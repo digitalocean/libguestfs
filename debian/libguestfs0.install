@@ -1,0 +1,3 @@
+usr/lib/lib*.so.*
+usr/lib/guestfs/*
+usr/share/man/man3/*

@@ -1,0 +1,11 @@
+libguestfs (1.0.41-1) unstable; urgency=low
+
+  * New upstream release 1.0.41.
+
+ -- Richard Jones <rjones@redhat.com>  Thu, 04 Jun 2009 16:10:38 +0100
+
+libguestfs (1.0.31-1) unstable; urgency=low
+
+  * Initial release (Closes: #530427)
+
+ -- Richard Jones <rjones@redhat.com>  Sun, 24 May 2009 21:43:45 +0100

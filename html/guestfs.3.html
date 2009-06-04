@@ -1,0 +1,2727 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>libguestfs API documentation</title>
+<link rel="stylesheet" href="pod.css" type="text/css" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:root@localhost" />
+</head>
+
+<body>
+
+
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#connection_management">CONNECTION MANAGEMENT</a></li>
+	<ul>
+
+		<li><a href="#guestfs_h__">guestfs_h *</a></li>
+		<li><a href="#guestfs_create">guestfs_create</a></li>
+		<li><a href="#guestfs_close">guestfs_close</a></li>
+	</ul>
+
+	<li><a href="#error_handling">ERROR HANDLING</a></li>
+	<ul>
+
+		<li><a href="#guestfs_last_error">guestfs_last_error</a></li>
+		<li><a href="#guestfs_set_error_handler">guestfs_set_error_handler</a></li>
+		<li><a href="#guestfs_get_error_handler">guestfs_get_error_handler</a></li>
+		<li><a href="#guestfs_set_out_of_memory_handler">guestfs_set_out_of_memory_handler</a></li>
+		<li><a href="#guestfs_get_out_of_memory_handler">guestfs_get_out_of_memory_handler</a></li>
+	</ul>
+
+	<li><a href="#path">PATH</a></li>
+	<li><a href="#high_level_api_actions">HIGH-LEVEL API ACTIONS</a></li>
+	<ul>
+
+		<li><a href="#guestfs_add_cdrom">guestfs_add_cdrom</a></li>
+		<li><a href="#guestfs_add_drive">guestfs_add_drive</a></li>
+		<li><a href="#guestfs_add_drive_ro">guestfs_add_drive_ro</a></li>
+		<li><a href="#guestfs_aug_close">guestfs_aug_close</a></li>
+		<li><a href="#guestfs_aug_defnode">guestfs_aug_defnode</a></li>
+		<li><a href="#guestfs_aug_defvar">guestfs_aug_defvar</a></li>
+		<li><a href="#guestfs_aug_get">guestfs_aug_get</a></li>
+		<li><a href="#guestfs_aug_init">guestfs_aug_init</a></li>
+		<li><a href="#guestfs_aug_insert">guestfs_aug_insert</a></li>
+		<li><a href="#guestfs_aug_load">guestfs_aug_load</a></li>
+		<li><a href="#guestfs_aug_ls">guestfs_aug_ls</a></li>
+		<li><a href="#guestfs_aug_match">guestfs_aug_match</a></li>
+		<li><a href="#guestfs_aug_mv">guestfs_aug_mv</a></li>
+		<li><a href="#guestfs_aug_rm">guestfs_aug_rm</a></li>
+		<li><a href="#guestfs_aug_save">guestfs_aug_save</a></li>
+		<li><a href="#guestfs_aug_set">guestfs_aug_set</a></li>
+		<li><a href="#guestfs_blockdev_flushbufs">guestfs_blockdev_flushbufs</a></li>
+		<li><a href="#guestfs_blockdev_getbsz">guestfs_blockdev_getbsz</a></li>
+		<li><a href="#guestfs_blockdev_getro">guestfs_blockdev_getro</a></li>
+		<li><a href="#guestfs_blockdev_getsize64">guestfs_blockdev_getsize64</a></li>
+		<li><a href="#guestfs_blockdev_getss">guestfs_blockdev_getss</a></li>
+		<li><a href="#guestfs_blockdev_getsz">guestfs_blockdev_getsz</a></li>
+		<li><a href="#guestfs_blockdev_rereadpt">guestfs_blockdev_rereadpt</a></li>
+		<li><a href="#guestfs_blockdev_setbsz">guestfs_blockdev_setbsz</a></li>
+		<li><a href="#guestfs_blockdev_setro">guestfs_blockdev_setro</a></li>
+		<li><a href="#guestfs_blockdev_setrw">guestfs_blockdev_setrw</a></li>
+		<li><a href="#guestfs_cat">guestfs_cat</a></li>
+		<li><a href="#guestfs_checksum">guestfs_checksum</a></li>
+		<li><a href="#guestfs_chmod">guestfs_chmod</a></li>
+		<li><a href="#guestfs_chown">guestfs_chown</a></li>
+		<li><a href="#guestfs_command">guestfs_command</a></li>
+		<li><a href="#guestfs_command_lines">guestfs_command_lines</a></li>
+		<li><a href="#guestfs_config">guestfs_config</a></li>
+		<li><a href="#guestfs_cp">guestfs_cp</a></li>
+		<li><a href="#guestfs_cp_a">guestfs_cp_a</a></li>
+		<li><a href="#guestfs_debug">guestfs_debug</a></li>
+		<li><a href="#guestfs_dmesg">guestfs_dmesg</a></li>
+		<li><a href="#guestfs_download">guestfs_download</a></li>
+		<li><a href="#guestfs_drop_caches">guestfs_drop_caches</a></li>
+		<li><a href="#guestfs_e2fsck_f">guestfs_e2fsck_f</a></li>
+		<li><a href="#guestfs_end_busy">guestfs_end_busy</a></li>
+		<li><a href="#guestfs_equal">guestfs_equal</a></li>
+		<li><a href="#guestfs_exists">guestfs_exists</a></li>
+		<li><a href="#guestfs_file">guestfs_file</a></li>
+		<li><a href="#guestfs_find">guestfs_find</a></li>
+		<li><a href="#guestfs_fsck">guestfs_fsck</a></li>
+		<li><a href="#guestfs_get_append">guestfs_get_append</a></li>
+		<li><a href="#guestfs_get_autosync">guestfs_get_autosync</a></li>
+		<li><a href="#guestfs_get_e2label">guestfs_get_e2label</a></li>
+		<li><a href="#guestfs_get_e2uuid">guestfs_get_e2uuid</a></li>
+		<li><a href="#guestfs_get_path">guestfs_get_path</a></li>
+		<li><a href="#guestfs_get_qemu">guestfs_get_qemu</a></li>
+		<li><a href="#guestfs_get_state">guestfs_get_state</a></li>
+		<li><a href="#guestfs_get_verbose">guestfs_get_verbose</a></li>
+		<li><a href="#guestfs_grub_install">guestfs_grub_install</a></li>
+		<li><a href="#guestfs_hexdump">guestfs_hexdump</a></li>
+		<li><a href="#guestfs_is_busy">guestfs_is_busy</a></li>
+		<li><a href="#guestfs_is_config">guestfs_is_config</a></li>
+		<li><a href="#guestfs_is_dir">guestfs_is_dir</a></li>
+		<li><a href="#guestfs_is_file">guestfs_is_file</a></li>
+		<li><a href="#guestfs_is_launching">guestfs_is_launching</a></li>
+		<li><a href="#guestfs_is_ready">guestfs_is_ready</a></li>
+		<li><a href="#guestfs_kill_subprocess">guestfs_kill_subprocess</a></li>
+		<li><a href="#guestfs_launch">guestfs_launch</a></li>
+		<li><a href="#guestfs_list_devices">guestfs_list_devices</a></li>
+		<li><a href="#guestfs_list_partitions">guestfs_list_partitions</a></li>
+		<li><a href="#guestfs_ll">guestfs_ll</a></li>
+		<li><a href="#guestfs_ls">guestfs_ls</a></li>
+		<li><a href="#guestfs_lstat">guestfs_lstat</a></li>
+		<li><a href="#guestfs_lvcreate">guestfs_lvcreate</a></li>
+		<li><a href="#guestfs_lvm_remove_all">guestfs_lvm_remove_all</a></li>
+		<li><a href="#guestfs_lvremove">guestfs_lvremove</a></li>
+		<li><a href="#guestfs_lvresize">guestfs_lvresize</a></li>
+		<li><a href="#guestfs_lvs">guestfs_lvs</a></li>
+		<li><a href="#guestfs_lvs_full">guestfs_lvs_full</a></li>
+		<li><a href="#guestfs_mkdir">guestfs_mkdir</a></li>
+		<li><a href="#guestfs_mkdir_p">guestfs_mkdir_p</a></li>
+		<li><a href="#guestfs_mkfs">guestfs_mkfs</a></li>
+		<li><a href="#guestfs_mount">guestfs_mount</a></li>
+		<li><a href="#guestfs_mount_options">guestfs_mount_options</a></li>
+		<li><a href="#guestfs_mount_ro">guestfs_mount_ro</a></li>
+		<li><a href="#guestfs_mount_vfs">guestfs_mount_vfs</a></li>
+		<li><a href="#guestfs_mounts">guestfs_mounts</a></li>
+		<li><a href="#guestfs_mv">guestfs_mv</a></li>
+		<li><a href="#guestfs_ping_daemon">guestfs_ping_daemon</a></li>
+		<li><a href="#guestfs_pvcreate">guestfs_pvcreate</a></li>
+		<li><a href="#guestfs_pvremove">guestfs_pvremove</a></li>
+		<li><a href="#guestfs_pvresize">guestfs_pvresize</a></li>
+		<li><a href="#guestfs_pvs">guestfs_pvs</a></li>
+		<li><a href="#guestfs_pvs_full">guestfs_pvs_full</a></li>
+		<li><a href="#guestfs_read_lines">guestfs_read_lines</a></li>
+		<li><a href="#guestfs_resize2fs">guestfs_resize2fs</a></li>
+		<li><a href="#guestfs_rm">guestfs_rm</a></li>
+		<li><a href="#guestfs_rm_rf">guestfs_rm_rf</a></li>
+		<li><a href="#guestfs_rmdir">guestfs_rmdir</a></li>
+		<li><a href="#guestfs_set_append">guestfs_set_append</a></li>
+		<li><a href="#guestfs_set_autosync">guestfs_set_autosync</a></li>
+		<li><a href="#guestfs_set_busy">guestfs_set_busy</a></li>
+		<li><a href="#guestfs_set_e2label">guestfs_set_e2label</a></li>
+		<li><a href="#guestfs_set_e2uuid">guestfs_set_e2uuid</a></li>
+		<li><a href="#guestfs_set_path">guestfs_set_path</a></li>
+		<li><a href="#guestfs_set_qemu">guestfs_set_qemu</a></li>
+		<li><a href="#guestfs_set_ready">guestfs_set_ready</a></li>
+		<li><a href="#guestfs_set_verbose">guestfs_set_verbose</a></li>
+		<li><a href="#guestfs_sfdisk">guestfs_sfdisk</a></li>
+		<li><a href="#guestfs_sfdisk_n">guestfs_sfdisk_N</a></li>
+		<li><a href="#guestfs_sfdisk_disk_geometry">guestfs_sfdisk_disk_geometry</a></li>
+		<li><a href="#guestfs_sfdisk_kernel_geometry">guestfs_sfdisk_kernel_geometry</a></li>
+		<li><a href="#guestfs_sfdisk_l">guestfs_sfdisk_l</a></li>
+		<li><a href="#guestfs_sleep">guestfs_sleep</a></li>
+		<li><a href="#guestfs_stat">guestfs_stat</a></li>
+		<li><a href="#guestfs_statvfs">guestfs_statvfs</a></li>
+		<li><a href="#guestfs_strings">guestfs_strings</a></li>
+		<li><a href="#guestfs_strings_e">guestfs_strings_e</a></li>
+		<li><a href="#guestfs_sync">guestfs_sync</a></li>
+		<li><a href="#guestfs_tar_in">guestfs_tar_in</a></li>
+		<li><a href="#guestfs_tar_out">guestfs_tar_out</a></li>
+		<li><a href="#guestfs_tgz_in">guestfs_tgz_in</a></li>
+		<li><a href="#guestfs_tgz_out">guestfs_tgz_out</a></li>
+		<li><a href="#guestfs_touch">guestfs_touch</a></li>
+		<li><a href="#guestfs_tune2fs_l">guestfs_tune2fs_l</a></li>
+		<li><a href="#guestfs_umount">guestfs_umount</a></li>
+		<li><a href="#guestfs_umount_all">guestfs_umount_all</a></li>
+		<li><a href="#guestfs_upload">guestfs_upload</a></li>
+		<li><a href="#guestfs_vg_activate">guestfs_vg_activate</a></li>
+		<li><a href="#guestfs_vg_activate_all">guestfs_vg_activate_all</a></li>
+		<li><a href="#guestfs_vgcreate">guestfs_vgcreate</a></li>
+		<li><a href="#guestfs_vgremove">guestfs_vgremove</a></li>
+		<li><a href="#guestfs_vgs">guestfs_vgs</a></li>
+		<li><a href="#guestfs_vgs_full">guestfs_vgs_full</a></li>
+		<li><a href="#guestfs_wait_ready">guestfs_wait_ready</a></li>
+		<li><a href="#guestfs_write_file">guestfs_write_file</a></li>
+		<li><a href="#guestfs_zero">guestfs_zero</a></li>
+		<li><a href="#guestfs_zerofree">guestfs_zerofree</a></li>
+	</ul>
+
+	<li><a href="#structures">STRUCTURES</a></li>
+	<ul>
+
+		<li><a href="#guestfs_lvm_pv">guestfs_lvm_pv</a></li>
+		<li><a href="#guestfs_lvm_vg">guestfs_lvm_vg</a></li>
+		<li><a href="#guestfs_lvm_lv">guestfs_lvm_lv</a></li>
+	</ul>
+
+	<li><a href="#state_machine_and_low_level_event_api">STATE MACHINE AND LOW-LEVEL EVENT API</a></li>
+	<ul>
+
+		<li><a href="#state_machine">STATE MACHINE</a></li>
+		<li><a href="#setting_callbacks_to_handle_events">SETTING CALLBACKS TO HANDLE EVENTS</a></li>
+		<li><a href="#non_blocking_actions">NON-BLOCKING ACTIONS</a></li>
+		<li><a href="#guestfs_set_send_callback">guestfs_set_send_callback</a></li>
+		<li><a href="#guestfs_set_reply_callback">guestfs_set_reply_callback</a></li>
+		<li><a href="#guestfs_set_log_message_callback">guestfs_set_log_message_callback</a></li>
+		<li><a href="#guestfs_set_subprocess_quit_callback">guestfs_set_subprocess_quit_callback</a></li>
+		<li><a href="#guestfs_set_launch_done_callback">guestfs_set_launch_done_callback</a></li>
+		<li><a href="#event_main_loop">EVENT MAIN LOOP</a></li>
+		<li><a href="#multiple_handles_and_multiple_threads">MULTIPLE HANDLES AND MULTIPLE THREADS</a></li>
+		<li><a href="#single_thread_case">SINGLE THREAD CASE</a></li>
+		<li><a href="#multiple_threads_case">MULTIPLE THREADS CASE</a></li>
+		<li><a href="#guestfs_set_main_loop">guestfs_set_main_loop</a></li>
+		<li><a href="#guestfs_get_main_loop">guestfs_get_main_loop</a></li>
+		<li><a href="#guestfs_get_default_main_loop">guestfs_get_default_main_loop</a></li>
+		<li><a href="#guestfs_create_main_loop">guestfs_create_main_loop</a></li>
+		<li><a href="#guestfs_free_main_loop">guestfs_free_main_loop</a></li>
+		<li><a href="#writing_a_custom_main_loop">WRITING A CUSTOM MAIN LOOP</a></li>
+	</ul>
+
+	<li><a href="#internals">INTERNALS</a></li>
+	<ul>
+
+		<li><a href="#communication_protocol">COMMUNICATION PROTOCOL</a></li>
+		<ul>
+
+			<li><a href="#ordinary_functions__no_filein_fileout_params_">ORDINARY FUNCTIONS (NO FILEIN/FILEOUT PARAMS)</a></li>
+			<li><a href="#functions_that_have_filein_parameters">FUNCTIONS THAT HAVE FILEIN PARAMETERS</a></li>
+			<li><a href="#functions_that_have_fileout_parameters">FUNCTIONS THAT HAVE FILEOUT PARAMETERS</a></li>
+			<li><a href="#initial_message">INITIAL MESSAGE</a></li>
+		</ul>
+
+	</ul>
+
+	<li><a href="#qemu_wrappers">QEMU WRAPPERS</a></li>
+	<li><a href="#environment_variables">ENVIRONMENT VARIABLES</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#authors">AUTHORS</a></li>
+	<li><a href="#copyright">COPYRIGHT</a></li>
+</ul>
+
+<hr name="index" />
+</div>
+<!-- INDEX END -->
+
+<p>
+</p>
+<hr />
+<h1><a name="name">NAME</a></h1>
+<p>guestfs - Library for accessing and modifying virtual machine images</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+ #include &lt;guestfs.h&gt;
+ 
+ guestfs_h *handle = guestfs_create ();
+ guestfs_add_drive (handle, &quot;guest.img&quot;);
+ guestfs_launch (handle);
+ guestfs_wait_ready (handle);
+ guestfs_mount (handle, &quot;/dev/sda1&quot;, &quot;/&quot;);
+ guestfs_touch (handle, &quot;/hello&quot;);
+ guestfs_sync (handle);
+ guestfs_close (handle);</pre>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>Libguestfs is a library for accessing and modifying guest disk images.
+Amongst the things this is good for: making batch configuration
+changes to guests, getting disk used/free statistics (see also:
+virt-df), migrating between virtualization systems (see also:
+virt-p2v), performing partial backups, performing partial guest
+clones, cloning guests and changing registry/UUID/hostname info, and
+much else besides.</p>
+<p>Libguestfs uses Linux kernel and qemu code, and can access any type of
+guest filesystem that Linux and qemu can, including but not limited
+to: ext2/3/4, btrfs, FAT and NTFS, LVM, many different disk partition
+schemes, qcow, qcow2, vmdk.</p>
+<p>Libguestfs provides ways to enumerate guest storage (eg. partitions,
+LVs, what filesystem is in each LV, etc.).  It can also run commands
+in the context of the guest.  Also you can access filesystems over FTP.</p>
+<p>Libguestfs is a library that can be linked with C and C++ management
+programs (or management programs written in OCaml, Perl, Python, Ruby, Java
+or Haskell).  You can also use it from shell scripts or the command line.</p>
+<p>You don't need to be root to use libguestfs, although obviously you do
+need enough permissions to access the disk images.</p>
+<p>
+</p>
+<hr />
+<h1><a name="connection_management">CONNECTION MANAGEMENT</a></h1>
+<p>If you are using the high-level API, then you should call the
+functions in the following order:</p>
+<pre>
+ guestfs_h *handle = guestfs_create ();
+ 
+ guestfs_add_drive (handle, &quot;guest.img&quot;);
+ /* call guestfs_add_drive additional times if the guest has
+  * multiple disks
+  */
+ 
+ guestfs_launch (handle);
+ guestfs_wait_ready (handle);</pre>
+<pre>
+ /* now you can examine what partitions, LVs etc are available
+  * you have to mount / at least
+  */ 
+ guestfs_mount (handle, &quot;/dev/sda1&quot;, &quot;/&quot;);</pre>
+<pre>
+ /* now you can perform actions on the guest disk image */
+ guestfs_touch (handle, &quot;/hello&quot;);
+ 
+ /* you only need to call guestfs_sync if you have made
+  * changes to the guest image
+  */
+ guestfs_sync (handle);
+ 
+ guestfs_close (handle);</pre>
+<p><code>guestfs_wait_ready</code> and all of the actions including <code>guestfs_sync</code>
+are blocking calls.  You can use the low-level event API to do
+non-blocking operations instead.</p>
+<p>All functions that return integers, return <code>-1</code> on error.  See
+section ERROR HANDLING below for how to handle errors.</p>
+<p>
+</p>
+<h2><a name="guestfs_h__">guestfs_h *</a></h2>
+<p><code>guestfs_h</code> is the opaque type representing a connection handle.
+Create a handle by calling <code>guestfs_create</code>.  Call <code>guestfs_close</code>
+to free the handle and release all resources used.</p>
+<p>For information on using multiple handles and threads, see the section
+MULTIPLE HANDLES AND MULTIPLE THREADS below.</p>
+<p>
+</p>
+<h2><a name="guestfs_create">guestfs_create</a></h2>
+<pre>
+ guestfs_h *guestfs_create (void);</pre>
+<p>Create a connection handle.</p>
+<p>You have to call <code>guestfs_add_drive</code> on the handle at least once.</p>
+<p>This function returns a non-NULL pointer to a handle on success or
+NULL on error.</p>
+<p>After configuring the handle, you have to call <code>guestfs_launch</code> and
+<code>guestfs_wait_ready</code>.</p>
+<p>You may also want to configure error handling for the handle.  See
+ERROR HANDLING section below.</p>
+<p>
+</p>
+<h2><a name="guestfs_close">guestfs_close</a></h2>
+<pre>
+ void guestfs_close (guestfs_h *handle);</pre>
+<p>This closes the connection handle and frees up all resources used.</p>
+<p>
+</p>
+<hr />
+<h1><a name="error_handling">ERROR HANDLING</a></h1>
+<p>The convention in all functions that return <code>int</code> is that they return
+<code>-1</code> to indicate an error.  You can get additional information on
+errors by calling <code>guestfs_last_error</code> and/or by setting up an error
+handler with <code>guestfs_set_error_handler</code>.</p>
+<p>The default error handler prints the information string to <code>stderr</code>.</p>
+<p>Out of memory errors are handled differently.  The default action is
+to call <em>abort(3)</em>.  If this is undesirable, then you can set a
+handler using <code>guestfs_set_out_of_memory_handler</code>.</p>
+<p>
+</p>
+<h2><a name="guestfs_last_error">guestfs_last_error</a></h2>
+<pre>
+ const char *guestfs_last_error (guestfs_h *handle);</pre>
+<p>This returns the last error message that happened on <code>handle</code>.  If
+there has not been an error since the handle was created, then this
+returns <code>NULL</code>.</p>
+<p>The lifetime of the returned string is until the next error occurs, or
+<code>guestfs_close</code> is called.</p>
+<p>The error string is not localized (ie. is always in English), because
+this makes searching for error messages in search engines give the
+largest number of results.</p>
+<p>
+</p>
+<h2><a name="guestfs_set_error_handler">guestfs_set_error_handler</a></h2>
+<pre>
+ typedef void (*guestfs_error_handler_cb) (guestfs_h *handle,
+                                           void *data,
+                                           const char *msg);
+ void guestfs_set_error_handler (guestfs_h *handle,
+                                 guestfs_error_handler_cb cb,
+                                 void *data);</pre>
+<p>The callback <code>cb</code> will be called if there is an error.  The
+parameters passed to the callback are an opaque data pointer and the
+error message string.</p>
+<p>Note that the message string <code>msg</code> is freed as soon as the callback
+function returns, so if you want to stash it somewhere you must make
+your own copy.</p>
+<p>The default handler prints messages on <code>stderr</code>.</p>
+<p>If you set <code>cb</code> to <code>NULL</code> then <em>no</em> handler is called.</p>
+<p>
+</p>
+<h2><a name="guestfs_get_error_handler">guestfs_get_error_handler</a></h2>
+<pre>
+ guestfs_error_handler_cb guestfs_get_error_handler (guestfs_h *handle,
+                                                     void **data_rtn);</pre>
+<p>Returns the current error handler callback.</p>
+<p>
+</p>
+<h2><a name="guestfs_set_out_of_memory_handler">guestfs_set_out_of_memory_handler</a></h2>
+<pre>
+ typedef void (*guestfs_abort_cb) (void);
+ int guestfs_set_out_of_memory_handler (guestfs_h *handle,
+                                        guestfs_abort_cb);</pre>
+<p>The callback <code>cb</code> will be called if there is an out of memory
+situation.  <em>Note this callback must not return</em>.</p>
+<p>The default is to call <em>abort(3)</em>.</p>
+<p>You cannot set <code>cb</code> to <code>NULL</code>.  You can't ignore out of memory
+situations.</p>
+<p>
+</p>
+<h2><a name="guestfs_get_out_of_memory_handler">guestfs_get_out_of_memory_handler</a></h2>
+<pre>
+ guestfs_abort_fn guestfs_get_out_of_memory_handler (guestfs_h *handle);</pre>
+<p>This returns the current out of memory handler.</p>
+<p>
+</p>
+<hr />
+<h1><a name="path">PATH</a></h1>
+<p>Libguestfs needs a kernel and initrd.img, which it finds by looking
+along an internal path.</p>
+<p>By default it looks for these in the directory <code>$libdir/guestfs</code>
+(eg. <code>/usr/local/lib/guestfs</code> or <code>/usr/lib64/guestfs</code>).</p>
+<p>Use <code>guestfs_set_path</code> or set the environment variable
+<a href="#libguestfs_path"><code>LIBGUESTFS_PATH</code></a> to change the directories that libguestfs will
+search in.  The value is a colon-separated list of paths.  The current
+directory is <em>not</em> searched unless the path contains an empty element
+or <code>.</code>.  For example <code>LIBGUESTFS_PATH=:/usr/lib/guestfs</code> would
+search the current directory and then <code>/usr/lib/guestfs</code>.</p>
+<p>
+</p>
+<hr />
+<h1><a name="high_level_api_actions">HIGH-LEVEL API ACTIONS</a></h1>
+<p>
+</p>
+<h2><a name="guestfs_add_cdrom">guestfs_add_cdrom</a></h2>
+<pre>
+ int guestfs_add_cdrom (guestfs_h *handle,
+                const char *filename);</pre>
+<p>This function adds a virtual CD-ROM disk image to the guest.</p>
+<p>This is equivalent to the qemu parameter <code>-cdrom filename</code>.</p>
+<p>Note that this call checks for the existence of <code>filename</code>.  This
+stops you from specifying other types of drive which are supported
+by qemu such as <code>nbd:</code> and <code>http:</code> URLs.  To specify those, use
+the general <code>guestfs_config</code> call instead.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_add_drive">guestfs_add_drive</a></h2>
+<pre>
+ int guestfs_add_drive (guestfs_h *handle,
+                const char *filename);</pre>
+<p>This function adds a virtual machine disk image <code>filename</code> to the
+guest.  The first time you call this function, the disk appears as IDE
+disk 0 (<code>/dev/sda</code>) in the guest, the second time as <code>/dev/sdb</code>, and
+so on.</p>
+<p>You don't necessarily need to be root when using libguestfs.  However
+you obviously do need sufficient permissions to access the filename
+for whatever operations you want to perform (ie. read access if you
+just want to read the image or write access if you want to modify the
+image).</p>
+<p>This is equivalent to the qemu parameter <code>-drive file=filename</code>.</p>
+<p>Note that this call checks for the existence of <code>filename</code>.  This
+stops you from specifying other types of drive which are supported
+by qemu such as <code>nbd:</code> and <code>http:</code> URLs.  To specify those, use
+the general <code>guestfs_config</code> call instead.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_add_drive_ro">guestfs_add_drive_ro</a></h2>
+<pre>
+ int guestfs_add_drive_ro (guestfs_h *handle,
+                const char *filename);</pre>
+<p>This adds a drive in snapshot mode, making it effectively
+read-only.</p>
+<p>Note that writes to the device are allowed, and will be seen for
+the duration of the guestfs handle, but they are written
+to a temporary file which is discarded as soon as the guestfs
+handle is closed.  We don't currently have any method to enable
+changes to be committed, although qemu can support this.</p>
+<p>This is equivalent to the qemu parameter
+<code>-drive file=filename,snapshot=on</code>.</p>
+<p>Note that this call checks for the existence of <code>filename</code>.  This
+stops you from specifying other types of drive which are supported
+by qemu such as <code>nbd:</code> and <code>http:</code> URLs.  To specify those, use
+the general <code>guestfs_config</code> call instead.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_aug_close">guestfs_aug_close</a></h2>
+<pre>
+ int guestfs_aug_close (guestfs_h *handle);</pre>
+<p>Close the current Augeas handle and free up any resources
+used by it.  After calling this, you have to call
+<code>guestfs_aug_init</code> again before you can use any other
+Augeas functions.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_aug_defnode">guestfs_aug_defnode</a></h2>
+<pre>
+ struct guestfs_int_bool *guestfs_aug_defnode (guestfs_h *handle,
+                const char *name,
+                const char *expr,
+                const char *val);</pre>
+<p>Defines a variable <code>name</code> whose value is the result of
+evaluating <code>expr</code>.</p>
+<p>If <code>expr</code> evaluates to an empty nodeset, a node is created,
+equivalent to calling <code>guestfs_aug_set</code> <code>expr</code>, <code>value</code>.
+<code>name</code> will be the nodeset containing that single node.</p>
+<p>On success this returns a pair containing the
+number of nodes in the nodeset, and a boolean flag
+if a node was created.</p>
+<p>This function returns a <code>struct guestfs_int_bool *</code>,
+or NULL if there was an error.
+<em>The caller must call <code>guestfs_free_int_bool</code> after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_aug_defvar">guestfs_aug_defvar</a></h2>
+<pre>
+ int guestfs_aug_defvar (guestfs_h *handle,
+                const char *name,
+                const char *expr);</pre>
+<p>Defines an Augeas variable <code>name</code> whose value is the result
+of evaluating <code>expr</code>.  If <code>expr</code> is NULL, then <code>name</code> is
+undefined.</p>
+<p>On success this returns the number of nodes in <code>expr</code>, or
+<code>0</code> if <code>expr</code> evaluates to something which is not a nodeset.</p>
+<p>On error this function returns -1.</p>
+<p>
+</p>
+<h2><a name="guestfs_aug_get">guestfs_aug_get</a></h2>
+<pre>
+ char *guestfs_aug_get (guestfs_h *handle,
+                const char *path);</pre>
+<p>Look up the value associated with <code>path</code>.  If <code>path</code>
+matches exactly one node, the <code>value</code> is returned.</p>
+<p>This function returns a string, or NULL on error.
+<em>The caller must free the returned string after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_aug_init">guestfs_aug_init</a></h2>
+<pre>
+ int guestfs_aug_init (guestfs_h *handle,
+                const char *root,
+                int flags);</pre>
+<p>Create a new Augeas handle for editing configuration files.
+If there was any previous Augeas handle associated with this
+guestfs session, then it is closed.</p>
+<p>You must call this before using any other <code>guestfs_aug_*</code>
+commands.</p>
+<p><code>root</code> is the filesystem root.  <code>root</code> must not be NULL,
+use <code>/</code> instead.</p>
+<p>The flags are the same as the flags defined in
+&lt;augeas.h&gt;, the logical <em>or</em> of the following
+integers:</p>
+<dl>
+<dt><strong><a name="aug_save_backup_1" class="item"><code>AUG_SAVE_BACKUP</code> = 1</a></strong></dt>
+
+<dd>
+<p>Keep the original file with a <code>.augsave</code> extension.</p>
+</dd>
+<dt><strong><a name="aug_save_newfile_2" class="item"><code>AUG_SAVE_NEWFILE</code> = 2</a></strong></dt>
+
+<dd>
+<p>Save changes into a file with extension <code>.augnew</code>, and
+do not overwrite original.  Overrides <code>AUG_SAVE_BACKUP</code>.</p>
+</dd>
+<dt><strong><a name="aug_type_check_4" class="item"><code>AUG_TYPE_CHECK</code> = 4</a></strong></dt>
+
+<dd>
+<p>Typecheck lenses (can be expensive).</p>
+</dd>
+<dt><strong><a name="aug_no_stdinc_8" class="item"><code>AUG_NO_STDINC</code> = 8</a></strong></dt>
+
+<dd>
+<p>Do not use standard load path for modules.</p>
+</dd>
+<dt><strong><a name="aug_save_noop_16" class="item"><code>AUG_SAVE_NOOP</code> = 16</a></strong></dt>
+
+<dd>
+<p>Make save a no-op, just record what would have been changed.</p>
+</dd>
+<dt><strong><a name="aug_no_load_32" class="item"><code>AUG_NO_LOAD</code> = 32</a></strong></dt>
+
+<dd>
+<p>Do not load the tree in <code>guestfs_aug_init</code>.</p>
+</dd>
+</dl>
+<p>To close the handle, you can call <code>guestfs_aug_close</code>.</p>
+<p>To find out more about Augeas, see <a href="http://augeas.net/">http://augeas.net/</a>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_aug_insert">guestfs_aug_insert</a></h2>
+<pre>
+ int guestfs_aug_insert (guestfs_h *handle,
+                const char *path,
+                const char *label,
+                int before);</pre>
+<p>Create a new sibling <code>label</code> for <code>path</code>, inserting it into
+the tree before or after <code>path</code> (depending on the boolean
+flag <code>before</code>).</p>
+<p><code>path</code> must match exactly one existing node in the tree, and
+<code>label</code> must be a label, ie. not contain <code>/</code>, <code>*</code> or end
+with a bracketed index <code>[N]</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_aug_load">guestfs_aug_load</a></h2>
+<pre>
+ int guestfs_aug_load (guestfs_h *handle);</pre>
+<p>Load files into the tree.</p>
+<p>See <code>aug_load</code> in the Augeas documentation for the full gory
+details.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_aug_ls">guestfs_aug_ls</a></h2>
+<pre>
+ char **guestfs_aug_ls (guestfs_h *handle,
+                const char *path);</pre>
+<p>This is just a shortcut for listing <code>guestfs_aug_match</code>
+<code>path/*</code> and sorting the resulting nodes into alphabetical order.</p>
+<p>This function returns a NULL-terminated array of strings
+(like <em>environ(3)</em>), or NULL if there was an error.
+<em>The caller must free the strings and the array after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_aug_match">guestfs_aug_match</a></h2>
+<pre>
+ char **guestfs_aug_match (guestfs_h *handle,
+                const char *path);</pre>
+<p>Returns a list of paths which match the path expression <code>path</code>.
+The returned paths are sufficiently qualified so that they match
+exactly one node in the current tree.</p>
+<p>This function returns a NULL-terminated array of strings
+(like <em>environ(3)</em>), or NULL if there was an error.
+<em>The caller must free the strings and the array after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_aug_mv">guestfs_aug_mv</a></h2>
+<pre>
+ int guestfs_aug_mv (guestfs_h *handle,
+                const char *src,
+                const char *dest);</pre>
+<p>Move the node <code>src</code> to <code>dest</code>.  <code>src</code> must match exactly
+one node.  <code>dest</code> is overwritten if it exists.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_aug_rm">guestfs_aug_rm</a></h2>
+<pre>
+ int guestfs_aug_rm (guestfs_h *handle,
+                const char *path);</pre>
+<p>Remove <code>path</code> and all of its children.</p>
+<p>On success this returns the number of entries which were removed.</p>
+<p>On error this function returns -1.</p>
+<p>
+</p>
+<h2><a name="guestfs_aug_save">guestfs_aug_save</a></h2>
+<pre>
+ int guestfs_aug_save (guestfs_h *handle);</pre>
+<p>This writes all pending changes to disk.</p>
+<p>The flags which were passed to <code>guestfs_aug_init</code> affect exactly
+how files are saved.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_aug_set">guestfs_aug_set</a></h2>
+<pre>
+ int guestfs_aug_set (guestfs_h *handle,
+                const char *path,
+                const char *val);</pre>
+<p>Set the value associated with <code>path</code> to <code>value</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_blockdev_flushbufs">guestfs_blockdev_flushbufs</a></h2>
+<pre>
+ int guestfs_blockdev_flushbufs (guestfs_h *handle,
+                const char *device);</pre>
+<p>This tells the kernel to flush internal buffers associated
+with <code>device</code>.</p>
+<p>This uses the <em>blockdev(8)</em> command.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_blockdev_getbsz">guestfs_blockdev_getbsz</a></h2>
+<pre>
+ int guestfs_blockdev_getbsz (guestfs_h *handle,
+                const char *device);</pre>
+<p>This returns the block size of a device.</p>
+<p>(Note this is different from both <em>size in blocks</em> and
+<em>filesystem block size</em>).</p>
+<p>This uses the <em>blockdev(8)</em> command.</p>
+<p>On error this function returns -1.</p>
+<p>
+</p>
+<h2><a name="guestfs_blockdev_getro">guestfs_blockdev_getro</a></h2>
+<pre>
+ int guestfs_blockdev_getro (guestfs_h *handle,
+                const char *device);</pre>
+<p>Returns a boolean indicating if the block device is read-only
+(true if read-only, false if not).</p>
+<p>This uses the <em>blockdev(8)</em> command.</p>
+<p>This function returns a C truth value on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_blockdev_getsize64">guestfs_blockdev_getsize64</a></h2>
+<pre>
+ int64_t guestfs_blockdev_getsize64 (guestfs_h *handle,
+                const char *device);</pre>
+<p>This returns the size of the device in bytes.</p>
+<p>See also <code>guestfs_blockdev_getsz</code>.</p>
+<p>This uses the <em>blockdev(8)</em> command.</p>
+<p>On error this function returns -1.</p>
+<p>
+</p>
+<h2><a name="guestfs_blockdev_getss">guestfs_blockdev_getss</a></h2>
+<pre>
+ int guestfs_blockdev_getss (guestfs_h *handle,
+                const char *device);</pre>
+<p>This returns the size of sectors on a block device.
+Usually 512, but can be larger for modern devices.</p>
+<p>(Note, this is not the size in sectors, use <code>guestfs_blockdev_getsz</code>
+for that).</p>
+<p>This uses the <em>blockdev(8)</em> command.</p>
+<p>On error this function returns -1.</p>
+<p>
+</p>
+<h2><a name="guestfs_blockdev_getsz">guestfs_blockdev_getsz</a></h2>
+<pre>
+ int64_t guestfs_blockdev_getsz (guestfs_h *handle,
+                const char *device);</pre>
+<p>This returns the size of the device in units of 512-byte sectors
+(even if the sectorsize isn't 512 bytes ... weird).</p>
+<p>See also <code>guestfs_blockdev_getss</code> for the real sector size of
+the device, and <code>guestfs_blockdev_getsize64</code> for the more
+useful <em>size in bytes</em>.</p>
+<p>This uses the <em>blockdev(8)</em> command.</p>
+<p>On error this function returns -1.</p>
+<p>
+</p>
+<h2><a name="guestfs_blockdev_rereadpt">guestfs_blockdev_rereadpt</a></h2>
+<pre>
+ int guestfs_blockdev_rereadpt (guestfs_h *handle,
+                const char *device);</pre>
+<p>Reread the partition table on <code>device</code>.</p>
+<p>This uses the <em>blockdev(8)</em> command.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_blockdev_setbsz">guestfs_blockdev_setbsz</a></h2>
+<pre>
+ int guestfs_blockdev_setbsz (guestfs_h *handle,
+                const char *device,
+                int blocksize);</pre>
+<p>This sets the block size of a device.</p>
+<p>(Note this is different from both <em>size in blocks</em> and
+<em>filesystem block size</em>).</p>
+<p>This uses the <em>blockdev(8)</em> command.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_blockdev_setro">guestfs_blockdev_setro</a></h2>
+<pre>
+ int guestfs_blockdev_setro (guestfs_h *handle,
+                const char *device);</pre>
+<p>Sets the block device named <code>device</code> to read-only.</p>
+<p>This uses the <em>blockdev(8)</em> command.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_blockdev_setrw">guestfs_blockdev_setrw</a></h2>
+<pre>
+ int guestfs_blockdev_setrw (guestfs_h *handle,
+                const char *device);</pre>
+<p>Sets the block device named <code>device</code> to read-write.</p>
+<p>This uses the <em>blockdev(8)</em> command.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_cat">guestfs_cat</a></h2>
+<pre>
+ char *guestfs_cat (guestfs_h *handle,
+                const char *path);</pre>
+<p>Return the contents of the file named <code>path</code>.</p>
+<p>Note that this function cannot correctly handle binary files
+(specifically, files containing <code>\0</code> character which is treated
+as end of string).  For those you need to use the <code>guestfs_download</code>
+function which has a more complex interface.</p>
+<p>This function returns a string, or NULL on error.
+<em>The caller must free the returned string after use</em>.</p>
+<p>Because of the message protocol, there is a transfer limit 
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.</p>
+<p>
+</p>
+<h2><a name="guestfs_checksum">guestfs_checksum</a></h2>
+<pre>
+ char *guestfs_checksum (guestfs_h *handle,
+                const char *csumtype,
+                const char *path);</pre>
+<p>This call computes the MD5, SHAx or CRC checksum of the
+file named <code>path</code>.</p>
+<p>The type of checksum to compute is given by the <code>csumtype</code>
+parameter which must have one of the following values:</p>
+<dl>
+<dt><strong><a name="crc" class="item"><code>crc</code></a></strong></dt>
+
+<dd>
+<p>Compute the cyclic redundancy check (CRC) specified by POSIX
+for the <code>cksum</code> command.</p>
+</dd>
+<dt><strong><a name="md5" class="item"><code>md5</code></a></strong></dt>
+
+<dd>
+<p>Compute the MD5 hash (using the <code>md5sum</code> program).</p>
+</dd>
+<dt><strong><a name="sha1" class="item"><code>sha1</code></a></strong></dt>
+
+<dd>
+<p>Compute the SHA1 hash (using the <code>sha1sum</code> program).</p>
+</dd>
+<dt><strong><a name="sha224" class="item"><code>sha224</code></a></strong></dt>
+
+<dd>
+<p>Compute the SHA224 hash (using the <code>sha224sum</code> program).</p>
+</dd>
+<dt><strong><a name="sha256" class="item"><code>sha256</code></a></strong></dt>
+
+<dd>
+<p>Compute the SHA256 hash (using the <code>sha256sum</code> program).</p>
+</dd>
+<dt><strong><a name="sha384" class="item"><code>sha384</code></a></strong></dt>
+
+<dd>
+<p>Compute the SHA384 hash (using the <code>sha384sum</code> program).</p>
+</dd>
+<dt><strong><a name="sha512" class="item"><code>sha512</code></a></strong></dt>
+
+<dd>
+<p>Compute the SHA512 hash (using the <code>sha512sum</code> program).</p>
+</dd>
+</dl>
+<p>The checksum is returned as a printable string.</p>
+<p>This function returns a string, or NULL on error.
+<em>The caller must free the returned string after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_chmod">guestfs_chmod</a></h2>
+<pre>
+ int guestfs_chmod (guestfs_h *handle,
+                int mode,
+                const char *path);</pre>
+<p>Change the mode (permissions) of <code>path</code> to <code>mode</code>.  Only
+numeric modes are supported.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_chown">guestfs_chown</a></h2>
+<pre>
+ int guestfs_chown (guestfs_h *handle,
+                int owner,
+                int group,
+                const char *path);</pre>
+<p>Change the file owner to <code>owner</code> and group to <code>group</code>.</p>
+<p>Only numeric uid and gid are supported.  If you want to use
+names, you will need to locate and parse the password file
+yourself (Augeas support makes this relatively easy).</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_command">guestfs_command</a></h2>
+<pre>
+ char *guestfs_command (guestfs_h *handle,
+                char * const* const arguments);</pre>
+<p>This call runs a command from the guest filesystem.  The
+filesystem must be mounted, and must contain a compatible
+operating system (ie. something Linux, with the same
+or compatible processor architecture).</p>
+<p>The single parameter is an argv-style list of arguments.
+The first element is the name of the program to run.
+Subsequent elements are parameters.  The list must be
+non-empty (ie. must contain a program name).</p>
+<p>The return value is anything printed to <em>stdout</em> by
+the command.</p>
+<p>If the command returns a non-zero exit status, then
+this function returns an error message.  The error message
+string is the content of <em>stderr</em> from the command.</p>
+<p>The <code>$PATH</code> environment variable will contain at least
+<code>/usr/bin</code> and <code>/bin</code>.  If you require a program from
+another location, you should provide the full path in the
+first parameter.</p>
+<p>Shared libraries and data files required by the program
+must be available on filesystems which are mounted in the
+correct places.  It is the caller's responsibility to ensure
+all filesystems that are needed are mounted at the right
+locations.</p>
+<p>This function returns a string, or NULL on error.
+<em>The caller must free the returned string after use</em>.</p>
+<p>Because of the message protocol, there is a transfer limit 
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.</p>
+<p>
+</p>
+<h2><a name="guestfs_command_lines">guestfs_command_lines</a></h2>
+<pre>
+ char **guestfs_command_lines (guestfs_h *handle,
+                char * const* const arguments);</pre>
+<p>This is the same as <code>guestfs_command</code>, but splits the
+result into a list of lines.</p>
+<p>This function returns a NULL-terminated array of strings
+(like <em>environ(3)</em>), or NULL if there was an error.
+<em>The caller must free the strings and the array after use</em>.</p>
+<p>Because of the message protocol, there is a transfer limit 
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.</p>
+<p>
+</p>
+<h2><a name="guestfs_config">guestfs_config</a></h2>
+<pre>
+ int guestfs_config (guestfs_h *handle,
+                const char *qemuparam,
+                const char *qemuvalue);</pre>
+<p>This can be used to add arbitrary qemu command line parameters
+of the form <code>-param value</code>.  Actually it's not quite arbitrary - we
+prevent you from setting some parameters which would interfere with
+parameters that we use.</p>
+<p>The first character of <code>param</code> string must be a <code>-</code> (dash).</p>
+<p><code>value</code> can be NULL.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_cp">guestfs_cp</a></h2>
+<pre>
+ int guestfs_cp (guestfs_h *handle,
+                const char *src,
+                const char *dest);</pre>
+<p>This copies a file from <code>src</code> to <code>dest</code> where <code>dest</code> is
+either a destination filename or destination directory.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_cp_a">guestfs_cp_a</a></h2>
+<pre>
+ int guestfs_cp_a (guestfs_h *handle,
+                const char *src,
+                const char *dest);</pre>
+<p>This copies a file or directory from <code>src</code> to <code>dest</code>
+recursively using the <code>cp -a</code> command.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_debug">guestfs_debug</a></h2>
+<pre>
+ char *guestfs_debug (guestfs_h *handle,
+                const char *subcmd,
+                char * const* const extraargs);</pre>
+<p>The <code>guestfs_debug</code> command exposes some internals of
+<code>guestfsd</code> (the guestfs daemon) that runs inside the
+qemu subprocess.</p>
+<p>There is no comprehensive help for this command.  You have
+to look at the file <code>daemon/debug.c</code> in the libguestfs source
+to find out what you can do.</p>
+<p>This function returns a string, or NULL on error.
+<em>The caller must free the returned string after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_dmesg">guestfs_dmesg</a></h2>
+<pre>
+ char *guestfs_dmesg (guestfs_h *handle);</pre>
+<p>This returns the kernel messages (<code>dmesg</code> output) from
+the guest kernel.  This is sometimes useful for extended
+debugging of problems.</p>
+<p>Another way to get the same information is to enable
+verbose messages with <code>guestfs_set_verbose</code> or by setting
+the environment variable <code>LIBGUESTFS_DEBUG=1</code> before
+running the program.</p>
+<p>This function returns a string, or NULL on error.
+<em>The caller must free the returned string after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_download">guestfs_download</a></h2>
+<pre>
+ int guestfs_download (guestfs_h *handle,
+                const char *remotefilename,
+                const char *filename);</pre>
+<p>Download file <code>remotefilename</code> and save it as <code>filename</code>
+on the local machine.</p>
+<p><code>filename</code> can also be a named pipe.</p>
+<p>See also <code>guestfs_upload</code>, <code>guestfs_cat</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_drop_caches">guestfs_drop_caches</a></h2>
+<pre>
+ int guestfs_drop_caches (guestfs_h *handle,
+                int whattodrop);</pre>
+<p>This instructs the guest kernel to drop its page cache,
+and/or dentries and inode caches.  The parameter <code>whattodrop</code>
+tells the kernel what precisely to drop, see
+<a href="http://linux-mm.org/Drop_Caches">http://linux-mm.org/Drop_Caches</a></p>
+<p>Setting <code>whattodrop</code> to 3 should drop everything.</p>
+<p>This automatically calls <em>sync(2)</em> before the operation,
+so that the maximum guest memory is freed.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_e2fsck_f">guestfs_e2fsck_f</a></h2>
+<pre>
+ int guestfs_e2fsck_f (guestfs_h *handle,
+                const char *device);</pre>
+<p>This runs <code>e2fsck -p -f device</code>, ie. runs the ext2/ext3
+filesystem checker on <code>device</code>, noninteractively (<code>-p</code>),
+even if the filesystem appears to be clean (<code>-f</code>).</p>
+<p>This command is only needed because of <code>guestfs_resize2fs</code>
+(q.v.).  Normally you should use <code>guestfs_fsck</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_end_busy">guestfs_end_busy</a></h2>
+<pre>
+ int guestfs_end_busy (guestfs_h *handle);</pre>
+<p>This sets the state to <code>READY</code>, or if in <code>CONFIG</code> then it leaves the
+state as is.  This is only used when implementing
+actions using the low-level API.</p>
+<p>For more information on states, see <em>guestfs(3)</em>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_equal">guestfs_equal</a></h2>
+<pre>
+ int guestfs_equal (guestfs_h *handle,
+                const char *file1,
+                const char *file2);</pre>
+<p>This compares the two files <code>file1</code> and <code>file2</code> and returns
+true if their content is exactly equal, or false otherwise.</p>
+<p>The external <em>cmp(1)</em> program is used for the comparison.</p>
+<p>This function returns a C truth value on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_exists">guestfs_exists</a></h2>
+<pre>
+ int guestfs_exists (guestfs_h *handle,
+                const char *path);</pre>
+<p>This returns <code>true</code> if and only if there is a file, directory
+(or anything) with the given <code>path</code> name.</p>
+<p>See also <code>guestfs_is_file</code>, <code>guestfs_is_dir</code>, <code>guestfs_stat</code>.</p>
+<p>This function returns a C truth value on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_file">guestfs_file</a></h2>
+<pre>
+ char *guestfs_file (guestfs_h *handle,
+                const char *path);</pre>
+<p>This call uses the standard <em>file(1)</em> command to determine
+the type or contents of the file.  This also works on devices,
+for example to find out whether a partition contains a filesystem.</p>
+<p>The exact command which runs is <code>file -bsL path</code>.  Note in
+particular that the filename is not prepended to the output
+(the <code>-b</code> option).</p>
+<p>This function returns a string, or NULL on error.
+<em>The caller must free the returned string after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_find">guestfs_find</a></h2>
+<pre>
+ char **guestfs_find (guestfs_h *handle,
+                const char *directory);</pre>
+<p>This command lists out all files and directories, recursively,
+starting at <code>directory</code>.  It is essentially equivalent to
+running the shell command <code>find directory -print</code> but some
+post-processing happens on the output, described below.</p>
+<p>This returns a list of strings <em>without any prefix</em>.  Thus
+if the directory structure was:</p>
+<pre>
+ /tmp/a
+ /tmp/b
+ /tmp/c/d</pre>
+<p>then the returned list from <code>guestfs_find</code> <code>/tmp</code> would be
+4 elements:</p>
+<pre>
+ a
+ b
+ c
+ c/d</pre>
+<p>If <code>directory</code> is not a directory, then this command returns
+an error.</p>
+<p>The returned list is sorted.</p>
+<p>This function returns a NULL-terminated array of strings
+(like <em>environ(3)</em>), or NULL if there was an error.
+<em>The caller must free the strings and the array after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_fsck">guestfs_fsck</a></h2>
+<pre>
+ int guestfs_fsck (guestfs_h *handle,
+                const char *fstype,
+                const char *device);</pre>
+<p>This runs the filesystem checker (fsck) on <code>device</code> which
+should have filesystem type <code>fstype</code>.</p>
+<p>The returned integer is the status.  See <em>fsck(8)</em> for the
+list of status codes from <code>fsck</code>.</p>
+<p>Notes:</p>
+<ul>
+<li>
+<p>Multiple status codes can be summed together.</p>
+</li>
+<li>
+<p>A non-zero return code can mean &quot;success&quot;, for example if
+errors have been corrected on the filesystem.</p>
+</li>
+<li>
+<p>Checking or repairing NTFS volumes is not supported
+(by linux-ntfs).</p>
+</li>
+</ul>
+<p>This command is entirely equivalent to running <code>fsck -a -t fstype device</code>.</p>
+<p>On error this function returns -1.</p>
+<p>
+</p>
+<h2><a name="guestfs_get_append">guestfs_get_append</a></h2>
+<pre>
+ const char *guestfs_get_append (guestfs_h *handle);</pre>
+<p>Return the additional kernel options which are added to the
+guest kernel command line.</p>
+<p>If <code>NULL</code> then no options are added.</p>
+<p>This function returns a string, or NULL on error.
+The string is owned by the guest handle and must <em>not</em> be freed.</p>
+<p>
+</p>
+<h2><a name="guestfs_get_autosync">guestfs_get_autosync</a></h2>
+<pre>
+ int guestfs_get_autosync (guestfs_h *handle);</pre>
+<p>Get the autosync flag.</p>
+<p>This function returns a C truth value on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_get_e2label">guestfs_get_e2label</a></h2>
+<pre>
+ char *guestfs_get_e2label (guestfs_h *handle,
+                const char *device);</pre>
+<p>This returns the ext2/3/4 filesystem label of the filesystem on
+<code>device</code>.</p>
+<p>This function returns a string, or NULL on error.
+<em>The caller must free the returned string after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_get_e2uuid">guestfs_get_e2uuid</a></h2>
+<pre>
+ char *guestfs_get_e2uuid (guestfs_h *handle,
+                const char *device);</pre>
+<p>This returns the ext2/3/4 filesystem UUID of the filesystem on
+<code>device</code>.</p>
+<p>This function returns a string, or NULL on error.
+<em>The caller must free the returned string after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_get_path">guestfs_get_path</a></h2>
+<pre>
+ const char *guestfs_get_path (guestfs_h *handle);</pre>
+<p>Return the current search path.</p>
+<p>This is always non-NULL.  If it wasn't set already, then this will
+return the default path.</p>
+<p>This function returns a string, or NULL on error.
+The string is owned by the guest handle and must <em>not</em> be freed.</p>
+<p>
+</p>
+<h2><a name="guestfs_get_qemu">guestfs_get_qemu</a></h2>
+<pre>
+ const char *guestfs_get_qemu (guestfs_h *handle);</pre>
+<p>Return the current qemu binary.</p>
+<p>This is always non-NULL.  If it wasn't set already, then this will
+return the default qemu binary name.</p>
+<p>This function returns a string, or NULL on error.
+The string is owned by the guest handle and must <em>not</em> be freed.</p>
+<p>
+</p>
+<h2><a name="guestfs_get_state">guestfs_get_state</a></h2>
+<pre>
+ int guestfs_get_state (guestfs_h *handle);</pre>
+<p>This returns the current state as an opaque integer.  This is
+only useful for printing debug and internal error messages.</p>
+<p>For more information on states, see <em>guestfs(3)</em>.</p>
+<p>On error this function returns -1.</p>
+<p>
+</p>
+<h2><a name="guestfs_get_verbose">guestfs_get_verbose</a></h2>
+<pre>
+ int guestfs_get_verbose (guestfs_h *handle);</pre>
+<p>This returns the verbose messages flag.</p>
+<p>This function returns a C truth value on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_grub_install">guestfs_grub_install</a></h2>
+<pre>
+ int guestfs_grub_install (guestfs_h *handle,
+                const char *root,
+                const char *device);</pre>
+<p>This command installs GRUB (the Grand Unified Bootloader) on
+<code>device</code>, with the root directory being <code>root</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_hexdump">guestfs_hexdump</a></h2>
+<pre>
+ char *guestfs_hexdump (guestfs_h *handle,
+                const char *path);</pre>
+<p>This runs <code>hexdump -C</code> on the given <code>path</code>.  The result is
+the human-readable, canonical hex dump of the file.</p>
+<p>This function returns a string, or NULL on error.
+<em>The caller must free the returned string after use</em>.</p>
+<p>Because of the message protocol, there is a transfer limit 
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.</p>
+<p>
+</p>
+<h2><a name="guestfs_is_busy">guestfs_is_busy</a></h2>
+<pre>
+ int guestfs_is_busy (guestfs_h *handle);</pre>
+<p>This returns true iff this handle is busy processing a command
+(in the <code>BUSY</code> state).</p>
+<p>For more information on states, see <em>guestfs(3)</em>.</p>
+<p>This function returns a C truth value on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_is_config">guestfs_is_config</a></h2>
+<pre>
+ int guestfs_is_config (guestfs_h *handle);</pre>
+<p>This returns true iff this handle is being configured
+(in the <code>CONFIG</code> state).</p>
+<p>For more information on states, see <em>guestfs(3)</em>.</p>
+<p>This function returns a C truth value on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_is_dir">guestfs_is_dir</a></h2>
+<pre>
+ int guestfs_is_dir (guestfs_h *handle,
+                const char *path);</pre>
+<p>This returns <code>true</code> if and only if there is a directory
+with the given <code>path</code> name.  Note that it returns false for
+other objects like files.</p>
+<p>See also <code>guestfs_stat</code>.</p>
+<p>This function returns a C truth value on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_is_file">guestfs_is_file</a></h2>
+<pre>
+ int guestfs_is_file (guestfs_h *handle,
+                const char *path);</pre>
+<p>This returns <code>true</code> if and only if there is a file
+with the given <code>path</code> name.  Note that it returns false for
+other objects like directories.</p>
+<p>See also <code>guestfs_stat</code>.</p>
+<p>This function returns a C truth value on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_is_launching">guestfs_is_launching</a></h2>
+<pre>
+ int guestfs_is_launching (guestfs_h *handle);</pre>
+<p>This returns true iff this handle is launching the subprocess
+(in the <code>LAUNCHING</code> state).</p>
+<p>For more information on states, see <em>guestfs(3)</em>.</p>
+<p>This function returns a C truth value on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_is_ready">guestfs_is_ready</a></h2>
+<pre>
+ int guestfs_is_ready (guestfs_h *handle);</pre>
+<p>This returns true iff this handle is ready to accept commands
+(in the <code>READY</code> state).</p>
+<p>For more information on states, see <em>guestfs(3)</em>.</p>
+<p>This function returns a C truth value on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_kill_subprocess">guestfs_kill_subprocess</a></h2>
+<pre>
+ int guestfs_kill_subprocess (guestfs_h *handle);</pre>
+<p>This kills the qemu subprocess.  You should never need to call this.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_launch">guestfs_launch</a></h2>
+<pre>
+ int guestfs_launch (guestfs_h *handle);</pre>
+<p>Internally libguestfs is implemented by running a virtual machine
+using <em>qemu(1)</em>.</p>
+<p>You should call this after configuring the handle
+(eg. adding drives) but before performing any actions.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_list_devices">guestfs_list_devices</a></h2>
+<pre>
+ char **guestfs_list_devices (guestfs_h *handle);</pre>
+<p>List all the block devices.</p>
+<p>The full block device names are returned, eg. <code>/dev/sda</code></p>
+<p>This function returns a NULL-terminated array of strings
+(like <em>environ(3)</em>), or NULL if there was an error.
+<em>The caller must free the strings and the array after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_list_partitions">guestfs_list_partitions</a></h2>
+<pre>
+ char **guestfs_list_partitions (guestfs_h *handle);</pre>
+<p>List all the partitions detected on all block devices.</p>
+<p>The full partition device names are returned, eg. <code>/dev/sda1</code></p>
+<p>This does not return logical volumes.  For that you will need to
+call <code>guestfs_lvs</code>.</p>
+<p>This function returns a NULL-terminated array of strings
+(like <em>environ(3)</em>), or NULL if there was an error.
+<em>The caller must free the strings and the array after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_ll">guestfs_ll</a></h2>
+<pre>
+ char *guestfs_ll (guestfs_h *handle,
+                const char *directory);</pre>
+<p>List the files in <code>directory</code> (relative to the root directory,
+there is no cwd) in the format of 'ls -la'.</p>
+<p>This command is mostly useful for interactive sessions.  It
+is <em>not</em> intended that you try to parse the output string.</p>
+<p>This function returns a string, or NULL on error.
+<em>The caller must free the returned string after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_ls">guestfs_ls</a></h2>
+<pre>
+ char **guestfs_ls (guestfs_h *handle,
+                const char *directory);</pre>
+<p>List the files in <code>directory</code> (relative to the root directory,
+there is no cwd).  The '.' and '..' entries are not returned, but
+hidden files are shown.</p>
+<p>This command is mostly useful for interactive sessions.  Programs
+should probably use <code>guestfs_readdir</code> instead.</p>
+<p>This function returns a NULL-terminated array of strings
+(like <em>environ(3)</em>), or NULL if there was an error.
+<em>The caller must free the strings and the array after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_lstat">guestfs_lstat</a></h2>
+<pre>
+ struct guestfs_stat *guestfs_lstat (guestfs_h *handle,
+                const char *path);</pre>
+<p>Returns file information for the given <code>path</code>.</p>
+<p>This is the same as <code>guestfs_stat</code> except that if <code>path</code>
+is a symbolic link, then the link is stat-ed, not the file it
+refers to.</p>
+<p>This is the same as the <code>lstat(2)</code> system call.</p>
+<p>This function returns a <code>struct guestfs_stat *</code>
+(see <em>stat(2)</em> and &lt;guestfs-structs.h&gt;),
+or NULL if there was an error.
+<em>The caller must call <code>free</code> after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_lvcreate">guestfs_lvcreate</a></h2>
+<pre>
+ int guestfs_lvcreate (guestfs_h *handle,
+                const char *logvol,
+                const char *volgroup,
+                int mbytes);</pre>
+<p>This creates an LVM volume group called <code>logvol</code>
+on the volume group <code>volgroup</code>, with <code>size</code> megabytes.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_lvm_remove_all">guestfs_lvm_remove_all</a></h2>
+<pre>
+ int guestfs_lvm_remove_all (guestfs_h *handle);</pre>
+<p>This command removes all LVM logical volumes, volume groups
+and physical volumes.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p><strong>This command is dangerous.  Without careful use you
+can easily destroy all your data</strong>.</p>
+<p>
+</p>
+<h2><a name="guestfs_lvremove">guestfs_lvremove</a></h2>
+<pre>
+ int guestfs_lvremove (guestfs_h *handle,
+                const char *device);</pre>
+<p>Remove an LVM logical volume <code>device</code>, where <code>device</code> is
+the path to the LV, such as <code>/dev/VG/LV</code>.</p>
+<p>You can also remove all LVs in a volume group by specifying
+the VG name, <code>/dev/VG</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_lvresize">guestfs_lvresize</a></h2>
+<pre>
+ int guestfs_lvresize (guestfs_h *handle,
+                const char *device,
+                int mbytes);</pre>
+<p>This resizes (expands or shrinks) an existing LVM logical
+volume to <code>mbytes</code>.  When reducing, data in the reduced part
+is lost.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_lvs">guestfs_lvs</a></h2>
+<pre>
+ char **guestfs_lvs (guestfs_h *handle);</pre>
+<p>List all the logical volumes detected.  This is the equivalent
+of the <em>lvs(8)</em> command.</p>
+<p>This returns a list of the logical volume device names
+(eg. <code>/dev/VolGroup00/LogVol00</code>).</p>
+<p>See also <code>guestfs_lvs_full</code>.</p>
+<p>This function returns a NULL-terminated array of strings
+(like <em>environ(3)</em>), or NULL if there was an error.
+<em>The caller must free the strings and the array after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_lvs_full">guestfs_lvs_full</a></h2>
+<pre>
+ struct guestfs_lvm_lv_list *guestfs_lvs_full (guestfs_h *handle);</pre>
+<p>List all the logical volumes detected.  This is the equivalent
+of the <em>lvs(8)</em> command.  The &quot;full&quot; version includes all fields.</p>
+<p>This function returns a <code>struct guestfs_lvm_lv_list *</code>
+(see &lt;guestfs-structs.h&gt;),
+or NULL if there was an error.
+<em>The caller must call <code>guestfs_free_lvm_lv_list</code> after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_mkdir">guestfs_mkdir</a></h2>
+<pre>
+ int guestfs_mkdir (guestfs_h *handle,
+                const char *path);</pre>
+<p>Create a directory named <code>path</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_mkdir_p">guestfs_mkdir_p</a></h2>
+<pre>
+ int guestfs_mkdir_p (guestfs_h *handle,
+                const char *path);</pre>
+<p>Create a directory named <code>path</code>, creating any parent directories
+as necessary.  This is like the <code>mkdir -p</code> shell command.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_mkfs">guestfs_mkfs</a></h2>
+<pre>
+ int guestfs_mkfs (guestfs_h *handle,
+                const char *fstype,
+                const char *device);</pre>
+<p>This creates a filesystem on <code>device</code> (usually a partition
+or LVM logical volume).  The filesystem type is <code>fstype</code>, for
+example <code>ext3</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_mount">guestfs_mount</a></h2>
+<pre>
+ int guestfs_mount (guestfs_h *handle,
+                const char *device,
+                const char *mountpoint);</pre>
+<p>Mount a guest disk at a position in the filesystem.  Block devices
+are named <code>/dev/sda</code>, <code>/dev/sdb</code> and so on, as they were added to
+the guest.  If those block devices contain partitions, they will have
+the usual names (eg. <code>/dev/sda1</code>).  Also LVM <code>/dev/VG/LV</code>-style
+names can be used.</p>
+<p>The rules are the same as for <em>mount(2)</em>:  A filesystem must
+first be mounted on <code>/</code> before others can be mounted.  Other
+filesystems can only be mounted on directories which already
+exist.</p>
+<p>The mounted filesystem is writable, if we have sufficient permissions
+on the underlying device.</p>
+<p>The filesystem options <code>sync</code> and <code>noatime</code> are set with this
+call, in order to improve reliability.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_mount_options">guestfs_mount_options</a></h2>
+<pre>
+ int guestfs_mount_options (guestfs_h *handle,
+                const char *options,
+                const char *device,
+                const char *mountpoint);</pre>
+<p>This is the same as the <code>guestfs_mount</code> command, but it
+allows you to set the mount options as for the
+<em>mount(8)</em> <em>-o</em> flag.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_mount_ro">guestfs_mount_ro</a></h2>
+<pre>
+ int guestfs_mount_ro (guestfs_h *handle,
+                const char *device,
+                const char *mountpoint);</pre>
+<p>This is the same as the <code>guestfs_mount</code> command, but it
+mounts the filesystem with the read-only (<em>-o ro</em>) flag.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_mount_vfs">guestfs_mount_vfs</a></h2>
+<pre>
+ int guestfs_mount_vfs (guestfs_h *handle,
+                const char *options,
+                const char *vfstype,
+                const char *device,
+                const char *mountpoint);</pre>
+<p>This is the same as the <code>guestfs_mount</code> command, but it
+allows you to set both the mount options and the vfstype
+as for the <em>mount(8)</em> <em>-o</em> and <em>-t</em> flags.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_mounts">guestfs_mounts</a></h2>
+<pre>
+ char **guestfs_mounts (guestfs_h *handle);</pre>
+<p>This returns the list of currently mounted filesystems.  It returns
+the list of devices (eg. <code>/dev/sda1</code>, <code>/dev/VG/LV</code>).</p>
+<p>Some internal mounts are not shown.</p>
+<p>This function returns a NULL-terminated array of strings
+(like <em>environ(3)</em>), or NULL if there was an error.
+<em>The caller must free the strings and the array after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_mv">guestfs_mv</a></h2>
+<pre>
+ int guestfs_mv (guestfs_h *handle,
+                const char *src,
+                const char *dest);</pre>
+<p>This moves a file from <code>src</code> to <code>dest</code> where <code>dest</code> is
+either a destination filename or destination directory.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_ping_daemon">guestfs_ping_daemon</a></h2>
+<pre>
+ int guestfs_ping_daemon (guestfs_h *handle);</pre>
+<p>This is a test probe into the guestfs daemon running inside
+the qemu subprocess.  Calling this function checks that the
+daemon responds to the ping message, without affecting the daemon
+or attached block device(s) in any other way.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_pvcreate">guestfs_pvcreate</a></h2>
+<pre>
+ int guestfs_pvcreate (guestfs_h *handle,
+                const char *device);</pre>
+<p>This creates an LVM physical volume on the named <code>device</code>,
+where <code>device</code> should usually be a partition name such
+as <code>/dev/sda1</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_pvremove">guestfs_pvremove</a></h2>
+<pre>
+ int guestfs_pvremove (guestfs_h *handle,
+                const char *device);</pre>
+<p>This wipes a physical volume <code>device</code> so that LVM will no longer
+recognise it.</p>
+<p>The implementation uses the <code>pvremove</code> command which refuses to
+wipe physical volumes that contain any volume groups, so you have
+to remove those first.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_pvresize">guestfs_pvresize</a></h2>
+<pre>
+ int guestfs_pvresize (guestfs_h *handle,
+                const char *device);</pre>
+<p>This resizes (expands or shrinks) an existing LVM physical
+volume to match the new size of the underlying device.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_pvs">guestfs_pvs</a></h2>
+<pre>
+ char **guestfs_pvs (guestfs_h *handle);</pre>
+<p>List all the physical volumes detected.  This is the equivalent
+of the <em>pvs(8)</em> command.</p>
+<p>This returns a list of just the device names that contain
+PVs (eg. <code>/dev/sda2</code>).</p>
+<p>See also <code>guestfs_pvs_full</code>.</p>
+<p>This function returns a NULL-terminated array of strings
+(like <em>environ(3)</em>), or NULL if there was an error.
+<em>The caller must free the strings and the array after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_pvs_full">guestfs_pvs_full</a></h2>
+<pre>
+ struct guestfs_lvm_pv_list *guestfs_pvs_full (guestfs_h *handle);</pre>
+<p>List all the physical volumes detected.  This is the equivalent
+of the <em>pvs(8)</em> command.  The &quot;full&quot; version includes all fields.</p>
+<p>This function returns a <code>struct guestfs_lvm_pv_list *</code>
+(see &lt;guestfs-structs.h&gt;),
+or NULL if there was an error.
+<em>The caller must call <code>guestfs_free_lvm_pv_list</code> after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_read_lines">guestfs_read_lines</a></h2>
+<pre>
+ char **guestfs_read_lines (guestfs_h *handle,
+                const char *path);</pre>
+<p>Return the contents of the file named <code>path</code>.</p>
+<p>The file contents are returned as a list of lines.  Trailing
+<code>LF</code> and <code>CRLF</code> character sequences are <em>not</em> returned.</p>
+<p>Note that this function cannot correctly handle binary files
+(specifically, files containing <code>\0</code> character which is treated
+as end of line).  For those you need to use the <code>guestfs_read_file</code>
+function which has a more complex interface.</p>
+<p>This function returns a NULL-terminated array of strings
+(like <em>environ(3)</em>), or NULL if there was an error.
+<em>The caller must free the strings and the array after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_resize2fs">guestfs_resize2fs</a></h2>
+<pre>
+ int guestfs_resize2fs (guestfs_h *handle,
+                const char *device);</pre>
+<p>This resizes an ext2 or ext3 filesystem to match the size of
+the underlying device.</p>
+<p><em>Note:</em> It is sometimes required that you run <code>guestfs_e2fsck_f</code>
+on the <code>device</code> before calling this command.  For unknown reasons
+<code>resize2fs</code> sometimes gives an error about this and sometimes not.
+In any case, it is always safe to call <code>guestfs_e2fsck_f</code> before
+calling this function.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_rm">guestfs_rm</a></h2>
+<pre>
+ int guestfs_rm (guestfs_h *handle,
+                const char *path);</pre>
+<p>Remove the single file <code>path</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_rm_rf">guestfs_rm_rf</a></h2>
+<pre>
+ int guestfs_rm_rf (guestfs_h *handle,
+                const char *path);</pre>
+<p>Remove the file or directory <code>path</code>, recursively removing the
+contents if its a directory.  This is like the <code>rm -rf</code> shell
+command.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_rmdir">guestfs_rmdir</a></h2>
+<pre>
+ int guestfs_rmdir (guestfs_h *handle,
+                const char *path);</pre>
+<p>Remove the single directory <code>path</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_set_append">guestfs_set_append</a></h2>
+<pre>
+ int guestfs_set_append (guestfs_h *handle,
+                const char *append);</pre>
+<p>This function is used to add additional options to the
+guest kernel command line.</p>
+<p>The default is <code>NULL</code> unless overridden by setting
+<a href="#libguestfs_append"><code>LIBGUESTFS_APPEND</code></a> environment variable.</p>
+<p>Setting <code>append</code> to <code>NULL</code> means <em>no</em> additional options
+are passed (libguestfs always adds a few of its own).</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_set_autosync">guestfs_set_autosync</a></h2>
+<pre>
+ int guestfs_set_autosync (guestfs_h *handle,
+                int autosync);</pre>
+<p>If <code>autosync</code> is true, this enables autosync.  Libguestfs will make a
+best effort attempt to run <code>guestfs_umount_all</code> followed by
+<code>guestfs_sync</code> when the handle is closed
+(also if the program exits without closing handles).</p>
+<p>This is disabled by default (except in guestfish where it is
+enabled by default).</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_set_busy">guestfs_set_busy</a></h2>
+<pre>
+ int guestfs_set_busy (guestfs_h *handle);</pre>
+<p>This sets the state to <code>BUSY</code>.  This is only used when implementing
+actions using the low-level API.</p>
+<p>For more information on states, see <em>guestfs(3)</em>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_set_e2label">guestfs_set_e2label</a></h2>
+<pre>
+ int guestfs_set_e2label (guestfs_h *handle,
+                const char *device,
+                const char *label);</pre>
+<p>This sets the ext2/3/4 filesystem label of the filesystem on
+<code>device</code> to <code>label</code>.  Filesystem labels are limited to
+16 characters.</p>
+<p>You can use either <code>guestfs_tune2fs_l</code> or <code>guestfs_get_e2label</code>
+to return the existing label on a filesystem.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_set_e2uuid">guestfs_set_e2uuid</a></h2>
+<pre>
+ int guestfs_set_e2uuid (guestfs_h *handle,
+                const char *device,
+                const char *uuid);</pre>
+<p>This sets the ext2/3/4 filesystem UUID of the filesystem on
+<code>device</code> to <code>uuid</code>.  The format of the UUID and alternatives
+such as <code>clear</code>, <code>random</code> and <code>time</code> are described in the
+<em>tune2fs(8)</em> manpage.</p>
+<p>You can use either <code>guestfs_tune2fs_l</code> or <code>guestfs_get_e2uuid</code>
+to return the existing UUID of a filesystem.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_set_path">guestfs_set_path</a></h2>
+<pre>
+ int guestfs_set_path (guestfs_h *handle,
+                const char *path);</pre>
+<p>Set the path that libguestfs searches for kernel and initrd.img.</p>
+<p>The default is <code>$libdir/guestfs</code> unless overridden by setting
+<a href="#libguestfs_path"><code>LIBGUESTFS_PATH</code></a> environment variable.</p>
+<p>Setting <code>path</code> to <code>NULL</code> restores the default path.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_set_qemu">guestfs_set_qemu</a></h2>
+<pre>
+ int guestfs_set_qemu (guestfs_h *handle,
+                const char *qemu);</pre>
+<p>Set the qemu binary that we will use.</p>
+<p>The default is chosen when the library was compiled by the
+configure script.</p>
+<p>You can also override this by setting the <a href="#libguestfs_qemu"><code>LIBGUESTFS_QEMU</code></a>
+environment variable.</p>
+<p>Setting <code>qemu</code> to <code>NULL</code> restores the default qemu binary.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_set_ready">guestfs_set_ready</a></h2>
+<pre>
+ int guestfs_set_ready (guestfs_h *handle);</pre>
+<p>This sets the state to <code>READY</code>.  This is only used when implementing
+actions using the low-level API.</p>
+<p>For more information on states, see <em>guestfs(3)</em>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_set_verbose">guestfs_set_verbose</a></h2>
+<pre>
+ int guestfs_set_verbose (guestfs_h *handle,
+                int verbose);</pre>
+<p>If <code>verbose</code> is true, this turns on verbose messages (to <code>stderr</code>).</p>
+<p>Verbose messages are disabled unless the environment variable
+<a href="#libguestfs_debug"><code>LIBGUESTFS_DEBUG</code></a> is defined and set to <code>1</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_sfdisk">guestfs_sfdisk</a></h2>
+<pre>
+ int guestfs_sfdisk (guestfs_h *handle,
+                const char *device,
+                int cyls,
+                int heads,
+                int sectors,
+                char * const* const lines);</pre>
+<p>This is a direct interface to the <em>sfdisk(8)</em> program for creating
+partitions on block devices.</p>
+<p><code>device</code> should be a block device, for example <code>/dev/sda</code>.</p>
+<p><code>cyls</code>, <code>heads</code> and <code>sectors</code> are the number of cylinders, heads
+and sectors on the device, which are passed directly to sfdisk as
+the <em>-C</em>, <em>-H</em> and <em>-S</em> parameters.  If you pass <code>0</code> for any
+of these, then the corresponding parameter is omitted.  Usually for
+'large' disks, you can just pass <code>0</code> for these, but for small
+(floppy-sized) disks, sfdisk (or rather, the kernel) cannot work
+out the right geometry and you will need to tell it.</p>
+<p><code>lines</code> is a list of lines that we feed to <code>sfdisk</code>.  For more
+information refer to the <em>sfdisk(8)</em> manpage.</p>
+<p>To create a single partition occupying the whole disk, you would
+pass <code>lines</code> as a single element list, when the single element being
+the string <code>,</code> (comma).</p>
+<p>See also: <code>guestfs_sfdisk_l</code>, <code>guestfs_sfdisk_N</code></p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p><strong>This command is dangerous.  Without careful use you
+can easily destroy all your data</strong>.</p>
+<p>
+</p>
+<h2><a name="guestfs_sfdisk_n">guestfs_sfdisk_N</a></h2>
+<pre>
+ int guestfs_sfdisk_N (guestfs_h *handle,
+                const char *device,
+                int n,
+                int cyls,
+                int heads,
+                int sectors,
+                const char *line);</pre>
+<p>This runs <em>sfdisk(8)</em> option to modify just the single
+partition <code>n</code> (note: <code>n</code> counts from 1).</p>
+<p>For other parameters, see <code>guestfs_sfdisk</code>.  You should usually
+pass <code>0</code> for the cyls/heads/sectors parameters.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p><strong>This command is dangerous.  Without careful use you
+can easily destroy all your data</strong>.</p>
+<p>
+</p>
+<h2><a name="guestfs_sfdisk_disk_geometry">guestfs_sfdisk_disk_geometry</a></h2>
+<pre>
+ char *guestfs_sfdisk_disk_geometry (guestfs_h *handle,
+                const char *device);</pre>
+<p>This displays the disk geometry of <code>device</code> read from the
+partition table.  Especially in the case where the underlying
+block device has been resized, this can be different from the
+kernel's idea of the geometry (see <code>guestfs_sfdisk_kernel_geometry</code>).</p>
+<p>The result is in human-readable format, and not designed to
+be parsed.</p>
+<p>This function returns a string, or NULL on error.
+<em>The caller must free the returned string after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_sfdisk_kernel_geometry">guestfs_sfdisk_kernel_geometry</a></h2>
+<pre>
+ char *guestfs_sfdisk_kernel_geometry (guestfs_h *handle,
+                const char *device);</pre>
+<p>This displays the kernel's idea of the geometry of <code>device</code>.</p>
+<p>The result is in human-readable format, and not designed to
+be parsed.</p>
+<p>This function returns a string, or NULL on error.
+<em>The caller must free the returned string after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_sfdisk_l">guestfs_sfdisk_l</a></h2>
+<pre>
+ char *guestfs_sfdisk_l (guestfs_h *handle,
+                const char *device);</pre>
+<p>This displays the partition table on <code>device</code>, in the
+human-readable output of the <em>sfdisk(8)</em> command.  It is
+not intended to be parsed.</p>
+<p>This function returns a string, or NULL on error.
+<em>The caller must free the returned string after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_sleep">guestfs_sleep</a></h2>
+<pre>
+ int guestfs_sleep (guestfs_h *handle,
+                int secs);</pre>
+<p>Sleep for <code>secs</code> seconds.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_stat">guestfs_stat</a></h2>
+<pre>
+ struct guestfs_stat *guestfs_stat (guestfs_h *handle,
+                const char *path);</pre>
+<p>Returns file information for the given <code>path</code>.</p>
+<p>This is the same as the <code>stat(2)</code> system call.</p>
+<p>This function returns a <code>struct guestfs_stat *</code>
+(see <em>stat(2)</em> and &lt;guestfs-structs.h&gt;),
+or NULL if there was an error.
+<em>The caller must call <code>free</code> after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_statvfs">guestfs_statvfs</a></h2>
+<pre>
+ struct guestfs_statvfs *guestfs_statvfs (guestfs_h *handle,
+                const char *path);</pre>
+<p>Returns file system statistics for any mounted file system.
+<code>path</code> should be a file or directory in the mounted file system
+(typically it is the mount point itself, but it doesn't need to be).</p>
+<p>This is the same as the <code>statvfs(2)</code> system call.</p>
+<p>This function returns a <code>struct guestfs_statvfs *</code>
+(see <em>statvfs(2)</em> and &lt;guestfs-structs.h&gt;),
+or NULL if there was an error.
+<em>The caller must call <code>free</code> after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_strings">guestfs_strings</a></h2>
+<pre>
+ char **guestfs_strings (guestfs_h *handle,
+                const char *path);</pre>
+<p>This runs the <em>strings(1)</em> command on a file and returns
+the list of printable strings found.</p>
+<p>This function returns a NULL-terminated array of strings
+(like <em>environ(3)</em>), or NULL if there was an error.
+<em>The caller must free the strings and the array after use</em>.</p>
+<p>Because of the message protocol, there is a transfer limit 
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.</p>
+<p>
+</p>
+<h2><a name="guestfs_strings_e">guestfs_strings_e</a></h2>
+<pre>
+ char **guestfs_strings_e (guestfs_h *handle,
+                const char *encoding,
+                const char *path);</pre>
+<p>This is like the <code>guestfs_strings</code> command, but allows you to
+specify the encoding.</p>
+<p>See the <em>strings(1)</em> manpage for the full list of encodings.</p>
+<p>Commonly useful encodings are <code>l</code> (lower case L) which will
+show strings inside Windows/x86 files.</p>
+<p>The returned strings are transcoded to UTF-8.</p>
+<p>This function returns a NULL-terminated array of strings
+(like <em>environ(3)</em>), or NULL if there was an error.
+<em>The caller must free the strings and the array after use</em>.</p>
+<p>Because of the message protocol, there is a transfer limit 
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.</p>
+<p>
+</p>
+<h2><a name="guestfs_sync">guestfs_sync</a></h2>
+<pre>
+ int guestfs_sync (guestfs_h *handle);</pre>
+<p>This syncs the disk, so that any writes are flushed through to the
+underlying disk image.</p>
+<p>You should always call this if you have modified a disk image, before
+closing the handle.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_tar_in">guestfs_tar_in</a></h2>
+<pre>
+ int guestfs_tar_in (guestfs_h *handle,
+                const char *tarfile,
+                const char *directory);</pre>
+<p>This command uploads and unpacks local file <code>tarfile</code> (an
+<em>uncompressed</em> tar file) into <code>directory</code>.</p>
+<p>To upload a compressed tarball, use <code>guestfs_tgz_in</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_tar_out">guestfs_tar_out</a></h2>
+<pre>
+ int guestfs_tar_out (guestfs_h *handle,
+                const char *directory,
+                const char *tarfile);</pre>
+<p>This command packs the contents of <code>directory</code> and downloads
+it to local file <code>tarfile</code>.</p>
+<p>To download a compressed tarball, use <code>guestfs_tgz_out</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_tgz_in">guestfs_tgz_in</a></h2>
+<pre>
+ int guestfs_tgz_in (guestfs_h *handle,
+                const char *tarball,
+                const char *directory);</pre>
+<p>This command uploads and unpacks local file <code>tarball</code> (a
+<em>gzip compressed</em> tar file) into <code>directory</code>.</p>
+<p>To upload an uncompressed tarball, use <code>guestfs_tar_in</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_tgz_out">guestfs_tgz_out</a></h2>
+<pre>
+ int guestfs_tgz_out (guestfs_h *handle,
+                const char *directory,
+                const char *tarball);</pre>
+<p>This command packs the contents of <code>directory</code> and downloads
+it to local file <code>tarball</code>.</p>
+<p>To download an uncompressed tarball, use <code>guestfs_tar_out</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_touch">guestfs_touch</a></h2>
+<pre>
+ int guestfs_touch (guestfs_h *handle,
+                const char *path);</pre>
+<p>Touch acts like the <em>touch(1)</em> command.  It can be used to
+update the timestamps on a file, or, if the file does not exist,
+to create a new zero-length file.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_tune2fs_l">guestfs_tune2fs_l</a></h2>
+<pre>
+ char **guestfs_tune2fs_l (guestfs_h *handle,
+                const char *device);</pre>
+<p>This returns the contents of the ext2, ext3 or ext4 filesystem
+superblock on <code>device</code>.</p>
+<p>It is the same as running <code>tune2fs -l device</code>.  See <em>tune2fs(8)</em>
+manpage for more details.  The list of fields returned isn't
+clearly defined, and depends on both the version of <code>tune2fs</code>
+that libguestfs was built against, and the filesystem itself.</p>
+<p>This function returns a NULL-terminated array of
+strings, or NULL if there was an error.
+The array of strings will always have length <code>2n+1</code>, where
+<code>n</code> keys and values alternate, followed by the trailing NULL entry.
+<em>The caller must free the strings and the array after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_umount">guestfs_umount</a></h2>
+<pre>
+ int guestfs_umount (guestfs_h *handle,
+                const char *pathordevice);</pre>
+<p>This unmounts the given filesystem.  The filesystem may be
+specified either by its mountpoint (path) or the device which
+contains the filesystem.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_umount_all">guestfs_umount_all</a></h2>
+<pre>
+ int guestfs_umount_all (guestfs_h *handle);</pre>
+<p>This unmounts all mounted filesystems.</p>
+<p>Some internal mounts are not unmounted by this call.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_upload">guestfs_upload</a></h2>
+<pre>
+ int guestfs_upload (guestfs_h *handle,
+                const char *filename,
+                const char *remotefilename);</pre>
+<p>Upload local file <code>filename</code> to <code>remotefilename</code> on the
+filesystem.</p>
+<p><code>filename</code> can also be a named pipe.</p>
+<p>See also <code>guestfs_download</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_vg_activate">guestfs_vg_activate</a></h2>
+<pre>
+ int guestfs_vg_activate (guestfs_h *handle,
+                int activate,
+                char * const* const volgroups);</pre>
+<p>This command activates or (if <code>activate</code> is false) deactivates
+all logical volumes in the listed volume groups <code>volgroups</code>.
+If activated, then they are made known to the
+kernel, ie. they appear as <code>/dev/mapper</code> devices.  If deactivated,
+then those devices disappear.</p>
+<p>This command is the same as running <code>vgchange -a y|n volgroups...</code></p>
+<p>Note that if <code>volgroups</code> is an empty list then <strong>all</strong> volume groups
+are activated or deactivated.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_vg_activate_all">guestfs_vg_activate_all</a></h2>
+<pre>
+ int guestfs_vg_activate_all (guestfs_h *handle,
+                int activate);</pre>
+<p>This command activates or (if <code>activate</code> is false) deactivates
+all logical volumes in all volume groups.
+If activated, then they are made known to the
+kernel, ie. they appear as <code>/dev/mapper</code> devices.  If deactivated,
+then those devices disappear.</p>
+<p>This command is the same as running <code>vgchange -a y|n</code></p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_vgcreate">guestfs_vgcreate</a></h2>
+<pre>
+ int guestfs_vgcreate (guestfs_h *handle,
+                const char *volgroup,
+                char * const* const physvols);</pre>
+<p>This creates an LVM volume group called <code>volgroup</code>
+from the non-empty list of physical volumes <code>physvols</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_vgremove">guestfs_vgremove</a></h2>
+<pre>
+ int guestfs_vgremove (guestfs_h *handle,
+                const char *vgname);</pre>
+<p>Remove an LVM volume group <code>vgname</code>, (for example <code>VG</code>).</p>
+<p>This also forcibly removes all logical volumes in the volume
+group (if any).</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_vgs">guestfs_vgs</a></h2>
+<pre>
+ char **guestfs_vgs (guestfs_h *handle);</pre>
+<p>List all the volumes groups detected.  This is the equivalent
+of the <em>vgs(8)</em> command.</p>
+<p>This returns a list of just the volume group names that were
+detected (eg. <code>VolGroup00</code>).</p>
+<p>See also <code>guestfs_vgs_full</code>.</p>
+<p>This function returns a NULL-terminated array of strings
+(like <em>environ(3)</em>), or NULL if there was an error.
+<em>The caller must free the strings and the array after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_vgs_full">guestfs_vgs_full</a></h2>
+<pre>
+ struct guestfs_lvm_vg_list *guestfs_vgs_full (guestfs_h *handle);</pre>
+<p>List all the volumes groups detected.  This is the equivalent
+of the <em>vgs(8)</em> command.  The &quot;full&quot; version includes all fields.</p>
+<p>This function returns a <code>struct guestfs_lvm_vg_list *</code>
+(see &lt;guestfs-structs.h&gt;),
+or NULL if there was an error.
+<em>The caller must call <code>guestfs_free_lvm_vg_list</code> after use</em>.</p>
+<p>
+</p>
+<h2><a name="guestfs_wait_ready">guestfs_wait_ready</a></h2>
+<pre>
+ int guestfs_wait_ready (guestfs_h *handle);</pre>
+<p>Internally libguestfs is implemented by running a virtual machine
+using <em>qemu(1)</em>.</p>
+<p>You should call this after <code>guestfs_launch</code> to wait for the launch
+to complete.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_write_file">guestfs_write_file</a></h2>
+<pre>
+ int guestfs_write_file (guestfs_h *handle,
+                const char *path,
+                const char *content,
+                int size);</pre>
+<p>This call creates a file called <code>path</code>.  The contents of the
+file is the string <code>content</code> (which can contain any 8 bit data),
+with length <code>size</code>.</p>
+<p>As a special case, if <code>size</code> is <code>0</code>
+then the length is calculated using <code>strlen</code> (so in this case
+the content cannot contain embedded ASCII NULs).</p>
+<p><em>NB.</em> Owing to a bug, writing content containing ASCII NUL
+characters does <em>not</em> work, even if the length is specified.
+We hope to resolve this bug in a future version.  In the meantime
+use <code>guestfs_upload</code>.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>Because of the message protocol, there is a transfer limit 
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.</p>
+<p>
+</p>
+<h2><a name="guestfs_zero">guestfs_zero</a></h2>
+<pre>
+ int guestfs_zero (guestfs_h *handle,
+                const char *device);</pre>
+<p>This command writes zeroes over the first few blocks of <code>device</code>.</p>
+<p>How many blocks are zeroed isn't specified (but it's <em>not</em> enough
+to securely wipe the device).  It should be sufficient to remove
+any partition tables, filesystem superblocks and so on.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<h2><a name="guestfs_zerofree">guestfs_zerofree</a></h2>
+<pre>
+ int guestfs_zerofree (guestfs_h *handle,
+                const char *device);</pre>
+<p>This runs the <em>zerofree</em> program on <code>device</code>.  This program
+claims to zero unused inodes and disk blocks on an ext2/3
+filesystem, thus making it possible to compress the filesystem
+more effectively.</p>
+<p>You should <strong>not</strong> run this program if the filesystem is
+mounted.</p>
+<p>It is possible that using this program can damage the filesystem
+or data on the filesystem.</p>
+<p>This function returns 0 on success or -1 on error.</p>
+<p>
+</p>
+<hr />
+<h1><a name="structures">STRUCTURES</a></h1>
+<p>
+</p>
+<h2><a name="guestfs_lvm_pv">guestfs_lvm_pv</a></h2>
+<pre>
+ struct guestfs_lvm_pv {
+  char *pv_name;
+  /* The next field is NOT nul-terminated, be careful when printing it: */
+  char pv_uuid[32];
+  char *pv_fmt;
+  uint64_t pv_size;
+  uint64_t dev_size;
+  uint64_t pv_free;
+  uint64_t pv_used;
+  char *pv_attr;
+  int64_t pv_pe_count;
+  int64_t pv_pe_alloc_count;
+  char *pv_tags;
+  uint64_t pe_start;
+  int64_t pv_mda_count;
+  uint64_t pv_mda_free;
+ 
+ struct guestfs_lvm_pv_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_lvm_pv *val; /* Elements. */
+ };
+ 
+ void guestfs_free_lvm_pv_list (struct guestfs_free_lvm_pv_list *);</pre>
+<p>
+</p>
+<h2><a name="guestfs_lvm_vg">guestfs_lvm_vg</a></h2>
+<pre>
+ struct guestfs_lvm_vg {
+  char *vg_name;
+  /* The next field is NOT nul-terminated, be careful when printing it: */
+  char vg_uuid[32];
+  char *vg_fmt;
+  char *vg_attr;
+  uint64_t vg_size;
+  uint64_t vg_free;
+  char *vg_sysid;
+  uint64_t vg_extent_size;
+  int64_t vg_extent_count;
+  int64_t vg_free_count;
+  int64_t max_lv;
+  int64_t max_pv;
+  int64_t pv_count;
+  int64_t lv_count;
+  int64_t snap_count;
+  int64_t vg_seqno;
+  char *vg_tags;
+  int64_t vg_mda_count;
+  uint64_t vg_mda_free;
+ 
+ struct guestfs_lvm_vg_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_lvm_vg *val; /* Elements. */
+ };
+ 
+ void guestfs_free_lvm_vg_list (struct guestfs_free_lvm_vg_list *);</pre>
+<p>
+</p>
+<h2><a name="guestfs_lvm_lv">guestfs_lvm_lv</a></h2>
+<pre>
+ struct guestfs_lvm_lv {
+  char *lv_name;
+  /* The next field is NOT nul-terminated, be careful when printing it: */
+  char lv_uuid[32];
+  char *lv_attr;
+  int64_t lv_major;
+  int64_t lv_minor;
+  int64_t lv_kernel_major;
+  int64_t lv_kernel_minor;
+  uint64_t lv_size;
+  int64_t seg_count;
+  char *origin;
+  /* The next field is [0..100] or -1 meaning 'not present': */
+  float snap_percent;
+  /* The next field is [0..100] or -1 meaning 'not present': */
+  float copy_percent;
+  char *move_pv;
+  char *lv_tags;
+  char *mirror_log;
+  char *modules;
+ 
+ struct guestfs_lvm_lv_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_lvm_lv *val; /* Elements. */
+ };
+ 
+ void guestfs_free_lvm_lv_list (struct guestfs_free_lvm_lv_list *);</pre>
+<p>
+</p>
+<hr />
+<h1><a name="state_machine_and_low_level_event_api">STATE MACHINE AND LOW-LEVEL EVENT API</a></h1>
+<p>Internally, libguestfs is implemented by running a virtual machine
+using <em>qemu(1)</em>.  QEmu runs as a child process of the main program,
+and most of this discussion won't make sense unless you understand
+that the complexity is dealing with the (asynchronous) actions of the
+child process.</p>
+<pre>
+                            child process
+  ___________________       _________________________
+ /                   \     /                         \
+ | main program      |     | qemu +-----------------+|
+ |                   |     |      | Linux kernel    ||
+ +-------------------+     |      +-----------------+|
+ | libguestfs     &lt;--------------&gt;| guestfsd        ||
+ |                   |     |      +-----------------+|
+ \___________________/     \_________________________/</pre>
+<p>The diagram above shows libguestfs communicating with the guestfsd
+daemon running inside the qemu child process.  There are several
+points of failure here: qemu can fail to start, the virtual machine
+inside qemu can fail to boot, guestfsd can fail to start or not
+establish communication, any component can start successfully but fail
+asynchronously later, and so on.</p>
+<p>
+</p>
+<h2><a name="state_machine">STATE MACHINE</a></h2>
+<p>libguestfs uses a state machine to model the child process:</p>
+<pre>
+                         |
+                    guestfs_create
+                         |
+                         |
+                     ____V_____
+                    /          \
+                    |  CONFIG  |
+                    \__________/
+                     ^ ^   ^  \
+                    /  |    \  \ guestfs_launch
+                   /   |    _\__V______
+                  /    |   /           \
+                 /     |   | LAUNCHING |
+                /      |   \___________/
+               /       |       /
+              /        |  guestfs_wait_ready
+             /         |     /
+    ______  /        __|____V
+   /      \ ------&gt; /        \
+   | BUSY |         | READY  |
+   \______/ &lt;------ \________/</pre>
+<p>The normal transitions are (1) CONFIG (when the handle is created, but
+there is no child process), (2) LAUNCHING (when the child process is
+booting up), (3) alternating between READY and BUSY as commands are
+issued to, and carried out by, the child process.</p>
+<p>The guest may be killed by <code>guestfs_kill_subprocess</code>, or may die
+asynchronously at any time (eg. due to some internal error), and that
+causes the state to transition back to CONFIG.</p>
+<p>Configuration commands for qemu such as <code>guestfs_add_drive</code> can only
+be issued when in the CONFIG state.</p>
+<p>The high-level API offers two calls that go from CONFIG through
+LAUNCHING to READY.  <code>guestfs_launch</code> is a non-blocking call that
+starts up the child process, immediately moving from CONFIG to
+LAUNCHING.  <code>guestfs_wait_ready</code> blocks until the child process is
+READY to accept commands (or until some failure or timeout).  The
+low-level event API described below provides a non-blocking way to
+replace <code>guestfs_wait_ready</code>.</p>
+<p>High-level API actions such as <code>guestfs_mount</code> can only be issued
+when in the READY state.  These high-level API calls block waiting for
+the command to be carried out (ie. the state to transition to BUSY and
+then back to READY).  But using the low-level event API, you get
+non-blocking versions.  (But you can still only carry out one
+operation per handle at a time - that is a limitation of the
+communications protocol we use).</p>
+<p>Finally, the child process sends asynchronous messages back to the
+main program, such as kernel log messages.  Mostly these are ignored
+by the high-level API, but using the low-level event API you can
+register to receive these messages.</p>
+<p>
+</p>
+<h2><a name="setting_callbacks_to_handle_events">SETTING CALLBACKS TO HANDLE EVENTS</a></h2>
+<p>The child process generates events in some situations.  Current events
+include: receiving a reply message after some action, receiving a log
+message, the child process exits, &amp;c.</p>
+<p>Use the <code>guestfs_set_*_callback</code> functions to set a callback for
+different types of events.</p>
+<p>Only <em>one callback of each type</em> can be registered for each handle.
+Calling <code>guestfs_set_*_callback</code> again overwrites the previous
+callback of that type.  Cancel all callbacks of this type by calling
+this function with <code>cb</code> set to <code>NULL</code>.</p>
+<p>
+</p>
+<h2><a name="non_blocking_actions">NON-BLOCKING ACTIONS</a></h2>
+<p>XXX This section was documented in previous versions but never
+implemented in a way which matched the documentation.  For now I have
+removed the documentation, pending a working implementation.  See also
+<code>src/guestfs-actions.c</code> in the source.</p>
+<p>
+</p>
+<h2><a name="guestfs_set_send_callback">guestfs_set_send_callback</a></h2>
+<pre>
+ typedef void (*guestfs_send_cb) (guestfs_h *g, void *opaque);
+ void guestfs_set_send_callback (guestfs_h *handle,
+                                 guestfs_send_cb cb,
+                                 void *opaque);</pre>
+<p>The callback function <code>cb</code> will be called whenever a message
+which is queued for sending, has been sent.</p>
+<p>
+</p>
+<h2><a name="guestfs_set_reply_callback">guestfs_set_reply_callback</a></h2>
+<pre>
+ typedef void (*guestfs_reply_cb) (guestfs_h *g, void *opaque, XDR *xdr);
+ void guestfs_set_reply_callback (guestfs_h *handle,
+                                  guestfs_reply_cb cb,
+                                  void *opaque);</pre>
+<p>The callback function <code>cb</code> will be called whenever a reply is
+received from the child process.  (This corresponds to a transition
+from the BUSY state to the READY state).</p>
+<p>Note that the <code>xdr</code> that you get in the callback is in <code>XDR_DECODE</code>
+mode, and you need to consume it before you return from the callback
+function (since it gets destroyed after).</p>
+<p>
+</p>
+<h2><a name="guestfs_set_log_message_callback">guestfs_set_log_message_callback</a></h2>
+<pre>
+ typedef void (*guestfs_log_message_cb) (guestfs_h *g, void *opaque,
+                                         char *buf, int len);
+ void guestfs_set_log_message_callback (guestfs_h *handle,
+                                        guestfs_log_message_cb cb,
+                                        void *opaque);</pre>
+<p>The callback function <code>cb</code> will be called whenever qemu or the guest
+writes anything to the console.</p>
+<p>Use this function to capture kernel messages and similar.</p>
+<p>Normally there is no log message handler, and log messages are just
+discarded.</p>
+<p>
+</p>
+<h2><a name="guestfs_set_subprocess_quit_callback">guestfs_set_subprocess_quit_callback</a></h2>
+<pre>
+ typedef void (*guestfs_subprocess_quit_cb) (guestfs_h *g, void *opaque);
+ void guestfs_set_subprocess_quit_callback (guestfs_h *handle,
+                                            guestfs_subprocess_quit_cb cb,
+                                            void *opaque);</pre>
+<p>The callback function <code>cb</code> will be called when the child process
+quits, either asynchronously or if killed by
+<code>guestfs_kill_subprocess</code>.  (This corresponds to a transition from
+any state to the CONFIG state).</p>
+<p>
+</p>
+<h2><a name="guestfs_set_launch_done_callback">guestfs_set_launch_done_callback</a></h2>
+<pre>
+ typedef void (*guestfs_launch_done_cb) (guestfs_h *g, void *opaque);
+ void guestfs_set_launch_done_callback (guestfs_h *handle,
+                                        guestfs_ready_cb cb,
+                                        void *opaque);</pre>
+<p>The callback function <code>cb</code> will be called when the child process
+becomes ready first time after it has been launched.  (This
+corresponds to a transition from LAUNCHING to the READY state).</p>
+<p>You can use this instead of <code>guestfs_wait_ready</code> to implement a
+non-blocking wait for the child process to finish booting up.</p>
+<p>
+</p>
+<h2><a name="event_main_loop">EVENT MAIN LOOP</a></h2>
+<p>To use the low-level event API and/or to use handles from multiple
+threads, you have to provide an event &quot;main loop&quot;.  You can write your
+own, but if you don't want to write one, two types are provided for
+you:</p>
+<dl>
+<dt><strong><a name="libguestfs_select" class="item">libguestfs-select</a></strong></dt>
+
+<dd>
+<p>A simple main loop that is implemented using <em>select(2)</em>.</p>
+<p>This is the default main loop for new guestfs handles, unless you
+call <code>guestfs_set_main_loop</code> after a handle is created.</p>
+</dd>
+<dt><strong><a name="libguestfs_glib" class="item">libguestfs-glib</a></strong></dt>
+
+<dd>
+<p>An implementation which can be used with GLib and GTK+ programs.  You
+can use this to write graphical (GTK+) programs which use libguestfs
+without hanging during long or slow operations.</p>
+</dd>
+</dl>
+<p>
+</p>
+<h2><a name="multiple_handles_and_multiple_threads">MULTIPLE HANDLES AND MULTIPLE THREADS</a></h2>
+<p>The support for multiple handles and multiple threads is modelled
+after glib (although doesn't require glib, if you use the select-based
+main loop).</p>
+<p><a href="http://library.gnome.org/devel/glib/unstable/glib-The-Main-Event-Loop.html">http://library.gnome.org/devel/glib/unstable/glib-The-Main-Event-Loop.html</a></p>
+<p>You will need to create one main loop for each thread that wants to
+use libguestfs.  Each guestfs handle should be confined to one thread.
+If you try to pass guestfs handles between threads, you will get
+undefined results.</p>
+<p>If you only want to use guestfs handles from one thread in your
+program, but your program has other threads doing other things, then
+you don't need to do anything special.</p>
+<p>
+</p>
+<h2><a name="single_thread_case">SINGLE THREAD CASE</a></h2>
+<p>In the single thread case, there is a single select-based main loop
+created for you.  All guestfs handles will use this main loop to
+execute high level API actions.</p>
+<p>
+</p>
+<h2><a name="multiple_threads_case">MULTIPLE THREADS CASE</a></h2>
+<p>In the multiple threads case, you will need to create a main loop for
+each thread that wants to use libguestfs.</p>
+<p>To create main loops for other threads, use
+<code>guestfs_create_main_loop</code> or <code>guestfs_glib_create_main_loop</code>.</p>
+<p>Then you will need to attach each handle to the thread-specific main
+loop by calling:</p>
+<pre>
+ handle = guestfs_create ();
+ guestfs_set_main_loop (handle, main_loop_of_current_thread);</pre>
+<p>
+</p>
+<h2><a name="guestfs_set_main_loop">guestfs_set_main_loop</a></h2>
+<pre>
+ void guestfs_set_main_loop (guestfs_h *handle,
+                             guestfs_main_loop *main_loop);</pre>
+<p>Sets the main loop used by high level API actions for this handle.  By
+default, the select-based main loop is used (see
+<code>guestfs_get_default_main_loop</code>).</p>
+<p>You only need to use this in multi-threaded programs, where multiple
+threads want to use libguestfs.  Create a main loop for each thread,
+then call this function.</p>
+<p>You cannot pass guestfs handles between threads.</p>
+<p>
+</p>
+<h2><a name="guestfs_get_main_loop">guestfs_get_main_loop</a></h2>
+<pre>
+ guestfs_main_loop *guestfs_get_main_loop (guestfs_h *handle);</pre>
+<p>Return the main loop used by <code>handle</code>.</p>
+<p>
+</p>
+<h2><a name="guestfs_get_default_main_loop">guestfs_get_default_main_loop</a></h2>
+<pre>
+ guestfs_main_loop *guestfs_get_default_main_loop (void);</pre>
+<p>Return the default select-based main loop.</p>
+<p>
+</p>
+<h2><a name="guestfs_create_main_loop">guestfs_create_main_loop</a></h2>
+<pre>
+ guestfs_main_loop *guestfs_create_main_loop (void);</pre>
+<p>This creates a select-based main loop.  You should create one main
+loop for each additional thread that needs to use libguestfs.</p>
+<p>
+</p>
+<h2><a name="guestfs_free_main_loop">guestfs_free_main_loop</a></h2>
+<pre>
+ void guestfs_free_main_loop (guestfs_main_loop *);</pre>
+<p>Free the select-based main loop which was previously allocated with
+<code>guestfs_create_main_loop</code>.</p>
+<p>
+</p>
+<h2><a name="writing_a_custom_main_loop">WRITING A CUSTOM MAIN LOOP</a></h2>
+<p>This isn't documented.  Please see the libguestfs-select and
+libguestfs-glib implementations.</p>
+<p>
+</p>
+<hr />
+<h1><a name="internals">INTERNALS</a></h1>
+<p>
+</p>
+<h2><a name="communication_protocol">COMMUNICATION PROTOCOL</a></h2>
+<p>Don't rely on using this protocol directly.  This section documents
+how it currently works, but it may change at any time.</p>
+<p>The protocol used to talk between the library and the daemon running
+inside the qemu virtual machine is a simple RPC mechanism built on top
+of XDR (<a href="http://www.ietf.org/rfc/rfc1014.txt" class="rfc">RFC 1014</a>, <a href="http://www.ietf.org/rfc/rfc1832.txt" class="rfc">RFC 1832</a>, <a href="http://www.ietf.org/rfc/rfc4506.txt" class="rfc">RFC 4506</a>).</p>
+<p>The detailed format of structures is in <code>src/guestfs_protocol.x</code>
+(note: this file is automatically generated).</p>
+<p>There are two broad cases, ordinary functions that don't have any
+<code>FileIn</code> and <code>FileOut</code> parameters, which are handled with very
+simple request/reply messages.  Then there are functions that have any
+<code>FileIn</code> or <code>FileOut</code> parameters, which use the same request and
+reply messages, but they may also be followed by files sent using a
+chunked encoding.</p>
+<p>
+</p>
+<h3><a name="ordinary_functions__no_filein_fileout_params_">ORDINARY FUNCTIONS (NO FILEIN/FILEOUT PARAMS)</a></h3>
+<p>For ordinary functions, the request message is:</p>
+<pre>
+ total length (header + arguments,
+      but not including the length word itself)
+ struct guestfs_message_header (encoded as XDR)
+ struct guestfs_&lt;foo&gt;_args (encoded as XDR)</pre>
+<p>The total length field allows the daemon to allocate a fixed size
+buffer into which it slurps the rest of the message.  As a result, the
+total length is limited to <code>GUESTFS_MESSAGE_MAX</code> bytes (currently
+4MB), which means the effective size of any request is limited to
+somewhere under this size.</p>
+<p>Note also that many functions don't take any arguments, in which case
+the <code>guestfs_foo_args</code> is completely omitted.</p>
+<p>The header contains the procedure number (<code>guestfs_proc</code>) which is
+how the receiver knows what type of args structure to expect, or none
+at all.</p>
+<p>The reply message for ordinary functions is:</p>
+<pre>
+ total length (header + ret,
+      but not including the length word itself)
+ struct guestfs_message_header (encoded as XDR)
+ struct guestfs_&lt;foo&gt;_ret (encoded as XDR)</pre>
+<p>As above the <code>guestfs_foo_ret</code> structure may be completely omitted
+for functions that return no formal return values.</p>
+<p>As above the total length of the reply is limited to
+<code>GUESTFS_MESSAGE_MAX</code>.</p>
+<p>In the case of an error, a flag is set in the header, and the reply
+message is slightly changed:</p>
+<pre>
+ total length (header + error,
+      but not including the length word itself)
+ struct guestfs_message_header (encoded as XDR)
+ struct guestfs_message_error (encoded as XDR)</pre>
+<p>The <code>guestfs_message_error</code> structure contains the error message as a
+string.</p>
+<p>
+</p>
+<h3><a name="functions_that_have_filein_parameters">FUNCTIONS THAT HAVE FILEIN PARAMETERS</a></h3>
+<p>A <code>FileIn</code> parameter indicates that we transfer a file <em>into</em> the
+guest.  The normal request message is sent (see above).  However this
+is followed by a sequence of file chunks.</p>
+<pre>
+ total length (header + arguments,
+      but not including the length word itself,
+      and not including the chunks)
+ struct guestfs_message_header (encoded as XDR)
+ struct guestfs_&lt;foo&gt;_args (encoded as XDR)
+ sequence of chunks for FileIn param #0
+ sequence of chunks for FileIn param #1 etc.</pre>
+<p>The &quot;sequence of chunks&quot; is:</p>
+<pre>
+ length of chunk (not including length word itself)
+ struct guestfs_chunk (encoded as XDR)
+ length of chunk
+ struct guestfs_chunk (encoded as XDR)
+   ...
+ length of chunk
+ struct guestfs_chunk (with data.data_len == 0)</pre>
+<p>The final chunk has the <code>data_len</code> field set to zero.  Additionally a
+flag is set in the final chunk to indicate either successful
+completion or early cancellation.</p>
+<p>At time of writing there are no functions that have more than one
+FileIn parameter.  However this is (theoretically) supported, by
+sending the sequence of chunks for each FileIn parameter one after
+another (from left to right).</p>
+<p>Both the library (sender) <em>and</em> the daemon (receiver) may cancel the
+transfer.  The library does this by sending a chunk with a special
+flag set to indicate cancellation.  When the daemon sees this, it
+cancels the whole RPC, does <em>not</em> send any reply, and goes back to
+reading the next request.</p>
+<p>The daemon may also cancel.  It does this by writing a special word
+<code>GUESTFS_CANCEL_FLAG</code> to the socket.  The library listens for this
+during the transfer, and if it gets it, it will cancel the transfer
+(it sends a cancel chunk).  The special word is chosen so that even if
+cancellation happens right at the end of the transfer (after the
+library has finished writing and has started listening for the reply),
+the &quot;spurious&quot; cancel flag will not be confused with the reply
+message.</p>
+<p>This protocol allows the transfer of arbitrary sized files (no 32 bit
+limit), and also files where the size is not known in advance
+(eg. from pipes or sockets).  However the chunks are rather small
+(<code>GUESTFS_MAX_CHUNK_SIZE</code>), so that neither the library nor the
+daemon need to keep much in memory.</p>
+<p>
+</p>
+<h3><a name="functions_that_have_fileout_parameters">FUNCTIONS THAT HAVE FILEOUT PARAMETERS</a></h3>
+<p>The protocol for FileOut parameters is exactly the same as for FileIn
+parameters, but with the roles of daemon and library reversed.</p>
+<pre>
+ total length (header + ret,
+      but not including the length word itself,
+      and not including the chunks)
+ struct guestfs_message_header (encoded as XDR)
+ struct guestfs_&lt;foo&gt;_ret (encoded as XDR)
+ sequence of chunks for FileOut param #0
+ sequence of chunks for FileOut param #1 etc.</pre>
+<p>
+</p>
+<h3><a name="initial_message">INITIAL MESSAGE</a></h3>
+<p>Because the underlying channel (QEmu -net channel) doesn't have any
+sort of connection control, when the daemon launches it sends an
+initial word (<code>GUESTFS_LAUNCH_FLAG</code>) which indicates that the guest
+and daemon is alive.  This is what <code>guestfs_wait_ready</code> waits for.</p>
+<p>
+</p>
+<hr />
+<h1><a name="qemu_wrappers">QEMU WRAPPERS</a></h1>
+<p>If you want to compile your own qemu, run qemu from a non-standard
+location, or pass extra arguments to qemu, then you can write a
+shell-script wrapper around qemu.</p>
+<p>There is one important rule to remember: you <em>must <code>exec qemu</code></em> as
+the last command in the shell script (so that qemu replaces the shell
+and becomes the direct child of the libguestfs-using program).  If you
+don't do this, then the qemu process won't be cleaned up correctly.</p>
+<p>Here is an example of a wrapper, where I have built my own copy of
+qemu from source:</p>
+<pre>
+ #!/bin/sh -
+ qemudir=/home/rjones/d/qemu
+ exec $qemudir/x86_64-softmmu/qemu-system-x86_64 -L $qemudir/pc-bios &quot;$@&quot;</pre>
+<p>Save this script as <code>/tmp/qemu.wrapper</code> (or wherever), <code>chmod +x</code>,
+and then use it by setting the LIBGUESTFS_QEMU environment variable.
+For example:</p>
+<pre>
+ LIBGUESTFS_QEMU=/tmp/qemu.wrapper guestfish</pre>
+<p>
+</p>
+<hr />
+<h1><a name="environment_variables">ENVIRONMENT VARIABLES</a></h1>
+<dl>
+<dt><strong><a name="libguestfs_debug" class="item">LIBGUESTFS_DEBUG</a></strong></dt>
+
+<dd>
+<p>Set <code>LIBGUESTFS_DEBUG=1</code> to enable verbose messages.  This
+has the same effect as calling <code>guestfs_set_verbose (handle, 1)</code>.</p>
+</dd>
+<dt><strong><a name="libguestfs_path" class="item">LIBGUESTFS_PATH</a></strong></dt>
+
+<dd>
+<p>Set the path that libguestfs uses to search for kernel and initrd.img.
+See the discussion of paths in section PATH above.</p>
+</dd>
+<dt><strong><a name="libguestfs_qemu" class="item">LIBGUESTFS_QEMU</a></strong></dt>
+
+<dd>
+<p>Set the default qemu binary that libguestfs uses.  If not set, then
+the qemu which was found at compile time by the configure script is
+used.</p>
+<p>See also <a href="#qemu_wrappers">QEMU WRAPPERS</a> above.</p>
+</dd>
+<dt><strong><a name="libguestfs_append" class="item">LIBGUESTFS_APPEND</a></strong></dt>
+
+<dd>
+<p>Pass additional options to the guest kernel.</p>
+</dd>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><em>guestfish(1)</em>,
+<em>qemu(1)</em>,
+<em>febootstrap(1)</em>,
+<a href="http://et.redhat.com/~rjones/libguestfs">http://et.redhat.com/~rjones/libguestfs</a>.</p>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>To get a list of bugs against libguestfs use this link:</p>
+<p><a href="https://bugzilla.redhat.com/buglist.cgi?component=libguestfs&product=Virtualization+Tools">https://bugzilla.redhat.com/buglist.cgi?component=libguestfs&product=Virtualization+Tools</a></p>
+<p>To report a new bug against libguestfs use this link:</p>
+<p><a href="https://bugzilla.redhat.com/enter_bug.cgi?component=libguestfs&product=Virtualization+Tools">https://bugzilla.redhat.com/enter_bug.cgi?component=libguestfs&product=Virtualization+Tools</a></p>
+<p>When reporting a bug, please check:</p>
+<ul>
+<li>
+<p>That the bug hasn't been reported already.</p>
+</li>
+<li>
+<p>That you are testing a recent version.</p>
+</li>
+<li>
+<p>Describe the bug accurately, and give a way to reproduce it.</p>
+</li>
+</ul>
+<p>
+</p>
+<hr />
+<h1><a name="authors">AUTHORS</a></h1>
+<p>Richard W.M. Jones (<code>rjones at redhat dot com</code>)</p>
+<p>
+</p>
+<hr />
+<h1><a name="copyright">COPYRIGHT</a></h1>
+<p>Copyright (C) 2009 Red Hat Inc.
+<a href="http://et.redhat.com/~rjones/libguestfs">http://et.redhat.com/~rjones/libguestfs</a></p>
+<p>This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later version.</p>
+<p>This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.</p>
+<p>You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA</p>
+
+</body>
+
+</html>

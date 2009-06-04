@@ -1,0 +1,8 @@
+libguestfs for Debian
+---------------------
+
+Please report bugs upstream here:
+
+https://bugzilla.redhat.com/enter_bug.cgi?component=libguestfs&product=Fedora
+
+ -- Richard Jones <rjones@redhat.com>  Sun, 24 May 2009 21:43:45 +0100
