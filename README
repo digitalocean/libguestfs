@@ -1,0 +1,223 @@
+Libguestfs is a library for accessing and modifying guest disk images.
+Amongst the things this is good for: making batch configuration
+changes to guests, getting disk used/free statistics (see also:
+virt-df), migrating between virtualization systems (see also:
+virt-p2v), performing partial backups, performing partial guest
+clones, cloning guests and changing registry/UUID/hostname info, and
+much else besides.
+
+Libguestfs uses Linux kernel and qemu code, and can access any type of
+guest filesystem that Linux and qemu can, including but not limited
+to: ext2/3/4, btrfs, FAT and NTFS, LVM, many different disk partition
+schemes, qcow, qcow2, vmdk.
+
+Libguestfs provides ways to enumerate guest storage (eg. partitions,
+LVs, what filesystem is in each LV, etc.).  It can also run commands
+in the context of the guest.  Also you can access filesystems over FTP.
+
+Libguestfs is a library that can be linked with C and C++ management
+programs (or management programs written in OCaml, Perl, Python, Ruby, Java
+or Haskell).  You can also use it from shell scripts or the command line.
+
+Libguestfs was written by Richard W.M. Jones (rjones@redhat.com).
+For discussion please use the fedora-virt mailing list:
+
+  https://www.redhat.com/mailman/listinfo/fedora-virt
+
+
+Requirements
+----------------------------------------------------------------------
+
+- recent QEMU >= 0.10 with vmchannel support
+  http://lists.gnu.org/archive/html/qemu-devel/2009-02/msg01042.html
+
+- febootstrap >= 2.0
+
+- fakeroot
+
+- fakechroot >= 2.9
+
+- XDR, rpcgen (on Linux these are provided by glibc)
+
+- squashfs-tools (mksquashfs only)
+
+- (Optional) Augeas (http://augeas.net/)
+
+- perldoc (pod2man, pod2text) to generate the manual pages and
+other documentation.
+
+- (Optional) Readline to have nicer command-line editing in guestfish.
+
+- (Optional) OCaml if you want to rebuild the generated files, and
+also to build the OCaml bindings
+
+- (Optional) local Fedora mirror
+
+- (Optional) Perl if you want to build the perl bindings
+
+- (Optional) Python if you want to build the python bindings
+
+- (Optional) Ruby, rake if you want to build the ruby bindings
+
+- (Optional) Java, JNI, jpackage-utils if you want to build the java
+bindings
+
+- (Optional) GHC if you want to build the Haskell bindings
+
+Running ./configure will check you have all the requirements installed
+on your machine.
+
+
+Building
+----------------------------------------------------------------------
+
+Then make the daemon, library and root filesystem:
+
+  ./configure [--with-mirror=URI]
+  make
+
+Use the optional --with-mirror parameter to specify the URI of a local
+Fedora mirror.  See the discussion of the MIRROR parameter in the
+febootstrap(8) manpage.
+
+Finally run the tests:
+
+  make check
+
+If everything works, you can install the library and tools by running
+this command as root:
+
+  make install
+
+
+Fedora
+----------------------------------------------------------------------
+
+We provide packages for Fedora >= 11 in Fedora.  Use those, or build
+from our source RPMs - it's far simpler that way.
+
+You can compile libguestfs on Fedora 10 but you cannot use it with the
+version of qemu in Fedora 10.  You need to compile your own qemu, see
+section 'qemu' below.
+
+
+RHEL / EPEL / CentOS etc
+----------------------------------------------------------------------
+
+We provide packages in EPEL which cover RHEL/CentOS >= 5.  Use those
+or build from our source RPMs.
+
+
+Debian
+----------------------------------------------------------------------
+
+libguestfs should build and run on Debian.  At the moment we don't
+provide Debian packages, and because of the appliance it's rather
+complicated to provide a package which could be accepted into the
+Debian repositories.  Want to help?  Please contact us.
+
+
+qemu
+----------------------------------------------------------------------
+
+By far the most common problem is with broken or incompatible
+qemu releases.
+
+First of all, you need qemu >= 0.10.4, which contains a vmchannel
+implementation.  There are several, conflicting, incompatible things
+called 'vmchannel' which at one time or another have been added or
+proposed for qemu/KVM.  The _only_ one we support is this one:
+
+  http://lists.gnu.org/archive/html/qemu-devel/2009-02/msg01042.html
+
+Secondly, different versions of qemu have problems booting the
+appliance for different reasons.  This varies between versions of
+qemu, and Linux distributions which add their own patches.
+
+If you find a problem, you could try using your own qemu built from
+source (qemu is very easy to build from source), with a 'qemu
+wrapper'.  Qemu wrappers are described in the guestfs(3) manpage.
+
+
+Note on using KVM
+----------------------------------------------------------------------
+
+By default the configure script will look for qemu-kvm (KVM support).
+You will need a reasonably recent processor for this to work.  KVM is
+much faster than using plain Qemu.
+
+You may also need to enable KVM support for non-root users, by following
+these instructions:
+
+  http://www.linux-kvm.org/page/FAQ#How_can_I_use_kvm_with_a_non-privileged_user.3F
+
+On some systems, this will work too:
+
+  chmod o+rw /dev/kvm
+
+On some systems, the chmod will not survive a reboot, and you will
+need to make edits to the udev configuration.
+
+
+Notes on cross-architecture support
+----------------------------------------------------------------------
+
+At the moment we basically don't support cross-architecture or
+32-on-64.  This limits what is possible for some guests.  Filesystem
+operations and FTP export will work fine, but running commands in
+guests may not be possible.
+
+To enable this requires work for cross-architecture and 32-on-64
+support in febootstrap, fakeroot and fakechroot.
+
+The daemon/ directory contains its own configure script.  This is so
+that in future we will be able to cross-compile the daemon.
+
+
+Mirroring tip
+----------------------------------------------------------------------
+
+On my machines I can usually rebuild the appliance in around 3
+minutes.  If it takes much longer for you, use a local Fedora mirror
+or squid.
+
+To use squid to cache yum downloads, read this first:
+https://lists.dulug.duke.edu/pipermail/yum/2006-August/009041.html
+(In brief, because yum chooses random mirrors each time, squid doesn't
+work very well with default yum configuration.  To get around this,
+choose a Fedora mirror which is close to you, set this with
+'./configure --with-mirror=[...]', and then proxy the whole lot
+through squid by setting http_proxy environment variable).
+
+You will also need to substantially increase the squid configuration
+limits:
+http://fedoraproject.org/wiki/Using_Mock_to_test_package_builds#Using_Squid_to_Speed_Up_Mock_package_downloads
+
+
+Porting to other Linux distros / non-Linux
+----------------------------------------------------------------------
+
+libguestfs itself should be fairly portable to other Linux
+distributions.  Non-Linux ports are trickier, but we will accept
+patches if they aren't too invasive.
+
+The main porting issues are with the dependencies needed to build the
+appliance.  You will need to find or port the following packages
+first:
+
+ - fakeroot
+ - fakechroot
+ - python
+ - rpm-python    http://www.rpm.org/
+ - yum           http://yum.baseurl.org/
+ - febootstrap   http://et.redhat.com/~rjones/febootstrap/
+
+
+Copyright and license information
+----------------------------------------------------------------------
+
+Copyright (C) 2009 Red Hat Inc.
+
+The library is distributed under the LGPLv2+.  The programs are
+distributed under the GPLv2+.  Please see the files COPYING and
+COPYING.LIB for full license information.

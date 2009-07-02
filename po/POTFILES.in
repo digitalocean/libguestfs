@@ -1,0 +1,5 @@
+fish/alloc.c
+fish/echo.c
+fish/edit.c
+fish/fish.c
+src/guestfs.c

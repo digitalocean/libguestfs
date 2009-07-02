@@ -1,0 +1,120 @@
+PLEASE LOOK AT THE TOP OF EACH FILE BEFORE EDITING TO SEE WHETHER IT
+IS AUTOMATICALLY GENERATED OR NOT.
+
+Adding a new action
+----------------------------------------------------------------------
+
+All action functions are generated automatically, so there are only
+two files you need to edit:
+
+(1) src/generator.ml: Add your new action, parameters, description,
+etc. to the big list called 'functions' at the top of this file.
+
+(2) Edit/create a C file in daemon/ subdirectory which implements your
+'do_action' function.  Take a look at one of the numerous examples
+there.
+
+You will need to run src/generator.ml (from the top directory) which
+regenerates all the auto-generated files, and then continue with the
+ordinary build process.
+
+Formatting
+----------------------------------------------------------------------
+
+Try to use GNU / Emacs default formatting, following the convention
+used elsewhere in the source.
+
+Please make sure that the code compiles without warnings.
+
+Please test any changes.
+
+Directories
+----------------------------------------------------------------------
+
+appliance/
+	The qemu appliance, build scripts and so on.
+
+capitests/
+	Automated tests of the C API.
+
+contrib/
+	Outside contributions, experimental parts.
+
+daemon/
+	The daemon that runs inside the guest and carries out actions.
+
+examples/
+	The examples.
+
+fish/
+	Guestfish (the command-line program / shell)
+
+haskell/
+	Haskell bindings.
+
+images/
+	Some guest images to test against.  These are gzipped to save
+	space.  You have to unzip them before use.
+
+	Also contains some files used by the test suite.
+
+inspector/
+	Virtual machine image inspector (virt-inspector).
+
+java/
+	Java bindings.
+
+m4/
+	M4 macros used by autoconf.
+
+ocaml/
+	OCaml bindings.
+
+po/
+	Translations.
+
+perl/
+	Perl bindings.
+
+python/
+	Python bindings.
+
+regressions/
+	Regression tests.
+
+ruby/
+	Ruby bindings.
+
+src/
+	Source code to the C library.
+	Also contains the crucial generator program.
+
+Debugging
+----------------------------------------------------------------------
+
+It's a good idea to use guestfish to try out new commands.
+
+Debugging the daemon is a problem because it runs inside a minimal
+qemu environment.  However you can print messages from the daemon, and
+they will show up if you use 'guestfish -v'.
+
+Patches
+----------------------------------------------------------------------
+
+Submit patches to the fedora-virt mailing list:
+http://www.redhat.com/mailman/listinfo/fedora-virt
+and CC to rjones@redhat.com
+
+I18N
+----------------------------------------------------------------------
+
+We support i18n (gettext anyhow) in the library.
+
+However many messages come from the daemon, and we don't translate
+those at the moment.  One reason is that the appliance generally has
+all locale files removed from it, because they take up a lot of space.
+So we'd have to readd some of those, as well as copying our PO files
+into the appliance.
+
+Debugging messages are never translated, since they are intended for
+the programmers.

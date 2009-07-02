@@ -1,0 +1,1213 @@
+2009-06-04  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Version 1.0.41.
+
+	Fix RHBZ#503169 comment 13 (regression) and add a regression test.
+
+	Added regression test for RHBZ503169#c10
+
+	Move pure regression tests to their own subdirectory.
+
+	Generated code for the 'sleep' command.
+
+	Added 'sleep' command.
+
+	Prepare for version 1.0.40.
+
+	Add missing /dev devices (bug 503169 comment 10).
+
+	Generated PO files for 1.0.39.
+
+	Prepare for version 1.0.39.
+
+2009-06-04  Charles Duffy  <cduffy@messageone.com>
+
+	Use --rbind rather than --bind for bind mounting /dev (to get /dev/pts).
+
+	mount /dev via tmpfs before MAKEDEV invocation. This ensures that /dev can be bind-mounted when running commands, as initramfs cannot be bind-mounted.
+
+2009-06-02  Charles Duffy  <cduffy@messageone.com>
+
+	use add_drive_ro for --mount parameters from guestfish when called with --ro
+	To prevent writes (such as ext3 journal replay) from occuring even when --ro is
+	passed, guestfish should use add_drive_ro() for any drives specified on the
+	command line with --add if --ro is also passed.
+
+	As we need to look through the entire command line for --ro before adding any
+	drives, we move the add process out of the argument-parsing loop and into its
+	own function, patterned off mount_mps().
+
+2009-06-02  Richard Jones  <rjones@trick.home.annexia.org>
+
+	No parallel make in ocaml/ directory (RHBZ#502309).
+
+	Version 1.0.38
+
+	Generated code for 'add_drive_ro' call.
+
+	Add 'add_drive_ro' call. Fix up documentation. Plus a couple of minor code improvements in the tests.
+
+2009-05-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	Squashfs recipe.
+
+	Correctly handle malloc/realloc(0)  - malloc and realloc(0) are valid requests.  Some implementations    may return NULL for these, which would not indicate an error.
+
+	Prepare for version 1.0.37
+
+	Use a squashfs attached as /dev/sdd during the C API tests.
+
+	Add cramfs and squashfs kernel modules (RHBZ#503135).
+
+	Fix the rule which rebuilds make-initramfs.sh.
+
+	Fix mkdir-p if directory exists (RHBZ#503133).
+
+2009-05-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	Rerun generator to update tests.
+
+	Version 1.0.36
+
+	Fix path to COPYING.LIB
+
+	To-do: Note that we need to finish the bindings tests.
+
+	Distribute bindtests.rb in the tarball.
+
+	Distribute bindtests.pl with the tarball.
+
+	Distribute bindtests file.
+
+	Fix path to guestfish in test-bootbootboot script.
+
+	Fix permissions on ocaml/run-bindtests
+
+	Add tests for bindings parameters, fix several broken bindings.
+
+	Add the test0* functions, used to test language bindings.
+
+	Move C API tests out of root build dir into 'capitests' subdir.
+
+	Move the appliance and build scripts into new appliance/ subdirectory.
+
+2009-05-27  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Updated PO files.
+
+	Removed contrib/*.spec files.
+
+	Version 1.0.34.
+
+2009-05-27  Richard Jones  <rjones@centos5x32.home.annexia.org>
+
+	Back to GNU gettext 0.14 for RHEL 5.
+
+	abs_top_builddir doesn't exist in old RHEL 5 automake, use top_builddir instead.
+
+	Removed these old/obsolete specfiles.  For replacements see contrib/README.  (for Charles Duffy).
+
+2009-05-27  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Version 1.0.33
+
+	Improve javadoc (RHBZ#501883).
+
+	Guestfish built-in commands auto-complete (RHBZ#501878).
+
+	Fix Java configure tests (RHBZ#501885).
+
+	To-do item.
+
+	README, TODO and HACKING files are now shown on the website.
+
+	Allow more ext filesystem kmods (Charles Duffy).
+
+	Improve documentation in README file.
+
+2009-05-26  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Fix bug links.
+
+	Version 1.0.32
+
+	Added Polish translation (Piotr Drąg) (fixes RHBZ#502533).
+
+2009-05-24  Richard Jones  <rjones@debian5x64.home.annexia.org>
+
+	(Commented out) Overwrite /sbin/init
+
+	Print a message when /init starts.
+
+	Small documentation bug in configure script.
+
+2009-05-22  Richard Jones  <rjones@trick.home.annexia.org>
+
+	In daemon, set PATH, SHELL and LANG environment variables.
+
+	Add 'debug env' command to print environment.
+
+2009-05-21  Richard Jones  <rjones@redhat.com>
+
+	Updated POT file.
+
+	Prepare for 1.0.31.
+
+	Individual tests can be skipped by setting SKIP_TEST_<CMD>[_<N>]=1
+
+	Updated POT file.
+
+	Prepare for version 1.0.30.  Reduce boot loop script to 10 boots.
+
+	Add test-bootbootboot.sh script to EXTRA_DIST.
+
+	Version 1.0.29
+
+	Generated code for e2fsck-f command.
+
+	Add e2fsck_f command, and modify lvresize test to use it (RHBZ 502018).
+
+	Fix pvremove, vgremove, lvremove tests (RHBZ 502007).
+
+	Ignore generated file.
+
+	Version 1.0.28
+
+	Gettextize the source, make library strings translatable.
+
+	Intltoolize the source.
+
+	Bugs have been moved to Red Hat Bugzilla.
+
+2009-05-20  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Bug about Fedora specfile.
+
+2009-05-19  Richard Jones  <rjones@trick.home.annexia.org>
+
+	To-do list for virt-inspector.
+
+	Prepare for 1.0.27
+
+	test-bootbootboot.sh is a test, not a source file.
+
+	Skip 'zerofree' test if the command doesn't exist in the appliance.
+
+	virt-inspector now lists installed modules.
+
+	Generated code for 'find' command.
+
+	Added 'find' command.
+
+	Fix a memory leak in handling of tar files.
+
+	Inspect kernels for Linux OSes.
+
+	Base appliance on Fedora 11 (by default - may be overriden by configure).
+
+2009-05-18  Richard Jones  <rjones@redhat.com>
+
+	Generated code for lvresize, resize2fs.
+
+	Add: lvresize, resize2fs commands.
+
+	Version 1.0.26.
+
+	Add vg-activate{,-all} commands, and resize recipe.
+
+	Ignore old make-initramfs file.
+
+2009-05-16  Richard Jones  <rjones@redhat.com>
+
+	To-do: Explain the situation with resizing block devices.
+
+2009-05-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	Add: pvresize, sfdisk-N, sfdisk-l, sfdisk-kernel-geomtry, sfdisk-disk-geometry commands.  Pass --no-reread flag to sfdisk.
+
+	To-do: zerofree done, Haskell bindings need to be completed.
+
+2009-05-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Add support for zerofree command.
+
+	To-do: zerofree
+
+	Enable run-time conditional test prerequisites.
+
+	Add test prerequisites.
+
+	Added a couple of bugs related to test code.
+
+2009-05-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	Bugs related to OptString handling.
+
+	Don't stash strings in the handle.  - makes it impossible to write bindings for set_{path,qemu,append}    functions
+
+	Add 'append', LIBGUESTFS_APPEND to set additional kernel options.
+
+2009-05-13  Richard Jones  <rjones@redhat.com>
+
+	Allow number of loops to be set on command line.
+
+	Tidy-up of test script.
+
+	Exit early from script on error.
+
+	Increase the wait time for vmchannel socket to appear (fix for slow / heavily-loaded) machines.
+
+	Test booting repeatedly to track down qemu boot hangs.
+
+2009-05-12  Richard Jones  <rjones@redhat.com>
+
+	Version 1.0.25
+
+	test-command is not an actual test program.
+
+	Prepare for version 1.0.24
+
+	Refactor line splitting code in the daemon, and fix it so it works.
+
+	Test the 'command' and 'command_lines' functions thoroughly.
+
+	Remove Perl from appliance - fixes large appliance problem on Rawhide builds.
+
+	Remove the specfile from the tarball.  Include contrib/ dir.
+
+2009-05-11  Richard Jones  <rjones@redhat.com>
+
+	Version 1.0.23
+
+	Depend on new febootstrap 2.0, and use febootstrap-install.
+
+	Perl bindings fix: Not enough memory was allocated for array params.
+
+2009-05-10  Richard Jones  <rjones@redhat.com>
+
+	Partial Haskell bindings.
+
+	Handle EINTR, EAGAIN in select main loop.
+
+2009-05-09  Richard Jones  <rjones@redhat.com>
+
+	Note about using FUSE / mountlo code.
+
+	Version 1.0.22
+
+	Valgrind now implemented - remove from TODO list
+
+	Add 'make valgrind' target to run tests under valgrind.
+
+	Fix four memory leaks in guestfs.c revealed by valgrind.
+
+	Fix memory leak in error return path.
+
+2009-05-08  Richard Jones  <rjones@redhat.com>
+
+	Experimental febootstrap install script.
+
+	To-do: Use valgrind.
+
+	Bug: Segfault in Perl bindings.
+
+	List installed applications (NOT WORKING).
+
+	Generated code to support last 3 commits.
+
+	Add test script to test recovery from qemu failure.
+
+	Implement -command (to ignore errors) in guestfish, and allow recovery from qemu process failure.
+
+	Allow recovery from guest failure.
+
+	Generated code to support previous 2 commits.
+
+	Implement 'strings' and 'hexdump' commands.
+
+	Bug: write_file doesn't work with strings containing ASCII NUL.
+
+	Note another bug found when testing on Koji.
+
+	Missing BRs in spec file.
+
+	Version 1.0.21
+
+	Change memory calculation to choose a generous amount of memory.
+
+	Merge branch 'master' of git+ssh://192.168.122.141/home/rjones/d/libguestfs
+
+2009-05-08  Richard Jones  <rjones@centos5x32.home.annexia.org>
+
+	Added RHEL/CentOS example spec file.
+
+2009-05-08  Richard Jones  <rjones@redhat.com>
+
+	Force qemu quit when kernel panics (Charles Duffy).
+
+2009-05-07  Richard Jones  <rjones@redhat.com>
+
+	Update date in changelog line.
+
+	Update %changelog in the specfile.
+
+	Prepare for version 1.0.20.
+
+	Fix leak in realloc failure (Jim Meyering).
+
+	Use unsigned type for lengths.
+
+	Handle EINTR and EAGAIN in reads.
+
+	Specify prototyping behaviour for Perl XSUBs.
+
+	Create daemon/m4 subdirectory if it doesn't exist already.
+
+2009-05-07  Richard Jones  <rjones@centos5x32.home.annexia.org>
+
+	Set mandir (as in RHEL 5).
+
+	Version 1.0.19
+
+	Misc changes to make tests pass in RHEL 5.
+
+	Include /usr/sbin on the $PATH (for RHEL 5).
+
+	Need to keep and modprobe dm_mod module for device-mapper support on RHEL 5.
+
+	/dev/hd* is also a block device on RHEL 5.
+
+2009-05-07  Richard Jones  <rjones@redhat.com>
+
+	Add BR on ncurses-devel (needed for RHEL 5).
+
+	Augeas is now completely optional.
+
+2009-05-06  Richard Jones  <rjones@redhat.com>
+
+	Added TODO item.
+
+	Merge branch 'master' of git+ssh://rich@hakodate/home/rich/d/libguestfs
+
+2009-05-06  Richard Jones  <rich@hakodate.home.annexia.org>
+
+	Note bug about chroot not found.
+
+2009-05-06  Richard Jones  <rjones@redhat.com>
+
+	Note Augeas support should be optional (TODO).
+
+2009-05-06  Richard Jones  <rich@hakodate.home.annexia.org>
+
+	Fix missing futimens bug.
+
+	AC_CHECK_FUNCS for multiple functions.
+
+	RARRAY_LEN macro for Ruby < 1.9.  Small strictness fix for OCaml < 3.10.
+
+	Backport CAMLreturnT for OCaml <= 3.10
+
+	Missing include <ctype.h>
+
+	virt-inspector configure bug.
+
+	Added bugs noted by Charles Duffy.
+
+2009-05-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	Another TODO item.
+
+	Typo in documentation.
+
+	Implement !local in guestfish.
+
+2009-05-01  Richard Jones  <rjones@redhat.com>
+
+	Version 1.0.18
+
+2009-05-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	Generated code for 'equal' command.
+
+	Added 'equal' command to compare files.
+
+	Generated code for ping-daemon command.
+
+	Added ping-daemon command.
+
+	Generated code for dmesg command.
+
+	Added dmesg command.
+
+	Generated code for drop-caches command.
+
+	Added drop-caches command.
+
+	Generated code for cp, cp-a and mv commands.
+
+	Add cp, cp-a and mv commands.
+
+	Always look for qemu-kvm, even on non-x86_64 platform.
+
+	Check fakechroot >= 2.9
+
+2009-04-30  Richard Jones  <rjones@redhat.com>
+
+	Version 1.0.17
+
+	Generated code for grub-install command.
+
+	Add grub-install command.
+
+	Replace rtl8139 network card with virtio-net.
+
+	Add documentation for the 'edit' and 'echo' commands.
+
+	Added guestfish 'echo' command.
+
+	Added a comment syntax to guestfish (# ...).
+
+	Prepare for version 1.0.16.
+
+	Added notes to the 'fsck' command documentation.
+
+	Added 'zero' command to wipe partition tables and superblocks.
+
+	Correct the path to /sbin/fsck.
+
+	Enable parallel builds (Jim Meyering).
+
+	Add generated code for 'fsck' command.
+
+	Added 'fsck' command.
+
+	Bind-mount /dev, /proc and /sys into chroot when running commands.
+
+	Autosync now runs umount-all; sync
+
+	Fix umount_all command so it unmounts filesystems in the correct order.
+
+2009-04-30  Jim Meyering  <jim@meyering.net>
+
+	build: don't tell "make clean" to remove my '~' backup files
+	Hi Rich,
+
+	automake's policy on what to remove via "make clean" is reasonable:
+	if running build rules creates it, then "make clean" can and should remove it.
+	However, even if build rules happen
+	to create backup files, please remove only the specific ones
+	they can create, not all of the ones in a directory.  Just in case
+	someone relies on those and expect them to hang around...
+
+	>From 1e8be391ac17b4ddcf9671e8413d2660844e6993 Mon Sep 17 00:00:00 2001
+	From: Jim Meyering <meyering@redhat.com>
+	Date: Thu, 30 Apr 2009 15:47:52 +0200
+	Subject: [PATCH] build: don't tell "make clean" to remove my '~' backup files
+
+	* Makefile.am (CLEANFILES): Don't remove '~' backup files.
+	* daemon/Makefile.am: Ditto.
+	* examples/Makefile.am: Ditto.
+	* fish/Makefile.am: Ditto.
+	* images/Makefile.am: Ditto.
+	* inspector/Makefile.am: Ditto.
+	* java/Makefile.am: Ditto.
+	* ocaml/Makefile.am: Ditto.
+	* ocaml/examples/Makefile.am: Ditto.
+	* perl/Makefile.am: Ditto.
+	* python/Makefile.am: Ditto.
+	* ruby/Makefile.am: Ditto.
+	* src/Makefile.am: Ditto.
+
+2009-04-30  Richard Jones  <rjones@redhat.com>
+
+	Safer way to copy RPMs in no-net builds (Jim Meyering).
+
+	Updated the generator so it only overwrites files if they've changed.
+
+	Correction to 366a86fb6097ab0f704443f0a6ae2addbc3745d5:   The code in fish/completion.c is generated, so update the generator instead.
+
+2009-04-30  Jim Meyering  <jim@meyering.net>
+
+	* fish/completion.c (commands): Declare with a 2nd "const".
+	It's a const array of const strings.
+
+	>From 70c53d3169ae53fc4874e00975893d33387c51e6 Mon Sep 17 00:00:00 2001
+	From: Jim Meyering <meyering@redhat.com>
+	Date: Thu, 30 Apr 2009 14:33:01 +0200
+	Subject: [PATCH] * fish/completion.c (commands): Declare with a 2nd "const".
+
+2009-04-30  Richard Jones  <rjones@redhat.com>
+
+	Use AC_PROG_CC_STDC because we really need an ISO C compiler (Jim Meyering).
+
+	Use safe_malloc and/or check returns from malloc (Jim Meyering).
+
+	Fix unchecked malloc (Jim Meyering).
+
+	Fix unchecked malloc & realloc in 'commandv' func (Jim Meyering).
+
+	Check return value from realloc call (Jim Meyering).
+
+	Rename tune2fs.c -> ext2.c
+
+2009-04-28  Richard Jones  <rjones@redhat.com>
+
+	Merge branch 'master' of git+ssh://g-rjones@et.redhat.com/git/libguestfs
+
+	[PATCH] add dependency to ensure make-initramfs.sh is rebuilt when (Jim Meyering)
+
+	Resync with proposed Fedora specfile.
+
+	Build virt-inspector HTML for the website.
+
+	Prepare for 1.0.15.
+
+	XML output.
+
+	Perl output.
+
+	--fish and --ro-fish options working.
+
+	Added virt-inspector program from virt-v2v.
+
+	s/builddir/top_builddir/ (Luciano Miguel Ferreira Rocha).
+
+	Fix perl hanging during configure (thanks to Luciano Miguel Ferreira Rocha).
+
+2009-04-27  Richard Jones  <rjones@redhat.com>
+
+	Generated code for ext2 UUID and label functions.
+
+	Functions for getting and setting the ext2 UUID and label.
+
+2009-04-26  Richard Jones  <rjones@redhat.com>
+
+	Version 1.0.14
+
+	Add --version option (show version) to guestfish.
+
+	Added the --ro option (readonly) to guestfish.
+
+	Update BUGS with latest status.
+
+	Get ready for version 1.0.13.
+
+	Multiple callbacks during file transfers could cause data corruption - FIXED.
+
+	Check for multiple callback in RPC code.
+
+	More checks.
+
+	Include UTF-8 NLS.
+
+	Use ferror to check for error conditions in pipe.
+
+	Carefully check return values from xwrite.
+
+	Don't echo output in scripts.
+
+	Added rpmqa example.
+
+	Document qemu wrappers.
+
+2009-04-25  Richard Jones  <rjones@redhat.com>
+
+	Documentation fix.
+
+	Note about bugs.
+
+	Clean up *~ files in recipes/
+
+	New recipe: iso2tar.
+
+	Include UDF driver (for CD/DVDs).
+
+	Include the right RPMs and kernel modules for NTFS & VFAT mkfs and mounts.
+
+	Generated code for lvremove, vgremove, pvremove.
+
+	Implement lvremove, vgremove, pvremove.
+
+	Better generation of recipes page.
+
+	export2tar recipe
+
+	Improve CSS on recipes page.
+
+	Added guestfish recipes.
+
+	If LIBGUESTFS_PATH is set, guestfish shouldn't modify the path.
+
+	Added configure test for qemu vmchannel support.
+
+2009-04-24  Richard Jones  <rjones@redhat.com>
+
+	Experimental recovery process should help with not cleaning up qemu.
+
+	Remove the debug mode from make-initramfs.sh.
+
+	Add support for ext4 to examples/to-xml.c
+
+	chmod /sysroot (also makes it known to fakeroot)
+
+	Resync specfile with proposed specfile in Fedora RR.
+
+	Ruby bindings didn't NULL-terminate an array, resulting in segfault.
+
+	Added bug about qemu not being cleaned up after segfault.
+
+	Get ready for version 1.0.12.
+
+2009-04-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	Don't allocate file chunks on the stack.
+
+	Don't use large message buffer on the stack (fixes Java/i386 segfault).
+
+2009-04-23  Richard Jones  <rjones@redhat.com>
+
+	Fix 64 bit memsize overhead.
+
+2009-04-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	catsprintf leaks, use open_memstream instead.
+
+	Remove the 'debug mem' command, it's never going to work.
+
+	Reduce the amount of memory allocated to guests based on some testing.
+
+	Implement 'debug sh' and 'debug fds' commands.
+
+	Implement extensible strings with catprintf.
+
+	Use AC_GNU_SOURCE in daemon.  Don't need _GNU_SOURCE in C files any more.
+
+	Fix buffer overrun in guestfish command-line parsing.
+
+	Generated code for debug command.
+
+	Add outline of 'debug' command.
+
+	Automatically generate ChangeLog file from the git log (thanks: Jim Meyering).
+
+	Substitute '-' in command names in guestfish documentation.
+
+	Fix Java tests by passing correct library path to JVM.
+
+	Configure script tests for Perl modules.
+
+	Merge branch 'master' of git+ssh://g-rjones@et.redhat.com/git/libguestfs
+
+2009-04-23  Richard Jones  <rjones@redhat.com>
+
+	Avoid a cast warning on 32 bit.
+
+2009-04-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	Instructions on running KVM as non-root (Robert P. J. Day).
+
+2009-04-22  Richard Jones  <rjones@redhat.com>
+
+	Version 1.0.10
+
+	Generated code for new mount_* commands.
+
+	Add mount_ro, mount_options, mount_vfs.  Fix small bug in OCaml generator.
+
+	Get ready for 1.0.9.
+
+	Force a specific network NIC model (allows to work with latest qemu from SVN).
+
+	Fix infinite loop encountered when reading Windows disk in example program.
+
+	Added pkgconfig file (libguestfs.pc).
+
+	Version 1.0.7
+
+	Fix quoting of list args in guestfish manpage.
+
+	Resync specfile to Fedora RR.
+
+	Create /tmp directory in the initramfs.
+
+	Include fuse.ko module in image.
+
+	Version 1.0.6.
+
+	Note, but don't fix, javadoc bug.
+
+	qemu runtime done - remove from TODO list.
+
+	Allow qemu binary to be overridden at runtime.
+
+	Allow selection of qemu using --with-qemu
+
+	Error message about using --with-java-home=no to disable Java support.
+
+2009-04-21  Richard Jones  <rjones@redhat.com>
+
+	Fixes for Java.
+
+	Add extra kernel modules required for ext4 support.
+
+	Updated documentation, prepare for 1.0.5 release.
+
+	Another Java test.
+
+	Testing the Java bindings.
+
+	Java bindings compile, not tested.
+
+	Add summary message, fix libruby detection.
+
+	More notes in the TODO list.
+
+	Basic Java build environment.
+
+2009-04-20  Richard Jones  <rjones@redhat.com>
+
+	Various fixes to build and test in Koji.
+
+	Fixes for CDPATH being set.
+
+	Use standard names for the OCaml/Perl/Python/Ruby subpackages.
+
+	Ruby also supported
+
+	Include the __cplusplus header magic so API really callable from C++.
+
+	Version 1.0.3.
+
+	Removed TODO item, now implemented.
+
+	Added tar-in, tar-out, tgz-in, tgz-out commands.
+
+	Various fixes to the daemon:  - make sure SIGPIPE doesn't kill us  - warn not to use macros in FileIn functions  - add shell_quote function
+
+	Some fixes to daemon upload command:  - don't leak the file descriptor along error paths  - can't use those macros in FileIn functions
+
+	Make daemon cancellation really work.
+
+	Add tests for the upload and download commands.
+
+	Prepare for version 1.0.2.
+
+	Avoid warning: Don't generate read_reply label unless needed.
+
+	Fix file descriptor leak in daemon.
+
+	Generated code for 'checksum' command.
+
+	Add 'checksum' command.
+
+	Implement upload and download commands.
+
+2009-04-19  Richard Jones  <rjones@redhat.com>
+
+	Use GUESTFS_LAUNCH_FLAG in the daemon, and use correct uint32_t.
+
+	Document initial message.
+
+	Document the internal protocol.
+
+	Implement NEED_ROOT_OR_IS_DEVICE macro.
+
+	Implement _send_sync, _send_file_sync and _receive_file_sync.
+
+2009-04-18  Richard Jones  <rjones@redhat.com>
+
+	Begin to add the upload and download commands.
+
+	Add ruby/ directory, add more warnings.
+
+	Split out send and reply operations into separate callbacks.
+
+	guestfs_send -> guestfs__send, in case we want a future command called "send".
+
+	Separate out the high-level API actions.  - Split out the high-level API actions so that they are in a    separate file, and use the defined guestfs C API, instead of    fiddling around with internal structures.
+
+	Merge branch 'master' of git+ssh://g-rjones@et.redhat.com/git/libguestfs
+
+	Rewrite of main loop impl, start of FileIn/FileOut support.
+
+	Merge branch 'master' of git+ssh://g-rjones@et.redhat.com/git/libguestfs
+
+	Version 1.0.1
+
+2009-04-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	Allow Ruby bindings to build correctly even if libguestfs not installed.
+
+2009-04-16  Richard Jones  <rjones@redhat.com>
+
+	Fix spec file.
+
+	Ruby bindings.
+
+	Resync with proposed Fedora specfile.
+
+	Missing free() on return path (thanks: Steve Grubb).
+
+	TODO list updated.
+
+	Note slow kernel boot times for F11/12.
+
+	Updated TODO, BUGS.
+
+	Added Python documentation.
+
+	Really needs qemu 0.10 for vmchannel support.
+
+2009-04-15  Richard Jones  <rjones@redhat.com>
+
+	0.9.9 for final cleanups before 1.0 release.
+
+	'guestfish edit' commands and several bugfixes.
+
+	Started BUGS list.
+
+	Move guestfish 'alloc' command to a separate file.
+
+	Version 0.9.3.
+
+	Show byte sizes in example.
+
+	Generated code for blockdev_* calls, RInt64, enhanced tests.
+
+	Added blockdev_* calls.  RInt64 type.  Enhanced tests.
+
+	Be strict about commands which don't test themselves, warn about missing tests.
+
+	Version 0.9.2.
+
+	Display ext2/3 details, and some bug fixes.
+
+	Correctly free memory in RHashtable binding for OCaml & Python.
+
+	Generated code for tune2fs-l command and RHashtable return type.
+
+	Added tune2fs-l command and RHashtable return type.
+
+	Added to-xml program.
+
+	Remove 'df' program from examples - didn't ever work.
+
+	Generated code for stat/lstat/statvfs changes.
+
+	Added stat, lstat, statvfs and associated stat structures.
+
+2009-04-14  Richard Jones  <rjones@redhat.com>
+
+	Quoting in guestfish.
+
+	Version 0.9.1
+
+	Added bindings for GNU readline.
+
+	Better handling of trailing \n problem.
+
+	Typos and documentation updates.
+
+	Generated changes to perl XS bindings.
+
+	Add 'command' and 'command-lines'. Fix args freeing in Perl bindings.
+
+	Fix 'file(1)' command to work on /dev devices.
+
+2009-04-13  Richard Jones  <rjones@redhat.com>
+
+	Generated files for file(1) command.
+
+	Added file(1) command.
+
+	Note a bug.
+
+	guestfs -> GuestFS
+
+	Python files.  Add $QUICK_RPMBUILD flag to avoid running tests.
+
+	Install guestfs.py
+
+	Missing dependency.
+
+	Describe all available bindings.
+
+	Need to package generator.ml -- oops.
+
+	Prepare for 0.9 release.
+
+	Extra CLEANFILES.
+
+	Additional test programs for Perl, Python, OCaml bindings.
+
+	Lots, mainly Python bindings.
+
+	Stricter checks on short descriptions.
+
+	OCaml bindings build using the installed, not built, library.
+
+	Old versions of augeas lack aug_load, aug_defvar, aug_node.  Check for those calls.
+
+	Version 0.8.1
+
+2009-04-12  Richard Jones  <rjones@redhat.com>
+
+	Distribute TODO file.
+
+	Fix looping bug in parse_string_list, and remove debug message.
+
+	More BuildRequires.
+
+	More TODO items.
+
+	Add BR qemu (required to run the tests).
+
+	Added some ideas in TODO file.
+
+2009-04-11  Richard Jones  <rjones@redhat.com>
+
+	Minor adjustments for 0.8 release.
+
+	Don't delete examples/Makefile.
+
+	Added test suite.
+
+2009-04-10  Richard Jones  <rjones@redhat.com>
+
+	Added test framework, no tests implemented yet.
+
+	Need to set LD_LIBRARY_PATH so we pick up the right C library.
+
+	Generated files for previous commands.
+
+	New commands: rm rmdir rm-rf mkdir mkdir-p chmod chown
+
+	CHROOT_OUT must preserve errno.
+
+	Fix off-by-one error in Augeas wrapper code.
+
+	Change Err -> RErr for consistency with other return types.
+
+	Documentation fix.
+
+	Code cleanup.
+
+	Add more function checking.
+
+	Just use plain lists for argument representation.
+
+	Documentation fixes.
+
+	Correction in the aug-ls documentation.
+
+2009-04-09  Richard Jones  <rjones@redhat.com>
+
+	Remove *~ files when doing 'make clean'.
+
+	Documentation update.
+
+	Bumped version number.
+
+	Added aug-ls (generated code).
+
+	Add aug-ls command (non-generated code).
+
+	No need for mirror, add HTML docs to subpackages.
+
+	Distribute the pod.css file.
+
+	Generate webpages.
+
+	Added Augeas support.
+
+	Updated HACKING notes about debugging.
+
+2009-04-08  Richard Jones  <rjones@redhat.com>
+
+	Generated code for new guestfs_read_lines API call.
+
+	Definition and implementation of new guestfs_read_lines API call.
+
+	Version 0.6
+
+	Added OCaml examples.
+
+	OCaml bindings compile.
+
+	Many non-daemon functions are now auto-generated.
+
+	Version 0.5: Numerous small fixes to make rpmbuild work again.
+
+	Added more Perl bindings tests.
+
+	Bug fix: Trailing whitespace from 'pvs' command.
+
+	Fixed Perl bindings, they now work properly.
+
+	Ignore perl/Guestfs.bs file.
+
+	Updated generated files.
+
+	Mention OCaml & Perl bindings in introduction.  Error handlers must copy 'msg' if they want to stash it.
+
+	File was removed, updated dependencies.
+
+	Need to distribute OCaml bits even if OCaml not found.
+
+	First version of Perl bindings, compiled but not tested.
+
+	Added a note that I'm not going to do Python bindings for now.
+
+2009-04-07  Richard Jones  <rjones@redhat.com>
+
+	Outline OCaml bindings.
+
+	Added guestfish(1) manpage.
+
+	Fix: "aclocal: couldn't open directory `m4': No such file or directory"
+
+	Added framework for the language bindings.
+
+	New header file.
+
+	Remove unnecessary kernel drivers.  Big reduction in image size.
+
+	Fix incorrect realloc size which was causing 'ls' command to fail on large directories.
+
+	Implement simple lvs/vgs/pvs commands.
+
+	Rename pvs -> pvs-full (etc), so we can add simple pvs (etc) commands.
+
+	pvs/vgs/lvs commands working now.
+
+2009-04-06  Richard Jones  <rjones@redhat.com>
+
+	Implement list-devices and list-partitions.
+
+	Implementations of 'cat', 'ls', and some cleanups.
+
+	Debugging tips.
+
+2009-04-04  Richard Jones  <rjones@redhat.com>
+
+	Fix incorrect short description of 'cat' command
+
+	Implement RString and RStringList return types.  - implement 'll' command.  - outlines for 'ls' and 'cat' commands.
+
+	Implement the alloc shell command.
+
+	guest_add_{drive,cdrom} now test if the files exist.
+
+	Add %post and %postun.
+
+	Fix parsing of paths with more than one element.
+
+	LIBGUESTFS_PATH implementation.
+
+	Document --add and --mount options.
+
+	Mostly working spec file.
+
+	Implemented autosync, make it the default for guestfish.
+
+	Generate actions section in guestfs.3 man page.
+
+	Implemented running actions in guestfish.
+
+	More tidy up of messages.
+
+	Command line, help.
+
+	Command line and interactive shell parsing, prompts etc.
+
+2009-04-03  Richard Jones  <rjones@redhat.com>
+
+	Added outline of shell command, added generator support.
+
+	Small updates to the generator.
+
+	Implemented 'mount' and 'touch' commands.
+
+	Added a HACKING file.
+
+	Added images/ directory for test images, and one image.
+
+	Parses return values and returned errors properly.
+
+	Make the partition configurable.
+
+	Added README file for examples directory.
+
+	No verbose.  User can enable by setting LIBGUESTFS_DEBUG=1 if they want.
+
+	Pass -no-kqemu parameter to avoid warning about kqemu.
+
+	Makes a series of non-trivial calls.
+
+	Daemon and library are mostly talking to each other now.
+
+	Remove initramfs/fakelog.root if make-initramfs fails.
+
+	Remove NFS support - we will probably use FTP instead.
+
+	Lots more auto-generation.
+
+	Set up ethernet interface.
+
+	Start the generated code and code generator.
+
+	Add the first version of the guestfsd daemon.
+
+	Add update-initramfs.sh.in so we don't need to rebuild initramfs for small changes in the daemon.
+
+	Updated to newer GPLv2 document.
+
+2009-04-02  Richard Jones  <rjones@redhat.com>
+
+	Correctly handle the case when select runs out of filehandles.
+
+	Code to handle the daemon communications socket.
+
+	Guest boots, and basic select/callbacks work.
+
+	Ignore generated manual page.
+
+	More documentation updates.
+
+	More documentation.
+
+2009-04-01  Richard Jones  <rjones@redhat.com>
+
+	Documentation of low-level API.
+
+	Add test-boot-realistic target.
+
+	Correct permissions problem in root filesystem by using febootstrap-run properly.
+
+	Various fixes to the build system, add 'make test-boot-image' target.
+
+	Run autoreconf with -i parameter.
+
+	More files to ignore.
+
+	Print size of kernel, don't need to delete gnome/help any more.
+
+	Moved .cvsignore -> .gitignore.
+
+2009-03-24  rjones  <rjones>
+
+	Build the initramfs.
+
+	Now using febootstrap.
+
+2009-03-04  rjones  <rjones>
+
+	Starts up QEMU now
+
+2009-03-03  rjones  <rjones>
+
+	Running qemu as a subprocess.
+
+	Final fixes to build environment, and added autogen.sh.
+
+	Build environment set up for libguestfs.

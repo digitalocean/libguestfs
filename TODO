@@ -1,0 +1,49 @@
+Ideas for the Python bindings:
+https://www.redhat.com/archives/fedora-virt/2009-April/msg00114.html
+
+----------------------------------------------------------------------
+
+We badly need to actually implement the FTP server mentioned in the
+documentation.
+
+Or: Implement a FUSE-based filesystem.  See the FUSE mountlo
+project which does something similar, albeit only to single
+filesystems:
+
+http://sourceforge.net/project/showfiles.php?group_id=121684&package_id=150116
+
+----------------------------------------------------------------------
+
+BufferIn and BufferOut should turn into <char *, int> and simple
+strings in other languages that can handle 8 bit clean strings.
+Limit on transfers would still be 2MB for these types.
+ - then implement write-file properly
+ - and implement read-file
+
+----------------------------------------------------------------------
+
+Implement febootstrap command.
+
+----------------------------------------------------------------------
+
+Complete the Haskell bindings (see discussion on haskell-cafe).
+
+----------------------------------------------------------------------
+
+Complete the bindings tests - must test the return values and
+error cases.
+
+----------------------------------------------------------------------
+
+For virt-inspector:
+
+ - Needs a "query mode", like "are (Xen|KVM) PV drivers installed?"
+   "does this guest need a Xen hypervisor?"
+
+ - Are PV network drivers enabled (see /etc/modprobe.conf)
+
+ - ... and can it boot from a PV driver (have to look inside the initrd)
+
+ - Make a libvirt XML config
+
+ - Test over available OSes

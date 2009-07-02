@@ -1,0 +1,350 @@
+=encoding utf8
+
+=head1 NAME
+
+guestfish - the libguestfs filesystem interactive shell
+
+=head1 SYNOPSIS
+
+ guestfish [--options] [commands]
+
+=head1 EXAMPLES
+
+=head2 From shell scripts
+
+Create a new C</etc/motd> file in a guest:
+
+ guestfish <<_EOF_
+ add disk.img
+ run
+ mount /dev/VolGroup00/LogVol00 /
+ write_file /etc/motd "Hello users" 0
+ _EOF_
+
+List the LVs in a guest:
+
+ guestfish <<_EOF_
+ add disk.img
+ run
+ lvs
+ _EOF_
+
+=head2 On the command line
+
+List the LVM PVs in a guest image:
+
+ guestfish add disk.img : run : pvs
+
+Remove C</boot/grub/menu.lst> (in reality not such a great idea):
+
+ guestfish --add disk.img \
+   --mount /dev/VolGroup00/LogVol00 \
+   --mount /dev/sda1:/boot \
+   rm /boot/grub/menu.lst : \
+   sync : exit
+
+=head2 As an interactive shell
+
+ $ guestfish
+ 
+ Welcome to guestfish, the libguestfs filesystem interactive shell for
+ editing virtual machine filesystems.
+ 
+ Type: 'help' for help with commands
+       'quit' to quit the shell
+ 
+ ><fs> help
+
+=head1 DESCRIPTION
+
+Guestfish is a shell and command-line tool for examining and modifying
+virtual machine filesystems.  It uses libguestfs and exposes all of
+the functionality of the guestfs API, see L<guestfs(3)>.
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<--help>
+
+Displays general help on options.
+
+=item B<-h> | B<--cmd-help>
+
+Lists all available guestfish commands.
+
+=item B<-h cmd> | B<--cmd-help cmd>
+
+Displays detailed help on a single command C<cmd>.
+
+=item B<-a image> | B<--add image>
+
+Add a block device or virtual machine image to the shell.
+
+=item B<-m dev[:mountpoint]> | B<--mount dev[:mountpoint]>
+
+Mount the named partition or logical volume on the given mountpoint.
+
+If the mountpoint is omitted, it defaults to C</>.
+
+You have to mount something on C</> before most commands will work.
+
+If any C<-m> or C<--mount> options are given, the guest is
+automatically launched.
+
+=item B<-n> | B<--no-sync>
+
+Disable autosync.  This is enabled by default.  See the discussion
+of autosync in the L<guestfs(3)> manpage.
+
+=item B<-r> | B<--ro>
+
+This changes the C<-m> option so that mounts are done read-only
+(see C<guestfs_mount_ro> in the L<guestfs(3)> manpage).
+
+=item B<-v> | B<--verbose>
+
+Enable very verbose messages.  This is particularly useful if you find
+a bug.
+
+=back
+
+=head1 COMMANDS ON COMMAND LINE
+
+Any additional (non-option) arguments are treated as commands to
+execute.
+
+Commands to execute should be separated by a colon (C<:>), where the
+colon is a separate parameter.  Thus:
+
+ guestfish cmd [args...] : cmd [args...] : cmd [args...] ...
+
+If there are no additional arguments, then we enter a shell, either an
+interactive shell with a prompt (if the input is a terminal) or a
+non-interactive shell.
+
+In either command line mode or non-interactive shell, the first
+command that gives an error causes the whole shell to exit.  In
+interactive mode (with a prompt) if a command fails, you can continue
+to enter commands.
+
+=head1 USING launch (OR run)
+
+As with L<guestfs(3)>, you must first configure your guest by adding
+disks, then launch it, then mount any disks you need, and finally
+issue actions/commands.  So the general order of the day is:
+
+=over 4
+
+=item *
+
+add or -a/--add
+
+=item *
+
+launch (aka run)
+
+=item *
+
+mount or -m/--mount
+
+=item *
+
+any other commands
+
+=back
+
+C<run> is a synonym for C<launch>.  You must C<launch> (or C<run>)
+your guest before mounting or performing any other commands.
+
+The only exception is that if the C<-m> or C<--mount> option was
+given, the guest is automatically run for you (simply because
+guestfish can't mount the disks you asked for without doing this).
+
+=head1 QUOTING
+
+You can quote ordinary parameters using either single or double
+quotes.  For example:
+
+ add "file with a space.img"
+
+ rm '/file name'
+
+ rm '/"'
+
+A few commands require a list of strings to be passed.  For these, use
+a space-separated list, enclosed in quotes.  For example:
+
+ vgcreate VG "/dev/sda1 /dev/sdb1"
+
+=head1 COMMENTS
+
+Any line which starts with a I<#> character is treated as a comment
+and ignored.  The I<#> can optionally be preceeded by whitespace,
+but B<not> by a command.  For example:
+
+ # this is a comment
+         # this is a comment
+ foo # NOT a comment
+
+Blank lines are also ignored.
+
+=head1 RUNNING COMMANDS LOCALLY
+
+Any line which starts with a I<!> character is treated as a command
+sent to the local shell (C</bin/sh> or whatever L<system(3)> uses).
+For example:
+
+ !mkdir local
+ tgz-out /remote local/remote-data.tar.gz
+
+will create a directory C<local> on the host, and then export
+the contents of C</remote> on the mounted filesystem to
+C<local/remote-data.tar.gz>.  (See C<tgz-out>).
+
+=head1 EXIT ON ERROR BEHAVIOUR
+
+By default, guestfish will ignore any errors when in interactive mode
+(ie. taking commands from a human over a tty), and will exit on the
+first error in non-interactive mode (scripts, commands given on the
+command line).
+
+If you prefix a command with a I<-> character, then that command will
+not cause guestfish to exit, even if that (one) command returns an
+error.
+
+=head1 COMMANDS
+
+=head2 help
+
+ help
+ help cmd
+
+Without any parameter, this lists all commands.  With a C<cmd>
+parameter, this displays detailed help for a command.
+
+=head2 quit | exit
+
+This exits guestfish.  You can also use C<^D> key.
+
+=head2 alloc | allocate
+
+ alloc filename size
+
+This creates an empty (zeroed) file of the given size, and then adds
+so it can be further examined.
+
+For more advanced image creation, see L<qemu-img(1)> utility.
+
+Size can be specified (where C<nn> means a number):
+
+=over 4
+
+=item C<nn> or C<nn>K or C<nn>KB
+
+number of kilobytes, eg: C<1440> = standard 3.5in floppy
+
+=item C<nn>M or C<nn>MB
+
+number of megabytes
+
+=item C<nn>G or C<nn>GB
+
+number of gigabytes
+
+=item C<nn>sects
+
+number of 512 byte sectors
+
+=back
+
+=head2 echo
+
+ echo [params ...]
+
+This echos the parameters to the terminal.
+
+=head2 edit | vi | emacs
+
+ edit filename
+
+This is used to edit a file.  It downloads the file, edits it
+locally using your editor, then uploads the result.
+
+The editor is C<$EDITOR>.  However if you use the alternate
+commands C<vi> or C<emacs> you will get those corresponding
+editors.
+
+NOTE: This will not work reliably for large files
+(> 2 MB) or binary files containing \0 bytes.
+
+@ACTIONS@
+
+=head1 ENVIRONMENT VARIABLES
+
+=over 4
+
+=item LIBGUESTFS_DEBUG
+
+Set C<LIBGUESTFS_DEBUG=1> to enable verbose messages.  This has the
+same effect as using the B<-v> option.
+
+=item LIBGUESTFS_PATH
+
+Set the path that guestfish uses to search for kernel and initrd.img.
+See the discussion of paths in L<guestfs(3)>.
+
+=item LIBGUESTFS_QEMU
+
+Set the default qemu binary that libguestfs uses.  If not set, then
+the qemu which was found at compile time by the configure script is
+used.
+
+=item LIBGUESTFS_APPEND
+
+Pass additional options to the guest kernel.
+
+=item HOME
+
+If compiled with GNU readline support, then the command history
+is saved in C<$HOME/.guestfish>
+
+=item EDITOR
+
+The C<edit> command uses C<$EDITOR> as the editor.  If not
+set, it uses C<vi>.
+
+=back
+
+=head1 EXIT CODE
+
+guestfish returns I<0> if the commands completed without error, or
+I<1> if there was an error.
+
+=head1 SEE ALSO
+
+L<guestfs(3)>,
+L<http://et.redhat.com/~rjones/libguestfs>.
+
+=head1 AUTHORS
+
+Richard W.M. Jones (C<rjones at redhat dot com>)
+
+=head1 COPYRIGHT
+
+Copyright (C) 2009 Red Hat Inc.
+L<http://et.redhat.com/~rjones/libguestfs>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
