@@ -1,3 +1,20 @@
+libguestfs (1.0.54+44git127ad3-1) unstable; urgency=low
+
+  * [4cea8bd] Imported Upstream version 1.0.54+44git127ad3
+  * [c01721f] switch to cdbs:
+        * add doc package
+        * add debug package
+        * add python bindings
+        * drop README.Debian
+        * set maintainer to pkg-libvirt team
+  * [91fafca] don't call configure, leave this to cdbs and make autoconf copy
+    files instead of symlinking so dpkg-source can create a proper .diff.gz
+  * [13207b9] drop .gitignore
+  * [967d228] touch fakeroot.log to indicate the appliance has been built
+  * [3477d95] use AM_MAINTAINER_MODE
+
+ -- Guido Günther <agx@sigxcpu.org>  Thu, 02 Jul 2009 21:49:44 +0200
+
 libguestfs (1.0.41-1) unstable; urgency=low
 
   * New upstream release 1.0.41.
