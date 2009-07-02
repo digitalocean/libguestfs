@@ -48,7 +48,7 @@ input_to_nul (FILE *fp, char *buf, int maxlen)
 }
 
 char **
-do_find (const char *dir)
+do_find (char *dir)
 {
   struct stat statbuf;
   int r, len, sysrootdirlen;
@@ -113,7 +113,11 @@ do_find (const char *dir)
       return NULL;
     }
   }
-  pclose (fp);
+  if (pclose (fp) != 0) {
+    reply_with_perror ("pclose: find");
+    free_stringslen (res, size);
+    return NULL;
+  }
 
   if (r == -1) {
     free_stringslen (res, size);

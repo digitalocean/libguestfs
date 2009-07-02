@@ -37,13 +37,145 @@ error cases.
 
 For virt-inspector:
 
- - Needs a "query mode", like "are (Xen|KVM) PV drivers installed?"
-   "does this guest need a Xen hypervisor?"
-
- - Are PV network drivers enabled (see /etc/modprobe.conf)
-
- - ... and can it boot from a PV driver (have to look inside the initrd)
-
  - Make a libvirt XML config
 
  - Test over available OSes
+
+ - Add 'reged' / NT registry support.
+
+----------------------------------------------------------------------
+
+Use virtio_blk by default.  It's faster and more natural.
+Unfortunately it seems like this will rename all devices - see next
+item.
+
+Note: virtio_blk *IS* supported by all our minimum platforms,
+ie. CentOS 5.3, Fedora 11, Debian.
+
+----------------------------------------------------------------------
+
+"Standalone/local mode"
+
+Instead of running guestfsd (the daemon) inside qemu, there should be
+an option to just run guestfsd directly.
+
+The architecture in this mode would look like:
+
+     +------------------+
+     | main program     |
+     |------------------|
+     | libguestfs       |
+     +--------^---------+
+          |   | reply
+      cmd |   |
+     +----v-------------+
+     | guestfsd         |
+     +------------------+
+
+Notes:
+
+(1) This only makes sense if we are running as root.
+
+(2) There is no console / kernel messages in this configuration, but
+we might consider capturing stderr from the daemon.
+
+(3) guestfs_config and guestfs_add_drive become no-ops.
+
+Obviously in this configuration, commands are run directly on the
+local machine's disks.  You could just run the commands themselves
+directly, but libguestfs provides a convenient API and language
+bindings.  Also deals with tricky stuff like parsing the output of the
+LVM commands.  Also we get to leverage other code such as
+virt-inspector.
+
+This is mainly useful from live CDs, ie. virt-p2v.
+
+Should we bother having the daemon at all and just link the guestfsd
+code directly into libguestfs?
+
+----------------------------------------------------------------------
+
+PPC problems:
+
+  ppc (32 bit) works with qemu from git, however there is no serial console
+
+  ppc64 requires extra parameters:
+    -M mac99 -cpu ppc64
+  however it still fails:
+    invalid/unsupported opcode: 01 - 01 - 1a (06301e83) 00000000018c2738 1
+    invalid bits: 00400000 for opcode: 0b - 19 - 15 (2d746572) 0000000000009230
+
+  no serial console in ppc or ppc64 because no one can tell us what
+  console=ttyXX option to use
+
+----------------------------------------------------------------------
+
+Supermin appliance should be moved into febootstrap.
+
+----------------------------------------------------------------------
+
+Extra commands / functionality:
+
+  General glibc / core programs:
+    chgrp
+    grep (do it locally using pipe?)
+    dd (?)
+    ln / ln -s
+    readlink
+    utime / utimes / futimes / futimens / l..
+    more mk*temp calls
+    readdir / readdir-and-stat
+    some sort of alloc/fallocate/posix_fallocate call to create empty space
+    realpath
+    trunc[ate??]
+    getfattr (also useful because gives us access to NTFS datastreams)
+    setfattr
+
+  ext2 properties:
+    chattr
+    lsattr
+    badblocks
+    blkid
+    debugfs
+    dumpe2fs
+    e2image
+    e2undo
+    filefrag
+    findfs
+    logsave
+    mklost+found
+
+  SELinux:
+    chcat
+    restorecon
+    ch???
+
+  Oddball:
+    pivot_root
+    fts(3) / ftw(3)
+
+----------------------------------------------------------------------
+
+Allow swap space from the guest to be used.  Is it a good idea?
+
+----------------------------------------------------------------------
+
+Need a way to query a binary or library file for its architecture.
+Using objdump or readelf?
+What about non-ELF files (eg. Windows, BSD).
+
+To do this properly requires some serious logic, eg. to cover Linux
+and Windows we'd need objdump and i686-pc-mingw32-objdump, and more to
+cover a.out, COFF and 64 bit Windows.  Therefore this cannot be done
+inside the daemon, and should be done by a separate, external program
+similar to virt-inspector.
+
+Probably we should go all the way and have virt-inspector able to
+determine kernel and userspace architectures of guests.
+
+----------------------------------------------------------------------
+
+Other initrd-* commands, such as:
+
+initrd-extract
+initrd-replace

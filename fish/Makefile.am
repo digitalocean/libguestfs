@@ -21,10 +21,15 @@ guestfish_SOURCES = \
 	alloc.c \
 	cmds.c \
 	completion.c \
+	destpaths.c \
 	echo.c \
 	edit.c \
 	fish.c \
-	fish.h
+	fish.h \
+	glob.c \
+	lcd.c \
+	more.c
+
 guestfish_CFLAGS = \
 	-I$(top_builddir)/src -Wall \
 	-DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"'

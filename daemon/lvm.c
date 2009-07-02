@@ -171,10 +171,12 @@ do_lvs_full (void)
 }
 
 int
-do_pvcreate (const char *device)
+do_pvcreate (char *device)
 {
   char *err;
   int r;
+
+  IS_DEVICE (device, -1);
 
   r = command (NULL, &err,
 	       "/sbin/lvm", "pvcreate", device, NULL);
@@ -185,15 +187,22 @@ do_pvcreate (const char *device)
   }
 
   free (err);
+
+  udev_settle ();
+
   return 0;
 }
 
 int
-do_vgcreate (const char *volgroup, char * const* const physvols)
+do_vgcreate (char *volgroup, char **physvols)
 {
   char *err;
   int r, argc, i;
   const char **argv;
+
+  /* Check they are devices and also do device name translation. */
+  for (i = 0; physvols[i] != NULL; ++i)
+    IS_DEVICE (physvols[i], -1);
 
   argc = count_strings (physvols) + 3;
   argv = malloc (sizeof (char *) * (argc + 1));
@@ -215,11 +224,14 @@ do_vgcreate (const char *volgroup, char * const* const physvols)
   }
 
   free (err);
+
+  udev_settle ();
+
   return 0;
 }
 
 int
-do_lvcreate (const char *logvol, const char *volgroup, int mbytes)
+do_lvcreate (char *logvol, char *volgroup, int mbytes)
 {
   char *err;
   int r;
@@ -237,11 +249,14 @@ do_lvcreate (const char *logvol, const char *volgroup, int mbytes)
   }
 
   free (err);
+
+  udev_settle ();
+
   return 0;
 }
 
 int
-do_lvresize (const char *logvol, int mbytes)
+do_lvresize (char *logvol, int mbytes)
 {
   char *err;
   int r;
@@ -325,15 +340,19 @@ do_lvm_remove_all (void)
   }
   free_strings (xs);
 
+  udev_settle ();
+
   /* There, that was easy, sorry about your data. */
   return 0;
 }
 
 int
-do_lvremove (const char *device)
+do_lvremove (char *device)
 {
   char *err;
   int r;
+
+  IS_DEVICE (device, -1);
 
   r = command (NULL, &err,
 	       "/sbin/lvm", "lvremove", "-f", device, NULL);
@@ -344,11 +363,14 @@ do_lvremove (const char *device)
   }
 
   free (err);
+
+  udev_settle ();
+
   return 0;
 }
 
 int
-do_vgremove (const char *device)
+do_vgremove (char *device)
 {
   char *err;
   int r;
@@ -362,14 +384,19 @@ do_vgremove (const char *device)
   }
 
   free (err);
+
+  udev_settle ();
+
   return 0;
 }
 
 int
-do_pvremove (const char *device)
+do_pvremove (char *device)
 {
   char *err;
   int r;
+
+  IS_DEVICE (device, -1);
 
   r = command (NULL, &err,
 	       "/sbin/lvm", "pvremove", "-ff", device, NULL);
@@ -380,14 +407,19 @@ do_pvremove (const char *device)
   }
 
   free (err);
+
+  udev_settle ();
+
   return 0;
 }
 
 int
-do_pvresize (const char *device)
+do_pvresize (char *device)
 {
   char *err;
   int r;
+
+  IS_DEVICE (device, -1);
 
   r = command (NULL, &err,
 	       "/sbin/lvm", "pvresize", device, NULL);
@@ -402,7 +434,7 @@ do_pvresize (const char *device)
 }
 
 int
-do_vg_activate (int activate, char * const* const volgroups)
+do_vg_activate (int activate, char **volgroups)
 {
   char *err;
   int r, i, argc;
@@ -430,6 +462,9 @@ do_vg_activate (int activate, char * const* const volgroups)
   }
 
   free (err);
+
+  udev_settle ();
+
   return 0;
 }
 

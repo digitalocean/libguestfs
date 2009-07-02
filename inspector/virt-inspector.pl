@@ -23,9 +23,14 @@ use Sys::Guestfs;
 use Pod::Usage;
 use Getopt::Long;
 use Data::Dumper;
+use File::Temp qw/tempdir/;
+use XML::Writer;
 
 # Optional:
 eval "use Sys::Virt;";
+eval "use XML::XPath;";
+eval "use XML::XPath::XMLParser;";
+eval "use YAML::Any;";
 
 =encoding utf8
 
@@ -101,40 +106,79 @@ my $force;
 
 =item B<--force>
 
-Force reading a particular guest even if it appears to
-be active, or if the guest image is writable.  This is
-dangerous and can even corrupt the guest image.
+Force reading a particular guest even if it appears to be active.  In
+earlier versions of virt-inspector, this could be dangerous (for
+example, corrupting the guest's disk image).  However in more recent
+versions, it should not cause corruption, but might cause
+virt-inspector to crash or produce incorrect results.
 
 =cut
 
 my $output = "text";
 
+=back
+
+The following options select the output format.  Use only one of them.
+The default is a readable text report.
+
+=over 4
+
 =item B<--text> (default)
+
+Plain text report.
+
+=item B<--none>
+
+Produce no output at all.
 
 =item B<--xml>
 
+If you select I<--xml> then you get XML output which can be fed
+to other programs.
+
+=item B<--yaml>
+
+If you select I<--yaml> then you get YAML output which can be fed
+to other programs.
+
 =item B<--perl>
+
+If you select I<--perl> then you get Perl structures output which
+can be used directly in another Perl program.
 
 =item B<--fish>
 
 =item B<--ro-fish>
 
-Select the output format.  The default is a readable text report.
-
-If you select I<--xml> then you get XML output which can be fed
-to other programs.
-
-If you select I<--perl> then you get Perl structures output which
-can be used directly in another Perl program.
-
 If you select I<--fish> then we print a L<guestfish(1)> command
 line which will automatically mount up the filesystems on the
 correct mount points.  Try this for example:
 
- eval `virt-inspector --fish guest.img`
+ guestfish $(virt-inspector --fish guest.img)
 
 I<--ro-fish> is the same, but the I<--ro> option is passed to
 guestfish so that the filesystems are mounted read-only.
+
+=item B<--query>
+
+In "query mode" we answer common questions about the guest, such
+as whether it is fullvirt or needs a Xen hypervisor to run.
+
+See section I<QUERY MODE> below.
+
+=cut
+
+my $windows_registry;
+
+=item B<--windows-registry>
+
+If this item is passed, I<and> the guest is Windows, I<and> the
+external program C<reged> is available (see SEE ALSO section), then we
+attempt to parse the Windows registry.  This allows much more
+information to be gathered for Windows guests.
+
+This is quite an expensive and slow operation, so we don't do it by
+default.
 
 =back
 
@@ -143,13 +187,18 @@ guestfish so that the filesystems are mounted read-only.
 GetOptions ("help|?" => \$help,
 	    "connect|c=s" => \$uri,
 	    "force" => \$force,
+	    "text" => sub { $output = "text" },
+	    "none" => sub { $output = "none" },
 	    "xml" => sub { $output = "xml" },
+	    "yaml" => sub { $output = "yaml" },
 	    "perl" => sub { $output = "perl" },
 	    "fish" => sub { $output = "fish" },
 	    "guestfish" => sub { $output = "fish" },
 	    "ro-fish" => sub { $output = "ro-fish" },
-	    "ro-guestfish" => sub { $output = "ro-fish" })
-    or pod2usage (2);
+	    "ro-guestfish" => sub { $output = "ro-fish" },
+	    "query" => sub { $output = "query" },
+	    "windows-registry" => \$windows_registry,
+    ) or pod2usage (2);
 pod2usage (1) if $help;
 pod2usage ("$0: no image or VM names given") if @ARGV == 0;
 
@@ -159,23 +208,16 @@ my @images;
 if (-e $ARGV[0]) {
     @images = @ARGV;
 
-    # Until we get an 'add_drive_ro' call, we must check that qemu
-    # will only open this image in readonly mode.
-    # XXX Remove this hack at some point ...  or at least push it
-    # into libguestfs.
-
     foreach (@images) {
 	if (! -r $_) {
 	    die "guest image $_ does not exist or is not readable\n"
-	} elsif (-w $_ && !$force) {
-	    die ("guest image $_ is writable! REFUSING TO PROCEED.\n".
-		 "You can use --force to override this BUT that action\n".
-		 "MAY CORRUPT THE DISK IMAGE.\n");
-        }
+	}
     }
 } else {
-    die "no libvirt support (install Sys::Virt)"
-	unless exists $INC{"Sys/Virt.pm"};
+    die "virt-inspector: no libvirt support (install Sys::Virt, XML::XPath and XML::XPath::XMLParser)\n"
+	unless exists $INC{"Sys/Virt.pm"} &&
+	exists $INC{"XML/XPath.pm"} &&
+	exists $INC{"XML/XPath/XMLParser.pm"};
 
     pod2usage ("$0: too many domains listed on command line") if @ARGV > 1;
 
@@ -188,6 +230,13 @@ if (-e $ARGV[0]) {
     die "cannot connect to libvirt $uri\n" unless $vmm;
 
     my @doms = $vmm->list_defined_domains ();
+    my $isitinactive = "an inactive libvirt domain";
+    if ($output ne "fish") {
+	# In the special case where we want read-only access to
+	# a domain, allow the user to specify an active domain too.
+	push @doms, $vmm->list_domains ();
+	$isitinactive = "a libvirt domain";
+    }
     my $dom;
     foreach (@doms) {
 	if ($_->get_name () eq $ARGV[0]) {
@@ -195,20 +244,14 @@ if (-e $ARGV[0]) {
 	    last;
 	}
     }
-    die "$ARGV[0] is not the name of an inactive libvirt domain\n"
-	unless $dom;
+    die "$ARGV[0] is not the name of $isitinactive\n" unless $dom;
 
     # Get the names of the image(s).
     my $xml = $dom->get_xml_description ();
 
-    my $p = new XML::XPath::XMLParser (xml => $xml);
-    my $disks = $p->find ("//devices/disk");
-    print "disks:\n";
-    foreach ($disks->get_nodelist) {
-	print XML::XPath::XMLParser::as_string($_);
-    }
-
-    die "XXX"
+    my $p = XML::XPath->new (xml => $xml);
+    my @disks = $p->findnodes ('//devices/disk/source/@dev');
+    @images = map { $_->getData } @disks;
 }
 
 # We've now got the list of @images, so feed them to libguestfs.
@@ -269,7 +312,7 @@ L<guestfish(1)> command line parameters, so that you can go in
 afterwards and inspect the guest with everything mounted in the
 right place.  For example:
 
- eval `virt-inspector --ro-fish guest.img`
+ guestfish $(virt-inspector --ro-fish guest.img)
  ==> guestfish --ro -a guest.img -m /dev/VG/LV:/ -m /dev/sda1:/boot
 
 =cut
@@ -361,6 +404,7 @@ sub check_fs {
 	    $g->is_file ("/autoexec.bat") ||
 	    $g->is_dir ("/Program Files") ||
 	    $g->is_dir ("/WINDOWS") ||
+	    $g->is_file ("/boot.ini") ||
 	    $g->is_file ("/ntldr")) {
 	    $r{fstype} = "ntfs"; # XXX this is a guess
 	    $r{fsos} = "windows";
@@ -429,12 +473,143 @@ sub check_linux_root
     }
 }
 
+# We only support NT.  The control file /boot.ini contains a list of
+# Windows installations and their %systemroot%s in a simple text
+# format.
+#
+# XXX We could parse this better.  This won't work if /boot.ini is on
+# a different drive from the %systemroot%, and in other unusual cases.
+
 sub check_windows_root
 {
     local $_;
     my $r = shift;
 
-    # Windows version?
+    my $boot_ini = resolve_windows_path ("/", "boot.ini");
+    $r->{boot_ini} = $boot_ini;
+
+    if (defined $r->{boot_ini}) {
+	$_ = $g->cat ($boot_ini);
+	my @lines = split /\n/;
+	my $section;
+	my $systemroot;
+	foreach (@lines) {
+	    if (m/\[.*\]/) {
+		$section = $1;
+	    } elsif (m/^default=.*?\\(\w+)$/i) {
+		$systemroot = $1;
+		last;
+	    } elsif (m/\\(\w+)=/) {
+		$systemroot = $1;
+		last;
+	    }
+	}
+
+	if (defined $systemroot) {
+	    $r->{systemroot} = resolve_windows_path ("/", $systemroot);
+	    if (defined $r->{systemroot} && $windows_registry) {
+		check_windows_registry ($r, $r->{systemroot});
+	    }
+	}
+    }
+}
+
+sub check_windows_registry
+{
+    local $_;
+    my $r = shift;
+    my $systemroot = shift;
+
+    # Download the system registry files.  Only download the
+    # interesting ones, and we don't bother with user profiles at all.
+    my $system32 = resolve_windows_path ($systemroot, "system32");
+    if (defined $system32) {
+	my $config = resolve_windows_path ($system32, "config");
+	if (defined $config) {
+	    my $software = resolve_windows_path ($config, "software");
+	    if (defined $software) {
+		load_windows_registry ($r, $software,
+				       "HKEY_LOCAL_MACHINE\\SOFTWARE");
+	    }
+	    my $system = resolve_windows_path ($config, "system");
+	    if (defined $system) {
+		load_windows_registry ($r, $system,
+				       "HKEY_LOCAL_MACHINE\\System");
+	    }
+	}
+    }
+}
+
+sub load_windows_registry
+{
+    local $_;
+    my $r = shift;
+    my $regfile = shift;
+    my $prefix = shift;
+
+    my $dir = tempdir (CLEANUP => 1);
+
+    $g->download ($regfile, "$dir/reg");
+
+    # 'reged' command is particularly noisy.  Redirect stdout and
+    # stderr to /dev/null temporarily.
+    open SAVEOUT, ">&STDOUT";
+    open SAVEERR, ">&STDERR";
+    open STDOUT, ">/dev/null";
+    open STDERR, ">/dev/null";
+
+    my @cmd = ("reged", "-x", "$dir/reg", "$prefix", "\\", "$dir/out");
+    my $res = system (@cmd);
+
+    close STDOUT;
+    close STDERR;
+    open STDOUT, ">&SAVEOUT";
+    open STDERR, ">&SAVEERR";
+    close SAVEOUT;
+    close SAVEERR;
+
+    unless ($res == 0) {
+	warn "reged command failed: $?";
+	return;
+    }
+
+    # Some versions of reged segfault on inputs.  If that happens we
+    # may get no / partial output file.  Anyway, if it exists, load
+    # it.
+    my $content;
+    unless (open F, "$dir/out") {
+	warn "no output from reged command: $!";
+	return;
+    }
+    { local $/ = undef; $content = <F>; }
+    close F;
+
+    my @registry = ();
+    @registry = @{$r->{registry}} if exists $r->{registry};
+    push @registry, $content;
+    $r->{registry} = \@registry;
+}
+
+# Because of case sensitivity, the actual path might have a different
+# name, and ntfs-3g is always case sensitive.  Find out what the real
+# path is.  Returns the correct full path, or undef.
+sub resolve_windows_path
+{
+    local $_;
+    my $parent = shift;		# Must exist, with correct case.
+    my $dir = shift;
+
+    foreach ($g->ls ($parent)) {
+	if (lc ($_) eq lc ($dir)) {
+	    if ($parent eq "/") {
+		return "/$_"
+	    } else {
+		return "$parent/$_"
+	    }
+	}
+    }
+
+    undef;
 }
 
 sub check_grub
@@ -497,6 +672,7 @@ sub assign_mount_points
 		} else {
 		    $fs->{used} = 1
 	        }
+                $fs->{spec} = $spec;
 	    }
 	}
     }
@@ -530,6 +706,12 @@ sub find_filesystem
     } else {
 	return ($_, $fses{$_}) if exists $fses{$_};
 
+        # The following is to handle the case where an fstab entry specifies a
+        # specific device rather than its label or uuid, and the libguestfs
+        # appliance has named the device differently due to the use of a
+        # different driver.
+        # This will work as long as the underlying drivers recognise devices in
+        # the same order.
 	if (m{^/dev/hd(.*)} && exists $fses{"/dev/sd$1"}) {
 	    return ("/dev/sd$1", $fses{"/dev/sd$1"});
 	}
@@ -564,6 +746,10 @@ if ($output !~ /.*fish$/) {
 
 	check_for_applications ($root_dev);
 	check_for_kernels ($root_dev);
+	if ($oses{$root_dev}->{os} eq "linux") {
+	    check_for_modprobe_aliases ($root_dev);
+	    check_for_initrd ($root_dev);
+	}
 
 	$g->umount_all ();
     }
@@ -579,10 +765,11 @@ sub check_for_applications
     my $os = $oses{$root_dev}->{os};
     if ($os eq "linux") {
 	my $distro = $oses{$root_dev}->{distro};
-	if ($distro eq "redhat") {
+	if (defined $distro && ($distro eq "redhat" || $distro eq "fedora")) {
 	    my @lines = $g->command_lines
-		(["rpm", "-q", "-a", "--qf",
-		  "%{name} %{epoch} %{version} %{release} %{arch}\n"]);
+		(["rpm",
+		  "-q", "-a",
+		  "--qf", "%{name} %{epoch} %{version} %{release} %{arch}\n"]);
 	    foreach (@lines) {
 		if (m/^(.*) (.*) (.*) (.*) (.*)$/) {
 		    my $epoch = $2;
@@ -630,7 +817,7 @@ sub check_for_kernels
 		# List modules.
 		my @modules;
 		foreach ($g->find ("/lib/modules/$_")) {
-		    if (m,/([^/]+)\.ko,) {
+		    if (m,/([^/]+)\.ko$, || m,([^/]+)\.o$,) {
 			push @modules, $1;
 		    }
 		}
@@ -648,6 +835,105 @@ sub check_for_kernels
     $oses{$root_dev}->{kernels} = \@kernels;
 }
 
+# Check /etc/modprobe.conf to see if there are any specified
+# drivers associated with network (ethX) or hard drives.  Normally
+# one might find something like:
+#
+#  alias eth0 xennet
+#  alias scsi_hostadapter xenblk
+#
+# XXX This doesn't look beyond /etc/modprobe.conf, eg. in /etc/modprobe.d/
+
+sub check_for_modprobe_aliases
+{
+    local $_;
+    my $root_dev = shift;
+
+    # Initialise augeas
+    my $success = 0;
+    $success = $g->aug_init("/", 16);
+
+    # Register /etc/modules.conf and /etc/conf.modules to the Modprobe lens
+    my @results;
+    @results = $g->aug_match("/augeas/load/Modprobe/incl");
+
+    # Calculate the next index of /augeas/load/Modprobe/incl
+    my $i = 1;
+    foreach ( @results ) {
+        next unless m{/augeas/load/Modprobe/incl\[(\d*)]};
+        $i = $1 + 1 if ($1 == $i);
+    }
+
+    $success = $g->aug_set("/augeas/load/Modprobe/incl[$i]",
+                           "/etc/modules.conf");
+    $i++;
+    $success = $g->aug_set("/augeas/load/Modprobe/incl[$i]",
+                                  "/etc/conf.modules");
+
+    # Make augeas reload
+    $success = $g->aug_load();
+
+    my %modprobe_aliases;
+
+    for my $pattern qw(/files/etc/conf.modules/alias
+                       /files/etc/modules.conf/alias
+                       /files/etc/modprobe.conf/alias
+                       /files/etc/modprobe.d/*/alias) {
+        @results = $g->aug_match($pattern);
+
+        for my $path ( @results ) {
+            $path =~ m{^/files(.*)/alias(?:\[\d*\])?$}
+                or die("$path doesn't match augeas pattern");
+            my $file = $1;
+
+            my $alias;
+            $alias = $g->aug_get($path);
+
+            my $modulename;
+            $modulename = $g->aug_get($path.'/modulename');
+
+            my %aliasinfo;
+            $aliasinfo{modulename} = $modulename;
+            $aliasinfo{augeas} = $path;
+            $aliasinfo{file} = $file;
+
+            $modprobe_aliases{$alias} = \%aliasinfo;
+        }
+    }
+
+    $oses{$root_dev}->{modprobe_aliases} = \%modprobe_aliases;
+}
+
+# Get a listing of device drivers in any initrd corresponding to a
+# kernel.  This is an indication of what can possibly be booted.
+
+sub check_for_initrd
+{
+    local $_;
+    my $root_dev = shift;
+
+    my %initrd_modules;
+
+    foreach my $initrd ($g->ls ("/boot")) {
+	if ($initrd =~ m/^initrd-(.*)\.img$/ && $g->is_file ("/boot/$initrd")) {
+	    my $version = $1;
+	    my @modules;
+
+	    eval {
+		@modules = $g->initrd_list ("/boot/$initrd");
+	    };
+	    unless ($@) {
+		@modules = grep { m,([^/]+)\.ko$, || m,([^/]+)\.o$, } @modules;
+		$initrd_modules{$version} = \@modules
+	    } else {
+		warn "/boot/$initrd: could not read initrd format"
+	    }
+	}
+    }
+
+    $oses{$root_dev}->{initrd_modules} = \%initrd_modules;
+}
+
 #----------------------------------------------------------------------
 # Output.
 
@@ -658,18 +944,17 @@ if ($output eq "fish" || $output eq "ro-fish") {
 
     my $root_dev = $osdevs[0];
 
-    print "guestfish";
     if ($output eq "ro-fish") {
-	print " --ro";
+	print "--ro ";
     }
 
-    print " -a $_" foreach @images;
+    print "-a $_ " foreach @images;
 
     my $mounts = $oses{$root_dev}->{mounts};
     # Have to mount / first.  Luckily '/' is early in the ASCII
     # character set, so this should be OK.
     foreach (sort keys %$mounts) {
-	print " -m $mounts->{$_}:$_" if $_ ne "swap";
+	print "-m $mounts->{$_}:$_ " if $_ ne "swap";
     }
     print "\n"
 }
@@ -677,6 +962,14 @@ if ($output eq "fish" || $output eq "ro-fish") {
 # Perl output.
 elsif ($output eq "perl") {
     print Dumper(\%oses);
+}
+
+# YAML output
+elsif ($output eq "yaml") {
+    die "virt-inspector: no YAML support\n"
+	unless exists $INC{"YAML/Any.pm"};
+    
+    print Dump(\%oses);
 }
 
 # Plain text output (the default).
@@ -687,6 +980,11 @@ elsif ($output eq "text") {
 # XML output.
 elsif ($output eq "xml") {
     output_xml ();
+}
+
+# Query mode.
+elsif ($output eq "query") {
+    output_query ();
 }
 
 sub output_text
@@ -723,6 +1021,30 @@ sub output_text_os
 	    if exists $filesystems->{$_}{content};
     }
 
+    if (exists $os->{modprobe_aliases}) {
+	my %aliases = %{$os->{modprobe_aliases}};
+	my @keys = sort keys %aliases;
+	if (@keys) {
+	    print "  Modprobe aliases:\n";
+	    foreach (@keys) {
+		printf "    %-30s %s\n", $_, $aliases{$_}->{modulename}
+	    }
+	}
+    }
+
+    if (exists $os->{initrd_modules}) {
+	my %modvers = %{$os->{initrd_modules}};
+	my @keys = sort keys %modvers;
+	if (@keys) {
+	    print "  Initrd modules:\n";
+	    foreach (@keys) {
+		my @modules = @{$modvers{$_}};
+		print "    $_:\n";
+		print "      $_\n" foreach @modules;
+	    }
+	}
+    }
+
     print "  Applications:\n";
     my @apps =  @{$os->{apps}};
     foreach (@apps) {
@@ -738,83 +1060,356 @@ sub output_text_os
 	    print "      $_\n";
 	}
     }
+
+    if (exists $os->{root}->{registry}) {
+	print "  Windows Registry entries:\n";
+	# These are just lumps of text - dump them out.
+	foreach (@{$os->{root}->{registry}}) {
+	    print "$_\n";
+	}
+    }
 }
 
 sub output_xml
 {
-    print "<operatingsystems>\n";
-    output_xml_os ($oses{$_}) foreach sort keys %oses;
-    print "</operatingsystems>\n";
+    my $xml = new XML::Writer(DATA_MODE => 1, DATA_INDENT => 2);
+
+    $xml->startTag("operatingsystems");
+    output_xml_os ($oses{$_}, $xml) foreach sort keys %oses;
+    $xml->endTag("operatingsystems");
+
+    $xml->end();
 }
 
 sub output_xml_os
 {
-    my $os = shift;
+    my ($os, $xml) = @_;
 
-    print "<operatingsystem>\n";
+    $xml->startTag("operatingsystem");
 
-    print "<os>", $os->{os}, "</os>\n" if exists $os->{os};
-    print "<distro>", $os->{distro}, "</distro>\n" if exists $os->{distro};
-    print "<version>", $os->{version}, "</version>\n" if exists $os->{version};
-    print "<root>", $os->{root_device}, "</root>\n";
+    foreach ( [ "name" => "os" ],
+              [ "distro" => "distro" ],
+              [ "version" => "version" ],
+              [ "root" => "root_device" ] ) {
+        $xml->dataElement($_->[0], $os->{$_->[1]}) if exists $os->{$_->[1]};
+    }
 
-    print "<mountpoints>\n";
+    $xml->startTag("mountpoints");
     my $mounts = $os->{mounts};
     foreach (sort keys %$mounts) {
-	printf "<mountpoint dev='%s'>%s</mountpoint>\n",
-	  $mounts->{$_}, $_
+        $xml->dataElement("mountpoint", $_, "dev" => $mounts->{$_});
     }
-    print "</mountpoints>\n";
+    $xml->endTag("mountpoints");
 
-    print "<filesystems>\n";
+    $xml->startTag("filesystems");
     my $filesystems = $os->{filesystems};
     foreach (sort keys %$filesystems) {
-	print "<filesystem dev='$_'>\n";
-	print "<label>$filesystems->{$_}{label}</label>\n"
-	    if exists $filesystems->{$_}{label};
-	print "<uuid>$filesystems->{$_}{uuid}</uuid>\n"
-	    if exists $filesystems->{$_}{uuid};
-	print "<type>$filesystems->{$_}{fstype}</type>\n"
-	    if exists $filesystems->{$_}{fstype};
-	print "<content>$filesystems->{$_}{content}</content>\n"
-	    if exists $filesystems->{$_}{content};
-	print "</filesystem>\n";
-    }
-    print "</filesystems>\n";
+        $xml->startTag("filesystem", "dev" => $_);
 
-    print "<applications>\n";
+        foreach my $field ( [ "label" => "label" ],
+                            [ "uuid" => "uuid" ],
+                            [ "type" => "fstype" ],
+                            [ "content" => "content" ],
+                            [ "spec" => "spec" ] ) {
+            $xml->dataElement($field->[0], $filesystems->{$_}{$field->[1]})
+                if exists $filesystems->{$_}{$field->[1]};
+        }
+
+        $xml->endTag("filesystem");
+    }
+    $xml->endTag("filesystems");
+
+    if (exists $os->{modprobe_aliases}) {
+	my %aliases = %{$os->{modprobe_aliases}};
+	my @keys = sort keys %aliases;
+	if (@keys) {
+            $xml->startTag("modprobealiases");
+	    foreach (@keys) {
+                $xml->startTag("alias", "device" => $_);
+
+                foreach my $field ( [ "modulename" => "modulename" ],
+                                    [ "augeas" => "augeas" ],
+                                    [ "file" => "file" ] ) {
+                    $xml->dataElement($field->[0], $aliases{$_}->{$field->[1]});
+                }
+
+                $xml->endTag("alias");
+	    }
+            $xml->endTag("modprobealiases");
+	}
+    }
+
+    if (exists $os->{initrd_modules}) {
+	my %modvers = %{$os->{initrd_modules}};
+	my @keys = sort keys %modvers;
+	if (@keys) {
+            $xml->startTag("initrds");
+	    foreach (@keys) {
+		my @modules = @{$modvers{$_}};
+                $xml->startTag("initrd", "version" => $_);
+                $xml->dataElement("module", $_) foreach @modules;
+                $xml->endTag("initrd");
+	    }
+            $xml->endTag("initrds");
+	}
+    }
+
+    $xml->startTag("applications");
     my @apps =  @{$os->{apps}};
     foreach (@apps) {
-	print "<application>\n";
-	print "<name>$_->{name}</name><version>$_->{version}</version>\n";
-	print "</application>\n";
+        $xml->startTag("application");
+        $xml->dataElement("name", $_->{name});
+        $xml->dataElement("version", $_->{version});
+        $xml->endTag("application");
     }
-    print "</applications>\n";
+    $xml->endTag("applications");
 
-    print "<kernels>\n";
+    $xml->startTag("kernels");
     my @kernels = @{$os->{kernels}};
     foreach (@kernels) {
-	print "<kernel>\n";
-	print "<version>$_->{version}</version>\n";
-	print "<modules>\n";
+        $xml->startTag("kernel", "version" => $_->{version});
+        $xml->startTag("modules");
 	my @modules = @{$_->{modules}};
 	foreach (@modules) {
-	    print "<module>$_</module>\n";
+            $xml->dataElement("module", $_);
 	}
-	print "</modules>\n";
-	print "</kernel>\n";
+        $xml->endTag("modules");
+        $xml->endTag("kernel");
     }
-    print "</kernels>\n";
+    $xml->endTag("kernels");
 
-    print "</operatingsystem>\n";
+    if (exists $os->{root}->{registry}) {
+        $xml->startTag("windowsregistryentries");
+	# These are just lumps of text - dump them out.
+	foreach (@{$os->{root}->{registry}}) {
+            $xml->dataElement("windowsregistryentry", $_);
+	}
+        $xml->endTag("windowsregistryentries");
+    }
+
+    $xml->endTag("operatingsystem");
 }
+
+=head1 QUERY MODE
+
+When you use C<virt-inspector --query>, the output is a series of
+lines of the form:
+
+ windows=no
+ linux=yes
+ fullvirt=yes
+ xen_pv_drivers=no
+
+(each answer is usually C<yes> or C<no>, or the line is completely
+missing if we could not determine the answer at all).
+
+If the guest is multiboot, you can get apparently conflicting answers
+(eg. C<windows=yes> and C<linux=yes>, or a guest which is both
+fullvirt and has a Xen PV kernel).  This is normal, and just means
+that the guest can do both things, although it might require operator
+intervention such as selecting a boot option when the guest is
+booting.
+
+This section describes the full range of answers possible.
+
+=over 4
+
+=cut
+
+sub output_query
+{
+    output_query_windows ();
+    output_query_linux ();
+    output_query_rhel ();
+    output_query_fedora ();
+    output_query_debian ();
+    output_query_fullvirt ();
+    output_query_xen_domU_kernel ();
+    output_query_xen_pv_drivers ();
+    output_query_virtio_drivers ();
+}
+
+=item windows=(yes|no)
+
+Answer C<yes> if Microsoft Windows is installed in the guest.
+
+=cut
+
+sub output_query_windows
+{
+    my $windows = "no";
+    foreach my $os (keys %oses) {
+	$windows="yes" if $oses{$os}->{os} eq "windows";
+    }
+    print "windows=$windows\n";
+}
+
+=item linux=(yes|no)
+
+Answer C<yes> if a Linux kernel is installed in the guest.
+
+=cut
+
+sub output_query_linux
+{
+    my $linux = "no";
+    foreach my $os (keys %oses) {
+	$linux="yes" if $oses{$os}->{os} eq "linux";
+    }
+    print "linux=$linux\n";
+}
+
+=item rhel=(yes|no)
+
+Answer C<yes> if the guest contains Red Hat Enterprise Linux.
+
+=cut
+
+sub output_query_rhel
+{
+    my $rhel = "no";
+    foreach my $os (keys %oses) {
+	$rhel="yes" if $oses{$os}->{os} eq "linux" && $oses{$os}->{distro} eq "redhat";
+    }
+    print "rhel=$rhel\n";
+}
+
+=item fedora=(yes|no)
+
+Answer C<yes> if the guest contains the Fedora Linux distribution.
+
+=cut
+
+sub output_query_fedora
+{
+    my $fedora = "no";
+    foreach my $os (keys %oses) {
+	$fedora="yes" if $oses{$os}->{os} eq "linux" && $oses{$os}->{distro} eq "fedora";
+    }
+    print "fedora=$fedora\n";
+}
+
+=item debian=(yes|no)
+
+Answer C<yes> if the guest contains the Debian Linux distribution.
+
+=cut
+
+sub output_query_debian
+{
+    my $debian = "no";
+    foreach my $os (keys %oses) {
+	$debian="yes" if $oses{$os}->{os} eq "linux" && $oses{$os}->{distro} eq "debian";
+    }
+    print "debian=$debian\n";
+}
+
+=item fullvirt=(yes|no)
+
+Answer C<yes> if there is at least one operating system kernel
+installed in the guest which runs fully virtualized.  Such a guest
+would require a hypervisor which supports full system virtualization.
+
+=cut
+
+sub output_query_fullvirt
+{
+    # The assumption is full-virt, unless all installed kernels
+    # are identified as paravirt.
+    # XXX Fails on Windows guests.
+    foreach my $os (keys %oses) {
+	foreach my $kernel (@{$oses{$os}->{kernels}}) {
+	    my $is_pv = $kernel->{version} =~ m/xen/;
+	    unless ($is_pv) {
+		print "fullvirt=yes\n";
+		return;
+	    }
+	}
+    }
+    print "fullvirt=no\n";
+}
+
+=item xen_domU_kernel=(yes|no)
+
+Answer C<yes> if there is at least one Linux kernel installed in
+the guest which is compiled as a Xen DomU (a Xen paravirtualized
+guest).
+
+=cut
+
+sub output_query_xen_domU_kernel
+{
+    foreach my $os (keys %oses) {
+	foreach my $kernel (@{$oses{$os}->{kernels}}) {
+	    my $is_xen = $kernel->{version} =~ m/xen/;
+	    if ($is_xen) {
+		print "xen_domU_kernel=yes\n";
+		return;
+	    }
+	}
+    }
+    print "xen_domU_kernel=no\n";
+}
+
+=item xen_pv_drivers=(yes|no)
+
+Answer C<yes> if the guest has Xen paravirtualized drivers installed
+(usually the kernel itself will be fully virtualized, but the PV
+drivers have been installed by the administrator for performance
+reasons).
+
+=cut
+
+sub output_query_xen_pv_drivers
+{
+    foreach my $os (keys %oses) {
+	foreach my $kernel (@{$oses{$os}->{kernels}}) {
+	    foreach my $module (@{$kernel->{modules}}) {
+		if ($module =~ m/xen-/) {
+		    print "xen_pv_drivers=yes\n";
+		    return;
+		}
+	    }
+	}
+    }
+    print "xen_pv_drivers=no\n";
+}
+
+=item virtio_drivers=(yes|no)
+
+Answer C<yes> if the guest has virtio paravirtualized drivers
+installed.  Virtio drivers are commonly used to improve the
+performance of KVM.
+
+=cut
+
+sub output_query_virtio_drivers
+{
+    foreach my $os (keys %oses) {
+	foreach my $kernel (@{$oses{$os}->{kernels}}) {
+	    foreach my $module (@{$kernel->{modules}}) {
+		if ($module =~ m/virtio_/) {
+		    print "virtio_drivers=yes\n";
+		    return;
+		}
+	    }
+	}
+    }
+    print "virtio_drivers=no\n";
+}
+
+=back
 
 =head1 SEE ALSO
 
 L<guestfs(3)>,
 L<guestfish(1)>,
 L<Sys::Guestfs(3)>,
-L<Sys::Virt(3)>
+L<Sys::Virt(3)>,
+L<http://libguestfs.org/>.
+
+For Windows registry parsing we require the C<reged> program
+from L<http://home.eunet.no/~pnordahl/ntpasswd/>.
 
 =head1 AUTHOR
 
