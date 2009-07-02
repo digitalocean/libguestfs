@@ -36,7 +36,7 @@ fwrite_cb (void *fp_ptr, const void *buf, int len)
 
 /* Has one FileIn parameter. */
 int
-do_tar_in (const char *dir)
+do_tar_in (char *dir)
 {
   int err, r, len;
   FILE *fp;
@@ -88,7 +88,7 @@ do_tar_in (const char *dir)
     return -1;
   }
 
-  if (pclose (fp) == -1) {
+  if (pclose (fp) != 0) {
     err = errno;
     cancel_receive ();
     errno = err;
@@ -101,7 +101,7 @@ do_tar_in (const char *dir)
 
 /* Has one FileOut parameter. */
 int
-do_tar_out (const char *dir)
+do_tar_out (char *dir)
 {
   int r, len;
   FILE *fp;
@@ -150,7 +150,7 @@ do_tar_out (const char *dir)
     return -1;
   }
 
-  if (pclose (fp) == -1) {
+  if (pclose (fp) != 0) {
     perror (dir);
     send_file_end (1);		/* Cancel. */
     return -1;
@@ -162,7 +162,7 @@ do_tar_out (const char *dir)
 
 /* Has one FileIn parameter. */
 int
-do_tgz_in (const char *dir)
+do_tgz_in (char *dir)
 {
   int err, r, len;
   FILE *fp;
@@ -214,7 +214,7 @@ do_tgz_in (const char *dir)
     return -1;
   }
 
-  if (pclose (fp) == -1) {
+  if (pclose (fp) != 0) {
     err = errno;
     cancel_receive ();
     errno = err;
@@ -227,7 +227,7 @@ do_tgz_in (const char *dir)
 
 /* Has one FileOut parameter. */
 int
-do_tgz_out (const char *dir)
+do_tgz_out (char *dir)
 {
   int r, len;
   FILE *fp;
@@ -276,7 +276,7 @@ do_tgz_out (const char *dir)
     return -1;
   }
 
-  if (pclose (fp) == -1) {
+  if (pclose (fp) != 0) {
     perror (dir);
     send_file_end (1);		/* Cancel. */
     return -1;

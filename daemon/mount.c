@@ -39,12 +39,14 @@ int root_mounted = 0;
  */
 
 int
-do_mount_vfs (const char *options, const char *vfstype,
-	      const char *device, const char *mountpoint)
+do_mount_vfs (char *options, char *vfstype,
+	      char *device, char *mountpoint)
 {
   int len, r, is_root;
   char *mp;
   char *error;
+
+  IS_DEVICE (device, -1);
 
   is_root = strcmp (mountpoint, "/") == 0;
 
@@ -69,6 +71,7 @@ do_mount_vfs (const char *options, const char *vfstype,
   else
     r = command (NULL, &error,
 		 "mount", "-o", options, device, mp, NULL);
+  free (mp);
   if (r == -1) {
     reply_with_error ("mount: %s on %s: %s", device, mountpoint, error);
     free (error);
@@ -82,20 +85,20 @@ do_mount_vfs (const char *options, const char *vfstype,
 }
 
 int
-do_mount (const char *device, const char *mountpoint)
+do_mount (char *device, char *mountpoint)
 {
   return do_mount_vfs ("sync,noatime", NULL, device, mountpoint);
 }
 
 int
-do_mount_ro (const char *device, const char *mountpoint)
+do_mount_ro (char *device, char *mountpoint)
 {
   return do_mount_vfs ("ro", NULL, device, mountpoint);
 }
 
 int
-do_mount_options (const char *options, const char *device,
-		  const char *mountpoint)
+do_mount_options (char *options, char *device,
+		  char *mountpoint)
 {
   return do_mount_vfs (options, NULL, device, mountpoint);
 }
@@ -104,15 +107,16 @@ do_mount_options (const char *options, const char *device,
  * is kept updated.
  */
 int
-do_umount (const char *pathordevice)
+do_umount (char *pathordevice)
 {
   int len, freeit = 0, r;
   char *buf;
   char *err;
 
-  if (strncmp (pathordevice, "/dev/", 5) == 0)
-    buf = (char *) pathordevice;
-  else {
+  if (strncmp (pathordevice, "/dev/", 5) == 0) {
+    buf = pathordevice;
+    IS_DEVICE (buf, -1);
+  } else {
     len = strlen (pathordevice) + 9;
     freeit = 1;
     buf = malloc (len);
@@ -271,6 +275,50 @@ do_umount_all (void)
 
   /* We've unmounted root now, so ... */
   root_mounted = 0;
+
+  return 0;
+}
+
+/* Mount using the loopback device.  You can't use the generic
+ * do_mount call for this because the first parameter isn't a
+ * device.
+ */
+int
+do_mount_loop (char *file, char *mountpoint)
+{
+  int len, r;
+  char *buf, *mp;
+  char *error;
+
+  NEED_ROOT (-1);
+  ABS_PATH (file, -1);
+
+  /* We have to prefix /sysroot on both the filename and the mountpoint. */
+  len = strlen (mountpoint) + 9;
+  mp = malloc (len);
+  if (!mp) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+  snprintf (mp, len, "/sysroot%s", mountpoint);
+
+  len = strlen (file) + 9;
+  buf = malloc (len);
+  if (!file) {
+    reply_with_perror ("malloc");
+    free (mp);
+    return -1;
+  }
+  snprintf (buf, len, "/sysroot%s", file);
+
+  r = command (NULL, &error, "mount", "-o", "loop", buf, mp, NULL);
+  free (mp);
+  free (buf);
+  if (r == -1) {
+    reply_with_error ("mount: %s on %s: %s", file, mountpoint, error);
+    free (error);
+    return -1;
+  }
 
   return 0;
 }

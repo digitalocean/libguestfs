@@ -30,7 +30,7 @@
 #include "actions.h"
 
 int
-do_touch (const char *path)
+do_touch (char *path)
 {
   int fd;
   int r;
@@ -58,12 +58,16 @@ do_touch (const char *path)
     return -1;
   }
 
-  close (fd);
+  if (close (fd) == -1) {
+    reply_with_perror ("close: %s", path);
+    return -1;
+  }
+
   return 0;
 }
 
 char *
-do_cat (const char *path)
+do_cat (char *path)
 {
   int fd;
   int alloc, size, r, max;
@@ -134,7 +138,7 @@ do_cat (const char *path)
 }
 
 char **
-do_read_lines (const char *path)
+do_read_lines (char *path)
 {
   char **r = NULL;
   int size = 0, alloc = 0;
@@ -186,7 +190,7 @@ do_read_lines (const char *path)
 }
 
 int
-do_rm (const char *path)
+do_rm (char *path)
 {
   int r;
 
@@ -206,7 +210,7 @@ do_rm (const char *path)
 }
 
 int
-do_chmod (int mode, const char *path)
+do_chmod (int mode, char *path)
 {
   int r;
 
@@ -226,7 +230,7 @@ do_chmod (int mode, const char *path)
 }
 
 int
-do_chown (int owner, int group, const char *path)
+do_chown (int owner, int group, char *path)
 {
   int r;
 
@@ -246,7 +250,7 @@ do_chown (int owner, int group, const char *path)
 }
 
 int
-do_exists (const char *path)
+do_exists (char *path)
 {
   int r;
 
@@ -261,7 +265,7 @@ do_exists (const char *path)
 }
 
 int
-do_is_file (const char *path)
+do_is_file (char *path)
 {
   int r;
   struct stat buf;
@@ -286,7 +290,7 @@ do_is_file (const char *path)
 }
 
 int
-do_write_file (const char *path, const char *content, int size)
+do_write_file (char *path, char *content, int size)
 {
   int fd;
 
@@ -321,7 +325,7 @@ do_write_file (const char *path, const char *content, int size)
 
 /* This runs the 'file' command. */
 char *
-do_file (const char *path)
+do_file (char *path)
 {
   char *out, *err;
   int r, len, freeit = 0;
