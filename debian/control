@@ -13,7 +13,7 @@ Standards-Version: 3.8.2
 Package: guestfish
 Section: devel
 Architecture: any
-Depends: libguestfs0 (= ${binary:Version})
+Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}
 Description: libguestfs filesystem interactive shell
  Guestfish is a shell and command-line tool for examining and modifying
  virtual machine filesystems.  It uses libguestfs and exposes all of the
