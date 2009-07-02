@@ -1,0 +1,22 @@
+From: =?utf-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
+Date: Thu, 2 Jul 2009 17:30:40 +0200
+Subject: [PATCH] touch fakeroot.log
+
+indicationg we're done creating the appliance
+---
+ appliance/make.sh.in |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+diff --git a/appliance/make.sh.in b/appliance/make.sh.in
+index e98c325..dd36bb4 100755
+--- a/appliance/make.sh.in
++++ b/appliance/make.sh.in
+@@ -148,5 +148,7 @@ __EOF__
+ elif [ "@DIST@" = "DEBIAN" ]; then
+   cd @top_builddir@/appliance
+   debirf make -n debian
++  mkdir -p @top_builddir@/initramfs
++  touch @top_builddir@/initramfs/fakeroot.log
+ fi
+ 
+-- 

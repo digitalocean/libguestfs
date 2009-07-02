@@ -1,2 +1,3 @@
 0001-don-t-run-configure.patch
 0002-make-autoreconf-copy-files.patch
+0003-touch-fakeroot.log.patch
