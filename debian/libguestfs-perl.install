@@ -1,0 +1,3 @@
+usr/man/man3/*.3pm /usr/share/man3/
+usr/lib/perl/*/Sys/*.pm /usr/lib/perl5/Sys/
+usr/lib/perl/*/auto/Sys/Guestfs/*.so /usr/lib/perl5/auto/Sys/Guestfs/
