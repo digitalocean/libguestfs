@@ -17,7 +17,7 @@ Standards-Version: 3.8.2
 Package: guestfish
 Section: devel
 Architecture: any
-Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}
+Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: libguestfs filesystem interactive shell
  Guestfish is a shell and command-line tool for examining and modifying
  virtual machine filesystems.  It uses libguestfs and exposes all of the
@@ -26,7 +26,7 @@ Description: libguestfs filesystem interactive shell
 Package: libguestfs-dev
 Section: libdevel
 Architecture: any
-Depends: libguestfs0 (= ${binary:Version})
+Depends: libguestfs0 (= ${binary:Version}), ${misc:Depends}
 Description: library for accessing and modifying guest disk images
  libguestfs is a library for accessing and modifying guest disk images. Amongst
  the things this is good for: making batch configuration changes to guests,
@@ -115,7 +115,7 @@ Description: library for accessing and modifying guest disk images
 Package: python-guestfs
 Section: python
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version})
 Provides: python-libguestfs
 Conflicts: python-libguestfs
 Description: library for accessing and modifying guest disk images
@@ -140,7 +140,8 @@ Description: library for accessing and modifying guest disk images
 Package: libguestfs-perl
 Section: perl
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version}),
+ ${perl:Depends}
 Description: library for accessing and modifying guest disk images
  libguestfs is a library for accessing and modifying guest disk images. Amongst
  the things this is good for: making batch configuration changes to guests,
