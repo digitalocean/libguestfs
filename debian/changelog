@@ -1,3 +1,16 @@
+libguestfs (1.0.54+44git127ad3-2) unstable; urgency=low
+
+  * [8f1cea9] add missing shlibs dependency
+  * [35663fe] shorten long descriptions a bit
+  * [1631e0e] add watch file
+  * [adebbd1] drop lib from python package name
+  * [a24e6b9] add perl bindings
+  * [cc2117e] don't run dh_makeshlibs on python lib to avoid ldconfig call
+  * [d361e06] add missing ${misc:Depends}, {perl:Depends} and tighten
+    dependency on libguestfs
+
+ -- Guido Günther <agx@sigxcpu.org>  Fri, 03 Jul 2009 12:03:14 +0200
+
 libguestfs (1.0.54+44git127ad3-1) unstable; urgency=low
 
   * [4cea8bd] Imported Upstream version 1.0.54+44git127ad3
