@@ -6,7 +6,6 @@ Uploaders: Richard Jones <rjones@redhat.com>, Guido Günther <agx@sigxcpu.org>
 Build-Depends: debhelper (>= 7), autotools-dev, quilt, python-support,
   automake, autoconf, libtool, debirf, libreadline-dev, squashfs-tools, cdbs,
   python-dev, ocaml
-XS-Python-Version: current
 Homepage: http://libguestfs.org
 Standards-Version: 3.8.2
 
@@ -85,29 +84,6 @@ Description: library for accessing and modifying guest disk images
  .
  This package contains the debugging symbols.
 
-Package: python-libguestfs
-Section: python
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: library for accessing and modifying guest disk images
- libguestfs is a library for accessing and modifying guest disk images. Amongst
- the things this is good for: making batch configuration changes to guests,
- viewing and editing files inside guests, getting disk used/free statistics,
- migrating between virtualization systems, performing partial backups,
- performing partial guest clones, cloning guests and changing
- registry/UUID/hostname info, and much else besides.
- .
- It uses Linux kernel and qemu code, and can access any type of guest
- filesystem that Linux and qemu can, including but not limited to: ext2/3/4,
- btrfs, FAT and NTFS, LVM, many different disk partition schemes, qcow, qcow2,
- vmdk.
- .
- libguestfs provides ways to enumerate guest storage (eg. partitions, LVs, what
- filesystem is in each LV, etc.). It can also run commands in the context of 
- the guest. Also you can upload and download files and directories.
- .
- This package contains the Python bindings.
- 
 Package: libguestfs-doc
 Section: doc
 Architecture: all
@@ -130,3 +106,29 @@ Description: library for accessing and modifying guest disk images
  the guest. Also you can upload and download files and directories.
  .
  This package contains the documentation.
+
+Package: python-guestfs
+Section: python
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Provides: python-libguestfs
+Conflicts: python-libguestfs
+Description: library for accessing and modifying guest disk images
+ libguestfs is a library for accessing and modifying guest disk images. Amongst
+ the things this is good for: making batch configuration changes to guests,
+ viewing and editing files inside guests, getting disk used/free statistics,
+ migrating between virtualization systems, performing partial backups,
+ performing partial guest clones, cloning guests and changing
+ registry/UUID/hostname info, and much else besides.
+ .
+ It uses Linux kernel and qemu code, and can access any type of guest
+ filesystem that Linux and qemu can, including but not limited to: ext2/3/4,
+ btrfs, FAT and NTFS, LVM, many different disk partition schemes, qcow, qcow2,
+ vmdk.
+ .
+ libguestfs provides ways to enumerate guest storage (eg. partitions, LVs, what
+ filesystem is in each LV, etc.). It can also run commands in the context of 
+ the guest. Also you can upload and download files and directories.
+ .
+ This package contains the Python bindings.
+ 

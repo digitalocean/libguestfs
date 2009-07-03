@@ -19,7 +19,7 @@ DEB_CONFIGURE_EXTRA_FLAGS := \
 DEB_DBG_PACKAGES = libguestfs0-dbg
 DEB_PYTHON_SETUP_CMD := /dev/null
 
-install/python-libguestfs::
+install/python-guestfs::
 	rm -f debian/tmp/usr/lib/python*/*/libguestfsmod.so
 	for mod in debian/tmp/usr/lib/python*/*/libguestfsmod.so.0.0.0; do \
 		mv $${mod} $$(dirname $${mod})/libguestfsmod.so; \
