@@ -1,2 +1,3 @@
 usr/bin/guestfish
+usr/bin/virt-inspector
 usr/share/man/man1/*

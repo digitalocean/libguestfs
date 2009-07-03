@@ -10,18 +10,23 @@ Build-Depends: debhelper (>= 7), autotools-dev, quilt,
 # for python bindings:
   python-dev, python-support,
 # for the perl bindings:
-  libtest-pod-coverage-perl, libextutils-command-perl
+  libtest-pod-coverage-perl, libextutils-command-perl,
+# for virt-inspector:
+  libsys-virt-perl
 Homepage: http://libguestfs.org
 Standards-Version: 3.8.2
 
 Package: guestfish
 Section: devel
 Architecture: any
-Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
+ libsys-virt-perl, libxml-writer-perl
 Description: libguestfs filesystem interactive shell
  Guestfish is a shell and command-line tool for examining and modifying
  virtual machine filesystems.  It uses libguestfs and exposes all of the
  functionality of the guestfs API, see guestfs(3).
+ .
+ This package also contains virt-inspector, a tool to examine virtual machines.
 
 Package: libguestfs-dev
 Section: libdevel
