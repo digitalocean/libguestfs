@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: Debian Libvirt Maintainers <pkg-libvirt-maintainers@lists.alioth.debian.org>
 Uploaders: Richard Jones <rjones@redhat.com>, Guido Günther <agx@sigxcpu.org>
 Build-Depends: debhelper (>= 7), autotools-dev, quilt,
-  debirf, libreadline-dev, squashfs-tools, cdbs,
+  debirf, libreadline-dev, squashfs-tools, cdbs, libaugeas-dev,
 # when building from git:
   automake, autoconf, libtool, ocaml,
 # for python bindings:
