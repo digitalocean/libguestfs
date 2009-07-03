@@ -18,6 +18,7 @@ DEB_CONFIGURE_EXTRA_FLAGS := \
 
 DEB_DBG_PACKAGES = libguestfs0-dbg
 DEB_PYTHON_SETUP_CMD := /dev/null
+DEB_DH_MAKESHLIBS_ARGS_python-guestfs = -X usr/lib/pyshared
 
 install/python-guestfs::
 	rm -f debian/tmp/usr/lib/python*/*/libguestfsmod.so
