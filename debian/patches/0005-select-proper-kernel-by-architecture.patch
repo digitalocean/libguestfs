@@ -1,0 +1,44 @@
+From: =?utf-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
+Date: Fri, 3 Jul 2009 22:20:05 +0200
+Subject: [PATCH] select proper kernel by architecture
+
+---
+ appliance/debian/debirf.conf.in |    2 +-
+ configure.ac                    |   12 ++++++++++++
+ 2 files changed, 13 insertions(+), 1 deletions(-)
+
+diff --git a/appliance/debian/debirf.conf.in b/appliance/debian/debirf.conf.in
+index a3dc16f..12506c5 100644
+--- a/appliance/debian/debirf.conf.in
++++ b/appliance/debian/debirf.conf.in
+@@ -1,5 +1,5 @@
+ DEBIRF_LABEL="debirf-libguestfs"
+ DEBIRF_SUITE=@REPO@
+ DEBIRF_MIRROR=@MIRROR@/${DEBIRF_DISTRO}
+-DEBIRF_KERNEL_ARCH=486
++DEBIRF_KERNEL_ARCH=@DEBIAN_KERNEL_ARCH@
+ 
+diff --git a/configure.ac b/configure.ac
+index a5fc7ee..c98ce3b 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -156,6 +156,18 @@ else
+   test "x$DEBIRF" = "xno" &&
+         AC_MSG_ERROR([debirf must be installed])
+   DIST="DEBIAN"
++  case $host_cpu in
++      *86)
++          DEBIAN_KERNEL_ARCH=486
++          ;;
++      x86_64)
++          DEBIAN_KERNEL_ARCH=amd64
++          ;;
++      *)
++         DEBIAN_KERNEL_ARCH=$host_cpu
++         ;;
++   esac
++   AC_SUBST(DEBIAN_KERNEL_ARCH)
+ fi
+ AC_SUBST(DIST)
+ 
+-- 

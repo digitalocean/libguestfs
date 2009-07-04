@@ -2,3 +2,4 @@
 0002-make-autoreconf-copy-files.patch
 0003-touch-fakeroot.log.patch
 0004-use-AM_MAINTAINER_MODE.patch
+0005-select-proper-kernel-by-architecture.patch
