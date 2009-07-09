@@ -48,6 +48,7 @@ guestfsd_SOURCES = \
 	lvm.c \
 	mknod.c \
 	mount.c \
+	names.c \
 	ntfs.c \
 	pingdaemon.c \
 	proto.c \
@@ -66,7 +67,7 @@ guestfsd_SOURCES = \
 	wc.c \
 	zero.c \
 	zerofree.c \
-	../src/guestfs_protocol.h \
-	../src/guestfs_protocol.c
+	$(top_builddir)/../src/guestfs_protocol.h \
+	$(top_builddir)/../src/guestfs_protocol.c
 
 guestfsd_CFLAGS = -Wall

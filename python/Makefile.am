@@ -15,6 +15,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+# Old RHEL 5 autoconf doesn't have builddir.
+builddir ?= $(top_builddir)/python
+
 EXTRA_DIST = \
 	guestfs.py \
 	guestfs-py.c \
@@ -32,12 +35,13 @@ python_DATA = guestfs.py
 python_LTLIBRARIES = libguestfsmod.la
 
 libguestfsmod_la_SOURCES = guestfs-py.c
-libguestfsmod_la_CFLAGS = -Wall -I$(PYTHON_INCLUDEDIR) -I$(top_builddir)/src
+libguestfsmod_la_CFLAGS = -Wall -I$(PYTHON_INCLUDEDIR) \
+			  -I$(top_srcdir)/src -I$(top_builddir)/src
 libguestfsmod_la_LIBADD = $(top_builddir)/src/libguestfs.la
 
 TESTS_ENVIRONMENT = \
 	LIBGUESTFS_PATH=$(top_builddir)/appliance \
-	PYTHONPATH=$(top_builddir)/python:$(top_builddir)/python/.libs
+	PYTHONPATH=$(builddir):$(builddir)/.libs
 
 TESTS = run-bindtests run-python-tests
 

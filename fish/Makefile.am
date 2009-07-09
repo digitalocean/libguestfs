@@ -28,9 +28,10 @@ guestfish_SOURCES = \
 	fish.h \
 	glob.c \
 	lcd.c \
-	more.c
+	more.c \
+	time.c
 
 guestfish_CFLAGS = \
-	-I$(top_builddir)/src -Wall \
+	-I$(top_srcdir)/src -I$(top_builddir)/src -Wall \
 	-DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"'
 guestfish_LDADD = $(top_builddir)/src/libguestfs.la $(LIBREADLINE)

@@ -21,7 +21,11 @@ EXTRA_DIST = \
 	kmod.whitelist \
 	kmod.whitelist.in \
 	packagelist.in \
-	init
+	init \
+	debian/modules/install_kernel \
+	debian/modules/y0_install-guestfsd \
+	debian/modules/z99_final-cleanups \
+	debian/debirf.conf.in
 
 # Build the root filesystem (appliance).
 # Currently this is arch-dependent, so it seems like putting it in
@@ -54,12 +58,12 @@ endif
 # This is for building the normal appliance:
 $(INITRAMFSIMG) $(VMLINUZ): $(top_builddir)/initramfs/fakeroot.log
 
-$(top_builddir)/initramfs/fakeroot.log: make.sh kmod.whitelist packagelist init
+$(top_builddir)/initramfs/fakeroot.log: make.sh kmod.whitelist packagelist
 	-mv $(INITRAMFSIMG) $(INITRAMFSIMG).bak
 	-mv $(VMLINUZ) $(VMLINUZ).bak
 	if ! bash make.sh; then rm -f $@; exit 1; fi
 
-$(INITRAMFSIMG): $(top_builddir)/initramfs/fakeroot.log $(top_builddir)/daemon/guestfsd update.sh
+$(INITRAMFSIMG): $(top_builddir)/initramfs/fakeroot.log $(top_builddir)/daemon/guestfsd init update.sh
 	rm -f $@
 	bash update.sh
 	touch $@
@@ -91,6 +95,21 @@ $(SUPERMINIMG): supermin.incfiles supermin-make.sh
 	bash supermin-make.sh
 
 endif
+
+# Extra symlinks needed by the Debian appliance.
+debirf_symlinks = \
+	a0_prep-root \
+	z0_remove-aptitude \
+	z0_remove-locales \
+	z1_clean-root
+noinst_DATA = $(debirf_symlinks:%=debian/modules/%)
+$(debirf_symlinks:%=debian/modules/%): stamp-debirf-modules
+stamp-debirf-modules:
+	mkdir -p debian/modules
+	for f in $(debirf_symlinks); do \
+	  ln -sf /usr/share/debirf/modules/$$f debian/modules/$$f; \
+	done
+	touch $@
 
 #----------------------------------------------------------------------
 # Extra rules for testing the appliance.

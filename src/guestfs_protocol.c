@@ -16,7 +16,30 @@ xdr_str (XDR *xdrs, str *objp)
 }
 
 bool_t
-xdr_guestfs_lvm_int_pv (XDR *xdrs, guestfs_lvm_int_pv *objp)
+xdr_guestfs_int_int_bool (XDR *xdrs, guestfs_int_int_bool *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->i))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->b))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_int_int_bool_list (XDR *xdrs, guestfs_int_int_bool_list *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->guestfs_int_int_bool_list_val, (u_int *) &objp->guestfs_int_int_bool_list_len, ~0,
+		sizeof (guestfs_int_int_bool), (xdrproc_t) xdr_guestfs_int_int_bool))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_int_lvm_pv (XDR *xdrs, guestfs_int_lvm_pv *objp)
 {
 	register int32_t *buf;
 
@@ -53,18 +76,18 @@ xdr_guestfs_lvm_int_pv (XDR *xdrs, guestfs_lvm_int_pv *objp)
 }
 
 bool_t
-xdr_guestfs_lvm_int_pv_list (XDR *xdrs, guestfs_lvm_int_pv_list *objp)
+xdr_guestfs_int_lvm_pv_list (XDR *xdrs, guestfs_int_lvm_pv_list *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_array (xdrs, (char **)&objp->guestfs_lvm_int_pv_list_val, (u_int *) &objp->guestfs_lvm_int_pv_list_len, ~0,
-		sizeof (guestfs_lvm_int_pv), (xdrproc_t) xdr_guestfs_lvm_int_pv))
+	 if (!xdr_array (xdrs, (char **)&objp->guestfs_int_lvm_pv_list_val, (u_int *) &objp->guestfs_int_lvm_pv_list_len, ~0,
+		sizeof (guestfs_int_lvm_pv), (xdrproc_t) xdr_guestfs_int_lvm_pv))
 		 return FALSE;
 	return TRUE;
 }
 
 bool_t
-xdr_guestfs_lvm_int_vg (XDR *xdrs, guestfs_lvm_int_vg *objp)
+xdr_guestfs_int_lvm_vg (XDR *xdrs, guestfs_int_lvm_vg *objp)
 {
 	register int32_t *buf;
 
@@ -111,18 +134,18 @@ xdr_guestfs_lvm_int_vg (XDR *xdrs, guestfs_lvm_int_vg *objp)
 }
 
 bool_t
-xdr_guestfs_lvm_int_vg_list (XDR *xdrs, guestfs_lvm_int_vg_list *objp)
+xdr_guestfs_int_lvm_vg_list (XDR *xdrs, guestfs_int_lvm_vg_list *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_array (xdrs, (char **)&objp->guestfs_lvm_int_vg_list_val, (u_int *) &objp->guestfs_lvm_int_vg_list_len, ~0,
-		sizeof (guestfs_lvm_int_vg), (xdrproc_t) xdr_guestfs_lvm_int_vg))
+	 if (!xdr_array (xdrs, (char **)&objp->guestfs_int_lvm_vg_list_val, (u_int *) &objp->guestfs_int_lvm_vg_list_len, ~0,
+		sizeof (guestfs_int_lvm_vg), (xdrproc_t) xdr_guestfs_int_lvm_vg))
 		 return FALSE;
 	return TRUE;
 }
 
 bool_t
-xdr_guestfs_lvm_int_lv (XDR *xdrs, guestfs_lvm_int_lv *objp)
+xdr_guestfs_int_lvm_lv (XDR *xdrs, guestfs_int_lvm_lv *objp)
 {
 	register int32_t *buf;
 
@@ -163,12 +186,12 @@ xdr_guestfs_lvm_int_lv (XDR *xdrs, guestfs_lvm_int_lv *objp)
 }
 
 bool_t
-xdr_guestfs_lvm_int_lv_list (XDR *xdrs, guestfs_lvm_int_lv_list *objp)
+xdr_guestfs_int_lvm_lv_list (XDR *xdrs, guestfs_int_lvm_lv_list *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_array (xdrs, (char **)&objp->guestfs_lvm_int_lv_list_val, (u_int *) &objp->guestfs_lvm_int_lv_list_len, ~0,
-		sizeof (guestfs_lvm_int_lv), (xdrproc_t) xdr_guestfs_lvm_int_lv))
+	 if (!xdr_array (xdrs, (char **)&objp->guestfs_int_lvm_lv_list_val, (u_int *) &objp->guestfs_int_lvm_lv_list_len, ~0,
+		sizeof (guestfs_int_lvm_lv), (xdrproc_t) xdr_guestfs_int_lvm_lv))
 		 return FALSE;
 	return TRUE;
 }
@@ -208,6 +231,17 @@ xdr_guestfs_int_stat (XDR *xdrs, guestfs_int_stat *objp)
 }
 
 bool_t
+xdr_guestfs_int_stat_list (XDR *xdrs, guestfs_int_stat_list *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->guestfs_int_stat_list_val, (u_int *) &objp->guestfs_int_stat_list_len, ~0,
+		sizeof (guestfs_int_stat), (xdrproc_t) xdr_guestfs_int_stat))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_int_statvfs (XDR *xdrs, guestfs_int_statvfs *objp)
 {
 	register int32_t *buf;
@@ -233,6 +267,17 @@ xdr_guestfs_int_statvfs (XDR *xdrs, guestfs_int_statvfs *objp)
 	 if (!xdr_quad_t (xdrs, &objp->flag))
 		 return FALSE;
 	 if (!xdr_quad_t (xdrs, &objp->namemax))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_int_statvfs_list (XDR *xdrs, guestfs_int_statvfs_list *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->guestfs_int_statvfs_list_val, (u_int *) &objp->guestfs_int_statvfs_list_len, ~0,
+		sizeof (guestfs_int_statvfs), (xdrproc_t) xdr_guestfs_int_statvfs))
 		 return FALSE;
 	return TRUE;
 }
@@ -405,7 +450,7 @@ xdr_guestfs_pvs_full_ret (XDR *xdrs, guestfs_pvs_full_ret *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_guestfs_lvm_int_pv_list (xdrs, &objp->physvols))
+	 if (!xdr_guestfs_int_lvm_pv_list (xdrs, &objp->physvols))
 		 return FALSE;
 	return TRUE;
 }
@@ -415,7 +460,7 @@ xdr_guestfs_vgs_full_ret (XDR *xdrs, guestfs_vgs_full_ret *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_guestfs_lvm_int_vg_list (xdrs, &objp->volgroups))
+	 if (!xdr_guestfs_int_lvm_vg_list (xdrs, &objp->volgroups))
 		 return FALSE;
 	return TRUE;
 }
@@ -425,7 +470,7 @@ xdr_guestfs_lvs_full_ret (XDR *xdrs, guestfs_lvs_full_ret *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_guestfs_lvm_int_lv_list (xdrs, &objp->logvols))
+	 if (!xdr_guestfs_int_lvm_lv_list (xdrs, &objp->logvols))
 		 return FALSE;
 	return TRUE;
 }
@@ -504,9 +549,7 @@ xdr_guestfs_aug_defnode_ret (XDR *xdrs, guestfs_aug_defnode_ret *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_int (xdrs, &objp->nrnodes))
-		 return FALSE;
-	 if (!xdr_bool (xdrs, &objp->created))
+	 if (!xdr_guestfs_int_int_bool (xdrs, &objp->nrnodescreated))
 		 return FALSE;
 	return TRUE;
 }
@@ -2475,6 +2518,19 @@ xdr_guestfs_readdir_ret (XDR *xdrs, guestfs_readdir_ret *objp)
 	register int32_t *buf;
 
 	 if (!xdr_guestfs_int_dirent_list (xdrs, &objp->entries))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_sfdiskM_args (XDR *xdrs, guestfs_sfdiskM_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	 if (!xdr_array (xdrs, (char **)&objp->lines.lines_val, (u_int *) &objp->lines.lines_len, ~0,
+		sizeof (str), (xdrproc_t) xdr_str))
 		 return FALSE;
 	return TRUE;
 }
