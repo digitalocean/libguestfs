@@ -29,12 +29,6 @@ install/python-guestfs::
 install/guestfish::
 	install -m 755 inspector/virt-inspector.pl debian/tmp/usr/bin/virt-inspector
 
-debian/autogen.stamp:
-	./autogen.sh
-	touch debian/autogen.stamp
-
-post-patches:: debian/autogen.stamp
-
 clean::
 	rm -rf appliance/debian/root \
 	       appliance/debian/nest \
