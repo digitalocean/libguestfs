@@ -1,3 +1,13 @@
+libguestfs (1.0.56-1) unstable; urgency=low
+
+  * [1b77dc8] Imported Upstream version 1.0.56
+  * [0ca461d] drop a all patches merged upstream or superfluous since
+    we're building from a released version now.
+  * [474dc39] no need to call autogen.sh
+  * [32c3d61] amke sure the symlinks get created in time
+
+ -- Guido Günther <agx@sigxcpu.org>  Thu, 09 Jul 2009 16:44:21 +0200
+
 libguestfs (1.0.54+44git127ad3-3) unstable; urgency=low
 
   * [a6e6cc7] add virt-inspector
