@@ -29,6 +29,9 @@ install/python-guestfs::
 install/guestfish::
 	install -m 755 inspector/virt-inspector.pl debian/tmp/usr/bin/virt-inspector
 
+configure/guestfish::
+	cd appliance; make stamp-debirf-modules
+
 clean::
 	rm -rf appliance/debian/root \
 	       appliance/debian/nest \
