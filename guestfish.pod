@@ -49,13 +49,13 @@ Remove C</boot/grub/menu.lst> (in reality not such a great idea):
 =head2 As an interactive shell
 
  $ guestfish
- 
+
  Welcome to guestfish, the libguestfs filesystem interactive shell for
  editing virtual machine filesystems.
- 
+
  Type: 'help' for help with commands
        'quit' to quit the shell
- 
+
  ><fs> help
 
 =head2 As a script interpreter
@@ -418,6 +418,13 @@ NOTE: This will not work reliably for large files
 =head2 quit | exit
 
 This exits guestfish.  You can also use C<^D> key.
+
+=head2 time
+
+ time command args...
+
+Run the command as usual, but print the elapsed time afterwards.  This
+can be useful for benchmarking operations.
 
 =head1 COMMANDS
 

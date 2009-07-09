@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009 Red Hat Inc. 
+ * Copyright (C) 2009 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -146,8 +146,10 @@ main_loop (int _sock)
       start_us = (int64_t) start_t.tv_sec * 1000000 + start_t.tv_usec;
       end_us = (int64_t) end_t.tv_sec * 1000000 + end_t.tv_usec;
       elapsed_us = end_us - start_us;
-      fprintf (stderr, "proc %d serial %d took %d.%02d seconds\n",
-	       proc_nr, serial,
+      fprintf (stderr, "proc %d (%s) took %d.%02d seconds\n",
+	       proc_nr,
+	       proc_nr >= 0 && proc_nr < GUESTFS_PROC_NR_PROCS
+	       ? function_names[proc_nr] : "UNKNOWN PROCEDURE",
 	       (int) (elapsed_us / 1000000),
 	       (int) ((elapsed_us / 10000) % 100));
     }
@@ -264,9 +266,14 @@ reply (xdrproc_t xdrp, char *ret)
   }
 
   if (xdrp) {
+    /* This can fail if the reply body is too large, for example
+     * if it exceeds the maximum message size.  In that case
+     * we want to return an error message instead. (RHBZ#509597).
+     */
     if (!(*xdrp) (&xdr, ret)) {
-      fprintf (stderr, "guestfsd: failed to encode reply body\n");
-      exit (1);
+      reply_with_perror ("guestfsd: failed to encode reply body\n");
+      xdr_destroy (&xdr);
+      return;
     }
   }
 

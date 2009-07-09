@@ -15,6 +15,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+# Old RHEL 5 autoconf doesn't have builddir.
+builddir ?= $(top_builddir)/images
+
 EXTRA_DIST = \
 	helloworld.tar \
 	helloworld.tar.gz \
@@ -28,35 +31,49 @@ CLEANFILES = \
 	100kallzeroes 100kallnewlines 100kallspaces 100krandom 10klines \
 	initrd
 
-squash_files = helloworld.tar helloworld.tar.gz empty known-1 known-2 known-3 \
-	100kallzeroes 100kallnewlines 100kallspaces 100krandom 10klines \
-	initrd
+squash_files_src = \
+    $(srcdir)/helloworld.tar \
+    $(srcdir)/helloworld.tar.gz \
+    $(srcdir)/empty \
+    $(srcdir)/known-1 \
+    $(srcdir)/known-2 \
+    $(srcdir)/known-3
+
+squash_files_build = \
+    $(builddir)/100kallzeroes \
+    $(builddir)/100kallnewlines \
+    $(builddir)/100kallspaces \
+    $(builddir)/100krandom \
+    $(builddir)/10klines \
+    $(builddir)/initrd
+
+squash_files = $(squash_files_src) $(squash_files_build)
 
 test.sqsh: $(squash_files)
 	rm -f $@
 	$(MKSQUASHFS) $(squash_files) $@
 
-100kallzeroes:
+$(builddir)/100kallzeroes:
 	rm -f $@ $@-t
 	dd if=/dev/zero of=$@-t bs=1024 count=100
 	mv $@-t $@
 
-100kallnewlines: 100kallzeroes
+$(builddir)/100kallnewlines: $(builddir)/100kallzeroes
 	rm -f $@ $@-t
 	tr '\0' '\n' < $< > $@-t
 	mv $@-t $@
 
-100kallspaces: 100kallzeroes
+$(builddir)/100kallspaces: $(builddir)/100kallzeroes
 	rm -f $@ $@-t
 	tr '\0' ' ' < $< > $@-t
 	mv $@-t $@
 
-100krandom:
+$(builddir)/100krandom:
 	rm -f $@ $@-t
 	dd if=/dev/urandom of=$@-t bs=1024 count=100
 	mv $@-t $@
 
-10klines:
+$(builddir)/10klines:
 	rm -f $@ $@-t
 	i=0; \
 	while [ $$i -lt 10000 ]; do \
@@ -65,7 +82,7 @@ test.sqsh: $(squash_files)
 	done > $@-t
 	mv $@-t $@
 
-initrd: empty known-1 known-2 known-3
+$(builddir)/initrd: empty known-1 known-2 known-3
 	rm -f $@ $@-t
 	for f in $^; do echo $$f; done | cpio -o -H newc | gzip --best > $@-t
 	mv $@-t $@

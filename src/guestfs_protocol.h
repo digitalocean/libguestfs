@@ -16,7 +16,18 @@ extern "C" {
 
 typedef char *str;
 
-struct guestfs_lvm_int_pv {
+struct guestfs_int_int_bool {
+	int i;
+	int b;
+};
+typedef struct guestfs_int_int_bool guestfs_int_int_bool;
+
+typedef struct {
+	u_int guestfs_int_int_bool_list_len;
+	guestfs_int_int_bool *guestfs_int_int_bool_list_val;
+} guestfs_int_int_bool_list;
+
+struct guestfs_int_lvm_pv {
 	char *pv_name;
 	char pv_uuid[32];
 	char *pv_fmt;
@@ -32,14 +43,14 @@ struct guestfs_lvm_int_pv {
 	quad_t pv_mda_count;
 	quad_t pv_mda_free;
 };
-typedef struct guestfs_lvm_int_pv guestfs_lvm_int_pv;
+typedef struct guestfs_int_lvm_pv guestfs_int_lvm_pv;
 
 typedef struct {
-	u_int guestfs_lvm_int_pv_list_len;
-	guestfs_lvm_int_pv *guestfs_lvm_int_pv_list_val;
-} guestfs_lvm_int_pv_list;
+	u_int guestfs_int_lvm_pv_list_len;
+	guestfs_int_lvm_pv *guestfs_int_lvm_pv_list_val;
+} guestfs_int_lvm_pv_list;
 
-struct guestfs_lvm_int_vg {
+struct guestfs_int_lvm_vg {
 	char *vg_name;
 	char vg_uuid[32];
 	char *vg_fmt;
@@ -60,14 +71,14 @@ struct guestfs_lvm_int_vg {
 	quad_t vg_mda_count;
 	quad_t vg_mda_free;
 };
-typedef struct guestfs_lvm_int_vg guestfs_lvm_int_vg;
+typedef struct guestfs_int_lvm_vg guestfs_int_lvm_vg;
 
 typedef struct {
-	u_int guestfs_lvm_int_vg_list_len;
-	guestfs_lvm_int_vg *guestfs_lvm_int_vg_list_val;
-} guestfs_lvm_int_vg_list;
+	u_int guestfs_int_lvm_vg_list_len;
+	guestfs_int_lvm_vg *guestfs_int_lvm_vg_list_val;
+} guestfs_int_lvm_vg_list;
 
-struct guestfs_lvm_int_lv {
+struct guestfs_int_lvm_lv {
 	char *lv_name;
 	char lv_uuid[32];
 	char *lv_attr;
@@ -85,12 +96,12 @@ struct guestfs_lvm_int_lv {
 	char *mirror_log;
 	char *modules;
 };
-typedef struct guestfs_lvm_int_lv guestfs_lvm_int_lv;
+typedef struct guestfs_int_lvm_lv guestfs_int_lvm_lv;
 
 typedef struct {
-	u_int guestfs_lvm_int_lv_list_len;
-	guestfs_lvm_int_lv *guestfs_lvm_int_lv_list_val;
-} guestfs_lvm_int_lv_list;
+	u_int guestfs_int_lvm_lv_list_len;
+	guestfs_int_lvm_lv *guestfs_int_lvm_lv_list_val;
+} guestfs_int_lvm_lv_list;
 
 struct guestfs_int_stat {
 	quad_t dev;
@@ -109,6 +120,11 @@ struct guestfs_int_stat {
 };
 typedef struct guestfs_int_stat guestfs_int_stat;
 
+typedef struct {
+	u_int guestfs_int_stat_list_len;
+	guestfs_int_stat *guestfs_int_stat_list_val;
+} guestfs_int_stat_list;
+
 struct guestfs_int_statvfs {
 	quad_t bsize;
 	quad_t frsize;
@@ -123,6 +139,11 @@ struct guestfs_int_statvfs {
 	quad_t namemax;
 };
 typedef struct guestfs_int_statvfs guestfs_int_statvfs;
+
+typedef struct {
+	u_int guestfs_int_statvfs_list_len;
+	guestfs_int_statvfs *guestfs_int_statvfs_list_val;
+} guestfs_int_statvfs_list;
 
 struct guestfs_int_dirent {
 	quad_t ino;
@@ -221,17 +242,17 @@ struct guestfs_lvs_ret {
 typedef struct guestfs_lvs_ret guestfs_lvs_ret;
 
 struct guestfs_pvs_full_ret {
-	guestfs_lvm_int_pv_list physvols;
+	guestfs_int_lvm_pv_list physvols;
 };
 typedef struct guestfs_pvs_full_ret guestfs_pvs_full_ret;
 
 struct guestfs_vgs_full_ret {
-	guestfs_lvm_int_vg_list volgroups;
+	guestfs_int_lvm_vg_list volgroups;
 };
 typedef struct guestfs_vgs_full_ret guestfs_vgs_full_ret;
 
 struct guestfs_lvs_full_ret {
-	guestfs_lvm_int_lv_list logvols;
+	guestfs_int_lvm_lv_list logvols;
 };
 typedef struct guestfs_lvs_full_ret guestfs_lvs_full_ret;
 
@@ -273,8 +294,7 @@ struct guestfs_aug_defnode_args {
 typedef struct guestfs_aug_defnode_args guestfs_aug_defnode_args;
 
 struct guestfs_aug_defnode_ret {
-	int nrnodes;
-	bool_t created;
+	guestfs_int_int_bool nrnodescreated;
 };
 typedef struct guestfs_aug_defnode_ret guestfs_aug_defnode_ret;
 
@@ -1209,6 +1229,15 @@ struct guestfs_readdir_ret {
 };
 typedef struct guestfs_readdir_ret guestfs_readdir_ret;
 
+struct guestfs_sfdiskM_args {
+	char *device;
+	struct {
+		u_int lines_len;
+		str *lines_val;
+	} lines;
+};
+typedef struct guestfs_sfdiskM_args guestfs_sfdiskM_args;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -1348,7 +1377,8 @@ enum guestfs_procedure {
 	GUESTFS_PROC_MKNOD_C = 136,
 	GUESTFS_PROC_UMASK = 137,
 	GUESTFS_PROC_READDIR = 138,
-	GUESTFS_PROC_NR_PROCS = 138 + 1,
+	GUESTFS_PROC_SFDISKM = 139,
+	GUESTFS_PROC_NR_PROCS = 139 + 1,
 };
 typedef enum guestfs_procedure guestfs_procedure;
 #define GUESTFS_MESSAGE_MAX 4194304
@@ -1399,14 +1429,18 @@ typedef struct guestfs_chunk guestfs_chunk;
 
 #if defined(__STDC__) || defined(__cplusplus)
 extern  bool_t xdr_str (XDR *, str*);
-extern  bool_t xdr_guestfs_lvm_int_pv (XDR *, guestfs_lvm_int_pv*);
-extern  bool_t xdr_guestfs_lvm_int_pv_list (XDR *, guestfs_lvm_int_pv_list*);
-extern  bool_t xdr_guestfs_lvm_int_vg (XDR *, guestfs_lvm_int_vg*);
-extern  bool_t xdr_guestfs_lvm_int_vg_list (XDR *, guestfs_lvm_int_vg_list*);
-extern  bool_t xdr_guestfs_lvm_int_lv (XDR *, guestfs_lvm_int_lv*);
-extern  bool_t xdr_guestfs_lvm_int_lv_list (XDR *, guestfs_lvm_int_lv_list*);
+extern  bool_t xdr_guestfs_int_int_bool (XDR *, guestfs_int_int_bool*);
+extern  bool_t xdr_guestfs_int_int_bool_list (XDR *, guestfs_int_int_bool_list*);
+extern  bool_t xdr_guestfs_int_lvm_pv (XDR *, guestfs_int_lvm_pv*);
+extern  bool_t xdr_guestfs_int_lvm_pv_list (XDR *, guestfs_int_lvm_pv_list*);
+extern  bool_t xdr_guestfs_int_lvm_vg (XDR *, guestfs_int_lvm_vg*);
+extern  bool_t xdr_guestfs_int_lvm_vg_list (XDR *, guestfs_int_lvm_vg_list*);
+extern  bool_t xdr_guestfs_int_lvm_lv (XDR *, guestfs_int_lvm_lv*);
+extern  bool_t xdr_guestfs_int_lvm_lv_list (XDR *, guestfs_int_lvm_lv_list*);
 extern  bool_t xdr_guestfs_int_stat (XDR *, guestfs_int_stat*);
+extern  bool_t xdr_guestfs_int_stat_list (XDR *, guestfs_int_stat_list*);
 extern  bool_t xdr_guestfs_int_statvfs (XDR *, guestfs_int_statvfs*);
+extern  bool_t xdr_guestfs_int_statvfs_list (XDR *, guestfs_int_statvfs_list*);
 extern  bool_t xdr_guestfs_int_dirent (XDR *, guestfs_int_dirent*);
 extern  bool_t xdr_guestfs_int_dirent_list (XDR *, guestfs_int_dirent_list*);
 extern  bool_t xdr_guestfs_mount_args (XDR *, guestfs_mount_args*);
@@ -1594,6 +1628,7 @@ extern  bool_t xdr_guestfs_umask_args (XDR *, guestfs_umask_args*);
 extern  bool_t xdr_guestfs_umask_ret (XDR *, guestfs_umask_ret*);
 extern  bool_t xdr_guestfs_readdir_args (XDR *, guestfs_readdir_args*);
 extern  bool_t xdr_guestfs_readdir_ret (XDR *, guestfs_readdir_ret*);
+extern  bool_t xdr_guestfs_sfdiskM_args (XDR *, guestfs_sfdiskM_args*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -1603,14 +1638,18 @@ extern  bool_t xdr_guestfs_chunk (XDR *, guestfs_chunk*);
 
 #else /* K&R C */
 extern bool_t xdr_str ();
-extern bool_t xdr_guestfs_lvm_int_pv ();
-extern bool_t xdr_guestfs_lvm_int_pv_list ();
-extern bool_t xdr_guestfs_lvm_int_vg ();
-extern bool_t xdr_guestfs_lvm_int_vg_list ();
-extern bool_t xdr_guestfs_lvm_int_lv ();
-extern bool_t xdr_guestfs_lvm_int_lv_list ();
+extern bool_t xdr_guestfs_int_int_bool ();
+extern bool_t xdr_guestfs_int_int_bool_list ();
+extern bool_t xdr_guestfs_int_lvm_pv ();
+extern bool_t xdr_guestfs_int_lvm_pv_list ();
+extern bool_t xdr_guestfs_int_lvm_vg ();
+extern bool_t xdr_guestfs_int_lvm_vg_list ();
+extern bool_t xdr_guestfs_int_lvm_lv ();
+extern bool_t xdr_guestfs_int_lvm_lv_list ();
 extern bool_t xdr_guestfs_int_stat ();
+extern bool_t xdr_guestfs_int_stat_list ();
 extern bool_t xdr_guestfs_int_statvfs ();
+extern bool_t xdr_guestfs_int_statvfs_list ();
 extern bool_t xdr_guestfs_int_dirent ();
 extern bool_t xdr_guestfs_int_dirent_list ();
 extern bool_t xdr_guestfs_mount_args ();
@@ -1798,6 +1837,7 @@ extern bool_t xdr_guestfs_umask_args ();
 extern bool_t xdr_guestfs_umask_ret ();
 extern bool_t xdr_guestfs_readdir_args ();
 extern bool_t xdr_guestfs_readdir_ret ();
+extern bool_t xdr_guestfs_sfdiskM_args ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

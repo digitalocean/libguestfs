@@ -15,8 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-AC_INIT([libguestfs],[1.0.54])
-AM_INIT_AUTOMAKE
+AC_INIT([libguestfs],[1.0.56])
+AM_INIT_AUTOMAKE([foreign])
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -102,6 +102,18 @@ the --with-qemu option.
     AC_MSG_RESULT([yes])
 fi
 
+dnl Set drive interface used by the guestfs_add_drive{,_ro} calls
+dnl ('-drive ...,if=...' option to qemu).
+dnl
+dnl NB. We will change the default in future to virtio, but at the
+dnl moment this causes a performance problem, RHBZ#509383.
+AC_ARG_WITH([drive-if],
+	[AS_HELP_STRING([--with-drive-if],
+	  [set default driver (ide|scsi|virtio) @<:@default=ide@:>@])],
+	[],
+	[with_drive_if=ide])
+AC_DEFINE_UNQUOTED([DRIVE_IF],["$with_drive_if"],[Default drive interface.])
+
 dnl Check for febootstrap etc.
 AC_CHECK_PROG([FEBOOTSTRAP],
 	[febootstrap],[febootstrap],[no])
@@ -155,6 +167,18 @@ else
   test "x$DEBIRF" = "xno" &&
         AC_MSG_ERROR([debirf must be installed])
   DIST="DEBIAN"
+  case $host_cpu in
+      *86)
+          DEBIAN_KERNEL_ARCH=486
+          ;;
+      x86_64)
+          DEBIAN_KERNEL_ARCH=amd64
+          ;;
+      *)
+         DEBIAN_KERNEL_ARCH=$host_cpu
+         ;;
+   esac
+   AC_SUBST(DEBIAN_KERNEL_ARCH)
 fi
 AC_SUBST(DIST)
 
