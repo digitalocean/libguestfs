@@ -20,16 +20,12 @@ builddir ?= $(top_builddir)/java
 
 java_prefix = com/redhat/et/libguestfs
 
+# Pull in automatically generated built sources
+include $(builddir)/Makefile.inc
+
 java_sources = \
-	$(java_prefix)/LibGuestFSException.java \
-	$(java_prefix)/IntBool.java \
-	$(java_prefix)/PV.java \
-	$(java_prefix)/VG.java \
-	$(java_prefix)/LV.java \
-	$(java_prefix)/Stat.java \
-	$(java_prefix)/StatVFS.java \
-	$(java_prefix)/Dirent.java \
-	$(java_prefix)/GuestFS.java
+	$(java_built_sources) \
+	com/redhat/et/libguestfs/LibGuestFSException.java
 
 java_tests = \
 	Bindtests.java \
@@ -41,9 +37,10 @@ EXTRA_DIST = \
 	$(java_sources) \
 	$(java_tests) \
 	run-bindtests \
-	run-java-tests
+	run-java-tests \
+	Makefile.inc
 
-CLEANFILES = doc-stamp
+CLEANFILES = doc-stamp $(builddir)/com/redhat/et/libguestfs/*.class com_redhat_et_libguestfs_GuestFS.h *.class *.jar api/com/redhat/et/libguestfs/*.html api/*
 
 if HAVE_JAVA
 

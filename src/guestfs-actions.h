@@ -66,6 +66,7 @@ extern int guestfs_end_busy (guestfs_h *handle);
 extern int guestfs_set_memsize (guestfs_h *handle, int memsize);
 extern int guestfs_get_memsize (guestfs_h *handle);
 extern int guestfs_get_pid (guestfs_h *handle);
+extern struct guestfs_version *guestfs_version (guestfs_h *handle);
 extern int guestfs_mount (guestfs_h *handle, const char *device, const char *mountpoint);
 extern int guestfs_sync (guestfs_h *handle);
 extern int guestfs_touch (guestfs_h *handle, const char *path);
@@ -205,3 +206,10 @@ extern int guestfs_mknod_c (guestfs_h *handle, int mode, int devmajor, int devmi
 extern int guestfs_umask (guestfs_h *handle, int mask);
 extern struct guestfs_dirent_list *guestfs_readdir (guestfs_h *handle, const char *dir);
 extern int guestfs_sfdiskM (guestfs_h *handle, const char *device, char * const* const lines);
+extern char *guestfs_zfile (guestfs_h *handle, const char *method, const char *path);
+extern struct guestfs_xattr_list *guestfs_getxattrs (guestfs_h *handle, const char *path);
+extern struct guestfs_xattr_list *guestfs_lgetxattrs (guestfs_h *handle, const char *path);
+extern int guestfs_setxattr (guestfs_h *handle, const char *xattr, const char *val, int vallen, const char *path);
+extern int guestfs_lsetxattr (guestfs_h *handle, const char *xattr, const char *val, int vallen, const char *path);
+extern int guestfs_removexattr (guestfs_h *handle, const char *xattr, const char *path);
+extern int guestfs_lremovexattr (guestfs_h *handle, const char *xattr, const char *path);

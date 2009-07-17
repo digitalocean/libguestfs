@@ -308,20 +308,34 @@ PREINIT:
       valout = guestfs_test0rstruct (g, val);
       if (valout == NULL)
         croak ("test0rstruct: %s", guestfs_last_error (g));
-      EXTEND (SP, 14);
+      EXTEND (SP, 2 * 14);
+      PUSHs (sv_2mortal (newSVpv ("pv_name", 0)));
       PUSHs (sv_2mortal (newSVpv (valout->pv_name, 0)));
+      PUSHs (sv_2mortal (newSVpv ("pv_uuid", 0)));
       PUSHs (sv_2mortal (newSVpv (valout->pv_uuid, 32)));
+      PUSHs (sv_2mortal (newSVpv ("pv_fmt", 0)));
       PUSHs (sv_2mortal (newSVpv (valout->pv_fmt, 0)));
+      PUSHs (sv_2mortal (newSVpv ("pv_size", 0)));
       PUSHs (sv_2mortal (my_newSVull (valout->pv_size)));
+      PUSHs (sv_2mortal (newSVpv ("dev_size", 0)));
       PUSHs (sv_2mortal (my_newSVull (valout->dev_size)));
+      PUSHs (sv_2mortal (newSVpv ("pv_free", 0)));
       PUSHs (sv_2mortal (my_newSVull (valout->pv_free)));
+      PUSHs (sv_2mortal (newSVpv ("pv_used", 0)));
       PUSHs (sv_2mortal (my_newSVull (valout->pv_used)));
+      PUSHs (sv_2mortal (newSVpv ("pv_attr", 0)));
       PUSHs (sv_2mortal (newSVpv (valout->pv_attr, 0)));
+      PUSHs (sv_2mortal (newSVpv ("pv_pe_count", 0)));
       PUSHs (sv_2mortal (my_newSVll (valout->pv_pe_count)));
+      PUSHs (sv_2mortal (newSVpv ("pv_pe_alloc_count", 0)));
       PUSHs (sv_2mortal (my_newSVll (valout->pv_pe_alloc_count)));
+      PUSHs (sv_2mortal (newSVpv ("pv_tags", 0)));
       PUSHs (sv_2mortal (newSVpv (valout->pv_tags, 0)));
+      PUSHs (sv_2mortal (newSVpv ("pe_start", 0)));
       PUSHs (sv_2mortal (my_newSVull (valout->pe_start)));
+      PUSHs (sv_2mortal (newSVpv ("pv_mda_count", 0)));
       PUSHs (sv_2mortal (my_newSVll (valout->pv_mda_count)));
+      PUSHs (sv_2mortal (newSVpv ("pv_mda_free", 0)));
       PUSHs (sv_2mortal (my_newSVull (valout->pv_mda_free)));
       free (valout);
 
@@ -334,20 +348,34 @@ PREINIT:
       valout = guestfs_test0rstructerr (g);
       if (valout == NULL)
         croak ("test0rstructerr: %s", guestfs_last_error (g));
-      EXTEND (SP, 14);
+      EXTEND (SP, 2 * 14);
+      PUSHs (sv_2mortal (newSVpv ("pv_name", 0)));
       PUSHs (sv_2mortal (newSVpv (valout->pv_name, 0)));
+      PUSHs (sv_2mortal (newSVpv ("pv_uuid", 0)));
       PUSHs (sv_2mortal (newSVpv (valout->pv_uuid, 32)));
+      PUSHs (sv_2mortal (newSVpv ("pv_fmt", 0)));
       PUSHs (sv_2mortal (newSVpv (valout->pv_fmt, 0)));
+      PUSHs (sv_2mortal (newSVpv ("pv_size", 0)));
       PUSHs (sv_2mortal (my_newSVull (valout->pv_size)));
+      PUSHs (sv_2mortal (newSVpv ("dev_size", 0)));
       PUSHs (sv_2mortal (my_newSVull (valout->dev_size)));
+      PUSHs (sv_2mortal (newSVpv ("pv_free", 0)));
       PUSHs (sv_2mortal (my_newSVull (valout->pv_free)));
+      PUSHs (sv_2mortal (newSVpv ("pv_used", 0)));
       PUSHs (sv_2mortal (my_newSVull (valout->pv_used)));
+      PUSHs (sv_2mortal (newSVpv ("pv_attr", 0)));
       PUSHs (sv_2mortal (newSVpv (valout->pv_attr, 0)));
+      PUSHs (sv_2mortal (newSVpv ("pv_pe_count", 0)));
       PUSHs (sv_2mortal (my_newSVll (valout->pv_pe_count)));
+      PUSHs (sv_2mortal (newSVpv ("pv_pe_alloc_count", 0)));
       PUSHs (sv_2mortal (my_newSVll (valout->pv_pe_alloc_count)));
+      PUSHs (sv_2mortal (newSVpv ("pv_tags", 0)));
       PUSHs (sv_2mortal (newSVpv (valout->pv_tags, 0)));
+      PUSHs (sv_2mortal (newSVpv ("pe_start", 0)));
       PUSHs (sv_2mortal (my_newSVull (valout->pe_start)));
+      PUSHs (sv_2mortal (newSVpv ("pv_mda_count", 0)));
       PUSHs (sv_2mortal (my_newSVll (valout->pv_mda_count)));
+      PUSHs (sv_2mortal (newSVpv ("pv_mda_free", 0)));
       PUSHs (sv_2mortal (my_newSVull (valout->pv_mda_free)));
       free (valout);
 
@@ -781,6 +809,26 @@ PREINIT:
       RETVAL
 
 void
+version (g)
+      guestfs_h *g;
+PREINIT:
+      struct guestfs_version *version;
+ PPCODE:
+      version = guestfs_version (g);
+      if (version == NULL)
+        croak ("version: %s", guestfs_last_error (g));
+      EXTEND (SP, 2 * 4);
+      PUSHs (sv_2mortal (newSVpv ("major", 0)));
+      PUSHs (sv_2mortal (my_newSVll (version->major)));
+      PUSHs (sv_2mortal (newSVpv ("minor", 0)));
+      PUSHs (sv_2mortal (my_newSVll (version->minor)));
+      PUSHs (sv_2mortal (newSVpv ("release", 0)));
+      PUSHs (sv_2mortal (my_newSVll (version->release)));
+      PUSHs (sv_2mortal (newSVpv ("extra", 0)));
+      PUSHs (sv_2mortal (newSVpv (version->extra, 0)));
+      free (version);
+
+void
 mount (g, device, mountpoint)
       guestfs_h *g;
       char *device;
@@ -1123,8 +1171,10 @@ PREINIT:
       nrnodescreated = guestfs_aug_defnode (g, name, expr, val);
       if (nrnodescreated == NULL)
         croak ("aug_defnode: %s", guestfs_last_error (g));
-      EXTEND (SP, 2);
+      EXTEND (SP, 2 * 2);
+      PUSHs (sv_2mortal (newSVpv ("i", 0)));
       PUSHs (sv_2mortal (newSVnv (nrnodescreated->i)));
+      PUSHs (sv_2mortal (newSVpv ("b", 0)));
       PUSHs (sv_2mortal (newSVnv (nrnodescreated->b)));
       free (nrnodescreated);
 
@@ -1562,19 +1612,32 @@ PREINIT:
       statbuf = guestfs_stat (g, path);
       if (statbuf == NULL)
         croak ("stat: %s", guestfs_last_error (g));
-      EXTEND (SP, 13);
+      EXTEND (SP, 2 * 13);
+      PUSHs (sv_2mortal (newSVpv ("dev", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->dev)));
+      PUSHs (sv_2mortal (newSVpv ("ino", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->ino)));
+      PUSHs (sv_2mortal (newSVpv ("mode", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->mode)));
+      PUSHs (sv_2mortal (newSVpv ("nlink", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->nlink)));
+      PUSHs (sv_2mortal (newSVpv ("uid", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->uid)));
+      PUSHs (sv_2mortal (newSVpv ("gid", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->gid)));
+      PUSHs (sv_2mortal (newSVpv ("rdev", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->rdev)));
+      PUSHs (sv_2mortal (newSVpv ("size", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->size)));
+      PUSHs (sv_2mortal (newSVpv ("blksize", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->blksize)));
+      PUSHs (sv_2mortal (newSVpv ("blocks", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->blocks)));
+      PUSHs (sv_2mortal (newSVpv ("atime", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->atime)));
+      PUSHs (sv_2mortal (newSVpv ("mtime", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->mtime)));
+      PUSHs (sv_2mortal (newSVpv ("ctime", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->ctime)));
       free (statbuf);
 
@@ -1588,19 +1651,32 @@ PREINIT:
       statbuf = guestfs_lstat (g, path);
       if (statbuf == NULL)
         croak ("lstat: %s", guestfs_last_error (g));
-      EXTEND (SP, 13);
+      EXTEND (SP, 2 * 13);
+      PUSHs (sv_2mortal (newSVpv ("dev", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->dev)));
+      PUSHs (sv_2mortal (newSVpv ("ino", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->ino)));
+      PUSHs (sv_2mortal (newSVpv ("mode", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->mode)));
+      PUSHs (sv_2mortal (newSVpv ("nlink", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->nlink)));
+      PUSHs (sv_2mortal (newSVpv ("uid", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->uid)));
+      PUSHs (sv_2mortal (newSVpv ("gid", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->gid)));
+      PUSHs (sv_2mortal (newSVpv ("rdev", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->rdev)));
+      PUSHs (sv_2mortal (newSVpv ("size", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->size)));
+      PUSHs (sv_2mortal (newSVpv ("blksize", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->blksize)));
+      PUSHs (sv_2mortal (newSVpv ("blocks", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->blocks)));
+      PUSHs (sv_2mortal (newSVpv ("atime", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->atime)));
+      PUSHs (sv_2mortal (newSVpv ("mtime", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->mtime)));
+      PUSHs (sv_2mortal (newSVpv ("ctime", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->ctime)));
       free (statbuf);
 
@@ -1614,17 +1690,28 @@ PREINIT:
       statbuf = guestfs_statvfs (g, path);
       if (statbuf == NULL)
         croak ("statvfs: %s", guestfs_last_error (g));
-      EXTEND (SP, 11);
+      EXTEND (SP, 2 * 11);
+      PUSHs (sv_2mortal (newSVpv ("bsize", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->bsize)));
+      PUSHs (sv_2mortal (newSVpv ("frsize", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->frsize)));
+      PUSHs (sv_2mortal (newSVpv ("blocks", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->blocks)));
+      PUSHs (sv_2mortal (newSVpv ("bfree", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->bfree)));
+      PUSHs (sv_2mortal (newSVpv ("bavail", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->bavail)));
+      PUSHs (sv_2mortal (newSVpv ("files", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->files)));
+      PUSHs (sv_2mortal (newSVpv ("ffree", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->ffree)));
+      PUSHs (sv_2mortal (newSVpv ("favail", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->favail)));
+      PUSHs (sv_2mortal (newSVpv ("fsid", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->fsid)));
+      PUSHs (sv_2mortal (newSVpv ("flag", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->flag)));
+      PUSHs (sv_2mortal (newSVpv ("namemax", 0)));
       PUSHs (sv_2mortal (my_newSVll (statbuf->namemax)));
       free (statbuf);
 
@@ -2799,4 +2886,114 @@ PREINIT:
       free (lines);
       if (r == -1)
         croak ("sfdiskM: %s", guestfs_last_error (g));
+
+SV *
+zfile (g, method, path)
+      guestfs_h *g;
+      char *method;
+      char *path;
+PREINIT:
+      char *description;
+   CODE:
+      description = guestfs_zfile (g, method, path);
+      if (description == NULL)
+        croak ("zfile: %s", guestfs_last_error (g));
+      RETVAL = newSVpv (description, 0);
+      free (description);
+ OUTPUT:
+      RETVAL
+
+void
+getxattrs (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      struct guestfs_xattr_list *xattrs;
+      int i;
+      HV *hv;
+ PPCODE:
+      xattrs = guestfs_getxattrs (g, path);
+      if (xattrs == NULL)
+        croak ("getxattrs: %s", guestfs_last_error (g));
+      EXTEND (SP, xattrs->len);
+      for (i = 0; i < xattrs->len; ++i) {
+        hv = newHV ();
+        (void) hv_store (hv, "attrname", 8, newSVpv (xattrs->val[i].attrname, 0), 0);
+        (void) hv_store (hv, "attrval", 7, newSVpv (xattrs->val[i].attrval, xattrs->val[i].attrval_len), 0);
+        PUSHs (sv_2mortal (newRV ((SV *) hv)));
+      }
+      guestfs_free_xattr_list (xattrs);
+
+void
+lgetxattrs (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      struct guestfs_xattr_list *xattrs;
+      int i;
+      HV *hv;
+ PPCODE:
+      xattrs = guestfs_lgetxattrs (g, path);
+      if (xattrs == NULL)
+        croak ("lgetxattrs: %s", guestfs_last_error (g));
+      EXTEND (SP, xattrs->len);
+      for (i = 0; i < xattrs->len; ++i) {
+        hv = newHV ();
+        (void) hv_store (hv, "attrname", 8, newSVpv (xattrs->val[i].attrname, 0), 0);
+        (void) hv_store (hv, "attrval", 7, newSVpv (xattrs->val[i].attrval, xattrs->val[i].attrval_len), 0);
+        PUSHs (sv_2mortal (newRV ((SV *) hv)));
+      }
+      guestfs_free_xattr_list (xattrs);
+
+void
+setxattr (g, xattr, val, vallen, path)
+      guestfs_h *g;
+      char *xattr;
+      char *val;
+      int vallen;
+      char *path;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_setxattr (g, xattr, val, vallen, path);
+      if (r == -1)
+        croak ("setxattr: %s", guestfs_last_error (g));
+
+void
+lsetxattr (g, xattr, val, vallen, path)
+      guestfs_h *g;
+      char *xattr;
+      char *val;
+      int vallen;
+      char *path;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_lsetxattr (g, xattr, val, vallen, path);
+      if (r == -1)
+        croak ("lsetxattr: %s", guestfs_last_error (g));
+
+void
+removexattr (g, xattr, path)
+      guestfs_h *g;
+      char *xattr;
+      char *path;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_removexattr (g, xattr, path);
+      if (r == -1)
+        croak ("removexattr: %s", guestfs_last_error (g));
+
+void
+lremovexattr (g, xattr, path)
+      guestfs_h *g;
+      char *xattr;
+      char *path;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_lremovexattr (g, xattr, path);
+      if (r == -1)
+        croak ("lremovexattr: %s", guestfs_last_error (g));
 

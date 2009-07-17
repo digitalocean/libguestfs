@@ -133,7 +133,11 @@ module Guestfs (
   mknod_b,
   mknod_c,
   umask,
-  sfdiskM
+  sfdiskM,
+  setxattr,
+  lsetxattr,
+  removexattr,
+  lremovexattr
   ) where
 import Foreign
 import Foreign.C
@@ -1498,6 +1502,54 @@ foreign import ccall unsafe "guestfs_sfdiskM" c_sfdiskM
 sfdiskM :: GuestfsH -> String -> [String] -> IO ()
 sfdiskM h device lines = do
   r <- withCString device $ \device -> withMany withCString lines $ \lines -> withArray0 nullPtr lines $ \lines -> withForeignPtr h (\p -> c_sfdiskM p device lines)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_setxattr" c_setxattr
+  :: GuestfsP -> CString -> CString -> CInt -> CString -> IO (CInt)
+
+setxattr :: GuestfsH -> String -> String -> Int -> String -> IO ()
+setxattr h xattr val vallen path = do
+  r <- withCString xattr $ \xattr -> withCString val $ \val -> withCString path $ \path -> withForeignPtr h (\p -> c_setxattr p xattr val (fromIntegral vallen) path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_lsetxattr" c_lsetxattr
+  :: GuestfsP -> CString -> CString -> CInt -> CString -> IO (CInt)
+
+lsetxattr :: GuestfsH -> String -> String -> Int -> String -> IO ()
+lsetxattr h xattr val vallen path = do
+  r <- withCString xattr $ \xattr -> withCString val $ \val -> withCString path $ \path -> withForeignPtr h (\p -> c_lsetxattr p xattr val (fromIntegral vallen) path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_removexattr" c_removexattr
+  :: GuestfsP -> CString -> CString -> IO (CInt)
+
+removexattr :: GuestfsH -> String -> String -> IO ()
+removexattr h xattr path = do
+  r <- withCString xattr $ \xattr -> withCString path $ \path -> withForeignPtr h (\p -> c_removexattr p xattr path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_lremovexattr" c_lremovexattr
+  :: GuestfsP -> CString -> CString -> IO (CInt)
+
+lremovexattr :: GuestfsH -> String -> String -> IO ()
+lremovexattr h xattr path = do
+  r <- withCString xattr $ \xattr -> withCString path $ \path -> withForeignPtr h (\p -> c_lremovexattr p xattr path)
   if (r == -1)
     then do
       err <- last_error h

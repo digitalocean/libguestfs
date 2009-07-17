@@ -126,6 +126,18 @@ type dirent = {
   name : string;
 }
 
+type version = {
+  major : int64;
+  minor : int64;
+  release : int64;
+  extra : string;
+}
+
+type xattr = {
+  attrname : string;
+  attrval : string;
+}
+
 external test0 : t -> string -> string option -> string array -> bool -> int -> string -> string -> unit = "ocaml_guestfs_test0_byte" "ocaml_guestfs_test0"
 external test0rint : t -> string -> int = "ocaml_guestfs_test0rint"
 external test0rinterr : t -> int = "ocaml_guestfs_test0rinterr"
@@ -173,6 +185,7 @@ external end_busy : t -> unit = "ocaml_guestfs_end_busy"
 external set_memsize : t -> int -> unit = "ocaml_guestfs_set_memsize"
 external get_memsize : t -> int = "ocaml_guestfs_get_memsize"
 external get_pid : t -> int = "ocaml_guestfs_get_pid"
+external version : t -> version = "ocaml_guestfs_version"
 external mount : t -> string -> string -> unit = "ocaml_guestfs_mount"
 external sync : t -> unit = "ocaml_guestfs_sync"
 external touch : t -> string -> unit = "ocaml_guestfs_touch"
@@ -312,3 +325,10 @@ external mknod_c : t -> int -> int -> int -> string -> unit = "ocaml_guestfs_mkn
 external umask : t -> int -> int = "ocaml_guestfs_umask"
 external readdir : t -> string -> dirent array = "ocaml_guestfs_readdir"
 external sfdiskM : t -> string -> string array -> unit = "ocaml_guestfs_sfdiskM"
+external zfile : t -> string -> string -> string = "ocaml_guestfs_zfile"
+external getxattrs : t -> string -> xattr array = "ocaml_guestfs_getxattrs"
+external lgetxattrs : t -> string -> xattr array = "ocaml_guestfs_lgetxattrs"
+external setxattr : t -> string -> string -> int -> string -> unit = "ocaml_guestfs_setxattr"
+external lsetxattr : t -> string -> string -> int -> string -> unit = "ocaml_guestfs_lsetxattr"
+external removexattr : t -> string -> string -> unit = "ocaml_guestfs_removexattr"
+external lremovexattr : t -> string -> string -> unit = "ocaml_guestfs_lremovexattr"

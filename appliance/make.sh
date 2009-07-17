@@ -26,8 +26,8 @@ set -x
 if [ "REDHAT" = "REDHAT" ]; then
   cd ..
   # Decide on names for the final output.  These have to match Makefile.am.
-  output=appliance/initramfs.fedora-11.i686.img
-  koutput=appliance/vmlinuz.fedora-11.i686
+  output=appliance/initramfs.fedora-11.x86_64.img
+  koutput=appliance/vmlinuz.fedora-11.x86_64
   rm -f $output
   rm -f $koutput
 
@@ -39,7 +39,7 @@ if [ "REDHAT" = "REDHAT" ]; then
   done
   exec 5<&-
 
-  febootstrap $packages -u updates-released-f11 fedora-11 initramfs 
+  febootstrap $packages -u http://www.mirrorservice.org/sites/download.fedora.redhat.com/pub/fedora/linux/updates/11/x86_64/ fedora-11 initramfs http://www.mirrorservice.org/sites/download.fedora.redhat.com/pub/fedora/linux/releases/11/Fedora/x86_64/os/
 
   # /sysroot is where the guest root filesystem will be mounted.
   febootstrap-run initramfs -- mkdir -p --mode=0777 /sysroot

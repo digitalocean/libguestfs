@@ -39,7 +39,7 @@ set -e
 cd ../initramfs
 
 incfiles=../appliance/supermin.incfiles
-hostfiles=../appliance/initramfs.fedora-11.i686.supermin.hostfiles
+hostfiles=../appliance/initramfs.fedora-11.x86_64.supermin.hostfiles
 
 exec 5>$incfiles
 exec 6>$hostfiles

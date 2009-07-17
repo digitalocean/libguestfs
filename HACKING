@@ -30,6 +30,9 @@ Directories
 appliance/
 	The qemu appliance, build scripts and so on.
 
+cat/
+	The virt-cat tool.
+
 capitests/
 	Automated tests of the C API.
 
@@ -38,6 +41,9 @@ contrib/
 
 daemon/
 	The daemon that runs inside the guest and carries out actions.
+
+df/
+	The virt-df tool.
 
 examples/
 	The examples.
@@ -85,6 +91,9 @@ src/
 	Source code to the C library.
 	Also contains the crucial generator program.
 
+v2v/
+	Xen to KVM (V2V) conversion tool.
+
 Debugging
 ----------------------------------------------------------------------
 
@@ -97,8 +106,8 @@ they will show up if you use 'guestfish -v'.
 Patches
 ----------------------------------------------------------------------
 
-Submit patches to the fedora-virt mailing list:
-http://www.redhat.com/mailman/listinfo/fedora-virt
+Submit patches to the mailing list:
+http://www.redhat.com/mailman/listinfo/libguestfs
 and CC to rjones@redhat.com
 
 I18N

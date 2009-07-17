@@ -172,3 +172,37 @@
  void guestfs_free_dirent (struct guestfs_free_dirent *);
  void guestfs_free_dirent_list (struct guestfs_free_dirent_list *);
 
+=head2 guestfs_version
+
+ struct guestfs_version {
+   int64_t major;
+   int64_t minor;
+   int64_t release;
+   char *extra;
+ };
+ 
+ struct guestfs_version_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_version *val; /* Elements. */
+ };
+ 
+ void guestfs_free_version (struct guestfs_free_version *);
+ void guestfs_free_version_list (struct guestfs_free_version_list *);
+
+=head2 guestfs_xattr
+
+ struct guestfs_xattr {
+   char *attrname;
+   /* The next two fields describe a byte array. */
+   uint32_t attrval_len;
+   char *attrval;
+ };
+ 
+ struct guestfs_xattr_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_xattr *val; /* Elements. */
+ };
+ 
+ void guestfs_free_xattr (struct guestfs_free_xattr *);
+ void guestfs_free_xattr_list (struct guestfs_free_xattr_list *);
+

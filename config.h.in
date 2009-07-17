@@ -90,6 +90,18 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
+/* Extra version string */
+#undef PACKAGE_VERSION_EXTRA
+
+/* Major version number */
+#undef PACKAGE_VERSION_MAJOR
+
+/* Minor version number */
+#undef PACKAGE_VERSION_MINOR
+
+/* Release number */
+#undef PACKAGE_VERSION_RELEASE
+
 /* Define to 1 if the C compiler supports function prototypes. */
 #undef PROTOTYPES
 
@@ -104,9 +116,6 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
-
-/* Name of Fedora updates repository. */
-#undef UPDATES
 
 /* Version number of package */
 #undef VERSION

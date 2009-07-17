@@ -426,6 +426,39 @@ class GuestFS:
         """
         return libguestfsmod.get_pid (self._o)
 
+    def version (self):
+        u"""Return the libguestfs version number that the program is
+        linked against.
+        
+        Note that because of dynamic linking this is not
+        necessarily the version of libguestfs that you compiled
+        against. You can compile the program, and then at
+        runtime dynamically link against a completely different
+        "libguestfs.so" library.
+        
+        This call was added in version 1.0.58. In previous
+        versions of libguestfs there was no way to get the
+        version number. From C code you can use ELF weak linking
+        tricks to find out if this symbol exists (if it doesn't,
+        then it's an earlier version).
+        
+        The call returns a structure with four elements. The
+        first three ("major", "minor" and "release") are numbers
+        and correspond to the usual version triplet. The fourth
+        element ("extra") is a string and is normally empty, but
+        may be used for distro-specific information.
+        
+        To construct the original version string:
+        "$major.$minor.$release$extra"
+        
+        *Note:* Don't use this call to test for availability of
+        features. Distro backports makes this unreliable.
+        
+        This function returns a dictionary, with keys matching
+        the various fields in the guestfs_version structure.
+        """
+        return libguestfsmod.version (self._o)
+
     def mount (self, device, mountpoint):
         u"""Mount a guest disk at a position in the filesystem.
         Block devices are named "/dev/sda", "/dev/sdb" and so
@@ -1973,4 +2006,69 @@ class GuestFS:
         easily destroy all your data.
         """
         return libguestfsmod.sfdiskM (self._o, device, lines)
+
+    def zfile (self, method, path):
+        u"""This command runs "file" after first decompressing
+        "path" using "method".
+        
+        "method" must be one of "gzip", "compress" or "bzip2".
+        
+        See also: "g.file"
+        """
+        return libguestfsmod.zfile (self._o, method, path)
+
+    def getxattrs (self, path):
+        u"""This call lists the extended attributes of the file or
+        directory "path".
+        
+        At the system call level, this is a combination of the
+        listxattr(2) and getxattr(2) calls.
+        
+        See also: "g.lgetxattrs", attr(5).
+        
+        This function returns a list of xattrs. Each xattr is
+        represented as a dictionary.
+        """
+        return libguestfsmod.getxattrs (self._o, path)
+
+    def lgetxattrs (self, path):
+        u"""This is the same as "g.getxattrs", but if "path" is a
+        symbolic link, then it returns the extended attributes
+        of the link itself.
+        
+        This function returns a list of xattrs. Each xattr is
+        represented as a dictionary.
+        """
+        return libguestfsmod.lgetxattrs (self._o, path)
+
+    def setxattr (self, xattr, val, vallen, path):
+        u"""This call sets the extended attribute named "xattr" of
+        the file "path" to the value "val" (of length "vallen").
+        The value is arbitrary 8 bit data.
+        
+        See also: "g.lsetxattr", attr(5).
+        """
+        return libguestfsmod.setxattr (self._o, xattr, val, vallen, path)
+
+    def lsetxattr (self, xattr, val, vallen, path):
+        u"""This is the same as "g.setxattr", but if "path" is a
+        symbolic link, then it sets an extended attribute of the
+        link itself.
+        """
+        return libguestfsmod.lsetxattr (self._o, xattr, val, vallen, path)
+
+    def removexattr (self, xattr, path):
+        u"""This call removes the extended attribute named "xattr"
+        of the file "path".
+        
+        See also: "g.lremovexattr", attr(5).
+        """
+        return libguestfsmod.removexattr (self._o, xattr, path)
+
+    def lremovexattr (self, xattr, path):
+        u"""This is the same as "g.removexattr", but if "path" is a
+        symbolic link, then it removes an extended attribute of
+        the link itself.
+        """
+        return libguestfsmod.lremovexattr (self._o, xattr, path)
 

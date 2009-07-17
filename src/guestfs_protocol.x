@@ -134,6 +134,22 @@ struct guestfs_int_dirent {
 
 typedef struct guestfs_int_dirent guestfs_int_dirent_list<>;
 
+struct guestfs_int_version {
+  hyper major;
+  hyper minor;
+  hyper release;
+  string extra<>;
+};
+
+typedef struct guestfs_int_version guestfs_int_version_list<>;
+
+struct guestfs_int_xattr {
+  string attrname<>;
+  opaque attrval<>;
+};
+
+typedef struct guestfs_int_xattr guestfs_int_xattr_list<>;
+
 struct guestfs_mount_args {
   string device<>;
   string mountpoint<>;
@@ -942,6 +958,55 @@ struct guestfs_sfdiskM_args {
   str lines<>;
 };
 
+struct guestfs_zfile_args {
+  string method<>;
+  string path<>;
+};
+
+struct guestfs_zfile_ret {
+  string description<>;
+};
+
+struct guestfs_getxattrs_args {
+  string path<>;
+};
+
+struct guestfs_getxattrs_ret {
+  guestfs_int_xattr_list xattrs;
+};
+
+struct guestfs_lgetxattrs_args {
+  string path<>;
+};
+
+struct guestfs_lgetxattrs_ret {
+  guestfs_int_xattr_list xattrs;
+};
+
+struct guestfs_setxattr_args {
+  string xattr<>;
+  string val<>;
+  int vallen;
+  string path<>;
+};
+
+struct guestfs_lsetxattr_args {
+  string xattr<>;
+  string val<>;
+  int vallen;
+  string path<>;
+};
+
+struct guestfs_removexattr_args {
+  string xattr<>;
+  string path<>;
+};
+
+struct guestfs_lremovexattr_args {
+  string xattr<>;
+  string path<>;
+};
+
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
   GUESTFS_PROC_SYNC = 2,
@@ -1082,6 +1147,13 @@ enum guestfs_procedure {
   GUESTFS_PROC_UMASK = 137,
   GUESTFS_PROC_READDIR = 138,
   GUESTFS_PROC_SFDISKM = 139,
+  GUESTFS_PROC_ZFILE = 140,
+  GUESTFS_PROC_GETXATTRS = 141,
+  GUESTFS_PROC_LGETXATTRS = 142,
+  GUESTFS_PROC_SETXATTR = 143,
+  GUESTFS_PROC_LSETXATTR = 144,
+  GUESTFS_PROC_REMOVEXATTR = 145,
+  GUESTFS_PROC_LREMOVEXATTR = 146,
   GUESTFS_PROC_NR_PROCS
 };
 

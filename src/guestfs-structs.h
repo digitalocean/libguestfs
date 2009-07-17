@@ -174,3 +174,32 @@ struct guestfs_dirent_list {
 extern void guestfs_free_dirent (struct guestfs_dirent *);
 extern void guestfs_free_dirent_list (struct guestfs_dirent_list *);
 
+struct guestfs_version {
+  int64_t major;
+  int64_t minor;
+  int64_t release;
+  char *extra;
+};
+
+struct guestfs_version_list {
+  uint32_t len;
+  struct guestfs_version *val;
+};
+
+extern void guestfs_free_version (struct guestfs_version *);
+extern void guestfs_free_version_list (struct guestfs_version_list *);
+
+struct guestfs_xattr {
+  char *attrname;
+  uint32_t attrval_len;
+  char *attrval;
+};
+
+struct guestfs_xattr_list {
+  uint32_t len;
+  struct guestfs_xattr *val;
+};
+
+extern void guestfs_free_xattr (struct guestfs_xattr *);
+extern void guestfs_free_xattr_list (struct guestfs_xattr_list *);
+

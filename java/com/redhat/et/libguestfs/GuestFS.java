@@ -900,6 +900,48 @@ public HashMap<String,String> test0rhashtableerr ()
     throws LibGuestFSException;
 
   /**
+   * get the library version number
+   * <p>
+   * Return the libguestfs version number that the program is
+   * linked against.
+   * <p>
+   * Note that because of dynamic linking this is not
+   * necessarily the version of libguestfs that you compiled
+   * against. You can compile the program, and then at
+   * runtime dynamically link against a completely different
+   * "libguestfs.so" library.
+   * <p>
+   * This call was added in version 1.0.58. In previous
+   * versions of libguestfs there was no way to get the
+   * version number. From C code you can use ELF weak linking
+   * tricks to find out if this symbol exists (if it doesn't,
+   * then it's an earlier version).
+   * <p>
+   * The call returns a structure with four elements. The
+   * first three ("major", "minor" and "release") are numbers
+   * and correspond to the usual version triplet. The fourth
+   * element ("extra") is a string and is normally empty, but
+   * may be used for distro-specific information.
+   * <p>
+   * To construct the original version string:
+   * "$major.$minor.$release$extra"
+   * <p>
+   * *Note:* Don't use this call to test for availability of
+   * features. Distro backports makes this unreliable.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public Version version ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("version: handle is closed");
+    return _version (g);
+  }
+  private native Version _version (long g)
+    throws LibGuestFSException;
+
+  /**
    * mount a guest disk at a position in the filesystem
    * <p>
    * Mount a guest disk at a position in the filesystem.
@@ -4045,6 +4087,149 @@ public HashMap<String,String> test0rhashtableerr ()
     _sfdiskM (g, device, lines);
   }
   private native void _sfdiskM (long g, String device, String[] lines)
+    throws LibGuestFSException;
+
+  /**
+   * determine file type inside a compressed file
+   * <p>
+   * This command runs "file" after first decompressing
+   * "path" using "method".
+   * <p>
+   * "method" must be one of "gzip", "compress" or "bzip2".
+   * <p>
+   * See also: "g.file"
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String zfile (String method, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("zfile: handle is closed");
+    return _zfile (g, method, path);
+  }
+  private native String _zfile (long g, String method, String path)
+    throws LibGuestFSException;
+
+  /**
+   * list extended attributes of a file or directory
+   * <p>
+   * This call lists the extended attributes of the file or
+   * directory "path".
+   * <p>
+   * At the system call level, this is a combination of the
+   * listxattr(2) and getxattr(2) calls.
+   * <p>
+   * See also: "g.lgetxattrs", attr(5).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public XAttr[] getxattrs (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("getxattrs: handle is closed");
+    return _getxattrs (g, path);
+  }
+  private native XAttr[] _getxattrs (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * list extended attributes of a file or directory
+   * <p>
+   * This is the same as "g.getxattrs", but if "path" is a
+   * symbolic link, then it returns the extended attributes
+   * of the link itself.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public XAttr[] lgetxattrs (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lgetxattrs: handle is closed");
+    return _lgetxattrs (g, path);
+  }
+  private native XAttr[] _lgetxattrs (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * set extended attribute of a file or directory
+   * <p>
+   * This call sets the extended attribute named "xattr" of
+   * the file "path" to the value "val" (of length "vallen").
+   * The value is arbitrary 8 bit data.
+   * <p>
+   * See also: "g.lsetxattr", attr(5).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void setxattr (String xattr, String val, int vallen, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("setxattr: handle is closed");
+    _setxattr (g, xattr, val, vallen, path);
+  }
+  private native void _setxattr (long g, String xattr, String val, int vallen, String path)
+    throws LibGuestFSException;
+
+  /**
+   * set extended attribute of a file or directory
+   * <p>
+   * This is the same as "g.setxattr", but if "path" is a
+   * symbolic link, then it sets an extended attribute of the
+   * link itself.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void lsetxattr (String xattr, String val, int vallen, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lsetxattr: handle is closed");
+    _lsetxattr (g, xattr, val, vallen, path);
+  }
+  private native void _lsetxattr (long g, String xattr, String val, int vallen, String path)
+    throws LibGuestFSException;
+
+  /**
+   * remove extended attribute of a file or directory
+   * <p>
+   * This call removes the extended attribute named "xattr"
+   * of the file "path".
+   * <p>
+   * See also: "g.lremovexattr", attr(5).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void removexattr (String xattr, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("removexattr: handle is closed");
+    _removexattr (g, xattr, path);
+  }
+  private native void _removexattr (long g, String xattr, String path)
+    throws LibGuestFSException;
+
+  /**
+   * remove extended attribute of a file or directory
+   * <p>
+   * This is the same as "g.removexattr", but if "path" is a
+   * symbolic link, then it removes an extended attribute of
+   * the link itself.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void lremovexattr (String xattr, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lremovexattr: handle is closed");
+    _lremovexattr (g, xattr, path);
+  }
+  private native void _lremovexattr (long g, String xattr, String path)
     throws LibGuestFSException;
 
 }

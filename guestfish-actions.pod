@@ -742,6 +742,18 @@ For more information on states, see L<guestfs(3)>.
 
 This returns the verbose messages flag.
 
+=head2 getxattrs
+
+ getxattrs path
+
+This call lists the extended attributes of the file or directory
+C<path>.
+
+At the system call level, this is a combination of the
+L<listxattr(2)> and L<getxattr(2)> calls.
+
+See also: C<lgetxattrs>, L<attr(5)>.
+
 =head2 glob-expand
 
  glob-expand pattern
@@ -888,6 +900,14 @@ using L<qemu(1)>.
 You should call this after configuring the handle
 (eg. adding drives) but before performing any actions.
 
+=head2 lgetxattrs
+
+ lgetxattrs path
+
+This is the same as C<getxattrs>, but if C<path>
+is a symbolic link, then it returns the extended attributes
+of the link itself.
+
 =head2 list-devices
 
  list-devices
@@ -917,6 +937,14 @@ there is no cwd) in the format of 'ls -la'.
 This command is mostly useful for interactive sessions.  It
 is I<not> intended that you try to parse the output string.
 
+=head2 lremovexattr
+
+ lremovexattr xattr path
+
+This is the same as C<removexattr>, but if C<path>
+is a symbolic link, then it removes an extended attribute
+of the link itself.
+
 =head2 ls
 
  ls directory
@@ -927,6 +955,14 @@ hidden files are shown.
 
 This command is mostly useful for interactive sessions.  Programs
 should probably use C<readdir> instead.
+
+=head2 lsetxattr
+
+ lsetxattr xattr val vallen path
+
+This is the same as C<setxattr>, but if C<path>
+is a symbolic link, then it sets an extended attribute
+of the link itself.
 
 =head2 lstat
 
@@ -1258,6 +1294,15 @@ This function is primarily intended for use by programs.  To
 get a simple list of names, use C<ls>.  To get a printable
 directory for human consumption, use C<ll>.
 
+=head2 removexattr
+
+ removexattr xattr path
+
+This call removes the extended attribute named C<xattr>
+of the file C<path>.
+
+See also: C<lremovexattr>, L<attr(5)>.
+
 =head2 resize2fs
 
  resize2fs device
@@ -1425,6 +1470,16 @@ If C<verbose> is true, this turns on verbose messages (to C<stderr>).
 
 Verbose messages are disabled unless the environment variable
 C<LIBGUESTFS_DEBUG> is defined and set to C<1>.
+
+=head2 setxattr
+
+ setxattr xattr val vallen path
+
+This call sets the extended attribute named C<xattr>
+of the file C<path> to the value C<val> (of length C<vallen>).
+The value is arbitrary 8 bit data.
+
+See also: C<lsetxattr>, L<attr(5)>.
 
 =head2 sfdisk
 
@@ -1741,6 +1796,35 @@ See also C<download>.
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
 
+=head2 version
+
+ version
+
+Return the libguestfs version number that the program is linked
+against.
+
+Note that because of dynamic linking this is not necessarily
+the version of libguestfs that you compiled against.  You can
+compile the program, and then at runtime dynamically link
+against a completely different C<libguestfs.so> library.
+
+This call was added in version C<1.0.58>.  In previous
+versions of libguestfs there was no way to get the version
+number.  From C code you can use ELF weak linking tricks to find out if
+this symbol exists (if it doesn't, then it's an earlier version).
+
+The call returns a structure with four elements.  The first
+three (C<major>, C<minor> and C<release>) are numbers and
+correspond to the usual version triplet.  The fourth element
+(C<extra>) is a string and is normally empty, but may be
+used for distro-specific information.
+
+To construct the original version string:
+C<$major.$minor.$release$extra>
+
+I<Note:> Don't use this call to test for availability
+of features.  Distro backports makes this unreliable.
+
 =head2 vg-activate
 
  vg-activate true|false 'volgroups ...'
@@ -1871,4 +1955,15 @@ mounted.
 
 It is possible that using this program can damage the filesystem
 or data on the filesystem.
+
+=head2 zfile
+
+ zfile method path
+
+This command runs C<file> after first decompressing C<path>
+using C<method>.
+
+C<method> must be one of C<gzip>, C<compress> or C<bzip2>.
+
+See also: C<file>
 
