@@ -12,7 +12,7 @@ Build-Depends: debhelper (>= 7), autotools-dev, quilt,
 # for the perl bindings:
   libtest-pod-coverage-perl, libextutils-command-perl, libintl-perl, libtest-pod-perl,
 # for virt-inspector:
-  libsys-virt-perl
+  libsys-virt-perl, libxml-writer-perl
 Homepage: http://libguestfs.org
 Standards-Version: 3.8.2
 
