@@ -1095,6 +1095,29 @@ static VALUE ruby_guestfs_get_pid (VALUE gv)
   return INT2NUM (r);
 }
 
+static VALUE ruby_guestfs_version (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "version");
+
+
+  struct guestfs_version *r;
+
+  r = guestfs_version (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  VALUE rv = rb_hash_new ();
+  rb_hash_aset (rv, rb_str_new2 ("major"), LL2NUM (r->major));
+  rb_hash_aset (rv, rb_str_new2 ("minor"), LL2NUM (r->minor));
+  rb_hash_aset (rv, rb_str_new2 ("release"), LL2NUM (r->release));
+  rb_hash_aset (rv, rb_str_new2 ("extra"), rb_str_new2 (r->extra));
+  guestfs_free_version (r);
+  return rv;
+}
+
 static VALUE ruby_guestfs_mount (VALUE gv, VALUE devicev, VALUE mountpointv)
 {
   guestfs_h *g;
@@ -4663,6 +4686,217 @@ static VALUE ruby_guestfs_sfdiskM (VALUE gv, VALUE devicev, VALUE linesv)
   return Qnil;
 }
 
+static VALUE ruby_guestfs_zfile (VALUE gv, VALUE methodv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "zfile");
+
+  Check_Type (methodv, T_STRING);
+  const char *method = StringValueCStr (methodv);
+  if (!method)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "method", "zfile");
+  Check_Type (pathv, T_STRING);
+  const char *path = StringValueCStr (pathv);
+  if (!path)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "path", "zfile");
+
+  char *r;
+
+  r = guestfs_zfile (g, method, path);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+static VALUE ruby_guestfs_getxattrs (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "getxattrs");
+
+  Check_Type (pathv, T_STRING);
+  const char *path = StringValueCStr (pathv);
+  if (!path)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "path", "getxattrs");
+
+  struct guestfs_xattr_list *r;
+
+  r = guestfs_getxattrs (g, path);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  VALUE rv = rb_ary_new2 (r->len);
+  int i;
+  for (i = 0; i < r->len; ++i) {
+    VALUE hv = rb_hash_new ();
+    rb_hash_aset (hv, rb_str_new2 ("attrname"), rb_str_new2 (r->val[i].attrname));
+    rb_hash_aset (hv, rb_str_new2 ("attrval"), rb_str_new (r->val[i].attrval, r->val[i].attrval_len));
+    rb_ary_push (rv, hv);
+  }
+  guestfs_free_xattr_list (r);
+  return rv;
+}
+
+static VALUE ruby_guestfs_lgetxattrs (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "lgetxattrs");
+
+  Check_Type (pathv, T_STRING);
+  const char *path = StringValueCStr (pathv);
+  if (!path)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "path", "lgetxattrs");
+
+  struct guestfs_xattr_list *r;
+
+  r = guestfs_lgetxattrs (g, path);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  VALUE rv = rb_ary_new2 (r->len);
+  int i;
+  for (i = 0; i < r->len; ++i) {
+    VALUE hv = rb_hash_new ();
+    rb_hash_aset (hv, rb_str_new2 ("attrname"), rb_str_new2 (r->val[i].attrname));
+    rb_hash_aset (hv, rb_str_new2 ("attrval"), rb_str_new (r->val[i].attrval, r->val[i].attrval_len));
+    rb_ary_push (rv, hv);
+  }
+  guestfs_free_xattr_list (r);
+  return rv;
+}
+
+static VALUE ruby_guestfs_setxattr (VALUE gv, VALUE xattrv, VALUE valv, VALUE vallenv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "setxattr");
+
+  Check_Type (xattrv, T_STRING);
+  const char *xattr = StringValueCStr (xattrv);
+  if (!xattr)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "xattr", "setxattr");
+  Check_Type (valv, T_STRING);
+  const char *val = StringValueCStr (valv);
+  if (!val)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "val", "setxattr");
+  int vallen = NUM2INT (vallenv);
+  Check_Type (pathv, T_STRING);
+  const char *path = StringValueCStr (pathv);
+  if (!path)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "path", "setxattr");
+
+  int r;
+
+  r = guestfs_setxattr (g, xattr, val, vallen, path);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+static VALUE ruby_guestfs_lsetxattr (VALUE gv, VALUE xattrv, VALUE valv, VALUE vallenv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "lsetxattr");
+
+  Check_Type (xattrv, T_STRING);
+  const char *xattr = StringValueCStr (xattrv);
+  if (!xattr)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "xattr", "lsetxattr");
+  Check_Type (valv, T_STRING);
+  const char *val = StringValueCStr (valv);
+  if (!val)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "val", "lsetxattr");
+  int vallen = NUM2INT (vallenv);
+  Check_Type (pathv, T_STRING);
+  const char *path = StringValueCStr (pathv);
+  if (!path)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "path", "lsetxattr");
+
+  int r;
+
+  r = guestfs_lsetxattr (g, xattr, val, vallen, path);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+static VALUE ruby_guestfs_removexattr (VALUE gv, VALUE xattrv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "removexattr");
+
+  Check_Type (xattrv, T_STRING);
+  const char *xattr = StringValueCStr (xattrv);
+  if (!xattr)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "xattr", "removexattr");
+  Check_Type (pathv, T_STRING);
+  const char *path = StringValueCStr (pathv);
+  if (!path)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "path", "removexattr");
+
+  int r;
+
+  r = guestfs_removexattr (g, xattr, path);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+static VALUE ruby_guestfs_lremovexattr (VALUE gv, VALUE xattrv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "lremovexattr");
+
+  Check_Type (xattrv, T_STRING);
+  const char *xattr = StringValueCStr (xattrv);
+  if (!xattr)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "xattr", "lremovexattr");
+  Check_Type (pathv, T_STRING);
+  const char *path = StringValueCStr (pathv);
+  if (!path)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "path", "lremovexattr");
+
+  int r;
+
+  r = guestfs_lremovexattr (g, xattr, path);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
 /* Initialize the module. */
 void Init__guestfs ()
 {
@@ -4767,6 +5001,8 @@ void Init__guestfs ()
         ruby_guestfs_get_memsize, 0);
   rb_define_method (c_guestfs, "get_pid",
         ruby_guestfs_get_pid, 0);
+  rb_define_method (c_guestfs, "version",
+        ruby_guestfs_version, 0);
   rb_define_method (c_guestfs, "mount",
         ruby_guestfs_mount, 2);
   rb_define_method (c_guestfs, "sync",
@@ -5045,4 +5281,18 @@ void Init__guestfs ()
         ruby_guestfs_readdir, 1);
   rb_define_method (c_guestfs, "sfdiskM",
         ruby_guestfs_sfdiskM, 2);
+  rb_define_method (c_guestfs, "zfile",
+        ruby_guestfs_zfile, 2);
+  rb_define_method (c_guestfs, "getxattrs",
+        ruby_guestfs_getxattrs, 1);
+  rb_define_method (c_guestfs, "lgetxattrs",
+        ruby_guestfs_lgetxattrs, 1);
+  rb_define_method (c_guestfs, "setxattr",
+        ruby_guestfs_setxattr, 4);
+  rb_define_method (c_guestfs, "lsetxattr",
+        ruby_guestfs_lsetxattr, 4);
+  rb_define_method (c_guestfs, "removexattr",
+        ruby_guestfs_removexattr, 2);
+  rb_define_method (c_guestfs, "lremovexattr",
+        ruby_guestfs_lremovexattr, 2);
 }

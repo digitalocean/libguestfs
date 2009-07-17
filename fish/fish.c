@@ -68,6 +68,10 @@ guestfs_h *g;
 int read_only = 0;
 int quit = 0;
 int verbose = 0;
+int echo_commands = 0;
+int remote_control_listen = 0;
+int remote_control = 0;
+int exit_on_error = 1;
 
 int
 launch (guestfs_h *_g)
@@ -108,10 +112,13 @@ usage (void)
 	     "  -D|--no-dest-paths   Don't tab-complete paths from guest fs\n"
 	     "  -f|--file file       Read commands from file\n"
 	     "  -i|--inspector       Run virt-inspector to get disk mountpoints\n"
+	     "  --listen             Listen for remote commands\n"
 	     "  -m|--mount dev[:mnt] Mount dev on mnt (if omitted, /)\n"
 	     "  -n|--no-sync         Don't autosync\n"
+	     "  --remote[=pid]       Send commands to remote guestfish\n"
 	     "  -r|--ro              Mount read-only\n"
 	     "  -v|--verbose         Verbose messages\n"
+	     "  -x                   Echo each command before executing it\n"
 	     "  -V|--version         Display version and exit\n"
 	     "For more information,  see the manpage guestfish(1).\n"));
 }
@@ -119,16 +126,18 @@ usage (void)
 int
 main (int argc, char *argv[])
 {
-  static const char *options = "a:f:h::im:nrv?V";
+  static const char *options = "a:Df:h::im:nrv?Vx";
   static struct option long_options[] = {
     { "add", 1, 0, 'a' },
     { "cmd-help", 2, 0, 'h' },
     { "file", 1, 0, 'f' },
     { "help", 0, 0, '?' },
     { "inspector", 0, 0, 'i' },
+    { "listen", 0, 0, 0 },
     { "mount", 1, 0, 'm' },
     { "no-dest-paths", 0, 0, 'D' },
     { "no-sync", 0, 0, 'n' },
+    { "remote", 2, 0, 0 },
     { "ro", 0, 0, 'r' },
     { "verbose", 0, 0, 'v' },
     { "version", 0, 0, 'V' },
@@ -139,7 +148,9 @@ main (int argc, char *argv[])
   struct mp *mps = NULL;
   struct mp *mp;
   char *p, *file = NULL;
-  int c, inspector = 0;
+  int c;
+  int inspector = 0;
+  int option_index;
   struct sigaction sa;
 
   initialize_readline ();
@@ -174,10 +185,33 @@ main (int argc, char *argv[])
     guestfs_set_path (g, "appliance:" GUESTFS_DEFAULT_PATH);
 
   for (;;) {
-    c = getopt_long (argc, argv, options, long_options, NULL);
+    c = getopt_long (argc, argv, options, long_options, &option_index);
     if (c == -1) break;
 
     switch (c) {
+    case 0:			/* options which are long only */
+      if (strcmp (long_options[option_index].name, "listen") == 0)
+	remote_control_listen = 1;
+      else if (strcmp (long_options[option_index].name, "remote") == 0) {
+	if (optarg) {
+	  if (sscanf (optarg, "%d", &remote_control) != 1) {
+	    fprintf (stderr, _("guestfish: --listen=PID: PID was not a number: %s\n"), optarg);
+	    exit (1);
+	  }
+	} else {
+	  p = getenv ("GUESTFISH_PID");
+	  if (!p || sscanf (p, "%d", &remote_control) != 1) {
+	    fprintf (stderr, _("guestfish: remote: $GUESTFISH_PID must be set to the PID of the remote process\n"));
+	    exit (1);
+	  }
+	}
+      } else {
+	fprintf (stderr, _("guestfish: unknown long option: %s (%d)\n"),
+		 long_options[option_index].name, option_index);
+	exit (1);
+      }
+      break;
+
     case 'a':
       if (access (optarg, R_OK) != 0) {
 	perror (optarg);
@@ -252,6 +286,10 @@ main (int argc, char *argv[])
       printf ("guestfish %s\n", PACKAGE_VERSION);
       exit (0);
 
+    case 'x':
+      echo_commands = 1;
+      break;
+
     case '?':
       usage ();
       exit (0);
@@ -268,8 +306,8 @@ main (int argc, char *argv[])
     char cmd[1024];
     int r;
 
-    if (drvs || mps) {
-      fprintf (stderr, _("guestfish: cannot use -i option with -a or -m\n"));
+    if (drvs || mps || remote_control_listen || remote_control) {
+      fprintf (stderr, _("guestfish: cannot use -i option with -a, -m, --listen or --remote\n"));
       exit (1);
     }
     if (optind >= argc) {
@@ -319,6 +357,24 @@ main (int argc, char *argv[])
   if (mps != NULL) {
     if (launch (g) == -1) exit (1);
     mount_mps (mps);
+  }
+
+  /* Remote control? */
+  if (remote_control_listen && remote_control) {
+    fprintf (stderr, _("guestfish: cannot use --listen and --remote options at the same time\n"));
+    exit (1);
+  }
+
+  if (remote_control_listen) {
+    if (optind < argc) {
+      fprintf (stderr, _("guestfish: extra parameters on the command line with --listen flag\n"));
+      exit (1);
+    }
+    if (file) {
+      fprintf (stderr, _("guestfish: cannot use --listen and --file options at the same time\n"));
+      exit (1);
+    }
+    rc_listen ();
   }
 
   /* -f (file) parameter? */
@@ -458,7 +514,7 @@ script (int prompt)
   char *argv[64];
   int i, len;
   int global_exit_on_error = !prompt;
-  int exit_on_error;
+  int tilde_candidate;
 
   if (prompt)
     printf (_("\n"
@@ -532,6 +588,8 @@ script (int prompt)
 
     /* Get the parameters. */
     while (*p && i < sizeof argv / sizeof argv[0]) {
+      tilde_candidate = 0;
+
       /* Parameters which start with quotes or pipes are treated
        * specially.  Bare parameters are delimited by whitespace.
        */
@@ -592,6 +650,11 @@ script (int prompt)
 	*(pend-1) = '\0';
 	*/
       } else if (*p != ' ' && *p != '\t') {
+	/* If the first character is a ~ then note that this parameter
+	 * is a candidate for ~username expansion.  NB this does not
+	 * apply to quoted parameters.
+	 */
+	tilde_candidate = *p == '~';
 	len = strcspn (p, " \t");
 	if (p[len]) {
 	  p[len] = '\0';
@@ -604,7 +667,11 @@ script (int prompt)
 	abort ();
       }
 
-      argv[i++] = p;
+      if (!tilde_candidate)
+	argv[i] = p;
+      else
+	argv[i] = try_tilde_expansion (p);
+      i++;
       p = pend;
 
       if (*p)
@@ -635,6 +702,8 @@ cmdline (char *argv[], int optind, int argc)
   const char *cmd;
   char **params;
 
+  exit_on_error = 1;
+
   if (optind >= argc) return;
 
   cmd = argv[optind++];
@@ -663,7 +732,14 @@ issue_command (const char *cmd, char *argv[], const char *pipecmd)
   int argc;
   int stdout_saved_fd = -1;
   int pid = 0;
-  int r;
+  int i, r;
+
+  if (echo_commands) {
+    printf ("%s", cmd);
+    for (i = 0; argv[i] != NULL; ++i)
+      printf (" %s", argv[i]);
+    printf ("\n");
+  }
 
   /* For | ... commands.  Annoyingly we can't use popen(3) here. */
   if (pipecmd) {
@@ -698,7 +774,12 @@ issue_command (const char *cmd, char *argv[], const char *pipecmd)
   for (argc = 0; argv[argc] != NULL; ++argc)
     ;
 
-  if (strcasecmp (cmd, "help") == 0) {
+  /* If --remote was set, then send this command to a remote process. */
+  if (remote_control)
+    r = rc_remote (remote_control, cmd, argc, argv, exit_on_error);
+
+  /* Otherwise execute it locally. */
+  else if (strcasecmp (cmd, "help") == 0) {
     if (argc == 0)
       list_commands ();
     else
@@ -727,6 +808,8 @@ issue_command (const char *cmd, char *argv[], const char *pipecmd)
   else if (strcasecmp (cmd, "more") == 0 ||
 	   strcasecmp (cmd, "less") == 0)
     r = do_more (cmd, argc, argv);
+  else if (strcasecmp (cmd, "reopen") == 0)
+    r = do_reopen (cmd, argc, argv);
   else if (strcasecmp (cmd, "time") == 0)
     r = do_time (cmd, argc, argv);
   else
@@ -766,6 +849,10 @@ list_builtin_commands (void)
 	  "lcd", _("local change directory"));
   printf ("%-20s %s\n",
 	  "glob", _("expand wildcards in command"));
+  printf ("%-20s %s\n",
+	  "more", _("view a file in the pager"));
+  printf ("%-20s %s\n",
+	  "reopen", _("close and reopen libguestfs handle"));
   printf ("%-20s %s\n",
 	  "time", _("measure time taken to run command"));
 
@@ -829,6 +916,10 @@ display_builtin_command (const char *cmd)
 	      "    Glob runs <command> with wildcards expanded in any\n"
 	      "    command args.  Note that the command is run repeatedly\n"
 	      "    once for each expanded argument.\n"));
+  else if (strcasecmp (cmd, "help") == 0)
+    printf (_("help - display a list of commands or help on a command\n"
+	      "     help cmd\n"
+	      "     help\n"));
   else if (strcasecmp (cmd, "more") == 0 ||
 	   strcasecmp (cmd, "less") == 0)
     printf (_("more - view a file in the pager\n"
@@ -844,15 +935,18 @@ display_builtin_command (const char *cmd)
 	      "\n"
 	      "    NOTE: This will not work reliably for large files\n"
 	      "    (> 2 MB) or binary files containing \\0 bytes.\n"));
-  else if (strcasecmp (cmd, "help") == 0)
-    printf (_("help - display a list of commands or help on a command\n"
-	      "     help cmd\n"
-	      "     help\n"));
   else if (strcasecmp (cmd, "quit") == 0 ||
 	   strcasecmp (cmd, "exit") == 0 ||
 	   strcasecmp (cmd, "q") == 0)
     printf (_("quit - quit guestfish\n"
 	      "     quit\n"));
+  else if (strcasecmp (cmd, "reopen") == 0)
+    printf (_("reopen - close and reopen the libguestfs handle\n"
+	      "     reopen\n"
+	      "\n"
+	      "Close and reopen the libguestfs handle.  It is not necessary to use\n"
+	      "this normally, because the handle is closed properly when guestfish\n"
+	      "exits.  However this is occasionally useful for testing.\n"));
   else if (strcasecmp (cmd, "time") == 0)
     printf (_("time - measure time taken to run command\n"
 	      "    time <command> [<args> ...]\n"

@@ -1,3 +1,287 @@
+2009-07-15  Richard Jones  <rjones@trick.home.annexia.org>
+
+	New tool virt-cat: display a file in a virtual machine.
+	This script is just a simpler way to cat a file from a VM.  It
+	is otherwise equivalent to using guestfish.
+
+	 virt-cat someguest /etc/fstab
+
+	 virt-cat someguest /var/log/messages | tail
+
+	Make Perl strings translatable using perl-libintl.
+	All Perl strings are now marked as translatable using __"string"
+	or __x("string {placeholder}", placeholder => $_).  Perl strings
+	now get copied to the PO files.
+
+	The po/POTFILES.in file is now updated automagically whenever we
+	add new *.c, *.pl or *.pm files into the repository.
+
+	guestfish: Add tilde expansion for paths (RHBZ#511372).
+	This commit adds tilde expansion for local users in guestfish:
+
+	  ><fs> echo "~"
+	  ~
+	  ><fs> echo ~
+	  /home/rjones
+	  ><fs> echo ~foo
+	  ~foo
+	  ><fs> echo ~rjones/bar
+	  /home/rjones/bar
+	  ><fs> echo ~roo
+	  ~roo
+	  ><fs> echo ~root/foo
+	  /root/foo
+	  ><fs> echo ~root
+	  /root
+
+2009-07-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.0.60.
+
+	java/Makefile.inc: Include this generated file.
+	We have to include this generated file because it is part of
+	the build system, thus required to exist before the generator
+	runs.
+
+	File missing from tarball: rc_protocol.x
+
+	Version 1.0.59.
+
+	RHEL 5: header was called <sys/xattr.h>
+
+	Fix: daemon/xattr.c can now compile even when no xattr support.
+
+2009-07-14  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Guestfish feature: remote control of guestfish over a pipe.
+	The use case is to have a long-running guestfish process in
+	a shell script, and thus to avoid the overhead of starting
+	guestfish each time.  Do:
+
+	 eval `guestfish --listen`
+
+	 guestfish --remote somecmd
+	 guestfish --remote someothercmd
+	 guestfish --remote exit
+
+	This patch also supports having multiple guestfish processes
+	at the same time.
+
+	The protocol is simple XDR messages over a Unix domain socket.
+
+2009-07-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Removed getfattr/setfattr from TODO list, since now implemented.
+
+	Support for Linux extended attributes.
+	This commit adds six calls to support Linux extended attributes.
+	They are:
+	  getxattrs     list all extended attributes for a file or directory
+	  setxattr      add/replace an extended attribute
+	  removexattr   remove an extended attribute
+	  lgetxattrs    \
+	  lsetxattr     (same as above, but operate on symbolic links)
+	  lremovexattr  /
+
+	See attr(5) for more information.
+
+	This also adds support for the FBuffer field type, which maps to
+	an XDR opaque<> or a C (int, char *) pair.
+
+2009-07-14  Richard Jones  <rjones@trick.home.annexia.org>
+
+	virt-inspector: Ignore swap partitions marked as "none".
+
+	Improve launch error message.
+	The previous error message was confusing for new users:
+
+	  libguestfs: error: guestfs_mount: call launch() before using this function
+
+	The new error message explains the action that the user must take,
+	especially if they are using guestfish:
+
+	  ><fs> mount /dev/sda1 /
+	  libguestfs: error: guestfs_mount: call launch before using this function
+	  (in guestfish, don't forget to use the 'run' command)
+
+	Add reiserfs module to kernel whitelist.
+
+2009-07-13  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Only allow virt-v2v to be run on single root guests (ie. no multi-boot).
+
+	Ignore old-style initrd which is a compressed ext2 filesystem.
+	'cpio' chokes on these, taking ages to decide that they are
+	not cpio files, and producing masses of messages.  This was
+	causing virt-inspector to be very slow (many minutes) on
+	RHEL 3 guests.  With this fix, speed is back to normal.
+
+	Implement new 'zfile' command, to show file type inside compressed files.
+
+	Ignore java/Makefile.inc (generated file).
+
+2009-07-13  Matthew Booth  <mbooth@redhat.com>
+
+	Automatically generate list of built java sources
+
+	Revert "Fix checking of generator being run from the right directory."
+	This reverts commit 35c646965a21d452cf74ef3683612210a653c36d.
+
+	As well as reverting this change, add a comment explaining that
+	configure must run first.
+
+2009-07-13  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Move BUILT_SOURCES so the comment is back in the right place.
+
+	Order alphabetically the options in guestfish.1 manpage.
+
+2009-07-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Guestfish: implement -x option, echo commands before executing them.
+
+	Fix: '-D' was not recognized as a parameter to guestfish.
+
+	Regression test: Test reopening the handle in the same process.
+
+	Guestfish: Add 'reopen' command to reopen the libguestfs handle.
+
+	Add missing documentation for "more" command in guestfish help output.
+
+	Add tests to many non-daemon functions.
+	Tests are added to the following functions:
+	  get_qemu get_path get_append get_autosync
+	  is_ready is_config is_launching is_busy
+	  set_memsize get_memsize get_pid
+
+	Add TestOutputIntOp, CompareWithIntOp.
+	These constructors allow enhanced tests where we compare
+	the result of a test against some operator, eg. >= 1 or < 5
+
+	Test for "version" command should be InitNone.
+
+	Add comment to the code about InitNone and InitEmpty.
+	These two constructors are treated as identical, but they
+	should be distinct concepts.
+
+	Fix UPDATES and host_cpu in configure.ac.
+	UPDATES does not need to be propagated into config.h.
+
+	host_cpu was AC_DEFINE'd twice.
+
+2009-07-11  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Documentation for virt-v2v.
+
+	V2V outline program.
+
+2009-07-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	Don't list Java files explicitly, since these files are auto-generated.
+
+	Version 1.0.58.
+
+	Proposal to add BufferIn and RBufferOut types (not implemented).
+
+	Sys::Guestfs::Lib: Exit with error if a libvirt domain appears to have no disks.
+
+	virt-df: Recognise libvirt domains with file-backed disks.
+	File-backed disks (<source file="...">) didn't get recognised
+	before.  This patch fixes the problem.
+
+2009-07-10  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Add --version options to virt-df, virt-inspector and virt-v2v.
+
+	Add 'version' call to get true library version number.
+	This patch also changes the way that the version is specified
+	in configure.ac.  It is now made out of four parts (major, minor,
+	release and extra) and constructed for AC_INIT.
+
+	Move 'use File::Temp' from virt-inspector program to Sys::Guestfs::Lib.
+
+	Version 1.0.57.
+
+	Update PO files.
+
+	Additional C files for POTFILES.in.
+
+	Rename internal subroutines with leading underscore character.
+	Otherwise Pod::Coverage in the tests will complain that the
+	internal subroutines are undocumented.
+
+	Working version of virt-df.
+
+	Fix for returning structures (hashes) from Perl calls.
+	Calls such as stat and statvfs which returned a single structure
+	were returning an array of values instead of a full hash of keys +
+	values.
+
+	Fix this by pushing the key names on the stack too.
+
+	'$_' should be marked as a local variable in Sys::Guestfs::Lib::open_guest.
+
+	Properly close fds and unregister handlers in guestfs_close.
+	This caused a segfault if you tried to repeatedly open and close
+	a guestfs handle in the same program.  The reason is that the
+	old handler remained registered (not always - it was racey).
+
+	This adds proper cleanup to the guestfs_close path, also for file
+	descriptors.
+
+	Added framework for 'virt-df' command.
+
+	Ignore any file called 'localconfigure'.
+	Developers should put their custom parameters for configure/autogen.sh
+	into a script called ./localconfigure, and this script will be ignored
+	by git and the build system.
+
+	Added outline of the virt-v2v script.
+
+2009-07-09  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Remove virt-inspector --force option - it didn't do anything.
+
+	Sys::Guestfs::Lib minor documentation clean-up.
+
+	Move the inspection analysis code into Sys::Guestfs::Lib library.
+	Creates new functions:
+	  inspect_all_partitions
+	  inspect_partition
+	  inspect_operating_systems
+	  mount_operating_system
+	  inspect_in_detail
+
+	Includes far more documentation for the process.
+
+	Move 'resolve_windows_path' to Sys::Guestfs::Lib.
+
+	Move 'get_partitions' call into Sys::Guestfs::Lib.
+
+	Add Sys::Guestfs::Lib - useful functions for using libguestfs from Perl.
+	This adds an extra Perl module called Sys::Guestfs::Lib which
+	adds useful functions for using libguestfs from Perl.
+
+	The intention is that common code shared between virt-inspector,
+	virt-df and virt-v2v will move into this library.
+
+	This patch also changes virt-inspector to use this library.
+
+	Just whitespace changes in the generator code.
+
+2009-07-08  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Update with links to the new mailing list.
+
+2009-07-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	Fix checking of generator being run from the right directory.
+	Originally it was looking for 'config.status', but this file
+	might not exist until configure has been run.  Make it look for
+	HACKING instead.
+
+	Version 1.0.56.
+
 2009-07-07  Richard Jones  <rjones@centos5x32.home.annexia.org>
 
 	RHEL 5: Mount squashfs with explicit type.

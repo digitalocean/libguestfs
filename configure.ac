@@ -15,12 +15,25 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-AC_INIT([libguestfs],[1.0.56])
+# major/minor/release must be numbers
+m4_define([libguestfs_major],   [1])
+m4_define([libguestfs_minor],   [0])
+m4_define([libguestfs_release], [61])
+# extra can be any string
+m4_define([libguestfs_extra],   [])
+
+AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release[]libguestfs_extra)
 AM_INIT_AUTOMAKE([foreign])
 
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_PROG_LIBTOOL
+
+dnl Split up the version string.
+AC_DEFINE([PACKAGE_VERSION_MAJOR],[libguestfs_major],[Major version number])
+AC_DEFINE([PACKAGE_VERSION_MINOR],[libguestfs_minor],[Minor version number])
+AC_DEFINE([PACKAGE_VERSION_RELEASE],[libguestfs_release],[Release number])
+AC_DEFINE([PACKAGE_VERSION_EXTRA],["libguestfs_extra"],[Extra version string])
 
 dnl Check for basic C environment.
 AC_PROG_CC_STDC
@@ -193,8 +206,6 @@ REPO="$with_repo"
 AC_SUBST(REPO)
 AC_DEFINE_UNQUOTED([REPO],["$REPO"],[Name of Fedora repository.])
 
-AC_DEFINE_UNQUOTED([host_cpu],["$host_cpu"],[Host architecture.])
-
 dnl --with-updates to specify a Fedora updates repository.
 AC_ARG_WITH([updates],
 	[AS_HELP_STRING([--with-updates],
@@ -203,8 +214,8 @@ AC_ARG_WITH([updates],
 	[with_updates=updates-released-f11])
 UPDATES="$with_updates"
 AC_SUBST(UPDATES)
-AC_DEFINE_UNQUOTED([UPDATES],["$UPDATES"],[Name of Fedora updates repository.])
 
+dnl Define a symbol for the host CPU architecture.
 AC_DEFINE_UNQUOTED([host_cpu],["$host_cpu"],[Host architecture.])
 
 dnl --with-mirror to specify a local Fedora mirror.
@@ -295,7 +306,7 @@ AC_CHECK_PROG([PERL],[perl],[perl],[no])
 dnl Check for Perl modules that must be present to compile and
 dnl test the Perl bindings.
 missing_perl_modules=no
-for pm in Test::More Test::Pod Test::Pod::Coverage ExtUtils::MakeMaker; do
+for pm in Test::More Test::Pod Test::Pod::Coverage ExtUtils::MakeMaker Locale::TextDomain; do
     AC_MSG_CHECKING([for $pm])
     if ! perl -M$pm -e1 >/dev/null 2>&1; then
         AC_MSG_RESULT([no])
@@ -506,9 +517,9 @@ AC_CHECK_PROG([GHC],[ghc],[ghc],[no])
 AM_CONDITIONAL([HAVE_HASKELL],
     [test "x$GHC" != "xno"])
 
-dnl Check for Perl modules needed by the inspector.
+dnl Check for Perl modules needed by virt-df, inspector, V2V etc.
 missing_perl_modules=no
-for pm in Pod::Usage Getopt::Long Sys::Virt Data::Dumper XML::Writer; do
+for pm in Pod::Usage Getopt::Long Sys::Virt Data::Dumper XML::Writer Locale::TextDomain; do
     AC_MSG_CHECKING([for $pm])
     if ! perl -M$pm -e1 >/dev/null 2>&1; then
         AC_MSG_RESULT([no])
@@ -518,10 +529,16 @@ for pm in Pod::Usage Getopt::Long Sys::Virt Data::Dumper XML::Writer; do
     fi
 done
 if test "x$missing_perl_modules" = "xyes"; then
-    AC_MSG_WARN([some Perl modules required to compile virt-inspector are missing])
+    AC_MSG_WARN([some Perl modules required to compile virt-cat, virt-df, virt-inspector and virt-v2v are missing])
 fi
 
+AM_CONDITIONAL([HAVE_CAT],
+    [test "x$PERL" != "xno" -a "x$missing_perl_modules" != "xyes"])
+AM_CONDITIONAL([HAVE_DF],
+    [test "x$PERL" != "xno" -a "x$missing_perl_modules" != "xyes"])
 AM_CONDITIONAL([HAVE_INSPECTOR],
+    [test "x$PERL" != "xno" -a "x$missing_perl_modules" != "xyes"])
+AM_CONDITIONAL([HAVE_V2V],
     [test "x$PERL" != "xno" -a "x$missing_perl_modules" != "xyes"])
 
 dnl Library versioning.
@@ -557,7 +574,10 @@ AC_CONFIG_FILES([Makefile
 		 ruby/Makefile ruby/Rakefile
 		 java/Makefile
 		 haskell/Makefile
+		 cat/Makefile
+		 df/Makefile
 		 inspector/Makefile
+		 v2v/Makefile
 		 libguestfs.pc
 		 ocaml/META perl/Makefile.PL])
 AC_OUTPUT
@@ -583,15 +603,21 @@ echo -n "Java bindings ....................... "
 if test "x$HAVE_JAVA_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 echo -n "Haskell bindings .................... "
 if test "x$HAVE_HASKELL" = "x"; then echo "yes"; else echo "no"; fi
+echo -n "virt-cat ............................ "
+if test "x$HAVE_CAT" = "x"; then echo "yes"; else echo "no"; fi
+echo -n "virt-df ............................. "
+if test "x$HAVE_DF" = "x"; then echo "yes"; else echo "no"; fi
 echo -n "virt-inspector ...................... "
 if test "x$HAVE_INSPECTOR" = "x"; then echo "yes"; else echo "no"; fi
+echo -n "virt-v2v ............................ "
+if test "x$HAVE_V2V" = "x"; then echo "yes"; else echo "no"; fi
 echo "supermin appliance .................. $enable_supermin"
 echo
 echo "If any optional component is configured 'no' when you expected 'yes'"
 echo "then you should check the preceeding messages."
 echo
-echo "Please report bugs back to the fedora-virt mailing list:"
-echo "http://www.redhat.com/mailman/listinfo/fedora-virt"
+echo "Please report bugs back to the mailing list:"
+echo "http://www.redhat.com/mailman/listinfo/libguestfs"
 echo
 echo "Next you should type 'make' to build the package,"
 echo "then 'make check' to run the tests."

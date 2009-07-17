@@ -29,3 +29,4 @@ hfsplus.ko
 ufs.ko
 exportfs.ko
 xfs.ko
+reiserfs.ko

@@ -28,7 +28,9 @@ TESTS = \
 	test-cancellation-download-librarycancels.sh \
 	test-qemudie-midcommand.sh \
 	test-qemudie-killsub.sh \
-	test-qemudie-synch.sh
+	test-qemudie-synch.sh \
+	test-remote.sh \
+	test-reopen.sh
 
 SKIPPED_TESTS = \
 	test-bootbootboot.sh

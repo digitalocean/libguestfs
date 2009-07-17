@@ -58,6 +58,10 @@ Libguestfs provides ways to enumerate guest storage (eg. partitions,
 LVs, what filesystem is in each LV, etc.).  It can also run commands
 in the context of the guest.  Also you can access filesystems over FTP.
 
+See also L<Sys::Guestfs::Lib(3)> for a set of useful library
+functions for using libguestfs from Perl, including integration
+with libvirt.
+
 =head1 ERRORS
 
 All errors turn into calls to C<croak> (see L<Carp(3)>).
@@ -725,6 +729,16 @@ For more information on states, see L<guestfs(3)>.
 
 This returns the verbose messages flag.
 
+=item @xattrs = $h->getxattrs ($path);
+
+This call lists the extended attributes of the file or directory
+C<path>.
+
+At the system call level, this is a combination of the
+L<listxattr(2)> and L<getxattr(2)> calls.
+
+See also: C<$h-E<gt>lgetxattrs>, L<attr(5)>.
+
 =item @paths = $h->glob_expand ($pattern);
 
 This command searches for all the pathnames matching
@@ -843,6 +857,12 @@ using L<qemu(1)>.
 You should call this after configuring the handle
 (eg. adding drives) but before performing any actions.
 
+=item @xattrs = $h->lgetxattrs ($path);
+
+This is the same as C<$h-E<gt>getxattrs>, but if C<path>
+is a symbolic link, then it returns the extended attributes
+of the link itself.
+
 =item @devices = $h->list_devices ();
 
 List all the block devices.
@@ -866,6 +886,12 @@ there is no cwd) in the format of 'ls -la'.
 This command is mostly useful for interactive sessions.  It
 is I<not> intended that you try to parse the output string.
 
+=item $h->lremovexattr ($xattr, $path);
+
+This is the same as C<$h-E<gt>removexattr>, but if C<path>
+is a symbolic link, then it removes an extended attribute
+of the link itself.
+
 =item @listing = $h->ls ($directory);
 
 List the files in C<directory> (relative to the root directory,
@@ -874,6 +900,12 @@ hidden files are shown.
 
 This command is mostly useful for interactive sessions.  Programs
 should probably use C<$h-E<gt>readdir> instead.
+
+=item $h->lsetxattr ($xattr, $val, $vallen, $path);
+
+This is the same as C<$h-E<gt>setxattr>, but if C<path>
+is a symbolic link, then it sets an extended attribute
+of the link itself.
 
 =item %statbuf = $h->lstat ($path);
 
@@ -1137,6 +1169,13 @@ This function is primarily intended for use by programs.  To
 get a simple list of names, use C<$h-E<gt>ls>.  To get a printable
 directory for human consumption, use C<$h-E<gt>ll>.
 
+=item $h->removexattr ($xattr, $path);
+
+This call removes the extended attribute named C<xattr>
+of the file C<path>.
+
+See also: C<$h-E<gt>lremovexattr>, L<attr(5)>.
+
 =item $h->resize2fs ($device);
 
 This resizes an ext2 or ext3 filesystem to match the size of
@@ -1288,6 +1327,14 @@ If C<verbose> is true, this turns on verbose messages (to C<stderr>).
 
 Verbose messages are disabled unless the environment variable
 C<LIBGUESTFS_DEBUG> is defined and set to C<1>.
+
+=item $h->setxattr ($xattr, $val, $vallen, $path);
+
+This call sets the extended attribute named C<xattr>
+of the file C<path> to the value C<val> (of length C<vallen>).
+The value is arbitrary 8 bit data.
+
+See also: C<$h-E<gt>lsetxattr>, L<attr(5)>.
 
 =item $h->sfdisk ($device, $cyls, $heads, $sectors, \@lines);
 
@@ -1542,6 +1589,33 @@ C<filename> can also be a named pipe.
 
 See also C<$h-E<gt>download>.
 
+=item %version = $h->version ();
+
+Return the libguestfs version number that the program is linked
+against.
+
+Note that because of dynamic linking this is not necessarily
+the version of libguestfs that you compiled against.  You can
+compile the program, and then at runtime dynamically link
+against a completely different C<libguestfs.so> library.
+
+This call was added in version C<1.0.58>.  In previous
+versions of libguestfs there was no way to get the version
+number.  From C code you can use ELF weak linking tricks to find out if
+this symbol exists (if it doesn't, then it's an earlier version).
+
+The call returns a structure with four elements.  The first
+three (C<major>, C<minor> and C<release>) are numbers and
+correspond to the usual version triplet.  The fourth element
+(C<extra>) is a string and is normally empty, but may be
+used for distro-specific information.
+
+To construct the original version string:
+C<$major.$minor.$release$extra>
+
+I<Note:> Don't use this call to test for availability
+of features.  Distro backports makes this unreliable.
+
 =item $h->vg_activate ($activate, \@volgroups);
 
 This command activates or (if C<activate> is false) deactivates
@@ -1657,6 +1731,15 @@ mounted.
 It is possible that using this program can damage the filesystem
 or data on the filesystem.
 
+=item $description = $h->zfile ($method, $path);
+
+This command runs C<file> after first decompressing C<path>
+using C<method>.
+
+C<method> must be one of C<gzip>, C<compress> or C<bzip2>.
+
+See also: C<$h-E<gt>file>
+
 =cut
 
 1;
@@ -1673,6 +1756,9 @@ Please see the file COPYING.LIB for the full license.
 
 =head1 SEE ALSO
 
-L<guestfs(3)>, L<guestfish(1)>.
+L<guestfs(3)>,
+L<guestfish(1)>,
+L<http://libguestfs.org>,
+L<Sys::Guestfs::Lib(3)>.
 
 =cut

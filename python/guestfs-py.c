@@ -465,6 +465,60 @@ put_dirent_list (struct guestfs_dirent_list *dirents)
 };
 
 static PyObject *
+put_version (struct guestfs_version *version)
+{
+  PyObject *dict;
+
+  dict = PyDict_New ();
+  PyDict_SetItemString (dict, "major",
+                        PyLong_FromLongLong (version->major));
+  PyDict_SetItemString (dict, "minor",
+                        PyLong_FromLongLong (version->minor));
+  PyDict_SetItemString (dict, "release",
+                        PyLong_FromLongLong (version->release));
+  PyDict_SetItemString (dict, "extra",
+                        PyString_FromString (version->extra));
+  return dict;
+};
+
+static PyObject *
+put_version_list (struct guestfs_version_list *versions)
+{
+  PyObject *list;
+  int i;
+
+  list = PyList_New (versions->len);
+  for (i = 0; i < versions->len; ++i)
+    PyList_SetItem (list, i, put_version (&versions->val[i]));
+  return list;
+};
+
+static PyObject *
+put_xattr (struct guestfs_xattr *xattr)
+{
+  PyObject *dict;
+
+  dict = PyDict_New ();
+  PyDict_SetItemString (dict, "attrname",
+                        PyString_FromString (xattr->attrname));
+  PyDict_SetItemString (dict, "attrval",
+                        PyString_FromStringAndSize (xattr->attrval, xattr->attrval_len));
+  return dict;
+};
+
+static PyObject *
+put_xattr_list (struct guestfs_xattr_list *xattrs)
+{
+  PyObject *list;
+  int i;
+
+  list = PyList_New (xattrs->len);
+  for (i = 0; i < xattrs->len; ++i)
+    PyList_SetItem (list, i, put_xattr (&xattrs->val[i]));
+  return list;
+};
+
+static PyObject *
 py_guestfs_test0 (PyObject *self, PyObject *args)
 {
   PyObject *py_g;
@@ -1600,6 +1654,30 @@ py_guestfs_get_pid (PyObject *self, PyObject *args)
   }
 
   py_r = PyInt_FromLong ((long) r);
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_version (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  struct guestfs_version *r;
+
+  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_version",
+                         &py_g))
+    return NULL;
+  g = get_handle (py_g);
+
+  r = guestfs_version (g);
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  py_r = put_version (r);
+  guestfs_free_version (r);
   return py_r;
 }
 
@@ -5139,6 +5217,190 @@ py_guestfs_sfdiskM (PyObject *self, PyObject *args)
   return py_r;
 }
 
+static PyObject *
+py_guestfs_zfile (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  char *r;
+  const char *method;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_zfile",
+                         &py_g, &method, &path))
+    return NULL;
+  g = get_handle (py_g);
+
+  r = guestfs_zfile (g, method, path);
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  py_r = PyString_FromString (r);
+  free (r);
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_getxattrs (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  struct guestfs_xattr_list *r;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_getxattrs",
+                         &py_g, &path))
+    return NULL;
+  g = get_handle (py_g);
+
+  r = guestfs_getxattrs (g, path);
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  py_r = put_xattr_list (r);
+  guestfs_free_xattr_list (r);
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_lgetxattrs (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  struct guestfs_xattr_list *r;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_lgetxattrs",
+                         &py_g, &path))
+    return NULL;
+  g = get_handle (py_g);
+
+  r = guestfs_lgetxattrs (g, path);
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  py_r = put_xattr_list (r);
+  guestfs_free_xattr_list (r);
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_setxattr (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  const char *xattr;
+  const char *val;
+  int vallen;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Ossis:guestfs_setxattr",
+                         &py_g, &xattr, &val, &vallen, &path))
+    return NULL;
+  g = get_handle (py_g);
+
+  r = guestfs_setxattr (g, xattr, val, vallen, path);
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_lsetxattr (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  const char *xattr;
+  const char *val;
+  int vallen;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Ossis:guestfs_lsetxattr",
+                         &py_g, &xattr, &val, &vallen, &path))
+    return NULL;
+  g = get_handle (py_g);
+
+  r = guestfs_lsetxattr (g, xattr, val, vallen, path);
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_removexattr (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  const char *xattr;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_removexattr",
+                         &py_g, &xattr, &path))
+    return NULL;
+  g = get_handle (py_g);
+
+  r = guestfs_removexattr (g, xattr, path);
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_lremovexattr (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  const char *xattr;
+  const char *path;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_lremovexattr",
+                         &py_g, &xattr, &path))
+    return NULL;
+  g = get_handle (py_g);
+
+  r = guestfs_lremovexattr (g, xattr, path);
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
 static PyMethodDef methods[] = {
   { (char *) "create", py_guestfs_create, METH_VARARGS, NULL },
   { (char *) "close", py_guestfs_close, METH_VARARGS, NULL },
@@ -5189,6 +5451,7 @@ static PyMethodDef methods[] = {
   { (char *) "set_memsize", py_guestfs_set_memsize, METH_VARARGS, NULL },
   { (char *) "get_memsize", py_guestfs_get_memsize, METH_VARARGS, NULL },
   { (char *) "get_pid", py_guestfs_get_pid, METH_VARARGS, NULL },
+  { (char *) "version", py_guestfs_version, METH_VARARGS, NULL },
   { (char *) "mount", py_guestfs_mount, METH_VARARGS, NULL },
   { (char *) "sync", py_guestfs_sync, METH_VARARGS, NULL },
   { (char *) "touch", py_guestfs_touch, METH_VARARGS, NULL },
@@ -5328,6 +5591,13 @@ static PyMethodDef methods[] = {
   { (char *) "umask", py_guestfs_umask, METH_VARARGS, NULL },
   { (char *) "readdir", py_guestfs_readdir, METH_VARARGS, NULL },
   { (char *) "sfdiskM", py_guestfs_sfdiskM, METH_VARARGS, NULL },
+  { (char *) "zfile", py_guestfs_zfile, METH_VARARGS, NULL },
+  { (char *) "getxattrs", py_guestfs_getxattrs, METH_VARARGS, NULL },
+  { (char *) "lgetxattrs", py_guestfs_lgetxattrs, METH_VARARGS, NULL },
+  { (char *) "setxattr", py_guestfs_setxattr, METH_VARARGS, NULL },
+  { (char *) "lsetxattr", py_guestfs_lsetxattr, METH_VARARGS, NULL },
+  { (char *) "removexattr", py_guestfs_removexattr, METH_VARARGS, NULL },
+  { (char *) "lremovexattr", py_guestfs_lremovexattr, METH_VARARGS, NULL },
   { NULL, NULL, 0, NULL }
 };
 

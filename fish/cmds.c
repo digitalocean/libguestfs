@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
+#include <ctype.h>
 
 #include <guestfs.h>
 #include "fish.h"
@@ -89,6 +90,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "get-qemu", "get the qemu binary");
   printf ("%-20s %s\n", "get-state", "get the current state");
   printf ("%-20s %s\n", "get-verbose", "get verbose mode");
+  printf ("%-20s %s\n", "getxattrs", "list extended attributes of a file or directory");
   printf ("%-20s %s\n", "glob-expand", "expand a wildcard path");
   printf ("%-20s %s\n", "grub-install", "install GRUB");
   printf ("%-20s %s\n", "head", "return first 10 lines of a file");
@@ -103,10 +105,13 @@ void list_commands (void)
   printf ("%-20s %s\n", "is-ready", "is ready to accept commands");
   printf ("%-20s %s\n", "kill-subprocess", "kill the qemu subprocess");
   printf ("%-20s %s\n", "launch", "launch the qemu subprocess");
+  printf ("%-20s %s\n", "lgetxattrs", "list extended attributes of a file or directory");
   printf ("%-20s %s\n", "list-devices", "list the block devices");
   printf ("%-20s %s\n", "list-partitions", "list the partitions");
   printf ("%-20s %s\n", "ll", "list the files in a directory (long format)");
+  printf ("%-20s %s\n", "lremovexattr", "remove extended attribute of a file or directory");
   printf ("%-20s %s\n", "ls", "list the files in a directory");
+  printf ("%-20s %s\n", "lsetxattr", "set extended attribute of a file or directory");
   printf ("%-20s %s\n", "lstat", "get file information for a symbolic link");
   printf ("%-20s %s\n", "lvcreate", "create an LVM volume group");
   printf ("%-20s %s\n", "lvm-remove-all", "remove all LVM LVs, VGs and PVs");
@@ -141,6 +146,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "pvs-full", "list the LVM physical volumes (PVs)");
   printf ("%-20s %s\n", "read-lines", "read file as lines");
   printf ("%-20s %s\n", "readdir", "read directories entries");
+  printf ("%-20s %s\n", "removexattr", "remove extended attribute of a file or directory");
   printf ("%-20s %s\n", "resize2fs", "resize an ext2/ext3 filesystem");
   printf ("%-20s %s\n", "rm", "remove a file");
   printf ("%-20s %s\n", "rm-rf", "remove a file or directory recursively");
@@ -156,6 +162,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "set-path", "set the search path");
   printf ("%-20s %s\n", "set-qemu", "set the qemu binary");
   printf ("%-20s %s\n", "set-verbose", "set verbose mode");
+  printf ("%-20s %s\n", "setxattr", "set extended attribute of a file or directory");
   printf ("%-20s %s\n", "sfdisk", "create partitions on a block device");
   printf ("%-20s %s\n", "sfdiskM", "create partitions on a block device");
   printf ("%-20s %s\n", "sfdisk-N", "modify a single partition on a block device");
@@ -182,6 +189,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "umount", "unmount a filesystem");
   printf ("%-20s %s\n", "umount-all", "unmount all filesystems");
   printf ("%-20s %s\n", "upload", "upload a file from the local machine");
+  printf ("%-20s %s\n", "version", "get the library version number");
   printf ("%-20s %s\n", "vg-activate", "activate or deactivate some volume groups");
   printf ("%-20s %s\n", "vg-activate-all", "activate or deactivate all volume groups");
   printf ("%-20s %s\n", "vgcreate", "create an LVM volume group");
@@ -194,6 +202,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "write-file", "create a file");
   printf ("%-20s %s\n", "zero", "write zeroes to the device");
   printf ("%-20s %s\n", "zerofree", "zero unused inodes and disk blocks on ext2/3 filesystem");
+  printf ("%-20s %s\n", "zfile", "determine file type inside a compressed file");
   printf ("    Use -h <cmd> / help <cmd> to show detailed help for a command.\n");
 }
 
@@ -270,6 +279,9 @@ void display_command (const char *cmd)
   else
   if (strcasecmp (cmd, "get_pid") == 0 || strcasecmp (cmd, "get-pid") == 0 || strcasecmp (cmd, "pid") == 0)
     pod2text ("get-pid - get PID of qemu subprocess", " get-pid\n\nReturn the process ID of the qemu subprocess.  If there is no\nqemu subprocess, then this will return an error.\n\nThis is an internal call used for debugging and testing.\n\nYou can use 'pid' as an alias for this command.");
+  else
+  if (strcasecmp (cmd, "version") == 0)
+    pod2text ("version - get the library version number", " version\n\nReturn the libguestfs version number that the program is linked\nagainst.\n\nNote that because of dynamic linking this is not necessarily\nthe version of libguestfs that you compiled against.  You can\ncompile the program, and then at runtime dynamically link\nagainst a completely different C<libguestfs.so> library.\n\nThis call was added in version C<1.0.58>.  In previous\nversions of libguestfs there was no way to get the version\nnumber.  From C code you can use ELF weak linking tricks to find out if\nthis symbol exists (if it doesn't, then it's an earlier version).\n\nThe call returns a structure with four elements.  The first\nthree (C<major>, C<minor> and C<release>) are numbers and\ncorrespond to the usual version triplet.  The fourth element\n(C<extra>) is a string and is normally empty, but may be\nused for distro-specific information.\n\nTo construct the original version string:\nC<$major.$minor.$release$extra>\n\nI<Note:> Don't use this call to test for availability\nof features.  Distro backports makes this unreliable.");
   else
   if (strcasecmp (cmd, "mount") == 0)
     pod2text ("mount - mount a guest disk at a position in the filesystem", " mount <device> <mountpoint>\n\nMount a guest disk at a position in the filesystem.  Block devices\nare named C</dev/sda>, C</dev/sdb> and so on, as they were added to\nthe guest.  If those block devices contain partitions, they will have\nthe usual names (eg. C</dev/sda1>).  Also LVM C</dev/VG/LV>-style\nnames can be used.\n\nThe rules are the same as for L<mount(2)>:  A filesystem must\nfirst be mounted on C</> before others can be mounted.  Other\nfilesystems can only be mounted on directories which already\nexist.\n\nThe mounted filesystem is writable, if we have sufficient permissions\non the underlying device.\n\nThe filesystem options C<sync> and C<noatime> are set with this\ncall, in order to improve reliability.");
@@ -688,6 +700,27 @@ void display_command (const char *cmd)
   if (strcasecmp (cmd, "sfdiskM") == 0)
     pod2text ("sfdiskM - create partitions on a block device", " sfdiskM <device> <lines>\n\nThis is a simplified interface to the C<sfdisk>\ncommand, where partition sizes are specified in megabytes\nonly (rounded to the nearest cylinder) and you don't need\nto specify the cyls, heads and sectors parameters which\nwere rarely if ever used anyway.\n\nSee also C<sfdisk> and the L<sfdisk(8)> manpage.\n\nB<This command is dangerous.  Without careful use you\ncan easily destroy all your data>.");
   else
+  if (strcasecmp (cmd, "zfile") == 0)
+    pod2text ("zfile - determine file type inside a compressed file", " zfile <method> <path>\n\nThis command runs C<file> after first decompressing C<path>\nusing C<method>.\n\nC<method> must be one of C<gzip>, C<compress> or C<bzip2>.\n\nSee also: C<file>");
+  else
+  if (strcasecmp (cmd, "getxattrs") == 0)
+    pod2text ("getxattrs - list extended attributes of a file or directory", " getxattrs <path>\n\nThis call lists the extended attributes of the file or directory\nC<path>.\n\nAt the system call level, this is a combination of the\nL<listxattr(2)> and L<getxattr(2)> calls.\n\nSee also: C<lgetxattrs>, L<attr(5)>.");
+  else
+  if (strcasecmp (cmd, "lgetxattrs") == 0)
+    pod2text ("lgetxattrs - list extended attributes of a file or directory", " lgetxattrs <path>\n\nThis is the same as C<getxattrs>, but if C<path>\nis a symbolic link, then it returns the extended attributes\nof the link itself.");
+  else
+  if (strcasecmp (cmd, "setxattr") == 0)
+    pod2text ("setxattr - set extended attribute of a file or directory", " setxattr <xattr> <val> <vallen> <path>\n\nThis call sets the extended attribute named C<xattr>\nof the file C<path> to the value C<val> (of length C<vallen>).\nThe value is arbitrary 8 bit data.\n\nSee also: C<lsetxattr>, L<attr(5)>.");
+  else
+  if (strcasecmp (cmd, "lsetxattr") == 0)
+    pod2text ("lsetxattr - set extended attribute of a file or directory", " lsetxattr <xattr> <val> <vallen> <path>\n\nThis is the same as C<setxattr>, but if C<path>\nis a symbolic link, then it sets an extended attribute\nof the link itself.");
+  else
+  if (strcasecmp (cmd, "removexattr") == 0)
+    pod2text ("removexattr - remove extended attribute of a file or directory", " removexattr <xattr> <path>\n\nThis call removes the extended attribute named C<xattr>\nof the file C<path>.\n\nSee also: C<lremovexattr>, L<attr(5)>.");
+  else
+  if (strcasecmp (cmd, "lremovexattr") == 0)
+    pod2text ("lremovexattr - remove extended attribute of a file or directory", " lremovexattr <xattr> <path>\n\nThis is the same as C<removexattr>, but if C<path>\nis a symbolic link, then it removes an extended attribute\nof the link itself.");
+  else
     display_builtin_command (cmd);
 }
 
@@ -868,6 +901,44 @@ static void print_dirent_list (struct guestfs_dirent_list *dirents)
 
   for (i = 0; i < dirents->len; ++i)
     print_dirent (&dirents->val[i]);
+}
+
+static void print_version (struct guestfs_version *version)
+{
+  printf ("major: %" PRIi64 "\n", version->major);
+  printf ("minor: %" PRIi64 "\n", version->minor);
+  printf ("release: %" PRIi64 "\n", version->release);
+  printf ("extra: %s\n", version->extra);
+}
+
+static void print_version_list (struct guestfs_version_list *versions)
+{
+  int i;
+
+  for (i = 0; i < versions->len; ++i)
+    print_version (&versions->val[i]);
+}
+
+static void print_xattr (struct guestfs_xattr *xattr)
+{
+  int i;
+
+  printf ("attrname: %s\n", xattr->attrname);
+  printf ("attrval: ");
+  for (i = 0; i < xattr->attrval_len; ++i)
+    if (isprint (xattr->attrval[i]))
+      printf ("%c", xattr->attrval[i]);
+    else
+      printf ("\\x%02x", xattr->attrval[i]);
+  printf ("\n");
+}
+
+static void print_xattr_list (struct guestfs_xattr_list *xattrs)
+{
+  int i;
+
+  for (i = 0; i < xattrs->len; ++i)
+    print_xattr (&xattrs->val[i]);
 }
 
 static int run_launch (const char *cmd, int argc, char *argv[])
@@ -1201,6 +1272,21 @@ static int run_get_pid (const char *cmd, int argc, char *argv[])
   r = guestfs_get_pid (g);
   if (r == -1) return -1;
   printf ("%d\n", r);
+  return 0;
+}
+
+static int run_version (const char *cmd, int argc, char *argv[])
+{
+  struct guestfs_version *r;
+  if (argc != 0) {
+    fprintf (stderr, "%s should have 0 parameter(s)\n", cmd);
+    fprintf (stderr, "type 'help %s' for help on %s\n", cmd, cmd);
+    return -1;
+  }
+  r = guestfs_version (g);
+  if (r == NULL) return -1;
+  print_version (r);
+  guestfs_free_version (r);
   return 0;
 }
 
@@ -3432,6 +3518,131 @@ static int run_sfdiskM (const char *cmd, int argc, char *argv[])
   return r;
 }
 
+static int run_zfile (const char *cmd, int argc, char *argv[])
+{
+  char *r;
+  const char *method;
+  const char *path;
+  if (argc != 2) {
+    fprintf (stderr, "%s should have 2 parameter(s)\n", cmd);
+    fprintf (stderr, "type 'help %s' for help on %s\n", cmd, cmd);
+    return -1;
+  }
+  method = argv[0];
+  path = argv[1];
+  r = guestfs_zfile (g, method, path);
+  if (r == NULL) return -1;
+  printf ("%s\n", r);
+  free (r);
+  return 0;
+}
+
+static int run_getxattrs (const char *cmd, int argc, char *argv[])
+{
+  struct guestfs_xattr_list *r;
+  const char *path;
+  if (argc != 1) {
+    fprintf (stderr, "%s should have 1 parameter(s)\n", cmd);
+    fprintf (stderr, "type 'help %s' for help on %s\n", cmd, cmd);
+    return -1;
+  }
+  path = argv[0];
+  r = guestfs_getxattrs (g, path);
+  if (r == NULL) return -1;
+  print_xattr_list (r);
+  guestfs_free_xattr_list (r);
+  return 0;
+}
+
+static int run_lgetxattrs (const char *cmd, int argc, char *argv[])
+{
+  struct guestfs_xattr_list *r;
+  const char *path;
+  if (argc != 1) {
+    fprintf (stderr, "%s should have 1 parameter(s)\n", cmd);
+    fprintf (stderr, "type 'help %s' for help on %s\n", cmd, cmd);
+    return -1;
+  }
+  path = argv[0];
+  r = guestfs_lgetxattrs (g, path);
+  if (r == NULL) return -1;
+  print_xattr_list (r);
+  guestfs_free_xattr_list (r);
+  return 0;
+}
+
+static int run_setxattr (const char *cmd, int argc, char *argv[])
+{
+  int r;
+  const char *xattr;
+  const char *val;
+  int vallen;
+  const char *path;
+  if (argc != 4) {
+    fprintf (stderr, "%s should have 4 parameter(s)\n", cmd);
+    fprintf (stderr, "type 'help %s' for help on %s\n", cmd, cmd);
+    return -1;
+  }
+  xattr = argv[0];
+  val = argv[1];
+  vallen = atoi (argv[2]);
+  path = argv[3];
+  r = guestfs_setxattr (g, xattr, val, vallen, path);
+  return r;
+}
+
+static int run_lsetxattr (const char *cmd, int argc, char *argv[])
+{
+  int r;
+  const char *xattr;
+  const char *val;
+  int vallen;
+  const char *path;
+  if (argc != 4) {
+    fprintf (stderr, "%s should have 4 parameter(s)\n", cmd);
+    fprintf (stderr, "type 'help %s' for help on %s\n", cmd, cmd);
+    return -1;
+  }
+  xattr = argv[0];
+  val = argv[1];
+  vallen = atoi (argv[2]);
+  path = argv[3];
+  r = guestfs_lsetxattr (g, xattr, val, vallen, path);
+  return r;
+}
+
+static int run_removexattr (const char *cmd, int argc, char *argv[])
+{
+  int r;
+  const char *xattr;
+  const char *path;
+  if (argc != 2) {
+    fprintf (stderr, "%s should have 2 parameter(s)\n", cmd);
+    fprintf (stderr, "type 'help %s' for help on %s\n", cmd, cmd);
+    return -1;
+  }
+  xattr = argv[0];
+  path = argv[1];
+  r = guestfs_removexattr (g, xattr, path);
+  return r;
+}
+
+static int run_lremovexattr (const char *cmd, int argc, char *argv[])
+{
+  int r;
+  const char *xattr;
+  const char *path;
+  if (argc != 2) {
+    fprintf (stderr, "%s should have 2 parameter(s)\n", cmd);
+    fprintf (stderr, "type 'help %s' for help on %s\n", cmd, cmd);
+    return -1;
+  }
+  xattr = argv[0];
+  path = argv[1];
+  r = guestfs_lremovexattr (g, xattr, path);
+  return r;
+}
+
 int run_action (const char *cmd, int argc, char *argv[])
 {
   if (strcasecmp (cmd, "launch") == 0 || strcasecmp (cmd, "run") == 0)
@@ -3505,6 +3716,9 @@ int run_action (const char *cmd, int argc, char *argv[])
   else
   if (strcasecmp (cmd, "get_pid") == 0 || strcasecmp (cmd, "get-pid") == 0 || strcasecmp (cmd, "pid") == 0)
     return run_get_pid (cmd, argc, argv);
+  else
+  if (strcasecmp (cmd, "version") == 0)
+    return run_version (cmd, argc, argv);
   else
   if (strcasecmp (cmd, "mount") == 0)
     return run_mount (cmd, argc, argv);
@@ -3922,6 +4136,27 @@ int run_action (const char *cmd, int argc, char *argv[])
   else
   if (strcasecmp (cmd, "sfdiskM") == 0)
     return run_sfdiskM (cmd, argc, argv);
+  else
+  if (strcasecmp (cmd, "zfile") == 0)
+    return run_zfile (cmd, argc, argv);
+  else
+  if (strcasecmp (cmd, "getxattrs") == 0)
+    return run_getxattrs (cmd, argc, argv);
+  else
+  if (strcasecmp (cmd, "lgetxattrs") == 0)
+    return run_lgetxattrs (cmd, argc, argv);
+  else
+  if (strcasecmp (cmd, "setxattr") == 0)
+    return run_setxattr (cmd, argc, argv);
+  else
+  if (strcasecmp (cmd, "lsetxattr") == 0)
+    return run_lsetxattr (cmd, argc, argv);
+  else
+  if (strcasecmp (cmd, "removexattr") == 0)
+    return run_removexattr (cmd, argc, argv);
+  else
+  if (strcasecmp (cmd, "lremovexattr") == 0)
+    return run_lremovexattr (cmd, argc, argv);
   else
     {
       fprintf (stderr, "%s: unknown command\n", cmd);

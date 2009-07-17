@@ -41,6 +41,15 @@ endif
 if HAVE_INSPECTOR
 SUBDIRS += inspector
 endif
+if HAVE_V2V
+SUBDIRS += v2v
+endif
+if HAVE_DF
+SUBDIRS += df
+endif
+if HAVE_CAT
+SUBDIRS += cat
+endif
 
 EXTRA_DIST = \
 	config.rpath \
@@ -123,7 +132,10 @@ html/recipes.html: $(wildcard recipes/*.sh) $(wildcard recipes/*.html) $(wildcar
 	mv $@-t $@
 
 HTMLFILES = html/guestfs.3.html html/guestfish.1.html \
+	html/virt-cat.1.html \
+	html/virt-df.1.html \
 	html/virt-inspector.1.html \
+	html/virt-v2v.1.html \
 	html/recipes.html \
 	html/pod.css html/recipes.css
 
@@ -140,6 +152,15 @@ website: $(HTMLFILES) $(TEXTFILES)
 dist-hook:
 	./gitlog-to-changelog > ChangeLog
 	cp ChangeLog $(distdir)/ChangeLog
+
+# Update the list of translatable files in po/POTFILES.in.
+all-local:
+	find -name '*.c' -o -name '*.pl' -o -name '*.pm' | \
+	grep -v '/blib/' | \
+	grep -v '/capitests/' | \
+	grep -v '/examples/' | \
+	sort | \
+	sed 's,^\./,,' > $(srcdir)/po/POTFILES.in
 
 # Pkgconfig.
 

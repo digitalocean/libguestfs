@@ -70,6 +70,7 @@ static const char *const commands[] = {
   "get-memsize",
   "get-pid",
   "pid",
+  "version",
   "mount",
   "sync",
   "touch",
@@ -211,6 +212,13 @@ static const char *const commands[] = {
   "umask",
   "readdir",
   "sfdiskM",
+  "zfile",
+  "getxattrs",
+  "lgetxattrs",
+  "setxattr",
+  "lsetxattr",
+  "removexattr",
+  "lremovexattr",
   NULL
 };
 

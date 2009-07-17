@@ -308,6 +308,56 @@ xdr_guestfs_int_dirent_list (XDR *xdrs, guestfs_int_dirent_list *objp)
 }
 
 bool_t
+xdr_guestfs_int_version (XDR *xdrs, guestfs_int_version *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_quad_t (xdrs, &objp->major))
+		 return FALSE;
+	 if (!xdr_quad_t (xdrs, &objp->minor))
+		 return FALSE;
+	 if (!xdr_quad_t (xdrs, &objp->release))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->extra, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_int_version_list (XDR *xdrs, guestfs_int_version_list *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->guestfs_int_version_list_val, (u_int *) &objp->guestfs_int_version_list_len, ~0,
+		sizeof (guestfs_int_version), (xdrproc_t) xdr_guestfs_int_version))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_int_xattr (XDR *xdrs, guestfs_int_xattr *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->attrname, ~0))
+		 return FALSE;
+	 if (!xdr_bytes (xdrs, (char **)&objp->attrval.attrval_val, (u_int *) &objp->attrval.attrval_len, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_int_xattr_list (XDR *xdrs, guestfs_int_xattr_list *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->guestfs_int_xattr_list_val, (u_int *) &objp->guestfs_int_xattr_list_len, ~0,
+		sizeof (guestfs_int_xattr), (xdrproc_t) xdr_guestfs_int_xattr))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_mount_args (XDR *xdrs, guestfs_mount_args *objp)
 {
 	register int32_t *buf;
@@ -2531,6 +2581,124 @@ xdr_guestfs_sfdiskM_args (XDR *xdrs, guestfs_sfdiskM_args *objp)
 		 return FALSE;
 	 if (!xdr_array (xdrs, (char **)&objp->lines.lines_val, (u_int *) &objp->lines.lines_len, ~0,
 		sizeof (str), (xdrproc_t) xdr_str))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_zfile_args (XDR *xdrs, guestfs_zfile_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->method, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_zfile_ret (XDR *xdrs, guestfs_zfile_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->description, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_getxattrs_args (XDR *xdrs, guestfs_getxattrs_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_getxattrs_ret (XDR *xdrs, guestfs_getxattrs_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_guestfs_int_xattr_list (xdrs, &objp->xattrs))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_lgetxattrs_args (XDR *xdrs, guestfs_lgetxattrs_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_lgetxattrs_ret (XDR *xdrs, guestfs_lgetxattrs_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_guestfs_int_xattr_list (xdrs, &objp->xattrs))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_setxattr_args (XDR *xdrs, guestfs_setxattr_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->xattr, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->val, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->vallen))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_lsetxattr_args (XDR *xdrs, guestfs_lsetxattr_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->xattr, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->val, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->vallen))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_removexattr_args (XDR *xdrs, guestfs_removexattr_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->xattr, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_lremovexattr_args (XDR *xdrs, guestfs_lremovexattr_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->xattr, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->path, ~0))
 		 return FALSE;
 	return TRUE;
 }

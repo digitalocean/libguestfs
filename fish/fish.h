@@ -1,4 +1,4 @@
-/* libguestfs - the guestfsd daemon
+/* libguestfs - guestfish shell
  * Copyright (C) 2009 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -77,8 +77,19 @@ extern int do_glob (const char *cmd, int argc, char *argv[]);
 /* in more.c */
 extern int do_more (const char *cmd, int argc, char *argv[]);
 
+/* in rc.c (remote control) */
+extern void rc_listen (void);
+extern int rc_remote (int pid, const char *cmd, int argc, char *argv[],
+		      int exit_on_error);
+
+/* in reopen.c */
+extern int do_reopen (const char *cmd, int argc, char *argv[]);
+
 /* in time.c */
 extern int do_time (const char *cmd, int argc, char *argv[]);
+
+/* in tilde.c */
+extern char *try_tilde_expansion (char *path);
 
 /* This should just list all the built-in commands so they can
  * be added to the generated auto-completion code.
@@ -92,6 +103,7 @@ extern int do_time (const char *cmd, int argc, char *argv[]);
   "lcd",				\
   "glob",				\
   "more", "less",			\
+  "reopen",				\
   "time"
 
 #endif /* FISH_H */

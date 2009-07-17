@@ -37,7 +37,7 @@ initrd="$3"
 # RHEL 5 didn't append the arch to the kernel name, so look for kernels
 # without arch second.
 
-arch=$(echo "i686" | sed 's/^i.86$/i?86/')
+arch=$(echo "x86_64" | sed 's/^i.86$/i?86/')
 kernels=$(ls -1vr /boot/vmlinuz-*.$arch* 2>/dev/null | grep -v xen; ls -1vr /boot/vmlinuz-* 2>/dev/null | grep -v xen)
 for f in $kernels; do
     b=$(basename "$f")
@@ -57,14 +57,14 @@ fi
 
 # The initrd consists of these components:
 # (1) The base skeleton appliance that we constructed at build time.
-#     name = initramfs.fedora-11.i686.supermin.img
+#     name = initramfs.fedora-11.x86_64.supermin.img
 #     format = compressed cpio
 # (2) The modules from modpath which are on the module whitelist.
 #     format = plain cpio
 # (3) The host files which match wildcards in *.supermin.hostfiles.
 #     format = plain cpio
 
-cp "$sourcedir"/initramfs.fedora-11.i686.supermin.img "$initrd"
+cp "$sourcedir"/initramfs.fedora-11.x86_64.supermin.img "$initrd"
 
 # Kernel modules (2).
 exec 5<"$sourcedir"/kmod.whitelist
@@ -81,6 +81,6 @@ find "$modpath" \( -not -name '*.ko' $whitelist \) -a -print0 |
 
 (cd / && \
   ls -1df $(
-      cat "$sourcedir"/initramfs.fedora-11.i686.supermin.hostfiles
+      cat "$sourcedir"/initramfs.fedora-11.x86_64.supermin.hostfiles
     ) 2>/dev/null |
   cpio --quiet -o -H newc ) >> "$initrd"

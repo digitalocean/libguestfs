@@ -164,4 +164,11 @@ const char *function_names[] = {
   [137] = "umask",
   [138] = "readdir",
   [139] = "sfdiskM",
+  [140] = "zfile",
+  [141] = "getxattrs",
+  [142] = "lgetxattrs",
+  [143] = "setxattr",
+  [144] = "lsetxattr",
+  [145] = "removexattr",
+  [146] = "lremovexattr",
 };

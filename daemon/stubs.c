@@ -3539,6 +3539,201 @@ done:
   xdr_free ((xdrproc_t) xdr_guestfs_sfdiskM_args, (char *) &args);
 }
 
+static void zfile_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_zfile_args args;
+  char *method;
+  char *path;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_zfile_args (xdr_in, &args)) {
+    reply_with_error ("%s: daemon failed to decode procedure arguments", "zfile");
+    return;
+  }
+  method = args.method;
+  path = args.path;
+
+  r = do_zfile (method, path);
+  if (r == NULL)
+    /* do_zfile has already called reply_with_error */
+    goto done;
+
+  struct guestfs_zfile_ret ret;
+  ret.description = r;
+  reply ((xdrproc_t) &xdr_guestfs_zfile_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_zfile_args, (char *) &args);
+}
+
+static void getxattrs_stub (XDR *xdr_in)
+{
+  guestfs_int_xattr_list *r;
+  struct guestfs_getxattrs_args args;
+  char *path;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_getxattrs_args (xdr_in, &args)) {
+    reply_with_error ("%s: daemon failed to decode procedure arguments", "getxattrs");
+    return;
+  }
+  path = args.path;
+
+  r = do_getxattrs (path);
+  if (r == NULL)
+    /* do_getxattrs has already called reply_with_error */
+    goto done;
+
+  struct guestfs_getxattrs_ret ret;
+  ret.xattrs = *r;
+  reply ((xdrproc_t) xdr_guestfs_getxattrs_ret, (char *) &ret);
+  xdr_free ((xdrproc_t) xdr_guestfs_getxattrs_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_getxattrs_args, (char *) &args);
+}
+
+static void lgetxattrs_stub (XDR *xdr_in)
+{
+  guestfs_int_xattr_list *r;
+  struct guestfs_lgetxattrs_args args;
+  char *path;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_lgetxattrs_args (xdr_in, &args)) {
+    reply_with_error ("%s: daemon failed to decode procedure arguments", "lgetxattrs");
+    return;
+  }
+  path = args.path;
+
+  r = do_lgetxattrs (path);
+  if (r == NULL)
+    /* do_lgetxattrs has already called reply_with_error */
+    goto done;
+
+  struct guestfs_lgetxattrs_ret ret;
+  ret.xattrs = *r;
+  reply ((xdrproc_t) xdr_guestfs_lgetxattrs_ret, (char *) &ret);
+  xdr_free ((xdrproc_t) xdr_guestfs_lgetxattrs_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_lgetxattrs_args, (char *) &args);
+}
+
+static void setxattr_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_setxattr_args args;
+  char *xattr;
+  char *val;
+  int vallen;
+  char *path;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_setxattr_args (xdr_in, &args)) {
+    reply_with_error ("%s: daemon failed to decode procedure arguments", "setxattr");
+    return;
+  }
+  xattr = args.xattr;
+  val = args.val;
+  vallen = args.vallen;
+  path = args.path;
+
+  r = do_setxattr (xattr, val, vallen, path);
+  if (r == -1)
+    /* do_setxattr has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_setxattr_args, (char *) &args);
+}
+
+static void lsetxattr_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_lsetxattr_args args;
+  char *xattr;
+  char *val;
+  int vallen;
+  char *path;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_lsetxattr_args (xdr_in, &args)) {
+    reply_with_error ("%s: daemon failed to decode procedure arguments", "lsetxattr");
+    return;
+  }
+  xattr = args.xattr;
+  val = args.val;
+  vallen = args.vallen;
+  path = args.path;
+
+  r = do_lsetxattr (xattr, val, vallen, path);
+  if (r == -1)
+    /* do_lsetxattr has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_lsetxattr_args, (char *) &args);
+}
+
+static void removexattr_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_removexattr_args args;
+  char *xattr;
+  char *path;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_removexattr_args (xdr_in, &args)) {
+    reply_with_error ("%s: daemon failed to decode procedure arguments", "removexattr");
+    return;
+  }
+  xattr = args.xattr;
+  path = args.path;
+
+  r = do_removexattr (xattr, path);
+  if (r == -1)
+    /* do_removexattr has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_removexattr_args, (char *) &args);
+}
+
+static void lremovexattr_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_lremovexattr_args args;
+  char *xattr;
+  char *path;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_lremovexattr_args (xdr_in, &args)) {
+    reply_with_error ("%s: daemon failed to decode procedure arguments", "lremovexattr");
+    return;
+  }
+  xattr = args.xattr;
+  path = args.path;
+
+  r = do_lremovexattr (xattr, path);
+  if (r == -1)
+    /* do_lremovexattr has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_lremovexattr_args, (char *) &args);
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -3958,6 +4153,27 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_SFDISKM:
       sfdiskM_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_ZFILE:
+      zfile_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_GETXATTRS:
+      getxattrs_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LGETXATTRS:
+      lgetxattrs_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_SETXATTR:
+      setxattr_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LSETXATTR:
+      lsetxattr_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_REMOVEXATTR:
+      removexattr_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LREMOVEXATTR:
+      lremovexattr_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

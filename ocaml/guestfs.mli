@@ -135,6 +135,18 @@ type dirent = {
   name : string;
 }
 
+type version = {
+  major : int64;
+  minor : int64;
+  release : int64;
+  extra : string;
+}
+
+type xattr = {
+  attrname : string;
+  attrval : string;
+}
+
 val test0 : t -> string -> string option -> string array -> bool -> int -> string -> string -> unit
 (** internal test function - do not use *)
 
@@ -275,6 +287,9 @@ val get_memsize : t -> int
 
 val get_pid : t -> int
 (** get PID of qemu subprocess *)
+
+val version : t -> version
+(** get the library version number *)
 
 val mount : t -> string -> string -> unit
 (** mount a guest disk at a position in the filesystem *)
@@ -692,4 +707,25 @@ val readdir : t -> string -> dirent array
 
 val sfdiskM : t -> string -> string array -> unit
 (** create partitions on a block device *)
+
+val zfile : t -> string -> string -> string
+(** determine file type inside a compressed file *)
+
+val getxattrs : t -> string -> xattr array
+(** list extended attributes of a file or directory *)
+
+val lgetxattrs : t -> string -> xattr array
+(** list extended attributes of a file or directory *)
+
+val setxattr : t -> string -> string -> int -> string -> unit
+(** set extended attribute of a file or directory *)
+
+val lsetxattr : t -> string -> string -> int -> string -> unit
+(** set extended attribute of a file or directory *)
+
+val removexattr : t -> string -> string -> unit
+(** remove extended attribute of a file or directory *)
+
+val lremovexattr : t -> string -> string -> unit
+(** remove extended attribute of a file or directory *)
 

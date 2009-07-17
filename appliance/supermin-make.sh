@@ -25,7 +25,7 @@ set -e
 
 cd ..
 
-output=appliance/initramfs.fedora-11.i686.supermin.img
+output=appliance/initramfs.fedora-11.x86_64.supermin.img
 
 # Generate final image.
 febootstrap-to-initramfs \

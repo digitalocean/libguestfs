@@ -84,26 +84,16 @@ static void no_test_warnings (void)
   fprintf (stderr, "warning: \"guestfs_add_drive_ro\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_config\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_set_qemu\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_get_qemu\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_set_path\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_get_path\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_set_append\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_get_append\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_set_autosync\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_get_autosync\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_set_verbose\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_get_verbose\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_is_ready\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_is_config\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_is_launching\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_is_busy\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_get_state\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_set_busy\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_set_ready\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_end_busy\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_set_memsize\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_get_memsize\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_get_pid\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_ll\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_pvs_full\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_vgs_full\" has no tests\n");
@@ -152,6 +142,13 @@ static void no_test_warnings (void)
   fprintf (stderr, "warning: \"guestfs_umask\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_readdir\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_sfdiskM\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_zfile\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_getxattrs\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_lgetxattrs\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_setxattr\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_lsetxattr\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_removexattr\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_lremovexattr\" has no tests\n");
 }
 
 static int test_mknod_c_0_skip (void)
@@ -19271,6 +19268,652 @@ static int test_mount_0 (void)
   return 0;
 }
 
+static int test_version_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "version") == NULL;
+  str = getenv ("SKIP_TEST_VERSION_0");
+  if (str && strcmp (str, "1") == 0) return 1;
+  str = getenv ("SKIP_TEST_VERSION");
+  if (str && strcmp (str, "1") == 0) return 1;
+  return 0;
+}
+
+static int test_version_0 (void)
+{
+  if (test_version_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_version_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_version_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputStruct for version (0) */
+  {
+    struct guestfs_version *r;
+    suppress_error = 0;
+    r = guestfs_version (g);
+    if (r == NULL)
+      return -1;
+    if (r->major != 1) {
+      fprintf (stderr, "test_version_0: major was %d, expected 1\n",
+               (int) r->major);
+      return -1;
+    }
+    guestfs_free_version (r);
+  }
+  return 0;
+}
+
+static int test_get_pid_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "get_pid") == NULL;
+  str = getenv ("SKIP_TEST_GET_PID_0");
+  if (str && strcmp (str, "1") == 0) return 1;
+  str = getenv ("SKIP_TEST_GET_PID");
+  if (str && strcmp (str, "1") == 0) return 1;
+  return 0;
+}
+
+static int test_get_pid_0 (void)
+{
+  if (test_get_pid_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_get_pid_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_get_pid_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputIntOp for get_pid (0) */
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_get_pid (g);
+    if (r == -1)
+      return -1;
+    if (! (r >= 1)) {
+      fprintf (stderr, "test_get_pid_0: expected >= 1 but got %d\n",               (int) r);
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_get_memsize_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "get_memsize") == NULL;
+  str = getenv ("SKIP_TEST_GET_MEMSIZE_0");
+  if (str && strcmp (str, "1") == 0) return 1;
+  str = getenv ("SKIP_TEST_GET_MEMSIZE");
+  if (str && strcmp (str, "1") == 0) return 1;
+  return 0;
+}
+
+static int test_get_memsize_0 (void)
+{
+  if (test_get_memsize_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_get_memsize_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_get_memsize_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputIntOp for get_memsize (0) */
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_get_memsize (g);
+    if (r == -1)
+      return -1;
+    if (! (r >= 256)) {
+      fprintf (stderr, "test_get_memsize_0: expected >= 256 but got %d\n",               (int) r);
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_set_memsize_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "set_memsize") == NULL;
+  str = getenv ("SKIP_TEST_SET_MEMSIZE_0");
+  if (str && strcmp (str, "1") == 0) return 1;
+  str = getenv ("SKIP_TEST_SET_MEMSIZE");
+  if (str && strcmp (str, "1") == 0) return 1;
+  return 0;
+}
+
+static int test_set_memsize_0 (void)
+{
+  if (test_set_memsize_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_set_memsize_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_set_memsize_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputInt for set_memsize (0) */
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_set_memsize (g, 500);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_get_memsize (g);
+    if (r == -1)
+      return -1;
+    if (r != 500) {
+      fprintf (stderr, "test_set_memsize_0: expected 500 but got %d\n",               (int) r);
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_is_busy_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "is_busy") == NULL;
+  str = getenv ("SKIP_TEST_IS_BUSY_0");
+  if (str && strcmp (str, "1") == 0) return 1;
+  str = getenv ("SKIP_TEST_IS_BUSY");
+  if (str && strcmp (str, "1") == 0) return 1;
+  return 0;
+}
+
+static int test_is_busy_0 (void)
+{
+  if (test_is_busy_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_is_busy_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_is_busy_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputFalse for is_busy (0) */
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_is_busy (g);
+    if (r == -1)
+      return -1;
+    if (r) {
+      fprintf (stderr, "test_is_busy_0: expected false, got true\n");
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_is_launching_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "is_launching") == NULL;
+  str = getenv ("SKIP_TEST_IS_LAUNCHING_0");
+  if (str && strcmp (str, "1") == 0) return 1;
+  str = getenv ("SKIP_TEST_IS_LAUNCHING");
+  if (str && strcmp (str, "1") == 0) return 1;
+  return 0;
+}
+
+static int test_is_launching_0 (void)
+{
+  if (test_is_launching_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_is_launching_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_is_launching_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputFalse for is_launching (0) */
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_is_launching (g);
+    if (r == -1)
+      return -1;
+    if (r) {
+      fprintf (stderr, "test_is_launching_0: expected false, got true\n");
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_is_config_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "is_config") == NULL;
+  str = getenv ("SKIP_TEST_IS_CONFIG_0");
+  if (str && strcmp (str, "1") == 0) return 1;
+  str = getenv ("SKIP_TEST_IS_CONFIG");
+  if (str && strcmp (str, "1") == 0) return 1;
+  return 0;
+}
+
+static int test_is_config_0 (void)
+{
+  if (test_is_config_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_is_config_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_is_config_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputFalse for is_config (0) */
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_is_config (g);
+    if (r == -1)
+      return -1;
+    if (r) {
+      fprintf (stderr, "test_is_config_0: expected false, got true\n");
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_is_ready_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "is_ready") == NULL;
+  str = getenv ("SKIP_TEST_IS_READY_0");
+  if (str && strcmp (str, "1") == 0) return 1;
+  str = getenv ("SKIP_TEST_IS_READY");
+  if (str && strcmp (str, "1") == 0) return 1;
+  return 0;
+}
+
+static int test_is_ready_0 (void)
+{
+  if (test_is_ready_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_is_ready_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_is_ready_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputTrue for is_ready (0) */
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_is_ready (g);
+    if (r == -1)
+      return -1;
+    if (!r) {
+      fprintf (stderr, "test_is_ready_0: expected true, got false\n");
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_get_autosync_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "get_autosync") == NULL;
+  str = getenv ("SKIP_TEST_GET_AUTOSYNC_0");
+  if (str && strcmp (str, "1") == 0) return 1;
+  str = getenv ("SKIP_TEST_GET_AUTOSYNC");
+  if (str && strcmp (str, "1") == 0) return 1;
+  return 0;
+}
+
+static int test_get_autosync_0 (void)
+{
+  if (test_get_autosync_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_get_autosync_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_get_autosync_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestRun for get_autosync (0) */
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_get_autosync (g);
+    if (r == -1)
+      return -1;
+  }
+  return 0;
+}
+
+static int test_get_path_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "get_path") == NULL;
+  str = getenv ("SKIP_TEST_GET_PATH_0");
+  if (str && strcmp (str, "1") == 0) return 1;
+  str = getenv ("SKIP_TEST_GET_PATH");
+  if (str && strcmp (str, "1") == 0) return 1;
+  return 0;
+}
+
+static int test_get_path_0 (void)
+{
+  if (test_get_path_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_get_path_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_get_path_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestRun for get_path (0) */
+  {
+    const char *r;
+    suppress_error = 0;
+    r = guestfs_get_path (g);
+    if (r == NULL)
+      return -1;
+  }
+  return 0;
+}
+
+static int test_get_qemu_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "get_qemu") == NULL;
+  str = getenv ("SKIP_TEST_GET_QEMU_0");
+  if (str && strcmp (str, "1") == 0) return 1;
+  str = getenv ("SKIP_TEST_GET_QEMU");
+  if (str && strcmp (str, "1") == 0) return 1;
+  return 0;
+}
+
+static int test_get_qemu_0 (void)
+{
+  if (test_get_qemu_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_get_qemu_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_get_qemu_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestRun for get_qemu (0) */
+  {
+    const char *r;
+    suppress_error = 0;
+    r = guestfs_get_qemu (g);
+    if (r == NULL)
+      return -1;
+  }
+  return 0;
+}
+
 int main (int argc, char *argv[])
 {
   char c = 0;
@@ -19398,7 +20041,7 @@ int main (int argc, char *argv[])
   /* Cancel previous alarm. */
   alarm (0);
 
-  nr_tests = 174;
+  nr_tests = 185;
 
   test_num++;
   printf ("%3d/%3d test_mknod_c_0\n", test_num, nr_tests);
@@ -20442,6 +21085,72 @@ int main (int argc, char *argv[])
   printf ("%3d/%3d test_mount_0\n", test_num, nr_tests);
   if (test_mount_0 () == -1) {
     printf ("test_mount_0 FAILED\n");
+    failed++;
+  }
+  test_num++;
+  printf ("%3d/%3d test_version_0\n", test_num, nr_tests);
+  if (test_version_0 () == -1) {
+    printf ("test_version_0 FAILED\n");
+    failed++;
+  }
+  test_num++;
+  printf ("%3d/%3d test_get_pid_0\n", test_num, nr_tests);
+  if (test_get_pid_0 () == -1) {
+    printf ("test_get_pid_0 FAILED\n");
+    failed++;
+  }
+  test_num++;
+  printf ("%3d/%3d test_get_memsize_0\n", test_num, nr_tests);
+  if (test_get_memsize_0 () == -1) {
+    printf ("test_get_memsize_0 FAILED\n");
+    failed++;
+  }
+  test_num++;
+  printf ("%3d/%3d test_set_memsize_0\n", test_num, nr_tests);
+  if (test_set_memsize_0 () == -1) {
+    printf ("test_set_memsize_0 FAILED\n");
+    failed++;
+  }
+  test_num++;
+  printf ("%3d/%3d test_is_busy_0\n", test_num, nr_tests);
+  if (test_is_busy_0 () == -1) {
+    printf ("test_is_busy_0 FAILED\n");
+    failed++;
+  }
+  test_num++;
+  printf ("%3d/%3d test_is_launching_0\n", test_num, nr_tests);
+  if (test_is_launching_0 () == -1) {
+    printf ("test_is_launching_0 FAILED\n");
+    failed++;
+  }
+  test_num++;
+  printf ("%3d/%3d test_is_config_0\n", test_num, nr_tests);
+  if (test_is_config_0 () == -1) {
+    printf ("test_is_config_0 FAILED\n");
+    failed++;
+  }
+  test_num++;
+  printf ("%3d/%3d test_is_ready_0\n", test_num, nr_tests);
+  if (test_is_ready_0 () == -1) {
+    printf ("test_is_ready_0 FAILED\n");
+    failed++;
+  }
+  test_num++;
+  printf ("%3d/%3d test_get_autosync_0\n", test_num, nr_tests);
+  if (test_get_autosync_0 () == -1) {
+    printf ("test_get_autosync_0 FAILED\n");
+    failed++;
+  }
+  test_num++;
+  printf ("%3d/%3d test_get_path_0\n", test_num, nr_tests);
+  if (test_get_path_0 () == -1) {
+    printf ("test_get_path_0 FAILED\n");
+    failed++;
+  }
+  test_num++;
+  printf ("%3d/%3d test_get_qemu_0\n", test_num, nr_tests);
+  if (test_get_qemu_0 () == -1) {
+    printf ("test_get_qemu_0 FAILED\n");
     failed++;
   }
 

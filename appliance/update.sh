@@ -25,7 +25,7 @@ set -e
 
 if [ "REDHAT" = "REDHAT" ]; then
   cd ..
-  output=appliance/initramfs.fedora-11.i686.img
+  output=appliance/initramfs.fedora-11.x86_64.img
 
   # Create the init script.
   febootstrap-install initramfs appliance/../appliance/init /init 0755 root.root
@@ -40,8 +40,8 @@ if [ "REDHAT" = "REDHAT" ]; then
 elif [ "REDHAT" = "DEBIAN" ]; then
   cd ../appliance
 
-  output=initramfs.fedora-11.i686.img
-  vmlinuz=vmlinuz.fedora-11.i686
+  output=initramfs.fedora-11.x86_64.img
+  vmlinuz=vmlinuz.fedora-11.x86_64
 
   ln -sf debian/debirf-libguestfs_fedora-11*.cgz $output
   ln -sf debian/vmlinuz-* $vmlinuz

@@ -434,6 +434,77 @@ copy_dirent_list (const struct guestfs_dirent_list *dirents)
   }
 }
 
+static CAMLprim value
+copy_version (const struct guestfs_version *version)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+
+  rv = caml_alloc (4, 0);
+  v = caml_copy_int64 (version->major);
+  Store_field (rv, 0, v);
+  v = caml_copy_int64 (version->minor);
+  Store_field (rv, 1, v);
+  v = caml_copy_int64 (version->release);
+  Store_field (rv, 2, v);
+  v = caml_copy_string (version->extra);
+  Store_field (rv, 3, v);
+  CAMLreturn (rv);
+}
+
+static CAMLprim value
+copy_version_list (const struct guestfs_version_list *versions)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+  int i;
+
+  if (versions->len == 0)
+    CAMLreturn (Atom (0));
+  else {
+    rv = caml_alloc (versions->len, 0);
+    for (i = 0; i < versions->len; ++i) {
+      v = copy_version (&versions->val[i]);
+      caml_modify (&Field (rv, i), v);
+    }
+    CAMLreturn (rv);
+  }
+}
+
+static CAMLprim value
+copy_xattr (const struct guestfs_xattr *xattr)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+
+  rv = caml_alloc (2, 0);
+  v = caml_copy_string (xattr->attrname);
+  Store_field (rv, 0, v);
+  v = caml_alloc_string (xattr->attrval_len);
+  memcpy (String_val (v), xattr->attrval, xattr->attrval_len);
+  Store_field (rv, 1, v);
+  CAMLreturn (rv);
+}
+
+static CAMLprim value
+copy_xattr_list (const struct guestfs_xattr_list *xattrs)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+  int i;
+
+  if (xattrs->len == 0)
+    CAMLreturn (Atom (0));
+  else {
+    rv = caml_alloc (xattrs->len, 0);
+    for (i = 0; i < xattrs->len; ++i) {
+      v = copy_xattr (&xattrs->val[i]);
+      caml_modify (&Field (rv, i), v);
+    }
+    CAMLreturn (rv);
+  }
+}
+
 CAMLprim value
 ocaml_guestfs_test0 (value gv, value strv, value optstrv, value strlistv, value bv, value integerv, value fileinv, value fileoutv)
 {
@@ -1520,6 +1591,29 @@ ocaml_guestfs_get_pid (value gv)
     ocaml_guestfs_raise_error (g, "get_pid");
 
   rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+CAMLprim value
+ocaml_guestfs_version (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    caml_failwith ("version: used handle after closing it");
+
+  struct guestfs_version *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_version (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "version");
+
+  rv = copy_version (r);
+  guestfs_free_version (r);
   CAMLreturn (rv);
 }
 
@@ -4880,6 +4974,179 @@ ocaml_guestfs_sfdiskM (value gv, value devicev, value linesv)
   ocaml_guestfs_free_strings (lines);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "sfdiskM");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+CAMLprim value
+ocaml_guestfs_zfile (value gv, value methodv, value pathv)
+{
+  CAMLparam3 (gv, methodv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    caml_failwith ("zfile: used handle after closing it");
+
+  const char *method = String_val (methodv);
+  const char *path = String_val (pathv);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_zfile (g, method, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "zfile");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+CAMLprim value
+ocaml_guestfs_getxattrs (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    caml_failwith ("getxattrs: used handle after closing it");
+
+  const char *path = String_val (pathv);
+  struct guestfs_xattr_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_getxattrs (g, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "getxattrs");
+
+  rv = copy_xattr_list (r);
+  guestfs_free_xattr_list (r);
+  CAMLreturn (rv);
+}
+
+CAMLprim value
+ocaml_guestfs_lgetxattrs (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    caml_failwith ("lgetxattrs: used handle after closing it");
+
+  const char *path = String_val (pathv);
+  struct guestfs_xattr_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lgetxattrs (g, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "lgetxattrs");
+
+  rv = copy_xattr_list (r);
+  guestfs_free_xattr_list (r);
+  CAMLreturn (rv);
+}
+
+CAMLprim value
+ocaml_guestfs_setxattr (value gv, value xattrv, value valv, value vallenv, value pathv)
+{
+  CAMLparam5 (gv, xattrv, valv, vallenv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    caml_failwith ("setxattr: used handle after closing it");
+
+  const char *xattr = String_val (xattrv);
+  const char *val = String_val (valv);
+  int vallen = Int_val (vallenv);
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_setxattr (g, xattr, val, vallen, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "setxattr");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+CAMLprim value
+ocaml_guestfs_lsetxattr (value gv, value xattrv, value valv, value vallenv, value pathv)
+{
+  CAMLparam5 (gv, xattrv, valv, vallenv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    caml_failwith ("lsetxattr: used handle after closing it");
+
+  const char *xattr = String_val (xattrv);
+  const char *val = String_val (valv);
+  int vallen = Int_val (vallenv);
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lsetxattr (g, xattr, val, vallen, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "lsetxattr");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+CAMLprim value
+ocaml_guestfs_removexattr (value gv, value xattrv, value pathv)
+{
+  CAMLparam3 (gv, xattrv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    caml_failwith ("removexattr: used handle after closing it");
+
+  const char *xattr = String_val (xattrv);
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_removexattr (g, xattr, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "removexattr");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+CAMLprim value
+ocaml_guestfs_lremovexattr (value gv, value xattrv, value pathv)
+{
+  CAMLparam3 (gv, xattrv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    caml_failwith ("lremovexattr: used handle after closing it");
+
+  const char *xattr = String_val (xattrv);
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lremovexattr (g, xattr, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "lremovexattr");
 
   rv = Val_unit;
   CAMLreturn (rv);
