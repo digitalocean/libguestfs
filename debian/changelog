@@ -1,3 +1,15 @@
+libguestfs (1.0.61-1) unstable; urgency=low
+
+  * [831bc5f] Imported Upstream version 1.0.61
+  * [b85412e] run checks but disable currently failing tests
+  * [21d7e00] add missing qemu build-dep
+  * [0636bb4] add missing build-dep for perl bindings
+  * [5585a82] add missing build-deps for perl based tools
+  * [e09005c] install virt-df and virt-cat
+  * [342f8e4] install Lib.pm for perl bindings
+
+ -- Guido Günther <agx@sigxcpu.org>  Fri, 17 Jul 2009 22:32:07 +0200
+
 libguestfs (1.0.56-1) unstable; urgency=low
 
   * [1b77dc8] Imported Upstream version 1.0.56
