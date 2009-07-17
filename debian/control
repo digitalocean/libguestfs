@@ -10,7 +10,7 @@ Build-Depends: debhelper (>= 7), autotools-dev, quilt,
 # for python bindings:
   python-dev, python-support,
 # for the perl bindings:
-  libtest-pod-coverage-perl, libextutils-command-perl,
+  libtest-pod-coverage-perl, libextutils-command-perl, libintl-perl, libtest-pod-perl,
 # for virt-inspector:
   libsys-virt-perl
 Homepage: http://libguestfs.org
