@@ -1,0 +1,43 @@
+From: =?utf-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
+Date: Sat, 18 Jul 2009 18:20:29 +0200
+Subject: [PATCH] add nls_base.ko and nls_cp437.ko for vfat
+
+---
+ appliance/kmod.whitelist    |    2 ++
+ appliance/kmod.whitelist.in |    4 +++-
+ 2 files changed, 5 insertions(+), 1 deletions(-)
+
+diff --git a/appliance/kmod.whitelist b/appliance/kmod.whitelist
+index 60681fe..b0c0590 100644
+--- a/appliance/kmod.whitelist
++++ b/appliance/kmod.whitelist
+@@ -22,6 +22,8 @@ fat.ko
+ udf.ko
+ crc_itu_t.ko
+ nls_utf8.ko
++nls_cp437.ko
++nls_base.ko
+ dm-*.ko
+ cramfs.ko
+ squashfs.ko
+diff --git a/appliance/kmod.whitelist.in b/appliance/kmod.whitelist.in
+index 734b3c4..1b98787 100644
+--- a/appliance/kmod.whitelist.in
++++ b/appliance/kmod.whitelist.in
+@@ -36,6 +36,8 @@ fat.ko
+ udf.ko
+ crc_itu_t.ko
+ nls_utf8.ko
++nls_cp437.ko
++nls_base.ko
+ 
+ dm-*.ko
+ 
+@@ -47,4 +49,4 @@ ufs.ko
+ exportfs.ko
+ xfs.ko
+ 
+-reiserfs.ko
+\ No newline at end of file
++reiserfs.ko
+-- 
