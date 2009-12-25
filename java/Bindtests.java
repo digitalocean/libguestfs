@@ -26,19 +26,19 @@ public class Bindtests {
     {
         try {
             GuestFS g = new GuestFS ();
-            g.test0 ("abc", "def", new String[]{}, false, 0, "123", "456");
-            g.test0 ("abc", null, new String[]{}, false, 0, "123", "456");
-            g.test0 ("", "def", new String[]{}, false, 0, "123", "456");
-            g.test0 ("", "", new String[]{}, false, 0, "123", "456");
-            g.test0 ("abc", "def", new String[]{"1"}, false, 0, "123", "456");
-            g.test0 ("abc", "def", new String[]{"1","2"}, false, 0, "123", "456");
-            g.test0 ("abc", "def", new String[]{"1"}, true, 0, "123", "456");
-            g.test0 ("abc", "def", new String[]{"1"}, false, -1, "123", "456");
-            g.test0 ("abc", "def", new String[]{"1"}, false, -2, "123", "456");
-            g.test0 ("abc", "def", new String[]{"1"}, false, 1, "123", "456");
-            g.test0 ("abc", "def", new String[]{"1"}, false, 2, "123", "456");
-            g.test0 ("abc", "def", new String[]{"1"}, false, 4095, "123", "456");
-            g.test0 ("abc", "def", new String[]{"1"}, false, 0, "", "");
+            g.test0 ("abc", "def", new String[]{}, false, 0, 0, "123", "456");
+            g.test0 ("abc", null, new String[]{}, false, 0, 0, "123", "456");
+            g.test0 ("", "def", new String[]{}, false, 0, 0, "123", "456");
+            g.test0 ("", "", new String[]{}, false, 0, 0, "123", "456");
+            g.test0 ("abc", "def", new String[]{"1"}, false, 0, 0, "123", "456");
+            g.test0 ("abc", "def", new String[]{"1","2"}, false, 0, 0, "123", "456");
+            g.test0 ("abc", "def", new String[]{"1"}, true, 0, 0, "123", "456");
+            g.test0 ("abc", "def", new String[]{"1"}, false, -1, -1, "123", "456");
+            g.test0 ("abc", "def", new String[]{"1"}, false, -2, -2, "123", "456");
+            g.test0 ("abc", "def", new String[]{"1"}, false, 1, 1, "123", "456");
+            g.test0 ("abc", "def", new String[]{"1"}, false, 2, 2, "123", "456");
+            g.test0 ("abc", "def", new String[]{"1"}, false, 4095, 4095, "123", "456");
+            g.test0 ("abc", "def", new String[]{"1"}, false, 0, 0, "", "");
 
             System.out.println ("EOF");
         }

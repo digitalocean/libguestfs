@@ -27,14 +27,13 @@
 #include <sys/types.h>
 #include <sys/un.h>
 #include <signal.h>
+#include <sys/socket.h>
 
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 
 #include "fish.h"
 #include "rc_protocol.h"
-
-#define UNIX_PATH_MAX 108
 
 static void
 create_sockpath (pid_t pid, char *sockpath, int len, struct sockaddr_un *addr)
@@ -51,6 +50,126 @@ create_sockpath (pid_t pid, char *sockpath, int len, struct sockaddr_un *addr)
   strcpy (addr->sun_path, sockpath);
 }
 
+static const socklen_t controllen = CMSG_LEN (sizeof (int));
+
+static void
+receive_stdout (int s)
+{
+  static struct cmsghdr *cmptr = NULL, *h;
+  struct msghdr         msg;
+  struct iovec          iov[1];
+
+  /* Our 1 byte buffer */
+  char buf[1];
+
+  if (NULL == cmptr) {
+    cmptr = malloc (controllen);
+    if (NULL == cmptr) {
+      perror ("malloc");
+      exit (EXIT_FAILURE);
+    }
+  }
+
+  /* Don't specify a source */
+  msg.msg_name = NULL;
+  msg.msg_namelen = 0;
+
+  /* Initialise the msghdr to receive zero byte */
+  iov[0].iov_base = buf;
+  iov[0].iov_len  = 1;
+  msg.msg_iov     = iov;
+  msg.msg_iovlen  = 1;
+
+  /* Initialise the control data */
+  msg.msg_control     = cmptr;
+  msg.msg_controllen  = controllen;
+
+  /* Read a message from the socket */
+  ssize_t n = recvmsg (s, &msg, 0);
+  if (n < 0) {
+    perror ("recvmsg stdout fd");
+    exit (EXIT_FAILURE);
+  }
+
+  h = CMSG_FIRSTHDR(&msg);
+  if (NULL == h) {
+    fprintf (stderr, "didn't receive a stdout file descriptor\n");
+  }
+
+  else {
+    /* Extract the transferred file descriptor from the control data */
+    unsigned char *data = CMSG_DATA (h);
+    int fd = *(int *)data;
+
+    /* Duplicate the received file descriptor to stdout */
+    dup2 (fd, STDOUT_FILENO);
+    close (fd);
+  }
+}
+
+static void
+send_stdout (int s)
+{
+  static struct cmsghdr *cmptr = NULL;
+  struct msghdr         msg;
+  struct iovec          iov[1];
+
+  /* Our 1 byte dummy buffer */
+  char buf[1];
+
+  /* Don't specify a destination */
+  msg.msg_name    = NULL;
+  msg.msg_namelen = 0;
+
+  /* Initialise the msghdr to send zero byte */
+  iov[0].iov_base = buf;
+  iov[0].iov_len  = 1;
+  msg.msg_iov     = iov;
+  msg.msg_iovlen  = 1;
+
+  /* Initialize the zero byte */
+  buf[0] = 0;
+
+  /* Initialize the control data */
+  if (NULL == cmptr) {
+    cmptr = malloc (controllen);
+    if (NULL == cmptr) {
+      perror ("malloc");
+      exit (EXIT_FAILURE);
+    }
+  }
+  cmptr->cmsg_level = SOL_SOCKET;
+  cmptr->cmsg_type  = SCM_RIGHTS;
+  cmptr->cmsg_len   = controllen;
+
+  /* Add control header to the message */
+  msg.msg_control     = cmptr;
+  msg.msg_controllen  = controllen;
+
+  /* Add STDOUT to the control data */
+  unsigned char *data = CMSG_DATA (cmptr);
+  *(int *)data = STDOUT_FILENO;
+
+  if (sendmsg (s, &msg, 0) != 1) {
+    perror ("sendmsg stdout fd");
+    exit (EXIT_FAILURE);
+  }
+}
+
+static void
+close_stdout (void)
+{
+  int fd;
+
+  fd = open ("/dev/null", O_WRONLY);
+  if (fd == -1)
+    perror ("/dev/null");
+  else {
+    dup2 (fd, STDOUT_FILENO);
+    close (fd);
+  }
+}
+
 /* Remote control server. */
 void
 rc_listen (void)
@@ -58,7 +177,7 @@ rc_listen (void)
   char sockpath[128];
   pid_t pid;
   struct sockaddr_un addr;
-  int sock, s, i, fd;
+  int sock, s, i;
   FILE *fp;
   XDR xdr, xdr2;
   guestfish_hello hello;
@@ -73,7 +192,7 @@ rc_listen (void)
   pid = fork ();
   if (pid == -1) {
     perror ("fork");
-    exit (1);
+    exit (EXIT_FAILURE);
   }
 
   if (pid > 0) {
@@ -98,28 +217,22 @@ rc_listen (void)
   sock = socket (AF_UNIX, SOCK_STREAM, 0);
   if (sock == -1) {
     perror ("socket");
-    exit (1);
+    exit (EXIT_FAILURE);
   }
   unlink (sockpath);
   if (bind (sock, (struct sockaddr *) &addr, sizeof addr) == -1) {
     perror (sockpath);
-    exit (1);
+    exit (EXIT_FAILURE);
   }
   if (listen (sock, 4) == -1) {
     perror ("listen");
-    exit (1);
+    exit (EXIT_FAILURE);
   }
 
   /* Now close stdout and substitute /dev/null.  This is necessary
    * so that eval `guestfish --listen` doesn't block forever.
    */
-  fd = open ("/dev/null", O_WRONLY);
-  if (fd == -1)
-    perror ("/dev/null");
-  else {
-    dup2 (fd, 1);
-    close (fd);
-  }
+  close_stdout();
 
   /* Read commands and execute them. */
   while (!quit) {
@@ -127,72 +240,75 @@ rc_listen (void)
     if (s == -1)
       perror ("accept");
     else {
+      receive_stdout(s);
+
       fp = fdopen (s, "r+");
       xdrstdio_create (&xdr, fp, XDR_DECODE);
 
       if (!xdr_guestfish_hello (&xdr, &hello)) {
-	fprintf (stderr, _("guestfish: protocol error: could not read 'hello' message\n"));
-	goto error;
+        fprintf (stderr, _("guestfish: protocol error: could not read 'hello' message\n"));
+        goto error;
       }
 
-      if (strcmp (hello.vers, PACKAGE_VERSION) != 0) {
-	fprintf (stderr, _("guestfish: protocol error: version mismatch, server version '%s' does not match client version '%s'.  The two versions must match exactly.\n"),
-		 PACKAGE_VERSION,
-		 hello.vers);
-	xdr_free ((xdrproc_t) xdr_guestfish_hello, (char *) &hello);
-	goto error;
+      if (STRNEQ (hello.vers, PACKAGE_VERSION)) {
+        fprintf (stderr, _("guestfish: protocol error: version mismatch, server version '%s' does not match client version '%s'.  The two versions must match exactly.\n"),
+                 PACKAGE_VERSION,
+                 hello.vers);
+        xdr_free ((xdrproc_t) xdr_guestfish_hello, (char *) &hello);
+        goto error;
       }
       xdr_free ((xdrproc_t) xdr_guestfish_hello, (char *) &hello);
 
       while (xdr_guestfish_call (&xdr, &call)) {
-	/* We have to extend and NULL-terminate the argv array. */
-	argc = call.args.args_len;
-	argv = realloc (call.args.args_val, (argc+1) * sizeof (char *));
-	if (argv == NULL) {
-	  perror ("realloc");
-	  exit (1);
-	}
-	call.args.args_val = argv;
-	argv[argc] = NULL;
+        /* We have to extend and NULL-terminate the argv array. */
+        argc = call.args.args_len;
+        argv = realloc (call.args.args_val, (argc+1) * sizeof (char *));
+        if (argv == NULL) {
+          perror ("realloc");
+          exit (EXIT_FAILURE);
+        }
+        call.args.args_val = argv;
+        argv[argc] = NULL;
 
-	if (verbose) {
-	  fprintf (stderr, "guestfish(%d): %s", pid, call.cmd);
-	  for (i = 0; i < argc; ++i)
-	    fprintf (stderr, " %s", argv[i]);
-	  fprintf (stderr, "\n");
-	}
+        if (verbose) {
+          fprintf (stderr, "guestfish(%d): %s", pid, call.cmd);
+          for (i = 0; i < argc; ++i)
+            fprintf (stderr, " %s", argv[i]);
+          fprintf (stderr, "\n");
+        }
 
-	/* Run the command. */
-	reply.r = issue_command (call.cmd, argv, NULL);
+        /* Run the command. */
+        reply.r = issue_command (call.cmd, argv, NULL);
 
-	xdr_free ((xdrproc_t) xdr_guestfish_call, (char *) &call);
+        xdr_free ((xdrproc_t) xdr_guestfish_call, (char *) &call);
 
-	/* Send the reply. */
-	xdrstdio_create (&xdr2, fp, XDR_ENCODE);
-	(void) xdr_guestfish_reply (&xdr2, &reply);
-	xdr_destroy (&xdr2);
+        /* Send the reply. */
+        xdrstdio_create (&xdr2, fp, XDR_ENCODE);
+        (void) xdr_guestfish_reply (&xdr2, &reply);
+        xdr_destroy (&xdr2);
 
-	/* Exit on error? */
-	if (call.exit_on_error && reply.r == -1) {
-	  unlink (sockpath);
-	  exit (1);
-	}
+        /* Exit on error? */
+        if (call.exit_on_error && reply.r == -1) {
+          unlink (sockpath);
+          exit (EXIT_FAILURE);
+        }
       }
 
     error:
       xdr_destroy (&xdr);	/* NB. This doesn't close 'fp'. */
       fclose (fp);		/* Closes the underlying socket 's'. */
+      close_stdout(); /* Re-close stdout */
     }
   }
 
   unlink (sockpath);
-  exit (0);
+  exit (EXIT_SUCCESS);
 }
 
 /* Remote control client. */
 int
 rc_remote (int pid, const char *cmd, int argc, char *argv[],
-	   int exit_on_error)
+           int exit_on_error)
 {
   guestfish_hello hello;
   guestfish_call call;
@@ -229,14 +345,16 @@ rc_remote (int pid, const char *cmd, int argc, char *argv[],
     return -1;
   }
 
+  send_stdout(sock);
+
   /* Send the greeting. */
   fp = fdopen (sock, "r+");
   xdrstdio_create (&xdr, fp, XDR_ENCODE);
 
   if (!xdr_guestfish_hello (&xdr, &hello)) {
     fprintf (stderr, _("guestfish: protocol error: could not send initial greeting to server\n"));
-    fclose (fp);
     xdr_destroy (&xdr);
+    fclose (fp);
     return -1;
   }
 
@@ -249,8 +367,8 @@ rc_remote (int pid, const char *cmd, int argc, char *argv[],
   call.exit_on_error = exit_on_error;
   if (!xdr_guestfish_call (&xdr, &call)) {
     fprintf (stderr, _("guestfish: protocol error: could not send initial greeting to server\n"));
-    fclose (fp);
     xdr_destroy (&xdr);
+    fclose (fp);
     return -1;
   }
   xdr_destroy (&xdr);
@@ -260,13 +378,13 @@ rc_remote (int pid, const char *cmd, int argc, char *argv[],
 
   if (!xdr_guestfish_reply (&xdr, &reply)) {
     fprintf (stderr, _("guestfish: protocol error: could not decode reply from server\n"));
-    fclose (fp);
     xdr_destroy (&xdr);
+    fclose (fp);
     return -1;
   }
 
-  fclose (fp);
   xdr_destroy (&xdr);
+  fclose (fp);
 
   return reply.r;
 }

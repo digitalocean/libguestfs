@@ -15,10 +15,25 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-EXTRA_DIST = \
+include $(top_srcdir)/subdir-rules.mk
+
+generator_built = \
 	guestfs_protocol.x \
-	guestfs_protocol.c \
-	guestfs_protocol.h \
+	guestfs-structs.h \
+	guestfs-actions.h \
+	guestfs-internal-actions.h \
+	guestfs-actions.c \
+	guestfs-bindtests.c
+
+$(generator_built): stamp-generator
+
+BUILT_SOURCES = \
+  $(generator_built) \
+  guestfs_protocol.c \
+  guestfs_protocol.h
+
+EXTRA_DIST = \
+	$(BUILT_SOURCES) \
 	MAX_PROC_NR \
 	stamp-generator \
 	generator.ml
@@ -30,27 +45,22 @@ EXTRA_DIST = \
 noinst_DATA = stamp-generator
 
 stamp-generator: generator.ml
-	mkdir -p $(top_builddir)/perl/lib/Sys
-	mkdir -p $(top_builddir)/ruby/ext/guestfs
-	mkdir -p $(top_builddir)/java/com/redhat/et/libguestfs
-	cd $(top_builddir) && ocaml -warn-error A ./src/$<
-
-guestfs_protocol.x: stamp-generator
+	mkdir -p $(top_srcdir)/perl/lib/Sys
+	mkdir -p $(top_srcdir)/ruby/ext/guestfs
+	mkdir -p $(top_srcdir)/java/com/redhat/et/libguestfs
+	cd $(top_srcdir) && ocaml -warn-error A src/generator.ml
 
 include_HEADERS = guestfs.h guestfs-actions.h guestfs-structs.h
 
 lib_LTLIBRARIES = libguestfs.la
 
-BUILT_SOURCES = \
-  guestfs_protocol.x \
+# This convenience library is solely to avoid compiler warnings
+# in its generated sources.
+libprotocol_la_SOURCES = \
   guestfs_protocol.c \
-  guestfs_protocol.h \
-  guestfs-structs.h \
-  guestfs-actions.h \
-  guestfs-actions.c \
-  guestfs-bindtests.c
+  guestfs_protocol.h
 
-$(BUILT_SOURCES): stamp-generator
+libprotocol_la_CFLAGS =
 
 # From the libtool info file, with comments:
 #
@@ -98,20 +108,32 @@ libguestfs_la_LDFLAGS = -version-info $(MAX_PROC_NR):0:$(MAX_PROC_NR)
 libguestfs_la_SOURCES = \
 	guestfs.c \
 	guestfs.h \
-	guestfs_protocol.c \
-	guestfs_protocol.h \
 	guestfs-actions.h \
 	guestfs-actions.c \
 	guestfs-bindtests.c \
+	guestfs-internal.h \
+	guestfs_protocol.h \
 	gettext.h
 
-libguestfs_la_CFLAGS = -Wall -DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"'
+libguestfs_la_LIBADD = $(LTLIBTHREAD)
+
+# Make libguestfs include the convenience library.
+noinst_LTLIBRARIES = libprotocol.la
+libguestfs_la_LIBADD += libprotocol.la
+
+libguestfs_la_CFLAGS = \
+  -DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"' \
+  $(WARN_CFLAGS) $(WERROR_CFLAGS)
+
+libguestfs_la_CPPFLAGS = -I$(top_srcdir)/gnulib/lib
 
 if HAVE_RPCGEN
 guestfs_protocol.c: guestfs_protocol.x
-	rm -f $@-t
+	rm -f $@-t $@-t2
 	$(RPCGEN) -c -o $@-t $<
-	mv $@-t $@
+	sed 's,\.\./\.\./src/,,' < $@-t > $@-t2
+	rm $@-t
+	mv $@-t2 $@
 
 guestfs_protocol.h: guestfs_protocol.x
 	rm -f $@-t

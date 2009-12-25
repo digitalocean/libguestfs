@@ -47,6 +47,8 @@ struct cmd {
 static char *debug_help (const char *subcmd, int argc, char *const *const argv);
 static char *debug_env (const char *subcmd, int argc, char *const *const argv);
 static char *debug_fds (const char *subcmd, int argc, char *const *const argv);
+static char *debug_ls (const char *subcmd, int argc, char *const *const argv);
+static char *debug_ll (const char *subcmd, int argc, char *const *const argv);
 static char *debug_segv (const char *subcmd, int argc, char *const *const argv);
 static char *debug_sh (const char *subcmd, int argc, char *const *const argv);
 
@@ -54,14 +56,22 @@ static struct cmd cmds[] = {
   { "help", debug_help },
   { "env", debug_env },
   { "fds", debug_fds },
+  { "ls", debug_ls },
+  { "ll", debug_ll },
   { "segv", debug_segv },
   { "sh", debug_sh },
   { NULL, NULL }
 };
 #endif
 
+#if ! ENABLE_DEBUG_COMMAND
+# define MAYBE_UNUSED ATTRIBUTE_UNUSED
+#else
+# define MAYBE_UNUSED /* empty */
+#endif
+
 char *
-do_debug (char *subcmd, char **argv)
+do_debug (const char *subcmd MAYBE_UNUSED, char *const *argv MAYBE_UNUSED)
 {
 #if ENABLE_DEBUG_COMMAND
   int argc, i;
@@ -70,7 +80,7 @@ do_debug (char *subcmd, char **argv)
     argc++;
 
   for (i = 0; cmds[i].cmd != NULL; ++i) {
-    if (strcasecmp (subcmd, cmds[i].cmd) == 0)
+    if (STRCASEEQ (subcmd, cmds[i].cmd))
       return cmds[i].f (subcmd, argc, argv);
   }
 
@@ -140,7 +150,7 @@ debug_fds (const char *subcmd, int argc, char *const *const argv)
   }
 
   while ((d = readdir (dir)) != NULL) {
-    if (strcmp (d->d_name, ".") == 0 || strcmp (d->d_name, "..") == 0)
+    if (STREQ (d->d_name, ".") || STREQ (d->d_name, ".."))
       continue;
 
     snprintf (fname, sizeof fname, "/proc/self/fd/%s", d->d_name);
@@ -157,11 +167,11 @@ debug_fds (const char *subcmd, int argc, char *const *const argv)
     if (S_ISLNK (statbuf.st_mode)) {
       r = readlink (fname, link, sizeof link - 1);
       if (r == -1) {
-	reply_with_perror ("readline: %s", fname);
-	fclose (fp);
-	free (out);
-	closedir (dir);
-	return NULL;
+        reply_with_perror ("readline: %s", fname);
+        fclose (fp);
+        free (out);
+        closedir (dir);
+        return NULL;
       }
       link[r] = '\0';
 
@@ -243,6 +253,66 @@ debug_env (const char *subcmd, int argc, char *const *const argv)
   r = command (&out, &err, "printenv", NULL);
   if (r == -1) {
     reply_with_error ("printenv: %s", err);
+    free (out);
+    free (err);
+    return NULL;
+  }
+
+  free (err);
+
+  return out;
+}
+
+/* List files in the appliance. */
+static char *
+debug_ls (const char *subcmd, int argc, char *const *const argv)
+{
+  int len = count_strings (argv);
+  const char *cargv[len+3];
+  int i;
+
+  cargv[0] = "ls";
+  cargv[1] = "-a";
+  for (i = 0; i < len; ++i)
+    cargv[2+i] = argv[i];
+  cargv[2+len] = NULL;
+
+  int r;
+  char *out, *err;
+
+  r = commandv (&out, &err, (void *) cargv);
+  if (r == -1) {
+    reply_with_error ("ls: %s", err);
+    free (out);
+    free (err);
+    return NULL;
+  }
+
+  free (err);
+
+  return out;
+}
+
+/* List files in the appliance. */
+static char *
+debug_ll (const char *subcmd, int argc, char *const *const argv)
+{
+  int len = count_strings (argv);
+  const char *cargv[len+3];
+  int i;
+
+  cargv[0] = "ls";
+  cargv[1] = "-la";
+  for (i = 0; i < len; ++i)
+    cargv[2+i] = argv[i];
+  cargv[2+len] = NULL;
+
+  int r;
+  char *out, *err;
+
+  r = commandv (&out, &err, (void *) cargv);
+  if (r == -1) {
+    reply_with_error ("ll: %s", err);
     free (out);
     free (err);
     return NULL;

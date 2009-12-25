@@ -2,17 +2,35 @@
 
 =head1 NAME
 
-guestfish - the libguestfs filesystem interactive shell
+guestfish - the libguestfs Filesystem Interactive SHell
 
 =head1 SYNOPSIS
 
  guestfish [--options] [commands]
 
+ guestfish
+
+ guestfish -a disk.img
+
+ guestfish -a disk.img -m dev[:mountpoint]
+
  guestfish -i libvirt-domain
 
- guestfish -i disk-image(s)
+ guestfish -i disk.img [disk.img ...]
 
 =head1 EXAMPLES
+
+=head2 As an interactive shell
+
+ $ guestfish
+ 
+ Welcome to guestfish, the libguestfs filesystem interactive shell for
+ editing virtual machine filesystems.
+ 
+ Type: 'help' for help with commands
+       'quit' to quit the shell
+ 
+ ><fs> help
 
 =head2 From shell scripts
 
@@ -21,61 +39,72 @@ Create a new C</etc/motd> file in a guest:
  guestfish <<_EOF_
  add disk.img
  run
- mount /dev/VolGroup00/LogVol00 /
- write_file /etc/motd "Hello users" 0
+ mount /dev/vg_guest/lv_root /
+ write_file /etc/motd "Welcome, new users" 0
  _EOF_
 
-List the LVs in a guest:
+List the LVM logical volumes in a guest:
 
- guestfish <<_EOF_
- add disk.img
+ guestfish -a disk.img --ro <<_EOF_
  run
  lvs
  _EOF_
 
-=head2 On the command line
+=head2 On one command line
 
-List the LVM PVs in a guest image:
+Update C</etc/resolv.conf> in a guest:
 
- guestfish add disk.img : run : pvs
+ guestfish \
+   add disk.img : run : mount /dev/vg_guest/lv_root / : \
+   write-file /etc/resolv.conf "nameserver 1.2.3.4" 0
 
-Remove C</boot/grub/menu.lst> (in reality not such a great idea):
+Edit C</boot/grub/grub.conf> interactively:
 
  guestfish --add disk.img \
-   --mount /dev/VolGroup00/LogVol00 \
+   --mount /dev/vg_guest/lv_root \
    --mount /dev/sda1:/boot \
-   rm /boot/grub/menu.lst
+   edit /boot/grub/grub.conf
 
-=head2 As an interactive shell
+=head2 Using virt-inspector
 
- $ guestfish
+Use the I<-i> option to get virt-inspector to mount
+the filesystems automatically as they would be mounted
+in the virtual machine:
 
- Welcome to guestfish, the libguestfs filesystem interactive shell for
- editing virtual machine filesystems.
-
- Type: 'help' for help with commands
-       'quit' to quit the shell
-
- ><fs> help
+ guestfish --ro -i disk.img cat /etc/group
 
 =head2 As a script interpreter
 
+Create a 50MB disk containing an ext2-formatted partition:
+
  #!/usr/bin/guestfish -f
- alloc /tmp/output.img 10M
+ alloc /tmp/output.img 50M
  run
- sfdisk /dev/sda 0 0 0 ,
+ part-disk /dev/sda mbr
  mkfs ext2 /dev/sda1
 
 =head2 Remote control
 
- eval `guestfish --listen`
- guestfish --remote cmd
+ eval `guestfish --listen --ro`
+ guestfish --remote add disk.img
+ guestfish --remote run
+ guestfish --remote lvs
 
 =head1 DESCRIPTION
 
 Guestfish is a shell and command-line tool for examining and modifying
 virtual machine filesystems.  It uses libguestfs and exposes all of
 the functionality of the guestfs API, see L<guestfs(3)>.
+
+Guestfish gives you structured access to the libguestfs API, from
+shell scripts or the command line or interactively.  If you want to
+rescue a broken virtual machine image, you might want to look at the
+L<virt-rescue(1)> command.
+
+Using guestfish in read/write mode on live virtual machines can be
+dangerous, potentially causing disk corruption.  Use the I<--ro>
+(read-only) option to use guestfish safely if the disk image or
+virtual machine might be live.
 
 =head1 OPTIONS
 
@@ -130,9 +159,9 @@ Typical usage is either:
 
  guestfish -i /dev/Guests/MyGuest
 
-You cannot use I<-a>, I<-m>, I<--listen> or I<--remote> in conjunction
-with this option, and options other than I<--ro> might not behave
-correctly.
+You cannot use I<-a>, I<-m>, I<--listen>, I<--remote> or I<--selinux>
+in conjunction with this option, and options other than I<--ro> might
+not behave correctly.
 
 See also: L<virt-inspector(1)>.
 
@@ -152,6 +181,11 @@ You have to mount something on C</> before most commands will work.
 If any C<-m> or C<--mount> options are given, the guest is
 automatically launched.
 
+If you don't know what filesystems a disk image contains, you
+can either run guestfish without this option, then list the partitions
+and LVs available (see L</list-partitions> and L</lvs> commands),
+or you can use the L<virt-list-filesystems(1)> program.
+
 =item B<-n> | B<--no-sync>
 
 Disable autosync.  This is enabled by default.  See the discussion
@@ -164,8 +198,16 @@ I<REMOTE CONTROL GUESTFISH OVER A SOCKET> below.
 
 =item B<-r> | B<--ro>
 
-This changes the C<-m> option so that mounts are done read-only
-(see C<guestfs_mount_ro> in the L<guestfs(3)> manpage).
+This changes the C<-a> and C<-m> options so that disks are added and
+mounts are done read-only (see L<guestfs(3)/guestfs_mount_ro>).
+
+The option must always be used if the disk image or virtual machine
+might be running, and is generally recommended in cases where you
+don't need write access to the disk.
+
+=item B<--selinux>
+
+Enable SELinux support for the guest.  See L<guestfs(3)/SELINUX>.
 
 =item B<-v> | B<--verbose>
 
@@ -246,9 +288,13 @@ quotes.  For example:
  rm '/"'
 
 A few commands require a list of strings to be passed.  For these, use
-a space-separated list, enclosed in quotes.  For example:
+a whitespace-separated list, enclosed in quotes.  Strings containing whitespace
+to be passed through must be enclosed in single quotes.  A literal single quote
+must be escaped with a backslash.
 
  vgcreate VG "/dev/sda1 /dev/sdb1"
+ command "/bin/echo 'foo      bar'"
+ command "/bin/echo \'foo\'"
 
 =head1 WILDCARDS AND GLOBBING
 
@@ -342,6 +388,23 @@ it, eg:
 
  echo "~"
 
+=head1 WINDOWS PATHS
+
+If a path is prefixed with C<win:> then you can use Windows-style
+paths (with some limitations).  The following commands are equivalent:
+
+ file /WINDOWS/system32/config/system.LOG
+
+ file win:/windows/system32/config/system.log
+
+ file win:\windows\system32\config\system.log
+
+ file WIN:C:\Windows\SYSTEM32\conFIG\SYSTEM.LOG
+
+This syntax implicitly calls C<case-sensitive-path> (q.v.) so it also
+handles case insensitivity like Windows would.  This only works in
+argument positions that expect a path.
+
 =head1 EXIT ON ERROR BEHAVIOUR
 
 By default, guestfish will ignore any errors when in interactive mode
@@ -390,13 +453,6 @@ You can have several guestfish listener processes running using:
  guestfish --remote=$pid1 cmd
  guestfish --remote=$pid2 cmd
 
-=head2 STANDARD OUTPUT DURING REMOTE CONTROL
-
-Because of limitations in the C<eval> statement, stdout from the
-listener is currently redirected to C</dev/null>.
-
-Stderr is unchanged.
-
 =head2 REMOTE CONTROL DETAILS
 
 Remote control happens over a Unix domain socket called
@@ -434,6 +490,18 @@ number of megabytes
 =item C<nn>G or C<nn>GB
 
 number of gigabytes
+
+=item C<nn>T or C<nn>TB
+
+number of terabytes
+
+=item C<nn>P or C<nn>PB
+
+number of petabytes
+
+=item C<nn>E or C<nn>EB
+
+number of exabytes
 
 =item C<nn>sects
 
@@ -513,6 +581,55 @@ Close and reopen the libguestfs handle.  It is not necessary to use
 this normally, because the handle is closed properly when guestfish
 exits.  However this is occasionally useful for testing.
 
+=head2 sparse
+
+ sparse filename size
+
+This creates an empty sparse file of the given size, and then adds
+so it can be further examined.
+
+In all respects it works the same as the C<alloc> command, except that
+the image file is allocated sparsely, which means that disk blocks are
+not assigned to the file until they are needed.  Sparse disk files
+only use space when written to, but they are slower and there is a
+danger you could run out of real disk space during a write operation.
+
+For more advanced image creation, see L<qemu-img(1)> utility.
+
+Size can be specified (where C<nn> means a number):
+
+=over 4
+
+=item C<nn> or C<nn>K or C<nn>KB
+
+number of kilobytes, eg: C<1440> = standard 3.5in floppy
+
+=item C<nn>M or C<nn>MB
+
+number of megabytes
+
+=item C<nn>G or C<nn>GB
+
+number of gigabytes
+
+=item C<nn>T or C<nn>TB
+
+number of terabytes
+
+=item C<nn>P or C<nn>PB
+
+number of petabytes
+
+=item C<nn>E or C<nn>EB
+
+number of exabytes
+
+=item C<nn>sects
+
+number of 512 byte sectors
+
+=back
+
 =head2 time
 
  time command args...
@@ -571,10 +688,24 @@ Set the default qemu binary that libguestfs uses.  If not set, then
 the qemu which was found at compile time by the configure script is
 used.
 
+=item LIBGUESTFS_TRACE
+
+Set C<LIBGUESTFS_TRACE=1> to enable command traces.
+
 =item PAGER
 
 The C<more> command uses C<$PAGER> as the pager.  If not
 set, it uses C<more>.
+
+=item TMPDIR
+
+Location of temporary directory, defaults to C</tmp>.
+
+If libguestfs was compiled to use the supermin appliance then each
+handle will require rather a large amount of space in this directory
+for short periods of time (~ 80 MB).  You can use C<$TMPDIR> to
+configure another directory to use in case C</tmp> is not large
+enough.
 
 =back
 
@@ -586,7 +717,13 @@ I<1> if there was an error.
 =head1 SEE ALSO
 
 L<guestfs(3)>,
-L<http://libguestfs.org/>.
+L<http://libguestfs.org/>,
+L<virt-cat(1)>,
+L<virt-edit(1)>,
+L<virt-list-filesystems(1)>,
+L<virt-ls(1)>,
+L<virt-rescue(1)>,
+L<virt-tar(1)>.
 
 =head1 AUTHORS
 

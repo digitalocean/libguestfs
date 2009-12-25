@@ -75,6 +75,60 @@ do_alloc (const char *cmd, int argc, char *argv[])
   return 0;
 }
 
+int
+do_sparse (const char *cmd, int argc, char *argv[])
+{
+  off_t size;
+  int fd;
+  char c = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("use 'sparse file size' to create a sparse image\n"));
+    return -1;
+  }
+
+  if (parse_size (argv[1], &size) == -1)
+    return -1;
+
+  if (!guestfs_is_config (g)) {
+    fprintf (stderr, _("can't allocate or add disks after launching\n"));
+    return -1;
+  }
+
+  fd = open (argv[0], O_WRONLY|O_CREAT|O_NOCTTY|O_TRUNC, 0666);
+  if (fd == -1) {
+    perror (argv[0]);
+    return -1;
+  }
+
+  if (lseek (fd, size-1, SEEK_SET) == (off_t) -1) {
+    perror ("lseek");
+    close (fd);
+    unlink (argv[0]);
+    return -1;
+  }
+
+  if (write (fd, &c, 1) != 1) {
+    perror ("write");
+    close (fd);
+    unlink (argv[0]);
+    return -1;
+  }
+
+  if (close (fd) == -1) {
+    perror (argv[0]);
+    unlink (argv[0]);
+    return -1;
+  }
+
+  if (guestfs_add_drive (g, argv[0]) == -1) {
+    unlink (argv[0]);
+    return -1;
+  }
+
+  return 0;
+}
+
 static int
 parse_size (const char *str, off_t *size_rtn)
 {
@@ -86,9 +140,12 @@ parse_size (const char *str, off_t *size_rtn)
    */
   if (sscanf (str, "%"SCNu64"%c", &size, &type) == 2) {
     switch (type) {
-    case 'k': case 'K': size *= 1024; break;
-    case 'm': case 'M': size *= 1024 * 1024; break;
-    case 'g': case 'G': size *= 1024 * 1024 * 1024; break;
+    case 'k': case 'K': size *= 1024ULL; break;
+    case 'm': case 'M': size *= 1024ULL * 1024ULL; break;
+    case 'g': case 'G': size *= 1024ULL * 1024ULL * 1024ULL; break;
+    case 't': case 'T': size *= 1024ULL * 1024ULL * 1024ULL * 1024ULL; break;
+    case 'p': case 'P': size *= 1024ULL * 1024ULL * 1024ULL * 1024ULL * 1024ULL; break;
+    case 'e': case 'E': size *= 1024ULL * 1024ULL * 1024ULL * 1024ULL * 1024ULL * 1024ULL; break;
     case 's': size *= 512; break;
     default:
       fprintf (stderr, _("could not parse size specification '%s'\n"), str);
@@ -96,7 +153,7 @@ parse_size (const char *str, off_t *size_rtn)
     }
   }
   else if (sscanf (str, "%"SCNu64, &size) == 1)
-    size *= 1024;
+    size *= 1024ULL;
   else {
     fprintf (stderr, _("could not parse size specification '%s'\n"), str);
     return -1;

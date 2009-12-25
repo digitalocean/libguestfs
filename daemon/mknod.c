@@ -29,14 +29,27 @@
 #include "../src/guestfs_protocol.h"
 #include "daemon.h"
 #include "actions.h"
+#include "optgroups.h"
+
+#ifdef HAVE_MKNOD
+int
+optgroup_mknod_available (void)
+{
+  return 1;
+}
+#else
+int
+optgroup_mknod_available (void)
+{
+  return 0;
+}
+#endif
 
 int
-do_mknod (int mode, int devmajor, int devminor, char *path)
+do_mknod (int mode, int devmajor, int devminor, const char *path)
 {
+#ifdef HAVE_MKNOD
   int r;
-
-  NEED_ROOT (-1);
-  ABS_PATH (path, -1);
 
   CHROOT_IN;
   r = mknod (path, mode, makedev (devmajor, devminor));
@@ -48,22 +61,25 @@ do_mknod (int mode, int devmajor, int devminor, char *path)
   }
 
   return 0;
+#else
+  NOT_AVAILABLE (-1);
+#endif
 }
 
 int
-do_mkfifo (int mode, char *path)
+do_mkfifo (int mode, const char *path)
 {
   return do_mknod (mode | S_IFIFO, 0, 0, path);
 }
 
 int
-do_mknod_b (int mode, int devmajor, int devminor, char *path)
+do_mknod_b (int mode, int devmajor, int devminor, const char *path)
 {
   return do_mknod (mode | S_IFBLK, devmajor, devminor, path);
 }
 
 int
-do_mknod_c (int mode, int devmajor, int devminor, char *path)
+do_mknod_c (int mode, int devmajor, int devminor, const char *path)
 {
   return do_mknod (mode | S_IFCHR, devmajor, devminor, path);
 }

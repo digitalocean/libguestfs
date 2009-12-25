@@ -7,6 +7,10 @@
 
 virtio*.ko
 
+# We normally use virtio_net, but keep these in reserve.
+8390.ko
+ne2k-pci.ko
+
 # drivers for QEMUs IDE/SCSI device emulation
 cdrom.ko
 i2c-piix4.ko
@@ -18,6 +22,7 @@ scsi_transport_spi.ko
 scsi_mod.ko
 sd_mod.ko
 sym53c8xx.ko
+ata_piix.ko
 
 ext2.ko
 ext3.ko
@@ -36,12 +41,18 @@ fat.ko
 udf.ko
 crc_itu_t.ko
 nls_utf8.ko
+nls_cp437.ko
+nls_base.ko
+
+isofs.ko
+zlib_inflate.ko
 
 dm-*.ko
 
 cramfs.ko
 squashfs.ko
 
+hfs.ko
 hfsplus.ko
 ufs.ko
 exportfs.ko

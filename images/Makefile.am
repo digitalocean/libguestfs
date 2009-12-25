@@ -15,6 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+include $(top_srcdir)/subdir-rules.mk
+
 # Old RHEL 5 autoconf doesn't have builddir.
 builddir ?= $(top_builddir)/images
 
@@ -22,36 +24,68 @@ EXTRA_DIST = \
 	helloworld.tar \
 	helloworld.tar.gz \
 	mbr-ext2-empty.img.gz \
-	empty known-1 known-2 known-3
+	empty known-1 known-2 known-3 known-4 known-5 \
+	bin-i586-dynamic \
+	bin-sparc-dynamic \
+	bin-win32.exe \
+	bin-win64.exe \
+	bin-x86_64-dynamic \
+	lib-i586.so \
+	lib-sparc.so \
+	lib-win32.dll \
+	lib-win64.dll \
+	lib-x86_64.so \
+	test-grep.txt
 
-noinst_DATA = test.sqsh
+noinst_DATA = test.iso
 
 CLEANFILES = \
-	test.sqsh \
+	test.iso test.sqsh \
 	100kallzeroes 100kallnewlines 100kallspaces 100krandom 10klines \
 	initrd
 
-squash_files_src = \
-    $(srcdir)/helloworld.tar \
-    $(srcdir)/helloworld.tar.gz \
-    $(srcdir)/empty \
-    $(srcdir)/known-1 \
-    $(srcdir)/known-2 \
-    $(srcdir)/known-3
+images_files_src = \
+	$(srcdir)/helloworld.tar \
+	$(srcdir)/helloworld.tar.gz \
+	$(srcdir)/empty \
+	$(srcdir)/known-1 \
+	$(srcdir)/known-2 \
+	$(srcdir)/known-3 \
+	$(srcdir)/known-4 \
+	$(srcdir)/known-5 \
+	$(srcdir)/bin-i586-dynamic \
+	$(srcdir)/bin-sparc-dynamic \
+	$(srcdir)/bin-win32.exe \
+	$(srcdir)/bin-win64.exe \
+	$(srcdir)/bin-x86_64-dynamic \
+	$(srcdir)/lib-i586.so \
+	$(srcdir)/lib-sparc.so \
+	$(srcdir)/lib-win32.dll \
+	$(srcdir)/lib-win64.dll \
+	$(srcdir)/lib-x86_64.so \
+	$(srcdir)/test-grep.txt
 
-squash_files_build = \
-    $(builddir)/100kallzeroes \
-    $(builddir)/100kallnewlines \
-    $(builddir)/100kallspaces \
-    $(builddir)/100krandom \
-    $(builddir)/10klines \
-    $(builddir)/initrd
+images_files_build = \
+	$(builddir)/100kallzeroes \
+	$(builddir)/100kallnewlines \
+	$(builddir)/100kallspaces \
+	$(builddir)/100krandom \
+	$(builddir)/10klines \
+	$(builddir)/initrd \
+	$(builddir)/initrd-x86_64.img \
+	$(builddir)/initrd-x86_64.img.gz \
+	$(builddir)/test-grep.txt.gz
 
-squash_files = $(squash_files_src) $(squash_files_build)
+images_files = $(images_files_src) $(images_files_build)
 
-test.sqsh: $(squash_files)
-	rm -f $@
-	$(MKSQUASHFS) $(squash_files) $@
+test.iso: $(images_files)
+	rm -f $@ $@-t
+	mkdir -p directory
+	$(MKISOFS) -J -r -graft-points \
+	  -o $@-t \
+	  $(images_files) /directory=directory
+	rmdir directory
+	mv $@-t $@
 
 $(builddir)/100kallzeroes:
 	rm -f $@ $@-t
@@ -82,7 +116,27 @@ $(builddir)/10klines:
 	done > $@-t
 	mv $@-t $@
 
-$(builddir)/initrd: empty known-1 known-2 known-3
+$(builddir)/initrd: empty known-1 known-2 known-3 known-4 known-5
 	rm -f $@ $@-t
 	for f in $^; do echo $$f; done | cpio -o -H newc | gzip --best > $@-t
+	mv $@-t $@
+
+# Create a dummy initrd with a single file called 'bin/nash' which
+# is used to test the Sys::Guestfs::Lib::file_architecture function.
+$(builddir)/initrd-x86_64.img: bin-x86_64-dynamic
+	rm -rf bin $@ $@-t
+	mkdir bin
+	cp $< bin/nash
+	echo bin/nash | cpio -o -H newc > $@-t
+	mv $@-t $@
+	rm -rf bin $@-t
+
+$(builddir)/initrd-x86_64.img.gz: initrd-x86_64.img
+	rm -f $@ $@-t
+	gzip --best -c $< > $@-t
+	mv $@-t $@
+
+$(builddir)/test-grep.txt.gz: test-grep.txt
+	rm -f $@ $@-t
+	gzip --best -c $< > $@-t
 	mv $@-t $@

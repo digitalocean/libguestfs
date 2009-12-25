@@ -20,23 +20,22 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
-#include <ctype.h>
 
 #include "../src/guestfs_protocol.h"
 #include "daemon.h"
+#include "c-ctype.h"
 #include "actions.h"
 
 char **
-do_tune2fs_l (char *device)
+do_tune2fs_l (const char *device)
 {
   int r;
   char *out, *err;
   char *p, *pend, *colon;
   char **ret = NULL;
   int size = 0, alloc = 0;
-
-  IS_DEVICE (device, NULL);
 
   r = command (&out, &err, "/sbin/tune2fs", "-l", device, NULL);
   if (r == -1) {
@@ -50,7 +49,7 @@ do_tune2fs_l (char *device)
   p = out;
 
   /* Discard the first line if it contains "tune2fs ...". */
-  if (strncmp (p, "tune2fs ", 8) == 0) {
+  if (STREQLEN (p, "tune2fs ", 8)) {
     p = strchr (p, '\n');
     if (p) p++;
     else {
@@ -74,34 +73,34 @@ do_tune2fs_l (char *device)
     if (colon) {
       *colon = '\0';
 
-      do { colon++; } while (*colon && isspace (*colon));
+      do { colon++; } while (*colon && c_isspace (*colon));
 
       if (add_string (&ret, &size, &alloc, p) == -1) {
-	free (out);
-	return NULL;
+        free (out);
+        return NULL;
       }
-      if (strcmp (colon, "<none>") == 0 ||
-	  strcmp (colon, "<not available>") == 0 ||
-	  strcmp (colon, "(none)") == 0) {
-	if (add_string (&ret, &size, &alloc, "") == -1) {
-	  free (out);
-	  return NULL;
-	}
+      if (STREQ (colon, "<none>") ||
+          STREQ (colon, "<not available>") ||
+          STREQ (colon, "(none)")) {
+        if (add_string (&ret, &size, &alloc, "") == -1) {
+          free (out);
+          return NULL;
+        }
       } else {
-	if (add_string (&ret, &size, &alloc, colon) == -1) {
-	  free (out);
-	  return NULL;
-	}
+        if (add_string (&ret, &size, &alloc, colon) == -1) {
+          free (out);
+          return NULL;
+        }
       }
     }
     else {
       if (add_string (&ret, &size, &alloc, p) == -1) {
-	free (out);
-	return NULL;
+        free (out);
+        return NULL;
       }
       if (add_string (&ret, &size, &alloc, "") == -1) {
-	free (out);
-	return NULL;
+        free (out);
+        return NULL;
       }
     }
 
@@ -117,12 +116,10 @@ do_tune2fs_l (char *device)
 }
 
 int
-do_set_e2label (char *device, char *label)
+do_set_e2label (const char *device, const char *label)
 {
   int r;
   char *err;
-
-  IS_DEVICE (device, -1);
 
   r = command (NULL, &err, "/sbin/e2label", device, label, NULL);
   if (r == -1) {
@@ -136,12 +133,10 @@ do_set_e2label (char *device, char *label)
 }
 
 char *
-do_get_e2label (char *device)
+do_get_e2label (const char *device)
 {
   int r, len;
   char *out, *err;
-
-  IS_DEVICE (device, NULL);
 
   r = command (&out, &err, "/sbin/e2label", device, NULL);
   if (r == -1) {
@@ -162,12 +157,10 @@ do_get_e2label (char *device)
 }
 
 int
-do_set_e2uuid (char *device, char *uuid)
+do_set_e2uuid (const char *device, const char *uuid)
 {
   int r;
   char *err;
-
-  IS_DEVICE (device, -1);
 
   r = command (NULL, &err, "/sbin/tune2fs", "-U", uuid, device, NULL);
   if (r == -1) {
@@ -181,12 +174,10 @@ do_set_e2uuid (char *device, char *uuid)
 }
 
 char *
-do_get_e2uuid (char *device)
+do_get_e2uuid (const char *device)
 {
   int r;
   char *out, *err, *p, *q;
-
-  IS_DEVICE (device, NULL);
 
   /* It's not so straightforward to get the volume UUID.  We have
    * to use tune2fs -l and then look for a particular string in
@@ -212,7 +203,7 @@ do_get_e2uuid (char *device)
   }
 
   p += 17;
-  while (*p && isspace (*p))
+  while (*p && c_isspace (*p))
     p++;
   if (!*p) {
     reply_with_error ("malformed Filesystem UUID in the output of tune2fs -l");
@@ -222,7 +213,7 @@ do_get_e2uuid (char *device)
 
   /* Now 'p' hopefully points to the start of the UUID. */
   q = p;
-  while (*q && (isxdigit (*q) || *q == '-'))
+  while (*q && (c_isxdigit (*q) || *q == '-'))
     q++;
   if (!*q) {
     reply_with_error ("malformed Filesystem UUID in the output of tune2fs -l");
@@ -244,12 +235,10 @@ do_get_e2uuid (char *device)
 }
 
 int
-do_resize2fs (char *device)
+do_resize2fs (const char *device)
 {
   char *err;
   int r;
-
-  IS_DEVICE (device, -1);
 
   r = command (NULL, &err, "/sbin/resize2fs", device, NULL);
   if (r == -1) {
@@ -263,16 +252,206 @@ do_resize2fs (char *device)
 }
 
 int
-do_e2fsck_f (char *device)
+do_e2fsck_f (const char *device)
 {
   char *err;
   int r;
 
-  IS_DEVICE (device, -1);
-
   r = command (NULL, &err, "/sbin/e2fsck", "-p", "-f", device, NULL);
   if (r == -1) {
     reply_with_error ("e2fsck: %s", err);
+    free (err);
+    return -1;
+  }
+
+  free (err);
+  return 0;
+}
+
+int
+do_mke2journal (int blocksize, const char *device)
+{
+  char *err;
+  int r;
+
+  char blocksize_s[32];
+  snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
+
+  r = command (NULL, &err,
+               "/sbin/mke2fs", "-O", "journal_dev", "-b", blocksize_s,
+               device, NULL);
+  if (r == -1) {
+    reply_with_error ("mke2journal: %s", err);
+    free (err);
+    return -1;
+  }
+
+  free (err);
+  return 0;
+}
+
+int
+do_mke2journal_L (int blocksize, const char *label, const char *device)
+{
+  char *err;
+  int r;
+
+  char blocksize_s[32];
+  snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
+
+  r = command (NULL, &err,
+               "/sbin/mke2fs", "-O", "journal_dev", "-b", blocksize_s,
+               "-L", label,
+               device, NULL);
+  if (r == -1) {
+    reply_with_error ("mke2journal_L: %s", err);
+    free (err);
+    return -1;
+  }
+
+  free (err);
+  return 0;
+}
+
+int
+do_mke2journal_U (int blocksize, const char *uuid, const char *device)
+{
+  char *err;
+  int r;
+
+  char blocksize_s[32];
+  snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
+
+  r = command (NULL, &err,
+               "/sbin/mke2fs", "-O", "journal_dev", "-b", blocksize_s,
+               "-U", uuid,
+               device, NULL);
+  if (r == -1) {
+    reply_with_error ("mke2journal_U: %s", err);
+    free (err);
+    return -1;
+  }
+
+  free (err);
+  return 0;
+}
+
+/* Run mke2fs to create a filesystem of type fstype, where fstype
+ * is the string "ext2", "ext3" or "ext4".
+ *
+ * This is more complex than it seems.
+ *
+ * On RHEL 5, the -t option was deprecated.  Moreover RHEL <= 5.4
+ * systems have a bug where the -t option doesn't work (it doesn't
+ * correctly ignore the following argument).
+ *
+ * On RHEL 5, to create an ext4dev filesystem you have to use
+ * the special command /sbin/mke4fs.  This can also create ext2/3
+ * using the '-t fstype' option.
+ *
+ * On Fedora 11+, mke4fs was renamed mke2fs, and it can use the
+ * '-t fstype' option to specify the filesystem type.
+ *
+ * So it seems best to run /sbin/mke4fs if it exists, or /sbin/mke2fs
+ * otherwise.  We specify e4fsprogs in the package list to ensure it
+ * is loaded if it exists.
+ */
+static const char *
+get_mke2fs (void)
+{
+  static const char *const progs[] = { "/sbin/mke4fs", "/sbin/mke2fs", NULL };
+  int i;
+
+  for (i = 0; progs[i]; ++i)
+    if (access (progs[i], F_OK) == 0)
+      return progs[i];
+
+  reply_with_error ("mke2fs: no mke2fs binary found in appliance");
+  return NULL;
+}
+
+int
+do_mke2fs_J (const char *fstype, int blocksize, const char *device,
+             const char *journal)
+{
+  char *err;
+  int r;
+
+  const char *prog = get_mke2fs ();
+  if (!prog) return -1;
+
+  char blocksize_s[32];
+  snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
+
+  int len = strlen (journal);
+  char jdev[len+32];
+  snprintf (jdev, len+32, "device=%s", journal);
+
+  r = command (NULL, &err,
+               prog, "-t", fstype, "-J", jdev, "-b", blocksize_s,
+               device, NULL);
+  if (r == -1) {
+    reply_with_error ("mke2fs_J: %s", err);
+    free (err);
+    return -1;
+  }
+
+  free (err);
+  return 0;
+}
+
+int
+do_mke2fs_JL (const char *fstype, int blocksize, const char *device,
+              const char *label)
+{
+  char *err;
+  int r;
+
+  const char *prog = get_mke2fs ();
+  if (!prog) return -1;
+
+  char blocksize_s[32];
+  snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
+
+  int len = strlen (label);
+  char jdev[len+32];
+  snprintf (jdev, len+32, "device=LABEL=%s", label);
+
+  r = command (NULL, &err,
+               prog, "-t", fstype, "-J", jdev, "-b", blocksize_s,
+               device, NULL);
+  if (r == -1) {
+    reply_with_error ("mke2fs_JL: %s", err);
+    free (err);
+    return -1;
+  }
+
+  free (err);
+  return 0;
+}
+
+int
+do_mke2fs_JU (const char *fstype, int blocksize, const char *device,
+              const char *uuid)
+{
+  char *err;
+  int r;
+
+  const char *prog = get_mke2fs ();
+  if (!prog) return -1;
+
+  char blocksize_s[32];
+  snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
+
+  int len = strlen (uuid);
+  char jdev[len+32];
+  snprintf (jdev, len+32, "device=UUID=%s", uuid);
+
+  r = command (NULL, &err,
+               prog, "-t", fstype, "-J", jdev, "-b", blocksize_s,
+               device, NULL);
+  if (r == -1) {
+    reply_with_error ("mke2fs_JU: %s", err);
     free (err);
     return -1;
   }

@@ -28,6 +28,8 @@ image).
 
 This is equivalent to the qemu parameter
 C<-drive file=filename,cache=off,if=...>.
+C<cache=off> is omitted in cases where it is not supported by
+the underlying filesystem.
 
 Note that this call checks for the existence of C<filename>.  This
 stops you from specifying other types of drive which are supported
@@ -92,7 +94,7 @@ C<0> if C<expr> evaluates to something which is not a nodeset.
 
 =head2 aug-get
 
- aug-get path
+ aug-get augpath
 
 Look up the value associated with C<path>.  If C<path>
 matches exactly one node, the C<value> is returned.
@@ -150,7 +152,7 @@ To find out more about Augeas, see L<http://augeas.net/>.
 
 =head2 aug-insert
 
- aug-insert path label true|false
+ aug-insert augpath label true|false
 
 Create a new sibling C<label> for C<path>, inserting it into
 the tree before or after C<path> (depending on the boolean
@@ -171,14 +173,14 @@ details.
 
 =head2 aug-ls
 
- aug-ls path
+ aug-ls augpath
 
 This is just a shortcut for listing C<aug-match>
 C<path/*> and sorting the resulting nodes into alphabetical order.
 
 =head2 aug-match
 
- aug-match path
+ aug-match augpath
 
 Returns a list of paths which match the path expression C<path>.
 The returned paths are sufficiently qualified so that they match
@@ -193,7 +195,7 @@ one node.  C<dest> is overwritten if it exists.
 
 =head2 aug-rm
 
- aug-rm path
+ aug-rm augpath
 
 Remove C<path> and all of its children.
 
@@ -210,9 +212,68 @@ how files are saved.
 
 =head2 aug-set
 
- aug-set path val
+ aug-set augpath val
 
 Set the value associated with C<path> to C<value>.
+
+=head2 available
+
+ available 'groups ...'
+
+This command is used to check the availability of some
+groups of functionality in the appliance, which not all builds of
+the libguestfs appliance will be able to provide.
+
+The libguestfs groups, and the functions that those
+groups correspond to, are listed in L<guestfs(3)/AVAILABILITY>.
+
+The argument C<groups> is a list of group names, eg:
+C<["inotify", "augeas"]> would check for the availability of
+the Linux inotify functions and Augeas (configuration file
+editing) functions.
+
+The command returns no error if I<all> requested groups are available.
+
+It fails with an error if one or more of the requested
+groups is unavailable in the appliance.
+
+If an unknown group name is included in the
+list of groups then an error is always returned.
+
+I<Notes:>
+
+=over 4
+
+=item *
+
+You must call C<launch> before calling this function.
+
+The reason is because we don't know what groups are
+supported by the appliance/daemon until it is running and can
+be queried.
+
+=item *
+
+If a group of functions is available, this does not necessarily
+mean that they will work.  You still have to check for errors
+when calling individual API functions even if they are
+available.
+
+=item *
+
+It is usually the job of distro packagers to build
+complete functionality into the libguestfs appliance.
+Upstream libguestfs, if built from source with all
+requirements satisfied, will support everything.
+
+=item *
+
+This call was added in version C<1.0.80>.  In previous
+versions of libguestfs all you could do would be to speculatively
+execute a command to find out if the daemon implemented it.
+See also C<version>.
+
+=back
 
 =head2 blockdev-flushbufs
 
@@ -313,6 +374,42 @@ Sets the block device named C<device> to read-write.
 
 This uses the L<blockdev(8)> command.
 
+=head2 case-sensitive-path
+
+ case-sensitive-path path
+
+This can be used to resolve case insensitive paths on
+a filesystem which is case sensitive.  The use case is
+to resolve paths which you have read from Windows configuration
+files or the Windows Registry, to the true path.
+
+The command handles a peculiarity of the Linux ntfs-3g
+filesystem driver (and probably others), which is that although
+the underlying filesystem is case-insensitive, the driver
+exports the filesystem to Linux as case-sensitive.
+
+One consequence of this is that special directories such
+as C<c:\windows> may appear as C</WINDOWS> or C</windows>
+(or other things) depending on the precise details of how
+they were created.  In Windows itself this would not be
+a problem.
+
+Bug or feature?  You decide:
+L<http://www.tuxera.com/community/ntfs-3g-faq/#posixfilenames1>
+
+This function resolves the true case of each element in the
+path and returns the case-sensitive path.
+
+Thus C<case-sensitive-path> ("/Windows/System32")
+might return C<"/WINDOWS/system32"> (the exact return value
+would depend on details of how the directories were originally
+created under Windows).
+
+I<Note>:
+This function does not handle drive names, backslashes etc.
+
+See also C<realpath>.
+
 =head2 cat
 
  cat path
@@ -321,8 +418,8 @@ Return the contents of the file named C<path>.
 
 Note that this function cannot correctly handle binary files
 (specifically, files containing C<\0> character which is treated
-as end of string).  For those you need to use the C<download>
-function which has a more complex interface.
+as end of string).  For those you need to use the C<read-file>
+or C<download> functions which have a more complex interface.
 
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  To transfer large files you should use
@@ -468,6 +565,19 @@ either a destination filename or destination directory.
 This copies a file or directory from C<src> to C<dest>
 recursively using the C<cp -a> command.
 
+=head2 dd
+
+ dd src dest
+
+This command copies from one source device or file C<src>
+to another destination device or file C<dest>.  Normally you
+would use this to copy to or from a device or partition, for
+example to duplicate a filesystem.
+
+If the destination is a device, it must be as large or larger
+than the source file or device, otherwise the copy will fail.
+This command cannot do partial copies.
+
 =head2 debug
 
  debug subcmd 'extraargs ...'
@@ -566,6 +676,39 @@ even if the filesystem appears to be clean (C<-f>).
 This command is only needed because of C<resize2fs>
 (q.v.).  Normally you should use C<fsck>.
 
+=head2 echo-daemon
+
+ echo-daemon 'words ...'
+
+This command concatenate the list of C<words> passed with single spaces between
+them and returns the resulting string.
+
+You can use this command to test the connection through to the daemon.
+
+See also C<ping-daemon>.
+
+=head2 egrep
+
+ egrep regex path
+
+This calls the external C<egrep> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
+=head2 egrepi
+
+ egrepi regex path
+
+This calls the external C<egrep -i> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
 =head2 equal
 
  equal file1 file2
@@ -584,6 +727,40 @@ This returns C<true> if and only if there is a file, directory
 
 See also C<is-file>, C<is-dir>, C<stat>.
 
+=head2 fallocate
+
+ fallocate path len
+
+This command preallocates a file (containing zero bytes) named
+C<path> of size C<len> bytes.  If the file exists already, it
+is overwritten.
+
+Do not confuse this with the guestfish-specific
+C<alloc> command which allocates a file in the host and
+attaches it as a device.
+
+=head2 fgrep
+
+ fgrep pattern path
+
+This calls the external C<fgrep> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
+=head2 fgrepi
+
+ fgrepi pattern path
+
+This calls the external C<fgrep -i> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
 =head2 file
 
  file path
@@ -592,9 +769,23 @@ This call uses the standard L<file(1)> command to determine
 the type or contents of the file.  This also works on devices,
 for example to find out whether a partition contains a filesystem.
 
-The exact command which runs is C<file -bsL path>.  Note in
+This call will also transparently look inside various types
+of compressed file.
+
+The exact command which runs is C<file -zbsL path>.  Note in
 particular that the filename is not prepended to the output
 (the C<-b> option).
+
+=head2 fill
+
+ fill c len path
+
+This command creates a new file called C<path>.  The initial
+content of the file is C<len> octets of C<c>, where C<c>
+must be a number in the range C<[0..255]>.
+
+To fill a file with zero bytes (sparsely), it is
+much more efficient to use C<truncate-size>.
 
 =head2 find
 
@@ -624,6 +815,47 @@ If C<directory> is not a directory, then this command returns
 an error.
 
 The returned list is sorted.
+
+See also C<find0>.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
+=head2 find0
+
+ find0 directory (files|-)
+
+This command lists out all files and directories, recursively,
+starting at C<directory>, placing the resulting list in the
+external file called C<files>.
+
+This command works the same way as C<find> with the
+following exceptions:
+
+=over 4
+
+=item *
+
+The resulting list is written to an external file.
+
+=item *
+
+Items (filenames) in the result are separated
+by C<\0> characters.  See L<find(1)> option I<-print0>.
+
+=item *
+
+This command is not limited in the number of names that it
+can return.
+
+=item *
+
+The result list is not sorted.
+
+=back
+
+Use C<-> instead of a filename to read/write from stdin/stdout.
 
 =head2 fsck
 
@@ -671,6 +903,12 @@ If C<NULL> then no options are added.
  get-autosync
 
 Get the autosync flag.
+
+=head2 get-direct
+
+ get-direct
+
+Return the direct appliance mode flag.
 
 =head2 get-e2label
 
@@ -727,6 +965,22 @@ Return the current qemu binary.
 This is always non-NULL.  If it wasn't set already, then this will
 return the default qemu binary name.
 
+=head2 get-recovery-proc
+
+ get-recovery-proc
+
+Return the recovery process enabled flag.
+
+=head2 get-selinux
+
+ get-selinux
+
+This returns the current setting of the selinux flag which
+is passed to the appliance at boot time.  See C<set-selinux>.
+
+For more information on the architecture of libguestfs,
+see L<guestfs(3)>.
+
 =head2 get-state
 
  get-state
@@ -736,11 +990,26 @@ only useful for printing debug and internal error messages.
 
 For more information on states, see L<guestfs(3)>.
 
+=head2 get-trace
+
+ get-trace
+
+Return the command trace flag.
+
 =head2 get-verbose
 
  get-verbose
 
 This returns the verbose messages flag.
+
+=head2 getcon
+
+ getcon
+
+This gets the SELinux security context of the daemon.
+
+See the documentation about SELINUX in L<guestfs(3)>,
+and C<setcon>
 
 =head2 getxattrs
 
@@ -768,6 +1037,28 @@ If no paths match, then this returns an empty list
 It is just a wrapper around the C L<glob(3)> function
 with flags C<GLOB_MARK|GLOB_BRACE>.
 See that manual page for more details.
+
+=head2 grep
+
+ grep regex path
+
+This calls the external C<grep> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
+=head2 grepi
+
+ grepi regex path
+
+This calls the external C<grep -i> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
 
 =head2 grub-install
 
@@ -827,6 +1118,98 @@ alphabetical).  Directory names are listed as separate items.
 Old Linux kernels (2.4 and earlier) used a compressed ext2
 filesystem as initrd.  We I<only> support the newer initramfs
 format (compressed cpio files).
+
+=head2 inotify-add-watch
+
+ inotify-add-watch path mask
+
+Watch C<path> for the events listed in C<mask>.
+
+Note that if C<path> is a directory then events within that
+directory are watched, but this does I<not> happen recursively
+(in subdirectories).
+
+Note for non-C or non-Linux callers: the inotify events are
+defined by the Linux kernel ABI and are listed in
+C</usr/include/sys/inotify.h>.
+
+=head2 inotify-close
+
+ inotify-close
+
+This closes the inotify handle which was previously
+opened by inotify_init.  It removes all watches, throws
+away any pending events, and deallocates all resources.
+
+=head2 inotify-files
+
+ inotify-files
+
+This function is a helpful wrapper around C<inotify-read>
+which just returns a list of pathnames of objects that were
+touched.  The returned pathnames are sorted and deduplicated.
+
+=head2 inotify-init
+
+ inotify-init maxevents
+
+This command creates a new inotify handle.
+The inotify subsystem can be used to notify events which happen to
+objects in the guest filesystem.
+
+C<maxevents> is the maximum number of events which will be
+queued up between calls to C<inotify-read> or
+C<inotify-files>.
+If this is passed as C<0>, then the kernel (or previously set)
+default is used.  For Linux 2.6.29 the default was 16384 events.
+Beyond this limit, the kernel throws away events, but records
+the fact that it threw them away by setting a flag
+C<IN_Q_OVERFLOW> in the returned structure list (see
+C<inotify-read>).
+
+Before any events are generated, you have to add some
+watches to the internal watch list.  See:
+C<inotify-add-watch>,
+C<inotify-rm-watch> and
+C<inotify-watch-all>.
+
+Queued up events should be read periodically by calling
+C<inotify-read>
+(or C<inotify-files> which is just a helpful
+wrapper around C<inotify-read>).  If you don't
+read the events out often enough then you risk the internal
+queue overflowing.
+
+The handle should be closed after use by calling
+C<inotify-close>.  This also removes any
+watches automatically.
+
+See also L<inotify(7)> for an overview of the inotify interface
+as exposed by the Linux kernel, which is roughly what we expose
+via libguestfs.  Note that there is one global inotify handle
+per libguestfs instance.
+
+=head2 inotify-read
+
+ inotify-read
+
+Return the complete queue of events that have happened
+since the previous read call.
+
+If no events have happened, this returns an empty list.
+
+I<Note>: In order to make sure that all events have been
+read, you must call this function repeatedly until it
+returns an empty list.  The reason is that the call will
+read events up to the maximum appliance-to-host message
+size and leave remaining events in the queue.
+
+=head2 inotify-rm-watch
+
+ inotify-rm-watch wd
+
+Remove a previously defined inotify watch.
+See C<inotify-add-watch>.
 
 =head2 is-busy
 
@@ -900,6 +1283,18 @@ using L<qemu(1)>.
 You should call this after configuring the handle
 (eg. adding drives) but before performing any actions.
 
+=head2 lchown
+
+ lchown owner group path
+
+Change the file owner to C<owner> and group to C<group>.
+This is like C<chown> but if C<path> is a symlink then
+the link itself is changed, not the target.
+
+Only numeric uid and gid are supported.  If you want to use
+names, you will need to locate and parse the password file
+yourself (Augeas support makes this relatively easy).
+
 =head2 lgetxattrs
 
  lgetxattrs path
@@ -936,6 +1331,32 @@ there is no cwd) in the format of 'ls -la'.
 
 This command is mostly useful for interactive sessions.  It
 is I<not> intended that you try to parse the output string.
+
+=head2 ln
+
+ ln target linkname
+
+This command creates a hard link using the C<ln> command.
+
+=head2 ln-f
+
+ ln-f target linkname
+
+This command creates a hard link using the C<ln -f> command.
+The C<-f> option removes the link (C<linkname>) if it exists already.
+
+=head2 ln-s
+
+ ln-s target linkname
+
+This command creates a symbolic link using the C<ln -s> command.
+
+=head2 ln-sf
+
+ ln-sf target linkname
+
+This command creates a symbolic link using the C<ln -sf> command,
+The C<-f> option removes the link (C<linkname>) if it exists already.
 
 =head2 lremovexattr
 
@@ -975,6 +1396,27 @@ is a symbolic link, then the link is stat-ed, not the file it
 refers to.
 
 This is the same as the C<lstat(2)> system call.
+
+=head2 lstatlist
+
+ lstatlist path 'names ...'
+
+This call allows you to perform the C<lstat> operation
+on multiple files, where all files are in the directory C<path>.
+C<names> is the list of files from this directory.
+
+On return you get a list of stat structs, with a one-to-one
+correspondence to the C<names> list.  If any name did not exist
+or could not be lstat'd, then the C<ino> field of that structure
+is set to C<-1>.
+
+This call is intended for programs that want to efficiently
+list a directory contents without making many round-trips.
+See also C<lxattrlist> for a similarly efficient call
+for getting extended attributes.  Very long directory listings
+might cause the protocol message size to be exceeded, causing
+this call to fail.  The caller must split up such requests
+into smaller groups of names.
 
 =head2 lvcreate
 
@@ -1030,11 +1472,44 @@ See also C<lvs-full>.
 List all the logical volumes detected.  This is the equivalent
 of the L<lvs(8)> command.  The "full" version includes all fields.
 
+=head2 lxattrlist
+
+ lxattrlist path 'names ...'
+
+This call allows you to get the extended attributes
+of multiple files, where all files are in the directory C<path>.
+C<names> is the list of files from this directory.
+
+On return you get a flat list of xattr structs which must be
+interpreted sequentially.  The first xattr struct always has a zero-length
+C<attrname>.  C<attrval> in this struct is zero-length
+to indicate there was an error doing C<lgetxattr> for this
+file, I<or> is a C string which is a decimal number
+(the number of following attributes for this file, which could
+be C<"0">).  Then after the first xattr struct are the
+zero or more attributes for the first named file.
+This repeats for the second and subsequent files.
+
+This call is intended for programs that want to efficiently
+list a directory contents without making many round-trips.
+See also C<lstatlist> for a similarly efficient call
+for getting standard stats.  Very long directory listings
+might cause the protocol message size to be exceeded, causing
+this call to fail.  The caller must split up such requests
+into smaller groups of names.
+
 =head2 mkdir
 
  mkdir path
 
 Create a directory named C<path>.
+
+=head2 mkdir-mode
+
+ mkdir-mode path mode
+
+This command creates a directory, setting the initial permissions
+of the directory to C<mode>.  See also C<mkdir>.
 
 =head2 mkdir-p
 
@@ -1066,6 +1541,57 @@ directory and its contents after use.
 
 See also: L<mkdtemp(3)>
 
+=head2 mke2fs-J
+
+ mke2fs-J fstype blocksize device journal
+
+This creates an ext2/3/4 filesystem on C<device> with
+an external journal on C<journal>.  It is equivalent
+to the command:
+
+ mke2fs -t fstype -b blocksize -J device=<journal> <device>
+
+See also C<mke2journal>.
+
+=head2 mke2fs-JL
+
+ mke2fs-JL fstype blocksize device label
+
+This creates an ext2/3/4 filesystem on C<device> with
+an external journal on the journal labeled C<label>.
+
+See also C<mke2journal-L>.
+
+=head2 mke2fs-JU
+
+ mke2fs-JU fstype blocksize device uuid
+
+This creates an ext2/3/4 filesystem on C<device> with
+an external journal on the journal with UUID C<uuid>.
+
+See also C<mke2journal-U>.
+
+=head2 mke2journal
+
+ mke2journal blocksize device
+
+This creates an ext2 external journal on C<device>.  It is equivalent
+to the command:
+
+ mke2fs -O journal_dev -b blocksize device
+
+=head2 mke2journal-L
+
+ mke2journal-L blocksize label device
+
+This creates an ext2 external journal on C<device> with label C<label>.
+
+=head2 mke2journal-U
+
+ mke2journal-U blocksize uuid device
+
+This creates an ext2 external journal on C<device> with UUID C<uuid>.
+
 =head2 mkfifo
 
  mkfifo mode path
@@ -1081,6 +1607,43 @@ C<mknod>.
 This creates a filesystem on C<device> (usually a partition
 or LVM logical volume).  The filesystem type is C<fstype>, for
 example C<ext3>.
+
+=head2 mkfs-b
+
+ mkfs-b fstype blocksize device
+
+This call is similar to C<mkfs>, but it allows you to
+control the block size of the resulting filesystem.  Supported
+block sizes depend on the filesystem type, but typically they
+are C<1024>, C<2048> or C<4096> only.
+
+=head2 mkmountpoint
+
+ mkmountpoint exemptpath
+
+C<mkmountpoint> and C<rmmountpoint> are
+specialized calls that can be used to create extra mountpoints
+before mounting the first filesystem.
+
+These calls are I<only> necessary in some very limited circumstances,
+mainly the case where you want to mount a mix of unrelated and/or
+read-only filesystems together.
+
+For example, live CDs often contain a "Russian doll" nest of
+filesystems, an ISO outer layer, with a squashfs image inside, with
+an ext2/3 image inside that.  You can unpack this as follows
+in guestfish:
+
+ add-ro Fedora-11-i686-Live.iso
+ run
+ mkmountpoint /cd
+ mkmountpoint /squash
+ mkmountpoint /ext3
+ mount /dev/sda /cd
+ mount-loop /cd/LiveOS/squashfs.img /squash
+ mount-loop /squash/LiveOS/ext3fs.img /ext3
+
+The inner filesystem is now unpacked under the /ext3 mountpoint.
 
 =head2 mknod
 
@@ -1122,11 +1685,33 @@ Create a swap partition on C<device>.
 
 Create a swap partition on C<device> with label C<label>.
 
+Note that you cannot attach a swap label to a block device
+(eg. C</dev/sda>), just to a partition.  This appears to be
+a limitation of the kernel or swap tools.
+
 =head2 mkswap-U
 
  mkswap-U uuid device
 
 Create a swap partition on C<device> with UUID C<uuid>.
+
+=head2 mkswap-file
+
+ mkswap-file path
+
+Create a swap file.
+
+This command just writes a swap file signature to an existing
+file.  To create the file itself, use something like C<fallocate>.
+
+=head2 modprobe
+
+ modprobe modulename
+
+This loads a kernel module in the appliance.
+
+The kernel module must have been whitelisted when libguestfs
+was built (see C<appliance/kmod.whitelist.in> in the source).
 
 =head2 mount
 
@@ -1180,6 +1765,14 @@ This is the same as the C<mount> command, but it
 allows you to set both the mount options and the vfstype
 as for the L<mount(8)> I<-o> and I<-t> flags.
 
+=head2 mountpoints
+
+ mountpoints
+
+This call is similar to C<mounts>.  That call returns
+a list of devices.  This one returns a hash table (map) of
+device name to directory where the device is mounted.
+
 =head2 mounts
 
  mounts
@@ -1188,6 +1781,8 @@ This returns the list of currently mounted filesystems.  It returns
 the list of devices (eg. C</dev/sda1>, C</dev/VG/LV>).
 
 Some internal mounts are not shown.
+
+See also: C<mountpoints>
 
 =head2 mv
 
@@ -1212,6 +1807,174 @@ The return value is an integer which C<0> if the operation
 would succeed, or some non-zero value documented in the
 L<ntfs-3g.probe(8)> manual page.
 
+=head2 part-add
+
+ part-add device prlogex startsect endsect
+
+This command adds a partition to C<device>.  If there is no partition
+table on the device, call C<part-init> first.
+
+The C<prlogex> parameter is the type of partition.  Normally you
+should pass C<p> or C<primary> here, but MBR partition tables also
+support C<l> (or C<logical>) and C<e> (or C<extended>) partition
+types.
+
+C<startsect> and C<endsect> are the start and end of the partition
+in I<sectors>.  C<endsect> may be negative, which means it counts
+backwards from the end of the disk (C<-1> is the last sector).
+
+Creating a partition which covers the whole disk is not so easy.
+Use C<part-disk> to do that.
+
+=head2 part-disk
+
+ part-disk device parttype
+
+This command is simply a combination of C<part-init>
+followed by C<part-add> to create a single primary partition
+covering the whole disk.
+
+C<parttype> is the partition table type, usually C<mbr> or C<gpt>,
+but other possible values are described in C<part-init>.
+
+B<This command is dangerous.  Without careful use you
+can easily destroy all your data>.
+
+=head2 part-get-parttype
+
+ part-get-parttype device
+
+This command examines the partition table on C<device> and
+returns the partition table type (format) being used.
+
+Common return values include: C<msdos> (a DOS/Windows style MBR
+partition table), C<gpt> (a GPT/EFI-style partition table).  Other
+values are possible, although unusual.  See C<part-init>
+for a full list.
+
+=head2 part-init
+
+ part-init device parttype
+
+This creates an empty partition table on C<device> of one of the
+partition types listed below.  Usually C<parttype> should be
+either C<msdos> or C<gpt> (for large disks).
+
+Initially there are no partitions.  Following this, you should
+call C<part-add> for each partition required.
+
+Possible values for C<parttype> are:
+
+=over 4
+
+=item B<efi> | B<gpt>
+
+Intel EFI / GPT partition table.
+
+This is recommended for >= 2 TB partitions that will be accessed
+from Linux and Intel-based Mac OS X.  It also has limited backwards
+compatibility with the C<mbr> format.
+
+=item B<mbr> | B<msdos>
+
+The standard PC "Master Boot Record" (MBR) format used
+by MS-DOS and Windows.  This partition type will B<only> work
+for device sizes up to 2 TB.  For large disks we recommend
+using C<gpt>.
+
+=back
+
+Other partition table types that may work but are not
+supported include:
+
+=over 4
+
+=item B<aix>
+
+AIX disk labels.
+
+=item B<amiga> | B<rdb>
+
+Amiga "Rigid Disk Block" format.
+
+=item B<bsd>
+
+BSD disk labels.
+
+=item B<dasd>
+
+DASD, used on IBM mainframes.
+
+=item B<dvh>
+
+MIPS/SGI volumes.
+
+=item B<mac>
+
+Old Mac partition format.  Modern Macs use C<gpt>.
+
+=item B<pc98>
+
+NEC PC-98 format, common in Japan apparently.
+
+=item B<sun>
+
+Sun disk labels.
+
+=back
+
+=head2 part-list
+
+ part-list device
+
+This command parses the partition table on C<device> and
+returns the list of partitions found.
+
+The fields in the returned structure are:
+
+=over 4
+
+=item B<part_num>
+
+Partition number, counting from 1.
+
+=item B<part_start>
+
+Start of the partition I<in bytes>.  To get sectors you have to
+divide by the device's sector size, see C<blockdev-getss>.
+
+=item B<part_end>
+
+End of the partition in bytes.
+
+=item B<part_size>
+
+Size of the partition in bytes.
+
+=back
+
+=head2 part-set-bootable
+
+ part-set-bootable device partnum true|false
+
+This sets the bootable flag on partition numbered C<partnum> on
+device C<device>.  Note that partitions are numbered from 1.
+
+The bootable flag is used by some PC BIOSes to determine which
+partition to boot from.  It is by no means universally recognized,
+and in any case if your operating system installed a boot
+sector on the device itself, then that takes precedence.
+
+=head2 part-set-name
+
+ part-set-name device partnum name
+
+This sets the partition name on partition numbered C<partnum> on
+device C<device>.  Note that partitions are numbered from 1.
+
+The partition name can only be set on certain types of partition
+table.  This works on C<gpt> but not on C<mbr> partitions.
+
 =head2 ping-daemon
 
  ping-daemon
@@ -1220,6 +1983,20 @@ This is a test probe into the guestfs daemon running inside
 the qemu subprocess.  Calling this function checks that the
 daemon responds to the ping message, without affecting the daemon
 or attached block device(s) in any other way.
+
+=head2 pread
+
+ pread path count offset
+
+This command lets you read part of a file.  It reads C<count>
+bytes of the file, starting at C<offset>, from file C<path>.
+
+This may read fewer bytes than requested.  For further details
+see the L<pread(2)> system call.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
 
 =head2 pvcreate
 
@@ -1266,6 +2043,22 @@ See also C<pvs-full>.
 List all the physical volumes detected.  This is the equivalent
 of the L<pvs(8)> command.  The "full" version includes all fields.
 
+=head2 read-file
+
+ read-file path
+
+This calls returns the contents of the file C<path> as a
+buffer.
+
+Unlike C<cat>, this function can correctly
+handle files that contain embedded ASCII NUL characters.
+However unlike C<download>, this function is limited
+in the total size of file that can be handled.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
 =head2 read-lines
 
  read-lines path
@@ -1290,9 +2083,92 @@ All entries in the directory are returned, including C<.> and
 C<..>.  The entries are I<not> sorted, but returned in the same
 order as the underlying filesystem.
 
+Also this call returns basic file type information about each
+file.  The C<ftyp> field will contain one of the following characters:
+
+=over 4
+
+=item 'b'
+
+Block special
+
+=item 'c'
+
+Char special
+
+=item 'd'
+
+Directory
+
+=item 'f'
+
+FIFO (named pipe)
+
+=item 'l'
+
+Symbolic link
+
+=item 'r'
+
+Regular file
+
+=item 's'
+
+Socket
+
+=item 'u'
+
+Unknown file type
+
+=item '?'
+
+The L<readdir(3)> returned a C<d_type> field with an
+unexpected value
+
+=back
+
 This function is primarily intended for use by programs.  To
 get a simple list of names, use C<ls>.  To get a printable
 directory for human consumption, use C<ll>.
+
+=head2 readlink
+
+ readlink path
+
+This command reads the target of a symbolic link.
+
+=head2 readlinklist
+
+ readlinklist path 'names ...'
+
+This call allows you to do a C<readlink> operation
+on multiple files, where all files are in the directory C<path>.
+C<names> is the list of files from this directory.
+
+On return you get a list of strings, with a one-to-one
+correspondence to the C<names> list.  Each string is the
+value of the symbol link.
+
+If the C<readlink(2)> operation fails on any name, then
+the corresponding result string is the empty string C<"">.
+However the whole operation is completed even if there
+were C<readlink(2)> errors, and so you can call this
+function with names where you don't know if they are
+symbolic links already (albeit slightly less efficient).
+
+This call is intended for programs that want to efficiently
+list a directory contents without making many round-trips.
+Very long directory listings might cause the protocol
+message size to be exceeded, causing
+this call to fail.  The caller must split up such requests
+into smaller groups of names.
+
+=head2 realpath
+
+ realpath path
+
+Return the canonicalized absolute pathname of C<path>.  The
+returned path has no C<.>, C<..> or symbolic link path elements.
 
 =head2 removexattr
 
@@ -1335,6 +2211,14 @@ command.
  rmdir path
 
 Remove the single directory C<path>.
+
+=head2 rmmountpoint
+
+ rmmountpoint exemptpath
+
+This calls removes a mountpoint that was previously created
+with C<mkmountpoint>.  See C<mkmountpoint>
+for full details.
 
 =head2 scrub-device
 
@@ -1399,6 +2283,23 @@ C<sync> when the handle is closed
 This is disabled by default (except in guestfish where it is
 enabled by default).
 
+=head2 set-direct | direct
+
+ set-direct true|false
+
+If the direct appliance mode flag is enabled, then stdin and
+stdout are passed directly through to the appliance once it
+is launched.
+
+One consequence of this is that log messages aren't caught
+by the library and handled by C<set-log-message-callback>,
+but go straight to stdout.
+
+You probably don't want to use this unless you know what you
+are doing.
+
+The default is disabled.
+
 =head2 set-e2label
 
  set-e2label device label
@@ -1439,7 +2340,7 @@ see L<guestfs(3)>.
 
 =head2 set-path | path
 
- set-path path
+ set-path searchpath
 
 Set the path that libguestfs searches for kernel and initrd.img.
 
@@ -1462,6 +2363,55 @@ environment variable.
 
 Setting C<qemu> to C<NULL> restores the default qemu binary.
 
+=head2 set-recovery-proc | recovery-proc
+
+ set-recovery-proc true|false
+
+If this is called with the parameter C<false> then
+C<launch> does not create a recovery process.  The
+purpose of the recovery process is to stop runaway qemu
+processes in the case where the main program aborts abruptly.
+
+This only has any effect if called before C<launch>,
+and the default is true.
+
+About the only time when you would want to disable this is
+if the main process will fork itself into the background
+("daemonize" itself).  In this case the recovery process
+thinks that the main program has disappeared and so kills
+qemu, which is not very helpful.
+
+=head2 set-selinux | selinux
+
+ set-selinux true|false
+
+This sets the selinux flag that is passed to the appliance
+at boot time.  The default is C<selinux=0> (disabled).
+
+Note that if SELinux is enabled, it is always in
+Permissive mode (C<enforcing=0>).
+
+For more information on the architecture of libguestfs,
+see L<guestfs(3)>.
+
+=head2 set-trace | trace
+
+ set-trace true|false
+
+If the command trace flag is set to 1, then commands are
+printed on stdout before they are executed in a format
+which is very similar to the one used by guestfish.  In
+other words, you can run a program with this enabled, and
+you will get out a script which you can feed to guestfish
+to perform the same set of actions.
+
+If you want to trace C API calls into libguestfs (and
+other libraries) then possibly a better way is to use
+the external ltrace(1) command.
+
+Command traces are disabled unless the environment variable
+C<LIBGUESTFS_TRACE> is defined and set to C<1>.
+
 =head2 set-verbose | verbose
 
  set-verbose true|false
@@ -1470,6 +2420,15 @@ If C<verbose> is true, this turns on verbose messages (to C<stderr>).
 
 Verbose messages are disabled unless the environment variable
 C<LIBGUESTFS_DEBUG> is defined and set to C<1>.
+
+=head2 setcon
+
+ setcon context
+
+This sets the SELinux security context of the daemon
+to the string C<context>.
+
+See the documentation about SELINUX in L<guestfs(3)>.
 
 =head2 setxattr
 
@@ -1505,7 +2464,8 @@ To create a single partition occupying the whole disk, you would
 pass C<lines> as a single element list, when the single element being
 the string C<,> (comma).
 
-See also: C<sfdisk-l>, C<sfdisk-N>
+See also: C<sfdisk-l>, C<sfdisk-N>,
+C<part-init>
 
 B<This command is dangerous.  Without careful use you
 can easily destroy all your data>.
@@ -1520,7 +2480,8 @@ only (rounded to the nearest cylinder) and you don't need
 to specify the cyls, heads and sectors parameters which
 were rarely if ever used anyway.
 
-See also C<sfdisk> and the L<sfdisk(8)> manpage.
+See also: C<sfdisk>, the L<sfdisk(8)> manpage
+and C<part-disk>
 
 B<This command is dangerous.  Without careful use you
 can easily destroy all your data>.
@@ -1534,6 +2495,8 @@ partition C<n> (note: C<n> counts from 1).
 
 For other parameters, see C<sfdisk>.  You should usually
 pass C<0> for the cyls/heads/sectors parameters.
+
+See also: C<part-add>
 
 B<This command is dangerous.  Without careful use you
 can easily destroy all your data>.
@@ -1566,6 +2529,8 @@ be parsed.
 This displays the partition table on C<device>, in the
 human-readable output of the L<sfdisk(8)> command.  It is
 not intended to be parsed.
+
+See also: C<part-list>
 
 =head2 sh
 
@@ -1645,6 +2610,71 @@ The returned strings are transcoded to UTF-8.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  To transfer large files you should use
 FTP.
+
+=head2 swapoff-device
+
+ swapoff-device device
+
+This command disables the libguestfs appliance swap
+device or partition named C<device>.
+See C<swapon-device>.
+
+=head2 swapoff-file
+
+ swapoff-file file
+
+This command disables the libguestfs appliance swap on file.
+
+=head2 swapoff-label
+
+ swapoff-label label
+
+This command disables the libguestfs appliance swap on
+labeled swap partition.
+
+=head2 swapoff-uuid
+
+ swapoff-uuid uuid
+
+This command disables the libguestfs appliance swap partition
+with the given UUID.
+
+=head2 swapon-device
+
+ swapon-device device
+
+This command enables the libguestfs appliance to use the
+swap device or partition named C<device>.  The increased
+memory is made available for all commands, for example
+those run using C<command> or C<sh>.
+
+Note that you should not swap to existing guest swap
+partitions unless you know what you are doing.  They may
+contain hibernation information, or other information that
+the guest doesn't want you to trash.  You also risk leaking
+information about the host to the guest this way.  Instead,
+attach a new host device to the guest and swap on that.
+
+=head2 swapon-file
+
+ swapon-file file
+
+This command enables swap to a file.
+See C<swapon-device> for other notes.
+
+=head2 swapon-label
+
+ swapon-label label
+
+This command enables swap to a labeled swap partition.
+See C<swapon-device> for other notes.
+
+=head2 swapon-uuid
+
+ swapon-uuid uuid
+
+This command enables swap to a swap partition with the given UUID.
+See C<swapon-device> for other notes.
 
 =head2 sync
 
@@ -1735,6 +2765,21 @@ Touch acts like the L<touch(1)> command.  It can be used to
 update the timestamps on a file, or, if the file does not exist,
 to create a new zero-length file.
 
+=head2 truncate
+
+ truncate path
+
+This command truncates C<path> to a zero-length file.  The
+file must exist already.
+
+=head2 truncate-size
+
+ truncate-size path size
+
+This command truncates C<path> to size C<size> bytes.  The file
+must exist already.  If the file is smaller than C<size> then
+the file is extended to the required size with null bytes.
+
 =head2 tune2fs-l
 
  tune2fs-l device
@@ -1796,6 +2841,27 @@ See also C<download>.
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
 
+=head2 utimens
+
+ utimens path atsecs atnsecs mtsecs mtnsecs
+
+This command sets the timestamps of a file with nanosecond
+precision.
+
+C<atsecs, atnsecs> are the last access time (atime) in secs and
+nanoseconds from the epoch.
+
+C<mtsecs, mtnsecs> are the last modification time (mtime) in
+secs and nanoseconds from the epoch.
+
+If the C<*nsecs> field contains the special value C<-1> then
+the corresponding timestamp is set to the current time.  (The
+C<*secs> field is ignored in this case).
+
+If the C<*nsecs> field contains the special value C<-2> then
+the corresponding timestamp is left unchanged.  (The
+C<*secs> field is ignored in this case).
+
 =head2 version
 
  version
@@ -1823,7 +2889,19 @@ To construct the original version string:
 C<$major.$minor.$release$extra>
 
 I<Note:> Don't use this call to test for availability
-of features.  Distro backports makes this unreliable.
+of features.  Distro backports makes this unreliable.  Use
+C<available> instead.
+
+=head2 vfs-type
+
+ vfs-type device
+
+This command gets the block device type corresponding to
+a mounted device called C<device>.
+
+Usually the result is the name of the Linux VFS module that
+is used to mount this device (probably determined automatically
+if you used the C<mount> call).
 
 =head2 vg-activate
 
@@ -1929,6 +3007,28 @@ Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  To transfer large files you should use
 FTP.
 
+=head2 zegrep
+
+ zegrep regex path
+
+This calls the external C<zegrep> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
+=head2 zegrepi
+
+ zegrepi regex path
+
+This calls the external C<zegrep -i> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
 =head2 zero
 
  zero device
@@ -1956,14 +3056,66 @@ mounted.
 It is possible that using this program can damage the filesystem
 or data on the filesystem.
 
+=head2 zfgrep
+
+ zfgrep pattern path
+
+This calls the external C<zfgrep> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
+=head2 zfgrepi
+
+ zfgrepi pattern path
+
+This calls the external C<zfgrep -i> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
 =head2 zfile
 
- zfile method path
+ zfile meth path
 
 This command runs C<file> after first decompressing C<path>
 using C<method>.
 
 C<method> must be one of C<gzip>, C<compress> or C<bzip2>.
 
-See also: C<file>
+Since 1.0.63, use C<file> instead which can now
+process compressed files.
+
+This function is deprecated.
+In new code, use the C<file> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
+=head2 zgrep
+
+ zgrep regex path
+
+This calls the external C<zgrep> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
+=head2 zgrepi
+
+ zgrepi regex path
+
+This calls the external C<zgrep -i> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
 

@@ -28,12 +28,10 @@
 #include "actions.h"
 
 int
-do_zero (char *device)
+do_zero (const char *device)
 {
   int fd, i;
   char buf[4096];
-
-  IS_DEVICE (device, -1);
 
   fd = open (device, O_WRONLY);
   if (fd == -1) {
@@ -44,9 +42,16 @@ do_zero (char *device)
   memset (buf, 0, sizeof buf);
 
   for (i = 0; i < 32; ++i)
-    (void) write (fd, buf, sizeof buf);
+    if (write (fd, buf, sizeof buf) != sizeof buf) {
+      reply_with_perror ("write: %s", device);
+      close (fd);
+      return -1;
+    }
 
-  close (fd);
+  if (close (fd) == -1) {
+    reply_with_perror ("close: %s", device);
+    return -1;
+  }
 
   return 0;
 }

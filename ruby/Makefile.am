@@ -15,14 +15,19 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-EXTRA_DIST = \
-	Rakefile.in \
+include $(top_srcdir)/subdir-rules.mk
+
+generator_built = \
 	ext/guestfs/_guestfs.c \
+	bindtests.rb
+
+EXTRA_DIST = \
+	$(generator_built) \
+	Rakefile.in \
 	ext/guestfs/extconf.rb \
 	lib/guestfs.rb \
 	run-bindtests \
 	run-ruby-tests \
-	bindtests.rb \
 	tests/tc_*.rb
 
 CLEANFILES = \
@@ -43,7 +48,7 @@ TESTS_ENVIRONMENT = \
 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
 	LIBGUESTFS_PATH=$(top_builddir)/appliance
 
-all:
+all: $(generator_built)
 	rake build
 
 endif

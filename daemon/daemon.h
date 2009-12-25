@@ -19,6 +19,7 @@
 #ifndef GUESTFSD_DAEMON_H
 #define GUESTFSD_DAEMON_H
 
+#include <stdio.h>
 #include <stdarg.h>
 #include <errno.h>
 #include <unistd.h>
@@ -29,31 +30,61 @@
 #include "../src/guestfs_protocol.h"
 
 /*-- in guestfsd.c --*/
-extern int xwrite (int sock, const void *buf, size_t len);
-extern int xread (int sock, void *buf, size_t len);
+extern int verbose;
+
+extern const char *sysroot;
+extern int sysroot_len;
+
+extern char *sysroot_path (const char *path);
+
+extern int xwrite (int sock, const void *buf, size_t len)
+  __attribute__((__warn_unused_result__));
+extern int xread (int sock, void *buf, size_t len)
+  __attribute__((__warn_unused_result__));
 
 extern int add_string (char ***argv, int *size, int *alloc, const char *str);
-extern int count_strings (char * const* const argv);
+extern int count_strings (char *const *argv);
 extern void sort_strings (char **argv, int len);
 extern void free_strings (char **argv);
 extern void free_stringslen (char **argv, int len);
 
-extern int command (char **stdoutput, char **stderror, const char *name, ...);
-extern int commandr (char **stdoutput, char **stderror, const char *name, ...);
-extern int commandv (char **stdoutput, char **stderror,
-		     char * const* const argv);
-extern int commandrv (char **stdoutput, char **stderror,
-		      char * const* const argv);
+#define command(out,err,name,...) commandf((out),(err),0,(name),__VA_ARGS__)
+#define commandr(out,err,name,...) commandrf((out),(err),0,(name),__VA_ARGS__)
+#define commandv(out,err,argv) commandvf((out),(err),0,(argv))
+#define commandrv(out,err,argv) commandrvf((out),(err),0,(argv))
+
+#define COMMAND_FLAG_FOLD_STDOUT_ON_STDERR 1
+
+extern int commandf (char **stdoutput, char **stderror, int flags,
+                     const char *name, ...);
+extern int commandrf (char **stdoutput, char **stderror, int flags,
+                      const char *name, ...);
+extern int commandvf (char **stdoutput, char **stderror, int flags,
+                      char const *const *argv);
+extern int commandrvf (char **stdoutput, char **stderror, int flags,
+                       char const* const *argv);
 
 extern char **split_lines (char *str);
-
-extern int shell_quote (char *out, int len, const char *in);
 
 extern int device_name_translation (char *device, const char *func);
 
 extern void udev_settle (void);
 
-extern int verbose;
+/* This just stops gcc from giving a warning about our custom
+ * printf formatters %Q and %R.  See HACKING file for more
+ * info about these.
+ */
+static inline int
+asprintf_nowarn (char **strp, const char *fmt, ...)
+{
+  int r;
+  va_list args;
+
+  va_start (args, fmt);
+  r = vasprintf (strp, fmt, args);
+  va_end (args);
+  return r;
+}
 
 /*-- in names.c (auto-generated) --*/
 extern const char *function_names[];
@@ -71,14 +102,26 @@ extern guestfs_int_lvm_pv_list *parse_command_line_pvs (void);
 extern guestfs_int_lvm_vg_list *parse_command_line_vgs (void);
 extern guestfs_int_lvm_lv_list *parse_command_line_lvs (void);
 
+/*-- in optgroups.c (auto-generated) --*/
+struct optgroup {
+  const char *group;            /* Name of the optional group. */
+  int (*available) (void);      /* Function to test availability. */
+};
+extern struct optgroup optgroups[];
+
+/*-- in sync.c --*/
+/* Use this as a replacement for sync(2). */
+extern int sync_disks (void);
+
 /*-- in proto.c --*/
-extern void main_loop (int sock);
+extern void main_loop (int sock) __attribute__((noreturn));
 
 /* ordinary daemon functions use these to indicate errors */
 extern void reply_with_error (const char *fs, ...)
   __attribute__((format (printf,1,2)));
-extern void reply_with_perror (const char *fs, ...)
-  __attribute__((format (printf,1,2)));
+extern void reply_with_perror_errno (int err, const char *fs, ...)
+  __attribute__((format (printf,2,3)));
+#define reply_with_perror(...) reply_with_perror_errno(errno, __VA_ARGS__)
 
 /* daemon functions that receive files (FileIn) should call
  * receive_file for each FileIn parameter.
@@ -88,7 +131,7 @@ extern int receive_file (receive_cb cb, void *opaque);
 
 /* daemon functions that receive files (FileIn) can call this
  * to cancel incoming transfers (eg. if there is a local error),
- * but they MUST then call reply_with_error or reply_with_perror.
+ * but they MUST then call reply_with_*.
  */
 extern void cancel_receive (void);
 
@@ -97,7 +140,7 @@ extern void cancel_receive (void);
  * Note max write size if GUESTFS_MAX_CHUNK_SIZE.
  */
 extern int send_file_write (const void *buf, int len);
-extern void send_file_end (int cancel);
+extern int send_file_end (int cancel);
 
 /* only call this if there is a FileOut parameter */
 extern void reply (xdrproc_t xdrp, char *ret);
@@ -105,11 +148,11 @@ extern void reply (xdrproc_t xdrp, char *ret);
 /* Helper for functions that need a root filesystem mounted.
  * NB. Cannot be used for FileIn functions.
  */
-#define NEED_ROOT(errcode)						\
+#define NEED_ROOT(fail_stmt)						\
   do {									\
     if (!root_mounted) {						\
       reply_with_error ("%s: you must call 'mount' first to mount the root filesystem", __func__); \
-      return (errcode);							\
+      fail_stmt;							\
     }									\
   }									\
   while (0)
@@ -117,11 +160,11 @@ extern void reply (xdrproc_t xdrp, char *ret);
 /* Helper for functions that need an argument ("path") that is absolute.
  * NB. Cannot be used for FileIn functions.
  */
-#define ABS_PATH(path,errcode)						\
+#define ABS_PATH(path,fail_stmt)					\
   do {									\
     if ((path)[0] != '/') {						\
       reply_with_error ("%s: path must start with a / character", __func__); \
-      return (errcode);							\
+      fail_stmt;							\
     }									\
   } while (0)
 
@@ -132,14 +175,14 @@ extern void reply (xdrproc_t xdrp, char *ret);
  *
  * NB. Cannot be used for FileIn functions.
  */
-#define IS_DEVICE(path,errcode)						\
+#define RESOLVE_DEVICE(path,fail_stmt)					\
   do {									\
-    if (strncmp ((path), "/dev/", 5) != 0) {				\
+    if (STRNEQLEN ((path), "/dev/", 5)) {				\
       reply_with_error ("%s: %s: expecting a device name", __func__, (path)); \
-      return (errcode);							\
+      fail_stmt;							\
     }									\
     if (device_name_translation ((path), __func__) == -1)		\
-      return (errcode);							\
+      fail_stmt;							\
   } while (0)
 
 /* Helper for functions which need either an absolute path in the
@@ -152,13 +195,13 @@ extern void reply (xdrproc_t xdrp, char *ret);
  * because we intend in future to make device parameters a distinct
  * type from filenames.
  */
-#define NEED_ROOT_OR_IS_DEVICE(path,errcode) \
+#define REQUIRE_ROOT_OR_RESOLVE_DEVICE(path,fail_stmt)			\
   do {									\
-    if (strncmp ((path), "/dev/", 5) == 0)				\
-      IS_DEVICE ((path),(errcode));					\
+    if (STREQLEN ((path), "/dev/", 5))                                  \
+      RESOLVE_DEVICE ((path), fail_stmt);				\
     else {								\
-      NEED_ROOT ((errcode));						\
-      ABS_PATH ((path),(errcode));					\
+      NEED_ROOT (fail_stmt);						\
+      ABS_PATH ((path),fail_stmt);					\
     }									\
   } while (0)
 
@@ -172,7 +215,7 @@ extern void reply (xdrproc_t xdrp, char *ret);
 #define CHROOT_IN				\
   do {						\
     int __old_errno = errno;			\
-    if (chroot ("/sysroot") == -1)		\
+    if (chroot (sysroot) == -1)			\
       perror ("CHROOT_IN: sysroot");		\
     errno = __old_errno;			\
   } while (0)
@@ -193,5 +236,35 @@ extern void reply (xdrproc_t xdrp, char *ret);
     return (errcode);							\
   }									\
   while (0)
+
+/* Marks functions which are not available.
+ * NB. Cannot be used for FileIn functions.
+ */
+#define NOT_AVAILABLE(errcode)                                          \
+  do {									\
+    reply_with_error ("%s: function not available", __func__);          \
+    return (errcode);							\
+  }									\
+  while (0)
+
+#ifndef __attribute__
+# if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 8)
+#  define __attribute__(x) /* empty */
+# endif
+#endif
+
+#ifndef ATTRIBUTE_UNUSED
+# define ATTRIBUTE_UNUSED __attribute__ ((__unused__))
+#endif
+
+#define STREQ(a,b) (strcmp((a),(b)) == 0)
+#define STRCASEEQ(a,b) (strcasecmp((a),(b)) == 0)
+#define STRNEQ(a,b) (strcmp((a),(b)) != 0)
+#define STRCASENEQ(a,b) (strcasecmp((a),(b)) != 0)
+#define STREQLEN(a,b,n) (strncmp((a),(b),(n)) == 0)
+#define STRCASEEQLEN(a,b,n) (strncasecmp((a),(b),(n)) == 0)
+#define STRNEQLEN(a,b,n) (strncmp((a),(b),(n)) != 0)
+#define STRCASENEQLEN(a,b,n) (strncasecmp((a),(b),(n)) != 0)
+#define STRPREFIX(a,b) (strncmp((a),(b),strlen((b))) == 0)
 
 #endif /* GUESTFSD_DAEMON_H */

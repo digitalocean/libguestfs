@@ -21,17 +21,17 @@
 
 let () =
   let g = Guestfs.create () in
-  Guestfs.test0 g "abc" (Some "def") [||] false 0 "123" "456";
-  Guestfs.test0 g "abc" None [||] false 0 "123" "456";
-  Guestfs.test0 g "" (Some "def") [||] false 0 "123" "456";
-  Guestfs.test0 g "" (Some "") [||] false 0 "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 0 "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1";"2"|] false 0 "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] true 0 "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false (-1) "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false (-2) "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 1 "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 2 "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 4095 "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 0 "" "";
+  Guestfs.test0 g "abc" (Some "def") [||] false 0 0L "123" "456";
+  Guestfs.test0 g "abc" None [||] false 0 0L "123" "456";
+  Guestfs.test0 g "" (Some "def") [||] false 0 0L "123" "456";
+  Guestfs.test0 g "" (Some "") [||] false 0 0L "123" "456";
+  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 0 0L "123" "456";
+  Guestfs.test0 g "abc" (Some "def") [|"1";"2"|] false 0 0L "123" "456";
+  Guestfs.test0 g "abc" (Some "def") [|"1"|] true 0 0L "123" "456";
+  Guestfs.test0 g "abc" (Some "def") [|"1"|] false (-1) (-1L) "123" "456";
+  Guestfs.test0 g "abc" (Some "def") [|"1"|] false (-2) (-2L) "123" "456";
+  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 1 1L "123" "456";
+  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 2 2L "123" "456";
+  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 4095 4095L "123" "456";
+  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 0 0L "" "";
 print_endline "EOF"

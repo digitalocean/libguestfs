@@ -203,3 +203,33 @@ struct guestfs_xattr_list {
 extern void guestfs_free_xattr (struct guestfs_xattr *);
 extern void guestfs_free_xattr_list (struct guestfs_xattr_list *);
 
+struct guestfs_inotify_event {
+  int64_t in_wd;
+  uint32_t in_mask;
+  uint32_t in_cookie;
+  char *in_name;
+};
+
+struct guestfs_inotify_event_list {
+  uint32_t len;
+  struct guestfs_inotify_event *val;
+};
+
+extern void guestfs_free_inotify_event (struct guestfs_inotify_event *);
+extern void guestfs_free_inotify_event_list (struct guestfs_inotify_event_list *);
+
+struct guestfs_partition {
+  int32_t part_num;
+  uint64_t part_start;
+  uint64_t part_end;
+  uint64_t part_size;
+};
+
+struct guestfs_partition_list {
+  uint32_t len;
+  struct guestfs_partition *val;
+};
+
+extern void guestfs_free_partition (struct guestfs_partition *);
+extern void guestfs_free_partition_list (struct guestfs_partition_list *);
+

@@ -24,7 +24,6 @@ import guestfs
 g = guestfs.GuestFS ()
 g.add_drive ("guest.img")
 g.launch ()
-g.wait_ready ()
 parts = g.list_partitions ()
 
 The guestfs module provides a Python binding to the libguestfs API
@@ -59,7 +58,6 @@ g.add_drive ("guest.img")
 
 # Launch the qemu subprocess and wait for it to become ready:
 g.launch ()
-g.wait_ready ()
 
 # Now you can issue commands, for example:
 logvols = g.lvs ()
@@ -78,8 +76,8 @@ class GuestFS:
     def __del__ (self):
         libguestfsmod.close (self._o)
 
-    def test0 (self, str, optstr, strlist, b, integer, filein, fileout):
-        return libguestfsmod.test0 (self._o, str, optstr, strlist, b, integer, filein, fileout)
+    def test0 (self, str, optstr, strlist, b, integer, integer64, filein, fileout):
+        return libguestfsmod.test0 (self._o, str, optstr, strlist, b, integer, integer64, filein, fileout)
 
     def test0rint (self, val):
         return libguestfsmod.test0rint (self._o, val)
@@ -104,6 +102,12 @@ class GuestFS:
 
     def test0rconststringerr (self):
         return libguestfsmod.test0rconststringerr (self._o)
+
+    def test0rconstoptstring (self, val):
+        return libguestfsmod.test0rconstoptstring (self._o, val)
+
+    def test0rconstoptstringerr (self):
+        return libguestfsmod.test0rconstoptstringerr (self._o)
 
     def test0rstring (self, val):
         return libguestfsmod.test0rstring (self._o, val)
@@ -145,11 +149,16 @@ class GuestFS:
         return libguestfsmod.launch (self._o)
 
     def wait_ready (self):
-        u"""Internally libguestfs is implemented by running a
-        virtual machine using qemu(1).
+        u"""This function is a no op.
         
-        You should call this after "g.launch" to wait for the
-        launch to complete.
+        In versions of the API < 1.0.71 you had to call this
+        function just after calling "g.launch" to wait for the
+        launch to complete. However this is no longer necessary
+        because "g.launch" now does the waiting.
+        
+        If you see any calls to this function in code then you
+        can just remove them, unless you want to retain
+        compatibility with older versions of the API.
         """
         return libguestfsmod.wait_ready (self._o)
 
@@ -173,7 +182,9 @@ class GuestFS:
         to modify the image).
         
         This is equivalent to the qemu parameter "-drive
-        file=filename,cache=off,if=...".
+        file=filename,cache=off,if=...". "cache=off" is omitted
+        in cases where it is not supported by the underlying
+        filesystem.
         
         Note that this call checks for the existence of
         "filename". This stops you from specifying other types
@@ -256,7 +267,7 @@ class GuestFS:
         """
         return libguestfsmod.get_qemu (self._o)
 
-    def set_path (self, path):
+    def set_path (self, searchpath):
         u"""Set the path that libguestfs searches for kernel and
         initrd.img.
         
@@ -265,7 +276,7 @@ class GuestFS:
         
         Setting "path" to "NULL" restores the default path.
         """
-        return libguestfsmod.set_path (self._o, path)
+        return libguestfsmod.set_path (self._o, searchpath)
 
     def get_path (self):
         u"""Return the current search path.
@@ -366,31 +377,6 @@ class GuestFS:
         """
         return libguestfsmod.get_state (self._o)
 
-    def set_busy (self):
-        u"""This sets the state to "BUSY". This is only used when
-        implementing actions using the low-level API.
-        
-        For more information on states, see guestfs(3).
-        """
-        return libguestfsmod.set_busy (self._o)
-
-    def set_ready (self):
-        u"""This sets the state to "READY". This is only used when
-        implementing actions using the low-level API.
-        
-        For more information on states, see guestfs(3).
-        """
-        return libguestfsmod.set_ready (self._o)
-
-    def end_busy (self):
-        u"""This sets the state to "READY", or if in "CONFIG" then
-        it leaves the state as is. This is only used when
-        implementing actions using the low-level API.
-        
-        For more information on states, see guestfs(3).
-        """
-        return libguestfsmod.end_busy (self._o)
-
     def set_memsize (self, memsize):
         u"""This sets the memory size in megabytes allocated to the
         qemu subprocess. This only has any effect if called
@@ -452,12 +438,103 @@ class GuestFS:
         "$major.$minor.$release$extra"
         
         *Note:* Don't use this call to test for availability of
-        features. Distro backports makes this unreliable.
+        features. Distro backports makes this unreliable. Use
+        "g.available" instead.
         
         This function returns a dictionary, with keys matching
         the various fields in the guestfs_version structure.
         """
         return libguestfsmod.version (self._o)
+
+    def set_selinux (self, selinux):
+        u"""This sets the selinux flag that is passed to the
+        appliance at boot time. The default is "selinux=0"
+        (disabled).
+        
+        Note that if SELinux is enabled, it is always in
+        Permissive mode ("enforcing=0").
+        
+        For more information on the architecture of libguestfs,
+        see guestfs(3).
+        """
+        return libguestfsmod.set_selinux (self._o, selinux)
+
+    def get_selinux (self):
+        u"""This returns the current setting of the selinux flag
+        which is passed to the appliance at boot time. See
+        "g.set_selinux".
+        
+        For more information on the architecture of libguestfs,
+        see guestfs(3).
+        """
+        return libguestfsmod.get_selinux (self._o)
+
+    def set_trace (self, trace):
+        u"""If the command trace flag is set to 1, then commands are
+        printed on stdout before they are executed in a format
+        which is very similar to the one used by guestfish. In
+        other words, you can run a program with this enabled,
+        and you will get out a script which you can feed to
+        guestfish to perform the same set of actions.
+        
+        If you want to trace C API calls into libguestfs (and
+        other libraries) then possibly a better way is to use
+        the external ltrace(1) command.
+        
+        Command traces are disabled unless the environment
+        variable "LIBGUESTFS_TRACE" is defined and set to 1.
+        """
+        return libguestfsmod.set_trace (self._o, trace)
+
+    def get_trace (self):
+        u"""Return the command trace flag.
+        """
+        return libguestfsmod.get_trace (self._o)
+
+    def set_direct (self, direct):
+        u"""If the direct appliance mode flag is enabled, then stdin
+        and stdout are passed directly through to the appliance
+        once it is launched.
+        
+        One consequence of this is that log messages aren't
+        caught by the library and handled by
+        "g.set_log_message_callback", but go straight to stdout.
+        
+        You probably don't want to use this unless you know what
+        you are doing.
+        
+        The default is disabled.
+        """
+        return libguestfsmod.set_direct (self._o, direct)
+
+    def get_direct (self):
+        u"""Return the direct appliance mode flag.
+        """
+        return libguestfsmod.get_direct (self._o)
+
+    def set_recovery_proc (self, recoveryproc):
+        u"""If this is called with the parameter "false" then
+        "g.launch" does not create a recovery process. The
+        purpose of the recovery process is to stop runaway qemu
+        processes in the case where the main program aborts
+        abruptly.
+        
+        This only has any effect if called before "g.launch",
+        and the default is true.
+        
+        About the only time when you would want to disable this
+        is if the main process will fork itself into the
+        background ("daemonize" itself). In this case the
+        recovery process thinks that the main program has
+        disappeared and so kills qemu, which is not very
+        helpful.
+        """
+        return libguestfsmod.set_recovery_proc (self._o, recoveryproc)
+
+    def get_recovery_proc (self):
+        u"""Return the recovery process enabled flag.
+        """
+        return libguestfsmod.get_recovery_proc (self._o)
 
     def mount (self, device, mountpoint):
         u"""Mount a guest disk at a position in the filesystem.
@@ -502,8 +579,8 @@ class GuestFS:
         Note that this function cannot correctly handle binary
         files (specifically, files containing "\\0" character
         which is treated as end of string). For those you need
-        to use the "g.download" function which has a more
-        complex interface.
+        to use the "g.read_file" or "g.download" functions which
+        have a more complex interface.
         
         Because of the message protocol, there is a transfer
         limit of somewhere between 2MB and 4MB. To transfer
@@ -719,18 +796,18 @@ class GuestFS:
         """
         return libguestfsmod.aug_defnode (self._o, name, expr, val)
 
-    def aug_get (self, path):
+    def aug_get (self, augpath):
         u"""Look up the value associated with "path". If "path"
         matches exactly one node, the "value" is returned.
         """
-        return libguestfsmod.aug_get (self._o, path)
+        return libguestfsmod.aug_get (self._o, augpath)
 
-    def aug_set (self, path, val):
+    def aug_set (self, augpath, val):
         u"""Set the value associated with "path" to "value".
         """
-        return libguestfsmod.aug_set (self._o, path, val)
+        return libguestfsmod.aug_set (self._o, augpath, val)
 
-    def aug_insert (self, path, label, before):
+    def aug_insert (self, augpath, label, before):
         u"""Create a new sibling "label" for "path", inserting it
         into the tree before or after "path" (depending on the
         boolean flag "before").
@@ -739,15 +816,15 @@ class GuestFS:
         and "label" must be a label, ie. not contain "/", "*" or
         end with a bracketed index "[N]".
         """
-        return libguestfsmod.aug_insert (self._o, path, label, before)
+        return libguestfsmod.aug_insert (self._o, augpath, label, before)
 
-    def aug_rm (self, path):
+    def aug_rm (self, augpath):
         u"""Remove "path" and all of its children.
         
         On success this returns the number of entries which were
         removed.
         """
-        return libguestfsmod.aug_rm (self._o, path)
+        return libguestfsmod.aug_rm (self._o, augpath)
 
     def aug_mv (self, src, dest):
         u"""Move the node "src" to "dest". "src" must match exactly
@@ -755,14 +832,14 @@ class GuestFS:
         """
         return libguestfsmod.aug_mv (self._o, src, dest)
 
-    def aug_match (self, path):
+    def aug_match (self, augpath):
         u"""Returns a list of paths which match the path expression
         "path". The returned paths are sufficiently qualified so
         that they match exactly one node in the current tree.
         
         This function returns a list of strings.
         """
-        return libguestfsmod.aug_match (self._o, path)
+        return libguestfsmod.aug_match (self._o, augpath)
 
     def aug_save (self):
         u"""This writes all pending changes to disk.
@@ -780,14 +857,14 @@ class GuestFS:
         """
         return libguestfsmod.aug_load (self._o)
 
-    def aug_ls (self, path):
+    def aug_ls (self, augpath):
         u"""This is just a shortcut for listing "g.aug_match"
         "path/*" and sorting the resulting nodes into
         alphabetical order.
         
         This function returns a list of strings.
         """
-        return libguestfsmod.aug_ls (self._o, path)
+        return libguestfsmod.aug_ls (self._o, augpath)
 
     def rm (self, path):
         u"""Remove the single file "path".
@@ -910,7 +987,7 @@ class GuestFS:
         you would pass "lines" as a single element list, when
         the single element being the string "," (comma).
         
-        See also: "g.sfdisk_l", "g.sfdisk_N"
+        See also: "g.sfdisk_l", "g.sfdisk_N", "g.part_init"
         
         This command is dangerous. Without careful use you can
         easily destroy all your data.
@@ -951,6 +1028,8 @@ class GuestFS:
         
         Some internal mounts are not shown.
         
+        See also: "g.mountpoints"
+        
         This function returns a list of strings.
         """
         return libguestfsmod.mounts (self._o)
@@ -977,7 +1056,10 @@ class GuestFS:
         devices, for example to find out whether a partition
         contains a filesystem.
         
-        The exact command which runs is "file -bsL path". Note
+        This call will also transparently look inside various
+        types of compressed file.
+        
+        The exact command which runs is "file -zbsL path". Note
         in particular that the filename is not prepended to the
         output (the "-b" option).
         """
@@ -1530,6 +1612,8 @@ class GuestFS:
         For other parameters, see "g.sfdisk". You should usually
         pass 0 for the cyls/heads/sectors parameters.
         
+        See also: "g.part_add"
+        
         This command is dangerous. Without careful use you can
         easily destroy all your data.
         """
@@ -1539,6 +1623,8 @@ class GuestFS:
         u"""This displays the partition table on "device", in the
         human-readable output of the sfdisk(8) command. It is
         not intended to be parsed.
+        
+        See also: "g.part_list"
         """
         return libguestfsmod.sfdisk_l (self._o, device)
 
@@ -1636,7 +1722,13 @@ class GuestFS:
         
         The returned list is sorted.
         
+        See also "g.find0".
+        
         This function returns a list of strings.
+        
+        Because of the message protocol, there is a transfer
+        limit of somewhere between 2MB and 4MB. To transfer
+        large files you should use FTP.
         """
         return libguestfsmod.find (self._o, directory)
 
@@ -1915,6 +2007,10 @@ class GuestFS:
 
     def mkswap_L (self, label, device):
         u"""Create a swap partition on "device" with label "label".
+        
+        Note that you cannot attach a swap label to a block
+        device (eg. "/dev/sda"), just to a partition. This
+        appears to be a limitation of the kernel or swap tools.
         """
         return libguestfsmod.mkswap_L (self._o, label, device)
 
@@ -1984,6 +2080,29 @@ class GuestFS:
         and "..". The entries are *not* sorted, but returned in
         the same order as the underlying filesystem.
         
+        Also this call returns basic file type information about
+        each file. The "ftyp" field will contain one of the
+        following characters:
+        
+        'b' Block special
+        
+        'c' Char special
+        
+        'd' Directory
+        
+        'f' FIFO (named pipe)
+        
+        'l' Symbolic link
+        
+        'r' Regular file
+        
+        's' Socket
+        
+        'u' Unknown file type
+        
+        '?' The readdir(3) returned a "d_type" field with an
+        unexpected value
+        
         This function is primarily intended for use by programs.
         To get a simple list of names, use "g.ls". To get a
         printable directory for human consumption, use "g.ll".
@@ -2000,22 +2119,31 @@ class GuestFS:
         don't need to specify the cyls, heads and sectors
         parameters which were rarely if ever used anyway.
         
-        See also "g.sfdisk" and the sfdisk(8) manpage.
+        See also: "g.sfdisk", the sfdisk(8) manpage and
+        "g.part_disk"
         
         This command is dangerous. Without careful use you can
         easily destroy all your data.
         """
         return libguestfsmod.sfdiskM (self._o, device, lines)
 
-    def zfile (self, method, path):
+    def zfile (self, meth, path):
         u"""This command runs "file" after first decompressing
         "path" using "method".
         
         "method" must be one of "gzip", "compress" or "bzip2".
         
-        See also: "g.file"
+        Since 1.0.63, use "g.file" instead which can now process
+        compressed files.
+        
+        This function is deprecated. In new code, use the "file"
+        call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
-        return libguestfsmod.zfile (self._o, method, path)
+        return libguestfsmod.zfile (self._o, meth, path)
 
     def getxattrs (self, path):
         u"""This call lists the extended attributes of the file or
@@ -2071,4 +2199,939 @@ class GuestFS:
         the link itself.
         """
         return libguestfsmod.lremovexattr (self._o, xattr, path)
+
+    def mountpoints (self):
+        u"""This call is similar to "g.mounts". That call returns a
+        list of devices. This one returns a hash table (map) of
+        device name to directory where the device is mounted.
+        
+        This function returns a dictionary.
+        """
+        return libguestfsmod.mountpoints (self._o)
+
+    def mkmountpoint (self, exemptpath):
+        u""""g.mkmountpoint" and "g.rmmountpoint" are specialized
+        calls that can be used to create extra mountpoints
+        before mounting the first filesystem.
+        
+        These calls are *only* necessary in some very limited
+        circumstances, mainly the case where you want to mount a
+        mix of unrelated and/or read-only filesystems together.
+        
+        For example, live CDs often contain a "Russian doll"
+        nest of filesystems, an ISO outer layer, with a squashfs
+        image inside, with an ext2/3 image inside that. You can
+        unpack this as follows in guestfish:
+        
+        add-ro Fedora-11-i686-Live.iso
+        run
+        mkmountpoint /cd
+        mkmountpoint /squash
+        mkmountpoint /ext3
+        mount /dev/sda /cd
+        mount-loop /cd/LiveOS/squashfs.img /squash
+        mount-loop /squash/LiveOS/ext3fs.img /ext3
+        
+        The inner filesystem is now unpacked under the /ext3
+        mountpoint.
+        """
+        return libguestfsmod.mkmountpoint (self._o, exemptpath)
+
+    def rmmountpoint (self, exemptpath):
+        u"""This calls removes a mountpoint that was previously
+        created with "g.mkmountpoint". See "g.mkmountpoint" for
+        full details.
+        """
+        return libguestfsmod.rmmountpoint (self._o, exemptpath)
+
+    def read_file (self, path):
+        u"""This calls returns the contents of the file "path" as a
+        buffer.
+        
+        Unlike "g.cat", this function can correctly handle files
+        that contain embedded ASCII NUL characters. However
+        unlike "g.download", this function is limited in the
+        total size of file that can be handled.
+        
+        Because of the message protocol, there is a transfer
+        limit of somewhere between 2MB and 4MB. To transfer
+        large files you should use FTP.
+        """
+        return libguestfsmod.read_file (self._o, path)
+
+    def grep (self, regex, path):
+        u"""This calls the external "grep" program and returns the
+        matching lines.
+        
+        This function returns a list of strings.
+        
+        Because of the message protocol, there is a transfer
+        limit of somewhere between 2MB and 4MB. To transfer
+        large files you should use FTP.
+        """
+        return libguestfsmod.grep (self._o, regex, path)
+
+    def egrep (self, regex, path):
+        u"""This calls the external "egrep" program and returns the
+        matching lines.
+        
+        This function returns a list of strings.
+        
+        Because of the message protocol, there is a transfer
+        limit of somewhere between 2MB and 4MB. To transfer
+        large files you should use FTP.
+        """
+        return libguestfsmod.egrep (self._o, regex, path)
+
+    def fgrep (self, pattern, path):
+        u"""This calls the external "fgrep" program and returns the
+        matching lines.
+        
+        This function returns a list of strings.
+        
+        Because of the message protocol, there is a transfer
+        limit of somewhere between 2MB and 4MB. To transfer
+        large files you should use FTP.
+        """
+        return libguestfsmod.fgrep (self._o, pattern, path)
+
+    def grepi (self, regex, path):
+        u"""This calls the external "grep -i" program and returns
+        the matching lines.
+        
+        This function returns a list of strings.
+        
+        Because of the message protocol, there is a transfer
+        limit of somewhere between 2MB and 4MB. To transfer
+        large files you should use FTP.
+        """
+        return libguestfsmod.grepi (self._o, regex, path)
+
+    def egrepi (self, regex, path):
+        u"""This calls the external "egrep -i" program and returns
+        the matching lines.
+        
+        This function returns a list of strings.
+        
+        Because of the message protocol, there is a transfer
+        limit of somewhere between 2MB and 4MB. To transfer
+        large files you should use FTP.
+        """
+        return libguestfsmod.egrepi (self._o, regex, path)
+
+    def fgrepi (self, pattern, path):
+        u"""This calls the external "fgrep -i" program and returns
+        the matching lines.
+        
+        This function returns a list of strings.
+        
+        Because of the message protocol, there is a transfer
+        limit of somewhere between 2MB and 4MB. To transfer
+        large files you should use FTP.
+        """
+        return libguestfsmod.fgrepi (self._o, pattern, path)
+
+    def zgrep (self, regex, path):
+        u"""This calls the external "zgrep" program and returns the
+        matching lines.
+        
+        This function returns a list of strings.
+        
+        Because of the message protocol, there is a transfer
+        limit of somewhere between 2MB and 4MB. To transfer
+        large files you should use FTP.
+        """
+        return libguestfsmod.zgrep (self._o, regex, path)
+
+    def zegrep (self, regex, path):
+        u"""This calls the external "zegrep" program and returns the
+        matching lines.
+        
+        This function returns a list of strings.
+        
+        Because of the message protocol, there is a transfer
+        limit of somewhere between 2MB and 4MB. To transfer
+        large files you should use FTP.
+        """
+        return libguestfsmod.zegrep (self._o, regex, path)
+
+    def zfgrep (self, pattern, path):
+        u"""This calls the external "zfgrep" program and returns the
+        matching lines.
+        
+        This function returns a list of strings.
+        
+        Because of the message protocol, there is a transfer
+        limit of somewhere between 2MB and 4MB. To transfer
+        large files you should use FTP.
+        """
+        return libguestfsmod.zfgrep (self._o, pattern, path)
+
+    def zgrepi (self, regex, path):
+        u"""This calls the external "zgrep -i" program and returns
+        the matching lines.
+        
+        This function returns a list of strings.
+        
+        Because of the message protocol, there is a transfer
+        limit of somewhere between 2MB and 4MB. To transfer
+        large files you should use FTP.
+        """
+        return libguestfsmod.zgrepi (self._o, regex, path)
+
+    def zegrepi (self, regex, path):
+        u"""This calls the external "zegrep -i" program and returns
+        the matching lines.
+        
+        This function returns a list of strings.
+        
+        Because of the message protocol, there is a transfer
+        limit of somewhere between 2MB and 4MB. To transfer
+        large files you should use FTP.
+        """
+        return libguestfsmod.zegrepi (self._o, regex, path)
+
+    def zfgrepi (self, pattern, path):
+        u"""This calls the external "zfgrep -i" program and returns
+        the matching lines.
+        
+        This function returns a list of strings.
+        
+        Because of the message protocol, there is a transfer
+        limit of somewhere between 2MB and 4MB. To transfer
+        large files you should use FTP.
+        """
+        return libguestfsmod.zfgrepi (self._o, pattern, path)
+
+    def realpath (self, path):
+        u"""Return the canonicalized absolute pathname of "path".
+        The returned path has no ".", ".." or symbolic link path
+        elements.
+        """
+        return libguestfsmod.realpath (self._o, path)
+
+    def ln (self, target, linkname):
+        u"""This command creates a hard link using the "ln" command.
+        """
+        return libguestfsmod.ln (self._o, target, linkname)
+
+    def ln_f (self, target, linkname):
+        u"""This command creates a hard link using the "ln -f"
+        command. The "-f" option removes the link ("linkname")
+        if it exists already.
+        """
+        return libguestfsmod.ln_f (self._o, target, linkname)
+
+    def ln_s (self, target, linkname):
+        u"""This command creates a symbolic link using the "ln -s"
+        command.
+        """
+        return libguestfsmod.ln_s (self._o, target, linkname)
+
+    def ln_sf (self, target, linkname):
+        u"""This command creates a symbolic link using the "ln -sf"
+        command, The "-f" option removes the link ("linkname")
+        if it exists already.
+        """
+        return libguestfsmod.ln_sf (self._o, target, linkname)
+
+    def readlink (self, path):
+        u"""This command reads the target of a symbolic link.
+        """
+        return libguestfsmod.readlink (self._o, path)
+
+    def fallocate (self, path, len):
+        u"""This command preallocates a file (containing zero bytes)
+        named "path" of size "len" bytes. If the file exists
+        already, it is overwritten.
+        
+        Do not confuse this with the guestfish-specific "alloc"
+        command which allocates a file in the host and attaches
+        it as a device.
+        """
+        return libguestfsmod.fallocate (self._o, path, len)
+
+    def swapon_device (self, device):
+        u"""This command enables the libguestfs appliance to use the
+        swap device or partition named "device". The increased
+        memory is made available for all commands, for example
+        those run using "g.command" or "g.sh".
+        
+        Note that you should not swap to existing guest swap
+        partitions unless you know what you are doing. They may
+        contain hibernation information, or other information
+        that the guest doesn't want you to trash. You also risk
+        leaking information about the host to the guest this
+        way. Instead, attach a new host device to the guest and
+        swap on that.
+        """
+        return libguestfsmod.swapon_device (self._o, device)
+
+    def swapoff_device (self, device):
+        u"""This command disables the libguestfs appliance swap
+        device or partition named "device". See
+        "g.swapon_device".
+        """
+        return libguestfsmod.swapoff_device (self._o, device)
+
+    def swapon_file (self, file):
+        u"""This command enables swap to a file. See
+        "g.swapon_device" for other notes.
+        """
+        return libguestfsmod.swapon_file (self._o, file)
+
+    def swapoff_file (self, file):
+        u"""This command disables the libguestfs appliance swap on
+        file.
+        """
+        return libguestfsmod.swapoff_file (self._o, file)
+
+    def swapon_label (self, label):
+        u"""This command enables swap to a labeled swap partition.
+        See "g.swapon_device" for other notes.
+        """
+        return libguestfsmod.swapon_label (self._o, label)
+
+    def swapoff_label (self, label):
+        u"""This command disables the libguestfs appliance swap on
+        labeled swap partition.
+        """
+        return libguestfsmod.swapoff_label (self._o, label)
+
+    def swapon_uuid (self, uuid):
+        u"""This command enables swap to a swap partition with the
+        given UUID. See "g.swapon_device" for other notes.
+        """
+        return libguestfsmod.swapon_uuid (self._o, uuid)
+
+    def swapoff_uuid (self, uuid):
+        u"""This command disables the libguestfs appliance swap
+        partition with the given UUID.
+        """
+        return libguestfsmod.swapoff_uuid (self._o, uuid)
+
+    def mkswap_file (self, path):
+        u"""Create a swap file.
+        
+        This command just writes a swap file signature to an
+        existing file. To create the file itself, use something
+        like "g.fallocate".
+        """
+        return libguestfsmod.mkswap_file (self._o, path)
+
+    def inotify_init (self, maxevents):
+        u"""This command creates a new inotify handle. The inotify
+        subsystem can be used to notify events which happen to
+        objects in the guest filesystem.
+        
+        "maxevents" is the maximum number of events which will
+        be queued up between calls to "g.inotify_read" or
+        "g.inotify_files". If this is passed as 0, then the
+        kernel (or previously set) default is used. For Linux
+        2.6.29 the default was 16384 events. Beyond this limit,
+        the kernel throws away events, but records the fact that
+        it threw them away by setting a flag "IN_Q_OVERFLOW" in
+        the returned structure list (see "g.inotify_read").
+        
+        Before any events are generated, you have to add some
+        watches to the internal watch list. See:
+        "g.inotify_add_watch", "g.inotify_rm_watch" and
+        "g.inotify_watch_all".
+        
+        Queued up events should be read periodically by calling
+        "g.inotify_read" (or "g.inotify_files" which is just a
+        helpful wrapper around "g.inotify_read"). If you don't
+        read the events out often enough then you risk the
+        internal queue overflowing.
+        
+        The handle should be closed after use by calling
+        "g.inotify_close". This also removes any watches
+        automatically.
+        
+        See also inotify(7) for an overview of the inotify
+        interface as exposed by the Linux kernel, which is
+        roughly what we expose via libguestfs. Note that there
+        is one global inotify handle per libguestfs instance.
+        """
+        return libguestfsmod.inotify_init (self._o, maxevents)
+
+    def inotify_add_watch (self, path, mask):
+        u"""Watch "path" for the events listed in "mask".
+        
+        Note that if "path" is a directory then events within
+        that directory are watched, but this does *not* happen
+        recursively (in subdirectories).
+        
+        Note for non-C or non-Linux callers: the inotify events
+        are defined by the Linux kernel ABI and are listed in
+        "/usr/include/sys/inotify.h".
+        """
+        return libguestfsmod.inotify_add_watch (self._o, path, mask)
+
+    def inotify_rm_watch (self, wd):
+        u"""Remove a previously defined inotify watch. See
+        "g.inotify_add_watch".
+        """
+        return libguestfsmod.inotify_rm_watch (self._o, wd)
+
+    def inotify_read (self):
+        u"""Return the complete queue of events that have happened
+        since the previous read call.
+        
+        If no events have happened, this returns an empty list.
+        
+        *Note*: In order to make sure that all events have been
+        read, you must call this function repeatedly until it
+        returns an empty list. The reason is that the call will
+        read events up to the maximum appliance-to-host message
+        size and leave remaining events in the queue.
+        
+        This function returns a list of inotify_events. Each
+        inotify_event is represented as a dictionary.
+        """
+        return libguestfsmod.inotify_read (self._o)
+
+    def inotify_files (self):
+        u"""This function is a helpful wrapper around
+        "g.inotify_read" which just returns a list of pathnames
+        of objects that were touched. The returned pathnames are
+        sorted and deduplicated.
+        
+        This function returns a list of strings.
+        """
+        return libguestfsmod.inotify_files (self._o)
+
+    def inotify_close (self):
+        u"""This closes the inotify handle which was previously
+        opened by inotify_init. It removes all watches, throws
+        away any pending events, and deallocates all resources.
+        """
+        return libguestfsmod.inotify_close (self._o)
+
+    def setcon (self, context):
+        u"""This sets the SELinux security context of the daemon to
+        the string "context".
+        
+        See the documentation about SELINUX in guestfs(3).
+        """
+        return libguestfsmod.setcon (self._o, context)
+
+    def getcon (self):
+        u"""This gets the SELinux security context of the daemon.
+        
+        See the documentation about SELINUX in guestfs(3), and
+        "g.setcon"
+        """
+        return libguestfsmod.getcon (self._o)
+
+    def mkfs_b (self, fstype, blocksize, device):
+        u"""This call is similar to "g.mkfs", but it allows you to
+        control the block size of the resulting filesystem.
+        Supported block sizes depend on the filesystem type, but
+        typically they are 1024, 2048 or 4096 only.
+        """
+        return libguestfsmod.mkfs_b (self._o, fstype, blocksize, device)
+
+    def mke2journal (self, blocksize, device):
+        u"""This creates an ext2 external journal on "device". It is
+        equivalent to the command:
+        
+        mke2fs -O journal_dev -b blocksize device
+        """
+        return libguestfsmod.mke2journal (self._o, blocksize, device)
+
+    def mke2journal_L (self, blocksize, label, device):
+        u"""This creates an ext2 external journal on "device" with
+        label "label".
+        """
+        return libguestfsmod.mke2journal_L (self._o, blocksize, label, device)
+
+    def mke2journal_U (self, blocksize, uuid, device):
+        u"""This creates an ext2 external journal on "device" with
+        UUID "uuid".
+        """
+        return libguestfsmod.mke2journal_U (self._o, blocksize, uuid, device)
+
+    def mke2fs_J (self, fstype, blocksize, device, journal):
+        u"""This creates an ext2/3/4 filesystem on "device" with an
+        external journal on "journal". It is equivalent to the
+        command:
+        
+        mke2fs -t fstype -b blocksize -J device=<journal> <device>
+        
+        See also "g.mke2journal".
+        """
+        return libguestfsmod.mke2fs_J (self._o, fstype, blocksize, device, journal)
+
+    def mke2fs_JL (self, fstype, blocksize, device, label):
+        u"""This creates an ext2/3/4 filesystem on "device" with an
+        external journal on the journal labeled "label".
+        
+        See also "g.mke2journal_L".
+        """
+        return libguestfsmod.mke2fs_JL (self._o, fstype, blocksize, device, label)
+
+    def mke2fs_JU (self, fstype, blocksize, device, uuid):
+        u"""This creates an ext2/3/4 filesystem on "device" with an
+        external journal on the journal with UUID "uuid".
+        
+        See also "g.mke2journal_U".
+        """
+        return libguestfsmod.mke2fs_JU (self._o, fstype, blocksize, device, uuid)
+
+    def modprobe (self, modulename):
+        u"""This loads a kernel module in the appliance.
+        
+        The kernel module must have been whitelisted when
+        libguestfs was built (see "appliance/kmod.whitelist.in"
+        in the source).
+        """
+        return libguestfsmod.modprobe (self._o, modulename)
+
+    def echo_daemon (self, words):
+        u"""This command concatenate the list of "words" passed with
+        single spaces between them and returns the resulting
+        string.
+        
+        You can use this command to test the connection through
+        to the daemon.
+        
+        See also "g.ping_daemon".
+        """
+        return libguestfsmod.echo_daemon (self._o, words)
+
+    def find0 (self, directory, files):
+        u"""This command lists out all files and directories,
+        recursively, starting at "directory", placing the
+        resulting list in the external file called "files".
+        
+        This command works the same way as "g.find" with the
+        following exceptions:
+        
+        *   The resulting list is written to an external file.
+        
+        *   Items (filenames) in the result are separated by
+        "\\0" characters. See find(1) option *-print0*.
+        
+        *   This command is not limited in the number of names
+        that it can return.
+        
+        *   The result list is not sorted.
+        """
+        return libguestfsmod.find0 (self._o, directory, files)
+
+    def case_sensitive_path (self, path):
+        u"""This can be used to resolve case insensitive paths on a
+        filesystem which is case sensitive. The use case is to
+        resolve paths which you have read from Windows
+        configuration files or the Windows Registry, to the true
+        path.
+        
+        The command handles a peculiarity of the Linux ntfs-3g
+        filesystem driver (and probably others), which is that
+        although the underlying filesystem is case-insensitive,
+        the driver exports the filesystem to Linux as
+        case-sensitive.
+        
+        One consequence of this is that special directories such
+        as "c:\\windows" may appear as "/WINDOWS" or "/windows"
+        (or other things) depending on the precise details of
+        how they were created. In Windows itself this would not
+        be a problem.
+        
+        Bug or feature? You decide:
+        <http://www.tuxera.com/community/ntfs-3g-faq/#posixfilen
+        ames1>
+        
+        This function resolves the true case of each element in
+        the path and returns the case-sensitive path.
+        
+        Thus "g.case_sensitive_path" ("/Windows/System32") might
+        return "/WINDOWS/system32" (the exact return value would
+        depend on details of how the directories were originally
+        created under Windows).
+        
+        *Note*: This function does not handle drive names,
+        backslashes etc.
+        
+        See also "g.realpath".
+        """
+        return libguestfsmod.case_sensitive_path (self._o, path)
+
+    def vfs_type (self, device):
+        u"""This command gets the block device type corresponding to
+        a mounted device called "device".
+        
+        Usually the result is the name of the Linux VFS module
+        that is used to mount this device (probably determined
+        automatically if you used the "g.mount" call).
+        """
+        return libguestfsmod.vfs_type (self._o, device)
+
+    def truncate (self, path):
+        u"""This command truncates "path" to a zero-length file. The
+        file must exist already.
+        """
+        return libguestfsmod.truncate (self._o, path)
+
+    def truncate_size (self, path, size):
+        u"""This command truncates "path" to size "size" bytes. The
+        file must exist already. If the file is smaller than
+        "size" then the file is extended to the required size
+        with null bytes.
+        """
+        return libguestfsmod.truncate_size (self._o, path, size)
+
+    def utimens (self, path, atsecs, atnsecs, mtsecs, mtnsecs):
+        u"""This command sets the timestamps of a file with
+        nanosecond precision.
+        
+        "atsecs, atnsecs" are the last access time (atime) in
+        secs and nanoseconds from the epoch.
+        
+        "mtsecs, mtnsecs" are the last modification time (mtime)
+        in secs and nanoseconds from the epoch.
+        
+        If the *nsecs field contains the special value -1 then
+        the corresponding timestamp is set to the current time.
+        (The *secs field is ignored in this case).
+        
+        If the *nsecs field contains the special value -2 then
+        the corresponding timestamp is left unchanged. (The
+        *secs field is ignored in this case).
+        """
+        return libguestfsmod.utimens (self._o, path, atsecs, atnsecs, mtsecs, mtnsecs)
+
+    def mkdir_mode (self, path, mode):
+        u"""This command creates a directory, setting the initial
+        permissions of the directory to "mode". See also
+        "g.mkdir".
+        """
+        return libguestfsmod.mkdir_mode (self._o, path, mode)
+
+    def lchown (self, owner, group, path):
+        u"""Change the file owner to "owner" and group to "group".
+        This is like "g.chown" but if "path" is a symlink then
+        the link itself is changed, not the target.
+        
+        Only numeric uid and gid are supported. If you want to
+        use names, you will need to locate and parse the
+        password file yourself (Augeas support makes this
+        relatively easy).
+        """
+        return libguestfsmod.lchown (self._o, owner, group, path)
+
+    def lstatlist (self, path, names):
+        u"""This call allows you to perform the "g.lstat" operation
+        on multiple files, where all files are in the directory
+        "path". "names" is the list of files from this
+        directory.
+        
+        On return you get a list of stat structs, with a
+        one-to-one correspondence to the "names" list. If any
+        name did not exist or could not be lstat'd, then the
+        "ino" field of that structure is set to -1.
+        
+        This call is intended for programs that want to
+        efficiently list a directory contents without making
+        many round-trips. See also "g.lxattrlist" for a
+        similarly efficient call for getting extended
+        attributes. Very long directory listings might cause the
+        protocol message size to be exceeded, causing this call
+        to fail. The caller must split up such requests into
+        smaller groups of names.
+        
+        This function returns a list of stats. Each stat is
+        represented as a dictionary.
+        """
+        return libguestfsmod.lstatlist (self._o, path, names)
+
+    def lxattrlist (self, path, names):
+        u"""This call allows you to get the extended attributes of
+        multiple files, where all files are in the directory
+        "path". "names" is the list of files from this
+        directory.
+        
+        On return you get a flat list of xattr structs which
+        must be interpreted sequentially. The first xattr struct
+        always has a zero-length "attrname". "attrval" in this
+        struct is zero-length to indicate there was an error
+        doing "lgetxattr" for this file, *or* is a C string
+        which is a decimal number (the number of following
+        attributes for this file, which could be "0"). Then
+        after the first xattr struct are the zero or more
+        attributes for the first named file. This repeats for
+        the second and subsequent files.
+        
+        This call is intended for programs that want to
+        efficiently list a directory contents without making
+        many round-trips. See also "g.lstatlist" for a similarly
+        efficient call for getting standard stats. Very long
+        directory listings might cause the protocol message size
+        to be exceeded, causing this call to fail. The caller
+        must split up such requests into smaller groups of
+        names.
+        
+        This function returns a list of xattrs. Each xattr is
+        represented as a dictionary.
+        """
+        return libguestfsmod.lxattrlist (self._o, path, names)
+
+    def readlinklist (self, path, names):
+        u"""This call allows you to do a "readlink" operation on
+        multiple files, where all files are in the directory
+        "path". "names" is the list of files from this
+        directory.
+        
+        On return you get a list of strings, with a one-to-one
+        correspondence to the "names" list. Each string is the
+        value of the symbol link.
+        
+        If the readlink(2) operation fails on any name, then the
+        corresponding result string is the empty string "".
+        However the whole operation is completed even if there
+        were readlink(2) errors, and so you can call this
+        function with names where you don't know if they are
+        symbolic links already (albeit slightly less efficient).
+        
+        This call is intended for programs that want to
+        efficiently list a directory contents without making
+        many round-trips. Very long directory listings might
+        cause the protocol message size to be exceeded, causing
+        this call to fail. The caller must split up such
+        requests into smaller groups of names.
+        
+        This function returns a list of strings.
+        """
+        return libguestfsmod.readlinklist (self._o, path, names)
+
+    def pread (self, path, count, offset):
+        u"""This command lets you read part of a file. It reads
+        "count" bytes of the file, starting at "offset", from
+        file "path".
+        
+        This may read fewer bytes than requested. For further
+        details see the pread(2) system call.
+        
+        Because of the message protocol, there is a transfer
+        limit of somewhere between 2MB and 4MB. To transfer
+        large files you should use FTP.
+        """
+        return libguestfsmod.pread (self._o, path, count, offset)
+
+    def part_init (self, device, parttype):
+        u"""This creates an empty partition table on "device" of one
+        of the partition types listed below. Usually "parttype"
+        should be either "msdos" or "gpt" (for large disks).
+        
+        Initially there are no partitions. Following this, you
+        should call "g.part_add" for each partition required.
+        
+        Possible values for "parttype" are:
+        
+        efi | gpt
+        Intel EFI / GPT partition table.
+        
+        This is recommended for >= 2 TB partitions that will
+        be accessed from Linux and Intel-based Mac OS X. It
+        also has limited backwards compatibility with the
+        "mbr" format.
+        
+        mbr | msdos
+        The standard PC "Master Boot Record" (MBR) format
+        used by MS-DOS and Windows. This partition type will
+        only work for device sizes up to 2 TB. For large
+        disks we recommend using "gpt".
+        
+        Other partition table types that may work but are not
+        supported include:
+        
+        aix AIX disk labels.
+        
+        amiga | rdb
+        Amiga "Rigid Disk Block" format.
+        
+        bsd BSD disk labels.
+        
+        dasd
+        DASD, used on IBM mainframes.
+        
+        dvh MIPS/SGI volumes.
+        
+        mac Old Mac partition format. Modern Macs use "gpt".
+        
+        pc98
+        NEC PC-98 format, common in Japan apparently.
+        
+        sun Sun disk labels.
+        """
+        return libguestfsmod.part_init (self._o, device, parttype)
+
+    def part_add (self, device, prlogex, startsect, endsect):
+        u"""This command adds a partition to "device". If there is
+        no partition table on the device, call "g.part_init"
+        first.
+        
+        The "prlogex" parameter is the type of partition.
+        Normally you should pass "p" or "primary" here, but MBR
+        partition tables also support "l" (or "logical") and "e"
+        (or "extended") partition types.
+        
+        "startsect" and "endsect" are the start and end of the
+        partition in *sectors*. "endsect" may be negative, which
+        means it counts backwards from the end of the disk (-1
+        is the last sector).
+        
+        Creating a partition which covers the whole disk is not
+        so easy. Use "g.part_disk" to do that.
+        """
+        return libguestfsmod.part_add (self._o, device, prlogex, startsect, endsect)
+
+    def part_disk (self, device, parttype):
+        u"""This command is simply a combination of "g.part_init"
+        followed by "g.part_add" to create a single primary
+        partition covering the whole disk.
+        
+        "parttype" is the partition table type, usually "mbr" or
+        "gpt", but other possible values are described in
+        "g.part_init".
+        
+        This command is dangerous. Without careful use you can
+        easily destroy all your data.
+        """
+        return libguestfsmod.part_disk (self._o, device, parttype)
+
+    def part_set_bootable (self, device, partnum, bootable):
+        u"""This sets the bootable flag on partition numbered
+        "partnum" on device "device". Note that partitions are
+        numbered from 1.
+        
+        The bootable flag is used by some PC BIOSes to determine
+        which partition to boot from. It is by no means
+        universally recognized, and in any case if your
+        operating system installed a boot sector on the device
+        itself, then that takes precedence.
+        """
+        return libguestfsmod.part_set_bootable (self._o, device, partnum, bootable)
+
+    def part_set_name (self, device, partnum, name):
+        u"""This sets the partition name on partition numbered
+        "partnum" on device "device". Note that partitions are
+        numbered from 1.
+        
+        The partition name can only be set on certain types of
+        partition table. This works on "gpt" but not on "mbr"
+        partitions.
+        """
+        return libguestfsmod.part_set_name (self._o, device, partnum, name)
+
+    def part_list (self, device):
+        u"""This command parses the partition table on "device" and
+        returns the list of partitions found.
+        
+        The fields in the returned structure are:
+        
+        part_num
+        Partition number, counting from 1.
+        
+        part_start
+        Start of the partition *in bytes*. To get sectors
+        you have to divide by the device's sector size, see
+        "g.blockdev_getss".
+        
+        part_end
+        End of the partition in bytes.
+        
+        part_size
+        Size of the partition in bytes.
+        
+        This function returns a list of partitions. Each
+        partition is represented as a dictionary.
+        """
+        return libguestfsmod.part_list (self._o, device)
+
+    def part_get_parttype (self, device):
+        u"""This command examines the partition table on "device"
+        and returns the partition table type (format) being
+        used.
+        
+        Common return values include: "msdos" (a DOS/Windows
+        style MBR partition table), "gpt" (a GPT/EFI-style
+        partition table). Other values are possible, although
+        unusual. See "g.part_init" for a full list.
+        """
+        return libguestfsmod.part_get_parttype (self._o, device)
+
+    def fill (self, c, len, path):
+        u"""This command creates a new file called "path". The
+        initial content of the file is "len" octets of "c",
+        where "c" must be a number in the range "[0..255]".
+        
+        To fill a file with zero bytes (sparsely), it is much
+        more efficient to use "g.truncate_size".
+        """
+        return libguestfsmod.fill (self._o, c, len, path)
+
+    def available (self, groups):
+        u"""This command is used to check the availability of some
+        groups of functionality in the appliance, which not all
+        builds of the libguestfs appliance will be able to
+        provide.
+        
+        The libguestfs groups, and the functions that those
+        groups correspond to, are listed in "AVAILABILITY" in
+        guestfs(3).
+        
+        The argument "groups" is a list of group names, eg:
+        "["inotify", "augeas"]" would check for the availability
+        of the Linux inotify functions and Augeas (configuration
+        file editing) functions.
+        
+        The command returns no error if *all* requested groups
+        are available.
+        
+        It fails with an error if one or more of the requested
+        groups is unavailable in the appliance.
+        
+        If an unknown group name is included in the list of
+        groups then an error is always returned.
+        
+        *Notes:*
+        
+        *   You must call "g.launch" before calling this
+        function.
+        
+        The reason is because we don't know what groups are
+        supported by the appliance/daemon until it is
+        running and can be queried.
+        
+        *   If a group of functions is available, this does not
+        necessarily mean that they will work. You still have
+        to check for errors when calling individual API
+        functions even if they are available.
+        
+        *   It is usually the job of distro packagers to build
+        complete functionality into the libguestfs
+        appliance. Upstream libguestfs, if built from source
+        with all requirements satisfied, will support
+        everything.
+        
+        *   This call was added in version 1.0.80. In previous
+        versions of libguestfs all you could do would be to
+        speculatively execute a command to find out if the
+        daemon implemented it. See also "g.version".
+        """
+        return libguestfsmod.available (self._o, groups)
+
+    def dd (self, src, dest):
+        u"""This command copies from one source device or file "src"
+        to another destination device or file "dest". Normally
+        you would use this to copy to or from a device or
+        partition, for example to duplicate a filesystem.
+        
+        If the destination is a device, it must be as large or
+        larger than the source file or device, otherwise the
+        copy will fail. This command cannot do partial copies.
+        """
+        return libguestfsmod.dd (self._o, src, dest)
 

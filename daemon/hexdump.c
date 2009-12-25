@@ -26,24 +26,17 @@
 #include "actions.h"
 
 char *
-do_hexdump (char *path)
+do_hexdump (const char *path)
 {
-  int len;
   char *buf;
   int r;
   char *out, *err;
 
-  NEED_ROOT (NULL);
-  ABS_PATH (path, NULL);
-
-  len = strlen (path) + 9;
-  buf = malloc (len);
+  buf = sysroot_path (path);
   if (!buf) {
     reply_with_perror ("malloc");
     return NULL;
   }
-
-  snprintf (buf, len, "/sysroot%s", path);
 
   r = command (&out, &err, "hexdump", "-C", buf, NULL);
   free (buf);

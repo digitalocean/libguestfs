@@ -18,8 +18,6 @@
 
 #include <config.h>
 
-#define _GNU_SOURCE // for strchrnul
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,7 +26,6 @@
 #include <getopt.h>
 #include <signal.h>
 #include <assert.h>
-#include <ctype.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
@@ -40,6 +37,9 @@
 #include <guestfs.h>
 
 #include "fish.h"
+#include "c-ctype.h"
+#include "closeout.h"
+#include "progname.h"
 
 struct mp {
   struct mp *next;
@@ -81,57 +81,72 @@ launch (guestfs_h *_g)
   if (guestfs_is_config (g)) {
     if (guestfs_launch (g) == -1)
       return -1;
-    if (guestfs_wait_ready (g) == -1)
-      return -1;
   }
   return 0;
 }
 
-static void
-usage (void)
+static void __attribute__((noreturn))
+usage (int status)
 {
-  fprintf (stderr,
-	   _("guestfish: guest filesystem shell\n"
-	     "guestfish lets you edit virtual machine filesystems\n"
-	     "Copyright (C) 2009 Red Hat Inc.\n"
-	     "Usage:\n"
-	     "  guestfish [--options] cmd [: cmd : cmd ...]\n"
-	     "  guestfish -i libvirt-domain\n"
-	     "  guestfish -i disk-image(s)\n"
-	     "or for interactive use:\n"
-	     "  guestfish\n"
-	     "or from a shell script:\n"
-	     "  guestfish <<EOF\n"
-	     "  cmd\n"
-	     "  ...\n"
-	     "  EOF\n"
-	     "Options:\n"
-	     "  -h|--cmd-help        List available commands\n"
-	     "  -h|--cmd-help cmd    Display detailed help on 'cmd'\n"
-	     "  -a|--add image       Add image\n"
-	     "  -D|--no-dest-paths   Don't tab-complete paths from guest fs\n"
-	     "  -f|--file file       Read commands from file\n"
-	     "  -i|--inspector       Run virt-inspector to get disk mountpoints\n"
-	     "  --listen             Listen for remote commands\n"
-	     "  -m|--mount dev[:mnt] Mount dev on mnt (if omitted, /)\n"
-	     "  -n|--no-sync         Don't autosync\n"
-	     "  --remote[=pid]       Send commands to remote guestfish\n"
-	     "  -r|--ro              Mount read-only\n"
-	     "  -v|--verbose         Verbose messages\n"
-	     "  -x                   Echo each command before executing it\n"
-	     "  -V|--version         Display version and exit\n"
-	     "For more information,  see the manpage guestfish(1).\n"));
+  if (status != EXIT_SUCCESS)
+    fprintf (stderr, _("Try `%s --help' for more information.\n"),
+             program_name);
+  else {
+    fprintf (stdout,
+           _("%s: guest filesystem shell\n"
+             "%s lets you edit virtual machine filesystems\n"
+             "Copyright (C) 2009 Red Hat Inc.\n"
+             "Usage:\n"
+             "  %s [--options] cmd [: cmd : cmd ...]\n"
+             "  %s -i libvirt-domain\n"
+             "  %s -i disk-image(s)\n"
+             "or for interactive use:\n"
+             "  %s\n"
+             "or from a shell script:\n"
+             "  %s <<EOF\n"
+             "  cmd\n"
+             "  ...\n"
+             "  EOF\n"
+             "Options:\n"
+             "  -h|--cmd-help        List available commands\n"
+             "  -h|--cmd-help cmd    Display detailed help on 'cmd'\n"
+             "  -a|--add image       Add image\n"
+             "  -D|--no-dest-paths   Don't tab-complete paths from guest fs\n"
+             "  -f|--file file       Read commands from file\n"
+             "  -i|--inspector       Run virt-inspector to get disk mountpoints\n"
+             "  --listen             Listen for remote commands\n"
+             "  -m|--mount dev[:mnt] Mount dev on mnt (if omitted, /)\n"
+             "  -n|--no-sync         Don't autosync\n"
+             "  --remote[=pid]       Send commands to remote %s\n"
+             "  -r|--ro              Mount read-only\n"
+             "  --selinux            Enable SELinux support\n"
+             "  -v|--verbose         Verbose messages\n"
+             "  -x                   Echo each command before executing it\n"
+             "  -V|--version         Display version and exit\n"
+             "For more information,  see the manpage %s(1).\n"),
+             program_name, program_name, program_name,
+             program_name, program_name, program_name,
+             program_name, program_name, program_name);
+  }
+  exit (status);
 }
 
 int
 main (int argc, char *argv[])
 {
+  /* Set global program name that is not polluted with libtool artifacts.  */
+  set_program_name (argv[0]);
+
+  atexit (close_stdout);
+
+  enum { HELP_OPTION = CHAR_MAX + 1 };
+
   static const char *options = "a:Df:h::im:nrv?Vx";
-  static struct option long_options[] = {
+  static const struct option long_options[] = {
     { "add", 1, 0, 'a' },
     { "cmd-help", 2, 0, 'h' },
     { "file", 1, 0, 'f' },
-    { "help", 0, 0, '?' },
+    { "help", 0, 0, HELP_OPTION },
     { "inspector", 0, 0, 'i' },
     { "listen", 0, 0, 0 },
     { "mount", 1, 0, 'm' },
@@ -139,6 +154,7 @@ main (int argc, char *argv[])
     { "no-sync", 0, 0, 'n' },
     { "remote", 2, 0, 0 },
     { "ro", 0, 0, 'r' },
+    { "selinux", 0, 0, 0 },
     { "verbose", 0, 0, 'v' },
     { "version", 0, 0, 'V' },
     { 0, 0, 0, 0 }
@@ -166,7 +182,7 @@ main (int argc, char *argv[])
   g = guestfs_create ();
   if (g == NULL) {
     fprintf (stderr, _("guestfs_create: failed to create handle\n"));
-    exit (1);
+    exit (EXIT_FAILURE);
   }
 
   guestfs_set_autosync (g, 1);
@@ -184,43 +200,57 @@ main (int argc, char *argv[])
       (argv[0][0] != '/' || strstr (argv[0], "/.libs/lt-") != NULL))
     guestfs_set_path (g, "appliance:" GUESTFS_DEFAULT_PATH);
 
+  /* CAUTION: we are careful to modify argv[0] here, only after
+   * using it just above.
+   *
+   * getopt_long uses argv[0], so give it the sanitized name.  Save a copy
+   * of the original, in case it's needed in virt-inspector mode, below.
+   */
+  char *real_argv0 = argv[0];
+  argv[0] = bad_cast (program_name);
+
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
     if (c == -1) break;
 
     switch (c) {
     case 0:			/* options which are long only */
-      if (strcmp (long_options[option_index].name, "listen") == 0)
-	remote_control_listen = 1;
-      else if (strcmp (long_options[option_index].name, "remote") == 0) {
-	if (optarg) {
-	  if (sscanf (optarg, "%d", &remote_control) != 1) {
-	    fprintf (stderr, _("guestfish: --listen=PID: PID was not a number: %s\n"), optarg);
-	    exit (1);
-	  }
-	} else {
-	  p = getenv ("GUESTFISH_PID");
-	  if (!p || sscanf (p, "%d", &remote_control) != 1) {
-	    fprintf (stderr, _("guestfish: remote: $GUESTFISH_PID must be set to the PID of the remote process\n"));
-	    exit (1);
-	  }
-	}
+      if (STREQ (long_options[option_index].name, "listen"))
+        remote_control_listen = 1;
+      else if (STREQ (long_options[option_index].name, "remote")) {
+        if (optarg) {
+          if (sscanf (optarg, "%d", &remote_control) != 1) {
+            fprintf (stderr, _("%s: --listen=PID: PID was not a number: %s\n"),
+                     program_name, optarg);
+            exit (EXIT_FAILURE);
+          }
+        } else {
+          p = getenv ("GUESTFISH_PID");
+          if (!p || sscanf (p, "%d", &remote_control) != 1) {
+            fprintf (stderr, _("%s: remote: $GUESTFISH_PID must be set"
+                               " to the PID of the remote process\n"),
+                     program_name);
+            exit (EXIT_FAILURE);
+          }
+        }
+      } else if (STREQ (long_options[option_index].name, "selinux")) {
+        guestfs_set_selinux (g, 1);
       } else {
-	fprintf (stderr, _("guestfish: unknown long option: %s (%d)\n"),
-		 long_options[option_index].name, option_index);
-	exit (1);
+        fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
+                 program_name, long_options[option_index].name, option_index);
+        exit (EXIT_FAILURE);
       }
       break;
 
     case 'a':
       if (access (optarg, R_OK) != 0) {
-	perror (optarg);
-	exit (1);
+        perror (optarg);
+        exit (EXIT_FAILURE);
       }
       drv = malloc (sizeof (struct drv));
       if (!drv) {
         perror ("malloc");
-        exit (1);
+        exit (EXIT_FAILURE);
       }
       drv->filename = optarg;
       drv->next = drvs;
@@ -233,20 +263,21 @@ main (int argc, char *argv[])
 
     case 'f':
       if (file) {
-	fprintf (stderr, _("guestfish: only one -f parameter can be given\n"));
-	exit (1);
+        fprintf (stderr, _("%s: only one -f parameter can be given\n"),
+                 program_name);
+        exit (EXIT_FAILURE);
       }
       file = optarg;
       break;
 
     case 'h':
       if (optarg)
-	display_command (optarg);
+        display_command (optarg);
       else if (argv[optind] && argv[optind][0] != '-')
-	display_command (argv[optind++]);
+        display_command (argv[optind++]);
       else
-	list_commands ();
-      exit (0);
+        list_commands ();
+      exit (EXIT_SUCCESS);
 
     case 'i':
       inspector = 1;
@@ -255,15 +286,15 @@ main (int argc, char *argv[])
     case 'm':
       mp = malloc (sizeof (struct mp));
       if (!mp) {
-	perror ("malloc");
-	exit (1);
+        perror ("malloc");
+        exit (EXIT_FAILURE);
       }
       p = strchr (optarg, ':');
       if (p) {
-	*p = '\0';
-	mp->mountpoint = p+1;
+        *p = '\0';
+        mp->mountpoint = p+1;
       } else
-	mp->mountpoint = "/";
+        mp->mountpoint = bad_cast ("/");
       mp->device = optarg;
       mp->next = mps;
       mps = mp;
@@ -283,21 +314,18 @@ main (int argc, char *argv[])
       break;
 
     case 'V':
-      printf ("guestfish %s\n", PACKAGE_VERSION);
-      exit (0);
+      printf ("%s %s\n", program_name, PACKAGE_VERSION);
+      exit (EXIT_SUCCESS);
 
     case 'x':
       echo_commands = 1;
       break;
 
-    case '?':
-      usage ();
-      exit (0);
+    case HELP_OPTION:
+      usage (EXIT_SUCCESS);
 
     default:
-      fprintf (stderr, _("guestfish: unexpected command line option 0x%x\n"),
-	       c);
-      exit (1);
+      usage (EXIT_FAILURE);
     }
   }
 
@@ -306,21 +334,28 @@ main (int argc, char *argv[])
     char cmd[1024];
     int r;
 
-    if (drvs || mps || remote_control_listen || remote_control) {
-      fprintf (stderr, _("guestfish: cannot use -i option with -a, -m, --listen or --remote\n"));
-      exit (1);
+    if (drvs || mps || remote_control_listen || remote_control ||
+        guestfs_get_selinux (g)) {
+      fprintf (stderr, _("%s: cannot use -i option with -a, -m,"
+                         " --listen, --remote or --selinux\n"),
+               program_name);
+      exit (EXIT_FAILURE);
     }
     if (optind >= argc) {
-      fprintf (stderr, _("guestfish -i requires a libvirt domain or path(s) to disk image(s)\n"));
-      exit (1);
+      fprintf (stderr,
+           _("%s: -i requires a libvirt domain or path(s) to disk image(s)\n"),
+               program_name);
+      exit (EXIT_FAILURE);
     }
 
     strcpy (cmd, "a=`virt-inspector");
     while (optind < argc) {
-      if (strlen (cmd) + strlen (argv[optind]) + strlen (argv[0]) + 60
-	  >= sizeof cmd) {
-	fprintf (stderr, _("guestfish: virt-inspector command too long for fixed-size buffer\n"));
-	exit (1);
+      if (strlen (cmd) + strlen (argv[optind]) + strlen (real_argv0) + 60
+          >= sizeof cmd) {
+        fprintf (stderr,
+                 _("%s: virt-inspector command too long for fixed-size buffer\n"),
+                 program_name);
+        exit (EXIT_FAILURE);
       }
       strcat (cmd, " '");
       strcat (cmd, argv[optind]);
@@ -333,19 +368,21 @@ main (int argc, char *argv[])
     else
       strcat (cmd, " --fish");
 
-    sprintf (&cmd[strlen(cmd)], "` && %s $a", argv[0]);
+    sprintf (&cmd[strlen(cmd)], "` && %s $a", real_argv0);
 
     if (guestfs_get_verbose (g))
       strcat (cmd, " -v");
     if (!guestfs_get_autosync (g))
       strcat (cmd, " -n");
 
-    /*printf ("%s\n", cmd);*/
+    if (verbose)
+      fprintf (stderr,
+               "%s -i: running virt-inspector command:\n%s\n", program_name, cmd);
 
     r = system (cmd);
     if (r == -1) {
       perror ("system");
-      exit (1);
+      exit (EXIT_FAILURE);
     }
     exit (WEXITSTATUS (r));
   }
@@ -355,24 +392,30 @@ main (int argc, char *argv[])
 
   /* If we've got mountpoints, we must launch the guest and mount them. */
   if (mps != NULL) {
-    if (launch (g) == -1) exit (1);
+    if (launch (g) == -1) exit (EXIT_FAILURE);
     mount_mps (mps);
   }
 
   /* Remote control? */
   if (remote_control_listen && remote_control) {
-    fprintf (stderr, _("guestfish: cannot use --listen and --remote options at the same time\n"));
-    exit (1);
+    fprintf (stderr,
+             _("%s: cannot use --listen and --remote options at the same time\n"),
+             program_name);
+    exit (EXIT_FAILURE);
   }
 
   if (remote_control_listen) {
     if (optind < argc) {
-      fprintf (stderr, _("guestfish: extra parameters on the command line with --listen flag\n"));
-      exit (1);
+      fprintf (stderr,
+               _("%s: extra parameters on the command line with --listen flag\n"),
+               program_name);
+      exit (EXIT_FAILURE);
     }
     if (file) {
-      fprintf (stderr, _("guestfish: cannot use --listen and --file options at the same time\n"));
-      exit (1);
+      fprintf (stderr,
+               _("%s: cannot use --listen and --file options at the same time\n"),
+               program_name);
+      exit (EXIT_FAILURE);
     }
     rc_listen ();
   }
@@ -382,7 +425,7 @@ main (int argc, char *argv[])
     close (0);
     if (open (file, O_RDONLY) == -1) {
       perror (file);
-      exit (1);
+      exit (EXIT_FAILURE);
     }
   }
 
@@ -398,11 +441,11 @@ main (int argc, char *argv[])
 
   cleanup_readline ();
 
-  exit (0);
+  exit (EXIT_SUCCESS);
 }
 
 void
-pod2text (const char *heading, const char *str)
+pod2text (const char *name, const char *shortdesc, const char *str)
 {
   FILE *fp;
 
@@ -411,12 +454,10 @@ pod2text (const char *heading, const char *str)
     /* pod2text failed, maybe not found, so let's just print the
      * source instead, since that's better than doing nothing.
      */
-    printf ("%s\n\n%s\n", heading, str);
+    printf ("%s - %s\n\n%s\n", name, shortdesc, str);
     return;
   }
-  fputs ("=head1 ", fp);
-  fputs (heading, fp);
-  fputs ("\n\n", fp);
+  fprintf (fp, "=head1 NAME\n\n%s - %s\n\n", name, shortdesc);
   fputs (str, fp);
   pclose (fp);
 }
@@ -434,7 +475,7 @@ mount_mps (struct mp *mp)
     else
       r = guestfs_mount_ro (g, mp->device, mp->mountpoint);
     if (r == -1)
-      exit (1);
+      exit (EXIT_FAILURE);
   }
 }
 
@@ -450,7 +491,7 @@ add_drives (struct drv *drv)
     else
       r = guestfs_add_drive_ro (g, drv->filename);
     if (r == -1)
-      exit (1);
+      exit (EXIT_FAILURE);
   }
 }
 
@@ -512,18 +553,18 @@ script (int prompt)
   char *cmd;
   char *p, *pend;
   char *argv[64];
-  int i, len;
+  int len;
   int global_exit_on_error = !prompt;
   int tilde_candidate;
 
   if (prompt)
     printf (_("\n"
-	      "Welcome to guestfish, the libguestfs filesystem interactive shell for\n"
-	      "editing virtual machine filesystems.\n"
-	      "\n"
-	      "Type: 'help' for help with commands\n"
-	      "      'quit' to quit the shell\n"
-	      "\n"));
+              "Welcome to guestfish, the libguestfs filesystem interactive shell for\n"
+              "editing virtual machine filesystems.\n"
+              "\n"
+              "Type: 'help' for help with commands\n"
+              "      'quit' to quit the shell\n"
+              "\n"));
 
   while (!quit) {
     char *pipe = NULL;
@@ -538,7 +579,7 @@ script (int prompt)
 
     /* Skip any initial whitespace before the command. */
   again:
-    while (*buf && isspace (*buf))
+    while (*buf && c_isspace (*buf))
       buf++;
 
     if (!*buf) continue;
@@ -552,11 +593,11 @@ script (int prompt)
 
       r = system (buf+1);
       if (exit_on_error) {
-	if (r == -1 ||
-	    (WIFSIGNALED (r) &&
-	     (WTERMSIG (r) == SIGINT || WTERMSIG (r) == SIGQUIT)) ||
-	    WEXITSTATUS (r) != 0)
-	  exit (1);
+        if (r == -1 ||
+            (WIFSIGNALED (r) &&
+             (WTERMSIG (r) == SIGINT || WTERMSIG (r) == SIGQUIT)) ||
+            WEXITSTATUS (r) != 0)
+          exit (EXIT_FAILURE);
       }
       continue;
     }
@@ -576,7 +617,7 @@ script (int prompt)
     if (len == 0) continue;
 
     cmd = buf;
-    i = 0;
+    unsigned int i = 0;
     if (buf[len] == '\0') {
       argv[0] = NULL;
       goto got_command;
@@ -594,93 +635,100 @@ script (int prompt)
        * specially.  Bare parameters are delimited by whitespace.
        */
       if (*p == '"') {
-	p++;
-	len = strcspn (p, "\"");
-	if (p[len] == '\0') {
-	  fprintf (stderr, _("guestfish: unterminated double quote\n"));
-	  if (exit_on_error) exit (1);
-	  goto next_command;
-	}
-	if (p[len+1] && (p[len+1] != ' ' && p[len+1] != '\t')) {
-	  fprintf (stderr, _("guestfish: command arguments not separated by whitespace\n"));
-	  if (exit_on_error) exit (1);
-	  goto next_command;
-	}
-	p[len] = '\0';
-	pend = p[len+1] ? &p[len+2] : &p[len+1];
+        p++;
+        len = strcspn (p, "\"");
+        if (p[len] == '\0') {
+          fprintf (stderr, _("%s: unterminated double quote\n"), program_name);
+          if (exit_on_error) exit (EXIT_FAILURE);
+          goto next_command;
+        }
+        if (p[len+1] && (p[len+1] != ' ' && p[len+1] != '\t')) {
+          fprintf (stderr,
+                   _("%s: command arguments not separated by whitespace\n"),
+                   program_name);
+          if (exit_on_error) exit (EXIT_FAILURE);
+          goto next_command;
+        }
+        p[len] = '\0';
+        pend = p[len+1] ? &p[len+2] : &p[len+1];
       } else if (*p == '\'') {
-	p++;
-	len = strcspn (p, "'");
-	if (p[len] == '\0') {
-	  fprintf (stderr, _("guestfish: unterminated single quote\n"));
-	  if (exit_on_error) exit (1);
-	  goto next_command;
-	}
-	if (p[len+1] && (p[len+1] != ' ' && p[len+1] != '\t')) {
-	  fprintf (stderr, _("guestfish: command arguments not separated by whitespace\n"));
-	  if (exit_on_error) exit (1);
-	  goto next_command;
-	}
-	p[len] = '\0';
-	pend = p[len+1] ? &p[len+2] : &p[len+1];
+        p++;
+        len = strcspn (p, "'");
+        if (p[len] == '\0') {
+          fprintf (stderr, _("%s: unterminated single quote\n"), program_name);
+          if (exit_on_error) exit (EXIT_FAILURE);
+          goto next_command;
+        }
+        if (p[len+1] && (p[len+1] != ' ' && p[len+1] != '\t')) {
+          fprintf (stderr,
+                   _("%s: command arguments not separated by whitespace\n"),
+                   program_name);
+          if (exit_on_error) exit (EXIT_FAILURE);
+          goto next_command;
+        }
+        p[len] = '\0';
+        pend = p[len+1] ? &p[len+2] : &p[len+1];
       } else if (*p == '|') {
-	*p = '\0';
-	pipe = p+1;
-	continue;
-	/*
+        *p = '\0';
+        pipe = p+1;
+        continue;
+        /*
       } else if (*p == '[') {
-	int c = 1;
-	p++;
-	pend = p;
-	while (*pend && c != 0) {
-	  if (*pend == '[') c++;
-	  else if (*pend == ']') c--;
-	  pend++;
-	}
-	if (c != 0) {
-	  fprintf (stderr, _("guestfish: unterminated \"[...]\" sequence\n"));
-	  if (exit_on_error) exit (1);
-	  goto next_command;
-	}
-	if (*pend && (*pend != ' ' && *pend != '\t')) {
-	  fprintf (stderr, _("guestfish: command arguments not separated by whitespace\n"));
-	  if (exit_on_error) exit (1);
-	  goto next_command;
-	}
-	*(pend-1) = '\0';
-	*/
+        int c = 1;
+        p++;
+        pend = p;
+        while (*pend && c != 0) {
+          if (*pend == '[') c++;
+          else if (*pend == ']') c--;
+          pend++;
+        }
+        if (c != 0) {
+          fprintf (stderr,
+                   _("%s: unterminated \"[...]\" sequence\n"), program_name);
+          if (exit_on_error) exit (EXIT_FAILURE);
+          goto next_command;
+        }
+        if (*pend && (*pend != ' ' && *pend != '\t')) {
+          fprintf (stderr,
+                   _("%s: command arguments not separated by whitespace\n"),
+                   program_name);
+          if (exit_on_error) exit (EXIT_FAILURE);
+          goto next_command;
+        }
+        *(pend-1) = '\0';
+        */
       } else if (*p != ' ' && *p != '\t') {
-	/* If the first character is a ~ then note that this parameter
-	 * is a candidate for ~username expansion.  NB this does not
-	 * apply to quoted parameters.
-	 */
-	tilde_candidate = *p == '~';
-	len = strcspn (p, " \t");
-	if (p[len]) {
-	  p[len] = '\0';
-	  pend = &p[len+1];
-	} else
-	  pend = &p[len];
+        /* If the first character is a ~ then note that this parameter
+         * is a candidate for ~username expansion.  NB this does not
+         * apply to quoted parameters.
+         */
+        tilde_candidate = *p == '~';
+        len = strcspn (p, " \t");
+        if (p[len]) {
+          p[len] = '\0';
+          pend = &p[len+1];
+        } else
+          pend = &p[len];
       } else {
-	fprintf (stderr, _("guestfish: internal error parsing string at '%s'\n"),
-		 p);
-	abort ();
+        fprintf (stderr, _("%s: internal error parsing string at '%s'\n"),
+                 program_name, p);
+        abort ();
       }
 
       if (!tilde_candidate)
-	argv[i] = p;
+        argv[i] = p;
       else
-	argv[i] = try_tilde_expansion (p);
+        argv[i] = try_tilde_expansion (p);
       i++;
       p = pend;
 
       if (*p)
-	p += strspn (p, " \t");
+        p += strspn (p, " \t");
     }
 
     if (i == sizeof argv / sizeof argv[0]) {
-      fprintf (stderr, _("guestfish: too many arguments\n"));
-      if (exit_on_error) exit (1);
+      fprintf (stderr, _("%s: too many arguments\n"), program_name);
+      if (exit_on_error) exit (EXIT_FAILURE);
       goto next_command;
     }
 
@@ -688,7 +736,7 @@ script (int prompt)
 
   got_command:
     if (issue_command (cmd, argv, pipe) == -1) {
-      if (exit_on_error) exit (1);
+      if (exit_on_error) exit (EXIT_FAILURE);
     }
 
   next_command:;
@@ -707,21 +755,21 @@ cmdline (char *argv[], int optind, int argc)
   if (optind >= argc) return;
 
   cmd = argv[optind++];
-  if (strcmp (cmd, ":") == 0) {
-    fprintf (stderr, _("guestfish: empty command on command line\n"));
-    exit (1);
+  if (STREQ (cmd, ":")) {
+    fprintf (stderr, _("%s: empty command on command line\n"), program_name);
+    exit (EXIT_FAILURE);
   }
   params = &argv[optind];
 
   /* Search for end of command list or ":" ... */
-  while (optind < argc && strcmp (argv[optind], ":") != 0)
+  while (optind < argc && STRNEQ (argv[optind], ":"))
     optind++;
 
   if (optind == argc) {
-    if (issue_command (cmd, params, NULL) == -1) exit (1);
+    if (issue_command (cmd, params, NULL) == -1) exit (EXIT_FAILURE);
   } else {
     argv[optind] = NULL;
-    if (issue_command (cmd, params, NULL) == -1) exit (1);
+    if (issue_command (cmd, params, NULL) == -1) exit (EXIT_FAILURE);
     cmdline (argv, optind+1, argc);
   }
 }
@@ -745,8 +793,14 @@ issue_command (const char *cmd, char *argv[], const char *pipecmd)
   if (pipecmd) {
     int fd[2];
 
-    fflush (stdout);
-    pipe (fd);
+    if (fflush (stdout) == EOF) {
+      perror ("failed to flush standard output");
+      return -1;
+    }
+    if (pipe (fd) < 0) {
+      perror ("pipe failed");
+      return -1;
+    }
     pid = fork ();
     if (pid == -1) {
       perror ("fork");
@@ -755,19 +809,29 @@ issue_command (const char *cmd, char *argv[], const char *pipecmd)
 
     if (pid == 0) {		/* Child process. */
       close (fd[1]);
-      dup2 (fd[0], 0);
+      if (dup2 (fd[0], 0) < 0) {
+        perror ("dup2 of stdin failed");
+        _exit (1);
+      }
 
       r = system (pipecmd);
       if (r == -1) {
-	perror (pipecmd);
-	_exit (1);
+        perror (pipecmd);
+        _exit (1);
       }
       _exit (WEXITSTATUS (r));
     }
 
-    stdout_saved_fd = dup (1);
+    if ((stdout_saved_fd = dup (1)) < 0) {
+      perror ("failed to dup stdout");
+      return -1;
+    }
     close (fd[0]);
-    dup2 (fd[1], 1);
+    if (dup2 (fd[1], 1) < 0) {
+      perror ("failed to dup stdout");
+      close (stdout_saved_fd);
+      return -1;
+    }
     close (fd[1]);
   }
 
@@ -779,38 +843,40 @@ issue_command (const char *cmd, char *argv[], const char *pipecmd)
     r = rc_remote (remote_control, cmd, argc, argv, exit_on_error);
 
   /* Otherwise execute it locally. */
-  else if (strcasecmp (cmd, "help") == 0) {
+  else if (STRCASEEQ (cmd, "help")) {
     if (argc == 0)
       list_commands ();
     else
       display_command (argv[0]);
     r = 0;
   }
-  else if (strcasecmp (cmd, "quit") == 0 ||
-	   strcasecmp (cmd, "exit") == 0 ||
-	   strcasecmp (cmd, "q") == 0) {
+  else if (STRCASEEQ (cmd, "quit") ||
+           STRCASEEQ (cmd, "exit") ||
+           STRCASEEQ (cmd, "q")) {
     quit = 1;
     r = 0;
   }
-  else if (strcasecmp (cmd, "alloc") == 0 ||
-	   strcasecmp (cmd, "allocate") == 0)
+  else if (STRCASEEQ (cmd, "alloc") ||
+           STRCASEEQ (cmd, "allocate"))
     r = do_alloc (cmd, argc, argv);
-  else if (strcasecmp (cmd, "echo") == 0)
+  else if (STRCASEEQ (cmd, "echo"))
     r = do_echo (cmd, argc, argv);
-  else if (strcasecmp (cmd, "edit") == 0 ||
-	   strcasecmp (cmd, "vi") == 0 ||
-	   strcasecmp (cmd, "emacs") == 0)
+  else if (STRCASEEQ (cmd, "edit") ||
+           STRCASEEQ (cmd, "vi") ||
+           STRCASEEQ (cmd, "emacs"))
     r = do_edit (cmd, argc, argv);
-  else if (strcasecmp (cmd, "lcd") == 0)
+  else if (STRCASEEQ (cmd, "lcd"))
     r = do_lcd (cmd, argc, argv);
-  else if (strcasecmp (cmd, "glob") == 0)
+  else if (STRCASEEQ (cmd, "glob"))
     r = do_glob (cmd, argc, argv);
-  else if (strcasecmp (cmd, "more") == 0 ||
-	   strcasecmp (cmd, "less") == 0)
+  else if (STRCASEEQ (cmd, "more") ||
+           STRCASEEQ (cmd, "less"))
     r = do_more (cmd, argc, argv);
-  else if (strcasecmp (cmd, "reopen") == 0)
+  else if (STRCASEEQ (cmd, "reopen"))
     r = do_reopen (cmd, argc, argv);
-  else if (strcasecmp (cmd, "time") == 0)
+  else if (STRCASEEQ (cmd, "sparse"))
+    r = do_sparse (cmd, argc, argv);
+  else if (STRCASEEQ (cmd, "time"))
     r = do_time (cmd, argc, argv);
   else
     r = run_action (cmd, argc, argv);
@@ -818,13 +884,22 @@ issue_command (const char *cmd, char *argv[], const char *pipecmd)
   /* Always flush stdout after every command, so that messages, results
    * etc appear immediately.
    */
-  fflush (stdout);
+  if (fflush (stdout) == EOF) {
+    perror ("failed to flush standard output");
+    return -1;
+  }
 
   if (pipecmd) {
     close (1);
-    dup2 (stdout_saved_fd, 1);
+    if (dup2 (stdout_saved_fd, 1) < 0) {
+      perror ("failed to dup2 standard output");
+      r = -1;
+    }
     close (stdout_saved_fd);
-    waitpid (pid, NULL, 0);
+    if (waitpid (pid, NULL, 0) < 0) {
+      perror ("waiting for command to complete");
+      r = -1;
+    }
   }
 
   return r;
@@ -835,26 +910,28 @@ list_builtin_commands (void)
 {
   /* help and quit should appear at the top */
   printf ("%-20s %s\n",
-	  "help", _("display a list of commands or help on a command"));
+          "help", _("display a list of commands or help on a command"));
   printf ("%-20s %s\n",
-	  "quit", _("quit guestfish"));
+          "quit", _("quit guestfish"));
 
   printf ("%-20s %s\n",
-	  "alloc", _("allocate an image"));
+          "alloc", _("allocate an image"));
   printf ("%-20s %s\n",
-	  "echo", _("display a line of text"));
+          "echo", _("display a line of text"));
   printf ("%-20s %s\n",
-	  "edit", _("edit a file in the image"));
+          "edit", _("edit a file in the image"));
   printf ("%-20s %s\n",
-	  "lcd", _("local change directory"));
+          "lcd", _("local change directory"));
   printf ("%-20s %s\n",
-	  "glob", _("expand wildcards in command"));
+          "glob", _("expand wildcards in command"));
   printf ("%-20s %s\n",
-	  "more", _("view a file in the pager"));
+          "more", _("view a file in the pager"));
   printf ("%-20s %s\n",
-	  "reopen", _("close and reopen libguestfs handle"));
+          "reopen", _("close and reopen libguestfs handle"));
   printf ("%-20s %s\n",
-	  "time", _("measure time taken to run command"));
+          "sparse", _("allocate a sparse image file"));
+  printf ("%-20s %s\n",
+          "time", _("measure time taken to run command"));
 
   /* actions are printed after this (see list_commands) */
 }
@@ -864,98 +941,128 @@ display_builtin_command (const char *cmd)
 {
   /* help for actions is auto-generated, see display_command */
 
-  if (strcasecmp (cmd, "alloc") == 0 ||
-      strcasecmp (cmd, "allocate") == 0)
+  if (STRCASEEQ (cmd, "alloc") ||
+      STRCASEEQ (cmd, "allocate"))
     printf (_("alloc - allocate an image\n"
-	      "     alloc <filename> <size>\n"
-	      "\n"
-	      "    This creates an empty (zeroed) file of the given size,\n"
-	      "    and then adds so it can be further examined.\n"
-	      "\n"
-	      "    For more advanced image creation, see qemu-img utility.\n"
-	      "\n"
-	      "    Size can be specified (where <nn> means a number):\n"
-	      "    <nn>             number of kilobytes\n"
-	      "      eg: 1440       standard 3.5\" floppy\n"
-	      "    <nn>K or <nn>KB  number of kilobytes\n"
-	      "    <nn>M or <nn>MB  number of megabytes\n"
-	      "    <nn>G or <nn>GB  number of gigabytes\n"
-	      "    <nn>sects        number of 512 byte sectors\n"));
-  else if (strcasecmp (cmd, "echo") == 0)
+              "     alloc <filename> <size>\n"
+              "\n"
+              "    This creates an empty (zeroed) file of the given size,\n"
+              "    and then adds so it can be further examined.\n"
+              "\n"
+              "    For more advanced image creation, see qemu-img utility.\n"
+              "\n"
+              "    Size can be specified (where <nn> means a number):\n"
+              "    <nn>             number of kilobytes\n"
+              "      eg: 1440       standard 3.5\" floppy\n"
+              "    <nn>K or <nn>KB  number of kilobytes\n"
+              "    <nn>M or <nn>MB  number of megabytes\n"
+              "    <nn>G or <nn>GB  number of gigabytes\n"
+              "    <nn>T or <nn>TB  number of terabytes\n"
+              "    <nn>P or <nn>PB  number of petabytes\n"
+              "    <nn>E or <nn>EB  number of exabytes\n"
+              "    <nn>sects        number of 512 byte sectors\n"));
+  else if (STRCASEEQ (cmd, "echo"))
     printf (_("echo - display a line of text\n"
-	      "     echo [<params> ...]\n"
-	      "\n"
-	      "    This echos the parameters to the terminal.\n"));
-  else if (strcasecmp (cmd, "edit") == 0 ||
-	   strcasecmp (cmd, "vi") == 0 ||
-	   strcasecmp (cmd, "emacs") == 0)
+              "     echo [<params> ...]\n"
+              "\n"
+              "    This echos the parameters to the terminal.\n"));
+  else if (STRCASEEQ (cmd, "edit") ||
+           STRCASEEQ (cmd, "vi") ||
+           STRCASEEQ (cmd, "emacs"))
     printf (_("edit - edit a file in the image\n"
-	      "     edit <filename>\n"
-	      "\n"
-	      "    This is used to edit a file.\n"
-	      "\n"
-	      "    It is the equivalent of (and is implemented by)\n"
-	      "    running \"cat\", editing locally, and then \"write-file\".\n"
-	      "\n"
-	      "    Normally it uses $EDITOR, but if you use the aliases\n"
-	      "    \"vi\" or \"emacs\" you will get those editors.\n"
-	      "\n"
-	      "    NOTE: This will not work reliably for large files\n"
-	      "    (> 2 MB) or binary files containing \\0 bytes.\n"));
-  else if (strcasecmp (cmd, "lcd") == 0)
+              "     edit <filename>\n"
+              "\n"
+              "    This is used to edit a file.\n"
+              "\n"
+              "    It is the equivalent of (and is implemented by)\n"
+              "    running \"cat\", editing locally, and then \"write-file\".\n"
+              "\n"
+              "    Normally it uses $EDITOR, but if you use the aliases\n"
+              "    \"vi\" or \"emacs\" you will get those editors.\n"
+              "\n"
+              "    NOTE: This will not work reliably for large files\n"
+              "    (> 2 MB) or binary files containing \\0 bytes.\n"));
+  else if (STRCASEEQ (cmd, "lcd"))
     printf (_("lcd - local change directory\n"
-	      "    lcd <directory>\n"
-	      "\n"
-	      "    Change guestfish's current directory. This command is\n"
-	      "    useful if you want to download files to a particular\n"
-	      "    place.\n"));
-  else if (strcasecmp (cmd, "glob") == 0)
+              "    lcd <directory>\n"
+              "\n"
+              "    Change guestfish's current directory. This command is\n"
+              "    useful if you want to download files to a particular\n"
+              "    place.\n"));
+  else if (STRCASEEQ (cmd, "glob"))
     printf (_("glob - expand wildcards in command\n"
-	      "    glob <command> [<args> ...]\n"
-	      "\n"
-	      "    Glob runs <command> with wildcards expanded in any\n"
-	      "    command args.  Note that the command is run repeatedly\n"
-	      "    once for each expanded argument.\n"));
-  else if (strcasecmp (cmd, "help") == 0)
+              "    glob <command> [<args> ...]\n"
+              "\n"
+              "    Glob runs <command> with wildcards expanded in any\n"
+              "    command args.  Note that the command is run repeatedly\n"
+              "    once for each expanded argument.\n"));
+  else if (STRCASEEQ (cmd, "help"))
     printf (_("help - display a list of commands or help on a command\n"
-	      "     help cmd\n"
-	      "     help\n"));
-  else if (strcasecmp (cmd, "more") == 0 ||
-	   strcasecmp (cmd, "less") == 0)
+              "     help cmd\n"
+              "     help\n"));
+  else if (STRCASEEQ (cmd, "more") ||
+           STRCASEEQ (cmd, "less"))
     printf (_("more - view a file in the pager\n"
-	      "     more <filename>\n"
-	      "\n"
-	      "    This is used to view a file in the pager.\n"
-	      "\n"
-	      "    It is the equivalent of (and is implemented by)\n"
-	      "    running \"cat\" and using the pager.\n"
-	      "\n"
-	      "    Normally it uses $PAGER, but if you use the alias\n"
-	      "    \"less\" then it always uses \"less\".\n"
-	      "\n"
-	      "    NOTE: This will not work reliably for large files\n"
-	      "    (> 2 MB) or binary files containing \\0 bytes.\n"));
-  else if (strcasecmp (cmd, "quit") == 0 ||
-	   strcasecmp (cmd, "exit") == 0 ||
-	   strcasecmp (cmd, "q") == 0)
+              "     more <filename>\n"
+              "\n"
+              "    This is used to view a file in the pager.\n"
+              "\n"
+              "    It is the equivalent of (and is implemented by)\n"
+              "    running \"cat\" and using the pager.\n"
+              "\n"
+              "    Normally it uses $PAGER, but if you use the alias\n"
+              "    \"less\" then it always uses \"less\".\n"
+              "\n"
+              "    NOTE: This will not work reliably for large files\n"
+              "    (> 2 MB) or binary files containing \\0 bytes.\n"));
+  else if (STRCASEEQ (cmd, "quit") ||
+           STRCASEEQ (cmd, "exit") ||
+           STRCASEEQ (cmd, "q"))
     printf (_("quit - quit guestfish\n"
-	      "     quit\n"));
-  else if (strcasecmp (cmd, "reopen") == 0)
+              "     quit\n"));
+  else if (STRCASEEQ (cmd, "reopen"))
     printf (_("reopen - close and reopen the libguestfs handle\n"
-	      "     reopen\n"
-	      "\n"
-	      "Close and reopen the libguestfs handle.  It is not necessary to use\n"
-	      "this normally, because the handle is closed properly when guestfish\n"
-	      "exits.  However this is occasionally useful for testing.\n"));
-  else if (strcasecmp (cmd, "time") == 0)
+              "     reopen\n"
+              "\n"
+              "Close and reopen the libguestfs handle.  It is not necessary to use\n"
+              "this normally, because the handle is closed properly when guestfish\n"
+              "exits.  However this is occasionally useful for testing.\n"));
+  else if (STRCASEEQ (cmd, "sparse"))
+    printf (_("sparse - allocate a sparse image file\n"
+              "     sparse <filename> <size>\n"
+              "\n"
+              "    This creates an empty sparse file of the given size,\n"
+              "    and then adds so it can be further examined.\n"
+              "\n"
+              "    In all respects it works the same as the 'alloc'\n"
+              "    command, except that the image file is allocated\n"
+              "    sparsely, which means that disk blocks are not assigned\n"
+              "    to the file until they are needed.  Sparse disk files\n"
+              "    only use space when written to, but they are slower\n"
+              "    and there is a danger you could run out of real disk\n"
+              "    space during a write operation.\n"
+              "\n"
+              "    For more advanced image creation, see qemu-img utility.\n"
+              "\n"
+              "    Size can be specified (where <nn> means a number):\n"
+              "    <nn>             number of kilobytes\n"
+              "      eg: 1440       standard 3.5\" floppy\n"
+              "    <nn>K or <nn>KB  number of kilobytes\n"
+              "    <nn>M or <nn>MB  number of megabytes\n"
+              "    <nn>G or <nn>GB  number of gigabytes\n"
+              "    <nn>T or <nn>TB  number of terabytes\n"
+              "    <nn>P or <nn>PB  number of petabytes\n"
+              "    <nn>E or <nn>EB  number of exabytes\n"
+              "    <nn>sects        number of 512 byte sectors\n"));
+  else if (STRCASEEQ (cmd, "time"))
     printf (_("time - measure time taken to run command\n"
-	      "    time <command> [<args> ...]\n"
-	      "\n"
-	      "    This runs <command> as usual, and prints the elapsed\n"
-	      "    time afterwards.\n"));
+              "    time <command> [<args> ...]\n"
+              "\n"
+              "    This runs <command> as usual, and prints the elapsed\n"
+              "    time afterwards.\n"));
   else
     fprintf (stderr, _("%s: command not known, use -h to list all commands\n"),
-	     cmd);
+             cmd);
 }
 
 void
@@ -969,7 +1076,7 @@ free_strings (char **argv)
 }
 
 int
-count_strings (char * const * const argv)
+count_strings (char *const *argv)
 {
   int c;
 
@@ -979,7 +1086,7 @@ count_strings (char * const * const argv)
 }
 
 void
-print_strings (char * const * const argv)
+print_strings (char *const *argv)
 {
   int argc;
 
@@ -988,7 +1095,7 @@ print_strings (char * const * const argv)
 }
 
 void
-print_table (char * const * const argv)
+print_table (char *const *argv)
 {
   int i;
 
@@ -1000,37 +1107,155 @@ int
 is_true (const char *str)
 {
   return
-    strcasecmp (str, "0") != 0 &&
-    strcasecmp (str, "f") != 0 &&
-    strcasecmp (str, "false") != 0 &&
-    strcasecmp (str, "n") != 0 &&
-    strcasecmp (str, "no") != 0;
+    STRCASENEQ (str, "0") &&
+    STRCASENEQ (str, "f") &&
+    STRCASENEQ (str, "false") &&
+    STRCASENEQ (str, "n") &&
+    STRCASENEQ (str, "no");
 }
 
-/* XXX We could improve list parsing. */
+/* Free strings from a non-NULL terminated char** */
+static void
+free_n_strings (char **str, size_t len)
+{
+  size_t i;
+
+  for (i = 0; i < len; i++) {
+    free (str[i]);
+  }
+  free (str);
+}
+
 char **
 parse_string_list (const char *str)
 {
-  char **argv;
-  const char *p, *pend;
-  int argc, i;
+  char **argv = NULL;
+  size_t argv_len = 0;
 
-  argc = 1;
-  for (i = 0; str[i]; ++i)
-    if (str[i] == ' ') argc++;
+  /* Current position pointer */
+  const char *p = str;
 
-  argv = malloc (sizeof (char *) * (argc+1));
-  if (argv == NULL) { perror ("malloc"); exit (1); }
-
-  p = str;
-  i = 0;
+  /* Token might be simple:
+   *  Token
+   * or be quoted:
+   *  'This is a single token'
+   * or contain embedded single-quoted sections:
+   *  This' is a sing'l'e to'ken
+   *
+   * The latter may seem over-complicated, but it's what a normal shell does.
+   * Not doing it risks surprising somebody.
+   *
+   * This outer loop is over complete tokens.
+   */
   while (*p) {
-    pend = strchrnul (p, ' ');
-    argv[i] = strndup (p, pend-p);
-    i++;
-    p = *pend == ' ' ? pend+1 : pend;
+    char *tok = NULL;
+    size_t tok_len = 0;
+
+    /* Skip leading whitespace */
+    p += strspn (p, " \t");
+
+    char in_quote = 0;
+
+    /* This loop is over token 'fragments'. A token can be in multiple bits if
+     * it contains single quotes. We also treat both sides of an escaped quote
+     * as separate fragments because we can't just copy it: we have to remove
+     * the \.
+     */
+    while (*p && (!c_isblank (*p) || in_quote)) {
+      const char *end = p;
+
+      /* Check if the fragment starts with a quote */
+      if ('\'' == *p) {
+        /* Toggle in_quote */
+        in_quote = !in_quote;
+
+        /* Skip the quote */
+        p++; end++;
+      }
+
+      /* If we're in a quote, look for an end quote */
+      if (in_quote) {
+        end += strcspn (end, "'");
+      }
+
+      /* Otherwise, look for whitespace or a quote */
+      else {
+        end += strcspn (end, " \t'");
+      }
+
+      /* Grow the token to accommodate the fragment */
+      size_t tok_end = tok_len;
+      tok_len += end - p;
+      char *tok_new = realloc (tok, tok_len + 1);
+      if (NULL == tok_new) {
+        perror ("realloc");
+        free_n_strings (argv, argv_len);
+        free (tok);
+        exit (EXIT_FAILURE);
+      }
+      tok = tok_new;
+
+      /* Check if we stopped on an escaped quote */
+      if ('\'' == *end && end != p && *(end-1) == '\\') {
+        /* Add everything before \' to the token */
+        memcpy (&tok[tok_end], p, end - p - 1);
+
+        /* Add the quote */
+        tok[tok_len-1] = '\'';
+
+        /* Already processed the quote */
+        p = end + 1;
+      }
+
+      else {
+        /* Add the whole fragment */
+        memcpy (&tok[tok_end], p, end - p);
+
+        p = end;
+      }
+    }
+
+    /* We've reached the end of a token. We shouldn't still be in quotes. */
+    if (in_quote) {
+      fprintf (stderr, _("Runaway quote in string \"%s\"\n"), str);
+
+      free_n_strings (argv, argv_len);
+
+      return NULL;
+    }
+
+    /* Add this token if there is one. There might not be if there was
+     * whitespace at the end of the input string */
+    if (tok) {
+      /* Add the NULL terminator */
+      tok[tok_len] = '\0';
+
+      /* Add the argument to the argument list */
+      argv_len++;
+      char **argv_new = realloc (argv, sizeof (*argv) * argv_len);
+      if (NULL == argv_new) {
+        perror ("realloc");
+        free_n_strings (argv, argv_len-1);
+        free (tok);
+        exit (EXIT_FAILURE);
+      }
+      argv = argv_new;
+
+      argv[argv_len-1] = tok;
+    }
   }
-  argv[i] = NULL;
+
+  /* NULL terminate the argument list */
+  argv_len++;
+  char **argv_new = realloc (argv, sizeof (*argv) * argv_len);
+  if (NULL == argv_new) {
+    perror ("realloc");
+    free_n_strings (argv, argv_len-1);
+    exit (EXIT_FAILURE);
+  }
+  argv = argv_new;
+
+  argv[argv_len-1] = NULL;
 
   return argv;
 }
@@ -1087,9 +1312,10 @@ add_history_line (const char *line)
 }
 
 int
-xwrite (int fd, const void *buf, size_t len)
+xwrite (int fd, const void *v_buf, size_t len)
 {
   int r;
+  const char *buf = v_buf;
 
   while (len > 0) {
     r = write (fd, buf, len);
@@ -1102,4 +1328,52 @@ xwrite (int fd, const void *buf, size_t len)
   }
 
   return 0;
+}
+
+/* Resolve the special "win:..." form for Windows-specific paths.
+ * This always returns a newly allocated string which is freed by the
+ * caller function in "cmds.c".
+ */
+char *
+resolve_win_path (const char *path)
+{
+  char *ret;
+  size_t i;
+
+  if (STRCASENEQLEN (path, "win:", 4)) {
+    ret = strdup (path);
+    if (ret == NULL)
+      perror ("strdup");
+    return ret;
+  }
+
+  path += 4;
+
+  /* Drop drive letter, if it's "C:". */
+  if (STRCASEEQLEN (path, "c:", 2))
+    path += 2;
+
+  if (!*path) {
+    ret = strdup ("/");
+    if (ret == NULL)
+      perror ("strdup");
+    return ret;
+  }
+
+  ret = strdup (path);
+  if (ret == NULL) {
+    perror ("strdup");
+    return NULL;
+  }
+
+  /* Blindly convert any backslashes into forward slashes.  Is this good? */
+  for (i = 0; i < strlen (ret); ++i)
+    if (ret[i] == '\\')
+      ret[i] = '/';
+
+  char *t = guestfs_case_sensitive_path (g, ret);
+  free (ret);
+  ret = t;
+
+  return ret;
 }

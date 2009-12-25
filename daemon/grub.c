@@ -26,23 +26,16 @@
 #include "actions.h"
 
 int
-do_grub_install (char *root, char *device)
+do_grub_install (const char *root, const char *device)
 {
-  int r, len;
+  int r;
   char *err;
   char *buf;
 
-  NEED_ROOT (-1);
-  ABS_PATH (root, -1);
-  IS_DEVICE (device, -1);
-
-  len = strlen (root) + 64;
-  buf = malloc (len);
-  if (!buf) {
-    reply_with_perror ("malloc");
+  if (asprintf_nowarn (&buf, "--root-directory=%R", root) == -1) {
+    reply_with_perror ("asprintf");
     return -1;
   }
-  snprintf (buf, len, "--root-directory=/sysroot%s", root);
 
   r = command (NULL, &err, "/sbin/grub-install", buf, device, NULL);
   free (buf);

@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 #include <unistd.h>
 
 #include "../src/guestfs_protocol.h"
@@ -28,31 +29,23 @@
 #include "actions.h"
 
 char **
-do_initrd_list (char *path)
+do_initrd_list (const char *path)
 {
   FILE *fp;
-  int len;
   char *cmd;
   char filename[PATH_MAX];
   char **filenames = NULL;
   int size = 0, alloc = 0;
-
-  NEED_ROOT (NULL);
-  ABS_PATH (path, NULL);
+  size_t len;
 
   /* "zcat /sysroot/<path> | cpio --quiet -it", but path must be quoted. */
-  len = 64 + 2 * strlen (path);
-  cmd = malloc (len);
-  if (!cmd) {
-    reply_with_perror ("malloc");
+  if (asprintf_nowarn (&cmd, "zcat %R | cpio --quiet -it", path) == -1) {
+    reply_with_perror ("asprintf");
     return NULL;
   }
 
-  strcpy (cmd, "zcat /sysroot");
-  shell_quote (cmd+13, len-13, path);
-  strcat (cmd, " | cpio --quiet -it");
-
-  fprintf (stderr, "%s\n", cmd);
+  if (verbose)
+    fprintf (stderr, "%s\n", cmd);
 
   fp = popen (cmd, "r");
   if (fp == NULL) {

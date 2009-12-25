@@ -30,12 +30,9 @@
 #include "actions.h"
 
 int
-do_rmdir (char *path)
+do_rmdir (const char *path)
 {
   int r;
-
-  NEED_ROOT (-1);
-  ABS_PATH (path, -1);
 
   CHROOT_IN;
   r = rmdir (path);
@@ -54,27 +51,21 @@ do_rmdir (char *path)
  * do stupid stuff, who are we to try to stop them?
  */
 int
-do_rm_rf (char *path)
+do_rm_rf (const char *path)
 {
-  int r, len;
+  int r;
   char *buf, *err;
 
-  NEED_ROOT (-1);
-  ABS_PATH (path, -1);
-
-  if (strcmp (path, "/") == 0) {
+  if (STREQ (path, "/")) {
     reply_with_error ("rm -rf: cannot remove root directory");
     return -1;
   }
 
-  len = strlen (path) + 9;
-  buf = malloc (len);
+  buf = sysroot_path (path);
   if (buf == NULL) {
     reply_with_perror ("malloc");
     return -1;
   }
-
-  snprintf (buf, len, "/sysroot%s", path);
 
   r = command (NULL, &err, "rm", "-rf", buf, NULL);
   free (buf);
@@ -92,12 +83,9 @@ do_rm_rf (char *path)
 }
 
 int
-do_mkdir (char *path)
+do_mkdir (const char *path)
 {
   int r;
-
-  NEED_ROOT (-1);
-  ABS_PATH (path, -1);
 
   CHROOT_IN;
   r = mkdir (path, 0777);
@@ -111,6 +99,28 @@ do_mkdir (char *path)
   return 0;
 }
 
+int
+do_mkdir_mode (const char *path, int mode)
+{
+  int r;
+
+  CHROOT_IN;
+  r = mkdir (path, mode);
+  CHROOT_OUT;
+
+  if (r == -1) {
+    reply_with_perror ("mkdir_mode: %s", path);
+    return -1;
+  }
+
+  return 0;
+}
+
+/* Returns:
+ * 0  if everything was OK,
+ * -1 for a general error (sets errno),
+ * -2 if an existing path element was not a directory.
+ */
 static int
 recursive_mkdir (const char *path)
 {
@@ -125,10 +135,7 @@ recursive_mkdir (const char *path)
     if (errno == EEXIST) {	/* Something exists here, might not be a dir. */
       r = lstat (path, &buf);
       if (r == -1) return -1;
-      if (!S_ISDIR (buf.st_mode)) {
-	errno = ENOTDIR;
-	return -1;
-      }
+      if (!S_ISDIR (buf.st_mode)) return -2;
       return 0;			/* OK - directory exists here already. */
     }
 
@@ -148,7 +155,7 @@ recursive_mkdir (const char *path)
       r = recursive_mkdir (ppath);
       free (ppath);
 
-      if (r == -1) return -1;
+      if (r != 0) return r;
 
       goto again;
     } else	  /* Failed for some other reason, so return error. */
@@ -158,12 +165,9 @@ recursive_mkdir (const char *path)
 }
 
 int
-do_mkdir_p (char *path)
+do_mkdir_p (const char *path)
 {
   int r;
-
-  NEED_ROOT (-1);
-  ABS_PATH (path, -1);
 
   CHROOT_IN;
   r = recursive_mkdir (path);
@@ -173,18 +177,19 @@ do_mkdir_p (char *path)
     reply_with_perror ("mkdir -p: %s", path);
     return -1;
   }
+  if (r == -2) {
+    reply_with_error ("mkdir -p: %s: a path element was not a directory", path);
+    return -1;
+  }
 
   return 0;
 }
 
 int
-do_is_dir (char *path)
+do_is_dir (const char *path)
 {
   int r;
   struct stat buf;
-
-  NEED_ROOT (-1);
-  ABS_PATH (path, -1);
 
   CHROOT_IN;
   r = lstat (path, &buf);
@@ -203,31 +208,22 @@ do_is_dir (char *path)
 }
 
 char *
-do_mkdtemp (char *template)
+do_mkdtemp (const char *template)
 {
-  char *r;
-
-  NEED_ROOT (NULL);
-  ABS_PATH (template, NULL);
+  char *writable = strdup (template);
+  if (writable == NULL) {
+    reply_with_perror ("strdup");
+    return NULL;
+  }
 
   CHROOT_IN;
-  r = mkdtemp (template);
+  char *r = mkdtemp (writable);
   CHROOT_OUT;
 
   if (r == NULL) {
     reply_with_perror ("mkdtemp: %s", template);
-    return NULL;
+    free (writable);
   }
 
-  /* The caller will free template AND try to free the return value,
-   * so we must make a copy here.
-   */
-  if (r == template) {
-    r = strdup (template);
-    if (r == NULL) {
-      reply_with_perror ("strdup");
-      return NULL;
-    }
-  }
   return r;
 }

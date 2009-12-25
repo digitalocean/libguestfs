@@ -9,8 +9,8 @@ mount -t sysfs /sys /sys
 
 if [ -x /etc/init.d/udev ]; then
   /etc/init.d/udev start
-elif [ -x /sbin/start_udev ]; then
-  /sbin/start_udev
+elif [ -x /sbin/start_udev ] && /sbin/start_udev; then
+  :
 else
   echo No udev, creating /dev manually
   mount -t tmpfs none /dev
@@ -33,13 +33,15 @@ else
   modprobe virtio_net
 fi
 
-modprobe dm_mod ||:
-mount
-ls -l /dev
+if grep -sq selinux=1 /proc/cmdline; then
+  mount -t selinuxfs none /selinux
+fi
 
-/sbin/ifconfig lo 127.0.0.1
-/sbin/ifconfig eth0 10.0.2.10
-/sbin/route add default gw 10.0.2.2
+modprobe dm_mod ||:
+
+ifconfig lo 127.0.0.1
+ifconfig eth0 10.0.2.10
+route add default gw 10.0.2.2
 
 lvm vgscan --ignorelockingfailure
 lvm vgchange -ay --ignorelockingfailure
@@ -47,7 +49,33 @@ lvm vgchange -ay --ignorelockingfailure
 # Improve virtio-blk performance (RHBZ#509383).
 for f in /sys/block/vd*/queue/rotational; do echo 1 > $f; done
 
-if grep -sq guestfs_rescue=1 /proc/cmdline; then
-  bash -i
+# Keep these to enhance the usefulness of debug output.
+ls -l /dev
+cat /proc/mounts
+lvm pvs
+lvm vgs
+lvm lvs
+ifconfig
+netstat -rn
+lsmod
+#ping -n -v -c 5 10.0.2.2
+#ping -n -v -c 5 10.0.2.4
+
+echo -n "uptime: "; cat /proc/uptime
+
+if ! grep -sq guestfs_rescue=1 /proc/cmdline; then
+  exec guestfsd -f
 fi
-exec guestfsd -f
+
+# Use appliance in rescue mode, also used by the virt-rescue command.
+TERM=linux ;# XXX library should pass this from library's environment
+PS1='><rescue> '
+export TERM PS1
+echo
+echo "Welcome to virt-rescue, the libguestfs rescue shell."
+echo
+echo "Note: The contents of / are the rescue appliance."
+echo "You have to mount the guest's partitions under /sysroot"
+echo "before you can examine them."
+echo
+exec bash -i

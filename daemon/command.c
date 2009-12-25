@@ -27,14 +27,16 @@
 #include "actions.h"
 
 char *
-do_command (char **argv)
+do_command (char *const *argv)
 {
   char *out, *err;
   int r;
-  int proc_ok, dev_ok, dev_pts_ok, sys_ok;
+  char *sysroot_dev, *sysroot_dev_pts, *sysroot_proc,
+    *sysroot_selinux, *sysroot_sys;
+  int dev_ok, dev_pts_ok, proc_ok, selinux_ok, sys_ok;
 
   /* We need a root filesystem mounted to do this. */
-  NEED_ROOT (NULL);
+  NEED_ROOT (return NULL);
 
   /* Conveniently, argv is already a NULL-terminated argv-style array
    * of parameters, so we can pass it straight in to our internal
@@ -53,23 +55,50 @@ do_command (char **argv)
    * We deliberately allow these commands to fail silently, BUT
    * if a mount fails, don't unmount the corresponding mount.
    */
-  r = command (NULL, NULL, "mount", "--bind", "/dev", "/sysroot/dev", NULL);
+  sysroot_dev = sysroot_path ("/dev");
+  sysroot_dev_pts = sysroot_path ("/dev/pts");
+  sysroot_proc = sysroot_path ("/proc");
+  sysroot_selinux = sysroot_path ("/selinux");
+  sysroot_sys = sysroot_path ("/sys");
+
+  if (sysroot_dev == NULL || sysroot_dev_pts == NULL ||
+      sysroot_proc == NULL || sysroot_selinux == NULL ||
+      sysroot_sys == NULL) {
+    reply_with_perror ("malloc");
+    free (sysroot_dev);
+    free (sysroot_dev_pts);
+    free (sysroot_proc);
+    free (sysroot_selinux);
+    free (sysroot_sys);
+    return NULL;
+  }
+
+  r = command (NULL, NULL, "mount", "--bind", "/dev", sysroot_dev, NULL);
   dev_ok = r != -1;
-  r = command (NULL, NULL, "mount", "--bind", "/dev/pts", "/sysroot/dev/pts", NULL);
+  r = command (NULL, NULL, "mount", "--bind", "/dev/pts", sysroot_dev_pts, NULL);
   dev_pts_ok = r != -1;
-  r = command (NULL, NULL, "mount", "--bind", "/proc", "/sysroot/proc", NULL);
+  r = command (NULL, NULL, "mount", "--bind", "/proc", sysroot_proc, NULL);
   proc_ok = r != -1;
-  r = command (NULL, NULL, "mount", "--bind", "/sys", "/sysroot/sys", NULL);
+  r = command (NULL, NULL, "mount", "--bind", "/selinux", sysroot_selinux, NULL);
+  selinux_ok = r != -1;
+  r = command (NULL, NULL, "mount", "--bind", "/sys", sysroot_sys, NULL);
   sys_ok = r != -1;
 
   CHROOT_IN;
-  r = commandv (&out, &err, argv);
+  r = commandv (&out, &err, (const char * const *) argv);
   CHROOT_OUT;
 
-  if (sys_ok) command (NULL, NULL, "umount", "/sysroot/sys", NULL);
-  if (proc_ok) command (NULL, NULL, "umount", "/sysroot/proc", NULL);
-  if (dev_pts_ok) command (NULL, NULL, "umount", "/sysroot/dev/pts", NULL);
-  if (dev_ok) command (NULL, NULL, "umount", "/sysroot/dev", NULL);
+  if (sys_ok) command (NULL, NULL, "umount", sysroot_sys, NULL);
+  if (selinux_ok) command (NULL, NULL, "umount", sysroot_selinux, NULL);
+  if (proc_ok) command (NULL, NULL, "umount", sysroot_proc, NULL);
+  if (dev_pts_ok) command (NULL, NULL, "umount", sysroot_dev_pts, NULL);
+  if (dev_ok) command (NULL, NULL, "umount", sysroot_dev, NULL);
+
+  free (sysroot_dev);
+  free (sysroot_dev_pts);
+  free (sysroot_proc);
+  free (sysroot_selinux);
+  free (sysroot_sys);
 
   if (r == -1) {
     reply_with_error ("%s", err);
@@ -84,7 +113,7 @@ do_command (char **argv)
 }
 
 char **
-do_command_lines (char **argv)
+do_command_lines (char *const *argv)
 {
   char *out;
   char **lines;
@@ -103,17 +132,17 @@ do_command_lines (char **argv)
 }
 
 char *
-do_sh (char *command)
+do_sh (const char *cmd)
 {
-  char *argv[] = { "/bin/sh", "-c", command, NULL };
+  const char *argv[] = { "/bin/sh", "-c", cmd, NULL };
 
-  return do_command (argv);
+  return do_command ((char **) argv);
 }
 
 char **
-do_sh_lines (char *command)
+do_sh_lines (const char *cmd)
 {
-  char *argv[] = { "/bin/sh", "-c", command, NULL };
+  const char *argv[] = { "/bin/sh", "-c", cmd, NULL };
 
-  return do_command_lines (argv);
+  return do_command_lines ((char **) argv);
 }

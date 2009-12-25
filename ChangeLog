@@ -1,4 +1,3417 @@
+2009-12-16  Richard Jones  <rjones@redhat.com>
+
+	Prepare for 1.0.80.
+
+	Include latest Polish translations (Piotr Drąg, RHBZ#502533).
+
+	Update PO files.
+
+	build: Fix typo in filename.
+
+	build: Remove references to old contrib/ files which were removed.
+
+	appliance: Special case handling for libbfd in the supermin appliance.
+	The libbfd library has a constantly changing, non-standard and
+	very long name, eg:
+
+	/usr/lib64/libbfd-2.20.51.0.2-7.fc13.so
+
+	Just add a special case to deal with this.  This fixes the guestfs_strings
+	command, which relies on the external strings binary which uses this
+	library.
+
+	appliance: Ignore unreadable dbus helper programs.
+
+2009-12-07  Richard Jones  <rjones@redhat.com>
+
+	lib: Link with $(LTLIBTHREAD), required by Gnulib lock module.
+	This fixes commit cada248a53858341c91f70392e8f5b6e47d9b4fe.
+
+2009-12-07  Matthew Booth  <mbooth@redhat.com>
+
+	appliance: Fix code which gets list of kernels.
+	The first 'ls' command was failing, so the second 'ls' command
+	would never run at all.
+
+2009-12-07  Jim Meyering  <jim@meyering.net>
+
+	accommodate leading "+" in git submodule output
+	* cfg.mk (_submodule_hash): Also filter out "+".
+	* autogen.sh: Likewise.
+
+2009-12-07  Richard Jones  <rjones@redhat.com>
+
+	lib: Add thread-safety to global list of handles.
+	This commit uses the Gnulib 'lock' module to implement a mutex on
+	the global list of handles which is stored by the library.
+
+	Note that Gnulib nicely avoids explicitly linking with -lpthread
+	unless the application program itself links to -lpthread.  Locks
+	are only enabled in multithreaded applications.
+
+	$ ldd src/.libs/libguestfs.so.0.217.0
+		linux-vdso.so.1 =>  (0x00007fffcb7ff000)
+		libc.so.6 => /lib64/libc.so.6 (0x00007f96a4e6c000)
+		/lib64/ld-linux-x86-64.so.2 (0x00007f96a544d000)
+
+	Please enter the commit message for your changes. Lines starting
+
+	daemon error handling: Define a new function reply_with_perror_errno.
+	This allows you to save the errno from a previous call and
+	pass it to reply_with_perror.
+
+	For example, original code:
+
+	  r = some_system_call ();
+	  err = errno;
+	  do_cleanup ();
+	  errno = err;
+	  if (r == -1) {
+	    reply_with_perror ("failed");
+	    return -1;
+	  }
+
+	can in future be changed to:
+
+	  r = some_system_call ();
+	  err = errno;
+	  do_cleanup ();
+	  if (r == -1) {
+	    reply_with_perror_errno (err, "failed");
+	    return -1;
+	  }
+
+	daemon error handling: recursive_mkdir shouldn't need to set errno.
+
+2009-12-04  Richard Jones  <rjones@redhat.com>
+
+	daemon error handling: Clear errno before calling stub functions.
+	This just ensures that we accurately report errors, even if our
+	error path code doesn't set errno.  We won't end up with a bogus
+	errno left over from a previous call.
+
+2009-11-27  Richard Jones  <rjones@redhat.com>
+
+	Whitespace change.
+
+2009-11-26  Richard Jones  <rjones@redhat.com>
+
+	virt-rescue: Freshen documentation.
+
+2009-11-26  Richard Jones  <rich@koneko.home.annexia.org>
+
+	guestfish: Freshen documentation.
+
+2009-11-26  Richard Jones  <rjones@redhat.com>
+
+	daemon: Move prototypes around to keep functions grouped logically.
+
+	Fix error handling in 'zero' function.
+
+	daemon/Win32: Add contributed test script to test daemon using Wine.
+	This test script allows you to test limited features of the
+	Windows daemon by running it on a standard Fedora host using
+	Wine.
+
+	Read contrib/README and contrib/guestfsd-in-wine.sh in detail
+	before using.
+
+	Ignore guestfsd.exe (Windows daemon).
+
+	Remove old contrib/febootstrap directory.
+
+	Update PO files.
+
+	Make realpath call optional, disable it for Windows.
+
+	build: update gnulib submodule to latest
+
+	daemon: program_name must be defined for Gnulib error module.
+
+	daemon/Win32: use gnulib modules connect, socket and symlinkat (for readlinkat).
+
+	daemon/Win32: provide htonl, htons, ntohl, ntohs functions.
+	These functions are not available on Windows.
+
+	daemon/Win32: Use Gnulib perror module.
+
+	daemon: Link guestfs_protocol.[ch] into the daemon directory.
+	Instead of doing a recursive call into the src/ directory to build
+	the object files, hard link the source files into the daemon
+	directory and build them separately.
+
+	See:
+	http://www.redhat.com/archives/libguestfs/2009-November/msg00254.html
+
+	Thanks to Jim Meyering for noticing a typo in the original version.
+
+	daemon: Typo generator_build -> generator_built
+
+	daemon: Indent C macros to reflect nesting level.
+
+	daemon/Win32: Win32 can't fork message moved to separate function (Jim Meyering)
+
+2009-11-25  Richard Jones  <rjones@redhat.com>
+
+	guestfs documentation: Missing space.
+
+2009-11-25  Richard Jones  <rich@koneko.home.annexia.org>
+
+	guestfs: Update architecture section of documentation.
+
+2009-11-25  Richard Jones  <rjones@redhat.com>
+
+	Update PO files.
+
+	daemon: Fix build on Unix.
+
+	daemon: Fix sync() call on Unix.
+
+	daemon/Win32: update comment
+
+	daemon/Win32: Supply MAX macro for challenged platforms.
+
+	daemon/Win32: Windows can't daemonize.
+
+	daemon/Win32: Windows replacement for umask.
+
+	daemon/Win32: Replace setenv with Win32 equivalent.
+
+	daemon/Win32: Use xdr_u_int for PortableXDR compatibility.
+	PortableXDR didn't support xdr_uint32_t.  xdr_u_int is the same type.
+
+	daemon/Win32: Don't bother blocking SIGPIPE on Win32.
+
+	daemon/Win32: Use gnulib getaddrinfo module.
+
+	daemon/Win32: Implement statvfs using GetDiskFreeSpaceEx.
+	At the time of writing Gnulib didn't support Win32 for its
+	fsusage API.  Therefore this patch uses GetDiskFreeSpaceEx
+	if it's available (on Windows) otherwise falls back to using
+	Gnulib fsusage.
+
+	daemon: Move statvfs code into separate file.
+	This makes no functional change to the code.  It just moves the
+	statvfs-related code out of daemon/stat.c into a new file called
+	daemon/statvfs.c.
+
+	daemon: Use gnulib futimens module.
+	Instead of checking for futimens support and falling back
+	(incorrectly in one case) to using futimes, use gnulib's
+	module.
+
+	However the gnulib module does not yet support Win32, so
+	this change is only really useful on platforms like RHEL 5.
+
+	daemon/Win32: Use gnulib pread module.
+
+	sync: Windows implementation of sync() call.
+	Replace calls to sync() with calls to sync_disks() which supports
+	Win32 via FlushFileBuffers.
+
+	daemon: Alternate implementation of posix_fallocate.
+	If the posix_fallocate function is not available [ie. Windows]
+	use an alternate implementation that just loops and writes.
+
+	dd: Missing include of <string.h>
+	Breaks compilation on Windows.
+
+	daemon/Windows: Define _WIN32_WINNT when compiling on Windows.
+
+	build: update gnulib submodule to latest
+
+	build: update gnulib submodule to latest
+
+	supermin: Die with an error if no kernels found (RHBZ#539746).
+	Updated with a suggestion from Jim Meyering to use the '-d'
+	option to ls to avoid a future case of directories matching.
+
+2009-11-24  Richard Jones  <rjones@redhat.com>
+
+	New tool: virt-list-filesystems
+	Use this program as a convenient way to list the filesystems
+	available in a disk image or libvirt guest.
+
+	Example:
+
+	  $ virt-list-filesystems /dev/vg_trick/Debian5x64
+	  /dev/debian5x64/home
+	  /dev/debian5x64/root
+	  /dev/debian5x64/tmp
+	  /dev/debian5x64/usr
+	  /dev/debian5x64/var
+	  /dev/sda1
+
+	This is designed to make it easier for novices to use guestfish
+	and guestmount.  In particular with guestmount this acts as a way
+	to get a list of filesystems to use with the '-m' option.  ie:
+
+	  $ virt-list-filesystems unknowndisk.img
+	  /dev/sda1
+	  /dev/sda2
+	  $ guestmount -a unknowndisk.img -m /dev/sda1 /mnt
+
+	availability: Document how to check for single API calls
+	This documents how to use autotools and dlopen(3) to test for
+	the availability of single API calls at compile time and run time
+	respectively.
+
+	availability: Add a test for this call.
+	Because all the tested groups are optional, there's not really
+	a group we can reliably test, therefore test against the
+	empty list (which should not fail).
+
+	availability: Clarify and fix documentation.
+
+	generator: Passing "" to StringList tests should turn into empty list.
+	This is a bug in the generator which wasn't being tickled.  If
+	you had a test which expected a StringList or DeviceList parameter,
+	and you passed "" to that test, then you'd (probably) expect to be
+	testing an empty list, but in fact you got a single element list
+	containing an empty string.  This fixes it so you get an empty list.
+
+	daemon: Fix return value from aug_defnode.
+	Bug fix - the return value from this function was wrong
+	in the no-Augeas case.
+
+2009-11-23  Richard Jones  <rjones@redhat.com>
+
+	Implement 'dd' command.
+
+2009-11-22  Richard Jones  <rjones@redhat.com>
+
+	Use STRPREFIX instead of STREQLEN.
+
+	generator: second parameter to upload is Dev_or_Path, not String.
+
+2009-11-21  Matthew Booth  <mbooth@redhat.com>
+
+	build: Add missing dependencies in perl directory
+	make all in the perl directory was missing a check that the library had been
+	built.
+
+	make check in the perl directory was missing a check that the appliance and test
+	images had been built.
+
+	build: Ensure building appliance depends on guestfsd
+	Previously, only the update.sh rule checked the daemon had been built. update.sh
+	is called directly from within make.sh, so in that path the dependency was never
+	checked. This adds the daemon dependency explicitly to the rebuild-from-scratch
+	path.
+
+	build: Don't re-check generator.ml for each generator_built in daemon directory
+
+	build: Rebuild the daemon as necessary from other directories
+	This change ensure that making the appliance will always rebuild the daemon if
+	required.
+
+2009-11-21  Richard Jones  <rjones@redhat.com>
+
+	Update TODO file.
+
+2009-11-20  Richard Jones  <rjones@redhat.com>
+
+	perl: Add Sys::Guestfs::Lib::feature_available
+	This is a nicer Perl wrapper around $g->available call.
+
+	Update the other code in Sys::Guestfs::Lib to use it before using
+	LVM, Augeas.
+
+	availability: Skip tests when functions are not available.
+
+	availability: Add optional groups and implement guestfs_available call.
+	The current groups are defined very conservatively using the
+	following criteria:
+	 (a) Would be impossible to implement on Windows because of
+	     sheer architectural differences (eg: mknod).
+	 (b) Already optional (augeas, inotify).
+	 (c) Not currently optional but not implemented on older RHEL and
+	     Debian releases (ntfs-3g.probe, scrub, zerofree).
+
+	The optional groups I've defined according to these criteria are:
+
+	 . augeas
+	 . inotify
+	 . linuxfsuuid
+	 . linuxmodules
+	 . linuxxattrs
+	 . lvm2
+	 . mknod
+	 . ntfs3g
+	 . scrub
+	 . selinux
+	 . zerofree
+
+	(Note that these choices don't prevent us from adding more
+	optional groups in future.  On the other hand to avoid breaking
+	ABIs we would not wish to change the above groups).
+
+	The rest of this large commit is really just implementation:
+
+	Each optional function is classified using Optional "group"
+	flag in the generator.
+
+	The daemon has to implement a function
+
+	  int optgroup_<name>_available (void);
+
+	for each optional group.  Some of these functions are fixed at
+	compile time, and some do simple run-time tests.
+
+	The do_available implementation in the daemon looks up the correct
+	function in a table and runs it.
+
+	We document the optional groups in the guestfs(3) man page.
+
+	Also: I added a NOT_AVAILABLE macro in order to unify all the
+	existing places where we had a message equivalent to
+	"function __func__ is not available".
+
+	availability: Add guestfs_available.
+	Start a new API allowing groups of functions to be tested for
+	availability.
+
+	There are two reasons for this:
+
+	(1) If libguestfs is built with missing dependencies (eg. no Augeas lib)
+	then the corresponding functions are disabled in the appliance.  Up till
+	now there has been no way to test for this except to speculatively
+	issue commands and check for errors.
+
+	(2) When we port the daemon to Win32 it is likely that major pieces of
+	functionality won't be available (eg. LVM support).  This API gives
+	a way to test for that.
+
+	There is no change for existing clients: you still have to check for
+	errors from individual API calls.
+
+	For new clients, you will be able to test for availability of particular
+	APIs.
+
+	Usage scenario (A): An LVM editing tool which requires
+	both the LVM API and inotify in order to function at all:
+
+	  char *apis[] = { "inotify", "lvm2", NULL };
+	  r = guestfs_available (g, apis);
+	  if (r == -1) {
+	    /* print an error and exit */
+	  }
+
+	Usage scenario (B): A general purpose tool which optionally provides
+	configuration file editing, but this can be disabled, the result
+	merely being reduced functionality:
+
+	  char *apis[] = { "augeas", NULL };
+	  r = guestfs_available (g, apis);
+	  enable_config_edit_menus = r == 0;
+
+	daemon/Win32: Use gnulib modules for first porting to Win32.
+
+2009-11-20  Matthew Booth  <mbooth@redhat.com>
+
+	build: Add missing dependency libguestfs.la->guestfs_protocol.h
+
+2009-11-20  Jim Meyering  <jim@meyering.net>
+
+	build: correct sed transformation to work also on .git-module-status
+	My patch was wrong.
+	I kept the sed transformation the same in the two places,
+	but it wasn't strict enough to also work on the file contents.
+	Sorry about that.  This fixes it.
+
+	>From 93927cc7b9f63c414e5bfeb7eba393fde3295601 Mon Sep 17 00:00:00 2001
+	From: Jim Meyering <meyering@redhat.com>
+	Date: Fri, 20 Nov 2009 16:23:17 +0100
+	Subject: [PATCH libguestfs] build: correct sed transformation to work also on .git-module-status
+
+	* autogen.sh: Use a more strict sed transformation so it works also
+	on the contents of .git-module-status, which has no prefix.
+	* cfg.mk (_submodule_hash): Use a stricter sed regexp.
+
+	build: make autogen.sh update .git-module-status, as it should
+	I ran autogen.sh, but then make was always failing like this:
+
+	    $ make
+	    cfg.mk:141: *** gnulib update required; run ./autogen.sh first.  Stop.
+
+	Here's the fix:
+
+	>From f743f32079fea2e8a17c7f5b59305e584c75dba0 Mon Sep 17 00:00:00 2001
+	From: Jim Meyering <meyering@redhat.com>
+	Date: Fri, 20 Nov 2009 14:29:55 +0100
+	Subject: [PATCH libguestfs] build: make autogen.sh update .git-module-status, as it should
+
+	* autogen.sh: Without this, "make" would always say "gnulib update
+	required; run ./autogen.sh first", even after you'd run autogen.sh
+	successfully.
+
+2009-11-20  Jim Meyering  <meyering@redhat.com>
+
+	maint: use EXIT_* symbol (not constant, 2) to indicate key/path not found
+	* hivex/hivexget.c (EXIT_NOT_FOUND): Define.
+	(main): Use exit (EXIT_NOT_FOUND), not "exit (2)".
+
+	maint: use EXIT_SUCCESS and EXIT_FAILURE, not 0 and 1 in "usage", too
+	Convert by running these commands:
+	perl -pi -e 's/\b(usage ?)\(1\)/$1(EXIT_FAILURE)/' \
+	  fish/fish.c fuse/guestmount.c
+	perl -pi -e 's/\b(usage ?)\(0\)/$1(EXIT_SUCCESS)/' \
+	  fish/fish.c fuse/guestmount.c
+	* fish/fish.c (main): Replace 0/1 with EXIT_SUCCESS/EXIT_FAILURE.
+	* fuse/guestmount.c (main): Likewise.
+
+	maint: use EXIT_SUCCESS and EXIT_FAILURE, not 0 and 1 to exit
+	Convert all uses automatically, via these two commands:
+	git grep -l '\<exit *(1)' \
+	  | grep -vEf .x-sc_prohibit_magic_number_exit \
+	  | xargs --no-run-if-empty \
+	    perl -pi -e 's/\b(exit ?)\(1\)/$1(EXIT_FAILURE)/'
+	git grep -l '\<exit *(0)' \
+	  | grep -vEf .x-sc_prohibit_magic_number_exit \
+	  | xargs --no-run-if-empty \
+	  perl -pi -e 's/\b(exit ?)\(0\)/$1(EXIT_SUCCESS)/'
+	* .x-sc_prohibit_magic_number_exit: New file.
+
+	Edit (RWMJ): Don't change Java code.
+
+	maint: remove unnecessary include of openat.h
+	* daemon/realpath.c: Don't include "openat.h".  not used.
+
+2009-11-20  Richard Jones  <rjones@redhat.com>
+
+	build: update gnulib submodule to latest
+
+	daemon/gnulib: Include glob module.
+
+	daemon/Win32: Don't include missing headers.
+	This is a partial fix for code in guestfsd.c where many of these
+	header files are missing on Win32.
+
+	daemon/Win32: make some functions and fields optional.
+	inotify: Make this optional on platforms that don't have this interface.
+
+	mknod, mkfifo etc.: Make these optional on non-Unix platforms.
+
+	readdir: If d_type field is missing on the platform, set the corresponding
+	field to 'u'.
+
+	stat: st_blocks and st_blksize are missing on non-Unix platforms, so
+	set these fields to -1 in the corresponding structures.
+
+	daemon/Win32: NAME_MAX does not exist on Windows, use FILENAME_MAX instead.
+
+	daemon: Missing #includes revealed by cross-compiling.
+
+	daemon/Win32: Ignore mingw32-config.cache.
+	The Fedora Windows cross-compiler 'mingw32-configure' script always
+	uses a configure cache.  Ignore that file.
+
+2009-11-19  Richard Jones  <rjones@redhat.com>
+
+	generator: open Unix module by default.
+	Add:
+
+	  open Unix
+
+	at the top of the generator, which means that we don't need to
+	prefix any 'Unix.foo' symbols (we can just use 'foo' instead).
+
+	Unfortunately the Unix module shadows one symbol in Pervasives
+	(the Pervasives module is opened by default in OCaml code).  That
+	symbol is 'stdout'.  So we replace this with 'Pervasives.stdout'
+	in two places.  Still a net reduction in code size.
+
+	syntax-check: Fix tab-vs-space issue in the generator.
+
+	Update PO files.
+
+	Update TODO file.
+
+2009-11-19  Matthew Booth  <mbooth@redhat.com>
+
+	build: Fix parallel build of haskell bindings
+	ghc isn't clever enough not to stomp on itself when building dependencies. This
+	change makes the 1 dependency explicit.
+
+	It also adds a dependency on src/libguestfs.la.
+
+	build: Fix inter-directory dependencies
+	This change adds an explicit dependency on generator.ml for every file it
+	generates, except java files. Java is left for another time because it's
+	considerably trickier.
+
+	It also adds a build rule for src/libguestfs.la so it can be rebuilt as required
+	from other directories.
+
+	It does this by creating a top level make file, subdir-rules.mk, which can be
+	included from sub-directories. sub-directories need to define 'generator_built'
+	to include local files which are built by generator.ml, and they will be updated
+	automatically.
+
+	This fixes parallel make, and will automatically re-create generated files when
+	make is run from any directory.
+
+	It also fixes the problem which efad4f53 was targetting. Specifically,
+	src/guestfs_protocol.(c|h) had an erroneous dependency on stamp-generator, and
+	therefore generator.ml, despite not being directly created by it. This caused
+	them to be recreated every time generator.ml ran rather than only when
+	src/guestfs_protocol.x was updated, which cascaded into a daemon and therefore
+	appliance update.
+
+	This patch also changes the contents of the distribution tarball by including
+	files created by rpcgen.
+
+2009-11-19  Richard Jones  <rjones@redhat.com>
+
+	generator: Acquire lock to prevent two parallel runs of the generator.
+	This commit acquires a lock on a file to prevent two parallel runs of
+	the generator from stomping on each other.  The second run will wait
+	for the first to complete before starting.
+
+	The lock is acquired on the "HACKING" file because it's convenient --
+	we are already checking this file exists to make sure that we don't
+	start off in the wrong directory.
+
+	Tested by adding some artificial sleeps in the code to observe
+	locking behaviour between two parallel runs.
+
+2009-11-19  Jim Meyering  <jim@meyering.net>
+
+	syntax-check: expand TABs in generator.ml
+	Jim Meyering wrote:
+	>>From 6f128e90afb055f9899011c4a592eb289e678936 Mon Sep 17 00:00:00 2001
+	> From: Jim Meyering <meyering@redhat.com>
+	> Date: Thu, 19 Nov 2009 11:39:10 +0100
+	> Subject: [PATCH libguestfs] syntax-check: expand TABs in generator.ml
+	>
+	> * src/generator.ml: Expand leading TABs to spaces.
+
+	That was incomplete.
+	Please use the following instead.
+	With it, now, "make syntax-check" now passes once again.
+
+	>From 716a30d0b692972aac8fbea1fb7ad3318ab3a0d8 Mon Sep 17 00:00:00 2001
+	From: Jim Meyering <meyering@redhat.com>
+	Date: Thu, 19 Nov 2009 11:39:10 +0100
+	Subject: [PATCH libguestfs] syntax-check: expand leading TABs
+
+	* src/generator.ml: Expand leading TABs to spaces.
+	* fuse/test-fuse.sh: Likewise.
+
+2009-11-19  Jim Meyering  <meyering@redhat.com>
+
+	syntax-check: exempt *.pod from no-trailing-blank prohibition
+	* .x-sc_trailing_blank: Exempt *.pod.
+
+2009-11-18  Richard Jones  <rjones@redhat.com>
+
+	BUILT_SOURCES now depends on running the generator.
+	This completely reverts commit efad4f53923dcca94613e193d6383bd032e70498.
+
+2009-11-18  Richard Jones  <rjones@centos5x32.home.annexia.org>
+
+	daemon/RHEL: Choose correct udev settle script.
+	On RHEL/CentOS 5.4, udevadm settle command does not work.  This didn't
+	affect us before, but now that we're using parted for partitioning, we
+	*do* need to wait for udev to settle (because parted isn't waiting for
+	this, unlike sfdisk).
+
+	This commit chooses the correct program to run.
+
+	fuse/RHEL: Don't require UTIME_{NOW,OMIT} to be defined.
+	These macros don't exist on RHEL/CentOS 5.4.  If the feature
+	is missing then just don't implement it in the FUSE layer.
+
+2009-11-18  Richard Jones  <rjones@redhat.com>
+
+	appliance: Print uptime.
+	Print the uptime just before the init script runs the daemon, so we
+	have a good idea of how long the kernel boot + init script takes to run.
+
+	recipes: Fix git URL.
+
+	Prepare for version 1.0.79.
+
+	fuse: Add test-fuse.sh to EXTRA_DIST.
+
+	generator: Fix API of functions that return RBufferOut
+	(NB: The API / ABI doesn't actually change here - it's just made much
+	simpler to use).
+
+	The API for RBufferOut functions was unexpectedly hard to use in the
+	case where a zero-length buffer might be returned.  For discussion on
+	this see:
+
+	https://www.redhat.com/archives/libguestfs/2009-November/thread.html#00115
+
+	This commit ensures that in the zero-length buffer case, the return
+	value is never NULL.  Thus code is now able to just check if the return
+	value == NULL to indicate an error, which is simpler for all concerned.
+
+	The implementation of this is, however, more complex because we have
+	to be careful about this case inside both the daemon and the library
+	code, which is what this commit does.
+
+	This has passed a full round of tests.
+
+2009-11-17  Richard Jones  <rjones@redhat.com>
+
+	fuse: Add tests for guestmount.
+	This script contains non-exhaustive tests for the system calls
+	implemented by guestmount.
+
+	fuse: Fix read for empty files.
+	Error handling for the guestfs_pread call was incorrect, which
+	meant that empty files could produce spurious error messages.
+
+	fish: Improve output of guestfish -h cmd
+	Display this output like a short manual page.
+
+	Don't put <..> around the parameters to the command.
+
+	New API call: fill - fill a file with octets
+
+	fuse: Fix cache invalidation in rename operation.
+	We need to invalidate both parameters, otherwise the old (moved)
+	file can appear that it still exists after the move.
+
+	fuse: Fix hard link creation.
+	The parameters were swapped.  We also need to invalidate the
+	cache for both parameters.
+
+	fuse: Fix symlink creation (RHBZ#538069).
+	The parameters were swapped, preventing symlinks from being created.
+
+	virt-df: Ignore domains which have ID 0.
+	This is the remainder of the fix for RHBZ#538041.  Domains
+	which have ID 0 are special domains.  libvirt defines it as
+	the "control plane OS".  Only Xen and HyperV have this
+	behaviour, and in both cases we should ignore those domains
+	for the purposes of virt-df (user can just run "df" if they
+	need that information for the dom0).
+
+	virt-df: Turn errors into warnings when listing all domains.
+	This is a partial fix for RHBZ#538041.  When listing all domains,
+	don't die just because one domain fails, but keep trying for the
+	rest.
+
+2009-11-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	Docs: copyediting
+
+	Docs: Add documentation about other language bindings to API overview.
+
+	Docs: line folding in example.
+
+	Docs: group preformatted sections of text together.
+
+	Docs typo: limited -> limits
+
+	Docs: Add section on using multiple threads.
+	This section was missing from the previous documentation.
+
+	Docs: Add/extend API overview.
+
+	Docs: Remove incorrect statement from man page.
+	The low-level event-based API never existed so this statement
+	in the man page is wrong.  If you want an asynchronous API, use
+	threads.
+
+2009-11-12  Jim Meyering  <meyering@redhat.com>
+
+	build: revive the ocaml package tests
+	* autogen.sh: Generalize the ocaml-package-existence test.
+	Remove the git-related part of the old test.
+
+2009-11-11  Matthew Booth  <mbooth@redhat.com>
+
+	Generate guestfs_protocol.x when stamp-generator updates
+	This partially reverts efad4f53923dcca94613e193d6383bd032e70498.
+	guestfs_protocol.x wasn't being generated when building from a clean checkout.
+
+2009-11-11  Richard Jones  <rjones@redhat.com>
+
+	autogen.sh: Remove test for ocaml etc from this script.
+	This test seems to cause a lot of trouble.  We need to go back to
+	the drawing-board on this one.
+
+	Set cpio blocksize to 64K.
+	See:
+	https://www.redhat.com/archives/fedora-devel-list/2009-November/thread.html#00523
+
+2009-11-10  Richard Jones  <rjones@debian5x64.home.annexia.org>
+
+	Debian: don't depend on gfs-tools since these have depsolving problems.
+
+2009-11-10  Richard Jones  <rjones@redhat.com>
+
+	Update PO files for release.
+
+	Check for ocaml-xml-light-devel (xml-light.cmxa)
+	Also unquote $pkg since OCaml package names can never contain
+	spaces or other unfriendly characters.
+
+	Prepare for version 1.0.78
+
+2009-11-10  Jim Meyering  <meyering@redhat.com>
+
+	tell "make syntax-check" that examples/to-xml.c is exempt from some tests
+	* .x-sc_prohibit_strcmp: Exempt examples/to-xml.c.
+	* .x-sc_prohibit_strcmp_and_strncmp: Likewise.
+
+2009-11-10  Richard Jones  <rjones@redhat.com>
+
+	examples: Don't use STREQ etc in the to-xml.c example.
+
+	Don't export STREQ and friends in <guestfs.h>
+	Move these to private header file(s) and other places as required
+	since these aren't part of the public API.
+
+	Fix problems found by 'make syntax check'
+
+	Print timestamped messages during appliance launch.
+	In verbose mode, print timestamped messages during guestfs_launch
+	so we can see how long each step takes.
+
+	Record time of guest launch.
+	The guest handle field start_t was previously used (when we
+	had the wait_ready call), but had fallen into disuse.  Note
+	that it could never be accessed through the API.
+
+	Rename this field as launch_t, convert it to a timeval, and
+	use it to measure the time since guestfs_launch was called
+	so that we can start profiling guest launch.
+
+	appliance: Prefix kernel messages with timestamp.
+
+	Generic partition creation interface.
+	This commit introduces a generic partition creation interface
+	which should be future-proof and extensible, and partially
+	replaces the old sfdisk-based interface.
+
+	The implementation is based on parted but is hopefully not too
+	dependent on the particulars of parted.
+
+	The following new calls are introduced:
+
+	  guestfs_part_init:
+	    Initialize a disk with a partition table.  Unlike the sfdisk-
+	    based interface, we also support GPT and other partition
+	    types, which is essential to scale to devices larger than 2TB.
+
+	  guestfs_part_add: Add a partition to an existing disk.
+
+	  guestfs_part_disk:
+	    Convenience function which combines part_init & part_add,
+	    creating a single partition that covers the whole disk.
+
+	  guestfs_part_set_bootable:
+	  guestfs_part_set_name:
+	    Set various aspects of existing partitions.
+
+	  guestfs_part_list:
+	    List partitions on a device.  This returns a programming-friendly
+	    list of partition structs (in contrast to sfdisk-l which cannot
+	    be parsed).
+
+	  guestfs_part_get_parttype:
+	    Return the partition table type, eg. "msdos" or "gpt".
+
+	The following calls are planned, but not added currently:
+
+	  guestfs_part_get_bootable
+	  guestfs_part_get_name
+	  guestfs_part_set_type
+	  guestfs_part_get_type
+
+	Add ata_piix to kernel module whitelist (RHBZ#533886).
+
+	Fix compilation if readline library is not present.
+
+	Fix compilation when Augeas is not present.
+	It would complain that NEED_AUG macro was defined but not used.
+
+2009-11-10  Jim Meyering  <meyering@redhat.com>
+
+	avoid "syntax-check" failure: hide cast of argument to free
+	* fuse/guestmount.c (fg_readlink): Perform cast in a
+	 separate statement to hide it from "make syntax-check".
+
+	build: die early if we lack ocaml, ocamlfind or ocaml-xml-light
+	* autogen.sh: Ensure that we fail very early when not building
+	from a tarball and when one of those is not installed.
+
+2009-11-09  Jim Meyering  <meyering@redhat.com>
+
+	tests: enable strcmp-related syntax-check tests
+	* cfg.mk (local-checks-to-skip): Don't skip these checks:
+	sc_prohibit_strcmp_and_strncmp, sc_prohibit_strcmp.
+
+	change strncasecmp() == 0 to STRCASEEQLEN()
+	git grep -l 'strncasecmp *([^=]*== *0'|xargs \
+	  perl -pi -e 's/\bstrncasecmp( *\(.*?\)) *== *0\b/STRCASEEQLEN$1/g'
+
+	change strncasecmp() == 0 to STRCASENEQLEN()
+	git grep -l 'strncasecmp *([^=]*!= *0'|xargs \
+	  perl -pi -e 's/\bstrncasecmp( *\(.*?\)) *!= *0\b/STRCASENEQLEN$1/g'
+
+	use STREQ, not strcmp: part 2
+	git grep -l 'strcmp *([^=]*!= *0'|xargs \
+	  perl -pi -e 's/\bstrcmp( *\(.*?\)) *!= *0\b/STRNEQ$1/g'
+
+	use STREQ, not strcmp: part 1
+	git grep -l 'strcmp *([^=]*== *0'|xargs \
+	  perl -pi -e 's/\bstrcmp( *\(.*?\)) *== *0/STREQ$1/g'
+
+	change strncmp() == 0 to STREQLEN()
+	git grep -l 'strncmp *([^=]*== *0'|xargs \
+	  perl -pi -e 's/\bstrncmp( *\(.*?\)) *== *0\b/STREQLEN$1/g'
+
+	change strncmp(...) != 0 to STRNEQLEN(...)
+	git grep -l 'strncmp *([^=]*!= *0'|xargs \
+	  perl -pi -e 's/\bstrncmp( *\(.*?\)) *!= *0/STRNEQLEN$1/g'
+
+	convert strcasecmp(...) != 0 to STRCASENEQ(...)
+	git grep -E -l 'strcasecmp *\(.*!= ?0\b'|xargs \
+	  perl -pi -e 's/\bstrcasecmp( ?\(.*?\)) != 0/STRCASENEQ$1/g'
+
+	convert uses of strcasecmp to STRCASEEQ
+	git grep -l 'strcasecmp *([^=]*== *0'| xargs \
+	  perl -pi -e 's/\bstrcasecmp( *\(.*?\)) *== *0/STRCASEEQ$1/'
+
+	define STREQ, STRNEQ, STREQLEN, STRCASEQ, etc.
+	* src/guestfs.h: Define STREQ and company.
+	* daemon/daemon.h: Likewise.
+	* hivex/hivex.h: Likewise.
+
+	indent with spaces, not TABs
+	* HACKING: Expand indentation TABs.
+	* configure.ac: Likewise.
+	* daemon/daemon.h: Likewise.
+	* daemon/guestfsd.c: Likewise.
+	* fuse/guestmount.c: Likewise.
+	* hivex/LICENSE: Likewise.
+	* src/generator.ml: Likewise.
+	* tools/virt-win-reg: Likewise.
+
+	fix doc typo
+	* fuse/guestmount.pod: Avoid "the the".
+
+	placate 'make syntax-check'
+	* hivex/hivex.c: Remove unused "#include <assert.h>".
+
+	avoid syntax-check warning about isdigit use in example program
+	* .x-sc_avoid_ctype_macros: New file.
+
+2009-11-09  Richard Jones  <rjones@redhat.com>
+
+	appliance: Enhance mkfs to support many more filesystem types.
+	This fixes support for NTFS, and adds support for:
+	 - reiserfs
+	 - btrfs
+	 - GFS and GFS2
+	 - JFS
+	 - HFS and HFS+
+	 - NILFS
+	 - OCFS2 (disabled)
+
+	We don't enable OCFS2 by default, because it pulls in about
+	140 extra packages into the appliance.
+
+	GFS & GFS2 default to single node (no lock manager etc).
+
+	Fix prototype of commandv to match prototype of commandrv.
+
+2009-11-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Always reflect command stderr to stderr when debugging.
+	When debugging (ie. LIBGUESTFS_DEBUG=1 & verbose flag set in daemon)
+	always reflect any stderr output from commands that we run to
+	stderr of the daemon, so it is visible.
+
+	Previously if stderror == NULL in command*, stderr output was
+	just eaten and discarded which meant useful error messages could
+	be lost.
+
+	daemon: Add flags argument to command*() functions.
+	This adds new variations of the command*() functions which
+	take a 'flags' argument.  Currently the only flag available
+	is defined as follows:
+
+	 COMMAND_FLAG_FOLD_STDOUT_ON_STDERR: For broken external commands
+	 that send error messages to stdout (hello, parted) but that don't
+	 have any useful stdout information, use this flag to capture the
+	 error messages in the *stderror buffer.  If using this flag,
+	 you should pass stdoutput as NULL because nothing could ever be
+	 captured in that buffer.
+
+	This patch also adds some documentation for command*()
+	function.
+
+2009-11-09  Richard Jones  <rjones@redhat.com>
+
+	haskell: Disambiguate truncate symbol.
+	This is a hack, but GHC doesn't like it if we have a symbol
+	with the same name as one in the Haskell Prelude.  Therefore
+	we much hide the corresponding symbol in the Prelude when
+	building this module.
+
+	ocaml: Update dependencies file.
+
+2009-11-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Sort the dependencies so they are stable between machines.
+
+	ocaml: General improvements to generated code.
+
+	Fixes for compiling on 32 bit.
+
+2009-11-05  Richard Jones  <rjones@redhat.com>
+
+	Don't update appliance after running generator.
+	I'm not sure why these dependencies exist, but they cause the
+	appliance to be updated every time the generator runs, which
+	appears to be unnecessary.
+
+	appliance: Add xfsprogs to list of packages
+
+2009-11-04  Richard Jones  <rjones@redhat.com>
+
+	fish: Allow <nn>P and <nn>E for petabyte and exabyte allocations.
+
+	fish: Allow <nn>T for terabyte allocations.
+
+	fish: New command 'sparse', like 'alloc' but to generate sparse files.
+	With sparse you can make sparse files, which is fun because you
+	can experiment with really large devices:
+
+	  ><fs> sparse /tmp/test.img 100G
+	  ><fs> run
+	  ><fs> sfdiskM /dev/vda ,
+	  ><fs> mkfs ext2 /dev/vda1    # very long pause here ...
+	  ><fs> mount /dev/vda1 /
+
+	To see the real (ie. allocated) size of the sparse file, use the du
+	command, eg:
+
+	  ><fs> !du -h /tmp/test.img
+	  1.6G -rw-rw-r-- 1 rjones rjones 100G 2009-11-04 17:40 /tmp/test.img
+
+	daemon: Build daemon with AC_SYS_LARGEFILE.
+
+2009-11-04  Richard Jones  <rjones@debian5x64.home.annexia.org>
+
+	Debian: Use /bin/bash as the shell for regression test scripts.
+	/bin/sh on Debian is a minimal shell called 'dash' which doesn't
+	support some features we need such as the particular 'function'
+	syntax used by regressions/test-stringlist.sh, and therefore
+	this script was failing on Debian.
+
+	Change all of these scripts to use #!/bin/bash explicitly to avoid
+	these sorts of problems.
+
+	daemon: When running external commands, open stdin as /dev/null
+	Previously when we ran external commands from the daemon, stdin
+	(ie. fd 0) was closed.  This caused a problem when running the
+	external hexdump command which seems to break if stdin is closed.
+
+	This patch opens stdin on /dev/null.
+
+	Debian: Include ISOFS driver in the kernel.
+
+	Debian: Ignore Debian appliance root when looking for translatable files.
+
+	debian: Ignore some generated debirf files.
+
+2009-11-04  Richard Jones  <rjones@redhat.com>
+
+	configure: Fix summary messages.
+	The following 3 summary messages in the configure output
+	always displayed "yes" even if they were not actually
+	enabled.
+
+	Haskell bindings .................... yes
+	virt-inspector ...................... yes
+	virt-* tools ........................ yes
+
+	Fixed by correcting the code that tests if the automake
+	conditional is set.
+
+2009-11-04  Jim Meyering  <jim@meyering.net>
+
+	hivex: fail upon integer overflow
+	* hivex/hivex.c (windows_utf16_to_utf8): Avoid overflow and a
+	potential infloop.
+
+2009-11-04  Richard Jones  <rjones@redhat.com>
+
+	hivex: Check unchecked calloc (Jim Meyering).
+
+2009-11-03  Richard Jones  <rjones@redhat.com>
+
+	Update PO files.
+
+	Fix EXTRA_DIST line in fuse/Makefile.am.
+
+	Add make.sh.in to EXTRA_DIST.
+
+	Comment out code which provokes strange gcc optimization error.
+
+	Prepare for 1.0.77.
+
+	FUSE filesystem support.
+	This implements FUSE filesystem support so that any libguestfs-
+	accessible disk image can be mounted as a local filesystem.
+
+	Note: file writes (ie. write(2) system call) is not yet implemented.
+
+	The API needs more test coverage, particularly lesser-used system
+	calls.
+
+	The big unresolved issue is UID/GID mapping between guest filesystem
+	IDs and the host.  It's not easy to automate this because you need
+	extra details about the guest itself in order to get to its
+	UID->username map (eg. /etc/passwd from the guest).
+
+	Allow callers to disable the recovery process.
+
+2009-11-02  Richard Jones  <rjones@redhat.com>
+
+	New API call: pread
+	guestfs_pread lets you do partial file reads from arbitrary
+	places within a file.  It works like the pread(2) system call.
+
+	New API calls: lstatlist, lxattrlist, readlinklist.
+	These three functions are very specifically designed for FUSE
+	support, so we can list directories efficiently.  Instead of
+	making lots of lstat, lgetxattr and readlink calls, we can make just
+	three calls per directory to grab all the attributes (which we
+	then cache briefly).
+
+	New API calls: truncate, truncate_size, mkdir_mode, utimens, lchown.
+	truncate, truncate_size: Used to truncate files to a particular
+	size, or to zero bytes.
+
+	mkdir_mode: Like mkdir but allows you to also specify the
+	initial permissions for the new directory.
+
+	utimens: Set timestamp on a file with nanosecond accuracy.
+
+	lchown: Corresponding to lchown(2) syscall (we already have chown).
+
+	The implementation is complicated by the fact that we had to
+	add an Int64 parameter type to the generator.
+
+	examples/to-xml.c: Don't depend on Gnulib function.
+	Since this program is just an example, it shouldn't require
+	the Gnulib c-ctype functions.
+
+	appliance: Don't rebuild the appliance every time configure runs.
+	config.status touches make.sh each time it runs, even if the
+	resulting script would not change.  This causes the appliance
+	to get rebuilt much more frequently than is necessary.
+
+	There's no way to stop configure running, but we can move the
+	config.status command into a Makefile rule to stop this
+	undesirable behaviour.
+
+	guestfish: Fix a third indentation problem.
+
+	guestfish: Another indentation fix.
+
+	guestfish: Fix printing of buffers in structs.
+	Somehow an 'indent' string crept in there, so it was printing:
+
+	  <char><indent><char><indent><char>...
+
+	instead of:
+
+	  <char><char><char>...
+
+	Fix rstructs_used handling in guestfish generated code.
+	rstructs_used wasn't correctly generating code for guestfish
+	because guestfish doesn't make all functions visible.  Since the
+	calculation of rstructs_used was over all functions (including
+	ones not available in guestfish) it could have generated
+	unnecessary functions.
+
+	In fact this error didn't affect us before - but I discovered
+	it when I added some extra struct-returning functions (future
+	commit).
+
+	daemon: Don't warn on -Wunsafe-loop-optimizations.
+	Ignore -Wunsafe-loop-optimizations, same as in the top level
+	configure file.
+
+2009-10-29  Richard Jones  <rjones@redhat.com>
+
+	Add hivex* documentation to website.
+
+	Add HTML documentation to website.
+
+	Prepare for 1.0.76.
+
+	Fix misspelling in previous commit.
+
+	RHEL 5: Also add le{16,64}toh functions
+
+	RHEL 5: Detect endianness functions and supply them.
+
+	Add virt-win-reg to toplevel Makefile.am, fix POTFILES.in
+
+	Prepare for version 1.0.75.
+
+	Support for Windows Registry.
+	In hivex/:  This mini-library allows us to extract Windows
+	Registry binary files ("hives").
+
+	There are also two tools: hivexml converts a hive to a
+	self-describing XML format.  hivexget can be used to extract
+	single subkeys from a hive.
+
+	New tool: virt-win-reg.  This is a wrapper around the library
+	functionality allowing you to pull out data from the registries
+	of Windows guests.
+
+2009-10-26  Richard Jones  <rjones@redhat.com>
+
+	New API: vfs_type - get the Linux VFS driver for a mounted device.
+
+	Modify Sys::Guestfs::Lib::resolve_windows_path to use case_sensitive_path.
+
+	guestfish: Add win: prefix to use Windows paths.
+	Add a win: prefix for path arguments in guestfish:
+
+	><fs> file win:c:\windows\system32\config\system.log
+	MS Windows registry file, NT/2000 or above
+
+	daemon: Change chdir to use openat/fdopendir.
+	Uses Gnulib implementation of openat which should be portable.
+
+	New API: case-sensitive-path to return case sensitive path on NTFS 3g fs
+	This function handles an annoyance/peculiarity of the Linux
+	NTFS 3g driver, which is that it exports NTFS filesystems with
+	names case sensitive, even though under Windows they would be
+	case insensitive.
+
+	This causes problems because the location of (eg.) c:\windows
+	might appear as /windows or /WINDOWS (etc) depending on the
+	inconsequential details of how it was originally created.
+
+	Example of this problem on a real Windows guest:
+
+	  ><fs> file /windows/system32/config/system.log
+	  libguestfs: error: file: access: /windows/system32/config/system.log: No such file or directory
+	  ><fs> case-sensitive-path /windows/system32/config/system.log
+	  /WINDOWS/system32/config/system.LOG
+	  ><fs> file /WINDOWS/system32/config/system.LOG
+	  MS Windows registry file, NT/2000 or above
+
+	inspector: Remove inaccurate paragraph from documentation.
+
+2009-10-25  Richard Jones  <rjones@redhat.com>
+
+	Include HFS (Mac OS X) driver.
+
+2009-10-21  Richard Jones  <rjones@redhat.com>
+
+	Set LC_ALL=C before running qemu.
+
+2009-10-21  Matthew Booth  <mbooth@redhat.com>
+
+	init: Check that start_udev succeeded
+	If start_udev fails for any reason, notice and fall through to manual /dev
+	creation.
+
+	Patch from Charles Duffy <charles@dyfis.net>
+
+2009-10-20  Richard Jones  <rjones@redhat.com>
+
+	Version 1.0.74.
+
+	Tab to space fixes, now passes 'make syntax-check'
+
+	guestfs_find: Fix memory leak of sysrootdir.
+
+	virt-ls: Modify to use find0 instead of find.
+	find0 is more scalable than find.  virt-ls will no longer
+	crash if asked to recursively list / on a Linux guest.
+
+	New API: find0 (unlimited version of find)
+	This adds a new API call guestfs_find0, which is like guestfs_find
+	but mainly doesn't suffer from the protocol limit of the earlier
+	command.  The earlier command is not deprecated because it is
+	still very useful.
+
+	guestfs_find0 uses a FileOut parameter and writes the results to
+	an external file.  The filenames in the output are separated by
+	ASCII NUL characters (so a bit like "find -print0").
+
+	There is also the addition of a regression test for this command.
+
+	guestfs_find: Document protocol limits for this API call.
+	guestfs_find has to send the complete list of files in a single
+	protocol message (hence, limited to 2-4 MB).  Unfortunately on
+	a typical Linux guest, guestfs_find ("/") will exceed this limit
+	resulting in an error.
+
+	Therefore we should add an unlimited version of this call in a
+	future commit.  This commit just documents the current limit.
+
+	New tool: virt-ls
+	This tool makes available the functionality of "ls", "ll", and "find"
+	in a slightly simpler to use form.
+
+	Examples:
+
+	  virt-ls -l myguest /tmp
+
+	New tool: virt-tar
+	This adds a new tool call virt-tar which is a general purpose
+	archive and uploading tool.  It doesn't add any functionality
+	which wasn't previously possible using guestfish, but makes it
+	simpler to access for some users.
+
+	Examples:
+
+	 virt-tar -zx myguest /home home.tar.gz
+	 virt-tar -zu myguest uploadstuff.tar.gz /tmp
+
+2009-10-19  Richard Jones  <rjones@redhat.com>
+
+	tools: Make warnings about running on live guests more prominent.
+	Add prominent warnings to the man pages about how it is dangerous
+	to run these tools against live guests.
+
+	Move virt tools (virt-cat, virt-edit etc) into tools/ subdirectory.
+	This moves the tool programs into a single directory:
+	  cat/* -> tools/virt-cat
+	  df/* -> tools/virt-df
+	  edit/* -> tools/virt-edit
+	  rescue/* -> tools/virt-rescue
+
+	This in itself simplifies the build process because we only need
+	one Makefile and one copy of 'run-locally'.
+
+	'run-*-locally' has become just 'run-locally' and takes an extra
+	parameter which is the name of the tool, eg:
+	  run-locally cat [virt-cat params...]
+
+	virt-inspector stays in its own directory, because this contains
+	more than just a single Perl script.
+
+	Comment: Describe the build order requirements for toplevel directories.
+
+2009-10-14  Richard Jones  <rjones@redhat.com>
+
+	Prepare for 1.0.73.
+
+	Add some missing EXTRA_DIST files.
+
+2009-10-13  Richard Jones  <rjones@trick.home.annexia.org>
+
+	inspector: Generate language bindings for OCaml.
+	This commit adds a generic mechanism for deriving language bindings
+	for virt-inspector, and implements one concrete binding, for OCaml.
+
+	The bindings are generated from the RELAX NG schema (virt-inspector.rng)
+	which is supposed to be a correct and always up to date description
+	of the XML that the virt-inspector program can generate.
+
+	From the RNG we generate a set of types to describe the output of
+	virt-inspector for the language, plus an XML parser, plus some
+	glue code to actually run an external instance of virt-inspector
+	and parse the resulting XML.
+
+	At runtime, an external 'virt-inspector --xml <name>' command runs
+	and the XML is parsed into language-specific structures.
+
+	This has been tested on the four example files (inspector/example?.xml)
+
+	The only particular difficulty about the OCaml binding is the use of
+	Obj.magic, which is naughty but works because of the isomorphism
+	between the representation of tuples and records in OCaml.  This
+	seems to cause no problems in my test program.  Apart from this, the
+	OCaml binding is straightforward and could be adapted easily for any
+	other languages that want type-safe virt-inspector bindings.
+
+	It's important to keep virt-inspector.rng up to date with changes
+	to virt-inspector's XML output format.
+
+2009-10-05  Jim Meyering  <meyering@redhat.com>
+
+	build: avoid parallel ocaml/... build failure
+	A parallel build could fail due to the use in ocaml/examples
+	of ocaml/guestfs.cmi before it was built.
+	* Makefile.am (SUBDIRS): Add both ocaml and ocaml/examples,
+	to ensure they're built in this order, and not in parallel.
+	* ocaml/Makefile.am (SUBDIRS): Don't define.
+
+2009-10-05  Piotr Drąg  <piotrdrag@gmail.com>
+
+	Updated Polish translation
+
+2009-10-02  Richard Jones  <rjones@trick.home.annexia.org>
+
+	inspector: Fix inspector/Makefile.am
+	Accidentally pushed the older version of the patch in
+	commit 9d25e82491ddcf495e1d30694327e4bfd3a23445.
+
+	This includes Jim Meyering's suggested changes from
+	https://www.redhat.com/archives/libguestfs/2009-October/msg00017.html
+
+2009-10-02  Jim Meyering  <meyering@redhat.com>
+
+	build: fix compile error
+	Link demo scripts with just-build library, not the installed one.
+	* ocaml/examples/Makefile.am (OCAMLFINDFLAGS): New variable.
+	(lvs, viewer): Use it.
+	This fix is based on a suggestion from Rich Jones.
+	This addresses RHBZ#526917.
+
+2009-10-02  Richard Jones  <rjones@trick.home.annexia.org>
+
+	inspector: Add tests for RELAX NG schema.
+
+	inspector: Add RELAX NG schema for virt-inspector --xml output.
+
+	configure: Update comment about viewer.ml.
+
+2009-10-01  Richard Jones  <rjones@trick.home.annexia.org>
+
+	inspector: Canonicalize device names (fix RHBZ#526717).
+	Make filesystem device names canonical, so they are /dev/sd*
+	instead of /dev/vd*.
+
+	run-*-locally: The programs are now virt-[tool], not virt-[tool].pl
+	This fixes commit b488436cc54288fcae8988493749f2e6c87f274c.
+
+	inspector: Don't bomb if no kernels detected.
+	If $os->{kernels} wasn't defined, virt-inspector would exit with
+	an error, leaving partial XML output.
+
+	Change the code so it doesn't die in this case, instead just
+	leaves out the <kernels> section.
+
+2009-09-30  Richard Jones  <rjones@trick.home.annexia.org>
+
+	OCaml viewer: Use ocamlduce to replace xpath code.
+
+2009-09-29  Richard Jones  <rjones@trick.home.annexia.org>
+
+	OCaml viewer: Handle exceptions properly.
+
+2009-09-29  Richard Jones  <rich@koneko.home.annexia.org>
+
+	OCaml example: graphical disk usage viewer.
+	This is an example of how to write an app which uses libguestfs
+	and libvirt, and has a responsive user interface (using threads).
+	It is a Gtk-based "graphical virt-df".
+
+	Read the top of the 'viewer.ml' file first for instructions on
+	how to compile.  This program is not compiled by default.
+
+2009-09-24  Richard Jones  <rjones@trick.home.annexia.org>
+
+	virt-df: Add note about parsing CSV.
+
+2009-09-24  Jim Meyering  <meyering@redhat.com>
+
+	avoid use of all ctype macros
+	* cfg.mk (disable_temporarily): Don't disable sc_avoid_ctype_macros.
+	* fish/tilde.c: Remove unnecessary inclusion of ctype.h.
+	* bootstrap: Add gnulib's c-ctype module to the list.
+	* daemon/m4/gnulib-cache.m4: Likewise.
+	* daemon/ext2.c: Include "c-ctype.h", not <ctype.h>.
+	Use c_isspace, etc, rather than isspace.
+	* daemon/guestfsd.c: Likewise.
+	* daemon/lvm.c: Likewise.
+	* daemon/proto.c: Likewise.
+	* fish/fish.c: Likewise.
+	* fish/tilde.c: Likewise.
+	* src/generator.ml: Likewise.
+	* src/guestfs.c: Likewise.
+	* examples/to-xml.c: Likewise.
+	* examples/Makefile.am (to_xml_CPPFLAGS): Add -I$(top_srcdir)/gnulib/lib
+	so inclusion of "c-ctype.h" works.
+	(to_xml_CPPFLAGS): Rename from to_xml_CFLAGS.
+
+	maint: prune dead wood from list of skipped syntax-check rules
+	* cfg.mk (local-checks-to-skip): Remove now-passing and
+	no-longer-relevant rule names.
+
+2009-09-24  Jim Meyering  <meyering@vv.meyering.net.meyering.net>
+
+	maint: use spaces, not TABs for indentation
+	"make syntax-check" was failing.  This fixes it.
+	* HACKING: Indent with spaces, not TABs.
+	* configure.ac: Likewise.
+	* rescue/virt-rescue: Likewise.
+	* src/generator.ml: Likewise.
+
+2009-09-23  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Prepare for 1.0.72.
+	Also update PO files.
+
+	More HTMLFILES.
+
+	Include virt tools in EXTRA_DIST.
+	Partially revert b488436cc54288fcae8988493749f2e6c87f274c.
+	It turns out that automake doesn't automatically place bin_SCRIPTS
+	in EXTRA_DIST.
+
+	Rename virt-[tool].pl as virt-[tool]
+
+	Check return value from readlink.
+
+	Create manpage atomically.
+	Don't fail with a partial file if disk full, etc.
+
+	Replace @...@ with $(...) in these common Makefile.am files.
+
+	guestfish: Update 'SEE ALSO' section of the manpage.
+
+	New tool: virt-edit
+	Edit any file in a guest.  This was possibly previously
+	using guestfish, but having a separate command makes it
+	simpler.
+
+	The usage is simply:
+
+	  virt-edit mydomain /some/file
+
+	It runs $EDITOR or vi on the file, and if the user changes
+	it, uploads the result back to the VM.
+
+	virt-cat: Remove some unused Perl module includes.
+
+	Add 'virt-rescue' command.
+	This command runs a "rescue appliance" against a virtual machine
+	or disk image.  This is useful for making ad-hoc interactive
+	changes to virtual machines.
+
+	  $ virt-rescue --ro /dev/vg_trick/F11x64
+
+	  Welcome to virt-rescue, the libguestfs rescue shell.
+
+	  Note: The contents of / are the rescue appliance.
+	  You have to mount the guest's partitions under /sysroot
+	  before you will be able to examine them.
+
+	  bash: cannot set terminal process group (-1): Inappropriate ioctl for device
+	  bash: no job control in this shell
+	  ><rescue> mount /dev/vg_f11x64/lv_root /sysroot
+	  EXT4-fs (dm-0): barriers enabled
+	  kjournald2 starting: pid 269, dev dm-0:8, commit interval 5 seconds
+	  EXT4-fs (dm-0): internal journal on dm-0:8
+	  EXT4-fs (dm-0): delayed allocation enabled
+	  EXT4-fs: file extents enabled
+	  EXT4-fs: mballoc enabled
+	  EXT4-fs (dm-0): mounted filesystem with ordered data mode
+	  ><rescue> ls /sysroot/
+	  bin   dev  home  lib64       media  opt   root  selinux  sys  usr
+	  boot  etc  lib   lost+found  mnt    proc  sbin  srv      tmp  var
+	  ><rescue> exit
+
+	Add direct appliance mode flag and implementation.
+	When the g->direct flag is set, the appliance stdin/stdout
+	are not connected to the library.  Instead they inherit the
+	stdin/stdout of the caller.
+
+	This is used to implement virt-rescue.
+
+	Tidy up appliance rescue code.
+	The appliance shouldn't run the daemon after we leave the
+	rescue shell.  It should just exit instead.
+
+	Rejig configure.ac tests for qemu vmchannel support.
+	vmchannel is no longer required, so we shouldn't test for it.
+	However we should test instead for user mode networking support.
+
+	Also fix up the documentation / error messages.
+
+	Always test for vmchannel and user mode networking support in
+	qemu.  This gives us more troubleshooting information if people
+	report bugs.
+
+2009-09-22  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Prepare for 1.0.71.
+	Update version number and update PO files.
+
+	Put latest version and release date on the website front page.
+
+	Change handling of spaces on Linux kernel command line.
+
+	Update documentation of qemu / vmchannel.
+
+	Implement "null vmchannel" - no vmchannel needed!
+	This commit removes the requirement for vmchannel, although retaining
+	support for it.
+
+	In this configuration, known as "null vmchannel", the library
+	listens on a random loopback port.  It passes the number of this
+	port to the appliance (guestfs_vmchannel=tcp:10.0.2.2:12345), and
+	the daemon then connects back.  The library, instead of connecting,
+	listens and accepts the connection during guestfs_launch.
+
+	QEMU SLIRP (user mode networking) is still required to make this
+	work: SLIRP forwards the TCP connection transparently (instead of
+	explicitly as with guestfwd) to 127.0.0.1:<port>
+
+	There is a window in which any other local process on the machine
+	could see the port number in the qemu command line and try to
+	connect to it.  This would be a devastating security hole, because
+	any local process could pretend to be the daemon and feed back
+	malicious replies to our remote procedure calls.  To prevent this,
+	we check the UID of the other side of the TCP connection.  If
+	the UID is different from the library's EUID, then we reject the
+	connection.  To do this we have to parse /proc/net/tcp.  (On Solaris
+	we could use getsockopt (SO_PEERCRED), but this doesn't work on
+	Linux TCP sockets).
+
+	Other vmchannel(s) are still supported.  This is important, because
+	we can't in general be sure the qemu will always support SLIRP.
+	In particular, in recent versions of qemu it is possible to compile
+	out SLIRP.
+
+	Gnulib: Add arpa-inet and netinet-in modules.
+
+	Flexible guestfs_vmchannel parameter for future appliances.
+	This reimplements parts of commit da0a4f8d1f6ddd302ceba028d87c6e009589e503
+	in a different, but compatible way.
+
+	We pass guestfs_vmchannel=tcp:<ip>:<port> on the command line.  This
+	is intended to be used as follows (now and in future versions):
+
+	  tcp:10.0.2.4:6666    for guestfwd vmchannel
+	  tcp:10.0.2.2:<port>  for future "no vmchannel" implementation
+	  /dev/vcon4           for future virtio-console vmchannel*
+
+	It also accepts the old-style guestfs=10.0.2.4:6666 parameter which
+	is sent by older libraries, and turns this transparently into the
+	correct format above.
+
+	If no guestfs_vmchannel is passed, then this defaults to the guestfwd
+	vmchannel which older libraries would expect.
+
+	* Maybe this last one should be dev:/dev/vcon4 or file:/dev/vcon4, but
+	we don't need to decide that now.
+
+	Rearrange and tidy up code in guestfsd.c
+	This just tidies up the main() function in the daemon.  There is
+	no longer a huge fixed-sized buffer used for the kernel command
+	line.  Variables are moved closer to where they are used.  Some
+	local variables turned out to be unused - these are removed.  Finally
+	the part that reads the kernel command line is moved into a separate
+	function.
+
+	There is only minimal functional change here (it now prints out
+	the kernel command line).
+
+	Literal '4' replaced with 'sizeof' expression, at Jim Meyering's
+	suggestion during patch review.
+
+2009-09-21  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Make GUESTFWD_PORT into a string.
+
+	Remove unnecessary extra space from qemu command line.
+
+	Remove guestfs_wait_ready (turn it into a no-op).
+	This commit changes guestfs_launch so that it both launches
+	the appliance and waits until it is ready (ie. the daemon communicates
+	back to us).
+
+	Since we removed the pretence that we could implement a low-level
+	asynchronous API, the need to call launch() followed by wait_ready()
+	has looked a bit silly.
+
+	Now guestfs_wait_ready() is basically a no-op.  It is left in the
+	API for backwards compatibility.  Any calls to guestfs_wait_ready()
+	can be removed from client code.
+
+	Combine temporary buffers.
+	buf[], append[] and memsize_str[] were all temporary buffers
+	used in non-overlapping code.
+
+	Combine them to use a single buffer (buf[]).
+
+	Rearrange qemu command line order (no functional change).
+
+2009-09-18  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Enable new-style -chardev ... guestfwd command line.
+	Newer versions of qemu have changed the command line format
+	(again).  '-net channel' is now deprecated.  Instead we use:
+
+	    -chardev socket,id=guestfsvmc,path=/path/to/sock,server,nowait
+	    -net user,vlan=0,net=10.0.2.0/8,guestfwd=tcp:10.0.2.4:6666-chardev:guestfsvmc
+	    -net nic,model=ne2k_pci,vlan=0
+
+	The old style format is still used if the new style is not
+	detected at runtime.
+
+2009-09-17  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Fix code which looked for leaked FDs between each command.
+	This code was not checking the return value from system()
+	so it failed if uncommented.  Add ignore_value() around the
+	call to system.  However, leave the code still disabled.
+
+	Remove explicit guestfs=10.0.2.4:6666 kernel command line parameter.
+	Since we control the appliance tightly, we can just specify
+	that it will always use a particular host and port, and we
+	don't need to pass it on the command line each time.
+
+	Also the VMCHANNEL_* constants are only relevant to the
+	particular guestfwd vmchannel implementation, so we rename
+	them as GUESTFWD_*.
+
+	Daemon: fix handling of errors from xread and xwrite.
+	If xread or xwrite returns -1, that indicates an error and we
+	should exit.  Note that xread/xwrite has already printed the
+	error message.
+
+	Fix verbose packet dumping functions.
+	Add the configure parameter --enable-packet-dump so that this
+	code can be enabled without editing the source.
+
+	This code is normally commented out, because it is too verbose
+	unless you happen to be debugging the underlying protocol.  Because
+	it is normally commented out, I found it had bit-rotted slightly.
+	This commit also fixes the obvious problems.
+
+	'len' should be an unsigned 32 bit int.
+	This only happened to work by accident before because 'unsigned len'
+	happens to be 32 bit on all platforms we support.
+
+	Disable -Wunsafe-loop-optimizations
+	This warning indicates that GCC could not do a particular sort
+	of loop optimization.  It pops up randomly in certain forms of
+	looping code, and seems safe to ignore.
+
+2009-09-15  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Update PO files (no functional change).
+
+	Prepare for version 1.0.70.
+
+	Update PO files.
+
+	Set minimum gettext version to 0.17.
+	This fixes the problem that the 1.0.69 tarball would fail in
+	the po/ subdirectory when installing:
+
+	make[1]: Entering directory `/builddir/build/BUILD/libguestfs-1.0.69/po'
+	/bin/sh @MKINSTALLDIRS@ /builddir/build/BUILDROOT/libguestfs-1.0.69-1.fc11.x86_64/usr/share
+	/bin/sh: @MKINSTALLDIRS@: No such file or directory
+	make[1]: Leaving directory `/builddir/build/BUILD/libguestfs-1.0.69/po'
+
+	RHEL 5.3 has gettext 0.14.6.  However the tarball will still
+	build (since it includes all the required code).  This may cause
+	a problem if RHEL users want to build from the git repository.
+
+2009-09-15  Richard Jones  <rjones@centos5x32.home.annexia.org>
+
+	Fix comparison between signed and unsigned (for RHEL 5).
+
+2009-09-14  Richard Jones  <rjones@centos5x32.home.annexia.org>
+
+	Move decl out for C99 compliance.
+
+2009-09-14  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Update PO files.
+
+	Move guestfs-internal-actions.h to EXTRA_DIST.
+
+	Prepare for 1.0.69.
+
+	Remove main loop.
+	This commit removes the external main loop, which never worked
+	and caused a number of bugs.  Requests are now done synchronously,
+	and if the user wants to have requests issued in the background
+	or to have a responsive GUI, then they'll just have to use threads.
+
+	The big change is to push all reads and writes through two
+	functions called send_to_daemon (for writes) and recv_from_daemon
+	(for reads) which operate synchronously.  These functions
+	read/write whole messages, and also handle checking for EOF
+	(ie. daemon died) and asynchronous log message events from
+	qemu (eg. from debug / dmesg printed by the guest).  A more
+	complete description of how these work can be found in the code.
+
+	This code passes a complete run of the tests.
+
+	Bugs believed to be fixed by this commit:
+
+	  https://bugzilla.redhat.com/show_bug.cgi?id=501888
+	  internal error: reply callback called twice
+
+	  https://bugzilla.redhat.com/show_bug.cgi?id=504418
+	  In virt-inspector: "download: guestfs_download reply failed, see earlier error messages"
+
+	I have tried to avoid reintroducing this:
+
+	  https://bugzilla.redhat.com/show_bug.cgi?id=508713
+	  libguestfs: error: write: Broken pipe (guestfish only)
+
+	One other benefit of this is that 'set_busy/end_busy' calls
+	no longer appear in traces.
+
+	Don't enable trace in set_trace test.
+	This leaves trace enabled afterwards, resulting in some
+	ugly test messages.
+
+	Fix type punning warning about use of CMSG_DATA in Rawhide.
+
+2009-09-14  Matthew Booth  <mbooth@redhat.com>
+
+	guestfish: Enable grouping in string lists
+	This change adds the ability to group entries in a string list with single
+	quotes. So the string:
+	  "'foo bar'"
+	becomes 1 token rather than 2. Consequently single quotes must now be escaped:
+	  "\'"
+	resolves to a literal single quote.
+
+	Incidentally, this change also alters another, probably unintentional behaviour
+	of the previous implementation, in that tokens are separated by any amount of
+	whitespace rather than a single whitespace character. I.e.:
+	  "a  b"
+	resolves to:
+	  'a' 'b'
+	rather than:
+	  'a' '' 'b'
+	That last syntax can be used if an empty argument is still desired. Whitespace
+	is now also defined to include tabs.
+
+	parse_string_list can also now fail if it contains an unmatched open quote.
+
+2009-09-14  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Ignore localrepo/ directory.
+	This can be used by people building from source and packagers for
+	their own purposes.
+
+	Add command trace functionality.
+	Enable this by calling guestfs_trace (handle, 1) or by
+	setting the LIBGUESTFS_TRACE=1 environment variable.
+
+	Non-daemon actions indirect through generated code.
+	Previously non-daemon actions were called directly by
+	user code, eg:
+
+	/* Non-generated */
+	int
+	guestfs_set_verbose (guestfs_h *g, int v)
+	{
+	  g->verbose = !!v;
+	  return 0;
+	}
+
+	This changes these actions so they go indirectly via
+	some generated code, eg:
+
+	/* Generated */
+	int guestfs_set_verbose (guestfs_h *g,
+			int verbose)
+	{
+	  return guestfs__set_verbose (g, verbose);
+	}
+
+	/* Non-generated */
+	int
+	guestfs__set_verbose (guestfs_h *g, int v)
+	{
+	  g->verbose = !!v;
+	  return 0;
+	}
+
+	The aim is to have a place in the generated code where
+	we can add debug or tracing information for these non-
+	daemon calls.
+
+2009-09-14  Matthew Booth  <mbooth@redhat.com>
+
+	guestfish: Redirect stdout when executing remote commands
+	guestfish --listen necessarily redirects its stdout to /dev/null so as not to
+	interfere with eval. The remote protocol doesn't contain any other provision for
+	collecting stdout for the caller, so executing guestfish --remote will never
+	generate any output.
+
+	This patch fixes that by forwarding the caller's STDOUT to the listener over the
+	unix socket connection. The listener redirects its STDOUT to the caller's STDOUT
+	for the duration of the command, then closes it again.
+
+2009-09-14  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Update TODO list
+
+	Add diffutils package.
+	On Fedora 12, /usr/bin/cmp is not pulled in unless we explicitly
+	add the diffutils package.
+
+2009-09-14  Matthew Booth  <mbooth@redhat.com>
+
+	Add echo_daemon command
+	echo_daemon is a simple echo which can be used to test connectivity between the
+	client and daemon.
+
+2009-09-11  Matthew Booth  <mbooth@redhat.com>
+
+	generator.ml: Fix string list memory leak
+	Parsed string lists are allocated by malloc, but were never freed.
+
+2009-09-09  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Ignore some more m4 files.
+
+	Don't include gnulib files in POTFILES.in.
+
+2009-09-04  Jim Meyering  <meyering@redhat.com>
+
+	avoid build-from-scratch failure due to missing daemon/configure
+	* bootstrap: Don't use autoreconf's --norecursive
+	option.  We require the default --recursive behavior in order
+	to create daemon/configure.  Reported by Matthew Booth.
+
+2009-08-31  Jim Meyering  <meyering@redhat.com>
+
+	maint: guestfs.c: avoid warning about possible NULL deref from llvm/clang
+	* src/guestfs.h (guestfs_abort_cb): Declare with attribute noreturn.
+
+	maint: guestfs.c: remove unnecessary initialization
+	* src/guestfs.c (guestfs__receive_file_sync): Don't set "r",
+	only to ignore it.
+
+2009-08-28  Jim Meyering  <meyering@redhat.com>
+
+	generator.ml: avoid a warning about signed overflow in tests.c
+	* src/generator.ml: Emit "unsigned long int n_failed;" rather than
+	"int failed;", to avoid warning from gcc about "assuming signed
+	overflow does not occur when simplifying conditional to constant".
+
+	generator.ml: avoid defined-but-not-used warnings in guestfs_c_actions.c
+	* src/generator.ml (emit_ocaml_copy_list_function): New function.
+	Emit a function definition only if it will be used.
+
+	generator.ml: avoid warnings in generated ocaml/guestfs_c_actions.c
+	* src/generator.ml: Emit prototypes for ocaml_guestfs_* functions,
+	to avoid warnings from gcc -Wmissing-prototypes.  Normally we'd put
+	these somewhere else, but in this unusual case, they're not needed
+	anywhere else.  Handle the >5-argument case, too, for these:
+	ocaml_guestfs_test0_byte, ocaml_guestfs_sfdisk_byte,
+	ocaml_guestfs_sfdisk_N_byte.
+
+2009-08-27  Jim Meyering  <meyering@redhat.com>
+
+	build: enable gcc warnings in capitests/ and ocaml/
+	* capitests/Makefile.am: Use $(WARN_CFLAGS) and $(WERROR_CFLAGS).
+	* ocaml/Makefile.am:: Likewise.
+
+	ocaml/guestfs_c.c: avoid warning about missing prototypes
+	* ocaml/guestfs_c.c (ocaml_guestfs_create, ocaml_guestfs_close): Declare.
+
+	ocaml/guestfs_c.c: avoid warning about initialization discarding "const"
+	* ocaml/guestfs_c.c (guestfs_custom_operations): Add a cast.
+
+	ocaml/guestfs_c.c avoid signed/unsigned-comparison warning
+	* ocaml/guestfs_c.c (ocaml_guestfs_strings_val): Declare index as
+	unsigned int.
+
+2009-08-25  Jim Meyering  <meyering@redhat.com>
+
+	build: use only one m4/ directory
+	* Makefile.am (ACLOCAL_AMFLAGS): Specify only one include dir: m4.
+	* bootstrap: Tell gnulib-tool to put .m4 files in m4/, not gnulib/m4.
+	* autogen.sh: Move autoreconf from here into...
+	* bootstrap: ...here, so that it is run only when gnulib-tool is.
+	Also, tell it to skip the usual autopoint and libtoolize runs.
+	* m4/.gitignore: Update.
+
+	build: invoke autopoint with --force
+	* bootstrap: Invoke autopoint with --force, to avoid warning
+	about existing build-aux/config.rpath.
+	Invoke libtoolize before gnulib-tool, to avoid spurious warnings.
+	* autogen.sh: Add comments.
+	Remove build-aux/config.rpath before running autoreconf.
+
+	build: update gnulib submodule to latest
+	* .gnulib: Update to latest.
+
+2009-08-24  Jim Meyering  <meyering@redhat.com>
+
+	build: don't define _GNU_SOURCE manually
+	Now that we're using gnulib in earnest, any manual definition
+	would provoke a redefinition warning.
+	* fish/fish.c (_GNU_SOURCE): Don't define.
+	* fish/destpaths.c (_GNU_SOURCE): Likewise.
+	* src/guestfs.c (_GNU_SOURCE): Likewise.
+	* bootstrap (modules): Add asprintf, strchrnul, strerror, strndup
+	and vasprintf.
+	* fish/fish.c (main): Set argv[0] to sanitized program_name, so
+	functions like getopt_long that use argv[0] use the clean name.
+
+	guestfish: diagnose stdout write failure
+	Use gnulib's closeout module to ensure any failure to write to
+	stdout is detected and reported.
+	* fish/fish.c: Include "closeout.h".
+	(main): Call atexit (close_stdout);
+	* bootstrap (modules): Add closeout.
+
+	guestfish: don't try to diagnose getopt failure
+	* fish/fish.c: ... getopt_long already does that.  Instead, suggest
+	"Try `guestfish --help' for more information."
+
+	guestfish: write --help to stdout, use gnulib's progname module
+	* fish/fish.c: Include "progname.h".
+	(main): Call set_program_name to initialize.
+	Don't hard-code guestfish everywhere.  Use program_name.
+	However, be careful when modifying argv[0], since it is used
+	in the hopes that it is an absolute file name.
+	(usage): Don't spew all of --help for a mis-typed option.
+	Split long lines.
+
+	build: avoid some autoconf warnings
+	* configure.ac: Move gl_EARLY and gl_INIT to be earlier.
+
+2009-08-24  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Todo: ntfsclone.
+
+2009-08-22  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Add waitpid along guestfs_close path (RHBZ#518747).
+
+2009-08-21  Jim Meyering  <meyering@redhat.com>
+
+	fish/: enable -Werror and all of gcc's warning options
+	* fish/Makefile.am: Use $(WARN_CFLAGS) $(WERROR_CFLAGS).
+
+	generator.ml: avoid signed/unsigned-comparison warning in fish/cmds.c
+	* src/generator.ml (emit_print_list_function): Emit code that doesn't
+	evoke warnings.  s/int/unsigned int/
+	(emit print_*_indent): Likewise, s/int/unsigned int/
+
+	destpaths.c: avoid signed/unsigned-comparison warning
+	* fish/destpaths.c (free_words): Change param type: s/int/size_t/.
+
+	fish.c: don't perform arithmetic on void* pointers
+	* fish/fish.c (xwrite): Use char*.
+
+	fish.c: avoid signed/unsigned-comparison warning
+	* fish/fish.c (script): Change type of index to "unsigned int".
+
+	fish.c: avoid "assignment discards qualifiers..." warning
+	* fish/fish.c (main): Cast-away-const.
+	* fish/fish.h (bad_cast): Define.  Safer than using an actual cast.
+
+	tilde.c: avoid a warning
+	* fish/tilde.c (find_home_for_username): Change param type: s/int/size_t/
+	(try_tilde_expansion): Adjust caller.
+
+	fish.c: avoid warnings
+	* fish/rc.c (UNIX_PATH_MAX): Remove unused definition.
+	* fish/fish.h (rc_listen): Declare with __attribute__((noreturn)).
+
+	edit.c: avoid warning about signed/unsigned comparison
+	* fish/edit.c (load_file): Change type of param from int to size_t.
+	(do_edit): Adjust caller.
+
+2009-08-20  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Remove virt-v2v.  New repo: http://gitorious.org/virt-v2v/
+
+2009-08-20  Jim Meyering  <meyering@redhat.com>
+
+	daemon: diagnose socket write failure
+	* daemon/proto.c (send_chunk): Don't ignore socket-write error.
+	* daemon/proto.c (send_file_end): Return "int", not void,
+	so we can propagate send_chunk failure to caller.
+	* daemon/daemon.h (send_file_end): Update prototype.
+	* daemon/tar.c (do_tar_out, do_tgz_out): Update uses of send_file_end.
+	* daemon/upload.c (do_download): Likewise.
+
+2009-08-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Found three more references to the squashfs, replaced with ISO.
+
+2009-08-19  Richard Jones  <rjones@trick.home.annexia.org>
+
+	tests: namemax on ISO devices is 255
+	Was 256 for the old squashfs device.
+
+2009-08-19  Matthew Booth  <mbooth@redhat.com>
+
+	Cleanup initialisation of hash entries in Lib.pm
+
+2009-08-19  Richard Jones  <rjones@debian5x64.home.annexia.org>
+
+	tests: Use ISO instead of squashfs.
+	The squashfs format changes too much.  Use an ISO file for
+	the tests instead.
+
+2009-08-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	mke2fs: Use e4fsprogs programs if available.
+	On RHEL 5, mke2fs is ancient, and there is a non-standard "mke4fs"
+	binary which acts like the more recent mke2fs on Fedora.  Since there
+	are several annoyances and actual bugs in the ancient RHEL 5 mke2fs,
+	use mke4fs instead if it's available.
+
+	tests: modprobe fat instead of ext2 module.
+	On RHEL 5, ext2 is compiled into the kernel, so trying to modprobe
+	it will fail.  I've checked that fat.ko is always a module on the
+	platforms we care about (RHEL 5, Fedora 11, Debian), so use that
+	to test instead.
+
+	tests: Conditionally skip UUID tests.
+	More tests introduced which break with old e2fsprogs that didn't
+	support UUIDs.  Skip those tests when the old platform is
+	detected.
+
+	Also tidy up this code a little.
+
+2009-08-19  Jim Meyering  <meyering@redhat.com>
+
+	avoid build failure due to Haskell keyword clash
+	* src/generator.ml: Fix this particular problem by
+	renaming the "module" parameter to "modulename".
+	Avoid the general problem by ensuring that no parameter name is
+	in the set of nearly all Haskell, OCaml and C reserved words.
+	(zfile): Adjust one more offender: s/method/meth/.
+
+2009-08-19  Matthew Booth  <mbooth@redhat.com>
+
+	Export inspect_linux_kernel in Lib.pm
+
+	Add boot/grub_fs to output
+	If present, this gives the mount point of the filesystem which contains grub.
+	All entries in grub.conf will be relative to this filesystem.
+
+2009-08-19  Jim Meyering  <meyering@redhat.com>
+
+	guestfish: detect more failed syscalls
+	* fish/fish.c (issue_command): Detect/diagnose more failed syscalls.
+
+2009-08-19  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Prepare for version 1.0.68.
+
+	guestfs_launch: Correct checks for dup failure.
+
+	Updated PO files.
+
+	build: Comment out some unused macros.
+	GCC 4.4.1 warns about some unused macros.  Comment these out
+	while they are not used.
+
+2009-08-18  Jim Meyering  <meyering@redhat.com>
+
+	build: new configure-time option: --enable-gcc-warnings
+	* configure.ac: Define/configure it.
+	* src/Makefile.am: Use new variables.
+
+	suppress warnings from -Wmissing-noreturn
+	Even though these functions are marked as "not implemented yet",
+	and they will surely return a value once implemented, ...
+	* src/guestfs.c (select_add_timeout): Declare with noreturn attribute.
+	(select_remove_timeout): Likewise.
+
+	suppress a warning from -Wswitch-default
+	* src/guestfs.c (guestfs_end_busy): Add a "default:" label.
+
+	suppress signed/unsigned-comparison warnings
+	* src/guestfs.c [struct guestfs_h] (msg_in_size, msg_in_allocated):
+	(msg_out_size, msg_out_allocated): Change type from int to unsigned int.
+
+	build: don't perform arithmetic on void* pointers
+	* src/guestfs.c (receive_file_data_sync, xread, xwrite): Use char*.
+
+	generator.ml: suppress signed/unsigned-compare warnings
+	* src/generator.ml (check_reply_header): Emit parameter declarations
+	that are unsigned, so as to avoid signed/unsigned-compare warnings.
+
+	build: suppress an ignored-dup-return-value warning
+	* src/guestfs.c (guestfs_launch): Handle dup failure.
+
+	build: suppress an ignored-write-return-value warning
+	* bootstrap (modules): Add ignore-value.
+	* src/guestfs.c: Include "ignore-value.h".
+	(stdout_event): Ignore failure to write to stderr.
+	Also, prefer STDERR_FILENO over the literal "2".
+	* src/Makefile.am (libguestfs_la_CPPFLAGS): Include gnulib's .h files.
+	(libprotocol_la_CFLAGS): Remove -Wall -Wno-unused.
+
+2009-08-18  Matthew Booth  <mbooth@redhat.com>
+
+	New 'modprobe' command.
+	Allow kernel modules to be loaded into the appliance.
+
+2009-08-18  Jim Meyering  <meyering@redhat.com>
+
+	avoid compiler warnings about unused vars in generated code
+	* fish/Makefile.am: Compile rc_protocol.c into a convenience library,
+	so it can have its own CFLAGS, and link that into guestfish.
+
+	generator.ml: Use TABs, not spaces for indentation.
+
+2009-08-18  Richard Jones  <rjones@trick.home.annexia.org>
+
+	generator: Small code rearrangement.
+	Move code which updates pod2text memo file into a separate function.
+
+2009-08-18  Jim Meyering  <meyering@redhat.com>
+
+	generator.ml: do not emit unused print_* functions
+	* src/generator.ml: Do not emit functions like print_xattr,
+	print_lvm_vg, print_inotify_event, that are not used.
+
+	generator.ml: do not emit unused print_*_list functions
+	* src/generator.ml (emit_print_list_function): New function.
+	Emit a function definition only if it will be used.
+
+	generator.ml: avoid warnings in generated tests.c
+	* src/generator.ml: Avoid warnings in generated tests.c, regarding
+	print_strings, and in exercising any function that takes a StringList
+	or DeviceList parameter.
+	(print_strings): Change param type to "char *const *s".
+	Declare fully-const initializer for each list-taking function use.
+	Cast *List argument to "(char **)".
+
+	avoid compiler warnings about unused vars in generated code
+	* src/Makefile.am: Compile protocol.c into a convenience library, so it
+	can have its own CFLAGS, and link that with the destination one.
+
+2009-08-18  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Implement 'debug ls' and 'debug ll' commands.
+	These commands can be used to list files in the appliance.
+
+2009-08-17  Jim Meyering  <meyering@redhat.com>
+
+	generator.ml: Use TABs, not spaces for indentation.
+
+2009-08-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	Ignore manywarnings.m4 / warnings.m4.
+
+	java: Small fix to Java bindings.
+	Missing declaration of local variable 'i'.
+
+	HACKING: Document make targets and ./configure --enable-gcc-warnings.
+
+	Remove redundant macro.
+
+2009-08-17  Jim Meyering  <meyering@redhat.com>
+
+	indent with spaces, not TABs
+
+	daemon: enable -Werror and many gcc warnings when --enable-gcc-warnings
+	* daemon/m4/gnulib-cache.m4: Add two modules: manywarnings, warnings.
+	* daemon/configure.ac: Implement --enable-gcc-warnings, and selectively
+	disable a few warning options that are either not useful or that provoke
+	too many warnings for now.
+	Define and AC_SUBST WARN_CFLAGS and WERROR_CFLAGS.
+	* daemon/Makefile.am (guestfsd_CFLAGS): Use $(WARN_CFLAGS)
+	and $(WERROR_CFLAGS), rather than just -Wall.
+
+	xattr.c: avoid warning about comparison between signed and unsigned
+	* daemon/xattr.c (getxattrs): Use an unsigned index.
+
+	guestfsd: don't ignore failed write-to-socket
+	* daemon/proto.c (reply): Fix typo that would cause us to ignore
+	failed write-to-socket.
+
+	daemon.h: avoid warning about possible noreturn function
+	* daemon/daemon.h (main_loop): Use "noreturn" attribute.
+
+	sfdisk.c, fallocate.c: use a string literal as format
+	* daemon/fallocate.c (do_fallocate): Format was not a string literal.
+	* daemon/sfdisk.c (sfdisk): Likewise.
+
+	wc, blockdev: avoid warnings about discarding "const" qualifiers
+	* daemon/wc.c (wc): Make "flag" param const.
+	* daemon/blockdev.c (call_blockdev): Likewise, for "switc".
+
+	daemon/zero: don't ignore write and close errors
+	* daemon/zero.c (do_zero): Detect write and close errors.
+
+	guestfsd.c: don't perform arithmetic on void pointers
+	* daemon/guestfsd.c (xread, xwrite): Use char* pointers instead.
+
+	command.c: avoid shadowing a global function
+	* daemon/command.c (do_sh_lines, do_sh): Do not shadow global "command".
+
+	avoid warning about old-style no-param function definition
+	* daemon/df.c (do_df, do_df_h): Add "void".
+	* sync.c (do_sync): Likewise.
+
+	generator.ml: emit slightly prettier code
+	* src/generator.ml: Emit a few omitted newlines.
+
+	python: avoid "_POSIX_C_SOURCE" redefinition warning
+	* src/generator.ml: Include <Python.h> *before* <stdio.h>
+	to avoid redefinition warning about "_POSIX_C_SOURCE".
+
+	adjust const "**" pointers to avoid warnings
+	Also, ...
+	* src/generator.ml: Add DeviceList type, and propagate that change
+	out to all calling/interface code.
+
+2009-08-16  Richard Jones  <rjones@trick.home.annexia.org>
+
+	test-tool: Recognize '-t timeout' as an option.
+
+2009-08-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	New commands: mkfs-b, mke2journal*, mke2fs-J*
+	mkfs-b: Pass the -b (blocksize) parameter to mkfs.
+
+	mke2journal and friends: Lets you create external ext2 journals on
+	devices.
+
+	mke2fs-J and friends: Lets you create ext2/3/4 filesystems with
+	external journals.
+
+	generator: Generate the UUIDs for tests randomly.
+	Adds a uuidgen function which gets the random UUID from the
+	uuid program.  Uses this for tests.
+
+2009-08-14  Jim Meyering  <meyering@redhat.com>
+
+	Merge branch '226-elide'
+
+	build: avoid "make sytnax-check" failure
+	* daemon/configure.ac: Change a leading TAB to 8 spaces.
+
+	generator.ml: don't emit unused functions
+	* src/generator.ml: Use "rstructs_used" to emit definitions only for
+	put_TYPE_list functions that are used.
+
+	generator.ml: factor out a function
+	* src/generator.ml (emit_put_list_function): New function.
+
+2009-08-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Work out which RStruct/RStructList structs are really used, and how.
+
+2009-08-13  Richard Jones  <rjones@trick.home.annexia.org>
+
+	guestfish: Add --selinux option.
+
+	Version 1.0.67.
+
+2009-08-13  Jim Meyering  <meyering@redhat.com>
+
+	tests: increase likelihood that heap abuse triggers failure
+	* regressions/Makefile.am (TESTS_ENVIRONMENT): Always set
+	MALLOC_PERTURB_ to a random value in 1..255.
+
+2009-08-13  Richard Jones  <rjones@trick.home.annexia.org>
+
+	appliance: Remove /usr/sbin/tcpd - it's unreadable on RHEL 5.4.
+
+	appliance: Replace LANG=C with LC_ALL=C
+
+	umount: Enable device name translation for device parameter.
+
+	mount: Check mountpoints are absolute paths.
+
+2009-08-13  Richard Jones  <rjones@centos5x32.home.annexia.org>
+
+	selinux: Don't fail if libselinux is not found.
+
+2009-08-13  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Misc parameters which are String but should be Pathname.
+
+	In rmmountpoint, have to explicitly check for ABS_PATH (*not* NEED_ROOT).
+
+	inotify-add-watch does not need to explicitly check for ABS_PATH.
+
+	cp/cp-a/mv parameters marked as Pathname.
+
+	do_equal does not need to explicitly check for NEED_ROOT/ABS_PATH.
+
+2009-08-13  Jim Meyering  <meyering@redhat.com>
+
+	generator.ml: convert leading TABs to spaces
+
+	sfdisk: guard against buffer overflow
+	* daemon/sfdisk.c (sfdisk): Don't let outrageous "extra_flag"
+	or "device" strings overflow a fixed-size buffer.
+
+	do_umount: don't use RESOLVE_DEVICE anymore
+	* daemon/mount.c (do_umount): Don't use RESOLVE_DEVICE here,
+	now that the caller always invokes REQUIRE_ROOT_OR_RESOLVE_DEVICE.
+
+	generator.ml: factor out "pr_args n" function
+
+	generator.ml: finish adding Dev_or_Path support
+	* src/generator.ml: Update all rules to handle Dev_or_Path.
+	(the above changes to generator.ml are mostly mechanical)
+	Emit a use of REQUIRE_ROOT_OR_RESOLVE_DEVICE.
+	* daemon/upload.c (do_download): Remove use of
+	REQUIRE_ROOT_OR_RESOLVE_DEVICE, now that it's automatically done
+	in calling code.
+	* daemon/file.c (do_file): Likewise.
+
+	generator.ml: add type: Dev_or_Path
+	* src/generator.ml (file, download): Use it.
+
+	generator.ml: constify do_mkdtemp
+	* daemon/dir.c (do_mkdtemp): Rewrite for a "const" parameter.
+	* src/generator.ml (mkdtemp): Declare parameter to be of type Pathname.
+
+	generator.ml: move String/Device decls "down" to definition
+
+	generator.ml: use new "Pathname" designation
+	Nearly every file-related function in daemons/*.c is affected:
+	Remove this pair of statements from each affected do_* function:
+	-  NEED_ROOT (return -1);
+	-  ABS_PATH (dir, return -1);
+	and change the type of the corresponding parameter to "const char *".
+	* src/generator.ml: Emit NEED_ROOT just once, even when there are two or
+	more Pathname args.
+
+	generator.ml: new type, "Pathname"
+	* src/generator.ml: Emit NEED_ROOT and ABS_PATH into generated
+	stubs.c, rather than requiring they be added manually at the start
+	of each and every do_* function that operates on a "path" parameter.
+	Update grammar: Pathname is just a String, with the above exception.
+	Do not update augeas "path" parameters, since they are not file names,
+	but rather ":"-separated search paths.  Except aug_init, for which
+	"path" *is* a file name.
+
+	generator.ml: emit "const char *" for Device and String params
+	* src/generator.ml: Emit "const char *", not "char *" for Device and
+	String params, now that the non-const code is hoisted into the calling
+	code in stubs.c.
+
+	fix daemon.h's use of NEED_ROOT-in-#define
+
+	update all NEED_ROOT uses
+	run this command:
+	  git grep -l -w NEED_ROOT|xargs perl -pi -e \
+	    's/(NEED_ROOT) \((.*?)\)/$1 (return $2)/'
+
+	* src/generator.ml: Change all `String "device"' to `Device "device"'.
+	Then update each affected function, removing each uses of RESOLVE_DEVICE,
+	now that it's generated in caller from stub.c.
+	* daemon/blockdev.c (call_blockdev): Remove use of RESOLVE_DEVICE.
+	* daemon/devsparts.c (do_mkfs): Likewise.
+	* daemon/ext2.c (do_e2fsck_f, do_get_e2label, do_get_e2uuid): Likewise.
+	(do_resize2fs, do_set_e2label, do_set_e2uuid, do_tune2fs_l): Likewise.
+	* daemon/fsck.c (do_fsck): Likewise.
+	* daemon/grub.c (do_grub_install): Likewise.
+	* daemon/lvm.c (do_lvremove, do_pvcreate, do_pvremove): Likewise.
+	(do_pvresize): Likewise.
+	* daemon/mount.c (do_mount_vfs): Likewise.
+	* daemon/ntfs.c (do_ntfs_3g_probe): Likewise.
+	* daemon/scrub.c (do_scrub_device): Likewise.
+	* daemon/sfdisk.c (sfdisk, sfdisk_flag): Likewise.
+	* daemon/swap.c (do_mkswap, do_mkswap_L, do_mkswap_U): Likewise.
+	(do_swapoff_device, do_swapon_device): Likewise.
+	* daemon/zero.c (do_zero): Likewise.
+	* daemon/zerofree.c (do_zerofree): Likewise.
+
+	update generator to emit each RESOLVE_DEVICE call
+	* src/generator.ml: Emit RESOLVE_DEVICE (device, goto done);
+	just before each Device-enabled do_$FUNCTION.
+
+	s/NEED_ROOT_OR_IS_DEVICE/REQUIRE_ROOT_OR_RESOLVE_DEVICE/
+
+	guestfsd.c: correct s/IS_DEVICE/RESOLVE_DEVICE/ in another comment
+
+	manually adjust ABS_PATH uses for new semantics
+	* daemon/file.c (do_cat): fix an ABS_PATH use
+
+	update all uses of ABS_PATH
+	run this command:
+	  git grep -l -w ABS_PATH|xargs perl -pi -e \
+	    's/(?:ABS_PATH)( \(.*?,) (.*?)\)/ABS_PATH$1 return $2)/'
+
+	propagate semantic changes to NEED_ROOT, NEED_ROOT_OR_IS_DEVICE
+	changing IS_DEVICE semantics leads to changing semantics of
+	NEED_ROOT_OR_IS_DEVICE and NEED_ROOT, too.
+	* daemon/daemon.h: Update definitions.
+
+	convert the last few, manually
+
+	change almost all uses: s/IS_DEVICE/RESOLVE_DEVICE/
+	Use this command:
+	  git grep -l -w IS_DEVICE|xargs perl -pi -e \
+	    's/\b(?:IS_DEVICE)\b( \(.*?,) (.*?)\)/RESOLVE_DEVICE$1 return $2)/'
+
+	* daemon/daemon.h (RESOLVE_DEVICE): Rename from IS_DEVICE.
+	Change parameter from "errcode" (which would be returned) to "fail_stmt"
+	so that a caller can specify e.g., "goto done" upon failure.
+
+	generator.ml: define new String-like type: "Device"
+
+2009-08-13  Matthew Booth  <mbooth@redhat.com>
+
+	Don't assume grub is on a separate boot filesystem
+	Paths in grub.conf are relative to the filesystem containing it. grub parsing
+	currently assumes that it is on /boot, and will fail if it isn't, for example
+	because a guest only has a single partition.
+
+	This patch makes grub parsing work harder to work out what grub paths are
+	relative to. Firstly, it looks for a previous detected 'linux-grub' filesystem.
+	If this isn't found, it tries to work out which filesystem contains
+	/boot/grub/menu.lst and uses that.
+
+2009-08-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	add_drive: Don't use cache=off if not supported by underlying filesystem.
+	If you use the guestfs_add_drive function, then currently it
+	generates a qemu command line element like:
+
+	  -drive ...,cache=off,...
+
+	This causes qemu to try to open the device with O_DIRECT.
+	Unfortunately some filesystems don't support this flag, notably tmpfs,
+	which means you can't use libguestfs in conjunction with tmpfs.  On
+	some systems /tmp is a tmpfs filesystem.
+
+	This patch fixes this so that if the filesystem doesn't support
+	O_DIRECT, then we omit the cache=off parameter.  This seems reasonable
+	from a reliability point of view, because if you're using tmpfs then
+	you probably didn't expect reliability in the case where your system
+	suddenly powers off.
+
+2009-08-13  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Add 'setcon', 'getcon' commands to set and get the SELinux context.
+
+2009-08-12  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Return error if allocations fail.
+
+	Add documentation for SELinux configuration.
+	Also use L</...> to link between sections.
+
+	Spelling fix: labelled -> labeled.
+
+	If using SELinux, mount /selinux in the appliance.
+	If selinux=1 on the Linux kernel command line, then we mount
+	/selinux in the appliance.  We will also bind-mount this
+	directory into guests when we run commands.
+
+	Allow selinux=? kernel flag to be controlled.
+	Adds new API calls to set and get this flags.
+
+2009-08-12  Jim Meyering  <meyering@redhat.com>
+
+	fish: don't read freed memory
+	* fish/rc.c (rc_remote): Close file handle only *after* xdr_destroy,
+	because that latter may flush its file handle (implicated via
+	xdrstdio_create).  FYI, this failure is triggered for me only when
+	MALLOC_PERTURB_ is set to nonzero < 256 in my environment.
+
+	doc: improve emacs snippets
+	* HACKING: Make (setq indent-tabs-mode nil) apply to nearly all
+	files, not just C-mode ones.
+
+2009-08-12  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Fix regression test rhbz503169c10.sh.
+	'll' command has changed semantics very slightly
+	(see commit 6727e7c8bdf1cb39264a9de6333d228b51c39956).
+	We need to fix this test so it doesn't try to run
+	the ll command without a mounted disk.
+
+2009-08-11  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Add contents of /proc/mounts to the debugging information.
+
+2009-08-11  Jim Meyering  <meyering@redhat.com>
+
+	daemon/ls: make do_ll require root, like all the rest
+	* ls.c (do_ll): Do invoke "NEED_ROOT" here, and add a FIXME to
+	provide a "debug ll" command with the semantics we're removing.
+
+2009-08-10  Jim Meyering  <meyering@redhat.com>
+
+	build: avoid first-time configure-from-clone failure
+	* bootstrap: Run autopoint before using the file it creates,
+	po/Makevars.template.  Reported by Richard Jones.  Details here:
+	https://www.redhat.com/archives/libguestfs/2009-August/msg00135.html
+
+	build: enable automake's silent rules option
+	* configure.ac: Use AM_SILENT_RULES([yes]).
+	Those who want verbose build output may configure with
+	--disable-silent-rules or use "make V=1".
+	* daemon/configure.ac: Likewise.
+
+	build: daemon/do_debug: parameters aren't always unused
+	* daemon/debug.c (MAYBE_UNUSED): Define.
+	(do_debug): Mark parameters as unused only when they really
+	are unused.  Spotted by Richard Jones.
+
+	SCALAR(0xdd8370)
+	prefer sizeof *VAR sizeof TYPE (no semantic change)
+
+	build: avoid warnings in daemon/inotify.c
+	Avoid "comparison between signed and unsigned integer expressions"
+	warnings.  If it's at all hard or risky to avoid this type of warning,
+	then it's not worthwhile.  Here, it's easy and safe.
+	* daemon/inotify.c (inotify_posn): Declare local to be of unsigned type.
+	(do_inotify_read, do_inotify_files): Likewise.
+
+	build: avoid warnings in daemon/guestfsd.c
+	* daemon/guestfsd.c (print_arginfo, print_shell_quote): Mark each
+	"info" parameter as unused.
+
+	build: avoid warnings in daemon/debug.c
+	* daemon/debug.c (do_debug): Mark parameters as unused.
+
+	define ATTRIBUTE_UNUSED
+	* daemon/daemon.h (__attribute__, ATTRIBUTE_UNUSED): Define.
+
+	daemon/file.c: remove duplicate absolute-path check
+	* daemon/file.c (do_file): Remove redundant use of ABS_PATH.
+	It's redundant because the preceding line invokes NEED_ROOT_OR_IS_DEVICE,
+	which also invokes ABS_PATH.
+
+2009-08-07  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Tidy up generation of java/Makefile.inc.
+	(Just whitespace and comment changes, and small restructuring
+	of the code).
+
+	Debug: Improve the way the qemu command line is printed.
+	Change the way the qemu command is displayed to look like
+	this:
+
+	/usr/bin/qemu-kvm \
+	    -drive file=/tmp/test.img,cache=off,if=virtio \
+	    -m 500 \
+	    -no-reboot \
+	    -kernel /tmp/libguestfsHBJHRh/kernel \
+	    -initrd /tmp/libguestfsHBJHRh/initrd \
+	    [...]
+
+	This allows the command line to be copied and pasted directly
+	into the shell, and also makes it simpler to read.
+
+	Allow network interface to be configured.
+	Add ./configure --with-net-if=(virtio|ne2k_pci) option.
+
+	This lets you workaround the following virtio_net bug:
+
+	https://bugzilla.redhat.com/show_bug.cgi?id=516022
+
+	Tests: swapon_device test mkswap /dev/sda1 instead of /dev/sdb.
+	On RHEL 5, mkswap /dev/sdb fails, even with the '-f' option
+	(contradictory to what the manual page says).
+
+	This commit adds a new 'InitPartition' initialization which
+	just creates /dev/sda1, and then does the swap test on that.
+
+2009-08-06  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Always pass mkswap -f parameter.
+	Otherwise mkswap will give a silly error if you ask it to
+	swap on a whole device.
+
+	Tests: Don't test block size in statvfs test.
+	The block size changes between kernel releases, causing
+	a false failure in the tests.  The error was:
+
+	test_statvfs_0: bsize was 65536, expected 131072
+
+	Version 1.0.66
+
+	RHEL 5: inotify_init1 call did not exist on RHEL 5.
+
+	Fix: segfault in tab completion (RHBZ#516024).
+	Actually this fixes two bugs: 'strs' was not being freed on every
+	path, and the tab completion segfault described in the bug report.
+
+2009-08-06  Matthew Booth  <mbooth@redhat.com>
+
+	Fix errno check in readdir in devsparts.c
+
+2009-08-06  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Add ne2k-pci driver to the appliance.
+	This allows people to use the ne2k-pci network driver, for those
+	situations where the virtio_net driver is broken (cough 516022 cough).
+
+	Make user network numbering explicit.
+	Use:
+	 -net user,vlan=0,net=10.0.2.0/8
+	just to make the (already implicit) 10.0.2.x network explicit.
+
+	appliance: More debug added to /init.
+
+2009-08-06  Matthew Booth  <mbooth@redhat.com>
+
+	Exclude daemon/lib and daemon/tests from being added to po/POTFILES.in
+
+2009-08-06  Jim Meyering  <meyering@redhat.com>
+
+	build: remove bootstrap's --gnulib-srcdir option
+	...because it probably didn't work, and even if it did, we've
+	discovered that using a separate git repo like that can lead
+	to subtle mix-ups.
+	Also, fix invocation of gnulib-tool in daemon/.
+
+	build: fix build failure
+	* bootstrap (gnulib_tool): Create lib and tests directories
+	under daemon/ before running gnulib-tool there.
+
+	daemon: use gnulib
+	* daemon/Makefile.am (SUBDIRS): Define.
+	(AM_CPPFLAGS): Define, to include from gnulib's lib/
+	(LDADD): Define, to link with gnulib's libgnu.a.
+	* daemon/configure.ac: Use AC_CONFIG_AUX_DIR([build-aux]),
+	gl_EARLY and gl_INIT.
+	(AC_CONFIG_FILES): Add lib/Makefile and tests/Makefile
+	* daemon/m4/gnulib-cache.m4: New file, generated by running
+	../.gnulib/gnulib-tool --import --with-tests hash
+	* daemon/.gitignore: Ignore all of the imported files.
+	build: tell bootstrap about daemon/
+	* bootstrap: Run gnulib-tool --update in daemon/.
+	Remove bootstrap's --gnulib-srcdir option, because it probably
+	didn't work, and even if it did, we've discovered that using
+	a separate git repo like that can lead to subtle mix-ups.
+
+2009-08-06  Richard Jones  <rjones@trick.home.annexia.org>
+
+	appliance: Include more debug output in the /init script.
+	Output more debugging information from this script, to enhance the
+	usefulness of LIBGUESTFS_DEBUG output.
+
+2009-08-06  Matthew Booth  <mbooth@redhat.com>
+
+	Recognise cd-rom devices in devsparts.c
+	Also:
+	* Un-duplicate device detection code by creating a common mapping function.
+	* Add some more comments.
+
+	Fix test failures in upload and download (RHBZ#515764)
+	The tests hardcoded an MD5 of the test file, COPYING.LIB, whose contents had
+	change. This change causes it to compute the MD5 rather than hardcoding it.
+
+	OCaml provided by rjones.
+
+2009-08-06  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Add copyright and license notice to regressions/test-noexec-stack.pl
+
+2009-08-05  Matthew Booth  <mbooth@redhat.com>
+
+	Add some newly-untracked files to .gitignore
+
+	Fix swapon_label test
+	The swapon label test has a side-effect, in that it creates a new partition.
+	This causes the later failure of the list_partitions test.
+
+	This change causes the swapon_label test to zero /dev/sdb after the test, and
+	then re-read the partition table.
+
+	Add resultant change to po/POTFILES.in
+	I missed this when committing 7e9cb884492aec243337ffc8e4432a9ff2690956
+
+	Add a test for an executable stack in resultant binaries
+
+2009-08-05  Jim Meyering  <meyering@redhat.com>
+
+	build: generate some just-removed files in po/
+	* bootstrap: Generate po/Makevars and po/LINGUAS.
+
+2009-08-04  Jim Meyering  <meyering@redhat.com>
+
+	build: remove trailing blank lines; enable the syntax-check rule
+	* cfg.mk (disable_temporarily): Remove sc_prohibit_trailing_blank_lines.
+	* appliance/Makefile.am: Remove trailing blank line(s).
+	* appliance/debian/modules/y0_install-guestfsd: Likewise.
+	* appliance/make.sh.in: Likewise.
+	* appliance/packagelist.in: Likewise.
+	* appliance/update.sh.in: Likewise.
+	* haskell/run-bindtests: Likewise.
+	* ocaml/run-bindtests: Likewise.
+	* python/run-python-tests: Likewise.
+	* recipes/squashfs.example: Likewise.
+	* ruby/run-ruby-tests: Likewise.
+
+	build: exempt symlinks from trailing-blank-line prohibition
+	* cfg.mk (sc_prohibit_trailing_blank_lines): Exempt symlinks.
+
+	build: enable syntax-check: TAB-only indentation in Makefiles
+	* cfg.mk (disable_temporarily): Remove sc_makefile_TAB_only_indentation.
+
+	build: tweak HACKING so we pass "make syntax-check"
+	* HACKING: Convert leading TABs.
+
+	build: remove trailing blanks, enable syntax-check
+	* regressions/test-cancellation-download-librarycancels.sh:
+	* src/generator.ml:
+	* cfg.mk (disable_temporarily): Remove sc_trailing_blank.
+	* .x-sc_trailing_blank: New file.
+
+	maint: use COPYING.LIB version 2.1
+	* COPYING.LIB: Update to 2.1.
+	* .x-sc_TAB_in_indentation: Also exempt COPYING.LIB.
+
+	build: don't emit trailing blanks, remove generated file
+	* ocaml/Makefile.am (.depend): Don't redirect directly to $@.
+	Filter out trailing blanks.
+	* ocaml/.depend: Regenerate.
+
+	build: remove more files added by ./autogen.sh
+	* po/LINGUAS: Remove file.
+	* po/Makefile.in.in: Likewise.
+	* po/Makevars: Likewise.
+	* po/Rules-quot: Likewise.
+	* po/boldquot.sed: Likewise.
+	* po/en@boldquot.header: Likewise.
+	* po/en@quot.header: Likewise.
+	* po/insert-header.sin: Likewise.
+	* po/quot.sed: Likewise.
+	* po/remove-potcdate.sin: Likewise.
+
+	build: tell aclocal to search gnulib/m4, too
+	* Makefile.am (ACLOCAL_AMFLAGS): Append "-I gnulib/m4".
+
+2009-08-03  Jim Meyering  <meyering@redhat.com>
+
+	Document and enforce the new spaces-only indentation policy.
+	* cfg.mk (disable_temporarily): Remove sc_TAB_in_indentation,
+	to enable the "make syntax-check" that enforces this.
+	* .x-sc_TAB_in_indentation: New file.  Exceptions.
+	* HACKING: Document the policy, with tips on how to conform.
+
+	Convert all TABs-as-indentation to spaces.
+	Do it by running this command:
+	[exempted files are matched via .x-sc_TAB_in_indentation]
+
+	  git ls-files \
+	    | pcregrep -vf .x-sc_TAB_in_indentation \
+	    | xargs pcregrep -l '^ *\t' \
+	    | xargs perl -MText::Tabs -ni -le \
+	      '$m=/^( *\t[ \t]*)(.*)/; print $m ? expand($1) . $2 : $_'
+
+	Remove files imported via autogen.sh.
+	* m4/.gitignore: Ignore these files.
+	* m4/codeset.m4: Remove file.
+	* m4/gettext.m4: Likewise.
+	* m4/glibc2.m4: Likewise.
+	* m4/glibc21.m4: Likewise.
+	* m4/iconv.m4: Likewise.
+	* m4/intdiv0.m4: Likewise.
+	* m4/intl.m4: Likewise.
+	* m4/intldir.m4: Likewise.
+	* m4/intlmacosx.m4: Likewise.
+	* m4/intltool.m4: Likewise.
+	* m4/inttypes-pri.m4: Likewise.
+	* m4/inttypes.m4: Likewise.
+	* m4/inttypes_h.m4: Likewise.
+	* m4/isc-posix.m4: Likewise.
+	* m4/lcmessage.m4: Likewise.
+	* m4/lib-ld.m4: Likewise.
+	* m4/lib-link.m4: Likewise.
+	* m4/lib-prefix.m4: Likewise.
+	* m4/lock.m4: Likewise.
+	* m4/longdouble.m4: Likewise.
+	* m4/longlong.m4: Likewise.
+	* m4/nls.m4: Likewise.
+	* m4/po.m4: Likewise.
+	* m4/printf-posix.m4: Likewise.
+	* m4/progtest.m4: Likewise.
+	* m4/signed.m4: Likewise.
+	* m4/size_max.m4: Likewise.
+	* m4/stdint_h.m4: Likewise.
+	* m4/uintmax_t.m4: Likewise.
+	* m4/ulonglong.m4: Likewise.
+	* m4/visibility.m4: Likewise.
+	* m4/wchar_t.m4: Likewise.
+	* m4/wint_t.m4: Likewise.
+	* m4/xsize.m4: Likewise.
+
+	allow use of #if HAVE_CONFIG_H, for example code
+	* .x-sc_prohibit_have_config_h: New file, to exempt examples.
+
+	guestfs: fix typo in my recent change
+	* src/guestfs.c (guestfs_perrorf): Rename former err to errnum,
+	to avoid compilation error.
+
+	Guard #inclusion of config.h in examples.
+	* examples/hello.c [HAVE_CONFIG_H]: Include <config.h> conditionally.
+	* examples/to-xml.c: Likewise.
+
+	build: reenable "syntax-check" rule: sc_const_long_option
+	* cfg.mk (disable_temporarily): Remove sc_const_long_option.
+	* daemon/guestfsd.c (main): Declare long_options to be "const".
+	* fish/fish.c (main): Likewise.
+	* test-tool/test-tool.c (main): Likewise.
+
+	build: temporarily disable failing "syntax-check" rules
+	* cfg.mk (disable_temporarily): Define.
+
+	maint: use a git submodule for gnulib
+	* .gitmodules: New file, to track gnulib.
+	* .gnulib: Submodule directory.
+	* Makefile.am (EXTRA_DIST): Don't list config.rpath or
+	gitlog-to-changelog.
+	* autogen.sh: Adapt to use the new submodule.
+	* cfg.mk: New file.
+	(SUBDIRS): Add gnulib/lib and gnulib/tests.
+	(dist-hook): Reflect new location of getlog-to-changelog.
+	* configure.ac: Set build-aux/ as AUX_DIR.
+	Invoke gl_EARLY and gl_INIT.
+	(AC_CONFIG_FILES): Add gnulib/lib/Makefile and gnulib/tests/Makefile.
+
+	always include <config.h>
+	* ocaml/guestfs_c.c: Include <config.h>.
+	* examples/to-xml.c: Likewise.
+	* examples/hello.c: Likewise.
+
+	build: add -I option to get config.h.
+	* ocaml/Makefile.am (AM_CPPFLAGS): Define.
+	(guestfs_c.o, guestfs_c_actions.o): Use it.
+
+	guestfs: don't fault upon failed vasprintf
+	* src/guestfs.c (guestfs_perrorf): Handle failed vasprintf.
+
+2009-08-03  Matthew Booth  <mbooth@redhat.com>
+
+	Cleanup whitespace warnings in Lib.pm
+
+	Use grub entries to find Linux kernels
+	This change adds grub parsing to Lib.pm. It adds the following structure to $os:
+	  {boot}
+	  ->{configs}
+	    ->[0]
+	      ->{title}   = "Fedora (2.6.29.6-213.fc11.i686.PAE)"
+	      ->{kernel}  = \kernel
+	      ->{cmdline} = "ro root=/dev/mapper/vg_mbooth-lv_root rhgb"
+	      ->{initrd}  = \initrd
+	  ->{default} = 0
+
+	The kernel and initrd entries are just references to their top level entries
+	under kernels and initrd_modules respectively.
+
+	It also changes the way Linux kernels and initrd are discovered. Instead of
+	searching /lib/modules and /boot for files with matching names, kernels and
+	initrds are scanned as they are discovered in grub.conf.
+
+	Additionally, the following attributes are added to the kernels top level entry:
+	* path
+	    The path to the kernel's vmlinuz file.
+	* package
+	    The name of the package which installed the kernel.
+
+	The xml output of virt-inspector is updated to reflect all of the above changes.
+
+2009-07-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	guestfish: Display RStructList results more pleasantly.
+
+	Add interface to Linux 'inotify' API.
+
+	lib: Add selinux=0 to default kernel command line.
+	SELinux exists in a very disturbed state if it is enabled at
+	boot time, but no policy is loaded.  In particular, it messes
+	up the security.selinux extended attributes on files in a
+	not-very-useful way.
+
+	We can't enable SELinux because we don't know what policy
+	can or should be loaded.  Therefore it's best to disable it
+	completely.
+
+2009-07-31  Matthew Booth  <mbooth@redhat.com>
+
+	Update incorrect comment in Lib.pm
+	Related: change the name of the function the comment describes to be more
+	accurate.
+
+2009-07-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	Improve warnings about missing tests.
+	Don't warn where a command just has no tests.
+
+	Instead check other commands' tests so we get a definitive
+	(and much smaller) list of commands that are not tested anywhere.
+
+	New commands: swapon-*, swapoff-*, mkswap-file.
+	swapon-device
+	swapoff-device
+	swapon-file
+	swapoff-file
+	swapon-label
+	swapoff-label
+	swapon-uuid
+	swapoff-uuid
+	mkswap-file
+
+	New command: 'fallocate' to (pre-)allocate sized files.
+
+	New commands: 'ln', 'ln-f', 'ln-s', 'ln-sf' and 'readlink'.
+	These commands can be used to make hard and symbolic links.  The
+	readlink command is used to read existing symbolic links.
+
+	Add 'realpath' command.
+
+	Ignore failure of 'mv' commands in appliance Makefile.
+	A lot of people report these as 'errors' when they are not.
+	Hide the error messages.
+
+2009-07-30  Jim Meyering  <jim@meyering.net>
+
+	configure.ac: more quoting
+	Also, prohibit an invalid value of $JAVA_HOME,
+	since it must be used unquoted below.
+
+2009-07-30  Richard Jones  <rjones@trick.home.annexia.org>
+
+	build: If guestfwd test fails, need to print AC_MSG_RESULT 'no'
+
+2009-07-30  Jim Meyering  <jim@meyering.net>
+
+	build: fix test for --nocompress option
+	Richard W.M. Jones wrote:
+	> On Wed, Jul 29, 2009 at 10:50:44PM +0200, Jim Meyering wrote:
+	>> The test for febootstrap-to-initramfs' --nocompress option
+	>> was always failing for me on F11.  Here's why:
+	> [...]
+	>
+	> Ouch that's obscure.  I've applied this patch and the previous
+	> one you sent too.  Thanks!
+
+	Our messages crossed.
+	Rebasing my fixed patch and adjusting the log:
+
+	>From 9e7846da50ceeee57187f703835bd3975e789719 Mon Sep 17 00:00:00 2001
+	From: Jim Meyering <meyering@redhat.com>
+	Date: Wed, 29 Jul 2009 16:33:02 -0400
+	Subject: [PATCH] build: quote the other option test similarly
+
+	* configure.ac: Quote properly.
+
+	build: fix test for --nocompress option
+	The test for febootstrap-to-initramfs' --nocompress option
+	was always failing for me on F11.  Here's why:
+
+	  $ bash                               ~/w/co/libguestfs:210-comment-fix
+	  $ t=`febootstrap-to-initramfs 2>&1`
+	  [Exit 1]
+	  $ if ! echo $t|grep -sq -- --nocompress; then echo not found; fi
+	  not found
+
+	Notice: without quotes, the [--nocompress] term expands to "k",
+	because I happen to have a temporary file named "k":
+
+	  $ echo $t
+	  Usage: febootstrap-to-initramfs [--files=filelist] k DIR Please read
+	  febootstrap-to-initramfs(8) man page for more information.
+	  $ echo "$t"
+	  Usage: febootstrap-to-initramfs [--files=filelist] [--nocompress] DIR
+	  Please read febootstrap-to-initramfs(8) man page for more information.
+
+	a simpler example gives a clue:
+
+	  $ touch a b c
+	  $ echo [--z]
+	  a b c
+	  $ echo [--a]
+	  a
+	  $ echo [--b]
+	  a b
+
+	it's interpreting [--nocompress] as a range: "-" through "n", plus
+	the other characters, ocmpres.  "k" falls in the --n range.
+
+	Anyhow, here's the fix:
+
+	>From 84855642ed41828d01d55123cfab8d8dede759c1 Mon Sep 17 00:00:00 2001
+	From: Jim Meyering <meyering@redhat.com>
+	Date: Wed, 29 Jul 2009 16:33:02 -0400
+	Subject: [PATCH] build: fix test for --nocompress option
+
+	* configure.ac: Fix underquoting bug that would cause the test
+	for febootstrap-to-initramfs' --nocompress option always to fail
+	with certain-letter-named files in the top directory.
+
+2009-07-30  Jim Meyering  <meyering@redhat.com>
+
+	fix comments; move declarations
+	* daemon/devsparts.c (do_list_devices, do_list_partitions):
+	Remove stray words in comments.
+	Move declarations down to definition.
+
+2009-07-29  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Whitespace and comment changes.
+
+	df: Fix alignment of columns.
+
+	guestfish: Make more strings translatable.
+	However this doesn't yet attempt to translate the POD
+	command documentation.  We need a plan to do that.
+
+	tests: Use squashfs for static data where possible.
+	Instead of creating a new InitBasicFS for just about every test,
+	where a test doesn't need to write to the filesystem it is far
+	faster to use prepared data on an InitSquashFS instead.
+
+	This commit changes as many tests as possible to make this so,
+	making the tests much faster.
+
+	tests: Fix read_file test.
+	The test ignored the fact that this function returns a (char *, size_t)
+	pair, and just treated the char * as a string.  This of course would
+	fail if the string didn't happen to be nul-terminated.
+
+	The tests are updated to add a new TestOutputBuffer type which should
+	be used with functions that return RBufferOut.
+
+	Implement '*grep*' family of commands.
+
+	Updated Polish translations (Piotr Drąg).
+
+	Version 1.0.65.
+
+	Updated PO files.
+
+2009-07-29  Jim Meyering  <jim@meyering.net>
+
+	build: avoid locale-specific changes in generated, VC'd file
+	When I build with LC_ALL=C in my environment,
+	the all-local rule generates po/POTFILES.in that
+	is sorted differently from the on that is checked in:
+
+	    diff --git a/po/POTFILES.in b/po/POTFILES.in
+	    index ca01b3d..154915a 100644
+	    --- a/po/POTFILES.in
+	    +++ b/po/POTFILES.in
+	    @@ -63,12 +63,11 @@ fish/tilde.c
+	     fish/time.c
+	     inspector/virt-inspector.pl
+	     java/com_redhat_et_libguestfs_GuestFS.c
+	    -ocaml/guestfs_c_actions.c
+	     ocaml/guestfs_c.c
+	    +ocaml/guestfs_c_actions.c
+	     perl/bindtests.pl
+	    -perl/Guestfs.c
+	    -perl/lib/Sys/Guestfs/Lib.pm
+	     perl/lib/Sys/Guestfs.pm
+	    +perl/lib/Sys/Guestfs/Lib.pm
+	     python/guestfs-py.c
+	     ruby/ext/guestfs/_guestfs.c
+	     src/guestfs-actions.c
+
+	If we generate that file so that sort always uses the C locale, then,
+	this type of difference will not arise.  Here's the patch to fix the
+	rule as well as to reflect the change in the generated file:
+
+	>From 609e1d1840da25614a7c9e8954e5356050c9f2ad Mon Sep 17 00:00:00 2001
+	From: Jim Meyering <meyering@redhat.com>
+	Date: Wed, 29 Jul 2009 08:13:35 -0400
+	Subject: [PATCH] build: avoid locale-specific changes in generated, VC'd file
+
+	* Makefile.am (all-local): Use LC_ALL=C to sort in C locale.
+	* po/POTFILES.in: Regenerate.
+
+2009-07-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	On RHEL 5, 'file' command prints 'AMD x86-64' for 'x86-64' arch.
+
+2009-07-29  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Run cpio with --quiet option so it doesn't print 'xx blocks'
+
+2009-07-29  Richard Jones  <rjones@centos5x32.home.annexia.org>
+
+	Lib.pm: Skip tests if perl-libintl module is not available.
+
+2009-07-29  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Lib.pm: Use Perl backtick instead of slurp (Aron Griffis).
+
+2009-07-29  Richard Jones  <rjones@centos5x32.home.annexia.org>
+
+	Don't show empty CD devices (RHBZ#514505).
+
+2009-07-29  Richard Jones  <rjones@trick.home.annexia.org>
+
+	ocaml: Rebuild the tests from source if the main library changes.
+
+	inspector: Determine guest architecture.
+	This commit adds kernel and userspace architecture detection
+	(fully for Linux, partially for Windows).  It adds an architecture
+	for each kernel detected, and an architecture for each root (ie.
+	userspace) found.
+
+	Lib.pm: Add file_architecture command.
+	This command detects the architecture of some types of binaries,
+	libraries, kernel modules and initrd images.
+
+	Lib: Document the $ro parameter for mount_operating_system properly.
+
+	Mention related tools in the manual page.
+
+2009-07-28  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Whitespace: indent some names in images/Makefile.am correctly.
+
+	Lib.pm: Use 'file' as replacement for 'zfile'.
+
+	Pass '-z' parameter to 'file' command so it looks inside compressed files.
+	Also we deprecate the old 'zfile' command.
+
+	Add DeprecatedBy flag to mark functions which are deprecated.
+
+	Need to declare asprintf_nowarn as inline to avoid gcc complaining.
+
+	Replace shell_quote function with %Q and %R printf specifiers.
+	%Q => simple shell quoted string
+	%R => path will be prefixed by /sysroot
+
+	eg. snprintf (cmd, sizeof cmd, "cat %R", path); system (cmd);
+
+2009-07-27  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Add InitSquashFS test type, for tests that just use the squashfs (/dev/sdd).
+	This also speeds up those tests because we don't have to wait
+	to create a filesystem which is never used.
+
+2009-07-24  Matthew Booth  <mbooth@redhat.com>
+
+	Make read-only optional in mount_operating_system()
+
+2009-07-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	More ideas on a quick Perl one-liner syntax for TODO file.
+
+	guestfish -iv should print virt-inspector command (for debugging).
+
+	Reformat the TODO file.
+
+2009-07-24  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Pass cgroup_disable=memory, saves ~ 5MB of RAM.
+
+2009-07-23  Richard Jones  <rjones@trick.home.annexia.org>
+
+	get_append call can return NULL, but bindings didn't handle it.
+	It's not a good idea because there is no way to return an error
+	indication.  However at least this means it won't segfault.
+
+	RHEL 5 thinks squashfs is HFS+ filesystem, unless we specify the type explicitly.
+
+	Remove hard-coded qemu-kvm, replace with $QEMU.
+
+	Version 1.0.63
+
+2009-07-22  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Add libguestfs-test-tool.
+	This is an end-user testing tool, designed to test basic functionality
+	of libguestfs/qemu/kernel combination on the end-user's final host
+	machine.
+
+	It does not perform a thorough test, but should be enough to find
+	most booting issues.
+
+	Also this is intended to be used when reporting bugs.
+
+	Fix typo in error message.
+
+	Revert "Add 'set-kernel'/'get-kernel'/LIBGUESTFS_KERNEL to override appliance kernel."
+	This reverts commit 34d2df41626f1ee4172a6d40b06d72d6ed9d6348.
+
+	set-append and set-kernel parameters are both nullable.
+	(So are the return values, but leave that bug for another day).
+
+	Add 'set-kernel'/'get-kernel'/LIBGUESTFS_KERNEL to override appliance kernel.
+	This allows you to override the appliance kernel with an easy
+	command or environment variable.
+
+	Todo: Suggestion for 'replace' command.
+
+2009-07-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	Add commented-out support for alternate guestfwd syntax.
+	This commit just moves code around.  The new support is not enabled
+	because it doesn't work.  See qemu-devel, subject
+	"guestfwd option doesn't allow supplementary ,server,nowait"
+
+	configure: Detect new-style guestfwd support (RHBZ#512957)
+	However new qemu 0.10.5 still doesn't work.
+
+	Library: Pass more options on the Linux kernel command line.
+	Always pass:
+	  noapic             (APIC causes problems for lots of people)
+	  udevtimeout=300    (for very slow qemu using softemu)
+	  acpi=off           (ACPI is troublesome and unnecessary, so turn it off)
+
+2009-07-21  Matthew Booth  <mbooth@redhat.com>
+
+	Split $os->{version} into $os->{major_version} and $os->{minor_version}
+
+2009-07-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	Allow TMPDIR to override directory used for temporary files (RHBZ#512905).
+
+	Generator: Implement RBufferOut and "read-file" call.
+	This commit implements the RBufferOut type for returning
+	arbitrary 8 bit data from calls.
+
+	We also implement the guestfs_read_file call to read a
+	whole file that can contain any 8 bit content, but up to
+	a limit of ~ 2 MB.
+
+	Docs: Fully document the guestfs_readdir ftyp return field.
+
+	Docs: Add "API Overview" section to guestfs(3) manpage.
+	This section collects together related API calls, to provide
+	more coherent documentation about different ways to carry
+	out actions such as uploading and downloading.
+
+2009-07-20  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Generator: Improve accuracy of a comment.
+
+	virt-inspector --fish: Fix incorrect '-a' parameter (RHBZ#512709)
+	virt-inspector --fish dom
+	virt-inspector --ro-fish dom
+
+	Both of the above commands give incorrect results if run on a
+	libvirt domain, eg:
+
+	$ virt-inspector --ro-fish RHEL54Betax64
+	==> --ro -a RHEL54Betax64 -m /dev/VolGroup00/LogVol00:/ -m /dev/sda1:/boot
+	            ^^^^^^^^^^^^^
+
+	This is because the current code just prints back the original @ARGV
+	parameters.
+
+	This patch fixes this by getting the image names instead.
+
+2009-07-20  Matthew Booth  <mbooth@redhat.com>
+
+	Replace 'distrofamily' with feature tags
+	It turns out that the distribution hierarchy is not as reliable concept as you
+	might think. This patch removes distrofamily again.
+
+	Instead of distrofamily, we will add feature tags. This patch adds 2 feature
+	tags for Linux distributions:
+
+	package_format (eg rpm/dpkg)
+	package_management (eg rhn/yum/apt)
+
+	This change is reflected in the output of virt-inspector
+
+2009-07-18  Guido Günther  <agx@sigxcpu.org>
+
+	add nls_base.ko and nls_cp437.ko for vfat
+
+2009-07-18  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Make /sysroot path configurable.
+	Currently /sysroot is hard-coded throughout the daemon code.
+
+	This patch turns the path into a variable so that we can change
+	it in future, for example to allow standalone mode to be implemented.
+
+	This patch was tested by running all the C API tests successfully.
+
+2009-07-17  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Version 1.0.62.
+
+	Merge branch 'master' of git+ssh://g-rjones@et.redhat.com/git/libguestfs
+
+2009-07-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	RHEL 5.4 fix: Check for qemu-kvm binary in /usr/libexec
+
+2009-07-17  Matthew Booth  <mbooth@redhat.com>
+
+	Differentiate 'distro' and 'distrofamily' in Sys::Guestfs::Lib
+	Change distro in the output formally known as virt-inspector to reflect the
+	actual distro. Possible values are now: fedora, rhel, centos, scientific,
+	debian.
+
+	Add new distrofamily entry which is one of: redhat, debian. Currently all
+	distros except 'debian' are in the redhat family.
+
+	This allows you to, for example, select a RHEL/CentOS/Scientific Linux specific
+	kernel for installation rather than assuming they're all the same.
+
+	Note this also changes the behaviour of virt-inspector --query. It will now only
+	return rhel=yes for RHEL.
+
+2009-07-17  Richard Jones  <rjones@trick.home.annexia.org>
+
+	cat: Example of finding DHCP IP address of a VM.
+
+	Fix non-srcdir builds: Ignore perl/Makefile-pl.old
+
+	Fix non-srcdir builds: further fixes to OCaml build rules.
+
+2009-07-16  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Fixes for non-srcdir builds: Only include POTFILES from SUBDIRS directories.
+
+	Fix non-srcdir builds: fix OCaml build rules.
+
+	Fix non-srcdir builds: Files generated by configure should be in the tarball.
+
+	Fix non-srcdir builds: Don't include generated *_protocol.c files in POTFILES.
+
+	Don't clean up some non-generated files.
+
+	Fix for non-srcdir builds: more misc fixes.
+
+	Fix for non-srcdir builds: Run src/generator.ml from the srcdir.
+	Note that files generated by src/generator.ml are stored in
+	the srcdir, *not* the builddir.  The reason is so that they
+	can be included in the tarball and will appear in the srcdir
+	for tarball builds.
+
+	More misc fixes to non-srcdir builds.
+
+	More misc fixes for non-srcdir builds.
+
+	Miscellaneous fixes for non-srcdir builds.
+
+2009-07-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	New commands: 'mkmountpoint' and 'rmmountpoint'
+	These specialized commands are used to create additional mountpoints
+	before mounting filesystems.  They are only used where you want to
+	mount several unrelated or read-only filesystems together, and need
+	additional care to use correctly.
+
+	Here is how to use these calls to unpack the "Russian doll" nest
+	of a Fedora 11 live CD:
+
+	 add-ro Fedora-11-i686-Live.iso
+	 run
+	 mkmountpoint /cd
+	 mkmountpoint /squash
+	 mkmountpoint /ext3
+	 mount /dev/sda /cd
+	 mount-loop /cd/LiveOS/squashfs.img /squash
+	 mount-loop /squash/LiveOS/ext3fs.img /ext3
+
+	The inner filesystem is now unpacked under the /ext3 mountpoint.
+
+	New command: 'mountpoints' which returns a hash of device -> mountpoint.
+
 2009-07-15  Richard Jones  <rjones@trick.home.annexia.org>
+
+	Build fix: perl-libintl is not required for the basic Perl bindings.
+
+	Version 1.0.61
 
 	New tool virt-cat: display a file in a virtual machine.
 	This script is just a simpler way to cat a file from a VM.  It

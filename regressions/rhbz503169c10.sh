@@ -1,4 +1,4 @@
-#!/bin/sh -
+#!/bin/bash -
 # libguestfs
 # Copyright (C) 2009 Red Hat Inc.
 #
@@ -26,6 +26,9 @@ dd if=/dev/zero of=test1.img bs=1024k count=10
 
 ../fish/guestfish -a test1.img <<EOF
 launch
+part-disk /dev/sda mbr
+mkfs ext2 /dev/sda1
+mount /dev/sda1 /
 ll /../dev/console
 ll /../dev/full
 ll /../dev/mapper/

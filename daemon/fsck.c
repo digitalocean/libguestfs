@@ -27,12 +27,10 @@
 #include "actions.h"
 
 int
-do_fsck (char *fstype, char *device)
+do_fsck (const char *fstype, const char *device)
 {
   char *err;
   int r;
-
-  IS_DEVICE (device, -1);
 
   r = commandr (NULL, &err, "/sbin/fsck", "-a", "-t", fstype, device, NULL);
   if (r == -1) {

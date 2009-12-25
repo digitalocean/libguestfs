@@ -30,15 +30,13 @@
 #include "actions.h"
 
 static int
-sfdisk (char *device, int n, int cyls, int heads, int sectors,
-	const char *extra_flag,
-	char * const* const lines)
+sfdisk (const char *device, int n, int cyls, int heads, int sectors,
+        const char *extra_flag,
+        char *const *lines)
 {
   FILE *fp;
   char buf[256];
   int i;
-
-  IS_DEVICE (device, -1);
 
   strcpy (buf, "/sbin/sfdisk");
 
@@ -50,10 +48,23 @@ sfdisk (char *device, int n, int cyls, int heads, int sectors,
     sprintf (buf + strlen (buf), " -H %d", heads);
   if (sectors)
     sprintf (buf + strlen (buf), " -S %d", sectors);
-  if (extra_flag)
-    sprintf (buf + strlen (buf), " %s", extra_flag);
 
-  /* Safe because of IS_DEVICE above: */
+  /* The above are all guaranteed to fit in the fixed-size buffer.
+     However, extra_flag and device have no restrictions,
+     so we must check.  */
+
+  if (extra_flag) {
+    if (strlen (buf) + 1 + strlen (extra_flag) >= sizeof buf) {
+      reply_with_error ("internal buffer overflow: sfdisk extra_flag too long");
+      return -1;
+    }
+    sprintf (buf + strlen (buf), " %s", extra_flag);
+  }
+
+  if (strlen (buf) + 1 + strlen (device) >= sizeof buf) {
+    reply_with_error ("internal buffer overflow: sfdisk device name too long");
+    return -1;
+  }
   sprintf (buf + strlen (buf), " %s", device);
 
   if (verbose)
@@ -61,13 +72,13 @@ sfdisk (char *device, int n, int cyls, int heads, int sectors,
 
   fp = popen (buf, "w");
   if (fp == NULL) {
-    reply_with_perror (buf);
+    reply_with_perror ("failed to open pipe: %s", buf);
     return -1;
   }
 
   for (i = 0; lines[i] != NULL; ++i) {
     if (fprintf (fp, "%s\n", lines[i]) < 0) {
-      reply_with_perror (buf);
+      reply_with_perror ("failed to write to pipe: %s", buf);
       pclose (fp);
       return -1;
     }
@@ -84,34 +95,32 @@ sfdisk (char *device, int n, int cyls, int heads, int sectors,
 }
 
 int
-do_sfdisk (char *device, int cyls, int heads, int sectors,
-	   char **lines)
+do_sfdisk (const char *device, int cyls, int heads, int sectors,
+           char *const *lines)
 {
   return sfdisk (device, 0, cyls, heads, sectors, NULL, lines);
 }
 
 int
-do_sfdisk_N (char *device, int n, int cyls, int heads, int sectors,
-	     char *line)
+do_sfdisk_N (const char *device, int n, int cyls, int heads, int sectors,
+             const char *line)
 {
-  const char *lines[2] = { line, NULL };
+  char const *const lines[2] = { line, NULL };
 
-  return sfdisk (device, n, cyls, heads, sectors, NULL, lines);
+  return sfdisk (device, n, cyls, heads, sectors, NULL, (void *) lines);
 }
 
 int
-do_sfdiskM (char *device, char **lines)
+do_sfdiskM (const char *device, char *const *lines)
 {
   return sfdisk (device, 0, 0, 0, 0, "-uM", lines);
 }
 
 static char *
-sfdisk_flag (char *device, const char *flag)
+sfdisk_flag (const char *device, const char *flag)
 {
   char *out, *err;
   int r;
-
-  IS_DEVICE (device, NULL);
 
   r = command (&out, &err, "/sbin/sfdisk", flag, device, NULL);
   if (r == -1) {
@@ -129,19 +138,19 @@ sfdisk_flag (char *device, const char *flag)
 }
 
 char *
-do_sfdisk_l (char *device)
+do_sfdisk_l (const char *device)
 {
   return sfdisk_flag (device, "-l");
 }
 
 char *
-do_sfdisk_kernel_geometry (char *device)
+do_sfdisk_kernel_geometry (const char *device)
 {
   return sfdisk_flag (device, "-g");
 }
 
 char *
-do_sfdisk_disk_geometry (char *device)
+do_sfdisk_disk_geometry (const char *device)
 {
   return sfdisk_flag (device, "-G");
 }

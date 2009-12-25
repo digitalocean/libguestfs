@@ -23,7 +23,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/statvfs.h>
+#include <fcntl.h>
 #include <unistd.h>
 
 #include "../src/guestfs_protocol.h"
@@ -31,14 +31,11 @@
 #include "actions.h"
 
 guestfs_int_stat *
-do_stat (char *path)
+do_stat (const char *path)
 {
   int r;
   guestfs_int_stat *ret;
   struct stat statbuf;
-
-  NEED_ROOT (NULL);
-  ABS_PATH (path, NULL);
 
   CHROOT_IN;
   r = stat (path, &statbuf);
@@ -63,8 +60,16 @@ do_stat (char *path)
   ret->gid = statbuf.st_gid;
   ret->rdev = statbuf.st_rdev;
   ret->size = statbuf.st_size;
+#ifdef HAVE_STRUCT_STAT_ST_BLKSIZE
   ret->blksize = statbuf.st_blksize;
+#else
+  ret->blksize = -1;
+#endif
+#ifdef HAVE_STRUCT_STAT_ST_BLOCKS
   ret->blocks = statbuf.st_blocks;
+#else
+  ret->blocks = -1;
+#endif
   ret->atime = statbuf.st_atime;
   ret->mtime = statbuf.st_mtime;
   ret->ctime = statbuf.st_ctime;
@@ -73,14 +78,11 @@ do_stat (char *path)
 }
 
 guestfs_int_stat *
-do_lstat (char *path)
+do_lstat (const char *path)
 {
   int r;
   guestfs_int_stat *ret;
   struct stat statbuf;
-
-  NEED_ROOT (NULL);
-  ABS_PATH (path, NULL);
 
   CHROOT_IN;
   r = lstat (path, &statbuf);
@@ -105,8 +107,16 @@ do_lstat (char *path)
   ret->gid = statbuf.st_gid;
   ret->rdev = statbuf.st_rdev;
   ret->size = statbuf.st_size;
+#ifdef HAVE_STRUCT_STAT_ST_BLKSIZE
   ret->blksize = statbuf.st_blksize;
+#else
+  ret->blksize = -1;
+#endif
+#ifdef HAVE_STRUCT_STAT_ST_BLOCKS
   ret->blocks = statbuf.st_blocks;
+#else
+  ret->blocks = -1;
+#endif
   ret->atime = statbuf.st_atime;
   ret->mtime = statbuf.st_mtime;
   ret->ctime = statbuf.st_ctime;
@@ -114,42 +124,77 @@ do_lstat (char *path)
   return ret;
 }
 
-guestfs_int_statvfs *
-do_statvfs (char *path)
+guestfs_int_stat_list *
+do_lstatlist (const char *path, char *const *names)
 {
-  int r;
-  guestfs_int_statvfs *ret;
-  struct statvfs statbuf;
+  int path_fd;
+  guestfs_int_stat_list *ret;
+  size_t i, nr_names;
 
-  NEED_ROOT (NULL);
-  ABS_PATH (path, NULL);
-
-  CHROOT_IN;
-  r = statvfs (path, &statbuf);
-  CHROOT_OUT;
-
-  if (r == -1) {
-    reply_with_perror ("statvfs");
-    return NULL;
-  }
+  nr_names = count_strings (names);
 
   ret = malloc (sizeof *ret);
-  if (ret == NULL) {
+  if (!ret) {
     reply_with_perror ("malloc");
     return NULL;
   }
+  ret->guestfs_int_stat_list_len = nr_names;
+  ret->guestfs_int_stat_list_val = calloc (nr_names, sizeof (guestfs_int_stat));
+  if (ret->guestfs_int_stat_list_val == NULL) {
+    reply_with_perror ("malloc");
+    free (ret);
+    return NULL;
+  }
 
-  ret->bsize = statbuf.f_bsize;
-  ret->frsize = statbuf.f_frsize;
-  ret->blocks = statbuf.f_blocks;
-  ret->bfree = statbuf.f_bfree;
-  ret->bavail = statbuf.f_bavail;
-  ret->files = statbuf.f_files;
-  ret->ffree = statbuf.f_ffree;
-  ret->favail = statbuf.f_favail;
-  ret->fsid = statbuf.f_fsid;
-  ret->flag = statbuf.f_flag;
-  ret->namemax = statbuf.f_namemax;
+  CHROOT_IN;
+  path_fd = open (path, O_RDONLY | O_DIRECTORY);
+  CHROOT_OUT;
+
+  if (path_fd == -1) {
+    reply_with_perror ("lstatlist: %s", path);
+    free (ret->guestfs_int_stat_list_val);
+    free (ret);
+    return NULL;
+  }
+
+  for (i = 0; names[i] != NULL; ++i) {
+    int r;
+    struct stat statbuf;
+
+    r = fstatat (path_fd, names[i], &statbuf, AT_SYMLINK_NOFOLLOW);
+    if (r == -1)
+      ret->guestfs_int_stat_list_val[i].ino = -1;
+    else {
+      ret->guestfs_int_stat_list_val[i].dev = statbuf.st_dev;
+      ret->guestfs_int_stat_list_val[i].ino = statbuf.st_ino;
+      ret->guestfs_int_stat_list_val[i].mode = statbuf.st_mode;
+      ret->guestfs_int_stat_list_val[i].nlink = statbuf.st_nlink;
+      ret->guestfs_int_stat_list_val[i].uid = statbuf.st_uid;
+      ret->guestfs_int_stat_list_val[i].gid = statbuf.st_gid;
+      ret->guestfs_int_stat_list_val[i].rdev = statbuf.st_rdev;
+      ret->guestfs_int_stat_list_val[i].size = statbuf.st_size;
+#ifdef HAVE_STRUCT_STAT_ST_BLKSIZE
+      ret->guestfs_int_stat_list_val[i].blksize = statbuf.st_blksize;
+#else
+      ret->guestfs_int_stat_list_val[i].blksize = -1;
+#endif
+#ifdef HAVE_STRUCT_STAT_ST_BLOCKS
+      ret->guestfs_int_stat_list_val[i].blocks = statbuf.st_blocks;
+#else
+      ret->guestfs_int_stat_list_val[i].blocks = -1;
+#endif
+      ret->guestfs_int_stat_list_val[i].atime = statbuf.st_atime;
+      ret->guestfs_int_stat_list_val[i].mtime = statbuf.st_mtime;
+      ret->guestfs_int_stat_list_val[i].ctime = statbuf.st_ctime;
+    }
+  }
+
+  if (close (path_fd) == -1) {
+    reply_with_perror ("close: %s", path);
+    free (ret->guestfs_int_stat_list_val);
+    free (ret);
+    return NULL;
+  }
 
   return ret;
 }

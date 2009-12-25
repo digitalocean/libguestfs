@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,6 +42,10 @@
 }while(0)
 #endif
 
+/* These prototypes are solely to quiet gcc warning.  */
+CAMLprim value ocaml_guestfs_create (void);
+CAMLprim value ocaml_guestfs_close (value gv);
+
 /* Allocate handles and deal with finalization. */
 static void
 guestfs_finalize (value gv)
@@ -50,7 +55,7 @@ guestfs_finalize (value gv)
 }
 
 static struct custom_operations guestfs_custom_operations = {
-  "guestfs_custom_operations",
+  (char *) "guestfs_custom_operations",
   guestfs_finalize,
   custom_compare_default,
   custom_hash_default,
@@ -85,6 +90,17 @@ ocaml_guestfs_raise_error (guestfs_h *g, const char *func)
   else
     v = caml_copy_string (func);
   caml_raise_with_arg (*caml_named_value ("ocaml_guestfs_error"), v);
+  CAMLnoreturn;
+}
+
+void
+ocaml_guestfs_raise_closed (const char *func)
+{
+  CAMLparam0 ();
+  CAMLlocal1 (v);
+
+  v = caml_copy_string (func);
+  caml_raise_with_arg (*caml_named_value ("ocaml_guestfs_closed"), v);
   CAMLnoreturn;
 }
 
@@ -130,7 +146,7 @@ ocaml_guestfs_strings_val (guestfs_h *g, value sv)
 {
   CAMLparam1 (sv);
   char **r;
-  int i;
+  unsigned int i;
 
   r = guestfs_safe_malloc (g, sizeof (char *) * (Wosize_val (sv) + 1));
   for (i = 0; i < Wosize_val (sv); ++i)

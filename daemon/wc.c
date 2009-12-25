@@ -28,23 +28,18 @@
 #include "actions.h"
 
 static int
-wc (char *flag, char *path)
+wc (const char *flag, const char *path)
 {
   char *buf;
   char *out, *err;
-  int r, len;
-
-  NEED_ROOT (-1);
-  ABS_PATH (path, -1);
+  int r;
 
   /* Make the path relative to /sysroot. */
-  len = strlen (path) + 9;
-  buf = malloc (len);
+  buf = sysroot_path (path);
   if (!buf) {
     reply_with_perror ("malloc");
     return -1;
   }
-  snprintf (buf, len, "/sysroot%s", path);
 
   r = command (&out, &err, "wc", flag, buf, NULL);
   free (buf);
@@ -75,19 +70,19 @@ wc (char *flag, char *path)
 }
 
 int
-do_wc_l (char *path)
+do_wc_l (const char *path)
 {
   return wc ("-l", path);
 }
 
 int
-do_wc_w (char *path)
+do_wc_w (const char *path)
 {
   return wc ("-w", path);
 }
 
 int
-do_wc_c (char *path)
+do_wc_c (const char *path)
 {
   return wc ("-c", path);
 }

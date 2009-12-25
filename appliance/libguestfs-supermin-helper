@@ -38,14 +38,23 @@ initrd="$3"
 # without arch second.
 
 arch=$(echo "x86_64" | sed 's/^i.86$/i?86/')
-kernels=$(ls -1vr /boot/vmlinuz-*.$arch* 2>/dev/null | grep -v xen; ls -1vr /boot/vmlinuz-* 2>/dev/null | grep -v xen)
+kernels=$(
+    ls -1dvr /boot/vmlinuz-*.$arch* 2>/dev/null | grep -v xen ||: ;
+    ls -1dvr /boot/vmlinuz-* 2>/dev/null | grep -v xen
+)
+
+if [ -z "$kernels" ]; then
+    echo "$0: failed to find a suitable kernel in /boot directory" >&2
+    exit 1
+fi
+
 for f in $kernels; do
     b=$(basename "$f")
     b=$(echo "$b" | sed 's,vmlinuz-,,')
     modpath="/lib/modules/$b"
     if [ -d "$modpath" ]; then
-	ln -sf "$f" "$kernel"
-	break
+        ln -sf "$f" "$kernel"
+        break
     fi
     modpath=
 done
@@ -83,4 +92,4 @@ find "$modpath" \( -not -name '*.ko' $whitelist \) -a -print0 |
   ls -1df $(
       cat "$sourcedir"/initramfs.fedora-11.x86_64.supermin.hostfiles
     ) 2>/dev/null |
-  cpio --quiet -o -H newc ) >> "$initrd"
+  cpio -C 65536 --quiet -o -H newc ) >> "$initrd"

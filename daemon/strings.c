@@ -26,25 +26,18 @@
 #include "actions.h"
 
 char **
-do_strings_e (char *encoding, char *path)
+do_strings_e (const char *encoding, const char *path)
 {
-  int len;
   char *buf;
   int r;
   char *out, *err;
   char **lines;
 
-  NEED_ROOT (NULL);
-  ABS_PATH (path, NULL);
-
-  len = strlen (path) + 9;
-  buf = malloc (len);
+  buf = sysroot_path (path);
   if (!buf) {
     reply_with_perror ("malloc");
     return NULL;
   }
-
-  snprintf (buf, len, "/sysroot%s", path);
 
   r = command (&out, &err, "strings", "-e", encoding, buf, NULL);
   free (buf);
@@ -68,7 +61,7 @@ do_strings_e (char *encoding, char *path)
 }
 
 char **
-do_strings (char *path)
+do_strings (const char *path)
 {
   return do_strings_e ("s", path);
 }
