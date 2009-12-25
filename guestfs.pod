@@ -7,11 +7,10 @@ guestfs - Library for accessing and modifying virtual machine images
 =head1 SYNOPSIS
 
  #include <guestfs.h>
-
+ 
  guestfs_h *handle = guestfs_create ();
  guestfs_add_drive (handle, "guest.img");
  guestfs_launch (handle);
- guestfs_wait_ready (handle);
  guestfs_mount (handle, "/dev/sda1", "/");
  guestfs_touch (handle, "/hello");
  guestfs_sync (handle);
@@ -43,42 +42,483 @@ or Haskell).  You can also use it from shell scripts or the command line.
 You don't need to be root to use libguestfs, although obviously you do
 need enough permissions to access the disk images.
 
-=head1 CONNECTION MANAGEMENT
+Libguestfs is a large API because it can do many things.  For a gentle
+introduction, please read the L</API OVERVIEW> section next.
 
-If you are using the high-level API, then you should call the
-functions in the following order:
+=head1 API OVERVIEW
+
+This section provides a gentler overview of the libguestfs API.  We
+also try to group API calls together, where that may not be obvious
+from reading about the individual calls below.
+
+=head2 HANDLES
+
+Before you can use libguestfs calls, you have to create a handle.
+Then you must add at least one disk image to the handle, followed by
+launching the handle, then performing whatever operations you want,
+and finally closing the handle.  So the general structure of all
+libguestfs-using programs looks like this:
 
  guestfs_h *handle = guestfs_create ();
-
- guestfs_add_drive (handle, "guest.img");
- /* call guestfs_add_drive additional times if the guest has
-  * multiple disks
+ 
+ /* Call guestfs_add_drive additional times if there are
+  * multiple disk images.
   */
-
+ guestfs_add_drive (handle, "guest.img");
+ 
+ /* Most manipulation calls won't work until you've launched
+  * the handle.  You have to do this _after_ adding drives
+  * and _before_ other commands.
+  */
  guestfs_launch (handle);
- guestfs_wait_ready (handle);
-
- /* now you can examine what partitions, LVs etc are available
-  * you have to mount / at least
+ 
+ /* Now you can examine what partitions, LVs etc are available.
+  */
+ char **partitions = guestfs_list_partitions (handle);
+ char **logvols = guestfs_lvs (handle);
+ 
+ /* To access a filesystem in the image, you must mount it.
   */
  guestfs_mount (handle, "/dev/sda1", "/");
-
- /* now you can perform actions on the guest disk image */
+ 
+ /* Now you can perform filesystem actions on the guest
+  * disk image.
+  */
  guestfs_touch (handle, "/hello");
-
- /* you only need to call guestfs_sync if you have made
-  * changes to the guest image
+ 
+ /* You only need to call guestfs_sync if you have made
+  * changes to the guest image.
   */
  guestfs_sync (handle);
-
+ 
+ /* Close the handle. */
  guestfs_close (handle);
 
-C<guestfs_wait_ready> and all of the actions including C<guestfs_sync>
-are blocking calls.  You can use the low-level event API to do
-non-blocking operations instead.
+The code above doesn't include any error checking.  In real code you
+should check return values carefully for errors.  In general all
+functions that return integers return C<-1> on error, and all
+functions that return pointers return C<NULL> on error.  See section
+L</ERROR HANDLING> below for how to handle errors, and consult the
+documentation for each function call below to see precisely how they
+return error indications.
 
-All functions that return integers, return C<-1> on error.  See
-section ERROR HANDLING below for how to handle errors.
+=head2 DISK IMAGES
+
+The image filename (C<"guest.img"> in the example above) could be a
+disk image from a virtual machine, a L<dd(1)> copy of a physical hard
+disk, an actual block device, or simply an empty file of zeroes that
+you have created through L<posix_fallocate(3)>.  Libguestfs lets you
+do useful things to all of these.
+
+You can add a disk read-only using C<guestfs_add_drive_ro>, in which
+case libguestfs won't modify the file.
+
+Be extremely cautious if the disk image is in use, eg. if it is being
+used by a virtual machine.  Adding it read-write will almost certainly
+cause disk corruption, but adding it read-only is safe.
+
+You must add at least one disk image, and you may add multiple disk
+images.  In the API, the disk images are usually referred to as
+C</dev/sda> (for the first one you added), C</dev/sdb> (for the second
+one you added), etc.
+
+Once C<guestfs_launch> has been called you cannot add any more images.
+You can call C<guestfs_list_devices> to get a list of the device
+names, in the order that you added them.  See also L</BLOCK DEVICE
+NAMING> below.
+
+=head2 MOUNTING
+
+Before you can read or write files, create directories and so on in a
+disk image that contains filesystems, you have to mount those
+filesystems using C<guestfs_mount>.  If you already know that a disk
+image contains (for example) one partition with a filesystem on that
+partition, then you can mount it directly:
+
+ guestfs_mount (handle, "/dev/sda1", "/");
+
+where C</dev/sda1> means literally the first partition (C<1>) of the
+first disk image that we added (C</dev/sda>).  If the disk contains
+Linux LVM2 logical volumes you could refer to those instead (eg. C</dev/VG/LV>).
+
+If you are given a disk image and you don't know what it contains then
+you have to find out.  Libguestfs can do that too: use
+C<guestfs_list_partitions> and C<guestfs_lvs> to list possible
+partitions and LVs, and either try mounting each to see what is
+mountable, or else examine them with C<guestfs_file>.  But you might
+find it easier to look at higher level programs built on top of
+libguestfs, in particular L<virt-inspector(1)>.
+
+To mount a disk image read-only, use C<guestfs_mount_ro>.  There are
+several other variations of the C<guestfs_mount_*> call.
+
+=head2 FILESYSTEM ACCESS AND MODIFICATION
+
+The majority of the libguestfs API consists of fairly low-level calls
+for accessing and modifying the files, directories, symlinks etc on
+mounted filesystems.  There are over a hundred such calls which you
+can find listed in detail below in this man page, and we don't even
+pretend to cover them all in this overview.
+
+Specify filenames as full paths including the mount point.
+
+For example, if you mounted a filesystem at C<"/"> and you want to
+read the file called C<"etc/passwd"> then you could do:
+
+ char *data = guestfs_cat (handle, "/etc/passwd");
+
+This would return C<data> as a newly allocated buffer containing the
+full content of that file (with some conditions: see also
+L</DOWNLOADING> below), or C<NULL> if there was an error.
+
+As another example, to create a top-level directory on that filesystem
+called C<"var"> you would do:
+
+ guestfs_mkdir (handle, "/var");
+
+To create a symlink you could do:
+
+ guestfs_ln_s (handle, "/etc/init.d/portmap",
+               "/etc/rc3.d/S30portmap");
+
+Libguestfs will reject attempts to use relative paths.  There is no
+concept of a current working directory.  Libguestfs can return errors
+in many situations: for example if the filesystem isn't writable, or
+if a file or directory that you requested doesn't exist.  If you are
+using the C API (documented here) you have to check for those error
+conditions after each call.  (Other language bindings turn these
+errors into exceptions).
+
+File writes are affected by the per-handle umask, set by calling
+C<guestfs_umask> and defaulting to 022.
+
+=head2 PARTITIONING
+
+Libguestfs contains API calls to read, create and modify partition
+tables on disk images.
+
+In the common case where you want to create a single partition
+covering the whole disk, you should use the C<guestfs_part_disk>
+call:
+
+ const char *parttype = "mbr";
+ if (disk_is_larger_than_2TB)
+   parttype = "gpt";
+ guestfs_part_disk (g, "/dev/sda", parttype);
+
+Obviously this effectively wipes anything that was on that disk image
+before.
+
+In general MBR partitions are both unnecessarily complicated and
+depend on archaic details, namely the Cylinder-Head-Sector (CHS)
+geometry of the disk.  C<guestfs_sfdiskM> can be used to
+create more complex arrangements where the relative sizes are
+expressed in megabytes instead of cylinders, which is a small win.
+C<guestfs_sfdiskM> will choose the nearest cylinder to approximate the
+requested size.  There's a lot of crazy stuff to do with IDE and
+virtio disks having different, incompatible CHS geometries, that you
+probably don't want to know about.
+
+My advice: make a single partition to cover the whole disk, then use
+LVM on top.
+
+=head2 LVM2
+
+Libguestfs provides access to a large part of the LVM2 API, such as
+C<guestfs_lvcreate> and C<guestfs_vgremove>.  It won't make much sense
+unless you familiarize yourself with the concepts of physical volumes,
+volume groups and logical volumes.
+
+This author strongly recommends reading the LVM HOWTO, online at
+L<http://tldp.org/HOWTO/LVM-HOWTO/>.
+
+=head2 DOWNLOADING
+
+Use C<guestfs_cat> to download small, text only files.  This call
+is limited to files which are less than 2 MB and which cannot contain
+any ASCII NUL (C<\0>) characters.  However it has a very simple
+to use API.
+
+C<guestfs_read_file> can be used to read files which contain
+arbitrary 8 bit data, since it returns a (pointer, size) pair.
+However it is still limited to "small" files, less than 2 MB.
+
+C<guestfs_download> can be used to download any file, with no
+limits on content or size (even files larger than 4 GB).
+
+To download multiple files, see C<guestfs_tar_out> and
+C<guestfs_tgz_out>.
+
+=head2 UPLOADING
+
+It's often the case that you want to write a file or files to the disk
+image.
+
+For small, single files, use C<guestfs_write_file>.  This call
+currently contains a bug which limits the call to plain text files
+(not containing ASCII NUL characters).
+
+To upload a single file, use C<guestfs_upload>.  This call has no
+limits on file content or size (even files larger than 4 GB).
+
+To upload multiple files, see C<guestfs_tar_in> and C<guestfs_tgz_in>.
+
+However the fastest way to upload I<large numbers of arbitrary files>
+is to turn them into a squashfs or CD ISO (see L<mksquashfs(8)> and
+L<mkisofs(8)>), then attach this using C<guestfs_add_drive_ro>.  If
+you add the drive in a predictable way (eg. adding it last after all
+other drives) then you can get the device name from
+C<guestfs_list_devices> and mount it directly using
+C<guestfs_mount_ro>.  Note that squashfs images are sometimes
+non-portable between kernel versions, and they don't support labels or
+UUIDs.  If you want to pre-build an image or you need to mount it
+using a label or UUID, use an ISO image instead.
+
+=head2 COPYING
+
+There are various different commands for copying between files and
+devices and in and out of the guest filesystem.  These are summarised
+in the table below.
+
+=over 4
+
+=item B<file> to B<file>
+
+Use L</guestfs_cp> to copy a single file, or
+L</guestfs_cp_a> to copy directories recursively.
+
+=item B<file or device> to B<file or device>
+
+Use L</guestfs_dd> which efficiently uses L<dd(1)>
+to copy between files and devices in the guest.
+
+Example: duplicate the contents of an LV:
+
+ guestfs_dd (g, "/dev/VG/Original", "/dev/VG/Copy");
+
+The destination (C</dev/VG/Copy>) must be at least as large as the
+source (C</dev/VG/Original>).
+
+=item B<file on the host> to B<file or device>
+
+Use L</guestfs_upload>.  See L</UPLOADING> above.
+
+=item B<file or device> to B<file on the host>
+
+Use L</guestfs_download>.  See L</DOWNLOADING> above.
+
+=back
+
+=head2 LISTING FILES
+
+C<guestfs_ll> is just designed for humans to read (mainly when using
+the L<guestfish(1)>-equivalent command C<ll>).
+
+C<guestfs_ls> is a quick way to get a list of files in a directory
+from programs, as a flat list of strings.
+
+C<guestfs_readdir> is a programmatic way to get a list of files in a
+directory, plus additional information about each one.  It is more
+equivalent to using the L<readdir(3)> call on a local filesystem.
+
+C<guestfs_find> can be used to recursively list files.
+
+=head2 RUNNING COMMANDS
+
+Although libguestfs is a primarily an API for manipulating files
+inside guest images, we also provide some limited facilities for
+running commands inside guests.
+
+There are many limitations to this:
+
+=over 4
+
+=item *
+
+The kernel version that the command runs under will be different
+from what it expects.
+
+=item *
+
+If the command needs to communicate with daemons, then most likely
+they won't be running.
+
+=item *
+
+The command will be running in limited memory.
+
+=item *
+
+Only supports Linux guests (not Windows, BSD, etc).
+
+=item *
+
+Architecture limitations (eg. won't work for a PPC guest on
+an X86 host).
+
+=item *
+
+For SELinux guests, you may need to enable SELinux and load policy
+first.  See L</SELINUX> in this manpage.
+
+=back
+
+The two main API calls to run commands are C<guestfs_command> and
+C<guestfs_sh> (there are also variations).
+
+The difference is that C<guestfs_sh> runs commands using the shell, so
+any shell globs, redirections, etc will work.
+
+=head2 CONFIGURATION FILES
+
+To read and write configuration files in Linux guest filesystems, we
+strongly recommend using Augeas.  For example, Augeas understands how
+to read and write, say, a Linux shadow password file or X.org
+configuration file, and so avoids you having to write that code.
+
+The main Augeas calls are bound through the C<guestfs_aug_*> APIs.  We
+don't document Augeas itself here because there is excellent
+documentation on the L<http://augeas.net/> website.
+
+If you don't want to use Augeas (you fool!) then try calling
+C<guestfs_read_lines> to get the file as a list of lines which
+you can iterate over.
+
+=head2 SELINUX
+
+We support SELinux guests.  To ensure that labeling happens correctly
+in SELinux guests, you need to enable SELinux and load the guest's
+policy:
+
+=over 4
+
+=item 1.
+
+Before launching, do:
+
+ guestfs_set_selinux (g, 1);
+
+=item 2.
+
+After mounting the guest's filesystem(s), load the policy.  This
+is best done by running the L<load_policy(8)> command in the
+guest itself:
+
+ guestfs_sh (g, "/usr/sbin/load_policy");
+
+(Older versions of C<load_policy> require you to specify the
+name of the policy file).
+
+=item 3.
+
+Optionally, set the security context for the API.  The correct
+security context to use can only be known by inspecting the
+guest.  As an example:
+
+ guestfs_setcon (g, "unconfined_u:unconfined_r:unconfined_t:s0");
+
+=back
+
+This will work for running commands and editing existing files.
+
+When new files are created, you may need to label them explicitly,
+for example by running the external command
+C<restorecon pathname>.
+
+=head2 SPECIAL CONSIDERATIONS FOR WINDOWS GUESTS
+
+Libguestfs can mount NTFS partitions.  It does this using the
+L<http://www.ntfs-3g.org/> driver.
+
+DOS and Windows still use drive letters, and the filesystems are
+always treated as case insensitive by Windows itself, and therefore
+you might find a Windows configuration file referring to a path like
+C<c:\windows\system32>.  When the filesystem is mounted in libguestfs,
+that directory might be referred to as C</WINDOWS/System32>.
+
+Drive letter mappings are outside the scope of libguestfs.  You have
+to use libguestfs to read the appropriate Windows Registry and
+configuration files, to determine yourself how drives are mapped (see
+also L<virt-inspector(1)>).
+
+Replacing backslash characters with forward slash characters is also
+outside the scope of libguestfs, but something that you can easily do.
+
+Where we can help is in resolving the case insensitivity of paths.
+For this, call C<guestfs_case_sensitive_path>.
+
+Libguestfs also provides some help for decoding Windows Registry
+"hive" files, through the library C<libhivex> which is part of
+libguestfs.  You have to locate and download the hive file(s)
+yourself, and then pass them to C<libhivex> functions.  See also the
+programs L<hivexml(1)>, L<hivexget(1)> and L<virt-win-reg(1)> for more
+help on this issue.
+
+=head2 USING LIBGUESTFS WITH OTHER PROGRAMMING LANGUAGES
+
+Although we don't want to discourage you from using the C API, we will
+mention here that the same API is also available in other languages.
+
+The API is broadly identical in all supported languages.  This means
+that the C call C<guestfs_mount(handle,path)> is
+C<$handle-E<gt>mount($path)> in Perl, C<handle.mount(path)> in Python,
+and C<Guestfs.mount handle path> in OCaml.  In other words, a
+straightforward, predictable isomorphism between each language.
+
+Error messages are automatically transformed
+into exceptions if the language supports it.
+
+We don't try to "object orientify" parts of the API in OO languages,
+although contributors are welcome to write higher level APIs above
+what we provide in their favourite languages if they wish.
+
+=over 4
+
+=item B<C++>
+
+You can use the I<guestfs.h> header file from C++ programs.  The C++
+API is identical to the C API.  C++ classes and exceptions are
+not implemented.
+
+=item B<Haskell>
+
+This is the only language binding that is incomplete.  Only calls
+which return simple integers have been bound in Haskell, and we are
+looking for help to complete this binding.
+
+=item B<Java>
+
+Full documentation is contained in the Javadoc which is distributed
+with libguestfs.
+
+=item B<OCaml>
+
+For documentation see the file C<guestfs.mli>.
+
+=item B<Perl>
+
+For documentation see L<Sys::Guestfs(3)>.
+
+=item B<Python>
+
+For documentation do:
+
+ $ python
+ >>> import guestfs
+ >>> help (guestfs)
+
+=item B<Ruby>
+
+Use the Guestfs module.  There is no Ruby-specific documentation, but
+you can find examples written in Ruby in the libguestfs source.
+
+=item B<shell scripts>
+
+For documentation see L<guestfish(1)>.
+
+=back
+
+=head1 CONNECTION MANAGEMENT
 
 =head2 guestfs_h *
 
@@ -87,7 +527,7 @@ Create a handle by calling C<guestfs_create>.  Call C<guestfs_close>
 to free the handle and release all resources used.
 
 For information on using multiple handles and threads, see the section
-MULTIPLE HANDLES AND MULTIPLE THREADS below.
+L</MULTIPLE HANDLES AND MULTIPLE THREADS> below.
 
 =head2 guestfs_create
 
@@ -100,11 +540,10 @@ You have to call C<guestfs_add_drive> on the handle at least once.
 This function returns a non-NULL pointer to a handle on success or
 NULL on error.
 
-After configuring the handle, you have to call C<guestfs_launch> and
-C<guestfs_wait_ready>.
+After configuring the handle, you have to call C<guestfs_launch>.
 
 You may also want to configure error handling for the handle.  See
-ERROR HANDLING section below.
+L</ERROR HANDLING> section below.
 
 =head2 guestfs_close
 
@@ -219,32 +658,139 @@ developer to program in confidence against libguestfs.
 
 @STRUCTS@
 
-=head1 STATE MACHINE AND LOW-LEVEL EVENT API
+=head1 AVAILABILITY
 
-Internally, libguestfs is implemented by running a virtual machine
-using L<qemu(1)>.  QEmu runs as a child process of the main program,
-and most of this discussion won't make sense unless you understand
-that the complexity is dealing with the (asynchronous) actions of the
-child process.
+=head2 GROUPS OF FUNCTIONALITY IN THE APPLIANCE
 
-                            child process
-  ___________________       _________________________
- /                   \     /                         \
- | main program      |     | qemu +-----------------+|
- |                   |     |      | Linux kernel    ||
- +-------------------+     |      +-----------------+|
- | libguestfs     <-------------->| guestfsd        ||
- |                   |     |      +-----------------+|
- \___________________/     \_________________________/
+Using L</guestfs_available> you can test availability of
+the following groups of functions.  This test queries the
+appliance to see if the appliance you are currently using
+supports the functionality.
 
-The diagram above shows libguestfs communicating with the guestfsd
-daemon running inside the qemu child process.  There are several
-points of failure here: qemu can fail to start, the virtual machine
-inside qemu can fail to boot, guestfsd can fail to start or not
-establish communication, any component can start successfully but fail
-asynchronously later, and so on.
+@AVAILABILITY@
 
-=head2 STATE MACHINE
+=head2 SINGLE CALLS AT COMPILE TIME
+
+If you need to test whether a single libguestfs function is
+available at compile time, we recommend using build tools
+such as autoconf or cmake.  For example in autotools you could
+use:
+
+ AC_CHECK_LIB([guestfs],[guestfs_create])
+ AC_CHECK_FUNCS([guestfs_dd])
+
+which would result in C<HAVE_GUESTFS_DD> being either defined
+or not defined in your program.
+
+=head2 SINGLE CALLS AT RUN TIME
+
+Testing at compile time doesn't guarantee that a function really
+exists in the library.  The reason is that you might be dynamically
+linked against a previous I<libguestfs.so> (dynamic library)
+which doesn't have the call.  This situation unfortunately results
+in a segmentation fault, which is a shortcoming of the C dynamic
+linking system itself.
+
+You can use L<dlopen(3)> to test if a function is available
+at run time, as in this example program (note that you still
+need the compile time check as well):
+
+ #include <config.h>
+ 
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <unistd.h>
+ #include <dlfcn.h>
+ #include <guestfs.h>
+ 
+ main ()
+ {
+ #ifdef HAVE_GUESTFS_DD
+   void *dl;
+   int has_function;
+ 
+   /* Test if the function guestfs_dd is really available. */
+   dl = dlopen (NULL, RTLD_LAZY);
+   if (!dl) {
+     fprintf (stderr, "dlopen: %s\n", dlerror ());
+     exit (1);
+   }
+   has_function = dlsym (dl, "guestfs_dd") != NULL;
+   dlclose (dl);
+ 
+   if (!has_function)
+     printf ("this libguestfs.so does NOT have guestfs_dd function\n");
+   else {
+     printf ("this libguestfs.so has guestfs_dd function\n");
+     /* Now it's safe to call
+     guestfs_dd (g, "foo", "bar");
+     */
+   }
+ #else
+   printf ("guestfs_dd function was not found at compile time\n");
+ #endif
+  }
+
+You may think the above is an awful lot of hassle, and it is.
+There are other ways outside of the C linking system to ensure
+that this kind of incompatibility never arises, such as using
+package versioning:
+
+ Requires: libguestfs >= 1.0.80
+
+=begin html
+
+<!-- old anchor for the next section -->
+<a name="state_machine_and_low_level_event_api"/>
+
+=end html
+
+=head1 ARCHITECTURE
+
+Internally, libguestfs is implemented by running an appliance (a
+special type of small virtual machine) using L<qemu(1)>.  Qemu runs as
+a child process of the main program.
+
+  ___________________
+ /                   \
+ | main program      |
+ |                   |
+ |                   |           child process / appliance
+ |                   |           __________________________
+ |                   |          / qemu                     \
+ +-------------------+   RPC    |      +-----------------+ |
+ | libguestfs     <--------------------> guestfsd        | |
+ |                   |          |      +-----------------+ |
+ \___________________/          |      | Linux kernel    | |
+                                |      +--^--------------+ |
+                                \_________|________________/
+                                          |
+                                   _______v______
+                                  /              \
+                                  | Device or    |
+                                  | disk image   |
+                                  \______________/
+
+The library, linked to the main program, creates the child process and
+hence the appliance in the L</guestfs_launch> function.
+
+Inside the appliance is a Linux kernel and a complete stack of
+userspace tools (such as LVM and ext2 programs) and a small
+controlling daemon called C<guestfsd>.  The library talks to
+C<guestfsd> using remote procedure calls (RPC).  There is a mostly
+one-to-one correspondence between libguestfs API calls and RPC calls
+to the daemon.  Lastly the disk image(s) are attached to the qemu
+process which translates device access by the appliance's Linux kernel
+into accesses to the image.
+
+A common misunderstanding is that the appliance "is" the virtual
+machine.  Although the disk image you are attached to might also be
+used by some virtual machine, libguestfs doesn't know or care about
+this.  (But you will care if both libguestfs's qemu process and your
+virtual machine are trying to update the disk image at the same time,
+since these usually results in massive disk corruption).
+
+=head1 STATE MACHINE
 
 libguestfs uses a state machine to model the child process:
 
@@ -263,7 +809,7 @@ libguestfs uses a state machine to model the child process:
                  /     |   | LAUNCHING |
                 /      |   \___________/
                /       |       /
-              /        |  guestfs_wait_ready
+              /        |  guestfs_launch
              /         |     /
     ______  /        __|____V
    /      \ ------> /        \
@@ -283,12 +829,10 @@ Configuration commands for qemu such as C<guestfs_add_drive> can only
 be issued when in the CONFIG state.
 
 The high-level API offers two calls that go from CONFIG through
-LAUNCHING to READY.  C<guestfs_launch> is a non-blocking call that
-starts up the child process, immediately moving from CONFIG to
-LAUNCHING.  C<guestfs_wait_ready> blocks until the child process is
-READY to accept commands (or until some failure or timeout).  The
-low-level event API described below provides a non-blocking way to
-replace C<guestfs_wait_ready>.
+LAUNCHING to READY.  C<guestfs_launch> blocks until the child process
+is READY to accept commands (or until some failure or timeout).
+C<guestfs_launch> internally moves the state from CONFIG to LAUNCHING
+while it is running.
 
 High-level API actions such as C<guestfs_mount> can only be issued
 when in the READY state.  These high-level API calls block waiting for
@@ -306,8 +850,7 @@ register to receive these messages.
 =head2 SETTING CALLBACKS TO HANDLE EVENTS
 
 The child process generates events in some situations.  Current events
-include: receiving a reply message after some action, receiving a log
-message, the child process exits, &c.
+include: receiving a log message, the child process exits.
 
 Use the C<guestfs_set_*_callback> functions to set a callback for
 different types of events.
@@ -316,39 +859,6 @@ Only I<one callback of each type> can be registered for each handle.
 Calling C<guestfs_set_*_callback> again overwrites the previous
 callback of that type.  Cancel all callbacks of this type by calling
 this function with C<cb> set to C<NULL>.
-
-=head2 NON-BLOCKING ACTIONS
-
-XXX This section was documented in previous versions but never
-implemented in a way which matched the documentation.  For now I have
-removed the documentation, pending a working implementation.  See also
-C<src/guestfs-actions.c> in the source.
-
-
-=head2 guestfs_set_send_callback
-
- typedef void (*guestfs_send_cb) (guestfs_h *g, void *opaque);
- void guestfs_set_send_callback (guestfs_h *handle,
-                                 guestfs_send_cb cb,
-                                 void *opaque);
-
-The callback function C<cb> will be called whenever a message
-which is queued for sending, has been sent.
-
-=head2 guestfs_set_reply_callback
-
- typedef void (*guestfs_reply_cb) (guestfs_h *g, void *opaque, XDR *xdr);
- void guestfs_set_reply_callback (guestfs_h *handle,
-                                  guestfs_reply_cb cb,
-                                  void *opaque);
-
-The callback function C<cb> will be called whenever a reply is
-received from the child process.  (This corresponds to a transition
-from the BUSY state to the READY state).
-
-Note that the C<xdr> that you get in the callback is in C<XDR_DECODE>
-mode, and you need to consume it before you return from the callback
-function (since it gets destroyed after).
 
 =head2 guestfs_set_log_message_callback
 
@@ -388,116 +898,6 @@ any state to the CONFIG state).
 The callback function C<cb> will be called when the child process
 becomes ready first time after it has been launched.  (This
 corresponds to a transition from LAUNCHING to the READY state).
-
-You can use this instead of C<guestfs_wait_ready> to implement a
-non-blocking wait for the child process to finish booting up.
-
-=head2 EVENT MAIN LOOP
-
-To use the low-level event API and/or to use handles from multiple
-threads, you have to provide an event "main loop".  You can write your
-own, but if you don't want to write one, two types are provided for
-you:
-
-=over 4
-
-=item libguestfs-select
-
-A simple main loop that is implemented using L<select(2)>.
-
-This is the default main loop for new guestfs handles, unless you
-call C<guestfs_set_main_loop> after a handle is created.
-
-=item libguestfs-glib
-
-An implementation which can be used with GLib and GTK+ programs.  You
-can use this to write graphical (GTK+) programs which use libguestfs
-without hanging during long or slow operations.
-
-=back
-
-=head2 MULTIPLE HANDLES AND MULTIPLE THREADS
-
-The support for multiple handles and multiple threads is modelled
-after glib (although doesn't require glib, if you use the select-based
-main loop).
-
-L<http://library.gnome.org/devel/glib/unstable/glib-The-Main-Event-Loop.html>
-
-You will need to create one main loop for each thread that wants to
-use libguestfs.  Each guestfs handle should be confined to one thread.
-If you try to pass guestfs handles between threads, you will get
-undefined results.
-
-If you only want to use guestfs handles from one thread in your
-program, but your program has other threads doing other things, then
-you don't need to do anything special.
-
-=head2 SINGLE THREAD CASE
-
-In the single thread case, there is a single select-based main loop
-created for you.  All guestfs handles will use this main loop to
-execute high level API actions.
-
-=head2 MULTIPLE THREADS CASE
-
-In the multiple threads case, you will need to create a main loop for
-each thread that wants to use libguestfs.
-
-To create main loops for other threads, use
-C<guestfs_create_main_loop> or C<guestfs_glib_create_main_loop>.
-
-Then you will need to attach each handle to the thread-specific main
-loop by calling:
-
- handle = guestfs_create ();
- guestfs_set_main_loop (handle, main_loop_of_current_thread);
-
-=head2 guestfs_set_main_loop
-
- void guestfs_set_main_loop (guestfs_h *handle,
-                             guestfs_main_loop *main_loop);
-
-Sets the main loop used by high level API actions for this handle.  By
-default, the select-based main loop is used (see
-C<guestfs_get_default_main_loop>).
-
-You only need to use this in multi-threaded programs, where multiple
-threads want to use libguestfs.  Create a main loop for each thread,
-then call this function.
-
-You cannot pass guestfs handles between threads.
-
-=head2 guestfs_get_main_loop
-
- guestfs_main_loop *guestfs_get_main_loop (guestfs_h *handle);
-
-Return the main loop used by C<handle>.
-
-=head2 guestfs_get_default_main_loop
-
- guestfs_main_loop *guestfs_get_default_main_loop (void);
-
-Return the default select-based main loop.
-
-=head2 guestfs_create_main_loop
-
- guestfs_main_loop *guestfs_create_main_loop (void);
-
-This creates a select-based main loop.  You should create one main
-loop for each additional thread that needs to use libguestfs.
-
-=head2 guestfs_free_main_loop
-
- void guestfs_free_main_loop (guestfs_main_loop *);
-
-Free the select-based main loop which was previously allocated with
-C<guestfs_create_main_loop>.
-
-=head2 WRITING A CUSTOM MAIN LOOP
-
-This isn't documented.  Please see the libguestfs-select and
-libguestfs-glib implementations.
 
 =head1 BLOCK DEVICE NAMING
 
@@ -741,7 +1141,16 @@ parameters, but with the roles of daemon and library reversed.
 Because the underlying channel (QEmu -net channel) doesn't have any
 sort of connection control, when the daemon launches it sends an
 initial word (C<GUESTFS_LAUNCH_FLAG>) which indicates that the guest
-and daemon is alive.  This is what C<guestfs_wait_ready> waits for.
+and daemon is alive.  This is what C<guestfs_launch> waits for.
+
+=head1 MULTIPLE HANDLES AND MULTIPLE THREADS
+
+All high-level libguestfs actions are synchronous.  If you want
+to use libguestfs asynchronously then you must create a thread.
+
+Only use the handle from a single thread.  Either use the handle
+exclusively from one thread, or provide your own mutex so that two
+threads cannot issue calls on the same handle at the same time.
 
 =head1 QEMU WRAPPERS
 
@@ -801,7 +1210,22 @@ Set the default qemu binary that libguestfs uses.  If not set, then
 the qemu which was found at compile time by the configure script is
 used.
 
-See also L<QEMU WRAPPERS> above.
+See also L</QEMU WRAPPERS> above.
+
+=item LIBGUESTFS_TRACE
+
+Set C<LIBGUESTFS_TRACE=1> to enable command traces.  This
+has the same effect as calling C<guestfs_set_trace (handle, 1)>.
+
+=item TMPDIR
+
+Location of temporary directory, defaults to C</tmp>.
+
+If libguestfs was compiled to use the supermin appliance then each
+handle will require rather a large amount of space in this directory
+for short periods of time (~ 80 MB).  You can use C<$TMPDIR> to
+configure another directory to use in case C</tmp> is not large
+enough.
 
 =back
 
@@ -811,6 +1235,13 @@ L<guestfish(1)>,
 L<qemu(1)>,
 L<febootstrap(1)>,
 L<http://libguestfs.org/>.
+
+Tools with a similar purpose:
+L<fdisk(8)>,
+L<parted(8)>,
+L<kpartx(8)>,
+L<lvm(8)>,
+L<disktype(1)>.
 
 =head1 BUGS
 
@@ -837,6 +1268,11 @@ That you are testing a recent version.
 =item *
 
 Describe the bug accurately, and give a way to reproduce it.
+
+=item *
+
+Run libguestfs-test-tool and paste the B<complete, unedited>
+output into the bug report.
 
 =back
 

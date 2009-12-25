@@ -24,10 +24,17 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
-#include <ctype.h>
 #include <sys/param.h>		/* defines MIN */
+#include <sys/select.h>
 #include <rpc/types.h>
 #include <rpc/xdr.h>
+
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#endif
+
+#include "c-ctype.h"
+#include "ignore-value.h"
 
 #include "daemon.h"
 #include "../src/guestfs_protocol.h"
@@ -45,7 +52,7 @@ main_loop (int _sock)
   XDR xdr;
   char *buf;
   char lenbuf[4];
-  unsigned len;
+  uint32_t len;
   struct guestfs_message_header hdr;
   struct timeval start_t, end_t;
   int64_t start_us, end_us, elapsed_us;
@@ -53,24 +60,24 @@ main_loop (int _sock)
   sock = _sock;
 
   for (;;) {
-#if 0
     /* Most common errors are leaked memory and leaked file descriptors,
      * so run this between each command:
      */
-    if (verbose)
-      system ("ls -l /proc/self/fd");
-#endif
+    if (verbose && 0)
+      ignore_value (system ("ls -l /proc/self/fd"));
 
     /* Read the length word. */
-    xread (sock, lenbuf, 4);
+    if (xread (sock, lenbuf, 4) == -1)
+      exit (EXIT_FAILURE);
+
     xdrmem_create (&xdr, lenbuf, 4, XDR_DECODE);
-    xdr_uint32_t (&xdr, &len);
+    xdr_u_int (&xdr, &len);
     xdr_destroy (&xdr);
 
     if (len > GUESTFS_MESSAGE_MAX) {
       fprintf (stderr, "guestfsd: incoming message is too long (%u bytes)\n",
-	       len);
-      exit (1);
+               len);
+      exit (EXIT_FAILURE);
     }
 
     buf = malloc (len);
@@ -79,27 +86,28 @@ main_loop (int _sock)
       continue;
     }
 
-    xread (sock, buf, len);
+    if (xread (sock, buf, len) == -1)
+      exit (EXIT_FAILURE);
 
-#if 0
+#ifdef ENABLE_PACKET_DUMP
     if (verbose) {
-      int i, j;
+      size_t i, j;
 
       for (i = 0; i < len; i += 16) {
-	printf ("%04x: ", i);
-	for (j = i; j < MIN (i+16, len); ++j)
-	  printf ("%02x ", (unsigned char) buf[j]);
-	for (; j < i+16; ++j)
-	  printf ("   ");
-	printf ("|");
-	for (j = i; j < MIN (i+16, len); ++j)
-	  if (isprint (buf[j]))
-	    printf ("%c", buf[j]);
-	  else
-	    printf (".");
-	for (; j < i+16; ++j)
-	  printf (" ");
-	printf ("|\n");
+        printf ("%04zx: ", i);
+        for (j = i; j < MIN (i+16, len); ++j)
+          printf ("%02x ", (unsigned char) buf[j]);
+        for (; j < i+16; ++j)
+          printf ("   ");
+        printf ("|");
+        for (j = i; j < MIN (i+16, len); ++j)
+          if (c_isprint (buf[j]))
+            printf ("%c", buf[j]);
+          else
+            printf (".");
+        for (; j < i+16; ++j)
+          printf (" ");
+        printf ("|\n");
       }
     }
 #endif
@@ -112,7 +120,7 @@ main_loop (int _sock)
     xdrmem_create (&xdr, buf, len, XDR_DECODE);
     if (!xdr_guestfs_message_header (&xdr, &hdr)) {
       fprintf (stderr, "guestfsd: could not decode message header\n");
-      exit (1);
+      exit (EXIT_FAILURE);
     }
 
     /* Check the version etc. */
@@ -133,9 +141,20 @@ main_loop (int _sock)
       goto cont;
     }
 
-    /* Now start to process this message. */
     proc_nr = hdr.proc;
     serial = hdr.serial;
+
+    /* Clear errors before we call the stub functions.  This is just
+     * to ensure that we can accurately report errors in cases where
+     * error handling paths don't set errno correctly.
+     */
+    errno = 0;
+#ifdef WIN32
+    SetLastError (0);
+    WSASetLastError (0);
+#endif
+
+    /* Now start to process this message. */
     dispatch_incoming_message (&xdr);
     /* Note that dispatch_incoming_message will also send a reply. */
 
@@ -147,11 +166,11 @@ main_loop (int _sock)
       end_us = (int64_t) end_t.tv_sec * 1000000 + end_t.tv_usec;
       elapsed_us = end_us - start_us;
       fprintf (stderr, "proc %d (%s) took %d.%02d seconds\n",
-	       proc_nr,
-	       proc_nr >= 0 && proc_nr < GUESTFS_PROC_NR_PROCS
-	       ? function_names[proc_nr] : "UNKNOWN PROCEDURE",
-	       (int) (elapsed_us / 1000000),
-	       (int) ((elapsed_us / 10000) % 100));
+               proc_nr,
+               proc_nr >= 0 && proc_nr < GUESTFS_PROC_NR_PROCS
+               ? function_names[proc_nr] : "UNKNOWN PROCEDURE",
+               (int) (elapsed_us / 1000000),
+               (int) ((elapsed_us / 10000) % 100));
     }
 
   cont:
@@ -176,12 +195,11 @@ reply_with_error (const char *fs, ...)
 }
 
 void
-reply_with_perror (const char *fs, ...)
+reply_with_perror_errno (int err, const char *fs, ...)
 {
   char buf1[GUESTFS_ERROR_LEN];
   char buf2[GUESTFS_ERROR_LEN];
   va_list args;
-  int err = errno;
 
   va_start (args, fs);
   vsnprintf (buf1, sizeof buf1, fs, args);
@@ -215,30 +233,30 @@ send_error (const char *msg)
 
   if (!xdr_guestfs_message_header (&xdr, &hdr)) {
     fprintf (stderr, "guestfsd: failed to encode error message header\n");
-    exit (1);
+    exit (EXIT_FAILURE);
   }
 
   err.error_message = (char *) msg;
 
   if (!xdr_guestfs_message_error (&xdr, &err)) {
     fprintf (stderr, "guestfsd: failed to encode error message body\n");
-    exit (1);
+    exit (EXIT_FAILURE);
   }
 
   len = xdr_getpos (&xdr);
   xdr_destroy (&xdr);
 
   xdrmem_create (&xdr, lenbuf, 4, XDR_ENCODE);
-  xdr_uint32_t (&xdr, &len);
+  xdr_u_int (&xdr, &len);
   xdr_destroy (&xdr);
 
   if (xwrite (sock, lenbuf, 4) == -1) {
     fprintf (stderr, "xwrite failed\n");
-    exit (1);
+    exit (EXIT_FAILURE);
   }
   if (xwrite (sock, buf, len) == -1) {
     fprintf (stderr, "xwrite failed\n");
-    exit (1);
+    exit (EXIT_FAILURE);
   }
 }
 
@@ -262,7 +280,7 @@ reply (xdrproc_t xdrp, char *ret)
 
   if (!xdr_guestfs_message_header (&xdr, &hdr)) {
     fprintf (stderr, "guestfsd: failed to encode reply header\n");
-    exit (1);
+    exit (EXIT_FAILURE);
   }
 
   if (xdrp) {
@@ -281,16 +299,16 @@ reply (xdrproc_t xdrp, char *ret)
   xdr_destroy (&xdr);
 
   xdrmem_create (&xdr, lenbuf, 4, XDR_ENCODE);
-  xdr_uint32_t (&xdr, &len);
+  xdr_u_int (&xdr, &len);
   xdr_destroy (&xdr);
 
   if (xwrite (sock, lenbuf, 4) == -1) {
     fprintf (stderr, "xwrite failed\n");
-    exit (1);
+    exit (EXIT_FAILURE);
   }
-  if (xwrite (sock, buf, len) == len) {
+  if (xwrite (sock, buf, len) == -1) {
     fprintf (stderr, "xwrite failed\n");
-    exit (1);
+    exit (EXIT_FAILURE);
   }
 }
 
@@ -307,9 +325,11 @@ receive_file (receive_cb cb, void *opaque)
 
   for (;;) {
     /* Read the length word. */
-    xread (sock, lenbuf, 4);
+    if (xread (sock, lenbuf, 4) == -1)
+      exit (EXIT_FAILURE);
+
     xdrmem_create (&xdr, lenbuf, 4, XDR_DECODE);
-    xdr_uint32_t (&xdr, &len);
+    xdr_u_int (&xdr, &len);
     xdr_destroy (&xdr);
 
     if (len == GUESTFS_CANCEL_FLAG)
@@ -317,8 +337,8 @@ receive_file (receive_cb cb, void *opaque)
 
     if (len > GUESTFS_MESSAGE_MAX) {
       fprintf (stderr, "guestfsd: incoming message is too long (%u bytes)\n",
-	       len);
-      exit (1);
+               len);
+      exit (EXIT_FAILURE);
     }
 
     buf = malloc (len);
@@ -327,7 +347,8 @@ receive_file (receive_cb cb, void *opaque)
       return -1;
     }
 
-    xread (sock, buf, len);
+    if (xread (sock, buf, len) == -1)
+      exit (EXIT_FAILURE);
 
     xdrmem_create (&xdr, buf, len, XDR_DECODE);
     memset (&chunk, 0, sizeof chunk);
@@ -341,7 +362,7 @@ receive_file (receive_cb cb, void *opaque)
 
     if (verbose)
       printf ("receive_file: got chunk: cancel = %d, len = %d, buf = %p\n",
-	      chunk.cancel, chunk.data.data_len, chunk.data.data_val);
+              chunk.cancel, chunk.data.data_len, chunk.data.data_val);
 
     if (chunk.cancel) {
       fprintf (stderr, "receive_file: received cancellation from library\n");
@@ -373,7 +394,7 @@ cancel_receive (void)
   uint32_t flag = GUESTFS_CANCEL_FLAG;
 
   xdrmem_create (&xdr, fbuf, sizeof fbuf, XDR_ENCODE);
-  xdr_uint32_t (&xdr, &flag);
+  xdr_u_int (&xdr, &flag);
   xdr_destroy (&xdr);
 
   if (xwrite (sock, fbuf, sizeof fbuf) == -1) {
@@ -397,7 +418,7 @@ send_file_write (const void *buf, int len)
 
   if (len > GUESTFS_MAX_CHUNK_SIZE) {
     fprintf (stderr, "send_file_write: len (%d) > GUESTFS_MAX_CHUNK_SIZE (%d)\n",
-	     len, GUESTFS_MAX_CHUNK_SIZE);
+             len, GUESTFS_MAX_CHUNK_SIZE);
     return -1;
   }
 
@@ -444,25 +465,23 @@ check_for_library_cancellation (void)
 
   /* Read the message from the daemon. */
   r = xread (sock, buf, sizeof buf);
-  if (r == -1) {
-    perror ("read");
+  if (r == -1)
     return 0;
-  }
 
   xdrmem_create (&xdr, buf, sizeof buf, XDR_DECODE);
-  xdr_uint32_t (&xdr, &flag);
+  xdr_u_int (&xdr, &flag);
   xdr_destroy (&xdr);
 
   if (flag != GUESTFS_CANCEL_FLAG) {
     fprintf (stderr, "check_for_library_cancellation: read 0x%x from library, expected 0x%x\n",
-	     flag, GUESTFS_CANCEL_FLAG);
+             flag, GUESTFS_CANCEL_FLAG);
     return 0;
   }
 
   return 1;
 }
 
-void
+int
 send_file_end (int cancel)
 {
   guestfs_chunk chunk;
@@ -470,7 +489,7 @@ send_file_end (int cancel)
   chunk.cancel = cancel;
   chunk.data.data_len = 0;
   chunk.data.data_val = NULL;
-  send_chunk (&chunk);
+  return send_chunk (&chunk);
 }
 
 static int
@@ -492,11 +511,15 @@ send_chunk (const guestfs_chunk *chunk)
   xdr_destroy (&xdr);
 
   xdrmem_create (&xdr, lenbuf, 4, XDR_ENCODE);
-  xdr_uint32_t (&xdr, &len);
+  xdr_u_int (&xdr, &len);
   xdr_destroy (&xdr);
 
-  (void) xwrite (sock, lenbuf, 4);
-  (void) xwrite (sock, buf, len);
+  int err = (xwrite (sock, lenbuf, 4) == 0
+             && xwrite (sock, buf, len) == 0 ? 0 : -1);
+  if (err) {
+    fprintf (stderr, "send_chunk: write failed\n");
+    exit (EXIT_FAILURE);
+  }
 
-  return 0;
+  return err;
 }

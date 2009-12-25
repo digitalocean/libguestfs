@@ -22,7 +22,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <ctype.h>
 #include <assert.h>
 #include <pwd.h>
 #include <sys/types.h>
@@ -30,7 +29,7 @@
 #include "fish.h"
 
 static char *expand_home (const char *);
-static const char *find_home_for_username (const char *, int);
+static const char *find_home_for_username (const char *, size_t);
 
 /* This is called from the script loop if we find a candidate for
  * ~username (tilde-expansion).
@@ -52,10 +51,8 @@ try_tilde_expansion (char *str)
    * username from the password file.
    */
   else {
-    int len;
     const char *home, *rest;
-
-    len = strcspn (&str[1], "/");
+    size_t len = strcspn (&str[1], "/");
     rest = &str[1+len];
 
     home = find_home_for_username (&str[1], len);
@@ -64,8 +61,8 @@ try_tilde_expansion (char *str)
       len = strlen (home) + strlen (rest);
       str = malloc (len);
       if (str == NULL) {
-	perror ("malloc");
-	exit (1);
+        perror ("malloc");
+        exit (EXIT_FAILURE);
       }
       strcpy (str, home);
       strcat (str, rest);
@@ -92,7 +89,7 @@ expand_home (const char *append)
   str = malloc (len);
   if (str == NULL) {
     perror ("malloc");
-    exit (1);
+    exit (EXIT_FAILURE);
   }
 
   strcpy (str, home);
@@ -106,14 +103,14 @@ expand_home (const char *append)
  * or NULL if not found.
  */
 static const char *
-find_home_for_username (const char *username, int ulen)
+find_home_for_username (const char *username, size_t ulen)
 {
   struct passwd *pw;
 
   setpwent ();
   while ((pw = getpwent ()) != NULL) {
     if (strlen (pw->pw_name) == ulen &&
-	strncmp (username, pw->pw_name, ulen) == 0)
+        STREQLEN (username, pw->pw_name, ulen))
       return pw->pw_dir;
   }
 

@@ -26,14 +26,20 @@
 
 #include "daemon.h"
 #include "actions.h"
+#include "optgroups.h"
 
 int
-do_zerofree (char *device)
+optgroup_zerofree_available (void)
+{
+  int r = access ("/usr/sbin/zerofree", X_OK);
+  return r == 0;
+}
+
+int
+do_zerofree (const char *device)
 {
   char *err;
   int r;
-
-  IS_DEVICE (device, -1);
 
   r = command (NULL, &err, "/usr/sbin/zerofree", device, NULL);
   if (r == -1) {

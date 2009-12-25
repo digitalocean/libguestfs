@@ -30,15 +30,12 @@
 #include "actions.h"
 
 char **
-do_ls (char *path)
+do_ls (const char *path)
 {
   char **r = NULL;
   int size = 0, alloc = 0;
   DIR *dir;
   struct dirent *d;
-
-  NEED_ROOT (NULL);
-  ABS_PATH (path, NULL);
 
   CHROOT_IN;
   dir = opendir (path);
@@ -50,7 +47,7 @@ do_ls (char *path)
   }
 
   while ((d = readdir (dir)) != NULL) {
-    if (strcmp (d->d_name, ".") == 0 || strcmp (d->d_name, "..") == 0)
+    if (STREQ (d->d_name, ".") || STREQ (d->d_name, ".."))
       continue;
 
     if (add_string (&r, &size, &alloc, d->d_name) == -1) {
@@ -74,29 +71,24 @@ do_ls (char *path)
   return r;
 }
 
+/* Because we can't chroot and run the ls command (since 'ls' won't
+ * necessarily exist in the chroot), this command can be used to escape
+ * from the sysroot (eg. 'll /..').  This command is not meant for
+ * serious use anyway, just for quick interactive sessions.
+ */
+
 char *
-do_ll (char *path)
+do_ll (const char *path)
 {
-  int r, len;
+  int r;
   char *out, *err;
   char *spath;
 
-  //NEED_ROOT
-  ABS_PATH (path, NULL);
-
-  /* This exposes the /sysroot, because we can't chroot and run the ls
-   * command (since 'ls' won't necessarily exist in the chroot).  This
-   * command is not meant for serious use anyway, just for quick
-   * interactive sessions.  For the same reason, you can also "escape"
-   * the sysroot (eg. 'll /..').
-   */
-  len = strlen (path) + 9;
-  spath = malloc (len);
+  spath = sysroot_path (path);
   if (!spath) {
     reply_with_perror ("malloc");
     return NULL;
   }
-  snprintf (spath, len, "/sysroot%s", path);
 
   r = command (&out, &err, "ls", "-la", spath, NULL);
   free (spath);

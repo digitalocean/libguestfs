@@ -30,13 +30,10 @@
 #include "actions.h"
 
 int
-do_touch (char *path)
+do_touch (const char *path)
 {
   int fd;
   int r;
-
-  NEED_ROOT (-1);
-  ABS_PATH (path, -1);
 
   CHROOT_IN;
   fd = open (path, O_WRONLY | O_CREAT | O_NOCTTY, 0666);
@@ -47,11 +44,7 @@ do_touch (char *path)
     return -1;
   }
 
-#ifdef HAVE_FUTIMENS
   r = futimens (fd, NULL);
-#else
-  r = futimes (fd, NULL);
-#endif
   if (r == -1) {
     reply_with_perror ("futimens: %s", path);
     close (fd);
@@ -67,14 +60,11 @@ do_touch (char *path)
 }
 
 char *
-do_cat (char *path)
+do_cat (const char *path)
 {
   int fd;
   int alloc, size, r, max;
   char *buf, *buf2;
-
-  NEED_ROOT (NULL);
-  ABS_PATH (path,NULL);
 
   CHROOT_IN;
   fd = open (path, O_RDONLY);
@@ -97,18 +87,18 @@ do_cat (char *path)
     if (size >= alloc) {
       alloc += 8192;
       if (alloc > max) {
-	reply_with_error ("cat: %s: file is too large for message buffer",
-			  path);
-	free (buf);
-	close (fd);
-	return NULL;
+        reply_with_error ("cat: %s: file is too large for message buffer",
+                          path);
+        free (buf);
+        close (fd);
+        return NULL;
       }
       buf2 = realloc (buf, alloc);
       if (buf2 == NULL) {
-	reply_with_perror ("realloc");
-	free (buf);
-	close (fd);
-	return NULL;
+        reply_with_perror ("realloc");
+        free (buf);
+        close (fd);
+        return NULL;
       }
       buf = buf2;
     }
@@ -138,7 +128,7 @@ do_cat (char *path)
 }
 
 char **
-do_read_lines (char *path)
+do_read_lines (const char *path)
 {
   char **r = NULL;
   int size = 0, alloc = 0;
@@ -146,9 +136,6 @@ do_read_lines (char *path)
   char *line = NULL;
   size_t len = 0;
   ssize_t n;
-
-  NEED_ROOT (NULL);
-  ABS_PATH (path, NULL);
 
   CHROOT_IN;
   fp = fopen (path, "r");
@@ -190,12 +177,9 @@ do_read_lines (char *path)
 }
 
 int
-do_rm (char *path)
+do_rm (const char *path)
 {
   int r;
-
-  NEED_ROOT (-1);
-  ABS_PATH (path, -1);
 
   CHROOT_IN;
   r = unlink (path);
@@ -210,12 +194,9 @@ do_rm (char *path)
 }
 
 int
-do_chmod (int mode, char *path)
+do_chmod (int mode, const char *path)
 {
   int r;
-
-  NEED_ROOT (-1);
-  ABS_PATH (path, -1);
 
   CHROOT_IN;
   r = chmod (path, mode);
@@ -230,12 +211,9 @@ do_chmod (int mode, char *path)
 }
 
 int
-do_chown (int owner, int group, char *path)
+do_chown (int owner, int group, const char *path)
 {
   int r;
-
-  NEED_ROOT (-1);
-  ABS_PATH (path, -1);
 
   CHROOT_IN;
   r = chown (path, owner, group);
@@ -250,12 +228,26 @@ do_chown (int owner, int group, char *path)
 }
 
 int
-do_exists (char *path)
+do_lchown (int owner, int group, const char *path)
 {
   int r;
 
-  NEED_ROOT (-1);
-  ABS_PATH (path, -1);
+  CHROOT_IN;
+  r = lchown (path, owner, group);
+  CHROOT_OUT;
+
+  if (r == -1) {
+    reply_with_perror ("lchown: %s: %d.%d", path, owner, group);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_exists (const char *path)
+{
+  int r;
 
   CHROOT_IN;
   r = access (path, F_OK);
@@ -265,13 +257,10 @@ do_exists (char *path)
 }
 
 int
-do_is_file (char *path)
+do_is_file (const char *path)
 {
   int r;
   struct stat buf;
-
-  NEED_ROOT (-1);
-  ABS_PATH (path, -1);
 
   CHROOT_IN;
   r = lstat (path, &buf);
@@ -290,12 +279,9 @@ do_is_file (char *path)
 }
 
 int
-do_write_file (char *path, char *content, int size)
+do_write_file (const char *path, const char *content, int size)
 {
   int fd;
-
-  NEED_ROOT (-1);
-  ABS_PATH (path, -1);
 
   if (size == 0)
     size = strlen (content);
@@ -323,27 +309,131 @@ do_write_file (char *path, char *content, int size)
   return 0;
 }
 
-/* This runs the 'file' command. */
 char *
-do_file (char *path)
+do_read_file (const char *path, size_t *size_r)
 {
-  char *out, *err;
-  int r, len, freeit = 0;
+  int fd;
+  struct stat statbuf;
+  char *r;
+
+  CHROOT_IN;
+  fd = open (path, O_RDONLY);
+  CHROOT_OUT;
+
+  if (fd == -1) {
+    reply_with_perror ("open: %s", path);
+    return NULL;
+  }
+
+  if (fstat (fd, &statbuf) == -1) {
+    reply_with_perror ("fstat: %s", path);
+    close (fd);
+    return NULL;
+  }
+
+  *size_r = statbuf.st_size;
+  /* The actual limit on messages is smaller than this.  This
+   * check just limits the amount of memory we'll try and allocate
+   * here.  If the message is larger than the real limit, that will
+   * be caught later when we try to serialize the message.
+   */
+  if (*size_r >= GUESTFS_MESSAGE_MAX) {
+    reply_with_error ("read_file: %s: file is too large for the protocol, use guestfs_download instead", path);
+    close (fd);
+    return NULL;
+  }
+  r = malloc (*size_r);
+  if (r == NULL) {
+    reply_with_perror ("malloc");
+    close (fd);
+    return NULL;
+  }
+
+  if (xread (fd, r, *size_r) == -1) {
+    reply_with_perror ("read: %s", path);
+    close (fd);
+    free (r);
+    return NULL;
+  }
+
+  if (close (fd) == -1) {
+    reply_with_perror ("close: %s", path);
+    free (r);
+    return NULL;
+  }
+
+  return r;
+}
+
+char *
+do_pread (const char *path, int count, int64_t offset, size_t *size_r)
+{
+  int fd;
+  ssize_t r;
   char *buf;
 
-  NEED_ROOT_OR_IS_DEVICE (path, NULL);
-  ABS_PATH (path, NULL);
+  /* The actual limit on messages is smaller than this.  This check
+   * just limits the amount of memory we'll try and allocate in the
+   * function.  If the message is larger than the real limit, that
+   * will be caught later when we try to serialize the message.
+   */
+  if (count >= GUESTFS_MESSAGE_MAX) {
+    reply_with_error ("pread: %s: count is too large for the protocol, use smaller reads", path);
+    return NULL;
+  }
 
-  if (strncmp (path, "/dev/", 5) == 0)
+  CHROOT_IN;
+  fd = open (path, O_RDONLY);
+  CHROOT_OUT;
+
+  if (fd == -1) {
+    reply_with_perror ("open: %s", path);
+    return NULL;
+  }
+
+  buf = malloc (count);
+  if (buf == NULL) {
+    reply_with_perror ("malloc");
+    close (fd);
+    return NULL;
+  }
+
+  r = pread (fd, buf, count, offset);
+  if (r == -1) {
+    reply_with_perror ("pread: %s", path);
+    close (fd);
+    free (buf);
+    return NULL;
+  }
+
+  if (close (fd) == -1) {
+    reply_with_perror ("close: %s", path);
+    close (fd);
+    free (buf);
+    return NULL;
+  }
+
+  *size_r = r;
+  return buf;
+}
+
+/* This runs the 'file' command. */
+char *
+do_file (const char *path)
+{
+  char *out, *err;
+  int r, freeit = 0;
+  char *buf;
+  int len;
+
+  if (STREQLEN (path, "/dev/", 5))
     buf = (char *) path;
   else {
-    len = strlen (path) + 9;
-    buf = malloc (len);
+    buf = sysroot_path (path);
     if (!buf) {
       reply_with_perror ("malloc");
       return NULL;
     }
-    snprintf (buf, len, "/sysroot%s", path);
     freeit = 1;
   }
 
@@ -358,7 +448,7 @@ do_file (char *path)
     return NULL;
   }
 
-  r = command (&out, &err, "file", "-bsL", buf, NULL);
+  r = command (&out, &err, "file", "-zbsL", buf, NULL);
   if (freeit) free (buf);
 
   if (r == -1) {
@@ -379,36 +469,30 @@ do_file (char *path)
 
 /* zcat | file */
 char *
-do_zfile (char *method, char *path)
+do_zfile (const char *method, const char *path)
 {
   int len;
+  const char *zcat;
   char *cmd;
   FILE *fp;
   char line[256];
 
-  NEED_ROOT (NULL);
-  ABS_PATH (path, NULL);
-
-  len = 2 * strlen (path) + 64;
-  cmd = malloc (len);
-  if (!cmd) {
-    reply_with_perror ("malloc");
-    return NULL;
-  }
-
-  if (strcmp (method, "gzip") == 0 || strcmp (method, "compress") == 0)
-    strcpy (cmd, "zcat");
-  else if (strcmp (method, "bzip2") == 0)
-    strcpy (cmd, "bzcat");
+  if (STREQ (method, "gzip") || STREQ (method, "compress"))
+    zcat = "zcat";
+  else if (STREQ (method, "bzip2"))
+    zcat = "bzcat";
   else {
-    free (cmd);
     reply_with_error ("zfile: unknown method");
     return NULL;
   }
 
-  strcat (cmd, " /sysroot");
-  shell_quote (cmd + strlen (cmd), len - strlen (cmd), path);
-  strcat (cmd, " | file -bsL -");
+  if (asprintf_nowarn (&cmd, "%s %R | file -bsL -", zcat, path) == -1) {
+    reply_with_perror ("asprintf");
+    return NULL;
+  }
+
+  if (verbose)
+    fprintf (stderr, "%s\n", cmd);
 
   fp = popen (cmd, "r");
   if (fp == NULL) {

@@ -15,15 +15,26 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+include $(top_srcdir)/subdir-rules.mk
+
 bin_PROGRAMS = guestfish
 
+generator_built = \
+	cmds.c \
+	completion.c
+
+BUILT_SOURCES = \
+	$(generator_built) \
+	rc_protocol.h \
+	rc_protocol.c
+
 EXTRA_DIST = \
+	$(BUILT_SOURCES) \
 	rc_protocol.x
 
 guestfish_SOURCES = \
+	$(generator_built) \
 	alloc.c \
-	cmds.c \
-	completion.c \
 	destpaths.c \
 	echo.c \
 	edit.c \
@@ -33,26 +44,35 @@ guestfish_SOURCES = \
 	lcd.c \
 	more.c \
 	rc.c \
-	rc_protocol.c \
-	rc_protocol.h \
 	reopen.c \
 	tilde.c \
 	time.c
 
-BUILT_SOURCES = \
-	rc_protocol.c \
-	rc_protocol.h
+# This convenience library is solely to avoid compiler warnings
+# in its generated sources.
+librc_protocol_la_SOURCES = rc_protocol.c
+librc_protocol_la_CFLAGS = -Wall -Wno-unused
 
 guestfish_CFLAGS = \
-	-I$(top_srcdir)/src -I$(top_builddir)/src -Wall \
-	-DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"'
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/fish -I$(top_builddir)/fish \
+	-DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"' \
+	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+
 guestfish_LDADD = $(top_builddir)/src/libguestfs.la $(LIBREADLINE)
+
+# Make libguestfs use the convenience library.
+noinst_LTLIBRARIES = librc_protocol.la
+guestfish_LDADD += librc_protocol.la ../gnulib/lib/libgnu.la
 
 if HAVE_RPCGEN
 rc_protocol.c: rc_protocol.x
-	rm -f $@-t
+	rm -f $@-t $@-t2
 	$(RPCGEN) -c -o $@-t $<
-	mv $@-t $@
+	sed 's,\.\./\.\./fish/,,' < $@-t > $@-t2
+	rm $@-t
+	mv $@-t2 $@
 
 rc_protocol.h: rc_protocol.x
 	rm -f $@-t

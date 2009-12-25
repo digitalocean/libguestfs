@@ -82,14 +82,14 @@ public class GuestFS {
     close ();
   }
 
-public void test0 (String str, String optstr, String[] strlist, boolean b, int integer, String filein, String fileout)
+public void test0 (String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("test0: handle is closed");
-    _test0 (g, str, optstr, strlist, b, integer, filein, fileout);
+    _test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout);
   }
-  private native void _test0 (long g, String str, String optstr, String[] strlist, boolean b, int integer, String filein, String fileout)
+  private native void _test0 (long g, String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout)
     throws LibGuestFSException;
 
 public int test0rint (String val)
@@ -170,6 +170,26 @@ public String test0rconststringerr ()
     return _test0rconststringerr (g);
   }
   private native String _test0rconststringerr (long g)
+    throws LibGuestFSException;
+
+public String test0rconstoptstring (String val)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("test0rconstoptstring: handle is closed");
+    return _test0rconstoptstring (g, val);
+  }
+  private native String _test0rconstoptstring (long g, String val)
+    throws LibGuestFSException;
+
+public String test0rconstoptstringerr ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("test0rconstoptstringerr: handle is closed");
+    return _test0rconstoptstringerr (g);
+  }
+  private native String _test0rconstoptstringerr (long g)
     throws LibGuestFSException;
 
 public String test0rstring (String val)
@@ -294,13 +314,18 @@ public HashMap<String,String> test0rhashtableerr ()
     throws LibGuestFSException;
 
   /**
-   * wait until the qemu subprocess launches
+   * wait until the qemu subprocess launches (no op)
    * <p>
-   * Internally libguestfs is implemented by running a
-   * virtual machine using qemu(1).
+   * This function is a no op.
    * <p>
-   * You should call this after "g.launch" to wait for the
-   * launch to complete.
+   * In versions of the API < 1.0.71 you had to call this
+   * function just after calling "g.launch" to wait for the
+   * launch to complete. However this is no longer necessary
+   * because "g.launch" now does the waiting.
+   * <p>
+   * If you see any calls to this function in code then you
+   * can just remove them, unless you want to retain
+   * compatibility with older versions of the API.
    * <p>
    * @throws LibGuestFSException
    */
@@ -348,7 +373,9 @@ public HashMap<String,String> test0rhashtableerr ()
    * to modify the image).
    * <p>
    * This is equivalent to the qemu parameter "-drive
-   * file=filename,cache=off,if=...".
+   * file=filename,cache=off,if=...". "cache=off" is omitted
+   * in cases where it is not supported by the underlying
+   * filesystem.
    * <p>
    * Note that this call checks for the existence of
    * "filename". This stops you from specifying other types
@@ -514,14 +541,14 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * @throws LibGuestFSException
    */
-  public void set_path (String path)
+  public void set_path (String searchpath)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("set_path: handle is closed");
-    _set_path (g, path);
+    _set_path (g, searchpath);
   }
-  private native void _set_path (long g, String path)
+  private native void _set_path (long g, String searchpath)
     throws LibGuestFSException;
 
   /**
@@ -768,67 +795,6 @@ public HashMap<String,String> test0rhashtableerr ()
     throws LibGuestFSException;
 
   /**
-   * set state to busy
-   * <p>
-   * This sets the state to "BUSY". This is only used when
-   * implementing actions using the low-level API.
-   * <p>
-   * For more information on states, see guestfs(3).
-   * <p>
-   * @throws LibGuestFSException
-   */
-  public void set_busy ()
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("set_busy: handle is closed");
-    _set_busy (g);
-  }
-  private native void _set_busy (long g)
-    throws LibGuestFSException;
-
-  /**
-   * set state to ready
-   * <p>
-   * This sets the state to "READY". This is only used when
-   * implementing actions using the low-level API.
-   * <p>
-   * For more information on states, see guestfs(3).
-   * <p>
-   * @throws LibGuestFSException
-   */
-  public void set_ready ()
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("set_ready: handle is closed");
-    _set_ready (g);
-  }
-  private native void _set_ready (long g)
-    throws LibGuestFSException;
-
-  /**
-   * leave the busy state
-   * <p>
-   * This sets the state to "READY", or if in "CONFIG" then
-   * it leaves the state as is. This is only used when
-   * implementing actions using the low-level API.
-   * <p>
-   * For more information on states, see guestfs(3).
-   * <p>
-   * @throws LibGuestFSException
-   */
-  public void end_busy ()
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("end_busy: handle is closed");
-    _end_busy (g);
-  }
-  private native void _end_busy (long g)
-    throws LibGuestFSException;
-
-  /**
    * set memory allocated to the qemu subprocess
    * <p>
    * This sets the memory size in megabytes allocated to the
@@ -927,7 +893,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * "$major.$minor.$release$extra"
    * <p>
    * *Note:* Don't use this call to test for availability of
-   * features. Distro backports makes this unreliable.
+   * features. Distro backports makes this unreliable. Use
+   * "g.available" instead.
    * <p>
    * @throws LibGuestFSException
    */
@@ -939,6 +906,192 @@ public HashMap<String,String> test0rhashtableerr ()
     return _version (g);
   }
   private native Version _version (long g)
+    throws LibGuestFSException;
+
+  /**
+   * set SELinux enabled or disabled at appliance boot
+   * <p>
+   * This sets the selinux flag that is passed to the
+   * appliance at boot time. The default is "selinux=0"
+   * (disabled).
+   * <p>
+   * Note that if SELinux is enabled, it is always in
+   * Permissive mode ("enforcing=0").
+   * <p>
+   * For more information on the architecture of libguestfs,
+   * see guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_selinux (boolean selinux)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_selinux: handle is closed");
+    _set_selinux (g, selinux);
+  }
+  private native void _set_selinux (long g, boolean selinux)
+    throws LibGuestFSException;
+
+  /**
+   * get SELinux enabled flag
+   * <p>
+   * This returns the current setting of the selinux flag
+   * which is passed to the appliance at boot time. See
+   * "g.set_selinux".
+   * <p>
+   * For more information on the architecture of libguestfs,
+   * see guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean get_selinux ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_selinux: handle is closed");
+    return _get_selinux (g);
+  }
+  private native boolean _get_selinux (long g)
+    throws LibGuestFSException;
+
+  /**
+   * enable or disable command traces
+   * <p>
+   * If the command trace flag is set to 1, then commands are
+   * printed on stdout before they are executed in a format
+   * which is very similar to the one used by guestfish. In
+   * other words, you can run a program with this enabled,
+   * and you will get out a script which you can feed to
+   * guestfish to perform the same set of actions.
+   * <p>
+   * If you want to trace C API calls into libguestfs (and
+   * other libraries) then possibly a better way is to use
+   * the external ltrace(1) command.
+   * <p>
+   * Command traces are disabled unless the environment
+   * variable "LIBGUESTFS_TRACE" is defined and set to 1.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_trace (boolean trace)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_trace: handle is closed");
+    _set_trace (g, trace);
+  }
+  private native void _set_trace (long g, boolean trace)
+    throws LibGuestFSException;
+
+  /**
+   * get command trace enabled flag
+   * <p>
+   * Return the command trace flag.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean get_trace ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_trace: handle is closed");
+    return _get_trace (g);
+  }
+  private native boolean _get_trace (long g)
+    throws LibGuestFSException;
+
+  /**
+   * enable or disable direct appliance mode
+   * <p>
+   * If the direct appliance mode flag is enabled, then stdin
+   * and stdout are passed directly through to the appliance
+   * once it is launched.
+   * <p>
+   * One consequence of this is that log messages aren't
+   * caught by the library and handled by
+   * "g.set_log_message_callback", but go straight to stdout.
+   * <p>
+   * You probably don't want to use this unless you know what
+   * you are doing.
+   * <p>
+   * The default is disabled.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_direct (boolean direct)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_direct: handle is closed");
+    _set_direct (g, direct);
+  }
+  private native void _set_direct (long g, boolean direct)
+    throws LibGuestFSException;
+
+  /**
+   * get direct appliance mode flag
+   * <p>
+   * Return the direct appliance mode flag.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean get_direct ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_direct: handle is closed");
+    return _get_direct (g);
+  }
+  private native boolean _get_direct (long g)
+    throws LibGuestFSException;
+
+  /**
+   * enable or disable the recovery process
+   * <p>
+   * If this is called with the parameter "false" then
+   * "g.launch" does not create a recovery process. The
+   * purpose of the recovery process is to stop runaway qemu
+   * processes in the case where the main program aborts
+   * abruptly.
+   * <p>
+   * This only has any effect if called before "g.launch",
+   * and the default is true.
+   * <p>
+   * About the only time when you would want to disable this
+   * is if the main process will fork itself into the
+   * background ("daemonize" itself). In this case the
+   * recovery process thinks that the main program has
+   * disappeared and so kills qemu, which is not very
+   * helpful.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_recovery_proc (boolean recoveryproc)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_recovery_proc: handle is closed");
+    _set_recovery_proc (g, recoveryproc);
+  }
+  private native void _set_recovery_proc (long g, boolean recoveryproc)
+    throws LibGuestFSException;
+
+  /**
+   * get recovery process enabled flag
+   * <p>
+   * Return the recovery process enabled flag.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean get_recovery_proc ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_recovery_proc: handle is closed");
+    return _get_recovery_proc (g);
+  }
+  private native boolean _get_recovery_proc (long g)
     throws LibGuestFSException;
 
   /**
@@ -1022,8 +1175,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * Note that this function cannot correctly handle binary
    * files (specifically, files containing "\0" character
    * which is treated as end of string). For those you need
-   * to use the "g.download" function which has a more
-   * complex interface.
+   * to use the "g.read_file" or "g.download" functions which
+   * have a more complex interface.
    * <p>
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. To transfer
@@ -1411,14 +1564,14 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * @throws LibGuestFSException
    */
-  public String aug_get (String path)
+  public String aug_get (String augpath)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_get: handle is closed");
-    return _aug_get (g, path);
+    return _aug_get (g, augpath);
   }
-  private native String _aug_get (long g, String path)
+  private native String _aug_get (long g, String augpath)
     throws LibGuestFSException;
 
   /**
@@ -1428,14 +1581,14 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * @throws LibGuestFSException
    */
-  public void aug_set (String path, String val)
+  public void aug_set (String augpath, String val)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_set: handle is closed");
-    _aug_set (g, path, val);
+    _aug_set (g, augpath, val);
   }
-  private native void _aug_set (long g, String path, String val)
+  private native void _aug_set (long g, String augpath, String val)
     throws LibGuestFSException;
 
   /**
@@ -1451,14 +1604,14 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * @throws LibGuestFSException
    */
-  public void aug_insert (String path, String label, boolean before)
+  public void aug_insert (String augpath, String label, boolean before)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_insert: handle is closed");
-    _aug_insert (g, path, label, before);
+    _aug_insert (g, augpath, label, before);
   }
-  private native void _aug_insert (long g, String path, String label, boolean before)
+  private native void _aug_insert (long g, String augpath, String label, boolean before)
     throws LibGuestFSException;
 
   /**
@@ -1471,14 +1624,14 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * @throws LibGuestFSException
    */
-  public int aug_rm (String path)
+  public int aug_rm (String augpath)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_rm: handle is closed");
-    return _aug_rm (g, path);
+    return _aug_rm (g, augpath);
   }
-  private native int _aug_rm (long g, String path)
+  private native int _aug_rm (long g, String augpath)
     throws LibGuestFSException;
 
   /**
@@ -1500,7 +1653,7 @@ public HashMap<String,String> test0rhashtableerr ()
     throws LibGuestFSException;
 
   /**
-   * return Augeas nodes which match path
+   * return Augeas nodes which match augpath
    * <p>
    * Returns a list of paths which match the path expression
    * "path". The returned paths are sufficiently qualified so
@@ -1508,14 +1661,14 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * @throws LibGuestFSException
    */
-  public String[] aug_match (String path)
+  public String[] aug_match (String augpath)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_match: handle is closed");
-    return _aug_match (g, path);
+    return _aug_match (g, augpath);
   }
-  private native String[] _aug_match (long g, String path)
+  private native String[] _aug_match (long g, String augpath)
     throws LibGuestFSException;
 
   /**
@@ -1559,7 +1712,7 @@ public HashMap<String,String> test0rhashtableerr ()
     throws LibGuestFSException;
 
   /**
-   * list Augeas nodes under a path
+   * list Augeas nodes under augpath
    * <p>
    * This is just a shortcut for listing "g.aug_match"
    * "path/*" and sorting the resulting nodes into
@@ -1567,14 +1720,14 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * @throws LibGuestFSException
    */
-  public String[] aug_ls (String path)
+  public String[] aug_ls (String augpath)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_ls: handle is closed");
-    return _aug_ls (g, path);
+    return _aug_ls (g, augpath);
   }
-  private native String[] _aug_ls (long g, String path)
+  private native String[] _aug_ls (long g, String augpath)
     throws LibGuestFSException;
 
   /**
@@ -1868,7 +2021,7 @@ public HashMap<String,String> test0rhashtableerr ()
    * you would pass "lines" as a single element list, when
    * the single element being the string "," (comma).
    * <p>
-   * See also: "g.sfdisk_l", "g.sfdisk_N"
+   * See also: "g.sfdisk_l", "g.sfdisk_N", "g.part_init"
    * <p>
    * This command is dangerous. Without careful use you can
    * easily destroy all your data.
@@ -1945,6 +2098,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * Some internal mounts are not shown.
    * <p>
+   * See also: "g.mountpoints"
+   * <p>
    * @throws LibGuestFSException
    */
   public String[] mounts ()
@@ -2005,7 +2160,10 @@ public HashMap<String,String> test0rhashtableerr ()
    * devices, for example to find out whether a partition
    * contains a filesystem.
    * <p>
-   * The exact command which runs is "file -bsL path". Note
+   * This call will also transparently look inside various
+   * types of compressed file.
+   * <p>
+   * The exact command which runs is "file -zbsL path". Note
    * in particular that the filename is not prepended to the
    * output (the "-b" option).
    * <p>
@@ -3141,6 +3299,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * For other parameters, see "g.sfdisk". You should usually
    * pass 0 for the cyls/heads/sectors parameters.
    * <p>
+   * See also: "g.part_add"
+   * <p>
    * This command is dangerous. Without careful use you can
    * easily destroy all your data.
    * <p>
@@ -3162,6 +3322,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * This displays the partition table on "device", in the
    * human-readable output of the sfdisk(8) command. It is
    * not intended to be parsed.
+   * <p>
+   * See also: "g.part_list"
    * <p>
    * @throws LibGuestFSException
    */
@@ -3342,6 +3504,12 @@ public HashMap<String,String> test0rhashtableerr ()
    * returns an error.
    * <p>
    * The returned list is sorted.
+   * <p>
+   * See also "g.find0".
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. To transfer
+   * large files you should use FTP.
    * <p>
    * @throws LibGuestFSException
    */
@@ -3895,6 +4063,10 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * Create a swap partition on "device" with label "label".
    * <p>
+   * Note that you cannot attach a swap label to a block
+   * device (eg. "/dev/sda"), just to a partition. This
+   * appears to be a limitation of the kernel or swap tools.
+   * <p>
    * @throws LibGuestFSException
    */
   public void mkswap_L (String label, String device)
@@ -4047,6 +4219,29 @@ public HashMap<String,String> test0rhashtableerr ()
    * and "..". The entries are *not* sorted, but returned in
    * the same order as the underlying filesystem.
    * <p>
+   * Also this call returns basic file type information about
+   * each file. The "ftyp" field will contain one of the
+   * following characters:
+   * <p>
+   * 'b' Block special
+   * <p>
+   * 'c' Char special
+   * <p>
+   * 'd' Directory
+   * <p>
+   * 'f' FIFO (named pipe)
+   * <p>
+   * 'l' Symbolic link
+   * <p>
+   * 'r' Regular file
+   * <p>
+   * 's' Socket
+   * <p>
+   * 'u' Unknown file type
+   * <p>
+   * '?' The readdir(3) returned a "d_type" field with an
+   * unexpected value
+   * <p>
    * This function is primarily intended for use by programs.
    * To get a simple list of names, use "g.ls". To get a
    * printable directory for human consumption, use "g.ll".
@@ -4072,7 +4267,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * don't need to specify the cyls, heads and sectors
    * parameters which were rarely if ever used anyway.
    * <p>
-   * See also "g.sfdisk" and the sfdisk(8) manpage.
+   * See also: "g.sfdisk", the sfdisk(8) manpage and
+   * "g.part_disk"
    * <p>
    * This command is dangerous. Without careful use you can
    * easily destroy all your data.
@@ -4097,18 +4293,26 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * "method" must be one of "gzip", "compress" or "bzip2".
    * <p>
-   * See also: "g.file"
+   * Since 1.0.63, use "g.file" instead which can now process
+   * compressed files.
+   * <p>
+   * This function is deprecated. In new code, use the "file"
+   * call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
-  public String zfile (String method, String path)
+  public String zfile (String meth, String path)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("zfile: handle is closed");
-    return _zfile (g, method, path);
+    return _zfile (g, meth, path);
   }
-  private native String _zfile (long g, String method, String path)
+  private native String _zfile (long g, String meth, String path)
     throws LibGuestFSException;
 
   /**
@@ -4230,6 +4434,1751 @@ public HashMap<String,String> test0rhashtableerr ()
     _lremovexattr (g, xattr, path);
   }
   private native void _lremovexattr (long g, String xattr, String path)
+    throws LibGuestFSException;
+
+  /**
+   * show mountpoints
+   * <p>
+   * This call is similar to "g.mounts". That call returns a
+   * list of devices. This one returns a hash table (map) of
+   * device name to directory where the device is mounted.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public HashMap<String,String> mountpoints ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mountpoints: handle is closed");
+    return _mountpoints (g);
+  }
+  private native HashMap<String,String> _mountpoints (long g)
+    throws LibGuestFSException;
+
+  /**
+   * create a mountpoint
+   * <p>
+   * "g.mkmountpoint" and "g.rmmountpoint" are specialized
+   * calls that can be used to create extra mountpoints
+   * before mounting the first filesystem.
+   * <p>
+   * These calls are *only* necessary in some very limited
+   * circumstances, mainly the case where you want to mount a
+   * mix of unrelated and/or read-only filesystems together.
+   * <p>
+   * For example, live CDs often contain a "Russian doll"
+   * nest of filesystems, an ISO outer layer, with a squashfs
+   * image inside, with an ext2/3 image inside that. You can
+   * unpack this as follows in guestfish:
+   * <p>
+   * add-ro Fedora-11-i686-Live.iso
+   * run
+   * mkmountpoint /cd
+   * mkmountpoint /squash
+   * mkmountpoint /ext3
+   * mount /dev/sda /cd
+   * mount-loop /cd/LiveOS/squashfs.img /squash
+   * mount-loop /squash/LiveOS/ext3fs.img /ext3
+   * <p>
+   * The inner filesystem is now unpacked under the /ext3
+   * mountpoint.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void mkmountpoint (String exemptpath)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mkmountpoint: handle is closed");
+    _mkmountpoint (g, exemptpath);
+  }
+  private native void _mkmountpoint (long g, String exemptpath)
+    throws LibGuestFSException;
+
+  /**
+   * remove a mountpoint
+   * <p>
+   * This calls removes a mountpoint that was previously
+   * created with "g.mkmountpoint". See "g.mkmountpoint" for
+   * full details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void rmmountpoint (String exemptpath)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("rmmountpoint: handle is closed");
+    _rmmountpoint (g, exemptpath);
+  }
+  private native void _rmmountpoint (long g, String exemptpath)
+    throws LibGuestFSException;
+
+  /**
+   * read a file
+   * <p>
+   * This calls returns the contents of the file "path" as a
+   * buffer.
+   * <p>
+   * Unlike "g.cat", this function can correctly handle files
+   * that contain embedded ASCII NUL characters. However
+   * unlike "g.download", this function is limited in the
+   * total size of file that can be handled.
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. To transfer
+   * large files you should use FTP.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String read_file (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("read_file: handle is closed");
+    return _read_file (g, path);
+  }
+  private native String _read_file (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * return lines matching a pattern
+   * <p>
+   * This calls the external "grep" program and returns the
+   * matching lines.
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. To transfer
+   * large files you should use FTP.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] grep (String regex, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("grep: handle is closed");
+    return _grep (g, regex, path);
+  }
+  private native String[] _grep (long g, String regex, String path)
+    throws LibGuestFSException;
+
+  /**
+   * return lines matching a pattern
+   * <p>
+   * This calls the external "egrep" program and returns the
+   * matching lines.
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. To transfer
+   * large files you should use FTP.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] egrep (String regex, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("egrep: handle is closed");
+    return _egrep (g, regex, path);
+  }
+  private native String[] _egrep (long g, String regex, String path)
+    throws LibGuestFSException;
+
+  /**
+   * return lines matching a pattern
+   * <p>
+   * This calls the external "fgrep" program and returns the
+   * matching lines.
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. To transfer
+   * large files you should use FTP.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] fgrep (String pattern, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("fgrep: handle is closed");
+    return _fgrep (g, pattern, path);
+  }
+  private native String[] _fgrep (long g, String pattern, String path)
+    throws LibGuestFSException;
+
+  /**
+   * return lines matching a pattern
+   * <p>
+   * This calls the external "grep -i" program and returns
+   * the matching lines.
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. To transfer
+   * large files you should use FTP.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] grepi (String regex, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("grepi: handle is closed");
+    return _grepi (g, regex, path);
+  }
+  private native String[] _grepi (long g, String regex, String path)
+    throws LibGuestFSException;
+
+  /**
+   * return lines matching a pattern
+   * <p>
+   * This calls the external "egrep -i" program and returns
+   * the matching lines.
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. To transfer
+   * large files you should use FTP.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] egrepi (String regex, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("egrepi: handle is closed");
+    return _egrepi (g, regex, path);
+  }
+  private native String[] _egrepi (long g, String regex, String path)
+    throws LibGuestFSException;
+
+  /**
+   * return lines matching a pattern
+   * <p>
+   * This calls the external "fgrep -i" program and returns
+   * the matching lines.
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. To transfer
+   * large files you should use FTP.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] fgrepi (String pattern, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("fgrepi: handle is closed");
+    return _fgrepi (g, pattern, path);
+  }
+  private native String[] _fgrepi (long g, String pattern, String path)
+    throws LibGuestFSException;
+
+  /**
+   * return lines matching a pattern
+   * <p>
+   * This calls the external "zgrep" program and returns the
+   * matching lines.
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. To transfer
+   * large files you should use FTP.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] zgrep (String regex, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("zgrep: handle is closed");
+    return _zgrep (g, regex, path);
+  }
+  private native String[] _zgrep (long g, String regex, String path)
+    throws LibGuestFSException;
+
+  /**
+   * return lines matching a pattern
+   * <p>
+   * This calls the external "zegrep" program and returns the
+   * matching lines.
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. To transfer
+   * large files you should use FTP.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] zegrep (String regex, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("zegrep: handle is closed");
+    return _zegrep (g, regex, path);
+  }
+  private native String[] _zegrep (long g, String regex, String path)
+    throws LibGuestFSException;
+
+  /**
+   * return lines matching a pattern
+   * <p>
+   * This calls the external "zfgrep" program and returns the
+   * matching lines.
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. To transfer
+   * large files you should use FTP.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] zfgrep (String pattern, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("zfgrep: handle is closed");
+    return _zfgrep (g, pattern, path);
+  }
+  private native String[] _zfgrep (long g, String pattern, String path)
+    throws LibGuestFSException;
+
+  /**
+   * return lines matching a pattern
+   * <p>
+   * This calls the external "zgrep -i" program and returns
+   * the matching lines.
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. To transfer
+   * large files you should use FTP.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] zgrepi (String regex, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("zgrepi: handle is closed");
+    return _zgrepi (g, regex, path);
+  }
+  private native String[] _zgrepi (long g, String regex, String path)
+    throws LibGuestFSException;
+
+  /**
+   * return lines matching a pattern
+   * <p>
+   * This calls the external "zegrep -i" program and returns
+   * the matching lines.
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. To transfer
+   * large files you should use FTP.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] zegrepi (String regex, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("zegrepi: handle is closed");
+    return _zegrepi (g, regex, path);
+  }
+  private native String[] _zegrepi (long g, String regex, String path)
+    throws LibGuestFSException;
+
+  /**
+   * return lines matching a pattern
+   * <p>
+   * This calls the external "zfgrep -i" program and returns
+   * the matching lines.
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. To transfer
+   * large files you should use FTP.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] zfgrepi (String pattern, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("zfgrepi: handle is closed");
+    return _zfgrepi (g, pattern, path);
+  }
+  private native String[] _zfgrepi (long g, String pattern, String path)
+    throws LibGuestFSException;
+
+  /**
+   * canonicalized absolute pathname
+   * <p>
+   * Return the canonicalized absolute pathname of "path".
+   * The returned path has no ".", ".." or symbolic link path
+   * elements.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String realpath (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("realpath: handle is closed");
+    return _realpath (g, path);
+  }
+  private native String _realpath (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * create a hard link
+   * <p>
+   * This command creates a hard link using the "ln" command.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void ln (String target, String linkname)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ln: handle is closed");
+    _ln (g, target, linkname);
+  }
+  private native void _ln (long g, String target, String linkname)
+    throws LibGuestFSException;
+
+  /**
+   * create a hard link
+   * <p>
+   * This command creates a hard link using the "ln -f"
+   * command. The "-f" option removes the link ("linkname")
+   * if it exists already.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void ln_f (String target, String linkname)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ln_f: handle is closed");
+    _ln_f (g, target, linkname);
+  }
+  private native void _ln_f (long g, String target, String linkname)
+    throws LibGuestFSException;
+
+  /**
+   * create a symbolic link
+   * <p>
+   * This command creates a symbolic link using the "ln -s"
+   * command.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void ln_s (String target, String linkname)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ln_s: handle is closed");
+    _ln_s (g, target, linkname);
+  }
+  private native void _ln_s (long g, String target, String linkname)
+    throws LibGuestFSException;
+
+  /**
+   * create a symbolic link
+   * <p>
+   * This command creates a symbolic link using the "ln -sf"
+   * command, The "-f" option removes the link ("linkname")
+   * if it exists already.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void ln_sf (String target, String linkname)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ln_sf: handle is closed");
+    _ln_sf (g, target, linkname);
+  }
+  private native void _ln_sf (long g, String target, String linkname)
+    throws LibGuestFSException;
+
+  /**
+   * read the target of a symbolic link
+   * <p>
+   * This command reads the target of a symbolic link.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String readlink (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("readlink: handle is closed");
+    return _readlink (g, path);
+  }
+  private native String _readlink (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * preallocate a file in the guest filesystem
+   * <p>
+   * This command preallocates a file (containing zero bytes)
+   * named "path" of size "len" bytes. If the file exists
+   * already, it is overwritten.
+   * <p>
+   * Do not confuse this with the guestfish-specific "alloc"
+   * command which allocates a file in the host and attaches
+   * it as a device.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void fallocate (String path, int len)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("fallocate: handle is closed");
+    _fallocate (g, path, len);
+  }
+  private native void _fallocate (long g, String path, int len)
+    throws LibGuestFSException;
+
+  /**
+   * enable swap on device
+   * <p>
+   * This command enables the libguestfs appliance to use the
+   * swap device or partition named "device". The increased
+   * memory is made available for all commands, for example
+   * those run using "g.command" or "g.sh".
+   * <p>
+   * Note that you should not swap to existing guest swap
+   * partitions unless you know what you are doing. They may
+   * contain hibernation information, or other information
+   * that the guest doesn't want you to trash. You also risk
+   * leaking information about the host to the guest this
+   * way. Instead, attach a new host device to the guest and
+   * swap on that.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void swapon_device (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("swapon_device: handle is closed");
+    _swapon_device (g, device);
+  }
+  private native void _swapon_device (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * disable swap on device
+   * <p>
+   * This command disables the libguestfs appliance swap
+   * device or partition named "device". See
+   * "g.swapon_device".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void swapoff_device (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("swapoff_device: handle is closed");
+    _swapoff_device (g, device);
+  }
+  private native void _swapoff_device (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * enable swap on file
+   * <p>
+   * This command enables swap to a file. See
+   * "g.swapon_device" for other notes.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void swapon_file (String file)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("swapon_file: handle is closed");
+    _swapon_file (g, file);
+  }
+  private native void _swapon_file (long g, String file)
+    throws LibGuestFSException;
+
+  /**
+   * disable swap on file
+   * <p>
+   * This command disables the libguestfs appliance swap on
+   * file.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void swapoff_file (String file)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("swapoff_file: handle is closed");
+    _swapoff_file (g, file);
+  }
+  private native void _swapoff_file (long g, String file)
+    throws LibGuestFSException;
+
+  /**
+   * enable swap on labeled swap partition
+   * <p>
+   * This command enables swap to a labeled swap partition.
+   * See "g.swapon_device" for other notes.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void swapon_label (String label)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("swapon_label: handle is closed");
+    _swapon_label (g, label);
+  }
+  private native void _swapon_label (long g, String label)
+    throws LibGuestFSException;
+
+  /**
+   * disable swap on labeled swap partition
+   * <p>
+   * This command disables the libguestfs appliance swap on
+   * labeled swap partition.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void swapoff_label (String label)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("swapoff_label: handle is closed");
+    _swapoff_label (g, label);
+  }
+  private native void _swapoff_label (long g, String label)
+    throws LibGuestFSException;
+
+  /**
+   * enable swap on swap partition by UUID
+   * <p>
+   * This command enables swap to a swap partition with the
+   * given UUID. See "g.swapon_device" for other notes.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void swapon_uuid (String uuid)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("swapon_uuid: handle is closed");
+    _swapon_uuid (g, uuid);
+  }
+  private native void _swapon_uuid (long g, String uuid)
+    throws LibGuestFSException;
+
+  /**
+   * disable swap on swap partition by UUID
+   * <p>
+   * This command disables the libguestfs appliance swap
+   * partition with the given UUID.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void swapoff_uuid (String uuid)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("swapoff_uuid: handle is closed");
+    _swapoff_uuid (g, uuid);
+  }
+  private native void _swapoff_uuid (long g, String uuid)
+    throws LibGuestFSException;
+
+  /**
+   * create a swap file
+   * <p>
+   * Create a swap file.
+   * <p>
+   * This command just writes a swap file signature to an
+   * existing file. To create the file itself, use something
+   * like "g.fallocate".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void mkswap_file (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mkswap_file: handle is closed");
+    _mkswap_file (g, path);
+  }
+  private native void _mkswap_file (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * create an inotify handle
+   * <p>
+   * This command creates a new inotify handle. The inotify
+   * subsystem can be used to notify events which happen to
+   * objects in the guest filesystem.
+   * <p>
+   * "maxevents" is the maximum number of events which will
+   * be queued up between calls to "g.inotify_read" or
+   * "g.inotify_files". If this is passed as 0, then the
+   * kernel (or previously set) default is used. For Linux
+   * 2.6.29 the default was 16384 events. Beyond this limit,
+   * the kernel throws away events, but records the fact that
+   * it threw them away by setting a flag "IN_Q_OVERFLOW" in
+   * the returned structure list (see "g.inotify_read").
+   * <p>
+   * Before any events are generated, you have to add some
+   * watches to the internal watch list. See:
+   * "g.inotify_add_watch", "g.inotify_rm_watch" and
+   * "g.inotify_watch_all".
+   * <p>
+   * Queued up events should be read periodically by calling
+   * "g.inotify_read" (or "g.inotify_files" which is just a
+   * helpful wrapper around "g.inotify_read"). If you don't
+   * read the events out often enough then you risk the
+   * internal queue overflowing.
+   * <p>
+   * The handle should be closed after use by calling
+   * "g.inotify_close". This also removes any watches
+   * automatically.
+   * <p>
+   * See also inotify(7) for an overview of the inotify
+   * interface as exposed by the Linux kernel, which is
+   * roughly what we expose via libguestfs. Note that there
+   * is one global inotify handle per libguestfs instance.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void inotify_init (int maxevents)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inotify_init: handle is closed");
+    _inotify_init (g, maxevents);
+  }
+  private native void _inotify_init (long g, int maxevents)
+    throws LibGuestFSException;
+
+  /**
+   * add an inotify watch
+   * <p>
+   * Watch "path" for the events listed in "mask".
+   * <p>
+   * Note that if "path" is a directory then events within
+   * that directory are watched, but this does *not* happen
+   * recursively (in subdirectories).
+   * <p>
+   * Note for non-C or non-Linux callers: the inotify events
+   * are defined by the Linux kernel ABI and are listed in
+   * "/usr/include/sys/inotify.h".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long inotify_add_watch (String path, int mask)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inotify_add_watch: handle is closed");
+    return _inotify_add_watch (g, path, mask);
+  }
+  private native long _inotify_add_watch (long g, String path, int mask)
+    throws LibGuestFSException;
+
+  /**
+   * remove an inotify watch
+   * <p>
+   * Remove a previously defined inotify watch. See
+   * "g.inotify_add_watch".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void inotify_rm_watch (int wd)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inotify_rm_watch: handle is closed");
+    _inotify_rm_watch (g, wd);
+  }
+  private native void _inotify_rm_watch (long g, int wd)
+    throws LibGuestFSException;
+
+  /**
+   * return list of inotify events
+   * <p>
+   * Return the complete queue of events that have happened
+   * since the previous read call.
+   * <p>
+   * If no events have happened, this returns an empty list.
+   * <p>
+   * *Note*: In order to make sure that all events have been
+   * read, you must call this function repeatedly until it
+   * returns an empty list. The reason is that the call will
+   * read events up to the maximum appliance-to-host message
+   * size and leave remaining events in the queue.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public INotifyEvent[] inotify_read ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inotify_read: handle is closed");
+    return _inotify_read (g);
+  }
+  private native INotifyEvent[] _inotify_read (long g)
+    throws LibGuestFSException;
+
+  /**
+   * return list of watched files that had events
+   * <p>
+   * This function is a helpful wrapper around
+   * "g.inotify_read" which just returns a list of pathnames
+   * of objects that were touched. The returned pathnames are
+   * sorted and deduplicated.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] inotify_files ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inotify_files: handle is closed");
+    return _inotify_files (g);
+  }
+  private native String[] _inotify_files (long g)
+    throws LibGuestFSException;
+
+  /**
+   * close the inotify handle
+   * <p>
+   * This closes the inotify handle which was previously
+   * opened by inotify_init. It removes all watches, throws
+   * away any pending events, and deallocates all resources.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void inotify_close ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inotify_close: handle is closed");
+    _inotify_close (g);
+  }
+  private native void _inotify_close (long g)
+    throws LibGuestFSException;
+
+  /**
+   * set SELinux security context
+   * <p>
+   * This sets the SELinux security context of the daemon to
+   * the string "context".
+   * <p>
+   * See the documentation about SELINUX in guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void setcon (String context)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("setcon: handle is closed");
+    _setcon (g, context);
+  }
+  private native void _setcon (long g, String context)
+    throws LibGuestFSException;
+
+  /**
+   * get SELinux security context
+   * <p>
+   * This gets the SELinux security context of the daemon.
+   * <p>
+   * See the documentation about SELINUX in guestfs(3), and
+   * "g.setcon"
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String getcon ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("getcon: handle is closed");
+    return _getcon (g);
+  }
+  private native String _getcon (long g)
+    throws LibGuestFSException;
+
+  /**
+   * make a filesystem with block size
+   * <p>
+   * This call is similar to "g.mkfs", but it allows you to
+   * control the block size of the resulting filesystem.
+   * Supported block sizes depend on the filesystem type, but
+   * typically they are 1024, 2048 or 4096 only.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void mkfs_b (String fstype, int blocksize, String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mkfs_b: handle is closed");
+    _mkfs_b (g, fstype, blocksize, device);
+  }
+  private native void _mkfs_b (long g, String fstype, int blocksize, String device)
+    throws LibGuestFSException;
+
+  /**
+   * make ext2/3/4 external journal
+   * <p>
+   * This creates an ext2 external journal on "device". It is
+   * equivalent to the command:
+   * <p>
+   * mke2fs -O journal_dev -b blocksize device
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void mke2journal (int blocksize, String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mke2journal: handle is closed");
+    _mke2journal (g, blocksize, device);
+  }
+  private native void _mke2journal (long g, int blocksize, String device)
+    throws LibGuestFSException;
+
+  /**
+   * make ext2/3/4 external journal with label
+   * <p>
+   * This creates an ext2 external journal on "device" with
+   * label "label".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void mke2journal_L (int blocksize, String label, String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mke2journal_L: handle is closed");
+    _mke2journal_L (g, blocksize, label, device);
+  }
+  private native void _mke2journal_L (long g, int blocksize, String label, String device)
+    throws LibGuestFSException;
+
+  /**
+   * make ext2/3/4 external journal with UUID
+   * <p>
+   * This creates an ext2 external journal on "device" with
+   * UUID "uuid".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void mke2journal_U (int blocksize, String uuid, String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mke2journal_U: handle is closed");
+    _mke2journal_U (g, blocksize, uuid, device);
+  }
+  private native void _mke2journal_U (long g, int blocksize, String uuid, String device)
+    throws LibGuestFSException;
+
+  /**
+   * make ext2/3/4 filesystem with external journal
+   * <p>
+   * This creates an ext2/3/4 filesystem on "device" with an
+   * external journal on "journal". It is equivalent to the
+   * command:
+   * <p>
+   * mke2fs -t fstype -b blocksize -J device=<journal> <device>
+   * <p>
+   * See also "g.mke2journal".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void mke2fs_J (String fstype, int blocksize, String device, String journal)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mke2fs_J: handle is closed");
+    _mke2fs_J (g, fstype, blocksize, device, journal);
+  }
+  private native void _mke2fs_J (long g, String fstype, int blocksize, String device, String journal)
+    throws LibGuestFSException;
+
+  /**
+   * make ext2/3/4 filesystem with external journal
+   * <p>
+   * This creates an ext2/3/4 filesystem on "device" with an
+   * external journal on the journal labeled "label".
+   * <p>
+   * See also "g.mke2journal_L".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void mke2fs_JL (String fstype, int blocksize, String device, String label)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mke2fs_JL: handle is closed");
+    _mke2fs_JL (g, fstype, blocksize, device, label);
+  }
+  private native void _mke2fs_JL (long g, String fstype, int blocksize, String device, String label)
+    throws LibGuestFSException;
+
+  /**
+   * make ext2/3/4 filesystem with external journal
+   * <p>
+   * This creates an ext2/3/4 filesystem on "device" with an
+   * external journal on the journal with UUID "uuid".
+   * <p>
+   * See also "g.mke2journal_U".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void mke2fs_JU (String fstype, int blocksize, String device, String uuid)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mke2fs_JU: handle is closed");
+    _mke2fs_JU (g, fstype, blocksize, device, uuid);
+  }
+  private native void _mke2fs_JU (long g, String fstype, int blocksize, String device, String uuid)
+    throws LibGuestFSException;
+
+  /**
+   * load a kernel module
+   * <p>
+   * This loads a kernel module in the appliance.
+   * <p>
+   * The kernel module must have been whitelisted when
+   * libguestfs was built (see "appliance/kmod.whitelist.in"
+   * in the source).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void modprobe (String modulename)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("modprobe: handle is closed");
+    _modprobe (g, modulename);
+  }
+  private native void _modprobe (long g, String modulename)
+    throws LibGuestFSException;
+
+  /**
+   * echo arguments back to the client
+   * <p>
+   * This command concatenate the list of "words" passed with
+   * single spaces between them and returns the resulting
+   * string.
+   * <p>
+   * You can use this command to test the connection through
+   * to the daemon.
+   * <p>
+   * See also "g.ping_daemon".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String echo_daemon (String[] words)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("echo_daemon: handle is closed");
+    return _echo_daemon (g, words);
+  }
+  private native String _echo_daemon (long g, String[] words)
+    throws LibGuestFSException;
+
+  /**
+   * find all files and directories, returning NUL-separated list
+   * <p>
+   * This command lists out all files and directories,
+   * recursively, starting at "directory", placing the
+   * resulting list in the external file called "files".
+   * <p>
+   * This command works the same way as "g.find" with the
+   * following exceptions:
+   * <p>
+   * *   The resulting list is written to an external file.
+   * <p>
+   * *   Items (filenames) in the result are separated by
+   * "\0" characters. See find(1) option *-print0*.
+   * <p>
+   * *   This command is not limited in the number of names
+   * that it can return.
+   * <p>
+   * *   The result list is not sorted.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void find0 (String directory, String files)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("find0: handle is closed");
+    _find0 (g, directory, files);
+  }
+  private native void _find0 (long g, String directory, String files)
+    throws LibGuestFSException;
+
+  /**
+   * return true path on case-insensitive filesystem
+   * <p>
+   * This can be used to resolve case insensitive paths on a
+   * filesystem which is case sensitive. The use case is to
+   * resolve paths which you have read from Windows
+   * configuration files or the Windows Registry, to the true
+   * path.
+   * <p>
+   * The command handles a peculiarity of the Linux ntfs-3g
+   * filesystem driver (and probably others), which is that
+   * although the underlying filesystem is case-insensitive,
+   * the driver exports the filesystem to Linux as
+   * case-sensitive.
+   * <p>
+   * One consequence of this is that special directories such
+   * as "c:\windows" may appear as "/WINDOWS" or "/windows"
+   * (or other things) depending on the precise details of
+   * how they were created. In Windows itself this would not
+   * be a problem.
+   * <p>
+   * Bug or feature? You decide:
+   * <http://www.tuxera.com/community/ntfs-3g-faq/#posixfilen
+   * ames1>
+   * <p>
+   * This function resolves the true case of each element in
+   * the path and returns the case-sensitive path.
+   * <p>
+   * Thus "g.case_sensitive_path" ("/Windows/System32") might
+   * return "/WINDOWS/system32" (the exact return value would
+   * depend on details of how the directories were originally
+   * created under Windows).
+   * <p>
+   * *Note*: This function does not handle drive names,
+   * backslashes etc.
+   * <p>
+   * See also "g.realpath".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String case_sensitive_path (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("case_sensitive_path: handle is closed");
+    return _case_sensitive_path (g, path);
+  }
+  private native String _case_sensitive_path (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * get the Linux VFS type corresponding to a mounted device
+   * <p>
+   * This command gets the block device type corresponding to
+   * a mounted device called "device".
+   * <p>
+   * Usually the result is the name of the Linux VFS module
+   * that is used to mount this device (probably determined
+   * automatically if you used the "g.mount" call).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String vfs_type (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("vfs_type: handle is closed");
+    return _vfs_type (g, device);
+  }
+  private native String _vfs_type (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * truncate a file to zero size
+   * <p>
+   * This command truncates "path" to a zero-length file. The
+   * file must exist already.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void truncate (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("truncate: handle is closed");
+    _truncate (g, path);
+  }
+  private native void _truncate (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * truncate a file to a particular size
+   * <p>
+   * This command truncates "path" to size "size" bytes. The
+   * file must exist already. If the file is smaller than
+   * "size" then the file is extended to the required size
+   * with null bytes.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void truncate_size (String path, long size)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("truncate_size: handle is closed");
+    _truncate_size (g, path, size);
+  }
+  private native void _truncate_size (long g, String path, long size)
+    throws LibGuestFSException;
+
+  /**
+   * set timestamp of a file with nanosecond precision
+   * <p>
+   * This command sets the timestamps of a file with
+   * nanosecond precision.
+   * <p>
+   * "atsecs, atnsecs" are the last access time (atime) in
+   * secs and nanoseconds from the epoch.
+   * <p>
+   * "mtsecs, mtnsecs" are the last modification time (mtime)
+   * in secs and nanoseconds from the epoch.
+   * <p>
+   * If the *nsecs field contains the special value -1 then
+   * the corresponding timestamp is set to the current time.
+   * (The *secs field is ignored in this case).
+   * <p>
+   * If the *nsecs field contains the special value -2 then
+   * the corresponding timestamp is left unchanged. (The
+   * *secs field is ignored in this case).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void utimens (String path, long atsecs, long atnsecs, long mtsecs, long mtnsecs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("utimens: handle is closed");
+    _utimens (g, path, atsecs, atnsecs, mtsecs, mtnsecs);
+  }
+  private native void _utimens (long g, String path, long atsecs, long atnsecs, long mtsecs, long mtnsecs)
+    throws LibGuestFSException;
+
+  /**
+   * create a directory with a particular mode
+   * <p>
+   * This command creates a directory, setting the initial
+   * permissions of the directory to "mode". See also
+   * "g.mkdir".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void mkdir_mode (String path, int mode)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mkdir_mode: handle is closed");
+    _mkdir_mode (g, path, mode);
+  }
+  private native void _mkdir_mode (long g, String path, int mode)
+    throws LibGuestFSException;
+
+  /**
+   * change file owner and group
+   * <p>
+   * Change the file owner to "owner" and group to "group".
+   * This is like "g.chown" but if "path" is a symlink then
+   * the link itself is changed, not the target.
+   * <p>
+   * Only numeric uid and gid are supported. If you want to
+   * use names, you will need to locate and parse the
+   * password file yourself (Augeas support makes this
+   * relatively easy).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void lchown (int owner, int group, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lchown: handle is closed");
+    _lchown (g, owner, group, path);
+  }
+  private native void _lchown (long g, int owner, int group, String path)
+    throws LibGuestFSException;
+
+  /**
+   * lstat on multiple files
+   * <p>
+   * This call allows you to perform the "g.lstat" operation
+   * on multiple files, where all files are in the directory
+   * "path". "names" is the list of files from this
+   * directory.
+   * <p>
+   * On return you get a list of stat structs, with a
+   * one-to-one correspondence to the "names" list. If any
+   * name did not exist or could not be lstat'd, then the
+   * "ino" field of that structure is set to -1.
+   * <p>
+   * This call is intended for programs that want to
+   * efficiently list a directory contents without making
+   * many round-trips. See also "g.lxattrlist" for a
+   * similarly efficient call for getting extended
+   * attributes. Very long directory listings might cause the
+   * protocol message size to be exceeded, causing this call
+   * to fail. The caller must split up such requests into
+   * smaller groups of names.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public Stat[] lstatlist (String path, String[] names)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lstatlist: handle is closed");
+    return _lstatlist (g, path, names);
+  }
+  private native Stat[] _lstatlist (long g, String path, String[] names)
+    throws LibGuestFSException;
+
+  /**
+   * lgetxattr on multiple files
+   * <p>
+   * This call allows you to get the extended attributes of
+   * multiple files, where all files are in the directory
+   * "path". "names" is the list of files from this
+   * directory.
+   * <p>
+   * On return you get a flat list of xattr structs which
+   * must be interpreted sequentially. The first xattr struct
+   * always has a zero-length "attrname". "attrval" in this
+   * struct is zero-length to indicate there was an error
+   * doing "lgetxattr" for this file, *or* is a C string
+   * which is a decimal number (the number of following
+   * attributes for this file, which could be "0"). Then
+   * after the first xattr struct are the zero or more
+   * attributes for the first named file. This repeats for
+   * the second and subsequent files.
+   * <p>
+   * This call is intended for programs that want to
+   * efficiently list a directory contents without making
+   * many round-trips. See also "g.lstatlist" for a similarly
+   * efficient call for getting standard stats. Very long
+   * directory listings might cause the protocol message size
+   * to be exceeded, causing this call to fail. The caller
+   * must split up such requests into smaller groups of
+   * names.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public XAttr[] lxattrlist (String path, String[] names)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lxattrlist: handle is closed");
+    return _lxattrlist (g, path, names);
+  }
+  private native XAttr[] _lxattrlist (long g, String path, String[] names)
+    throws LibGuestFSException;
+
+  /**
+   * readlink on multiple files
+   * <p>
+   * This call allows you to do a "readlink" operation on
+   * multiple files, where all files are in the directory
+   * "path". "names" is the list of files from this
+   * directory.
+   * <p>
+   * On return you get a list of strings, with a one-to-one
+   * correspondence to the "names" list. Each string is the
+   * value of the symbol link.
+   * <p>
+   * If the readlink(2) operation fails on any name, then the
+   * corresponding result string is the empty string "".
+   * However the whole operation is completed even if there
+   * were readlink(2) errors, and so you can call this
+   * function with names where you don't know if they are
+   * symbolic links already (albeit slightly less efficient).
+   * <p>
+   * This call is intended for programs that want to
+   * efficiently list a directory contents without making
+   * many round-trips. Very long directory listings might
+   * cause the protocol message size to be exceeded, causing
+   * this call to fail. The caller must split up such
+   * requests into smaller groups of names.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] readlinklist (String path, String[] names)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("readlinklist: handle is closed");
+    return _readlinklist (g, path, names);
+  }
+  private native String[] _readlinklist (long g, String path, String[] names)
+    throws LibGuestFSException;
+
+  /**
+   * read part of a file
+   * <p>
+   * This command lets you read part of a file. It reads
+   * "count" bytes of the file, starting at "offset", from
+   * file "path".
+   * <p>
+   * This may read fewer bytes than requested. For further
+   * details see the pread(2) system call.
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. To transfer
+   * large files you should use FTP.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String pread (String path, int count, long offset)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("pread: handle is closed");
+    return _pread (g, path, count, offset);
+  }
+  private native String _pread (long g, String path, int count, long offset)
+    throws LibGuestFSException;
+
+  /**
+   * create an empty partition table
+   * <p>
+   * This creates an empty partition table on "device" of one
+   * of the partition types listed below. Usually "parttype"
+   * should be either "msdos" or "gpt" (for large disks).
+   * <p>
+   * Initially there are no partitions. Following this, you
+   * should call "g.part_add" for each partition required.
+   * <p>
+   * Possible values for "parttype" are:
+   * <p>
+   * efi | gpt
+   * Intel EFI / GPT partition table.
+   * <p>
+   * This is recommended for >= 2 TB partitions that will
+   * be accessed from Linux and Intel-based Mac OS X. It
+   * also has limited backwards compatibility with the
+   * "mbr" format.
+   * <p>
+   * mbr | msdos
+   * The standard PC "Master Boot Record" (MBR) format
+   * used by MS-DOS and Windows. This partition type will
+   * only work for device sizes up to 2 TB. For large
+   * disks we recommend using "gpt".
+   * <p>
+   * Other partition table types that may work but are not
+   * supported include:
+   * <p>
+   * aix AIX disk labels.
+   * <p>
+   * amiga | rdb
+   * Amiga "Rigid Disk Block" format.
+   * <p>
+   * bsd BSD disk labels.
+   * <p>
+   * dasd
+   * DASD, used on IBM mainframes.
+   * <p>
+   * dvh MIPS/SGI volumes.
+   * <p>
+   * mac Old Mac partition format. Modern Macs use "gpt".
+   * <p>
+   * pc98
+   * NEC PC-98 format, common in Japan apparently.
+   * <p>
+   * sun Sun disk labels.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void part_init (String device, String parttype)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_init: handle is closed");
+    _part_init (g, device, parttype);
+  }
+  private native void _part_init (long g, String device, String parttype)
+    throws LibGuestFSException;
+
+  /**
+   * add a partition to the device
+   * <p>
+   * This command adds a partition to "device". If there is
+   * no partition table on the device, call "g.part_init"
+   * first.
+   * <p>
+   * The "prlogex" parameter is the type of partition.
+   * Normally you should pass "p" or "primary" here, but MBR
+   * partition tables also support "l" (or "logical") and "e"
+   * (or "extended") partition types.
+   * <p>
+   * "startsect" and "endsect" are the start and end of the
+   * partition in *sectors*. "endsect" may be negative, which
+   * means it counts backwards from the end of the disk (-1
+   * is the last sector).
+   * <p>
+   * Creating a partition which covers the whole disk is not
+   * so easy. Use "g.part_disk" to do that.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void part_add (String device, String prlogex, long startsect, long endsect)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_add: handle is closed");
+    _part_add (g, device, prlogex, startsect, endsect);
+  }
+  private native void _part_add (long g, String device, String prlogex, long startsect, long endsect)
+    throws LibGuestFSException;
+
+  /**
+   * partition whole disk with a single primary partition
+   * <p>
+   * This command is simply a combination of "g.part_init"
+   * followed by "g.part_add" to create a single primary
+   * partition covering the whole disk.
+   * <p>
+   * "parttype" is the partition table type, usually "mbr" or
+   * "gpt", but other possible values are described in
+   * "g.part_init".
+   * <p>
+   * This command is dangerous. Without careful use you can
+   * easily destroy all your data.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void part_disk (String device, String parttype)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_disk: handle is closed");
+    _part_disk (g, device, parttype);
+  }
+  private native void _part_disk (long g, String device, String parttype)
+    throws LibGuestFSException;
+
+  /**
+   * make a partition bootable
+   * <p>
+   * This sets the bootable flag on partition numbered
+   * "partnum" on device "device". Note that partitions are
+   * numbered from 1.
+   * <p>
+   * The bootable flag is used by some PC BIOSes to determine
+   * which partition to boot from. It is by no means
+   * universally recognized, and in any case if your
+   * operating system installed a boot sector on the device
+   * itself, then that takes precedence.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void part_set_bootable (String device, int partnum, boolean bootable)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_set_bootable: handle is closed");
+    _part_set_bootable (g, device, partnum, bootable);
+  }
+  private native void _part_set_bootable (long g, String device, int partnum, boolean bootable)
+    throws LibGuestFSException;
+
+  /**
+   * set partition name
+   * <p>
+   * This sets the partition name on partition numbered
+   * "partnum" on device "device". Note that partitions are
+   * numbered from 1.
+   * <p>
+   * The partition name can only be set on certain types of
+   * partition table. This works on "gpt" but not on "mbr"
+   * partitions.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void part_set_name (String device, int partnum, String name)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_set_name: handle is closed");
+    _part_set_name (g, device, partnum, name);
+  }
+  private native void _part_set_name (long g, String device, int partnum, String name)
+    throws LibGuestFSException;
+
+  /**
+   * list partitions on a device
+   * <p>
+   * This command parses the partition table on "device" and
+   * returns the list of partitions found.
+   * <p>
+   * The fields in the returned structure are:
+   * <p>
+   * part_num
+   * Partition number, counting from 1.
+   * <p>
+   * part_start
+   * Start of the partition *in bytes*. To get sectors
+   * you have to divide by the device's sector size, see
+   * "g.blockdev_getss".
+   * <p>
+   * part_end
+   * End of the partition in bytes.
+   * <p>
+   * part_size
+   * Size of the partition in bytes.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public Partition[] part_list (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_list: handle is closed");
+    return _part_list (g, device);
+  }
+  private native Partition[] _part_list (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * get the partition table type
+   * <p>
+   * This command examines the partition table on "device"
+   * and returns the partition table type (format) being
+   * used.
+   * <p>
+   * Common return values include: "msdos" (a DOS/Windows
+   * style MBR partition table), "gpt" (a GPT/EFI-style
+   * partition table). Other values are possible, although
+   * unusual. See "g.part_init" for a full list.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String part_get_parttype (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_get_parttype: handle is closed");
+    return _part_get_parttype (g, device);
+  }
+  private native String _part_get_parttype (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * fill a file with octets
+   * <p>
+   * This command creates a new file called "path". The
+   * initial content of the file is "len" octets of "c",
+   * where "c" must be a number in the range "[0..255]".
+   * <p>
+   * To fill a file with zero bytes (sparsely), it is much
+   * more efficient to use "g.truncate_size".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void fill (int c, int len, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("fill: handle is closed");
+    _fill (g, c, len, path);
+  }
+  private native void _fill (long g, int c, int len, String path)
+    throws LibGuestFSException;
+
+  /**
+   * test availability of some parts of the API
+   * <p>
+   * This command is used to check the availability of some
+   * groups of functionality in the appliance, which not all
+   * builds of the libguestfs appliance will be able to
+   * provide.
+   * <p>
+   * The libguestfs groups, and the functions that those
+   * groups correspond to, are listed in "AVAILABILITY" in
+   * guestfs(3).
+   * <p>
+   * The argument "groups" is a list of group names, eg:
+   * "["inotify", "augeas"]" would check for the availability
+   * of the Linux inotify functions and Augeas (configuration
+   * file editing) functions.
+   * <p>
+   * The command returns no error if *all* requested groups
+   * are available.
+   * <p>
+   * It fails with an error if one or more of the requested
+   * groups is unavailable in the appliance.
+   * <p>
+   * If an unknown group name is included in the list of
+   * groups then an error is always returned.
+   * <p>
+   * *Notes:*
+   * <p>
+   * *   You must call "g.launch" before calling this
+   * function.
+   * <p>
+   * The reason is because we don't know what groups are
+   * supported by the appliance/daemon until it is
+   * running and can be queried.
+   * <p>
+   * *   If a group of functions is available, this does not
+   * necessarily mean that they will work. You still have
+   * to check for errors when calling individual API
+   * functions even if they are available.
+   * <p>
+   * *   It is usually the job of distro packagers to build
+   * complete functionality into the libguestfs
+   * appliance. Upstream libguestfs, if built from source
+   * with all requirements satisfied, will support
+   * everything.
+   * <p>
+   * *   This call was added in version 1.0.80. In previous
+   * versions of libguestfs all you could do would be to
+   * speculatively execute a command to find out if the
+   * daemon implemented it. See also "g.version".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void available (String[] groups)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("available: handle is closed");
+    _available (g, groups);
+  }
+  private native void _available (long g, String[] groups)
+    throws LibGuestFSException;
+
+  /**
+   * copy from source to destination using dd
+   * <p>
+   * This command copies from one source device or file "src"
+   * to another destination device or file "dest". Normally
+   * you would use this to copy to or from a device or
+   * partition, for example to duplicate a filesystem.
+   * <p>
+   * If the destination is a device, it must be as large or
+   * larger than the source file or device, otherwise the
+   * copy will fail. This command cannot do partial copies.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void dd (String src, String dest)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("dd: handle is closed");
+    _dd (g, src, dest);
+  }
+  private native void _dd (long g, String src, String dest)
     throws LibGuestFSException;
 
 }

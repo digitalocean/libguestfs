@@ -7,6 +7,9 @@
  *   to-xml guest.img [guest.img ...]
  */
 
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,7 +25,7 @@
  * to stderr already.
  */
 #define CALL(call,errcode)			\
-  if ((call) == (errcode)) exit (1);
+  if ((call) == (errcode)) exit (EXIT_FAILURE);
 
 static void display_partition (guestfs_h *g, const char *dev);
 static void display_partitions (guestfs_h *g, const char *dev);
@@ -36,19 +39,18 @@ main (int argc, char *argv[])
 
   if (argc < 2 || access (argv[1], F_OK) != 0) {
     fprintf (stderr, "Usage: to-xml guest.img [guest.img ...]\n");
-    exit (1);
+    exit (EXIT_FAILURE);
   }
 
   if (!(g = guestfs_create ())) {
     fprintf (stderr, "Cannot create libguestfs handle.\n");
-    exit (1);
+    exit (EXIT_FAILURE);
   }
 
   for (i = 1; i < argc; ++i)
     CALL (guestfs_add_drive (g, argv[i]), -1);
 
   CALL (guestfs_launch (g), -1);
-  CALL (guestfs_wait_ready (g), -1);
 
   printf ("<guestfs-system>\n");
 
@@ -86,14 +88,14 @@ main (int argc, char *argv[])
     int j;
     for (j = 0; lvs[j] != NULL; ++j) {
       if (strncmp (lvs[j], "/dev/", 5) == 0 &&
-	  strncmp (&lvs[j][5], vgs[i], len) == 0 &&
-	  lvs[j][len+5] == '/') {
-	int64_t size;
-	CALL (size = guestfs_blockdev_getsize64 (g, lvs[j]), -1);
-	printf ("<logvol name=\"%s\" size=\"%" PRIi64 "\">\n", lvs[j], size);
-	display_partition (g, lvs[j]);
-	printf ("</logvol>\n");
-	free (lvs[j]);
+          strncmp (&lvs[j][5], vgs[i], len) == 0 &&
+          lvs[j][len+5] == '/') {
+        int64_t size;
+        CALL (size = guestfs_blockdev_getsize64 (g, lvs[j]), -1);
+        printf ("<logvol name=\"%s\" size=\"%" PRIi64 "\">\n", lvs[j], size);
+        display_partition (g, lvs[j]);
+        printf ("</logvol>\n");
+        free (lvs[j]);
       }
     }
 

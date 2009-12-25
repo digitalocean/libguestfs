@@ -1,60 +1,67 @@
+TODO list for libguestfs
+======================================================================
+
+This list contains random ideas and musings on features we could add
+to libguestfs in future.
+
+   - RWMJ
+
+Python bindings
+---------------
+
 Ideas for the Python bindings:
 https://www.redhat.com/archives/fedora-virt/2009-April/msg00114.html
 
-----------------------------------------------------------------------
+FUSE API
+--------
 
-We badly need to actually implement the FTP server mentioned in the
-documentation.
+The API needs more test coverage, particularly lesser-used system
+calls.
 
-Or: Implement a FUSE-based filesystem.  See the FUSE mountlo
-project which does something similar, albeit only to single
-filesystems:
+The big unresolved issue is UID/GID mapping between guest filesystem
+IDs and the host.  It's not easy to automate this because you need
+extra details about the guest itself in order to get to its
+UID->username map (eg. /etc/passwd from the guest).
 
-http://sourceforge.net/project/showfiles.php?group_id=121684&package_id=150116
+BufferIn
+--------
 
-----------------------------------------------------------------------
+BufferIn should turn into <char *, int> and simple strings in other
+languages that can handle 8 bit clean strings.
 
-BufferIn and BufferOut should turn into <char *, int> and simple
-strings in other languages that can handle 8 bit clean strings.
 Limit on transfers would still be 2MB for these types.
  - then implement write-file properly
- - and implement read-file
 
-----------------------------------------------------------------------
+febootstrap / debootstrap inside appliance
+------------------------------------------
 
-Implement febootstrap command.
+This was originally proposed as a way to install new operating systems
+in the appliance.  However no one has come up with a workable
+solution.
 
-----------------------------------------------------------------------
+Haskell bindings
+----------------
 
 Complete the Haskell bindings (see discussion on haskell-cafe).
 
-----------------------------------------------------------------------
+Complete bind tests
+-------------------
 
-Complete the bindings tests - must test the return values and
-error cases.
+Complete the bind tests - must test the return values and error cases.
 
-----------------------------------------------------------------------
+virt-inspector - make libvirt XML
+---------------------------------
 
-For virt-inspector:
+It should be possible to generate libvirt XML from virt-inspector
+data, at least partially.  This would be just another output type so:
 
- - Make a libvirt XML config
+ virt-inspector --libvirt guest.img
 
- - Test over available OSes
-
- - Add 'reged' / NT registry support.
-
-----------------------------------------------------------------------
-
-Use virtio_blk by default.  It's faster and more natural.
-Unfortunately it seems like this will rename all devices - see next
-item.
-
-Note: virtio_blk *IS* supported by all our minimum platforms,
-ie. CentOS 5.3, Fedora 11, Debian.
-
-----------------------------------------------------------------------
+Note that recent versions of libvirt/virt-install allow guests to be
+imported, so this is not so useful any more.
 
 "Standalone/local mode"
+-----------------------
 
 Instead of running guestfsd (the daemon) inside qemu, there should be
 an option to just run guestfsd directly.
@@ -93,9 +100,11 @@ This is mainly useful from live CDs, ie. virt-p2v.
 Should we bother having the daemon at all and just link the guestfsd
 code directly into libguestfs?
 
-----------------------------------------------------------------------
+PPC problems
+------------
 
-PPC problems:
+[This section should be filed as bugs, but no one seems to care for
+PPC hosts and the hardware is rapidly becoming obsolete]
 
   ppc (32 bit) works with qemu from git, however there is no serial console
 
@@ -108,25 +117,17 @@ PPC problems:
   no serial console in ppc or ppc64 because no one can tell us what
   console=ttyXX option to use
 
-----------------------------------------------------------------------
+Supermin appliance to febootstrap
+---------------------------------
 
-Supermin appliance should be moved into febootstrap.
+Supermin appliance functionality should be moved into febootstrap.
 
-----------------------------------------------------------------------
-
-Extra commands / functionality:
+Ideas for extra commands
+------------------------
 
   General glibc / core programs:
     chgrp
-    grep (do it locally using pipe?)
-    dd (?)
-    ln / ln -s
-    readlink
-    utime / utimes / futimes / futimens / l..
     more mk*temp calls
-    some sort of alloc/fallocate/posix_fallocate call to create empty space
-    realpath
-    trunc[ate??]
 
   ext2 properties:
     chattr
@@ -151,28 +152,146 @@ Extra commands / functionality:
     pivot_root
     fts(3) / ftw(3)
 
-----------------------------------------------------------------------
+Other initrd-* commands
+-----------------------
 
-Allow swap space from the guest to be used.  Is it a good idea?
-
-----------------------------------------------------------------------
-
-Need a way to query a binary or library file for its architecture.
-Using objdump or readelf?
-What about non-ELF files (eg. Windows, BSD).
-
-To do this properly requires some serious logic, eg. to cover Linux
-and Windows we'd need objdump and i686-pc-mingw32-objdump, and more to
-cover a.out, COFF and 64 bit Windows.  Therefore this cannot be done
-inside the daemon, and should be done by a separate, external program
-similar to virt-inspector.
-
-Probably we should go all the way and have virt-inspector able to
-determine kernel and userspace architectures of guests.
-
-----------------------------------------------------------------------
-
-Other initrd-* commands, such as:
+Such as:
 
 initrd-extract
 initrd-replace
+
+Simple editing of configuration files
+-------------------------------------
+
+Some easy non-Augeas methods to edit configuration files.
+I'm thinking:
+
+  replace /etc/file key value
+
+which would look in /etc/file for any instances of
+
+  key=...
+  key ...
+  key:...
+
+and replace them with
+
+  key=value
+  key value
+  key:value
+
+That would solve about 50% of reconfiguration needs, and for the
+rest you'd use Augeas, 'download'+'upload' or 'edit'.
+
+RWMJ: I had a go at implementing this, but it's quite error-prone to
+do this sort of editing inside the C-based daemon code.  It's far
+better to do it with Augeas, or else to use an external language like
+Perl.
+
+Quick Perl scripts
+------------------
+
+Currently we can't do Perl "one-liners".  ie. The current syntax for
+any short Perl one-liner would be:
+
+  perl -MSys::Guestfs -e '$g = Sys::Guestfs->new(); $g->add_drive ("foo"); $g->launch; $g->mount ("/dev/sda1", "/"); ....'
+
+You can see we're well beyond a single line just getting to the point
+of adding drives and mounting.
+
+First suggestion:
+
+ $h = create ($filename, \"/dev/sda1\" => \"/\");
+
+ $h = create ([$file1, $file2], \"/dev/sda1\" => \"/\");
+
+To mount read-only, add C<ro =E<gt> 1> like this:
+
+ $h = create ($filename, \"/dev/sda1\" => \"/\", ro => 1);
+
+which is equivalent to the following sequence of calls:
+
+ $h = Sys::Guestfs->new ();
+ $h->set_autosync (1);
+ $h->add_drive_ro ($filename);
+ $h->launch ();
+ $h->mount_ro (\"/dev/sda1\", \"/\");
+
+Command-line form would be:
+
+ perl -MSys::Guestfs=:all -e '$_=create("guest.img", "/dev/sda1" => "/"); $_->cat ("/etc/fstab");'
+
+That's not brief enough for one-liners, so we could have an extra
+autogenerated module which creates a Sys::Guestfs handle singleton
+(the handle is an implicit global variable as in guestfish), eg:
+
+ perl -MSys::Guestfs::One -e 'inspect("guest.img"); cat ("/etc/fstab");'
+
+How would editing files work?
+
+ntfsclone
+---------
+
+Useful imaging tool:
+http://man.linux-ntfs.org/ntfsclone.8.html
+
+Standard images
+---------------
+
+Equip guestfish with some standard images that it can load
+quickly, eg:
+
+  load ext2
+
+Maybe it's better to create these on the fly?
+
+virt-rescue pty
+---------------
+
+See:
+http://search.cpan.org/~rgiersig/IO-Tty-1.08/Pty.pm
+http://www.perlmonks.org/index.pl?node_id=582185
+
+Note that pty requires cooperation inside the C code too (there are
+two sides to a pty, and one has to be handled after the fork).
+
+virt-rescue TERM
+----------------
+
+Pass TERM from the library, through the kernel command line, to the
+init script.
+
+Windows-based daemon/appliance
+------------------------------
+
+See discussion on list:
+https://www.redhat.com/archives/libguestfs/2009-November/msg00165.html
+
+virt-grow, virt-shrink
+----------------------
+
+Grow and shrink existing guests.  The main problem comes with
+MBR-style partitions where you have to actually copy data around the
+disk (unless you only want to change the final partition).
+
+qemu locking
+------------
+
+Add -drive file=...,lock=exclusive and -drive file=...,lock=shared
+
+Change libguestfs and libvirt to do the right thing, so that multiple
+instances of qemu cannot stomp on each other.
+
+virt-disk-explore
+-----------------
+
+For multi-level disk images such as live CDs:
+http://rwmj.wordpress.com/2009/07/15/unpack-the-russian-doll-of-a-f11-live-cd/
+
+It's possible with libguestfs to recursively look for anything that
+might be a filesystem, mount-{,loop} it and look in those, revealing
+anything in a disk image.
+
+However this won't work easily for VM disk images in the disk image.
+One would have to download those to the host and launch another
+libguestfs instance.

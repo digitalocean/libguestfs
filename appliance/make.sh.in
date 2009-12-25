@@ -47,6 +47,9 @@ if [ "@DIST@" = "REDHAT" ]; then
   # Create /tmp if it is missing.
   @FEBOOTSTRAP_RUN@ initramfs -- mkdir -p --mode=0777 /tmp
 
+  # Create /selinux if it is missing.
+  @FEBOOTSTRAP_RUN@ initramfs -- mkdir -p --mode=0755 /selinux
+
   # Nuke some stuff.  The kernel pulls mkinitrd and plymouth which pulls in
   # all of Python.  Sheez.
   (cd initramfs && find -name '*plymouth*' -print0) |
@@ -92,6 +95,9 @@ if [ "@DIST@" = "REDHAT" ]; then
     /usr/sbin/groupmod \
     /usr/sbin/groupmems \
     /sbin/unix_update \
+    /usr/sbin/tcpd \
+    /lib/dbus-1/dbus-daemon-launch-helper \
+    /lib64/dbus-1/dbus-daemon-launch-helper \
     $(cd initramfs && echo usr/sbin/glibc_post_upgrade.*)
 
   # Kernel modules take up nearly half of the image.  Only include ones
@@ -145,4 +151,3 @@ elif [ "@DIST@" = "DEBIAN" ]; then
   mkdir -p @top_builddir@/initramfs
   touch @top_builddir@/initramfs/fakeroot.log
 fi
-

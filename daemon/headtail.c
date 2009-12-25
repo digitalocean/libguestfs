@@ -28,24 +28,19 @@
 #include "actions.h"
 
 static char **
-headtail (const char *prog, const char *flag, const char *n, char *path)
+headtail (const char *prog, const char *flag, const char *n, const char *path)
 {
   char *buf;
   char *out, *err;
-  int r, len;
+  int r;
   char **lines;
 
-  NEED_ROOT (NULL);
-  ABS_PATH (path, NULL);
-
   /* Make the path relative to /sysroot. */
-  len = strlen (path) + 9;
-  buf = malloc (len);
+  buf = sysroot_path (path);
   if (!buf) {
     reply_with_perror ("malloc");
     return NULL;
   }
-  snprintf (buf, len, "/sysroot%s", path);
 
   r = command (&out, &err, prog, flag, n, buf, NULL);
   free (buf);
@@ -72,19 +67,19 @@ headtail (const char *prog, const char *flag, const char *n, char *path)
 }
 
 char **
-do_head (char *path)
+do_head (const char *path)
 {
   return headtail ("head", "-n", "10", path);
 }
 
 char **
-do_tail (char *path)
+do_tail (const char *path)
 {
   return headtail ("tail", "-n", "10", path);
 }
 
 char **
-do_head_n (int n, char *path)
+do_head_n (int n, const char *path)
 {
   char nbuf[16];
 
@@ -94,7 +89,7 @@ do_head_n (int n, char *path)
 }
 
 char **
-do_tail_n (int n, char *path)
+do_tail_n (int n, const char *path)
 {
   char nbuf[16];
 

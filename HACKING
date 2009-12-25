@@ -24,75 +24,120 @@ Please make sure that the code compiles without warnings.
 
 Please test any changes.
 
+Useful targets:
+  make syntax-check    Checks the syntax of the C code.
+  make check           Runs the test suite.
+
+Enable warnings, and fix any you find:
+  ./configure --enable-gcc-warnings
+
+Code indentation
+----------------------------------------------------------------------
+Our C source code generally adheres to some basic code-formatting
+conventions.  The existing code base is not totally consistent on this
+front, but we do prefer that contributed code be formatted similarly.
+In short, use spaces-not-TABs for indentation, use 2 spaces for each
+indentation level, and other than that, follow the K&R style.
+
+If you use Emacs, add the following to one of one of your start-up files
+(e.g., ~/.emacs), to help ensure that you get indentation right:
+
+  ;;; In libguestfs, indent with spaces everywhere (not TABs).
+  ;;; Exceptions: Makefile and ChangeLog modes.
+  (add-hook 'find-file-hook
+      '(lambda () (if (and buffer-file-name
+                           (string-match "/libguestfs\\>" (buffer-file-name))
+                           (not (string-equal mode-name "Change Log"))
+                           (not (string-equal mode-name "Makefile")))
+                      (setq indent-tabs-mode nil))))
+
+  ;;; When editing C sources in libguestfs, use this style.
+  (defun libguestfs-c-mode ()
+    "C mode with adjusted defaults for use with libguestfs."
+    (interactive)
+    (c-set-style "K&R")
+    (setq c-indent-level 2)
+    (setq c-basic-offset 2))
+  (add-hook 'c-mode-hook
+            '(lambda () (if (string-match "/libguestfs\\>" (buffer-file-name))
+                            (libguestfs-c-mode))))
+
 Directories
 ----------------------------------------------------------------------
 
 appliance/
-	The qemu appliance, build scripts and so on.
-
-cat/
-	The virt-cat tool.
+        The qemu appliance, build scripts and so on.
 
 capitests/
-	Automated tests of the C API.
+        Automated tests of the C API.
 
 contrib/
-	Outside contributions, experimental parts.
+        Outside contributions, experimental parts.
 
 daemon/
-	The daemon that runs inside the guest and carries out actions.
-
-df/
-	The virt-df tool.
+        The daemon that runs inside the guest and carries out actions.
 
 examples/
-	The examples.
+        The examples.
 
 fish/
-	Guestfish (the command-line program / shell)
+        Guestfish (the command-line program / shell)
+
+fuse/
+        FUSE (userspace filesystem) built on top of libguestfs.
 
 haskell/
-	Haskell bindings.
+        Haskell bindings.
+
+hivex/
+        Hive extraction library, for reading Windows Registry files.
+        See hivex/README for more details.
 
 images/
-	Some guest images to test against.  These are gzipped to save
-	space.  You have to unzip them before use.
+        Some guest images to test against.  These are gzipped to save
+        space.  You have to unzip them before use.
 
-	Also contains some files used by the test suite.
+        Also contains some files used by the test suite.
 
 inspector/
-	Virtual machine image inspector (virt-inspector).
+        Virtual machine image inspector (virt-inspector).
 
 java/
-	Java bindings.
+        Java bindings.
 
 m4/
-	M4 macros used by autoconf.
+        M4 macros used by autoconf.
 
 ocaml/
-	OCaml bindings.
+        OCaml bindings.
 
 po/
-	Translations.
+        Translations.
 
 perl/
-	Perl bindings.
+        Perl bindings.
 
 python/
-	Python bindings.
+        Python bindings.
 
 regressions/
-	Regression tests.
+        Regression tests.
 
 ruby/
-	Ruby bindings.
+        Ruby bindings.
+
+tools/
+        Command line tools like virt-cat, virt-df, virt-edit and more.
+        In versions <= 1.0.73 these were all in separate directories
+        like cat/, df/, edit/, but since then we moved them all into
+        one directory to simplify builds.
 
 src/
-	Source code to the C library.
-	Also contains the crucial generator program.
+        Source code to the C library.
+        Also contains the crucial generator program.
 
-v2v/
-	Xen to KVM (V2V) conversion tool.
+test-tool/
+        Interactive qemu/kernel test tool.
 
 Debugging
 ----------------------------------------------------------------------
@@ -123,3 +168,25 @@ into the appliance.
 
 Debugging messages are never translated, since they are intended for
 the programmers.
+
+Extended printf
+----------------------------------------------------------------------
+
+In the daemon code we have created custom printf formatters %Q and %R,
+which are used to do shell quoting.
+
+%Q => Simple shell quoted string.  Any spaces or other shell characters
+      are escaped for you.
+
+%R => Same as %Q except the string is treated as a path which is prefixed
+      by the sysroot.
+
+eg.
+
+asprintf (&cmd, "cat %R", path);
+==> "cat /sysroot/some\ path\ with\ spaces"
+
+Note: Do NOT use these when you are passing parameters to the
+command{,r,v,rv}() functions.  These parameters do NOT need to be
+quoted because they are not passed via the shell (instead, straight to
+exec).  You probably want to use the sysroot_path() function however.

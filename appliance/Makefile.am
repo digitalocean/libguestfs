@@ -15,17 +15,18 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+include $(top_srcdir)/subdir-rules.mk
+
 EXTRA_DIST = \
-	make.sh update.sh supermin-split.sh supermin-make.sh \
 	libguestfs-supermin-helper \
-	kmod.whitelist \
 	kmod.whitelist.in \
 	packagelist.in \
 	init \
 	debian/modules/install_kernel \
 	debian/modules/y0_install-guestfsd \
 	debian/modules/z99_final-cleanups \
-	debian/debirf.conf.in
+	debian/debirf.conf.in \
+	make.sh.in
 
 # Build the root filesystem (appliance).
 # Currently this is arch-dependent, so it seems like putting it in
@@ -58,10 +59,19 @@ endif
 # This is for building the normal appliance:
 $(INITRAMFSIMG) $(VMLINUZ): $(top_builddir)/initramfs/fakeroot.log
 
-$(top_builddir)/initramfs/fakeroot.log: make.sh kmod.whitelist packagelist
-	-mv $(INITRAMFSIMG) $(INITRAMFSIMG).bak
-	-mv $(VMLINUZ) $(VMLINUZ).bak
+$(top_builddir)/initramfs/fakeroot.log: make.sh kmod.whitelist packagelist $(top_builddir)/daemon/guestfsd
+	mv $(INITRAMFSIMG) $(INITRAMFSIMG).bak 2>/dev/null; :
+	mv $(VMLINUZ) $(VMLINUZ).bak 2>/dev/null; :
 	if ! bash make.sh; then rm -f $@; exit 1; fi
+
+# This used to be a configure-generated file (as is update.sh still).
+# However config.status always touches the destination file, which
+# means the appliance got rebuilt too often.
+make.sh: make.sh.in
+	cd $(top_builddir) && \
+	  ./config.status --file=appliance/$@-t:appliance/$<
+	chmod +x $@-t
+	mv $@-t $@
 
 $(INITRAMFSIMG): $(top_builddir)/initramfs/fakeroot.log $(top_builddir)/daemon/guestfsd init update.sh
 	rm -f $@
@@ -144,8 +154,7 @@ test-boot-realistic: emptydisk
 
 # Make clean.
 
-CLEANFILES = $(APPLIANCE_FILES)
+CLEANFILES = $(APPLIANCE_FILES) packagelist kmod.whitelist supermin.incfiles
 
 clean-local:
 	rm -rf $(top_builddir)/initramfs
-

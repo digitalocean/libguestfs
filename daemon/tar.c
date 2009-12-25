@@ -36,9 +36,9 @@ fwrite_cb (void *fp_ptr, const void *buf, int len)
 
 /* Has one FileIn parameter. */
 int
-do_tar_in (char *dir)
+do_tar_in (const char *dir)
 {
-  int err, r, len;
+  int err, r;
   FILE *fp;
   char *cmd;
 
@@ -49,18 +49,16 @@ do_tar_in (char *dir)
   }
 
   /* "tar -C /sysroot%s -xf -" but we have to quote the dir. */
-  len = 2 * strlen (dir) + 32;
-  cmd = malloc (len);
-  if (!cmd) {
+  if (asprintf_nowarn (&cmd, "tar -C %R -xf -", dir) == -1) {
     err = errno;
     cancel_receive ();
     errno = err;
-    reply_with_perror ("malloc");
+    reply_with_perror ("asprintf");
     return -1;
   }
-  strcpy (cmd, "tar -C /sysroot");
-  shell_quote (cmd+15, len-15, dir);
-  strcat (cmd, " -xf -");
+
+  if (verbose)
+    fprintf (stderr, "%s\n", cmd);
 
   fp = popen (cmd, "w");
   if (fp == NULL) {
@@ -101,26 +99,21 @@ do_tar_in (char *dir)
 
 /* Has one FileOut parameter. */
 int
-do_tar_out (char *dir)
+do_tar_out (const char *dir)
 {
-  int r, len;
+  int r;
   FILE *fp;
   char *cmd;
   char buf[GUESTFS_MAX_CHUNK_SIZE];
 
-  NEED_ROOT (-1);
-  ABS_PATH (dir, -1);
-
   /* "tar -C /sysroot%s -cf - ." but we have to quote the dir. */
-  len = 2 * strlen (dir) + 32;
-  cmd = malloc (len);
-  if (!cmd) {
-    reply_with_perror ("malloc");
+  if (asprintf_nowarn (&cmd, "tar -C %R -cf - .", dir) == -1) {
+    reply_with_perror ("asprintf");
     return -1;
   }
-  strcpy (cmd, "tar -C /sysroot");
-  shell_quote (cmd+15, len-15, dir);
-  strcat (cmd, " -cf - .");
+
+  if (verbose)
+    fprintf (stderr, "%s\n", cmd);
 
   fp = popen (cmd, "r");
   if (fp == NULL) {
@@ -156,15 +149,17 @@ do_tar_out (char *dir)
     return -1;
   }
 
-  send_file_end (0);		/* Normal end of file. */
+  if (send_file_end (0))	/* Normal end of file. */
+    return -1;
+
   return 0;
 }
 
 /* Has one FileIn parameter. */
 int
-do_tgz_in (char *dir)
+do_tgz_in (const char *dir)
 {
-  int err, r, len;
+  int err, r;
   FILE *fp;
   char *cmd;
 
@@ -175,18 +170,16 @@ do_tgz_in (char *dir)
   }
 
   /* "tar -C /sysroot%s -zxf -" but we have to quote the dir. */
-  len = 2 * strlen (dir) + 32;
-  cmd = malloc (len);
-  if (!cmd) {
+  if (asprintf_nowarn (&cmd, "tar -C %R -zxf -", dir) == -1) {
     err = errno;
     cancel_receive ();
     errno = err;
-    reply_with_perror ("malloc");
+    reply_with_perror ("asprintf");
     return -1;
   }
-  strcpy (cmd, "tar -C /sysroot");
-  shell_quote (cmd+15, len-15, dir);
-  strcat (cmd, " -zxf -");
+
+  if (verbose)
+    fprintf (stderr, "%s\n", cmd);
 
   fp = popen (cmd, "w");
   if (fp == NULL) {
@@ -227,26 +220,21 @@ do_tgz_in (char *dir)
 
 /* Has one FileOut parameter. */
 int
-do_tgz_out (char *dir)
+do_tgz_out (const char *dir)
 {
-  int r, len;
+  int r;
   FILE *fp;
   char *cmd;
   char buf[GUESTFS_MAX_CHUNK_SIZE];
 
-  NEED_ROOT (-1);
-  ABS_PATH (dir, -1);
-
   /* "tar -C /sysroot%s -zcf - ." but we have to quote the dir. */
-  len = 2 * strlen (dir) + 32;
-  cmd = malloc (len);
-  if (!cmd) {
-    reply_with_perror ("malloc");
+  if (asprintf_nowarn (&cmd, "tar -C %R -zcf - .", dir) == -1) {
+    reply_with_perror ("asprintf");
     return -1;
   }
-  strcpy (cmd, "tar -C /sysroot");
-  shell_quote (cmd+15, len-15, dir);
-  strcat (cmd, " -zcf - .");
+
+  if (verbose)
+    fprintf (stderr, "%s\n", cmd);
 
   fp = popen (cmd, "r");
   if (fp == NULL) {
@@ -282,6 +270,8 @@ do_tgz_out (char *dir)
     return -1;
   }
 
-  send_file_end (0);		/* Normal end of file. */
+  if (send_file_end (0))	/* Normal end of file. */
+    return -1;
+
   return 0;
 }

@@ -77,25 +77,6 @@ copy_int_bool (const struct guestfs_int_bool *int_bool)
 }
 
 static CAMLprim value
-copy_int_bool_list (const struct guestfs_int_bool_list *int_bools)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-  int i;
-
-  if (int_bools->len == 0)
-    CAMLreturn (Atom (0));
-  else {
-    rv = caml_alloc (int_bools->len, 0);
-    for (i = 0; i < int_bools->len; ++i) {
-      v = copy_int_bool (&int_bools->val[i]);
-      caml_modify (&Field (rv, i), v);
-    }
-    CAMLreturn (rv);
-  }
-}
-
-static CAMLprim value
 copy_lvm_pv (const struct guestfs_lvm_pv *lvm_pv)
 {
   CAMLparam0 ();
@@ -132,25 +113,6 @@ copy_lvm_pv (const struct guestfs_lvm_pv *lvm_pv)
   v = caml_copy_int64 (lvm_pv->pv_mda_free);
   Store_field (rv, 13, v);
   CAMLreturn (rv);
-}
-
-static CAMLprim value
-copy_lvm_pv_list (const struct guestfs_lvm_pv_list *lvm_pvs)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-  int i;
-
-  if (lvm_pvs->len == 0)
-    CAMLreturn (Atom (0));
-  else {
-    rv = caml_alloc (lvm_pvs->len, 0);
-    for (i = 0; i < lvm_pvs->len; ++i) {
-      v = copy_lvm_pv (&lvm_pvs->val[i]);
-      caml_modify (&Field (rv, i), v);
-    }
-    CAMLreturn (rv);
-  }
 }
 
 static CAMLprim value
@@ -200,25 +162,6 @@ copy_lvm_vg (const struct guestfs_lvm_vg *lvm_vg)
   v = caml_copy_int64 (lvm_vg->vg_mda_free);
   Store_field (rv, 18, v);
   CAMLreturn (rv);
-}
-
-static CAMLprim value
-copy_lvm_vg_list (const struct guestfs_lvm_vg_list *lvm_vgs)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-  int i;
-
-  if (lvm_vgs->len == 0)
-    CAMLreturn (Atom (0));
-  else {
-    rv = caml_alloc (lvm_vgs->len, 0);
-    for (i = 0; i < lvm_vgs->len; ++i) {
-      v = copy_lvm_vg (&lvm_vgs->val[i]);
-      caml_modify (&Field (rv, i), v);
-    }
-    CAMLreturn (rv);
-  }
 }
 
 static CAMLprim value
@@ -275,25 +218,6 @@ copy_lvm_lv (const struct guestfs_lvm_lv *lvm_lv)
 }
 
 static CAMLprim value
-copy_lvm_lv_list (const struct guestfs_lvm_lv_list *lvm_lvs)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-  int i;
-
-  if (lvm_lvs->len == 0)
-    CAMLreturn (Atom (0));
-  else {
-    rv = caml_alloc (lvm_lvs->len, 0);
-    for (i = 0; i < lvm_lvs->len; ++i) {
-      v = copy_lvm_lv (&lvm_lvs->val[i]);
-      caml_modify (&Field (rv, i), v);
-    }
-    CAMLreturn (rv);
-  }
-}
-
-static CAMLprim value
 copy_stat (const struct guestfs_stat *stat)
 {
   CAMLparam0 ();
@@ -330,25 +254,6 @@ copy_stat (const struct guestfs_stat *stat)
 }
 
 static CAMLprim value
-copy_stat_list (const struct guestfs_stat_list *stats)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-  int i;
-
-  if (stats->len == 0)
-    CAMLreturn (Atom (0));
-  else {
-    rv = caml_alloc (stats->len, 0);
-    for (i = 0; i < stats->len; ++i) {
-      v = copy_stat (&stats->val[i]);
-      caml_modify (&Field (rv, i), v);
-    }
-    CAMLreturn (rv);
-  }
-}
-
-static CAMLprim value
 copy_statvfs (const struct guestfs_statvfs *statvfs)
 {
   CAMLparam0 ();
@@ -381,25 +286,6 @@ copy_statvfs (const struct guestfs_statvfs *statvfs)
 }
 
 static CAMLprim value
-copy_statvfs_list (const struct guestfs_statvfs_list *statvfss)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-  int i;
-
-  if (statvfss->len == 0)
-    CAMLreturn (Atom (0));
-  else {
-    rv = caml_alloc (statvfss->len, 0);
-    for (i = 0; i < statvfss->len; ++i) {
-      v = copy_statvfs (&statvfss->val[i]);
-      caml_modify (&Field (rv, i), v);
-    }
-    CAMLreturn (rv);
-  }
-}
-
-static CAMLprim value
 copy_dirent (const struct guestfs_dirent *dirent)
 {
   CAMLparam0 ();
@@ -413,25 +299,6 @@ copy_dirent (const struct guestfs_dirent *dirent)
   v = caml_copy_string (dirent->name);
   Store_field (rv, 2, v);
   CAMLreturn (rv);
-}
-
-static CAMLprim value
-copy_dirent_list (const struct guestfs_dirent_list *dirents)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-  int i;
-
-  if (dirents->len == 0)
-    CAMLreturn (Atom (0));
-  else {
-    rv = caml_alloc (dirents->len, 0);
-    for (i = 0; i < dirents->len; ++i) {
-      v = copy_dirent (&dirents->val[i]);
-      caml_modify (&Field (rv, i), v);
-    }
-    CAMLreturn (rv);
-  }
 }
 
 static CAMLprim value
@@ -453,25 +320,6 @@ copy_version (const struct guestfs_version *version)
 }
 
 static CAMLprim value
-copy_version_list (const struct guestfs_version_list *versions)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-  int i;
-
-  if (versions->len == 0)
-    CAMLreturn (Atom (0));
-  else {
-    rv = caml_alloc (versions->len, 0);
-    for (i = 0; i < versions->len; ++i) {
-      v = copy_version (&versions->val[i]);
-      caml_modify (&Field (rv, i), v);
-    }
-    CAMLreturn (rv);
-  }
-}
-
-static CAMLprim value
 copy_xattr (const struct guestfs_xattr *xattr)
 {
   CAMLparam0 ();
@@ -487,11 +335,142 @@ copy_xattr (const struct guestfs_xattr *xattr)
 }
 
 static CAMLprim value
+copy_inotify_event (const struct guestfs_inotify_event *inotify_event)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+
+  rv = caml_alloc (4, 0);
+  v = caml_copy_int64 (inotify_event->in_wd);
+  Store_field (rv, 0, v);
+  v = caml_copy_int32 (inotify_event->in_mask);
+  Store_field (rv, 1, v);
+  v = caml_copy_int32 (inotify_event->in_cookie);
+  Store_field (rv, 2, v);
+  v = caml_copy_string (inotify_event->in_name);
+  Store_field (rv, 3, v);
+  CAMLreturn (rv);
+}
+
+static CAMLprim value
+copy_partition (const struct guestfs_partition *partition)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+
+  rv = caml_alloc (4, 0);
+  v = caml_copy_int32 (partition->part_num);
+  Store_field (rv, 0, v);
+  v = caml_copy_int64 (partition->part_start);
+  Store_field (rv, 1, v);
+  v = caml_copy_int64 (partition->part_end);
+  Store_field (rv, 2, v);
+  v = caml_copy_int64 (partition->part_size);
+  Store_field (rv, 3, v);
+  CAMLreturn (rv);
+}
+
+static CAMLprim value
+copy_lvm_vg_list (const struct guestfs_lvm_vg_list *lvm_vgs)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+  unsigned int i;
+
+  if (lvm_vgs->len == 0)
+    CAMLreturn (Atom (0));
+  else {
+    rv = caml_alloc (lvm_vgs->len, 0);
+    for (i = 0; i < lvm_vgs->len; ++i) {
+      v = copy_lvm_vg (&lvm_vgs->val[i]);
+      caml_modify (&Field (rv, i), v);
+    }
+    CAMLreturn (rv);
+  }
+}
+
+static CAMLprim value
+copy_stat_list (const struct guestfs_stat_list *stats)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+  unsigned int i;
+
+  if (stats->len == 0)
+    CAMLreturn (Atom (0));
+  else {
+    rv = caml_alloc (stats->len, 0);
+    for (i = 0; i < stats->len; ++i) {
+      v = copy_stat (&stats->val[i]);
+      caml_modify (&Field (rv, i), v);
+    }
+    CAMLreturn (rv);
+  }
+}
+
+static CAMLprim value
+copy_dirent_list (const struct guestfs_dirent_list *dirents)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+  unsigned int i;
+
+  if (dirents->len == 0)
+    CAMLreturn (Atom (0));
+  else {
+    rv = caml_alloc (dirents->len, 0);
+    for (i = 0; i < dirents->len; ++i) {
+      v = copy_dirent (&dirents->val[i]);
+      caml_modify (&Field (rv, i), v);
+    }
+    CAMLreturn (rv);
+  }
+}
+
+static CAMLprim value
+copy_partition_list (const struct guestfs_partition_list *partitions)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+  unsigned int i;
+
+  if (partitions->len == 0)
+    CAMLreturn (Atom (0));
+  else {
+    rv = caml_alloc (partitions->len, 0);
+    for (i = 0; i < partitions->len; ++i) {
+      v = copy_partition (&partitions->val[i]);
+      caml_modify (&Field (rv, i), v);
+    }
+    CAMLreturn (rv);
+  }
+}
+
+static CAMLprim value
+copy_lvm_lv_list (const struct guestfs_lvm_lv_list *lvm_lvs)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+  unsigned int i;
+
+  if (lvm_lvs->len == 0)
+    CAMLreturn (Atom (0));
+  else {
+    rv = caml_alloc (lvm_lvs->len, 0);
+    for (i = 0; i < lvm_lvs->len; ++i) {
+      v = copy_lvm_lv (&lvm_lvs->val[i]);
+      caml_modify (&Field (rv, i), v);
+    }
+    CAMLreturn (rv);
+  }
+}
+
+static CAMLprim value
 copy_xattr_list (const struct guestfs_xattr_list *xattrs)
 {
   CAMLparam0 ();
   CAMLlocal2 (rv, v);
-  int i;
+  unsigned int i;
 
   if (xattrs->len == 0)
     CAMLreturn (Atom (0));
@@ -505,555 +484,50 @@ copy_xattr_list (const struct guestfs_xattr_list *xattrs)
   }
 }
 
-CAMLprim value
-ocaml_guestfs_test0 (value gv, value strv, value optstrv, value strlistv, value bv, value integerv, value fileinv, value fileoutv)
+static CAMLprim value
+copy_lvm_pv_list (const struct guestfs_lvm_pv_list *lvm_pvs)
 {
-  CAMLparam5 (gv, strv, optstrv, strlistv, bv);
-  CAMLxparam3 (integerv, fileinv, fileoutv);
-  CAMLlocal1 (rv);
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+  unsigned int i;
 
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0: used handle after closing it");
-
-  const char *str = String_val (strv);
-  const char *optstr =
-    optstrv != Val_int (0) ? String_val (Field (optstrv, 0)) : NULL;
-  char **strlist = ocaml_guestfs_strings_val (g, strlistv);
-  int b = Bool_val (bv);
-  int integer = Int_val (integerv);
-  const char *filein = String_val (fileinv);
-  const char *fileout = String_val (fileoutv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0 (g, str, optstr, strlist, b, integer, filein, fileout);
-  caml_leave_blocking_section ();
-  ocaml_guestfs_free_strings (strlist);
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "test0");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
+  if (lvm_pvs->len == 0)
+    CAMLreturn (Atom (0));
+  else {
+    rv = caml_alloc (lvm_pvs->len, 0);
+    for (i = 0; i < lvm_pvs->len; ++i) {
+      v = copy_lvm_pv (&lvm_pvs->val[i]);
+      caml_modify (&Field (rv, i), v);
+    }
+    CAMLreturn (rv);
+  }
 }
 
-CAMLprim value
-ocaml_guestfs_test0_byte (value *argv, int argn)
+static CAMLprim value
+copy_inotify_event_list (const struct guestfs_inotify_event_list *inotify_events)
 {
-  return ocaml_guestfs_test0 (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+  unsigned int i;
+
+  if (inotify_events->len == 0)
+    CAMLreturn (Atom (0));
+  else {
+    rv = caml_alloc (inotify_events->len, 0);
+    for (i = 0; i < inotify_events->len; ++i) {
+      v = copy_inotify_event (&inotify_events->val[i]);
+      caml_modify (&Field (rv, i), v);
+    }
+    CAMLreturn (rv);
+  }
 }
 
-CAMLprim value
-ocaml_guestfs_test0rint (value gv, value valv)
-{
-  CAMLparam2 (gv, valv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rint: used handle after closing it");
-
-  const char *val = String_val (valv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rint (g, val);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "test0rint");
-
-  rv = Val_int (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_test0rinterr (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rinterr: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rinterr (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "test0rinterr");
-
-  rv = Val_int (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_test0rint64 (value gv, value valv)
-{
-  CAMLparam2 (gv, valv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rint64: used handle after closing it");
-
-  const char *val = String_val (valv);
-  int64_t r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rint64 (g, val);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "test0rint64");
-
-  rv = caml_copy_int64 (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_test0rint64err (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rint64err: used handle after closing it");
-
-  int64_t r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rint64err (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "test0rint64err");
-
-  rv = caml_copy_int64 (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_test0rbool (value gv, value valv)
-{
-  CAMLparam2 (gv, valv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rbool: used handle after closing it");
-
-  const char *val = String_val (valv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rbool (g, val);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "test0rbool");
-
-  rv = Val_bool (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_test0rboolerr (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rboolerr: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rboolerr (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "test0rboolerr");
-
-  rv = Val_bool (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_test0rconststring (value gv, value valv)
-{
-  CAMLparam2 (gv, valv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rconststring: used handle after closing it");
-
-  const char *val = String_val (valv);
-  const char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rconststring (g, val);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "test0rconststring");
-
-  rv = caml_copy_string (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_test0rconststringerr (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rconststringerr: used handle after closing it");
-
-  const char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rconststringerr (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "test0rconststringerr");
-
-  rv = caml_copy_string (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_test0rstring (value gv, value valv)
-{
-  CAMLparam2 (gv, valv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rstring: used handle after closing it");
-
-  const char *val = String_val (valv);
-  char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rstring (g, val);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "test0rstring");
-
-  rv = caml_copy_string (r);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_test0rstringerr (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rstringerr: used handle after closing it");
-
-  char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rstringerr (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "test0rstringerr");
-
-  rv = caml_copy_string (r);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_test0rstringlist (value gv, value valv)
-{
-  CAMLparam2 (gv, valv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rstringlist: used handle after closing it");
-
-  const char *val = String_val (valv);
-  int i;
-  char **r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rstringlist (g, val);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "test0rstringlist");
-
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_test0rstringlisterr (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rstringlisterr: used handle after closing it");
-
-  int i;
-  char **r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rstringlisterr (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "test0rstringlisterr");
-
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_test0rstruct (value gv, value valv)
-{
-  CAMLparam2 (gv, valv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rstruct: used handle after closing it");
-
-  const char *val = String_val (valv);
-  struct guestfs_lvm_pv *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rstruct (g, val);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "test0rstruct");
-
-  rv = copy_lvm_pv (r);
-  guestfs_free_lvm_pv (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_test0rstructerr (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rstructerr: used handle after closing it");
-
-  struct guestfs_lvm_pv *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rstructerr (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "test0rstructerr");
-
-  rv = copy_lvm_pv (r);
-  guestfs_free_lvm_pv (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_test0rstructlist (value gv, value valv)
-{
-  CAMLparam2 (gv, valv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rstructlist: used handle after closing it");
-
-  const char *val = String_val (valv);
-  struct guestfs_lvm_pv_list *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rstructlist (g, val);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "test0rstructlist");
-
-  rv = copy_lvm_pv_list (r);
-  guestfs_free_lvm_pv_list (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_test0rstructlisterr (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rstructlisterr: used handle after closing it");
-
-  struct guestfs_lvm_pv_list *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rstructlisterr (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "test0rstructlisterr");
-
-  rv = copy_lvm_pv_list (r);
-  guestfs_free_lvm_pv_list (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_test0rhashtable (value gv, value valv)
-{
-  CAMLparam2 (gv, valv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rhashtable: used handle after closing it");
-
-  const char *val = String_val (valv);
-  int i;
-  char **r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rhashtable (g, val);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "test0rhashtable");
-
-  rv = copy_table (r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_test0rhashtableerr (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("test0rhashtableerr: used handle after closing it");
-
-  int i;
-  char **r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_test0rhashtableerr (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "test0rhashtableerr");
-
-  rv = copy_table (r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_launch (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("launch: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_launch (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "launch");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_wait_ready (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("wait_ready: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_wait_ready (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "wait_ready");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_kill_subprocess (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("kill_subprocess: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_kill_subprocess (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "kill_subprocess");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_add_drive (value gv, value filenamev)
-{
-  CAMLparam2 (gv, filenamev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("add_drive: used handle after closing it");
-
-  const char *filename = String_val (filenamev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_add_drive (g, filename);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "add_drive");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
+/* Automatically generated wrapper for function
+ * val add_cdrom : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_add_cdrom (value gv, value filenamev);
 
 CAMLprim value
 ocaml_guestfs_add_cdrom (value gv, value filenamev)
@@ -1063,7 +537,7 @@ ocaml_guestfs_add_cdrom (value gv, value filenamev)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("add_cdrom: used handle after closing it");
+    ocaml_guestfs_raise_closed ("add_cdrom");
 
   const char *filename = String_val (filenamev);
   int r;
@@ -1078,6 +552,43 @@ ocaml_guestfs_add_cdrom (value gv, value filenamev)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val add_drive : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_add_drive (value gv, value filenamev);
+
+CAMLprim value
+ocaml_guestfs_add_drive (value gv, value filenamev)
+{
+  CAMLparam2 (gv, filenamev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("add_drive");
+
+  const char *filename = String_val (filenamev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_add_drive (g, filename);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "add_drive");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val add_drive_ro : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_add_drive_ro (value gv, value filenamev);
+
 CAMLprim value
 ocaml_guestfs_add_drive_ro (value gv, value filenamev)
 {
@@ -1086,7 +597,7 @@ ocaml_guestfs_add_drive_ro (value gv, value filenamev)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("add_drive_ro: used handle after closing it");
+    ocaml_guestfs_raise_closed ("add_drive_ro");
 
   const char *filename = String_val (filenamev);
   int r;
@@ -1101,908 +612,12 @@ ocaml_guestfs_add_drive_ro (value gv, value filenamev)
   CAMLreturn (rv);
 }
 
-CAMLprim value
-ocaml_guestfs_config (value gv, value qemuparamv, value qemuvaluev)
-{
-  CAMLparam3 (gv, qemuparamv, qemuvaluev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("config: used handle after closing it");
-
-  const char *qemuparam = String_val (qemuparamv);
-  const char *qemuvalue =
-    qemuvaluev != Val_int (0) ? String_val (Field (qemuvaluev, 0)) : NULL;
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_config (g, qemuparam, qemuvalue);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "config");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_set_qemu (value gv, value qemuv)
-{
-  CAMLparam2 (gv, qemuv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("set_qemu: used handle after closing it");
-
-  const char *qemu = String_val (qemuv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_set_qemu (g, qemu);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "set_qemu");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_get_qemu (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("get_qemu: used handle after closing it");
-
-  const char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_get_qemu (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "get_qemu");
-
-  rv = caml_copy_string (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_set_path (value gv, value pathv)
-{
-  CAMLparam2 (gv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("set_path: used handle after closing it");
-
-  const char *path = String_val (pathv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_set_path (g, path);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "set_path");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_get_path (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("get_path: used handle after closing it");
-
-  const char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_get_path (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "get_path");
-
-  rv = caml_copy_string (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_set_append (value gv, value appendv)
-{
-  CAMLparam2 (gv, appendv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("set_append: used handle after closing it");
-
-  const char *append = String_val (appendv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_set_append (g, append);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "set_append");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_get_append (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("get_append: used handle after closing it");
-
-  const char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_get_append (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "get_append");
-
-  rv = caml_copy_string (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_set_autosync (value gv, value autosyncv)
-{
-  CAMLparam2 (gv, autosyncv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("set_autosync: used handle after closing it");
-
-  int autosync = Bool_val (autosyncv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_set_autosync (g, autosync);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "set_autosync");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_get_autosync (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("get_autosync: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_get_autosync (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "get_autosync");
-
-  rv = Val_bool (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_set_verbose (value gv, value verbosev)
-{
-  CAMLparam2 (gv, verbosev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("set_verbose: used handle after closing it");
-
-  int verbose = Bool_val (verbosev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_set_verbose (g, verbose);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "set_verbose");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_get_verbose (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("get_verbose: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_get_verbose (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "get_verbose");
-
-  rv = Val_bool (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_is_ready (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("is_ready: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_is_ready (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "is_ready");
-
-  rv = Val_bool (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_is_config (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("is_config: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_is_config (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "is_config");
-
-  rv = Val_bool (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_is_launching (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("is_launching: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_is_launching (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "is_launching");
-
-  rv = Val_bool (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_is_busy (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("is_busy: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_is_busy (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "is_busy");
-
-  rv = Val_bool (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_get_state (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("get_state: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_get_state (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "get_state");
-
-  rv = Val_int (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_set_busy (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("set_busy: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_set_busy (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "set_busy");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_set_ready (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("set_ready: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_set_ready (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "set_ready");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_end_busy (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("end_busy: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_end_busy (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "end_busy");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_set_memsize (value gv, value memsizev)
-{
-  CAMLparam2 (gv, memsizev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("set_memsize: used handle after closing it");
-
-  int memsize = Int_val (memsizev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_set_memsize (g, memsize);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "set_memsize");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_get_memsize (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("get_memsize: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_get_memsize (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "get_memsize");
-
-  rv = Val_int (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_get_pid (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("get_pid: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_get_pid (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "get_pid");
-
-  rv = Val_int (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_version (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("version: used handle after closing it");
-
-  struct guestfs_version *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_version (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "version");
-
-  rv = copy_version (r);
-  guestfs_free_version (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_mount (value gv, value devicev, value mountpointv)
-{
-  CAMLparam3 (gv, devicev, mountpointv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("mount: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  const char *mountpoint = String_val (mountpointv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_mount (g, device, mountpoint);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "mount");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_sync (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("sync: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_sync (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "sync");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_touch (value gv, value pathv)
-{
-  CAMLparam2 (gv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("touch: used handle after closing it");
-
-  const char *path = String_val (pathv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_touch (g, path);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "touch");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_cat (value gv, value pathv)
-{
-  CAMLparam2 (gv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("cat: used handle after closing it");
-
-  const char *path = String_val (pathv);
-  char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_cat (g, path);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "cat");
-
-  rv = caml_copy_string (r);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_ll (value gv, value directoryv)
-{
-  CAMLparam2 (gv, directoryv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("ll: used handle after closing it");
-
-  const char *directory = String_val (directoryv);
-  char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_ll (g, directory);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "ll");
-
-  rv = caml_copy_string (r);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_ls (value gv, value directoryv)
-{
-  CAMLparam2 (gv, directoryv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("ls: used handle after closing it");
-
-  const char *directory = String_val (directoryv);
-  int i;
-  char **r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_ls (g, directory);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "ls");
-
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_list_devices (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("list_devices: used handle after closing it");
-
-  int i;
-  char **r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_list_devices (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "list_devices");
-
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_list_partitions (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("list_partitions: used handle after closing it");
-
-  int i;
-  char **r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_list_partitions (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "list_partitions");
-
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_pvs (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("pvs: used handle after closing it");
-
-  int i;
-  char **r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_pvs (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "pvs");
-
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_vgs (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("vgs: used handle after closing it");
-
-  int i;
-  char **r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_vgs (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "vgs");
-
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_lvs (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("lvs: used handle after closing it");
-
-  int i;
-  char **r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_lvs (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "lvs");
-
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_pvs_full (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("pvs_full: used handle after closing it");
-
-  struct guestfs_lvm_pv_list *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_pvs_full (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "pvs_full");
-
-  rv = copy_lvm_pv_list (r);
-  guestfs_free_lvm_pv_list (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_vgs_full (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("vgs_full: used handle after closing it");
-
-  struct guestfs_lvm_vg_list *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_vgs_full (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "vgs_full");
-
-  rv = copy_lvm_vg_list (r);
-  guestfs_free_lvm_vg_list (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_lvs_full (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("lvs_full: used handle after closing it");
-
-  struct guestfs_lvm_lv_list *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_lvs_full (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "lvs_full");
-
-  rv = copy_lvm_lv_list (r);
-  guestfs_free_lvm_lv_list (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_read_lines (value gv, value pathv)
-{
-  CAMLparam2 (gv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("read_lines: used handle after closing it");
-
-  const char *path = String_val (pathv);
-  int i;
-  char **r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_read_lines (g, path);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "read_lines");
-
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_aug_init (value gv, value rootv, value flagsv)
-{
-  CAMLparam3 (gv, rootv, flagsv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("aug_init: used handle after closing it");
-
-  const char *root = String_val (rootv);
-  int flags = Int_val (flagsv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_aug_init (g, root, flags);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "aug_init");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
+/* Automatically generated wrapper for function
+ * val aug_close : t -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_aug_close (value gv);
 
 CAMLprim value
 ocaml_guestfs_aug_close (value gv)
@@ -2012,7 +627,7 @@ ocaml_guestfs_aug_close (value gv)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("aug_close: used handle after closing it");
+    ocaml_guestfs_raise_closed ("aug_close");
 
   int r;
 
@@ -2026,30 +641,12 @@ ocaml_guestfs_aug_close (value gv)
   CAMLreturn (rv);
 }
 
-CAMLprim value
-ocaml_guestfs_aug_defvar (value gv, value namev, value exprv)
-{
-  CAMLparam3 (gv, namev, exprv);
-  CAMLlocal1 (rv);
+/* Automatically generated wrapper for function
+ * val aug_defnode : t -> string -> string -> string -> int_bool
+ */
 
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("aug_defvar: used handle after closing it");
-
-  const char *name = String_val (namev);
-  const char *expr =
-    exprv != Val_int (0) ? String_val (Field (exprv, 0)) : NULL;
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_aug_defvar (g, name, expr);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "aug_defvar");
-
-  rv = Val_int (r);
-  CAMLreturn (rv);
-}
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_aug_defnode (value gv, value namev, value exprv, value valv);
 
 CAMLprim value
 ocaml_guestfs_aug_defnode (value gv, value namev, value exprv, value valv)
@@ -2059,7 +656,7 @@ ocaml_guestfs_aug_defnode (value gv, value namev, value exprv, value valv)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("aug_defnode: used handle after closing it");
+    ocaml_guestfs_raise_closed ("aug_defnode");
 
   const char *name = String_val (namev);
   const char *expr = String_val (exprv);
@@ -2077,21 +674,60 @@ ocaml_guestfs_aug_defnode (value gv, value namev, value exprv, value valv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val aug_defvar : t -> string -> string option -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_aug_defvar (value gv, value namev, value exprv);
+
 CAMLprim value
-ocaml_guestfs_aug_get (value gv, value pathv)
+ocaml_guestfs_aug_defvar (value gv, value namev, value exprv)
 {
-  CAMLparam2 (gv, pathv);
+  CAMLparam3 (gv, namev, exprv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("aug_get: used handle after closing it");
+    ocaml_guestfs_raise_closed ("aug_defvar");
 
-  const char *path = String_val (pathv);
+  const char *name = String_val (namev);
+  const char *expr =
+    exprv != Val_int (0) ? String_val (Field (exprv, 0)) : NULL;
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_aug_defvar (g, name, expr);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "aug_defvar");
+
+  rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val aug_get : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_aug_get (value gv, value augpathv);
+
+CAMLprim value
+ocaml_guestfs_aug_get (value gv, value augpathv)
+{
+  CAMLparam2 (gv, augpathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("aug_get");
+
+  const char *augpath = String_val (augpathv);
   char *r;
 
   caml_enter_blocking_section ();
-  r = guestfs_aug_get (g, path);
+  r = guestfs_aug_get (g, augpath);
   caml_leave_blocking_section ();
   if (r == NULL)
     ocaml_guestfs_raise_error (g, "aug_get");
@@ -2101,47 +737,61 @@ ocaml_guestfs_aug_get (value gv, value pathv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val aug_init : t -> string -> int -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_aug_init (value gv, value rootv, value flagsv);
+
 CAMLprim value
-ocaml_guestfs_aug_set (value gv, value pathv, value valv)
+ocaml_guestfs_aug_init (value gv, value rootv, value flagsv)
 {
-  CAMLparam3 (gv, pathv, valv);
+  CAMLparam3 (gv, rootv, flagsv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("aug_set: used handle after closing it");
+    ocaml_guestfs_raise_closed ("aug_init");
 
-  const char *path = String_val (pathv);
-  const char *val = String_val (valv);
+  const char *root = String_val (rootv);
+  int flags = Int_val (flagsv);
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_aug_set (g, path, val);
+  r = guestfs_aug_init (g, root, flags);
   caml_leave_blocking_section ();
   if (r == -1)
-    ocaml_guestfs_raise_error (g, "aug_set");
+    ocaml_guestfs_raise_error (g, "aug_init");
 
   rv = Val_unit;
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val aug_insert : t -> string -> string -> bool -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_aug_insert (value gv, value augpathv, value labelv, value beforev);
+
 CAMLprim value
-ocaml_guestfs_aug_insert (value gv, value pathv, value labelv, value beforev)
+ocaml_guestfs_aug_insert (value gv, value augpathv, value labelv, value beforev)
 {
-  CAMLparam4 (gv, pathv, labelv, beforev);
+  CAMLparam4 (gv, augpathv, labelv, beforev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("aug_insert: used handle after closing it");
+    ocaml_guestfs_raise_closed ("aug_insert");
 
-  const char *path = String_val (pathv);
+  const char *augpath = String_val (augpathv);
   const char *label = String_val (labelv);
   int before = Bool_val (beforev);
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_aug_insert (g, path, label, before);
+  r = guestfs_aug_insert (g, augpath, label, before);
   caml_leave_blocking_section ();
   if (r == -1)
     ocaml_guestfs_raise_error (g, "aug_insert");
@@ -2150,28 +800,107 @@ ocaml_guestfs_aug_insert (value gv, value pathv, value labelv, value beforev)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val aug_load : t -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_aug_load (value gv);
+
 CAMLprim value
-ocaml_guestfs_aug_rm (value gv, value pathv)
+ocaml_guestfs_aug_load (value gv)
 {
-  CAMLparam2 (gv, pathv);
+  CAMLparam1 (gv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("aug_rm: used handle after closing it");
+    ocaml_guestfs_raise_closed ("aug_load");
 
-  const char *path = String_val (pathv);
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_aug_rm (g, path);
+  r = guestfs_aug_load (g);
   caml_leave_blocking_section ();
   if (r == -1)
-    ocaml_guestfs_raise_error (g, "aug_rm");
+    ocaml_guestfs_raise_error (g, "aug_load");
 
-  rv = Val_int (r);
+  rv = Val_unit;
   CAMLreturn (rv);
 }
+
+/* Automatically generated wrapper for function
+ * val aug_ls : t -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_aug_ls (value gv, value augpathv);
+
+CAMLprim value
+ocaml_guestfs_aug_ls (value gv, value augpathv)
+{
+  CAMLparam2 (gv, augpathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("aug_ls");
+
+  const char *augpath = String_val (augpathv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_aug_ls (g, augpath);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "aug_ls");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val aug_match : t -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_aug_match (value gv, value augpathv);
+
+CAMLprim value
+ocaml_guestfs_aug_match (value gv, value augpathv)
+{
+  CAMLparam2 (gv, augpathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("aug_match");
+
+  const char *augpath = String_val (augpathv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_aug_match (g, augpath);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "aug_match");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val aug_mv : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_aug_mv (value gv, value srcv, value destv);
 
 CAMLprim value
 ocaml_guestfs_aug_mv (value gv, value srcv, value destv)
@@ -2181,7 +910,7 @@ ocaml_guestfs_aug_mv (value gv, value srcv, value destv)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("aug_mv: used handle after closing it");
+    ocaml_guestfs_raise_closed ("aug_mv");
 
   const char *src = String_val (srcv);
   const char *dest = String_val (destv);
@@ -2197,31 +926,42 @@ ocaml_guestfs_aug_mv (value gv, value srcv, value destv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val aug_rm : t -> string -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_aug_rm (value gv, value augpathv);
+
 CAMLprim value
-ocaml_guestfs_aug_match (value gv, value pathv)
+ocaml_guestfs_aug_rm (value gv, value augpathv)
 {
-  CAMLparam2 (gv, pathv);
+  CAMLparam2 (gv, augpathv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("aug_match: used handle after closing it");
+    ocaml_guestfs_raise_closed ("aug_rm");
 
-  const char *path = String_val (pathv);
-  int i;
-  char **r;
+  const char *augpath = String_val (augpathv);
+  int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_aug_match (g, path);
+  r = guestfs_aug_rm (g, augpath);
   caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "aug_match");
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "aug_rm");
 
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
+  rv = Val_int (r);
   CAMLreturn (rv);
 }
+
+/* Automatically generated wrapper for function
+ * val aug_save : t -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_aug_save (value gv);
 
 CAMLprim value
 ocaml_guestfs_aug_save (value gv)
@@ -2231,7 +971,7 @@ ocaml_guestfs_aug_save (value gv)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("aug_save: used handle after closing it");
+    ocaml_guestfs_raise_closed ("aug_save");
 
   int r;
 
@@ -2245,168 +985,469 @@ ocaml_guestfs_aug_save (value gv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val aug_set : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_aug_set (value gv, value augpathv, value valv);
+
 CAMLprim value
-ocaml_guestfs_aug_load (value gv)
+ocaml_guestfs_aug_set (value gv, value augpathv, value valv)
 {
-  CAMLparam1 (gv);
+  CAMLparam3 (gv, augpathv, valv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("aug_load: used handle after closing it");
+    ocaml_guestfs_raise_closed ("aug_set");
 
+  const char *augpath = String_val (augpathv);
+  const char *val = String_val (valv);
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_aug_load (g);
+  r = guestfs_aug_set (g, augpath, val);
   caml_leave_blocking_section ();
   if (r == -1)
-    ocaml_guestfs_raise_error (g, "aug_load");
+    ocaml_guestfs_raise_error (g, "aug_set");
 
   rv = Val_unit;
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val available : t -> string array -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_available (value gv, value groupsv);
+
 CAMLprim value
-ocaml_guestfs_aug_ls (value gv, value pathv)
+ocaml_guestfs_available (value gv, value groupsv)
+{
+  CAMLparam2 (gv, groupsv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("available");
+
+  char **groups = ocaml_guestfs_strings_val (g, groupsv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_available (g, groups);
+  caml_leave_blocking_section ();
+  ocaml_guestfs_free_strings (groups);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "available");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val blockdev_flushbufs : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_blockdev_flushbufs (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_blockdev_flushbufs (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("blockdev_flushbufs");
+
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_blockdev_flushbufs (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "blockdev_flushbufs");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val blockdev_getbsz : t -> string -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_blockdev_getbsz (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_blockdev_getbsz (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("blockdev_getbsz");
+
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_blockdev_getbsz (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "blockdev_getbsz");
+
+  rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val blockdev_getro : t -> string -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_blockdev_getro (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_blockdev_getro (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("blockdev_getro");
+
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_blockdev_getro (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "blockdev_getro");
+
+  rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val blockdev_getsize64 : t -> string -> int64
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_blockdev_getsize64 (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_blockdev_getsize64 (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("blockdev_getsize64");
+
+  const char *device = String_val (devicev);
+  int64_t r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_blockdev_getsize64 (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "blockdev_getsize64");
+
+  rv = caml_copy_int64 (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val blockdev_getss : t -> string -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_blockdev_getss (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_blockdev_getss (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("blockdev_getss");
+
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_blockdev_getss (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "blockdev_getss");
+
+  rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val blockdev_getsz : t -> string -> int64
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_blockdev_getsz (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_blockdev_getsz (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("blockdev_getsz");
+
+  const char *device = String_val (devicev);
+  int64_t r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_blockdev_getsz (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "blockdev_getsz");
+
+  rv = caml_copy_int64 (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val blockdev_rereadpt : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_blockdev_rereadpt (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_blockdev_rereadpt (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("blockdev_rereadpt");
+
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_blockdev_rereadpt (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "blockdev_rereadpt");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val blockdev_setbsz : t -> string -> int -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_blockdev_setbsz (value gv, value devicev, value blocksizev);
+
+CAMLprim value
+ocaml_guestfs_blockdev_setbsz (value gv, value devicev, value blocksizev)
+{
+  CAMLparam3 (gv, devicev, blocksizev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("blockdev_setbsz");
+
+  const char *device = String_val (devicev);
+  int blocksize = Int_val (blocksizev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_blockdev_setbsz (g, device, blocksize);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "blockdev_setbsz");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val blockdev_setro : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_blockdev_setro (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_blockdev_setro (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("blockdev_setro");
+
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_blockdev_setro (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "blockdev_setro");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val blockdev_setrw : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_blockdev_setrw (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_blockdev_setrw (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("blockdev_setrw");
+
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_blockdev_setrw (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "blockdev_setrw");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val case_sensitive_path : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_case_sensitive_path (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_case_sensitive_path (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("aug_ls: used handle after closing it");
+    ocaml_guestfs_raise_closed ("case_sensitive_path");
 
   const char *path = String_val (pathv);
-  int i;
-  char **r;
+  char *r;
 
   caml_enter_blocking_section ();
-  r = guestfs_aug_ls (g, path);
+  r = guestfs_case_sensitive_path (g, path);
   caml_leave_blocking_section ();
   if (r == NULL)
-    ocaml_guestfs_raise_error (g, "aug_ls");
+    ocaml_guestfs_raise_error (g, "case_sensitive_path");
 
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  rv = caml_copy_string (r);
   free (r);
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val cat : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_cat (value gv, value pathv);
+
 CAMLprim value
-ocaml_guestfs_rm (value gv, value pathv)
+ocaml_guestfs_cat (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("rm: used handle after closing it");
+    ocaml_guestfs_raise_closed ("cat");
 
   const char *path = String_val (pathv);
-  int r;
+  char *r;
 
   caml_enter_blocking_section ();
-  r = guestfs_rm (g, path);
+  r = guestfs_cat (g, path);
   caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "rm");
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "cat");
 
-  rv = Val_unit;
+  rv = caml_copy_string (r);
+  free (r);
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val checksum : t -> string -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_checksum (value gv, value csumtypev, value pathv);
+
 CAMLprim value
-ocaml_guestfs_rmdir (value gv, value pathv)
+ocaml_guestfs_checksum (value gv, value csumtypev, value pathv)
 {
-  CAMLparam2 (gv, pathv);
+  CAMLparam3 (gv, csumtypev, pathv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("rmdir: used handle after closing it");
+    ocaml_guestfs_raise_closed ("checksum");
 
+  const char *csumtype = String_val (csumtypev);
   const char *path = String_val (pathv);
-  int r;
+  char *r;
 
   caml_enter_blocking_section ();
-  r = guestfs_rmdir (g, path);
+  r = guestfs_checksum (g, csumtype, path);
   caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "rmdir");
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "checksum");
 
-  rv = Val_unit;
+  rv = caml_copy_string (r);
+  free (r);
   CAMLreturn (rv);
 }
 
-CAMLprim value
-ocaml_guestfs_rm_rf (value gv, value pathv)
-{
-  CAMLparam2 (gv, pathv);
-  CAMLlocal1 (rv);
+/* Automatically generated wrapper for function
+ * val chmod : t -> int -> string -> unit
+ */
 
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("rm_rf: used handle after closing it");
-
-  const char *path = String_val (pathv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_rm_rf (g, path);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "rm_rf");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_mkdir (value gv, value pathv)
-{
-  CAMLparam2 (gv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("mkdir: used handle after closing it");
-
-  const char *path = String_val (pathv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_mkdir (g, path);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "mkdir");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_mkdir_p (value gv, value pathv)
-{
-  CAMLparam2 (gv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("mkdir_p: used handle after closing it");
-
-  const char *path = String_val (pathv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_mkdir_p (g, path);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "mkdir_p");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_chmod (value gv, value modev, value pathv);
 
 CAMLprim value
 ocaml_guestfs_chmod (value gv, value modev, value pathv)
@@ -2416,7 +1457,7 @@ ocaml_guestfs_chmod (value gv, value modev, value pathv)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("chmod: used handle after closing it");
+    ocaml_guestfs_raise_closed ("chmod");
 
   int mode = Int_val (modev);
   const char *path = String_val (pathv);
@@ -2432,6 +1473,13 @@ ocaml_guestfs_chmod (value gv, value modev, value pathv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val chown : t -> int -> int -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_chown (value gv, value ownerv, value groupv, value pathv);
+
 CAMLprim value
 ocaml_guestfs_chown (value gv, value ownerv, value groupv, value pathv)
 {
@@ -2440,7 +1488,7 @@ ocaml_guestfs_chown (value gv, value ownerv, value groupv, value pathv)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("chown: used handle after closing it");
+    ocaml_guestfs_raise_closed ("chown");
 
   int owner = Int_val (ownerv);
   int group = Int_val (groupv);
@@ -2457,6 +1505,579 @@ ocaml_guestfs_chown (value gv, value ownerv, value groupv, value pathv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val command : t -> string array -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_command (value gv, value argumentsv);
+
+CAMLprim value
+ocaml_guestfs_command (value gv, value argumentsv)
+{
+  CAMLparam2 (gv, argumentsv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("command");
+
+  char **arguments = ocaml_guestfs_strings_val (g, argumentsv);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_command (g, arguments);
+  caml_leave_blocking_section ();
+  ocaml_guestfs_free_strings (arguments);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "command");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val command_lines : t -> string array -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_command_lines (value gv, value argumentsv);
+
+CAMLprim value
+ocaml_guestfs_command_lines (value gv, value argumentsv)
+{
+  CAMLparam2 (gv, argumentsv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("command_lines");
+
+  char **arguments = ocaml_guestfs_strings_val (g, argumentsv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_command_lines (g, arguments);
+  caml_leave_blocking_section ();
+  ocaml_guestfs_free_strings (arguments);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "command_lines");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val config : t -> string -> string option -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_config (value gv, value qemuparamv, value qemuvaluev);
+
+CAMLprim value
+ocaml_guestfs_config (value gv, value qemuparamv, value qemuvaluev)
+{
+  CAMLparam3 (gv, qemuparamv, qemuvaluev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("config");
+
+  const char *qemuparam = String_val (qemuparamv);
+  const char *qemuvalue =
+    qemuvaluev != Val_int (0) ? String_val (Field (qemuvaluev, 0)) : NULL;
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_config (g, qemuparam, qemuvalue);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "config");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val cp : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_cp (value gv, value srcv, value destv);
+
+CAMLprim value
+ocaml_guestfs_cp (value gv, value srcv, value destv)
+{
+  CAMLparam3 (gv, srcv, destv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("cp");
+
+  const char *src = String_val (srcv);
+  const char *dest = String_val (destv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_cp (g, src, dest);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "cp");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val cp_a : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_cp_a (value gv, value srcv, value destv);
+
+CAMLprim value
+ocaml_guestfs_cp_a (value gv, value srcv, value destv)
+{
+  CAMLparam3 (gv, srcv, destv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("cp_a");
+
+  const char *src = String_val (srcv);
+  const char *dest = String_val (destv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_cp_a (g, src, dest);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "cp_a");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val dd : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_dd (value gv, value srcv, value destv);
+
+CAMLprim value
+ocaml_guestfs_dd (value gv, value srcv, value destv)
+{
+  CAMLparam3 (gv, srcv, destv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("dd");
+
+  const char *src = String_val (srcv);
+  const char *dest = String_val (destv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_dd (g, src, dest);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "dd");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val debug : t -> string -> string array -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_debug (value gv, value subcmdv, value extraargsv);
+
+CAMLprim value
+ocaml_guestfs_debug (value gv, value subcmdv, value extraargsv)
+{
+  CAMLparam3 (gv, subcmdv, extraargsv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("debug");
+
+  const char *subcmd = String_val (subcmdv);
+  char **extraargs = ocaml_guestfs_strings_val (g, extraargsv);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_debug (g, subcmd, extraargs);
+  caml_leave_blocking_section ();
+  ocaml_guestfs_free_strings (extraargs);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "debug");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val df : t -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_df (value gv);
+
+CAMLprim value
+ocaml_guestfs_df (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("df");
+
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_df (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "df");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val df_h : t -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_df_h (value gv);
+
+CAMLprim value
+ocaml_guestfs_df_h (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("df_h");
+
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_df_h (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "df_h");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val dmesg : t -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_dmesg (value gv);
+
+CAMLprim value
+ocaml_guestfs_dmesg (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("dmesg");
+
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_dmesg (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "dmesg");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val download : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_download (value gv, value remotefilenamev, value filenamev);
+
+CAMLprim value
+ocaml_guestfs_download (value gv, value remotefilenamev, value filenamev)
+{
+  CAMLparam3 (gv, remotefilenamev, filenamev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("download");
+
+  const char *remotefilename = String_val (remotefilenamev);
+  const char *filename = String_val (filenamev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_download (g, remotefilename, filename);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "download");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val drop_caches : t -> int -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_drop_caches (value gv, value whattodropv);
+
+CAMLprim value
+ocaml_guestfs_drop_caches (value gv, value whattodropv)
+{
+  CAMLparam2 (gv, whattodropv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("drop_caches");
+
+  int whattodrop = Int_val (whattodropv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_drop_caches (g, whattodrop);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "drop_caches");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val du : t -> string -> int64
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_du (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_du (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("du");
+
+  const char *path = String_val (pathv);
+  int64_t r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_du (g, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "du");
+
+  rv = caml_copy_int64 (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val e2fsck_f : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_e2fsck_f (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_e2fsck_f (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("e2fsck_f");
+
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_e2fsck_f (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "e2fsck_f");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val echo_daemon : t -> string array -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_echo_daemon (value gv, value wordsv);
+
+CAMLprim value
+ocaml_guestfs_echo_daemon (value gv, value wordsv)
+{
+  CAMLparam2 (gv, wordsv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("echo_daemon");
+
+  char **words = ocaml_guestfs_strings_val (g, wordsv);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_echo_daemon (g, words);
+  caml_leave_blocking_section ();
+  ocaml_guestfs_free_strings (words);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "echo_daemon");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val egrep : t -> string -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_egrep (value gv, value regexv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_egrep (value gv, value regexv, value pathv)
+{
+  CAMLparam3 (gv, regexv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("egrep");
+
+  const char *regex = String_val (regexv);
+  const char *path = String_val (pathv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_egrep (g, regex, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "egrep");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val egrepi : t -> string -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_egrepi (value gv, value regexv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_egrepi (value gv, value regexv, value pathv)
+{
+  CAMLparam3 (gv, regexv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("egrepi");
+
+  const char *regex = String_val (regexv);
+  const char *path = String_val (pathv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_egrepi (g, regex, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "egrepi");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val equal : t -> string -> string -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_equal (value gv, value file1v, value file2v);
+
+CAMLprim value
+ocaml_guestfs_equal (value gv, value file1v, value file2v)
+{
+  CAMLparam3 (gv, file1v, file2v);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("equal");
+
+  const char *file1 = String_val (file1v);
+  const char *file2 = String_val (file2v);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_equal (g, file1, file2);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "equal");
+
+  rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val exists : t -> string -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_exists (value gv, value pathv);
+
 CAMLprim value
 ocaml_guestfs_exists (value gv, value pathv)
 {
@@ -2465,7 +2086,7 @@ ocaml_guestfs_exists (value gv, value pathv)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("exists: used handle after closing it");
+    ocaml_guestfs_raise_closed ("exists");
 
   const char *path = String_val (pathv);
   int r;
@@ -2480,28 +2101,1248 @@ ocaml_guestfs_exists (value gv, value pathv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val fallocate : t -> string -> int -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_fallocate (value gv, value pathv, value lenv);
+
 CAMLprim value
-ocaml_guestfs_is_file (value gv, value pathv)
+ocaml_guestfs_fallocate (value gv, value pathv, value lenv)
+{
+  CAMLparam3 (gv, pathv, lenv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("fallocate");
+
+  const char *path = String_val (pathv);
+  int len = Int_val (lenv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_fallocate (g, path, len);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "fallocate");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val fgrep : t -> string -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_fgrep (value gv, value patternv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_fgrep (value gv, value patternv, value pathv)
+{
+  CAMLparam3 (gv, patternv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("fgrep");
+
+  const char *pattern = String_val (patternv);
+  const char *path = String_val (pathv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_fgrep (g, pattern, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "fgrep");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val fgrepi : t -> string -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_fgrepi (value gv, value patternv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_fgrepi (value gv, value patternv, value pathv)
+{
+  CAMLparam3 (gv, patternv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("fgrepi");
+
+  const char *pattern = String_val (patternv);
+  const char *path = String_val (pathv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_fgrepi (g, pattern, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "fgrepi");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val file : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_file (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_file (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("is_file: used handle after closing it");
+    ocaml_guestfs_raise_closed ("file");
 
+  const char *path = String_val (pathv);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_file (g, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "file");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val fill : t -> int -> int -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_fill (value gv, value cv, value lenv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_fill (value gv, value cv, value lenv, value pathv)
+{
+  CAMLparam4 (gv, cv, lenv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("fill");
+
+  int c = Int_val (cv);
+  int len = Int_val (lenv);
   const char *path = String_val (pathv);
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_is_file (g, path);
+  r = guestfs_fill (g, c, len, path);
   caml_leave_blocking_section ();
   if (r == -1)
-    ocaml_guestfs_raise_error (g, "is_file");
+    ocaml_guestfs_raise_error (g, "fill");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val find : t -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_find (value gv, value directoryv);
+
+CAMLprim value
+ocaml_guestfs_find (value gv, value directoryv)
+{
+  CAMLparam2 (gv, directoryv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("find");
+
+  const char *directory = String_val (directoryv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_find (g, directory);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "find");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val find0 : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_find0 (value gv, value directoryv, value filesv);
+
+CAMLprim value
+ocaml_guestfs_find0 (value gv, value directoryv, value filesv)
+{
+  CAMLparam3 (gv, directoryv, filesv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("find0");
+
+  const char *directory = String_val (directoryv);
+  const char *files = String_val (filesv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_find0 (g, directory, files);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "find0");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val fsck : t -> string -> string -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_fsck (value gv, value fstypev, value devicev);
+
+CAMLprim value
+ocaml_guestfs_fsck (value gv, value fstypev, value devicev)
+{
+  CAMLparam3 (gv, fstypev, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("fsck");
+
+  const char *fstype = String_val (fstypev);
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_fsck (g, fstype, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "fsck");
+
+  rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val get_append : t -> string option
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_get_append (value gv);
+
+CAMLprim value
+ocaml_guestfs_get_append (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal3 (rv, v, v2);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_append");
+
+  const char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_get_append (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "get_append");
+
+  if (r) { /* Some string */
+    v = caml_alloc (1, 0);
+    v2 = caml_copy_string (r);
+    Store_field (v, 0, v2);
+  } else /* None */
+    v = Val_int (0);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val get_autosync : t -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_get_autosync (value gv);
+
+CAMLprim value
+ocaml_guestfs_get_autosync (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_autosync");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_get_autosync (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "get_autosync");
 
   rv = Val_bool (r);
   CAMLreturn (rv);
 }
+
+/* Automatically generated wrapper for function
+ * val get_direct : t -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_get_direct (value gv);
+
+CAMLprim value
+ocaml_guestfs_get_direct (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_direct");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_get_direct (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "get_direct");
+
+  rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val get_e2label : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_get_e2label (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_get_e2label (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_e2label");
+
+  const char *device = String_val (devicev);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_get_e2label (g, device);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "get_e2label");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val get_e2uuid : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_get_e2uuid (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_get_e2uuid (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_e2uuid");
+
+  const char *device = String_val (devicev);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_get_e2uuid (g, device);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "get_e2uuid");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val get_memsize : t -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_get_memsize (value gv);
+
+CAMLprim value
+ocaml_guestfs_get_memsize (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_memsize");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_get_memsize (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "get_memsize");
+
+  rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val get_path : t -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_get_path (value gv);
+
+CAMLprim value
+ocaml_guestfs_get_path (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_path");
+
+  const char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_get_path (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "get_path");
+
+  rv = caml_copy_string (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val get_pid : t -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_get_pid (value gv);
+
+CAMLprim value
+ocaml_guestfs_get_pid (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_pid");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_get_pid (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "get_pid");
+
+  rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val get_qemu : t -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_get_qemu (value gv);
+
+CAMLprim value
+ocaml_guestfs_get_qemu (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_qemu");
+
+  const char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_get_qemu (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "get_qemu");
+
+  rv = caml_copy_string (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val get_recovery_proc : t -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_get_recovery_proc (value gv);
+
+CAMLprim value
+ocaml_guestfs_get_recovery_proc (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_recovery_proc");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_get_recovery_proc (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "get_recovery_proc");
+
+  rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val get_selinux : t -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_get_selinux (value gv);
+
+CAMLprim value
+ocaml_guestfs_get_selinux (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_selinux");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_get_selinux (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "get_selinux");
+
+  rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val get_state : t -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_get_state (value gv);
+
+CAMLprim value
+ocaml_guestfs_get_state (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_state");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_get_state (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "get_state");
+
+  rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val get_trace : t -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_get_trace (value gv);
+
+CAMLprim value
+ocaml_guestfs_get_trace (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_trace");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_get_trace (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "get_trace");
+
+  rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val get_verbose : t -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_get_verbose (value gv);
+
+CAMLprim value
+ocaml_guestfs_get_verbose (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_verbose");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_get_verbose (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "get_verbose");
+
+  rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val getcon : t -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_getcon (value gv);
+
+CAMLprim value
+ocaml_guestfs_getcon (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("getcon");
+
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_getcon (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "getcon");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val getxattrs : t -> string -> xattr array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_getxattrs (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_getxattrs (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("getxattrs");
+
+  const char *path = String_val (pathv);
+  struct guestfs_xattr_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_getxattrs (g, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "getxattrs");
+
+  rv = copy_xattr_list (r);
+  guestfs_free_xattr_list (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val glob_expand : t -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_glob_expand (value gv, value patternv);
+
+CAMLprim value
+ocaml_guestfs_glob_expand (value gv, value patternv)
+{
+  CAMLparam2 (gv, patternv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("glob_expand");
+
+  const char *pattern = String_val (patternv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_glob_expand (g, pattern);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "glob_expand");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val grep : t -> string -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_grep (value gv, value regexv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_grep (value gv, value regexv, value pathv)
+{
+  CAMLparam3 (gv, regexv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("grep");
+
+  const char *regex = String_val (regexv);
+  const char *path = String_val (pathv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_grep (g, regex, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "grep");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val grepi : t -> string -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_grepi (value gv, value regexv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_grepi (value gv, value regexv, value pathv)
+{
+  CAMLparam3 (gv, regexv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("grepi");
+
+  const char *regex = String_val (regexv);
+  const char *path = String_val (pathv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_grepi (g, regex, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "grepi");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val grub_install : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_grub_install (value gv, value rootv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_grub_install (value gv, value rootv, value devicev)
+{
+  CAMLparam3 (gv, rootv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("grub_install");
+
+  const char *root = String_val (rootv);
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_grub_install (g, root, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "grub_install");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val head : t -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_head (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_head (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("head");
+
+  const char *path = String_val (pathv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_head (g, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "head");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val head_n : t -> int -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_head_n (value gv, value nrlinesv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_head_n (value gv, value nrlinesv, value pathv)
+{
+  CAMLparam3 (gv, nrlinesv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("head_n");
+
+  int nrlines = Int_val (nrlinesv);
+  const char *path = String_val (pathv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_head_n (g, nrlines, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "head_n");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val hexdump : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_hexdump (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_hexdump (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("hexdump");
+
+  const char *path = String_val (pathv);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_hexdump (g, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "hexdump");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val initrd_list : t -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_initrd_list (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_initrd_list (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("initrd_list");
+
+  const char *path = String_val (pathv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_initrd_list (g, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "initrd_list");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val inotify_add_watch : t -> string -> int -> int64
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_inotify_add_watch (value gv, value pathv, value maskv);
+
+CAMLprim value
+ocaml_guestfs_inotify_add_watch (value gv, value pathv, value maskv)
+{
+  CAMLparam3 (gv, pathv, maskv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("inotify_add_watch");
+
+  const char *path = String_val (pathv);
+  int mask = Int_val (maskv);
+  int64_t r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_inotify_add_watch (g, path, mask);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "inotify_add_watch");
+
+  rv = caml_copy_int64 (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val inotify_close : t -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_inotify_close (value gv);
+
+CAMLprim value
+ocaml_guestfs_inotify_close (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("inotify_close");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_inotify_close (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "inotify_close");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val inotify_files : t -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_inotify_files (value gv);
+
+CAMLprim value
+ocaml_guestfs_inotify_files (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("inotify_files");
+
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_inotify_files (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "inotify_files");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val inotify_init : t -> int -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_inotify_init (value gv, value maxeventsv);
+
+CAMLprim value
+ocaml_guestfs_inotify_init (value gv, value maxeventsv)
+{
+  CAMLparam2 (gv, maxeventsv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("inotify_init");
+
+  int maxevents = Int_val (maxeventsv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_inotify_init (g, maxevents);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "inotify_init");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val inotify_read : t -> inotify_event array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_inotify_read (value gv);
+
+CAMLprim value
+ocaml_guestfs_inotify_read (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("inotify_read");
+
+  struct guestfs_inotify_event_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_inotify_read (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "inotify_read");
+
+  rv = copy_inotify_event_list (r);
+  guestfs_free_inotify_event_list (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val inotify_rm_watch : t -> int -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_inotify_rm_watch (value gv, value wdv);
+
+CAMLprim value
+ocaml_guestfs_inotify_rm_watch (value gv, value wdv)
+{
+  CAMLparam2 (gv, wdv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("inotify_rm_watch");
+
+  int wd = Int_val (wdv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_inotify_rm_watch (g, wd);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "inotify_rm_watch");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val is_busy : t -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_is_busy (value gv);
+
+CAMLprim value
+ocaml_guestfs_is_busy (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("is_busy");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_is_busy (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "is_busy");
+
+  rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val is_config : t -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_is_config (value gv);
+
+CAMLprim value
+ocaml_guestfs_is_config (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("is_config");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_is_config (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "is_config");
+
+  rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val is_dir : t -> string -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_is_dir (value gv, value pathv);
 
 CAMLprim value
 ocaml_guestfs_is_dir (value gv, value pathv)
@@ -2511,7 +3352,7 @@ ocaml_guestfs_is_dir (value gv, value pathv)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("is_dir: used handle after closing it");
+    ocaml_guestfs_raise_closed ("is_dir");
 
   const char *path = String_val (pathv);
   int r;
@@ -2526,53 +3367,601 @@ ocaml_guestfs_is_dir (value gv, value pathv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val is_file : t -> string -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_is_file (value gv, value pathv);
+
 CAMLprim value
-ocaml_guestfs_pvcreate (value gv, value devicev)
+ocaml_guestfs_is_file (value gv, value pathv)
 {
-  CAMLparam2 (gv, devicev);
+  CAMLparam2 (gv, pathv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("pvcreate: used handle after closing it");
+    ocaml_guestfs_raise_closed ("is_file");
 
-  const char *device = String_val (devicev);
+  const char *path = String_val (pathv);
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_pvcreate (g, device);
+  r = guestfs_is_file (g, path);
   caml_leave_blocking_section ();
   if (r == -1)
-    ocaml_guestfs_raise_error (g, "pvcreate");
+    ocaml_guestfs_raise_error (g, "is_file");
+
+  rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val is_launching : t -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_is_launching (value gv);
+
+CAMLprim value
+ocaml_guestfs_is_launching (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("is_launching");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_is_launching (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "is_launching");
+
+  rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val is_ready : t -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_is_ready (value gv);
+
+CAMLprim value
+ocaml_guestfs_is_ready (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("is_ready");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_is_ready (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "is_ready");
+
+  rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val kill_subprocess : t -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_kill_subprocess (value gv);
+
+CAMLprim value
+ocaml_guestfs_kill_subprocess (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("kill_subprocess");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_kill_subprocess (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "kill_subprocess");
 
   rv = Val_unit;
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val launch : t -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_launch (value gv);
+
 CAMLprim value
-ocaml_guestfs_vgcreate (value gv, value volgroupv, value physvolsv)
+ocaml_guestfs_launch (value gv)
 {
-  CAMLparam3 (gv, volgroupv, physvolsv);
+  CAMLparam1 (gv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("vgcreate: used handle after closing it");
+    ocaml_guestfs_raise_closed ("launch");
 
-  const char *volgroup = String_val (volgroupv);
-  char **physvols = ocaml_guestfs_strings_val (g, physvolsv);
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_vgcreate (g, volgroup, physvols);
+  r = guestfs_launch (g);
   caml_leave_blocking_section ();
-  ocaml_guestfs_free_strings (physvols);
   if (r == -1)
-    ocaml_guestfs_raise_error (g, "vgcreate");
+    ocaml_guestfs_raise_error (g, "launch");
 
   rv = Val_unit;
   CAMLreturn (rv);
 }
+
+/* Automatically generated wrapper for function
+ * val lchown : t -> int -> int -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_lchown (value gv, value ownerv, value groupv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_lchown (value gv, value ownerv, value groupv, value pathv)
+{
+  CAMLparam4 (gv, ownerv, groupv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("lchown");
+
+  int owner = Int_val (ownerv);
+  int group = Int_val (groupv);
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lchown (g, owner, group, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "lchown");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val lgetxattrs : t -> string -> xattr array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_lgetxattrs (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_lgetxattrs (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("lgetxattrs");
+
+  const char *path = String_val (pathv);
+  struct guestfs_xattr_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lgetxattrs (g, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "lgetxattrs");
+
+  rv = copy_xattr_list (r);
+  guestfs_free_xattr_list (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val list_devices : t -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_list_devices (value gv);
+
+CAMLprim value
+ocaml_guestfs_list_devices (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("list_devices");
+
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_list_devices (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "list_devices");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val list_partitions : t -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_list_partitions (value gv);
+
+CAMLprim value
+ocaml_guestfs_list_partitions (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("list_partitions");
+
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_list_partitions (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "list_partitions");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val ll : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_ll (value gv, value directoryv);
+
+CAMLprim value
+ocaml_guestfs_ll (value gv, value directoryv)
+{
+  CAMLparam2 (gv, directoryv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("ll");
+
+  const char *directory = String_val (directoryv);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_ll (g, directory);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "ll");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val ln : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_ln (value gv, value targetv, value linknamev);
+
+CAMLprim value
+ocaml_guestfs_ln (value gv, value targetv, value linknamev)
+{
+  CAMLparam3 (gv, targetv, linknamev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("ln");
+
+  const char *target = String_val (targetv);
+  const char *linkname = String_val (linknamev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_ln (g, target, linkname);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "ln");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val ln_f : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_ln_f (value gv, value targetv, value linknamev);
+
+CAMLprim value
+ocaml_guestfs_ln_f (value gv, value targetv, value linknamev)
+{
+  CAMLparam3 (gv, targetv, linknamev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("ln_f");
+
+  const char *target = String_val (targetv);
+  const char *linkname = String_val (linknamev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_ln_f (g, target, linkname);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "ln_f");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val ln_s : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_ln_s (value gv, value targetv, value linknamev);
+
+CAMLprim value
+ocaml_guestfs_ln_s (value gv, value targetv, value linknamev)
+{
+  CAMLparam3 (gv, targetv, linknamev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("ln_s");
+
+  const char *target = String_val (targetv);
+  const char *linkname = String_val (linknamev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_ln_s (g, target, linkname);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "ln_s");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val ln_sf : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_ln_sf (value gv, value targetv, value linknamev);
+
+CAMLprim value
+ocaml_guestfs_ln_sf (value gv, value targetv, value linknamev)
+{
+  CAMLparam3 (gv, targetv, linknamev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("ln_sf");
+
+  const char *target = String_val (targetv);
+  const char *linkname = String_val (linknamev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_ln_sf (g, target, linkname);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "ln_sf");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val lremovexattr : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_lremovexattr (value gv, value xattrv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_lremovexattr (value gv, value xattrv, value pathv)
+{
+  CAMLparam3 (gv, xattrv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("lremovexattr");
+
+  const char *xattr = String_val (xattrv);
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lremovexattr (g, xattr, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "lremovexattr");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val ls : t -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_ls (value gv, value directoryv);
+
+CAMLprim value
+ocaml_guestfs_ls (value gv, value directoryv)
+{
+  CAMLparam2 (gv, directoryv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("ls");
+
+  const char *directory = String_val (directoryv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_ls (g, directory);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "ls");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val lsetxattr : t -> string -> string -> int -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_lsetxattr (value gv, value xattrv, value valv, value vallenv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_lsetxattr (value gv, value xattrv, value valv, value vallenv, value pathv)
+{
+  CAMLparam5 (gv, xattrv, valv, vallenv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("lsetxattr");
+
+  const char *xattr = String_val (xattrv);
+  const char *val = String_val (valv);
+  int vallen = Int_val (vallenv);
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lsetxattr (g, xattr, val, vallen, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "lsetxattr");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val lstat : t -> string -> stat
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_lstat (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_lstat (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("lstat");
+
+  const char *path = String_val (pathv);
+  struct guestfs_stat *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lstat (g, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "lstat");
+
+  rv = copy_stat (r);
+  guestfs_free_stat (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val lstatlist : t -> string -> string array -> stat array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_lstatlist (value gv, value pathv, value namesv);
+
+CAMLprim value
+ocaml_guestfs_lstatlist (value gv, value pathv, value namesv)
+{
+  CAMLparam3 (gv, pathv, namesv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("lstatlist");
+
+  const char *path = String_val (pathv);
+  char **names = ocaml_guestfs_strings_val (g, namesv);
+  struct guestfs_stat_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lstatlist (g, path, names);
+  caml_leave_blocking_section ();
+  ocaml_guestfs_free_strings (names);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "lstatlist");
+
+  rv = copy_stat_list (r);
+  guestfs_free_stat_list (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val lvcreate : t -> string -> string -> int -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_lvcreate (value gv, value logvolv, value volgroupv, value mbytesv);
 
 CAMLprim value
 ocaml_guestfs_lvcreate (value gv, value logvolv, value volgroupv, value mbytesv)
@@ -2582,7 +3971,7 @@ ocaml_guestfs_lvcreate (value gv, value logvolv, value volgroupv, value mbytesv)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("lvcreate: used handle after closing it");
+    ocaml_guestfs_raise_closed ("lvcreate");
 
   const char *logvol = String_val (logvolv);
   const char *volgroup = String_val (volgroupv);
@@ -2599,6 +3988,545 @@ ocaml_guestfs_lvcreate (value gv, value logvolv, value volgroupv, value mbytesv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val lvm_remove_all : t -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_lvm_remove_all (value gv);
+
+CAMLprim value
+ocaml_guestfs_lvm_remove_all (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("lvm_remove_all");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lvm_remove_all (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "lvm_remove_all");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val lvremove : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_lvremove (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_lvremove (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("lvremove");
+
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lvremove (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "lvremove");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val lvresize : t -> string -> int -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_lvresize (value gv, value devicev, value mbytesv);
+
+CAMLprim value
+ocaml_guestfs_lvresize (value gv, value devicev, value mbytesv)
+{
+  CAMLparam3 (gv, devicev, mbytesv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("lvresize");
+
+  const char *device = String_val (devicev);
+  int mbytes = Int_val (mbytesv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lvresize (g, device, mbytes);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "lvresize");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val lvs : t -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_lvs (value gv);
+
+CAMLprim value
+ocaml_guestfs_lvs (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("lvs");
+
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lvs (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "lvs");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val lvs_full : t -> lvm_lv array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_lvs_full (value gv);
+
+CAMLprim value
+ocaml_guestfs_lvs_full (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("lvs_full");
+
+  struct guestfs_lvm_lv_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lvs_full (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "lvs_full");
+
+  rv = copy_lvm_lv_list (r);
+  guestfs_free_lvm_lv_list (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val lxattrlist : t -> string -> string array -> xattr array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_lxattrlist (value gv, value pathv, value namesv);
+
+CAMLprim value
+ocaml_guestfs_lxattrlist (value gv, value pathv, value namesv)
+{
+  CAMLparam3 (gv, pathv, namesv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("lxattrlist");
+
+  const char *path = String_val (pathv);
+  char **names = ocaml_guestfs_strings_val (g, namesv);
+  struct guestfs_xattr_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_lxattrlist (g, path, names);
+  caml_leave_blocking_section ();
+  ocaml_guestfs_free_strings (names);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "lxattrlist");
+
+  rv = copy_xattr_list (r);
+  guestfs_free_xattr_list (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mkdir : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mkdir (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_mkdir (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mkdir");
+
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mkdir (g, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mkdir");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mkdir_mode : t -> string -> int -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mkdir_mode (value gv, value pathv, value modev);
+
+CAMLprim value
+ocaml_guestfs_mkdir_mode (value gv, value pathv, value modev)
+{
+  CAMLparam3 (gv, pathv, modev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mkdir_mode");
+
+  const char *path = String_val (pathv);
+  int mode = Int_val (modev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mkdir_mode (g, path, mode);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mkdir_mode");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mkdir_p : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mkdir_p (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_mkdir_p (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mkdir_p");
+
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mkdir_p (g, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mkdir_p");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mkdtemp : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mkdtemp (value gv, value templatev);
+
+CAMLprim value
+ocaml_guestfs_mkdtemp (value gv, value templatev)
+{
+  CAMLparam2 (gv, templatev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mkdtemp");
+
+  const char *template = String_val (templatev);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mkdtemp (g, template);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "mkdtemp");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mke2fs_J : t -> string -> int -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mke2fs_J (value gv, value fstypev, value blocksizev, value devicev, value journalv);
+
+CAMLprim value
+ocaml_guestfs_mke2fs_J (value gv, value fstypev, value blocksizev, value devicev, value journalv)
+{
+  CAMLparam5 (gv, fstypev, blocksizev, devicev, journalv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mke2fs_J");
+
+  const char *fstype = String_val (fstypev);
+  int blocksize = Int_val (blocksizev);
+  const char *device = String_val (devicev);
+  const char *journal = String_val (journalv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mke2fs_J (g, fstype, blocksize, device, journal);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mke2fs_J");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mke2fs_JL : t -> string -> int -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mke2fs_JL (value gv, value fstypev, value blocksizev, value devicev, value labelv);
+
+CAMLprim value
+ocaml_guestfs_mke2fs_JL (value gv, value fstypev, value blocksizev, value devicev, value labelv)
+{
+  CAMLparam5 (gv, fstypev, blocksizev, devicev, labelv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mke2fs_JL");
+
+  const char *fstype = String_val (fstypev);
+  int blocksize = Int_val (blocksizev);
+  const char *device = String_val (devicev);
+  const char *label = String_val (labelv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mke2fs_JL (g, fstype, blocksize, device, label);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mke2fs_JL");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mke2fs_JU : t -> string -> int -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mke2fs_JU (value gv, value fstypev, value blocksizev, value devicev, value uuidv);
+
+CAMLprim value
+ocaml_guestfs_mke2fs_JU (value gv, value fstypev, value blocksizev, value devicev, value uuidv)
+{
+  CAMLparam5 (gv, fstypev, blocksizev, devicev, uuidv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mke2fs_JU");
+
+  const char *fstype = String_val (fstypev);
+  int blocksize = Int_val (blocksizev);
+  const char *device = String_val (devicev);
+  const char *uuid = String_val (uuidv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mke2fs_JU (g, fstype, blocksize, device, uuid);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mke2fs_JU");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mke2journal : t -> int -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mke2journal (value gv, value blocksizev, value devicev);
+
+CAMLprim value
+ocaml_guestfs_mke2journal (value gv, value blocksizev, value devicev)
+{
+  CAMLparam3 (gv, blocksizev, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mke2journal");
+
+  int blocksize = Int_val (blocksizev);
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mke2journal (g, blocksize, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mke2journal");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mke2journal_L : t -> int -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mke2journal_L (value gv, value blocksizev, value labelv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_mke2journal_L (value gv, value blocksizev, value labelv, value devicev)
+{
+  CAMLparam4 (gv, blocksizev, labelv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mke2journal_L");
+
+  int blocksize = Int_val (blocksizev);
+  const char *label = String_val (labelv);
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mke2journal_L (g, blocksize, label, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mke2journal_L");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mke2journal_U : t -> int -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mke2journal_U (value gv, value blocksizev, value uuidv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_mke2journal_U (value gv, value blocksizev, value uuidv, value devicev)
+{
+  CAMLparam4 (gv, blocksizev, uuidv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mke2journal_U");
+
+  int blocksize = Int_val (blocksizev);
+  const char *uuid = String_val (uuidv);
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mke2journal_U (g, blocksize, uuid, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mke2journal_U");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mkfifo : t -> int -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mkfifo (value gv, value modev, value pathv);
+
+CAMLprim value
+ocaml_guestfs_mkfifo (value gv, value modev, value pathv)
+{
+  CAMLparam3 (gv, modev, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mkfifo");
+
+  int mode = Int_val (modev);
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mkfifo (g, mode, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mkfifo");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mkfs : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mkfs (value gv, value fstypev, value devicev);
+
 CAMLprim value
 ocaml_guestfs_mkfs (value gv, value fstypev, value devicev)
 {
@@ -2607,7 +4535,7 @@ ocaml_guestfs_mkfs (value gv, value fstypev, value devicev)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("mkfs: used handle after closing it");
+    ocaml_guestfs_raise_closed ("mkfs");
 
   const char *fstype = String_val (fstypev);
   const char *device = String_val (devicev);
@@ -2623,6 +4551,1936 @@ ocaml_guestfs_mkfs (value gv, value fstypev, value devicev)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val mkfs_b : t -> string -> int -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mkfs_b (value gv, value fstypev, value blocksizev, value devicev);
+
+CAMLprim value
+ocaml_guestfs_mkfs_b (value gv, value fstypev, value blocksizev, value devicev)
+{
+  CAMLparam4 (gv, fstypev, blocksizev, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mkfs_b");
+
+  const char *fstype = String_val (fstypev);
+  int blocksize = Int_val (blocksizev);
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mkfs_b (g, fstype, blocksize, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mkfs_b");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mkmountpoint : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mkmountpoint (value gv, value exemptpathv);
+
+CAMLprim value
+ocaml_guestfs_mkmountpoint (value gv, value exemptpathv)
+{
+  CAMLparam2 (gv, exemptpathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mkmountpoint");
+
+  const char *exemptpath = String_val (exemptpathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mkmountpoint (g, exemptpath);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mkmountpoint");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mknod : t -> int -> int -> int -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mknod (value gv, value modev, value devmajorv, value devminorv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_mknod (value gv, value modev, value devmajorv, value devminorv, value pathv)
+{
+  CAMLparam5 (gv, modev, devmajorv, devminorv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mknod");
+
+  int mode = Int_val (modev);
+  int devmajor = Int_val (devmajorv);
+  int devminor = Int_val (devminorv);
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mknod (g, mode, devmajor, devminor, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mknod");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mknod_b : t -> int -> int -> int -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mknod_b (value gv, value modev, value devmajorv, value devminorv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_mknod_b (value gv, value modev, value devmajorv, value devminorv, value pathv)
+{
+  CAMLparam5 (gv, modev, devmajorv, devminorv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mknod_b");
+
+  int mode = Int_val (modev);
+  int devmajor = Int_val (devmajorv);
+  int devminor = Int_val (devminorv);
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mknod_b (g, mode, devmajor, devminor, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mknod_b");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mknod_c : t -> int -> int -> int -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mknod_c (value gv, value modev, value devmajorv, value devminorv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_mknod_c (value gv, value modev, value devmajorv, value devminorv, value pathv)
+{
+  CAMLparam5 (gv, modev, devmajorv, devminorv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mknod_c");
+
+  int mode = Int_val (modev);
+  int devmajor = Int_val (devmajorv);
+  int devminor = Int_val (devminorv);
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mknod_c (g, mode, devmajor, devminor, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mknod_c");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mkswap : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mkswap (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_mkswap (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mkswap");
+
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mkswap (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mkswap");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mkswap_L : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mkswap_L (value gv, value labelv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_mkswap_L (value gv, value labelv, value devicev)
+{
+  CAMLparam3 (gv, labelv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mkswap_L");
+
+  const char *label = String_val (labelv);
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mkswap_L (g, label, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mkswap_L");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mkswap_U : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mkswap_U (value gv, value uuidv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_mkswap_U (value gv, value uuidv, value devicev)
+{
+  CAMLparam3 (gv, uuidv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mkswap_U");
+
+  const char *uuid = String_val (uuidv);
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mkswap_U (g, uuid, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mkswap_U");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mkswap_file : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mkswap_file (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_mkswap_file (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mkswap_file");
+
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mkswap_file (g, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mkswap_file");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val modprobe : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_modprobe (value gv, value modulenamev);
+
+CAMLprim value
+ocaml_guestfs_modprobe (value gv, value modulenamev)
+{
+  CAMLparam2 (gv, modulenamev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("modprobe");
+
+  const char *modulename = String_val (modulenamev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_modprobe (g, modulename);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "modprobe");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mount : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mount (value gv, value devicev, value mountpointv);
+
+CAMLprim value
+ocaml_guestfs_mount (value gv, value devicev, value mountpointv)
+{
+  CAMLparam3 (gv, devicev, mountpointv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mount");
+
+  const char *device = String_val (devicev);
+  const char *mountpoint = String_val (mountpointv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mount (g, device, mountpoint);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mount");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mount_loop : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mount_loop (value gv, value filev, value mountpointv);
+
+CAMLprim value
+ocaml_guestfs_mount_loop (value gv, value filev, value mountpointv)
+{
+  CAMLparam3 (gv, filev, mountpointv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mount_loop");
+
+  const char *file = String_val (filev);
+  const char *mountpoint = String_val (mountpointv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mount_loop (g, file, mountpoint);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mount_loop");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mount_options : t -> string -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mount_options (value gv, value optionsv, value devicev, value mountpointv);
+
+CAMLprim value
+ocaml_guestfs_mount_options (value gv, value optionsv, value devicev, value mountpointv)
+{
+  CAMLparam4 (gv, optionsv, devicev, mountpointv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mount_options");
+
+  const char *options = String_val (optionsv);
+  const char *device = String_val (devicev);
+  const char *mountpoint = String_val (mountpointv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mount_options (g, options, device, mountpoint);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mount_options");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mount_ro : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mount_ro (value gv, value devicev, value mountpointv);
+
+CAMLprim value
+ocaml_guestfs_mount_ro (value gv, value devicev, value mountpointv)
+{
+  CAMLparam3 (gv, devicev, mountpointv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mount_ro");
+
+  const char *device = String_val (devicev);
+  const char *mountpoint = String_val (mountpointv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mount_ro (g, device, mountpoint);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mount_ro");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mount_vfs : t -> string -> string -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mount_vfs (value gv, value optionsv, value vfstypev, value devicev, value mountpointv);
+
+CAMLprim value
+ocaml_guestfs_mount_vfs (value gv, value optionsv, value vfstypev, value devicev, value mountpointv)
+{
+  CAMLparam5 (gv, optionsv, vfstypev, devicev, mountpointv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mount_vfs");
+
+  const char *options = String_val (optionsv);
+  const char *vfstype = String_val (vfstypev);
+  const char *device = String_val (devicev);
+  const char *mountpoint = String_val (mountpointv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mount_vfs");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mountpoints : t -> (string * string) list
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mountpoints (value gv);
+
+CAMLprim value
+ocaml_guestfs_mountpoints (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mountpoints");
+
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mountpoints (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "mountpoints");
+
+  rv = copy_table (r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mounts : t -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mounts (value gv);
+
+CAMLprim value
+ocaml_guestfs_mounts (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mounts");
+
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mounts (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "mounts");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val mv : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_mv (value gv, value srcv, value destv);
+
+CAMLprim value
+ocaml_guestfs_mv (value gv, value srcv, value destv)
+{
+  CAMLparam3 (gv, srcv, destv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("mv");
+
+  const char *src = String_val (srcv);
+  const char *dest = String_val (destv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_mv (g, src, dest);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "mv");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val ntfs_3g_probe : t -> bool -> string -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_ntfs_3g_probe (value gv, value rwv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_ntfs_3g_probe (value gv, value rwv, value devicev)
+{
+  CAMLparam3 (gv, rwv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("ntfs_3g_probe");
+
+  int rw = Bool_val (rwv);
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_ntfs_3g_probe (g, rw, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "ntfs_3g_probe");
+
+  rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val part_add : t -> string -> string -> int64 -> int64 -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_part_add (value gv, value devicev, value prlogexv, value startsectv, value endsectv);
+
+CAMLprim value
+ocaml_guestfs_part_add (value gv, value devicev, value prlogexv, value startsectv, value endsectv)
+{
+  CAMLparam5 (gv, devicev, prlogexv, startsectv, endsectv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("part_add");
+
+  const char *device = String_val (devicev);
+  const char *prlogex = String_val (prlogexv);
+  int64_t startsect = Int64_val (startsectv);
+  int64_t endsect = Int64_val (endsectv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_add (g, device, prlogex, startsect, endsect);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "part_add");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val part_disk : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_part_disk (value gv, value devicev, value parttypev);
+
+CAMLprim value
+ocaml_guestfs_part_disk (value gv, value devicev, value parttypev)
+{
+  CAMLparam3 (gv, devicev, parttypev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("part_disk");
+
+  const char *device = String_val (devicev);
+  const char *parttype = String_val (parttypev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_disk (g, device, parttype);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "part_disk");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val part_get_parttype : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_part_get_parttype (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_part_get_parttype (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("part_get_parttype");
+
+  const char *device = String_val (devicev);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_get_parttype (g, device);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "part_get_parttype");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val part_init : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_part_init (value gv, value devicev, value parttypev);
+
+CAMLprim value
+ocaml_guestfs_part_init (value gv, value devicev, value parttypev)
+{
+  CAMLparam3 (gv, devicev, parttypev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("part_init");
+
+  const char *device = String_val (devicev);
+  const char *parttype = String_val (parttypev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_init (g, device, parttype);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "part_init");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val part_list : t -> string -> partition array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_part_list (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_part_list (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("part_list");
+
+  const char *device = String_val (devicev);
+  struct guestfs_partition_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_list (g, device);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "part_list");
+
+  rv = copy_partition_list (r);
+  guestfs_free_partition_list (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val part_set_bootable : t -> string -> int -> bool -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_part_set_bootable (value gv, value devicev, value partnumv, value bootablev);
+
+CAMLprim value
+ocaml_guestfs_part_set_bootable (value gv, value devicev, value partnumv, value bootablev)
+{
+  CAMLparam4 (gv, devicev, partnumv, bootablev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("part_set_bootable");
+
+  const char *device = String_val (devicev);
+  int partnum = Int_val (partnumv);
+  int bootable = Bool_val (bootablev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_set_bootable (g, device, partnum, bootable);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "part_set_bootable");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val part_set_name : t -> string -> int -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_part_set_name (value gv, value devicev, value partnumv, value namev);
+
+CAMLprim value
+ocaml_guestfs_part_set_name (value gv, value devicev, value partnumv, value namev)
+{
+  CAMLparam4 (gv, devicev, partnumv, namev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("part_set_name");
+
+  const char *device = String_val (devicev);
+  int partnum = Int_val (partnumv);
+  const char *name = String_val (namev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_part_set_name (g, device, partnum, name);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "part_set_name");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val ping_daemon : t -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_ping_daemon (value gv);
+
+CAMLprim value
+ocaml_guestfs_ping_daemon (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("ping_daemon");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_ping_daemon (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "ping_daemon");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val pread : t -> string -> int -> int64 -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_pread (value gv, value pathv, value countv, value offsetv);
+
+CAMLprim value
+ocaml_guestfs_pread (value gv, value pathv, value countv, value offsetv)
+{
+  CAMLparam4 (gv, pathv, countv, offsetv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("pread");
+
+  const char *path = String_val (pathv);
+  int count = Int_val (countv);
+  int64_t offset = Int64_val (offsetv);
+  char *r;
+  size_t size;
+
+  caml_enter_blocking_section ();
+  r = guestfs_pread (g, path, count, offset, &size);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "pread");
+
+  rv = caml_alloc_string (size);
+  memcpy (String_val (rv), r, size);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val pvcreate : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_pvcreate (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_pvcreate (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("pvcreate");
+
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_pvcreate (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "pvcreate");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val pvremove : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_pvremove (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_pvremove (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("pvremove");
+
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_pvremove (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "pvremove");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val pvresize : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_pvresize (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_pvresize (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("pvresize");
+
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_pvresize (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "pvresize");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val pvs : t -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_pvs (value gv);
+
+CAMLprim value
+ocaml_guestfs_pvs (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("pvs");
+
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_pvs (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "pvs");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val pvs_full : t -> lvm_pv array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_pvs_full (value gv);
+
+CAMLprim value
+ocaml_guestfs_pvs_full (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("pvs_full");
+
+  struct guestfs_lvm_pv_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_pvs_full (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "pvs_full");
+
+  rv = copy_lvm_pv_list (r);
+  guestfs_free_lvm_pv_list (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val read_file : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_read_file (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_read_file (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("read_file");
+
+  const char *path = String_val (pathv);
+  char *r;
+  size_t size;
+
+  caml_enter_blocking_section ();
+  r = guestfs_read_file (g, path, &size);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "read_file");
+
+  rv = caml_alloc_string (size);
+  memcpy (String_val (rv), r, size);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val read_lines : t -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_read_lines (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_read_lines (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("read_lines");
+
+  const char *path = String_val (pathv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_read_lines (g, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "read_lines");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val readdir : t -> string -> dirent array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_readdir (value gv, value dirv);
+
+CAMLprim value
+ocaml_guestfs_readdir (value gv, value dirv)
+{
+  CAMLparam2 (gv, dirv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("readdir");
+
+  const char *dir = String_val (dirv);
+  struct guestfs_dirent_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_readdir (g, dir);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "readdir");
+
+  rv = copy_dirent_list (r);
+  guestfs_free_dirent_list (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val readlink : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_readlink (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_readlink (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("readlink");
+
+  const char *path = String_val (pathv);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_readlink (g, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "readlink");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val readlinklist : t -> string -> string array -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_readlinklist (value gv, value pathv, value namesv);
+
+CAMLprim value
+ocaml_guestfs_readlinklist (value gv, value pathv, value namesv)
+{
+  CAMLparam3 (gv, pathv, namesv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("readlinklist");
+
+  const char *path = String_val (pathv);
+  char **names = ocaml_guestfs_strings_val (g, namesv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_readlinklist (g, path, names);
+  caml_leave_blocking_section ();
+  ocaml_guestfs_free_strings (names);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "readlinklist");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val realpath : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_realpath (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_realpath (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("realpath");
+
+  const char *path = String_val (pathv);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_realpath (g, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "realpath");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val removexattr : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_removexattr (value gv, value xattrv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_removexattr (value gv, value xattrv, value pathv)
+{
+  CAMLparam3 (gv, xattrv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("removexattr");
+
+  const char *xattr = String_val (xattrv);
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_removexattr (g, xattr, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "removexattr");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val resize2fs : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_resize2fs (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_resize2fs (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("resize2fs");
+
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_resize2fs (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "resize2fs");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val rm : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_rm (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_rm (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("rm");
+
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_rm (g, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "rm");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val rm_rf : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_rm_rf (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_rm_rf (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("rm_rf");
+
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_rm_rf (g, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "rm_rf");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val rmdir : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_rmdir (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_rmdir (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("rmdir");
+
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_rmdir (g, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "rmdir");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val rmmountpoint : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_rmmountpoint (value gv, value exemptpathv);
+
+CAMLprim value
+ocaml_guestfs_rmmountpoint (value gv, value exemptpathv)
+{
+  CAMLparam2 (gv, exemptpathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("rmmountpoint");
+
+  const char *exemptpath = String_val (exemptpathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_rmmountpoint (g, exemptpath);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "rmmountpoint");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val scrub_device : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_scrub_device (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_scrub_device (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("scrub_device");
+
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_scrub_device (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "scrub_device");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val scrub_file : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_scrub_file (value gv, value filev);
+
+CAMLprim value
+ocaml_guestfs_scrub_file (value gv, value filev)
+{
+  CAMLparam2 (gv, filev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("scrub_file");
+
+  const char *file = String_val (filev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_scrub_file (g, file);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "scrub_file");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val scrub_freespace : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_scrub_freespace (value gv, value dirv);
+
+CAMLprim value
+ocaml_guestfs_scrub_freespace (value gv, value dirv)
+{
+  CAMLparam2 (gv, dirv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("scrub_freespace");
+
+  const char *dir = String_val (dirv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_scrub_freespace (g, dir);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "scrub_freespace");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_append : t -> string option -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_set_append (value gv, value appendv);
+
+CAMLprim value
+ocaml_guestfs_set_append (value gv, value appendv)
+{
+  CAMLparam2 (gv, appendv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_append");
+
+  const char *append =
+    appendv != Val_int (0) ? String_val (Field (appendv, 0)) : NULL;
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_set_append (g, append);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_append");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_autosync : t -> bool -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_set_autosync (value gv, value autosyncv);
+
+CAMLprim value
+ocaml_guestfs_set_autosync (value gv, value autosyncv)
+{
+  CAMLparam2 (gv, autosyncv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_autosync");
+
+  int autosync = Bool_val (autosyncv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_set_autosync (g, autosync);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_autosync");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_direct : t -> bool -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_set_direct (value gv, value directv);
+
+CAMLprim value
+ocaml_guestfs_set_direct (value gv, value directv)
+{
+  CAMLparam2 (gv, directv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_direct");
+
+  int direct = Bool_val (directv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_set_direct (g, direct);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_direct");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_e2label : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_set_e2label (value gv, value devicev, value labelv);
+
+CAMLprim value
+ocaml_guestfs_set_e2label (value gv, value devicev, value labelv)
+{
+  CAMLparam3 (gv, devicev, labelv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_e2label");
+
+  const char *device = String_val (devicev);
+  const char *label = String_val (labelv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_set_e2label (g, device, label);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_e2label");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_e2uuid : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_set_e2uuid (value gv, value devicev, value uuidv);
+
+CAMLprim value
+ocaml_guestfs_set_e2uuid (value gv, value devicev, value uuidv)
+{
+  CAMLparam3 (gv, devicev, uuidv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_e2uuid");
+
+  const char *device = String_val (devicev);
+  const char *uuid = String_val (uuidv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_set_e2uuid (g, device, uuid);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_e2uuid");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_memsize : t -> int -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_set_memsize (value gv, value memsizev);
+
+CAMLprim value
+ocaml_guestfs_set_memsize (value gv, value memsizev)
+{
+  CAMLparam2 (gv, memsizev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_memsize");
+
+  int memsize = Int_val (memsizev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_set_memsize (g, memsize);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_memsize");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_path : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_set_path (value gv, value searchpathv);
+
+CAMLprim value
+ocaml_guestfs_set_path (value gv, value searchpathv)
+{
+  CAMLparam2 (gv, searchpathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_path");
+
+  const char *searchpath = String_val (searchpathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_set_path (g, searchpath);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_path");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_qemu : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_set_qemu (value gv, value qemuv);
+
+CAMLprim value
+ocaml_guestfs_set_qemu (value gv, value qemuv)
+{
+  CAMLparam2 (gv, qemuv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_qemu");
+
+  const char *qemu = String_val (qemuv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_set_qemu (g, qemu);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_qemu");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_recovery_proc : t -> bool -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_set_recovery_proc (value gv, value recoveryprocv);
+
+CAMLprim value
+ocaml_guestfs_set_recovery_proc (value gv, value recoveryprocv)
+{
+  CAMLparam2 (gv, recoveryprocv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_recovery_proc");
+
+  int recoveryproc = Bool_val (recoveryprocv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_set_recovery_proc (g, recoveryproc);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_recovery_proc");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_selinux : t -> bool -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_set_selinux (value gv, value selinuxv);
+
+CAMLprim value
+ocaml_guestfs_set_selinux (value gv, value selinuxv)
+{
+  CAMLparam2 (gv, selinuxv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_selinux");
+
+  int selinux = Bool_val (selinuxv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_set_selinux (g, selinux);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_selinux");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_trace : t -> bool -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_set_trace (value gv, value tracev);
+
+CAMLprim value
+ocaml_guestfs_set_trace (value gv, value tracev)
+{
+  CAMLparam2 (gv, tracev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_trace");
+
+  int trace = Bool_val (tracev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_set_trace (g, trace);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_trace");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_verbose : t -> bool -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_set_verbose (value gv, value verbosev);
+
+CAMLprim value
+ocaml_guestfs_set_verbose (value gv, value verbosev)
+{
+  CAMLparam2 (gv, verbosev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_verbose");
+
+  int verbose = Bool_val (verbosev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_set_verbose (g, verbose);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_verbose");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val setcon : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_setcon (value gv, value contextv);
+
+CAMLprim value
+ocaml_guestfs_setcon (value gv, value contextv)
+{
+  CAMLparam2 (gv, contextv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("setcon");
+
+  const char *context = String_val (contextv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_setcon (g, context);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "setcon");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val setxattr : t -> string -> string -> int -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_setxattr (value gv, value xattrv, value valv, value vallenv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_setxattr (value gv, value xattrv, value valv, value vallenv, value pathv)
+{
+  CAMLparam5 (gv, xattrv, valv, vallenv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("setxattr");
+
+  const char *xattr = String_val (xattrv);
+  const char *val = String_val (valv);
+  int vallen = Int_val (vallenv);
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_setxattr (g, xattr, val, vallen, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "setxattr");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val sfdisk : t -> string -> int -> int -> int -> string array -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_sfdisk (value gv, value devicev, value cylsv, value headsv, value sectorsv, value linesv);
+
 CAMLprim value
 ocaml_guestfs_sfdisk (value gv, value devicev, value cylsv, value headsv, value sectorsv, value linesv)
 {
@@ -2632,7 +6490,7 @@ ocaml_guestfs_sfdisk (value gv, value devicev, value cylsv, value headsv, value 
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("sfdisk: used handle after closing it");
+    ocaml_guestfs_raise_closed ("sfdisk");
 
   const char *device = String_val (devicev);
   int cyls = Int_val (cylsv);
@@ -2652,1326 +6510,52 @@ ocaml_guestfs_sfdisk (value gv, value devicev, value cylsv, value headsv, value 
   CAMLreturn (rv);
 }
 
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_sfdisk_byte (value *argv, int argn);
 CAMLprim value
 ocaml_guestfs_sfdisk_byte (value *argv, int argn)
 {
   return ocaml_guestfs_sfdisk (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4]);
 }
 
+/* Automatically generated wrapper for function
+ * val sfdiskM : t -> string -> string array -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_sfdiskM (value gv, value devicev, value linesv);
+
 CAMLprim value
-ocaml_guestfs_write_file (value gv, value pathv, value contentv, value sizev)
+ocaml_guestfs_sfdiskM (value gv, value devicev, value linesv)
 {
-  CAMLparam4 (gv, pathv, contentv, sizev);
+  CAMLparam3 (gv, devicev, linesv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("write_file: used handle after closing it");
-
-  const char *path = String_val (pathv);
-  const char *content = String_val (contentv);
-  int size = Int_val (sizev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_write_file (g, path, content, size);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "write_file");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_umount (value gv, value pathordevicev)
-{
-  CAMLparam2 (gv, pathordevicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("umount: used handle after closing it");
-
-  const char *pathordevice = String_val (pathordevicev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_umount (g, pathordevice);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "umount");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_mounts (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("mounts: used handle after closing it");
-
-  int i;
-  char **r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_mounts (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "mounts");
-
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_umount_all (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("umount_all: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_umount_all (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "umount_all");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_lvm_remove_all (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("lvm_remove_all: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_lvm_remove_all (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "lvm_remove_all");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_file (value gv, value pathv)
-{
-  CAMLparam2 (gv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("file: used handle after closing it");
-
-  const char *path = String_val (pathv);
-  char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_file (g, path);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "file");
-
-  rv = caml_copy_string (r);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_command (value gv, value argumentsv)
-{
-  CAMLparam2 (gv, argumentsv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("command: used handle after closing it");
-
-  char **arguments = ocaml_guestfs_strings_val (g, argumentsv);
-  char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_command (g, arguments);
-  caml_leave_blocking_section ();
-  ocaml_guestfs_free_strings (arguments);
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "command");
-
-  rv = caml_copy_string (r);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_command_lines (value gv, value argumentsv)
-{
-  CAMLparam2 (gv, argumentsv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("command_lines: used handle after closing it");
-
-  char **arguments = ocaml_guestfs_strings_val (g, argumentsv);
-  int i;
-  char **r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_command_lines (g, arguments);
-  caml_leave_blocking_section ();
-  ocaml_guestfs_free_strings (arguments);
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "command_lines");
-
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_stat (value gv, value pathv)
-{
-  CAMLparam2 (gv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("stat: used handle after closing it");
-
-  const char *path = String_val (pathv);
-  struct guestfs_stat *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_stat (g, path);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "stat");
-
-  rv = copy_stat (r);
-  guestfs_free_stat (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_lstat (value gv, value pathv)
-{
-  CAMLparam2 (gv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("lstat: used handle after closing it");
-
-  const char *path = String_val (pathv);
-  struct guestfs_stat *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_lstat (g, path);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "lstat");
-
-  rv = copy_stat (r);
-  guestfs_free_stat (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_statvfs (value gv, value pathv)
-{
-  CAMLparam2 (gv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("statvfs: used handle after closing it");
-
-  const char *path = String_val (pathv);
-  struct guestfs_statvfs *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_statvfs (g, path);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "statvfs");
-
-  rv = copy_statvfs (r);
-  guestfs_free_statvfs (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_tune2fs_l (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("tune2fs_l: used handle after closing it");
+    ocaml_guestfs_raise_closed ("sfdiskM");
 
   const char *device = String_val (devicev);
-  int i;
-  char **r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_tune2fs_l (g, device);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "tune2fs_l");
-
-  rv = copy_table (r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_blockdev_setro (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("blockdev_setro: used handle after closing it");
-
-  const char *device = String_val (devicev);
+  char **lines = ocaml_guestfs_strings_val (g, linesv);
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_blockdev_setro (g, device);
+  r = guestfs_sfdiskM (g, device, lines);
   caml_leave_blocking_section ();
+  ocaml_guestfs_free_strings (lines);
   if (r == -1)
-    ocaml_guestfs_raise_error (g, "blockdev_setro");
+    ocaml_guestfs_raise_error (g, "sfdiskM");
 
   rv = Val_unit;
   CAMLreturn (rv);
 }
 
-CAMLprim value
-ocaml_guestfs_blockdev_setrw (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("blockdev_setrw: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_blockdev_setrw (g, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "blockdev_setrw");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_blockdev_getro (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("blockdev_getro: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_blockdev_getro (g, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "blockdev_getro");
-
-  rv = Val_bool (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_blockdev_getss (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("blockdev_getss: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_blockdev_getss (g, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "blockdev_getss");
-
-  rv = Val_int (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_blockdev_getbsz (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("blockdev_getbsz: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_blockdev_getbsz (g, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "blockdev_getbsz");
-
-  rv = Val_int (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_blockdev_setbsz (value gv, value devicev, value blocksizev)
-{
-  CAMLparam3 (gv, devicev, blocksizev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("blockdev_setbsz: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  int blocksize = Int_val (blocksizev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_blockdev_setbsz (g, device, blocksize);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "blockdev_setbsz");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_blockdev_getsz (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("blockdev_getsz: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  int64_t r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_blockdev_getsz (g, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "blockdev_getsz");
-
-  rv = caml_copy_int64 (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_blockdev_getsize64 (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("blockdev_getsize64: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  int64_t r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_blockdev_getsize64 (g, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "blockdev_getsize64");
-
-  rv = caml_copy_int64 (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_blockdev_flushbufs (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("blockdev_flushbufs: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_blockdev_flushbufs (g, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "blockdev_flushbufs");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_blockdev_rereadpt (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("blockdev_rereadpt: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_blockdev_rereadpt (g, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "blockdev_rereadpt");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_upload (value gv, value filenamev, value remotefilenamev)
-{
-  CAMLparam3 (gv, filenamev, remotefilenamev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("upload: used handle after closing it");
-
-  const char *filename = String_val (filenamev);
-  const char *remotefilename = String_val (remotefilenamev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_upload (g, filename, remotefilename);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "upload");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_download (value gv, value remotefilenamev, value filenamev)
-{
-  CAMLparam3 (gv, remotefilenamev, filenamev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("download: used handle after closing it");
-
-  const char *remotefilename = String_val (remotefilenamev);
-  const char *filename = String_val (filenamev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_download (g, remotefilename, filename);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "download");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_checksum (value gv, value csumtypev, value pathv)
-{
-  CAMLparam3 (gv, csumtypev, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("checksum: used handle after closing it");
-
-  const char *csumtype = String_val (csumtypev);
-  const char *path = String_val (pathv);
-  char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_checksum (g, csumtype, path);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "checksum");
-
-  rv = caml_copy_string (r);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_tar_in (value gv, value tarfilev, value directoryv)
-{
-  CAMLparam3 (gv, tarfilev, directoryv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("tar_in: used handle after closing it");
-
-  const char *tarfile = String_val (tarfilev);
-  const char *directory = String_val (directoryv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_tar_in (g, tarfile, directory);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "tar_in");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_tar_out (value gv, value directoryv, value tarfilev)
-{
-  CAMLparam3 (gv, directoryv, tarfilev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("tar_out: used handle after closing it");
-
-  const char *directory = String_val (directoryv);
-  const char *tarfile = String_val (tarfilev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_tar_out (g, directory, tarfile);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "tar_out");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_tgz_in (value gv, value tarballv, value directoryv)
-{
-  CAMLparam3 (gv, tarballv, directoryv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("tgz_in: used handle after closing it");
-
-  const char *tarball = String_val (tarballv);
-  const char *directory = String_val (directoryv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_tgz_in (g, tarball, directory);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "tgz_in");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_tgz_out (value gv, value directoryv, value tarballv)
-{
-  CAMLparam3 (gv, directoryv, tarballv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("tgz_out: used handle after closing it");
-
-  const char *directory = String_val (directoryv);
-  const char *tarball = String_val (tarballv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_tgz_out (g, directory, tarball);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "tgz_out");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_mount_ro (value gv, value devicev, value mountpointv)
-{
-  CAMLparam3 (gv, devicev, mountpointv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("mount_ro: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  const char *mountpoint = String_val (mountpointv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_mount_ro (g, device, mountpoint);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "mount_ro");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_mount_options (value gv, value optionsv, value devicev, value mountpointv)
-{
-  CAMLparam4 (gv, optionsv, devicev, mountpointv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("mount_options: used handle after closing it");
-
-  const char *options = String_val (optionsv);
-  const char *device = String_val (devicev);
-  const char *mountpoint = String_val (mountpointv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_mount_options (g, options, device, mountpoint);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "mount_options");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_mount_vfs (value gv, value optionsv, value vfstypev, value devicev, value mountpointv)
-{
-  CAMLparam5 (gv, optionsv, vfstypev, devicev, mountpointv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("mount_vfs: used handle after closing it");
-
-  const char *options = String_val (optionsv);
-  const char *vfstype = String_val (vfstypev);
-  const char *device = String_val (devicev);
-  const char *mountpoint = String_val (mountpointv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "mount_vfs");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_debug (value gv, value subcmdv, value extraargsv)
-{
-  CAMLparam3 (gv, subcmdv, extraargsv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("debug: used handle after closing it");
-
-  const char *subcmd = String_val (subcmdv);
-  char **extraargs = ocaml_guestfs_strings_val (g, extraargsv);
-  char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_debug (g, subcmd, extraargs);
-  caml_leave_blocking_section ();
-  ocaml_guestfs_free_strings (extraargs);
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "debug");
-
-  rv = caml_copy_string (r);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_lvremove (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("lvremove: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_lvremove (g, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "lvremove");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_vgremove (value gv, value vgnamev)
-{
-  CAMLparam2 (gv, vgnamev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("vgremove: used handle after closing it");
-
-  const char *vgname = String_val (vgnamev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_vgremove (g, vgname);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "vgremove");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_pvremove (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("pvremove: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_pvremove (g, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "pvremove");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_set_e2label (value gv, value devicev, value labelv)
-{
-  CAMLparam3 (gv, devicev, labelv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("set_e2label: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  const char *label = String_val (labelv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_set_e2label (g, device, label);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "set_e2label");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_get_e2label (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("get_e2label: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_get_e2label (g, device);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "get_e2label");
-
-  rv = caml_copy_string (r);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_set_e2uuid (value gv, value devicev, value uuidv)
-{
-  CAMLparam3 (gv, devicev, uuidv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("set_e2uuid: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  const char *uuid = String_val (uuidv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_set_e2uuid (g, device, uuid);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "set_e2uuid");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_get_e2uuid (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("get_e2uuid: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_get_e2uuid (g, device);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "get_e2uuid");
-
-  rv = caml_copy_string (r);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_fsck (value gv, value fstypev, value devicev)
-{
-  CAMLparam3 (gv, fstypev, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("fsck: used handle after closing it");
-
-  const char *fstype = String_val (fstypev);
-  const char *device = String_val (devicev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_fsck (g, fstype, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "fsck");
-
-  rv = Val_int (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_zero (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("zero: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_zero (g, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "zero");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_grub_install (value gv, value rootv, value devicev)
-{
-  CAMLparam3 (gv, rootv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("grub_install: used handle after closing it");
-
-  const char *root = String_val (rootv);
-  const char *device = String_val (devicev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_grub_install (g, root, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "grub_install");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_cp (value gv, value srcv, value destv)
-{
-  CAMLparam3 (gv, srcv, destv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("cp: used handle after closing it");
-
-  const char *src = String_val (srcv);
-  const char *dest = String_val (destv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_cp (g, src, dest);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "cp");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_cp_a (value gv, value srcv, value destv)
-{
-  CAMLparam3 (gv, srcv, destv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("cp_a: used handle after closing it");
-
-  const char *src = String_val (srcv);
-  const char *dest = String_val (destv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_cp_a (g, src, dest);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "cp_a");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_mv (value gv, value srcv, value destv)
-{
-  CAMLparam3 (gv, srcv, destv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("mv: used handle after closing it");
-
-  const char *src = String_val (srcv);
-  const char *dest = String_val (destv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_mv (g, src, dest);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "mv");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_drop_caches (value gv, value whattodropv)
-{
-  CAMLparam2 (gv, whattodropv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("drop_caches: used handle after closing it");
-
-  int whattodrop = Int_val (whattodropv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_drop_caches (g, whattodrop);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "drop_caches");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_dmesg (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("dmesg: used handle after closing it");
-
-  char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_dmesg (g);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "dmesg");
-
-  rv = caml_copy_string (r);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_ping_daemon (value gv)
-{
-  CAMLparam1 (gv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("ping_daemon: used handle after closing it");
-
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_ping_daemon (g);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "ping_daemon");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_equal (value gv, value file1v, value file2v)
-{
-  CAMLparam3 (gv, file1v, file2v);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("equal: used handle after closing it");
-
-  const char *file1 = String_val (file1v);
-  const char *file2 = String_val (file2v);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_equal (g, file1, file2);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "equal");
-
-  rv = Val_bool (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_strings (value gv, value pathv)
-{
-  CAMLparam2 (gv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("strings: used handle after closing it");
-
-  const char *path = String_val (pathv);
-  int i;
-  char **r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_strings (g, path);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "strings");
-
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_strings_e (value gv, value encodingv, value pathv)
-{
-  CAMLparam3 (gv, encodingv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("strings_e: used handle after closing it");
-
-  const char *encoding = String_val (encodingv);
-  const char *path = String_val (pathv);
-  int i;
-  char **r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_strings_e (g, encoding, path);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "strings_e");
-
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_hexdump (value gv, value pathv)
-{
-  CAMLparam2 (gv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("hexdump: used handle after closing it");
-
-  const char *path = String_val (pathv);
-  char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_hexdump (g, path);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "hexdump");
-
-  rv = caml_copy_string (r);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_zerofree (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("zerofree: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_zerofree (g, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "zerofree");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_pvresize (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("pvresize: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_pvresize (g, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "pvresize");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
+/* Automatically generated wrapper for function
+ * val sfdisk_N : t -> string -> int -> int -> int -> int -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_sfdisk_N (value gv, value devicev, value partnumv, value cylsv, value headsv, value sectorsv, value linev);
 
 CAMLprim value
 ocaml_guestfs_sfdisk_N (value gv, value devicev, value partnumv, value cylsv, value headsv, value sectorsv, value linev)
@@ -3982,7 +6566,7 @@ ocaml_guestfs_sfdisk_N (value gv, value devicev, value partnumv, value cylsv, va
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("sfdisk_N: used handle after closing it");
+    ocaml_guestfs_raise_closed ("sfdisk_N");
 
   const char *device = String_val (devicev);
   int partnum = Int_val (partnumv);
@@ -4002,59 +6586,20 @@ ocaml_guestfs_sfdisk_N (value gv, value devicev, value partnumv, value cylsv, va
   CAMLreturn (rv);
 }
 
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_sfdisk_N_byte (value *argv, int argn);
 CAMLprim value
 ocaml_guestfs_sfdisk_N_byte (value *argv, int argn)
 {
   return ocaml_guestfs_sfdisk_N (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
 }
 
-CAMLprim value
-ocaml_guestfs_sfdisk_l (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
+/* Automatically generated wrapper for function
+ * val sfdisk_disk_geometry : t -> string -> string
+ */
 
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("sfdisk_l: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_sfdisk_l (g, device);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "sfdisk_l");
-
-  rv = caml_copy_string (r);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_sfdisk_kernel_geometry (value gv, value devicev)
-{
-  CAMLparam2 (gv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("sfdisk_kernel_geometry: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_sfdisk_kernel_geometry (g, device);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "sfdisk_kernel_geometry");
-
-  rv = caml_copy_string (r);
-  free (r);
-  CAMLreturn (rv);
-}
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_sfdisk_disk_geometry (value gv, value devicev);
 
 CAMLprim value
 ocaml_guestfs_sfdisk_disk_geometry (value gv, value devicev)
@@ -4064,7 +6609,7 @@ ocaml_guestfs_sfdisk_disk_geometry (value gv, value devicev)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("sfdisk_disk_geometry: used handle after closing it");
+    ocaml_guestfs_raise_closed ("sfdisk_disk_geometry");
 
   const char *device = String_val (devicev);
   char *r;
@@ -4080,196 +6625,74 @@ ocaml_guestfs_sfdisk_disk_geometry (value gv, value devicev)
   CAMLreturn (rv);
 }
 
-CAMLprim value
-ocaml_guestfs_vg_activate_all (value gv, value activatev)
-{
-  CAMLparam2 (gv, activatev);
-  CAMLlocal1 (rv);
+/* Automatically generated wrapper for function
+ * val sfdisk_kernel_geometry : t -> string -> string
+ */
 
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("vg_activate_all: used handle after closing it");
-
-  int activate = Bool_val (activatev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_vg_activate_all (g, activate);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "vg_activate_all");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_sfdisk_kernel_geometry (value gv, value devicev);
 
 CAMLprim value
-ocaml_guestfs_vg_activate (value gv, value activatev, value volgroupsv)
-{
-  CAMLparam3 (gv, activatev, volgroupsv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("vg_activate: used handle after closing it");
-
-  int activate = Bool_val (activatev);
-  char **volgroups = ocaml_guestfs_strings_val (g, volgroupsv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_vg_activate (g, activate, volgroups);
-  caml_leave_blocking_section ();
-  ocaml_guestfs_free_strings (volgroups);
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "vg_activate");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_lvresize (value gv, value devicev, value mbytesv)
-{
-  CAMLparam3 (gv, devicev, mbytesv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("lvresize: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  int mbytes = Int_val (mbytesv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_lvresize (g, device, mbytes);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "lvresize");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_resize2fs (value gv, value devicev)
+ocaml_guestfs_sfdisk_kernel_geometry (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("resize2fs: used handle after closing it");
+    ocaml_guestfs_raise_closed ("sfdisk_kernel_geometry");
 
   const char *device = String_val (devicev);
-  int r;
+  char *r;
 
   caml_enter_blocking_section ();
-  r = guestfs_resize2fs (g, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "resize2fs");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_find (value gv, value directoryv)
-{
-  CAMLparam2 (gv, directoryv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("find: used handle after closing it");
-
-  const char *directory = String_val (directoryv);
-  int i;
-  char **r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_find (g, directory);
+  r = guestfs_sfdisk_kernel_geometry (g, device);
   caml_leave_blocking_section ();
   if (r == NULL)
-    ocaml_guestfs_raise_error (g, "find");
+    ocaml_guestfs_raise_error (g, "sfdisk_kernel_geometry");
 
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  rv = caml_copy_string (r);
   free (r);
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val sfdisk_l : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_sfdisk_l (value gv, value devicev);
+
 CAMLprim value
-ocaml_guestfs_e2fsck_f (value gv, value devicev)
+ocaml_guestfs_sfdisk_l (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("e2fsck_f: used handle after closing it");
+    ocaml_guestfs_raise_closed ("sfdisk_l");
 
   const char *device = String_val (devicev);
-  int r;
+  char *r;
 
   caml_enter_blocking_section ();
-  r = guestfs_e2fsck_f (g, device);
+  r = guestfs_sfdisk_l (g, device);
   caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "e2fsck_f");
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "sfdisk_l");
 
-  rv = Val_unit;
+  rv = caml_copy_string (r);
+  free (r);
   CAMLreturn (rv);
 }
 
-CAMLprim value
-ocaml_guestfs_sleep (value gv, value secsv)
-{
-  CAMLparam2 (gv, secsv);
-  CAMLlocal1 (rv);
+/* Automatically generated wrapper for function
+ * val sh : t -> string -> string
+ */
 
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("sleep: used handle after closing it");
-
-  int secs = Int_val (secsv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_sleep (g, secs);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "sleep");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_ntfs_3g_probe (value gv, value rwv, value devicev)
-{
-  CAMLparam3 (gv, rwv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("ntfs_3g_probe: used handle after closing it");
-
-  int rw = Bool_val (rwv);
-  const char *device = String_val (devicev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_ntfs_3g_probe (g, rw, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "ntfs_3g_probe");
-
-  rv = Val_int (r);
-  CAMLreturn (rv);
-}
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_sh (value gv, value commandv);
 
 CAMLprim value
 ocaml_guestfs_sh (value gv, value commandv)
@@ -4279,7 +6702,7 @@ ocaml_guestfs_sh (value gv, value commandv)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("sh: used handle after closing it");
+    ocaml_guestfs_raise_closed ("sh");
 
   const char *command = String_val (commandv);
   char *r;
@@ -4295,6 +6718,13 @@ ocaml_guestfs_sh (value gv, value commandv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val sh_lines : t -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_sh_lines (value gv, value commandv);
+
 CAMLprim value
 ocaml_guestfs_sh_lines (value gv, value commandv)
 {
@@ -4303,7 +6733,7 @@ ocaml_guestfs_sh_lines (value gv, value commandv)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("sh_lines: used handle after closing it");
+    ocaml_guestfs_raise_closed ("sh_lines");
 
   const char *command = String_val (commandv);
   int i;
@@ -4321,25 +6751,124 @@ ocaml_guestfs_sh_lines (value gv, value commandv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val sleep : t -> int -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_sleep (value gv, value secsv);
+
 CAMLprim value
-ocaml_guestfs_glob_expand (value gv, value patternv)
+ocaml_guestfs_sleep (value gv, value secsv)
 {
-  CAMLparam2 (gv, patternv);
+  CAMLparam2 (gv, secsv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("glob_expand: used handle after closing it");
+    ocaml_guestfs_raise_closed ("sleep");
 
-  const char *pattern = String_val (patternv);
+  int secs = Int_val (secsv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_sleep (g, secs);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "sleep");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val stat : t -> string -> stat
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_stat (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_stat (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("stat");
+
+  const char *path = String_val (pathv);
+  struct guestfs_stat *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_stat (g, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "stat");
+
+  rv = copy_stat (r);
+  guestfs_free_stat (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val statvfs : t -> string -> statvfs
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_statvfs (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_statvfs (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("statvfs");
+
+  const char *path = String_val (pathv);
+  struct guestfs_statvfs *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_statvfs (g, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "statvfs");
+
+  rv = copy_statvfs (r);
+  guestfs_free_statvfs (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val strings : t -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_strings (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_strings (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("strings");
+
+  const char *path = String_val (pathv);
   int i;
   char **r;
 
   caml_enter_blocking_section ();
-  r = guestfs_glob_expand (g, pattern);
+  r = guestfs_strings (g, path);
   caml_leave_blocking_section ();
   if (r == NULL)
-    ocaml_guestfs_raise_error (g, "glob_expand");
+    ocaml_guestfs_raise_error (g, "strings");
 
   rv = caml_copy_string_array ((const char **) r);
   for (i = 0; r[i] != NULL; ++i) free (r[i]);
@@ -4347,220 +6876,315 @@ ocaml_guestfs_glob_expand (value gv, value patternv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val strings_e : t -> string -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_strings_e (value gv, value encodingv, value pathv);
+
 CAMLprim value
-ocaml_guestfs_scrub_device (value gv, value devicev)
+ocaml_guestfs_strings_e (value gv, value encodingv, value pathv)
+{
+  CAMLparam3 (gv, encodingv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("strings_e");
+
+  const char *encoding = String_val (encodingv);
+  const char *path = String_val (pathv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_strings_e (g, encoding, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "strings_e");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val swapoff_device : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_swapoff_device (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_swapoff_device (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("scrub_device: used handle after closing it");
+    ocaml_guestfs_raise_closed ("swapoff_device");
 
   const char *device = String_val (devicev);
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_scrub_device (g, device);
+  r = guestfs_swapoff_device (g, device);
   caml_leave_blocking_section ();
   if (r == -1)
-    ocaml_guestfs_raise_error (g, "scrub_device");
+    ocaml_guestfs_raise_error (g, "swapoff_device");
 
   rv = Val_unit;
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val swapoff_file : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_swapoff_file (value gv, value filev);
+
 CAMLprim value
-ocaml_guestfs_scrub_file (value gv, value filev)
+ocaml_guestfs_swapoff_file (value gv, value filev)
 {
   CAMLparam2 (gv, filev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("scrub_file: used handle after closing it");
+    ocaml_guestfs_raise_closed ("swapoff_file");
 
   const char *file = String_val (filev);
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_scrub_file (g, file);
+  r = guestfs_swapoff_file (g, file);
   caml_leave_blocking_section ();
   if (r == -1)
-    ocaml_guestfs_raise_error (g, "scrub_file");
+    ocaml_guestfs_raise_error (g, "swapoff_file");
 
   rv = Val_unit;
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val swapoff_label : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_swapoff_label (value gv, value labelv);
+
 CAMLprim value
-ocaml_guestfs_scrub_freespace (value gv, value dirv)
+ocaml_guestfs_swapoff_label (value gv, value labelv)
 {
-  CAMLparam2 (gv, dirv);
+  CAMLparam2 (gv, labelv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("scrub_freespace: used handle after closing it");
+    ocaml_guestfs_raise_closed ("swapoff_label");
 
-  const char *dir = String_val (dirv);
+  const char *label = String_val (labelv);
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_scrub_freespace (g, dir);
+  r = guestfs_swapoff_label (g, label);
   caml_leave_blocking_section ();
   if (r == -1)
-    ocaml_guestfs_raise_error (g, "scrub_freespace");
+    ocaml_guestfs_raise_error (g, "swapoff_label");
 
   rv = Val_unit;
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val swapoff_uuid : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_swapoff_uuid (value gv, value uuidv);
+
 CAMLprim value
-ocaml_guestfs_mkdtemp (value gv, value templatev)
+ocaml_guestfs_swapoff_uuid (value gv, value uuidv)
 {
-  CAMLparam2 (gv, templatev);
+  CAMLparam2 (gv, uuidv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("mkdtemp: used handle after closing it");
+    ocaml_guestfs_raise_closed ("swapoff_uuid");
 
-  const char *template = String_val (templatev);
-  char *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_mkdtemp (g, template);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "mkdtemp");
-
-  rv = caml_copy_string (r);
-  free (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_wc_l (value gv, value pathv)
-{
-  CAMLparam2 (gv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("wc_l: used handle after closing it");
-
-  const char *path = String_val (pathv);
+  const char *uuid = String_val (uuidv);
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_wc_l (g, path);
+  r = guestfs_swapoff_uuid (g, uuid);
   caml_leave_blocking_section ();
   if (r == -1)
-    ocaml_guestfs_raise_error (g, "wc_l");
+    ocaml_guestfs_raise_error (g, "swapoff_uuid");
 
-  rv = Val_int (r);
+  rv = Val_unit;
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val swapon_device : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_swapon_device (value gv, value devicev);
+
 CAMLprim value
-ocaml_guestfs_wc_w (value gv, value pathv)
+ocaml_guestfs_swapon_device (value gv, value devicev)
 {
-  CAMLparam2 (gv, pathv);
+  CAMLparam2 (gv, devicev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("wc_w: used handle after closing it");
+    ocaml_guestfs_raise_closed ("swapon_device");
 
-  const char *path = String_val (pathv);
+  const char *device = String_val (devicev);
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_wc_w (g, path);
+  r = guestfs_swapon_device (g, device);
   caml_leave_blocking_section ();
   if (r == -1)
-    ocaml_guestfs_raise_error (g, "wc_w");
+    ocaml_guestfs_raise_error (g, "swapon_device");
 
-  rv = Val_int (r);
+  rv = Val_unit;
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val swapon_file : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_swapon_file (value gv, value filev);
+
 CAMLprim value
-ocaml_guestfs_wc_c (value gv, value pathv)
+ocaml_guestfs_swapon_file (value gv, value filev)
 {
-  CAMLparam2 (gv, pathv);
+  CAMLparam2 (gv, filev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("wc_c: used handle after closing it");
+    ocaml_guestfs_raise_closed ("swapon_file");
 
-  const char *path = String_val (pathv);
+  const char *file = String_val (filev);
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_wc_c (g, path);
+  r = guestfs_swapon_file (g, file);
   caml_leave_blocking_section ();
   if (r == -1)
-    ocaml_guestfs_raise_error (g, "wc_c");
+    ocaml_guestfs_raise_error (g, "swapon_file");
 
-  rv = Val_int (r);
+  rv = Val_unit;
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val swapon_label : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_swapon_label (value gv, value labelv);
+
 CAMLprim value
-ocaml_guestfs_head (value gv, value pathv)
+ocaml_guestfs_swapon_label (value gv, value labelv)
 {
-  CAMLparam2 (gv, pathv);
+  CAMLparam2 (gv, labelv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("head: used handle after closing it");
+    ocaml_guestfs_raise_closed ("swapon_label");
 
-  const char *path = String_val (pathv);
-  int i;
-  char **r;
+  const char *label = String_val (labelv);
+  int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_head (g, path);
+  r = guestfs_swapon_label (g, label);
   caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "head");
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "swapon_label");
 
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
+  rv = Val_unit;
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val swapon_uuid : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_swapon_uuid (value gv, value uuidv);
+
 CAMLprim value
-ocaml_guestfs_head_n (value gv, value nrlinesv, value pathv)
+ocaml_guestfs_swapon_uuid (value gv, value uuidv)
 {
-  CAMLparam3 (gv, nrlinesv, pathv);
+  CAMLparam2 (gv, uuidv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("head_n: used handle after closing it");
+    ocaml_guestfs_raise_closed ("swapon_uuid");
 
-  int nrlines = Int_val (nrlinesv);
-  const char *path = String_val (pathv);
-  int i;
-  char **r;
+  const char *uuid = String_val (uuidv);
+  int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_head_n (g, nrlines, path);
+  r = guestfs_swapon_uuid (g, uuid);
   caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "head_n");
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "swapon_uuid");
 
-  rv = caml_copy_string_array ((const char **) r);
-  for (i = 0; r[i] != NULL; ++i) free (r[i]);
-  free (r);
+  rv = Val_unit;
   CAMLreturn (rv);
 }
+
+/* Automatically generated wrapper for function
+ * val sync : t -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_sync (value gv);
+
+CAMLprim value
+ocaml_guestfs_sync (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("sync");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_sync (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "sync");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val tail : t -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_tail (value gv, value pathv);
 
 CAMLprim value
 ocaml_guestfs_tail (value gv, value pathv)
@@ -4570,7 +7194,7 @@ ocaml_guestfs_tail (value gv, value pathv)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("tail: used handle after closing it");
+    ocaml_guestfs_raise_closed ("tail");
 
   const char *path = String_val (pathv);
   int i;
@@ -4588,6 +7212,13 @@ ocaml_guestfs_tail (value gv, value pathv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val tail_n : t -> int -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_tail_n (value gv, value nrlinesv, value pathv);
+
 CAMLprim value
 ocaml_guestfs_tail_n (value gv, value nrlinesv, value pathv)
 {
@@ -4596,7 +7227,7 @@ ocaml_guestfs_tail_n (value gv, value nrlinesv, value pathv)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("tail_n: used handle after closing it");
+    ocaml_guestfs_raise_closed ("tail_n");
 
   int nrlines = Int_val (nrlinesv);
   const char *path = String_val (pathv);
@@ -4615,94 +7246,573 @@ ocaml_guestfs_tail_n (value gv, value nrlinesv, value pathv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val tar_in : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_tar_in (value gv, value tarfilev, value directoryv);
+
 CAMLprim value
-ocaml_guestfs_df (value gv)
+ocaml_guestfs_tar_in (value gv, value tarfilev, value directoryv)
+{
+  CAMLparam3 (gv, tarfilev, directoryv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("tar_in");
+
+  const char *tarfile = String_val (tarfilev);
+  const char *directory = String_val (directoryv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_tar_in (g, tarfile, directory);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "tar_in");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val tar_out : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_tar_out (value gv, value directoryv, value tarfilev);
+
+CAMLprim value
+ocaml_guestfs_tar_out (value gv, value directoryv, value tarfilev)
+{
+  CAMLparam3 (gv, directoryv, tarfilev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("tar_out");
+
+  const char *directory = String_val (directoryv);
+  const char *tarfile = String_val (tarfilev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_tar_out (g, directory, tarfile);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "tar_out");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val test0 : t -> string -> string option -> string array -> bool -> int -> int64 -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0 (value gv, value strv, value optstrv, value strlistv, value bv, value integerv, value integer64v, value fileinv, value fileoutv);
+
+CAMLprim value
+ocaml_guestfs_test0 (value gv, value strv, value optstrv, value strlistv, value bv, value integerv, value integer64v, value fileinv, value fileoutv)
+{
+  CAMLparam5 (gv, strv, optstrv, strlistv, bv);
+  CAMLxparam4 (integerv, integer64v, fileinv, fileoutv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("test0");
+
+  const char *str = String_val (strv);
+  const char *optstr =
+    optstrv != Val_int (0) ? String_val (Field (optstrv, 0)) : NULL;
+  char **strlist = ocaml_guestfs_strings_val (g, strlistv);
+  int b = Bool_val (bv);
+  int integer = Int_val (integerv);
+  int64_t integer64 = Int64_val (integer64v);
+  const char *filein = String_val (fileinv);
+  const char *fileout = String_val (fileoutv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout);
+  caml_leave_blocking_section ();
+  ocaml_guestfs_free_strings (strlist);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "test0");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0_byte (value *argv, int argn);
+CAMLprim value
+ocaml_guestfs_test0_byte (value *argv, int argn)
+{
+  return ocaml_guestfs_test0 (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7]);
+}
+
+/* Automatically generated wrapper for function
+ * val test0rbool : t -> string -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rbool (value gv, value valv);
+
+CAMLprim value
+ocaml_guestfs_test0rbool (value gv, value valv)
+{
+  CAMLparam2 (gv, valv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("test0rbool");
+
+  const char *val = String_val (valv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_test0rbool (g, val);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "test0rbool");
+
+  rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val test0rboolerr : t -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rboolerr (value gv);
+
+CAMLprim value
+ocaml_guestfs_test0rboolerr (value gv)
 {
   CAMLparam1 (gv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("df: used handle after closing it");
+    ocaml_guestfs_raise_closed ("test0rboolerr");
 
-  char *r;
+  int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_df (g);
+  r = guestfs_test0rboolerr (g);
   caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "df");
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "test0rboolerr");
 
-  rv = caml_copy_string (r);
-  free (r);
+  rv = Val_bool (r);
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val test0rconstoptstring : t -> string -> string option
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rconstoptstring (value gv, value valv);
+
 CAMLprim value
-ocaml_guestfs_df_h (value gv)
+ocaml_guestfs_test0rconstoptstring (value gv, value valv)
+{
+  CAMLparam2 (gv, valv);
+  CAMLlocal3 (rv, v, v2);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("test0rconstoptstring");
+
+  const char *val = String_val (valv);
+  const char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_test0rconstoptstring (g, val);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "test0rconstoptstring");
+
+  if (r) { /* Some string */
+    v = caml_alloc (1, 0);
+    v2 = caml_copy_string (r);
+    Store_field (v, 0, v2);
+  } else /* None */
+    v = Val_int (0);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val test0rconstoptstringerr : t -> string option
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rconstoptstringerr (value gv);
+
+CAMLprim value
+ocaml_guestfs_test0rconstoptstringerr (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal3 (rv, v, v2);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("test0rconstoptstringerr");
+
+  const char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_test0rconstoptstringerr (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "test0rconstoptstringerr");
+
+  if (r) { /* Some string */
+    v = caml_alloc (1, 0);
+    v2 = caml_copy_string (r);
+    Store_field (v, 0, v2);
+  } else /* None */
+    v = Val_int (0);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val test0rconststring : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rconststring (value gv, value valv);
+
+CAMLprim value
+ocaml_guestfs_test0rconststring (value gv, value valv)
+{
+  CAMLparam2 (gv, valv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("test0rconststring");
+
+  const char *val = String_val (valv);
+  const char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_test0rconststring (g, val);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "test0rconststring");
+
+  rv = caml_copy_string (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val test0rconststringerr : t -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rconststringerr (value gv);
+
+CAMLprim value
+ocaml_guestfs_test0rconststringerr (value gv)
 {
   CAMLparam1 (gv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("df_h: used handle after closing it");
+    ocaml_guestfs_raise_closed ("test0rconststringerr");
 
-  char *r;
+  const char *r;
 
   caml_enter_blocking_section ();
-  r = guestfs_df_h (g);
+  r = guestfs_test0rconststringerr (g);
   caml_leave_blocking_section ();
   if (r == NULL)
-    ocaml_guestfs_raise_error (g, "df_h");
+    ocaml_guestfs_raise_error (g, "test0rconststringerr");
 
   rv = caml_copy_string (r);
-  free (r);
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val test0rhashtable : t -> string -> (string * string) list
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rhashtable (value gv, value valv);
+
 CAMLprim value
-ocaml_guestfs_du (value gv, value pathv)
+ocaml_guestfs_test0rhashtable (value gv, value valv)
 {
-  CAMLparam2 (gv, pathv);
+  CAMLparam2 (gv, valv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("du: used handle after closing it");
+    ocaml_guestfs_raise_closed ("test0rhashtable");
 
-  const char *path = String_val (pathv);
+  const char *val = String_val (valv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_test0rhashtable (g, val);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "test0rhashtable");
+
+  rv = copy_table (r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val test0rhashtableerr : t -> (string * string) list
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rhashtableerr (value gv);
+
+CAMLprim value
+ocaml_guestfs_test0rhashtableerr (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("test0rhashtableerr");
+
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_test0rhashtableerr (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "test0rhashtableerr");
+
+  rv = copy_table (r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val test0rint : t -> string -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rint (value gv, value valv);
+
+CAMLprim value
+ocaml_guestfs_test0rint (value gv, value valv)
+{
+  CAMLparam2 (gv, valv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("test0rint");
+
+  const char *val = String_val (valv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_test0rint (g, val);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "test0rint");
+
+  rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val test0rint64 : t -> string -> int64
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rint64 (value gv, value valv);
+
+CAMLprim value
+ocaml_guestfs_test0rint64 (value gv, value valv)
+{
+  CAMLparam2 (gv, valv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("test0rint64");
+
+  const char *val = String_val (valv);
   int64_t r;
 
   caml_enter_blocking_section ();
-  r = guestfs_du (g, path);
+  r = guestfs_test0rint64 (g, val);
   caml_leave_blocking_section ();
   if (r == -1)
-    ocaml_guestfs_raise_error (g, "du");
+    ocaml_guestfs_raise_error (g, "test0rint64");
 
   rv = caml_copy_int64 (r);
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val test0rint64err : t -> int64
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rint64err (value gv);
+
 CAMLprim value
-ocaml_guestfs_initrd_list (value gv, value pathv)
+ocaml_guestfs_test0rint64err (value gv)
 {
-  CAMLparam2 (gv, pathv);
+  CAMLparam1 (gv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("initrd_list: used handle after closing it");
+    ocaml_guestfs_raise_closed ("test0rint64err");
 
-  const char *path = String_val (pathv);
+  int64_t r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_test0rint64err (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "test0rint64err");
+
+  rv = caml_copy_int64 (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val test0rinterr : t -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rinterr (value gv);
+
+CAMLprim value
+ocaml_guestfs_test0rinterr (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("test0rinterr");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_test0rinterr (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "test0rinterr");
+
+  rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val test0rstring : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rstring (value gv, value valv);
+
+CAMLprim value
+ocaml_guestfs_test0rstring (value gv, value valv)
+{
+  CAMLparam2 (gv, valv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("test0rstring");
+
+  const char *val = String_val (valv);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_test0rstring (g, val);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "test0rstring");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val test0rstringerr : t -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rstringerr (value gv);
+
+CAMLprim value
+ocaml_guestfs_test0rstringerr (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("test0rstringerr");
+
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_test0rstringerr (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "test0rstringerr");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val test0rstringlist : t -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rstringlist (value gv, value valv);
+
+CAMLprim value
+ocaml_guestfs_test0rstringlist (value gv, value valv)
+{
+  CAMLparam2 (gv, valv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("test0rstringlist");
+
+  const char *val = String_val (valv);
   int i;
   char **r;
 
   caml_enter_blocking_section ();
-  r = guestfs_initrd_list (g, path);
+  r = guestfs_test0rstringlist (g, val);
   caml_leave_blocking_section ();
   if (r == NULL)
-    ocaml_guestfs_raise_error (g, "initrd_list");
+    ocaml_guestfs_raise_error (g, "test0rstringlist");
 
   rv = caml_copy_string_array ((const char **) r);
   for (i = 0; r[i] != NULL; ++i) free (r[i]);
@@ -4710,202 +7820,352 @@ ocaml_guestfs_initrd_list (value gv, value pathv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val test0rstringlisterr : t -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rstringlisterr (value gv);
+
 CAMLprim value
-ocaml_guestfs_mount_loop (value gv, value filev, value mountpointv)
+ocaml_guestfs_test0rstringlisterr (value gv)
 {
-  CAMLparam3 (gv, filev, mountpointv);
+  CAMLparam1 (gv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("mount_loop: used handle after closing it");
+    ocaml_guestfs_raise_closed ("test0rstringlisterr");
 
-  const char *file = String_val (filev);
-  const char *mountpoint = String_val (mountpointv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_test0rstringlisterr (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "test0rstringlisterr");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val test0rstruct : t -> string -> lvm_pv
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rstruct (value gv, value valv);
+
+CAMLprim value
+ocaml_guestfs_test0rstruct (value gv, value valv)
+{
+  CAMLparam2 (gv, valv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("test0rstruct");
+
+  const char *val = String_val (valv);
+  struct guestfs_lvm_pv *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_test0rstruct (g, val);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "test0rstruct");
+
+  rv = copy_lvm_pv (r);
+  guestfs_free_lvm_pv (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val test0rstructerr : t -> lvm_pv
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rstructerr (value gv);
+
+CAMLprim value
+ocaml_guestfs_test0rstructerr (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("test0rstructerr");
+
+  struct guestfs_lvm_pv *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_test0rstructerr (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "test0rstructerr");
+
+  rv = copy_lvm_pv (r);
+  guestfs_free_lvm_pv (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val test0rstructlist : t -> string -> lvm_pv array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rstructlist (value gv, value valv);
+
+CAMLprim value
+ocaml_guestfs_test0rstructlist (value gv, value valv)
+{
+  CAMLparam2 (gv, valv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("test0rstructlist");
+
+  const char *val = String_val (valv);
+  struct guestfs_lvm_pv_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_test0rstructlist (g, val);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "test0rstructlist");
+
+  rv = copy_lvm_pv_list (r);
+  guestfs_free_lvm_pv_list (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val test0rstructlisterr : t -> lvm_pv array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_test0rstructlisterr (value gv);
+
+CAMLprim value
+ocaml_guestfs_test0rstructlisterr (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("test0rstructlisterr");
+
+  struct guestfs_lvm_pv_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_test0rstructlisterr (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "test0rstructlisterr");
+
+  rv = copy_lvm_pv_list (r);
+  guestfs_free_lvm_pv_list (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val tgz_in : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_tgz_in (value gv, value tarballv, value directoryv);
+
+CAMLprim value
+ocaml_guestfs_tgz_in (value gv, value tarballv, value directoryv)
+{
+  CAMLparam3 (gv, tarballv, directoryv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("tgz_in");
+
+  const char *tarball = String_val (tarballv);
+  const char *directory = String_val (directoryv);
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_mount_loop (g, file, mountpoint);
+  r = guestfs_tgz_in (g, tarball, directory);
   caml_leave_blocking_section ();
   if (r == -1)
-    ocaml_guestfs_raise_error (g, "mount_loop");
+    ocaml_guestfs_raise_error (g, "tgz_in");
 
   rv = Val_unit;
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val tgz_out : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_tgz_out (value gv, value directoryv, value tarballv);
+
 CAMLprim value
-ocaml_guestfs_mkswap (value gv, value devicev)
+ocaml_guestfs_tgz_out (value gv, value directoryv, value tarballv)
+{
+  CAMLparam3 (gv, directoryv, tarballv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("tgz_out");
+
+  const char *directory = String_val (directoryv);
+  const char *tarball = String_val (tarballv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_tgz_out (g, directory, tarball);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "tgz_out");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val touch : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_touch (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_touch (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("touch");
+
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_touch (g, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "touch");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val truncate : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_truncate (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_truncate (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("truncate");
+
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_truncate (g, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "truncate");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val truncate_size : t -> string -> int64 -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_truncate_size (value gv, value pathv, value sizev);
+
+CAMLprim value
+ocaml_guestfs_truncate_size (value gv, value pathv, value sizev)
+{
+  CAMLparam3 (gv, pathv, sizev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("truncate_size");
+
+  const char *path = String_val (pathv);
+  int64_t size = Int64_val (sizev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_truncate_size (g, path, size);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "truncate_size");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val tune2fs_l : t -> string -> (string * string) list
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_tune2fs_l (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_tune2fs_l (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("mkswap: used handle after closing it");
+    ocaml_guestfs_raise_closed ("tune2fs_l");
 
   const char *device = String_val (devicev);
-  int r;
+  int i;
+  char **r;
 
   caml_enter_blocking_section ();
-  r = guestfs_mkswap (g, device);
+  r = guestfs_tune2fs_l (g, device);
   caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "mkswap");
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "tune2fs_l");
 
-  rv = Val_unit;
+  rv = copy_table (r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
   CAMLreturn (rv);
 }
 
-CAMLprim value
-ocaml_guestfs_mkswap_L (value gv, value labelv, value devicev)
-{
-  CAMLparam3 (gv, labelv, devicev);
-  CAMLlocal1 (rv);
+/* Automatically generated wrapper for function
+ * val umask : t -> int -> int
+ */
 
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("mkswap_L: used handle after closing it");
-
-  const char *label = String_val (labelv);
-  const char *device = String_val (devicev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_mkswap_L (g, label, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "mkswap_L");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_mkswap_U (value gv, value uuidv, value devicev)
-{
-  CAMLparam3 (gv, uuidv, devicev);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("mkswap_U: used handle after closing it");
-
-  const char *uuid = String_val (uuidv);
-  const char *device = String_val (devicev);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_mkswap_U (g, uuid, device);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "mkswap_U");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_mknod (value gv, value modev, value devmajorv, value devminorv, value pathv)
-{
-  CAMLparam5 (gv, modev, devmajorv, devminorv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("mknod: used handle after closing it");
-
-  int mode = Int_val (modev);
-  int devmajor = Int_val (devmajorv);
-  int devminor = Int_val (devminorv);
-  const char *path = String_val (pathv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_mknod (g, mode, devmajor, devminor, path);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "mknod");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_mkfifo (value gv, value modev, value pathv)
-{
-  CAMLparam3 (gv, modev, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("mkfifo: used handle after closing it");
-
-  int mode = Int_val (modev);
-  const char *path = String_val (pathv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_mkfifo (g, mode, path);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "mkfifo");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_mknod_b (value gv, value modev, value devmajorv, value devminorv, value pathv)
-{
-  CAMLparam5 (gv, modev, devmajorv, devminorv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("mknod_b: used handle after closing it");
-
-  int mode = Int_val (modev);
-  int devmajor = Int_val (devmajorv);
-  int devminor = Int_val (devminorv);
-  const char *path = String_val (pathv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_mknod_b (g, mode, devmajor, devminor, path);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "mknod_b");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_mknod_c (value gv, value modev, value devmajorv, value devminorv, value pathv)
-{
-  CAMLparam5 (gv, modev, devmajorv, devminorv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("mknod_c: used handle after closing it");
-
-  int mode = Int_val (modev);
-  int devmajor = Int_val (devmajorv);
-  int devminor = Int_val (devminorv);
-  const char *path = String_val (pathv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_mknod_c (g, mode, devmajor, devminor, path);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "mknod_c");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_umask (value gv, value maskv);
 
 CAMLprim value
 ocaml_guestfs_umask (value gv, value maskv)
@@ -4915,7 +8175,7 @@ ocaml_guestfs_umask (value gv, value maskv)
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("umask: used handle after closing it");
+    ocaml_guestfs_raise_closed ("umask");
 
   int mask = Int_val (maskv);
   int r;
@@ -4930,71 +8190,756 @@ ocaml_guestfs_umask (value gv, value maskv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val umount : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_umount (value gv, value pathordevicev);
+
 CAMLprim value
-ocaml_guestfs_readdir (value gv, value dirv)
+ocaml_guestfs_umount (value gv, value pathordevicev)
 {
-  CAMLparam2 (gv, dirv);
+  CAMLparam2 (gv, pathordevicev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("readdir: used handle after closing it");
+    ocaml_guestfs_raise_closed ("umount");
 
-  const char *dir = String_val (dirv);
-  struct guestfs_dirent_list *r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_readdir (g, dir);
-  caml_leave_blocking_section ();
-  if (r == NULL)
-    ocaml_guestfs_raise_error (g, "readdir");
-
-  rv = copy_dirent_list (r);
-  guestfs_free_dirent_list (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_sfdiskM (value gv, value devicev, value linesv)
-{
-  CAMLparam3 (gv, devicev, linesv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("sfdiskM: used handle after closing it");
-
-  const char *device = String_val (devicev);
-  char **lines = ocaml_guestfs_strings_val (g, linesv);
+  const char *pathordevice = String_val (pathordevicev);
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_sfdiskM (g, device, lines);
+  r = guestfs_umount (g, pathordevice);
   caml_leave_blocking_section ();
-  ocaml_guestfs_free_strings (lines);
   if (r == -1)
-    ocaml_guestfs_raise_error (g, "sfdiskM");
+    ocaml_guestfs_raise_error (g, "umount");
 
   rv = Val_unit;
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val umount_all : t -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_umount_all (value gv);
+
 CAMLprim value
-ocaml_guestfs_zfile (value gv, value methodv, value pathv)
+ocaml_guestfs_umount_all (value gv)
 {
-  CAMLparam3 (gv, methodv, pathv);
+  CAMLparam1 (gv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("zfile: used handle after closing it");
+    ocaml_guestfs_raise_closed ("umount_all");
 
-  const char *method = String_val (methodv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_umount_all (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "umount_all");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val upload : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_upload (value gv, value filenamev, value remotefilenamev);
+
+CAMLprim value
+ocaml_guestfs_upload (value gv, value filenamev, value remotefilenamev)
+{
+  CAMLparam3 (gv, filenamev, remotefilenamev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("upload");
+
+  const char *filename = String_val (filenamev);
+  const char *remotefilename = String_val (remotefilenamev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_upload (g, filename, remotefilename);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "upload");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val utimens : t -> string -> int64 -> int64 -> int64 -> int64 -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_utimens (value gv, value pathv, value atsecsv, value atnsecsv, value mtsecsv, value mtnsecsv);
+
+CAMLprim value
+ocaml_guestfs_utimens (value gv, value pathv, value atsecsv, value atnsecsv, value mtsecsv, value mtnsecsv)
+{
+  CAMLparam5 (gv, pathv, atsecsv, atnsecsv, mtsecsv);
+  CAMLxparam1 (mtnsecsv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("utimens");
+
+  const char *path = String_val (pathv);
+  int64_t atsecs = Int64_val (atsecsv);
+  int64_t atnsecs = Int64_val (atnsecsv);
+  int64_t mtsecs = Int64_val (mtsecsv);
+  int64_t mtnsecs = Int64_val (mtnsecsv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_utimens (g, path, atsecs, atnsecs, mtsecs, mtnsecs);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "utimens");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_utimens_byte (value *argv, int argn);
+CAMLprim value
+ocaml_guestfs_utimens_byte (value *argv, int argn)
+{
+  return ocaml_guestfs_utimens (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4]);
+}
+
+/* Automatically generated wrapper for function
+ * val version : t -> version
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_version (value gv);
+
+CAMLprim value
+ocaml_guestfs_version (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("version");
+
+  struct guestfs_version *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_version (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "version");
+
+  rv = copy_version (r);
+  guestfs_free_version (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val vfs_type : t -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_vfs_type (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_vfs_type (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("vfs_type");
+
+  const char *device = String_val (devicev);
+  char *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_vfs_type (g, device);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "vfs_type");
+
+  rv = caml_copy_string (r);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val vg_activate : t -> bool -> string array -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_vg_activate (value gv, value activatev, value volgroupsv);
+
+CAMLprim value
+ocaml_guestfs_vg_activate (value gv, value activatev, value volgroupsv)
+{
+  CAMLparam3 (gv, activatev, volgroupsv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("vg_activate");
+
+  int activate = Bool_val (activatev);
+  char **volgroups = ocaml_guestfs_strings_val (g, volgroupsv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_vg_activate (g, activate, volgroups);
+  caml_leave_blocking_section ();
+  ocaml_guestfs_free_strings (volgroups);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "vg_activate");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val vg_activate_all : t -> bool -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_vg_activate_all (value gv, value activatev);
+
+CAMLprim value
+ocaml_guestfs_vg_activate_all (value gv, value activatev)
+{
+  CAMLparam2 (gv, activatev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("vg_activate_all");
+
+  int activate = Bool_val (activatev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_vg_activate_all (g, activate);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "vg_activate_all");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val vgcreate : t -> string -> string array -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_vgcreate (value gv, value volgroupv, value physvolsv);
+
+CAMLprim value
+ocaml_guestfs_vgcreate (value gv, value volgroupv, value physvolsv)
+{
+  CAMLparam3 (gv, volgroupv, physvolsv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("vgcreate");
+
+  const char *volgroup = String_val (volgroupv);
+  char **physvols = ocaml_guestfs_strings_val (g, physvolsv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_vgcreate (g, volgroup, physvols);
+  caml_leave_blocking_section ();
+  ocaml_guestfs_free_strings (physvols);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "vgcreate");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val vgremove : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_vgremove (value gv, value vgnamev);
+
+CAMLprim value
+ocaml_guestfs_vgremove (value gv, value vgnamev)
+{
+  CAMLparam2 (gv, vgnamev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("vgremove");
+
+  const char *vgname = String_val (vgnamev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_vgremove (g, vgname);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "vgremove");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val vgs : t -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_vgs (value gv);
+
+CAMLprim value
+ocaml_guestfs_vgs (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("vgs");
+
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_vgs (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "vgs");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val vgs_full : t -> lvm_vg array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_vgs_full (value gv);
+
+CAMLprim value
+ocaml_guestfs_vgs_full (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("vgs_full");
+
+  struct guestfs_lvm_vg_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_vgs_full (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "vgs_full");
+
+  rv = copy_lvm_vg_list (r);
+  guestfs_free_lvm_vg_list (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val wait_ready : t -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_wait_ready (value gv);
+
+CAMLprim value
+ocaml_guestfs_wait_ready (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("wait_ready");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_wait_ready (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "wait_ready");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val wc_c : t -> string -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_wc_c (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_wc_c (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("wc_c");
+
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_wc_c (g, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "wc_c");
+
+  rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val wc_l : t -> string -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_wc_l (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_wc_l (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("wc_l");
+
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_wc_l (g, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "wc_l");
+
+  rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val wc_w : t -> string -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_wc_w (value gv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_wc_w (value gv, value pathv)
+{
+  CAMLparam2 (gv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("wc_w");
+
+  const char *path = String_val (pathv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_wc_w (g, path);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "wc_w");
+
+  rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val write_file : t -> string -> string -> int -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_write_file (value gv, value pathv, value contentv, value sizev);
+
+CAMLprim value
+ocaml_guestfs_write_file (value gv, value pathv, value contentv, value sizev)
+{
+  CAMLparam4 (gv, pathv, contentv, sizev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("write_file");
+
+  const char *path = String_val (pathv);
+  const char *content = String_val (contentv);
+  int size = Int_val (sizev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_write_file (g, path, content, size);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "write_file");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val zegrep : t -> string -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_zegrep (value gv, value regexv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_zegrep (value gv, value regexv, value pathv)
+{
+  CAMLparam3 (gv, regexv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("zegrep");
+
+  const char *regex = String_val (regexv);
+  const char *path = String_val (pathv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_zegrep (g, regex, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "zegrep");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val zegrepi : t -> string -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_zegrepi (value gv, value regexv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_zegrepi (value gv, value regexv, value pathv)
+{
+  CAMLparam3 (gv, regexv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("zegrepi");
+
+  const char *regex = String_val (regexv);
+  const char *path = String_val (pathv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_zegrepi (g, regex, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "zegrepi");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val zero : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_zero (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_zero (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("zero");
+
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_zero (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "zero");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val zerofree : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_zerofree (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_zerofree (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("zerofree");
+
+  const char *device = String_val (devicev);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_zerofree (g, device);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "zerofree");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val zfgrep : t -> string -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_zfgrep (value gv, value patternv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_zfgrep (value gv, value patternv, value pathv)
+{
+  CAMLparam3 (gv, patternv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("zfgrep");
+
+  const char *pattern = String_val (patternv);
+  const char *path = String_val (pathv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_zfgrep (g, pattern, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "zfgrep");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val zfgrepi : t -> string -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_zfgrepi (value gv, value patternv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_zfgrepi (value gv, value patternv, value pathv)
+{
+  CAMLparam3 (gv, patternv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("zfgrepi");
+
+  const char *pattern = String_val (patternv);
+  const char *path = String_val (pathv);
+  int i;
+  char **r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_zfgrepi (g, pattern, path);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "zfgrepi");
+
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val zfile : t -> string -> string -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_zfile (value gv, value methv, value pathv);
+
+CAMLprim value
+ocaml_guestfs_zfile (value gv, value methv, value pathv)
+{
+  CAMLparam3 (gv, methv, pathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("zfile");
+
+  const char *meth = String_val (methv);
   const char *path = String_val (pathv);
   char *r;
 
   caml_enter_blocking_section ();
-  r = guestfs_zfile (g, method, path);
+  r = guestfs_zfile (g, meth, path);
   caml_leave_blocking_section ();
   if (r == NULL)
     ocaml_guestfs_raise_error (g, "zfile");
@@ -5004,151 +8949,71 @@ ocaml_guestfs_zfile (value gv, value methodv, value pathv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val zgrep : t -> string -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_zgrep (value gv, value regexv, value pathv);
+
 CAMLprim value
-ocaml_guestfs_getxattrs (value gv, value pathv)
+ocaml_guestfs_zgrep (value gv, value regexv, value pathv)
 {
-  CAMLparam2 (gv, pathv);
+  CAMLparam3 (gv, regexv, pathv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("getxattrs: used handle after closing it");
+    ocaml_guestfs_raise_closed ("zgrep");
 
+  const char *regex = String_val (regexv);
   const char *path = String_val (pathv);
-  struct guestfs_xattr_list *r;
+  int i;
+  char **r;
 
   caml_enter_blocking_section ();
-  r = guestfs_getxattrs (g, path);
+  r = guestfs_zgrep (g, regex, path);
   caml_leave_blocking_section ();
   if (r == NULL)
-    ocaml_guestfs_raise_error (g, "getxattrs");
+    ocaml_guestfs_raise_error (g, "zgrep");
 
-  rv = copy_xattr_list (r);
-  guestfs_free_xattr_list (r);
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
   CAMLreturn (rv);
 }
 
+/* Automatically generated wrapper for function
+ * val zgrepi : t -> string -> string -> string array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_zgrepi (value gv, value regexv, value pathv);
+
 CAMLprim value
-ocaml_guestfs_lgetxattrs (value gv, value pathv)
+ocaml_guestfs_zgrepi (value gv, value regexv, value pathv)
 {
-  CAMLparam2 (gv, pathv);
+  CAMLparam3 (gv, regexv, pathv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
-    caml_failwith ("lgetxattrs: used handle after closing it");
+    ocaml_guestfs_raise_closed ("zgrepi");
 
+  const char *regex = String_val (regexv);
   const char *path = String_val (pathv);
-  struct guestfs_xattr_list *r;
+  int i;
+  char **r;
 
   caml_enter_blocking_section ();
-  r = guestfs_lgetxattrs (g, path);
+  r = guestfs_zgrepi (g, regex, path);
   caml_leave_blocking_section ();
   if (r == NULL)
-    ocaml_guestfs_raise_error (g, "lgetxattrs");
+    ocaml_guestfs_raise_error (g, "zgrepi");
 
-  rv = copy_xattr_list (r);
-  guestfs_free_xattr_list (r);
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_setxattr (value gv, value xattrv, value valv, value vallenv, value pathv)
-{
-  CAMLparam5 (gv, xattrv, valv, vallenv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("setxattr: used handle after closing it");
-
-  const char *xattr = String_val (xattrv);
-  const char *val = String_val (valv);
-  int vallen = Int_val (vallenv);
-  const char *path = String_val (pathv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_setxattr (g, xattr, val, vallen, path);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "setxattr");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_lsetxattr (value gv, value xattrv, value valv, value vallenv, value pathv)
-{
-  CAMLparam5 (gv, xattrv, valv, vallenv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("lsetxattr: used handle after closing it");
-
-  const char *xattr = String_val (xattrv);
-  const char *val = String_val (valv);
-  int vallen = Int_val (vallenv);
-  const char *path = String_val (pathv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_lsetxattr (g, xattr, val, vallen, path);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "lsetxattr");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_removexattr (value gv, value xattrv, value pathv)
-{
-  CAMLparam3 (gv, xattrv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("removexattr: used handle after closing it");
-
-  const char *xattr = String_val (xattrv);
-  const char *path = String_val (pathv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_removexattr (g, xattr, path);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "removexattr");
-
-  rv = Val_unit;
-  CAMLreturn (rv);
-}
-
-CAMLprim value
-ocaml_guestfs_lremovexattr (value gv, value xattrv, value pathv)
-{
-  CAMLparam3 (gv, xattrv, pathv);
-  CAMLlocal1 (rv);
-
-  guestfs_h *g = Guestfs_val (gv);
-  if (g == NULL)
-    caml_failwith ("lremovexattr: used handle after closing it");
-
-  const char *xattr = String_val (xattrv);
-  const char *path = String_val (pathv);
-  int r;
-
-  caml_enter_blocking_section ();
-  r = guestfs_lremovexattr (g, xattr, path);
-  caml_leave_blocking_section ();
-  if (r == -1)
-    ocaml_guestfs_raise_error (g, "lremovexattr");
-
-  rv = Val_unit;
+  rv = caml_copy_string_array ((const char **) r);
+  for (i = 0; r[i] != NULL; ++i) free (r[i]);
+  free (r);
   CAMLreturn (rv);
 }
 

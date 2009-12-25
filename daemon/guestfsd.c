@@ -20,6 +20,10 @@
 
 #define _BSD_SOURCE		/* for daemon(3) */
 
+#ifdef HAVE_WINDOWS_H
+# include <windows.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,183 +31,348 @@
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 #include <getopt.h>
-#include <netdb.h>
 #include <sys/param.h>
-#include <sys/select.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <ctype.h>
 #include <signal.h>
+#include <netdb.h>
+#include <sys/select.h>
+#include <sys/wait.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+
+#ifdef HAVE_PRINTF_H
+# include <printf.h>
+#endif
+
+#include "sockets.h"
+#include "c-ctype.h"
+#include "ignore-value.h"
+#include "error.h"
 
 #include "daemon.h"
 
-static void usage (void);
+static char *read_cmdline (void);
 
 /* Also in guestfs.c */
-#define VMCHANNEL_PORT "6666"
-#define VMCHANNEL_ADDR "10.0.2.4"
+#define GUESTFWD_ADDR "10.0.2.4"
+#define GUESTFWD_PORT "6666"
+
+/* This is only a hint.  If not defined, ignore it. */
+#ifndef AI_ADDRCONFIG
+# define AI_ADDRCONFIG 0
+#endif
+
+#ifndef MAX
+# define MAX(a,b) ((a)>(b)?(a):(b))
+#endif
 
 int verbose = 0;
+
+static int print_shell_quote (FILE *stream, const struct printf_info *info, const void *const *args);
+static int print_sysroot_shell_quote (FILE *stream, const struct printf_info *info, const void *const *args);
+#ifdef HAVE_REGISTER_PRINTF_SPECIFIER
+static int print_arginfo (const struct printf_info *info, size_t n, int *argtypes, int *size);
+#else
+#ifdef HAVE_REGISTER_PRINTF_FUNCTION
+static int print_arginfo (const struct printf_info *info, size_t n, int *argtypes);
+#else
+#error "HAVE_REGISTER_PRINTF_{SPECIFIER|FUNCTION} not defined"
+#endif
+#endif
+
+#ifdef WIN32
+static int
+daemon (int nochdir, int noclose)
+{
+  fprintf (stderr,
+           "On Windows the daemon does not support forking into the "
+           "background.\nYou *must* run the daemon with the -f option.\n");
+  exit (EXIT_FAILURE);
+}
+#endif /* WIN32 */
+
+#ifdef WIN32
+static int
+winsock_init (void)
+{
+  int r;
+
+  /* http://msdn2.microsoft.com/en-us/library/ms742213.aspx */
+  r = gl_sockets_startup (SOCKETS_2_2);
+  return r == 0 ? 0 : -1;
+}
+#else /* !WIN32 */
+static int
+winsock_init (void)
+{
+  return 0;
+}
+#endif /* !WIN32 */
+
+/* Location to mount root device. */
+const char *sysroot = "/sysroot"; /* No trailing slash. */
+int sysroot_len = 8;
+
+/* Not used explicitly, but required by the gnulib 'error' module. */
+const char *program_name = "guestfsd";
+
+static void
+usage (void)
+{
+  fprintf (stderr,
+    "guestfsd [-f|--foreground] [-c|--channel vmchannel] [-v|--verbose]\n");
+}
 
 int
 main (int argc, char *argv[])
 {
-  static const char *options = "fh:p:?";
-  static struct option long_options[] = {
+  static const char *options = "fc:v?";
+  static const struct option long_options[] = {
+    { "channel", required_argument, 0, 'c' },
     { "foreground", 0, 0, 'f' },
     { "help", 0, 0, '?' },
-    { "host", 1, 0, 'h' },
-    { "port", 1, 0, 'p' },
+    { "verbose", 0, 0, 'v' },
     { 0, 0, 0, 0 }
   };
-  int c, n, r;
+  int c;
   int dont_fork = 0;
-  const char *host = NULL;
-  const char *port = NULL;
-  FILE *fp;
-  char buf[4096];
-  char *p, *p2;
-  int sock;
-  struct addrinfo *res, *rr;
-  struct addrinfo hints;
-  XDR xdr;
-  uint32_t len;
-  struct sigaction sa;
+  char *cmdline;
+  char *vmchannel = NULL;
+
+  if (winsock_init () == -1)
+    error (EXIT_FAILURE, 0, "winsock initialization failed");
+
+#ifdef HAVE_REGISTER_PRINTF_SPECIFIER
+  /* http://udrepper.livejournal.com/20948.html */
+  register_printf_specifier ('Q', print_shell_quote, print_arginfo);
+  register_printf_specifier ('R', print_sysroot_shell_quote, print_arginfo);
+#else
+#ifdef HAVE_REGISTER_PRINTF_FUNCTION
+  register_printf_function ('Q', print_shell_quote, print_arginfo);
+  register_printf_function ('R', print_sysroot_shell_quote, print_arginfo);
+#else
+#error "HAVE_REGISTER_PRINTF_{SPECIFIER|FUNCTION} not defined"
+#endif
+#endif
 
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, NULL);
     if (c == -1) break;
 
     switch (c) {
+    case 'c':
+      vmchannel = optarg;
+      break;
+
     case 'f':
       dont_fork = 1;
       break;
 
-    case 'h':
-      host = optarg;
-      break;
-
-    case 'p':
-      port = optarg;
+    case 'v':
+      verbose = 1;
       break;
 
     case '?':
       usage ();
-      exit (0);
+      exit (EXIT_SUCCESS);
 
     default:
       fprintf (stderr, "guestfsd: unexpected command line option 0x%x\n", c);
-      exit (1);
+      exit (EXIT_FAILURE);
     }
   }
 
   if (optind < argc) {
     usage ();
-    exit (1);
+    exit (EXIT_FAILURE);
   }
 
-  /* If host and port aren't set yet, try /proc/cmdline. */
-  if (!host || !port) {
-    fp = fopen ("/proc/cmdline", "r");
-    if (fp == NULL) {
-      perror ("/proc/cmdline");
-      goto next;
-    }
-    n = fread (buf, 1, sizeof buf - 1, fp);
-    fclose (fp);
-    buf[n] = '\0';
+  cmdline = read_cmdline ();
 
-    /* Set the verbose flag.  Not quite right because this will only
-     * set the flag if host and port aren't set on the command line.
-     * Don't worry about this for now. (XXX)
-     */
-    verbose = strstr (buf, "guestfs_verbose=1") != NULL;
-    if (verbose)
-      printf ("verbose daemon enabled\n");
+  /* Set the verbose flag. */
+  verbose = verbose ||
+    (cmdline && strstr (cmdline, "guestfs_verbose=1") != NULL);
+  if (verbose)
+    printf ("verbose daemon enabled\n");
 
-    p = strstr (buf, "guestfs=");
-
-    if (p) {
-      p += 8;
-      p2 = strchr (p, ':');
-      if (p2) {
-	*p2++ = '\0';
-	host = p;
-	r = strcspn (p2, " \n");
-	p2[r] = '\0';
-	port = p2;
-      }
-    }
+  if (verbose) {
+    if (cmdline)
+      printf ("linux commmand line: %s\n", cmdline);
+    else
+      printf ("could not read linux command line\n");
   }
 
- next:
-  /* Can't parse /proc/cmdline, so use built-in defaults. */
-  if (!host || !port) {
-    host = VMCHANNEL_ADDR;
-    port = VMCHANNEL_PORT;
-  }
-
+#ifndef WIN32
   /* Make sure SIGPIPE doesn't kill us. */
+  struct sigaction sa;
   memset (&sa, 0, sizeof sa);
   sa.sa_handler = SIG_IGN;
   sa.sa_flags = 0;
   if (sigaction (SIGPIPE, &sa, NULL) == -1)
     perror ("sigaction SIGPIPE"); /* but try to continue anyway ... */
+#endif
 
+#ifdef WIN32
+# define setenv(n,v,f) _putenv(n "=" v)
+#endif
   /* Set up a basic environment.  After we are called by /init the
    * environment is essentially empty.
    * https://bugzilla.redhat.com/show_bug.cgi?id=502074#c5
    */
   setenv ("PATH", "/usr/bin:/bin", 1);
   setenv ("SHELL", "/bin/sh", 1);
-  setenv ("LANG", "C", 1);
+  setenv ("LC_ALL", "C", 1);
 
+#ifndef WIN32
   /* We document that umask defaults to 022 (it should be this anyway). */
   umask (022);
+#else
+  /* This is the default for Windows anyway.  It's not even clear if
+   * Windows ever uses this -- the MSDN documentation for the function
+   * contains obvious errors.
+   */
+  _umask (0);
+#endif
 
-  /* Resolve the hostname. */
-  memset (&hints, 0, sizeof hints);
-  hints.ai_socktype = SOCK_STREAM;
-  hints.ai_flags = AI_ADDRCONFIG;
-  r = getaddrinfo (host, port, &hints, &res);
-  if (r != 0) {
-    fprintf (stderr, "%s:%s: %s\n", host, port, gai_strerror (r));
-    exit (1);
-  }
+  /* Get the vmchannel string.
+   *
+   * Sources:
+   *   --channel/-c option on the command line
+   *   guestfs_vmchannel=... from the kernel command line
+   *   guestfs=... from the kernel command line
+   *   built-in default
+   *
+   * At the moment we expect this to contain "tcp:ip:port" but in
+   * future it might contain a device name, eg. "/dev/vcon4" for
+   * virtio-console vmchannel.
+   */
+  if (vmchannel == NULL && cmdline) {
+    char *p;
+    size_t len;
 
-  /* Connect to the given TCP socket. */
-  sock = -1;
-  for (rr = res; rr != NULL; rr = rr->ai_next) {
-    sock = socket (rr->ai_family, rr->ai_socktype, rr->ai_protocol);
-    if (sock != -1) {
-      if (connect (sock, rr->ai_addr, rr->ai_addrlen) == 0)
-	break;
-      perror ("connect");
+    p = strstr (cmdline, "guestfs_vmchannel=");
+    if (p) {
+      len = strcspn (p + 18, " \t\n");
+      vmchannel = strndup (p + 18, len);
+      if (!vmchannel) {
+        perror ("strndup");
+        exit (EXIT_FAILURE);
+      }
+    }
 
-      close (sock);
-      sock = -1;
+    /* Old libraries passed guestfs=host:port.  Rewrite it as tcp:host:port. */
+    if (vmchannel == NULL) {
+      /* We will rewrite it part of the "guestfs=" string with
+       *                       "tcp:"       hence p + 4 below.    */
+      p = strstr (cmdline, "guestfs=");
+      if (p) {
+        len = strcspn (p + 4, " \t\n");
+        vmchannel = strndup (p + 4, len);
+        if (!vmchannel) {
+          perror ("strndup");
+          exit (EXIT_FAILURE);
+        }
+        memcpy (vmchannel, "tcp:", 4);
+      }
     }
   }
-  freeaddrinfo (res);
+
+  /* Default vmchannel. */
+  if (vmchannel == NULL) {
+    vmchannel = strdup ("tcp:" GUESTFWD_ADDR ":" GUESTFWD_PORT);
+    if (!vmchannel) {
+      perror ("strdup");
+      exit (EXIT_FAILURE);
+    }
+  }
+
+  if (verbose)
+    printf ("vmchannel: %s\n", vmchannel);
+
+  /* Connect to vmchannel. */
+  int sock = -1;
+
+  if (STREQLEN (vmchannel, "tcp:", 4)) {
+    /* Resolve the hostname. */
+    struct addrinfo *res, *rr;
+    struct addrinfo hints;
+    int r;
+    char *host, *port;
+
+    host = vmchannel+4;
+    port = strchr (host, ':');
+    if (port) {
+      port[0] = '\0';
+      port++;
+    } else {
+      fprintf (stderr, "vmchannel: expecting \"tcp:<ip>:<port>\": %s\n",
+               vmchannel);
+      exit (EXIT_FAILURE);
+    }
+
+    memset (&hints, 0, sizeof hints);
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_ADDRCONFIG;
+    r = getaddrinfo (host, port, &hints, &res);
+    if (r != 0) {
+      fprintf (stderr, "%s:%s: %s\n",
+               host, port, gai_strerror (r));
+      exit (EXIT_FAILURE);
+    }
+
+    /* Connect to the given TCP socket. */
+    for (rr = res; rr != NULL; rr = rr->ai_next) {
+      sock = socket (rr->ai_family, rr->ai_socktype, rr->ai_protocol);
+      if (sock != -1) {
+        if (connect (sock, rr->ai_addr, rr->ai_addrlen) == 0)
+          break;
+        perror ("connect");
+
+        close (sock);
+        sock = -1;
+      }
+    }
+    freeaddrinfo (res);
+  } else {
+    fprintf (stderr,
+             "unknown vmchannel connection type: %s\n"
+             "expecting \"tcp:<ip>:<port>\"\n",
+             vmchannel);
+    exit (EXIT_FAILURE);
+  }
 
   if (sock == -1) {
-    fprintf (stderr, "connection to %s:%s failed\n", host, port);
-    exit (1);
+    fprintf (stderr,
+             "\n"
+             "Failed to connect to any vmchannel implementation.\n"
+             "vmchannel: %s\n"
+             "\n"
+             "This is a fatal error and the appliance will now exit.\n"
+             "\n"
+             "Usually this error is caused by either QEMU or the appliance\n"
+             "kernel not supporting the vmchannel method that the\n"
+             "libguestfs library chose to use.  Please run\n"
+             "'libguestfs-test-tool' and provide the complete, unedited\n"
+             "output to the libguestfs developers, either in a bug report\n"
+             "or on the libguestfs redhat com mailing list.\n"
+             "\n",
+             vmchannel);
+    exit (EXIT_FAILURE);
   }
 
   /* Send the magic length message which indicates that
    * userspace is up inside the guest.
    */
-  len = GUESTFS_LAUNCH_FLAG;
-  xdrmem_create (&xdr, buf, sizeof buf, XDR_ENCODE);
-  if (!xdr_uint32_t (&xdr, &len)) {
-    fprintf (stderr, "xdr_uint32_t failed\n");
-    exit (1);
-  }
+  char lenbuf[4];
+  XDR xdr;
+  uint32_t len = GUESTFS_LAUNCH_FLAG;
+  xdrmem_create (&xdr, lenbuf, sizeof lenbuf, XDR_ENCODE);
+  xdr_u_int (&xdr, &len);
 
-  (void) xwrite (sock, buf, xdr_getpos (&xdr));
+  if (xwrite (sock, lenbuf, sizeof lenbuf) == -1)
+    exit (EXIT_FAILURE);
 
   xdr_destroy (&xdr);
 
@@ -211,20 +380,91 @@ main (int argc, char *argv[])
   if (!dont_fork) {
     if (daemon (0, 1) == -1) {
       perror ("daemon");
-      exit (1);
+      exit (EXIT_FAILURE);
     }
   }
 
   /* Enter the main loop, reading and performing actions. */
   main_loop (sock);
 
-  exit (0);
+  exit (EXIT_SUCCESS);
+}
+
+/* Read /proc/cmdline. */
+static char *
+read_cmdline (void)
+{
+  int fd = open ("/proc/cmdline", O_RDONLY);
+  if (fd == -1) {
+    perror ("/proc/cmdline");
+    return NULL;
+  }
+
+  size_t len = 0;
+  ssize_t n;
+  char buf[256];
+  char *r = NULL;
+
+  for (;;) {
+    n = read (fd, buf, sizeof buf);
+    if (n == -1) {
+      perror ("read");
+      free (r);
+      close (fd);
+      return NULL;
+    }
+    if (n == 0)
+      break;
+    char *newr = realloc (r, len + n + 1); /* + 1 is for terminating NUL */
+    if (newr == NULL) {
+      perror ("realloc");
+      free (r);
+      close (fd);
+      return NULL;
+    }
+    r = newr;
+    memcpy (&r[len], buf, n);
+    len += n;
+  }
+
+  if (r)
+    r[len] = '\0';
+
+  if (close (fd) == -1) {
+    perror ("close");
+    free (r);
+    return NULL;
+  }
+
+  return r;
+}
+
+/* Turn "/path" into "/sysroot/path".
+ *
+ * Caller must check for NULL and call reply_with_perror ("malloc")
+ * if it is.  Caller must also free the string.
+ *
+ * See also the custom %R printf formatter which does shell quoting too.
+ */
+char *
+sysroot_path (const char *path)
+{
+  char *r;
+  int len = strlen (path) + sysroot_len + 1;
+
+  r = malloc (len);
+  if (r == NULL)
+    return NULL;
+
+  snprintf (r, len, "%s%s", sysroot, path);
+  return r;
 }
 
 int
-xwrite (int sock, const void *buf, size_t len)
+xwrite (int sock, const void *v_buf, size_t len)
 {
   int r;
+  const char *buf = v_buf;
 
   while (len > 0) {
     r = write (sock, buf, len);
@@ -240,9 +480,10 @@ xwrite (int sock, const void *buf, size_t len)
 }
 
 int
-xread (int sock, void *buf, size_t len)
+xread (int sock, void *v_buf, size_t len)
 {
   int r;
+  char *buf = v_buf;
 
   while (len > 0) {
     r = read (sock, buf, len);
@@ -259,12 +500,6 @@ xread (int sock, void *buf, size_t len)
   }
 
   return 0;
-}
-
-static void
-usage (void)
-{
-  fprintf (stderr, "guestfsd [-f] [-h host -p port]\n");
 }
 
 int
@@ -300,7 +535,7 @@ add_string (char ***argv, int *size, int *alloc, const char *str)
 }
 
 int
-count_strings (char * const* const argv)
+count_strings (char *const *argv)
 {
   int argc;
 
@@ -343,16 +578,14 @@ free_stringslen (char **argv, int len)
   free (argv);
 }
 
-/* This is a more sane version of 'system(3)' for running external
- * commands.  It uses fork/execvp, so we don't need to worry about
- * quoting of parameters, and it allows us to capture any error
- * messages in a buffer.
+/* Easy ways to run external commands.  For full documentation, see
+ * 'commandrvf' below.
  */
 int
-command (char **stdoutput, char **stderror, const char *name, ...)
+commandf (char **stdoutput, char **stderror, int flags, const char *name, ...)
 {
   va_list args;
-  char **argv, **p;
+  const char **argv;
   char *s;
   int i, r;
 
@@ -369,7 +602,7 @@ command (char **stdoutput, char **stderror, const char *name, ...)
   va_start (args, name);
 
   while ((s = va_arg (args, char *)) != NULL) {
-    p = realloc (argv, sizeof (char *) * (++i));
+    const char **p = realloc (argv, sizeof (char *) * (++i));
     if (p == NULL) {
       perror ("realloc");
       free (argv);
@@ -383,7 +616,7 @@ command (char **stdoutput, char **stderror, const char *name, ...)
 
   va_end (args);
 
-  r = commandv (stdoutput, stderror, argv);
+  r = commandvf (stdoutput, stderror, flags, (const char * const*) argv);
 
   /* NB: Mustn't free the strings which are on the stack. */
   free (argv);
@@ -396,10 +629,10 @@ command (char **stdoutput, char **stderror, const char *name, ...)
  * We still return -1 if there was some other error.
  */
 int
-commandr (char **stdoutput, char **stderror, const char *name, ...)
+commandrf (char **stdoutput, char **stderror, int flags, const char *name, ...)
 {
   va_list args;
-  char **argv, **p;
+  const char **argv;
   char *s;
   int i, r;
 
@@ -416,7 +649,7 @@ commandr (char **stdoutput, char **stderror, const char *name, ...)
   va_start (args, name);
 
   while ((s = va_arg (args, char *)) != NULL) {
-    p = realloc (argv, sizeof (char *) * (++i));
+    const char **p = realloc (argv, sizeof (char *) * (++i));
     if (p == NULL) {
       perror ("realloc");
       free (argv);
@@ -430,7 +663,7 @@ commandr (char **stdoutput, char **stderror, const char *name, ...)
 
   va_end (args);
 
-  r = commandrv (stdoutput, stderror, argv);
+  r = commandrvf (stdoutput, stderror, flags, argv);
 
   /* NB: Mustn't free the strings which are on the stack. */
   free (argv);
@@ -440,19 +673,43 @@ commandr (char **stdoutput, char **stderror, const char *name, ...)
 
 /* Same as 'command', but passing an argv. */
 int
-commandv (char **stdoutput, char **stderror, char * const* const argv)
+commandvf (char **stdoutput, char **stderror, int flags,
+           char const *const *argv)
 {
   int r;
 
-  r = commandrv (stdoutput, stderror, argv);
+  r = commandrvf (stdoutput, stderror, flags, (void *) argv);
   if (r == 0)
     return 0;
   else
     return -1;
 }
 
+/* This is a more sane version of 'system(3)' for running external
+ * commands.  It uses fork/execvp, so we don't need to worry about
+ * quoting of parameters, and it allows us to capture any error
+ * messages in a buffer.
+ *
+ * If stdoutput is not NULL, then *stdoutput will return the stdout
+ * of the command.
+ *
+ * If stderror is not NULL, then *stderror will return the stderr
+ * of the command.  If there is a final \n character, it is removed
+ * so you can use the error string directly in a call to
+ * reply_with_error.
+ *
+ * Flags:
+ *
+ * COMMAND_FLAG_FOLD_STDOUT_ON_STDERR: For broken external commands
+ * that send error messages to stdout (hello, parted) but that don't
+ * have any useful stdout information, use this flag to capture the
+ * error messages in the *stderror buffer.  If using this flag,
+ * you should pass stdoutput as NULL because nothing could ever be
+ * captured in that buffer.
+ */
 int
-commandrv (char **stdoutput, char **stderror, char * const* const argv)
+commandrvf (char **stdoutput, char **stderror, int flags,
+            char const* const *argv)
 {
   int so_size = 0, se_size = 0;
   int so_fd[2], se_fd[2];
@@ -489,14 +746,18 @@ commandrv (char **stdoutput, char **stderror, char * const* const argv)
 
   if (pid == 0) {		/* Child process. */
     close (0);
+    open ("/dev/null", O_RDONLY); /* Set stdin to /dev/null (ignore failure) */
     close (so_fd[0]);
     close (se_fd[0]);
-    dup2 (so_fd[1], 1);
+    if (!(flags & COMMAND_FLAG_FOLD_STDOUT_ON_STDERR))
+      dup2 (so_fd[1], 1);
+    else
+      dup2 (se_fd[1], 1);
     dup2 (se_fd[1], 2);
     close (so_fd[1]);
     close (se_fd[1]);
 
-    execvp (argv[0], argv);
+    execvp (argv[0], (void *) argv);
     perror (argv[0]);
     _exit (1);
   }
@@ -527,40 +788,45 @@ commandrv (char **stdoutput, char **stderror, char * const* const argv)
     if (FD_ISSET (so_fd[0], &rset2)) { /* something on stdout */
       r = read (so_fd[0], buf, sizeof buf);
       if (r == -1) {
-	perror ("read");
-	goto quit;
+        perror ("read");
+        goto quit;
       }
       if (r == 0) { FD_CLR (so_fd[0], &rset); quit++; }
 
       if (r > 0 && stdoutput) {
-	so_size += r;
-	p = realloc (*stdoutput, so_size);
-	if (p == NULL) {
-	  perror ("realloc");
-	  goto quit;
-	}
-	*stdoutput = p;
-	memcpy (*stdoutput + so_size - r, buf, r);
+        so_size += r;
+        p = realloc (*stdoutput, so_size);
+        if (p == NULL) {
+          perror ("realloc");
+          goto quit;
+        }
+        *stdoutput = p;
+        memcpy (*stdoutput + so_size - r, buf, r);
       }
     }
 
     if (FD_ISSET (se_fd[0], &rset2)) { /* something on stderr */
       r = read (se_fd[0], buf, sizeof buf);
       if (r == -1) {
-	perror ("read");
-	goto quit;
+        perror ("read");
+        goto quit;
       }
       if (r == 0) { FD_CLR (se_fd[0], &rset); quit++; }
 
-      if (r > 0 && stderror) {
-	se_size += r;
-	p = realloc (*stderror, se_size);
-	if (p == NULL) {
-	  perror ("realloc");
-	  goto quit;
-	}
-	*stderror = p;
-	memcpy (*stderror + se_size - r, buf, r);
+      if (r > 0) {
+        if (verbose)
+          ignore_value (write (2, buf, r));
+
+        if (stderror) {
+          se_size += r;
+          p = realloc (*stderror, se_size);
+          if (p == NULL) {
+            perror ("realloc");
+            goto quit;
+          }
+          *stderror = p;
+          memcpy (*stderror + se_size - r, buf, r);
+        }
       }
     }
   }
@@ -592,7 +858,7 @@ commandrv (char **stdoutput, char **stderror, char * const* const argv)
       (*stderror)[se_size] = '\0';
       se_size--;
       while (se_size >= 0 && (*stderror)[se_size] == '\n')
-	(*stderror)[se_size--] = '\0';
+        (*stderror)[se_size--] = '\0';
     }
   }
 
@@ -633,7 +899,7 @@ split_lines (char *str)
   int size = 0, alloc = 0;
   char *p, *pend;
 
-  if (strcmp (str, "") == 0)
+  if (STREQ (str, ""))
     goto empty_list;
 
   p = str;
@@ -662,45 +928,67 @@ split_lines (char *str)
   return lines;
 }
 
-/* Quote 'in' for the shell, and write max len-1 bytes to out.  The
- * result will be NUL-terminated, even if it is truncated.
- *
- * Returns number of bytes needed, so if result >= len then the buffer
- * should have been longer.
- *
- * XXX This doesn't quote \n correctly (but is still safe).
+/* printf helper function so we can use %Q ("quoted") and %R to print
+ * shell-quoted strings.  See HACKING file for more details.
  */
-int
-shell_quote (char *out, int len, const char *in)
+static int
+print_shell_quote (FILE *stream,
+                   const struct printf_info *info ATTRIBUTE_UNUSED,
+                   const void *const *args)
 {
-#define SAFE(c) (isalnum((c)) ||					\
-		 (c) == '/' || (c) == '-' || (c) == '_' || (c) == '.')
-  int i, j;
-  int outlen = strlen (in);
+#define SAFE(c) (c_isalnum((c)) ||					\
+                 (c) == '/' || (c) == '-' || (c) == '_' || (c) == '.')
+  int i, len;
+  const char *str = *((const char **) (args[0]));
 
-  /* Calculate how much output space this really needs. */
-  for (i = 0; in[i]; ++i)
-    if (!SAFE (in[i])) outlen++;
-
-  /* Now copy the string, but only up to len-1 bytes. */
-  for (i = 0, j = 0; in[i]; ++i) {
-    int is_safe = SAFE (in[i]);
-
-    /* Enough space left to write this character? */
-    if (j >= len-1 || (!is_safe && j >= len-2))
-      break;
-
-    if (!is_safe) out[j++] = '\\';
-    out[j++] = in[i];
+  for (i = len = 0; str[i]; ++i) {
+    if (!SAFE(str[i])) {
+      putc ('\\', stream);
+      len ++;
+    }
+    putc (str[i], stream);
+    len ++;
   }
 
-  out[j] = '\0';
-
-  return outlen;
+  return len;
 }
 
+static int
+print_sysroot_shell_quote (FILE *stream,
+                           const struct printf_info *info,
+                           const void *const *args)
+{
+  fputs (sysroot, stream);
+  return sysroot_len + print_shell_quote (stream, info, args);
+}
+
+#ifdef HAVE_REGISTER_PRINTF_SPECIFIER
+static int
+print_arginfo (const struct printf_info *info ATTRIBUTE_UNUSED,
+               size_t n, int *argtypes, int *size)
+{
+  if (n > 0) {
+    argtypes[0] = PA_STRING;
+    size[0] = sizeof (const char *);
+  }
+  return 1;
+}
+#else
+#ifdef HAVE_REGISTER_PRINTF_FUNCTION
+static int
+print_arginfo (const struct printf_info *info, size_t n, int *argtypes)
+{
+  if (n > 0)
+    argtypes[0] = PA_STRING;
+  return 1;
+}
+#else
+#error "HAVE_REGISTER_PRINTF_{SPECIFIER|FUNCTION} not defined"
+#endif
+#endif
+
 /* Perform device name translation.  Don't call this directly -
- * use the IS_DEVICE macro.
+ * use the RESOLVE_DEVICE macro.
  *
  * See guestfs(3) for the algorithm.
  *
@@ -725,7 +1013,7 @@ device_name_translation (char *device, const char *func)
   }
 
   /* If the name begins with "/dev/sd" then try the alternatives. */
-  if (strncmp (device, "/dev/sd", 7) != 0)
+  if (STRNEQLEN (device, "/dev/sd", 7))
     goto error;
 
   device[5] = 'h';		/* /dev/hd (old IDE driver) */
@@ -756,5 +1044,25 @@ device_name_translation (char *device, const char *func)
 void
 udev_settle (void)
 {
-  command (NULL, NULL, "/sbin/udevadm", "settle", NULL);
+  static int which_prog = 0;
+
+  if (which_prog == 0) {
+    if (access ("/sbin/udevsettle", X_OK) == 0)
+      which_prog = 2;
+    else if (access ("/sbin/udevadm", X_OK) == 0)
+      which_prog = 1;
+    else
+      which_prog = 3;
+  }
+
+  switch (which_prog) {
+  case 1:
+    command (NULL, NULL, "/sbin/udevadm", "settle", NULL);
+    break;
+  case 2:
+    command (NULL, NULL, "/sbin/udevsettle", NULL);
+    break;
+  default:
+    ;
+  }
 }

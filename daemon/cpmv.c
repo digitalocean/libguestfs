@@ -28,19 +28,19 @@
 static int cpmv_cmd (const char *cmd, const char *flags, const char *src, const char *dest);
 
 int
-do_cp (char *src, char *dest)
+do_cp (const char *src, const char *dest)
 {
   return cpmv_cmd ("cp", NULL, src, dest);
 }
 
 int
-do_cp_a (char *src, char *dest)
+do_cp_a (const char *src, const char *dest)
 {
   return cpmv_cmd ("cp", "-a", src, dest);
 }
 
 int
-do_mv (char *src, char *dest)
+do_mv (const char *src, const char *dest)
 {
   return cpmv_cmd ("mv", NULL, src, dest);
 }
@@ -49,31 +49,21 @@ static int
 cpmv_cmd (const char *cmd, const char *flags, const char *src, const char *dest)
 {
   char *srcbuf, *destbuf;
-  int srclen, destlen;
   char *err;
   int r;
 
-  NEED_ROOT (-1);
-  ABS_PATH (src, -1);
-  ABS_PATH (dest, -1);
-
-  srclen = strlen (src) + 32;
-  srcbuf = malloc (srclen);
+  srcbuf = sysroot_path (src);
   if (srcbuf == NULL) {
     reply_with_perror ("malloc");
     return -1;
   }
 
-  destlen = strlen (dest) + 32;
-  destbuf = malloc (destlen);
+  destbuf = sysroot_path (dest);
   if (destbuf == NULL) {
     reply_with_perror ("malloc");
     free (srcbuf);
     return -1;
   }
-
-  snprintf (srcbuf, srclen, "/sysroot%s", src);
-  snprintf (destbuf, destlen, "/sysroot%s", dest);
 
   if (flags)
     r = command (NULL, &err, cmd, flags, srcbuf, destbuf, NULL);

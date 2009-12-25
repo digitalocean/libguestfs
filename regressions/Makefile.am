@@ -21,16 +21,22 @@
 #
 # See also capitests/
 
+include $(top_srcdir)/subdir-rules.mk
+
 TESTS = \
 	rhbz503169c10.sh \
 	rhbz503169c13.sh \
-	test-cancellation-upload-daemoncancels.sh \
 	test-cancellation-download-librarycancels.sh \
-	test-qemudie-midcommand.sh \
+	test-cancellation-upload-daemoncancels.sh \
+	test-find0.sh \
+	test-noexec-stack.pl \
 	test-qemudie-killsub.sh \
+	test-qemudie-midcommand.sh \
 	test-qemudie-synch.sh \
+	test-read_file.sh \
 	test-remote.sh \
-	test-reopen.sh
+	test-reopen.sh \
+	test-stringlist.sh
 
 SKIPPED_TESTS = \
 	test-bootbootboot.sh
@@ -38,9 +44,13 @@ SKIPPED_TESTS = \
 FAILING_TESTS = \
 	test-qemudie-launchfail.sh
 
+random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
+
 TESTS_ENVIRONMENT = \
+	MALLOC_PERTURB_=$(random_val) \
 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
-	LIBGUESTFS_PATH=$(top_builddir)/appliance
+	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+	NOEXEC_CHECK="$(top_builddir)/src/.libs/libguestfs.so $(top_builddir)/daemon/guestfsd"
 
 EXTRA_DIST = \
 	$(FAILING_TESTS) \

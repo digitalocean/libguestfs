@@ -19,14 +19,14 @@
 #include <config.h>
 
 #define _BSD_SOURCE /* for mkdtemp, usleep */
-#define _GNU_SOURCE /* for vasprintf, GNU strerror_r, strchrnul */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stddef.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include <unistd.h>
-#include <ctype.h>
 #include <string.h>
 #include <fcntl.h>
 #include <time.h>
@@ -57,16 +57,25 @@
 #include <sys/un.h>
 #endif
 
+#include <arpa/inet.h>
+#include <netinet/in.h>
+
+#include "c-ctype.h"
+#include "glthread/lock.h"
+#include "ignore-value.h"
+
 #include "guestfs.h"
+#include "guestfs-internal.h"
+#include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 
 #ifdef HAVE_GETTEXT
 #include "gettext.h"
 #define _(str) dgettext(PACKAGE, (str))
-#define N_(str) dgettext(PACKAGE, (str))
+//#define N_(str) dgettext(PACKAGE, (str))
 #else
 #define _(str) str
-#define N_(str) str
+//#define N_(str) str
 #endif
 
 #define error guestfs_error
@@ -74,73 +83,20 @@
 #define safe_malloc guestfs_safe_malloc
 #define safe_realloc guestfs_safe_realloc
 #define safe_strdup guestfs_safe_strdup
-#define safe_memdup guestfs_safe_memdup
+//#define safe_memdup guestfs_safe_memdup
 
 static void default_error_cb (guestfs_h *g, void *data, const char *msg);
-static void stdout_event (struct guestfs_main_loop *ml, guestfs_h *g, void *data, int watch, int fd, int events);
-static void sock_read_event (struct guestfs_main_loop *ml, guestfs_h *g, void *data, int watch, int fd, int events);
-static void sock_write_event (struct guestfs_main_loop *ml, guestfs_h *g, void *data, int watch, int fd, int events);
-
+static int send_to_daemon (guestfs_h *g, const void *v_buf, size_t n);
+static int recv_from_daemon (guestfs_h *g, uint32_t *size_rtn, void **buf_rtn);
+static int accept_from_daemon (guestfs_h *g);
+static int check_peer_euid (guestfs_h *g, int sock, uid_t *rtn);
 static void close_handles (void);
-
-static int select_add_handle (guestfs_main_loop *ml, guestfs_h *g, int fd, int events, guestfs_handle_event_cb cb, void *data);
-static int select_remove_handle (guestfs_main_loop *ml, guestfs_h *g, int watch);
-static int select_add_timeout (guestfs_main_loop *ml, guestfs_h *g, int interval, guestfs_handle_timeout_cb cb, void *data);
-static int select_remove_timeout (guestfs_main_loop *ml, guestfs_h *g, int timer);
-static int select_main_loop_run (guestfs_main_loop *ml, guestfs_h *g);
-static int select_main_loop_quit (guestfs_main_loop *ml, guestfs_h *g);
-
-/* Default select-based main loop. */
-struct select_handle_cb_data {
-  guestfs_handle_event_cb cb;
-  guestfs_h *g;
-  void *data;
-};
-
-struct select_main_loop {
-  /* NB. These fields must be the same as in struct guestfs_main_loop: */
-  guestfs_add_handle_cb add_handle;
-  guestfs_remove_handle_cb remove_handle;
-  guestfs_add_timeout_cb add_timeout;
-  guestfs_remove_timeout_cb remove_timeout;
-  guestfs_main_loop_run_cb main_loop_run;
-  guestfs_main_loop_quit_cb main_loop_quit;
-
-  /* Additional private data: */
-  int is_running;
-
-  fd_set rset;
-  fd_set wset;
-  fd_set xset;
-
-  int max_fd;
-  int nr_fds;
-  struct select_handle_cb_data *handle_cb_data;
-};
-
-/* Default main loop. */
-static struct select_main_loop default_main_loop = {
-  .add_handle = select_add_handle,
-  .remove_handle = select_remove_handle,
-  .add_timeout = select_add_timeout,
-  .remove_timeout = select_remove_timeout,
-  .main_loop_run = select_main_loop_run,
-  .main_loop_quit = select_main_loop_quit,
-
-  /* XXX hopefully .rset, .wset, .xset are initialized to the empty
-   * set by the normal action of everything being initialized to zero.
-   */
-  .is_running = 0,
-  .max_fd = -1,
-  .nr_fds = 0,
-  .handle_cb_data = NULL,
-};
 
 #define UNIX_PATH_MAX 108
 
 /* Also in guestfsd.c */
-#define VMCHANNEL_PORT 6666
-#define VMCHANNEL_ADDR "10.0.2.4"
+#define GUESTFWD_ADDR "10.0.2.4"
+#define GUESTFWD_PORT "6666"
 
 /* GuestFS handle and connection. */
 enum state { CONFIG, LAUNCHING, READY, BUSY, NO_HANDLE };
@@ -156,10 +112,8 @@ struct guestfs_h
   int sock;			/* Daemon communications socket. */
   pid_t pid;			/* Qemu PID. */
   pid_t recoverypid;		/* Recovery process PID. */
-  time_t start_t;		/* The time when we started qemu. */
 
-  int stdout_watch;		/* Watches qemu stdout for log messages. */
-  int sock_watch;		/* Watches daemon comm socket. */
+  struct timeval launch_t;      /* The time that we called guestfs_launch. */
 
   char *tmpdir;			/* Temporary directory containing socket. */
 
@@ -169,7 +123,10 @@ struct guestfs_h
   int cmdline_size;
 
   int verbose;
+  int trace;
   int autosync;
+  int direct;
+  int recovery_proc;
 
   char *path;			/* Path to kernel, initrd. */
   char *qemu;			/* Qemu binary. */
@@ -177,16 +134,14 @@ struct guestfs_h
 
   int memsize;			/* Size of RAM (megabytes). */
 
+  int selinux;                  /* selinux enabled? */
+
   char *last_error;
 
   /* Callbacks. */
   guestfs_abort_cb           abort_cb;
   guestfs_error_handler_cb   error_cb;
   void *                     error_cb_data;
-  guestfs_send_cb            send_cb;
-  void *                     send_cb_data;
-  guestfs_reply_cb           reply_cb;
-  void *                     reply_cb_data;
   guestfs_log_message_cb     log_message_cb;
   void *                     log_message_cb_data;
   guestfs_subprocess_quit_cb subprocess_quit_cb;
@@ -194,18 +149,10 @@ struct guestfs_h
   guestfs_launch_done_cb     launch_done_cb;
   void *                     launch_done_cb_data;
 
-  /* Main loop used by this handle. */
-  guestfs_main_loop *main_loop;
-
-  /* Messages sent and received from the daemon. */
-  char *msg_in;
-  int msg_in_size, msg_in_allocated;
-  char *msg_out;
-  int msg_out_size, msg_out_pos;
-
   int msg_next_serial;
 };
 
+gl_lock_define_initialized (static, handles_lock);
 static guestfs_h *handles = NULL;
 static int atexit_handler_set = 0;
 
@@ -225,15 +172,18 @@ guestfs_create (void)
   g->fd[0] = -1;
   g->fd[1] = -1;
   g->sock = -1;
-  g->stdout_watch = -1;
-  g->sock_watch = -1;
 
   g->abort_cb = abort;
   g->error_cb = default_error_cb;
   g->error_cb_data = NULL;
 
+  g->recovery_proc = 1;
+
   str = getenv ("LIBGUESTFS_DEBUG");
-  g->verbose = str != NULL && strcmp (str, "1") == 0;
+  g->verbose = str != NULL && STREQ (str, "1");
+
+  str = getenv ("LIBGUESTFS_TRACE");
+  g->trace = str != NULL && STREQ (str, "1");
 
   str = getenv ("LIBGUESTFS_PATH");
   g->path = str != NULL ? strdup (str) : strdup (GUESTFS_DEFAULT_PATH);
@@ -265,24 +215,20 @@ guestfs_create (void)
   } else
     g->memsize = 500;
 
-  g->main_loop = guestfs_get_default_main_loop ();
-
   /* Start with large serial numbers so they are easy to spot
    * inside the protocol.
    */
   g->msg_next_serial = 0x00123400;
 
-  /* Link the handles onto a global list.  This is the one area
-   * where the library needs to be made thread-safe. (XXX)
-   */
-  /* acquire mutex (XXX) */
+  /* Link the handles onto a global list. */
+  gl_lock_lock (handles_lock);
   g->next = handles;
   handles = g;
   if (!atexit_handler_set) {
     atexit (close_handles);
     atexit_handler_set = 1;
   }
-  /* release mutex (XXX) */
+  gl_lock_unlock (handles_lock);
 
   if (g->verbose)
     fprintf (stderr, "new guestfs handle %p\n", g);
@@ -327,14 +273,7 @@ guestfs_close (guestfs_h *g)
   if (g->state != CONFIG)
     guestfs_kill_subprocess (g);
 
-  /* Close any sockets and deregister any handlers. */
-  if (g->stdout_watch >= 0)
-    g->main_loop->remove_handle (g->main_loop, g, g->stdout_watch);
-  if (g->sock_watch >= 0)
-    g->main_loop->remove_handle (g->main_loop, g, g->sock_watch);
-  g->stdout_watch = -1;
-  g->sock_watch = -1;
-
+  /* Close sockets. */
   if (g->fd[0] >= 0)
     close (g->fd[0]);
   if (g->fd[1] >= 0)
@@ -344,6 +283,10 @@ guestfs_close (guestfs_h *g)
   g->fd[0] = -1;
   g->fd[1] = -1;
   g->sock = -1;
+
+  /* Wait for subprocess(es) to exit. */
+  waitpid (g->pid, NULL, 0);
+  if (g->recoverypid > 0) waitpid (g->recoverypid, NULL, 0);
 
   /* Remove tmpfiles. */
   if (g->tmpdir) {
@@ -370,7 +313,7 @@ guestfs_close (guestfs_h *g)
   /* Mark the handle as dead before freeing it. */
   g->state = NO_HANDLE;
 
-  /* acquire mutex (XXX) */
+  gl_lock_lock (handles_lock);
   if (handles == g)
     handles = g->next;
   else {
@@ -378,10 +321,8 @@ guestfs_close (guestfs_h *g)
       ;
     gg->next = g->next;
   }
-  /* release mutex (XXX) */
+  gl_lock_unlock (handles_lock);
 
-  free (g->msg_in);
-  free (g->msg_out);
   free (g->last_error);
   free (g->path);
   free (g->qemu);
@@ -440,19 +381,21 @@ guestfs_perrorf (guestfs_h *g, const char *fs, ...)
 {
   va_list args;
   char *msg;
-  int err = errno;
+  int errnum = errno;
 
   va_start (args, fs);
-  vasprintf (&msg, fs, args);
+  int err = vasprintf (&msg, fs, args);
   va_end (args);
+
+  if (err < 0) return;
 
 #ifndef _GNU_SOURCE
   char buf[256];
-  strerror_r (err, buf, sizeof buf);
+  strerror_r (errnum, buf, sizeof buf);
 #else
   char _buf[256];
   char *buf;
-  buf = strerror_r (err, _buf, sizeof _buf);
+  buf = strerror_r (errnum, _buf, sizeof _buf);
 #endif
 
   msg = safe_realloc (g, msg, strlen (msg) + 2 + strlen (buf) + 1);
@@ -535,34 +478,15 @@ guestfs_safe_memdup (guestfs_h *g, void *ptr, size_t size)
 }
 
 static int
-xwrite (int fd, const void *buf, size_t len)
+xwrite (int fd, const void *v_buf, size_t len)
 {
+  const char *buf = v_buf;
   int r;
 
   while (len > 0) {
     r = write (fd, buf, len);
     if (r == -1)
       return -1;
-
-    buf += r;
-    len -= r;
-  }
-
-  return 0;
-}
-
-static int
-xread (int fd, void *buf, size_t len)
-{
-  int r;
-
-  while (len > 0) {
-    r = read (fd, buf, len);
-    if (r == -1) {
-      if (errno == EINTR || errno == EAGAIN)
-	continue;
-      return -1;
-    }
 
     buf += r;
     len -= r;
@@ -598,33 +522,33 @@ guestfs_get_error_handler (guestfs_h *g, void **data_rtn)
 }
 
 int
-guestfs_set_verbose (guestfs_h *g, int v)
+guestfs__set_verbose (guestfs_h *g, int v)
 {
   g->verbose = !!v;
   return 0;
 }
 
 int
-guestfs_get_verbose (guestfs_h *g)
+guestfs__get_verbose (guestfs_h *g)
 {
   return g->verbose;
 }
 
 int
-guestfs_set_autosync (guestfs_h *g, int a)
+guestfs__set_autosync (guestfs_h *g, int a)
 {
   g->autosync = !!a;
   return 0;
 }
 
 int
-guestfs_get_autosync (guestfs_h *g)
+guestfs__get_autosync (guestfs_h *g)
 {
   return g->autosync;
 }
 
 int
-guestfs_set_path (guestfs_h *g, const char *path)
+guestfs__set_path (guestfs_h *g, const char *path)
 {
   free (g->path);
   g->path = NULL;
@@ -636,13 +560,13 @@ guestfs_set_path (guestfs_h *g, const char *path)
 }
 
 const char *
-guestfs_get_path (guestfs_h *g)
+guestfs__get_path (guestfs_h *g)
 {
   return g->path;
 }
 
 int
-guestfs_set_qemu (guestfs_h *g, const char *qemu)
+guestfs__set_qemu (guestfs_h *g, const char *qemu)
 {
   free (g->qemu);
   g->qemu = NULL;
@@ -652,13 +576,13 @@ guestfs_set_qemu (guestfs_h *g, const char *qemu)
 }
 
 const char *
-guestfs_get_qemu (guestfs_h *g)
+guestfs__get_qemu (guestfs_h *g)
 {
   return g->qemu;
 }
 
 int
-guestfs_set_append (guestfs_h *g, const char *append)
+guestfs__set_append (guestfs_h *g, const char *append)
 {
   free (g->append);
   g->append = NULL;
@@ -668,26 +592,39 @@ guestfs_set_append (guestfs_h *g, const char *append)
 }
 
 const char *
-guestfs_get_append (guestfs_h *g)
+guestfs__get_append (guestfs_h *g)
 {
   return g->append;
 }
 
 int
-guestfs_set_memsize (guestfs_h *g, int memsize)
+guestfs__set_memsize (guestfs_h *g, int memsize)
 {
   g->memsize = memsize;
   return 0;
 }
 
 int
-guestfs_get_memsize (guestfs_h *g)
+guestfs__get_memsize (guestfs_h *g)
 {
   return g->memsize;
 }
 
 int
-guestfs_get_pid (guestfs_h *g)
+guestfs__set_selinux (guestfs_h *g, int selinux)
+{
+  g->selinux = selinux;
+  return 0;
+}
+
+int
+guestfs__get_selinux (guestfs_h *g)
+{
+  return g->selinux;
+}
+
+int
+guestfs__get_pid (guestfs_h *g)
 {
   if (g->pid > 0)
     return g->pid;
@@ -698,7 +635,7 @@ guestfs_get_pid (guestfs_h *g)
 }
 
 struct guestfs_version *
-guestfs_version (guestfs_h *g)
+guestfs__version (guestfs_h *g)
 {
   struct guestfs_version *r;
 
@@ -708,6 +645,45 @@ guestfs_version (guestfs_h *g)
   r->release = PACKAGE_VERSION_RELEASE;
   r->extra = safe_strdup (g, PACKAGE_VERSION_EXTRA);
   return r;
+}
+
+int
+guestfs__set_trace (guestfs_h *g, int t)
+{
+  g->trace = !!t;
+  return 0;
+}
+
+int
+guestfs__get_trace (guestfs_h *g)
+{
+  return g->trace;
+}
+
+int
+guestfs__set_direct (guestfs_h *g, int d)
+{
+  g->direct = !!d;
+  return 0;
+}
+
+int
+guestfs__get_direct (guestfs_h *g)
+{
+  return g->direct;
+}
+
+int
+guestfs__set_recovery_proc (guestfs_h *g, int f)
+{
+  g->recovery_proc = !!f;
+  return 0;
+}
+
+int
+guestfs__get_recovery_proc (guestfs_h *g)
+{
+  return g->recovery_proc;
 }
 
 /* Add a string to the current command line. */
@@ -740,8 +716,8 @@ add_cmdline (guestfs_h *g, const char *str)
 }
 
 int
-guestfs_config (guestfs_h *g,
-		const char *qemu_param, const char *qemu_value)
+guestfs__config (guestfs_h *g,
+                 const char *qemu_param, const char *qemu_value)
 {
   if (qemu_param[0] != '-') {
     error (g, _("guestfs_config: parameter must begin with '-' character"));
@@ -751,13 +727,13 @@ guestfs_config (guestfs_h *g,
   /* A bit fascist, but the user will probably break the extra
    * parameters that we add if they try to set any of these.
    */
-  if (strcmp (qemu_param, "-kernel") == 0 ||
-      strcmp (qemu_param, "-initrd") == 0 ||
-      strcmp (qemu_param, "-nographic") == 0 ||
-      strcmp (qemu_param, "-serial") == 0 ||
-      strcmp (qemu_param, "-full-screen") == 0 ||
-      strcmp (qemu_param, "-std-vga") == 0 ||
-      strcmp (qemu_param, "-vnc") == 0) {
+  if (STREQ (qemu_param, "-kernel") ||
+      STREQ (qemu_param, "-initrd") ||
+      STREQ (qemu_param, "-nographic") ||
+      STREQ (qemu_param, "-serial") ||
+      STREQ (qemu_param, "-full-screen") ||
+      STREQ (qemu_param, "-std-vga") ||
+      STREQ (qemu_param, "-vnc")) {
     error (g, _("guestfs_config: parameter '%s' isn't allowed"), qemu_param);
     return -1;
   }
@@ -772,7 +748,7 @@ guestfs_config (guestfs_h *g,
 }
 
 int
-guestfs_add_drive (guestfs_h *g, const char *filename)
+guestfs__add_drive (guestfs_h *g, const char *filename)
 {
   size_t len = strlen (filename) + 64;
   char buf[len];
@@ -782,19 +758,36 @@ guestfs_add_drive (guestfs_h *g, const char *filename)
     return -1;
   }
 
-  if (access (filename, F_OK) == -1) {
-    perrorf (g, "%s", filename);
-    return -1;
+  /* cache=off improves reliability in the event of a host crash.
+   *
+   * However this option causes qemu to try to open the file with
+   * O_DIRECT.  This fails on some filesystem types (notably tmpfs).
+   * So we check if we can open the file with or without O_DIRECT,
+   * and use cache=off (or not) accordingly.
+   *
+   * This test also checks for the presence of the file, which
+   * is a documented semantic of this interface.
+   */
+  int fd = open (filename, O_RDONLY|O_DIRECT);
+  if (fd >= 0) {
+    close (fd);
+    snprintf (buf, len, "file=%s,cache=off,if=" DRIVE_IF, filename);
+  } else {
+    fd = open (filename, O_RDONLY);
+    if (fd >= 0) {
+      close (fd);
+      snprintf (buf, len, "file=%s,if=" DRIVE_IF, filename);
+    } else {
+      perrorf (g, "%s", filename);
+      return -1;
+    }
   }
 
-  /* cache=off improves reliability in the event of a host crash. */
-  snprintf (buf, len, "file=%s,cache=off,if=%s", filename, DRIVE_IF);
-
-  return guestfs_config (g, "-drive", buf);
+  return guestfs__config (g, "-drive", buf);
 }
 
 int
-guestfs_add_drive_ro (guestfs_h *g, const char *filename)
+guestfs__add_drive_ro (guestfs_h *g, const char *filename)
 {
   size_t len = strlen (filename) + 64;
   char buf[len];
@@ -811,11 +804,11 @@ guestfs_add_drive_ro (guestfs_h *g, const char *filename)
 
   snprintf (buf, len, "file=%s,snapshot=on,if=%s", filename, DRIVE_IF);
 
-  return guestfs_config (g, "-drive", buf);
+  return guestfs__config (g, "-drive", buf);
 }
 
 int
-guestfs_add_cdrom (guestfs_h *g, const char *filename)
+guestfs__add_cdrom (guestfs_h *g, const char *filename)
 {
   if (strchr (filename, ',') != NULL) {
     error (g, _("filename cannot contain ',' (comma) character"));
@@ -827,7 +820,7 @@ guestfs_add_cdrom (guestfs_h *g, const char *filename)
     return -1;
   }
 
-  return guestfs_config (g, "-cdrom", filename);
+  return guestfs__config (g, "-cdrom", filename);
 }
 
 /* Returns true iff file is contained in dir. */
@@ -861,9 +854,11 @@ dir_contains_files (const char *dir, ...)
   return 1;
 }
 
+static void print_timestamped_message (guestfs_h *g, const char *fs, ...);
 static int build_supermin_appliance (guestfs_h *g, const char *path, char **kernel, char **initrd);
 static int test_qemu (guestfs_h *g);
 static int qemu_supports (guestfs_h *g, const char *option);
+static void print_cmdline (guestfs_h *g);
 
 static const char *kernel_name = "vmlinuz." REPO "." host_cpu;
 static const char *initrd_name = "initramfs." REPO "." host_cpu ".img";
@@ -873,17 +868,31 @@ static const char *supermin_hostfiles_name =
   "initramfs." REPO "." host_cpu ".supermin.hostfiles";
 
 int
-guestfs_launch (guestfs_h *g)
+guestfs__launch (guestfs_h *g)
 {
-  static const char *dir_template = "/tmp/libguestfsXXXXXX";
-  int r, i, pmore;
+  const char *tmpdir;
+  char dir_template[PATH_MAX];
+  int r, pmore;
   size_t len;
   int wfd[2], rfd[2];
   int tries;
   char *path, *pelem, *pend;
   char *kernel = NULL, *initrd = NULL;
+  int null_vmchannel_sock;
   char unixsock[256];
   struct sockaddr_un addr;
+
+  /* Start the clock ... */
+  gettimeofday (&g->launch_t, NULL);
+
+#ifdef P_tmpdir
+  tmpdir = P_tmpdir;
+#else
+  tmpdir = "/tmp";
+#endif
+
+  tmpdir = getenv ("TMPDIR") ? : tmpdir;
+  snprintf (dir_template, sizeof dir_template, "%s/libguestfsXXXXXX", tmpdir);
 
   /* Configured? */
   if (!g->cmdline) {
@@ -920,27 +929,27 @@ guestfs_launch (guestfs_h *g)
     /* Empty element of "." means cwd. */
     if (len == 0 || (len == 1 && *pelem == '.')) {
       if (g->verbose)
-	fprintf (stderr,
-		 "looking for supermin appliance in current directory\n");
+        fprintf (stderr,
+                 "looking for supermin appliance in current directory\n");
       if (dir_contains_files (".",
-			      supermin_name, supermin_hostfiles_name,
-			      "kmod.whitelist", NULL)) {
-	if (build_supermin_appliance (g, ".", &kernel, &initrd) == -1)
-	  return -1;
-	break;
+                              supermin_name, supermin_hostfiles_name,
+                              "kmod.whitelist", NULL)) {
+        if (build_supermin_appliance (g, ".", &kernel, &initrd) == -1)
+          return -1;
+        break;
       }
     }
     /* Look at <path>/supermin* etc. */
     else {
       if (g->verbose)
-	fprintf (stderr, "looking for supermin appliance in %s\n", pelem);
+        fprintf (stderr, "looking for supermin appliance in %s\n", pelem);
 
       if (dir_contains_files (pelem,
-			      supermin_name, supermin_hostfiles_name,
-			      "kmod.whitelist", NULL)) {
-	if (build_supermin_appliance (g, pelem, &kernel, &initrd) == -1)
-	  return -1;
-	break;
+                              supermin_name, supermin_hostfiles_name,
+                              "kmod.whitelist", NULL)) {
+        if (build_supermin_appliance (g, pelem, &kernel, &initrd) == -1)
+          return -1;
+        break;
       }
     }
 
@@ -960,27 +969,27 @@ guestfs_launch (guestfs_h *g)
 
       /* Empty element or "." means cwd. */
       if (len == 0 || (len == 1 && *pelem == '.')) {
-	if (g->verbose)
-	  fprintf (stderr,
-		   "looking for appliance in current directory\n");
-	if (dir_contains_files (".", kernel_name, initrd_name, NULL)) {
-	  kernel = safe_strdup (g, kernel_name);
-	  initrd = safe_strdup (g, initrd_name);
-	  break;
-	}
+        if (g->verbose)
+          fprintf (stderr,
+                   "looking for appliance in current directory\n");
+        if (dir_contains_files (".", kernel_name, initrd_name, NULL)) {
+          kernel = safe_strdup (g, kernel_name);
+          initrd = safe_strdup (g, initrd_name);
+          break;
+        }
       }
       /* Look at <path>/kernel etc. */
       else {
-	if (g->verbose)
-	  fprintf (stderr, "looking for appliance in %s\n", pelem);
+        if (g->verbose)
+          fprintf (stderr, "looking for appliance in %s\n", pelem);
 
-	if (dir_contains_files (pelem, kernel_name, initrd_name, NULL)) {
-	  kernel = safe_malloc (g, len + strlen (kernel_name) + 2);
-	  initrd = safe_malloc (g, len + strlen (initrd_name) + 2);
-	  sprintf (kernel, "%s/%s", pelem, kernel_name);
-	  sprintf (initrd, "%s/%s", pelem, initrd_name);
-	  break;
-	}
+        if (dir_contains_files (pelem, kernel_name, initrd_name, NULL)) {
+          kernel = safe_malloc (g, len + strlen (kernel_name) + 2);
+          initrd = safe_malloc (g, len + strlen (initrd_name) + 2);
+          sprintf (kernel, "%s/%s", pelem, kernel_name);
+          sprintf (initrd, "%s/%s", pelem, initrd_name);
+          break;
+        }
       }
 
       pelem = pend + 1;
@@ -991,75 +1000,105 @@ guestfs_launch (guestfs_h *g)
 
   if (kernel == NULL || initrd == NULL) {
     error (g, _("cannot find %s or %s on LIBGUESTFS_PATH (current path = %s)"),
-	   kernel_name, initrd_name, g->path);
+           kernel_name, initrd_name, g->path);
     goto cleanup0;
   }
+
+  if (g->verbose)
+    print_timestamped_message (g, "begin testing qemu features");
 
   /* Get qemu help text and version. */
   if (test_qemu (g) == -1)
     goto cleanup0;
 
-  /* Make the vmchannel socket. */
-  snprintf (unixsock, sizeof unixsock, "%s/sock", g->tmpdir);
-  unlink (unixsock);
+  /* Choose which vmchannel implementation to use. */
+  if (qemu_supports (g, "-net user")) {
+    /* The "null vmchannel" implementation.  Requires SLIRP (user mode
+     * networking in qemu) but no other vmchannel support.  The daemon
+     * will connect back to a random port number on localhost.
+     */
+    struct sockaddr_in addr;
+    socklen_t addrlen = sizeof addr;
 
-  if (pipe (wfd) == -1 || pipe (rfd) == -1) {
-    perrorf (g, "pipe");
-    goto cleanup0;
+    g->sock = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (g->sock == -1) {
+      perrorf (g, "socket");
+      goto cleanup0;
+    }
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons (0);
+    addr.sin_addr.s_addr = htonl (INADDR_LOOPBACK);
+    if (bind (g->sock, (struct sockaddr *) &addr, addrlen) == -1) {
+      perrorf (g, "bind");
+      goto cleanup0;
+    }
+
+    if (listen (g->sock, 256) == -1) {
+      perrorf (g, "listen");
+      goto cleanup0;
+    }
+
+    if (getsockname (g->sock, (struct sockaddr *) &addr, &addrlen) == -1) {
+      perrorf (g, "getsockname");
+      goto cleanup0;
+    }
+
+    if (fcntl (g->sock, F_SETFL, O_NONBLOCK) == -1) {
+      perrorf (g, "fcntl");
+      goto cleanup0;
+    }
+
+    null_vmchannel_sock = ntohs (addr.sin_port);
+    if (g->verbose)
+      fprintf (stderr, "null_vmchannel_sock = %d\n", null_vmchannel_sock);
+  } else {
+    /* Using some vmchannel impl.  We need to create a local Unix
+     * domain socket for qemu to use.
+     */
+    snprintf (unixsock, sizeof unixsock, "%s/sock", g->tmpdir);
+    unlink (unixsock);
+    null_vmchannel_sock = 0;
   }
+
+  if (!g->direct) {
+    if (pipe (wfd) == -1 || pipe (rfd) == -1) {
+      perrorf (g, "pipe");
+      goto cleanup0;
+    }
+  }
+
+  if (g->verbose)
+    print_timestamped_message (g, "finished testing qemu features");
 
   r = fork ();
   if (r == -1) {
     perrorf (g, "fork");
-    close (wfd[0]);
-    close (wfd[1]);
-    close (rfd[0]);
-    close (rfd[1]);
+    if (!g->direct) {
+      close (wfd[0]);
+      close (wfd[1]);
+      close (rfd[0]);
+      close (rfd[1]);
+    }
     goto cleanup0;
   }
 
   if (r == 0) {			/* Child (qemu). */
-    char vmchannel[256];
-    char append[256];
-    char memsize_str[256];
+    char buf[256];
+    const char *vmchannel = NULL;
 
     /* Set up the full command line.  Do this in the subprocess so we
      * don't need to worry about cleaning up.
      */
     g->cmdline[0] = g->qemu;
 
-    /* Construct the -net channel parameter for qemu. */
-    snprintf (vmchannel, sizeof vmchannel,
-	      "channel,%d:unix:%s,server,nowait",
-	      VMCHANNEL_PORT, unixsock);
-
-    /* Linux kernel command line. */
-    snprintf (append, sizeof append,
-	      "panic=1 console=ttyS0 guestfs=%s:%d%s%s%s",
-	      VMCHANNEL_ADDR, VMCHANNEL_PORT,
-	      g->verbose ? " guestfs_verbose=1" : "",
-	      g->append ? " " : "", g->append ? g->append : "");
-
-    snprintf (memsize_str, sizeof memsize_str, "%d", g->memsize);
-
+    snprintf (buf, sizeof buf, "%d", g->memsize);
     add_cmdline (g, "-m");
-    add_cmdline (g, memsize_str);
+    add_cmdline (g, buf);
+
     add_cmdline (g, "-no-reboot"); /* Force exit instead of reboot on panic */
-    add_cmdline (g, "-kernel");
-    add_cmdline (g, (char *) kernel);
-    add_cmdline (g, "-initrd");
-    add_cmdline (g, (char *) initrd);
-    add_cmdline (g, "-append");
-    add_cmdline (g, append);
     add_cmdline (g, "-nographic");
     add_cmdline (g, "-serial");
     add_cmdline (g, "stdio");
-    add_cmdline (g, "-net");
-    add_cmdline (g, vmchannel);
-    add_cmdline (g, "-net");
-    add_cmdline (g, "user,vlan=0");
-    add_cmdline (g, "-net");
-    add_cmdline (g, "nic,model=virtio,vlan=0");
 
     /* These options recommended by KVM developers to improve reliability. */
     if (qemu_supports (g, "-no-hpet"))
@@ -1068,26 +1107,118 @@ guestfs_launch (guestfs_h *g)
     if (qemu_supports (g, "-rtc-td-hack"))
       add_cmdline (g, "-rtc-td-hack");
 
+    /* If qemu has SLIRP (user mode network) enabled then we can get
+     * away with "no vmchannel", where we just connect back to a random
+     * host port.
+     */
+    if (null_vmchannel_sock) {
+      add_cmdline (g, "-net");
+      add_cmdline (g, "user,vlan=0,net=10.0.2.0/8");
+
+      snprintf (buf, sizeof buf,
+                "guestfs_vmchannel=tcp:10.0.2.2:%d", null_vmchannel_sock);
+      vmchannel = strdup (buf);
+    }
+
+    /* New-style -net user,guestfwd=... syntax for guestfwd.  See:
+     *
+     * http://git.savannah.gnu.org/cgit/qemu.git/commit/?id=c92ef6a22d3c71538fcc48fb61ad353f7ba03b62
+     *
+     * The original suggested format doesn't work, see:
+     *
+     * http://lists.gnu.org/archive/html/qemu-devel/2009-07/msg01654.html
+     *
+     * However Gerd Hoffman privately suggested to me using -chardev
+     * instead, which does work.
+     */
+    else if (qemu_supports (g, "-chardev") && qemu_supports (g, "guestfwd")) {
+      snprintf (buf, sizeof buf,
+                "socket,id=guestfsvmc,path=%s,server,nowait", unixsock);
+
+      add_cmdline (g, "-chardev");
+      add_cmdline (g, buf);
+
+      snprintf (buf, sizeof buf,
+                "user,vlan=0,net=10.0.2.0/8,"
+                "guestfwd=tcp:" GUESTFWD_ADDR ":" GUESTFWD_PORT
+                "-chardev:guestfsvmc");
+
+      add_cmdline (g, "-net");
+      add_cmdline (g, buf);
+
+      vmchannel = "guestfs_vmchannel=tcp:" GUESTFWD_ADDR ":" GUESTFWD_PORT;
+    }
+
+    /* Not guestfwd.  HOPEFULLY this qemu uses the older -net channel
+     * syntax, or if not then we'll get a quick failure.
+     */
+    else {
+      snprintf (buf, sizeof buf,
+                "channel," GUESTFWD_PORT ":unix:%s,server,nowait", unixsock);
+
+      add_cmdline (g, "-net");
+      add_cmdline (g, buf);
+      add_cmdline (g, "-net");
+      add_cmdline (g, "user,vlan=0,net=10.0.2.0/8");
+
+      vmchannel = "guestfs_vmchannel=tcp:" GUESTFWD_ADDR ":" GUESTFWD_PORT;
+    }
+    add_cmdline (g, "-net");
+    add_cmdline (g, "nic,model=" NET_IF ",vlan=0");
+
+#define LINUX_CMDLINE							\
+    "panic=1 "         /* force kernel to panic if daemon exits */	\
+    "console=ttyS0 "   /* serial console */				\
+    "udevtimeout=300 " /* good for very slow systems (RHBZ#480319) */	\
+    "noapic "          /* workaround for RHBZ#502058 - ok if not SMP */ \
+    "acpi=off "        /* we don't need ACPI, turn it off */		\
+    "printk.time=1 "   /* display timestamp before kernel messages */   \
+    "cgroup_disable=memory " /* saves us about 5 MB of RAM */
+
+    /* Linux kernel command line. */
+    snprintf (buf, sizeof buf,
+              LINUX_CMDLINE
+              "%s "             /* (selinux) */
+              "%s "             /* (vmchannel) */
+              "%s "             /* (verbose) */
+              "%s",             /* (append) */
+              g->selinux ? "selinux=1 enforcing=0" : "selinux=0",
+              vmchannel ? vmchannel : "",
+              g->verbose ? "guestfs_verbose=1" : "",
+              g->append ? g->append : "");
+
+    add_cmdline (g, "-kernel");
+    add_cmdline (g, (char *) kernel);
+    add_cmdline (g, "-initrd");
+    add_cmdline (g, (char *) initrd);
+    add_cmdline (g, "-append");
+    add_cmdline (g, buf);
+
     /* Finish off the command line. */
     incr_cmdline_size (g);
     g->cmdline[g->cmdline_size-1] = NULL;
 
-    if (g->verbose) {
-      fprintf (stderr, "%s", g->qemu);
-      for (i = 0; g->cmdline[i]; ++i)
-	fprintf (stderr, " %s", g->cmdline[i]);
-      fprintf (stderr, "\n");
-    }
+    if (g->verbose)
+      print_cmdline (g);
 
-    /* Set up stdin, stdout. */
-    close (0);
-    close (1);
-    close (wfd[1]);
-    close (rfd[0]);
-    dup (wfd[0]);
-    dup (rfd[1]);
-    close (wfd[0]);
-    close (rfd[1]);
+    if (!g->direct) {
+      /* Set up stdin, stdout. */
+      close (0);
+      close (1);
+      close (wfd[1]);
+      close (rfd[0]);
+
+      if (dup (wfd[0]) == -1) {
+      dup_failed:
+        perror ("dup failed");
+        _exit (1);
+      }
+      if (dup (rfd[1]) == -1)
+        goto dup_failed;
+
+      close (wfd[0]);
+      close (rfd[1]);
+    }
 
 #if 0
     /* Set up a new process group, so we can signal this process
@@ -1095,6 +1226,8 @@ guestfs_launch (guestfs_h *g)
      */
     setpgid (0, 0);
 #endif
+
+    setenv ("LC_ALL", "C", 1);
 
     execv (g->qemu, g->cmdline); /* Run qemu. */
     perror (g->qemu);
@@ -1112,149 +1245,228 @@ guestfs_launch (guestfs_h *g)
   /* Fork the recovery process off which will kill qemu if the parent
    * process fails to do so (eg. if the parent segfaults).
    */
-  r = fork ();
-  if (r == 0) {
-    pid_t qemu_pid = g->pid;
-    pid_t parent_pid = getppid ();
+  g->recoverypid = -1;
+  if (g->recovery_proc) {
+    r = fork ();
+    if (r == 0) {
+      pid_t qemu_pid = g->pid;
+      pid_t parent_pid = getppid ();
 
-    /* Writing to argv is hideously complicated and error prone.  See:
-     * http://anoncvs.postgresql.org/cvsweb.cgi/pgsql/src/backend/utils/misc/ps_status.c?rev=1.33.2.1;content-type=text%2Fplain
-     */
+      /* Writing to argv is hideously complicated and error prone.  See:
+       * http://anoncvs.postgresql.org/cvsweb.cgi/pgsql/src/backend/utils/misc/ps_status.c?rev=1.33.2.1;content-type=text%2Fplain
+       */
 
-    /* Loop around waiting for one or both of the other processes to
-     * disappear.  It's fair to say this is very hairy.  The PIDs that
-     * we are looking at might be reused by another process.  We are
-     * effectively polling.  Is the cure worse than the disease?
-     */
-    for (;;) {
-      if (kill (qemu_pid, 0) == -1) /* qemu's gone away, we aren't needed */
-	_exit (0);
-      if (kill (parent_pid, 0) == -1) {
-	/* Parent's gone away, qemu still around, so kill qemu. */
-	kill (qemu_pid, 9);
-	_exit (0);
+      /* Loop around waiting for one or both of the other processes to
+       * disappear.  It's fair to say this is very hairy.  The PIDs that
+       * we are looking at might be reused by another process.  We are
+       * effectively polling.  Is the cure worse than the disease?
+       */
+      for (;;) {
+        if (kill (qemu_pid, 0) == -1) /* qemu's gone away, we aren't needed */
+          _exit (0);
+        if (kill (parent_pid, 0) == -1) {
+          /* Parent's gone away, qemu still around, so kill qemu. */
+          kill (qemu_pid, 9);
+          _exit (0);
+        }
+        sleep (2);
       }
-      sleep (2);
+    }
+
+    /* Don't worry, if the fork failed, this will be -1.  The recovery
+     * process isn't essential.
+     */
+    g->recoverypid = r;
+  }
+
+  if (!g->direct) {
+    /* Close the other ends of the pipe. */
+    close (wfd[0]);
+    close (rfd[1]);
+
+    if (fcntl (wfd[1], F_SETFL, O_NONBLOCK) == -1 ||
+        fcntl (rfd[0], F_SETFL, O_NONBLOCK) == -1) {
+      perrorf (g, "fcntl");
+      goto cleanup1;
+    }
+
+    g->fd[0] = wfd[1];		/* stdin of child */
+    g->fd[1] = rfd[0];		/* stdout of child */
+  } else {
+    g->fd[0] = open ("/dev/null", O_RDWR);
+    if (g->fd[0] == -1) {
+      perrorf (g, "open /dev/null");
+      goto cleanup1;
+    }
+    g->fd[1] = dup (g->fd[0]);
+    if (g->fd[1] == -1) {
+      perrorf (g, "dup");
+      close (g->fd[0]);
+      goto cleanup1;
     }
   }
 
-  /* Don't worry, if the fork failed, this will be -1.  The recovery
-   * process isn't essential.
-   */
-  g->recoverypid = r;
+  if (null_vmchannel_sock) {
+    int sock = -1;
+    uid_t uid;
 
-  /* Start the clock ... */
-  time (&g->start_t);
+    /* Null vmchannel implementation: We listen on g->sock for a
+     * connection.  The connection could come from any local process
+     * so we must check it comes from the appliance (or at least
+     * from our UID) for security reasons.
+     */
+    while (sock == -1) {
+      sock = accept_from_daemon (g);
+      if (sock == -1)
+        goto cleanup1;
 
-  /* Close the other ends of the pipe. */
-  close (wfd[0]);
-  close (rfd[1]);
+      if (check_peer_euid (g, sock, &uid) == -1)
+        goto cleanup1;
+      if (uid != geteuid ()) {
+        fprintf (stderr,
+                 "libguestfs: warning: unexpected connection from UID %d to port %d\n",
+                 uid, null_vmchannel_sock);
+        close (sock);
+        continue;
+      }
+    }
 
-  if (fcntl (wfd[1], F_SETFL, O_NONBLOCK) == -1 ||
-      fcntl (rfd[0], F_SETFL, O_NONBLOCK) == -1) {
-    perrorf (g, "fcntl");
+    if (fcntl (sock, F_SETFL, O_NONBLOCK) == -1) {
+      perrorf (g, "fcntl");
+      goto cleanup1;
+    }
+
+    close (g->sock);
+    g->sock = sock;
+  } else {
+    /* Other vmchannel.  Open the Unix socket.
+     *
+     * The vmchannel implementation that got merged with qemu sucks in
+     * a number of ways.  Both ends do connect(2), which means that no
+     * one knows what, if anything, is connected to the other end, or
+     * if it becomes disconnected.  Even worse, we have to wait some
+     * indeterminate time for qemu to create the socket and connect to
+     * it (which happens very early in qemu's start-up), so any code
+     * that uses vmchannel is inherently racy.  Hence this silly loop.
+     */
+    g->sock = socket (AF_UNIX, SOCK_STREAM, 0);
+    if (g->sock == -1) {
+      perrorf (g, "socket");
+      goto cleanup1;
+    }
+
+    if (fcntl (g->sock, F_SETFL, O_NONBLOCK) == -1) {
+      perrorf (g, "fcntl");
+      goto cleanup1;
+    }
+
+    addr.sun_family = AF_UNIX;
+    strncpy (addr.sun_path, unixsock, UNIX_PATH_MAX);
+    addr.sun_path[UNIX_PATH_MAX-1] = '\0';
+
+    tries = 100;
+    /* Always sleep at least once to give qemu a small chance to start up. */
+    usleep (10000);
+    while (tries > 0) {
+      r = connect (g->sock, (struct sockaddr *) &addr, sizeof addr);
+      if ((r == -1 && errno == EINPROGRESS) || r == 0)
+        goto connected;
+
+      if (errno != ENOENT)
+        perrorf (g, "connect");
+      tries--;
+      usleep (100000);
+    }
+
+    error (g, _("failed to connect to vmchannel socket"));
     goto cleanup1;
+
+  connected: ;
   }
-
-  g->fd[0] = wfd[1];		/* stdin of child */
-  g->fd[1] = rfd[0];		/* stdout of child */
-
-  /* Open the Unix socket.  The vmchannel implementation that got
-   * merged with qemu sucks in a number of ways.  Both ends do
-   * connect(2), which means that no one knows what, if anything, is
-   * connected to the other end, or if it becomes disconnected.  Even
-   * worse, we have to wait some indeterminate time for qemu to create
-   * the socket and connect to it (which happens very early in qemu's
-   * start-up), so any code that uses vmchannel is inherently racy.
-   * Hence this silly loop.
-   */
-  g->sock = socket (AF_UNIX, SOCK_STREAM, 0);
-  if (g->sock == -1) {
-    perrorf (g, "socket");
-    goto cleanup1;
-  }
-
-  if (fcntl (g->sock, F_SETFL, O_NONBLOCK) == -1) {
-    perrorf (g, "fcntl");
-    goto cleanup2;
-  }
-
-  addr.sun_family = AF_UNIX;
-  strncpy (addr.sun_path, unixsock, UNIX_PATH_MAX);
-  addr.sun_path[UNIX_PATH_MAX-1] = '\0';
-
-  tries = 100;
-  /* Always sleep at least once to give qemu a small chance to start up. */
-  usleep (10000);
-  while (tries > 0) {
-    r = connect (g->sock, (struct sockaddr *) &addr, sizeof addr);
-    if ((r == -1 && errno == EINPROGRESS) || r == 0)
-      goto connected;
-
-    if (errno != ENOENT)
-      perrorf (g, "connect");
-    tries--;
-    usleep (100000);
-  }
-
-  error (g, _("failed to connect to vmchannel socket"));
-  goto cleanup2;
-
- connected:
-  /* Watch the file descriptors. */
-  free (g->msg_in);
-  g->msg_in = NULL;
-  g->msg_in_size = g->msg_in_allocated = 0;
-
-  free (g->msg_out);
-  g->msg_out = NULL;
-  g->msg_out_size = 0;
-  g->msg_out_pos = 0;
-
-  g->stdout_watch =
-    g->main_loop->add_handle (g->main_loop, g, g->fd[1],
-			      GUESTFS_HANDLE_READABLE,
-			      stdout_event, NULL);
-  if (g->stdout_watch == -1) {
-    error (g, _("could not watch qemu stdout"));
-    goto cleanup3;
-  }
-
-  if (guestfs__switch_to_receiving (g) == -1)
-    goto cleanup3;
 
   g->state = LAUNCHING;
+
+  /* Wait for qemu to start and to connect back to us via vmchannel and
+   * send the GUESTFS_LAUNCH_FLAG message.
+   */
+  uint32_t size;
+  void *buf = NULL;
+  r = recv_from_daemon (g, &size, &buf);
+  free (buf);
+
+  if (r == -1) return -1;
+
+  if (size != GUESTFS_LAUNCH_FLAG) {
+    error (g, _("guestfs_launch failed, see earlier error messages"));
+    goto cleanup1;
+  }
+
+  if (g->verbose)
+    print_timestamped_message (g, "appliance is up");
+
+  /* This is possible in some really strange situations, such as
+   * guestfsd starts up OK but then qemu immediately exits.  Check for
+   * it because the caller is probably expecting to be able to send
+   * commands after this function returns.
+   */
+  if (g->state != READY) {
+    error (g, _("qemu launched and contacted daemon, but state != READY"));
+    goto cleanup1;
+  }
+
   return 0;
 
- cleanup3:
-  if (g->stdout_watch >= 0)
-    g->main_loop->remove_handle (g->main_loop, g, g->stdout_watch);
-  if (g->sock_watch >= 0)
-    g->main_loop->remove_handle (g->main_loop, g, g->sock_watch);
-
- cleanup2:
-  close (g->sock);
-
  cleanup1:
-  close (wfd[1]);
-  close (rfd[0]);
+  if (!g->direct) {
+    close (wfd[1]);
+    close (rfd[0]);
+  }
   kill (g->pid, 9);
   if (g->recoverypid > 0) kill (g->recoverypid, 9);
   waitpid (g->pid, NULL, 0);
   if (g->recoverypid > 0) waitpid (g->recoverypid, NULL, 0);
   g->fd[0] = -1;
   g->fd[1] = -1;
-  g->sock = -1;
   g->pid = 0;
   g->recoverypid = 0;
-  g->start_t = 0;
-  g->stdout_watch = -1;
-  g->sock_watch = -1;
+  memset (&g->launch_t, 0, sizeof g->launch_t);
 
  cleanup0:
+  if (g->sock >= 0) {
+    close (g->sock);
+    g->sock = -1;
+  }
+  g->state = CONFIG;
   free (kernel);
   free (initrd);
   return -1;
+}
+
+/* This function is used to print the qemu command line before it gets
+ * executed, when in verbose mode.
+ */
+static void
+print_cmdline (guestfs_h *g)
+{
+  int i = 0;
+  int needs_quote;
+
+  while (g->cmdline[i]) {
+    if (g->cmdline[i][0] == '-') /* -option starts a new line */
+      fprintf (stderr, " \\\n   ");
+
+    if (i > 0) fputc (' ', stderr);
+
+    /* Does it need shell quoting?  This only deals with simple cases. */
+    needs_quote = strcspn (g->cmdline[i], " ") != strlen (g->cmdline[i]);
+
+    if (needs_quote) fputc ('\'', stderr);
+    fprintf (stderr, "%s", g->cmdline[i]);
+    if (needs_quote) fputc ('\'', stderr);
+    i++;
+  }
+
+  fputc ('\n', stderr);
 }
 
 /* This function does the hard work of building the supermin appliance
@@ -1265,10 +1477,13 @@ guestfs_launch (guestfs_h *g)
  */
 static int
 build_supermin_appliance (guestfs_h *g, const char *path,
-			  char **kernel, char **initrd)
+                          char **kernel, char **initrd)
 {
   char cmd[4096];
   int r, len;
+
+  if (g->verbose)
+    print_timestamped_message (g, "begin building supermin appliance");
 
   len = strlen (g->tmpdir);
   *kernel = safe_malloc (g, len + 8);
@@ -1277,10 +1492,10 @@ build_supermin_appliance (guestfs_h *g, const char *path,
   snprintf (*initrd, len+8, "%s/initrd", g->tmpdir);
 
   snprintf (cmd, sizeof cmd,
-	    "PATH='%s':$PATH "
-	    "libguestfs-supermin-helper '%s' %s %s",
-	    path,
-	    path, *kernel, *initrd);
+            "PATH='%s':$PATH "
+            "libguestfs-supermin-helper '%s' %s %s",
+            path,
+            path, *kernel, *initrd);
 
   r = system (cmd);
   if (r == -1 || WEXITSTATUS(r) != 0) {
@@ -1291,7 +1506,46 @@ build_supermin_appliance (guestfs_h *g, const char *path,
     return -1;
   }
 
+  if (g->verbose)
+    print_timestamped_message (g, "finished building supermin appliance");
+
   return 0;
+}
+
+/* Compute Y - X and return the result in milliseconds.
+ * Approximately the same as this code:
+ * http://www.mpp.mpg.de/~huber/util/timevaldiff.c
+ */
+static int64_t
+timeval_diff (const struct timeval *x, const struct timeval *y)
+{
+  int64_t msec;
+
+  msec = (y->tv_sec - x->tv_sec) * 1000;
+  msec += (y->tv_usec - x->tv_usec) / 1000;
+  return msec;
+}
+
+static void
+print_timestamped_message (guestfs_h *g, const char *fs, ...)
+{
+  va_list args;
+  char *msg;
+  int err;
+  struct timeval tv, diff;
+
+  va_start (args, fs);
+  err = vasprintf (&msg, fs, args);
+  va_end (args);
+
+  if (err < 0) return;
+
+  gettimeofday (&tv, NULL);
+
+  fprintf (stderr, "[%05" PRIi64 "ms] %s\n",
+           timeval_diff (&g->launch_t, &tv), msg);
+
+  free (msg);
 }
 
 static int read_all (guestfs_h *g, FILE *fp, char **ret);
@@ -1311,7 +1565,7 @@ test_qemu (guestfs_h *g)
   g->qemu_help = NULL;
   g->qemu_version = NULL;
 
-  snprintf (cmd, sizeof cmd, "'%s' -help", g->qemu);
+  snprintf (cmd, sizeof cmd, "LC_ALL=C '%s' -help", g->qemu);
 
   fp = popen (cmd, "r");
   /* qemu -help should always work (qemu -version OTOH wasn't
@@ -1333,7 +1587,7 @@ test_qemu (guestfs_h *g)
   if (pclose (fp) == -1)
     goto error;
 
-  snprintf (cmd, sizeof cmd, "'%s' -version 2>/dev/null", g->qemu);
+  snprintf (cmd, sizeof cmd, "LC_ALL=C '%s' -version 2>/dev/null", g->qemu);
 
   fp = popen (cmd, "r");
   if (fp) {
@@ -1378,53 +1632,91 @@ qemu_supports (guestfs_h *g, const char *option)
   return g->qemu_help && strstr (g->qemu_help, option) != NULL;
 }
 
-static void
-finish_wait_ready (guestfs_h *g, void *vp)
+/* Check the peer effective UID for a TCP socket.  Ideally we'd like
+ * SO_PEERCRED for a loopback TCP socket.  This isn't possible on
+ * Linux (but it is on Solaris!) so we read /proc/net/tcp instead.
+ */
+static int
+check_peer_euid (guestfs_h *g, int sock, uid_t *rtn)
 {
-  if (g->verbose)
-    fprintf (stderr, "finish_wait_ready called, %p, vp = %p\n", g, vp);
+  struct sockaddr_in peer;
+  socklen_t addrlen = sizeof peer;
 
-  *((int *)vp) = 1;
-  g->main_loop->main_loop_quit (g->main_loop, g);
+  if (getpeername (sock, (struct sockaddr *) &peer, &addrlen) == -1) {
+    perrorf (g, "getpeername");
+    return -1;
+  }
+
+  if (peer.sin_family != AF_INET ||
+      ntohl (peer.sin_addr.s_addr) != INADDR_LOOPBACK) {
+    error (g, "check_peer_euid: unexpected connection from non-IPv4, non-loopback peer (family = %d, addr = %s)",
+           peer.sin_family, inet_ntoa (peer.sin_addr));
+    return -1;
+  }
+
+  struct sockaddr_in our;
+  addrlen = sizeof our;
+  if (getsockname (sock, (struct sockaddr *) &our, &addrlen) == -1) {
+    perrorf (g, "getsockname");
+    return -1;
+  }
+
+  FILE *fp = fopen ("/proc/net/tcp", "r");
+  if (fp == NULL) {
+    perrorf (g, "/proc/net/tcp");
+    return -1;
+  }
+
+  char line[256];
+  if (fgets (line, sizeof line, fp) == NULL) { /* Drop first line. */
+    error (g, "unexpected end of file in /proc/net/tcp");
+    fclose (fp);
+    return -1;
+  }
+
+  while (fgets (line, sizeof line, fp) != NULL) {
+    unsigned line_our_addr, line_our_port, line_peer_addr, line_peer_port;
+    int dummy0, dummy1, dummy2, dummy3, dummy4, dummy5, dummy6;
+    int line_uid;
+
+    if (sscanf (line, "%d:%08X:%04X %08X:%04X %02X %08X:%08X %02X:%08X %08X %d",
+                &dummy0,
+                &line_our_addr, &line_our_port,
+                &line_peer_addr, &line_peer_port,
+                &dummy1, &dummy2, &dummy3, &dummy4, &dummy5, &dummy6,
+                &line_uid) == 12) {
+      /* Note about /proc/net/tcp: local_address and rem_address are
+       * always in network byte order.  However the port part is
+       * always in host byte order.
+       *
+       * The sockname and peername that we got above are in network
+       * byte order.  So we have to byte swap the port but not the
+       * address part.
+       */
+      if (line_our_addr == our.sin_addr.s_addr &&
+          line_our_port == ntohs (our.sin_port) &&
+          line_peer_addr == peer.sin_addr.s_addr &&
+          line_peer_port == ntohs (peer.sin_port)) {
+        *rtn = line_uid;
+        fclose (fp);
+        return 0;
+      }
+    }
+  }
+
+  error (g, "check_peer_euid: no matching TCP connection found in /proc/net/tcp");
+  fclose (fp);
+  return -1;
 }
 
+/* You had to call this function after launch in versions <= 1.0.70,
+ * but it is now a no-op.
+ */
 int
-guestfs_wait_ready (guestfs_h *g)
+guestfs__wait_ready (guestfs_h *g)
 {
-  int finished = 0, r;
-
-  if (g->state == READY) return 0;
-
-  if (g->state == BUSY) {
-    error (g, _("qemu has finished launching already"));
-    return -1;
-  }
-
-  if (g->state != LAUNCHING) {
+  if (g->state != READY)  {
     error (g, _("qemu has not been launched yet"));
-    return -1;
-  }
-
-  g->launch_done_cb = finish_wait_ready;
-  g->launch_done_cb_data = &finished;
-  r = g->main_loop->main_loop_run (g->main_loop, g);
-  g->launch_done_cb = NULL;
-  g->launch_done_cb_data = NULL;
-
-  if (r == -1) return -1;
-
-  if (finished != 1) {
-    error (g, _("guestfs_wait_ready failed, see earlier error messages"));
-    return -1;
-  }
-
-  /* This is possible in some really strange situations, such as
-   * guestfsd starts up OK but then qemu immediately exits.  Check for
-   * it because the caller is probably expecting to be able to send
-   * commands after this function returns.
-   */
-  if (g->state != READY) {
-    error (g, _("qemu launched and contacted daemon, but state != READY"));
     return -1;
   }
 
@@ -1432,7 +1724,7 @@ guestfs_wait_ready (guestfs_h *g)
 }
 
 int
-guestfs_kill_subprocess (guestfs_h *g)
+guestfs__kill_subprocess (guestfs_h *g)
 {
   if (g->state == CONFIG) {
     error (g, _("no subprocess to kill"));
@@ -1450,53 +1742,115 @@ guestfs_kill_subprocess (guestfs_h *g)
 
 /* Access current state. */
 int
-guestfs_is_config (guestfs_h *g)
+guestfs__is_config (guestfs_h *g)
 {
   return g->state == CONFIG;
 }
 
 int
-guestfs_is_launching (guestfs_h *g)
+guestfs__is_launching (guestfs_h *g)
 {
   return g->state == LAUNCHING;
 }
 
 int
-guestfs_is_ready (guestfs_h *g)
+guestfs__is_ready (guestfs_h *g)
 {
   return g->state == READY;
 }
 
 int
-guestfs_is_busy (guestfs_h *g)
+guestfs__is_busy (guestfs_h *g)
 {
   return g->state == BUSY;
 }
 
 int
-guestfs_get_state (guestfs_h *g)
+guestfs__get_state (guestfs_h *g)
 {
   return g->state;
 }
 
-int
-guestfs_set_ready (guestfs_h *g)
+void
+guestfs_set_log_message_callback (guestfs_h *g,
+                                  guestfs_log_message_cb cb, void *opaque)
 {
-  if (g->state != BUSY) {
-    error (g, _("guestfs_set_ready: called when in state %d != BUSY"),
-	   g->state);
-    return -1;
-  }
-  g->state = READY;
-  return 0;
+  g->log_message_cb = cb;
+  g->log_message_cb_data = opaque;
 }
 
+void
+guestfs_set_subprocess_quit_callback (guestfs_h *g,
+                                      guestfs_subprocess_quit_cb cb, void *opaque)
+{
+  g->subprocess_quit_cb = cb;
+  g->subprocess_quit_cb_data = opaque;
+}
+
+void
+guestfs_set_launch_done_callback (guestfs_h *g,
+                                  guestfs_launch_done_cb cb, void *opaque)
+{
+  g->launch_done_cb = cb;
+  g->launch_done_cb_data = opaque;
+}
+
+/*----------------------------------------------------------------------*/
+
+/* This is the code used to send and receive RPC messages and (for
+ * certain types of message) to perform file transfers.  This code is
+ * driven from the generated actions (src/guestfs-actions.c).  There
+ * are five different cases to consider:
+ *
+ * (1) A non-daemon function.  There is no RPC involved at all, it's
+ * all handled inside the library.
+ *
+ * (2) A simple RPC (eg. "mount").  We write the request, then read
+ * the reply.  The sequence of calls is:
+ *
+ *   guestfs___set_busy
+ *   guestfs___send
+ *   guestfs___recv
+ *   guestfs___end_busy
+ *
+ * (3) An RPC with FileOut parameters (eg. "upload").  We write the
+ * request, then write the file(s), then read the reply.  The sequence
+ * of calls is:
+ *
+ *   guestfs___set_busy
+ *   guestfs___send
+ *   guestfs___send_file  (possibly multiple times)
+ *   guestfs___recv
+ *   guestfs___end_busy
+ *
+ * (4) An RPC with FileIn parameters (eg. "download").  We write the
+ * request, then read the reply, then read the file(s).  The sequence
+ * of calls is:
+ *
+ *   guestfs___set_busy
+ *   guestfs___send
+ *   guestfs___recv
+ *   guestfs___recv_file  (possibly multiple times)
+ *   guestfs___end_busy
+ *
+ * (5) Both FileOut and FileIn parameters.  There are no calls like
+ * this in the current API, but they would be implemented as a
+ * combination of cases (3) and (4).
+ *
+ * During all writes and reads, we also select(2) on qemu stdout
+ * looking for messages (guestfsd stderr and guest kernel dmesg), and
+ * anything received is passed up through the log_message_cb.  This is
+ * also the reason why all the sockets are non-blocking.  We also have
+ * to check for EOF (qemu died).  All of this is handled by the
+ * functions send_to_daemon and recv_from_daemon.
+ */
+
 int
-guestfs_set_busy (guestfs_h *g)
+guestfs___set_busy (guestfs_h *g)
 {
   if (g->state != READY) {
     error (g, _("guestfs_set_busy: called when in state %d != READY"),
-	   g->state);
+           g->state);
     return -1;
   }
   g->state = BUSY;
@@ -1504,7 +1858,7 @@ guestfs_set_busy (guestfs_h *g)
 }
 
 int
-guestfs_end_busy (guestfs_h *g)
+guestfs___end_busy (guestfs_h *g)
 {
   switch (g->state)
     {
@@ -1514,31 +1868,27 @@ guestfs_end_busy (guestfs_h *g)
     case CONFIG:
     case READY:
       break;
+
     case LAUNCHING:
     case NO_HANDLE:
+    default:
       error (g, _("guestfs_end_busy: called when in state %d"), g->state);
       return -1;
     }
   return 0;
 }
 
-/* We don't know if stdout_event or sock_read_event will be the
- * first to receive EOF if the qemu process dies.  This function
- * has the common cleanup code for both.
- */
+/* This is called if we detect EOF, ie. qemu died. */
 static void
 child_cleanup (guestfs_h *g)
 {
   if (g->verbose)
-    fprintf (stderr, "stdout_event: %p: child process died\n", g);
+    fprintf (stderr, "child_cleanup: %p: child process died\n", g);
+
   /*kill (g->pid, SIGTERM);*/
   if (g->recoverypid > 0) kill (g->recoverypid, 9);
   waitpid (g->pid, NULL, 0);
   if (g->recoverypid > 0) waitpid (g->recoverypid, NULL, 0);
-  if (g->stdout_watch >= 0)
-    g->main_loop->remove_handle (g->main_loop, g, g->stdout_watch);
-  if (g->sock_watch >= 0)
-    g->main_loop->remove_handle (g->main_loop, g, g->sock_watch);
   close (g->fd[0]);
   close (g->fd[1]);
   close (g->sock);
@@ -1547,405 +1897,401 @@ child_cleanup (guestfs_h *g)
   g->sock = -1;
   g->pid = 0;
   g->recoverypid = 0;
-  g->start_t = 0;
-  g->stdout_watch = -1;
-  g->sock_watch = -1;
+  memset (&g->launch_t, 0, sizeof g->launch_t);
   g->state = CONFIG;
   if (g->subprocess_quit_cb)
     g->subprocess_quit_cb (g, g->subprocess_quit_cb_data);
 }
 
-/* This function is called whenever qemu prints something on stdout.
- * Qemu's stdout is also connected to the guest's serial console, so
- * we see kernel messages here too.
- */
-static void
-stdout_event (struct guestfs_main_loop *ml, guestfs_h *g, void *data,
-	      int watch, int fd, int events)
+static int
+read_log_message_or_eof (guestfs_h *g, int fd)
 {
-  char buf[4096];
+  char buf[BUFSIZ];
   int n;
 
 #if 0
   if (g->verbose)
     fprintf (stderr,
-	     "stdout_event: %p g->state = %d, fd = %d, events = 0x%x\n",
-	     g, g->state, fd, events);
+             "read_log_message_or_eof: %p g->state = %d, fd = %d\n",
+             g, g->state, fd);
 #endif
 
-  if (g->fd[1] != fd) {
-    error (g, _("stdout_event: internal error: %d != %d"), g->fd[1], fd);
-    return;
-  }
-
+  /* QEMU's console emulates a 16550A serial port.  The real 16550A
+   * device has a small FIFO buffer (16 bytes) which means here we see
+   * lots of small reads of 1-16 bytes in length, usually single
+   * bytes.
+   */
   n = read (fd, buf, sizeof buf);
   if (n == 0) {
     /* Hopefully this indicates the qemu child process has died. */
     child_cleanup (g);
-    return;
+    return -1;
   }
 
   if (n == -1) {
-    if (errno != EINTR && errno != EAGAIN)
-      perrorf (g, "read");
-    return;
+    if (errno == EINTR || errno == EAGAIN)
+      return 0;
+
+    perrorf (g, "read");
+    return -1;
   }
 
   /* In verbose mode, copy all log messages to stderr. */
   if (g->verbose)
-    write (2, buf, n);
+    ignore_value (write (STDERR_FILENO, buf, n));
 
   /* It's an actual log message, send it upwards if anyone is listening. */
   if (g->log_message_cb)
     g->log_message_cb (g, g->log_message_cb_data, buf, n);
+
+  return 0;
 }
 
-/* The function is called whenever we can read something on the
- * guestfsd (daemon inside the guest) communication socket.
- */
-static void
-sock_read_event (struct guestfs_main_loop *ml, guestfs_h *g, void *data,
-		 int watch, int fd, int events)
+static int
+check_for_daemon_cancellation_or_eof (guestfs_h *g, int fd)
 {
-  XDR xdr;
-  u_int32_t len;
+  char buf[4];
   int n;
+  uint32_t flag;
+  XDR xdr;
 
   if (g->verbose)
     fprintf (stderr,
-	     "sock_read_event: %p g->state = %d, fd = %d, events = 0x%x\n",
-	     g, g->state, fd, events);
+             "check_for_daemon_cancellation_or_eof: %p g->state = %d, fd = %d\n",
+             g, g->state, fd);
 
-  if (g->sock != fd) {
-    error (g, _("sock_read_event: internal error: %d != %d"), g->sock, fd);
-    return;
-  }
-
-  if (g->msg_in_size <= g->msg_in_allocated) {
-    g->msg_in_allocated += 4096;
-    g->msg_in = safe_realloc (g, g->msg_in, g->msg_in_allocated);
-  }
-  n = read (g->sock, g->msg_in + g->msg_in_size,
-	    g->msg_in_allocated - g->msg_in_size);
+  n = read (fd, buf, 4);
   if (n == 0) {
-    /* Disconnected. */
+    /* Hopefully this indicates the qemu child process has died. */
     child_cleanup (g);
-    return;
+    return -1;
   }
 
   if (n == -1) {
-    if (errno != EINTR && errno != EAGAIN)
-      perrorf (g, "read");
-    return;
+    if (errno == EINTR || errno == EAGAIN)
+      return 0;
+
+    perrorf (g, "read");
+    return -1;
   }
 
-  g->msg_in_size += n;
+  xdrmem_create (&xdr, buf, 4, XDR_DECODE);
+  xdr_uint32_t (&xdr, &flag);
+  xdr_destroy (&xdr);
 
-  /* Have we got enough of a message to be able to process it yet? */
- again:
-  if (g->msg_in_size < 4) return;
-
-  xdrmem_create (&xdr, g->msg_in, g->msg_in_size, XDR_DECODE);
-  if (!xdr_uint32_t (&xdr, &len)) {
-    error (g, _("can't decode length word"));
-    goto cleanup;
+  if (flag != GUESTFS_CANCEL_FLAG) {
+    error (g, _("check_for_daemon_cancellation_or_eof: read 0x%x from daemon, expected 0x%x\n"),
+           flag, GUESTFS_CANCEL_FLAG);
+    return -1;
   }
 
-  /* Length is normally the length of the message, but when guestfsd
-   * starts up it sends a "magic" value (longer than any possible
-   * message).  Check for this.
-   */
-  if (len == GUESTFS_LAUNCH_FLAG) {
-    if (g->state != LAUNCHING)
-      error (g, _("received magic signature from guestfsd, but in state %d"),
-	     g->state);
-    else if (g->msg_in_size != 4)
-      error (g, _("received magic signature from guestfsd, but msg size is %d"),
-	     g->msg_in_size);
-    else {
-      g->state = READY;
-      if (g->launch_done_cb)
-	g->launch_done_cb (g, g->launch_done_cb_data);
+  return -2;
+}
+
+/* This writes the whole N bytes of BUF to the daemon socket.
+ *
+ * If the whole write is successful, it returns 0.
+ * If there was an error, it returns -1.
+ * If the daemon sent a cancellation message, it returns -2.
+ *
+ * It also checks qemu stdout for log messages and passes those up
+ * through log_message_cb.
+ *
+ * It also checks for EOF (qemu died) and passes that up through the
+ * child_cleanup function above.
+ */
+static int
+send_to_daemon (guestfs_h *g, const void *v_buf, size_t n)
+{
+  const char *buf = v_buf;
+  fd_set rset, rset2;
+  fd_set wset, wset2;
+
+  if (g->verbose)
+    fprintf (stderr,
+             "send_to_daemon: %p g->state = %d, n = %zu\n", g, g->state, n);
+
+  FD_ZERO (&rset);
+  FD_ZERO (&wset);
+
+  FD_SET (g->fd[1], &rset);     /* Read qemu stdout for log messages & EOF. */
+  FD_SET (g->sock, &rset);      /* Read socket for cancellation & EOF. */
+  FD_SET (g->sock, &wset);      /* Write to socket to send the data. */
+
+  int max_fd = MAX (g->sock, g->fd[1]);
+
+  while (n > 0) {
+    rset2 = rset;
+    wset2 = wset;
+    int r = select (max_fd+1, &rset2, &wset2, NULL, NULL);
+    if (r == -1) {
+      if (errno == EINTR || errno == EAGAIN)
+        continue;
+      perrorf (g, "select");
+      return -1;
     }
 
-    goto cleanup;
+    if (FD_ISSET (g->fd[1], &rset2)) {
+      if (read_log_message_or_eof (g, g->fd[1]) == -1)
+        return -1;
+    }
+    if (FD_ISSET (g->sock, &rset2)) {
+      r = check_for_daemon_cancellation_or_eof (g, g->sock);
+      if (r < 0)
+        return r;
+    }
+    if (FD_ISSET (g->sock, &wset2)) {
+      r = write (g->sock, buf, n);
+      if (r == -1) {
+        if (errno == EINTR || errno == EAGAIN)
+          continue;
+        perrorf (g, "write");
+        if (errno == EPIPE) /* Disconnected from guest (RHBZ#508713). */
+          child_cleanup (g);
+        return -1;
+      }
+      buf += r;
+      n -= r;
+    }
   }
 
-  /* This can happen if a cancellation happens right at the end
-   * of us sending a FileIn parameter to the daemon.  Discard.  The
-   * daemon should send us an error message next.
+  return 0;
+}
+
+/* This reads a single message, file chunk, launch flag or
+ * cancellation flag from the daemon.  If something was read, it
+ * returns 0, otherwise -1.
+ *
+ * Both size_rtn and buf_rtn must be passed by the caller as non-NULL.
+ *
+ * *size_rtn returns the size of the returned message or it may be
+ * GUESTFS_LAUNCH_FLAG or GUESTFS_CANCEL_FLAG.
+ *
+ * *buf_rtn is returned containing the message (if any) or will be set
+ * to NULL.  *buf_rtn must be freed by the caller.
+ *
+ * It also checks qemu stdout for log messages and passes those up
+ * through log_message_cb.
+ *
+ * It also checks for EOF (qemu died) and passes that up through the
+ * child_cleanup function above.
+ */
+static int
+recv_from_daemon (guestfs_h *g, uint32_t *size_rtn, void **buf_rtn)
+{
+  fd_set rset, rset2;
+
+  if (g->verbose)
+    fprintf (stderr,
+             "recv_from_daemon: %p g->state = %d, size_rtn = %p, buf_rtn = %p\n",
+             g, g->state, size_rtn, buf_rtn);
+
+  FD_ZERO (&rset);
+
+  FD_SET (g->fd[1], &rset);     /* Read qemu stdout for log messages & EOF. */
+  FD_SET (g->sock, &rset);      /* Read socket for data & EOF. */
+
+  int max_fd = MAX (g->sock, g->fd[1]);
+
+  *size_rtn = 0;
+  *buf_rtn = NULL;
+
+  char lenbuf[4];
+  /* nr is the size of the message, but we prime it as -4 because we
+   * have to read the message length word first.
    */
-  if (len == GUESTFS_CANCEL_FLAG) {
-    g->msg_in_size -= 4;
-    memmove (g->msg_in, g->msg_in+4, g->msg_in_size);
-    goto again;
+  ssize_t nr = -4;
+
+  while (nr < (ssize_t) *size_rtn) {
+    rset2 = rset;
+    int r = select (max_fd+1, &rset2, NULL, NULL, NULL);
+    if (r == -1) {
+      if (errno == EINTR || errno == EAGAIN)
+        continue;
+      perrorf (g, "select");
+      free (*buf_rtn);
+      *buf_rtn = NULL;
+      return -1;
+    }
+
+    if (FD_ISSET (g->fd[1], &rset2)) {
+      if (read_log_message_or_eof (g, g->fd[1]) == -1) {
+        free (*buf_rtn);
+        *buf_rtn = NULL;
+        return -1;
+      }
+    }
+    if (FD_ISSET (g->sock, &rset2)) {
+      if (nr < 0) {    /* Have we read the message length word yet? */
+        r = read (g->sock, lenbuf+nr+4, -nr);
+        if (r == -1) {
+          if (errno == EINTR || errno == EAGAIN)
+            continue;
+          int err = errno;
+          perrorf (g, "read");
+          /* Under some circumstances we see "Connection reset by peer"
+           * here when the child dies suddenly.  Catch this and call
+           * the cleanup function, same as for EOF.
+           */
+          if (err == ECONNRESET)
+            child_cleanup (g);
+          return -1;
+        }
+        if (r == 0) {
+          error (g, _("unexpected end of file when reading from daemon"));
+          child_cleanup (g);
+          return -1;
+        }
+        nr += r;
+
+        if (nr < 0)         /* Still not got the whole length word. */
+          continue;
+
+        XDR xdr;
+        xdrmem_create (&xdr, lenbuf, 4, XDR_DECODE);
+        xdr_uint32_t (&xdr, size_rtn);
+        xdr_destroy (&xdr);
+
+        if (*size_rtn == GUESTFS_LAUNCH_FLAG) {
+          if (g->state != LAUNCHING)
+            error (g, _("received magic signature from guestfsd, but in state %d"),
+                   g->state);
+          else {
+            g->state = READY;
+            if (g->launch_done_cb)
+              g->launch_done_cb (g, g->launch_done_cb_data);
+          }
+          return 0;
+        }
+        else if (*size_rtn == GUESTFS_CANCEL_FLAG)
+          return 0;
+        /* If this happens, it's pretty bad and we've probably lost
+         * synchronization.
+         */
+        else if (*size_rtn > GUESTFS_MESSAGE_MAX) {
+          error (g, _("message length (%u) > maximum possible size (%d)"),
+                 (unsigned) *size_rtn, GUESTFS_MESSAGE_MAX);
+          return -1;
+        }
+
+        /* Allocate the complete buffer, size now known. */
+        *buf_rtn = safe_malloc (g, *size_rtn);
+        /*FALLTHROUGH*/
+      }
+
+      size_t sizetoread = *size_rtn - nr;
+      if (sizetoread > BUFSIZ) sizetoread = BUFSIZ;
+
+      r = read (g->sock, (char *) (*buf_rtn) + nr, sizetoread);
+      if (r == -1) {
+        if (errno == EINTR || errno == EAGAIN)
+          continue;
+        perrorf (g, "read");
+        free (*buf_rtn);
+        *buf_rtn = NULL;
+        return -1;
+      }
+      if (r == 0) {
+        error (g, _("unexpected end of file when reading from daemon"));
+        child_cleanup (g);
+        free (*buf_rtn);
+        *buf_rtn = NULL;
+        return -1;
+      }
+      nr += r;
+    }
   }
 
-  /* If this happens, it's pretty bad and we've probably lost
-   * synchronization.
-   */
-  if (len > GUESTFS_MESSAGE_MAX) {
-    error (g, _("message length (%u) > maximum possible size (%d)"),
-	   len, GUESTFS_MESSAGE_MAX);
-    goto cleanup;
-  }
-
-  if (g->msg_in_size-4 < len) return; /* Need more of this message. */
-
-  /* Got the full message, begin processing it. */
-#if 0
+  /* Got the full message, caller can start processing it. */
+#ifdef ENABLE_PACKET_DUMP
   if (g->verbose) {
-    int i, j;
+    ssize_t i, j;
 
-    for (i = 0; i < g->msg_in_size; i += 16) {
-      printf ("%04x: ", i);
-      for (j = i; j < MIN (i+16, g->msg_in_size); ++j)
-	printf ("%02x ", (unsigned char) g->msg_in[j]);
+    for (i = 0; i < nr; i += 16) {
+      printf ("%04zx: ", i);
+      for (j = i; j < MIN (i+16, nr); ++j)
+        printf ("%02x ", (*(unsigned char **)buf_rtn)[j]);
       for (; j < i+16; ++j)
-	printf ("   ");
+        printf ("   ");
       printf ("|");
-      for (j = i; j < MIN (i+16, g->msg_in_size); ++j)
-	if (isprint (g->msg_in[j]))
-	  printf ("%c", g->msg_in[j]);
-	else
-	  printf (".");
+      for (j = i; j < MIN (i+16, nr); ++j)
+        if (c_isprint ((*(char **)buf_rtn)[j]))
+          printf ("%c", (*(char **)buf_rtn)[j]);
+        else
+          printf (".");
       for (; j < i+16; ++j)
-	printf (" ");
+        printf (" ");
       printf ("|\n");
     }
   }
 #endif
 
-  /* Not in the expected state. */
-  if (g->state != BUSY)
-    error (g, _("state %d != BUSY"), g->state);
-
-  /* Push the message up to the higher layer. */
-  if (g->reply_cb)
-    g->reply_cb (g, g->reply_cb_data, &xdr);
-  else
-    /* This message (probably) should never be printed. */
-    fprintf (stderr, "libguesfs: sock_read_event: !!! dropped message !!!\n");
-
-  g->msg_in_size -= len + 4;
-  memmove (g->msg_in, g->msg_in+len+4, g->msg_in_size);
-  if (g->msg_in_size > 0) goto again;
-
- cleanup:
-  /* Free the message buffer if it's grown excessively large. */
-  if (g->msg_in_allocated > 65536) {
-    free (g->msg_in);
-    g->msg_in = NULL;
-    g->msg_in_size = g->msg_in_allocated = 0;
-  } else
-    g->msg_in_size = 0;
-
-  xdr_destroy (&xdr);
+  return 0;
 }
 
-/* The function is called whenever we can write something on the
- * guestfsd (daemon inside the guest) communication socket.
+/* This is very much like recv_from_daemon above, but g->sock is
+ * a listening socket and we are accepting a new connection on
+ * that socket instead of reading anything.  Returns the newly
+ * accepted socket.
  */
-static void
-sock_write_event (struct guestfs_main_loop *ml, guestfs_h *g, void *data,
-		  int watch, int fd, int events)
+static int
+accept_from_daemon (guestfs_h *g)
 {
-  int n, err;
+  fd_set rset, rset2;
 
   if (g->verbose)
     fprintf (stderr,
-	     "sock_write_event: %p g->state = %d, fd = %d, events = 0x%x\n",
-	     g, g->state, fd, events);
+             "accept_from_daemon: %p g->state = %d\n", g, g->state);
 
-  if (g->sock != fd) {
-    error (g, _("sock_write_event: internal error: %d != %d"), g->sock, fd);
-    return;
-  }
+  FD_ZERO (&rset);
 
-  if (g->state != BUSY) {
-    error (g, _("sock_write_event: state %d != BUSY"), g->state);
-    return;
-  }
+  FD_SET (g->fd[1], &rset);     /* Read qemu stdout for log messages & EOF. */
+  FD_SET (g->sock, &rset);      /* Read socket for accept. */
 
-  if (g->verbose)
-    fprintf (stderr, "sock_write_event: writing %d bytes ...\n",
-	     g->msg_out_size - g->msg_out_pos);
+  int max_fd = MAX (g->sock, g->fd[1]);
+  int sock = -1;
 
-  n = write (g->sock, g->msg_out + g->msg_out_pos,
-	     g->msg_out_size - g->msg_out_pos);
-  if (n == -1) {
-    err = errno;
-    if (err != EAGAIN)
-      perrorf (g, "write");
-    if (err == EPIPE)	/* Disconnected from guest (RHBZ#508713). */
-      child_cleanup (g);
-    return;
-  }
-
-  if (g->verbose)
-    fprintf (stderr, "sock_write_event: wrote %d bytes\n", n);
-
-  g->msg_out_pos += n;
-
-  /* More to write? */
-  if (g->msg_out_pos < g->msg_out_size)
-    return;
-
-  if (g->verbose)
-    fprintf (stderr, "sock_write_event: done writing, calling send_cb\n");
-
-  free (g->msg_out);
-  g->msg_out = NULL;
-  g->msg_out_pos = g->msg_out_size = 0;
-
-  /* Done writing, call the higher layer. */
-  if (g->send_cb)
-    g->send_cb (g, g->send_cb_data);
-}
-
-void
-guestfs_set_send_callback (guestfs_h *g,
-			   guestfs_send_cb cb, void *opaque)
-{
-  g->send_cb = cb;
-  g->send_cb_data = opaque;
-}
-
-void
-guestfs_set_reply_callback (guestfs_h *g,
-			    guestfs_reply_cb cb, void *opaque)
-{
-  g->reply_cb = cb;
-  g->reply_cb_data = opaque;
-}
-
-void
-guestfs_set_log_message_callback (guestfs_h *g,
-				  guestfs_log_message_cb cb, void *opaque)
-{
-  g->log_message_cb = cb;
-  g->log_message_cb_data = opaque;
-}
-
-void
-guestfs_set_subprocess_quit_callback (guestfs_h *g,
-				      guestfs_subprocess_quit_cb cb, void *opaque)
-{
-  g->subprocess_quit_cb = cb;
-  g->subprocess_quit_cb_data = opaque;
-}
-
-void
-guestfs_set_launch_done_callback (guestfs_h *g,
-				  guestfs_launch_done_cb cb, void *opaque)
-{
-  g->launch_done_cb = cb;
-  g->launch_done_cb_data = opaque;
-}
-
-/* Access to the handle's main loop and the default main loop. */
-void
-guestfs_set_main_loop (guestfs_h *g, guestfs_main_loop *main_loop)
-{
-  g->main_loop = main_loop;
-}
-
-guestfs_main_loop *
-guestfs_get_main_loop (guestfs_h *g)
-{
-  return g->main_loop;
-}
-
-guestfs_main_loop *
-guestfs_get_default_main_loop (void)
-{
-  return (guestfs_main_loop *) &default_main_loop;
-}
-
-/* Change the daemon socket handler so that we are now writing.
- * This sets the handle to sock_write_event.
- */
-int
-guestfs__switch_to_sending (guestfs_h *g)
-{
-  if (g->sock_watch >= 0) {
-    if (g->main_loop->remove_handle (g->main_loop, g, g->sock_watch) == -1) {
-      error (g, _("remove_handle failed"));
-      g->sock_watch = -1;
+  while (sock == -1) {
+    rset2 = rset;
+    int r = select (max_fd+1, &rset2, NULL, NULL, NULL);
+    if (r == -1) {
+      if (errno == EINTR || errno == EAGAIN)
+        continue;
+      perrorf (g, "select");
       return -1;
+    }
+
+    if (FD_ISSET (g->fd[1], &rset2)) {
+      if (read_log_message_or_eof (g, g->fd[1]) == -1)
+        return -1;
+    }
+    if (FD_ISSET (g->sock, &rset2)) {
+      sock = accept (g->sock, NULL, NULL);
+      if (sock == -1) {
+        if (errno == EINTR || errno == EAGAIN)
+          continue;
+        perrorf (g, "accept");
+        return -1;
+      }
     }
   }
 
-  g->sock_watch =
-    g->main_loop->add_handle (g->main_loop, g, g->sock,
-			      GUESTFS_HANDLE_WRITABLE,
-			      sock_write_event, NULL);
-  if (g->sock_watch == -1) {
-    error (g, _("add_handle failed"));
-    return -1;
-  }
-
-  return 0;
+  return sock;
 }
 
 int
-guestfs__switch_to_receiving (guestfs_h *g)
-{
-  if (g->sock_watch >= 0) {
-    if (g->main_loop->remove_handle (g->main_loop, g, g->sock_watch) == -1) {
-      error (g, _("remove_handle failed"));
-      g->sock_watch = -1;
-      return -1;
-    }
-  }
-
-  g->sock_watch =
-    g->main_loop->add_handle (g->main_loop, g, g->sock,
-			      GUESTFS_HANDLE_READABLE,
-			      sock_read_event, NULL);
-  if (g->sock_watch == -1) {
-    error (g, _("add_handle failed"));
-    return -1;
-  }
-
-  return 0;
-}
-
-/* Dispatch a call (len + header + args) to the remote daemon,
- * synchronously (ie. using the guest's main loop to wait until
- * it has been sent).  Returns -1 for error, or the serial
- * number of the message.
- */
-static void
-send_cb (guestfs_h *g, void *data)
-{
-  guestfs_main_loop *ml = guestfs_get_main_loop (g);
-
-  *((int *)data) = 1;
-  ml->main_loop_quit (ml, g);
-}
-
-int
-guestfs__send_sync (guestfs_h *g, int proc_nr,
-		    xdrproc_t xdrp, char *args)
+guestfs___send (guestfs_h *g, int proc_nr, xdrproc_t xdrp, char *args)
 {
   struct guestfs_message_header hdr;
   XDR xdr;
   u_int32_t len;
   int serial = g->msg_next_serial++;
-  int sent;
-  guestfs_main_loop *ml = guestfs_get_main_loop (g);
+  int r;
+  char *msg_out;
+  size_t msg_out_size;
 
   if (g->state != BUSY) {
-    error (g, _("guestfs__send_sync: state %d != BUSY"), g->state);
-    return -1;
-  }
-
-  /* This is probably an internal error.  Or perhaps we should just
-   * free the buffer anyway?
-   */
-  if (g->msg_out != NULL) {
-    error (g, _("guestfs__send_sync: msg_out should be NULL"));
+    error (g, _("guestfs___send: state %d != BUSY"), g->state);
     return -1;
   }
 
@@ -1955,8 +2301,8 @@ guestfs__send_sync (guestfs_h *g, int proc_nr,
    * we have quite limited stack space available, notably when
    * running in the JVM.
    */
-  g->msg_out = safe_malloc (g, GUESTFS_MESSAGE_MAX + 4);
-  xdrmem_create (&xdr, g->msg_out + 4, GUESTFS_MESSAGE_MAX, XDR_ENCODE);
+  msg_out = safe_malloc (g, GUESTFS_MESSAGE_MAX + 4);
+  xdrmem_create (&xdr, msg_out + 4, GUESTFS_MESSAGE_MAX, XDR_ENCODE);
 
   /* Serialize the header. */
   hdr.prog = GUESTFS_PROGRAM;
@@ -1987,48 +2333,41 @@ guestfs__send_sync (guestfs_h *g, int proc_nr,
   len = xdr_getpos (&xdr);
   xdr_destroy (&xdr);
 
-  g->msg_out = safe_realloc (g, g->msg_out, len + 4);
-  g->msg_out_size = len + 4;
-  g->msg_out_pos = 0;
+  msg_out = safe_realloc (g, msg_out, len + 4);
+  msg_out_size = len + 4;
 
-  xdrmem_create (&xdr, g->msg_out, 4, XDR_ENCODE);
+  xdrmem_create (&xdr, msg_out, 4, XDR_ENCODE);
   xdr_uint32_t (&xdr, &len);
 
-  if (guestfs__switch_to_sending (g) == -1)
+ again:
+  r = send_to_daemon (g, msg_out, msg_out_size);
+  if (r == -2)                  /* Ignore stray daemon cancellations. */
+    goto again;
+  if (r == -1)
     goto cleanup1;
-
-  sent = 0;
-  guestfs_set_send_callback (g, send_cb, &sent);
-  if (ml->main_loop_run (ml, g) == -1)
-    goto cleanup1;
-  if (sent != 1) {
-    error (g, _("send failed, see earlier error messages"));
-    goto cleanup1;
-  }
+  free (msg_out);
 
   return serial;
 
  cleanup1:
-  free (g->msg_out);
-  g->msg_out = NULL;
-  g->msg_out_size = 0;
+  free (msg_out);
   return -1;
 }
 
 static int cancel = 0; /* XXX Implement file cancellation. */
-static int send_file_chunk_sync (guestfs_h *g, int cancel, const char *buf, size_t len);
-static int send_file_data_sync (guestfs_h *g, const char *buf, size_t len);
-static int send_file_cancellation_sync (guestfs_h *g);
-static int send_file_complete_sync (guestfs_h *g);
+static int send_file_chunk (guestfs_h *g, int cancel, const char *buf, size_t len);
+static int send_file_data (guestfs_h *g, const char *buf, size_t len);
+static int send_file_cancellation (guestfs_h *g);
+static int send_file_complete (guestfs_h *g);
 
-/* Synchronously send a file.
+/* Send a file.
  * Returns:
  *   0 OK
  *   -1 error
  *   -2 daemon cancelled (we must read the error message)
  */
 int
-guestfs__send_file_sync (guestfs_h *g, const char *filename)
+guestfs___send_file (guestfs_h *g, const char *filename)
 {
   char buf[GUESTFS_MAX_CHUNK_SIZE];
   int fd, r, err;
@@ -2036,7 +2375,7 @@ guestfs__send_file_sync (guestfs_h *g, const char *filename)
   fd = open (filename, O_RDONLY);
   if (fd == -1) {
     perrorf (g, "open: %s", filename);
-    send_file_cancellation_sync (g);
+    send_file_cancellation (g);
     /* Daemon sees cancellation and won't reply, so caller can
      * just return here.
      */
@@ -2049,22 +2388,22 @@ guestfs__send_file_sync (guestfs_h *g, const char *filename)
     if (r == -1 && (errno == EINTR || errno == EAGAIN))
       continue;
     if (r <= 0) break;
-    err = send_file_data_sync (g, buf, r);
+    err = send_file_data (g, buf, r);
     if (err < 0) {
       if (err == -2)		/* daemon sent cancellation */
-	send_file_cancellation_sync (g);
+        send_file_cancellation (g);
       return err;
     }
   }
 
   if (cancel) {			/* cancel from either end */
-    send_file_cancellation_sync (g);
+    send_file_cancellation (g);
     return -1;
   }
 
   if (r == -1) {
     perrorf (g, "read: %s", filename);
-    send_file_cancellation_sync (g);
+    send_file_cancellation (g);
     return -1;
   }
 
@@ -2073,74 +2412,55 @@ guestfs__send_file_sync (guestfs_h *g, const char *filename)
    */
   if (close (fd) == -1) {
     perrorf (g, "close: %s", filename);
-    send_file_cancellation_sync (g);
+    send_file_cancellation (g);
     return -1;
   }
 
-  return send_file_complete_sync (g);
+  return send_file_complete (g);
 }
 
 /* Send a chunk of file data. */
 static int
-send_file_data_sync (guestfs_h *g, const char *buf, size_t len)
+send_file_data (guestfs_h *g, const char *buf, size_t len)
 {
-  return send_file_chunk_sync (g, 0, buf, len);
+  return send_file_chunk (g, 0, buf, len);
 }
 
 /* Send a cancellation message. */
 static int
-send_file_cancellation_sync (guestfs_h *g)
+send_file_cancellation (guestfs_h *g)
 {
-  return send_file_chunk_sync (g, 1, NULL, 0);
+  return send_file_chunk (g, 1, NULL, 0);
 }
 
 /* Send a file complete chunk. */
 static int
-send_file_complete_sync (guestfs_h *g)
+send_file_complete (guestfs_h *g)
 {
   char buf[1];
-  return send_file_chunk_sync (g, 0, buf, 0);
+  return send_file_chunk (g, 0, buf, 0);
 }
 
-/* Send a chunk, cancellation or end of file, synchronously (ie. wait
- * for it to go).
- */
-static int check_for_daemon_cancellation (guestfs_h *g);
-
 static int
-send_file_chunk_sync (guestfs_h *g, int cancel, const char *buf, size_t buflen)
+send_file_chunk (guestfs_h *g, int cancel, const char *buf, size_t buflen)
 {
   u_int32_t len;
-  int sent;
+  int r;
   guestfs_chunk chunk;
   XDR xdr;
-  guestfs_main_loop *ml = guestfs_get_main_loop (g);
+  char *msg_out;
+  size_t msg_out_size;
 
   if (g->state != BUSY) {
-    error (g, _("send_file_chunk_sync: state %d != READY"), g->state);
+    error (g, _("send_file_chunk: state %d != READY"), g->state);
     return -1;
-  }
-
-  /* This is probably an internal error.  Or perhaps we should just
-   * free the buffer anyway?
-   */
-  if (g->msg_out != NULL) {
-    error (g, _("guestfs__send_sync: msg_out should be NULL"));
-    return -1;
-  }
-
-  /* Did the daemon send a cancellation message? */
-  if (check_for_daemon_cancellation (g)) {
-    if (g->verbose)
-      fprintf (stderr, "got daemon cancellation\n");
-    return -2;
   }
 
   /* Allocate the chunk buffer.  Don't use the stack to avoid
    * excessive stack usage and unnecessary copies.
    */
-  g->msg_out = safe_malloc (g, GUESTFS_MAX_CHUNK_SIZE + 4 + 48);
-  xdrmem_create (&xdr, g->msg_out + 4, GUESTFS_MAX_CHUNK_SIZE + 48, XDR_ENCODE);
+  msg_out = safe_malloc (g, GUESTFS_MAX_CHUNK_SIZE + 4 + 48);
+  xdrmem_create (&xdr, msg_out + 4, GUESTFS_MAX_CHUNK_SIZE + 48, XDR_ENCODE);
 
   /* Serialize the chunk. */
   chunk.cancel = cancel;
@@ -2149,7 +2469,7 @@ send_file_chunk_sync (guestfs_h *g, int cancel, const char *buf, size_t buflen)
 
   if (!xdr_guestfs_chunk (&xdr, &chunk)) {
     error (g, _("xdr_guestfs_chunk failed (buf = %p, buflen = %zu)"),
-	   buf, buflen);
+           buf, buflen);
     xdr_destroy (&xdr);
     goto cleanup1;
   }
@@ -2158,87 +2478,98 @@ send_file_chunk_sync (guestfs_h *g, int cancel, const char *buf, size_t buflen)
   xdr_destroy (&xdr);
 
   /* Reduce the size of the outgoing message buffer to the real length. */
-  g->msg_out = safe_realloc (g, g->msg_out, len + 4);
-  g->msg_out_size = len + 4;
-  g->msg_out_pos = 0;
+  msg_out = safe_realloc (g, msg_out, len + 4);
+  msg_out_size = len + 4;
 
-  xdrmem_create (&xdr, g->msg_out, 4, XDR_ENCODE);
+  xdrmem_create (&xdr, msg_out, 4, XDR_ENCODE);
   xdr_uint32_t (&xdr, &len);
 
-  if (guestfs__switch_to_sending (g) == -1)
+  r = send_to_daemon (g, msg_out, msg_out_size);
+
+  /* Did the daemon send a cancellation message? */
+  if (r == -2) {
+    if (g->verbose)
+      fprintf (stderr, "got daemon cancellation\n");
+    return -2;
+  }
+
+  if (r == -1)
     goto cleanup1;
 
-  sent = 0;
-  guestfs_set_send_callback (g, send_cb, &sent);
-  if (ml->main_loop_run (ml, g) == -1)
-    goto cleanup1;
-  if (sent != 1) {
-    error (g, _("send file chunk failed, see earlier error messages"));
-    goto cleanup1;
-  }
+  free (msg_out);
 
   return 0;
 
  cleanup1:
-  free (g->msg_out);
-  g->msg_out = NULL;
-  g->msg_out_size = 0;
+  free (msg_out);
   return -1;
 }
 
-/* At this point we are sending FileIn file(s) to the guest, and not
- * expecting to read anything, so if we do read anything, it must be
- * a cancellation message.  This checks for this case without blocking.
- */
-static int
-check_for_daemon_cancellation (guestfs_h *g)
+/* Receive a reply. */
+int
+guestfs___recv (guestfs_h *g, const char *fn,
+                guestfs_message_header *hdr,
+                guestfs_message_error *err,
+                xdrproc_t xdrp, char *ret)
 {
-  fd_set rset;
-  struct timeval tv;
-  int r;
-  char buf[4];
-  uint32_t flag;
   XDR xdr;
+  void *buf;
+  uint32_t size;
+  int r;
 
-  FD_ZERO (&rset);
-  FD_SET (g->sock, &rset);
-  tv.tv_sec = 0;
-  tv.tv_usec = 0;
-  r = select (g->sock+1, &rset, NULL, NULL, &tv);
-  if (r == -1) {
-    perrorf (g, "select");
-    return 0;
+ again:
+  r = recv_from_daemon (g, &size, &buf);
+  if (r == -1)
+    return -1;
+
+  /* This can happen if a cancellation happens right at the end
+   * of us sending a FileIn parameter to the daemon.  Discard.  The
+   * daemon should send us an error message next.
+   */
+  if (size == GUESTFS_CANCEL_FLAG)
+    goto again;
+
+  if (size == GUESTFS_LAUNCH_FLAG) {
+    error (g, "%s: received unexpected launch flag from daemon when expecting reply", fn);
+    return -1;
   }
-  if (r == 0)
-    return 0;
 
-  /* Read the message from the daemon. */
-  r = xread (g->sock, buf, sizeof buf);
-  if (r == -1) {
-    perrorf (g, "read");
-    return 0;
+  xdrmem_create (&xdr, buf, size, XDR_DECODE);
+
+  if (!xdr_guestfs_message_header (&xdr, hdr)) {
+    error (g, "%s: failed to parse reply header", fn);
+    xdr_destroy (&xdr);
+    free (buf);
+    return -1;
   }
-
-  xdrmem_create (&xdr, buf, sizeof buf, XDR_DECODE);
-  xdr_uint32_t (&xdr, &flag);
+  if (hdr->status == GUESTFS_STATUS_ERROR) {
+    if (!xdr_guestfs_message_error (&xdr, err)) {
+      error (g, "%s: failed to parse reply error", fn);
+      xdr_destroy (&xdr);
+      free (buf);
+      return -1;
+    }
+  } else {
+    if (xdrp && ret && !xdrp (&xdr, ret)) {
+      error (g, "%s: failed to parse reply", fn);
+      xdr_destroy (&xdr);
+      free (buf);
+      return -1;
+    }
+  }
   xdr_destroy (&xdr);
+  free (buf);
 
-  if (flag != GUESTFS_CANCEL_FLAG) {
-    error (g, _("check_for_daemon_cancellation: read 0x%x from daemon, expected 0x%x\n"),
-	   flag, GUESTFS_CANCEL_FLAG);
-    return 0;
-  }
-
-  return 1;
+  return 0;
 }
 
-/* Synchronously receive a file. */
+/* Receive a file. */
 
-/* Returns -1 = error, 0 = EOF, 1 = more data */
-static int receive_file_data_sync (guestfs_h *g, void **buf, size_t *len);
+/* Returns -1 = error, 0 = EOF, > 0 = more data */
+static ssize_t receive_file_data (guestfs_h *g, void **buf);
 
 int
-guestfs__receive_file_sync (guestfs_h *g, const char *filename)
+guestfs___recv_file (guestfs_h *g, const char *filename)
 {
   void *buf;
   int fd, r;
@@ -2251,14 +2582,13 @@ guestfs__receive_file_sync (guestfs_h *g, const char *filename)
   }
 
   /* Receive the file in chunked encoding. */
-  while ((r = receive_file_data_sync (g, &buf, &len)) >= 0) {
-    if (xwrite (fd, buf, len) == -1) {
+  while ((r = receive_file_data (g, &buf)) > 0) {
+    if (xwrite (fd, buf, r) == -1) {
       perrorf (g, "%s: write", filename);
       free (buf);
       goto cancel;
     }
     free (buf);
-    if (r == 0) break; /* End of file. */
   }
 
   if (r == -1) {
@@ -2283,7 +2613,7 @@ guestfs__receive_file_sync (guestfs_h *g, const char *filename)
 
   if (g->verbose)
     fprintf (stderr, "%s: waiting for daemon to acknowledge cancellation\n",
-	     __func__);
+             __func__);
 
   xdrmem_create (&xdr, fbuf, sizeof fbuf, XDR_ENCODE);
   xdr_uint32_t (&xdr, &flag);
@@ -2294,302 +2624,59 @@ guestfs__receive_file_sync (guestfs_h *g, const char *filename)
     return -1;
   }
 
-  while ((r = receive_file_data_sync (g, NULL, NULL)) > 0)
-    ;				/* just discard it */
+  while (receive_file_data (g, NULL) > 0)
+    ;                           /* just discard it */
 
   return -1;
 }
 
-/* Note that the reply callback can be called multiple times before
- * the main loop quits and we get back to the synchronous code.  So
- * we have to be prepared to save multiple chunks on a list here.
- */
-struct receive_file_ctx {
-  int count;			/* 0 if receive_file_cb not called, or
-				 * else count number of chunks.
-				 */
-  guestfs_chunk *chunks;	/* Array of chunks. */
-};
-
-static void
-free_chunks (struct receive_file_ctx *ctx)
+/* Receive a chunk of file data. */
+/* Returns -1 = error, 0 = EOF, > 0 = more data */
+static ssize_t
+receive_file_data (guestfs_h *g, void **buf_r)
 {
-  int i;
-
-  for (i = 0; i < ctx->count; ++i)
-    free (ctx->chunks[i].data.data_val);
-
-  free (ctx->chunks);
-}
-
-static void
-receive_file_cb (guestfs_h *g, void *data, XDR *xdr)
-{
-  guestfs_main_loop *ml = guestfs_get_main_loop (g);
-  struct receive_file_ctx *ctx = (struct receive_file_ctx *) data;
+  int r;
+  void *buf;
+  uint32_t len;
+  XDR xdr;
   guestfs_chunk chunk;
 
-  if (ctx->count == -1)		/* Parse error occurred previously. */
-    return;
+  r = recv_from_daemon (g, &len, &buf);
+  if (r == -1) {
+    error (g, _("receive_file_data: parse error in reply callback"));
+    return -1;
+  }
 
-  ml->main_loop_quit (ml, g);
+  if (len == GUESTFS_LAUNCH_FLAG || len == GUESTFS_CANCEL_FLAG) {
+    error (g, _("receive_file_data: unexpected flag received when reading file chunks"));
+    return -1;
+  }
 
   memset (&chunk, 0, sizeof chunk);
 
-  if (!xdr_guestfs_chunk (xdr, &chunk)) {
+  xdrmem_create (&xdr, buf, len, XDR_DECODE);
+  if (!xdr_guestfs_chunk (&xdr, &chunk)) {
     error (g, _("failed to parse file chunk"));
-    free_chunks (ctx);
-    ctx->chunks = NULL;
-    ctx->count = -1;
-    return;
+    free (buf);
+    return -1;
   }
+  xdr_destroy (&xdr);
+  /* After decoding, the original buffer is no longer used. */
+  free (buf);
 
-  /* Copy the chunk to the list. */
-  ctx->chunks = safe_realloc (g, ctx->chunks,
-			      sizeof (guestfs_chunk) * (ctx->count+1));
-  ctx->chunks[ctx->count] = chunk;
-  ctx->count++;
-}
-
-/* Receive a chunk of file data. */
-/* Returns -1 = error, 0 = EOF, 1 = more data */
-static int
-receive_file_data_sync (guestfs_h *g, void **buf, size_t *len_r)
-{
-  struct receive_file_ctx ctx;
-  guestfs_main_loop *ml = guestfs_get_main_loop (g);
-  int i;
-  size_t len;
-
-  ctx.count = 0;
-  ctx.chunks = NULL;
-
-  guestfs_set_reply_callback (g, receive_file_cb, &ctx);
-  (void) ml->main_loop_run (ml, g);
-  guestfs_set_reply_callback (g, NULL, NULL);
-
-  if (ctx.count == 0) {
-    error (g, _("receive_file_data_sync: reply callback not called\n"));
+  if (chunk.cancel) {
+    error (g, _("file receive cancelled by daemon"));
+    free (chunk.data.data_val);
     return -1;
   }
 
-  if (ctx.count == -1) {
-    error (g, _("receive_file_data_sync: parse error in reply callback\n"));
-    /* callback already freed the chunks */
-    return -1;
+  if (chunk.data.data_len == 0) { /* end of transfer */
+    free (chunk.data.data_val);
+    return 0;
   }
 
-  if (g->verbose)
-    fprintf (stderr, "receive_file_data_sync: got %d chunks\n", ctx.count);
+  if (buf_r) *buf_r = chunk.data.data_val;
+  else free (chunk.data.data_val); /* else caller frees */
 
-  /* Process each chunk in the list. */
-  if (buf) *buf = NULL;		/* Accumulate data in this buffer. */
-  len = 0;
-
-  for (i = 0; i < ctx.count; ++i) {
-    if (ctx.chunks[i].cancel) {
-      error (g, _("file receive cancelled by daemon"));
-      free_chunks (&ctx);
-      if (buf) free (*buf);
-      if (len_r) *len_r = 0;
-      return -1;
-    }
-
-    if (ctx.chunks[i].data.data_len == 0) { /* end of transfer */
-      free_chunks (&ctx);
-      if (len_r) *len_r = len;
-      return 0;
-    }
-
-    if (buf) {
-      *buf = safe_realloc (g, *buf, len + ctx.chunks[i].data.data_len);
-      memcpy (*buf+len, ctx.chunks[i].data.data_val,
-	      ctx.chunks[i].data.data_len);
-    }
-    len += ctx.chunks[i].data.data_len;
-  }
-
-  if (len_r) *len_r = len;
-  free_chunks (&ctx);
-  return 1;
-}
-
-/* This is the default main loop implementation, using select(2). */
-
-static int
-select_add_handle (guestfs_main_loop *mlv, guestfs_h *g, int fd, int events,
-		   guestfs_handle_event_cb cb, void *data)
-{
-  struct select_main_loop *ml = (struct select_main_loop *) mlv;
-
-  if (fd < 0 || fd >= FD_SETSIZE) {
-    error (g, _("fd %d is out of range"), fd);
-    return -1;
-  }
-
-  if ((events & ~(GUESTFS_HANDLE_READABLE |
-		  GUESTFS_HANDLE_WRITABLE |
-		  GUESTFS_HANDLE_HANGUP |
-		  GUESTFS_HANDLE_ERROR)) != 0) {
-    error (g, _("set of events (0x%x) contains unknown events"), events);
-    return -1;
-  }
-
-  if (events == 0) {
-    error (g, _("set of events is empty"));
-    return -1;
-  }
-
-  if (FD_ISSET (fd, &ml->rset) ||
-      FD_ISSET (fd, &ml->wset) ||
-      FD_ISSET (fd, &ml->xset)) {
-    error (g, _("fd %d is already registered"), fd);
-    return -1;
-  }
-
-  if (cb == NULL) {
-    error (g, _("callback is NULL"));
-    return -1;
-  }
-
-  if ((events & GUESTFS_HANDLE_READABLE))
-    FD_SET (fd, &ml->rset);
-  if ((events & GUESTFS_HANDLE_WRITABLE))
-    FD_SET (fd, &ml->wset);
-  if ((events & GUESTFS_HANDLE_HANGUP) || (events & GUESTFS_HANDLE_ERROR))
-    FD_SET (fd, &ml->xset);
-
-  if (fd > ml->max_fd) {
-    ml->max_fd = fd;
-    ml->handle_cb_data =
-      safe_realloc (g, ml->handle_cb_data,
-		    sizeof (struct select_handle_cb_data) * (ml->max_fd+1));
-  }
-  ml->handle_cb_data[fd].cb = cb;
-  ml->handle_cb_data[fd].g = g;
-  ml->handle_cb_data[fd].data = data;
-
-  ml->nr_fds++;
-
-  /* Any integer >= 0 can be the handle, and this is as good as any ... */
-  return fd;
-}
-
-static int
-select_remove_handle (guestfs_main_loop *mlv, guestfs_h *g, int fd)
-{
-  struct select_main_loop *ml = (struct select_main_loop *) mlv;
-
-  if (fd < 0 || fd >= FD_SETSIZE) {
-    error (g, _("fd %d is out of range"), fd);
-    return -1;
-  }
-
-  if (!FD_ISSET (fd, &ml->rset) &&
-      !FD_ISSET (fd, &ml->wset) &&
-      !FD_ISSET (fd, &ml->xset)) {
-    error (g, _("fd %d was not registered"), fd);
-    return -1;
-  }
-
-  FD_CLR (fd, &ml->rset);
-  FD_CLR (fd, &ml->wset);
-  FD_CLR (fd, &ml->xset);
-
-  if (fd == ml->max_fd) {
-    ml->max_fd--;
-    ml->handle_cb_data =
-      safe_realloc (g, ml->handle_cb_data,
-		    sizeof (struct select_handle_cb_data) * (ml->max_fd+1));
-  }
-
-  ml->nr_fds--;
-
-  return 0;
-}
-
-static int
-select_add_timeout (guestfs_main_loop *mlv, guestfs_h *g, int interval,
-		    guestfs_handle_timeout_cb cb, void *data)
-{
-  //struct select_main_loop *ml = (struct select_main_loop *) mlv;
-
-  abort ();			/* XXX not implemented yet */
-}
-
-static int
-select_remove_timeout (guestfs_main_loop *mlv, guestfs_h *g, int timer)
-{
-  //struct select_main_loop *ml = (struct select_main_loop *) mlv;
-
-  abort ();			/* XXX not implemented yet */
-}
-
-/* The 'g' parameter is just used for error reporting.  Events
- * for multiple handles can be dispatched by running the main
- * loop.
- */
-static int
-select_main_loop_run (guestfs_main_loop *mlv, guestfs_h *g)
-{
-  struct select_main_loop *ml = (struct select_main_loop *) mlv;
-  int fd, r, events;
-  fd_set rset2, wset2, xset2;
-
-  if (ml->is_running) {
-    error (g, _("select_main_loop_run: this cannot be called recursively"));
-    return -1;
-  }
-
-  ml->is_running = 1;
-
-  while (ml->is_running) {
-    if (ml->nr_fds == 0)
-      break;
-
-    rset2 = ml->rset;
-    wset2 = ml->wset;
-    xset2 = ml->xset;
-    r = select (ml->max_fd+1, &rset2, &wset2, &xset2, NULL);
-    if (r == -1) {
-      if (errno == EINTR || errno == EAGAIN)
-	continue;
-      perrorf (g, "select");
-      ml->is_running = 0;
-      return -1;
-    }
-
-    for (fd = 0; r > 0 && fd <= ml->max_fd; ++fd) {
-      events = 0;
-      if (FD_ISSET (fd, &rset2))
-	events |= GUESTFS_HANDLE_READABLE;
-      if (FD_ISSET (fd, &wset2))
-	events |= GUESTFS_HANDLE_WRITABLE;
-      if (FD_ISSET (fd, &xset2))
-	events |= GUESTFS_HANDLE_ERROR | GUESTFS_HANDLE_HANGUP;
-      if (events) {
-	r--;
-	ml->handle_cb_data[fd].cb ((guestfs_main_loop *) ml,
-				   ml->handle_cb_data[fd].g,
-				   ml->handle_cb_data[fd].data,
-				   fd, fd, events);
-      }
-    }
-  }
-
-  ml->is_running = 0;
-  return 0;
-}
-
-static int
-select_main_loop_quit (guestfs_main_loop *mlv, guestfs_h *g)
-{
-  struct select_main_loop *ml = (struct select_main_loop *) mlv;
-
-  /* Note that legitimately ml->is_running can be zero when
-   * this function is called.
-   */
-
-  ml->is_running = 0;
-  return 0;
+  return chunk.data.data_len;
 }

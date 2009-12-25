@@ -1,4 +1,4 @@
-#!/bin/sh -
+#!/bin/bash -
 # libguestfs
 # Copyright (C) 2009 Red Hat Inc.
 #
@@ -18,17 +18,17 @@
 
 # Test download where the library cancels.
 #
-# 
+#
 
 set -e
 
 rm -f test.img
 
 ../fish/guestfish <<'EOF'
-add ../images/test.sqsh
+add ../images/test.iso
 run
 
-mount-vfs ro squashfs /dev/sda /
+mount-ro /dev/sda /
 
 # Download a file to /dev/full.
 echo "Expect: write: /dev/full: No space left on device"

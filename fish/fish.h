@@ -30,22 +30,33 @@
 #define N_(str) str
 #endif
 
+#define STREQ(a,b) (strcmp((a),(b)) == 0)
+#define STRCASEEQ(a,b) (strcasecmp((a),(b)) == 0)
+#define STRNEQ(a,b) (strcmp((a),(b)) != 0)
+#define STRCASENEQ(a,b) (strcasecmp((a),(b)) != 0)
+#define STREQLEN(a,b,n) (strncmp((a),(b),(n)) == 0)
+#define STRCASEEQLEN(a,b,n) (strncasecmp((a),(b),(n)) == 0)
+#define STRNEQLEN(a,b,n) (strncmp((a),(b),(n)) != 0)
+#define STRCASENEQLEN(a,b,n) (strncasecmp((a),(b),(n)) != 0)
+#define STRPREFIX(a,b) (strncmp((a),(b),strlen((b))) == 0)
+
 /* in fish.c */
 extern guestfs_h *g;
 extern int quit;
 extern int verbose;
 extern int issue_command (const char *cmd, char *argv[], const char *pipe);
-extern void pod2text (const char *heading, const char *body);
+extern void pod2text (const char *name, const char *shortdesc, const char *body);
 extern void list_builtin_commands (void);
 extern void display_builtin_command (const char *cmd);
 extern void free_strings (char **argv);
-extern int count_strings (char * const * const argv);
-extern void print_strings (char * const * const argv);
-extern void print_table (char * const * const argv);
+extern int count_strings (char *const *argv);
+extern void print_strings (char *const *argv);
+extern void print_table (char *const *argv);
 extern int launch (guestfs_h *);
 extern int is_true (const char *str);
 extern char **parse_string_list (const char *str);
 extern int xwrite (int fd, const void *buf, size_t len);
+extern char *resolve_win_path (const char *path);
 
 /* in cmds.c (auto-generated) */
 extern void list_commands (void);
@@ -61,6 +72,7 @@ extern char *complete_dest_paths_generator (const char *text, int state);
 
 /* in alloc.c */
 extern int do_alloc (const char *cmd, int argc, char *argv[]);
+extern int do_sparse (const char *cmd, int argc, char *argv[]);
 
 /* in echo.c */
 extern int do_echo (const char *cmd, int argc, char *argv[]);
@@ -78,9 +90,9 @@ extern int do_glob (const char *cmd, int argc, char *argv[]);
 extern int do_more (const char *cmd, int argc, char *argv[]);
 
 /* in rc.c (remote control) */
-extern void rc_listen (void);
+extern void rc_listen (void) __attribute__((noreturn));
 extern int rc_remote (int pid, const char *cmd, int argc, char *argv[],
-		      int exit_on_error);
+                      int exit_on_error);
 
 /* in reopen.c */
 extern int do_reopen (const char *cmd, int argc, char *argv[]);
@@ -105,5 +117,11 @@ extern char *try_tilde_expansion (char *path);
   "more", "less",			\
   "reopen",				\
   "time"
+
+static inline char *
+bad_cast (char const *s)
+{
+  return (char *) s;
+}
 
 #endif /* FISH_H */

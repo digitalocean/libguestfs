@@ -15,34 +15,57 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+include $(top_srcdir)/subdir-rules.mk
+
 EXTRA_DIST = \
 	run-inspector-locally \
-	virt-inspector.pl
+	virt-inspector \
+	inspector_generator.ml
+
+dist_doc_DATA = \
+	virt-inspector.rng \
+	example1.xml example2.xml example3.xml example4.xml
 
 if HAVE_INSPECTOR
 
+bin_SCRIPTS = virt-inspector
 man_MANS = virt-inspector.1
 
-noinst_DATA = @top_builddir@/html/virt-inspector.1.html
+noinst_DATA = \
+	$(top_builddir)/html/virt-inspector.1.html stamp-inspector-generator
 
-virt-inspector.1: virt-inspector.pl
+virt-inspector.1: virt-inspector
 	$(POD2MAN) \
 	  --section 1 \
 	  -c "Virtualization Support" \
 	  --release "$(PACKAGE_NAME)-$(PACKAGE_VERSION)" \
-	  $< > $@
+	  $< > $@-t && mv $@-t $@
 
-@top_builddir@/html/virt-inspector.1.html: virt-inspector.pl
-	mkdir -p @top_builddir@/html
-	cd @top_builddir@ && pod2html \
+$(top_builddir)/html/virt-inspector.1.html: virt-inspector
+	mkdir -p $(top_builddir)/html
+	cd $(top_builddir) && pod2html \
 	  --css 'pod.css' \
 	  --title 'virt-inspector, display OS version, kernel, drivers, mount points, applications, etc. in a virtual machine' \
 	  --htmldir html \
 	  --outfile html/virt-inspector.1.html \
 	  inspector/$<
 
-install-data-hook:
-	mkdir -p $(DESTDIR)$(bindir)
-	install -m 0755 virt-inspector.pl $(DESTDIR)$(bindir)/virt-inspector
+if HAVE_XMLLINT
+
+TESTS = example1.xml example2.xml example3.xml example4.xml
+TESTS_ENVIRONMENT = $(XMLLINT) --noout --relaxng virt-inspector.rng
+
+endif
+
+if HAVE_XML_LIGHT
+stamp-inspector-generator: inspector_generator.ml
+	cd $(top_srcdir) && \
+	ocaml -warn-error A \
+	  inspector/inspector_generator.ml
+	touch $@
+else
+stamp-inspector-generator:
+	touch $@
+endif
 
 endif

@@ -31,7 +31,6 @@ Sys::Guestfs - Perl bindings for libguestfs
  my $h = Sys::Guestfs->new ();
  $h->add_drive ('guest.img');
  $h->launch ();
- $h->wait_ready ();
  $h->mount ('/dev/sda1', '/');
  $h->touch ('/hello');
  $h->sync ();
@@ -121,6 +120,8 @@ image).
 
 This is equivalent to the qemu parameter
 C<-drive file=filename,cache=off,if=...>.
+C<cache=off> is omitted in cases where it is not supported by
+the underlying filesystem.
 
 Note that this call checks for the existence of C<filename>.  This
 stops you from specifying other types of drive which are supported
@@ -175,7 +176,7 @@ undefined.
 On success this returns the number of nodes in C<expr>, or
 C<0> if C<expr> evaluates to something which is not a nodeset.
 
-=item $val = $h->aug_get ($path);
+=item $val = $h->aug_get ($augpath);
 
 Look up the value associated with C<path>.  If C<path>
 matches exactly one node, the C<value> is returned.
@@ -229,7 +230,7 @@ To close the handle, you can call C<$h-E<gt>aug_close>.
 
 To find out more about Augeas, see L<http://augeas.net/>.
 
-=item $h->aug_insert ($path, $label, $before);
+=item $h->aug_insert ($augpath, $label, $before);
 
 Create a new sibling C<label> for C<path>, inserting it into
 the tree before or after C<path> (depending on the boolean
@@ -246,12 +247,12 @@ Load files into the tree.
 See C<aug_load> in the Augeas documentation for the full gory
 details.
 
-=item @matches = $h->aug_ls ($path);
+=item @matches = $h->aug_ls ($augpath);
 
 This is just a shortcut for listing C<$h-E<gt>aug_match>
 C<path/*> and sorting the resulting nodes into alphabetical order.
 
-=item @matches = $h->aug_match ($path);
+=item @matches = $h->aug_match ($augpath);
 
 Returns a list of paths which match the path expression C<path>.
 The returned paths are sufficiently qualified so that they match
@@ -262,7 +263,7 @@ exactly one node in the current tree.
 Move the node C<src> to C<dest>.  C<src> must match exactly
 one node.  C<dest> is overwritten if it exists.
 
-=item $nrnodes = $h->aug_rm ($path);
+=item $nrnodes = $h->aug_rm ($augpath);
 
 Remove C<path> and all of its children.
 
@@ -275,9 +276,66 @@ This writes all pending changes to disk.
 The flags which were passed to C<$h-E<gt>aug_init> affect exactly
 how files are saved.
 
-=item $h->aug_set ($path, $val);
+=item $h->aug_set ($augpath, $val);
 
 Set the value associated with C<path> to C<value>.
+
+=item $h->available (\@groups);
+
+This command is used to check the availability of some
+groups of functionality in the appliance, which not all builds of
+the libguestfs appliance will be able to provide.
+
+The libguestfs groups, and the functions that those
+groups correspond to, are listed in L<guestfs(3)/AVAILABILITY>.
+
+The argument C<groups> is a list of group names, eg:
+C<["inotify", "augeas"]> would check for the availability of
+the Linux inotify functions and Augeas (configuration file
+editing) functions.
+
+The command returns no error if I<all> requested groups are available.
+
+It fails with an error if one or more of the requested
+groups is unavailable in the appliance.
+
+If an unknown group name is included in the
+list of groups then an error is always returned.
+
+I<Notes:>
+
+=over 4
+
+=item *
+
+You must call C<$h-E<gt>launch> before calling this function.
+
+The reason is because we don't know what groups are
+supported by the appliance/daemon until it is running and can
+be queried.
+
+=item *
+
+If a group of functions is available, this does not necessarily
+mean that they will work.  You still have to check for errors
+when calling individual API functions even if they are
+available.
+
+=item *
+
+It is usually the job of distro packagers to build
+complete functionality into the libguestfs appliance.
+Upstream libguestfs, if built from source with all
+requirements satisfied, will support everything.
+
+=item *
+
+This call was added in version C<1.0.80>.  In previous
+versions of libguestfs all you could do would be to speculatively
+execute a command to find out if the daemon implemented it.
+See also C<$h-E<gt>version>.
+
+=back
 
 =item $h->blockdev_flushbufs ($device);
 
@@ -358,14 +416,48 @@ Sets the block device named C<device> to read-write.
 
 This uses the L<blockdev(8)> command.
 
+=item $rpath = $h->case_sensitive_path ($path);
+
+This can be used to resolve case insensitive paths on
+a filesystem which is case sensitive.  The use case is
+to resolve paths which you have read from Windows configuration
+files or the Windows Registry, to the true path.
+
+The command handles a peculiarity of the Linux ntfs-3g
+filesystem driver (and probably others), which is that although
+the underlying filesystem is case-insensitive, the driver
+exports the filesystem to Linux as case-sensitive.
+
+One consequence of this is that special directories such
+as C<c:\windows> may appear as C</WINDOWS> or C</windows>
+(or other things) depending on the precise details of how
+they were created.  In Windows itself this would not be
+a problem.
+
+Bug or feature?  You decide:
+L<http://www.tuxera.com/community/ntfs-3g-faq/#posixfilenames1>
+
+This function resolves the true case of each element in the
+path and returns the case-sensitive path.
+
+Thus C<$h-E<gt>case_sensitive_path> ("/Windows/System32")
+might return C<"/WINDOWS/system32"> (the exact return value
+would depend on details of how the directories were originally
+created under Windows).
+
+I<Note>:
+This function does not handle drive names, backslashes etc.
+
+See also C<$h-E<gt>realpath>.
+
 =item $content = $h->cat ($path);
 
 Return the contents of the file named C<path>.
 
 Note that this function cannot correctly handle binary files
 (specifically, files containing C<\0> character which is treated
-as end of string).  For those you need to use the C<$h-E<gt>download>
-function which has a more complex interface.
+as end of string).  For those you need to use the C<$h-E<gt>read_file>
+or C<$h-E<gt>download> functions which have a more complex interface.
 
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  To transfer large files you should use
@@ -495,6 +587,17 @@ either a destination filename or destination directory.
 This copies a file or directory from C<src> to C<dest>
 recursively using the C<cp -a> command.
 
+=item $h->dd ($src, $dest);
+
+This command copies from one source device or file C<src>
+to another destination device or file C<dest>.  Normally you
+would use this to copy to or from a device or partition, for
+example to duplicate a filesystem.
+
+If the destination is a device, it must be as large or larger
+than the source file or device, otherwise the copy will fail.
+This command cannot do partial copies.
+
 =item $result = $h->debug ($subcmd, \@extraargs);
 
 The C<$h-E<gt>debug> command exposes some internals of
@@ -575,13 +678,32 @@ even if the filesystem appears to be clean (C<-f>).
 This command is only needed because of C<$h-E<gt>resize2fs>
 (q.v.).  Normally you should use C<$h-E<gt>fsck>.
 
-=item $h->end_busy ();
+=item $output = $h->echo_daemon (\@words);
 
-This sets the state to C<READY>, or if in C<CONFIG> then it leaves the
-state as is.  This is only used when implementing
-actions using the low-level API.
+This command concatenate the list of C<words> passed with single spaces between
+them and returns the resulting string.
 
-For more information on states, see L<guestfs(3)>.
+You can use this command to test the connection through to the daemon.
+
+See also C<$h-E<gt>ping_daemon>.
+
+=item @lines = $h->egrep ($regex, $path);
+
+This calls the external C<egrep> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
+=item @lines = $h->egrepi ($regex, $path);
+
+This calls the external C<egrep -i> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
 
 =item $equality = $h->equal ($file1, $file2);
 
@@ -597,15 +719,55 @@ This returns C<true> if and only if there is a file, directory
 
 See also C<$h-E<gt>is_file>, C<$h-E<gt>is_dir>, C<$h-E<gt>stat>.
 
+=item $h->fallocate ($path, $len);
+
+This command preallocates a file (containing zero bytes) named
+C<path> of size C<len> bytes.  If the file exists already, it
+is overwritten.
+
+Do not confuse this with the guestfish-specific
+C<alloc> command which allocates a file in the host and
+attaches it as a device.
+
+=item @lines = $h->fgrep ($pattern, $path);
+
+This calls the external C<fgrep> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
+=item @lines = $h->fgrepi ($pattern, $path);
+
+This calls the external C<fgrep -i> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
 =item $description = $h->file ($path);
 
 This call uses the standard L<file(1)> command to determine
 the type or contents of the file.  This also works on devices,
 for example to find out whether a partition contains a filesystem.
 
-The exact command which runs is C<file -bsL path>.  Note in
+This call will also transparently look inside various types
+of compressed file.
+
+The exact command which runs is C<file -zbsL path>.  Note in
 particular that the filename is not prepended to the output
 (the C<-b> option).
+
+=item $h->fill ($c, $len, $path);
+
+This command creates a new file called C<path>.  The initial
+content of the file is C<len> octets of C<c>, where C<c>
+must be a number in the range C<[0..255]>.
+
+To fill a file with zero bytes (sparsely), it is
+much more efficient to use C<$h-E<gt>truncate_size>.
 
 =item @names = $h->find ($directory);
 
@@ -633,6 +795,43 @@ If C<directory> is not a directory, then this command returns
 an error.
 
 The returned list is sorted.
+
+See also C<$h-E<gt>find0>.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
+=item $h->find0 ($directory, $files);
+
+This command lists out all files and directories, recursively,
+starting at C<directory>, placing the resulting list in the
+external file called C<files>.
+
+This command works the same way as C<$h-E<gt>find> with the
+following exceptions:
+
+=over 4
+
+=item *
+
+The resulting list is written to an external file.
+
+=item *
+
+Items (filenames) in the result are separated
+by C<\0> characters.  See L<find(1)> option I<-print0>.
+
+=item *
+
+This command is not limited in the number of names that it
+can return.
+
+=item *
+
+The result list is not sorted.
+
+=back
 
 =item $status = $h->fsck ($fstype, $device);
 
@@ -674,6 +873,10 @@ If C<NULL> then no options are added.
 =item $autosync = $h->get_autosync ();
 
 Get the autosync flag.
+
+=item $direct = $h->get_direct ();
+
+Return the direct appliance mode flag.
 
 =item $label = $h->get_e2label ($device);
 
@@ -718,6 +921,18 @@ Return the current qemu binary.
 This is always non-NULL.  If it wasn't set already, then this will
 return the default qemu binary name.
 
+=item $recoveryproc = $h->get_recovery_proc ();
+
+Return the recovery process enabled flag.
+
+=item $selinux = $h->get_selinux ();
+
+This returns the current setting of the selinux flag which
+is passed to the appliance at boot time.  See C<$h-E<gt>set_selinux>.
+
+For more information on the architecture of libguestfs,
+see L<guestfs(3)>.
+
 =item $state = $h->get_state ();
 
 This returns the current state as an opaque integer.  This is
@@ -725,9 +940,20 @@ only useful for printing debug and internal error messages.
 
 For more information on states, see L<guestfs(3)>.
 
+=item $trace = $h->get_trace ();
+
+Return the command trace flag.
+
 =item $verbose = $h->get_verbose ();
 
 This returns the verbose messages flag.
+
+=item $context = $h->getcon ();
+
+This gets the SELinux security context of the daemon.
+
+See the documentation about SELINUX in L<guestfs(3)>,
+and C<$h-E<gt>setcon>
 
 =item @xattrs = $h->getxattrs ($path);
 
@@ -751,6 +977,24 @@ If no paths match, then this returns an empty list
 It is just a wrapper around the C L<glob(3)> function
 with flags C<GLOB_MARK|GLOB_BRACE>.
 See that manual page for more details.
+
+=item @lines = $h->grep ($regex, $path);
+
+This calls the external C<grep> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
+=item @lines = $h->grepi ($regex, $path);
+
+This calls the external C<grep -i> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
 
 =item $h->grub_install ($root, $device);
 
@@ -800,6 +1044,86 @@ alphabetical).  Directory names are listed as separate items.
 Old Linux kernels (2.4 and earlier) used a compressed ext2
 filesystem as initrd.  We I<only> support the newer initramfs
 format (compressed cpio files).
+
+=item $wd = $h->inotify_add_watch ($path, $mask);
+
+Watch C<path> for the events listed in C<mask>.
+
+Note that if C<path> is a directory then events within that
+directory are watched, but this does I<not> happen recursively
+(in subdirectories).
+
+Note for non-C or non-Linux callers: the inotify events are
+defined by the Linux kernel ABI and are listed in
+C</usr/include/sys/inotify.h>.
+
+=item $h->inotify_close ();
+
+This closes the inotify handle which was previously
+opened by inotify_init.  It removes all watches, throws
+away any pending events, and deallocates all resources.
+
+=item @paths = $h->inotify_files ();
+
+This function is a helpful wrapper around C<$h-E<gt>inotify_read>
+which just returns a list of pathnames of objects that were
+touched.  The returned pathnames are sorted and deduplicated.
+
+=item $h->inotify_init ($maxevents);
+
+This command creates a new inotify handle.
+The inotify subsystem can be used to notify events which happen to
+objects in the guest filesystem.
+
+C<maxevents> is the maximum number of events which will be
+queued up between calls to C<$h-E<gt>inotify_read> or
+C<$h-E<gt>inotify_files>.
+If this is passed as C<0>, then the kernel (or previously set)
+default is used.  For Linux 2.6.29 the default was 16384 events.
+Beyond this limit, the kernel throws away events, but records
+the fact that it threw them away by setting a flag
+C<IN_Q_OVERFLOW> in the returned structure list (see
+C<$h-E<gt>inotify_read>).
+
+Before any events are generated, you have to add some
+watches to the internal watch list.  See:
+C<$h-E<gt>inotify_add_watch>,
+C<$h-E<gt>inotify_rm_watch> and
+C<$h-E<gt>inotify_watch_all>.
+
+Queued up events should be read periodically by calling
+C<$h-E<gt>inotify_read>
+(or C<$h-E<gt>inotify_files> which is just a helpful
+wrapper around C<$h-E<gt>inotify_read>).  If you don't
+read the events out often enough then you risk the internal
+queue overflowing.
+
+The handle should be closed after use by calling
+C<$h-E<gt>inotify_close>.  This also removes any
+watches automatically.
+
+See also L<inotify(7)> for an overview of the inotify interface
+as exposed by the Linux kernel, which is roughly what we expose
+via libguestfs.  Note that there is one global inotify handle
+per libguestfs instance.
+
+=item @events = $h->inotify_read ();
+
+Return the complete queue of events that have happened
+since the previous read call.
+
+If no events have happened, this returns an empty list.
+
+I<Note>: In order to make sure that all events have been
+read, you must call this function repeatedly until it
+returns an empty list.  The reason is that the call will
+read events up to the maximum appliance-to-host message
+size and leave remaining events in the queue.
+
+=item $h->inotify_rm_watch ($wd);
+
+Remove a previously defined inotify watch.
+See C<$h-E<gt>inotify_add_watch>.
 
 =item $busy = $h->is_busy ();
 
@@ -857,6 +1181,16 @@ using L<qemu(1)>.
 You should call this after configuring the handle
 (eg. adding drives) but before performing any actions.
 
+=item $h->lchown ($owner, $group, $path);
+
+Change the file owner to C<owner> and group to C<group>.
+This is like C<$h-E<gt>chown> but if C<path> is a symlink then
+the link itself is changed, not the target.
+
+Only numeric uid and gid are supported.  If you want to use
+names, you will need to locate and parse the password file
+yourself (Augeas support makes this relatively easy).
+
 =item @xattrs = $h->lgetxattrs ($path);
 
 This is the same as C<$h-E<gt>getxattrs>, but if C<path>
@@ -885,6 +1219,24 @@ there is no cwd) in the format of 'ls -la'.
 
 This command is mostly useful for interactive sessions.  It
 is I<not> intended that you try to parse the output string.
+
+=item $h->ln ($target, $linkname);
+
+This command creates a hard link using the C<ln> command.
+
+=item $h->ln_f ($target, $linkname);
+
+This command creates a hard link using the C<ln -f> command.
+The C<-f> option removes the link (C<linkname>) if it exists already.
+
+=item $h->ln_s ($target, $linkname);
+
+This command creates a symbolic link using the C<ln -s> command.
+
+=item $h->ln_sf ($target, $linkname);
+
+This command creates a symbolic link using the C<ln -sf> command,
+The C<-f> option removes the link (C<linkname>) if it exists already.
 
 =item $h->lremovexattr ($xattr, $path);
 
@@ -916,6 +1268,25 @@ is a symbolic link, then the link is stat-ed, not the file it
 refers to.
 
 This is the same as the C<lstat(2)> system call.
+
+=item @statbufs = $h->lstatlist ($path, \@names);
+
+This call allows you to perform the C<$h-E<gt>lstat> operation
+on multiple files, where all files are in the directory C<path>.
+C<names> is the list of files from this directory.
+
+On return you get a list of stat structs, with a one-to-one
+correspondence to the C<names> list.  If any name did not exist
+or could not be lstat'd, then the C<ino> field of that structure
+is set to C<-1>.
+
+This call is intended for programs that want to efficiently
+list a directory contents without making many round-trips.
+See also C<$h-E<gt>lxattrlist> for a similarly efficient call
+for getting extended attributes.  Very long directory listings
+might cause the protocol message size to be exceeded, causing
+this call to fail.  The caller must split up such requests
+into smaller groups of names.
 
 =item $h->lvcreate ($logvol, $volgroup, $mbytes);
 
@@ -959,9 +1330,38 @@ See also C<$h-E<gt>lvs_full>.
 List all the logical volumes detected.  This is the equivalent
 of the L<lvs(8)> command.  The "full" version includes all fields.
 
+=item @xattrs = $h->lxattrlist ($path, \@names);
+
+This call allows you to get the extended attributes
+of multiple files, where all files are in the directory C<path>.
+C<names> is the list of files from this directory.
+
+On return you get a flat list of xattr structs which must be
+interpreted sequentially.  The first xattr struct always has a zero-length
+C<attrname>.  C<attrval> in this struct is zero-length
+to indicate there was an error doing C<lgetxattr> for this
+file, I<or> is a C string which is a decimal number
+(the number of following attributes for this file, which could
+be C<"0">).  Then after the first xattr struct are the
+zero or more attributes for the first named file.
+This repeats for the second and subsequent files.
+
+This call is intended for programs that want to efficiently
+list a directory contents without making many round-trips.
+See also C<$h-E<gt>lstatlist> for a similarly efficient call
+for getting standard stats.  Very long directory listings
+might cause the protocol message size to be exceeded, causing
+this call to fail.  The caller must split up such requests
+into smaller groups of names.
+
 =item $h->mkdir ($path);
 
 Create a directory named C<path>.
+
+=item $h->mkdir_mode ($path, $mode);
+
+This command creates a directory, setting the initial permissions
+of the directory to C<mode>.  See also C<$h-E<gt>mkdir>.
 
 =item $h->mkdir_p ($path);
 
@@ -989,6 +1389,45 @@ directory and its contents after use.
 
 See also: L<mkdtemp(3)>
 
+=item $h->mke2fs_J ($fstype, $blocksize, $device, $journal);
+
+This creates an ext2/3/4 filesystem on C<device> with
+an external journal on C<journal>.  It is equivalent
+to the command:
+
+ mke2fs -t fstype -b blocksize -J device=<journal> <device>
+
+See also C<$h-E<gt>mke2journal>.
+
+=item $h->mke2fs_JL ($fstype, $blocksize, $device, $label);
+
+This creates an ext2/3/4 filesystem on C<device> with
+an external journal on the journal labeled C<label>.
+
+See also C<$h-E<gt>mke2journal_L>.
+
+=item $h->mke2fs_JU ($fstype, $blocksize, $device, $uuid);
+
+This creates an ext2/3/4 filesystem on C<device> with
+an external journal on the journal with UUID C<uuid>.
+
+See also C<$h-E<gt>mke2journal_U>.
+
+=item $h->mke2journal ($blocksize, $device);
+
+This creates an ext2 external journal on C<device>.  It is equivalent
+to the command:
+
+ mke2fs -O journal_dev -b blocksize device
+
+=item $h->mke2journal_L ($blocksize, $label, $device);
+
+This creates an ext2 external journal on C<device> with label C<label>.
+
+=item $h->mke2journal_U ($blocksize, $uuid, $device);
+
+This creates an ext2 external journal on C<device> with UUID C<uuid>.
+
 =item $h->mkfifo ($mode, $path);
 
 This call creates a FIFO (named pipe) called C<path> with
@@ -1000,6 +1439,39 @@ C<$h-E<gt>mknod>.
 This creates a filesystem on C<device> (usually a partition
 or LVM logical volume).  The filesystem type is C<fstype>, for
 example C<ext3>.
+
+=item $h->mkfs_b ($fstype, $blocksize, $device);
+
+This call is similar to C<$h-E<gt>mkfs>, but it allows you to
+control the block size of the resulting filesystem.  Supported
+block sizes depend on the filesystem type, but typically they
+are C<1024>, C<2048> or C<4096> only.
+
+=item $h->mkmountpoint ($exemptpath);
+
+C<$h-E<gt>mkmountpoint> and C<$h-E<gt>rmmountpoint> are
+specialized calls that can be used to create extra mountpoints
+before mounting the first filesystem.
+
+These calls are I<only> necessary in some very limited circumstances,
+mainly the case where you want to mount a mix of unrelated and/or
+read-only filesystems together.
+
+For example, live CDs often contain a "Russian doll" nest of
+filesystems, an ISO outer layer, with a squashfs image inside, with
+an ext2/3 image inside that.  You can unpack this as follows
+in guestfish:
+
+ add-ro Fedora-11-i686-Live.iso
+ run
+ mkmountpoint /cd
+ mkmountpoint /squash
+ mkmountpoint /ext3
+ mount /dev/sda /cd
+ mount-loop /cd/LiveOS/squashfs.img /squash
+ mount-loop /squash/LiveOS/ext3fs.img /ext3
+
+The inner filesystem is now unpacked under the /ext3 mountpoint.
 
 =item $h->mknod ($mode, $devmajor, $devminor, $path);
 
@@ -1031,9 +1503,27 @@ Create a swap partition on C<device>.
 
 Create a swap partition on C<device> with label C<label>.
 
+Note that you cannot attach a swap label to a block device
+(eg. C</dev/sda>), just to a partition.  This appears to be
+a limitation of the kernel or swap tools.
+
 =item $h->mkswap_U ($uuid, $device);
 
 Create a swap partition on C<device> with UUID C<uuid>.
+
+=item $h->mkswap_file ($path);
+
+Create a swap file.
+
+This command just writes a swap file signature to an existing
+file.  To create the file itself, use something like C<$h-E<gt>fallocate>.
+
+=item $h->modprobe ($modulename);
+
+This loads a kernel module in the appliance.
+
+The kernel module must have been whitelisted when libguestfs
+was built (see C<appliance/kmod.whitelist.in> in the source).
 
 =item $h->mount ($device, $mountpoint);
 
@@ -1077,12 +1567,20 @@ This is the same as the C<$h-E<gt>mount> command, but it
 allows you to set both the mount options and the vfstype
 as for the L<mount(8)> I<-o> and I<-t> flags.
 
+=item %mps = $h->mountpoints ();
+
+This call is similar to C<$h-E<gt>mounts>.  That call returns
+a list of devices.  This one returns a hash table (map) of
+device name to directory where the device is mounted.
+
 =item @devices = $h->mounts ();
 
 This returns the list of currently mounted filesystems.  It returns
 the list of devices (eg. C</dev/sda1>, C</dev/VG/LV>).
 
 Some internal mounts are not shown.
+
+See also: C<$h-E<gt>mountpoints>
 
 =item $h->mv ($src, $dest);
 
@@ -1103,12 +1601,178 @@ The return value is an integer which C<0> if the operation
 would succeed, or some non-zero value documented in the
 L<ntfs-3g.probe(8)> manual page.
 
+=item $h->part_add ($device, $prlogex, $startsect, $endsect);
+
+This command adds a partition to C<device>.  If there is no partition
+table on the device, call C<$h-E<gt>part_init> first.
+
+The C<prlogex> parameter is the type of partition.  Normally you
+should pass C<p> or C<primary> here, but MBR partition tables also
+support C<l> (or C<logical>) and C<e> (or C<extended>) partition
+types.
+
+C<startsect> and C<endsect> are the start and end of the partition
+in I<sectors>.  C<endsect> may be negative, which means it counts
+backwards from the end of the disk (C<-1> is the last sector).
+
+Creating a partition which covers the whole disk is not so easy.
+Use C<$h-E<gt>part_disk> to do that.
+
+=item $h->part_disk ($device, $parttype);
+
+This command is simply a combination of C<$h-E<gt>part_init>
+followed by C<$h-E<gt>part_add> to create a single primary partition
+covering the whole disk.
+
+C<parttype> is the partition table type, usually C<mbr> or C<gpt>,
+but other possible values are described in C<$h-E<gt>part_init>.
+
+B<This command is dangerous.  Without careful use you
+can easily destroy all your data>.
+
+=item $parttype = $h->part_get_parttype ($device);
+
+This command examines the partition table on C<device> and
+returns the partition table type (format) being used.
+
+Common return values include: C<msdos> (a DOS/Windows style MBR
+partition table), C<gpt> (a GPT/EFI-style partition table).  Other
+values are possible, although unusual.  See C<$h-E<gt>part_init>
+for a full list.
+
+=item $h->part_init ($device, $parttype);
+
+This creates an empty partition table on C<device> of one of the
+partition types listed below.  Usually C<parttype> should be
+either C<msdos> or C<gpt> (for large disks).
+
+Initially there are no partitions.  Following this, you should
+call C<$h-E<gt>part_add> for each partition required.
+
+Possible values for C<parttype> are:
+
+=over 4
+
+=item B<efi> | B<gpt>
+
+Intel EFI / GPT partition table.
+
+This is recommended for >= 2 TB partitions that will be accessed
+from Linux and Intel-based Mac OS X.  It also has limited backwards
+compatibility with the C<mbr> format.
+
+=item B<mbr> | B<msdos>
+
+The standard PC "Master Boot Record" (MBR) format used
+by MS-DOS and Windows.  This partition type will B<only> work
+for device sizes up to 2 TB.  For large disks we recommend
+using C<gpt>.
+
+=back
+
+Other partition table types that may work but are not
+supported include:
+
+=over 4
+
+=item B<aix>
+
+AIX disk labels.
+
+=item B<amiga> | B<rdb>
+
+Amiga "Rigid Disk Block" format.
+
+=item B<bsd>
+
+BSD disk labels.
+
+=item B<dasd>
+
+DASD, used on IBM mainframes.
+
+=item B<dvh>
+
+MIPS/SGI volumes.
+
+=item B<mac>
+
+Old Mac partition format.  Modern Macs use C<gpt>.
+
+=item B<pc98>
+
+NEC PC-98 format, common in Japan apparently.
+
+=item B<sun>
+
+Sun disk labels.
+
+=back
+
+=item @partitions = $h->part_list ($device);
+
+This command parses the partition table on C<device> and
+returns the list of partitions found.
+
+The fields in the returned structure are:
+
+=over 4
+
+=item B<part_num>
+
+Partition number, counting from 1.
+
+=item B<part_start>
+
+Start of the partition I<in bytes>.  To get sectors you have to
+divide by the device's sector size, see C<$h-E<gt>blockdev_getss>.
+
+=item B<part_end>
+
+End of the partition in bytes.
+
+=item B<part_size>
+
+Size of the partition in bytes.
+
+=back
+
+=item $h->part_set_bootable ($device, $partnum, $bootable);
+
+This sets the bootable flag on partition numbered C<partnum> on
+device C<device>.  Note that partitions are numbered from 1.
+
+The bootable flag is used by some PC BIOSes to determine which
+partition to boot from.  It is by no means universally recognized,
+and in any case if your operating system installed a boot
+sector on the device itself, then that takes precedence.
+
+=item $h->part_set_name ($device, $partnum, $name);
+
+This sets the partition name on partition numbered C<partnum> on
+device C<device>.  Note that partitions are numbered from 1.
+
+The partition name can only be set on certain types of partition
+table.  This works on C<gpt> but not on C<mbr> partitions.
+
 =item $h->ping_daemon ();
 
 This is a test probe into the guestfs daemon running inside
 the qemu subprocess.  Calling this function checks that the
 daemon responds to the ping message, without affecting the daemon
 or attached block device(s) in any other way.
+
+=item $content = $h->pread ($path, $count, $offset);
+
+This command lets you read part of a file.  It reads C<count>
+bytes of the file, starting at C<offset>, from file C<path>.
+
+This may read fewer bytes than requested.  For further details
+see the L<pread(2)> system call.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
 
 =item $h->pvcreate ($device);
 
@@ -1145,6 +1809,20 @@ See also C<$h-E<gt>pvs_full>.
 List all the physical volumes detected.  This is the equivalent
 of the L<pvs(8)> command.  The "full" version includes all fields.
 
+=item $content = $h->read_file ($path);
+
+This calls returns the contents of the file C<path> as a
+buffer.
+
+Unlike C<$h-E<gt>cat>, this function can correctly
+handle files that contain embedded ASCII NUL characters.
+However unlike C<$h-E<gt>download>, this function is limited
+in the total size of file that can be handled.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
 =item @lines = $h->read_lines ($path);
 
 Return the contents of the file named C<path>.
@@ -1165,9 +1843,86 @@ All entries in the directory are returned, including C<.> and
 C<..>.  The entries are I<not> sorted, but returned in the same
 order as the underlying filesystem.
 
+Also this call returns basic file type information about each
+file.  The C<ftyp> field will contain one of the following characters:
+
+=over 4
+
+=item 'b'
+
+Block special
+
+=item 'c'
+
+Char special
+
+=item 'd'
+
+Directory
+
+=item 'f'
+
+FIFO (named pipe)
+
+=item 'l'
+
+Symbolic link
+
+=item 'r'
+
+Regular file
+
+=item 's'
+
+Socket
+
+=item 'u'
+
+Unknown file type
+
+=item '?'
+
+The L<readdir(3)> returned a C<d_type> field with an
+unexpected value
+
+=back
+
 This function is primarily intended for use by programs.  To
 get a simple list of names, use C<$h-E<gt>ls>.  To get a printable
 directory for human consumption, use C<$h-E<gt>ll>.
+
+=item $link = $h->readlink ($path);
+
+This command reads the target of a symbolic link.
+
+=item @links = $h->readlinklist ($path, \@names);
+
+This call allows you to do a C<readlink> operation
+on multiple files, where all files are in the directory C<path>.
+C<names> is the list of files from this directory.
+
+On return you get a list of strings, with a one-to-one
+correspondence to the C<names> list.  Each string is the
+value of the symbol link.
+
+If the C<readlink(2)> operation fails on any name, then
+the corresponding result string is the empty string C<"">.
+However the whole operation is completed even if there
+were C<readlink(2)> errors, and so you can call this
+function with names where you don't know if they are
+symbolic links already (albeit slightly less efficient).
+
+This call is intended for programs that want to efficiently
+list a directory contents without making many round-trips.
+Very long directory listings might cause the protocol
+message size to be exceeded, causing
+this call to fail.  The caller must split up such requests
+into smaller groups of names.
+
+=item $rpath = $h->realpath ($path);
+
+Return the canonicalized absolute pathname of C<path>.  The
+returned path has no C<.>, C<..> or symbolic link path elements.
 
 =item $h->removexattr ($xattr, $path);
 
@@ -1200,6 +1955,12 @@ command.
 =item $h->rmdir ($path);
 
 Remove the single directory C<path>.
+
+=item $h->rmmountpoint ($exemptpath);
+
+This calls removes a mountpoint that was previously created
+with C<$h-E<gt>mkmountpoint>.  See C<$h-E<gt>mkmountpoint>
+for full details.
 
 =item $h->scrub_device ($device);
 
@@ -1254,12 +2015,20 @@ C<$h-E<gt>sync> when the handle is closed
 This is disabled by default (except in guestfish where it is
 enabled by default).
 
-=item $h->set_busy ();
+=item $h->set_direct ($direct);
 
-This sets the state to C<BUSY>.  This is only used when implementing
-actions using the low-level API.
+If the direct appliance mode flag is enabled, then stdin and
+stdout are passed directly through to the appliance once it
+is launched.
 
-For more information on states, see L<guestfs(3)>.
+One consequence of this is that log messages aren't caught
+by the library and handled by C<$h-E<gt>set_log_message_callback>,
+but go straight to stdout.
+
+You probably don't want to use this unless you know what you
+are doing.
+
+The default is disabled.
 
 =item $h->set_e2label ($device, $label);
 
@@ -1293,7 +2062,7 @@ created.
 For more information on the architecture of libguestfs,
 see L<guestfs(3)>.
 
-=item $h->set_path ($path);
+=item $h->set_path ($searchpath);
 
 Set the path that libguestfs searches for kernel and initrd.img.
 
@@ -1314,12 +2083,48 @@ environment variable.
 
 Setting C<qemu> to C<NULL> restores the default qemu binary.
 
-=item $h->set_ready ();
+=item $h->set_recovery_proc ($recoveryproc);
 
-This sets the state to C<READY>.  This is only used when implementing
-actions using the low-level API.
+If this is called with the parameter C<false> then
+C<$h-E<gt>launch> does not create a recovery process.  The
+purpose of the recovery process is to stop runaway qemu
+processes in the case where the main program aborts abruptly.
 
-For more information on states, see L<guestfs(3)>.
+This only has any effect if called before C<$h-E<gt>launch>,
+and the default is true.
+
+About the only time when you would want to disable this is
+if the main process will fork itself into the background
+("daemonize" itself).  In this case the recovery process
+thinks that the main program has disappeared and so kills
+qemu, which is not very helpful.
+
+=item $h->set_selinux ($selinux);
+
+This sets the selinux flag that is passed to the appliance
+at boot time.  The default is C<selinux=0> (disabled).
+
+Note that if SELinux is enabled, it is always in
+Permissive mode (C<enforcing=0>).
+
+For more information on the architecture of libguestfs,
+see L<guestfs(3)>.
+
+=item $h->set_trace ($trace);
+
+If the command trace flag is set to 1, then commands are
+printed on stdout before they are executed in a format
+which is very similar to the one used by guestfish.  In
+other words, you can run a program with this enabled, and
+you will get out a script which you can feed to guestfish
+to perform the same set of actions.
+
+If you want to trace C API calls into libguestfs (and
+other libraries) then possibly a better way is to use
+the external ltrace(1) command.
+
+Command traces are disabled unless the environment variable
+C<LIBGUESTFS_TRACE> is defined and set to C<1>.
 
 =item $h->set_verbose ($verbose);
 
@@ -1327,6 +2132,13 @@ If C<verbose> is true, this turns on verbose messages (to C<stderr>).
 
 Verbose messages are disabled unless the environment variable
 C<LIBGUESTFS_DEBUG> is defined and set to C<1>.
+
+=item $h->setcon ($context);
+
+This sets the SELinux security context of the daemon
+to the string C<context>.
+
+See the documentation about SELINUX in L<guestfs(3)>.
 
 =item $h->setxattr ($xattr, $val, $vallen, $path);
 
@@ -1358,7 +2170,8 @@ To create a single partition occupying the whole disk, you would
 pass C<lines> as a single element list, when the single element being
 the string C<,> (comma).
 
-See also: C<$h-E<gt>sfdisk_l>, C<$h-E<gt>sfdisk_N>
+See also: C<$h-E<gt>sfdisk_l>, C<$h-E<gt>sfdisk_N>,
+C<$h-E<gt>part_init>
 
 B<This command is dangerous.  Without careful use you
 can easily destroy all your data>.
@@ -1371,7 +2184,8 @@ only (rounded to the nearest cylinder) and you don't need
 to specify the cyls, heads and sectors parameters which
 were rarely if ever used anyway.
 
-See also C<$h-E<gt>sfdisk> and the L<sfdisk(8)> manpage.
+See also: C<$h-E<gt>sfdisk>, the L<sfdisk(8)> manpage
+and C<$h-E<gt>part_disk>
 
 B<This command is dangerous.  Without careful use you
 can easily destroy all your data>.
@@ -1383,6 +2197,8 @@ partition C<n> (note: C<n> counts from 1).
 
 For other parameters, see C<$h-E<gt>sfdisk>.  You should usually
 pass C<0> for the cyls/heads/sectors parameters.
+
+See also: C<$h-E<gt>part_add>
 
 B<This command is dangerous.  Without careful use you
 can easily destroy all your data>.
@@ -1409,6 +2225,8 @@ be parsed.
 This displays the partition table on C<device>, in the
 human-readable output of the L<sfdisk(8)> command.  It is
 not intended to be parsed.
+
+See also: C<$h-E<gt>part_list>
 
 =item $output = $h->sh ($command);
 
@@ -1475,6 +2293,55 @@ Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  To transfer large files you should use
 FTP.
 
+=item $h->swapoff_device ($device);
+
+This command disables the libguestfs appliance swap
+device or partition named C<device>.
+See C<$h-E<gt>swapon_device>.
+
+=item $h->swapoff_file ($file);
+
+This command disables the libguestfs appliance swap on file.
+
+=item $h->swapoff_label ($label);
+
+This command disables the libguestfs appliance swap on
+labeled swap partition.
+
+=item $h->swapoff_uuid ($uuid);
+
+This command disables the libguestfs appliance swap partition
+with the given UUID.
+
+=item $h->swapon_device ($device);
+
+This command enables the libguestfs appliance to use the
+swap device or partition named C<device>.  The increased
+memory is made available for all commands, for example
+those run using C<$h-E<gt>command> or C<$h-E<gt>sh>.
+
+Note that you should not swap to existing guest swap
+partitions unless you know what you are doing.  They may
+contain hibernation information, or other information that
+the guest doesn't want you to trash.  You also risk leaking
+information about the host to the guest this way.  Instead,
+attach a new host device to the guest and swap on that.
+
+=item $h->swapon_file ($file);
+
+This command enables swap to a file.
+See C<$h-E<gt>swapon_device> for other notes.
+
+=item $h->swapon_label ($label);
+
+This command enables swap to a labeled swap partition.
+See C<$h-E<gt>swapon_device> for other notes.
+
+=item $h->swapon_uuid ($uuid);
+
+This command enables swap to a swap partition with the given UUID.
+See C<$h-E<gt>swapon_device> for other notes.
+
 =item $h->sync ();
 
 This syncs the disk, so that any writes are flushed through to the
@@ -1540,6 +2407,17 @@ Touch acts like the L<touch(1)> command.  It can be used to
 update the timestamps on a file, or, if the file does not exist,
 to create a new zero-length file.
 
+=item $h->truncate ($path);
+
+This command truncates C<path> to a zero-length file.  The
+file must exist already.
+
+=item $h->truncate_size ($path, $size);
+
+This command truncates C<path> to size C<size> bytes.  The file
+must exist already.  If the file is smaller than C<size> then
+the file is extended to the required size with null bytes.
+
 =item %superblock = $h->tune2fs_l ($device);
 
 This returns the contents of the ext2, ext3 or ext4 filesystem
@@ -1589,6 +2467,25 @@ C<filename> can also be a named pipe.
 
 See also C<$h-E<gt>download>.
 
+=item $h->utimens ($path, $atsecs, $atnsecs, $mtsecs, $mtnsecs);
+
+This command sets the timestamps of a file with nanosecond
+precision.
+
+C<atsecs, atnsecs> are the last access time (atime) in secs and
+nanoseconds from the epoch.
+
+C<mtsecs, mtnsecs> are the last modification time (mtime) in
+secs and nanoseconds from the epoch.
+
+If the C<*nsecs> field contains the special value C<-1> then
+the corresponding timestamp is set to the current time.  (The
+C<*secs> field is ignored in this case).
+
+If the C<*nsecs> field contains the special value C<-2> then
+the corresponding timestamp is left unchanged.  (The
+C<*secs> field is ignored in this case).
+
 =item %version = $h->version ();
 
 Return the libguestfs version number that the program is linked
@@ -1614,7 +2511,17 @@ To construct the original version string:
 C<$major.$minor.$release$extra>
 
 I<Note:> Don't use this call to test for availability
-of features.  Distro backports makes this unreliable.
+of features.  Distro backports makes this unreliable.  Use
+C<$h-E<gt>available> instead.
+
+=item $fstype = $h->vfs_type ($device);
+
+This command gets the block device type corresponding to
+a mounted device called C<device>.
+
+Usually the result is the name of the Linux VFS module that
+is used to mount this device (probably determined automatically
+if you used the C<$h-E<gt>mount> call).
 
 =item $h->vg_activate ($activate, \@volgroups);
 
@@ -1668,11 +2575,16 @@ of the L<vgs(8)> command.  The "full" version includes all fields.
 
 =item $h->wait_ready ();
 
-Internally libguestfs is implemented by running a virtual machine
-using L<qemu(1)>.
+This function is a no op.
 
-You should call this after C<$h-E<gt>launch> to wait for the launch
-to complete.
+In versions of the API E<lt> 1.0.71 you had to call this function
+just after calling C<$h-E<gt>launch> to wait for the launch
+to complete.  However this is no longer necessary because
+C<$h-E<gt>launch> now does the waiting.
+
+If you see any calls to this function in code then you can just
+remove them, unless you want to retain compatibility with older
+versions of the API.
 
 =item $chars = $h->wc_c ($path);
 
@@ -1708,6 +2620,24 @@ Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  To transfer large files you should use
 FTP.
 
+=item @lines = $h->zegrep ($regex, $path);
+
+This calls the external C<zegrep> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
+=item @lines = $h->zegrepi ($regex, $path);
+
+This calls the external C<zegrep -i> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
 =item $h->zero ($device);
 
 This command writes zeroes over the first few blocks of C<device>.
@@ -1731,14 +2661,58 @@ mounted.
 It is possible that using this program can damage the filesystem
 or data on the filesystem.
 
-=item $description = $h->zfile ($method, $path);
+=item @lines = $h->zfgrep ($pattern, $path);
+
+This calls the external C<zfgrep> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
+=item @lines = $h->zfgrepi ($pattern, $path);
+
+This calls the external C<zfgrep -i> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
+=item $description = $h->zfile ($meth, $path);
 
 This command runs C<file> after first decompressing C<path>
 using C<method>.
 
 C<method> must be one of C<gzip>, C<compress> or C<bzip2>.
 
-See also: C<$h-E<gt>file>
+Since 1.0.63, use C<$h-E<gt>file> instead which can now
+process compressed files.
+
+This function is deprecated.
+In new code, use the C<file> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
+=item @lines = $h->zgrep ($regex, $path);
+
+This calls the external C<zgrep> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
+
+=item @lines = $h->zgrepi ($regex, $path);
+
+This calls the external C<zgrep -i> program and returns the
+matching lines.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP.
 
 =cut
 

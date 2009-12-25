@@ -25,18 +25,17 @@
  * daemon/<somefile>.c to write the implementation.
  *
  * After editing this file, run it (./src/generator.ml) to regenerate all the
- * output files. Note that if you are using a separate build directory you must
- * run generator.ml from your top level build directory. You must also have run
- * configure before generator.ml will run.
+ * output files.  Note that if you are using a separate build directory you
+ * must run generator.ml from the _source_ directory.
  *
  * IMPORTANT: This script should NOT print any warnings.  If it prints
  * warnings, you should treat them as errors.
- * [Need to add -warn-error to ocaml command line]
  *)
 
 #load "unix.cma";;
 #load "str.cma";;
 
+open Unix
 open Printf
 
 type style = ret * args
@@ -45,39 +44,62 @@ and ret =
      * indication, ie. 0 or -1.
      *)
   | RErr
+
     (* "RInt" as a return value means an int which is -1 for error
      * or any value >= 0 on success.  Only use this for smallish
      * positive ints (0 <= i < 2^30).
      *)
   | RInt of string
+
     (* "RInt64" is the same as RInt, but is guaranteed to be able
      * to return a full 64 bit value, _except_ that -1 means error
      * (so -1 cannot be a valid, non-error return value).
      *)
   | RInt64 of string
+
     (* "RBool" is a bool return value which can be true/false or
      * -1 for error.
      *)
   | RBool of string
+
     (* "RConstString" is a string that refers to a constant value.
+     * The return value must NOT be NULL (since NULL indicates
+     * an error).
+     *
      * Try to avoid using this.  In particular you cannot use this
      * for values returned from the daemon, because there is no
      * thread-safe way to return them in the C API.
      *)
   | RConstString of string
-    (* "RString" and "RStringList" are caller-frees. *)
+
+    (* "RConstOptString" is an even more broken version of
+     * "RConstString".  The returned string may be NULL and there
+     * is no way to return an error indication.  Avoid using this!
+     *)
+  | RConstOptString of string
+
+    (* "RString" is a returned string.  It must NOT be NULL, since
+     * a NULL return indicates an error.  The caller frees this.
+     *)
   | RString of string
+
+    (* "RStringList" is a list of strings.  No string in the list
+     * can be NULL.  The caller frees the strings and the array.
+     *)
   | RStringList of string
+
     (* "RStruct" is a function which returns a single named structure
      * or an error indication (in C, a struct, and in other languages
      * with varying representations, but usually very efficient).  See
-     * after the function list below for the structures. 
+     * after the function list below for the structures.
      *)
   | RStruct of string * string		(* name of retval, name of struct *)
+
     (* "RStructList" is a function which returns either a list/array
      * of structures (could be zero-length), or an error indication.
      *)
   | RStructList of string * string	(* name of retval, name of struct *)
+
     (* Key-value pairs of untyped strings.  Turns into a hashtable or
      * dictionary in languages which support it.  DON'T use this as a
      * general "bucket" for results.  Prefer a stronger typed return
@@ -86,16 +108,21 @@ and ret =
      * inefficient.  Keys should be unique.  NULLs are not permitted.
      *)
   | RHashtable of string
-(* Not implemented:
+
     (* "RBufferOut" is handled almost exactly like RString, but
      * it allows the string to contain arbitrary 8 bit data including
      * ASCII NUL.  In the C API this causes an implicit extra parameter
-     * to be added of type <size_t *size_r>.  Other programming languages
-     * support strings with arbitrary 8 bit data.  At the RPC layer
-     * we have to use the opaque<> type instead of string<>.
+     * to be added of type <size_t *size_r>.  The extra parameter
+     * returns the actual size of the return buffer in bytes.
+     *
+     * Other programming languages support strings with arbitrary 8 bit
+     * data.
+     *
+     * At the RPC layer we have to use the opaque<> type instead of
+     * string<>.  Returned data is still limited to the max message
+     * size (ie. ~ 2 MB).
      *)
   | RBufferOut of string
-*)
 
 and args = argt list	(* Function parameters, guestfs handle is implicit. *)
 
@@ -108,10 +135,15 @@ and args = argt list	(* Function parameters, guestfs handle is implicit. *)
      *)
 and argt =
   | String of string	(* const char *name, cannot be NULL *)
+  | Device of string	(* /dev device name, cannot be NULL *)
+  | Pathname of string	(* file name, cannot be NULL *)
+  | Dev_or_Path of string (* /dev device name or Pathname, cannot be NULL *)
   | OptString of string	(* const char *name, may be NULL *)
   | StringList of string(* list of strings (each string cannot be NULL) *)
+  | DeviceList of string(* list of Device names (each cannot be NULL) *)
   | Bool of string	(* boolean *)
   | Int of string	(* int (smallish ints, signed, <= 31 bits) *)
+  | Int64 of string	(* any 64 bit int *)
     (* These are treated as filenames (simple string parameters) in
      * the C API and bindings.  But in the RPC protocol, we transfer
      * the actual file content up to or down from the daemon.
@@ -142,27 +174,20 @@ type flags =
   | FishAction of string  (* call this function in guestfish *)
   | NotInFish		  (* do not export via guestfish *)
   | NotInDocs		  (* do not add this function to documentation *)
-
-let protocol_limit_warning =
-  "Because of the message protocol, there is a transfer limit
-of somewhere between 2MB and 4MB.  To transfer large files you should use
-FTP."
-
-let danger_will_robinson =
-  "B<This command is dangerous.  Without careful use you
-can easily destroy all your data>."
+  | DeprecatedBy of string (* function is deprecated, use .. instead *)
+  | Optional of string	  (* function is part of an optional group *)
 
 (* You can supply zero or as many tests as you want per API call.
  *
  * Note that the test environment has 3 block devices, of size 500MB,
  * 50MB and 10MB (respectively /dev/sda, /dev/sdb, /dev/sdc), and
- * a fourth squashfs block device with some known files on it (/dev/sdd).
+ * a fourth ISO block device with some known files on it (/dev/sdd).
  *
  * Note for partitioning purposes, the 500MB device has 1015 cylinders.
  * Number of cylinders was 63 for IDE emulated disks with precisely
  * the same size.  How exactly this is calculated is a mystery.
  *
- * The squashfs block device (/dev/sdd) comes from images/test.sqsh.
+ * The ISO block device (/dev/sdd) comes from images/test.iso.
  *
  * To be able to run the tests in a reasonable amount of time,
  * the virtual machine and block devices are reused between tests.
@@ -188,45 +213,60 @@ type tests = (test_init * test_prereq * test) list
 and test =
     (* Run the command sequence and just expect nothing to fail. *)
   | TestRun of seq
+
     (* Run the command sequence and expect the output of the final
      * command to be the string.
      *)
   | TestOutput of seq * string
+
     (* Run the command sequence and expect the output of the final
      * command to be the list of strings.
      *)
   | TestOutputList of seq * string list
+
     (* Run the command sequence and expect the output of the final
      * command to be the list of block devices (could be either
      * "/dev/sd.." or "/dev/hd.." form - we don't check the 5th
      * character of each string).
      *)
   | TestOutputListOfDevices of seq * string list
+
     (* Run the command sequence and expect the output of the final
      * command to be the integer.
      *)
   | TestOutputInt of seq * int
+
     (* Run the command sequence and expect the output of the final
      * command to be <op> <int>, eg. ">=", "1".
      *)
   | TestOutputIntOp of seq * string * int
+
     (* Run the command sequence and expect the output of the final
      * command to be a true value (!= 0 or != NULL).
      *)
   | TestOutputTrue of seq
+
     (* Run the command sequence and expect the output of the final
      * command to be a false value (== 0 or == NULL, but not an error).
      *)
   | TestOutputFalse of seq
+
     (* Run the command sequence and expect the output of the final
      * command to be a list of the given length (but don't care about
      * content).
      *)
   | TestOutputLength of seq * int
+
+    (* Run the command sequence and expect the output of the final
+     * command to be a buffer (RBufferOut), ie. string + size.
+     *)
+  | TestOutputBuffer of seq * string
+
     (* Run the command sequence and expect the output of the final
      * command to be a structure.
      *)
   | TestOutputStruct of seq * test_field_compare list
+
     (* Run the command sequence and expect the final command (only)
      * to fail.
      *)
@@ -243,14 +283,17 @@ and test_field_compare =
 and test_prereq =
     (* Test always runs. *)
   | Always
+
     (* Test is currently disabled - eg. it fails, or it tests some
      * unimplemented feature.
      *)
   | Disabled
+
     (* 'string' is some C code (a function body) that should return
      * true or false.  The test will run if the code returns true.
      *)
   | If of string
+
     (* As for 'If' but the test runs _unless_ the code returns true. *)
   | Unless of string
 
@@ -261,14 +304,23 @@ and test_init =
      * a bad idea.
      *)
   | InitNone
+
     (* Block devices are empty and no filesystems are mounted. *)
   | InitEmpty
+
+    (* /dev/sda contains a single partition /dev/sda1, with random
+     * content.  /dev/sdb and /dev/sdc may have random content.
+     * No LVM.
+     *)
+  | InitPartition
+
     (* /dev/sda contains a single partition /dev/sda1, which is formatted
      * as ext2, empty [except for lost+found] and mounted on /.
      * /dev/sdb and /dev/sdc may have random content.
      * No LVM.
      *)
   | InitBasicFS
+
     (* /dev/sda:
      *   /dev/sda1 (is a PV):
      *     /dev/VG/LV (size 8MB):
@@ -276,6 +328,11 @@ and test_init =
      * /dev/sdb and /dev/sdc may have random content.
      *)
   | InitBasicFSonLVM
+
+    (* /dev/sdd (the ISO, see images/ directory in source)
+     * is mounted on /
+     *)
+  | InitISOFS
 
 (* Sequence of commands for testing. *)
 and seq = cmd list
@@ -289,6 +346,19 @@ and cmd = string list
  * Apart from that, long descriptions are just perldoc paragraphs.
  *)
 
+(* Generate a random UUID (used in tests). *)
+let uuidgen () =
+  let chan = open_process_in "uuidgen" in
+  let uuid = input_line chan in
+  (match close_process_in chan with
+   | WEXITED 0 -> ()
+   | WEXITED _ ->
+       failwith "uuidgen: process exited with non-zero status"
+   | WSIGNALED _ | WSTOPPED _ ->
+       failwith "uuidgen: process signalled or stopped by signal"
+  );
+  uuid
+
 (* These test functions are used in the language binding tests. *)
 
 let test_all_args = [
@@ -297,6 +367,7 @@ let test_all_args = [
   StringList "strlist";
   Bool "b";
   Int "integer";
+  Int64 "integer64";
   FileIn "filein";
   FileOut "fileout";
 ]
@@ -307,6 +378,7 @@ let test_all_rets = [
   "test0rint64",       RInt64 "valout";
   "test0rbool",        RBool "valout";
   "test0rconststring", RConstString "valout";
+  "test0rconstoptstring", RConstOptString "valout";
   "test0rstring",      RString "valout";
   "test0rstringlist",  RStringList "valout";
   "test0rstruct",      RStruct ("valout", "lvm_pv");
@@ -330,9 +402,9 @@ You probably don't want to call this function.");
   List.map (
     fun (name, ret) ->
       [(name, (ret, [String "val"]), -1, [NotInFish; NotInDocs],
-	[],
-	"internal test function - do not use",
-	"\
+        [],
+        "internal test function - do not use",
+        "\
 This is an internal test function which is used to test whether
 the automatically generated bindings can handle every possible
 return type correctly.
@@ -341,9 +413,9 @@ It converts string C<val> to the return type.
 
 You probably don't want to call this function.");
        (name ^ "err", (ret, []), -1, [NotInFish; NotInDocs],
-	[],
-	"internal test function - do not use",
-	"\
+        [],
+        "internal test function - do not use",
+        "\
 This is an internal test function which is used to test whether
 the automatically generated bindings can handle every possible
 return type correctly.
@@ -372,13 +444,18 @@ You should call this after configuring the handle
 
   ("wait_ready", (RErr, []), -1, [NotInFish],
    [],
-   "wait until the qemu subprocess launches",
+   "wait until the qemu subprocess launches (no op)",
    "\
-Internally libguestfs is implemented by running a virtual machine
-using L<qemu(1)>.
+This function is a no op.
 
-You should call this after C<guestfs_launch> to wait for the launch
-to complete.");
+In versions of the API E<lt> 1.0.71 you had to call this function
+just after calling C<guestfs_launch> to wait for the launch
+to complete.  However this is no longer necessary because
+C<guestfs_launch> now does the waiting.
+
+If you see any calls to this function in code then you can just
+remove them, unless you want to retain compatibility with older
+versions of the API.");
 
   ("kill_subprocess", (RErr, []), -1, [],
    [],
@@ -403,6 +480,8 @@ image).
 
 This is equivalent to the qemu parameter
 C<-drive file=filename,cache=off,if=...>.
+C<cache=off> is omitted in cases where it is not supported by
+the underlying filesystem.
 
 Note that this call checks for the existence of C<filename>.  This
 stops you from specifying other types of drive which are supported
@@ -480,7 +559,7 @@ Return the current qemu binary.
 This is always non-NULL.  If it wasn't set already, then this will
 return the default qemu binary name.");
 
-  ("set_path", (RErr, [String "path"]), -1, [FishAlias "path"],
+  ("set_path", (RErr, [String "searchpath"]), -1, [FishAlias "path"],
    [],
    "set the search path",
    "\
@@ -501,7 +580,7 @@ Return the current search path.
 This is always non-NULL.  If it wasn't set already, then this will
 return the default path.");
 
-  ("set_append", (RErr, [String "append"]), -1, [FishAlias "append"],
+  ("set_append", (RErr, [OptString "append"]), -1, [FishAlias "append"],
    [],
    "add options to kernel command line",
    "\
@@ -514,7 +593,7 @@ C<LIBGUESTFS_APPEND> environment variable.
 Setting C<append> to C<NULL> means I<no> additional options
 are passed (libguestfs always adds a few of its own).");
 
-  ("get_append", (RConstString "append", []), -1, [],
+  ("get_append", (RConstOptString "append", []), -1, [],
    (* This cannot be tested with the current framework.  The
     * function can return NULL in normal operations, which the
     * test framework interprets as an error.
@@ -610,34 +689,6 @@ only useful for printing debug and internal error messages.
 
 For more information on states, see L<guestfs(3)>.");
 
-  ("set_busy", (RErr, []), -1, [NotInFish],
-   [],
-   "set state to busy",
-   "\
-This sets the state to C<BUSY>.  This is only used when implementing
-actions using the low-level API.
-
-For more information on states, see L<guestfs(3)>.");
-
-  ("set_ready", (RErr, []), -1, [NotInFish],
-   [],
-   "set state to ready",
-   "\
-This sets the state to C<READY>.  This is only used when implementing
-actions using the low-level API.
-
-For more information on states, see L<guestfs(3)>.");
-
-  ("end_busy", (RErr, []), -1, [NotInFish],
-   [],
-   "leave the busy state",
-   "\
-This sets the state to C<READY>, or if in C<CONFIG> then it leaves the
-state as is.  This is only used when implementing
-actions using the low-level API.
-
-For more information on states, see L<guestfs(3)>.");
-
   ("set_memsize", (RErr, [Int "memsize"]), -1, [FishAlias "memsize"],
    [InitNone, Always, TestOutputInt (
       [["set_memsize"; "500"];
@@ -708,7 +759,110 @@ To construct the original version string:
 C<$major.$minor.$release$extra>
 
 I<Note:> Don't use this call to test for availability
-of features.  Distro backports makes this unreliable.");
+of features.  Distro backports makes this unreliable.  Use
+C<guestfs_available> instead.");
+
+  ("set_selinux", (RErr, [Bool "selinux"]), -1, [FishAlias "selinux"],
+   [InitNone, Always, TestOutputTrue (
+      [["set_selinux"; "true"];
+       ["get_selinux"]])],
+   "set SELinux enabled or disabled at appliance boot",
+   "\
+This sets the selinux flag that is passed to the appliance
+at boot time.  The default is C<selinux=0> (disabled).
+
+Note that if SELinux is enabled, it is always in
+Permissive mode (C<enforcing=0>).
+
+For more information on the architecture of libguestfs,
+see L<guestfs(3)>.");
+
+  ("get_selinux", (RBool "selinux", []), -1, [],
+   [],
+   "get SELinux enabled flag",
+   "\
+This returns the current setting of the selinux flag which
+is passed to the appliance at boot time.  See C<guestfs_set_selinux>.
+
+For more information on the architecture of libguestfs,
+see L<guestfs(3)>.");
+
+  ("set_trace", (RErr, [Bool "trace"]), -1, [FishAlias "trace"],
+   [InitNone, Always, TestOutputFalse (
+      [["set_trace"; "false"];
+       ["get_trace"]])],
+   "enable or disable command traces",
+   "\
+If the command trace flag is set to 1, then commands are
+printed on stdout before they are executed in a format
+which is very similar to the one used by guestfish.  In
+other words, you can run a program with this enabled, and
+you will get out a script which you can feed to guestfish
+to perform the same set of actions.
+
+If you want to trace C API calls into libguestfs (and
+other libraries) then possibly a better way is to use
+the external ltrace(1) command.
+
+Command traces are disabled unless the environment variable
+C<LIBGUESTFS_TRACE> is defined and set to C<1>.");
+
+  ("get_trace", (RBool "trace", []), -1, [],
+   [],
+   "get command trace enabled flag",
+   "\
+Return the command trace flag.");
+
+  ("set_direct", (RErr, [Bool "direct"]), -1, [FishAlias "direct"],
+   [InitNone, Always, TestOutputFalse (
+      [["set_direct"; "false"];
+       ["get_direct"]])],
+   "enable or disable direct appliance mode",
+   "\
+If the direct appliance mode flag is enabled, then stdin and
+stdout are passed directly through to the appliance once it
+is launched.
+
+One consequence of this is that log messages aren't caught
+by the library and handled by C<guestfs_set_log_message_callback>,
+but go straight to stdout.
+
+You probably don't want to use this unless you know what you
+are doing.
+
+The default is disabled.");
+
+  ("get_direct", (RBool "direct", []), -1, [],
+   [],
+   "get direct appliance mode flag",
+   "\
+Return the direct appliance mode flag.");
+
+  ("set_recovery_proc", (RErr, [Bool "recoveryproc"]), -1, [FishAlias "recovery-proc"],
+   [InitNone, Always, TestOutputTrue (
+      [["set_recovery_proc"; "true"];
+       ["get_recovery_proc"]])],
+   "enable or disable the recovery process",
+   "\
+If this is called with the parameter C<false> then
+C<guestfs_launch> does not create a recovery process.  The
+purpose of the recovery process is to stop runaway qemu
+processes in the case where the main program aborts abruptly.
+
+This only has any effect if called before C<guestfs_launch>,
+and the default is true.
+
+About the only time when you would want to disable this is
+if the main process will fork itself into the background
+(\"daemonize\" itself).  In this case the recovery process
+thinks that the main program has disappeared and so kills
+qemu, which is not very helpful.");
+
+  ("get_recovery_proc", (RBool "recoveryproc", []), -1, [],
+   [],
+   "get recovery process enabled flag",
+   "\
+Return the recovery process enabled flag.");
 
 ]
 
@@ -717,9 +871,9 @@ of features.  Distro backports makes this unreliable.");
  *)
 
 let daemon_functions = [
-  ("mount", (RErr, [String "device"; String "mountpoint"]), 1, [],
+  ("mount", (RErr, [Device "device"; String "mountpoint"]), 1, [],
    [InitEmpty, Always, TestOutput (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["mkfs"; "ext2"; "/dev/sda1"];
        ["mount"; "/dev/sda1"; "/"];
        ["write_file"; "/new"; "new file contents"; "0"];
@@ -753,7 +907,7 @@ underlying disk image.
 You should always call this if you have modified a disk image, before
 closing the handle.");
 
-  ("touch", (RErr, [String "path"]), 3, [],
+  ("touch", (RErr, [Pathname "path"]), 3, [],
    [InitBasicFS, Always, TestOutputTrue (
       [["touch"; "/new"];
        ["exists"; "/new"]])],
@@ -763,23 +917,22 @@ Touch acts like the L<touch(1)> command.  It can be used to
 update the timestamps on a file, or, if the file does not exist,
 to create a new zero-length file.");
 
-  ("cat", (RString "content", [String "path"]), 4, [ProtocolLimitWarning],
-   [InitBasicFS, Always, TestOutput (
-      [["write_file"; "/new"; "new file contents"; "0"];
-       ["cat"; "/new"]], "new file contents")],
+  ("cat", (RString "content", [Pathname "path"]), 4, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutput (
+      [["cat"; "/known-2"]], "abcdef\n")],
    "list the contents of a file",
    "\
 Return the contents of the file named C<path>.
 
 Note that this function cannot correctly handle binary files
 (specifically, files containing C<\\0> character which is treated
-as end of string).  For those you need to use the C<guestfs_download>
-function which has a more complex interface.");
+as end of string).  For those you need to use the C<guestfs_read_file>
+or C<guestfs_download> functions which have a more complex interface.");
 
-  ("ll", (RString "listing", [String "directory"]), 5, [],
+  ("ll", (RString "listing", [Pathname "directory"]), 5, [],
    [], (* XXX Tricky to test because it depends on the exact format
-	* of the 'ls -l' command, which changes between F10 and F11.
-	*)
+        * of the 'ls -l' command, which changes between F10 and F11.
+        *)
    "list the files in a directory (long format)",
    "\
 List the files in C<directory> (relative to the root directory,
@@ -788,7 +941,7 @@ there is no cwd) in the format of 'ls -la'.
 This command is mostly useful for interactive sessions.  It
 is I<not> intended that you try to parse the output string.");
 
-  ("ls", (RStringList "listing", [String "directory"]), 6, [],
+  ("ls", (RStringList "listing", [Pathname "directory"]), 6, [],
    [InitBasicFS, Always, TestOutputList (
       [["touch"; "/new"];
        ["touch"; "/newer"];
@@ -827,7 +980,7 @@ The full partition device names are returned, eg. C</dev/sda1>
 This does not return logical volumes.  For that you will need to
 call C<guestfs_lvs>.");
 
-  ("pvs", (RStringList "physvols", []), 9, [],
+  ("pvs", (RStringList "physvols", []), 9, [Optional "lvm2"],
    [InitBasicFSonLVM, Always, TestOutputListOfDevices (
       [["pvs"]], ["/dev/sda1"]);
     InitEmpty, Always, TestOutputListOfDevices (
@@ -846,7 +999,7 @@ PVs (eg. C</dev/sda2>).
 
 See also C<guestfs_pvs_full>.");
 
-  ("vgs", (RStringList "volgroups", []), 10, [],
+  ("vgs", (RStringList "volgroups", []), 10, [Optional "lvm2"],
    [InitBasicFSonLVM, Always, TestOutputList (
       [["vgs"]], ["VG"]);
     InitEmpty, Always, TestOutputList (
@@ -867,7 +1020,7 @@ detected (eg. C<VolGroup00>).
 
 See also C<guestfs_vgs_full>.");
 
-  ("lvs", (RStringList "logvols", []), 11, [],
+  ("lvs", (RStringList "logvols", []), 11, [Optional "lvm2"],
    [InitBasicFSonLVM, Always, TestOutputList (
       [["lvs"]], ["/dev/VG/LV"]);
     InitEmpty, Always, TestOutputList (
@@ -891,34 +1044,32 @@ This returns a list of the logical volume device names
 
 See also C<guestfs_lvs_full>.");
 
-  ("pvs_full", (RStructList ("physvols", "lvm_pv"), []), 12, [],
+  ("pvs_full", (RStructList ("physvols", "lvm_pv"), []), 12, [Optional "lvm2"],
    [], (* XXX how to test? *)
    "list the LVM physical volumes (PVs)",
    "\
 List all the physical volumes detected.  This is the equivalent
 of the L<pvs(8)> command.  The \"full\" version includes all fields.");
 
-  ("vgs_full", (RStructList ("volgroups", "lvm_vg"), []), 13, [],
+  ("vgs_full", (RStructList ("volgroups", "lvm_vg"), []), 13, [Optional "lvm2"],
    [], (* XXX how to test? *)
    "list the LVM volume groups (VGs)",
    "\
 List all the volumes groups detected.  This is the equivalent
 of the L<vgs(8)> command.  The \"full\" version includes all fields.");
 
-  ("lvs_full", (RStructList ("logvols", "lvm_lv"), []), 14, [],
+  ("lvs_full", (RStructList ("logvols", "lvm_lv"), []), 14, [Optional "lvm2"],
    [], (* XXX how to test? *)
    "list the LVM logical volumes (LVs)",
    "\
 List all the logical volumes detected.  This is the equivalent
 of the L<lvs(8)> command.  The \"full\" version includes all fields.");
 
-  ("read_lines", (RStringList "lines", [String "path"]), 15, [],
-   [InitBasicFS, Always, TestOutputList (
-      [["write_file"; "/new"; "line1\r\nline2\nline3"; "0"];
-       ["read_lines"; "/new"]], ["line1"; "line2"; "line3"]);
-    InitBasicFS, Always, TestOutputList (
-      [["write_file"; "/new"; ""; "0"];
-       ["read_lines"; "/new"]], [])],
+  ("read_lines", (RStringList "lines", [Pathname "path"]), 15, [],
+   [InitISOFS, Always, TestOutputList (
+      [["read_lines"; "/known-4"]], ["abc"; "def"; "ghi"]);
+    InitISOFS, Always, TestOutputList (
+      [["read_lines"; "/empty"]], [])],
    "read file as lines",
    "\
 Return the contents of the file named C<path>.
@@ -931,7 +1082,7 @@ Note that this function cannot correctly handle binary files
 as end of line).  For those you need to use the C<guestfs_read_file>
 function which has a more complex interface.");
 
-  ("aug_init", (RErr, [String "root"; Int "flags"]), 16, [],
+  ("aug_init", (RErr, [Pathname "root"; Int "flags"]), 16, [Optional "augeas"],
    [], (* XXX Augeas code needs tests. *)
    "create a new Augeas handle",
    "\
@@ -982,7 +1133,7 @@ To close the handle, you can call C<guestfs_aug_close>.
 
 To find out more about Augeas, see L<http://augeas.net/>.");
 
-  ("aug_close", (RErr, []), 26, [],
+  ("aug_close", (RErr, []), 26, [Optional "augeas"],
    [], (* XXX Augeas code needs tests. *)
    "close the current Augeas handle",
    "\
@@ -991,7 +1142,7 @@ used by it.  After calling this, you have to call
 C<guestfs_aug_init> again before you can use any other
 Augeas functions.");
 
-  ("aug_defvar", (RInt "nrnodes", [String "name"; OptString "expr"]), 17, [],
+  ("aug_defvar", (RInt "nrnodes", [String "name"; OptString "expr"]), 17, [Optional "augeas"],
    [], (* XXX Augeas code needs tests. *)
    "define an Augeas variable",
    "\
@@ -1002,7 +1153,7 @@ undefined.
 On success this returns the number of nodes in C<expr>, or
 C<0> if C<expr> evaluates to something which is not a nodeset.");
 
-  ("aug_defnode", (RStruct ("nrnodescreated", "int_bool"), [String "name"; String "expr"; String "val"]), 18, [],
+  ("aug_defnode", (RStruct ("nrnodescreated", "int_bool"), [String "name"; String "expr"; String "val"]), 18, [Optional "augeas"],
    [], (* XXX Augeas code needs tests. *)
    "define an Augeas node",
    "\
@@ -1017,20 +1168,20 @@ On success this returns a pair containing the
 number of nodes in the nodeset, and a boolean flag
 if a node was created.");
 
-  ("aug_get", (RString "val", [String "path"]), 19, [],
+  ("aug_get", (RString "val", [String "augpath"]), 19, [Optional "augeas"],
    [], (* XXX Augeas code needs tests. *)
    "look up the value of an Augeas path",
    "\
 Look up the value associated with C<path>.  If C<path>
 matches exactly one node, the C<value> is returned.");
 
-  ("aug_set", (RErr, [String "path"; String "val"]), 20, [],
+  ("aug_set", (RErr, [String "augpath"; String "val"]), 20, [Optional "augeas"],
    [], (* XXX Augeas code needs tests. *)
    "set Augeas path to value",
    "\
 Set the value associated with C<path> to C<value>.");
 
-  ("aug_insert", (RErr, [String "path"; String "label"; Bool "before"]), 21, [],
+  ("aug_insert", (RErr, [String "augpath"; String "label"; Bool "before"]), 21, [Optional "augeas"],
    [], (* XXX Augeas code needs tests. *)
    "insert a sibling Augeas node",
    "\
@@ -1042,7 +1193,7 @@ C<path> must match exactly one existing node in the tree, and
 C<label> must be a label, ie. not contain C</>, C<*> or end
 with a bracketed index C<[N]>.");
 
-  ("aug_rm", (RInt "nrnodes", [String "path"]), 22, [],
+  ("aug_rm", (RInt "nrnodes", [String "augpath"]), 22, [Optional "augeas"],
    [], (* XXX Augeas code needs tests. *)
    "remove an Augeas path",
    "\
@@ -1050,22 +1201,22 @@ Remove C<path> and all of its children.
 
 On success this returns the number of entries which were removed.");
 
-  ("aug_mv", (RErr, [String "src"; String "dest"]), 23, [],
+  ("aug_mv", (RErr, [String "src"; String "dest"]), 23, [Optional "augeas"],
    [], (* XXX Augeas code needs tests. *)
    "move Augeas node",
    "\
 Move the node C<src> to C<dest>.  C<src> must match exactly
 one node.  C<dest> is overwritten if it exists.");
 
-  ("aug_match", (RStringList "matches", [String "path"]), 24, [],
+  ("aug_match", (RStringList "matches", [String "augpath"]), 24, [Optional "augeas"],
    [], (* XXX Augeas code needs tests. *)
-   "return Augeas nodes which match path",
+   "return Augeas nodes which match augpath",
    "\
 Returns a list of paths which match the path expression C<path>.
 The returned paths are sufficiently qualified so that they match
 exactly one node in the current tree.");
 
-  ("aug_save", (RErr, []), 25, [],
+  ("aug_save", (RErr, []), 25, [Optional "augeas"],
    [], (* XXX Augeas code needs tests. *)
    "write all pending Augeas changes to disk",
    "\
@@ -1074,7 +1225,7 @@ This writes all pending changes to disk.
 The flags which were passed to C<guestfs_aug_init> affect exactly
 how files are saved.");
 
-  ("aug_load", (RErr, []), 27, [],
+  ("aug_load", (RErr, []), 27, [Optional "augeas"],
    [], (* XXX Augeas code needs tests. *)
    "load files into the tree",
    "\
@@ -1083,14 +1234,14 @@ Load files into the tree.
 See C<aug_load> in the Augeas documentation for the full gory
 details.");
 
-  ("aug_ls", (RStringList "matches", [String "path"]), 28, [],
+  ("aug_ls", (RStringList "matches", [String "augpath"]), 28, [Optional "augeas"],
    [], (* XXX Augeas code needs tests. *)
-   "list Augeas nodes under a path",
+   "list Augeas nodes under augpath",
    "\
 This is just a shortcut for listing C<guestfs_aug_match>
 C<path/*> and sorting the resulting nodes into alphabetical order.");
 
-  ("rm", (RErr, [String "path"]), 29, [],
+  ("rm", (RErr, [Pathname "path"]), 29, [],
    [InitBasicFS, Always, TestRun
       [["touch"; "/new"];
        ["rm"; "/new"]];
@@ -1103,7 +1254,7 @@ C<path/*> and sorting the resulting nodes into alphabetical order.");
    "\
 Remove the single file C<path>.");
 
-  ("rmdir", (RErr, [String "path"]), 30, [],
+  ("rmdir", (RErr, [Pathname "path"]), 30, [],
    [InitBasicFS, Always, TestRun
       [["mkdir"; "/new"];
        ["rmdir"; "/new"]];
@@ -1116,7 +1267,7 @@ Remove the single file C<path>.");
    "\
 Remove the single directory C<path>.");
 
-  ("rm_rf", (RErr, [String "path"]), 31, [],
+  ("rm_rf", (RErr, [Pathname "path"]), 31, [],
    [InitBasicFS, Always, TestOutputFalse
       [["mkdir"; "/new"];
        ["mkdir"; "/new/foo"];
@@ -1129,7 +1280,7 @@ Remove the file or directory C<path>, recursively removing the
 contents if its a directory.  This is like the C<rm -rf> shell
 command.");
 
-  ("mkdir", (RErr, [String "path"]), 32, [],
+  ("mkdir", (RErr, [Pathname "path"]), 32, [],
    [InitBasicFS, Always, TestOutputTrue
       [["mkdir"; "/new"];
        ["is_dir"; "/new"]];
@@ -1139,7 +1290,7 @@ command.");
    "\
 Create a directory named C<path>.");
 
-  ("mkdir_p", (RErr, [String "path"]), 33, [],
+  ("mkdir_p", (RErr, [Pathname "path"]), 33, [],
    [InitBasicFS, Always, TestOutputTrue
       [["mkdir_p"; "/new/foo/bar"];
        ["is_dir"; "/new/foo/bar"]];
@@ -1161,14 +1312,14 @@ Create a directory named C<path>.");
 Create a directory named C<path>, creating any parent directories
 as necessary.  This is like the C<mkdir -p> shell command.");
 
-  ("chmod", (RErr, [Int "mode"; String "path"]), 34, [],
+  ("chmod", (RErr, [Int "mode"; Pathname "path"]), 34, [],
    [], (* XXX Need stat command to test *)
    "change file mode",
    "\
 Change the mode (permissions) of C<path> to C<mode>.  Only
 numeric modes are supported.");
 
-  ("chown", (RErr, [Int "owner"; Int "group"; String "path"]), 35, [],
+  ("chown", (RErr, [Int "owner"; Int "group"; Pathname "path"]), 35, [],
    [], (* XXX Need stat command to test *)
    "change file owner and group",
    "\
@@ -1178,13 +1329,11 @@ Only numeric uid and gid are supported.  If you want to use
 names, you will need to locate and parse the password file
 yourself (Augeas support makes this relatively easy).");
 
-  ("exists", (RBool "existsflag", [String "path"]), 36, [],
-   [InitBasicFS, Always, TestOutputTrue (
-      [["touch"; "/new"];
-       ["exists"; "/new"]]);
-    InitBasicFS, Always, TestOutputTrue (
-      [["mkdir"; "/new"];
-       ["exists"; "/new"]])],
+  ("exists", (RBool "existsflag", [Pathname "path"]), 36, [],
+   [InitISOFS, Always, TestOutputTrue (
+      [["exists"; "/empty"]]);
+    InitISOFS, Always, TestOutputTrue (
+      [["exists"; "/directory"]])],
    "test if file or directory exists",
    "\
 This returns C<true> if and only if there is a file, directory
@@ -1192,13 +1341,11 @@ This returns C<true> if and only if there is a file, directory
 
 See also C<guestfs_is_file>, C<guestfs_is_dir>, C<guestfs_stat>.");
 
-  ("is_file", (RBool "fileflag", [String "path"]), 37, [],
-   [InitBasicFS, Always, TestOutputTrue (
-      [["touch"; "/new"];
-       ["is_file"; "/new"]]);
-    InitBasicFS, Always, TestOutputFalse (
-      [["mkdir"; "/new"];
-       ["is_file"; "/new"]])],
+  ("is_file", (RBool "fileflag", [Pathname "path"]), 37, [],
+   [InitISOFS, Always, TestOutputTrue (
+      [["is_file"; "/known-1"]]);
+    InitISOFS, Always, TestOutputFalse (
+      [["is_file"; "/directory"]])],
    "test if file exists",
    "\
 This returns C<true> if and only if there is a file
@@ -1207,13 +1354,11 @@ other objects like directories.
 
 See also C<guestfs_stat>.");
 
-  ("is_dir", (RBool "dirflag", [String "path"]), 38, [],
-   [InitBasicFS, Always, TestOutputFalse (
-      [["touch"; "/new"];
-       ["is_dir"; "/new"]]);
-    InitBasicFS, Always, TestOutputTrue (
-      [["mkdir"; "/new"];
-       ["is_dir"; "/new"]])],
+  ("is_dir", (RBool "dirflag", [Pathname "path"]), 38, [],
+   [InitISOFS, Always, TestOutputFalse (
+      [["is_dir"; "/known-3"]]);
+    InitISOFS, Always, TestOutputTrue (
+      [["is_dir"; "/directory"]])],
    "test if file exists",
    "\
 This returns C<true> if and only if there is a directory
@@ -1222,7 +1367,7 @@ other objects like files.
 
 See also C<guestfs_stat>.");
 
-  ("pvcreate", (RErr, [String "device"]), 39, [],
+  ("pvcreate", (RErr, [Device "device"]), 39, [Optional "lvm2"],
    [InitEmpty, Always, TestOutputListOfDevices (
       [["sfdiskM"; "/dev/sda"; ",100 ,200 ,"];
        ["pvcreate"; "/dev/sda1"];
@@ -1235,7 +1380,7 @@ This creates an LVM physical volume on the named C<device>,
 where C<device> should usually be a partition name such
 as C</dev/sda1>.");
 
-  ("vgcreate", (RErr, [String "volgroup"; StringList "physvols"]), 40, [],
+  ("vgcreate", (RErr, [String "volgroup"; DeviceList "physvols"]), 40, [Optional "lvm2"],
    [InitEmpty, Always, TestOutputList (
       [["sfdiskM"; "/dev/sda"; ",100 ,200 ,"];
        ["pvcreate"; "/dev/sda1"];
@@ -1249,7 +1394,7 @@ as C</dev/sda1>.");
 This creates an LVM volume group called C<volgroup>
 from the non-empty list of physical volumes C<physvols>.");
 
-  ("lvcreate", (RErr, [String "logvol"; String "volgroup"; Int "mbytes"]), 41, [],
+  ("lvcreate", (RErr, [String "logvol"; String "volgroup"; Int "mbytes"]), 41, [Optional "lvm2"],
    [InitEmpty, Always, TestOutputList (
       [["sfdiskM"; "/dev/sda"; ",100 ,200 ,"];
        ["pvcreate"; "/dev/sda1"];
@@ -1270,9 +1415,9 @@ from the non-empty list of physical volumes C<physvols>.");
 This creates an LVM volume group called C<logvol>
 on the volume group C<volgroup>, with C<size> megabytes.");
 
-  ("mkfs", (RErr, [String "fstype"; String "device"]), 42, [],
+  ("mkfs", (RErr, [String "fstype"; Device "device"]), 42, [],
    [InitEmpty, Always, TestOutput (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["mkfs"; "ext2"; "/dev/sda1"];
        ["mount"; "/dev/sda1"; "/"];
        ["write_file"; "/new"; "new file contents"; "0"];
@@ -1283,9 +1428,9 @@ This creates a filesystem on C<device> (usually a partition
 or LVM logical volume).  The filesystem type is C<fstype>, for
 example C<ext3>.");
 
-  ("sfdisk", (RErr, [String "device";
-		     Int "cyls"; Int "heads"; Int "sectors";
-		     StringList "lines"]), 43, [DangerWillRobinson],
+  ("sfdisk", (RErr, [Device "device";
+                     Int "cyls"; Int "heads"; Int "sectors";
+                     StringList "lines"]), 43, [DangerWillRobinson],
    [],
    "create partitions on a block device",
    "\
@@ -1309,9 +1454,10 @@ To create a single partition occupying the whole disk, you would
 pass C<lines> as a single element list, when the single element being
 the string C<,> (comma).
 
-See also: C<guestfs_sfdisk_l>, C<guestfs_sfdisk_N>");
+See also: C<guestfs_sfdisk_l>, C<guestfs_sfdisk_N>,
+C<guestfs_part_init>");
 
-  ("write_file", (RErr, [String "path"; String "content"; Int "size"]), 44, [ProtocolLimitWarning],
+  ("write_file", (RErr, [Pathname "path"; String "content"; Int "size"]), 44, [ProtocolLimitWarning],
    [InitBasicFS, Always, TestOutput (
       [["write_file"; "/new"; "new file contents"; "0"];
        ["cat"; "/new"]], "new file contents");
@@ -1347,12 +1493,12 @@ use C<guestfs_upload>.");
 
   ("umount", (RErr, [String "pathordevice"]), 45, [FishAlias "unmount"],
    [InitEmpty, Always, TestOutputListOfDevices (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["mkfs"; "ext2"; "/dev/sda1"];
        ["mount"; "/dev/sda1"; "/"];
        ["mounts"]], ["/dev/sda1"]);
     InitEmpty, Always, TestOutputList (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["mkfs"; "ext2"; "/dev/sda1"];
        ["mount"; "/dev/sda1"; "/"];
        ["umount"; "/"];
@@ -1371,7 +1517,9 @@ contains the filesystem.");
 This returns the list of currently mounted filesystems.  It returns
 the list of devices (eg. C</dev/sda1>, C</dev/VG/LV>).
 
-Some internal mounts are not shown.");
+Some internal mounts are not shown.
+
+See also: C<guestfs_mountpoints>");
 
   ("umount_all", (RErr, []), 47, [FishAlias "unmount-all"],
    [InitBasicFS, Always, TestOutputList (
@@ -1397,29 +1545,30 @@ This unmounts all mounted filesystems.
 
 Some internal mounts are not unmounted by this call.");
 
-  ("lvm_remove_all", (RErr, []), 48, [DangerWillRobinson],
+  ("lvm_remove_all", (RErr, []), 48, [DangerWillRobinson; Optional "lvm2"],
    [],
    "remove all LVM LVs, VGs and PVs",
    "\
 This command removes all LVM logical volumes, volume groups
 and physical volumes.");
 
-  ("file", (RString "description", [String "path"]), 49, [],
-   [InitBasicFS, Always, TestOutput (
-      [["touch"; "/new"];
-       ["file"; "/new"]], "empty");
-    InitBasicFS, Always, TestOutput (
-      [["write_file"; "/new"; "some content\n"; "0"];
-       ["file"; "/new"]], "ASCII text");
-    InitBasicFS, Always, TestLastFail (
-      [["file"; "/nofile"]])],
+  ("file", (RString "description", [Dev_or_Path "path"]), 49, [],
+   [InitISOFS, Always, TestOutput (
+      [["file"; "/empty"]], "empty");
+    InitISOFS, Always, TestOutput (
+      [["file"; "/known-1"]], "ASCII text");
+    InitISOFS, Always, TestLastFail (
+      [["file"; "/notexists"]])],
    "determine file type",
    "\
 This call uses the standard L<file(1)> command to determine
 the type or contents of the file.  This also works on devices,
 for example to find out whether a partition contains a filesystem.
 
-The exact command which runs is C<file -bsL path>.  Note in
+This call will also transparently look inside various types
+of compressed file.
+
+The exact command which runs is C<file -zbsL path>.  Note in
 particular that the filename is not prepended to the output
 (the C<-b> option).");
 
@@ -1556,20 +1705,18 @@ result into a list of lines.
 
 See also: C<guestfs_sh_lines>");
 
-  ("stat", (RStruct ("statbuf", "stat"), [String "path"]), 52, [],
-   [InitBasicFS, Always, TestOutputStruct (
-      [["touch"; "/new"];
-       ["stat"; "/new"]], [CompareWithInt ("size", 0)])],
+  ("stat", (RStruct ("statbuf", "stat"), [Pathname "path"]), 52, [],
+   [InitISOFS, Always, TestOutputStruct (
+      [["stat"; "/empty"]], [CompareWithInt ("size", 0)])],
    "get file information",
    "\
 Returns file information for the given C<path>.
 
 This is the same as the C<stat(2)> system call.");
 
-  ("lstat", (RStruct ("statbuf", "stat"), [String "path"]), 53, [],
-   [InitBasicFS, Always, TestOutputStruct (
-      [["touch"; "/new"];
-       ["lstat"; "/new"]], [CompareWithInt ("size", 0)])],
+  ("lstat", (RStruct ("statbuf", "stat"), [Pathname "path"]), 53, [],
+   [InitISOFS, Always, TestOutputStruct (
+      [["lstat"; "/empty"]], [CompareWithInt ("size", 0)])],
    "get file information for a symbolic link",
    "\
 Returns file information for the given C<path>.
@@ -1580,10 +1727,9 @@ refers to.
 
 This is the same as the C<lstat(2)> system call.");
 
-  ("statvfs", (RStruct ("statbuf", "statvfs"), [String "path"]), 54, [],
-   [InitBasicFS, Always, TestOutputStruct (
-      [["statvfs"; "/"]], [CompareWithInt ("namemax", 255);
-			   CompareWithInt ("bsize", 1024)])],
+  ("statvfs", (RStruct ("statbuf", "statvfs"), [Pathname "path"]), 54, [],
+   [InitISOFS, Always, TestOutputStruct (
+      [["statvfs"; "/"]], [CompareWithInt ("namemax", 255)])],
    "get file system statistics",
    "\
 Returns file system statistics for any mounted file system.
@@ -1592,7 +1738,7 @@ C<path> should be a file or directory in the mounted file system
 
 This is the same as the C<statvfs(2)> system call.");
 
-  ("tune2fs_l", (RHashtable "superblock", [String "device"]), 55, [],
+  ("tune2fs_l", (RHashtable "superblock", [Device "device"]), 55, [],
    [], (* XXX test *)
    "get ext2/ext3/ext4 superblock details",
    "\
@@ -1604,7 +1750,7 @@ manpage for more details.  The list of fields returned isn't
 clearly defined, and depends on both the version of C<tune2fs>
 that libguestfs was built against, and the filesystem itself.");
 
-  ("blockdev_setro", (RErr, [String "device"]), 56, [],
+  ("blockdev_setro", (RErr, [Device "device"]), 56, [],
    [InitEmpty, Always, TestOutputTrue (
       [["blockdev_setro"; "/dev/sda"];
        ["blockdev_getro"; "/dev/sda"]])],
@@ -1614,7 +1760,7 @@ Sets the block device named C<device> to read-only.
 
 This uses the L<blockdev(8)> command.");
 
-  ("blockdev_setrw", (RErr, [String "device"]), 57, [],
+  ("blockdev_setrw", (RErr, [Device "device"]), 57, [],
    [InitEmpty, Always, TestOutputFalse (
       [["blockdev_setrw"; "/dev/sda"];
        ["blockdev_getro"; "/dev/sda"]])],
@@ -1624,7 +1770,7 @@ Sets the block device named C<device> to read-write.
 
 This uses the L<blockdev(8)> command.");
 
-  ("blockdev_getro", (RBool "ro", [String "device"]), 58, [],
+  ("blockdev_getro", (RBool "ro", [Device "device"]), 58, [],
    [InitEmpty, Always, TestOutputTrue (
       [["blockdev_setro"; "/dev/sda"];
        ["blockdev_getro"; "/dev/sda"]])],
@@ -1635,7 +1781,7 @@ Returns a boolean indicating if the block device is read-only
 
 This uses the L<blockdev(8)> command.");
 
-  ("blockdev_getss", (RInt "sectorsize", [String "device"]), 59, [],
+  ("blockdev_getss", (RInt "sectorsize", [Device "device"]), 59, [],
    [InitEmpty, Always, TestOutputInt (
       [["blockdev_getss"; "/dev/sda"]], 512)],
    "get sectorsize of block device",
@@ -1648,7 +1794,7 @@ for that).
 
 This uses the L<blockdev(8)> command.");
 
-  ("blockdev_getbsz", (RInt "blocksize", [String "device"]), 60, [],
+  ("blockdev_getbsz", (RInt "blocksize", [Device "device"]), 60, [],
    [InitEmpty, Always, TestOutputInt (
       [["blockdev_getbsz"; "/dev/sda"]], 4096)],
    "get blocksize of block device",
@@ -1660,7 +1806,7 @@ I<filesystem block size>).
 
 This uses the L<blockdev(8)> command.");
 
-  ("blockdev_setbsz", (RErr, [String "device"; Int "blocksize"]), 61, [],
+  ("blockdev_setbsz", (RErr, [Device "device"; Int "blocksize"]), 61, [],
    [], (* XXX test *)
    "set blocksize of block device",
    "\
@@ -1671,7 +1817,7 @@ I<filesystem block size>).
 
 This uses the L<blockdev(8)> command.");
 
-  ("blockdev_getsz", (RInt64 "sizeinsectors", [String "device"]), 62, [],
+  ("blockdev_getsz", (RInt64 "sizeinsectors", [Device "device"]), 62, [],
    [InitEmpty, Always, TestOutputInt (
       [["blockdev_getsz"; "/dev/sda"]], 1024000)],
    "get total size of device in 512-byte sectors",
@@ -1685,7 +1831,7 @@ useful I<size in bytes>.
 
 This uses the L<blockdev(8)> command.");
 
-  ("blockdev_getsize64", (RInt64 "sizeinbytes", [String "device"]), 63, [],
+  ("blockdev_getsize64", (RInt64 "sizeinbytes", [Device "device"]), 63, [],
    [InitEmpty, Always, TestOutputInt (
       [["blockdev_getsize64"; "/dev/sda"]], 524288000)],
    "get total size of device in bytes",
@@ -1696,7 +1842,7 @@ See also C<guestfs_blockdev_getsz>.
 
 This uses the L<blockdev(8)> command.");
 
-  ("blockdev_flushbufs", (RErr, [String "device"]), 64, [],
+  ("blockdev_flushbufs", (RErr, [Device "device"]), 64, [],
    [InitEmpty, Always, TestRun
       [["blockdev_flushbufs"; "/dev/sda"]]],
    "flush device buffers",
@@ -1706,7 +1852,7 @@ with C<device>.
 
 This uses the L<blockdev(8)> command.");
 
-  ("blockdev_rereadpt", (RErr, [String "device"]), 65, [],
+  ("blockdev_rereadpt", (RErr, [Device "device"]), 65, [],
    [InitEmpty, Always, TestRun
       [["blockdev_rereadpt"; "/dev/sda"]]],
    "reread partition table",
@@ -1715,11 +1861,12 @@ Reread the partition table on C<device>.
 
 This uses the L<blockdev(8)> command.");
 
-  ("upload", (RErr, [FileIn "filename"; String "remotefilename"]), 66, [],
+  ("upload", (RErr, [FileIn "filename"; Dev_or_Path "remotefilename"]), 66, [],
    [InitBasicFS, Always, TestOutput (
       (* Pick a file from cwd which isn't likely to change. *)
       [["upload"; "../COPYING.LIB"; "/COPYING.LIB"];
-       ["checksum"; "md5"; "/COPYING.LIB"]], "e3eda01d9815f8d24aae2dbd89b68b06")],
+       ["checksum"; "md5"; "/COPYING.LIB"]],
+        Digest.to_hex (Digest.file "COPYING.LIB"))],
    "upload a file from the local machine",
    "\
 Upload local file C<filename> to C<remotefilename> on the
@@ -1729,13 +1876,14 @@ C<filename> can also be a named pipe.
 
 See also C<guestfs_download>.");
 
-  ("download", (RErr, [String "remotefilename"; FileOut "filename"]), 67, [],
+  ("download", (RErr, [Dev_or_Path "remotefilename"; FileOut "filename"]), 67, [],
    [InitBasicFS, Always, TestOutput (
       (* Pick a file from cwd which isn't likely to change. *)
       [["upload"; "../COPYING.LIB"; "/COPYING.LIB"];
        ["download"; "/COPYING.LIB"; "testdownload.tmp"];
        ["upload"; "testdownload.tmp"; "/upload"];
-       ["checksum"; "md5"; "/upload"]], "e3eda01d9815f8d24aae2dbd89b68b06")],
+       ["checksum"; "md5"; "/upload"]],
+        Digest.to_hex (Digest.file "COPYING.LIB"))],
    "download a file to the local machine",
    "\
 Download file C<remotefilename> and save it as C<filename>
@@ -1745,36 +1893,23 @@ C<filename> can also be a named pipe.
 
 See also C<guestfs_upload>, C<guestfs_cat>.");
 
-  ("checksum", (RString "checksum", [String "csumtype"; String "path"]), 68, [],
-   [InitBasicFS, Always, TestOutput (
-      [["write_file"; "/new"; "test\n"; "0"];
-       ["checksum"; "crc"; "/new"]], "935282863");
-    InitBasicFS, Always, TestLastFail (
-      [["checksum"; "crc"; "/new"]]);
-    InitBasicFS, Always, TestOutput (
-      [["write_file"; "/new"; "test\n"; "0"];
-       ["checksum"; "md5"; "/new"]], "d8e8fca2dc0f896fd7cb4cb0031ba249");
-    InitBasicFS, Always, TestOutput (
-      [["write_file"; "/new"; "test\n"; "0"];
-       ["checksum"; "sha1"; "/new"]], "4e1243bd22c66e76c2ba9eddc1f91394e57f9f83");
-    InitBasicFS, Always, TestOutput (
-      [["write_file"; "/new"; "test\n"; "0"];
-       ["checksum"; "sha224"; "/new"]], "52f1bf093f4b7588726035c176c0cdb4376cfea53819f1395ac9e6ec");
-    InitBasicFS, Always, TestOutput (
-      [["write_file"; "/new"; "test\n"; "0"];
-       ["checksum"; "sha256"; "/new"]], "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2");
-    InitBasicFS, Always, TestOutput (
-      [["write_file"; "/new"; "test\n"; "0"];
-       ["checksum"; "sha384"; "/new"]], "109bb6b5b6d5547c1ce03c7a8bd7d8f80c1cb0957f50c4f7fda04692079917e4f9cad52b878f3d8234e1a170b154b72d");
-    InitBasicFS, Always, TestOutput (
-      [["write_file"; "/new"; "test\n"; "0"];
-       ["checksum"; "sha512"; "/new"]], "0e3e75234abc68f4378a86b3f4b32a198ba301845b0cd6e50106e874345700cc6663a86c1ea125dc5e92be17c98f9a0f85ca9d5f595db2012f7cc3571945c123");
-    InitBasicFS, Always, TestOutput (
-      (* RHEL 5 thinks this is an HFS+ filesystem unless we give
-       * the type explicitly.
-       *)
-      [["mount_vfs"; "ro"; "squashfs"; "/dev/sdd"; "/"];
-       ["checksum"; "md5"; "/known-3"]], "46d6ca27ee07cdc6fa99c2e138cc522c")],
+  ("checksum", (RString "checksum", [String "csumtype"; Pathname "path"]), 68, [],
+   [InitISOFS, Always, TestOutput (
+      [["checksum"; "crc"; "/known-3"]], "2891671662");
+    InitISOFS, Always, TestLastFail (
+      [["checksum"; "crc"; "/notexists"]]);
+    InitISOFS, Always, TestOutput (
+      [["checksum"; "md5"; "/known-3"]], "46d6ca27ee07cdc6fa99c2e138cc522c");
+    InitISOFS, Always, TestOutput (
+      [["checksum"; "sha1"; "/known-3"]], "b7ebccc3ee418311091c3eda0a45b83c0a770f15");
+    InitISOFS, Always, TestOutput (
+      [["checksum"; "sha224"; "/known-3"]], "d2cd1774b28f3659c14116be0a6dc2bb5c4b350ce9cd5defac707741");
+    InitISOFS, Always, TestOutput (
+      [["checksum"; "sha256"; "/known-3"]], "75bb71b90cd20cb13f86d2bea8dad63ac7194e7517c3b52b8d06ff52d3487d30");
+    InitISOFS, Always, TestOutput (
+      [["checksum"; "sha384"; "/known-3"]], "5fa7883430f357b5d7b7271d3a1d2872b51d73cba72731de6863d3dea55f30646af2799bef44d5ea776a5ec7941ac640");
+    InitISOFS, Always, TestOutput (
+      [["checksum"; "sha512"; "/known-3"]], "2794062c328c6b216dca90443b7f7134c5f40e56bd0ed7853123275a09982a6f992e6ca682f9d2fba34a4c5e870d8fe077694ff831e3032a004ee077e00603f6")],
    "compute MD5, SHAx or CRC checksum of file",
    "\
 This call computes the MD5, SHAx or CRC checksum of the
@@ -1849,7 +1984,7 @@ I<gzip compressed> tar file) into C<directory>.
 
 To upload an uncompressed tarball, use C<guestfs_tar_in>.");
 
-  ("tgz_out", (RErr, [String "directory"; FileOut "tarball"]), 72, [],
+  ("tgz_out", (RErr, [Pathname "directory"; FileOut "tarball"]), 72, [],
    [],
    "pack directory into compressed tarball",
    "\
@@ -1858,7 +1993,7 @@ it to local file C<tarball>.
 
 To download an uncompressed tarball, use C<guestfs_tar_out>.");
 
-  ("mount_ro", (RErr, [String "device"; String "mountpoint"]), 73, [],
+  ("mount_ro", (RErr, [Device "device"; String "mountpoint"]), 73, [],
    [InitBasicFS, Always, TestLastFail (
       [["umount"; "/"];
        ["mount_ro"; "/dev/sda1"; "/"];
@@ -1873,7 +2008,7 @@ To download an uncompressed tarball, use C<guestfs_tar_out>.");
 This is the same as the C<guestfs_mount> command, but it
 mounts the filesystem with the read-only (I<-o ro>) flag.");
 
-  ("mount_options", (RErr, [String "options"; String "device"; String "mountpoint"]), 74, [],
+  ("mount_options", (RErr, [String "options"; Device "device"; String "mountpoint"]), 74, [],
    [],
    "mount a guest disk with mount options",
    "\
@@ -1881,7 +2016,7 @@ This is the same as the C<guestfs_mount> command, but it
 allows you to set the mount options as for the
 L<mount(8)> I<-o> flag.");
 
-  ("mount_vfs", (RErr, [String "options"; String "vfstype"; String "device"; String "mountpoint"]), 75, [],
+  ("mount_vfs", (RErr, [String "options"; String "vfstype"; Device "device"; String "mountpoint"]), 75, [],
    [],
    "mount a guest disk with mount options and vfstype",
    "\
@@ -1901,9 +2036,9 @@ There is no comprehensive help for this command.  You have
 to look at the file C<daemon/debug.c> in the libguestfs source
 to find out what you can do.");
 
-  ("lvremove", (RErr, [String "device"]), 77, [],
+  ("lvremove", (RErr, [Device "device"]), 77, [Optional "lvm2"],
    [InitEmpty, Always, TestOutputList (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["pvcreate"; "/dev/sda1"];
        ["vgcreate"; "VG"; "/dev/sda1"];
        ["lvcreate"; "LV1"; "VG"; "50"];
@@ -1911,7 +2046,7 @@ to find out what you can do.");
        ["lvremove"; "/dev/VG/LV1"];
        ["lvs"]], ["/dev/VG/LV2"]);
     InitEmpty, Always, TestOutputList (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["pvcreate"; "/dev/sda1"];
        ["vgcreate"; "VG"; "/dev/sda1"];
        ["lvcreate"; "LV1"; "VG"; "50"];
@@ -1919,7 +2054,7 @@ to find out what you can do.");
        ["lvremove"; "/dev/VG"];
        ["lvs"]], []);
     InitEmpty, Always, TestOutputList (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["pvcreate"; "/dev/sda1"];
        ["vgcreate"; "VG"; "/dev/sda1"];
        ["lvcreate"; "LV1"; "VG"; "50"];
@@ -1934,9 +2069,9 @@ the path to the LV, such as C</dev/VG/LV>.
 You can also remove all LVs in a volume group by specifying
 the VG name, C</dev/VG>.");
 
-  ("vgremove", (RErr, [String "vgname"]), 78, [],
+  ("vgremove", (RErr, [String "vgname"]), 78, [Optional "lvm2"],
    [InitEmpty, Always, TestOutputList (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["pvcreate"; "/dev/sda1"];
        ["vgcreate"; "VG"; "/dev/sda1"];
        ["lvcreate"; "LV1"; "VG"; "50"];
@@ -1944,7 +2079,7 @@ the VG name, C</dev/VG>.");
        ["vgremove"; "VG"];
        ["lvs"]], []);
     InitEmpty, Always, TestOutputList (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["pvcreate"; "/dev/sda1"];
        ["vgcreate"; "VG"; "/dev/sda1"];
        ["lvcreate"; "LV1"; "VG"; "50"];
@@ -1958,9 +2093,9 @@ Remove an LVM volume group C<vgname>, (for example C<VG>).
 This also forcibly removes all logical volumes in the volume
 group (if any).");
 
-  ("pvremove", (RErr, [String "device"]), 79, [],
+  ("pvremove", (RErr, [Device "device"]), 79, [Optional "lvm2"],
    [InitEmpty, Always, TestOutputListOfDevices (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["pvcreate"; "/dev/sda1"];
        ["vgcreate"; "VG"; "/dev/sda1"];
        ["lvcreate"; "LV1"; "VG"; "50"];
@@ -1969,7 +2104,7 @@ group (if any).");
        ["pvremove"; "/dev/sda1"];
        ["lvs"]], []);
     InitEmpty, Always, TestOutputListOfDevices (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["pvcreate"; "/dev/sda1"];
        ["vgcreate"; "VG"; "/dev/sda1"];
        ["lvcreate"; "LV1"; "VG"; "50"];
@@ -1978,7 +2113,7 @@ group (if any).");
        ["pvremove"; "/dev/sda1"];
        ["vgs"]], []);
     InitEmpty, Always, TestOutputListOfDevices (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["pvcreate"; "/dev/sda1"];
        ["vgcreate"; "VG"; "/dev/sda1"];
        ["lvcreate"; "LV1"; "VG"; "50"];
@@ -1995,7 +2130,7 @@ The implementation uses the C<pvremove> command which refuses to
 wipe physical volumes that contain any volume groups, so you have
 to remove those first.");
 
-  ("set_e2label", (RErr, [String "device"; String "label"]), 80, [],
+  ("set_e2label", (RErr, [Device "device"; String "label"]), 80, [],
    [InitBasicFS, Always, TestOutput (
       [["set_e2label"; "/dev/sda1"; "testlabel"];
        ["get_e2label"; "/dev/sda1"]], "testlabel")],
@@ -2008,25 +2143,26 @@ C<device> to C<label>.  Filesystem labels are limited to
 You can use either C<guestfs_tune2fs_l> or C<guestfs_get_e2label>
 to return the existing label on a filesystem.");
 
-  ("get_e2label", (RString "label", [String "device"]), 81, [],
+  ("get_e2label", (RString "label", [Device "device"]), 81, [],
    [],
    "get the ext2/3/4 filesystem label",
    "\
 This returns the ext2/3/4 filesystem label of the filesystem on
 C<device>.");
 
-  ("set_e2uuid", (RErr, [String "device"; String "uuid"]), 82, [],
-   [InitBasicFS, Always, TestOutput (
-      [["set_e2uuid"; "/dev/sda1"; "a3a61220-882b-4f61-89f4-cf24dcc7297d"];
-       ["get_e2uuid"; "/dev/sda1"]], "a3a61220-882b-4f61-89f4-cf24dcc7297d");
-    InitBasicFS, Always, TestOutput (
-      [["set_e2uuid"; "/dev/sda1"; "clear"];
-       ["get_e2uuid"; "/dev/sda1"]], "");
-    (* We can't predict what UUIDs will be, so just check the commands run. *)
-    InitBasicFS, Always, TestRun (
-      [["set_e2uuid"; "/dev/sda1"; "random"]]);
-    InitBasicFS, Always, TestRun (
-      [["set_e2uuid"; "/dev/sda1"; "time"]])],
+  ("set_e2uuid", (RErr, [Device "device"; String "uuid"]), 82, [],
+   (let uuid = uuidgen () in
+    [InitBasicFS, Always, TestOutput (
+       [["set_e2uuid"; "/dev/sda1"; uuid];
+        ["get_e2uuid"; "/dev/sda1"]], uuid);
+     InitBasicFS, Always, TestOutput (
+       [["set_e2uuid"; "/dev/sda1"; "clear"];
+        ["get_e2uuid"; "/dev/sda1"]], "");
+     (* We can't predict what UUIDs will be, so just check the commands run. *)
+     InitBasicFS, Always, TestRun (
+       [["set_e2uuid"; "/dev/sda1"; "random"]]);
+     InitBasicFS, Always, TestRun (
+       [["set_e2uuid"; "/dev/sda1"; "time"]])]),
    "set the ext2/3/4 filesystem UUID",
    "\
 This sets the ext2/3/4 filesystem UUID of the filesystem on
@@ -2037,14 +2173,14 @@ L<tune2fs(8)> manpage.
 You can use either C<guestfs_tune2fs_l> or C<guestfs_get_e2uuid>
 to return the existing UUID of a filesystem.");
 
-  ("get_e2uuid", (RString "uuid", [String "device"]), 83, [],
+  ("get_e2uuid", (RString "uuid", [Device "device"]), 83, [],
    [],
    "get the ext2/3/4 filesystem UUID",
    "\
 This returns the ext2/3/4 filesystem UUID of the filesystem on
 C<device>.");
 
-  ("fsck", (RInt "status", [String "fstype"; String "device"]), 84, [],
+  ("fsck", (RInt "status", [String "fstype"; Device "device"]), 84, [],
    [InitBasicFS, Always, TestOutputInt (
       [["umount"; "/dev/sda1"];
        ["fsck"; "ext2"; "/dev/sda1"]], 0);
@@ -2082,7 +2218,7 @@ Checking or repairing NTFS volumes is not supported
 
 This command is entirely equivalent to running C<fsck -a -t fstype device>.");
 
-  ("zero", (RErr, [String "device"]), 85, [],
+  ("zero", (RErr, [Device "device"]), 85, [],
    [InitBasicFS, Always, TestOutput (
       [["umount"; "/dev/sda1"];
        ["zero"; "/dev/sda1"];
@@ -2097,7 +2233,7 @@ any partition tables, filesystem superblocks and so on.
 
 See also: C<guestfs_scrub_device>.");
 
-  ("grub_install", (RErr, [String "root"; String "device"]), 86, [],
+  ("grub_install", (RErr, [Pathname "root"; Device "device"]), 86, [],
    (* Test disabled because grub-install incompatible with virtio-blk driver.
     * See also: https://bugzilla.redhat.com/show_bug.cgi?id=479760
     *)
@@ -2109,7 +2245,7 @@ See also: C<guestfs_scrub_device>.");
 This command installs GRUB (the Grand Unified Bootloader) on
 C<device>, with the root directory being C<root>.");
 
-  ("cp", (RErr, [String "src"; String "dest"]), 87, [],
+  ("cp", (RErr, [Pathname "src"; Pathname "dest"]), 87, [],
    [InitBasicFS, Always, TestOutput (
       [["write_file"; "/old"; "file content"; "0"];
        ["cp"; "/old"; "/new"];
@@ -2128,7 +2264,7 @@ C<device>, with the root directory being C<root>.");
 This copies a file from C<src> to C<dest> where C<dest> is
 either a destination filename or destination directory.");
 
-  ("cp_a", (RErr, [String "src"; String "dest"]), 88, [],
+  ("cp_a", (RErr, [Pathname "src"; Pathname "dest"]), 88, [],
    [InitBasicFS, Always, TestOutput (
       [["mkdir"; "/olddir"];
        ["mkdir"; "/newdir"];
@@ -2140,7 +2276,7 @@ either a destination filename or destination directory.");
 This copies a file or directory from C<src> to C<dest>
 recursively using the C<cp -a> command.");
 
-  ("mv", (RErr, [String "src"; String "dest"]), 89, [],
+  ("mv", (RErr, [Pathname "src"; Pathname "dest"]), 89, [],
    [InitBasicFS, Always, TestOutput (
       [["write_file"; "/old"; "file content"; "0"];
        ["mv"; "/old"; "/new"];
@@ -2193,7 +2329,7 @@ the qemu subprocess.  Calling this function checks that the
 daemon responds to the ping message, without affecting the daemon
 or attached block device(s) in any other way.");
 
-  ("equal", (RBool "equality", [String "file1"; String "file2"]), 93, [],
+  ("equal", (RBool "equality", [Pathname "file1"; Pathname "file2"]), 93, [],
    [InitBasicFS, Always, TestOutputTrue (
       [["write_file"; "/file1"; "contents of a file"; "0"];
        ["cp"; "/file1"; "/file2"];
@@ -2211,22 +2347,19 @@ true if their content is exactly equal, or false otherwise.
 
 The external L<cmp(1)> program is used for the comparison.");
 
-  ("strings", (RStringList "stringsout", [String "path"]), 94, [ProtocolLimitWarning],
-   [InitBasicFS, Always, TestOutputList (
-      [["write_file"; "/new"; "hello\nworld\n"; "0"];
-       ["strings"; "/new"]], ["hello"; "world"]);
-    InitBasicFS, Always, TestOutputList (
-      [["touch"; "/new"];
-       ["strings"; "/new"]], [])],
+  ("strings", (RStringList "stringsout", [Pathname "path"]), 94, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["strings"; "/known-5"]], ["abcdefghi"; "jklmnopqr"]);
+    InitISOFS, Always, TestOutputList (
+      [["strings"; "/empty"]], [])],
    "print the printable strings in a file",
    "\
 This runs the L<strings(1)> command on a file and returns
 the list of printable strings found.");
 
-  ("strings_e", (RStringList "stringsout", [String "encoding"; String "path"]), 95, [ProtocolLimitWarning],
-   [InitBasicFS, Always, TestOutputList (
-      [["write_file"; "/new"; "hello\nworld\n"; "0"];
-       ["strings_e"; "b"; "/new"]], []);
+  ("strings_e", (RStringList "stringsout", [String "encoding"; Pathname "path"]), 95, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["strings_e"; "b"; "/known-5"]], []);
     InitBasicFS, Disabled, TestOutputList (
       [["write_file"; "/new"; "\000h\000e\000l\000l\000o\000\n\000w\000o\000r\000l\000d\000\n"; "24"];
        ["strings_e"; "b"; "/new"]], ["hello"; "world"])],
@@ -2242,24 +2375,22 @@ show strings inside Windows/x86 files.
 
 The returned strings are transcoded to UTF-8.");
 
-  ("hexdump", (RString "dump", [String "path"]), 96, [ProtocolLimitWarning],
-   [InitBasicFS, Always, TestOutput (
-      [["write_file"; "/new"; "hello\nworld\n"; "12"];
-       ["hexdump"; "/new"]], "00000000  68 65 6c 6c 6f 0a 77 6f  72 6c 64 0a              |hello.world.|\n0000000c\n");
+  ("hexdump", (RString "dump", [Pathname "path"]), 96, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutput (
+      [["hexdump"; "/known-4"]], "00000000  61 62 63 0a 64 65 66 0a  67 68 69                 |abc.def.ghi|\n0000000b\n");
     (* Test for RHBZ#501888c2 regression which caused large hexdump
      * commands to segfault.
      *)
-    InitBasicFS, Always, TestRun (
-      [["mount_vfs"; "ro"; "squashfs"; "/dev/sdd"; "/"];
-       ["hexdump"; "/100krandom"]])],
+    InitISOFS, Always, TestRun (
+      [["hexdump"; "/100krandom"]])],
    "dump a file in hexadecimal",
    "\
 This runs C<hexdump -C> on the given C<path>.  The result is
 the human-readable, canonical hex dump of the file.");
 
-  ("zerofree", (RErr, [String "device"]), 97, [],
+  ("zerofree", (RErr, [Device "device"]), 97, [Optional "zerofree"],
    [InitNone, Always, TestOutput (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["mkfs"; "ext3"; "/dev/sda1"];
        ["mount"; "/dev/sda1"; "/"];
        ["write_file"; "/new"; "test file"; "0"];
@@ -2280,16 +2411,16 @@ mounted.
 It is possible that using this program can damage the filesystem
 or data on the filesystem.");
 
-  ("pvresize", (RErr, [String "device"]), 98, [],
+  ("pvresize", (RErr, [Device "device"]), 98, [Optional "lvm2"],
    [],
    "resize an LVM physical volume",
    "\
 This resizes (expands or shrinks) an existing LVM physical
 volume to match the new size of the underlying device.");
 
-  ("sfdisk_N", (RErr, [String "device"; Int "partnum";
-		       Int "cyls"; Int "heads"; Int "sectors";
-		       String "line"]), 99, [DangerWillRobinson],
+  ("sfdisk_N", (RErr, [Device "device"; Int "partnum";
+                       Int "cyls"; Int "heads"; Int "sectors";
+                       String "line"]), 99, [DangerWillRobinson],
    [],
    "modify a single partition on a block device",
    "\
@@ -2297,17 +2428,21 @@ This runs L<sfdisk(8)> option to modify just the single
 partition C<n> (note: C<n> counts from 1).
 
 For other parameters, see C<guestfs_sfdisk>.  You should usually
-pass C<0> for the cyls/heads/sectors parameters.");
+pass C<0> for the cyls/heads/sectors parameters.
 
-  ("sfdisk_l", (RString "partitions", [String "device"]), 100, [],
+See also: C<guestfs_part_add>");
+
+  ("sfdisk_l", (RString "partitions", [Device "device"]), 100, [],
    [],
    "display the partition table",
    "\
 This displays the partition table on C<device>, in the
 human-readable output of the L<sfdisk(8)> command.  It is
-not intended to be parsed.");
+not intended to be parsed.
 
-  ("sfdisk_kernel_geometry", (RString "partitions", [String "device"]), 101, [],
+See also: C<guestfs_part_list>");
+
+  ("sfdisk_kernel_geometry", (RString "partitions", [Device "device"]), 101, [],
    [],
    "display the kernel geometry",
    "\
@@ -2316,7 +2451,7 @@ This displays the kernel's idea of the geometry of C<device>.
 The result is in human-readable format, and not designed to
 be parsed.");
 
-  ("sfdisk_disk_geometry", (RString "partitions", [String "device"]), 102, [],
+  ("sfdisk_disk_geometry", (RString "partitions", [Device "device"]), 102, [],
    [],
    "display the disk geometry from the partition table",
    "\
@@ -2328,7 +2463,7 @@ kernel's idea of the geometry (see C<guestfs_sfdisk_kernel_geometry>).
 The result is in human-readable format, and not designed to
 be parsed.");
 
-  ("vg_activate_all", (RErr, [Bool "activate"]), 103, [],
+  ("vg_activate_all", (RErr, [Bool "activate"]), 103, [Optional "lvm2"],
    [],
    "activate or deactivate all volume groups",
    "\
@@ -2340,7 +2475,7 @@ then those devices disappear.
 
 This command is the same as running C<vgchange -a y|n>");
 
-  ("vg_activate", (RErr, [Bool "activate"; StringList "volgroups"]), 104, [],
+  ("vg_activate", (RErr, [Bool "activate"; StringList "volgroups"]), 104, [Optional "lvm2"],
    [],
    "activate or deactivate some volume groups",
    "\
@@ -2355,9 +2490,9 @@ This command is the same as running C<vgchange -a y|n volgroups...>
 Note that if C<volgroups> is an empty list then B<all> volume groups
 are activated or deactivated.");
 
-  ("lvresize", (RErr, [String "device"; Int "mbytes"]), 105, [],
+  ("lvresize", (RErr, [Device "device"; Int "mbytes"]), 105, [Optional "lvm2"],
    [InitNone, Always, TestOutput (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["pvcreate"; "/dev/sda1"];
        ["vgcreate"; "VG"; "/dev/sda1"];
        ["lvcreate"; "LV"; "VG"; "10"];
@@ -2376,7 +2511,7 @@ This resizes (expands or shrinks) an existing LVM logical
 volume to C<mbytes>.  When reducing, data in the reduced part
 is lost.");
 
-  ("resize2fs", (RErr, [String "device"]), 106, [],
+  ("resize2fs", (RErr, [Device "device"]), 106, [],
    [], (* lvresize tests this *)
    "resize an ext2/ext3 filesystem",
    "\
@@ -2389,7 +2524,7 @@ C<resize2fs> sometimes gives an error about this and sometimes not.
 In any case, it is always safe to call C<guestfs_e2fsck_f> before
 calling this function.");
 
-  ("find", (RStringList "names", [String "directory"]), 107, [],
+  ("find", (RStringList "names", [Pathname "directory"]), 107, [ProtocolLimitWarning],
    [InitBasicFS, Always, TestOutputList (
       [["find"; "/"]], ["lost+found"]);
     InitBasicFS, Always, TestOutputList (
@@ -2426,9 +2561,11 @@ then the returned list from C<guestfs_find> C</tmp> would be
 If C<directory> is not a directory, then this command returns
 an error.
 
-The returned list is sorted.");
+The returned list is sorted.
 
-  ("e2fsck_f", (RErr, [String "device"]), 108, [],
+See also C<guestfs_find0>.");
+
+  ("e2fsck_f", (RErr, [Device "device"]), 108, [],
    [], (* lvresize tests this *)
    "check an ext2/ext3 filesystem",
    "\
@@ -2446,13 +2583,13 @@ This command is only needed because of C<guestfs_resize2fs>
    "\
 Sleep for C<secs> seconds.");
 
-  ("ntfs_3g_probe", (RInt "status", [Bool "rw"; String "device"]), 110, [],
+  ("ntfs_3g_probe", (RInt "status", [Bool "rw"; Device "device"]), 110, [Optional "ntfs3g"],
    [InitNone, Always, TestOutputInt (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["mkfs"; "ntfs"; "/dev/sda1"];
        ["ntfs_3g_probe"; "true"; "/dev/sda1"]], 0);
     InitNone, Always, TestOutputInt (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["mkfs"; "ext2"; "/dev/sda1"];
        ["ntfs_3g_probe"; "true"; "/dev/sda1"]], 12)],
    "probe NTFS volume",
@@ -2495,7 +2632,11 @@ into a list of lines.
 
 See also: C<guestfs_command_lines>");
 
-  ("glob_expand", (RStringList "paths", [String "pattern"]), 113, [],
+  ("glob_expand", (RStringList "paths", [Pathname "pattern"]), 113, [],
+   (* Use Pathname here, and hence ABS_PATH (pattern,... in generated
+    * code in stubs.c, since all valid glob patterns must start with "/".
+    * There is no concept of "cwd" in libguestfs, hence no "."-relative names.
+    *)
    [InitBasicFS, Always, TestOutputList (
       [["mkdir_p"; "/a/b/c"];
        ["touch"; "/a/b/c/d"];
@@ -2524,7 +2665,7 @@ It is just a wrapper around the C L<glob(3)> function
 with flags C<GLOB_MARK|GLOB_BRACE>.
 See that manual page for more details.");
 
-  ("scrub_device", (RErr, [String "device"]), 114, [DangerWillRobinson],
+  ("scrub_device", (RErr, [Device "device"]), 114, [DangerWillRobinson; Optional "scrub"],
    [InitNone, Always, TestRun (	(* use /dev/sdc because it's smaller *)
       [["scrub_device"; "/dev/sdc"]])],
    "scrub (securely wipe) a device",
@@ -2535,7 +2676,7 @@ more difficult.
 It is an interface to the L<scrub(1)> program.  See that
 manual page for more details.");
 
-  ("scrub_file", (RErr, [String "file"]), 115, [],
+  ("scrub_file", (RErr, [Pathname "file"]), 115, [Optional "scrub"],
    [InitBasicFS, Always, TestRun (
       [["write_file"; "/file"; "content"; "0"];
        ["scrub_file"; "/file"]])],
@@ -2549,7 +2690,7 @@ The file is I<removed> after scrubbing.
 It is an interface to the L<scrub(1)> program.  See that
 manual page for more details.");
 
-  ("scrub_freespace", (RErr, [String "dir"]), 116, [],
+  ("scrub_freespace", (RErr, [Pathname "dir"]), 116, [Optional "scrub"],
    [], (* XXX needs testing *)
    "scrub (securely wipe) free space",
    "\
@@ -2562,7 +2703,7 @@ containing C<dir>.
 It is an interface to the L<scrub(1)> program.  See that
 manual page for more details.");
 
-  ("mkdtemp", (RString "dir", [String "template"]), 117, [],
+  ("mkdtemp", (RString "dir", [Pathname "template"]), 117, [],
    [InitBasicFS, Always, TestRun (
       [["mkdir"; "/tmp"];
        ["mkdtemp"; "/tmp/tmpXXXXXX"]])],
@@ -2587,52 +2728,45 @@ directory and its contents after use.
 
 See also: L<mkdtemp(3)>");
 
-  ("wc_l", (RInt "lines", [String "path"]), 118, [],
-   [InitBasicFS, Always, TestOutputInt (
-      [["mount_vfs"; "ro"; "squashfs"; "/dev/sdd"; "/"];
-       ["wc_l"; "/10klines"]], 10000)],
+  ("wc_l", (RInt "lines", [Pathname "path"]), 118, [],
+   [InitISOFS, Always, TestOutputInt (
+      [["wc_l"; "/10klines"]], 10000)],
    "count lines in a file",
    "\
 This command counts the lines in a file, using the
 C<wc -l> external command.");
 
-  ("wc_w", (RInt "words", [String "path"]), 119, [],
-   [InitBasicFS, Always, TestOutputInt (
-      [["mount_vfs"; "ro"; "squashfs"; "/dev/sdd"; "/"];
-       ["wc_w"; "/10klines"]], 10000)],
+  ("wc_w", (RInt "words", [Pathname "path"]), 119, [],
+   [InitISOFS, Always, TestOutputInt (
+      [["wc_w"; "/10klines"]], 10000)],
    "count words in a file",
    "\
 This command counts the words in a file, using the
 C<wc -w> external command.");
 
-  ("wc_c", (RInt "chars", [String "path"]), 120, [],
-   [InitBasicFS, Always, TestOutputInt (
-      [["mount_vfs"; "ro"; "squashfs"; "/dev/sdd"; "/"];
-       ["wc_c"; "/100kallspaces"]], 102400)],
+  ("wc_c", (RInt "chars", [Pathname "path"]), 120, [],
+   [InitISOFS, Always, TestOutputInt (
+      [["wc_c"; "/100kallspaces"]], 102400)],
    "count characters in a file",
    "\
 This command counts the characters in a file, using the
 C<wc -c> external command.");
 
-  ("head", (RStringList "lines", [String "path"]), 121, [ProtocolLimitWarning],
-   [InitBasicFS, Always, TestOutputList (
-      [["mount_vfs"; "ro"; "squashfs"; "/dev/sdd"; "/"];
-       ["head"; "/10klines"]], ["0abcdefghijklmnopqrstuvwxyz";"1abcdefghijklmnopqrstuvwxyz";"2abcdefghijklmnopqrstuvwxyz";"3abcdefghijklmnopqrstuvwxyz";"4abcdefghijklmnopqrstuvwxyz";"5abcdefghijklmnopqrstuvwxyz";"6abcdefghijklmnopqrstuvwxyz";"7abcdefghijklmnopqrstuvwxyz";"8abcdefghijklmnopqrstuvwxyz";"9abcdefghijklmnopqrstuvwxyz"])],
+  ("head", (RStringList "lines", [Pathname "path"]), 121, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["head"; "/10klines"]], ["0abcdefghijklmnopqrstuvwxyz";"1abcdefghijklmnopqrstuvwxyz";"2abcdefghijklmnopqrstuvwxyz";"3abcdefghijklmnopqrstuvwxyz";"4abcdefghijklmnopqrstuvwxyz";"5abcdefghijklmnopqrstuvwxyz";"6abcdefghijklmnopqrstuvwxyz";"7abcdefghijklmnopqrstuvwxyz";"8abcdefghijklmnopqrstuvwxyz";"9abcdefghijklmnopqrstuvwxyz"])],
    "return first 10 lines of a file",
    "\
 This command returns up to the first 10 lines of a file as
 a list of strings.");
 
-  ("head_n", (RStringList "lines", [Int "nrlines"; String "path"]), 122, [ProtocolLimitWarning],
-   [InitBasicFS, Always, TestOutputList (
-      [["mount_vfs"; "ro"; "squashfs"; "/dev/sdd"; "/"];
-       ["head_n"; "3"; "/10klines"]], ["0abcdefghijklmnopqrstuvwxyz";"1abcdefghijklmnopqrstuvwxyz";"2abcdefghijklmnopqrstuvwxyz"]);
-    InitBasicFS, Always, TestOutputList (
-      [["mount_vfs"; "ro"; "squashfs"; "/dev/sdd"; "/"];
-       ["head_n"; "-9997"; "/10klines"]], ["0abcdefghijklmnopqrstuvwxyz";"1abcdefghijklmnopqrstuvwxyz";"2abcdefghijklmnopqrstuvwxyz"]);
-    InitBasicFS, Always, TestOutputList (
-      [["mount_vfs"; "ro"; "squashfs"; "/dev/sdd"; "/"];
-       ["head_n"; "0"; "/10klines"]], [])],
+  ("head_n", (RStringList "lines", [Int "nrlines"; Pathname "path"]), 122, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["head_n"; "3"; "/10klines"]], ["0abcdefghijklmnopqrstuvwxyz";"1abcdefghijklmnopqrstuvwxyz";"2abcdefghijklmnopqrstuvwxyz"]);
+    InitISOFS, Always, TestOutputList (
+      [["head_n"; "-9997"; "/10klines"]], ["0abcdefghijklmnopqrstuvwxyz";"1abcdefghijklmnopqrstuvwxyz";"2abcdefghijklmnopqrstuvwxyz"]);
+    InitISOFS, Always, TestOutputList (
+      [["head_n"; "0"; "/10klines"]], [])],
    "return first N lines of a file",
    "\
 If the parameter C<nrlines> is a positive number, this returns the first
@@ -2643,25 +2777,21 @@ from the file C<path>, excluding the last C<nrlines> lines.
 
 If the parameter C<nrlines> is zero, this returns an empty list.");
 
-  ("tail", (RStringList "lines", [String "path"]), 123, [ProtocolLimitWarning],
-   [InitBasicFS, Always, TestOutputList (
-      [["mount_vfs"; "ro"; "squashfs"; "/dev/sdd"; "/"];
-       ["tail"; "/10klines"]], ["9990abcdefghijklmnopqrstuvwxyz";"9991abcdefghijklmnopqrstuvwxyz";"9992abcdefghijklmnopqrstuvwxyz";"9993abcdefghijklmnopqrstuvwxyz";"9994abcdefghijklmnopqrstuvwxyz";"9995abcdefghijklmnopqrstuvwxyz";"9996abcdefghijklmnopqrstuvwxyz";"9997abcdefghijklmnopqrstuvwxyz";"9998abcdefghijklmnopqrstuvwxyz";"9999abcdefghijklmnopqrstuvwxyz"])],
+  ("tail", (RStringList "lines", [Pathname "path"]), 123, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["tail"; "/10klines"]], ["9990abcdefghijklmnopqrstuvwxyz";"9991abcdefghijklmnopqrstuvwxyz";"9992abcdefghijklmnopqrstuvwxyz";"9993abcdefghijklmnopqrstuvwxyz";"9994abcdefghijklmnopqrstuvwxyz";"9995abcdefghijklmnopqrstuvwxyz";"9996abcdefghijklmnopqrstuvwxyz";"9997abcdefghijklmnopqrstuvwxyz";"9998abcdefghijklmnopqrstuvwxyz";"9999abcdefghijklmnopqrstuvwxyz"])],
    "return last 10 lines of a file",
    "\
 This command returns up to the last 10 lines of a file as
 a list of strings.");
 
-  ("tail_n", (RStringList "lines", [Int "nrlines"; String "path"]), 124, [ProtocolLimitWarning],
-   [InitBasicFS, Always, TestOutputList (
-      [["mount_vfs"; "ro"; "squashfs"; "/dev/sdd"; "/"];
-       ["tail_n"; "3"; "/10klines"]], ["9997abcdefghijklmnopqrstuvwxyz";"9998abcdefghijklmnopqrstuvwxyz";"9999abcdefghijklmnopqrstuvwxyz"]);
-    InitBasicFS, Always, TestOutputList (
-      [["mount_vfs"; "ro"; "squashfs"; "/dev/sdd"; "/"];
-       ["tail_n"; "-9998"; "/10klines"]], ["9997abcdefghijklmnopqrstuvwxyz";"9998abcdefghijklmnopqrstuvwxyz";"9999abcdefghijklmnopqrstuvwxyz"]);
-    InitBasicFS, Always, TestOutputList (
-      [["mount_vfs"; "ro"; "squashfs"; "/dev/sdd"; "/"];
-       ["tail_n"; "0"; "/10klines"]], [])],
+  ("tail_n", (RStringList "lines", [Int "nrlines"; Pathname "path"]), 124, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["tail_n"; "3"; "/10klines"]], ["9997abcdefghijklmnopqrstuvwxyz";"9998abcdefghijklmnopqrstuvwxyz";"9999abcdefghijklmnopqrstuvwxyz"]);
+    InitISOFS, Always, TestOutputList (
+      [["tail_n"; "-9998"; "/10klines"]], ["9997abcdefghijklmnopqrstuvwxyz";"9998abcdefghijklmnopqrstuvwxyz";"9999abcdefghijklmnopqrstuvwxyz"]);
+    InitISOFS, Always, TestOutputList (
+      [["tail_n"; "0"; "/10klines"]], [])],
    "return last N lines of a file",
    "\
 If the parameter C<nrlines> is a positive number, this returns the last
@@ -2674,8 +2804,8 @@ If the parameter C<nrlines> is zero, this returns an empty list.");
 
   ("df", (RString "output", []), 125, [],
    [], (* XXX Tricky to test because it depends on the exact format
-	* of the 'df' command and other imponderables.
-	*)
+        * of the 'df' command and other imponderables.
+        *)
    "report file system disk space usage",
    "\
 This command runs the C<df> command to report disk space used.
@@ -2686,8 +2816,8 @@ Use C<statvfs> from programs.");
 
   ("df_h", (RString "output", []), 126, [],
    [], (* XXX Tricky to test because it depends on the exact format
-	* of the 'df' command and other imponderables.
-	*)
+        * of the 'df' command and other imponderables.
+        *)
    "report file system disk space usage (human readable)",
    "\
 This command runs the C<df -h> command to report disk space used
@@ -2697,10 +2827,9 @@ This command is mostly useful for interactive sessions.  It
 is I<not> intended that you try to parse the output string.
 Use C<statvfs> from programs.");
 
-  ("du", (RInt64 "sizekb", [String "path"]), 127, [],
-   [InitBasicFS, Always, TestOutputInt (
-      [["mkdir"; "/p"];
-       ["du"; "/p"]], 1 (* ie. 1 block, so depends on ext3 blocksize *))],
+  ("du", (RInt64 "sizekb", [Pathname "path"]), 127, [],
+   [InitISOFS, Always, TestOutputInt (
+      [["du"; "/directory"]], 2 (* ISO fs blocksize is 2K *))],
    "estimate file space usage",
    "\
 This command runs the C<du -s> command to estimate file space
@@ -2713,10 +2842,9 @@ subdirectories (recursively).
 The result is the estimated size in I<kilobytes>
 (ie. units of 1024 bytes).");
 
-  ("initrd_list", (RStringList "filenames", [String "path"]), 128, [],
-   [InitBasicFS, Always, TestOutputList (
-      [["mount_vfs"; "ro"; "squashfs"; "/dev/sdd"; "/"];
-       ["initrd_list"; "/initrd"]], ["empty";"known-1";"known-2";"known-3"])],
+  ("initrd_list", (RStringList "filenames", [Pathname "path"]), 128, [],
+   [InitISOFS, Always, TestOutputList (
+      [["initrd_list"; "/initrd"]], ["empty";"known-1";"known-2";"known-3";"known-4"; "known-5"])],
    "list files in an initrd",
    "\
 This command lists out files contained in an initrd.
@@ -2729,7 +2857,7 @@ Old Linux kernels (2.4 and earlier) used a compressed ext2
 filesystem as initrd.  We I<only> support the newer initramfs
 format (compressed cpio files).");
 
-  ("mount_loop", (RErr, [String "file"; String "mountpoint"]), 129, [],
+  ("mount_loop", (RErr, [Pathname "file"; Pathname "mountpoint"]), 129, [],
    [],
    "mount a file using the loop device",
    "\
@@ -2737,31 +2865,36 @@ This command lets you mount C<file> (a filesystem image
 in a file) on a mount point.  It is entirely equivalent to
 the command C<mount -o loop file mountpoint>.");
 
-  ("mkswap", (RErr, [String "device"]), 130, [],
+  ("mkswap", (RErr, [Device "device"]), 130, [],
    [InitEmpty, Always, TestRun (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["mkswap"; "/dev/sda1"]])],
    "create a swap partition",
    "\
 Create a swap partition on C<device>.");
 
-  ("mkswap_L", (RErr, [String "label"; String "device"]), 131, [],
+  ("mkswap_L", (RErr, [String "label"; Device "device"]), 131, [],
    [InitEmpty, Always, TestRun (
-      [["sfdiskM"; "/dev/sda"; ","];
+      [["part_disk"; "/dev/sda"; "mbr"];
        ["mkswap_L"; "hello"; "/dev/sda1"]])],
    "create a swap partition with a label",
    "\
-Create a swap partition on C<device> with label C<label>.");
+Create a swap partition on C<device> with label C<label>.
 
-  ("mkswap_U", (RErr, [String "uuid"; String "device"]), 132, [],
-   [InitEmpty, Always, TestRun (
-      [["sfdiskM"; "/dev/sda"; ","];
-       ["mkswap_U"; "a3a61220-882b-4f61-89f4-cf24dcc7297d"; "/dev/sda1"]])],
+Note that you cannot attach a swap label to a block device
+(eg. C</dev/sda>), just to a partition.  This appears to be
+a limitation of the kernel or swap tools.");
+
+  ("mkswap_U", (RErr, [String "uuid"; Device "device"]), 132, [Optional "linuxfsuuid"],
+   (let uuid = uuidgen () in
+    [InitEmpty, Always, TestRun (
+       [["part_disk"; "/dev/sda"; "mbr"];
+        ["mkswap_U"; uuid; "/dev/sda1"]])]),
    "create a swap partition with an explicit UUID",
    "\
 Create a swap partition on C<device> with UUID C<uuid>.");
 
-  ("mknod", (RErr, [Int "mode"; Int "devmajor"; Int "devminor"; String "path"]), 133, [],
+  ("mknod", (RErr, [Int "mode"; Int "devmajor"; Int "devminor"; Pathname "path"]), 133, [Optional "mknod"],
    [InitBasicFS, Always, TestOutputStruct (
       [["mknod"; "0o10777"; "0"; "0"; "/node"];
        (* NB: default umask 022 means 0777 -> 0755 in these tests *)
@@ -2779,7 +2912,7 @@ constants.  C<devmajor> and C<devminor> are the
 device major and minor numbers, only used when creating block
 and character special devices.");
 
-  ("mkfifo", (RErr, [Int "mode"; String "path"]), 134, [],
+  ("mkfifo", (RErr, [Int "mode"; Pathname "path"]), 134, [Optional "mknod"],
    [InitBasicFS, Always, TestOutputStruct (
       [["mkfifo"; "0o777"; "/node"];
        ["stat"; "/node"]], [CompareWithInt ("mode", 0o10755)])],
@@ -2789,7 +2922,7 @@ This call creates a FIFO (named pipe) called C<path> with
 mode C<mode>.  It is just a convenient wrapper around
 C<guestfs_mknod>.");
 
-  ("mknod_b", (RErr, [Int "mode"; Int "devmajor"; Int "devminor"; String "path"]), 135, [],
+  ("mknod_b", (RErr, [Int "mode"; Int "devmajor"; Int "devminor"; Pathname "path"]), 135, [Optional "mknod"],
    [InitBasicFS, Always, TestOutputStruct (
       [["mknod_b"; "0o777"; "99"; "66"; "/node"];
        ["stat"; "/node"]], [CompareWithInt ("mode", 0o60755)])],
@@ -2799,7 +2932,7 @@ This call creates a block device node called C<path> with
 mode C<mode> and device major/minor C<devmajor> and C<devminor>.
 It is just a convenient wrapper around C<guestfs_mknod>.");
 
-  ("mknod_c", (RErr, [Int "mode"; Int "devmajor"; Int "devminor"; String "path"]), 136, [],
+  ("mknod_c", (RErr, [Int "mode"; Int "devmajor"; Int "devminor"; Pathname "path"]), 136, [Optional "mknod"],
    [InitBasicFS, Always, TestOutputStruct (
       [["mknod_c"; "0o777"; "99"; "66"; "/node"];
        ["stat"; "/node"]], [CompareWithInt ("mode", 0o20755)])],
@@ -2811,8 +2944,8 @@ It is just a convenient wrapper around C<guestfs_mknod>.");
 
   ("umask", (RInt "oldmask", [Int "mask"]), 137, [],
    [], (* XXX umask is one of those stateful things that we should
-	* reset between each test.
-	*)
+        * reset between each test.
+        *)
    "set file mode creation mask (umask)",
    "\
 This function sets the mask used for creating new files and
@@ -2831,7 +2964,7 @@ See also L<umask(2)>, C<guestfs_mknod>, C<guestfs_mkdir>.
 
 This call returns the previous umask.");
 
-  ("readdir", (RStructList ("entries", "dirent"), [String "dir"]), 138, [],
+  ("readdir", (RStructList ("entries", "dirent"), [Pathname "dir"]), 138, [],
    [],
    "read directories entries",
    "\
@@ -2841,11 +2974,55 @@ All entries in the directory are returned, including C<.> and
 C<..>.  The entries are I<not> sorted, but returned in the same
 order as the underlying filesystem.
 
+Also this call returns basic file type information about each
+file.  The C<ftyp> field will contain one of the following characters:
+
+=over 4
+
+=item 'b'
+
+Block special
+
+=item 'c'
+
+Char special
+
+=item 'd'
+
+Directory
+
+=item 'f'
+
+FIFO (named pipe)
+
+=item 'l'
+
+Symbolic link
+
+=item 'r'
+
+Regular file
+
+=item 's'
+
+Socket
+
+=item 'u'
+
+Unknown file type
+
+=item '?'
+
+The L<readdir(3)> returned a C<d_type> field with an
+unexpected value
+
+=back
+
 This function is primarily intended for use by programs.  To
 get a simple list of names, use C<guestfs_ls>.  To get a printable
 directory for human consumption, use C<guestfs_ll>.");
 
-  ("sfdiskM", (RErr, [String "device"; StringList "lines"]), 139, [DangerWillRobinson],
+  ("sfdiskM", (RErr, [Device "device"; StringList "lines"]), 139, [DangerWillRobinson],
    [],
    "create partitions on a block device",
    "\
@@ -2855,9 +3032,10 @@ only (rounded to the nearest cylinder) and you don't need
 to specify the cyls, heads and sectors parameters which
 were rarely if ever used anyway.
 
-See also C<guestfs_sfdisk> and the L<sfdisk(8)> manpage.");
+See also: C<guestfs_sfdisk>, the L<sfdisk(8)> manpage
+and C<guestfs_part_disk>");
 
-  ("zfile", (RString "description", [String "method"; String "path"]), 140, [],
+  ("zfile", (RString "description", [String "meth"; Pathname "path"]), 140, [DeprecatedBy "file"],
    [],
    "determine file type inside a compressed file",
    "\
@@ -2866,9 +3044,10 @@ using C<method>.
 
 C<method> must be one of C<gzip>, C<compress> or C<bzip2>.
 
-See also: C<guestfs_file>");
+Since 1.0.63, use C<guestfs_file> instead which can now
+process compressed files.");
 
-  ("getxattrs", (RStructList ("xattrs", "xattr"), [String "path"]), 141, [],
+  ("getxattrs", (RStructList ("xattrs", "xattr"), [Pathname "path"]), 141, [Optional "linuxxattrs"],
    [],
    "list extended attributes of a file or directory",
    "\
@@ -2880,7 +3059,7 @@ L<listxattr(2)> and L<getxattr(2)> calls.
 
 See also: C<guestfs_lgetxattrs>, L<attr(5)>.");
 
-  ("lgetxattrs", (RStructList ("xattrs", "xattr"), [String "path"]), 142, [],
+  ("lgetxattrs", (RStructList ("xattrs", "xattr"), [Pathname "path"]), 142, [Optional "linuxxattrs"],
    [],
    "list extended attributes of a file or directory",
    "\
@@ -2889,8 +3068,8 @@ is a symbolic link, then it returns the extended attributes
 of the link itself.");
 
   ("setxattr", (RErr, [String "xattr";
-		       String "val"; Int "vallen"; (* will be BufferIn *)
-		       String "path"]), 143, [],
+                       String "val"; Int "vallen"; (* will be BufferIn *)
+                       Pathname "path"]), 143, [Optional "linuxxattrs"],
    [],
    "set extended attribute of a file or directory",
    "\
@@ -2901,8 +3080,8 @@ The value is arbitrary 8 bit data.
 See also: C<guestfs_lsetxattr>, L<attr(5)>.");
 
   ("lsetxattr", (RErr, [String "xattr";
-			String "val"; Int "vallen"; (* will be BufferIn *)
-			String "path"]), 144, [],
+                        String "val"; Int "vallen"; (* will be BufferIn *)
+                        Pathname "path"]), 144, [Optional "linuxxattrs"],
    [],
    "set extended attribute of a file or directory",
    "\
@@ -2910,7 +3089,7 @@ This is the same as C<guestfs_setxattr>, but if C<path>
 is a symbolic link, then it sets an extended attribute
 of the link itself.");
 
-  ("removexattr", (RErr, [String "xattr"; String "path"]), 145, [],
+  ("removexattr", (RErr, [String "xattr"; Pathname "path"]), 145, [Optional "linuxxattrs"],
    [],
    "remove extended attribute of a file or directory",
    "\
@@ -2919,13 +3098,1086 @@ of the file C<path>.
 
 See also: C<guestfs_lremovexattr>, L<attr(5)>.");
 
-  ("lremovexattr", (RErr, [String "xattr"; String "path"]), 146, [],
+  ("lremovexattr", (RErr, [String "xattr"; Pathname "path"]), 146, [Optional "linuxxattrs"],
    [],
    "remove extended attribute of a file or directory",
    "\
 This is the same as C<guestfs_removexattr>, but if C<path>
 is a symbolic link, then it removes an extended attribute
 of the link itself.");
+
+  ("mountpoints", (RHashtable "mps", []), 147, [],
+   [],
+   "show mountpoints",
+   "\
+This call is similar to C<guestfs_mounts>.  That call returns
+a list of devices.  This one returns a hash table (map) of
+device name to directory where the device is mounted.");
+
+  ("mkmountpoint", (RErr, [String "exemptpath"]), 148, [],
+  (* This is a special case: while you would expect a parameter
+   * of type "Pathname", that doesn't work, because it implies
+   * NEED_ROOT in the generated calling code in stubs.c, and
+   * this function cannot use NEED_ROOT.
+   *)
+   [],
+   "create a mountpoint",
+   "\
+C<guestfs_mkmountpoint> and C<guestfs_rmmountpoint> are
+specialized calls that can be used to create extra mountpoints
+before mounting the first filesystem.
+
+These calls are I<only> necessary in some very limited circumstances,
+mainly the case where you want to mount a mix of unrelated and/or
+read-only filesystems together.
+
+For example, live CDs often contain a \"Russian doll\" nest of
+filesystems, an ISO outer layer, with a squashfs image inside, with
+an ext2/3 image inside that.  You can unpack this as follows
+in guestfish:
+
+ add-ro Fedora-11-i686-Live.iso
+ run
+ mkmountpoint /cd
+ mkmountpoint /squash
+ mkmountpoint /ext3
+ mount /dev/sda /cd
+ mount-loop /cd/LiveOS/squashfs.img /squash
+ mount-loop /squash/LiveOS/ext3fs.img /ext3
+
+The inner filesystem is now unpacked under the /ext3 mountpoint.");
+
+  ("rmmountpoint", (RErr, [String "exemptpath"]), 149, [],
+   [],
+   "remove a mountpoint",
+   "\
+This calls removes a mountpoint that was previously created
+with C<guestfs_mkmountpoint>.  See C<guestfs_mkmountpoint>
+for full details.");
+
+  ("read_file", (RBufferOut "content", [Pathname "path"]), 150, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputBuffer (
+      [["read_file"; "/known-4"]], "abc\ndef\nghi")],
+   "read a file",
+   "\
+This calls returns the contents of the file C<path> as a
+buffer.
+
+Unlike C<guestfs_cat>, this function can correctly
+handle files that contain embedded ASCII NUL characters.
+However unlike C<guestfs_download>, this function is limited
+in the total size of file that can be handled.");
+
+  ("grep", (RStringList "lines", [String "regex"; Pathname "path"]), 151, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["grep"; "abc"; "/test-grep.txt"]], ["abc"; "abc123"]);
+    InitISOFS, Always, TestOutputList (
+      [["grep"; "nomatch"; "/test-grep.txt"]], [])],
+   "return lines matching a pattern",
+   "\
+This calls the external C<grep> program and returns the
+matching lines.");
+
+  ("egrep", (RStringList "lines", [String "regex"; Pathname "path"]), 152, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["egrep"; "abc"; "/test-grep.txt"]], ["abc"; "abc123"])],
+   "return lines matching a pattern",
+   "\
+This calls the external C<egrep> program and returns the
+matching lines.");
+
+  ("fgrep", (RStringList "lines", [String "pattern"; Pathname "path"]), 153, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["fgrep"; "abc"; "/test-grep.txt"]], ["abc"; "abc123"])],
+   "return lines matching a pattern",
+   "\
+This calls the external C<fgrep> program and returns the
+matching lines.");
+
+  ("grepi", (RStringList "lines", [String "regex"; Pathname "path"]), 154, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["grepi"; "abc"; "/test-grep.txt"]], ["abc"; "abc123"; "ABC"])],
+   "return lines matching a pattern",
+   "\
+This calls the external C<grep -i> program and returns the
+matching lines.");
+
+  ("egrepi", (RStringList "lines", [String "regex"; Pathname "path"]), 155, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["egrepi"; "abc"; "/test-grep.txt"]], ["abc"; "abc123"; "ABC"])],
+   "return lines matching a pattern",
+   "\
+This calls the external C<egrep -i> program and returns the
+matching lines.");
+
+  ("fgrepi", (RStringList "lines", [String "pattern"; Pathname "path"]), 156, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["fgrepi"; "abc"; "/test-grep.txt"]], ["abc"; "abc123"; "ABC"])],
+   "return lines matching a pattern",
+   "\
+This calls the external C<fgrep -i> program and returns the
+matching lines.");
+
+  ("zgrep", (RStringList "lines", [String "regex"; Pathname "path"]), 157, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["zgrep"; "abc"; "/test-grep.txt.gz"]], ["abc"; "abc123"])],
+   "return lines matching a pattern",
+   "\
+This calls the external C<zgrep> program and returns the
+matching lines.");
+
+  ("zegrep", (RStringList "lines", [String "regex"; Pathname "path"]), 158, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["zegrep"; "abc"; "/test-grep.txt.gz"]], ["abc"; "abc123"])],
+   "return lines matching a pattern",
+   "\
+This calls the external C<zegrep> program and returns the
+matching lines.");
+
+  ("zfgrep", (RStringList "lines", [String "pattern"; Pathname "path"]), 159, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["zfgrep"; "abc"; "/test-grep.txt.gz"]], ["abc"; "abc123"])],
+   "return lines matching a pattern",
+   "\
+This calls the external C<zfgrep> program and returns the
+matching lines.");
+
+  ("zgrepi", (RStringList "lines", [String "regex"; Pathname "path"]), 160, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["zgrepi"; "abc"; "/test-grep.txt.gz"]], ["abc"; "abc123"; "ABC"])],
+   "return lines matching a pattern",
+   "\
+This calls the external C<zgrep -i> program and returns the
+matching lines.");
+
+  ("zegrepi", (RStringList "lines", [String "regex"; Pathname "path"]), 161, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["zegrepi"; "abc"; "/test-grep.txt.gz"]], ["abc"; "abc123"; "ABC"])],
+   "return lines matching a pattern",
+   "\
+This calls the external C<zegrep -i> program and returns the
+matching lines.");
+
+  ("zfgrepi", (RStringList "lines", [String "pattern"; Pathname "path"]), 162, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputList (
+      [["zfgrepi"; "abc"; "/test-grep.txt.gz"]], ["abc"; "abc123"; "ABC"])],
+   "return lines matching a pattern",
+   "\
+This calls the external C<zfgrep -i> program and returns the
+matching lines.");
+
+  ("realpath", (RString "rpath", [Pathname "path"]), 163, [Optional "realpath"],
+   [InitISOFS, Always, TestOutput (
+      [["realpath"; "/../directory"]], "/directory")],
+   "canonicalized absolute pathname",
+   "\
+Return the canonicalized absolute pathname of C<path>.  The
+returned path has no C<.>, C<..> or symbolic link path elements.");
+
+  ("ln", (RErr, [String "target"; Pathname "linkname"]), 164, [],
+   [InitBasicFS, Always, TestOutputStruct (
+      [["touch"; "/a"];
+       ["ln"; "/a"; "/b"];
+       ["stat"; "/b"]], [CompareWithInt ("nlink", 2)])],
+   "create a hard link",
+   "\
+This command creates a hard link using the C<ln> command.");
+
+  ("ln_f", (RErr, [String "target"; Pathname "linkname"]), 165, [],
+   [InitBasicFS, Always, TestOutputStruct (
+      [["touch"; "/a"];
+       ["touch"; "/b"];
+       ["ln_f"; "/a"; "/b"];
+       ["stat"; "/b"]], [CompareWithInt ("nlink", 2)])],
+   "create a hard link",
+   "\
+This command creates a hard link using the C<ln -f> command.
+The C<-f> option removes the link (C<linkname>) if it exists already.");
+
+  ("ln_s", (RErr, [String "target"; Pathname "linkname"]), 166, [],
+   [InitBasicFS, Always, TestOutputStruct (
+      [["touch"; "/a"];
+       ["ln_s"; "a"; "/b"];
+       ["lstat"; "/b"]], [CompareWithInt ("mode", 0o120777)])],
+   "create a symbolic link",
+   "\
+This command creates a symbolic link using the C<ln -s> command.");
+
+  ("ln_sf", (RErr, [String "target"; Pathname "linkname"]), 167, [],
+   [InitBasicFS, Always, TestOutput (
+      [["mkdir_p"; "/a/b"];
+       ["touch"; "/a/b/c"];
+       ["ln_sf"; "../d"; "/a/b/c"];
+       ["readlink"; "/a/b/c"]], "../d")],
+   "create a symbolic link",
+   "\
+This command creates a symbolic link using the C<ln -sf> command,
+The C<-f> option removes the link (C<linkname>) if it exists already.");
+
+  ("readlink", (RString "link", [Pathname "path"]), 168, [],
+   [] (* XXX tested above *),
+   "read the target of a symbolic link",
+   "\
+This command reads the target of a symbolic link.");
+
+  ("fallocate", (RErr, [Pathname "path"; Int "len"]), 169, [],
+   [InitBasicFS, Always, TestOutputStruct (
+      [["fallocate"; "/a"; "1000000"];
+       ["stat"; "/a"]], [CompareWithInt ("size", 1_000_000)])],
+   "preallocate a file in the guest filesystem",
+   "\
+This command preallocates a file (containing zero bytes) named
+C<path> of size C<len> bytes.  If the file exists already, it
+is overwritten.
+
+Do not confuse this with the guestfish-specific
+C<alloc> command which allocates a file in the host and
+attaches it as a device.");
+
+  ("swapon_device", (RErr, [Device "device"]), 170, [],
+   [InitPartition, Always, TestRun (
+      [["mkswap"; "/dev/sda1"];
+       ["swapon_device"; "/dev/sda1"];
+       ["swapoff_device"; "/dev/sda1"]])],
+   "enable swap on device",
+   "\
+This command enables the libguestfs appliance to use the
+swap device or partition named C<device>.  The increased
+memory is made available for all commands, for example
+those run using C<guestfs_command> or C<guestfs_sh>.
+
+Note that you should not swap to existing guest swap
+partitions unless you know what you are doing.  They may
+contain hibernation information, or other information that
+the guest doesn't want you to trash.  You also risk leaking
+information about the host to the guest this way.  Instead,
+attach a new host device to the guest and swap on that.");
+
+  ("swapoff_device", (RErr, [Device "device"]), 171, [],
+   [], (* XXX tested by swapon_device *)
+   "disable swap on device",
+   "\
+This command disables the libguestfs appliance swap
+device or partition named C<device>.
+See C<guestfs_swapon_device>.");
+
+  ("swapon_file", (RErr, [Pathname "file"]), 172, [],
+   [InitBasicFS, Always, TestRun (
+      [["fallocate"; "/swap"; "8388608"];
+       ["mkswap_file"; "/swap"];
+       ["swapon_file"; "/swap"];
+       ["swapoff_file"; "/swap"]])],
+   "enable swap on file",
+   "\
+This command enables swap to a file.
+See C<guestfs_swapon_device> for other notes.");
+
+  ("swapoff_file", (RErr, [Pathname "file"]), 173, [],
+   [], (* XXX tested by swapon_file *)
+   "disable swap on file",
+   "\
+This command disables the libguestfs appliance swap on file.");
+
+  ("swapon_label", (RErr, [String "label"]), 174, [],
+   [InitEmpty, Always, TestRun (
+      [["part_disk"; "/dev/sdb"; "mbr"];
+       ["mkswap_L"; "swapit"; "/dev/sdb1"];
+       ["swapon_label"; "swapit"];
+       ["swapoff_label"; "swapit"];
+       ["zero"; "/dev/sdb"];
+       ["blockdev_rereadpt"; "/dev/sdb"]])],
+   "enable swap on labeled swap partition",
+   "\
+This command enables swap to a labeled swap partition.
+See C<guestfs_swapon_device> for other notes.");
+
+  ("swapoff_label", (RErr, [String "label"]), 175, [],
+   [], (* XXX tested by swapon_label *)
+   "disable swap on labeled swap partition",
+   "\
+This command disables the libguestfs appliance swap on
+labeled swap partition.");
+
+  ("swapon_uuid", (RErr, [String "uuid"]), 176, [Optional "linuxfsuuid"],
+   (let uuid = uuidgen () in
+    [InitEmpty, Always, TestRun (
+       [["mkswap_U"; uuid; "/dev/sdb"];
+        ["swapon_uuid"; uuid];
+        ["swapoff_uuid"; uuid]])]),
+   "enable swap on swap partition by UUID",
+   "\
+This command enables swap to a swap partition with the given UUID.
+See C<guestfs_swapon_device> for other notes.");
+
+  ("swapoff_uuid", (RErr, [String "uuid"]), 177, [Optional "linuxfsuuid"],
+   [], (* XXX tested by swapon_uuid *)
+   "disable swap on swap partition by UUID",
+   "\
+This command disables the libguestfs appliance swap partition
+with the given UUID.");
+
+  ("mkswap_file", (RErr, [Pathname "path"]), 178, [],
+   [InitBasicFS, Always, TestRun (
+      [["fallocate"; "/swap"; "8388608"];
+       ["mkswap_file"; "/swap"]])],
+   "create a swap file",
+   "\
+Create a swap file.
+
+This command just writes a swap file signature to an existing
+file.  To create the file itself, use something like C<guestfs_fallocate>.");
+
+  ("inotify_init", (RErr, [Int "maxevents"]), 179, [Optional "inotify"],
+   [InitISOFS, Always, TestRun (
+      [["inotify_init"; "0"]])],
+   "create an inotify handle",
+   "\
+This command creates a new inotify handle.
+The inotify subsystem can be used to notify events which happen to
+objects in the guest filesystem.
+
+C<maxevents> is the maximum number of events which will be
+queued up between calls to C<guestfs_inotify_read> or
+C<guestfs_inotify_files>.
+If this is passed as C<0>, then the kernel (or previously set)
+default is used.  For Linux 2.6.29 the default was 16384 events.
+Beyond this limit, the kernel throws away events, but records
+the fact that it threw them away by setting a flag
+C<IN_Q_OVERFLOW> in the returned structure list (see
+C<guestfs_inotify_read>).
+
+Before any events are generated, you have to add some
+watches to the internal watch list.  See:
+C<guestfs_inotify_add_watch>,
+C<guestfs_inotify_rm_watch> and
+C<guestfs_inotify_watch_all>.
+
+Queued up events should be read periodically by calling
+C<guestfs_inotify_read>
+(or C<guestfs_inotify_files> which is just a helpful
+wrapper around C<guestfs_inotify_read>).  If you don't
+read the events out often enough then you risk the internal
+queue overflowing.
+
+The handle should be closed after use by calling
+C<guestfs_inotify_close>.  This also removes any
+watches automatically.
+
+See also L<inotify(7)> for an overview of the inotify interface
+as exposed by the Linux kernel, which is roughly what we expose
+via libguestfs.  Note that there is one global inotify handle
+per libguestfs instance.");
+
+  ("inotify_add_watch", (RInt64 "wd", [Pathname "path"; Int "mask"]), 180, [Optional "inotify"],
+   [InitBasicFS, Always, TestOutputList (
+      [["inotify_init"; "0"];
+       ["inotify_add_watch"; "/"; "1073741823"];
+       ["touch"; "/a"];
+       ["touch"; "/b"];
+       ["inotify_files"]], ["a"; "b"])],
+   "add an inotify watch",
+   "\
+Watch C<path> for the events listed in C<mask>.
+
+Note that if C<path> is a directory then events within that
+directory are watched, but this does I<not> happen recursively
+(in subdirectories).
+
+Note for non-C or non-Linux callers: the inotify events are
+defined by the Linux kernel ABI and are listed in
+C</usr/include/sys/inotify.h>.");
+
+  ("inotify_rm_watch", (RErr, [Int(*XXX64*) "wd"]), 181, [Optional "inotify"],
+   [],
+   "remove an inotify watch",
+   "\
+Remove a previously defined inotify watch.
+See C<guestfs_inotify_add_watch>.");
+
+  ("inotify_read", (RStructList ("events", "inotify_event"), []), 182, [Optional "inotify"],
+   [],
+   "return list of inotify events",
+   "\
+Return the complete queue of events that have happened
+since the previous read call.
+
+If no events have happened, this returns an empty list.
+
+I<Note>: In order to make sure that all events have been
+read, you must call this function repeatedly until it
+returns an empty list.  The reason is that the call will
+read events up to the maximum appliance-to-host message
+size and leave remaining events in the queue.");
+
+  ("inotify_files", (RStringList "paths", []), 183, [Optional "inotify"],
+   [],
+   "return list of watched files that had events",
+   "\
+This function is a helpful wrapper around C<guestfs_inotify_read>
+which just returns a list of pathnames of objects that were
+touched.  The returned pathnames are sorted and deduplicated.");
+
+  ("inotify_close", (RErr, []), 184, [Optional "inotify"],
+   [],
+   "close the inotify handle",
+   "\
+This closes the inotify handle which was previously
+opened by inotify_init.  It removes all watches, throws
+away any pending events, and deallocates all resources.");
+
+  ("setcon", (RErr, [String "context"]), 185, [Optional "selinux"],
+   [],
+   "set SELinux security context",
+   "\
+This sets the SELinux security context of the daemon
+to the string C<context>.
+
+See the documentation about SELINUX in L<guestfs(3)>.");
+
+  ("getcon", (RString "context", []), 186, [Optional "selinux"],
+   [],
+   "get SELinux security context",
+   "\
+This gets the SELinux security context of the daemon.
+
+See the documentation about SELINUX in L<guestfs(3)>,
+and C<guestfs_setcon>");
+
+  ("mkfs_b", (RErr, [String "fstype"; Int "blocksize"; Device "device"]), 187, [],
+   [InitEmpty, Always, TestOutput (
+      [["part_disk"; "/dev/sda"; "mbr"];
+       ["mkfs_b"; "ext2"; "4096"; "/dev/sda1"];
+       ["mount"; "/dev/sda1"; "/"];
+       ["write_file"; "/new"; "new file contents"; "0"];
+       ["cat"; "/new"]], "new file contents")],
+   "make a filesystem with block size",
+   "\
+This call is similar to C<guestfs_mkfs>, but it allows you to
+control the block size of the resulting filesystem.  Supported
+block sizes depend on the filesystem type, but typically they
+are C<1024>, C<2048> or C<4096> only.");
+
+  ("mke2journal", (RErr, [Int "blocksize"; Device "device"]), 188, [],
+   [InitEmpty, Always, TestOutput (
+      [["sfdiskM"; "/dev/sda"; ",100 ,"];
+       ["mke2journal"; "4096"; "/dev/sda1"];
+       ["mke2fs_J"; "ext2"; "4096"; "/dev/sda2"; "/dev/sda1"];
+       ["mount"; "/dev/sda2"; "/"];
+       ["write_file"; "/new"; "new file contents"; "0"];
+       ["cat"; "/new"]], "new file contents")],
+   "make ext2/3/4 external journal",
+   "\
+This creates an ext2 external journal on C<device>.  It is equivalent
+to the command:
+
+ mke2fs -O journal_dev -b blocksize device");
+
+  ("mke2journal_L", (RErr, [Int "blocksize"; String "label"; Device "device"]), 189, [],
+   [InitEmpty, Always, TestOutput (
+      [["sfdiskM"; "/dev/sda"; ",100 ,"];
+       ["mke2journal_L"; "4096"; "JOURNAL"; "/dev/sda1"];
+       ["mke2fs_JL"; "ext2"; "4096"; "/dev/sda2"; "JOURNAL"];
+       ["mount"; "/dev/sda2"; "/"];
+       ["write_file"; "/new"; "new file contents"; "0"];
+       ["cat"; "/new"]], "new file contents")],
+   "make ext2/3/4 external journal with label",
+   "\
+This creates an ext2 external journal on C<device> with label C<label>.");
+
+  ("mke2journal_U", (RErr, [Int "blocksize"; String "uuid"; Device "device"]), 190, [Optional "linuxfsuuid"],
+   (let uuid = uuidgen () in
+    [InitEmpty, Always, TestOutput (
+       [["sfdiskM"; "/dev/sda"; ",100 ,"];
+        ["mke2journal_U"; "4096"; uuid; "/dev/sda1"];
+        ["mke2fs_JU"; "ext2"; "4096"; "/dev/sda2"; uuid];
+        ["mount"; "/dev/sda2"; "/"];
+        ["write_file"; "/new"; "new file contents"; "0"];
+        ["cat"; "/new"]], "new file contents")]),
+   "make ext2/3/4 external journal with UUID",
+   "\
+This creates an ext2 external journal on C<device> with UUID C<uuid>.");
+
+  ("mke2fs_J", (RErr, [String "fstype"; Int "blocksize"; Device "device"; Device "journal"]), 191, [],
+   [],
+   "make ext2/3/4 filesystem with external journal",
+   "\
+This creates an ext2/3/4 filesystem on C<device> with
+an external journal on C<journal>.  It is equivalent
+to the command:
+
+ mke2fs -t fstype -b blocksize -J device=<journal> <device>
+
+See also C<guestfs_mke2journal>.");
+
+  ("mke2fs_JL", (RErr, [String "fstype"; Int "blocksize"; Device "device"; String "label"]), 192, [],
+   [],
+   "make ext2/3/4 filesystem with external journal",
+   "\
+This creates an ext2/3/4 filesystem on C<device> with
+an external journal on the journal labeled C<label>.
+
+See also C<guestfs_mke2journal_L>.");
+
+  ("mke2fs_JU", (RErr, [String "fstype"; Int "blocksize"; Device "device"; String "uuid"]), 193, [Optional "linuxfsuuid"],
+   [],
+   "make ext2/3/4 filesystem with external journal",
+   "\
+This creates an ext2/3/4 filesystem on C<device> with
+an external journal on the journal with UUID C<uuid>.
+
+See also C<guestfs_mke2journal_U>.");
+
+  ("modprobe", (RErr, [String "modulename"]), 194, [Optional "linuxmodules"],
+   [InitNone, Always, TestRun [["modprobe"; "fat"]]],
+   "load a kernel module",
+   "\
+This loads a kernel module in the appliance.
+
+The kernel module must have been whitelisted when libguestfs
+was built (see C<appliance/kmod.whitelist.in> in the source).");
+
+  ("echo_daemon", (RString "output", [StringList "words"]), 195, [],
+   [InitNone, Always, TestOutput (
+     [["echo_daemon"; "This is a test"]], "This is a test"
+   )],
+   "echo arguments back to the client",
+   "\
+This command concatenate the list of C<words> passed with single spaces between
+them and returns the resulting string.
+
+You can use this command to test the connection through to the daemon.
+
+See also C<guestfs_ping_daemon>.");
+
+  ("find0", (RErr, [Pathname "directory"; FileOut "files"]), 196, [],
+   [], (* There is a regression test for this. *)
+   "find all files and directories, returning NUL-separated list",
+   "\
+This command lists out all files and directories, recursively,
+starting at C<directory>, placing the resulting list in the
+external file called C<files>.
+
+This command works the same way as C<guestfs_find> with the
+following exceptions:
+
+=over 4
+
+=item *
+
+The resulting list is written to an external file.
+
+=item *
+
+Items (filenames) in the result are separated
+by C<\\0> characters.  See L<find(1)> option I<-print0>.
+
+=item *
+
+This command is not limited in the number of names that it
+can return.
+
+=item *
+
+The result list is not sorted.
+
+=back");
+
+  ("case_sensitive_path", (RString "rpath", [Pathname "path"]), 197, [],
+   [InitISOFS, Always, TestOutput (
+      [["case_sensitive_path"; "/DIRECTORY"]], "/directory");
+    InitISOFS, Always, TestOutput (
+      [["case_sensitive_path"; "/DIRECTORY/"]], "/directory");
+    InitISOFS, Always, TestOutput (
+      [["case_sensitive_path"; "/Known-1"]], "/known-1");
+    InitISOFS, Always, TestLastFail (
+      [["case_sensitive_path"; "/Known-1/"]]);
+    InitBasicFS, Always, TestOutput (
+      [["mkdir"; "/a"];
+       ["mkdir"; "/a/bbb"];
+       ["touch"; "/a/bbb/c"];
+       ["case_sensitive_path"; "/A/bbB/C"]], "/a/bbb/c");
+    InitBasicFS, Always, TestOutput (
+      [["mkdir"; "/a"];
+       ["mkdir"; "/a/bbb"];
+       ["touch"; "/a/bbb/c"];
+       ["case_sensitive_path"; "/A////bbB/C"]], "/a/bbb/c");
+    InitBasicFS, Always, TestLastFail (
+      [["mkdir"; "/a"];
+       ["mkdir"; "/a/bbb"];
+       ["touch"; "/a/bbb/c"];
+       ["case_sensitive_path"; "/A/bbb/../bbb/C"]])],
+   "return true path on case-insensitive filesystem",
+   "\
+This can be used to resolve case insensitive paths on
+a filesystem which is case sensitive.  The use case is
+to resolve paths which you have read from Windows configuration
+files or the Windows Registry, to the true path.
+
+The command handles a peculiarity of the Linux ntfs-3g
+filesystem driver (and probably others), which is that although
+the underlying filesystem is case-insensitive, the driver
+exports the filesystem to Linux as case-sensitive.
+
+One consequence of this is that special directories such
+as C<c:\\windows> may appear as C</WINDOWS> or C</windows>
+(or other things) depending on the precise details of how
+they were created.  In Windows itself this would not be
+a problem.
+
+Bug or feature?  You decide:
+L<http://www.tuxera.com/community/ntfs-3g-faq/#posixfilenames1>
+
+This function resolves the true case of each element in the
+path and returns the case-sensitive path.
+
+Thus C<guestfs_case_sensitive_path> (\"/Windows/System32\")
+might return C<\"/WINDOWS/system32\"> (the exact return value
+would depend on details of how the directories were originally
+created under Windows).
+
+I<Note>:
+This function does not handle drive names, backslashes etc.
+
+See also C<guestfs_realpath>.");
+
+  ("vfs_type", (RString "fstype", [Device "device"]), 198, [],
+   [InitBasicFS, Always, TestOutput (
+      [["vfs_type"; "/dev/sda1"]], "ext2")],
+   "get the Linux VFS type corresponding to a mounted device",
+   "\
+This command gets the block device type corresponding to
+a mounted device called C<device>.
+
+Usually the result is the name of the Linux VFS module that
+is used to mount this device (probably determined automatically
+if you used the C<guestfs_mount> call).");
+
+  ("truncate", (RErr, [Pathname "path"]), 199, [],
+   [InitBasicFS, Always, TestOutputStruct (
+      [["write_file"; "/test"; "some stuff so size is not zero"; "0"];
+       ["truncate"; "/test"];
+       ["stat"; "/test"]], [CompareWithInt ("size", 0)])],
+   "truncate a file to zero size",
+   "\
+This command truncates C<path> to a zero-length file.  The
+file must exist already.");
+
+  ("truncate_size", (RErr, [Pathname "path"; Int64 "size"]), 200, [],
+   [InitBasicFS, Always, TestOutputStruct (
+      [["touch"; "/test"];
+       ["truncate_size"; "/test"; "1000"];
+       ["stat"; "/test"]], [CompareWithInt ("size", 1000)])],
+   "truncate a file to a particular size",
+   "\
+This command truncates C<path> to size C<size> bytes.  The file
+must exist already.  If the file is smaller than C<size> then
+the file is extended to the required size with null bytes.");
+
+  ("utimens", (RErr, [Pathname "path"; Int64 "atsecs"; Int64 "atnsecs"; Int64 "mtsecs"; Int64 "mtnsecs"]), 201, [],
+   [InitBasicFS, Always, TestOutputStruct (
+      [["touch"; "/test"];
+       ["utimens"; "/test"; "12345"; "67890"; "9876"; "5432"];
+       ["stat"; "/test"]], [CompareWithInt ("mtime", 9876)])],
+   "set timestamp of a file with nanosecond precision",
+   "\
+This command sets the timestamps of a file with nanosecond
+precision.
+
+C<atsecs, atnsecs> are the last access time (atime) in secs and
+nanoseconds from the epoch.
+
+C<mtsecs, mtnsecs> are the last modification time (mtime) in
+secs and nanoseconds from the epoch.
+
+If the C<*nsecs> field contains the special value C<-1> then
+the corresponding timestamp is set to the current time.  (The
+C<*secs> field is ignored in this case).
+
+If the C<*nsecs> field contains the special value C<-2> then
+the corresponding timestamp is left unchanged.  (The
+C<*secs> field is ignored in this case).");
+
+  ("mkdir_mode", (RErr, [Pathname "path"; Int "mode"]), 202, [],
+   [InitBasicFS, Always, TestOutputStruct (
+      [["mkdir_mode"; "/test"; "0o111"];
+       ["stat"; "/test"]], [CompareWithInt ("mode", 0o40111)])],
+   "create a directory with a particular mode",
+   "\
+This command creates a directory, setting the initial permissions
+of the directory to C<mode>.  See also C<guestfs_mkdir>.");
+
+  ("lchown", (RErr, [Int "owner"; Int "group"; Pathname "path"]), 203, [],
+   [], (* XXX *)
+   "change file owner and group",
+   "\
+Change the file owner to C<owner> and group to C<group>.
+This is like C<guestfs_chown> but if C<path> is a symlink then
+the link itself is changed, not the target.
+
+Only numeric uid and gid are supported.  If you want to use
+names, you will need to locate and parse the password file
+yourself (Augeas support makes this relatively easy).");
+
+  ("lstatlist", (RStructList ("statbufs", "stat"), [Pathname "path"; StringList "names"]), 204, [],
+   [], (* XXX *)
+   "lstat on multiple files",
+   "\
+This call allows you to perform the C<guestfs_lstat> operation
+on multiple files, where all files are in the directory C<path>.
+C<names> is the list of files from this directory.
+
+On return you get a list of stat structs, with a one-to-one
+correspondence to the C<names> list.  If any name did not exist
+or could not be lstat'd, then the C<ino> field of that structure
+is set to C<-1>.
+
+This call is intended for programs that want to efficiently
+list a directory contents without making many round-trips.
+See also C<guestfs_lxattrlist> for a similarly efficient call
+for getting extended attributes.  Very long directory listings
+might cause the protocol message size to be exceeded, causing
+this call to fail.  The caller must split up such requests
+into smaller groups of names.");
+
+  ("lxattrlist", (RStructList ("xattrs", "xattr"), [Pathname "path"; StringList "names"]), 205, [Optional "linuxxattrs"],
+   [], (* XXX *)
+   "lgetxattr on multiple files",
+   "\
+This call allows you to get the extended attributes
+of multiple files, where all files are in the directory C<path>.
+C<names> is the list of files from this directory.
+
+On return you get a flat list of xattr structs which must be
+interpreted sequentially.  The first xattr struct always has a zero-length
+C<attrname>.  C<attrval> in this struct is zero-length
+to indicate there was an error doing C<lgetxattr> for this
+file, I<or> is a C string which is a decimal number
+(the number of following attributes for this file, which could
+be C<\"0\">).  Then after the first xattr struct are the
+zero or more attributes for the first named file.
+This repeats for the second and subsequent files.
+
+This call is intended for programs that want to efficiently
+list a directory contents without making many round-trips.
+See also C<guestfs_lstatlist> for a similarly efficient call
+for getting standard stats.  Very long directory listings
+might cause the protocol message size to be exceeded, causing
+this call to fail.  The caller must split up such requests
+into smaller groups of names.");
+
+  ("readlinklist", (RStringList "links", [Pathname "path"; StringList "names"]), 206, [],
+   [], (* XXX *)
+   "readlink on multiple files",
+   "\
+This call allows you to do a C<readlink> operation
+on multiple files, where all files are in the directory C<path>.
+C<names> is the list of files from this directory.
+
+On return you get a list of strings, with a one-to-one
+correspondence to the C<names> list.  Each string is the
+value of the symbol link.
+
+If the C<readlink(2)> operation fails on any name, then
+the corresponding result string is the empty string C<\"\">.
+However the whole operation is completed even if there
+were C<readlink(2)> errors, and so you can call this
+function with names where you don't know if they are
+symbolic links already (albeit slightly less efficient).
+
+This call is intended for programs that want to efficiently
+list a directory contents without making many round-trips.
+Very long directory listings might cause the protocol
+message size to be exceeded, causing
+this call to fail.  The caller must split up such requests
+into smaller groups of names.");
+
+  ("pread", (RBufferOut "content", [Pathname "path"; Int "count"; Int64 "offset"]), 207, [ProtocolLimitWarning],
+   [InitISOFS, Always, TestOutputBuffer (
+      [["pread"; "/known-4"; "1"; "3"]], "\n");
+    InitISOFS, Always, TestOutputBuffer (
+      [["pread"; "/empty"; "0"; "100"]], "")],
+   "read part of a file",
+   "\
+This command lets you read part of a file.  It reads C<count>
+bytes of the file, starting at C<offset>, from file C<path>.
+
+This may read fewer bytes than requested.  For further details
+see the L<pread(2)> system call.");
+
+  ("part_init", (RErr, [Device "device"; String "parttype"]), 208, [],
+   [InitEmpty, Always, TestRun (
+      [["part_init"; "/dev/sda"; "gpt"]])],
+   "create an empty partition table",
+   "\
+This creates an empty partition table on C<device> of one of the
+partition types listed below.  Usually C<parttype> should be
+either C<msdos> or C<gpt> (for large disks).
+
+Initially there are no partitions.  Following this, you should
+call C<guestfs_part_add> for each partition required.
+
+Possible values for C<parttype> are:
+
+=over 4
+
+=item B<efi> | B<gpt>
+
+Intel EFI / GPT partition table.
+
+This is recommended for >= 2 TB partitions that will be accessed
+from Linux and Intel-based Mac OS X.  It also has limited backwards
+compatibility with the C<mbr> format.
+
+=item B<mbr> | B<msdos>
+
+The standard PC \"Master Boot Record\" (MBR) format used
+by MS-DOS and Windows.  This partition type will B<only> work
+for device sizes up to 2 TB.  For large disks we recommend
+using C<gpt>.
+
+=back
+
+Other partition table types that may work but are not
+supported include:
+
+=over 4
+
+=item B<aix>
+
+AIX disk labels.
+
+=item B<amiga> | B<rdb>
+
+Amiga \"Rigid Disk Block\" format.
+
+=item B<bsd>
+
+BSD disk labels.
+
+=item B<dasd>
+
+DASD, used on IBM mainframes.
+
+=item B<dvh>
+
+MIPS/SGI volumes.
+
+=item B<mac>
+
+Old Mac partition format.  Modern Macs use C<gpt>.
+
+=item B<pc98>
+
+NEC PC-98 format, common in Japan apparently.
+
+=item B<sun>
+
+Sun disk labels.
+
+=back");
+
+  ("part_add", (RErr, [Device "device"; String "prlogex"; Int64 "startsect"; Int64 "endsect"]), 209, [],
+   [InitEmpty, Always, TestRun (
+      [["part_init"; "/dev/sda"; "mbr"];
+       ["part_add"; "/dev/sda"; "primary"; "1"; "-1"]]);
+    InitEmpty, Always, TestRun (
+      [["part_init"; "/dev/sda"; "gpt"];
+       ["part_add"; "/dev/sda"; "primary"; "34"; "127"];
+       ["part_add"; "/dev/sda"; "primary"; "128"; "-34"]]);
+    InitEmpty, Always, TestRun (
+      [["part_init"; "/dev/sda"; "mbr"];
+       ["part_add"; "/dev/sda"; "primary"; "32"; "127"];
+       ["part_add"; "/dev/sda"; "primary"; "128"; "255"];
+       ["part_add"; "/dev/sda"; "primary"; "256"; "511"];
+       ["part_add"; "/dev/sda"; "primary"; "512"; "-1"]])],
+   "add a partition to the device",
+   "\
+This command adds a partition to C<device>.  If there is no partition
+table on the device, call C<guestfs_part_init> first.
+
+The C<prlogex> parameter is the type of partition.  Normally you
+should pass C<p> or C<primary> here, but MBR partition tables also
+support C<l> (or C<logical>) and C<e> (or C<extended>) partition
+types.
+
+C<startsect> and C<endsect> are the start and end of the partition
+in I<sectors>.  C<endsect> may be negative, which means it counts
+backwards from the end of the disk (C<-1> is the last sector).
+
+Creating a partition which covers the whole disk is not so easy.
+Use C<guestfs_part_disk> to do that.");
+
+  ("part_disk", (RErr, [Device "device"; String "parttype"]), 210, [DangerWillRobinson],
+   [InitEmpty, Always, TestRun (
+      [["part_disk"; "/dev/sda"; "mbr"]]);
+    InitEmpty, Always, TestRun (
+      [["part_disk"; "/dev/sda"; "gpt"]])],
+   "partition whole disk with a single primary partition",
+   "\
+This command is simply a combination of C<guestfs_part_init>
+followed by C<guestfs_part_add> to create a single primary partition
+covering the whole disk.
+
+C<parttype> is the partition table type, usually C<mbr> or C<gpt>,
+but other possible values are described in C<guestfs_part_init>.");
+
+  ("part_set_bootable", (RErr, [Device "device"; Int "partnum"; Bool "bootable"]), 211, [],
+   [InitEmpty, Always, TestRun (
+      [["part_disk"; "/dev/sda"; "mbr"];
+       ["part_set_bootable"; "/dev/sda"; "1"; "true"]])],
+   "make a partition bootable",
+   "\
+This sets the bootable flag on partition numbered C<partnum> on
+device C<device>.  Note that partitions are numbered from 1.
+
+The bootable flag is used by some PC BIOSes to determine which
+partition to boot from.  It is by no means universally recognized,
+and in any case if your operating system installed a boot
+sector on the device itself, then that takes precedence.");
+
+  ("part_set_name", (RErr, [Device "device"; Int "partnum"; String "name"]), 212, [],
+   [InitEmpty, Always, TestRun (
+      [["part_disk"; "/dev/sda"; "gpt"];
+       ["part_set_name"; "/dev/sda"; "1"; "thepartname"]])],
+   "set partition name",
+   "\
+This sets the partition name on partition numbered C<partnum> on
+device C<device>.  Note that partitions are numbered from 1.
+
+The partition name can only be set on certain types of partition
+table.  This works on C<gpt> but not on C<mbr> partitions.");
+
+  ("part_list", (RStructList ("partitions", "partition"), [Device "device"]), 213, [],
+   [], (* XXX Add a regression test for this. *)
+   "list partitions on a device",
+   "\
+This command parses the partition table on C<device> and
+returns the list of partitions found.
+
+The fields in the returned structure are:
+
+=over 4
+
+=item B<part_num>
+
+Partition number, counting from 1.
+
+=item B<part_start>
+
+Start of the partition I<in bytes>.  To get sectors you have to
+divide by the device's sector size, see C<guestfs_blockdev_getss>.
+
+=item B<part_end>
+
+End of the partition in bytes.
+
+=item B<part_size>
+
+Size of the partition in bytes.
+
+=back");
+
+  ("part_get_parttype", (RString "parttype", [Device "device"]), 214, [],
+   [InitEmpty, Always, TestOutput (
+      [["part_disk"; "/dev/sda"; "gpt"];
+       ["part_get_parttype"; "/dev/sda"]], "gpt")],
+   "get the partition table type",
+   "\
+This command examines the partition table on C<device> and
+returns the partition table type (format) being used.
+
+Common return values include: C<msdos> (a DOS/Windows style MBR
+partition table), C<gpt> (a GPT/EFI-style partition table).  Other
+values are possible, although unusual.  See C<guestfs_part_init>
+for a full list.");
+
+  ("fill", (RErr, [Int "c"; Int "len"; Pathname "path"]), 215, [],
+   [InitBasicFS, Always, TestOutputBuffer (
+      [["fill"; "0x63"; "10"; "/test"];
+       ["read_file"; "/test"]], "cccccccccc")],
+   "fill a file with octets",
+   "\
+This command creates a new file called C<path>.  The initial
+content of the file is C<len> octets of C<c>, where C<c>
+must be a number in the range C<[0..255]>.
+
+To fill a file with zero bytes (sparsely), it is
+much more efficient to use C<guestfs_truncate_size>.");
+
+  ("available", (RErr, [StringList "groups"]), 216, [],
+   [InitNone, Always, TestRun [["available"; ""]]],
+   "test availability of some parts of the API",
+   "\
+This command is used to check the availability of some
+groups of functionality in the appliance, which not all builds of
+the libguestfs appliance will be able to provide.
+
+The libguestfs groups, and the functions that those
+groups correspond to, are listed in L<guestfs(3)/AVAILABILITY>.
+
+The argument C<groups> is a list of group names, eg:
+C<[\"inotify\", \"augeas\"]> would check for the availability of
+the Linux inotify functions and Augeas (configuration file
+editing) functions.
+
+The command returns no error if I<all> requested groups are available.
+
+It fails with an error if one or more of the requested
+groups is unavailable in the appliance.
+
+If an unknown group name is included in the
+list of groups then an error is always returned.
+
+I<Notes:>
+
+=over 4
+
+=item *
+
+You must call C<guestfs_launch> before calling this function.
+
+The reason is because we don't know what groups are
+supported by the appliance/daemon until it is running and can
+be queried.
+
+=item *
+
+If a group of functions is available, this does not necessarily
+mean that they will work.  You still have to check for errors
+when calling individual API functions even if they are
+available.
+
+=item *
+
+It is usually the job of distro packagers to build
+complete functionality into the libguestfs appliance.
+Upstream libguestfs, if built from source with all
+requirements satisfied, will support everything.
+
+=item *
+
+This call was added in version C<1.0.80>.  In previous
+versions of libguestfs all you could do would be to speculatively
+execute a command to find out if the daemon implemented it.
+See also C<guestfs_version>.
+
+=back");
+
+  ("dd", (RErr, [Dev_or_Path "src"; Dev_or_Path "dest"]), 217, [],
+   [InitBasicFS, Always, TestOutputBuffer (
+      [["write_file"; "/src"; "hello, world"; "0"];
+       ["dd"; "/src"; "/dest"];
+       ["read_file"; "/dest"]], "hello, world")],
+   "copy from source to destination using dd",
+   "\
+This command copies from one source device or file C<src>
+to another destination device or file C<dest>.  Normally you
+would use this to copy to or from a device or partition, for
+example to duplicate a filesystem.
+
+If the destination is a device, it must be as large or larger
+than the source file or device, otherwise the copy will fail.
+This command cannot do partial copies.");
 
 ]
 
@@ -2936,12 +4188,12 @@ let all_functions = non_daemon_functions @ daemon_functions
  *)
 let all_functions_sorted =
   List.sort (fun (n1,_,_,_,_,_,_) (n2,_,_,_,_,_,_) ->
-	       compare n1 n2) all_functions
+               compare n1 n2) all_functions
 
 (* Field types for structures. *)
 type field =
   | FChar			(* C 'char' (really, a 7 bit byte). *)
-  | FString			(* nul-terminated ASCII string. *)
+  | FString			(* nul-terminated ASCII string, NOT NULL. *)
   | FBuffer			(* opaque buffer of bytes, (char *, int) pair *)
   | FUInt32
   | FInt32
@@ -3087,6 +4339,22 @@ let structs = [
     "attrname", FString;
     "attrval", FBuffer;
   ];
+
+  (* Inotify events. *)
+  "inotify_event", [
+    "in_wd", FInt64;
+    "in_mask", FUInt32;
+    "in_cookie", FUInt32;
+    "in_name", FString;
+  ];
+
+  (* Partition table entry. *)
+  "partition", [
+    "part_num", FInt32;
+    "part_start", FBytes;
+    "part_end", FBytes;
+    "part_size", FBytes;
+  ];
 ] (* end of structs *)
 
 (* Ugh, Java has to be different ..
@@ -3102,7 +4370,57 @@ let java_structs = [
   "dirent", "Dirent";
   "version", "Version";
   "xattr", "XAttr";
+  "inotify_event", "INotifyEvent";
+  "partition", "Partition";
 ]
+
+(* What structs are actually returned. *)
+type rstructs_used_t = RStructOnly | RStructListOnly | RStructAndList
+
+(* Returns a list of RStruct/RStructList structs that are returned
+ * by any function.  Each element of returned list is a pair:
+ *
+ * (structname, RStructOnly)
+ *    == there exists function which returns RStruct (_, structname)
+ * (structname, RStructListOnly)
+ *    == there exists function which returns RStructList (_, structname)
+ * (structname, RStructAndList)
+ *    == there are functions returning both RStruct (_, structname)
+ *                                      and RStructList (_, structname)
+ *)
+let rstructs_used_by functions =
+  (* ||| is a "logical OR" for rstructs_used_t *)
+  let (|||) a b =
+    match a, b with
+    | RStructAndList, _
+    | _, RStructAndList -> RStructAndList
+    | RStructOnly, RStructListOnly
+    | RStructListOnly, RStructOnly -> RStructAndList
+    | RStructOnly, RStructOnly -> RStructOnly
+    | RStructListOnly, RStructListOnly -> RStructListOnly
+  in
+
+  let h = Hashtbl.create 13 in
+
+  (* if elem->oldv exists, update entry using ||| operator,
+   * else just add elem->newv to the hash
+   *)
+  let update elem newv =
+    try  let oldv = Hashtbl.find h elem in
+         Hashtbl.replace h elem (newv ||| oldv)
+    with Not_found -> Hashtbl.add h elem newv
+  in
+
+  List.iter (
+    fun (_, style, _, _, _, _, _) ->
+      match fst style with
+      | RStruct (_, structname) -> update structname RStructOnly
+      | RStructList (_, structname) -> update structname RStructListOnly
+      | _ -> ()
+  ) functions;
+
+  (* return key->values as a list of (key,value) *)
+  Hashtbl.fold (fun key value xs -> (key, value) :: xs) h []
 
 (* Used for testing language bindings. *)
 type callt =
@@ -3110,6 +4428,7 @@ type callt =
   | CallOptString of string option
   | CallStringList of string list
   | CallInt of int
+  | CallInt64 of int64
   | CallBool of bool
 
 (* Used to memoize the result of pod2text. *)
@@ -3122,6 +4441,10 @@ let pod2text_memo : ((int * string * string), string list) Hashtbl.t =
     v
   with
     _ -> Hashtbl.create 13
+let pod2text_memo_updated () =
+  let chan = open_out pod2text_memo_filename in
+  output_value chan pod2text_memo;
+  close_out chan
 
 (* Useful functions.
  * Note we don't want to use any external OCaml libraries which
@@ -3171,11 +4494,11 @@ let rec find s sub =
   let rec loop i =
     if i <= len-sublen then (
       let rec loop2 j =
-	if j < sublen then (
-	  if s.[i+j] = sub.[j] then loop2 (j+1)
-	  else -1
-	) else
-	  i (* found *)
+        if j < sublen then (
+          if s.[i+j] = sub.[j] then loop2 (j+1)
+          else -1
+        ) else
+          i (* found *)
       in
       let r = loop2 0 in
       if r = -1 then loop (i+1) else r
@@ -3213,6 +4536,13 @@ let files_equal n1 n2 =
   | 1 -> false
   | i -> failwithf "%s: failed with error code %d" cmd i
 
+let rec filter_map f = function
+  | [] -> []
+  | x :: xs ->
+      match f x with
+      | Some y -> y :: filter_map f xs
+      | None -> filter_map f xs
+
 let rec find_map f = function
   | [] -> raise Not_found
   | x :: xs ->
@@ -3235,7 +4565,8 @@ let mapi f xs =
   loop 0 xs
 
 let name_of_argt = function
-  | String n | OptString n | StringList n | Bool n | Int n
+  | Pathname n | Device n | Dev_or_Path n | String n | OptString n
+  | StringList n | DeviceList n | Bool n | Int n | Int64 n
   | FileIn n | FileOut n -> n
 
 let java_name_of_struct typ =
@@ -3254,8 +4585,54 @@ let seq_of_test = function
   | TestOutputListOfDevices (s, _)
   | TestOutputInt (s, _) | TestOutputIntOp (s, _, _)
   | TestOutputTrue s | TestOutputFalse s
-  | TestOutputLength (s, _) | TestOutputStruct (s, _)
+  | TestOutputLength (s, _) | TestOutputBuffer (s, _)
+  | TestOutputStruct (s, _)
   | TestLastFail s -> s
+
+(* Handling for function flags. *)
+let protocol_limit_warning =
+  "Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  To transfer large files you should use
+FTP."
+
+let danger_will_robinson =
+  "B<This command is dangerous.  Without careful use you
+can easily destroy all your data>."
+
+let deprecation_notice flags =
+  try
+    let alt =
+      find_map (function DeprecatedBy str -> Some str | _ -> None) flags in
+    let txt =
+      sprintf "This function is deprecated.
+In new code, use the C<%s> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions." alt in
+    Some txt
+  with
+    Not_found -> None
+
+(* Create list of optional groups. *)
+let optgroups =
+  let h = Hashtbl.create 13 in
+  List.iter (
+    fun (name, _, _, flags, _, _, _) ->
+      List.iter (
+        function
+        | Optional group ->
+            let names = try Hashtbl.find h group with Not_found -> [] in
+            Hashtbl.replace h group (name :: names)
+        | _ -> ()
+      ) flags
+  ) daemon_functions;
+  let groups = Hashtbl.fold (fun k _ ks -> k :: ks) h [] in
+  let groups =
+    List.map (
+      fun group -> group, List.sort compare (Hashtbl.find h group)
+    ) groups in
+  List.sort (fun x y -> compare (fst x) (fst y)) groups
 
 (* Check function names etc. for consistency. *)
 let check_functions () =
@@ -3264,9 +4641,9 @@ let check_functions () =
     let rec loop i =
       if i >= len then false
       else (
-	let c = str.[i] in
-	if c >= 'A' && c <= 'Z' then true
-	else loop (i+1)
+        let c = str.[i] in
+        if c >= 'A' && c <= 'Z' then true
+        else loop (i+1)
       )
     in
     loop 0
@@ -3276,42 +4653,72 @@ let check_functions () =
   List.iter (
     fun (name, _, _, _, _, _, _) ->
       if String.length name >= 7 && String.sub name 0 7 = "guestfs" then
-	failwithf "function name %s does not need 'guestfs' prefix" name;
+        failwithf "function name %s does not need 'guestfs' prefix" name;
       if name = "" then
-	failwithf "function name is empty";
+        failwithf "function name is empty";
       if name.[0] < 'a' || name.[0] > 'z' then
-	failwithf "function name %s must start with lowercase a-z" name;
+        failwithf "function name %s must start with lowercase a-z" name;
       if String.contains name '-' then
-	failwithf "function name %s should not contain '-', use '_' instead."
-	  name
+        failwithf "function name %s should not contain '-', use '_' instead."
+          name
   ) all_functions;
 
   (* Check function parameter/return names. *)
   List.iter (
     fun (name, style, _, _, _, _, _) ->
       let check_arg_ret_name n =
-	if contains_uppercase n then
-	  failwithf "%s param/ret %s should not contain uppercase chars"
-	    name n;
-	if String.contains n '-' || String.contains n '_' then
-	  failwithf "%s param/ret %s should not contain '-' or '_'"
-	    name n;
-	if n = "value" then
-	  failwithf "%s has a param/ret called 'value', which causes conflicts in the OCaml bindings, use something like 'val' or a more descriptive name" name;
-	if n = "int" || n = "char" || n = "short" || n = "long" then
-	  failwithf "%s has a param/ret which conflicts with a C type (eg. 'int', 'char' etc.)" name;
-	if n = "i" || n = "n" then
-	  failwithf "%s has a param/ret called 'i' or 'n', which will cause some conflicts in the generated code" name;
-	if n = "argv" || n = "args" then
-	  failwithf "%s has a param/ret called 'argv' or 'args', which will cause some conflicts in the generated code" name
+        if contains_uppercase n then
+          failwithf "%s param/ret %s should not contain uppercase chars"
+            name n;
+        if String.contains n '-' || String.contains n '_' then
+          failwithf "%s param/ret %s should not contain '-' or '_'"
+            name n;
+        if n = "value" then
+          failwithf "%s has a param/ret called 'value', which causes conflicts in the OCaml bindings, use something like 'val' or a more descriptive name" name;
+        if n = "int" || n = "char" || n = "short" || n = "long" then
+          failwithf "%s has a param/ret which conflicts with a C type (eg. 'int', 'char' etc.)" name;
+        if n = "i" || n = "n" then
+          failwithf "%s has a param/ret called 'i' or 'n', which will cause some conflicts in the generated code" name;
+        if n = "argv" || n = "args" then
+          failwithf "%s has a param/ret called 'argv' or 'args', which will cause some conflicts in the generated code" name;
+
+        (* List Haskell, OCaml and C keywords here.
+         * http://www.haskell.org/haskellwiki/Keywords
+         * http://caml.inria.fr/pub/docs/manual-ocaml/lex.html#operator-char
+         * http://en.wikipedia.org/wiki/C_syntax#Reserved_keywords
+         * Formatted via: cat c haskell ocaml|sort -u|grep -vE '_|^val$' \
+         *   |perl -pe 's/(.+)/"$1";/'|fmt -70
+         * Omitting _-containing words, since they're handled above.
+         * Omitting the OCaml reserved word, "val", is ok,
+         * and saves us from renaming several parameters.
+         *)
+        let reserved = [
+          "and"; "as"; "asr"; "assert"; "auto"; "begin"; "break"; "case";
+          "char"; "class"; "const"; "constraint"; "continue"; "data";
+          "default"; "deriving"; "do"; "done"; "double"; "downto"; "else";
+          "end"; "enum"; "exception"; "extern"; "external"; "false"; "float";
+          "for"; "forall"; "foreign"; "fun"; "function"; "functor"; "goto";
+          "hiding"; "if"; "import"; "in"; "include"; "infix"; "infixl";
+          "infixr"; "inherit"; "initializer"; "inline"; "instance"; "int";
+          "land"; "lazy"; "let"; "long"; "lor"; "lsl"; "lsr"; "lxor";
+          "match"; "mdo"; "method"; "mod"; "module"; "mutable"; "new";
+          "newtype"; "object"; "of"; "open"; "or"; "private"; "qualified";
+          "rec"; "register"; "restrict"; "return"; "short"; "sig"; "signed";
+          "sizeof"; "static"; "struct"; "switch"; "then"; "to"; "true"; "try";
+          "type"; "typedef"; "union"; "unsigned"; "virtual"; "void";
+          "volatile"; "when"; "where"; "while";
+          ] in
+        if List.mem n reserved then
+          failwithf "%s has param/ret using reserved word %s" name n;
       in
 
       (match fst style with
        | RErr -> ()
-       | RInt n | RInt64 n | RBool n | RConstString n | RString n
+       | RInt n | RInt64 n | RBool n
+       | RConstString n | RConstOptString n | RString n
        | RStringList n | RStruct (n, _) | RStructList (n, _)
-       | RHashtable n ->
-	   check_arg_ret_name n
+       | RHashtable n | RBufferOut n ->
+           check_arg_ret_name n
       );
       List.iter (fun arg -> check_arg_ret_name (name_of_argt arg)) (snd style)
   ) all_functions;
@@ -3320,30 +4727,30 @@ let check_functions () =
   List.iter (
     fun (name, _, _, _, _, shortdesc, _) ->
       if shortdesc.[0] <> Char.lowercase shortdesc.[0] then
-	failwithf "short description of %s should begin with lowercase." name;
+        failwithf "short description of %s should begin with lowercase." name;
       let c = shortdesc.[String.length shortdesc-1] in
       if c = '\n' || c = '.' then
-	failwithf "short description of %s should not end with . or \\n." name
+        failwithf "short description of %s should not end with . or \\n." name
   ) all_functions;
 
   (* Check long dscriptions. *)
   List.iter (
     fun (name, _, _, _, _, _, longdesc) ->
       if longdesc.[String.length longdesc-1] = '\n' then
-	failwithf "long description of %s should not end with \\n." name
+        failwithf "long description of %s should not end with \\n." name
   ) all_functions;
 
   (* Check proc_nrs. *)
   List.iter (
     fun (name, _, proc_nr, _, _, _, _) ->
       if proc_nr <= 0 then
-	failwithf "daemon function %s should have proc_nr > 0" name
+        failwithf "daemon function %s should have proc_nr > 0" name
   ) daemon_functions;
 
   List.iter (
     fun (name, _, proc_nr, _, _, _, _) ->
       if proc_nr <> -1 then
-	failwithf "non-daemon function %s should have proc_nr -1" name
+        failwithf "non-daemon function %s should have proc_nr -1" name
   ) non_daemon_functions;
 
   let proc_nrs =
@@ -3355,10 +4762,10 @@ let check_functions () =
     | [] -> ()
     | [_] -> ()
     | (name1,nr1) :: ((name2,nr2) :: _ as rest) when nr1 < nr2 ->
-	loop rest
+        loop rest
     | (name1,nr1) :: (name2,nr2) :: _ ->
-	failwithf "%s and %s have conflicting procedure numbers (%d, %d)"
-	  name1 name2 nr1 nr2
+        failwithf "%s and %s have conflicting procedure numbers (%d, %d)"
+          name1 name2 nr1 nr2
   in
   loop proc_nrs;
 
@@ -3370,24 +4777,24 @@ let check_functions () =
        *)
     | name, _, _, _, [], _, _ -> ()
     | name, _, _, _, tests, _, _ ->
-	let funcs =
-	  List.map (
-	    fun (_, _, test) ->
-	      match seq_of_test test with
-	      | [] ->
-		  failwithf "%s has a test containing an empty sequence" name
-	      | cmds -> List.map List.hd cmds
-	  ) tests in
-	let funcs = List.flatten funcs in
+        let funcs =
+          List.map (
+            fun (_, _, test) ->
+              match seq_of_test test with
+              | [] ->
+                  failwithf "%s has a test containing an empty sequence" name
+              | cmds -> List.map List.hd cmds
+          ) tests in
+        let funcs = List.flatten funcs in
 
-	let tested = List.mem name funcs in
+        let tested = List.mem name funcs in
 
-	if not tested then
-	  failwithf "function %s has tests but does not test itself" name
+        if not tested then
+          failwithf "function %s has tests but does not test itself" name
   ) all_functions
 
 (* 'pr' prints to the current output file. *)
-let chan = ref stdout
+let chan = ref Pervasives.stdout
 let pr fs = ksprintf (output_string !chan) fs
 
 (* Generate a header block in a number of standard styles. *)
@@ -3452,51 +4859,62 @@ let rec generate_actions_pod () =
   List.iter (
     fun (shortname, style, _, flags, _, _, longdesc) ->
       if not (List.mem NotInDocs flags) then (
-	let name = "guestfs_" ^ shortname in
-	pr "=head2 %s\n\n" name;
-	pr " ";
-	generate_prototype ~extern:false ~handle:"handle" name style;
-	pr "\n\n";
-	pr "%s\n\n" longdesc;
-	(match fst style with
-	 | RErr ->
-	     pr "This function returns 0 on success or -1 on error.\n\n"
-	 | RInt _ ->
-	     pr "On error this function returns -1.\n\n"
-	 | RInt64 _ ->
-	     pr "On error this function returns -1.\n\n"
-	 | RBool _ ->
-	     pr "This function returns a C truth value on success or -1 on error.\n\n"
-	 | RConstString _ ->
-	     pr "This function returns a string, or NULL on error.
+        let name = "guestfs_" ^ shortname in
+        pr "=head2 %s\n\n" name;
+        pr " ";
+        generate_prototype ~extern:false ~handle:"handle" name style;
+        pr "\n\n";
+        pr "%s\n\n" longdesc;
+        (match fst style with
+         | RErr ->
+             pr "This function returns 0 on success or -1 on error.\n\n"
+         | RInt _ ->
+             pr "On error this function returns -1.\n\n"
+         | RInt64 _ ->
+             pr "On error this function returns -1.\n\n"
+         | RBool _ ->
+             pr "This function returns a C truth value on success or -1 on error.\n\n"
+         | RConstString _ ->
+             pr "This function returns a string, or NULL on error.
 The string is owned by the guest handle and must I<not> be freed.\n\n"
-	 | RString _ ->
-	     pr "This function returns a string, or NULL on error.
+         | RConstOptString _ ->
+             pr "This function returns a string which may be NULL.
+There is way to return an error from this function.
+The string is owned by the guest handle and must I<not> be freed.\n\n"
+         | RString _ ->
+             pr "This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.\n\n"
-	 | RStringList _ ->
-	     pr "This function returns a NULL-terminated array of strings
+         | RStringList _ ->
+             pr "This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.\n\n"
-	 | RStruct (_, typ) ->
-	     pr "This function returns a C<struct guestfs_%s *>,
+         | RStruct (_, typ) ->
+             pr "This function returns a C<struct guestfs_%s *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_%s> after use>.\n\n" typ typ
-	 | RStructList (_, typ) ->
-	     pr "This function returns a C<struct guestfs_%s_list *>
+         | RStructList (_, typ) ->
+             pr "This function returns a C<struct guestfs_%s_list *>
 (see E<lt>guestfs-structs.hE<gt>),
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_%s_list> after use>.\n\n" typ typ
-	 | RHashtable _ ->
-	     pr "This function returns a NULL-terminated array of
+         | RHashtable _ ->
+             pr "This function returns a NULL-terminated array of
 strings, or NULL if there was an error.
 The array of strings will always have length C<2n+1>, where
 C<n> keys and values alternate, followed by the trailing NULL entry.
 I<The caller must free the strings and the array after use>.\n\n"
-	);
-	if List.mem ProtocolLimitWarning flags then
-	  pr "%s\n\n" protocol_limit_warning;
-	if List.mem DangerWillRobinson flags then
-	  pr "%s\n\n" danger_will_robinson
+         | RBufferOut _ ->
+             pr "This function returns a buffer, or NULL on error.
+The size of the returned buffer is written to C<*size_r>.
+I<The caller must free the returned buffer after use>.\n\n"
+        );
+        if List.mem ProtocolLimitWarning flags then
+          pr "%s\n\n" protocol_limit_warning;
+        if List.mem DangerWillRobinson flags then
+          pr "%s\n\n" danger_will_robinson;
+        match deprecation_notice flags with
+        | None -> ()
+        | Some txt -> pr "%s\n\n" txt
       )
   ) all_functions_sorted
 
@@ -3508,23 +4926,23 @@ and generate_structs_pod () =
       pr "\n";
       pr " struct guestfs_%s {\n" typ;
       List.iter (
-	function
-	| name, FChar -> pr "   char %s;\n" name
-	| name, FUInt32 -> pr "   uint32_t %s;\n" name
-	| name, FInt32 -> pr "   int32_t %s;\n" name
-	| name, (FUInt64|FBytes) -> pr "   uint64_t %s;\n" name
-	| name, FInt64 -> pr "   int64_t %s;\n" name
-	| name, FString -> pr "   char *%s;\n" name
-	| name, FBuffer ->
-	    pr "   /* The next two fields describe a byte array. */\n";
-	    pr "   uint32_t %s_len;\n" name;
-	    pr "   char *%s;\n" name
-	| name, FUUID ->
-	    pr "   /* The next field is NOT nul-terminated, be careful when printing it: */\n";
-	    pr "   char %s[32];\n" name
-	| name, FOptPercent ->
-	    pr "   /* The next field is [0..100] or -1 meaning 'not present': */\n";
-	    pr "   float %s;\n" name
+        function
+        | name, FChar -> pr "   char %s;\n" name
+        | name, FUInt32 -> pr "   uint32_t %s;\n" name
+        | name, FInt32 -> pr "   int32_t %s;\n" name
+        | name, (FUInt64|FBytes) -> pr "   uint64_t %s;\n" name
+        | name, FInt64 -> pr "   int64_t %s;\n" name
+        | name, FString -> pr "   char *%s;\n" name
+        | name, FBuffer ->
+            pr "   /* The next two fields describe a byte array. */\n";
+            pr "   uint32_t %s_len;\n" name;
+            pr "   char *%s;\n" name
+        | name, FUUID ->
+            pr "   /* The next field is NOT nul-terminated, be careful when printing it: */\n";
+            pr "   char %s[32];\n" name
+        | name, FOptPercent ->
+            pr "   /* The next field is [0..100] or -1 meaning 'not present': */\n";
+            pr "   float %s;\n" name
       ) cols;
       pr " };\n";
       pr " \n";
@@ -3535,9 +4953,24 @@ and generate_structs_pod () =
       pr " \n";
       pr " void guestfs_free_%s (struct guestfs_free_%s *);\n" typ typ;
       pr " void guestfs_free_%s_list (struct guestfs_free_%s_list *);\n"
-	typ typ;
+        typ typ;
       pr "\n"
   ) structs
+
+and generate_availability_pod () =
+  (* Availability documentation. *)
+  pr "=over 4\n";
+  pr "\n";
+  List.iter (
+    fun (group, functions) ->
+      pr "=item B<%s>\n" group;
+      pr "\n";
+      pr "The following functions:\n";
+      List.iter (pr "L</guestfs_%s>\n") functions;
+      pr "\n"
+  ) optgroups;
+  pr "=back\n";
+  pr "\n"
 
 (* Generate the protocol (XDR) file, 'guestfs_protocol.x' and
  * indirectly 'guestfs_protocol.h' and 'guestfs_protocol.c'.
@@ -3558,20 +4991,20 @@ and generate_xdr () =
   List.iter (
     function
     | typ, cols ->
-	pr "struct guestfs_int_%s {\n" typ;
-	List.iter (function
-		   | name, FChar -> pr "  char %s;\n" name
-		   | name, FString -> pr "  string %s<>;\n" name
-		   | name, FBuffer -> pr "  opaque %s<>;\n" name
-		   | name, FUUID -> pr "  opaque %s[32];\n" name
-		   | name, (FInt32|FUInt32) -> pr "  int %s;\n" name
-		   | name, (FInt64|FUInt64|FBytes) -> pr "  hyper %s;\n" name
-		   | name, FOptPercent -> pr "  float %s;\n" name
-		  ) cols;
-	pr "};\n";
-	pr "\n";
-	pr "typedef struct guestfs_int_%s guestfs_int_%s_list<>;\n" typ typ;
-	pr "\n";
+        pr "struct guestfs_int_%s {\n" typ;
+        List.iter (function
+                   | name, FChar -> pr "  char %s;\n" name
+                   | name, FString -> pr "  string %s<>;\n" name
+                   | name, FBuffer -> pr "  opaque %s<>;\n" name
+                   | name, FUUID -> pr "  opaque %s[32];\n" name
+                   | name, (FInt32|FUInt32) -> pr "  int %s;\n" name
+                   | name, (FInt64|FUInt64|FBytes) -> pr "  hyper %s;\n" name
+                   | name, FOptPercent -> pr "  float %s;\n" name
+                  ) cols;
+        pr "};\n";
+        pr "\n";
+        pr "typedef struct guestfs_int_%s guestfs_int_%s_list<>;\n" typ typ;
+        pr "\n";
   ) structs;
 
   List.iter (
@@ -3581,54 +5014,60 @@ and generate_xdr () =
       (match snd style with
        | [] -> ()
        | args ->
-	   pr "struct %s_args {\n" name;
-	   List.iter (
-	     function
-	     | String n -> pr "  string %s<>;\n" n
-	     | OptString n -> pr "  str *%s;\n" n
-	     | StringList n -> pr "  str %s<>;\n" n
-	     | Bool n -> pr "  bool %s;\n" n
-	     | Int n -> pr "  int %s;\n" n
-	     | FileIn _ | FileOut _ -> ()
-	   ) args;
-	   pr "};\n\n"
+           pr "struct %s_args {\n" name;
+           List.iter (
+             function
+             | Pathname n | Device n | Dev_or_Path n | String n ->
+                 pr "  string %s<>;\n" n
+             | OptString n -> pr "  str *%s;\n" n
+             | StringList n | DeviceList n -> pr "  str %s<>;\n" n
+             | Bool n -> pr "  bool %s;\n" n
+             | Int n -> pr "  int %s;\n" n
+             | Int64 n -> pr "  hyper %s;\n" n
+             | FileIn _ | FileOut _ -> ()
+           ) args;
+           pr "};\n\n"
       );
       (match fst style with
        | RErr -> ()
        | RInt n ->
-	   pr "struct %s_ret {\n" name;
-	   pr "  int %s;\n" n;
-	   pr "};\n\n"
+           pr "struct %s_ret {\n" name;
+           pr "  int %s;\n" n;
+           pr "};\n\n"
        | RInt64 n ->
-	   pr "struct %s_ret {\n" name;
-	   pr "  hyper %s;\n" n;
-	   pr "};\n\n"
+           pr "struct %s_ret {\n" name;
+           pr "  hyper %s;\n" n;
+           pr "};\n\n"
        | RBool n ->
-	   pr "struct %s_ret {\n" name;
-	   pr "  bool %s;\n" n;
-	   pr "};\n\n"
-       | RConstString _ ->
-	   failwithf "RConstString cannot be returned from a daemon function"
+           pr "struct %s_ret {\n" name;
+           pr "  bool %s;\n" n;
+           pr "};\n\n"
+       | RConstString _ | RConstOptString _ ->
+           failwithf "RConstString|RConstOptString cannot be used by daemon functions"
        | RString n ->
-	   pr "struct %s_ret {\n" name;
-	   pr "  string %s<>;\n" n;
-	   pr "};\n\n"
+           pr "struct %s_ret {\n" name;
+           pr "  string %s<>;\n" n;
+           pr "};\n\n"
        | RStringList n ->
-	   pr "struct %s_ret {\n" name;
-	   pr "  str %s<>;\n" n;
-	   pr "};\n\n"
+           pr "struct %s_ret {\n" name;
+           pr "  str %s<>;\n" n;
+           pr "};\n\n"
        | RStruct (n, typ) ->
-	   pr "struct %s_ret {\n" name;
-	   pr "  guestfs_int_%s %s;\n" typ n;
-	   pr "};\n\n"
+           pr "struct %s_ret {\n" name;
+           pr "  guestfs_int_%s %s;\n" typ n;
+           pr "};\n\n"
        | RStructList (n, typ) ->
-	   pr "struct %s_ret {\n" name;
-	   pr "  guestfs_int_%s_list %s;\n" typ n;
-	   pr "};\n\n"
+           pr "struct %s_ret {\n" name;
+           pr "  guestfs_int_%s_list %s;\n" typ n;
+           pr "};\n\n"
        | RHashtable n ->
-	   pr "struct %s_ret {\n" name;
-	   pr "  str %s<>;\n" n;
-	   pr "};\n\n"
+           pr "struct %s_ret {\n" name;
+           pr "  str %s<>;\n" n;
+           pr "};\n\n"
+       | RBufferOut n ->
+           pr "struct %s_ret {\n" name;
+           pr "  opaque %s<>;\n" n;
+           pr "};\n\n"
       );
   ) daemon_functions;
 
@@ -3721,18 +5160,18 @@ and generate_structs_h () =
     fun (typ, cols) ->
       pr "struct guestfs_%s {\n" typ;
       List.iter (
-	function
-	| name, FChar -> pr "  char %s;\n" name
-	| name, FString -> pr "  char *%s;\n" name
-	| name, FBuffer ->
-	    pr "  uint32_t %s_len;\n" name;
-	    pr "  char *%s;\n" name
-	| name, FUUID -> pr "  char %s[32]; /* this is NOT nul-terminated, be careful when printing */\n" name
-	| name, FUInt32 -> pr "  uint32_t %s;\n" name
-	| name, FInt32 -> pr "  int32_t %s;\n" name
-	| name, (FUInt64|FBytes) -> pr "  uint64_t %s;\n" name
-	| name, FInt64 -> pr "  int64_t %s;\n" name
-	| name, FOptPercent -> pr "  float %s; /* [0..100] or -1 */\n" name
+        function
+        | name, FChar -> pr "  char %s;\n" name
+        | name, FString -> pr "  char *%s;\n" name
+        | name, FBuffer ->
+            pr "  uint32_t %s_len;\n" name;
+            pr "  char *%s;\n" name
+        | name, FUUID -> pr "  char %s[32]; /* this is NOT nul-terminated, be careful when printing */\n" name
+        | name, FUInt32 -> pr "  uint32_t %s;\n" name
+        | name, FInt32 -> pr "  int32_t %s;\n" name
+        | name, (FUInt64|FBytes) -> pr "  uint64_t %s;\n" name
+        | name, FInt64 -> pr "  int64_t %s;\n" name
+        | name, FOptPercent -> pr "  float %s; /* [0..100] or -1 */\n" name
       ) cols;
       pr "};\n";
       pr "\n";
@@ -3753,8 +5192,18 @@ and generate_actions_h () =
     fun (shortname, style, _, _, _, _, _) ->
       let name = "guestfs_" ^ shortname in
       generate_prototype ~single_line:true ~newline:true ~handle:"handle"
-	name style
+        name style
   ) all_functions
+
+(* Generate the guestfs-internal-actions.h file. *)
+and generate_internal_actions_h () =
+  generate_header CStyle LGPLv2;
+  List.iter (
+    fun (shortname, style, _, _, _, _, _) ->
+      let name = "guestfs__" ^ shortname in
+      generate_prototype ~single_line:true ~newline:true ~handle:"handle"
+        name style
+  ) non_daemon_functions
 
 (* Generate the client-side dispatch stubs. *)
 and generate_client_actions () =
@@ -3763,22 +5212,26 @@ and generate_client_actions () =
   pr "\
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <inttypes.h>
 
 #include \"guestfs.h\"
+#include \"guestfs-internal.h\"
+#include \"guestfs-internal-actions.h\"
 #include \"guestfs_protocol.h\"
 
 #define error guestfs_error
-#define perrorf guestfs_perrorf
+//#define perrorf guestfs_perrorf
 #define safe_malloc guestfs_safe_malloc
 #define safe_realloc guestfs_safe_realloc
-#define safe_strdup guestfs_safe_strdup
+//#define safe_strdup guestfs_safe_strdup
 #define safe_memdup guestfs_safe_memdup
 
 /* Check the return message from a call for validity. */
 static int
 check_reply_header (guestfs_h *g,
                     const struct guestfs_message_header *hdr,
-                    int proc_nr, int serial)
+                    unsigned int proc_nr, unsigned int serial)
 {
   if (hdr->prog != GUESTFS_PROGRAM) {
     error (g, \"wrong program (%%d/%%d)\", hdr->prog, GUESTFS_PROGRAM);
@@ -3786,12 +5239,12 @@ check_reply_header (guestfs_h *g,
   }
   if (hdr->vers != GUESTFS_PROTOCOL_VERSION) {
     error (g, \"wrong protocol version (%%d/%%d)\",
-	   hdr->vers, GUESTFS_PROTOCOL_VERSION);
+           hdr->vers, GUESTFS_PROTOCOL_VERSION);
     return -1;
   }
   if (hdr->direction != GUESTFS_DIRECTION_REPLY) {
     error (g, \"unexpected message direction (%%d/%%d)\",
-	   hdr->direction, GUESTFS_DIRECTION_REPLY);
+           hdr->direction, GUESTFS_DIRECTION_REPLY);
     return -1;
   }
   if (hdr->proc != proc_nr) {
@@ -3810,16 +5263,13 @@ check_reply_header (guestfs_h *g,
 static int
 check_state (guestfs_h *g, const char *caller)
 {
-  if (!guestfs_is_ready (g)) {
-    if (guestfs_is_config (g))
+  if (!guestfs__is_ready (g)) {
+    if (guestfs__is_config (g) || guestfs__is_launching (g))
       error (g, \"%%s: call launch before using this function\\n(in guestfish, don't forget to use the 'run' command)\",
-        caller);
-    else if (guestfs_is_launching (g))
-      error (g, \"%%s: call wait_ready() before using this function\",
         caller);
     else
       error (g, \"%%s called from the wrong state, %%d != READY\",
-        caller, guestfs_get_state (g));
+        caller, guestfs__get_state (g));
     return -1;
   }
   return 0;
@@ -3827,94 +5277,88 @@ check_state (guestfs_h *g, const char *caller)
 
 ";
 
+  (* Generate code to generate guestfish call traces. *)
+  let trace_call shortname style =
+    pr "  if (guestfs__get_trace (g)) {\n";
+
+    let needs_i =
+      List.exists (function
+                   | StringList _ | DeviceList _ -> true
+                   | _ -> false) (snd style) in
+    if needs_i then (
+      pr "    int i;\n";
+      pr "\n"
+    );
+
+    pr "    printf (\"%s\");\n" shortname;
+    List.iter (
+      function
+      | String n			(* strings *)
+      | Device n
+      | Pathname n
+      | Dev_or_Path n
+      | FileIn n
+      | FileOut n ->
+          (* guestfish doesn't support string escaping, so neither do we *)
+          pr "    printf (\" \\\"%%s\\\"\", %s);\n" n
+      | OptString n ->			(* string option *)
+          pr "    if (%s) printf (\" \\\"%%s\\\"\", %s);\n" n n;
+          pr "    else printf (\" null\");\n"
+      | StringList n
+      | DeviceList n ->			(* string list *)
+          pr "    putchar (' ');\n";
+          pr "    putchar ('\"');\n";
+          pr "    for (i = 0; %s[i]; ++i) {\n" n;
+          pr "      if (i > 0) putchar (' ');\n";
+          pr "      fputs (%s[i], stdout);\n" n;
+          pr "    }\n";
+          pr "    putchar ('\"');\n";
+      | Bool n ->			(* boolean *)
+          pr "    fputs (%s ? \" true\" : \" false\", stdout);\n" n
+      | Int n ->			(* int *)
+          pr "    printf (\" %%d\", %s);\n" n
+      | Int64 n ->
+          pr "    printf (\" %%\" PRIi64, %s);\n" n
+    ) (snd style);
+    pr "    putchar ('\\n');\n";
+    pr "  }\n";
+    pr "\n";
+  in
+
+  (* For non-daemon functions, generate a wrapper around each function. *)
+  List.iter (
+    fun (shortname, style, _, _, _, _, _) ->
+      let name = "guestfs_" ^ shortname in
+
+      generate_prototype ~extern:false ~semicolon:false ~newline:true
+        ~handle:"g" name style;
+      pr "{\n";
+      trace_call shortname style;
+      pr "  return guestfs__%s " shortname;
+      generate_c_call_args ~handle:"g" style;
+      pr ";\n";
+      pr "}\n";
+      pr "\n"
+  ) non_daemon_functions;
+
   (* Client-side stubs for each function. *)
   List.iter (
     fun (shortname, style, _, _, _, _, _) ->
       let name = "guestfs_" ^ shortname in
 
-      (* Generate the context struct which stores the high-level
-       * state between callback functions.
-       *)
-      pr "struct %s_ctx {\n" shortname;
-      pr "  /* This flag is set by the callbacks, so we know we've done\n";
-      pr "   * the callbacks as expected, and in the right sequence.\n";
-      pr "   * 0 = not called, 1 = reply_cb called.\n";
-      pr "   */\n";
-      pr "  int cb_sequence;\n";
-      pr "  struct guestfs_message_header hdr;\n";
-      pr "  struct guestfs_message_error err;\n";
-      (match fst style with
-       | RErr -> ()
-       | RConstString _ ->
-	   failwithf "RConstString cannot be returned from a daemon function"
-       | RInt _ | RInt64 _
-       | RBool _ | RString _ | RStringList _
-       | RStruct _ | RStructList _
-       | RHashtable _ ->
-	   pr "  struct %s_ret ret;\n" name
-      );
-      pr "};\n";
-      pr "\n";
-
-      (* Generate the reply callback function. *)
-      pr "static void %s_reply_cb (guestfs_h *g, void *data, XDR *xdr)\n" shortname;
-      pr "{\n";
-      pr "  guestfs_main_loop *ml = guestfs_get_main_loop (g);\n";
-      pr "  struct %s_ctx *ctx = (struct %s_ctx *) data;\n" shortname shortname;
-      pr "\n";
-      pr "  /* This should definitely not happen. */\n";
-      pr "  if (ctx->cb_sequence != 0) {\n";
-      pr "    ctx->cb_sequence = 9999;\n";
-      pr "    error (g, \"%%s: internal error: reply callback called twice\", \"%s\");\n" name;
-      pr "    return;\n";
-      pr "  }\n";
-      pr "\n";
-      pr "  ml->main_loop_quit (ml, g);\n";
-      pr "\n";
-      pr "  if (!xdr_guestfs_message_header (xdr, &ctx->hdr)) {\n";
-      pr "    error (g, \"%%s: failed to parse reply header\", \"%s\");\n" name;
-      pr "    return;\n";
-      pr "  }\n";
-      pr "  if (ctx->hdr.status == GUESTFS_STATUS_ERROR) {\n";
-      pr "    if (!xdr_guestfs_message_error (xdr, &ctx->err)) {\n";
-      pr "      error (g, \"%%s: failed to parse reply error\", \"%s\");\n"
-	name;
-      pr "      return;\n";
-      pr "    }\n";
-      pr "    goto done;\n";
-      pr "  }\n";
-
-      (match fst style with
-       | RErr -> ()
-       | RConstString _ ->
-	   failwithf "RConstString cannot be returned from a daemon function"
-       | RInt _ | RInt64 _
-       | RBool _ | RString _ | RStringList _
-       | RStruct _ | RStructList _
-       | RHashtable _ ->
-	   pr "  if (!xdr_%s_ret (xdr, &ctx->ret)) {\n" name;
-	   pr "    error (g, \"%%s: failed to parse reply\", \"%s\");\n" name;
-	   pr "    return;\n";
-	   pr "  }\n";
-      );
-
-      pr " done:\n";
-      pr "  ctx->cb_sequence = 1;\n";
-      pr "}\n\n";
-
       (* Generate the action stub. *)
       generate_prototype ~extern:false ~semicolon:false ~newline:true
-	~handle:"g" name style;
+        ~handle:"g" name style;
 
       let error_code =
-	match fst style with
-	| RErr | RInt _ | RInt64 _ | RBool _ -> "-1"
-	| RConstString _ ->
-	    failwithf "RConstString cannot be returned from a daemon function"
-	| RString _ | RStringList _
-	| RStruct _ | RStructList _
-	| RHashtable _ ->
-	    "NULL" in
+        match fst style with
+        | RErr | RInt _ | RInt64 _ | RBool _ -> "-1"
+        | RConstString _ | RConstOptString _ ->
+            failwithf "RConstString|RConstOptString cannot be used by daemon functions"
+        | RString _ | RStringList _
+        | RStruct _ | RStructList _
+        | RHashtable _ | RBufferOut _ ->
+            "NULL" in
 
       pr "{\n";
 
@@ -3923,44 +5367,58 @@ check_state (guestfs_h *g, const char *caller)
        | _ -> pr "  struct %s_args args;\n" name
       );
 
-      pr "  struct %s_ctx ctx;\n" shortname;
-      pr "  guestfs_main_loop *ml = guestfs_get_main_loop (g);\n";
+      pr "  guestfs_message_header hdr;\n";
+      pr "  guestfs_message_error err;\n";
+      let has_ret =
+        match fst style with
+        | RErr -> false
+        | RConstString _ | RConstOptString _ ->
+            failwithf "RConstString|RConstOptString cannot be used by daemon functions"
+        | RInt _ | RInt64 _
+        | RBool _ | RString _ | RStringList _
+        | RStruct _ | RStructList _
+        | RHashtable _ | RBufferOut _ ->
+            pr "  struct %s_ret ret;\n" name;
+            true in
+
       pr "  int serial;\n";
+      pr "  int r;\n";
       pr "\n";
+      trace_call shortname style;
       pr "  if (check_state (g, \"%s\") == -1) return %s;\n" name error_code;
-      pr "  guestfs_set_busy (g);\n";
-      pr "\n";
-      pr "  memset (&ctx, 0, sizeof ctx);\n";
+      pr "  guestfs___set_busy (g);\n";
       pr "\n";
 
       (* Send the main header and arguments. *)
       (match snd style with
        | [] ->
-	   pr "  serial = guestfs__send_sync (g, GUESTFS_PROC_%s, NULL, NULL);\n"
-	     (String.uppercase shortname)
+           pr "  serial = guestfs___send (g, GUESTFS_PROC_%s, NULL, NULL);\n"
+             (String.uppercase shortname)
        | args ->
-	   List.iter (
-	     function
-	     | String n ->
-		 pr "  args.%s = (char *) %s;\n" n n
-	     | OptString n ->
-		 pr "  args.%s = %s ? (char **) &%s : NULL;\n" n n n
-	     | StringList n ->
-		 pr "  args.%s.%s_val = (char **) %s;\n" n n n;
-		 pr "  for (args.%s.%s_len = 0; %s[args.%s.%s_len]; args.%s.%s_len++) ;\n" n n n n n n n;
-	     | Bool n ->
-		 pr "  args.%s = %s;\n" n n
-	     | Int n ->
-		 pr "  args.%s = %s;\n" n n
-	     | FileIn _ | FileOut _ -> ()
-	   ) args;
-	   pr "  serial = guestfs__send_sync (g, GUESTFS_PROC_%s,\n"
-	     (String.uppercase shortname);
-	   pr "        (xdrproc_t) xdr_%s_args, (char *) &args);\n"
-	     name;
+           List.iter (
+             function
+             | Pathname n | Device n | Dev_or_Path n | String n ->
+                 pr "  args.%s = (char *) %s;\n" n n
+             | OptString n ->
+                 pr "  args.%s = %s ? (char **) &%s : NULL;\n" n n n
+             | StringList n | DeviceList n ->
+                 pr "  args.%s.%s_val = (char **) %s;\n" n n n;
+                 pr "  for (args.%s.%s_len = 0; %s[args.%s.%s_len]; args.%s.%s_len++) ;\n" n n n n n n n;
+             | Bool n ->
+                 pr "  args.%s = %s;\n" n n
+             | Int n ->
+                 pr "  args.%s = %s;\n" n n
+             | Int64 n ->
+                 pr "  args.%s = %s;\n" n n
+             | FileIn _ | FileOut _ -> ()
+           ) args;
+           pr "  serial = guestfs___send (g, GUESTFS_PROC_%s,\n"
+             (String.uppercase shortname);
+           pr "        (xdrproc_t) xdr_%s_args, (char *) &args);\n"
+             name;
       );
       pr "  if (serial == -1) {\n";
-      pr "    guestfs_end_busy (g);\n";
+      pr "    guestfs___end_busy (g);\n";
       pr "    return %s;\n" error_code;
       pr "  }\n";
       pr "\n";
@@ -3968,89 +5426,105 @@ check_state (guestfs_h *g, const char *caller)
       (* Send any additional files (FileIn) requested. *)
       let need_read_reply_label = ref false in
       List.iter (
-	function
-	| FileIn n ->
-	    pr "  {\n";
-	    pr "    int r;\n";
-	    pr "\n";
-	    pr "    r = guestfs__send_file_sync (g, %s);\n" n;
-	    pr "    if (r == -1) {\n";
-	    pr "      guestfs_end_busy (g);\n";
-	    pr "      return %s;\n" error_code;
-	    pr "    }\n";
-	    pr "    if (r == -2) /* daemon cancelled */\n";
-	    pr "      goto read_reply;\n";
-	    need_read_reply_label := true;
-	    pr "  }\n";
-	    pr "\n";
-	| _ -> ()
+        function
+        | FileIn n ->
+            pr "  r = guestfs___send_file (g, %s);\n" n;
+            pr "  if (r == -1) {\n";
+            pr "    guestfs___end_busy (g);\n";
+            pr "    return %s;\n" error_code;
+            pr "  }\n";
+            pr "  if (r == -2) /* daemon cancelled */\n";
+            pr "    goto read_reply;\n";
+            need_read_reply_label := true;
+            pr "\n";
+        | _ -> ()
       ) (snd style);
 
       (* Wait for the reply from the remote end. *)
       if !need_read_reply_label then pr " read_reply:\n";
-      pr "  guestfs__switch_to_receiving (g);\n";
-      pr "  ctx.cb_sequence = 0;\n";
-      pr "  guestfs_set_reply_callback (g, %s_reply_cb, &ctx);\n" shortname;
-      pr "  (void) ml->main_loop_run (ml, g);\n";
-      pr "  guestfs_set_reply_callback (g, NULL, NULL);\n";
-      pr "  if (ctx.cb_sequence != 1) {\n";
-      pr "    error (g, \"%%s reply failed, see earlier error messages\", \"%s\");\n" name;
-      pr "    guestfs_end_busy (g);\n";
+      pr "  memset (&hdr, 0, sizeof hdr);\n";
+      pr "  memset (&err, 0, sizeof err);\n";
+      if has_ret then pr "  memset (&ret, 0, sizeof ret);\n";
+      pr "\n";
+      pr "  r = guestfs___recv (g, \"%s\", &hdr, &err,\n        " shortname;
+      if not has_ret then
+        pr "NULL, NULL"
+      else
+        pr "(xdrproc_t) xdr_guestfs_%s_ret, (char *) &ret" shortname;
+      pr ");\n";
+
+      pr "  if (r == -1) {\n";
+      pr "    guestfs___end_busy (g);\n";
       pr "    return %s;\n" error_code;
       pr "  }\n";
       pr "\n";
 
-      pr "  if (check_reply_header (g, &ctx.hdr, GUESTFS_PROC_%s, serial) == -1) {\n"
-	(String.uppercase shortname);
-      pr "    guestfs_end_busy (g);\n";
+      pr "  if (check_reply_header (g, &hdr, GUESTFS_PROC_%s, serial) == -1) {\n"
+        (String.uppercase shortname);
+      pr "    guestfs___end_busy (g);\n";
       pr "    return %s;\n" error_code;
       pr "  }\n";
       pr "\n";
 
-      pr "  if (ctx.hdr.status == GUESTFS_STATUS_ERROR) {\n";
-      pr "    error (g, \"%%s\", ctx.err.error_message);\n";
-      pr "    free (ctx.err.error_message);\n";
-      pr "    guestfs_end_busy (g);\n";
+      pr "  if (hdr.status == GUESTFS_STATUS_ERROR) {\n";
+      pr "    error (g, \"%%s: %%s\", \"%s\", err.error_message);\n" shortname;
+      pr "    free (err.error_message);\n";
+      pr "    guestfs___end_busy (g);\n";
       pr "    return %s;\n" error_code;
       pr "  }\n";
       pr "\n";
 
       (* Expecting to receive further files (FileOut)? *)
       List.iter (
-	function
-	| FileOut n ->
-	    pr "  if (guestfs__receive_file_sync (g, %s) == -1) {\n" n;
-	    pr "    guestfs_end_busy (g);\n";
-	    pr "    return %s;\n" error_code;
-	    pr "  }\n";
-	    pr "\n";
-	| _ -> ()
+        function
+        | FileOut n ->
+            pr "  if (guestfs___recv_file (g, %s) == -1) {\n" n;
+            pr "    guestfs___end_busy (g);\n";
+            pr "    return %s;\n" error_code;
+            pr "  }\n";
+            pr "\n";
+        | _ -> ()
       ) (snd style);
 
-      pr "  guestfs_end_busy (g);\n";
+      pr "  guestfs___end_busy (g);\n";
 
       (match fst style with
        | RErr -> pr "  return 0;\n"
        | RInt n | RInt64 n | RBool n ->
-	   pr "  return ctx.ret.%s;\n" n
-       | RConstString _ ->
-	   failwithf "RConstString cannot be returned from a daemon function"
+           pr "  return ret.%s;\n" n
+       | RConstString _ | RConstOptString _ ->
+           failwithf "RConstString|RConstOptString cannot be used by daemon functions"
        | RString n ->
-	   pr "  return ctx.ret.%s; /* caller will free */\n" n
+           pr "  return ret.%s; /* caller will free */\n" n
        | RStringList n | RHashtable n ->
-	   pr "  /* caller will free this, but we need to add a NULL entry */\n";
-	   pr "  ctx.ret.%s.%s_val =\n" n n;
-	   pr "    safe_realloc (g, ctx.ret.%s.%s_val,\n" n n;
-	   pr "                  sizeof (char *) * (ctx.ret.%s.%s_len + 1));\n"
-	     n n;
-	   pr "  ctx.ret.%s.%s_val[ctx.ret.%s.%s_len] = NULL;\n" n n n n;
-	   pr "  return ctx.ret.%s.%s_val;\n" n n
+           pr "  /* caller will free this, but we need to add a NULL entry */\n";
+           pr "  ret.%s.%s_val =\n" n n;
+           pr "    safe_realloc (g, ret.%s.%s_val,\n" n n;
+           pr "                  sizeof (char *) * (ret.%s.%s_len + 1));\n"
+             n n;
+           pr "  ret.%s.%s_val[ret.%s.%s_len] = NULL;\n" n n n n;
+           pr "  return ret.%s.%s_val;\n" n n
        | RStruct (n, _) ->
-	   pr "  /* caller will free this */\n";
-	   pr "  return safe_memdup (g, &ctx.ret.%s, sizeof (ctx.ret.%s));\n" n n
+           pr "  /* caller will free this */\n";
+           pr "  return safe_memdup (g, &ret.%s, sizeof (ret.%s));\n" n n
        | RStructList (n, _) ->
-	   pr "  /* caller will free this */\n";
-	   pr "  return safe_memdup (g, &ctx.ret.%s, sizeof (ctx.ret.%s));\n" n n
+           pr "  /* caller will free this */\n";
+           pr "  return safe_memdup (g, &ret.%s, sizeof (ret.%s));\n" n n
+       | RBufferOut n ->
+           pr "  /* RBufferOut is tricky: If the buffer is zero-length, then\n";
+           pr "   * _val might be NULL here.  To make the API saner for\n";
+           pr "   * callers, we turn this case into a unique pointer (using\n";
+           pr "   * malloc(1)).\n";
+           pr "   */\n";
+           pr "  if (ret.%s.%s_len > 0) {\n" n n;
+           pr "    *size_r = ret.%s.%s_len;\n" n n;
+           pr "    return ret.%s.%s_val; /* caller will free */\n" n n;
+           pr "  } else {\n";
+           pr "    free (ret.%s.%s_val);\n" n n;
+           pr "    char *p = safe_malloc (g, 1);\n";
+           pr "    *size_r = ret.%s.%s_len;\n" n n;
+           pr "    return p;\n";
+           pr "  }\n";
       );
 
       pr "}\n\n"
@@ -4093,8 +5567,8 @@ and generate_daemon_actions_h () =
   List.iter (
     fun (name, style, _, _, _, _, _) ->
       generate_prototype
-	~single_line:true ~newline:true ~in_daemon:true ~prefix:"do_"
-	name style;
+        ~single_line:true ~newline:true ~in_daemon:true ~prefix:"do_"
+        name style;
   ) daemon_functions
 
 (* Generate the server-side stubs. *)
@@ -4107,11 +5581,11 @@ and generate_daemon_actions () =
   pr "#include <stdlib.h>\n";
   pr "#include <string.h>\n";
   pr "#include <inttypes.h>\n";
-  pr "#include <ctype.h>\n";
   pr "#include <rpc/types.h>\n";
   pr "#include <rpc/xdr.h>\n";
   pr "\n";
   pr "#include \"daemon.h\"\n";
+  pr "#include \"c-ctype.h\"\n";
   pr "#include \"../src/guestfs_protocol.h\"\n";
   pr "#include \"actions.h\"\n";
   pr "\n";
@@ -4122,135 +5596,190 @@ and generate_daemon_actions () =
       pr "static void %s_stub (XDR *xdr_in)\n" name;
       pr "{\n";
       let error_code =
-	match fst style with
-	| RErr | RInt _ -> pr "  int r;\n"; "-1"
-	| RInt64 _ -> pr "  int64_t r;\n"; "-1"
-	| RBool _ -> pr "  int r;\n"; "-1"
-	| RConstString _ ->
-	    failwithf "RConstString cannot be returned from a daemon function"
-	| RString _ -> pr "  char *r;\n"; "NULL"
-	| RStringList _ | RHashtable _ -> pr "  char **r;\n"; "NULL"
-	| RStruct (_, typ) -> pr "  guestfs_int_%s *r;\n" typ; "NULL"
-	| RStructList (_, typ) -> pr "  guestfs_int_%s_list *r;\n" typ; "NULL" in
+        match fst style with
+        | RErr | RInt _ -> pr "  int r;\n"; "-1"
+        | RInt64 _ -> pr "  int64_t r;\n"; "-1"
+        | RBool _ -> pr "  int r;\n"; "-1"
+        | RConstString _ | RConstOptString _ ->
+            failwithf "RConstString|RConstOptString cannot be used by daemon functions"
+        | RString _ -> pr "  char *r;\n"; "NULL"
+        | RStringList _ | RHashtable _ -> pr "  char **r;\n"; "NULL"
+        | RStruct (_, typ) -> pr "  guestfs_int_%s *r;\n" typ; "NULL"
+        | RStructList (_, typ) -> pr "  guestfs_int_%s_list *r;\n" typ; "NULL"
+        | RBufferOut _ ->
+            pr "  size_t size = 1;\n";
+            pr "  char *r;\n";
+            "NULL" in
 
       (match snd style with
        | [] -> ()
        | args ->
-	   pr "  struct guestfs_%s_args args;\n" name;
-	   List.iter (
-	     function
-	       (* Note we allow the string to be writable, in order to
-		* allow device name translation.  This is safe because
-		* we can modify the string (passed from RPC).
-		*)
-	     | String n
-	     | OptString n -> pr "  char *%s;\n" n
-	     | StringList n -> pr "  char **%s;\n" n
-	     | Bool n -> pr "  int %s;\n" n
-	     | Int n -> pr "  int %s;\n" n
-	     | FileIn _ | FileOut _ -> ()
-	   ) args
+           pr "  struct guestfs_%s_args args;\n" name;
+           List.iter (
+             function
+             | Device n | Dev_or_Path n
+             | Pathname n
+             | String n -> ()
+             | OptString n -> pr "  char *%s;\n" n
+             | StringList n | DeviceList n -> pr "  char **%s;\n" n
+             | Bool n -> pr "  int %s;\n" n
+             | Int n -> pr "  int %s;\n" n
+             | Int64 n -> pr "  int64_t %s;\n" n
+             | FileIn _ | FileOut _ -> ()
+           ) args
       );
       pr "\n";
 
       (match snd style with
        | [] -> ()
        | args ->
-	   pr "  memset (&args, 0, sizeof args);\n";
-	   pr "\n";
-	   pr "  if (!xdr_guestfs_%s_args (xdr_in, &args)) {\n" name;
-	   pr "    reply_with_error (\"%%s: daemon failed to decode procedure arguments\", \"%s\");\n" name;
-	   pr "    return;\n";
-	   pr "  }\n";
-	   List.iter (
-	     function
-	     | String n -> pr "  %s = args.%s;\n" n n
-	     | OptString n -> pr "  %s = args.%s ? *args.%s : NULL;\n" n n n
-	     | StringList n ->
-		 pr "  %s = realloc (args.%s.%s_val,\n" n n n;
-		 pr "                sizeof (char *) * (args.%s.%s_len+1));\n" n n;
-		 pr "  if (%s == NULL) {\n" n;
-		 pr "    reply_with_perror (\"realloc\");\n";
-		 pr "    goto done;\n";
-		 pr "  }\n";
-		 pr "  %s[args.%s.%s_len] = NULL;\n" n n n;
-		 pr "  args.%s.%s_val = %s;\n" n n n;
-	     | Bool n -> pr "  %s = args.%s;\n" n n
-	     | Int n -> pr "  %s = args.%s;\n" n n
-	     | FileIn _ | FileOut _ -> ()
-	   ) args;
-	   pr "\n"
+           pr "  memset (&args, 0, sizeof args);\n";
+           pr "\n";
+           pr "  if (!xdr_guestfs_%s_args (xdr_in, &args)) {\n" name;
+           pr "    reply_with_error (\"%%s: daemon failed to decode procedure arguments\", \"%s\");\n" name;
+           pr "    return;\n";
+           pr "  }\n";
+           let pr_args n =
+             pr "  char *%s = args.%s;\n" n n
+           in
+           let pr_list_handling_code n =
+             pr "  %s = realloc (args.%s.%s_val,\n" n n n;
+             pr "                sizeof (char *) * (args.%s.%s_len+1));\n" n n;
+             pr "  if (%s == NULL) {\n" n;
+             pr "    reply_with_perror (\"realloc\");\n";
+             pr "    goto done;\n";
+             pr "  }\n";
+             pr "  %s[args.%s.%s_len] = NULL;\n" n n n;
+             pr "  args.%s.%s_val = %s;\n" n n n;
+           in
+           List.iter (
+             function
+             | Pathname n ->
+                 pr_args n;
+                 pr "  ABS_PATH (%s, goto done);\n" n;
+             | Device n ->
+                 pr_args n;
+                 pr "  RESOLVE_DEVICE (%s, goto done);\n" n;
+             | Dev_or_Path n ->
+                 pr_args n;
+                 pr "  REQUIRE_ROOT_OR_RESOLVE_DEVICE (%s, goto done);\n" n;
+             | String n -> pr_args n
+             | OptString n -> pr "  %s = args.%s ? *args.%s : NULL;\n" n n n
+             | StringList n ->
+                 pr_list_handling_code n;
+             | DeviceList n ->
+                 pr_list_handling_code n;
+                 pr "  /* Ensure that each is a device,\n";
+                 pr "   * and perform device name translation. */\n";
+                 pr "  { int pvi; for (pvi = 0; physvols[pvi] != NULL; ++pvi)\n";
+                 pr "    RESOLVE_DEVICE (physvols[pvi], goto done);\n";
+                 pr "  }\n";
+             | Bool n -> pr "  %s = args.%s;\n" n n
+             | Int n -> pr "  %s = args.%s;\n" n n
+             | Int64 n -> pr "  %s = args.%s;\n" n n
+             | FileIn _ | FileOut _ -> ()
+           ) args;
+           pr "\n"
+      );
+
+
+      (* this is used at least for do_equal *)
+      if List.exists (function Pathname _ -> true | _ -> false) (snd style) then (
+        (* Emit NEED_ROOT just once, even when there are two or
+           more Pathname args *)
+        pr "  NEED_ROOT (goto done);\n";
       );
 
       (* Don't want to call the impl with any FileIn or FileOut
        * parameters, since these go "outside" the RPC protocol.
        *)
-      let argsnofile =
-	List.filter (function FileIn _ | FileOut _ -> false | _ -> true)
-	  (snd style) in
+      let args' =
+        List.filter (function FileIn _ | FileOut _ -> false | _ -> true)
+          (snd style) in
       pr "  r = do_%s " name;
-      generate_call_args argsnofile;
+      generate_c_call_args (fst style, args');
       pr ";\n";
 
-      pr "  if (r == %s)\n" error_code;
-      pr "    /* do_%s has already called reply_with_error */\n" name;
-      pr "    goto done;\n";
-      pr "\n";
+      (match fst style with
+       | RErr | RInt _ | RInt64 _ | RBool _
+       | RConstString _ | RConstOptString _
+       | RString _ | RStringList _ | RHashtable _
+       | RStruct (_, _) | RStructList (_, _) ->
+           pr "  if (r == %s)\n" error_code;
+           pr "    /* do_%s has already called reply_with_error */\n" name;
+           pr "    goto done;\n";
+           pr "\n"
+       | RBufferOut _ ->
+           pr "  /* size == 0 && r == NULL could be a non-error case (just\n";
+           pr "   * an ordinary zero-length buffer), so be careful ...\n";
+           pr "   */\n";
+           pr "  if (size == 1 && r == %s)\n" error_code;
+           pr "    /* do_%s has already called reply_with_error */\n" name;
+           pr "    goto done;\n";
+           pr "\n"
+      );
 
       (* If there are any FileOut parameters, then the impl must
        * send its own reply.
        *)
       let no_reply =
-	List.exists (function FileOut _ -> true | _ -> false) (snd style) in
+        List.exists (function FileOut _ -> true | _ -> false) (snd style) in
       if no_reply then
-	pr "  /* do_%s has already sent a reply */\n" name
+        pr "  /* do_%s has already sent a reply */\n" name
       else (
-	match fst style with
-	| RErr -> pr "  reply (NULL, NULL);\n"
-	| RInt n | RInt64 n | RBool n ->
-	    pr "  struct guestfs_%s_ret ret;\n" name;
-	    pr "  ret.%s = r;\n" n;
-	    pr "  reply ((xdrproc_t) &xdr_guestfs_%s_ret, (char *) &ret);\n"
-	      name
-	| RConstString _ ->
-	    failwithf "RConstString cannot be returned from a daemon function"
-	| RString n ->
-	    pr "  struct guestfs_%s_ret ret;\n" name;
-	    pr "  ret.%s = r;\n" n;
-	    pr "  reply ((xdrproc_t) &xdr_guestfs_%s_ret, (char *) &ret);\n"
-	      name;
-	    pr "  free (r);\n"
-	| RStringList n | RHashtable n ->
-	    pr "  struct guestfs_%s_ret ret;\n" name;
-	    pr "  ret.%s.%s_len = count_strings (r);\n" n n;
-	    pr "  ret.%s.%s_val = r;\n" n n;
-	    pr "  reply ((xdrproc_t) &xdr_guestfs_%s_ret, (char *) &ret);\n"
-	      name;
-	    pr "  free_strings (r);\n"
-	| RStruct (n, _) ->
-	    pr "  struct guestfs_%s_ret ret;\n" name;
-	    pr "  ret.%s = *r;\n" n;
-	    pr "  reply ((xdrproc_t) xdr_guestfs_%s_ret, (char *) &ret);\n"
-	      name;
-	    pr "  xdr_free ((xdrproc_t) xdr_guestfs_%s_ret, (char *) &ret);\n"
-	      name
-	| RStructList (n, _) ->
-	    pr "  struct guestfs_%s_ret ret;\n" name;
-	    pr "  ret.%s = *r;\n" n;
-	    pr "  reply ((xdrproc_t) xdr_guestfs_%s_ret, (char *) &ret);\n"
-	      name;
-	    pr "  xdr_free ((xdrproc_t) xdr_guestfs_%s_ret, (char *) &ret);\n"
-	      name
+        match fst style with
+        | RErr -> pr "  reply (NULL, NULL);\n"
+        | RInt n | RInt64 n | RBool n ->
+            pr "  struct guestfs_%s_ret ret;\n" name;
+            pr "  ret.%s = r;\n" n;
+            pr "  reply ((xdrproc_t) &xdr_guestfs_%s_ret, (char *) &ret);\n"
+              name
+        | RConstString _ | RConstOptString _ ->
+            failwithf "RConstString|RConstOptString cannot be used by daemon functions"
+        | RString n ->
+            pr "  struct guestfs_%s_ret ret;\n" name;
+            pr "  ret.%s = r;\n" n;
+            pr "  reply ((xdrproc_t) &xdr_guestfs_%s_ret, (char *) &ret);\n"
+              name;
+            pr "  free (r);\n"
+        | RStringList n | RHashtable n ->
+            pr "  struct guestfs_%s_ret ret;\n" name;
+            pr "  ret.%s.%s_len = count_strings (r);\n" n n;
+            pr "  ret.%s.%s_val = r;\n" n n;
+            pr "  reply ((xdrproc_t) &xdr_guestfs_%s_ret, (char *) &ret);\n"
+              name;
+            pr "  free_strings (r);\n"
+        | RStruct (n, _) ->
+            pr "  struct guestfs_%s_ret ret;\n" name;
+            pr "  ret.%s = *r;\n" n;
+            pr "  reply ((xdrproc_t) xdr_guestfs_%s_ret, (char *) &ret);\n"
+              name;
+            pr "  xdr_free ((xdrproc_t) xdr_guestfs_%s_ret, (char *) &ret);\n"
+              name
+        | RStructList (n, _) ->
+            pr "  struct guestfs_%s_ret ret;\n" name;
+            pr "  ret.%s = *r;\n" n;
+            pr "  reply ((xdrproc_t) xdr_guestfs_%s_ret, (char *) &ret);\n"
+              name;
+            pr "  xdr_free ((xdrproc_t) xdr_guestfs_%s_ret, (char *) &ret);\n"
+              name
+        | RBufferOut n ->
+            pr "  struct guestfs_%s_ret ret;\n" name;
+            pr "  ret.%s.%s_val = r;\n" n n;
+            pr "  ret.%s.%s_len = size;\n" n n;
+            pr "  reply ((xdrproc_t) &xdr_guestfs_%s_ret, (char *) &ret);\n"
+              name;
+            pr "  free (r);\n"
       );
 
       (* Free the args. *)
       (match snd style with
        | [] ->
-	   pr "done: ;\n";
+           pr "done: ;\n";
        | _ ->
-	   pr "done:\n";
-	   pr "  xdr_free ((xdrproc_t) xdr_guestfs_%s_args, (char *) &args);\n"
-	     name
+           pr "done:\n";
+           pr "  xdr_free ((xdrproc_t) xdr_guestfs_%s_args, (char *) &args);\n"
+             name
       );
 
       pr "}\n\n";
@@ -4281,164 +5810,164 @@ and generate_daemon_actions () =
   List.iter (
     function
     | typ, cols ->
-	pr "static const char *lvm_%s_cols = \"%s\";\n"
-	  typ (String.concat "," (List.map fst cols));
-	pr "\n";
+        pr "static const char *lvm_%s_cols = \"%s\";\n"
+          typ (String.concat "," (List.map fst cols));
+        pr "\n";
 
-	pr "static int lvm_tokenize_%s (char *str, guestfs_int_lvm_%s *r)\n" typ typ;
-	pr "{\n";
-	pr "  char *tok, *p, *next;\n";
-	pr "  int i, j;\n";
-	pr "\n";
-	(*
-	  pr "  fprintf (stderr, \"%%s: <<%%s>>\\n\", __func__, str);\n";
-	  pr "\n";
-	*)
-	pr "  if (!str) {\n";
-	pr "    fprintf (stderr, \"%%s: failed: passed a NULL string\\n\", __func__);\n";
-	pr "    return -1;\n";
-	pr "  }\n";
-	pr "  if (!*str || isspace (*str)) {\n";
-	pr "    fprintf (stderr, \"%%s: failed: passed a empty string or one beginning with whitespace\\n\", __func__);\n";
-	pr "    return -1;\n";
-	pr "  }\n";
-	pr "  tok = str;\n";
-	List.iter (
-	  fun (name, coltype) ->
-	    pr "  if (!tok) {\n";
-	    pr "    fprintf (stderr, \"%%s: failed: string finished early, around token %%s\\n\", __func__, \"%s\");\n" name;
-	    pr "    return -1;\n";
-	    pr "  }\n";
-	    pr "  p = strchrnul (tok, ',');\n";
-	    pr "  if (*p) next = p+1; else next = NULL;\n";
-	    pr "  *p = '\\0';\n";
-	    (match coltype with
-	     | FString ->
-		 pr "  r->%s = strdup (tok);\n" name;
-		 pr "  if (r->%s == NULL) {\n" name;
-		 pr "    perror (\"strdup\");\n";
-		 pr "    return -1;\n";
-		 pr "  }\n"
-	     | FUUID ->
-		 pr "  for (i = j = 0; i < 32; ++j) {\n";
-		 pr "    if (tok[j] == '\\0') {\n";
-		 pr "      fprintf (stderr, \"%%s: failed to parse UUID from '%%s'\\n\", __func__, tok);\n";
-		 pr "      return -1;\n";
-		 pr "    } else if (tok[j] != '-')\n";
-		 pr "      r->%s[i++] = tok[j];\n" name;
-		 pr "  }\n";
-	     | FBytes ->
-		 pr "  if (sscanf (tok, \"%%\"SCNu64, &r->%s) != 1) {\n" name;
-		 pr "    fprintf (stderr, \"%%s: failed to parse size '%%s' from token %%s\\n\", __func__, tok, \"%s\");\n" name;
-		 pr "    return -1;\n";
-		 pr "  }\n";
-	     | FInt64 ->
-		 pr "  if (sscanf (tok, \"%%\"SCNi64, &r->%s) != 1) {\n" name;
-		 pr "    fprintf (stderr, \"%%s: failed to parse int '%%s' from token %%s\\n\", __func__, tok, \"%s\");\n" name;
-		 pr "    return -1;\n";
-		 pr "  }\n";
-	     | FOptPercent ->
-		 pr "  if (tok[0] == '\\0')\n";
-		 pr "    r->%s = -1;\n" name;
-		 pr "  else if (sscanf (tok, \"%%f\", &r->%s) != 1) {\n" name;
-		 pr "    fprintf (stderr, \"%%s: failed to parse float '%%s' from token %%s\\n\", __func__, tok, \"%s\");\n" name;
-		 pr "    return -1;\n";
-		 pr "  }\n";
-	     | FBuffer | FInt32 | FUInt32 | FUInt64 | FChar ->
-		 assert false (* can never be an LVM column *)
-	    );
-	    pr "  tok = next;\n";
-	) cols;
+        pr "static int lvm_tokenize_%s (char *str, guestfs_int_lvm_%s *r)\n" typ typ;
+        pr "{\n";
+        pr "  char *tok, *p, *next;\n";
+        pr "  int i, j;\n";
+        pr "\n";
+        (*
+          pr "  fprintf (stderr, \"%%s: <<%%s>>\\n\", __func__, str);\n";
+          pr "\n";
+        *)
+        pr "  if (!str) {\n";
+        pr "    fprintf (stderr, \"%%s: failed: passed a NULL string\\n\", __func__);\n";
+        pr "    return -1;\n";
+        pr "  }\n";
+        pr "  if (!*str || c_isspace (*str)) {\n";
+        pr "    fprintf (stderr, \"%%s: failed: passed a empty string or one beginning with whitespace\\n\", __func__);\n";
+        pr "    return -1;\n";
+        pr "  }\n";
+        pr "  tok = str;\n";
+        List.iter (
+          fun (name, coltype) ->
+            pr "  if (!tok) {\n";
+            pr "    fprintf (stderr, \"%%s: failed: string finished early, around token %%s\\n\", __func__, \"%s\");\n" name;
+            pr "    return -1;\n";
+            pr "  }\n";
+            pr "  p = strchrnul (tok, ',');\n";
+            pr "  if (*p) next = p+1; else next = NULL;\n";
+            pr "  *p = '\\0';\n";
+            (match coltype with
+             | FString ->
+                 pr "  r->%s = strdup (tok);\n" name;
+                 pr "  if (r->%s == NULL) {\n" name;
+                 pr "    perror (\"strdup\");\n";
+                 pr "    return -1;\n";
+                 pr "  }\n"
+             | FUUID ->
+                 pr "  for (i = j = 0; i < 32; ++j) {\n";
+                 pr "    if (tok[j] == '\\0') {\n";
+                 pr "      fprintf (stderr, \"%%s: failed to parse UUID from '%%s'\\n\", __func__, tok);\n";
+                 pr "      return -1;\n";
+                 pr "    } else if (tok[j] != '-')\n";
+                 pr "      r->%s[i++] = tok[j];\n" name;
+                 pr "  }\n";
+             | FBytes ->
+                 pr "  if (sscanf (tok, \"%%\"SCNu64, &r->%s) != 1) {\n" name;
+                 pr "    fprintf (stderr, \"%%s: failed to parse size '%%s' from token %%s\\n\", __func__, tok, \"%s\");\n" name;
+                 pr "    return -1;\n";
+                 pr "  }\n";
+             | FInt64 ->
+                 pr "  if (sscanf (tok, \"%%\"SCNi64, &r->%s) != 1) {\n" name;
+                 pr "    fprintf (stderr, \"%%s: failed to parse int '%%s' from token %%s\\n\", __func__, tok, \"%s\");\n" name;
+                 pr "    return -1;\n";
+                 pr "  }\n";
+             | FOptPercent ->
+                 pr "  if (tok[0] == '\\0')\n";
+                 pr "    r->%s = -1;\n" name;
+                 pr "  else if (sscanf (tok, \"%%f\", &r->%s) != 1) {\n" name;
+                 pr "    fprintf (stderr, \"%%s: failed to parse float '%%s' from token %%s\\n\", __func__, tok, \"%s\");\n" name;
+                 pr "    return -1;\n";
+                 pr "  }\n";
+             | FBuffer | FInt32 | FUInt32 | FUInt64 | FChar ->
+                 assert false (* can never be an LVM column *)
+            );
+            pr "  tok = next;\n";
+        ) cols;
 
-	pr "  if (tok != NULL) {\n";
-	pr "    fprintf (stderr, \"%%s: failed: extra tokens at end of string\\n\", __func__);\n";
-	pr "    return -1;\n";
-	pr "  }\n";
-	pr "  return 0;\n";
-	pr "}\n";
-	pr "\n";
+        pr "  if (tok != NULL) {\n";
+        pr "    fprintf (stderr, \"%%s: failed: extra tokens at end of string\\n\", __func__);\n";
+        pr "    return -1;\n";
+        pr "  }\n";
+        pr "  return 0;\n";
+        pr "}\n";
+        pr "\n";
 
-	pr "guestfs_int_lvm_%s_list *\n" typ;
-	pr "parse_command_line_%ss (void)\n" typ;
-	pr "{\n";
-	pr "  char *out, *err;\n";
-	pr "  char *p, *pend;\n";
-	pr "  int r, i;\n";
-	pr "  guestfs_int_lvm_%s_list *ret;\n" typ;
-	pr "  void *newp;\n";
-	pr "\n";
-	pr "  ret = malloc (sizeof *ret);\n";
-	pr "  if (!ret) {\n";
-	pr "    reply_with_perror (\"malloc\");\n";
-	pr "    return NULL;\n";
-	pr "  }\n";
-	pr "\n";
-	pr "  ret->guestfs_int_lvm_%s_list_len = 0;\n" typ;
-	pr "  ret->guestfs_int_lvm_%s_list_val = NULL;\n" typ;
-	pr "\n";
-	pr "  r = command (&out, &err,\n";
-	pr "	       \"/sbin/lvm\", \"%ss\",\n" typ;
-	pr "	       \"-o\", lvm_%s_cols, \"--unbuffered\", \"--noheadings\",\n" typ;
-	pr "	       \"--nosuffix\", \"--separator\", \",\", \"--units\", \"b\", NULL);\n";
-	pr "  if (r == -1) {\n";
-	pr "    reply_with_error (\"%%s\", err);\n";
-	pr "    free (out);\n";
-	pr "    free (err);\n";
-	pr "    free (ret);\n";
-	pr "    return NULL;\n";
-	pr "  }\n";
-	pr "\n";
-	pr "  free (err);\n";
-	pr "\n";
-	pr "  /* Tokenize each line of the output. */\n";
-	pr "  p = out;\n";
-	pr "  i = 0;\n";
-	pr "  while (p) {\n";
-	pr "    pend = strchr (p, '\\n');	/* Get the next line of output. */\n";
-	pr "    if (pend) {\n";
-	pr "      *pend = '\\0';\n";
-	pr "      pend++;\n";
-	pr "    }\n";
-	pr "\n";
-	pr "    while (*p && isspace (*p))	/* Skip any leading whitespace. */\n";
-	pr "      p++;\n";
-	pr "\n";
-	pr "    if (!*p) {			/* Empty line?  Skip it. */\n";
-	pr "      p = pend;\n";
-	pr "      continue;\n";
-	pr "    }\n";
-	pr "\n";
-	pr "    /* Allocate some space to store this next entry. */\n";
-	pr "    newp = realloc (ret->guestfs_int_lvm_%s_list_val,\n" typ;
-	pr "		    sizeof (guestfs_int_lvm_%s) * (i+1));\n" typ;
-	pr "    if (newp == NULL) {\n";
-	pr "      reply_with_perror (\"realloc\");\n";
-	pr "      free (ret->guestfs_int_lvm_%s_list_val);\n" typ;
-	pr "      free (ret);\n";
-	pr "      free (out);\n";
-	pr "      return NULL;\n";
-	pr "    }\n";
-	pr "    ret->guestfs_int_lvm_%s_list_val = newp;\n" typ;
-	pr "\n";
-	pr "    /* Tokenize the next entry. */\n";
-	pr "    r = lvm_tokenize_%s (p, &ret->guestfs_int_lvm_%s_list_val[i]);\n" typ typ;
-	pr "    if (r == -1) {\n";
-	pr "      reply_with_error (\"failed to parse output of '%ss' command\");\n" typ;
+        pr "guestfs_int_lvm_%s_list *\n" typ;
+        pr "parse_command_line_%ss (void)\n" typ;
+        pr "{\n";
+        pr "  char *out, *err;\n";
+        pr "  char *p, *pend;\n";
+        pr "  int r, i;\n";
+        pr "  guestfs_int_lvm_%s_list *ret;\n" typ;
+        pr "  void *newp;\n";
+        pr "\n";
+        pr "  ret = malloc (sizeof *ret);\n";
+        pr "  if (!ret) {\n";
+        pr "    reply_with_perror (\"malloc\");\n";
+        pr "    return NULL;\n";
+        pr "  }\n";
+        pr "\n";
+        pr "  ret->guestfs_int_lvm_%s_list_len = 0;\n" typ;
+        pr "  ret->guestfs_int_lvm_%s_list_val = NULL;\n" typ;
+        pr "\n";
+        pr "  r = command (&out, &err,\n";
+        pr "	       \"/sbin/lvm\", \"%ss\",\n" typ;
+        pr "	       \"-o\", lvm_%s_cols, \"--unbuffered\", \"--noheadings\",\n" typ;
+        pr "	       \"--nosuffix\", \"--separator\", \",\", \"--units\", \"b\", NULL);\n";
+        pr "  if (r == -1) {\n";
+        pr "    reply_with_error (\"%%s\", err);\n";
+        pr "    free (out);\n";
+        pr "    free (err);\n";
+        pr "    free (ret);\n";
+        pr "    return NULL;\n";
+        pr "  }\n";
+        pr "\n";
+        pr "  free (err);\n";
+        pr "\n";
+        pr "  /* Tokenize each line of the output. */\n";
+        pr "  p = out;\n";
+        pr "  i = 0;\n";
+        pr "  while (p) {\n";
+        pr "    pend = strchr (p, '\\n');	/* Get the next line of output. */\n";
+        pr "    if (pend) {\n";
+        pr "      *pend = '\\0';\n";
+        pr "      pend++;\n";
+        pr "    }\n";
+        pr "\n";
+        pr "    while (*p && c_isspace (*p))	/* Skip any leading whitespace. */\n";
+        pr "      p++;\n";
+        pr "\n";
+        pr "    if (!*p) {			/* Empty line?  Skip it. */\n";
+        pr "      p = pend;\n";
+        pr "      continue;\n";
+        pr "    }\n";
+        pr "\n";
+        pr "    /* Allocate some space to store this next entry. */\n";
+        pr "    newp = realloc (ret->guestfs_int_lvm_%s_list_val,\n" typ;
+        pr "		    sizeof (guestfs_int_lvm_%s) * (i+1));\n" typ;
+        pr "    if (newp == NULL) {\n";
+        pr "      reply_with_perror (\"realloc\");\n";
         pr "      free (ret->guestfs_int_lvm_%s_list_val);\n" typ;
         pr "      free (ret);\n";
-	pr "      free (out);\n";
-	pr "      return NULL;\n";
-	pr "    }\n";
-	pr "\n";
-	pr "    ++i;\n";
-	pr "    p = pend;\n";
-	pr "  }\n";
-	pr "\n";
-	pr "  ret->guestfs_int_lvm_%s_list_len = i;\n" typ;
-	pr "\n";
-	pr "  free (out);\n";
-	pr "  return ret;\n";
-	pr "}\n"
+        pr "      free (out);\n";
+        pr "      return NULL;\n";
+        pr "    }\n";
+        pr "    ret->guestfs_int_lvm_%s_list_val = newp;\n" typ;
+        pr "\n";
+        pr "    /* Tokenize the next entry. */\n";
+        pr "    r = lvm_tokenize_%s (p, &ret->guestfs_int_lvm_%s_list_val[i]);\n" typ typ;
+        pr "    if (r == -1) {\n";
+        pr "      reply_with_error (\"failed to parse output of '%ss' command\");\n" typ;
+        pr "      free (ret->guestfs_int_lvm_%s_list_val);\n" typ;
+        pr "      free (ret);\n";
+        pr "      free (out);\n";
+        pr "      return NULL;\n";
+        pr "    }\n";
+        pr "\n";
+        pr "    ++i;\n";
+        pr "    p = pend;\n";
+        pr "  }\n";
+        pr "\n";
+        pr "  ret->guestfs_int_lvm_%s_list_len = i;\n" typ;
+        pr "\n";
+        pr "  free (out);\n";
+        pr "  return ret;\n";
+        pr "}\n"
 
   ) ["pv", lvm_pv_cols; "vg", lvm_vg_cols; "lv", lvm_lv_cols]
 
@@ -4458,6 +5987,34 @@ and generate_daemon_names () =
   ) daemon_functions;
   pr "};\n";
 
+(* Generate the optional groups for the daemon to implement
+ * guestfs_available.
+ *)
+and generate_daemon_optgroups_c () =
+  generate_header CStyle GPLv2;
+
+  pr "#include <config.h>\n";
+  pr "\n";
+  pr "#include \"daemon.h\"\n";
+  pr "#include \"optgroups.h\"\n";
+  pr "\n";
+
+  pr "struct optgroup optgroups[] = {\n";
+  List.iter (
+    fun (group, _) ->
+      pr "  { \"%s\", optgroup_%s_available },\n" group group
+  ) optgroups;
+  pr "  { NULL, NULL }\n";
+  pr "};\n"
+
+and generate_daemon_optgroups_h () =
+  generate_header CStyle GPLv2;
+
+  List.iter (
+    fun (group, _) ->
+      pr "extern int optgroup_%s_available (void);\n" group
+  ) optgroups
+
 (* Generate the tests. *)
 and generate_tests () =
   generate_header CStyle GPLv2;
@@ -4471,6 +6028,7 @@ and generate_tests () =
 #include <fcntl.h>
 
 #include \"guestfs.h\"
+#include \"guestfs-internal.h\"
 
 static guestfs_h *g;
 static int suppress_error = 0;
@@ -4481,7 +6039,8 @@ static void print_error (guestfs_h *g, void *data, const char *msg)
     fprintf (stderr, \"%%s\\n\", msg);
 }
 
-static void print_strings (char * const * const argv)
+/* FIXME: nearly identical code appears in fish.c */
+static void print_strings (char *const *argv)
 {
   int argc;
 
@@ -4490,7 +6049,7 @@ static void print_strings (char * const * const argv)
 }
 
 /*
-static void print_table (char * const * const argv)
+static void print_table (char const *const *argv)
 {
   int i;
 
@@ -4499,15 +6058,29 @@ static void print_table (char * const * const argv)
 }
 */
 
-static void no_test_warnings (void)
-{
 ";
 
+  (* Generate a list of commands which are not tested anywhere. *)
+  pr "static void no_test_warnings (void)\n";
+  pr "{\n";
+
+  let hash : (string, bool) Hashtbl.t = Hashtbl.create 13 in
   List.iter (
-    function
-    | name, _, _, _, [], _, _ ->
-	pr "  fprintf (stderr, \"warning: \\\"guestfs_%s\\\" has no tests\\n\");\n" name
-    | name, _, _, _, tests, _, _ -> ()
+    fun (_, _, _, _, tests, _, _) ->
+      let tests = filter_map (
+        function
+        | (_, (Always|If _|Unless _), test) -> Some test
+        | (_, Disabled, _) -> None
+      ) tests in
+      let seq = List.concat (List.map seq_of_test tests) in
+      let cmds_tested = List.map List.hd seq in
+      List.iter (fun cmd -> Hashtbl.replace hash cmd true) cmds_tested
+  ) all_functions;
+
+  List.iter (
+    fun (name, _, _, _, _, _, _) ->
+      if not (Hashtbl.mem hash name) then
+        pr "  fprintf (stderr, \"warning: \\\"guestfs_%s\\\" has no tests\\n\");\n" name
   ) all_functions;
 
   pr "}\n";
@@ -4520,8 +6093,8 @@ static void no_test_warnings (void)
    *)
   let test_names =
     List.map (
-      fun (name, _, _, _, tests, _, _) ->
-	mapi (generate_one_test name) tests
+      fun (name, _, _, flags, tests, _, _) ->
+        mapi (generate_one_test name flags) tests
     ) (List.rev all_functions) in
   let test_names = List.concat test_names in
   let nr_tests = List.length test_names in
@@ -4530,7 +6103,7 @@ static void no_test_warnings (void)
 int main (int argc, char *argv[])
 {
   char c = 0;
-  int failed = 0;
+  unsigned long int n_failed = 0;
   const char *filename;
   int fd;
   int nr_tests, test_num = 0;
@@ -4542,7 +6115,7 @@ int main (int argc, char *argv[])
   g = guestfs_create ();
   if (g == NULL) {
     printf (\"guestfs_create FAILED\\n\");
-    exit (1);
+    exit (EXIT_FAILURE);
   }
 
   guestfs_set_error_handler (g, print_error, NULL);
@@ -4553,103 +6126,98 @@ int main (int argc, char *argv[])
   fd = open (filename, O_WRONLY|O_CREAT|O_NOCTTY|O_NONBLOCK|O_TRUNC, 0666);
   if (fd == -1) {
     perror (filename);
-    exit (1);
+    exit (EXIT_FAILURE);
   }
   if (lseek (fd, %d, SEEK_SET) == -1) {
     perror (\"lseek\");
     close (fd);
     unlink (filename);
-    exit (1);
+    exit (EXIT_FAILURE);
   }
   if (write (fd, &c, 1) == -1) {
     perror (\"write\");
     close (fd);
     unlink (filename);
-    exit (1);
+    exit (EXIT_FAILURE);
   }
   if (close (fd) == -1) {
     perror (filename);
     unlink (filename);
-    exit (1);
+    exit (EXIT_FAILURE);
   }
   if (guestfs_add_drive (g, filename) == -1) {
     printf (\"guestfs_add_drive %%s FAILED\\n\", filename);
-    exit (1);
+    exit (EXIT_FAILURE);
   }
 
   filename = \"test2.img\";
   fd = open (filename, O_WRONLY|O_CREAT|O_NOCTTY|O_NONBLOCK|O_TRUNC, 0666);
   if (fd == -1) {
     perror (filename);
-    exit (1);
+    exit (EXIT_FAILURE);
   }
   if (lseek (fd, %d, SEEK_SET) == -1) {
     perror (\"lseek\");
     close (fd);
     unlink (filename);
-    exit (1);
+    exit (EXIT_FAILURE);
   }
   if (write (fd, &c, 1) == -1) {
     perror (\"write\");
     close (fd);
     unlink (filename);
-    exit (1);
+    exit (EXIT_FAILURE);
   }
   if (close (fd) == -1) {
     perror (filename);
     unlink (filename);
-    exit (1);
+    exit (EXIT_FAILURE);
   }
   if (guestfs_add_drive (g, filename) == -1) {
     printf (\"guestfs_add_drive %%s FAILED\\n\", filename);
-    exit (1);
+    exit (EXIT_FAILURE);
   }
 
   filename = \"test3.img\";
   fd = open (filename, O_WRONLY|O_CREAT|O_NOCTTY|O_NONBLOCK|O_TRUNC, 0666);
   if (fd == -1) {
     perror (filename);
-    exit (1);
+    exit (EXIT_FAILURE);
   }
   if (lseek (fd, %d, SEEK_SET) == -1) {
     perror (\"lseek\");
     close (fd);
     unlink (filename);
-    exit (1);
+    exit (EXIT_FAILURE);
   }
   if (write (fd, &c, 1) == -1) {
     perror (\"write\");
     close (fd);
     unlink (filename);
-    exit (1);
+    exit (EXIT_FAILURE);
   }
   if (close (fd) == -1) {
     perror (filename);
     unlink (filename);
-    exit (1);
+    exit (EXIT_FAILURE);
   }
   if (guestfs_add_drive (g, filename) == -1) {
     printf (\"guestfs_add_drive %%s FAILED\\n\", filename);
-    exit (1);
+    exit (EXIT_FAILURE);
   }
 
-  if (guestfs_add_drive_ro (g, \"../images/test.sqsh\") == -1) {
-    printf (\"guestfs_add_drive_ro ../images/test.sqsh FAILED\\n\");
-    exit (1);
+  if (guestfs_add_drive_ro (g, \"../images/test.iso\") == -1) {
+    printf (\"guestfs_add_drive_ro ../images/test.iso FAILED\\n\");
+    exit (EXIT_FAILURE);
   }
 
   if (guestfs_launch (g) == -1) {
     printf (\"guestfs_launch FAILED\\n\");
-    exit (1);
+    exit (EXIT_FAILURE);
   }
 
   /* Set a timeout in case qemu hangs during launch (RHBZ#505329). */
   alarm (600);
-
-  if (guestfs_wait_ready (g) == -1) {
-    printf (\"guestfs_wait_ready FAILED\\n\");
-    exit (1);
-  }
 
   /* Cancel previous alarm. */
   alarm (0);
@@ -4664,7 +6232,7 @@ int main (int argc, char *argv[])
       pr "  printf (\"%%3d/%%3d %s\\n\", test_num, nr_tests);\n" test_name;
       pr "  if (%s () == -1) {\n" test_name;
       pr "    printf (\"%s FAILED\\n\");\n" test_name;
-      pr "    failed++;\n";
+      pr "    n_failed++;\n";
       pr "  }\n";
   ) test_names;
   pr "\n";
@@ -4675,16 +6243,16 @@ int main (int argc, char *argv[])
   pr "  unlink (\"test3.img\");\n";
   pr "\n";
 
-  pr "  if (failed > 0) {\n";
-  pr "    printf (\"***** %%d / %%d tests FAILED *****\\n\", failed, nr_tests);\n";
-  pr "    exit (1);\n";
+  pr "  if (n_failed > 0) {\n";
+  pr "    printf (\"***** %%lu / %%d tests FAILED *****\\n\", n_failed, nr_tests);\n";
+  pr "    exit (EXIT_FAILURE);\n";
   pr "  }\n";
   pr "\n";
 
-  pr "  exit (0);\n";
+  pr "  exit (EXIT_SUCCESS);\n";
   pr "}\n"
 
-and generate_one_test name i (init, prereq, test) =
+and generate_one_test name flags i (init, prereq, test) =
   let test_name = sprintf "test_%s_%d" name i in
 
   pr "\
@@ -4696,9 +6264,9 @@ static int %s_skip (void)
   if (str)
     return strstr (str, \"%s\") == NULL;
   str = getenv (\"SKIP_%s\");
-  if (str && strcmp (str, \"1\") == 0) return 1;
+  if (str && STREQ (str, \"1\")) return 1;
   str = getenv (\"SKIP_TEST_%s\");
-  if (str && strcmp (str, \"1\") == 0) return 1;
+  if (str && STREQ (str, \"1\")) return 1;
   return 0;
 }
 
@@ -4723,6 +6291,26 @@ static int %s (void)
   }
 
 " test_name test_name test_name;
+
+  (* Optional functions should only be tested if the relevant
+   * support is available in the daemon.
+   *)
+  List.iter (
+    function
+    | Optional group ->
+        pr "  {\n";
+        pr "    const char *groups[] = { \"%s\", NULL };\n" group;
+        pr "    int r;\n";
+        pr "    suppress_error = 1;\n";
+        pr "    r = guestfs_available (g, (char **) groups);\n";
+        pr "    suppress_error = 0;\n";
+        pr "    if (r == -1) {\n";
+        pr "      printf (\"        %%s skipped (reason: group %%s not available in daemon)\\n\", \"%s\", groups[0]);\n" test_name;
+        pr "      return 0;\n";
+        pr "    }\n";
+        pr "  }\n";
+    | _ -> ()
+  ) flags;
 
   (match prereq with
    | Disabled ->
@@ -4753,47 +6341,61 @@ static int %s (void)
 and generate_one_test_body name i test_name init test =
   (match init with
    | InitNone (* XXX at some point, InitNone and InitEmpty became
-	       * folded together as the same thing.  Really we should
-	       * make InitNone do nothing at all, but the tests may
-	       * need to be checked to make sure this is OK.
-	       *)
+               * folded together as the same thing.  Really we should
+               * make InitNone do nothing at all, but the tests may
+               * need to be checked to make sure this is OK.
+               *)
    | InitEmpty ->
        pr "  /* InitNone|InitEmpty for %s */\n" test_name;
        List.iter (generate_test_command_call test_name)
-	 [["blockdev_setrw"; "/dev/sda"];
-	  ["umount_all"];
-	  ["lvm_remove_all"]]
+         [["blockdev_setrw"; "/dev/sda"];
+          ["umount_all"];
+          ["lvm_remove_all"]]
+   | InitPartition ->
+       pr "  /* InitPartition for %s: create /dev/sda1 */\n" test_name;
+       List.iter (generate_test_command_call test_name)
+         [["blockdev_setrw"; "/dev/sda"];
+          ["umount_all"];
+          ["lvm_remove_all"];
+          ["part_disk"; "/dev/sda"; "mbr"]]
    | InitBasicFS ->
        pr "  /* InitBasicFS for %s: create ext2 on /dev/sda1 */\n" test_name;
        List.iter (generate_test_command_call test_name)
-	 [["blockdev_setrw"; "/dev/sda"];
-	  ["umount_all"];
-	  ["lvm_remove_all"];
-	  ["sfdiskM"; "/dev/sda"; ","];
-	  ["mkfs"; "ext2"; "/dev/sda1"];
-	  ["mount"; "/dev/sda1"; "/"]]
+         [["blockdev_setrw"; "/dev/sda"];
+          ["umount_all"];
+          ["lvm_remove_all"];
+          ["part_disk"; "/dev/sda"; "mbr"];
+          ["mkfs"; "ext2"; "/dev/sda1"];
+          ["mount"; "/dev/sda1"; "/"]]
    | InitBasicFSonLVM ->
        pr "  /* InitBasicFSonLVM for %s: create ext2 on /dev/VG/LV */\n"
-	 test_name;
+         test_name;
        List.iter (generate_test_command_call test_name)
-	 [["blockdev_setrw"; "/dev/sda"];
-	  ["umount_all"];
-	  ["lvm_remove_all"];
-	  ["sfdiskM"; "/dev/sda"; ","];
-	  ["pvcreate"; "/dev/sda1"];
-	  ["vgcreate"; "VG"; "/dev/sda1"];
-	  ["lvcreate"; "LV"; "VG"; "8"];
-	  ["mkfs"; "ext2"; "/dev/VG/LV"];
-	  ["mount"; "/dev/VG/LV"; "/"]]
+         [["blockdev_setrw"; "/dev/sda"];
+          ["umount_all"];
+          ["lvm_remove_all"];
+          ["part_disk"; "/dev/sda"; "mbr"];
+          ["pvcreate"; "/dev/sda1"];
+          ["vgcreate"; "VG"; "/dev/sda1"];
+          ["lvcreate"; "LV"; "VG"; "8"];
+          ["mkfs"; "ext2"; "/dev/VG/LV"];
+          ["mount"; "/dev/VG/LV"; "/"]]
+   | InitISOFS ->
+       pr "  /* InitISOFS for %s */\n" test_name;
+       List.iter (generate_test_command_call test_name)
+         [["blockdev_setrw"; "/dev/sda"];
+          ["umount_all"];
+          ["lvm_remove_all"];
+          ["mount_ro"; "/dev/sdd"; "/"]]
   );
 
   let get_seq_last = function
     | [] ->
-	failwithf "%s: you cannot use [] (empty list) when expecting a command"
-	  test_name
+        failwithf "%s: you cannot use [] (empty list) when expecting a command"
+          test_name
     | seq ->
-	let seq = List.rev seq in
-	List.rev (List.tl seq), List.hd seq
+        let seq = List.rev seq in
+        List.rev (List.tl seq), List.hd seq
   in
 
   match test with
@@ -4805,10 +6407,10 @@ and generate_one_test_body name i test_name init test =
       pr "  const char *expected = \"%s\";\n" (c_quote expected);
       let seq, last = get_seq_last seq in
       let test () =
-	pr "    if (strcmp (r, expected) != 0) {\n";
-	pr "      fprintf (stderr, \"%s: expected \\\"%%s\\\" but got \\\"%%s\\\"\\n\", expected, r);\n" test_name;
-	pr "      return -1;\n";
-	pr "    }\n"
+        pr "    if (STRNEQ (r, expected)) {\n";
+        pr "      fprintf (stderr, \"%s: expected \\\"%%s\\\" but got \\\"%%s\\\"\\n\", expected, r);\n" test_name;
+        pr "      return -1;\n";
+        pr "    }\n"
       in
       List.iter (generate_test_command_call test_name) seq;
       generate_test_command_call ~test test_name last
@@ -4816,27 +6418,27 @@ and generate_one_test_body name i test_name init test =
       pr "  /* TestOutputList for %s (%d) */\n" name i;
       let seq, last = get_seq_last seq in
       let test () =
-	iteri (
-	  fun i str ->
-	    pr "    if (!r[%d]) {\n" i;
-	    pr "      fprintf (stderr, \"%s: short list returned from command\\n\");\n" test_name;
-	    pr "      print_strings (r);\n";
-	    pr "      return -1;\n";
-	    pr "    }\n";
+        iteri (
+          fun i str ->
+            pr "    if (!r[%d]) {\n" i;
+            pr "      fprintf (stderr, \"%s: short list returned from command\\n\");\n" test_name;
+            pr "      print_strings (r);\n";
+            pr "      return -1;\n";
+            pr "    }\n";
             pr "    {\n";
             pr "      const char *expected = \"%s\";\n" (c_quote str);
-	    pr "      if (strcmp (r[%d], expected) != 0) {\n" i;
-	    pr "        fprintf (stderr, \"%s: expected \\\"%%s\\\" but got \\\"%%s\\\"\\n\", expected, r[%d]);\n" test_name i;
-	    pr "        return -1;\n";
-	    pr "      }\n";
-	    pr "    }\n"
-	) expected;
-	pr "    if (r[%d] != NULL) {\n" (List.length expected);
-	pr "      fprintf (stderr, \"%s: extra elements returned from command\\n\");\n"
-	  test_name;
-	pr "      print_strings (r);\n";
-	pr "      return -1;\n";
-	pr "    }\n"
+            pr "      if (STRNEQ (r[%d], expected)) {\n" i;
+            pr "        fprintf (stderr, \"%s: expected \\\"%%s\\\" but got \\\"%%s\\\"\\n\", expected, r[%d]);\n" test_name i;
+            pr "        return -1;\n";
+            pr "      }\n";
+            pr "    }\n"
+        ) expected;
+        pr "    if (r[%d] != NULL) {\n" (List.length expected);
+        pr "      fprintf (stderr, \"%s: extra elements returned from command\\n\");\n"
+          test_name;
+        pr "      print_strings (r);\n";
+        pr "      return -1;\n";
+        pr "    }\n"
       in
       List.iter (generate_test_command_call test_name) seq;
       generate_test_command_call ~test test_name last
@@ -4844,28 +6446,28 @@ and generate_one_test_body name i test_name init test =
       pr "  /* TestOutputListOfDevices for %s (%d) */\n" name i;
       let seq, last = get_seq_last seq in
       let test () =
-	iteri (
-	  fun i str ->
-	    pr "    if (!r[%d]) {\n" i;
-	    pr "      fprintf (stderr, \"%s: short list returned from command\\n\");\n" test_name;
-	    pr "      print_strings (r);\n";
-	    pr "      return -1;\n";
-	    pr "    }\n";
+        iteri (
+          fun i str ->
+            pr "    if (!r[%d]) {\n" i;
+            pr "      fprintf (stderr, \"%s: short list returned from command\\n\");\n" test_name;
+            pr "      print_strings (r);\n";
+            pr "      return -1;\n";
+            pr "    }\n";
             pr "    {\n";
             pr "      const char *expected = \"%s\";\n" (c_quote str);
-	    pr "      r[%d][5] = 's';\n" i;
-	    pr "      if (strcmp (r[%d], expected) != 0) {\n" i;
-	    pr "        fprintf (stderr, \"%s: expected \\\"%%s\\\" but got \\\"%%s\\\"\\n\", expected, r[%d]);\n" test_name i;
-	    pr "        return -1;\n";
-	    pr "      }\n";
-	    pr "    }\n"
-	) expected;
-	pr "    if (r[%d] != NULL) {\n" (List.length expected);
-	pr "      fprintf (stderr, \"%s: extra elements returned from command\\n\");\n"
-	  test_name;
-	pr "      print_strings (r);\n";
-	pr "      return -1;\n";
-	pr "    }\n"
+            pr "      r[%d][5] = 's';\n" i;
+            pr "      if (STRNEQ (r[%d], expected)) {\n" i;
+            pr "        fprintf (stderr, \"%s: expected \\\"%%s\\\" but got \\\"%%s\\\"\\n\", expected, r[%d]);\n" test_name i;
+            pr "        return -1;\n";
+            pr "      }\n";
+            pr "    }\n"
+        ) expected;
+        pr "    if (r[%d] != NULL) {\n" (List.length expected);
+        pr "      fprintf (stderr, \"%s: extra elements returned from command\\n\");\n"
+          test_name;
+        pr "      print_strings (r);\n";
+        pr "      return -1;\n";
+        pr "    }\n"
       in
       List.iter (generate_test_command_call test_name) seq;
       generate_test_command_call ~test test_name last
@@ -4873,12 +6475,12 @@ and generate_one_test_body name i test_name init test =
       pr "  /* TestOutputInt for %s (%d) */\n" name i;
       let seq, last = get_seq_last seq in
       let test () =
-	pr "    if (r != %d) {\n" expected;
-	pr "      fprintf (stderr, \"%s: expected %d but got %%d\\n\","
-	  test_name expected;
-	pr "               (int) r);\n";
-	pr "      return -1;\n";
-	pr "    }\n"
+        pr "    if (r != %d) {\n" expected;
+        pr "      fprintf (stderr, \"%s: expected %d but got %%d\\n\","
+          test_name expected;
+        pr "               (int) r);\n";
+        pr "      return -1;\n";
+        pr "    }\n"
       in
       List.iter (generate_test_command_call test_name) seq;
       generate_test_command_call ~test test_name last
@@ -4886,12 +6488,12 @@ and generate_one_test_body name i test_name init test =
       pr "  /* TestOutputIntOp for %s (%d) */\n" name i;
       let seq, last = get_seq_last seq in
       let test () =
-	pr "    if (! (r %s %d)) {\n" op expected;
-	pr "      fprintf (stderr, \"%s: expected %s %d but got %%d\\n\","
-	  test_name op expected;
-	pr "               (int) r);\n";
-	pr "      return -1;\n";
-	pr "    }\n"
+        pr "    if (! (r %s %d)) {\n" op expected;
+        pr "      fprintf (stderr, \"%s: expected %s %d but got %%d\\n\","
+          test_name op expected;
+        pr "               (int) r);\n";
+        pr "      return -1;\n";
+        pr "    }\n"
       in
       List.iter (generate_test_command_call test_name) seq;
       generate_test_command_call ~test test_name last
@@ -4899,11 +6501,11 @@ and generate_one_test_body name i test_name init test =
       pr "  /* TestOutputTrue for %s (%d) */\n" name i;
       let seq, last = get_seq_last seq in
       let test () =
-	pr "    if (!r) {\n";
-	pr "      fprintf (stderr, \"%s: expected true, got false\\n\");\n"
-	  test_name;
-	pr "      return -1;\n";
-	pr "    }\n"
+        pr "    if (!r) {\n";
+        pr "      fprintf (stderr, \"%s: expected true, got false\\n\");\n"
+          test_name;
+        pr "      return -1;\n";
+        pr "    }\n"
       in
       List.iter (generate_test_command_call test_name) seq;
       generate_test_command_call ~test test_name last
@@ -4911,11 +6513,11 @@ and generate_one_test_body name i test_name init test =
       pr "  /* TestOutputFalse for %s (%d) */\n" name i;
       let seq, last = get_seq_last seq in
       let test () =
-	pr "    if (r) {\n";
-	pr "      fprintf (stderr, \"%s: expected false, got true\\n\");\n"
-	  test_name;
-	pr "      return -1;\n";
-	pr "    }\n"
+        pr "    if (r) {\n";
+        pr "      fprintf (stderr, \"%s: expected false, got true\\n\");\n"
+          test_name;
+        pr "      return -1;\n";
+        pr "    }\n"
       in
       List.iter (generate_test_command_call test_name) seq;
       generate_test_command_call ~test test_name last
@@ -4923,20 +6525,37 @@ and generate_one_test_body name i test_name init test =
       pr "  /* TestOutputLength for %s (%d) */\n" name i;
       let seq, last = get_seq_last seq in
       let test () =
-	pr "    int j;\n";
-	pr "    for (j = 0; j < %d; ++j)\n" expected;
-	pr "      if (r[j] == NULL) {\n";
-	pr "        fprintf (stderr, \"%s: short list returned\\n\");\n"
-	  test_name;
-	pr "        print_strings (r);\n";
-	pr "        return -1;\n";
-	pr "      }\n";
-	pr "    if (r[j] != NULL) {\n";
-	pr "      fprintf (stderr, \"%s: long list returned\\n\");\n"
-	  test_name;
-	pr "      print_strings (r);\n";
-	pr "      return -1;\n";
-	pr "    }\n"
+        pr "    int j;\n";
+        pr "    for (j = 0; j < %d; ++j)\n" expected;
+        pr "      if (r[j] == NULL) {\n";
+        pr "        fprintf (stderr, \"%s: short list returned\\n\");\n"
+          test_name;
+        pr "        print_strings (r);\n";
+        pr "        return -1;\n";
+        pr "      }\n";
+        pr "    if (r[j] != NULL) {\n";
+        pr "      fprintf (stderr, \"%s: long list returned\\n\");\n"
+          test_name;
+        pr "      print_strings (r);\n";
+        pr "      return -1;\n";
+        pr "    }\n"
+      in
+      List.iter (generate_test_command_call test_name) seq;
+      generate_test_command_call ~test test_name last
+  | TestOutputBuffer (seq, expected) ->
+      pr "  /* TestOutputBuffer for %s (%d) */\n" name i;
+      pr "  const char *expected = \"%s\";\n" (c_quote expected);
+      let seq, last = get_seq_last seq in
+      let len = String.length expected in
+      let test () =
+        pr "    if (size != %d) {\n" len;
+        pr "      fprintf (stderr, \"%s: returned size of buffer wrong, expected %d but got %%zu\\n\", size);\n" test_name len;
+        pr "      return -1;\n";
+        pr "    }\n";
+        pr "    if (STRNEQLEN (r, expected, size)) {\n";
+        pr "      fprintf (stderr, \"%s: expected \\\"%%s\\\" but got \\\"%%s\\\"\\n\", expected, r);\n" test_name;
+        pr "      return -1;\n";
+        pr "    }\n"
       in
       List.iter (generate_test_command_call test_name) seq;
       generate_test_command_call ~test test_name last
@@ -4944,44 +6563,44 @@ and generate_one_test_body name i test_name init test =
       pr "  /* TestOutputStruct for %s (%d) */\n" name i;
       let seq, last = get_seq_last seq in
       let test () =
-	List.iter (
-	  function
-	  | CompareWithInt (field, expected) ->
-	      pr "    if (r->%s != %d) {\n" field expected;
-	      pr "      fprintf (stderr, \"%s: %s was %%d, expected %d\\n\",\n"
-		test_name field expected;
-	      pr "               (int) r->%s);\n" field;
-	      pr "      return -1;\n";
-	      pr "    }\n"
-	  | CompareWithIntOp (field, op, expected) ->
-	      pr "    if (!(r->%s %s %d)) {\n" field op expected;
-	      pr "      fprintf (stderr, \"%s: %s was %%d, expected %s %d\\n\",\n"
-		test_name field op expected;
-	      pr "               (int) r->%s);\n" field;
-	      pr "      return -1;\n";
-	      pr "    }\n"
-	  | CompareWithString (field, expected) ->
-	      pr "    if (strcmp (r->%s, \"%s\") != 0) {\n" field expected;
-	      pr "      fprintf (stderr, \"%s: %s was \"%%s\", expected \"%s\"\\n\",\n"
-		test_name field expected;
-	      pr "               r->%s);\n" field;
-	      pr "      return -1;\n";
-	      pr "    }\n"
-	  | CompareFieldsIntEq (field1, field2) ->
-	      pr "    if (r->%s != r->%s) {\n" field1 field2;
-	      pr "      fprintf (stderr, \"%s: %s (%%d) <> %s (%%d)\\n\",\n"
-		test_name field1 field2;
-	      pr "               (int) r->%s, (int) r->%s);\n" field1 field2;
-	      pr "      return -1;\n";
-	      pr "    }\n"
-	  | CompareFieldsStrEq (field1, field2) ->
-	      pr "    if (strcmp (r->%s, r->%s) != 0) {\n" field1 field2;
-	      pr "      fprintf (stderr, \"%s: %s (\"%%s\") <> %s (\"%%s\")\\n\",\n"
-		test_name field1 field2;
-	      pr "               r->%s, r->%s);\n" field1 field2;
-	      pr "      return -1;\n";
-	      pr "    }\n"
-	) checks
+        List.iter (
+          function
+          | CompareWithInt (field, expected) ->
+              pr "    if (r->%s != %d) {\n" field expected;
+              pr "      fprintf (stderr, \"%s: %s was %%d, expected %d\\n\",\n"
+                test_name field expected;
+              pr "               (int) r->%s);\n" field;
+              pr "      return -1;\n";
+              pr "    }\n"
+          | CompareWithIntOp (field, op, expected) ->
+              pr "    if (!(r->%s %s %d)) {\n" field op expected;
+              pr "      fprintf (stderr, \"%s: %s was %%d, expected %s %d\\n\",\n"
+                test_name field op expected;
+              pr "               (int) r->%s);\n" field;
+              pr "      return -1;\n";
+              pr "    }\n"
+          | CompareWithString (field, expected) ->
+              pr "    if (STRNEQ (r->%s, \"%s\")) {\n" field expected;
+              pr "      fprintf (stderr, \"%s: %s was \"%%s\", expected \"%s\"\\n\",\n"
+                test_name field expected;
+              pr "               r->%s);\n" field;
+              pr "      return -1;\n";
+              pr "    }\n"
+          | CompareFieldsIntEq (field1, field2) ->
+              pr "    if (r->%s != r->%s) {\n" field1 field2;
+              pr "      fprintf (stderr, \"%s: %s (%%d) <> %s (%%d)\\n\",\n"
+                test_name field1 field2;
+              pr "               (int) r->%s, (int) r->%s);\n" field1 field2;
+              pr "      return -1;\n";
+              pr "    }\n"
+          | CompareFieldsStrEq (field1, field2) ->
+              pr "    if (STRNEQ (r->%s, r->%s)) {\n" field1 field2;
+              pr "      fprintf (stderr, \"%s: %s (\"%%s\") <> %s (\"%%s\")\\n\",\n"
+                test_name field1 field2;
+              pr "               r->%s, r->%s);\n" field1 field2;
+              pr "      return -1;\n";
+              pr "    }\n"
+        ) checks
       in
       List.iter (generate_test_command_call test_name) seq;
       generate_test_command_call ~test test_name last
@@ -5000,86 +6619,111 @@ and generate_test_command_call ?(expect_error = false) ?test test_name cmd =
   | name :: args ->
       (* Look up the command to find out what args/ret it has. *)
       let style =
-	try
-	  let _, style, _, _, _, _, _ =
-	    List.find (fun (n, _, _, _, _, _, _) -> n = name) all_functions in
-	  style
-	with Not_found ->
-	  failwithf "%s: in test, command %s was not found" test_name name in
+        try
+          let _, style, _, _, _, _, _ =
+            List.find (fun (n, _, _, _, _, _, _) -> n = name) all_functions in
+          style
+        with Not_found ->
+          failwithf "%s: in test, command %s was not found" test_name name in
 
       if List.length (snd style) <> List.length args then
-	failwithf "%s: in test, wrong number of args given to %s"
-	  test_name name;
+        failwithf "%s: in test, wrong number of args given to %s"
+          test_name name;
 
       pr "  {\n";
 
       List.iter (
-	function
-	| OptString n, "NULL" -> ()
-	| String n, arg
-	| OptString n, arg ->
-	    pr "    const char *%s = \"%s\";\n" n (c_quote arg);
-	| Int _, _
-	| Bool _, _
-	| FileIn _, _ | FileOut _, _ -> ()
-	| StringList n, arg ->
-	    let strs = string_split " " arg in
-	    iteri (
-	      fun i str ->
+        function
+        | OptString n, "NULL" -> ()
+        | Pathname n, arg
+        | Device n, arg
+        | Dev_or_Path n, arg
+        | String n, arg
+        | OptString n, arg ->
+            pr "    const char *%s = \"%s\";\n" n (c_quote arg);
+        | Int _, _
+        | Int64 _, _
+        | Bool _, _
+        | FileIn _, _ | FileOut _, _ -> ()
+        | StringList n, "" | DeviceList n, "" ->
+	    pr "    const char *const %s[1] = { NULL };\n" n
+        | StringList n, arg | DeviceList n, arg ->
+            let strs = string_split " " arg in
+            iteri (
+              fun i str ->
                 pr "    const char *%s_%d = \"%s\";\n" n i (c_quote str);
-	    ) strs;
-	    pr "    const char *%s[] = {\n" n;
-	    iteri (
-	      fun i _ -> pr "      %s_%d,\n" n i
-	    ) strs;
-	    pr "      NULL\n";
-	    pr "    };\n";
+            ) strs;
+            pr "    const char *const %s[] = {\n" n;
+            iteri (
+              fun i _ -> pr "      %s_%d,\n" n i
+            ) strs;
+            pr "      NULL\n";
+            pr "    };\n";
       ) (List.combine (snd style) args);
 
       let error_code =
-	match fst style with
-	| RErr | RInt _ | RBool _ -> pr "    int r;\n"; "-1"
-	| RInt64 _ -> pr "    int64_t r;\n"; "-1"
-	| RConstString _ -> pr "    const char *r;\n"; "NULL"
-	| RString _ -> pr "    char *r;\n"; "NULL"
-	| RStringList _ | RHashtable _ ->
-	    pr "    char **r;\n";
-	    pr "    int i;\n";
-	    "NULL"
-	| RStruct (_, typ) ->
-	    pr "    struct guestfs_%s *r;\n" typ; "NULL"
-	| RStructList (_, typ) ->
-	    pr "    struct guestfs_%s_list *r;\n" typ; "NULL" in
+        match fst style with
+        | RErr | RInt _ | RBool _ -> pr "    int r;\n"; "-1"
+        | RInt64 _ -> pr "    int64_t r;\n"; "-1"
+        | RConstString _ | RConstOptString _ ->
+            pr "    const char *r;\n"; "NULL"
+        | RString _ -> pr "    char *r;\n"; "NULL"
+        | RStringList _ | RHashtable _ ->
+            pr "    char **r;\n";
+            pr "    int i;\n";
+            "NULL"
+        | RStruct (_, typ) ->
+            pr "    struct guestfs_%s *r;\n" typ; "NULL"
+        | RStructList (_, typ) ->
+            pr "    struct guestfs_%s_list *r;\n" typ; "NULL"
+        | RBufferOut _ ->
+            pr "    char *r;\n";
+            pr "    size_t size;\n";
+            "NULL" in
 
       pr "    suppress_error = %d;\n" (if expect_error then 1 else 0);
       pr "    r = guestfs_%s (g" name;
 
       (* Generate the parameters. *)
       List.iter (
-	function
-	| OptString _, "NULL" -> pr ", NULL"
-	| String n, _
-	| OptString n, _ ->
+        function
+        | OptString _, "NULL" -> pr ", NULL"
+        | Pathname n, _
+        | Device n, _ | Dev_or_Path n, _
+        | String n, _
+        | OptString n, _ ->
             pr ", %s" n
-	| FileIn _, arg | FileOut _, arg ->
-	    pr ", \"%s\"" (c_quote arg)
-	| StringList n, _ ->
-	    pr ", %s" n
-	| Int _, arg ->
-	    let i =
-	      try int_of_string arg
-	      with Failure "int_of_string" ->
-		failwithf "%s: expecting an int, but got '%s'" test_name arg in
-	    pr ", %d" i
-	| Bool _, arg ->
-	    let b = bool_of_string arg in pr ", %d" (if b then 1 else 0)
+        | FileIn _, arg | FileOut _, arg ->
+            pr ", \"%s\"" (c_quote arg)
+        | StringList n, _ | DeviceList n, _ ->
+            pr ", (char **) %s" n
+        | Int _, arg ->
+            let i =
+              try int_of_string arg
+              with Failure "int_of_string" ->
+                failwithf "%s: expecting an int, but got '%s'" test_name arg in
+            pr ", %d" i
+        | Int64 _, arg ->
+            let i =
+              try Int64.of_string arg
+              with Failure "int_of_string" ->
+                failwithf "%s: expecting an int64, but got '%s'" test_name arg in
+            pr ", %Ld" i
+        | Bool _, arg ->
+            let b = bool_of_string arg in pr ", %d" (if b then 1 else 0)
       ) (List.combine (snd style) args);
 
+      (match fst style with
+       | RBufferOut _ -> pr ", &size"
+       | _ -> ()
+      );
+
       pr ");\n";
+
       if not expect_error then
-	pr "    if (r == %s)\n" error_code
+        pr "    if (r == %s)\n" error_code
       else
-	pr "    if (r != %s)\n" error_code;
+        pr "    if (r != %s)\n" error_code;
       pr "      return -1;\n";
 
       (* Insert the test code. *)
@@ -5089,16 +6733,17 @@ and generate_test_command_call ?(expect_error = false) ?test test_name cmd =
       );
 
       (match fst style with
-       | RErr | RInt _ | RInt64 _ | RBool _ | RConstString _ -> ()
-       | RString _ -> pr "    free (r);\n"
+       | RErr | RInt _ | RInt64 _ | RBool _
+       | RConstString _ | RConstOptString _ -> ()
+       | RString _ | RBufferOut _ -> pr "    free (r);\n"
        | RStringList _ | RHashtable _ ->
-	   pr "    for (i = 0; r[i] != NULL; ++i)\n";
-	   pr "      free (r[i]);\n";
-	   pr "    free (r);\n"
+           pr "    for (i = 0; r[i] != NULL; ++i)\n";
+           pr "      free (r[i]);\n";
+           pr "    free (r);\n"
        | RStruct (_, typ) ->
-	   pr "    guestfs_free_%s (r);\n" typ
+           pr "    guestfs_free_%s (r);\n" typ
        | RStructList (_, typ) ->
-	   pr "    guestfs_free_%s_list (r);\n" typ
+           pr "    guestfs_free_%s_list (r);\n" typ
       );
 
       pr "  }\n"
@@ -5127,24 +6772,25 @@ and generate_fish_cmds () =
   pr "#include <stdlib.h>\n";
   pr "#include <string.h>\n";
   pr "#include <inttypes.h>\n";
-  pr "#include <ctype.h>\n";
   pr "\n";
   pr "#include <guestfs.h>\n";
+  pr "#include \"c-ctype.h\"\n";
   pr "#include \"fish.h\"\n";
   pr "\n";
 
   (* list_commands function, which implements guestfish -h *)
   pr "void list_commands (void)\n";
   pr "{\n";
-  pr "  printf (\"    %%-16s     %%s\\n\", \"Command\", \"Description\");\n";
+  pr "  printf (\"    %%-16s     %%s\\n\", _(\"Command\"), _(\"Description\"));\n";
   pr "  list_builtin_commands ();\n";
   List.iter (
     fun (name, _, _, flags, _, shortdesc, _) ->
       let name = replace_char name '_' '-' in
-      pr "  printf (\"%%-20s %%s\\n\", \"%s\", \"%s\");\n"
-	name shortdesc
+      pr "  printf (\"%%-20s %%s\\n\", \"%s\", _(\"%s\"));\n"
+        name shortdesc
   ) all_functions_sorted;
-  pr "  printf (\"    Use -h <cmd> / help <cmd> to show detailed help for a command.\\n\");\n";
+  pr "  printf (\"    %%s\\n\",";
+  pr "          _(\"Use -h <cmd> / help <cmd> to show detailed help for a command.\"));\n";
   pr "}\n";
   pr "\n";
 
@@ -5155,51 +6801,74 @@ and generate_fish_cmds () =
     fun (name, style, _, flags, _, shortdesc, longdesc) ->
       let name2 = replace_char name '_' '-' in
       let alias =
-	try find_map (function FishAlias n -> Some n | _ -> None) flags
-	with Not_found -> name in
+        try find_map (function FishAlias n -> Some n | _ -> None) flags
+        with Not_found -> name in
       let longdesc = replace_str longdesc "C<guestfs_" "C<" in
       let synopsis =
-	match snd style with
-	| [] -> name2
-	| args ->
-	    sprintf "%s <%s>"
-	      name2 (String.concat "> <" (List.map name_of_argt args)) in
+        match snd style with
+        | [] -> name2
+        | args ->
+            sprintf "%s %s"
+              name2 (String.concat " " (List.map name_of_argt args)) in
 
       let warnings =
-	if List.mem ProtocolLimitWarning flags then
-	  ("\n\n" ^ protocol_limit_warning)
-	else "" in
+        if List.mem ProtocolLimitWarning flags then
+          ("\n\n" ^ protocol_limit_warning)
+        else "" in
 
       (* For DangerWillRobinson commands, we should probably have
        * guestfish prompt before allowing you to use them (especially
        * in interactive mode). XXX
        *)
       let warnings =
-	warnings ^
-	  if List.mem DangerWillRobinson flags then
-	    ("\n\n" ^ danger_will_robinson)
-	  else "" in
+        warnings ^
+          if List.mem DangerWillRobinson flags then
+            ("\n\n" ^ danger_will_robinson)
+          else "" in
+
+      let warnings =
+        warnings ^
+          match deprecation_notice flags with
+          | None -> ""
+          | Some txt -> "\n\n" ^ txt in
 
       let describe_alias =
-	if name <> alias then
-	  sprintf "\n\nYou can use '%s' as an alias for this command." alias
-	else "" in
+        if name <> alias then
+          sprintf "\n\nYou can use '%s' as an alias for this command." alias
+        else "" in
 
       pr "  if (";
-      pr "strcasecmp (cmd, \"%s\") == 0" name;
+      pr "STRCASEEQ (cmd, \"%s\")" name;
       if name <> name2 then
-	pr " || strcasecmp (cmd, \"%s\") == 0" name2;
+        pr " || STRCASEEQ (cmd, \"%s\")" name2;
       if name <> alias then
-	pr " || strcasecmp (cmd, \"%s\") == 0" alias;
+        pr " || STRCASEEQ (cmd, \"%s\")" alias;
       pr ")\n";
-      pr "    pod2text (\"%s - %s\", %S);\n"
-	name2 shortdesc
-	(" " ^ synopsis ^ "\n\n" ^ longdesc ^ warnings ^ describe_alias);
+      pr "    pod2text (\"%s\", _(\"%s\"), %S);\n"
+        name2 shortdesc
+        ("=head1 SYNOPSIS\n\n " ^ synopsis ^ "\n\n" ^
+         "=head1 DESCRIPTION\n\n" ^
+         longdesc ^ warnings ^ describe_alias);
       pr "  else\n"
   ) all_functions;
   pr "    display_builtin_command (cmd);\n";
   pr "}\n";
   pr "\n";
+
+  let emit_print_list_function typ =
+    pr "static void print_%s_list (struct guestfs_%s_list *%ss)\n"
+      typ typ typ;
+    pr "{\n";
+    pr "  unsigned int i;\n";
+    pr "\n";
+    pr "  for (i = 0; i < %ss->len; ++i) {\n" typ;
+    pr "    printf (\"[%%d] = {\\n\", i);\n";
+    pr "    print_%s_indent (&%ss->val[i], \"  \");\n" typ typ;
+    pr "    printf (\"}\\n\");\n";
+    pr "  }\n";
+    pr "}\n";
+    pr "\n";
+  in
 
   (* print_* functions *)
   List.iter (
@@ -5207,56 +6876,73 @@ and generate_fish_cmds () =
       let needs_i =
         List.exists (function (_, (FUUID|FBuffer)) -> true | _ -> false) cols in
 
-      pr "static void print_%s (struct guestfs_%s *%s)\n" typ typ typ;
+      pr "static void print_%s_indent (struct guestfs_%s *%s, const char *indent)\n" typ typ typ;
       pr "{\n";
       if needs_i then (
-        pr "  int i;\n";
+        pr "  unsigned int i;\n";
         pr "\n"
       );
       List.iter (
-	function
-	| name, FString ->
-	    pr "  printf (\"%s: %%s\\n\", %s->%s);\n" name typ name
-	| name, FUUID ->
-	    pr "  printf (\"%s: \");\n" name;
-	    pr "  for (i = 0; i < 32; ++i)\n";
-	    pr "    printf (\"%%c\", %s->%s[i]);\n" typ name;
-	    pr "  printf (\"\\n\");\n"
-	| name, FBuffer ->
-	    pr "  printf (\"%s: \");\n" name;
-	    pr "  for (i = 0; i < %s->%s_len; ++i)\n" typ name;
-	    pr "    if (isprint (%s->%s[i]))\n" typ name;
-	    pr "      printf (\"%%c\", %s->%s[i]);\n" typ name;
-	    pr "    else\n";
-	    pr "      printf (\"\\\\x%%02x\", %s->%s[i]);\n" typ name;
-	    pr "  printf (\"\\n\");\n"
-	| name, (FUInt64|FBytes) ->
-	    pr "  printf (\"%s: %%\" PRIu64 \"\\n\", %s->%s);\n" name typ name
-	| name, FInt64 ->
-	    pr "  printf (\"%s: %%\" PRIi64 \"\\n\", %s->%s);\n" name typ name
-	| name, FUInt32 ->
-	    pr "  printf (\"%s: %%\" PRIu32 \"\\n\", %s->%s);\n" name typ name
-	| name, FInt32 ->
-	    pr "  printf (\"%s: %%\" PRIi32 \"\\n\", %s->%s);\n" name typ name
-	| name, FChar ->
-	    pr "  printf (\"%s: %%c\\n\", %s->%s);\n" name typ name
-	| name, FOptPercent ->
-	    pr "  if (%s->%s >= 0) printf (\"%s: %%g %%%%\\n\", %s->%s);\n"
-	      typ name name typ name;
-	    pr "  else printf (\"%s: \\n\");\n" name
+        function
+        | name, FString ->
+            pr "  printf (\"%%s%s: %%s\\n\", indent, %s->%s);\n" name typ name
+        | name, FUUID ->
+            pr "  printf (\"%%s%s: \", indent);\n" name;
+            pr "  for (i = 0; i < 32; ++i)\n";
+            pr "    printf (\"%%c\", %s->%s[i]);\n" typ name;
+            pr "  printf (\"\\n\");\n"
+        | name, FBuffer ->
+            pr "  printf (\"%%s%s: \", indent);\n" name;
+            pr "  for (i = 0; i < %s->%s_len; ++i)\n" typ name;
+            pr "    if (c_isprint (%s->%s[i]))\n" typ name;
+            pr "      printf (\"%%c\", %s->%s[i]);\n" typ name;
+            pr "    else\n";
+            pr "      printf (\"\\\\x%%02x\", %s->%s[i]);\n" typ name;
+            pr "  printf (\"\\n\");\n"
+        | name, (FUInt64|FBytes) ->
+            pr "  printf (\"%%s%s: %%\" PRIu64 \"\\n\", indent, %s->%s);\n"
+              name typ name
+        | name, FInt64 ->
+            pr "  printf (\"%%s%s: %%\" PRIi64 \"\\n\", indent, %s->%s);\n"
+              name typ name
+        | name, FUInt32 ->
+            pr "  printf (\"%%s%s: %%\" PRIu32 \"\\n\", indent, %s->%s);\n"
+              name typ name
+        | name, FInt32 ->
+            pr "  printf (\"%%s%s: %%\" PRIi32 \"\\n\", indent, %s->%s);\n"
+              name typ name
+        | name, FChar ->
+            pr "  printf (\"%%s%s: %%c\\n\", indent, %s->%s);\n"
+              name typ name
+        | name, FOptPercent ->
+            pr "  if (%s->%s >= 0) printf (\"%%s%s: %%g %%%%\\n\", indent, %s->%s);\n"
+              typ name name typ name;
+            pr "  else printf (\"%%s%s: \\n\", indent);\n" name
       ) cols;
       pr "}\n";
       pr "\n";
-      pr "static void print_%s_list (struct guestfs_%s_list *%ss)\n"
-	typ typ typ;
-      pr "{\n";
-      pr "  int i;\n";
-      pr "\n";
-      pr "  for (i = 0; i < %ss->len; ++i)\n" typ;
-      pr "    print_%s (&%ss->val[i]);\n" typ typ;
-      pr "}\n";
-      pr "\n";
   ) structs;
+
+  (* Emit a print_TYPE_list function definition only if that function is used. *)
+  List.iter (
+    function
+    | typ, (RStructListOnly | RStructAndList) ->
+        (* generate the function for typ *)
+        emit_print_list_function typ
+    | typ, _ -> () (* empty *)
+  ) (rstructs_used_by all_functions);
+
+  (* Emit a print_TYPE function definition only if that function is used. *)
+  List.iter (
+    function
+    | typ, (RStructOnly | RStructAndList) ->
+        pr "static void print_%s (struct guestfs_%s *%s)\n" typ typ typ;
+        pr "{\n";
+        pr "  print_%s_indent (%s, \"\");\n" typ typ;
+        pr "}\n";
+        pr "\n";
+    | typ, _ -> () (* empty *)
+  ) (rstructs_used_by all_functions);
 
   (* run_<action> actions *)
   List.iter (
@@ -5268,104 +6954,139 @@ and generate_fish_cmds () =
        | RInt _
        | RBool _ -> pr "  int r;\n"
        | RInt64 _ -> pr "  int64_t r;\n"
-       | RConstString _ -> pr "  const char *r;\n"
+       | RConstString _ | RConstOptString _ -> pr "  const char *r;\n"
        | RString _ -> pr "  char *r;\n"
        | RStringList _ | RHashtable _ -> pr "  char **r;\n"
        | RStruct (_, typ) -> pr "  struct guestfs_%s *r;\n" typ
        | RStructList (_, typ) -> pr "  struct guestfs_%s_list *r;\n" typ
+       | RBufferOut _ ->
+           pr "  char *r;\n";
+           pr "  size_t size;\n";
       );
       List.iter (
-	function
-	| String n
-	| OptString n
-	| FileIn n
-	| FileOut n -> pr "  const char *%s;\n" n
-	| StringList n -> pr "  char **%s;\n" n
-	| Bool n -> pr "  int %s;\n" n
-	| Int n -> pr "  int %s;\n" n
+        function
+        | Device n
+        | String n
+        | OptString n
+        | FileIn n
+        | FileOut n -> pr "  const char *%s;\n" n
+        | Pathname n
+        | Dev_or_Path n -> pr "  char *%s;\n" n
+        | StringList n | DeviceList n -> pr "  char **%s;\n" n
+        | Bool n -> pr "  int %s;\n" n
+        | Int n -> pr "  int %s;\n" n
+        | Int64 n -> pr "  int64_t %s;\n" n
       ) (snd style);
 
       (* Check and convert parameters. *)
       let argc_expected = List.length (snd style) in
       pr "  if (argc != %d) {\n" argc_expected;
-      pr "    fprintf (stderr, \"%%s should have %d parameter(s)\\n\", cmd);\n"
-	argc_expected;
-      pr "    fprintf (stderr, \"type 'help %%s' for help on %%s\\n\", cmd, cmd);\n";
+      pr "    fprintf (stderr, _(\"%%s should have %%d parameter(s)\\n\"), cmd, %d);\n"
+        argc_expected;
+      pr "    fprintf (stderr, _(\"type 'help %%s' for help on %%s\\n\"), cmd, cmd);\n";
       pr "    return -1;\n";
       pr "  }\n";
       iteri (
-	fun i ->
-	  function
-	  | String name -> pr "  %s = argv[%d];\n" name i
-	  | OptString name ->
-	      pr "  %s = strcmp (argv[%d], \"\") != 0 ? argv[%d] : NULL;\n"
-		name i i
-	  | FileIn name ->
-	      pr "  %s = strcmp (argv[%d], \"-\") != 0 ? argv[%d] : \"/dev/stdin\";\n"
-		name i i
-	  | FileOut name ->
-	      pr "  %s = strcmp (argv[%d], \"-\") != 0 ? argv[%d] : \"/dev/stdout\";\n"
-		name i i
-	  | StringList name ->
-	      pr "  %s = parse_string_list (argv[%d]);\n" name i
-	  | Bool name ->
-	      pr "  %s = is_true (argv[%d]) ? 1 : 0;\n" name i
-	  | Int name ->
-	      pr "  %s = atoi (argv[%d]);\n" name i
+        fun i ->
+          function
+          | Device name
+          | String name ->
+              pr "  %s = argv[%d];\n" name i
+          | Pathname name
+          | Dev_or_Path name ->
+              pr "  %s = resolve_win_path (argv[%d]);\n" name i;
+              pr "  if (%s == NULL) return -1;\n" name
+          | OptString name ->
+              pr "  %s = STRNEQ (argv[%d], \"\") ? argv[%d] : NULL;\n"
+                name i i
+          | FileIn name ->
+              pr "  %s = STRNEQ (argv[%d], \"-\") ? argv[%d] : \"/dev/stdin\";\n"
+                name i i
+          | FileOut name ->
+              pr "  %s = STRNEQ (argv[%d], \"-\") ? argv[%d] : \"/dev/stdout\";\n"
+                name i i
+          | StringList name | DeviceList name ->
+              pr "  %s = parse_string_list (argv[%d]);\n" name i;
+              pr "  if (%s == NULL) return -1;\n" name;
+          | Bool name ->
+              pr "  %s = is_true (argv[%d]) ? 1 : 0;\n" name i
+          | Int name ->
+              pr "  %s = atoi (argv[%d]);\n" name i
+          | Int64 name ->
+              pr "  %s = atoll (argv[%d]);\n" name i
       ) (snd style);
 
       (* Call C API function. *)
       let fn =
-	try find_map (function FishAction n -> Some n | _ -> None) flags
-	with Not_found -> sprintf "guestfs_%s" name in
+        try find_map (function FishAction n -> Some n | _ -> None) flags
+        with Not_found -> sprintf "guestfs_%s" name in
       pr "  r = %s " fn;
-      generate_call_args ~handle:"g" (snd style);
+      generate_c_call_args ~handle:"g" style;
       pr ";\n";
+
+      List.iter (
+        function
+        | Device name | String name
+        | OptString name | FileIn name | FileOut name | Bool name
+        | Int name | Int64 name -> ()
+        | Pathname name | Dev_or_Path name ->
+            pr "  free (%s);\n" name
+        | StringList name | DeviceList name ->
+            pr "  free_strings (%s);\n" name
+      ) (snd style);
 
       (* Check return value for errors and display command results. *)
       (match fst style with
        | RErr -> pr "  return r;\n"
        | RInt _ ->
-	   pr "  if (r == -1) return -1;\n";
-	   pr "  printf (\"%%d\\n\", r);\n";
-	   pr "  return 0;\n"
+           pr "  if (r == -1) return -1;\n";
+           pr "  printf (\"%%d\\n\", r);\n";
+           pr "  return 0;\n"
        | RInt64 _ ->
-	   pr "  if (r == -1) return -1;\n";
-	   pr "  printf (\"%%\" PRIi64 \"\\n\", r);\n";
-	   pr "  return 0;\n"
+           pr "  if (r == -1) return -1;\n";
+           pr "  printf (\"%%\" PRIi64 \"\\n\", r);\n";
+           pr "  return 0;\n"
        | RBool _ ->
-	   pr "  if (r == -1) return -1;\n";
-	   pr "  if (r) printf (\"true\\n\"); else printf (\"false\\n\");\n";
-	   pr "  return 0;\n"
+           pr "  if (r == -1) return -1;\n";
+           pr "  if (r) printf (\"true\\n\"); else printf (\"false\\n\");\n";
+           pr "  return 0;\n"
        | RConstString _ ->
-	   pr "  if (r == NULL) return -1;\n";
-	   pr "  printf (\"%%s\\n\", r);\n";
-	   pr "  return 0;\n"
+           pr "  if (r == NULL) return -1;\n";
+           pr "  printf (\"%%s\\n\", r);\n";
+           pr "  return 0;\n"
+       | RConstOptString _ ->
+           pr "  printf (\"%%s\\n\", r ? : \"(null)\");\n";
+           pr "  return 0;\n"
        | RString _ ->
-	   pr "  if (r == NULL) return -1;\n";
-	   pr "  printf (\"%%s\\n\", r);\n";
-	   pr "  free (r);\n";
-	   pr "  return 0;\n"
+           pr "  if (r == NULL) return -1;\n";
+           pr "  printf (\"%%s\\n\", r);\n";
+           pr "  free (r);\n";
+           pr "  return 0;\n"
        | RStringList _ ->
-	   pr "  if (r == NULL) return -1;\n";
-	   pr "  print_strings (r);\n";
-	   pr "  free_strings (r);\n";
-	   pr "  return 0;\n"
+           pr "  if (r == NULL) return -1;\n";
+           pr "  print_strings (r);\n";
+           pr "  free_strings (r);\n";
+           pr "  return 0;\n"
        | RStruct (_, typ) ->
-	   pr "  if (r == NULL) return -1;\n";
-	   pr "  print_%s (r);\n" typ;
-	   pr "  guestfs_free_%s (r);\n" typ;
-	   pr "  return 0;\n"
+           pr "  if (r == NULL) return -1;\n";
+           pr "  print_%s (r);\n" typ;
+           pr "  guestfs_free_%s (r);\n" typ;
+           pr "  return 0;\n"
        | RStructList (_, typ) ->
-	   pr "  if (r == NULL) return -1;\n";
-	   pr "  print_%s_list (r);\n" typ;
-	   pr "  guestfs_free_%s_list (r);\n" typ;
-	   pr "  return 0;\n"
+           pr "  if (r == NULL) return -1;\n";
+           pr "  print_%s_list (r);\n" typ;
+           pr "  guestfs_free_%s_list (r);\n" typ;
+           pr "  return 0;\n"
        | RHashtable _ ->
-	   pr "  if (r == NULL) return -1;\n";
-	   pr "  print_table (r);\n";
-	   pr "  free_strings (r);\n";
-	   pr "  return 0;\n"
+           pr "  if (r == NULL) return -1;\n";
+           pr "  print_table (r);\n";
+           pr "  free_strings (r);\n";
+           pr "  return 0;\n"
+       | RBufferOut _ ->
+           pr "  if (r == NULL) return -1;\n";
+           pr "  fwrite (r, size, 1, stdout);\n";
+           pr "  free (r);\n";
+           pr "  return 0;\n"
       );
       pr "}\n";
       pr "\n"
@@ -5378,20 +7099,20 @@ and generate_fish_cmds () =
     fun (name, _, _, flags, _, _, _) ->
       let name2 = replace_char name '_' '-' in
       let alias =
-	try find_map (function FishAlias n -> Some n | _ -> None) flags
-	with Not_found -> name in
+        try find_map (function FishAlias n -> Some n | _ -> None) flags
+        with Not_found -> name in
       pr "  if (";
-      pr "strcasecmp (cmd, \"%s\") == 0" name;
+      pr "STRCASEEQ (cmd, \"%s\")" name;
       if name <> name2 then
-	pr " || strcasecmp (cmd, \"%s\") == 0" name2;
+        pr " || STRCASEEQ (cmd, \"%s\")" name2;
       if name <> alias then
-	pr " || strcasecmp (cmd, \"%s\") == 0" alias;
+        pr " || STRCASEEQ (cmd, \"%s\")" alias;
       pr ")\n";
       pr "    return run_%s (cmd, argc, argv);\n" name;
       pr "  else\n";
   ) all_functions;
   pr "    {\n";
-  pr "      fprintf (stderr, \"%%s: unknown command\\n\", cmd);\n";
+  pr "      fprintf (stderr, _(\"%%s: unknown command\\n\"), cmd);\n";
   pr "      return -1;\n";
   pr "    }\n";
   pr "  return 0;\n";
@@ -5432,12 +7153,12 @@ static const char *const commands[] = {
   let commands =
     List.map (
       fun (name, _, _, flags, _, _, _) ->
-	let name2 = replace_char name '_' '-' in
-	let alias =
-	  try find_map (function FishAlias n -> Some n | _ -> None) flags
-	  with Not_found -> name in
+        let name2 = replace_char name '_' '-' in
+        let alias =
+          try find_map (function FishAlias n -> Some n | _ -> None) flags
+          with Not_found -> name in
 
-	if name <> alias then [name2; alias] else [name2]
+        if name <> alias then [name2; alias] else [name2]
     ) all_functions in
   let commands = List.flatten commands in
 
@@ -5461,7 +7182,7 @@ generator (const char *text, int state)
 
   while ((name = commands[index]) != NULL) {
     index++;
-    if (strncasecmp (name, text, len) == 0)
+    if (STRCASEEQLEN (name, text, len))
       return strdup (name);
   }
 
@@ -5492,7 +7213,7 @@ and generate_fish_actions_pod () =
   let all_functions_sorted =
     List.filter (
       fun (_, _, _, flags, _, _, _) ->
-	not (List.mem NotInFish flags || List.mem NotInDocs flags)
+        not (List.mem NotInFish flags || List.mem NotInDocs flags)
     ) all_functions_sorted in
 
   let rex = Str.regexp "C<guestfs_\\([^>]+\\)>" in
@@ -5500,47 +7221,52 @@ and generate_fish_actions_pod () =
   List.iter (
     fun (name, style, _, flags, _, _, longdesc) ->
       let longdesc =
-	Str.global_substitute rex (
-	  fun s ->
-	    let sub =
-	      try Str.matched_group 1 s
-	      with Not_found ->
-		failwithf "error substituting C<guestfs_...> in longdesc of function %s" name in
-	    "C<" ^ replace_char sub '_' '-' ^ ">"
-	) longdesc in
+        Str.global_substitute rex (
+          fun s ->
+            let sub =
+              try Str.matched_group 1 s
+              with Not_found ->
+                failwithf "error substituting C<guestfs_...> in longdesc of function %s" name in
+            "C<" ^ replace_char sub '_' '-' ^ ">"
+        ) longdesc in
       let name = replace_char name '_' '-' in
       let alias =
-	try find_map (function FishAlias n -> Some n | _ -> None) flags
-	with Not_found -> name in
+        try find_map (function FishAlias n -> Some n | _ -> None) flags
+        with Not_found -> name in
 
       pr "=head2 %s" name;
       if name <> alias then
-	pr " | %s" alias;
+        pr " | %s" alias;
       pr "\n";
       pr "\n";
       pr " %s" name;
       List.iter (
-	function
-	| String n -> pr " %s" n
-	| OptString n -> pr " %s" n
-	| StringList n -> pr " '%s ...'" n
-	| Bool _ -> pr " true|false"
-	| Int n -> pr " %s" n
-	| FileIn n | FileOut n -> pr " (%s|-)" n
+        function
+        | Pathname n | Device n | Dev_or_Path n | String n -> pr " %s" n
+        | OptString n -> pr " %s" n
+        | StringList n | DeviceList n -> pr " '%s ...'" n
+        | Bool _ -> pr " true|false"
+        | Int n -> pr " %s" n
+        | Int64 n -> pr " %s" n
+        | FileIn n | FileOut n -> pr " (%s|-)" n
       ) (snd style);
       pr "\n";
       pr "\n";
       pr "%s\n\n" longdesc;
 
       if List.exists (function FileIn _ | FileOut _ -> true
-		      | _ -> false) (snd style) then
-	pr "Use C<-> instead of a filename to read/write from stdin/stdout.\n\n";
+                      | _ -> false) (snd style) then
+        pr "Use C<-> instead of a filename to read/write from stdin/stdout.\n\n";
 
       if List.mem ProtocolLimitWarning flags then
-	pr "%s\n\n" protocol_limit_warning;
+        pr "%s\n\n" protocol_limit_warning;
 
       if List.mem DangerWillRobinson flags then
-	pr "%s\n\n" danger_will_robinson
+        pr "%s\n\n" danger_will_robinson;
+
+      match deprecation_notice flags with
+      | None -> ()
+      | Some txt -> pr "%s\n\n" txt
   ) all_functions_sorted
 
 (* Generate a C function prototype. *)
@@ -5555,8 +7281,8 @@ and generate_prototype ?(extern = true) ?(static = false) ?(semicolon = true)
    | RInt _ -> pr "int "
    | RInt64 _ -> pr "int64_t "
    | RBool _ -> pr "int "
-   | RConstString _ -> pr "const char *"
-   | RString _ -> pr "char *"
+   | RConstString _ | RConstOptString _ -> pr "const char *"
+   | RString _ | RBufferOut _ -> pr "char *"
    | RStringList _ | RHashtable _ -> pr "char **"
    | RStruct (_, typ) ->
        if not in_daemon then pr "struct guestfs_%s *" typ
@@ -5565,8 +7291,9 @@ and generate_prototype ?(extern = true) ?(static = false) ?(semicolon = true)
        if not in_daemon then pr "struct guestfs_%s_list *" typ
        else pr "guestfs_int_%s_list *" typ
   );
+  let is_RBufferOut = match fst style with RBufferOut _ -> true | _ -> false in
   pr "%s%s (" prefix name;
-  if handle = None && List.length (snd style) = 0 then
+  if handle = None && List.length (snd style) = 0 && not is_RBufferOut then
     pr "void"
   else (
     let comma = ref false in
@@ -5576,46 +7303,59 @@ and generate_prototype ?(extern = true) ?(static = false) ?(semicolon = true)
     );
     let next () =
       if !comma then (
-	if single_line then pr ", " else pr ",\n\t\t"
+        if single_line then pr ", " else pr ",\n\t\t"
       );
       comma := true
     in
     List.iter (
       function
+      | Pathname n
+      | Device n | Dev_or_Path n
       | String n
       | OptString n ->
-	  next ();
-	  if not in_daemon then pr "const char *%s" n
-	  else pr "char *%s" n
-      | StringList n ->
-	  next ();
-	  if not in_daemon then pr "char * const* const %s" n
-	  else pr "char **%s" n
+          next ();
+          pr "const char *%s" n
+      | StringList n | DeviceList n ->
+          next ();
+          pr "char *const *%s" n
       | Bool n -> next (); pr "int %s" n
       | Int n -> next (); pr "int %s" n
+      | Int64 n -> next (); pr "int64_t %s" n
       | FileIn n
       | FileOut n ->
-	  if not in_daemon then (next (); pr "const char *%s" n)
+          if not in_daemon then (next (); pr "const char *%s" n)
     ) (snd style);
+    if is_RBufferOut then (next (); pr "size_t *size_r");
   );
   pr ")";
   if semicolon then pr ";";
   if newline then pr "\n"
 
 (* Generate C call arguments, eg "(handle, foo, bar)" *)
-and generate_call_args ?handle args =
+and generate_c_call_args ?handle ?(decl = false) style =
   pr "(";
   let comma = ref false in
+  let next () =
+    if !comma then pr ", ";
+    comma := true
+  in
   (match handle with
    | None -> ()
    | Some handle -> pr "%s" handle; comma := true
   );
   List.iter (
     fun arg ->
-      if !comma then pr ", ";
-      comma := true;
+      next ();
       pr "%s" (name_of_argt arg)
-  ) args;
+  ) (snd style);
+  (* For RBufferOut calls, add implicit &size parameter. *)
+  if not decl then (
+    match fst style with
+    | RBufferOut _ ->
+        next ();
+        pr "&size"
+    | _ -> ()
+  );
   pr ")"
 
 (* Generate the OCaml bindings interface. *)
@@ -5633,12 +7373,21 @@ type t
 exception Error of string
 (** This exception is raised when there is an error. *)
 
+exception Handle_closed of string
+(** This exception is raised if you use a {!Guestfs.t} handle
+    after calling {!close} on it.  The string is the name of
+    the function. *)
+
 val create : unit -> t
+(** Create a {!Guestfs.t} handle. *)
 
 val close : t -> unit
-(** Handles are closed by the garbage collector when they become
-    unreferenced, but callers can also call this in order to
-    provide predictable cleanup. *)
+(** Close the {!Guestfs.t} handle and free up all resources used
+    by it immediately.
+
+    Handles are closed by the garbage collector when they become
+    unreferenced, but callers can call this in order to provide
+    predictable cleanup. *)
 
 ";
   generate_ocaml_structure_decls ();
@@ -5649,7 +7398,7 @@ val close : t -> unit
       generate_ocaml_prototype name style;
       pr "(** %s *)\n" shortdesc;
       pr "\n"
-  ) all_functions
+  ) all_functions_sorted
 
 (* Generate the OCaml bindings implementation. *)
 and generate_ocaml_ml () =
@@ -5657,12 +7406,17 @@ and generate_ocaml_ml () =
 
   pr "\
 type t
+
 exception Error of string
+exception Handle_closed of string
+
 external create : unit -> t = \"ocaml_guestfs_create\"
 external close : t -> unit = \"ocaml_guestfs_close\"
 
+(* Give the exceptions names, so they can be raised from the C code. *)
 let () =
-  Callback.register_exception \"ocaml_guestfs_error\" (Error \"\")
+  Callback.register_exception \"ocaml_guestfs_error\" (Error \"\");
+  Callback.register_exception \"ocaml_guestfs_closed\" (Handle_closed \"\")
 
 ";
 
@@ -5672,7 +7426,7 @@ let () =
   List.iter (
     fun (name, style, _, _, _, shortdesc, _) ->
       generate_ocaml_prototype ~is_external:true name style;
-  ) all_functions
+  ) all_functions_sorted
 
 (* Generate the OCaml bindings C implementation. *)
 and generate_ocaml_c () =
@@ -5725,80 +7479,105 @@ copy_table (char * const * argv)
 ";
 
   (* Struct copy functions. *)
+
+  let emit_ocaml_copy_list_function typ =
+    pr "static CAMLprim value\n";
+    pr "copy_%s_list (const struct guestfs_%s_list *%ss)\n" typ typ typ;
+    pr "{\n";
+    pr "  CAMLparam0 ();\n";
+    pr "  CAMLlocal2 (rv, v);\n";
+    pr "  unsigned int i;\n";
+    pr "\n";
+    pr "  if (%ss->len == 0)\n" typ;
+    pr "    CAMLreturn (Atom (0));\n";
+    pr "  else {\n";
+    pr "    rv = caml_alloc (%ss->len, 0);\n" typ;
+    pr "    for (i = 0; i < %ss->len; ++i) {\n" typ;
+    pr "      v = copy_%s (&%ss->val[i]);\n" typ typ;
+    pr "      caml_modify (&Field (rv, i), v);\n";
+    pr "    }\n";
+    pr "    CAMLreturn (rv);\n";
+    pr "  }\n";
+    pr "}\n";
+    pr "\n";
+  in
+
   List.iter (
     fun (typ, cols) ->
       let has_optpercent_col =
-	List.exists (function (_, FOptPercent) -> true | _ -> false) cols in
+        List.exists (function (_, FOptPercent) -> true | _ -> false) cols in
 
       pr "static CAMLprim value\n";
       pr "copy_%s (const struct guestfs_%s *%s)\n" typ typ typ;
       pr "{\n";
       pr "  CAMLparam0 ();\n";
       if has_optpercent_col then
-	pr "  CAMLlocal3 (rv, v, v2);\n"
+        pr "  CAMLlocal3 (rv, v, v2);\n"
       else
-	pr "  CAMLlocal2 (rv, v);\n";
+        pr "  CAMLlocal2 (rv, v);\n";
       pr "\n";
       pr "  rv = caml_alloc (%d, 0);\n" (List.length cols);
       iteri (
-	fun i col ->
-	  (match col with
-	   | name, FString ->
-	       pr "  v = caml_copy_string (%s->%s);\n" typ name
-	   | name, FBuffer ->
-	       pr "  v = caml_alloc_string (%s->%s_len);\n" typ name;
-	       pr "  memcpy (String_val (v), %s->%s, %s->%s_len);\n"
-		 typ name typ name
-	   | name, FUUID ->
-	       pr "  v = caml_alloc_string (32);\n";
-	       pr "  memcpy (String_val (v), %s->%s, 32);\n" typ name
-	   | name, (FBytes|FInt64|FUInt64) ->
-	       pr "  v = caml_copy_int64 (%s->%s);\n" typ name
-	   | name, (FInt32|FUInt32) ->
-	       pr "  v = caml_copy_int32 (%s->%s);\n" typ name
-	   | name, FOptPercent ->
-	       pr "  if (%s->%s >= 0) { /* Some %s */\n" typ name name;
-	       pr "    v2 = caml_copy_double (%s->%s);\n" typ name;
-	       pr "    v = caml_alloc (1, 0);\n";
-	       pr "    Store_field (v, 0, v2);\n";
-	       pr "  } else /* None */\n";
-	       pr "    v = Val_int (0);\n";
-	   | name, FChar ->
-	       pr "  v = Val_int (%s->%s);\n" typ name
-	  );
-	  pr "  Store_field (rv, %d, v);\n" i
+        fun i col ->
+          (match col with
+           | name, FString ->
+               pr "  v = caml_copy_string (%s->%s);\n" typ name
+           | name, FBuffer ->
+               pr "  v = caml_alloc_string (%s->%s_len);\n" typ name;
+               pr "  memcpy (String_val (v), %s->%s, %s->%s_len);\n"
+                 typ name typ name
+           | name, FUUID ->
+               pr "  v = caml_alloc_string (32);\n";
+               pr "  memcpy (String_val (v), %s->%s, 32);\n" typ name
+           | name, (FBytes|FInt64|FUInt64) ->
+               pr "  v = caml_copy_int64 (%s->%s);\n" typ name
+           | name, (FInt32|FUInt32) ->
+               pr "  v = caml_copy_int32 (%s->%s);\n" typ name
+           | name, FOptPercent ->
+               pr "  if (%s->%s >= 0) { /* Some %s */\n" typ name name;
+               pr "    v2 = caml_copy_double (%s->%s);\n" typ name;
+               pr "    v = caml_alloc (1, 0);\n";
+               pr "    Store_field (v, 0, v2);\n";
+               pr "  } else /* None */\n";
+               pr "    v = Val_int (0);\n";
+           | name, FChar ->
+               pr "  v = Val_int (%s->%s);\n" typ name
+          );
+          pr "  Store_field (rv, %d, v);\n" i
       ) cols;
       pr "  CAMLreturn (rv);\n";
       pr "}\n";
       pr "\n";
-
-      pr "static CAMLprim value\n";
-      pr "copy_%s_list (const struct guestfs_%s_list *%ss)\n"
-	typ typ typ;
-      pr "{\n";
-      pr "  CAMLparam0 ();\n";
-      pr "  CAMLlocal2 (rv, v);\n";
-      pr "  int i;\n";
-      pr "\n";
-      pr "  if (%ss->len == 0)\n" typ;
-      pr "    CAMLreturn (Atom (0));\n";
-      pr "  else {\n";
-      pr "    rv = caml_alloc (%ss->len, 0);\n" typ;
-      pr "    for (i = 0; i < %ss->len; ++i) {\n" typ;
-      pr "      v = copy_%s (&%ss->val[i]);\n" typ typ;
-      pr "      caml_modify (&Field (rv, i), v);\n";
-      pr "    }\n";
-      pr "    CAMLreturn (rv);\n";
-      pr "  }\n";
-      pr "}\n";
-      pr "\n";
   ) structs;
+
+  (* Emit a copy_TYPE_list function definition only if that function is used. *)
+  List.iter (
+    function
+    | typ, (RStructListOnly | RStructAndList) ->
+        (* generate the function for typ *)
+        emit_ocaml_copy_list_function typ
+    | typ, _ -> () (* empty *)
+  ) (rstructs_used_by all_functions);
 
   (* The wrappers. *)
   List.iter (
     fun (name, style, _, _, _, _, _) ->
+      pr "/* Automatically generated wrapper for function\n";
+      pr " * ";
+      generate_ocaml_prototype name style;
+      pr " */\n";
+      pr "\n";
+
       let params =
-	"gv" :: List.map (fun arg -> name_of_argt arg ^ "v") (snd style) in
+        "gv" :: List.map (fun arg -> name_of_argt arg ^ "v") (snd style) in
+
+      let needs_extra_vs =
+        match fst style with RConstOptString _ -> true | _ -> false in
+
+      pr "/* Emit prototype to appease gcc's -Wmissing-prototypes. */\n";
+      pr "CAMLprim value ocaml_guestfs_%s (value %s" name (List.hd params);
+      List.iter (pr ", value %s") (List.tl params); pr ");\n";
+      pr "\n";
 
       pr "CAMLprim value\n";
       pr "ocaml_guestfs_%s (value %s" name (List.hd params);
@@ -5808,72 +7587,86 @@ copy_table (char * const * argv)
 
       (match params with
        | [p1; p2; p3; p4; p5] ->
-	   pr "  CAMLparam5 (%s);\n" (String.concat ", " params)
+           pr "  CAMLparam5 (%s);\n" (String.concat ", " params)
        | p1 :: p2 :: p3 :: p4 :: p5 :: rest ->
-	   pr "  CAMLparam5 (%s);\n" (String.concat ", " [p1; p2; p3; p4; p5]);
-	   pr "  CAMLxparam%d (%s);\n"
-	     (List.length rest) (String.concat ", " rest)
+           pr "  CAMLparam5 (%s);\n" (String.concat ", " [p1; p2; p3; p4; p5]);
+           pr "  CAMLxparam%d (%s);\n"
+             (List.length rest) (String.concat ", " rest)
        | ps ->
-	   pr "  CAMLparam%d (%s);\n" (List.length ps) (String.concat ", " ps)
+           pr "  CAMLparam%d (%s);\n" (List.length ps) (String.concat ", " ps)
       );
-      pr "  CAMLlocal1 (rv);\n";
+      if not needs_extra_vs then
+        pr "  CAMLlocal1 (rv);\n"
+      else
+        pr "  CAMLlocal3 (rv, v, v2);\n";
       pr "\n";
 
       pr "  guestfs_h *g = Guestfs_val (gv);\n";
       pr "  if (g == NULL)\n";
-      pr "    caml_failwith (\"%s: used handle after closing it\");\n" name;
+      pr "    ocaml_guestfs_raise_closed (\"%s\");\n" name;
       pr "\n";
 
       List.iter (
-	function
-	| String n
-	| FileIn n
-	| FileOut n ->
-	    pr "  const char *%s = String_val (%sv);\n" n n
-	| OptString n ->
-	    pr "  const char *%s =\n" n;
-	    pr "    %sv != Val_int (0) ? String_val (Field (%sv, 0)) : NULL;\n"
-	      n n
-	| StringList n ->
-	    pr "  char **%s = ocaml_guestfs_strings_val (g, %sv);\n" n n
-	| Bool n ->
-	    pr "  int %s = Bool_val (%sv);\n" n n
-	| Int n ->
-	    pr "  int %s = Int_val (%sv);\n" n n
+        function
+        | Pathname n
+        | Device n | Dev_or_Path n
+        | String n
+        | FileIn n
+        | FileOut n ->
+            pr "  const char *%s = String_val (%sv);\n" n n
+        | OptString n ->
+            pr "  const char *%s =\n" n;
+            pr "    %sv != Val_int (0) ? String_val (Field (%sv, 0)) : NULL;\n"
+              n n
+        | StringList n | DeviceList n ->
+            pr "  char **%s = ocaml_guestfs_strings_val (g, %sv);\n" n n
+        | Bool n ->
+            pr "  int %s = Bool_val (%sv);\n" n n
+        | Int n ->
+            pr "  int %s = Int_val (%sv);\n" n n
+        | Int64 n ->
+            pr "  int64_t %s = Int64_val (%sv);\n" n n
       ) (snd style);
       let error_code =
-	match fst style with
-	| RErr -> pr "  int r;\n"; "-1"
-	| RInt _ -> pr "  int r;\n"; "-1"
-	| RInt64 _ -> pr "  int64_t r;\n"; "-1"
-	| RBool _ -> pr "  int r;\n"; "-1"
-	| RConstString _ -> pr "  const char *r;\n"; "NULL"
-	| RString _ -> pr "  char *r;\n"; "NULL"
-	| RStringList _ ->
-	    pr "  int i;\n";
-	    pr "  char **r;\n";
-	    "NULL"
-	| RStruct (_, typ) ->
-	    pr "  struct guestfs_%s *r;\n" typ; "NULL"
-	| RStructList (_, typ) ->
-	    pr "  struct guestfs_%s_list *r;\n" typ; "NULL"
-	| RHashtable _ ->
-	    pr "  int i;\n";
-	    pr "  char **r;\n";
-	    "NULL" in
+        match fst style with
+        | RErr -> pr "  int r;\n"; "-1"
+        | RInt _ -> pr "  int r;\n"; "-1"
+        | RInt64 _ -> pr "  int64_t r;\n"; "-1"
+        | RBool _ -> pr "  int r;\n"; "-1"
+        | RConstString _ | RConstOptString _ ->
+            pr "  const char *r;\n"; "NULL"
+        | RString _ -> pr "  char *r;\n"; "NULL"
+        | RStringList _ ->
+            pr "  int i;\n";
+            pr "  char **r;\n";
+            "NULL"
+        | RStruct (_, typ) ->
+            pr "  struct guestfs_%s *r;\n" typ; "NULL"
+        | RStructList (_, typ) ->
+            pr "  struct guestfs_%s_list *r;\n" typ; "NULL"
+        | RHashtable _ ->
+            pr "  int i;\n";
+            pr "  char **r;\n";
+            "NULL"
+        | RBufferOut _ ->
+            pr "  char *r;\n";
+            pr "  size_t size;\n";
+            "NULL" in
       pr "\n";
 
       pr "  caml_enter_blocking_section ();\n";
       pr "  r = guestfs_%s " name;
-      generate_call_args ~handle:"g" (snd style);
+      generate_c_call_args ~handle:"g" style;
       pr ";\n";
       pr "  caml_leave_blocking_section ();\n";
 
       List.iter (
-	function
-	| StringList n ->
-	    pr "  ocaml_guestfs_free_strings (%s);\n" n;
-	| String _ | OptString _ | Bool _ | Int _ | FileIn _ | FileOut _ -> ()
+        function
+        | StringList n | DeviceList n ->
+            pr "  ocaml_guestfs_free_strings (%s);\n" n;
+        | Pathname _ | Device _ | Dev_or_Path _ | String _ | OptString _
+        | Bool _ | Int _ | Int64 _
+        | FileIn _ | FileOut _ -> ()
       ) (snd style);
 
       pr "  if (r == %s)\n" error_code;
@@ -5884,26 +7677,37 @@ copy_table (char * const * argv)
        | RErr -> pr "  rv = Val_unit;\n"
        | RInt _ -> pr "  rv = Val_int (r);\n"
        | RInt64 _ ->
-	   pr "  rv = caml_copy_int64 (r);\n"
+           pr "  rv = caml_copy_int64 (r);\n"
        | RBool _ -> pr "  rv = Val_bool (r);\n"
-       | RConstString _ -> pr "  rv = caml_copy_string (r);\n"
+       | RConstString _ ->
+           pr "  rv = caml_copy_string (r);\n"
+       | RConstOptString _ ->
+           pr "  if (r) { /* Some string */\n";
+           pr "    v = caml_alloc (1, 0);\n";
+           pr "    v2 = caml_copy_string (r);\n";
+           pr "    Store_field (v, 0, v2);\n";
+           pr "  } else /* None */\n";
+           pr "    v = Val_int (0);\n";
        | RString _ ->
-	   pr "  rv = caml_copy_string (r);\n";
-	   pr "  free (r);\n"
+           pr "  rv = caml_copy_string (r);\n";
+           pr "  free (r);\n"
        | RStringList _ ->
-	   pr "  rv = caml_copy_string_array ((const char **) r);\n";
-	   pr "  for (i = 0; r[i] != NULL; ++i) free (r[i]);\n";
-	   pr "  free (r);\n"
+           pr "  rv = caml_copy_string_array ((const char **) r);\n";
+           pr "  for (i = 0; r[i] != NULL; ++i) free (r[i]);\n";
+           pr "  free (r);\n"
        | RStruct (_, typ) ->
-	   pr "  rv = copy_%s (r);\n" typ;
-	   pr "  guestfs_free_%s (r);\n" typ;
+           pr "  rv = copy_%s (r);\n" typ;
+           pr "  guestfs_free_%s (r);\n" typ;
        | RStructList (_, typ) ->
-	   pr "  rv = copy_%s_list (r);\n" typ;
-	   pr "  guestfs_free_%s_list (r);\n" typ;
+           pr "  rv = copy_%s_list (r);\n" typ;
+           pr "  guestfs_free_%s_list (r);\n" typ;
        | RHashtable _ ->
-	   pr "  rv = copy_table (r);\n";
-	   pr "  for (i = 0; r[i] != NULL; ++i) free (r[i]);\n";
-	   pr "  free (r);\n";
+           pr "  rv = copy_table (r);\n";
+           pr "  for (i = 0; r[i] != NULL; ++i) free (r[i]);\n";
+           pr "  free (r);\n";
+       | RBufferOut _ ->
+           pr "  rv = caml_alloc_string (size);\n";
+           pr "  memcpy (String_val (rv), r, size);\n";
       );
 
       pr "  CAMLreturn (rv);\n";
@@ -5911,30 +7715,33 @@ copy_table (char * const * argv)
       pr "\n";
 
       if List.length params > 5 then (
-	pr "CAMLprim value\n";
-	pr "ocaml_guestfs_%s_byte (value *argv, int argn)\n" name;
-	pr "{\n";
-	pr "  return ocaml_guestfs_%s (argv[0]" name;
-	iteri (fun i _ -> pr ", argv[%d]" i) (List.tl params);
-	pr ");\n";
-	pr "}\n";
-	pr "\n"
+        pr "/* Emit prototype to appease gcc's -Wmissing-prototypes. */\n";
+        pr "CAMLprim value ";
+        pr "ocaml_guestfs_%s_byte (value *argv, int argn);\n" name;
+        pr "CAMLprim value\n";
+        pr "ocaml_guestfs_%s_byte (value *argv, int argn)\n" name;
+        pr "{\n";
+        pr "  return ocaml_guestfs_%s (argv[0]" name;
+        iteri (fun i _ -> pr ", argv[%d]" i) (List.tl params);
+        pr ");\n";
+        pr "}\n";
+        pr "\n"
       )
-  ) all_functions
+  ) all_functions_sorted
 
 and generate_ocaml_structure_decls () =
   List.iter (
     fun (typ, cols) ->
       pr "type %s = {\n" typ;
       List.iter (
-	function
-	| name, FString -> pr "  %s : string;\n" name
-	| name, FBuffer -> pr "  %s : string;\n" name
-	| name, FUUID -> pr "  %s : string;\n" name
-	| name, (FBytes|FInt64|FUInt64) -> pr "  %s : int64;\n" name
-	| name, (FInt32|FUInt32) -> pr "  %s : int32;\n" name
-	| name, FChar -> pr "  %s : char;\n" name
-	| name, FOptPercent -> pr "  %s : float option;\n" name
+        function
+        | name, FString -> pr "  %s : string;\n" name
+        | name, FBuffer -> pr "  %s : string;\n" name
+        | name, FUUID -> pr "  %s : string;\n" name
+        | name, (FBytes|FInt64|FUInt64) -> pr "  %s : int64;\n" name
+        | name, (FInt32|FUInt32) -> pr "  %s : int32;\n" name
+        | name, FChar -> pr "  %s : char;\n" name
+        | name, FOptPercent -> pr "  %s : float option;\n" name
       ) cols;
       pr "}\n";
       pr "\n"
@@ -5945,11 +7752,12 @@ and generate_ocaml_prototype ?(is_external = false) name style =
   pr "%s : t -> " name;
   List.iter (
     function
-    | String _ | FileIn _ | FileOut _ -> pr "string -> "
+    | Pathname _ | Device _ | Dev_or_Path _ | String _ | FileIn _ | FileOut _ -> pr "string -> "
     | OptString _ -> pr "string option -> "
-    | StringList _ -> pr "string array -> "
+    | StringList _ | DeviceList _ -> pr "string array -> "
     | Bool _ -> pr "bool -> "
     | Int _ -> pr "int -> "
+    | Int64 _ -> pr "int64 -> "
   ) (snd style);
   (match fst style with
    | RErr -> pr "unit" (* all errors are turned into exceptions *)
@@ -5957,7 +7765,8 @@ and generate_ocaml_prototype ?(is_external = false) name style =
    | RInt64 _ -> pr "int64"
    | RBool _ -> pr "bool"
    | RConstString _ -> pr "string"
-   | RString _ -> pr "string"
+   | RConstOptString _ -> pr "string option"
+   | RString _ | RBufferOut _ -> pr "string"
    | RStringList _ -> pr "string array"
    | RStruct (_, typ) -> pr "%s" typ
    | RStructList (_, typ) -> pr "%s array" typ
@@ -6073,131 +7882,165 @@ DESTROY (g)
        | RInt64 _ -> pr "SV *\n"
        | RBool _ -> pr "SV *\n"
        | RConstString _ -> pr "SV *\n"
+       | RConstOptString _ -> pr "SV *\n"
        | RString _ -> pr "SV *\n"
+       | RBufferOut _ -> pr "SV *\n"
        | RStringList _
        | RStruct _ | RStructList _
        | RHashtable _ ->
-	   pr "void\n" (* all lists returned implictly on the stack *)
+           pr "void\n" (* all lists returned implictly on the stack *)
       );
       (* Call and arguments. *)
       pr "%s " name;
-      generate_call_args ~handle:"g" (snd style);
+      generate_c_call_args ~handle:"g" ~decl:true style;
       pr "\n";
       pr "      guestfs_h *g;\n";
       iteri (
-	fun i ->
-	  function
-	  | String n | FileIn n | FileOut n -> pr "      char *%s;\n" n
-	  | OptString n ->
-	      (* http://www.perlmonks.org/?node_id=554277
-	       * Note that the implicit handle argument means we have
-	       * to add 1 to the ST(x) operator.
-	       *)
-	      pr "      char *%s = SvOK(ST(%d)) ? SvPV_nolen(ST(%d)) : NULL;\n" n (i+1) (i+1)
-	  | StringList n -> pr "      char **%s;\n" n
-	  | Bool n -> pr "      int %s;\n" n
-	  | Int n -> pr "      int %s;\n" n
+        fun i ->
+          function
+          | Pathname n | Device n | Dev_or_Path n | String n | FileIn n | FileOut n ->
+              pr "      char *%s;\n" n
+          | OptString n ->
+              (* http://www.perlmonks.org/?node_id=554277
+               * Note that the implicit handle argument means we have
+               * to add 1 to the ST(x) operator.
+               *)
+              pr "      char *%s = SvOK(ST(%d)) ? SvPV_nolen(ST(%d)) : NULL;\n" n (i+1) (i+1)
+          | StringList n | DeviceList n -> pr "      char **%s;\n" n
+          | Bool n -> pr "      int %s;\n" n
+          | Int n -> pr "      int %s;\n" n
+          | Int64 n -> pr "      int64_t %s;\n" n
       ) (snd style);
 
       let do_cleanups () =
-	List.iter (
-	  function
-	  | String _ | OptString _ | Bool _ | Int _
-	  | FileIn _ | FileOut _ -> ()
-	  | StringList n -> pr "      free (%s);\n" n
-	) (snd style)
+        List.iter (
+          function
+          | Pathname _ | Device _ | Dev_or_Path _ | String _ | OptString _
+          | Bool _ | Int _ | Int64 _
+          | FileIn _ | FileOut _ -> ()
+          | StringList n | DeviceList n -> pr "      free (%s);\n" n
+        ) (snd style)
       in
 
       (* Code. *)
       (match fst style with
        | RErr ->
-	   pr "PREINIT:\n";
-	   pr "      int r;\n";
-	   pr " PPCODE:\n";
-	   pr "      r = guestfs_%s " name;
-	   generate_call_args ~handle:"g" (snd style);
-	   pr ";\n";
-	   do_cleanups ();
-	   pr "      if (r == -1)\n";
-	   pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
+           pr "PREINIT:\n";
+           pr "      int r;\n";
+           pr " PPCODE:\n";
+           pr "      r = guestfs_%s " name;
+           generate_c_call_args ~handle:"g" style;
+           pr ";\n";
+           do_cleanups ();
+           pr "      if (r == -1)\n";
+           pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
        | RInt n
        | RBool n ->
-	   pr "PREINIT:\n";
-	   pr "      int %s;\n" n;
-	   pr "   CODE:\n";
-	   pr "      %s = guestfs_%s " n name;
-	   generate_call_args ~handle:"g" (snd style);
-	   pr ";\n";
-	   do_cleanups ();
-	   pr "      if (%s == -1)\n" n;
-	   pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
-	   pr "      RETVAL = newSViv (%s);\n" n;
-	   pr " OUTPUT:\n";
-	   pr "      RETVAL\n"
+           pr "PREINIT:\n";
+           pr "      int %s;\n" n;
+           pr "   CODE:\n";
+           pr "      %s = guestfs_%s " n name;
+           generate_c_call_args ~handle:"g" style;
+           pr ";\n";
+           do_cleanups ();
+           pr "      if (%s == -1)\n" n;
+           pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
+           pr "      RETVAL = newSViv (%s);\n" n;
+           pr " OUTPUT:\n";
+           pr "      RETVAL\n"
        | RInt64 n ->
-	   pr "PREINIT:\n";
-	   pr "      int64_t %s;\n" n;
-	   pr "   CODE:\n";
-	   pr "      %s = guestfs_%s " n name;
-	   generate_call_args ~handle:"g" (snd style);
-	   pr ";\n";
-	   do_cleanups ();
-	   pr "      if (%s == -1)\n" n;
-	   pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
-	   pr "      RETVAL = my_newSVll (%s);\n" n;
-	   pr " OUTPUT:\n";
-	   pr "      RETVAL\n"
+           pr "PREINIT:\n";
+           pr "      int64_t %s;\n" n;
+           pr "   CODE:\n";
+           pr "      %s = guestfs_%s " n name;
+           generate_c_call_args ~handle:"g" style;
+           pr ";\n";
+           do_cleanups ();
+           pr "      if (%s == -1)\n" n;
+           pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
+           pr "      RETVAL = my_newSVll (%s);\n" n;
+           pr " OUTPUT:\n";
+           pr "      RETVAL\n"
        | RConstString n ->
-	   pr "PREINIT:\n";
-	   pr "      const char *%s;\n" n;
-	   pr "   CODE:\n";
-	   pr "      %s = guestfs_%s " n name;
-	   generate_call_args ~handle:"g" (snd style);
-	   pr ";\n";
-	   do_cleanups ();
-	   pr "      if (%s == NULL)\n" n;
-	   pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
-	   pr "      RETVAL = newSVpv (%s, 0);\n" n;
-	   pr " OUTPUT:\n";
-	   pr "      RETVAL\n"
+           pr "PREINIT:\n";
+           pr "      const char *%s;\n" n;
+           pr "   CODE:\n";
+           pr "      %s = guestfs_%s " n name;
+           generate_c_call_args ~handle:"g" style;
+           pr ";\n";
+           do_cleanups ();
+           pr "      if (%s == NULL)\n" n;
+           pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
+           pr "      RETVAL = newSVpv (%s, 0);\n" n;
+           pr " OUTPUT:\n";
+           pr "      RETVAL\n"
+       | RConstOptString n ->
+           pr "PREINIT:\n";
+           pr "      const char *%s;\n" n;
+           pr "   CODE:\n";
+           pr "      %s = guestfs_%s " n name;
+           generate_c_call_args ~handle:"g" style;
+           pr ";\n";
+           do_cleanups ();
+           pr "      if (%s == NULL)\n" n;
+           pr "        RETVAL = &PL_sv_undef;\n";
+           pr "      else\n";
+           pr "        RETVAL = newSVpv (%s, 0);\n" n;
+           pr " OUTPUT:\n";
+           pr "      RETVAL\n"
        | RString n ->
-	   pr "PREINIT:\n";
-	   pr "      char *%s;\n" n;
-	   pr "   CODE:\n";
-	   pr "      %s = guestfs_%s " n name;
-	   generate_call_args ~handle:"g" (snd style);
-	   pr ";\n";
-	   do_cleanups ();
-	   pr "      if (%s == NULL)\n" n;
-	   pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
-	   pr "      RETVAL = newSVpv (%s, 0);\n" n;
-	   pr "      free (%s);\n" n;
-	   pr " OUTPUT:\n";
-	   pr "      RETVAL\n"
+           pr "PREINIT:\n";
+           pr "      char *%s;\n" n;
+           pr "   CODE:\n";
+           pr "      %s = guestfs_%s " n name;
+           generate_c_call_args ~handle:"g" style;
+           pr ";\n";
+           do_cleanups ();
+           pr "      if (%s == NULL)\n" n;
+           pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
+           pr "      RETVAL = newSVpv (%s, 0);\n" n;
+           pr "      free (%s);\n" n;
+           pr " OUTPUT:\n";
+           pr "      RETVAL\n"
        | RStringList n | RHashtable n ->
-	   pr "PREINIT:\n";
-	   pr "      char **%s;\n" n;
-	   pr "      int i, n;\n";
-	   pr " PPCODE:\n";
-	   pr "      %s = guestfs_%s " n name;
-	   generate_call_args ~handle:"g" (snd style);
-	   pr ";\n";
-	   do_cleanups ();
-	   pr "      if (%s == NULL)\n" n;
-	   pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
-	   pr "      for (n = 0; %s[n] != NULL; ++n) /**/;\n" n;
-	   pr "      EXTEND (SP, n);\n";
-	   pr "      for (i = 0; i < n; ++i) {\n";
-	   pr "        PUSHs (sv_2mortal (newSVpv (%s[i], 0)));\n" n;
-	   pr "        free (%s[i]);\n" n;
-	   pr "      }\n";
-	   pr "      free (%s);\n" n;
+           pr "PREINIT:\n";
+           pr "      char **%s;\n" n;
+           pr "      int i, n;\n";
+           pr " PPCODE:\n";
+           pr "      %s = guestfs_%s " n name;
+           generate_c_call_args ~handle:"g" style;
+           pr ";\n";
+           do_cleanups ();
+           pr "      if (%s == NULL)\n" n;
+           pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
+           pr "      for (n = 0; %s[n] != NULL; ++n) /**/;\n" n;
+           pr "      EXTEND (SP, n);\n";
+           pr "      for (i = 0; i < n; ++i) {\n";
+           pr "        PUSHs (sv_2mortal (newSVpv (%s[i], 0)));\n" n;
+           pr "        free (%s[i]);\n" n;
+           pr "      }\n";
+           pr "      free (%s);\n" n;
        | RStruct (n, typ) ->
-	   let cols = cols_of_struct typ in
-	   generate_perl_struct_code typ cols name style n do_cleanups
+           let cols = cols_of_struct typ in
+           generate_perl_struct_code typ cols name style n do_cleanups
        | RStructList (n, typ) ->
-	   let cols = cols_of_struct typ in
-	   generate_perl_struct_list_code typ cols name style n do_cleanups
+           let cols = cols_of_struct typ in
+           generate_perl_struct_list_code typ cols name style n do_cleanups
+       | RBufferOut n ->
+           pr "PREINIT:\n";
+           pr "      char *%s;\n" n;
+           pr "      size_t size;\n";
+           pr "   CODE:\n";
+           pr "      %s = guestfs_%s " n name;
+           generate_c_call_args ~handle:"g" style;
+           pr ";\n";
+           do_cleanups ();
+           pr "      if (%s == NULL)\n" n;
+           pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
+           pr "      RETVAL = newSVpv (%s, size);\n" n;
+           pr "      free (%s);\n" n;
+           pr " OUTPUT:\n";
+           pr "      RETVAL\n"
       );
 
       pr "\n"
@@ -6210,7 +8053,7 @@ and generate_perl_struct_list_code typ cols name style n do_cleanups =
   pr "      HV *hv;\n";
   pr " PPCODE:\n";
   pr "      %s = guestfs_%s " n name;
-  generate_call_args ~handle:"g" (snd style);
+  generate_c_call_args ~handle:"g" style;
   pr ";\n";
   do_cleanups ();
   pr "      if (%s == NULL)\n" n;
@@ -6221,29 +8064,29 @@ and generate_perl_struct_list_code typ cols name style n do_cleanups =
   List.iter (
     function
     | name, FString ->
-	pr "        (void) hv_store (hv, \"%s\", %d, newSVpv (%s->val[i].%s, 0), 0);\n"
-	  name (String.length name) n name
+        pr "        (void) hv_store (hv, \"%s\", %d, newSVpv (%s->val[i].%s, 0), 0);\n"
+          name (String.length name) n name
     | name, FUUID ->
-	pr "        (void) hv_store (hv, \"%s\", %d, newSVpv (%s->val[i].%s, 32), 0);\n"
-	  name (String.length name) n name
+        pr "        (void) hv_store (hv, \"%s\", %d, newSVpv (%s->val[i].%s, 32), 0);\n"
+          name (String.length name) n name
     | name, FBuffer ->
-	pr "        (void) hv_store (hv, \"%s\", %d, newSVpv (%s->val[i].%s, %s->val[i].%s_len), 0);\n"
-	  name (String.length name) n name n name
+        pr "        (void) hv_store (hv, \"%s\", %d, newSVpv (%s->val[i].%s, %s->val[i].%s_len), 0);\n"
+          name (String.length name) n name n name
     | name, (FBytes|FUInt64) ->
-	pr "        (void) hv_store (hv, \"%s\", %d, my_newSVull (%s->val[i].%s), 0);\n"
-	  name (String.length name) n name
+        pr "        (void) hv_store (hv, \"%s\", %d, my_newSVull (%s->val[i].%s), 0);\n"
+          name (String.length name) n name
     | name, FInt64 ->
-	pr "        (void) hv_store (hv, \"%s\", %d, my_newSVll (%s->val[i].%s), 0);\n"
-	  name (String.length name) n name
+        pr "        (void) hv_store (hv, \"%s\", %d, my_newSVll (%s->val[i].%s), 0);\n"
+          name (String.length name) n name
     | name, (FInt32|FUInt32) ->
-	pr "        (void) hv_store (hv, \"%s\", %d, newSVnv (%s->val[i].%s), 0);\n"
-	  name (String.length name) n name
+        pr "        (void) hv_store (hv, \"%s\", %d, newSVnv (%s->val[i].%s), 0);\n"
+          name (String.length name) n name
     | name, FChar ->
-	pr "        (void) hv_store (hv, \"%s\", %d, newSVpv (&%s->val[i].%s, 1), 0);\n"
-	  name (String.length name) n name
+        pr "        (void) hv_store (hv, \"%s\", %d, newSVpv (&%s->val[i].%s, 1), 0);\n"
+          name (String.length name) n name
     | name, FOptPercent ->
-	pr "        (void) hv_store (hv, \"%s\", %d, newSVnv (%s->val[i].%s), 0);\n"
-	  name (String.length name) n name
+        pr "        (void) hv_store (hv, \"%s\", %d, newSVnv (%s->val[i].%s), 0);\n"
+          name (String.length name) n name
   ) cols;
   pr "        PUSHs (sv_2mortal (newRV ((SV *) hv)));\n";
   pr "      }\n";
@@ -6254,7 +8097,7 @@ and generate_perl_struct_code typ cols name style n do_cleanups =
   pr "      struct guestfs_%s *%s;\n" typ n;
   pr " PPCODE:\n";
   pr "      %s = guestfs_%s " n name;
-  generate_call_args ~handle:"g" (snd style);
+  generate_c_call_args ~handle:"g" style;
   pr ";\n";
   do_cleanups ();
   pr "      if (%s == NULL)\n" n;
@@ -6266,29 +8109,29 @@ and generate_perl_struct_code typ cols name style n do_cleanups =
 
       match col with
       | name, FString ->
-	  pr "      PUSHs (sv_2mortal (newSVpv (%s->%s, 0)));\n"
-	    n name
+          pr "      PUSHs (sv_2mortal (newSVpv (%s->%s, 0)));\n"
+            n name
       | name, FBuffer ->
-	  pr "      PUSHs (sv_2mortal (newSVpv (%s->%s, %s->%s_len)));\n"
-	    n name n name
+          pr "      PUSHs (sv_2mortal (newSVpv (%s->%s, %s->%s_len)));\n"
+            n name n name
       | name, FUUID ->
-	  pr "      PUSHs (sv_2mortal (newSVpv (%s->%s, 32)));\n"
-	    n name
+          pr "      PUSHs (sv_2mortal (newSVpv (%s->%s, 32)));\n"
+            n name
       | name, (FBytes|FUInt64) ->
-	  pr "      PUSHs (sv_2mortal (my_newSVull (%s->%s)));\n"
-	    n name
+          pr "      PUSHs (sv_2mortal (my_newSVull (%s->%s)));\n"
+            n name
       | name, FInt64 ->
-	  pr "      PUSHs (sv_2mortal (my_newSVll (%s->%s)));\n"
-	    n name
+          pr "      PUSHs (sv_2mortal (my_newSVll (%s->%s)));\n"
+            n name
       | name, (FInt32|FUInt32) ->
-	  pr "      PUSHs (sv_2mortal (newSVnv (%s->%s)));\n"
-	    n name
+          pr "      PUSHs (sv_2mortal (newSVnv (%s->%s)));\n"
+            n name
       | name, FChar ->
-	  pr "      PUSHs (sv_2mortal (newSVpv (&%s->%s, 1)));\n"
-	    n name
+          pr "      PUSHs (sv_2mortal (newSVpv (&%s->%s, 1)));\n"
+            n name
       | name, FOptPercent ->
-	  pr "      PUSHs (sv_2mortal (newSVnv (%s->%s)));\n"
-	    n name
+          pr "      PUSHs (sv_2mortal (newSVnv (%s->%s)));\n"
+            n name
   ) cols;
   pr "      free (%s);\n" n
 
@@ -6310,7 +8153,6 @@ Sys::Guestfs - Perl bindings for libguestfs
  my $h = Sys::Guestfs->new ();
  $h->add_drive ('guest.img');
  $h->launch ();
- $h->wait_ready ();
  $h->mount ('/dev/sda1', '/');
  $h->touch ('/hello');
  $h->sync ();
@@ -6382,15 +8224,18 @@ sub new {
   List.iter (
     fun (name, style, _, flags, _, _, longdesc) ->
       if not (List.mem NotInDocs flags) then (
-	let longdesc = replace_str longdesc "C<guestfs_" "C<$h-E<gt>" in
-	pr "=item ";
-	generate_perl_prototype name style;
-	pr "\n\n";
-	pr "%s\n\n" longdesc;
-	if List.mem ProtocolLimitWarning flags then
-	  pr "%s\n\n" protocol_limit_warning;
-	if List.mem DangerWillRobinson flags then
-	  pr "%s\n\n" danger_will_robinson
+        let longdesc = replace_str longdesc "C<guestfs_" "C<$h-E<gt>" in
+        pr "=item ";
+        generate_perl_prototype name style;
+        pr "\n\n";
+        pr "%s\n\n" longdesc;
+        if List.mem ProtocolLimitWarning flags then
+          pr "%s\n\n" protocol_limit_warning;
+        if List.mem DangerWillRobinson flags then
+          pr "%s\n\n" danger_will_robinson;
+        match deprecation_notice flags with
+        | None -> ()
+        | Some txt -> pr "%s\n\n" txt
       )
   ) all_functions_sorted;
 
@@ -6427,7 +8272,9 @@ and generate_perl_prototype name style =
    | RInt n
    | RInt64 n
    | RConstString n
-   | RString n -> pr "$%s = " n
+   | RConstOptString n
+   | RString n
+   | RBufferOut n -> pr "$%s = " n
    | RStruct (n,_)
    | RHashtable n -> pr "%%%s = " n
    | RStringList n
@@ -6440,10 +8287,11 @@ and generate_perl_prototype name style =
       if !comma then pr ", ";
       comma := true;
       match arg with
-      | String n | OptString n | Bool n | Int n | FileIn n | FileOut n ->
-	  pr "$%s" n
-      | StringList n ->
-	  pr "\\@%s" n
+      | Pathname n | Device n | Dev_or_Path n | String n
+      | OptString n | Bool n | Int n | Int64 n | FileIn n | FileOut n ->
+          pr "$%s" n
+      | StringList n | DeviceList n ->
+          pr "\\@%s" n
   ) (snd style);
   pr ");"
 
@@ -6452,11 +8300,11 @@ and generate_python_c () =
   generate_header CStyle LGPLv2;
 
   pr "\
+#include <Python.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-
-#include <Python.h>
 
 #include \"guestfs.h\"
 
@@ -6482,11 +8330,11 @@ put_handle (guestfs_h *g)
 }
 
 /* This list should be freed (but not the strings) after use. */
-static const char **
+static char **
 get_string_list (PyObject *obj)
 {
   int i, len;
-  const char **r;
+  char **r;
 
   assert (obj);
 
@@ -6588,6 +8436,21 @@ py_guestfs_close (PyObject *self, PyObject *args)
 
 ";
 
+  let emit_put_list_function typ =
+    pr "static PyObject *\n";
+    pr "put_%s_list (struct guestfs_%s_list *%ss)\n" typ typ typ;
+    pr "{\n";
+    pr "  PyObject *list;\n";
+    pr "  int i;\n";
+    pr "\n";
+    pr "  list = PyList_New (%ss->len);\n" typ;
+    pr "  for (i = 0; i < %ss->len; ++i)\n" typ;
+    pr "    PyList_SetItem (list, i, put_%s (&%ss->val[i]));\n" typ typ;
+    pr "  return list;\n";
+    pr "};\n";
+    pr "\n"
+  in
+
   (* Structures, turned into Python dictionaries. *)
   List.iter (
     fun (typ, cols) ->
@@ -6598,65 +8461,62 @@ py_guestfs_close (PyObject *self, PyObject *args)
       pr "\n";
       pr "  dict = PyDict_New ();\n";
       List.iter (
-	function
-	| name, FString ->
-	    pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-	    pr "                        PyString_FromString (%s->%s));\n"
-	      typ name
-	| name, FBuffer ->
-	    pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-	    pr "                        PyString_FromStringAndSize (%s->%s, %s->%s_len));\n"
-	      typ name typ name
-	| name, FUUID ->
-	    pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-	    pr "                        PyString_FromStringAndSize (%s->%s, 32));\n"
-	      typ name
-	| name, (FBytes|FUInt64) ->
-	    pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-	    pr "                        PyLong_FromUnsignedLongLong (%s->%s));\n"
-	      typ name
-	| name, FInt64 ->
-	    pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-	    pr "                        PyLong_FromLongLong (%s->%s));\n"
-	      typ name
-	| name, FUInt32 ->
-	    pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-	    pr "                        PyLong_FromUnsignedLong (%s->%s));\n"
-	      typ name
-	| name, FInt32 ->
-	    pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-	    pr "                        PyLong_FromLong (%s->%s));\n"
-	      typ name
-	| name, FOptPercent ->
-	    pr "  if (%s->%s >= 0)\n" typ name;
-	    pr "    PyDict_SetItemString (dict, \"%s\",\n" name;
-	    pr "                          PyFloat_FromDouble ((double) %s->%s));\n"
-	      typ name;
-	    pr "  else {\n";
-	    pr "    Py_INCREF (Py_None);\n";
-	    pr "    PyDict_SetItemString (dict, \"%s\", Py_None);" name;
-	    pr "  }\n"
-	| name, FChar ->
-	    pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
-	    pr "                        PyString_FromStringAndSize (&dirent->%s, 1));\n" name
+        function
+        | name, FString ->
+            pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
+            pr "                        PyString_FromString (%s->%s));\n"
+              typ name
+        | name, FBuffer ->
+            pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
+            pr "                        PyString_FromStringAndSize (%s->%s, %s->%s_len));\n"
+              typ name typ name
+        | name, FUUID ->
+            pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
+            pr "                        PyString_FromStringAndSize (%s->%s, 32));\n"
+              typ name
+        | name, (FBytes|FUInt64) ->
+            pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
+            pr "                        PyLong_FromUnsignedLongLong (%s->%s));\n"
+              typ name
+        | name, FInt64 ->
+            pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
+            pr "                        PyLong_FromLongLong (%s->%s));\n"
+              typ name
+        | name, FUInt32 ->
+            pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
+            pr "                        PyLong_FromUnsignedLong (%s->%s));\n"
+              typ name
+        | name, FInt32 ->
+            pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
+            pr "                        PyLong_FromLong (%s->%s));\n"
+              typ name
+        | name, FOptPercent ->
+            pr "  if (%s->%s >= 0)\n" typ name;
+            pr "    PyDict_SetItemString (dict, \"%s\",\n" name;
+            pr "                          PyFloat_FromDouble ((double) %s->%s));\n"
+              typ name;
+            pr "  else {\n";
+            pr "    Py_INCREF (Py_None);\n";
+            pr "    PyDict_SetItemString (dict, \"%s\", Py_None);\n" name;
+            pr "  }\n"
+        | name, FChar ->
+            pr "  PyDict_SetItemString (dict, \"%s\",\n" name;
+            pr "                        PyString_FromStringAndSize (&dirent->%s, 1));\n" name
       ) cols;
       pr "  return dict;\n";
       pr "};\n";
       pr "\n";
 
-      pr "static PyObject *\n";
-      pr "put_%s_list (struct guestfs_%s_list *%ss)\n" typ typ typ;
-      pr "{\n";
-      pr "  PyObject *list;\n";
-      pr "  int i;\n";
-      pr "\n";
-      pr "  list = PyList_New (%ss->len);\n" typ;
-      pr "  for (i = 0; i < %ss->len; ++i)\n" typ;
-      pr "    PyList_SetItem (list, i, put_%s (&%ss->val[i]));\n" typ typ;
-      pr "  return list;\n";
-      pr "};\n";
-      pr "\n"
   ) structs;
+
+  (* Emit a put_TYPE_list function definition only if that function is used. *)
+  List.iter (
+    function
+    | typ, (RStructListOnly | RStructAndList) ->
+        (* generate the function for typ *)
+        emit_put_list_function typ
+    | typ, _ -> () (* empty *)
+  ) (rstructs_used_by all_functions);
 
   (* Python wrapper functions. *)
   List.iter (
@@ -6670,25 +8530,32 @@ py_guestfs_close (PyObject *self, PyObject *args)
       pr "  PyObject *py_r;\n";
 
       let error_code =
-	match fst style with
-	| RErr | RInt _ | RBool _ -> pr "  int r;\n"; "-1"
-	| RInt64 _ -> pr "  int64_t r;\n"; "-1"
-	| RConstString _ -> pr "  const char *r;\n"; "NULL"
-	| RString _ -> pr "  char *r;\n"; "NULL"
-	| RStringList _ | RHashtable _ -> pr "  char **r;\n"; "NULL"
-	| RStruct (_, typ) -> pr "  struct guestfs_%s *r;\n" typ; "NULL"
-	| RStructList (_, typ) ->
-	    pr "  struct guestfs_%s_list *r;\n" typ; "NULL" in
+        match fst style with
+        | RErr | RInt _ | RBool _ -> pr "  int r;\n"; "-1"
+        | RInt64 _ -> pr "  int64_t r;\n"; "-1"
+        | RConstString _ | RConstOptString _ ->
+            pr "  const char *r;\n"; "NULL"
+        | RString _ -> pr "  char *r;\n"; "NULL"
+        | RStringList _ | RHashtable _ -> pr "  char **r;\n"; "NULL"
+        | RStruct (_, typ) -> pr "  struct guestfs_%s *r;\n" typ; "NULL"
+        | RStructList (_, typ) ->
+            pr "  struct guestfs_%s_list *r;\n" typ; "NULL"
+        | RBufferOut _ ->
+            pr "  char *r;\n";
+            pr "  size_t size;\n";
+            "NULL" in
 
       List.iter (
-	function
-	| String n | FileIn n | FileOut n -> pr "  const char *%s;\n" n
-	| OptString n -> pr "  const char *%s;\n" n
-	| StringList n ->
-	    pr "  PyObject *py_%s;\n" n;
-	    pr "  const char **%s;\n" n
-	| Bool n -> pr "  int %s;\n" n
-	| Int n -> pr "  int %s;\n" n
+        function
+        | Pathname n | Device n | Dev_or_Path n | String n | FileIn n | FileOut n ->
+            pr "  const char *%s;\n" n
+        | OptString n -> pr "  const char *%s;\n" n
+        | StringList n | DeviceList n ->
+            pr "  PyObject *py_%s;\n" n;
+            pr "  char **%s;\n" n
+        | Bool n -> pr "  int %s;\n" n
+        | Int n -> pr "  int %s;\n" n
+        | Int64 n -> pr "  long long %s;\n" n
       ) (snd style);
 
       pr "\n";
@@ -6696,22 +8563,26 @@ py_guestfs_close (PyObject *self, PyObject *args)
       (* Convert the parameters. *)
       pr "  if (!PyArg_ParseTuple (args, (char *) \"O";
       List.iter (
-	function
-	| String _ | FileIn _ | FileOut _ -> pr "s"
-	| OptString _ -> pr "z"
-	| StringList _ -> pr "O"
-	| Bool _ -> pr "i" (* XXX Python has booleans? *)
-	| Int _ -> pr "i"
+        function
+        | Pathname _ | Device _ | Dev_or_Path _ | String _ | FileIn _ | FileOut _ -> pr "s"
+        | OptString _ -> pr "z"
+        | StringList _ | DeviceList _ -> pr "O"
+        | Bool _ -> pr "i" (* XXX Python has booleans? *)
+        | Int _ -> pr "i"
+        | Int64 _ -> pr "L" (* XXX Whoever thought it was a good idea to
+                             * emulate C's int/long/long long in Python?
+                             *)
       ) (snd style);
       pr ":guestfs_%s\",\n" name;
       pr "                         &py_g";
       List.iter (
-	function
-	| String n | FileIn n | FileOut n -> pr ", &%s" n
-	| OptString n -> pr ", &%s" n
-	| StringList n -> pr ", &py_%s" n
-	| Bool n -> pr ", &%s" n
-	| Int n -> pr ", &%s" n
+        function
+        | Pathname n | Device n | Dev_or_Path n | String n | FileIn n | FileOut n -> pr ", &%s" n
+        | OptString n -> pr ", &%s" n
+        | StringList n | DeviceList n -> pr ", &py_%s" n
+        | Bool n -> pr ", &%s" n
+        | Int n -> pr ", &%s" n
+        | Int64 n -> pr ", &%s" n
       ) (snd style);
 
       pr "))\n";
@@ -6719,24 +8590,26 @@ py_guestfs_close (PyObject *self, PyObject *args)
 
       pr "  g = get_handle (py_g);\n";
       List.iter (
-	function
-	| String _ | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ -> ()
-	| StringList n ->
-	    pr "  %s = get_string_list (py_%s);\n" n n;
-	    pr "  if (!%s) return NULL;\n" n
+        function
+        | Pathname _ | Device _ | Dev_or_Path _ | String _
+        | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ | Int64 _ -> ()
+        | StringList n | DeviceList n ->
+            pr "  %s = get_string_list (py_%s);\n" n n;
+            pr "  if (!%s) return NULL;\n" n
       ) (snd style);
 
       pr "\n";
 
       pr "  r = guestfs_%s " name;
-      generate_call_args ~handle:"g" (snd style);
+      generate_c_call_args ~handle:"g" style;
       pr ";\n";
 
       List.iter (
-	function
-	| String _ | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ -> ()
-	| StringList n ->
-	    pr "  free (%s);\n" n
+        function
+        | Pathname _ | Device _ | Dev_or_Path _ | String _
+        | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ | Int64 _ -> ()
+        | StringList n | DeviceList n ->
+            pr "  free (%s);\n" n
       ) (snd style);
 
       pr "  if (r == %s) {\n" error_code;
@@ -6747,27 +8620,37 @@ py_guestfs_close (PyObject *self, PyObject *args)
 
       (match fst style with
        | RErr ->
-	   pr "  Py_INCREF (Py_None);\n";
-	   pr "  py_r = Py_None;\n"
+           pr "  Py_INCREF (Py_None);\n";
+           pr "  py_r = Py_None;\n"
        | RInt _
        | RBool _ -> pr "  py_r = PyInt_FromLong ((long) r);\n"
        | RInt64 _ -> pr "  py_r = PyLong_FromLongLong (r);\n"
        | RConstString _ -> pr "  py_r = PyString_FromString (r);\n"
+       | RConstOptString _ ->
+           pr "  if (r)\n";
+           pr "    py_r = PyString_FromString (r);\n";
+           pr "  else {\n";
+           pr "    Py_INCREF (Py_None);\n";
+           pr "    py_r = Py_None;\n";
+           pr "  }\n"
        | RString _ ->
-	   pr "  py_r = PyString_FromString (r);\n";
-	   pr "  free (r);\n"
+           pr "  py_r = PyString_FromString (r);\n";
+           pr "  free (r);\n"
        | RStringList _ ->
-	   pr "  py_r = put_string_list (r);\n";
-	   pr "  free_strings (r);\n"
+           pr "  py_r = put_string_list (r);\n";
+           pr "  free_strings (r);\n"
        | RStruct (_, typ) ->
-	   pr "  py_r = put_%s (r);\n" typ;
-	   pr "  guestfs_free_%s (r);\n" typ
+           pr "  py_r = put_%s (r);\n" typ;
+           pr "  guestfs_free_%s (r);\n" typ
        | RStructList (_, typ) ->
-	   pr "  py_r = put_%s_list (r);\n" typ;
-	   pr "  guestfs_free_%s_list (r);\n" typ
+           pr "  py_r = put_%s_list (r);\n" typ;
+           pr "  guestfs_free_%s_list (r);\n" typ
        | RHashtable n ->
-	   pr "  py_r = put_table (r);\n";
-	   pr "  free_strings (r);\n"
+           pr "  py_r = put_table (r);\n";
+           pr "  free_strings (r);\n"
+       | RBufferOut _ ->
+           pr "  py_r = PyString_FromStringAndSize (r, size);\n";
+           pr "  free (r);\n"
       );
 
       pr "  return py_r;\n";
@@ -6782,7 +8665,7 @@ py_guestfs_close (PyObject *self, PyObject *args)
   List.iter (
     fun (name, _, _, _, _, _, _) ->
       pr "  { (char *) \"%s\", py_guestfs_%s, METH_VARARGS, NULL },\n"
-	name name
+        name name
   ) all_functions;
   pr "  { NULL, NULL, 0, NULL }\n";
   pr "};\n";
@@ -6812,7 +8695,6 @@ import guestfs
 g = guestfs.GuestFS ()
 g.add_drive (\"guest.img\")
 g.launch ()
-g.wait_ready ()
 parts = g.list_partitions ()
 
 The guestfs module provides a Python binding to the libguestfs API
@@ -6847,7 +8729,6 @@ g.add_drive (\"guest.img\")
 
 # Launch the qemu subprocess and wait for it to become ready:
 g.launch ()
-g.wait_ready ()
 
 # Now you can issue commands, for example:
 logvols = g.lvs ()
@@ -6871,41 +8752,52 @@ class GuestFS:
   List.iter (
     fun (name, style, _, flags, _, _, longdesc) ->
       pr "    def %s " name;
-      generate_call_args ~handle:"self" (snd style);
+      generate_py_call_args ~handle:"self" (snd style);
       pr ":\n";
 
       if not (List.mem NotInDocs flags) then (
-	let doc = replace_str longdesc "C<guestfs_" "C<g." in
-	let doc =
+        let doc = replace_str longdesc "C<guestfs_" "C<g." in
+        let doc =
           match fst style with
-	  | RErr | RInt _ | RInt64 _ | RBool _ | RConstString _
-	  | RString _ -> doc
-	  | RStringList _ ->
-	      doc ^ "\n\nThis function returns a list of strings."
-	  | RStruct (_, typ) ->
-	      doc ^ sprintf "\n\nThis function returns a dictionary, with keys matching the various fields in the guestfs_%s structure." typ
-	  | RStructList (_, typ) ->
-	      doc ^ sprintf "\n\nThis function returns a list of %ss.  Each %s is represented as a dictionary." typ typ
-	  | RHashtable _ ->
-	      doc ^ "\n\nThis function returns a dictionary." in
-	let doc =
-	  if List.mem ProtocolLimitWarning flags then
-	    doc ^ "\n\n" ^ protocol_limit_warning
-	  else doc in
-	let doc =
-	  if List.mem DangerWillRobinson flags then
-	    doc ^ "\n\n" ^ danger_will_robinson
-	  else doc in
-	let doc = pod2text ~width:60 name doc in
-	let doc = List.map (fun line -> replace_str line "\\" "\\\\") doc in
-	let doc = String.concat "\n        " doc in
-	pr "        u\"\"\"%s\"\"\"\n" doc;
+          | RErr | RInt _ | RInt64 _ | RBool _
+          | RConstOptString _ | RConstString _
+          | RString _ | RBufferOut _ -> doc
+          | RStringList _ ->
+              doc ^ "\n\nThis function returns a list of strings."
+          | RStruct (_, typ) ->
+              doc ^ sprintf "\n\nThis function returns a dictionary, with keys matching the various fields in the guestfs_%s structure." typ
+          | RStructList (_, typ) ->
+              doc ^ sprintf "\n\nThis function returns a list of %ss.  Each %s is represented as a dictionary." typ typ
+          | RHashtable _ ->
+              doc ^ "\n\nThis function returns a dictionary." in
+        let doc =
+          if List.mem ProtocolLimitWarning flags then
+            doc ^ "\n\n" ^ protocol_limit_warning
+          else doc in
+        let doc =
+          if List.mem DangerWillRobinson flags then
+            doc ^ "\n\n" ^ danger_will_robinson
+          else doc in
+        let doc =
+          match deprecation_notice flags with
+          | None -> doc
+          | Some txt -> doc ^ "\n\n" ^ txt in
+        let doc = pod2text ~width:60 name doc in
+        let doc = List.map (fun line -> replace_str line "\\" "\\\\") doc in
+        let doc = String.concat "\n        " doc in
+        pr "        u\"\"\"%s\"\"\"\n" doc;
       );
       pr "        return libguestfsmod.%s " name;
-      generate_call_args ~handle:"self._o" (snd style);
+      generate_py_call_args ~handle:"self._o" (snd style);
       pr "\n";
       pr "\n";
   ) all_functions
+
+(* Generate Python call arguments, eg "(handle, foo, bar)" *)
+and generate_py_call_args ~handle args =
+  pr "(%s" handle;
+  List.iter (fun arg -> pr ", %s" (name_of_argt arg)) args;
+  pr ")"
 
 (* Useful if you need the longdesc POD text as plain text.  Returns a
  * list of lines.
@@ -6921,30 +8813,28 @@ and pod2text ~width name longdesc =
     fprintf chan "=head1 %s\n\n%s\n" name longdesc;
     close_out chan;
     let cmd = sprintf "pod2text -w %d %s" width (Filename.quote filename) in
-    let chan = Unix.open_process_in cmd in
+    let chan = open_process_in cmd in
     let lines = ref [] in
     let rec loop i =
       let line = input_line chan in
       if i = 1 then		(* discard the first line of output *)
-	loop (i+1)
+        loop (i+1)
       else (
-	let line = triml line in
-	lines := line :: !lines;
-	loop (i+1)
+        let line = triml line in
+        lines := line :: !lines;
+        loop (i+1)
       ) in
     let lines = try loop 1 with End_of_file -> List.rev !lines in
-    Unix.unlink filename;
-    (match Unix.close_process_in chan with
-     | Unix.WEXITED 0 -> ()
-     | Unix.WEXITED i ->
-	 failwithf "pod2text: process exited with non-zero status (%d)" i
-     | Unix.WSIGNALED i | Unix.WSTOPPED i ->
-	 failwithf "pod2text: process signalled or stopped by signal %d" i
+    unlink filename;
+    (match close_process_in chan with
+     | WEXITED 0 -> ()
+     | WEXITED i ->
+         failwithf "pod2text: process exited with non-zero status (%d)" i
+     | WSIGNALED i | WSTOPPED i ->
+         failwithf "pod2text: process signalled or stopped by signal %d" i
     );
     Hashtbl.add pod2text_memo key lines;
-    let chan = open_out pod2text_memo_filename in
-    output_value chan pod2text_memo;
-    close_out chan;
+    pod2text_memo_updated ();
     lines
 
 (* Generate ruby bindings. *)
@@ -7016,61 +8906,69 @@ static VALUE ruby_guestfs_close (VALUE gv)
       pr "  Data_Get_Struct (gv, guestfs_h, g);\n";
       pr "  if (!g)\n";
       pr "    rb_raise (rb_eArgError, \"%%s: used handle after closing it\", \"%s\");\n"
-	name;
+        name;
       pr "\n";
 
       List.iter (
-	function
-	| String n | FileIn n | FileOut n ->
-	    pr "  Check_Type (%sv, T_STRING);\n" n;
-	    pr "  const char *%s = StringValueCStr (%sv);\n" n n;
-	    pr "  if (!%s)\n" n;
-	    pr "    rb_raise (rb_eTypeError, \"expected string for parameter %%s of %%s\",\n";
-	    pr "              \"%s\", \"%s\");\n" n name
-	| OptString n ->
-	    pr "  const char *%s = !NIL_P (%sv) ? StringValueCStr (%sv) : NULL;\n" n n n
-	| StringList n ->
-	    pr "  char **%s;\n" n;
-	    pr "  Check_Type (%sv, T_ARRAY);\n" n;
-	    pr "  {\n";
-	    pr "    int i, len;\n";
-	    pr "    len = RARRAY_LEN (%sv);\n" n;
-	    pr "    %s = guestfs_safe_malloc (g, sizeof (char *) * (len+1));\n"
-	      n;
-	    pr "    for (i = 0; i < len; ++i) {\n";
-	    pr "      VALUE v = rb_ary_entry (%sv, i);\n" n;
-	    pr "      %s[i] = StringValueCStr (v);\n" n;
-	    pr "    }\n";
-	    pr "    %s[len] = NULL;\n" n;
-	    pr "  }\n";
-	| Bool n ->
-	    pr "  int %s = RTEST (%sv);\n" n n
-	| Int n ->
-	    pr "  int %s = NUM2INT (%sv);\n" n n
+        function
+        | Pathname n | Device n | Dev_or_Path n | String n | FileIn n | FileOut n ->
+            pr "  Check_Type (%sv, T_STRING);\n" n;
+            pr "  const char *%s = StringValueCStr (%sv);\n" n n;
+            pr "  if (!%s)\n" n;
+            pr "    rb_raise (rb_eTypeError, \"expected string for parameter %%s of %%s\",\n";
+            pr "              \"%s\", \"%s\");\n" n name
+        | OptString n ->
+            pr "  const char *%s = !NIL_P (%sv) ? StringValueCStr (%sv) : NULL;\n" n n n
+        | StringList n | DeviceList n ->
+            pr "  char **%s;\n" n;
+            pr "  Check_Type (%sv, T_ARRAY);\n" n;
+            pr "  {\n";
+            pr "    int i, len;\n";
+            pr "    len = RARRAY_LEN (%sv);\n" n;
+            pr "    %s = guestfs_safe_malloc (g, sizeof (char *) * (len+1));\n"
+              n;
+            pr "    for (i = 0; i < len; ++i) {\n";
+            pr "      VALUE v = rb_ary_entry (%sv, i);\n" n;
+            pr "      %s[i] = StringValueCStr (v);\n" n;
+            pr "    }\n";
+            pr "    %s[len] = NULL;\n" n;
+            pr "  }\n";
+        | Bool n ->
+            pr "  int %s = RTEST (%sv);\n" n n
+        | Int n ->
+            pr "  int %s = NUM2INT (%sv);\n" n n
+        | Int64 n ->
+            pr "  long long %s = NUM2LL (%sv);\n" n n
       ) (snd style);
       pr "\n";
 
       let error_code =
-	match fst style with
-	| RErr | RInt _ | RBool _ -> pr "  int r;\n"; "-1"
-	| RInt64 _ -> pr "  int64_t r;\n"; "-1"
-	| RConstString _ -> pr "  const char *r;\n"; "NULL"
-	| RString _ -> pr "  char *r;\n"; "NULL"
-	| RStringList _ | RHashtable _ -> pr "  char **r;\n"; "NULL"
-	| RStruct (_, typ) -> pr "  struct guestfs_%s *r;\n" typ; "NULL"
-	| RStructList (_, typ) ->
-	    pr "  struct guestfs_%s_list *r;\n" typ; "NULL" in
+        match fst style with
+        | RErr | RInt _ | RBool _ -> pr "  int r;\n"; "-1"
+        | RInt64 _ -> pr "  int64_t r;\n"; "-1"
+        | RConstString _ | RConstOptString _ ->
+            pr "  const char *r;\n"; "NULL"
+        | RString _ -> pr "  char *r;\n"; "NULL"
+        | RStringList _ | RHashtable _ -> pr "  char **r;\n"; "NULL"
+        | RStruct (_, typ) -> pr "  struct guestfs_%s *r;\n" typ; "NULL"
+        | RStructList (_, typ) ->
+            pr "  struct guestfs_%s_list *r;\n" typ; "NULL"
+        | RBufferOut _ ->
+            pr "  char *r;\n";
+            pr "  size_t size;\n";
+            "NULL" in
       pr "\n";
 
       pr "  r = guestfs_%s " name;
-      generate_call_args ~handle:"g" (snd style);
+      generate_c_call_args ~handle:"g" style;
       pr ";\n";
 
       List.iter (
-	function
-	| String _ | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ -> ()
-	| StringList n ->
-	    pr "  free (%s);\n" n
+        function
+        | Pathname _ | Device _ | Dev_or_Path _ | String _
+        | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ | Int64 _ -> ()
+        | StringList n | DeviceList n ->
+            pr "  free (%s);\n" n
       ) (snd style);
 
       pr "  if (r == %s)\n" error_code;
@@ -7079,43 +8977,52 @@ static VALUE ruby_guestfs_close (VALUE gv)
 
       (match fst style with
        | RErr ->
-	   pr "  return Qnil;\n"
+           pr "  return Qnil;\n"
        | RInt _ | RBool _ ->
-	   pr "  return INT2NUM (r);\n"
+           pr "  return INT2NUM (r);\n"
        | RInt64 _ ->
-	   pr "  return ULL2NUM (r);\n"
+           pr "  return ULL2NUM (r);\n"
        | RConstString _ ->
-	   pr "  return rb_str_new2 (r);\n";
+           pr "  return rb_str_new2 (r);\n";
+       | RConstOptString _ ->
+           pr "  if (r)\n";
+           pr "    return rb_str_new2 (r);\n";
+           pr "  else\n";
+           pr "    return Qnil;\n";
        | RString _ ->
-	   pr "  VALUE rv = rb_str_new2 (r);\n";
-	   pr "  free (r);\n";
-	   pr "  return rv;\n";
+           pr "  VALUE rv = rb_str_new2 (r);\n";
+           pr "  free (r);\n";
+           pr "  return rv;\n";
        | RStringList _ ->
-	   pr "  int i, len = 0;\n";
-	   pr "  for (i = 0; r[i] != NULL; ++i) len++;\n";
-	   pr "  VALUE rv = rb_ary_new2 (len);\n";
-	   pr "  for (i = 0; r[i] != NULL; ++i) {\n";
-	   pr "    rb_ary_push (rv, rb_str_new2 (r[i]));\n";
-	   pr "    free (r[i]);\n";
-	   pr "  }\n";
-	   pr "  free (r);\n";
-	   pr "  return rv;\n"
+           pr "  int i, len = 0;\n";
+           pr "  for (i = 0; r[i] != NULL; ++i) len++;\n";
+           pr "  VALUE rv = rb_ary_new2 (len);\n";
+           pr "  for (i = 0; r[i] != NULL; ++i) {\n";
+           pr "    rb_ary_push (rv, rb_str_new2 (r[i]));\n";
+           pr "    free (r[i]);\n";
+           pr "  }\n";
+           pr "  free (r);\n";
+           pr "  return rv;\n"
        | RStruct (_, typ) ->
-	   let cols = cols_of_struct typ in
-	   generate_ruby_struct_code typ cols
+           let cols = cols_of_struct typ in
+           generate_ruby_struct_code typ cols
        | RStructList (_, typ) ->
-	   let cols = cols_of_struct typ in
-	   generate_ruby_struct_list_code typ cols
+           let cols = cols_of_struct typ in
+           generate_ruby_struct_list_code typ cols
        | RHashtable _ ->
-	   pr "  VALUE rv = rb_hash_new ();\n";
-	   pr "  int i;\n";
-	   pr "  for (i = 0; r[i] != NULL; i+=2) {\n";
-	   pr "    rb_hash_aset (rv, rb_str_new2 (r[i]), rb_str_new2 (r[i+1]));\n";
-	   pr "    free (r[i]);\n";
-	   pr "    free (r[i+1]);\n";
-	   pr "  }\n";
-	   pr "  free (r);\n";
-	   pr "  return rv;\n"
+           pr "  VALUE rv = rb_hash_new ();\n";
+           pr "  int i;\n";
+           pr "  for (i = 0; r[i] != NULL; i+=2) {\n";
+           pr "    rb_hash_aset (rv, rb_str_new2 (r[i]), rb_str_new2 (r[i+1]));\n";
+           pr "    free (r[i]);\n";
+           pr "    free (r[i+1]);\n";
+           pr "  }\n";
+           pr "  free (r);\n";
+           pr "  return rv;\n"
+       | RBufferOut _ ->
+           pr "  VALUE rv = rb_str_new (r, size);\n";
+           pr "  free (r);\n";
+           pr "  return rv;\n";
       );
 
       pr "}\n";
@@ -7149,23 +9056,23 @@ and generate_ruby_struct_code typ cols =
   List.iter (
     function
     | name, FString ->
-	pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), rb_str_new2 (r->%s));\n" name name
+        pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), rb_str_new2 (r->%s));\n" name name
     | name, FBuffer ->
-	pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), rb_str_new (r->%s, r->%s_len));\n" name name name
+        pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), rb_str_new (r->%s, r->%s_len));\n" name name name
     | name, FUUID ->
-	pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), rb_str_new (r->%s, 32));\n" name name
+        pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), rb_str_new (r->%s, 32));\n" name name
     | name, (FBytes|FUInt64) ->
-	pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), ULL2NUM (r->%s));\n" name name
+        pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), ULL2NUM (r->%s));\n" name name
     | name, FInt64 ->
-	pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), LL2NUM (r->%s));\n" name name
+        pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), LL2NUM (r->%s));\n" name name
     | name, FUInt32 ->
-	pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), UINT2NUM (r->%s));\n" name name
+        pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), UINT2NUM (r->%s));\n" name name
     | name, FInt32 ->
-	pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), INT2NUM (r->%s));\n" name name
+        pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), INT2NUM (r->%s));\n" name name
     | name, FOptPercent ->
-	pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), rb_dbl2big (r->%s));\n" name name
+        pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), rb_dbl2big (r->%s));\n" name name
     | name, FChar -> (* XXX wrong? *)
-	pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), ULL2NUM (r->%s));\n" name name
+        pr "  rb_hash_aset (rv, rb_str_new2 (\"%s\"), ULL2NUM (r->%s));\n" name name
   ) cols;
   pr "  guestfs_free_%s (r);\n" typ;
   pr "  return rv;\n"
@@ -7179,23 +9086,23 @@ and generate_ruby_struct_list_code typ cols =
   List.iter (
     function
     | name, FString ->
-	pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), rb_str_new2 (r->val[i].%s));\n" name name
+        pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), rb_str_new2 (r->val[i].%s));\n" name name
     | name, FBuffer ->
-	pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), rb_str_new (r->val[i].%s, r->val[i].%s_len));\n" name name name
+        pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), rb_str_new (r->val[i].%s, r->val[i].%s_len));\n" name name name
     | name, FUUID ->
-	pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), rb_str_new (r->val[i].%s, 32));\n" name name
+        pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), rb_str_new (r->val[i].%s, 32));\n" name name
     | name, (FBytes|FUInt64) ->
-	pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), ULL2NUM (r->val[i].%s));\n" name name
+        pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), ULL2NUM (r->val[i].%s));\n" name name
     | name, FInt64 ->
-	pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), LL2NUM (r->val[i].%s));\n" name name
+        pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), LL2NUM (r->val[i].%s));\n" name name
     | name, FUInt32 ->
-	pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), UINT2NUM (r->val[i].%s));\n" name name
+        pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), UINT2NUM (r->val[i].%s));\n" name name
     | name, FInt32 ->
-	pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), INT2NUM (r->val[i].%s));\n" name name
+        pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), INT2NUM (r->val[i].%s));\n" name name
     | name, FOptPercent ->
-	pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), rb_dbl2big (r->val[i].%s));\n" name name
+        pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), rb_dbl2big (r->val[i].%s));\n" name name
     | name, FChar -> (* XXX wrong? *)
-	pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), ULL2NUM (r->val[i].%s));\n" name name
+        pr "    rb_hash_aset (hv, rb_str_new2 (\"%s\"), ULL2NUM (r->val[i].%s));\n" name name
   ) cols;
   pr "    rb_ary_push (rv, hv);\n";
   pr "  }\n";
@@ -7275,41 +9182,45 @@ public class GuestFS {
   List.iter (
     fun (name, style, _, flags, _, shortdesc, longdesc) ->
       if not (List.mem NotInDocs flags); then (
-	let doc = replace_str longdesc "C<guestfs_" "C<g." in
-	let doc =
-	  if List.mem ProtocolLimitWarning flags then
-	    doc ^ "\n\n" ^ protocol_limit_warning
-	  else doc in
-	let doc =
-	  if List.mem DangerWillRobinson flags then
-	    doc ^ "\n\n" ^ danger_will_robinson
-	  else doc in
-	let doc = pod2text ~width:60 name doc in
-	let doc = List.map (		(* RHBZ#501883 *)
-	  function
-	  | "" -> "<p>"
-	  | nonempty -> nonempty
-	) doc in
-	let doc = String.concat "\n   * " doc in
+        let doc = replace_str longdesc "C<guestfs_" "C<g." in
+        let doc =
+          if List.mem ProtocolLimitWarning flags then
+            doc ^ "\n\n" ^ protocol_limit_warning
+          else doc in
+        let doc =
+          if List.mem DangerWillRobinson flags then
+            doc ^ "\n\n" ^ danger_will_robinson
+          else doc in
+        let doc =
+          match deprecation_notice flags with
+          | None -> doc
+          | Some txt -> doc ^ "\n\n" ^ txt in
+        let doc = pod2text ~width:60 name doc in
+        let doc = List.map (		(* RHBZ#501883 *)
+          function
+          | "" -> "<p>"
+          | nonempty -> nonempty
+        ) doc in
+        let doc = String.concat "\n   * " doc in
 
-	pr "  /**\n";
-	pr "   * %s\n" shortdesc;
-	pr "   * <p>\n";
-	pr "   * %s\n" doc;
-	pr "   * @throws LibGuestFSException\n";
-	pr "   */\n";
-	pr "  ";
+        pr "  /**\n";
+        pr "   * %s\n" shortdesc;
+        pr "   * <p>\n";
+        pr "   * %s\n" doc;
+        pr "   * @throws LibGuestFSException\n";
+        pr "   */\n";
+        pr "  ";
       );
       generate_java_prototype ~public:true ~semicolon:false name style;
       pr "\n";
       pr "  {\n";
       pr "    if (g == 0)\n";
       pr "      throw new LibGuestFSException (\"%s: handle is closed\");\n"
-	name;
+        name;
       pr "    ";
       if fst style <> RErr then pr "return ";
       pr "_%s " name;
-      generate_call_args ~handle:"g" (snd style);
+      generate_java_call_args ~handle:"g" (snd style);
       pr ";\n";
       pr "  }\n";
       pr "  ";
@@ -7319,6 +9230,12 @@ public class GuestFS {
   ) all_functions;
 
   pr "}\n"
+
+(* Generate Java call arguments, eg "(handle, foo, bar)" *)
+and generate_java_call_args ~handle args =
+  pr "(%s" handle;
+  List.iter (fun arg -> pr ", %s" (name_of_argt arg)) args;
+  pr ")"
 
 and generate_java_prototype ?(public=false) ?(privat=false) ?(native=false)
     ?(semicolon=true) name style =
@@ -7332,7 +9249,8 @@ and generate_java_prototype ?(public=false) ?(privat=false) ?(native=false)
    | RInt _ -> pr "int ";
    | RInt64 _ -> pr "long ";
    | RBool _ -> pr "boolean ";
-   | RConstString _ | RString _ -> pr "String ";
+   | RConstString _ | RConstOptString _ | RString _
+   | RBufferOut _ -> pr "String ";
    | RStringList _ -> pr "String[] ";
    | RStruct (_, typ) ->
        let name = java_name_of_struct typ in
@@ -7358,17 +9276,21 @@ and generate_java_prototype ?(public=false) ?(privat=false) ?(native=false)
       needs_comma := true;
 
       match arg with
+      | Pathname n
+      | Device n | Dev_or_Path n
       | String n
       | OptString n
       | FileIn n
       | FileOut n ->
-	  pr "String %s" n
-      | StringList n ->
-	  pr "String[] %s" n
+          pr "String %s" n
+      | StringList n | DeviceList n ->
+          pr "String[] %s" n
       | Bool n ->
-	  pr "boolean %s" n
+          pr "boolean %s" n
       | Int n ->
-	  pr "int %s" n
+          pr "int %s" n
+      | Int64 n ->
+          pr "long %s" n
   ) (snd style);
 
   pr ")\n";
@@ -7399,8 +9321,8 @@ public class %s {
     | name, (FUInt32|FInt32) -> pr "  public int %s;\n" name
     | name, FChar -> pr "  public char %s;\n" name
     | name, FOptPercent ->
-	pr "  /* The next field is [0..100] or -1 meaning 'not present': */\n";
-	pr "  public float %s;\n" name
+        pr "  /* The next field is [0..100] or -1 meaning 'not present': */\n";
+        pr "  public float %s;\n" name
   ) cols;
 
   pr "}\n"
@@ -7461,11 +9383,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
        | RInt _ -> pr "jint ";
        | RInt64 _ -> pr "jlong ";
        | RBool _ -> pr "jboolean ";
-       | RConstString _ | RString _ -> pr "jstring ";
+       | RConstString _ | RConstOptString _ | RString _
+       | RBufferOut _ -> pr "jstring ";
        | RStruct _ | RHashtable _ ->
-	   pr "jobject ";
+           pr "jobject ";
        | RStringList _ | RStructList _ ->
-	   pr "jobjectArray ";
+           pr "jobjectArray ";
       );
       pr "JNICALL\n";
       pr "Java_com_redhat_et_libguestfs_GuestFS_";
@@ -7473,126 +9396,150 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
       pr "\n";
       pr "  (JNIEnv *env, jobject obj, jlong jg";
       List.iter (
-	function
-	| String n
-	| OptString n
-	| FileIn n
-	| FileOut n ->
-	    pr ", jstring j%s" n
-	| StringList n ->
-	    pr ", jobjectArray j%s" n
-	| Bool n ->
-	    pr ", jboolean j%s" n
-	| Int n ->
-	    pr ", jint j%s" n
+        function
+        | Pathname n
+        | Device n | Dev_or_Path n
+        | String n
+        | OptString n
+        | FileIn n
+        | FileOut n ->
+            pr ", jstring j%s" n
+        | StringList n | DeviceList n ->
+            pr ", jobjectArray j%s" n
+        | Bool n ->
+            pr ", jboolean j%s" n
+        | Int n ->
+            pr ", jint j%s" n
+        | Int64 n ->
+            pr ", jlong j%s" n
       ) (snd style);
       pr ")\n";
       pr "{\n";
       pr "  guestfs_h *g = (guestfs_h *) (long) jg;\n";
       let error_code, no_ret =
-	match fst style with
-	| RErr -> pr "  int r;\n"; "-1", ""
-	| RBool _
-	| RInt _ -> pr "  int r;\n"; "-1", "0"
-	| RInt64 _ -> pr "  int64_t r;\n"; "-1", "0"
-	| RConstString _ -> pr "  const char *r;\n"; "NULL", "NULL"
-	| RString _ ->
-	    pr "  jstring jr;\n";
-	    pr "  char *r;\n"; "NULL", "NULL"
-	| RStringList _ ->
-	    pr "  jobjectArray jr;\n";
-	    pr "  int r_len;\n";
-	    pr "  jclass cl;\n";
-	    pr "  jstring jstr;\n";
-	    pr "  char **r;\n"; "NULL", "NULL"
-	| RStruct (_, typ) ->
-	    pr "  jobject jr;\n";
-	    pr "  jclass cl;\n";
-	    pr "  jfieldID fl;\n";
-	    pr "  struct guestfs_%s *r;\n" typ; "NULL", "NULL"
-	| RStructList (_, typ) ->
-	    pr "  jobjectArray jr;\n";
-	    pr "  jclass cl;\n";
-	    pr "  jfieldID fl;\n";
-	    pr "  jobject jfl;\n";
-	    pr "  struct guestfs_%s_list *r;\n" typ; "NULL", "NULL"
-	| RHashtable _ -> pr "  char **r;\n"; "NULL", "NULL" in
+        match fst style with
+        | RErr -> pr "  int r;\n"; "-1", ""
+        | RBool _
+        | RInt _ -> pr "  int r;\n"; "-1", "0"
+        | RInt64 _ -> pr "  int64_t r;\n"; "-1", "0"
+        | RConstString _ -> pr "  const char *r;\n"; "NULL", "NULL"
+        | RConstOptString _ -> pr "  const char *r;\n"; "NULL", "NULL"
+        | RString _ ->
+            pr "  jstring jr;\n";
+            pr "  char *r;\n"; "NULL", "NULL"
+        | RStringList _ ->
+            pr "  jobjectArray jr;\n";
+            pr "  int r_len;\n";
+            pr "  jclass cl;\n";
+            pr "  jstring jstr;\n";
+            pr "  char **r;\n"; "NULL", "NULL"
+        | RStruct (_, typ) ->
+            pr "  jobject jr;\n";
+            pr "  jclass cl;\n";
+            pr "  jfieldID fl;\n";
+            pr "  struct guestfs_%s *r;\n" typ; "NULL", "NULL"
+        | RStructList (_, typ) ->
+            pr "  jobjectArray jr;\n";
+            pr "  jclass cl;\n";
+            pr "  jfieldID fl;\n";
+            pr "  jobject jfl;\n";
+            pr "  struct guestfs_%s_list *r;\n" typ; "NULL", "NULL"
+        | RHashtable _ -> pr "  char **r;\n"; "NULL", "NULL"
+        | RBufferOut _ ->
+            pr "  jstring jr;\n";
+            pr "  char *r;\n";
+            pr "  size_t size;\n";
+            "NULL", "NULL" in
       List.iter (
-	function
-	| String n
-	| OptString n
-	| FileIn n
-	| FileOut n ->
-	    pr "  const char *%s;\n" n
-	| StringList n ->
-	    pr "  int %s_len;\n" n;
-	    pr "  const char **%s;\n" n
-	| Bool n
-	| Int n ->
-	    pr "  int %s;\n" n
+        function
+        | Pathname n
+        | Device n | Dev_or_Path n
+        | String n
+        | OptString n
+        | FileIn n
+        | FileOut n ->
+            pr "  const char *%s;\n" n
+        | StringList n | DeviceList n ->
+            pr "  int %s_len;\n" n;
+            pr "  const char **%s;\n" n
+        | Bool n
+        | Int n ->
+            pr "  int %s;\n" n
+        | Int64 n ->
+            pr "  int64_t %s;\n" n
       ) (snd style);
 
       let needs_i =
-	(match fst style with
-	 | RStringList _ | RStructList _ -> true
-	 | RErr | RBool _ | RInt _ | RInt64 _ | RConstString _
-	 | RString _ | RStruct _ | RHashtable _ -> false) ||
-	  List.exists (function StringList _ -> true | _ -> false) (snd style) in
+        (match fst style with
+         | RStringList _ | RStructList _ -> true
+         | RErr | RBool _ | RInt _ | RInt64 _ | RConstString _
+         | RConstOptString _
+         | RString _ | RBufferOut _ | RStruct _ | RHashtable _ -> false) ||
+          List.exists (function
+                       | StringList _ -> true
+                       | DeviceList _ -> true
+                       | _ -> false) (snd style) in
       if needs_i then
-	pr "  int i;\n";
+        pr "  int i;\n";
 
       pr "\n";
 
       (* Get the parameters. *)
       List.iter (
-	function
-	| String n
-	| FileIn n
-	| FileOut n ->
-	    pr "  %s = (*env)->GetStringUTFChars (env, j%s, NULL);\n" n n
-	| OptString n ->
-	    (* This is completely undocumented, but Java null becomes
-	     * a NULL parameter.
-	     *)
-	    pr "  %s = j%s ? (*env)->GetStringUTFChars (env, j%s, NULL) : NULL;\n" n n n
-	| StringList n ->
-	    pr "  %s_len = (*env)->GetArrayLength (env, j%s);\n" n n;
-	    pr "  %s = guestfs_safe_malloc (g, sizeof (char *) * (%s_len+1));\n" n n;
-	    pr "  for (i = 0; i < %s_len; ++i) {\n" n;
-	    pr "    jobject o = (*env)->GetObjectArrayElement (env, j%s, i);\n"
-	      n;
-	    pr "    %s[i] = (*env)->GetStringUTFChars (env, o, NULL);\n" n;
-	    pr "  }\n";
-	    pr "  %s[%s_len] = NULL;\n" n n;
-	| Bool n
-	| Int n ->
-	    pr "  %s = j%s;\n" n n
+        function
+        | Pathname n
+        | Device n | Dev_or_Path n
+        | String n
+        | FileIn n
+        | FileOut n ->
+            pr "  %s = (*env)->GetStringUTFChars (env, j%s, NULL);\n" n n
+        | OptString n ->
+            (* This is completely undocumented, but Java null becomes
+             * a NULL parameter.
+             *)
+            pr "  %s = j%s ? (*env)->GetStringUTFChars (env, j%s, NULL) : NULL;\n" n n n
+        | StringList n | DeviceList n ->
+            pr "  %s_len = (*env)->GetArrayLength (env, j%s);\n" n n;
+            pr "  %s = guestfs_safe_malloc (g, sizeof (char *) * (%s_len+1));\n" n n;
+            pr "  for (i = 0; i < %s_len; ++i) {\n" n;
+            pr "    jobject o = (*env)->GetObjectArrayElement (env, j%s, i);\n"
+              n;
+            pr "    %s[i] = (*env)->GetStringUTFChars (env, o, NULL);\n" n;
+            pr "  }\n";
+            pr "  %s[%s_len] = NULL;\n" n n;
+        | Bool n
+        | Int n
+        | Int64 n ->
+            pr "  %s = j%s;\n" n n
       ) (snd style);
 
       (* Make the call. *)
       pr "  r = guestfs_%s " name;
-      generate_call_args ~handle:"g" (snd style);
+      generate_c_call_args ~handle:"g" style;
       pr ";\n";
 
       (* Release the parameters. *)
       List.iter (
-	function
-	| String n
-	| FileIn n
-	| FileOut n ->
-	    pr "  (*env)->ReleaseStringUTFChars (env, j%s, %s);\n" n n
-	| OptString n ->
-	    pr "  if (j%s)\n" n;
-	    pr "    (*env)->ReleaseStringUTFChars (env, j%s, %s);\n" n n
-	| StringList n ->
-	    pr "  for (i = 0; i < %s_len; ++i) {\n" n;
-	    pr "    jobject o = (*env)->GetObjectArrayElement (env, j%s, i);\n"
-	      n;
-	    pr "    (*env)->ReleaseStringUTFChars (env, o, %s[i]);\n" n;
-	    pr "  }\n";
-	    pr "  free (%s);\n" n
-	| Bool n
-	| Int n -> ()
+        function
+        | Pathname n
+        | Device n | Dev_or_Path n
+        | String n
+        | FileIn n
+        | FileOut n ->
+            pr "  (*env)->ReleaseStringUTFChars (env, j%s, %s);\n" n n
+        | OptString n ->
+            pr "  if (j%s)\n" n;
+            pr "    (*env)->ReleaseStringUTFChars (env, j%s, %s);\n" n n
+        | StringList n | DeviceList n ->
+            pr "  for (i = 0; i < %s_len; ++i) {\n" n;
+            pr "    jobject o = (*env)->GetObjectArrayElement (env, j%s, i);\n"
+              n;
+            pr "    (*env)->ReleaseStringUTFChars (env, o, %s[i]);\n" n;
+            pr "  }\n";
+            pr "  free (%s);\n" n
+        | Bool n
+        | Int n
+        | Int64 n -> ()
       ) (snd style);
 
       (* Check for errors. *)
@@ -7608,34 +9555,40 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
        | RBool _ -> pr "  return (jboolean) r;\n"
        | RInt64 _ -> pr "  return (jlong) r;\n"
        | RConstString _ -> pr "  return (*env)->NewStringUTF (env, r);\n"
+       | RConstOptString _ ->
+           pr "  return (*env)->NewStringUTF (env, r); /* XXX r NULL? */\n"
        | RString _ ->
-	   pr "  jr = (*env)->NewStringUTF (env, r);\n";
-	   pr "  free (r);\n";
-	   pr "  return jr;\n"
+           pr "  jr = (*env)->NewStringUTF (env, r);\n";
+           pr "  free (r);\n";
+           pr "  return jr;\n"
        | RStringList _ ->
-	   pr "  for (r_len = 0; r[r_len] != NULL; ++r_len) ;\n";
-	   pr "  cl = (*env)->FindClass (env, \"java/lang/String\");\n";
-	   pr "  jstr = (*env)->NewStringUTF (env, \"\");\n";
-	   pr "  jr = (*env)->NewObjectArray (env, r_len, cl, jstr);\n";
-	   pr "  for (i = 0; i < r_len; ++i) {\n";
-	   pr "    jstr = (*env)->NewStringUTF (env, r[i]);\n";
-	   pr "    (*env)->SetObjectArrayElement (env, jr, i, jstr);\n";
-	   pr "    free (r[i]);\n";
-	   pr "  }\n";
-	   pr "  free (r);\n";
-	   pr "  return jr;\n"
+           pr "  for (r_len = 0; r[r_len] != NULL; ++r_len) ;\n";
+           pr "  cl = (*env)->FindClass (env, \"java/lang/String\");\n";
+           pr "  jstr = (*env)->NewStringUTF (env, \"\");\n";
+           pr "  jr = (*env)->NewObjectArray (env, r_len, cl, jstr);\n";
+           pr "  for (i = 0; i < r_len; ++i) {\n";
+           pr "    jstr = (*env)->NewStringUTF (env, r[i]);\n";
+           pr "    (*env)->SetObjectArrayElement (env, jr, i, jstr);\n";
+           pr "    free (r[i]);\n";
+           pr "  }\n";
+           pr "  free (r);\n";
+           pr "  return jr;\n"
        | RStruct (_, typ) ->
-	   let jtyp = java_name_of_struct typ in
-	   let cols = cols_of_struct typ in
-	   generate_java_struct_return typ jtyp cols
+           let jtyp = java_name_of_struct typ in
+           let cols = cols_of_struct typ in
+           generate_java_struct_return typ jtyp cols
        | RStructList (_, typ) ->
-	   let jtyp = java_name_of_struct typ in
-	   let cols = cols_of_struct typ in
-	   generate_java_struct_list_return typ jtyp cols
+           let jtyp = java_name_of_struct typ in
+           let cols = cols_of_struct typ in
+           generate_java_struct_list_return typ jtyp cols
        | RHashtable _ ->
-	   (* XXX *)
-	   pr "  throw_exception (env, \"%s: internal error: please let us know how to make a Java HashMap from JNI bindings!\");\n" name;
-	   pr "  return NULL;\n"
+           (* XXX *)
+           pr "  throw_exception (env, \"%s: internal error: please let us know how to make a Java HashMap from JNI bindings!\");\n" name;
+           pr "  return NULL;\n"
+       | RBufferOut _ ->
+           pr "  jr = (*env)->NewStringUTF (env, r); /* XXX size */\n";
+           pr "  free (r);\n";
+           pr "  return jr;\n"
       );
 
       pr "}\n";
@@ -7648,37 +9601,37 @@ and generate_java_struct_return typ jtyp cols =
   List.iter (
     function
     | name, FString ->
-	pr "  fl = (*env)->GetFieldID (env, cl, \"%s\", \"Ljava/lang/String;\");\n" name;
-	pr "  (*env)->SetObjectField (env, jr, fl, (*env)->NewStringUTF (env, r->%s));\n" name;
+        pr "  fl = (*env)->GetFieldID (env, cl, \"%s\", \"Ljava/lang/String;\");\n" name;
+        pr "  (*env)->SetObjectField (env, jr, fl, (*env)->NewStringUTF (env, r->%s));\n" name;
     | name, FUUID ->
-	pr "  {\n";
-	pr "    char s[33];\n";
-	pr "    memcpy (s, r->%s, 32);\n" name;
-	pr "    s[32] = 0;\n";
-	pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"Ljava/lang/String;\");\n" name;
-	pr "    (*env)->SetObjectField (env, jr, fl, (*env)->NewStringUTF (env, s));\n";
-	pr "  }\n";
+        pr "  {\n";
+        pr "    char s[33];\n";
+        pr "    memcpy (s, r->%s, 32);\n" name;
+        pr "    s[32] = 0;\n";
+        pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"Ljava/lang/String;\");\n" name;
+        pr "    (*env)->SetObjectField (env, jr, fl, (*env)->NewStringUTF (env, s));\n";
+        pr "  }\n";
     | name, FBuffer ->
-	pr "  {\n";
-	pr "    int len = r->%s_len;\n" name;
-	pr "    char s[len+1];\n";
-	pr "    memcpy (s, r->%s, len);\n" name;
-	pr "    s[len] = 0;\n";
-	pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"Ljava/lang/String;\");\n" name;
-	pr "    (*env)->SetObjectField (env, jr, fl, (*env)->NewStringUTF (env, s));\n";
-	pr "  }\n";
+        pr "  {\n";
+        pr "    int len = r->%s_len;\n" name;
+        pr "    char s[len+1];\n";
+        pr "    memcpy (s, r->%s, len);\n" name;
+        pr "    s[len] = 0;\n";
+        pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"Ljava/lang/String;\");\n" name;
+        pr "    (*env)->SetObjectField (env, jr, fl, (*env)->NewStringUTF (env, s));\n";
+        pr "  }\n";
     | name, (FBytes|FUInt64|FInt64) ->
-	pr "  fl = (*env)->GetFieldID (env, cl, \"%s\", \"J\");\n" name;
-	pr "  (*env)->SetLongField (env, jr, fl, r->%s);\n" name;
+        pr "  fl = (*env)->GetFieldID (env, cl, \"%s\", \"J\");\n" name;
+        pr "  (*env)->SetLongField (env, jr, fl, r->%s);\n" name;
     | name, (FUInt32|FInt32) ->
-	pr "  fl = (*env)->GetFieldID (env, cl, \"%s\", \"I\");\n" name;
-	pr "  (*env)->SetLongField (env, jr, fl, r->%s);\n" name;
+        pr "  fl = (*env)->GetFieldID (env, cl, \"%s\", \"I\");\n" name;
+        pr "  (*env)->SetLongField (env, jr, fl, r->%s);\n" name;
     | name, FOptPercent ->
-	pr "  fl = (*env)->GetFieldID (env, cl, \"%s\", \"F\");\n" name;
-	pr "  (*env)->SetFloatField (env, jr, fl, r->%s);\n" name;
+        pr "  fl = (*env)->GetFieldID (env, cl, \"%s\", \"F\");\n" name;
+        pr "  (*env)->SetFloatField (env, jr, fl, r->%s);\n" name;
     | name, FChar ->
-	pr "  fl = (*env)->GetFieldID (env, cl, \"%s\", \"C\");\n" name;
-	pr "  (*env)->SetLongField (env, jr, fl, r->%s);\n" name;
+        pr "  fl = (*env)->GetFieldID (env, cl, \"%s\", \"C\");\n" name;
+        pr "  (*env)->SetLongField (env, jr, fl, r->%s);\n" name;
   ) cols;
   pr "  free (r);\n";
   pr "  return jr;\n"
@@ -7691,42 +9644,52 @@ and generate_java_struct_list_return typ jtyp cols =
   List.iter (
     function
     | name, FString ->
-	pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"Ljava/lang/String;\");\n" name;
-	pr "    (*env)->SetObjectField (env, jfl, fl, (*env)->NewStringUTF (env, r->val[i].%s));\n" name;
+        pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"Ljava/lang/String;\");\n" name;
+        pr "    (*env)->SetObjectField (env, jfl, fl, (*env)->NewStringUTF (env, r->val[i].%s));\n" name;
     | name, FUUID ->
-	pr "    {\n";
-	pr "      char s[33];\n";
-	pr "      memcpy (s, r->val[i].%s, 32);\n" name;
-	pr "      s[32] = 0;\n";
-	pr "      fl = (*env)->GetFieldID (env, cl, \"%s\", \"Ljava/lang/String;\");\n" name;
-	pr "      (*env)->SetObjectField (env, jfl, fl, (*env)->NewStringUTF (env, s));\n";
-	pr "    }\n";
+        pr "    {\n";
+        pr "      char s[33];\n";
+        pr "      memcpy (s, r->val[i].%s, 32);\n" name;
+        pr "      s[32] = 0;\n";
+        pr "      fl = (*env)->GetFieldID (env, cl, \"%s\", \"Ljava/lang/String;\");\n" name;
+        pr "      (*env)->SetObjectField (env, jfl, fl, (*env)->NewStringUTF (env, s));\n";
+        pr "    }\n";
     | name, FBuffer ->
-	pr "    {\n";
-	pr "      int len = r->val[i].%s_len;\n" name;
-	pr "      char s[len+1];\n";
-	pr "      memcpy (s, r->val[i].%s, len);\n" name;
-	pr "      s[len] = 0;\n";
-	pr "      fl = (*env)->GetFieldID (env, cl, \"%s\", \"Ljava/lang/String;\");\n" name;
-	pr "      (*env)->SetObjectField (env, jfl, fl, (*env)->NewStringUTF (env, s));\n";
-	pr "    }\n";
+        pr "    {\n";
+        pr "      int len = r->val[i].%s_len;\n" name;
+        pr "      char s[len+1];\n";
+        pr "      memcpy (s, r->val[i].%s, len);\n" name;
+        pr "      s[len] = 0;\n";
+        pr "      fl = (*env)->GetFieldID (env, cl, \"%s\", \"Ljava/lang/String;\");\n" name;
+        pr "      (*env)->SetObjectField (env, jfl, fl, (*env)->NewStringUTF (env, s));\n";
+        pr "    }\n";
     | name, (FBytes|FUInt64|FInt64) ->
-	pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"J\");\n" name;
-	pr "    (*env)->SetLongField (env, jfl, fl, r->val[i].%s);\n" name;
+        pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"J\");\n" name;
+        pr "    (*env)->SetLongField (env, jfl, fl, r->val[i].%s);\n" name;
     | name, (FUInt32|FInt32) ->
-	pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"I\");\n" name;
-	pr "    (*env)->SetLongField (env, jfl, fl, r->val[i].%s);\n" name;
+        pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"I\");\n" name;
+        pr "    (*env)->SetLongField (env, jfl, fl, r->val[i].%s);\n" name;
     | name, FOptPercent ->
-	pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"F\");\n" name;
-	pr "    (*env)->SetFloatField (env, jfl, fl, r->val[i].%s);\n" name;
+        pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"F\");\n" name;
+        pr "    (*env)->SetFloatField (env, jfl, fl, r->val[i].%s);\n" name;
     | name, FChar ->
-	pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"C\");\n" name;
-	pr "    (*env)->SetLongField (env, jfl, fl, r->val[i].%s);\n" name;
+        pr "    fl = (*env)->GetFieldID (env, cl, \"%s\", \"C\");\n" name;
+        pr "    (*env)->SetLongField (env, jfl, fl, r->val[i].%s);\n" name;
   ) cols;
   pr "    (*env)->SetObjectArrayElement (env, jfl, i, jfl);\n";
   pr "  }\n";
   pr "  guestfs_free_%s_list (r);\n" typ;
   pr "  return jr;\n"
+
+and generate_java_makefile_inc () =
+  generate_header HashStyle GPLv2;
+
+  pr "java_built_sources = \\\n";
+  List.iter (
+    fun (typ, jtyp) ->
+        pr "\tcom/redhat/et/libguestfs/%s.java \\\n" jtyp;
+  ) java_structs;
+  pr "\tcom/redhat/et/libguestfs/GuestFS.java\n"
 
 and generate_haskell_hs () =
   generate_header HaskellStyle LGPLv2;
@@ -7741,11 +9704,13 @@ and generate_haskell_hs () =
     | RInt64 _, _ -> true
     | RBool _, _
     | RConstString _, _
+    | RConstOptString _, _
     | RString _, _
     | RStringList _, _
     | RStruct _, _
     | RStructList _, _
-    | RHashtable _, _ -> false in
+    | RHashtable _, _
+    | RBufferOut _, _ -> false in
 
   pr "\
 {-# INCLUDE <guestfs.h> #-}
@@ -7762,6 +9727,12 @@ module Guestfs (
 
   pr "
   ) where
+
+-- Unfortunately some symbols duplicate ones already present
+-- in Prelude.  We don't know which, so we hard-code a list
+-- here.
+import Prelude hiding (truncate)
+
 import Foreign
 import Foreign.C
 import Foreign.C.Types
@@ -7817,68 +9788,73 @@ last_error h = do
   List.iter (
     fun (name, style, _, _, _, _, _) ->
       if can_generate style then (
-	pr "foreign import ccall unsafe \"guestfs_%s\" c_%s\n" name name;
-	pr "  :: ";
-	generate_haskell_prototype ~handle:"GuestfsP" style;
-	pr "\n";
-	pr "\n";
-	pr "%s :: " name;
-	generate_haskell_prototype ~handle:"GuestfsH" ~hs:true style;
-	pr "\n";
-	pr "%s %s = do\n" name
-	  (String.concat " " ("h" :: List.map name_of_argt (snd style)));
-	pr "  r <- ";
-	(* Convert pointer arguments using with* functions. *)
-	List.iter (
-	  function
-	  | FileIn n
-	  | FileOut n
-	  | String n -> pr "withCString %s $ \\%s -> " n n
-	  | OptString n -> pr "maybeWith withCString %s $ \\%s -> " n n
-	  | StringList n -> pr "withMany withCString %s $ \\%s -> withArray0 nullPtr %s $ \\%s -> " n n n n
-	  | Bool _ | Int _ -> ()
-	) (snd style);
-	(* Convert integer arguments. *)
-	let args =
-	  List.map (
-	    function
-	    | Bool n -> sprintf "(fromBool %s)" n
-	    | Int n -> sprintf "(fromIntegral %s)" n
-	    | FileIn n | FileOut n | String n | OptString n | StringList n -> n
-	  ) (snd style) in
-	pr "withForeignPtr h (\\p -> c_%s %s)\n" name
-	  (String.concat " " ("p" :: args));
-	(match fst style with
-	 | RErr | RInt _ | RInt64 _ | RBool _ ->
-	     pr "  if (r == -1)\n";
-	     pr "    then do\n";
-	     pr "      err <- last_error h\n";
-	     pr "      fail err\n";
-	 | RConstString _ | RString _ | RStringList _ | RStruct _
-	 | RStructList _ | RHashtable _ ->
-	     pr "  if (r == nullPtr)\n";
-	     pr "    then do\n";
-	     pr "      err <- last_error h\n";
-	     pr "      fail err\n";
-	);
-	(match fst style with
-	 | RErr ->
-	     pr "    else return ()\n"
-	 | RInt _ ->
-	     pr "    else return (fromIntegral r)\n"
-	 | RInt64 _ ->
-	     pr "    else return (fromIntegral r)\n"
-	 | RBool _ ->
-	     pr "    else return (toBool r)\n"
-	 | RConstString _
-	 | RString _
-	 | RStringList _
-	 | RStruct _
-	 | RStructList _
-	 | RHashtable _ ->
-	     pr "    else return ()\n" (* XXXXXXXXXXXXXXXXXXXX *)
-	);
-	pr "\n";
+        pr "foreign import ccall unsafe \"guestfs_%s\" c_%s\n" name name;
+        pr "  :: ";
+        generate_haskell_prototype ~handle:"GuestfsP" style;
+        pr "\n";
+        pr "\n";
+        pr "%s :: " name;
+        generate_haskell_prototype ~handle:"GuestfsH" ~hs:true style;
+        pr "\n";
+        pr "%s %s = do\n" name
+          (String.concat " " ("h" :: List.map name_of_argt (snd style)));
+        pr "  r <- ";
+        (* Convert pointer arguments using with* functions. *)
+        List.iter (
+          function
+          | FileIn n
+          | FileOut n
+          | Pathname n | Device n | Dev_or_Path n | String n -> pr "withCString %s $ \\%s -> " n n
+          | OptString n -> pr "maybeWith withCString %s $ \\%s -> " n n
+          | StringList n | DeviceList n -> pr "withMany withCString %s $ \\%s -> withArray0 nullPtr %s $ \\%s -> " n n n n
+          | Bool _ | Int _ | Int64 _ -> ()
+        ) (snd style);
+        (* Convert integer arguments. *)
+        let args =
+          List.map (
+            function
+            | Bool n -> sprintf "(fromBool %s)" n
+            | Int n -> sprintf "(fromIntegral %s)" n
+            | Int64 n -> sprintf "(fromIntegral %s)" n
+            | FileIn n | FileOut n
+            | Pathname n | Device n | Dev_or_Path n | String n | OptString n | StringList n | DeviceList n -> n
+          ) (snd style) in
+        pr "withForeignPtr h (\\p -> c_%s %s)\n" name
+          (String.concat " " ("p" :: args));
+        (match fst style with
+         | RErr | RInt _ | RInt64 _ | RBool _ ->
+             pr "  if (r == -1)\n";
+             pr "    then do\n";
+             pr "      err <- last_error h\n";
+             pr "      fail err\n";
+         | RConstString _ | RConstOptString _ | RString _
+         | RStringList _ | RStruct _
+         | RStructList _ | RHashtable _ | RBufferOut _ ->
+             pr "  if (r == nullPtr)\n";
+             pr "    then do\n";
+             pr "      err <- last_error h\n";
+             pr "      fail err\n";
+        );
+        (match fst style with
+         | RErr ->
+             pr "    else return ()\n"
+         | RInt _ ->
+             pr "    else return (fromIntegral r)\n"
+         | RInt64 _ ->
+             pr "    else return (fromIntegral r)\n"
+         | RBool _ ->
+             pr "    else return (toBool r)\n"
+         | RConstString _
+         | RConstOptString _
+         | RString _
+         | RStringList _
+         | RStruct _
+         | RStructList _
+         | RHashtable _
+         | RBufferOut _ ->
+             pr "    else return ()\n" (* XXXXXXXXXXXXXXXXXXXX *)
+        );
+        pr "\n";
       )
   ) all_functions
 
@@ -7891,11 +9867,12 @@ and generate_haskell_prototype ~handle ?(hs = false) style =
   List.iter (
     fun arg ->
       (match arg with
-       | String _ -> pr "%s" string
+       | Pathname _ | Device _ | Dev_or_Path _ | String _ -> pr "%s" string
        | OptString _ -> if hs then pr "Maybe String" else pr "CString"
-       | StringList _ -> if hs then pr "[String]" else pr "Ptr CString"
+       | StringList _ | DeviceList _ -> if hs then pr "[String]" else pr "Ptr CString"
        | Bool _ -> pr "%s" bool
        | Int _ -> pr "%s" int
+       | Int64 _ -> pr "%s" int
        | FileIn _ -> pr "%s" string
        | FileOut _ -> pr "%s" string
       );
@@ -7908,6 +9885,7 @@ and generate_haskell_prototype ~handle ?(hs = false) style =
    | RInt64 _ -> pr "%s" int64
    | RBool _ -> pr "%s" bool
    | RConstString _ -> pr "%s" string
+   | RConstOptString _ -> pr "Maybe %s" string
    | RString _ -> pr "%s" string
    | RStringList _ -> pr "[%s]" string
    | RStruct (_, typ) ->
@@ -7917,6 +9895,7 @@ and generate_haskell_prototype ~handle ?(hs = false) style =
        let name = java_name_of_struct typ in
        pr "[%s]" name
    | RHashtable _ -> pr "Hashtable"
+   | RBufferOut _ -> pr "%s" string
   );
   pr ")"
 
@@ -7930,6 +9909,8 @@ and generate_bindtests () =
 #include <string.h>
 
 #include \"guestfs.h\"
+#include \"guestfs-internal.h\"
+#include \"guestfs-internal-actions.h\"
 #include \"guestfs_protocol.h\"
 
 #define error guestfs_error
@@ -7937,7 +9918,7 @@ and generate_bindtests () =
 #define safe_malloc guestfs_safe_malloc
 
 static void
-print_strings (char * const* const argv)
+print_strings (char *const *argv)
 {
   int argc;
 
@@ -7960,17 +9941,20 @@ print_strings (char * const* const argv)
   let () =
     let (name, style, _, _, _, _, _) = test0 in
     generate_prototype ~extern:false ~semicolon:false ~newline:true
-      ~handle:"g" ~prefix:"guestfs_" name style;
+      ~handle:"g" ~prefix:"guestfs__" name style;
     pr "{\n";
     List.iter (
       function
+      | Pathname n
+      | Device n | Dev_or_Path n
       | String n
       | FileIn n
       | FileOut n -> pr "  printf (\"%%s\\n\", %s);\n" n
       | OptString n -> pr "  printf (\"%%s\\n\", %s ? %s : \"null\");\n" n n
-      | StringList n -> pr "  print_strings (%s);\n" n
+      | StringList n | DeviceList n -> pr "  print_strings (%s);\n" n
       | Bool n -> pr "  printf (\"%%s\\n\", %s ? \"true\" : \"false\");\n" n
       | Int n -> pr "  printf (\"%%d\\n\", %s);\n" n
+      | Int64 n -> pr "  printf (\"%%\" PRIi64 \"\\n\", %s);\n" n
     ) (snd style);
     pr "  /* Java changes stdout line buffering so we need this: */\n";
     pr "  fflush (stdout);\n";
@@ -7981,85 +9965,89 @@ print_strings (char * const* const argv)
   List.iter (
     fun (name, style, _, _, _, _, _) ->
       if String.sub name (String.length name - 3) 3 <> "err" then (
-	pr "/* Test normal return. */\n";
-	generate_prototype ~extern:false ~semicolon:false ~newline:true
-	  ~handle:"g" ~prefix:"guestfs_" name style;
-	pr "{\n";
-	(match fst style with
-	 | RErr ->
-	     pr "  return 0;\n"
-	 | RInt _ ->
-	     pr "  int r;\n";
-	     pr "  sscanf (val, \"%%d\", &r);\n";
-	     pr "  return r;\n"
-	 | RInt64 _ ->
-	     pr "  int64_t r;\n";
-	     pr "  sscanf (val, \"%%\" SCNi64, &r);\n";
-	     pr "  return r;\n"
-	 | RBool _ ->
-	     pr "  return strcmp (val, \"true\") == 0;\n"
-	 | RConstString _ ->
-	     (* Can't return the input string here.  Return a static
-	      * string so we ensure we get a segfault if the caller
-	      * tries to free it.
-	      *)
-	     pr "  return \"static string\";\n"
-	 | RString _ ->
-	     pr "  return strdup (val);\n"
-	 | RStringList _ ->
-	     pr "  char **strs;\n";
-	     pr "  int n, i;\n";
-	     pr "  sscanf (val, \"%%d\", &n);\n";
-	     pr "  strs = safe_malloc (g, (n+1) * sizeof (char *));\n";
-	     pr "  for (i = 0; i < n; ++i) {\n";
-	     pr "    strs[i] = safe_malloc (g, 16);\n";
-	     pr "    snprintf (strs[i], 16, \"%%d\", i);\n";
-	     pr "  }\n";
-	     pr "  strs[n] = NULL;\n";
-	     pr "  return strs;\n"
-	 | RStruct (_, typ) ->
-	     pr "  struct guestfs_%s *r;\n" typ;
-	     pr "  r = safe_calloc (g, sizeof *r, 1);\n";
-	     pr "  return r;\n"
-	 | RStructList (_, typ) ->
-	     pr "  struct guestfs_%s_list *r;\n" typ;
-	     pr "  r = safe_calloc (g, sizeof *r, 1);\n";
-	     pr "  sscanf (val, \"%%d\", &r->len);\n";
-	     pr "  r->val = safe_calloc (g, r->len, sizeof *r->val);\n";
-	     pr "  return r;\n"
-	 | RHashtable _ ->
-	     pr "  char **strs;\n";
-	     pr "  int n, i;\n";
-	     pr "  sscanf (val, \"%%d\", &n);\n";
-	     pr "  strs = safe_malloc (g, (n*2+1) * sizeof (*strs));\n";
-	     pr "  for (i = 0; i < n; ++i) {\n";
-	     pr "    strs[i*2] = safe_malloc (g, 16);\n";
-	     pr "    strs[i*2+1] = safe_malloc (g, 16);\n";
-	     pr "    snprintf (strs[i*2], 16, \"%%d\", i);\n";
-	     pr "    snprintf (strs[i*2+1], 16, \"%%d\", i);\n";
-	     pr "  }\n";
-	     pr "  strs[n*2] = NULL;\n";
-	     pr "  return strs;\n"
-	);
-	pr "}\n";
-	pr "\n"
+        pr "/* Test normal return. */\n";
+        generate_prototype ~extern:false ~semicolon:false ~newline:true
+          ~handle:"g" ~prefix:"guestfs__" name style;
+        pr "{\n";
+        (match fst style with
+         | RErr ->
+             pr "  return 0;\n"
+         | RInt _ ->
+             pr "  int r;\n";
+             pr "  sscanf (val, \"%%d\", &r);\n";
+             pr "  return r;\n"
+         | RInt64 _ ->
+             pr "  int64_t r;\n";
+             pr "  sscanf (val, \"%%\" SCNi64, &r);\n";
+             pr "  return r;\n"
+         | RBool _ ->
+             pr "  return STREQ (val, \"true\");\n"
+         | RConstString _
+         | RConstOptString _ ->
+             (* Can't return the input string here.  Return a static
+              * string so we ensure we get a segfault if the caller
+              * tries to free it.
+              *)
+             pr "  return \"static string\";\n"
+         | RString _ ->
+             pr "  return strdup (val);\n"
+         | RStringList _ ->
+             pr "  char **strs;\n";
+             pr "  int n, i;\n";
+             pr "  sscanf (val, \"%%d\", &n);\n";
+             pr "  strs = safe_malloc (g, (n+1) * sizeof (char *));\n";
+             pr "  for (i = 0; i < n; ++i) {\n";
+             pr "    strs[i] = safe_malloc (g, 16);\n";
+             pr "    snprintf (strs[i], 16, \"%%d\", i);\n";
+             pr "  }\n";
+             pr "  strs[n] = NULL;\n";
+             pr "  return strs;\n"
+         | RStruct (_, typ) ->
+             pr "  struct guestfs_%s *r;\n" typ;
+             pr "  r = safe_calloc (g, sizeof *r, 1);\n";
+             pr "  return r;\n"
+         | RStructList (_, typ) ->
+             pr "  struct guestfs_%s_list *r;\n" typ;
+             pr "  r = safe_calloc (g, sizeof *r, 1);\n";
+             pr "  sscanf (val, \"%%d\", &r->len);\n";
+             pr "  r->val = safe_calloc (g, r->len, sizeof *r->val);\n";
+             pr "  return r;\n"
+         | RHashtable _ ->
+             pr "  char **strs;\n";
+             pr "  int n, i;\n";
+             pr "  sscanf (val, \"%%d\", &n);\n";
+             pr "  strs = safe_malloc (g, (n*2+1) * sizeof (*strs));\n";
+             pr "  for (i = 0; i < n; ++i) {\n";
+             pr "    strs[i*2] = safe_malloc (g, 16);\n";
+             pr "    strs[i*2+1] = safe_malloc (g, 16);\n";
+             pr "    snprintf (strs[i*2], 16, \"%%d\", i);\n";
+             pr "    snprintf (strs[i*2+1], 16, \"%%d\", i);\n";
+             pr "  }\n";
+             pr "  strs[n*2] = NULL;\n";
+             pr "  return strs;\n"
+         | RBufferOut _ ->
+             pr "  return strdup (val);\n"
+        );
+        pr "}\n";
+        pr "\n"
       ) else (
-	pr "/* Test error return. */\n";
-	generate_prototype ~extern:false ~semicolon:false ~newline:true
-	  ~handle:"g" ~prefix:"guestfs_" name style;
-	pr "{\n";
-	pr "  error (g, \"error\");\n";
-	(match fst style with
-	 | RErr | RInt _ | RInt64 _ | RBool _ ->
-	     pr "  return -1;\n"
-	 | RConstString _
-	 | RString _ | RStringList _ | RStruct _
-	 | RStructList _
-	 | RHashtable _ ->
-	     pr "  return NULL;\n"
-	);
-	pr "}\n";
-	pr "\n"
+        pr "/* Test error return. */\n";
+        generate_prototype ~extern:false ~semicolon:false ~newline:true
+          ~handle:"g" ~prefix:"guestfs__" name style;
+        pr "{\n";
+        pr "  error (g, \"error\");\n";
+        (match fst style with
+         | RErr | RInt _ | RInt64 _ | RBool _ ->
+             pr "  return -1;\n"
+         | RConstString _ | RConstOptString _
+         | RString _ | RStringList _ | RStruct _
+         | RStructList _
+         | RHashtable _
+         | RBufferOut _ ->
+             pr "  return NULL;\n"
+        );
+        pr "}\n";
+        pr "\n"
       )
   ) tests
 
@@ -8074,15 +10062,17 @@ let () =
   let mkargs args =
     String.concat " " (
       List.map (
-	function
-	| CallString s -> "\"" ^ s ^ "\""
-	| CallOptString None -> "None"
-	| CallOptString (Some s) -> sprintf "(Some \"%s\")" s
-	| CallStringList xs ->
-	    "[|" ^ String.concat ";" (List.map (sprintf "\"%s\"") xs) ^ "|]"
-	| CallInt i when i >= 0 -> string_of_int i
-	| CallInt i (* when i < 0 *) -> "(" ^ string_of_int i ^ ")"
-	| CallBool b -> string_of_bool b
+        function
+        | CallString s -> "\"" ^ s ^ "\""
+        | CallOptString None -> "None"
+        | CallOptString (Some s) -> sprintf "(Some \"%s\")" s
+        | CallStringList xs ->
+            "[|" ^ String.concat ";" (List.map (sprintf "\"%s\"") xs) ^ "|]"
+        | CallInt i when i >= 0 -> string_of_int i
+        | CallInt i (* when i < 0 *) -> "(" ^ string_of_int i ^ ")"
+        | CallInt64 i when i >= 0L -> Int64.to_string i ^ "L"
+        | CallInt64 i (* when i < 0L *) -> "(" ^ Int64.to_string i ^ "L)"
+        | CallBool b -> string_of_bool b
       ) args
     )
   in
@@ -8108,14 +10098,15 @@ my $g = Sys::Guestfs->new ();
   let mkargs args =
     String.concat ", " (
       List.map (
-	function
-	| CallString s -> "\"" ^ s ^ "\""
-	| CallOptString None -> "undef"
-	| CallOptString (Some s) -> sprintf "\"%s\"" s
-	| CallStringList xs ->
-	    "[" ^ String.concat "," (List.map (sprintf "\"%s\"") xs) ^ "]"
-	| CallInt i -> string_of_int i
-	| CallBool b -> if b then "1" else "0"
+        function
+        | CallString s -> "\"" ^ s ^ "\""
+        | CallOptString None -> "undef"
+        | CallOptString (Some s) -> sprintf "\"%s\"" s
+        | CallStringList xs ->
+            "[" ^ String.concat "," (List.map (sprintf "\"%s\"") xs) ^ "]"
+        | CallInt i -> string_of_int i
+        | CallInt64 i -> Int64.to_string i
+        | CallBool b -> if b then "1" else "0"
       ) args
     )
   in
@@ -8138,14 +10129,15 @@ g = guestfs.GuestFS ()
   let mkargs args =
     String.concat ", " (
       List.map (
-	function
-	| CallString s -> "\"" ^ s ^ "\""
-	| CallOptString None -> "None"
-	| CallOptString (Some s) -> sprintf "\"%s\"" s
-	| CallStringList xs ->
-	    "[" ^ String.concat "," (List.map (sprintf "\"%s\"") xs) ^ "]"
-	| CallInt i -> string_of_int i
-	| CallBool b -> if b then "1" else "0"
+        function
+        | CallString s -> "\"" ^ s ^ "\""
+        | CallOptString None -> "None"
+        | CallOptString (Some s) -> sprintf "\"%s\"" s
+        | CallStringList xs ->
+            "[" ^ String.concat "," (List.map (sprintf "\"%s\"") xs) ^ "]"
+        | CallInt i -> string_of_int i
+        | CallInt64 i -> Int64.to_string i
+        | CallBool b -> if b then "1" else "0"
       ) args
     )
   in
@@ -8168,14 +10160,15 @@ g = Guestfs::create()
   let mkargs args =
     String.concat ", " (
       List.map (
-	function
-	| CallString s -> "\"" ^ s ^ "\""
-	| CallOptString None -> "nil"
-	| CallOptString (Some s) -> sprintf "\"%s\"" s
-	| CallStringList xs ->
-	    "[" ^ String.concat "," (List.map (sprintf "\"%s\"") xs) ^ "]"
-	| CallInt i -> string_of_int i
-	| CallBool b -> string_of_bool b
+        function
+        | CallString s -> "\"" ^ s ^ "\""
+        | CallOptString None -> "nil"
+        | CallOptString (Some s) -> sprintf "\"%s\"" s
+        | CallStringList xs ->
+            "[" ^ String.concat "," (List.map (sprintf "\"%s\"") xs) ^ "]"
+        | CallInt i -> string_of_int i
+        | CallInt64 i -> Int64.to_string i
+        | CallBool b -> string_of_bool b
       ) args
     )
   in
@@ -8202,15 +10195,16 @@ public class Bindtests {
   let mkargs args =
     String.concat ", " (
       List.map (
-	function
-	| CallString s -> "\"" ^ s ^ "\""
-	| CallOptString None -> "null"
-	| CallOptString (Some s) -> sprintf "\"%s\"" s
-	| CallStringList xs ->
-	    "new String[]{" ^
-	      String.concat "," (List.map (sprintf "\"%s\"") xs) ^ "}"
-	| CallInt i -> string_of_int i
-	| CallBool b -> string_of_bool b
+        function
+        | CallString s -> "\"" ^ s ^ "\""
+        | CallOptString None -> "null"
+        | CallOptString (Some s) -> sprintf "\"%s\"" s
+        | CallStringList xs ->
+            "new String[]{" ^
+              String.concat "," (List.map (sprintf "\"%s\"") xs) ^ "}"
+        | CallInt i -> string_of_int i
+        | CallInt64 i -> Int64.to_string i
+        | CallBool b -> string_of_bool b
       ) args
     )
   in
@@ -8244,16 +10238,18 @@ main = do
   let mkargs args =
     String.concat " " (
       List.map (
-	function
-	| CallString s -> "\"" ^ s ^ "\""
-	| CallOptString None -> "Nothing"
-	| CallOptString (Some s) -> sprintf "(Just \"%s\")" s
-	| CallStringList xs ->
-	    "[" ^ String.concat "," (List.map (sprintf "\"%s\"") xs) ^ "]"
-	| CallInt i when i < 0 -> "(" ^ string_of_int i ^ ")"
-	| CallInt i -> string_of_int i
-	| CallBool true -> "True"
-	| CallBool false -> "False"
+        function
+        | CallString s -> "\"" ^ s ^ "\""
+        | CallOptString None -> "Nothing"
+        | CallOptString (Some s) -> sprintf "(Just \"%s\")" s
+        | CallStringList xs ->
+            "[" ^ String.concat "," (List.map (sprintf "\"%s\"") xs) ^ "]"
+        | CallInt i when i < 0 -> "(" ^ string_of_int i ^ ")"
+        | CallInt i -> string_of_int i
+        | CallInt64 i when i < 0L -> "(" ^ Int64.to_string i ^ ")"
+        | CallInt64 i -> Int64.to_string i
+        | CallBool true -> "True"
+        | CallBool false -> "False"
       ) args
     )
   in
@@ -8269,44 +10265,44 @@ main = do
  *)
 and generate_lang_bindtests call =
   call "test0" [CallString "abc"; CallOptString (Some "def");
-		CallStringList []; CallBool false;
-		CallInt 0; CallString "123"; CallString "456"];
+                CallStringList []; CallBool false;
+                CallInt 0; CallInt64 0L; CallString "123"; CallString "456"];
   call "test0" [CallString "abc"; CallOptString None;
-		CallStringList []; CallBool false;
-		CallInt 0; CallString "123"; CallString "456"];
+                CallStringList []; CallBool false;
+                CallInt 0; CallInt64 0L; CallString "123"; CallString "456"];
   call "test0" [CallString ""; CallOptString (Some "def");
-		CallStringList []; CallBool false;
-		CallInt 0; CallString "123"; CallString "456"];
+                CallStringList []; CallBool false;
+                CallInt 0; CallInt64 0L; CallString "123"; CallString "456"];
   call "test0" [CallString ""; CallOptString (Some "");
-		CallStringList []; CallBool false;
-		CallInt 0; CallString "123"; CallString "456"];
+                CallStringList []; CallBool false;
+                CallInt 0; CallInt64 0L; CallString "123"; CallString "456"];
   call "test0" [CallString "abc"; CallOptString (Some "def");
-		CallStringList ["1"]; CallBool false;
-		CallInt 0; CallString "123"; CallString "456"];
+                CallStringList ["1"]; CallBool false;
+                CallInt 0; CallInt64 0L; CallString "123"; CallString "456"];
   call "test0" [CallString "abc"; CallOptString (Some "def");
-		CallStringList ["1"; "2"]; CallBool false;
-		CallInt 0; CallString "123"; CallString "456"];
+                CallStringList ["1"; "2"]; CallBool false;
+                CallInt 0; CallInt64 0L; CallString "123"; CallString "456"];
   call "test0" [CallString "abc"; CallOptString (Some "def");
-		CallStringList ["1"]; CallBool true;
-		CallInt 0; CallString "123"; CallString "456"];
+                CallStringList ["1"]; CallBool true;
+                CallInt 0; CallInt64 0L; CallString "123"; CallString "456"];
   call "test0" [CallString "abc"; CallOptString (Some "def");
-		CallStringList ["1"]; CallBool false;
-		CallInt (-1); CallString "123"; CallString "456"];
+                CallStringList ["1"]; CallBool false;
+                CallInt (-1); CallInt64 (-1L); CallString "123"; CallString "456"];
   call "test0" [CallString "abc"; CallOptString (Some "def");
-		CallStringList ["1"]; CallBool false;
-		CallInt (-2); CallString "123"; CallString "456"];
+                CallStringList ["1"]; CallBool false;
+                CallInt (-2); CallInt64 (-2L); CallString "123"; CallString "456"];
   call "test0" [CallString "abc"; CallOptString (Some "def");
-		CallStringList ["1"]; CallBool false;
-		CallInt 1; CallString "123"; CallString "456"];
+                CallStringList ["1"]; CallBool false;
+                CallInt 1; CallInt64 1L; CallString "123"; CallString "456"];
   call "test0" [CallString "abc"; CallOptString (Some "def");
-		CallStringList ["1"]; CallBool false;
-		CallInt 2; CallString "123"; CallString "456"];
+                CallStringList ["1"]; CallBool false;
+                CallInt 2; CallInt64 2L; CallString "123"; CallString "456"];
   call "test0" [CallString "abc"; CallOptString (Some "def");
-		CallStringList ["1"]; CallBool false;
-		CallInt 4095; CallString "123"; CallString "456"];
+                CallStringList ["1"]; CallBool false;
+                CallInt 4095; CallInt64 4095L; CallString "123"; CallString "456"];
   call "test0" [CallString "abc"; CallOptString (Some "def");
-		CallStringList ["1"]; CallBool false;
-		CallInt 0; CallString ""; CallString ""]
+                CallStringList ["1"]; CallBool false;
+                CallInt 0; CallInt64 0L; CallString ""; CallString ""]
 
 (* XXX Add here tests of the return and error functions. *)
 
@@ -8328,33 +10324,54 @@ let output_to filename =
   chan := open_out filename_new;
   let close () =
     close_out !chan;
-    chan := stdout;
+    chan := Pervasives.stdout;
 
     (* Is the new file different from the current file? *)
     if Sys.file_exists filename && files_equal filename filename_new then
-      Unix.unlink filename_new		(* same, so skip it *)
+      unlink filename_new		(* same, so skip it *)
     else (
       (* different, overwrite old one *)
-      (try Unix.chmod filename 0o644 with Unix.Unix_error _ -> ());
-      Unix.rename filename_new filename;
-      Unix.chmod filename 0o444;
+      (try chmod filename 0o644 with Unix_error _ -> ());
+      rename filename_new filename;
+      chmod filename 0o444;
       printf "written %s\n%!" filename;
     )
   in
   close
 
+let perror msg = function
+  | Unix_error (err, _, _) ->
+      eprintf "%s: %s\n" msg (error_message err)
+  | exn ->
+      eprintf "%s: %s\n" msg (Printexc.to_string exn)
+
 (* Main program. *)
 let () =
-  check_functions ();
-
-  if not (Sys.file_exists "config.status") then (
-    eprintf "\
+  let lock_fd =
+    try openfile "HACKING" [O_RDWR] 0
+    with
+    | Unix_error (ENOENT, _, _) ->
+        eprintf "\
 You are probably running this from the wrong directory.
 Run it from the top source directory using the command
   src/generator.ml
 ";
-    exit 1
-  );
+        exit 1
+    | exn ->
+        perror "open: HACKING" exn;
+        exit 1 in
+
+  (* Acquire a lock so parallel builds won't try to run the generator
+   * twice at the same time.  Subsequent builds will wait for the first
+   * one to finish.  Note the lock is released implicitly when the
+   * program exits.
+   *)
+  (try lockf lock_fd F_LOCK 1
+   with exn ->
+     perror "lock: HACKING" exn;
+     exit 1);
+
+  check_functions ();
 
   let close = output_to "src/guestfs_protocol.x" in
   generate_xdr ();
@@ -8366,6 +10383,10 @@ Run it from the top source directory using the command
 
   let close = output_to "src/guestfs-actions.h" in
   generate_actions_h ();
+  close ();
+
+  let close = output_to "src/guestfs-internal-actions.h" in
+  generate_internal_actions_h ();
   close ();
 
   let close = output_to "src/guestfs-actions.c" in
@@ -8382,6 +10403,14 @@ Run it from the top source directory using the command
 
   let close = output_to "daemon/names.c" in
   generate_daemon_names ();
+  close ();
+
+  let close = output_to "daemon/optgroups.c" in
+  generate_daemon_optgroups_c ();
+  close ();
+
+  let close = output_to "daemon/optgroups.h" in
+  generate_daemon_optgroups_h ();
   close ();
 
   let close = output_to "capitests/tests.c" in
@@ -8406,6 +10435,10 @@ Run it from the top source directory using the command
 
   let close = output_to "guestfs-actions.pod" in
   generate_actions_pod ();
+  close ();
+
+  let close = output_to "guestfs-availability.pod" in
+  generate_availability_pod ();
   close ();
 
   let close = output_to "guestfish-actions.pod" in
@@ -8474,12 +10507,7 @@ Run it from the top source directory using the command
   ) java_structs;
 
   let close = output_to "java/Makefile.inc" in
-  pr "java_built_sources =";
-  List.iter (
-    fun (typ, jtyp) ->
-        pr " com/redhat/et/libguestfs/%s.java" jtyp;
-  ) java_structs;
-  pr " com/redhat/et/libguestfs/GuestFS.java\n";
+  generate_java_makefile_inc ();
   close ();
 
   let close = output_to "java/com_redhat_et_libguestfs_GuestFS.c" in

@@ -15,8 +15,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-EXTRA_DIST = \
-	tests.c
+include $(top_srcdir)/subdir-rules.mk
+
+generator_built = tests.c
+
+BUILT_SOURCES = $(generator_built)
+
+EXTRA_DIST = $(BUILT_SOURCES)
 
 # Tests.  These are auto-generated from the test descriptions
 # in the generator.
@@ -24,19 +29,15 @@ EXTRA_DIST = \
 check_PROGRAMS = tests test-command
 
 tests_SOURCES = tests.c
-tests_CFLAGS = -I$(top_srcdir)/src -I$(top_builddir)/src -Wall
+tests_CFLAGS = -I$(top_srcdir)/src -I$(top_builddir)/src \
+  $(WARN_CFLAGS) $(WERROR_CFLAGS)
 tests_LDADD = $(top_builddir)/src/libguestfs.la
 
 TESTS = tests
 TESTS_ENVIRONMENT = \
 	SKIP_TEST_COMMAND=$(shell ldd test-command | grep -sq 'not a dynamic executable' || echo 1) \
 	SKIP_TEST_COMMAND_LINES=$(shell ldd test-command | grep -sq 'not a dynamic executable' || echo 1) \
-	SKIP_TEST_ZEROFREE=$(shell test -x ../initramfs/usr/sbin/zerofree || echo 1) \
-	SKIP_TEST_NTFS_3G_PROBE=$(shell test -x ../initramfs/bin/ntfs-3g.probe || echo 1) \
 	SKIP_TEST_CHECKSUM_8=$(shell if test `find ../initramfs -name squashfs.ko | wc -l` -eq 0; then echo 1; fi) \
-	SKIP_TEST_MKSWAP_U=$(shell r=1; if test -x ../initramfs/sbin/mkswap; then if ../initramfs/sbin/mkswap --help 2>&1 | grep -sq -- -U; then r=0; fi; fi; echo $$r) \
-	SKIP_TEST_SCRUB_FILE=$(shell test -x ../initramfs/usr/bin/scrub || echo 1) \
-	SKIP_TEST_SCRUB_DEVICE=$(shell test -x ../initramfs/usr/bin/scrub || echo 1) \
 	$(VG)
 
 # Run the tests under valgrind.

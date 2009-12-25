@@ -29,6 +29,7 @@
 
 #include "daemon.h"
 #include "actions.h"
+#include "optgroups.h"
 
 #ifdef HAVE_AUGEAS
 /* The Augeas handle.  We maintain a single handle per daemon, which
@@ -36,7 +37,6 @@
  * considerably.
  */
 static augeas *aug = NULL;
-#endif
 
 #define NEED_AUG(errcode)						\
   do {									\
@@ -47,29 +47,36 @@ static augeas *aug = NULL;
   }									\
   while (0)
 
+int
+optgroup_augeas_available (void)
+{
+  return 1;
+}
+#else /* !HAVE_AUGEAS */
+int
+optgroup_augeas_available (void)
+{
+  return 0;
+}
+#endif
+
 /* We need to rewrite the root path so it is based at /sysroot. */
 int
-do_aug_init (char *root, int flags)
+do_aug_init (const char *root, int flags)
 {
 #ifdef HAVE_AUGEAS
   char *buf;
-  int len;
-
-  NEED_ROOT (-1);
-  ABS_PATH (root, -1);
 
   if (aug) {
     aug_close (aug);
     aug = NULL;
   }
 
-  len = strlen (root) + 9;
-  buf = malloc (len);
+  buf = sysroot_path (root);
   if (!buf) {
     reply_with_perror ("malloc");
     return -1;
   }
-  snprintf (buf, len, "/sysroot%s", root);
 
   aug = aug_init (buf, NULL, flags);
   free (buf);
@@ -81,8 +88,7 @@ do_aug_init (char *root, int flags)
 
   return 0;
 #else
-  reply_with_error ("%s is not available", __func__);
-  return -1;
+  NOT_AVAILABLE (-1);
 #endif
 }
 
@@ -97,13 +103,12 @@ do_aug_close (void)
 
   return 0;
 #else
-  reply_with_error ("%s is not available", __func__);
-  return -1;
+  NOT_AVAILABLE (-1);
 #endif
 }
 
 int
-do_aug_defvar (char *name, char *expr)
+do_aug_defvar (const char *name, const char *expr)
 {
 #ifdef HAVE_AUG_DEFVAR
   int r;
@@ -117,13 +122,12 @@ do_aug_defvar (char *name, char *expr)
   }
   return r;
 #else
-  reply_with_error ("%s is not available", __func__);
-  return -1;
+  NOT_AVAILABLE (-1);
 #endif
 }
 
 guestfs_int_int_bool *
-do_aug_defnode (char *name, char *expr, char *val)
+do_aug_defnode (const char *name, const char *expr, const char *val)
 {
 #ifdef HAVE_AUG_DEFNODE
   static guestfs_int_int_bool r;
@@ -139,13 +143,12 @@ do_aug_defnode (char *name, char *expr, char *val)
   r.b = created;
   return &r;
 #else
-  reply_with_error ("%s is not available", __func__);
-  return NULL;
+  NOT_AVAILABLE (NULL);
 #endif
 }
 
 char *
-do_aug_get (char *path)
+do_aug_get (const char *path)
 {
 #ifdef HAVE_AUGEAS
   const char *value = NULL;
@@ -182,13 +185,12 @@ do_aug_get (char *path)
 
   return v;			/* Caller frees. */
 #else
-  reply_with_error ("%s is not available", __func__);
-  return NULL;
+  NOT_AVAILABLE (NULL);
 #endif
 }
 
 int
-do_aug_set (char *path, char *val)
+do_aug_set (const char *path, const char *val)
 {
 #ifdef HAVE_AUGEAS
   int r;
@@ -203,13 +205,12 @@ do_aug_set (char *path, char *val)
 
   return 0;
 #else
-  reply_with_error ("%s is not available", __func__);
-  return -1;
+  NOT_AVAILABLE (-1);
 #endif
 }
 
 int
-do_aug_insert (char *path, char *label, int before)
+do_aug_insert (const char *path, const char *label, int before)
 {
 #ifdef HAVE_AUGEAS
   int r;
@@ -224,13 +225,12 @@ do_aug_insert (char *path, char *label, int before)
 
   return 0;
 #else
-  reply_with_error ("%s is not available", __func__);
-  return -1;
+  NOT_AVAILABLE (-1);
 #endif
 }
 
 int
-do_aug_rm (char *path)
+do_aug_rm (const char *path)
 {
 #ifdef HAVE_AUGEAS
   int r;
@@ -245,13 +245,12 @@ do_aug_rm (char *path)
 
   return r;
 #else
-  reply_with_error ("%s is not available", __func__);
-  return -1;
+  NOT_AVAILABLE (-1);
 #endif
 }
 
 int
-do_aug_mv (char *src, char *dest)
+do_aug_mv (const char *src, const char *dest)
 {
 #ifdef HAVE_AUGEAS
   int r;
@@ -266,13 +265,12 @@ do_aug_mv (char *src, char *dest)
 
   return 0;
 #else
-  reply_with_error ("%s is not available", __func__);
-  return -1;
+  NOT_AVAILABLE (-1);
 #endif
 }
 
 char **
-do_aug_match (char *path)
+do_aug_match (const char *path)
 {
 #ifdef HAVE_AUGEAS
   char **matches = NULL;
@@ -301,8 +299,7 @@ do_aug_match (char *path)
 
   return matches;		/* Caller frees. */
 #else
-  reply_with_error ("%s is not available", __func__);
-  return NULL;
+  NOT_AVAILABLE (NULL);
 #endif
 }
 
@@ -319,8 +316,7 @@ do_aug_save (void)
 
   return 0;
 #else
-  reply_with_error ("%s is not available", __func__);
-  return -1;
+  NOT_AVAILABLE (-1);
 #endif
 }
 
@@ -337,14 +333,13 @@ do_aug_load (void)
 
   return 0;
 #else
-  reply_with_error ("%s is not available", __func__);
-  return -1;
+  NOT_AVAILABLE (-1);
 #endif
 }
 
 /* Simpler version of aug-match, which also sorts the output. */
 char **
-do_aug_ls (char *path)
+do_aug_ls (const char *path)
 {
 #ifdef HAVE_AUGEAS
   char **matches;
@@ -353,7 +348,7 @@ do_aug_ls (char *path)
 
   NEED_AUG (NULL);
 
-  ABS_PATH (path, NULL);
+  ABS_PATH (path, return NULL);
 
   len = strlen (path);
 
@@ -382,10 +377,9 @@ do_aug_ls (char *path)
   if (matches == NULL)
     return NULL;		/* do_aug_match has already sent the error */
 
-  sort_strings (matches, count_strings (matches));
+  sort_strings (matches, count_strings ((void *) matches));
   return matches;		/* Caller frees. */
 #else
-  reply_with_error ("%s is not available", __func__);
-  return NULL;
+  NOT_AVAILABLE (NULL);
 #endif
 }

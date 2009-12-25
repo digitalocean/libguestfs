@@ -25,6 +25,8 @@
 #include <string.h>
 
 #include "guestfs.h"
+#include "guestfs-internal.h"
+#include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 
 #define error guestfs_error
@@ -32,7 +34,7 @@
 #define safe_malloc guestfs_safe_malloc
 
 static void
-print_strings (char * const* const argv)
+print_strings (char *const *argv)
 {
   int argc;
 
@@ -45,12 +47,13 @@ print_strings (char * const* const argv)
 }
 
 /* The test0 function prints its parameters to stdout. */
-int guestfs_test0 (guestfs_h *g,
+int guestfs__test0 (guestfs_h *g,
 		const char *str,
 		const char *optstr,
-		char * const* const strlist,
+		char *const *strlist,
 		int b,
 		int integer,
+		int64_t integer64,
 		const char *filein,
 		const char *fileout)
 {
@@ -59,6 +62,7 @@ int guestfs_test0 (guestfs_h *g,
   print_strings (strlist);
   printf ("%s\n", b ? "true" : "false");
   printf ("%d\n", integer);
+  printf ("%" PRIi64 "\n", integer64);
   printf ("%s\n", filein);
   printf ("%s\n", fileout);
   /* Java changes stdout line buffering so we need this: */
@@ -67,7 +71,7 @@ int guestfs_test0 (guestfs_h *g,
 }
 
 /* Test normal return. */
-int guestfs_test0rint (guestfs_h *g,
+int guestfs__test0rint (guestfs_h *g,
 		const char *val)
 {
   int r;
@@ -76,14 +80,14 @@ int guestfs_test0rint (guestfs_h *g,
 }
 
 /* Test error return. */
-int guestfs_test0rinterr (guestfs_h *g)
+int guestfs__test0rinterr (guestfs_h *g)
 {
   error (g, "error");
   return -1;
 }
 
 /* Test normal return. */
-int64_t guestfs_test0rint64 (guestfs_h *g,
+int64_t guestfs__test0rint64 (guestfs_h *g,
 		const char *val)
 {
   int64_t r;
@@ -92,56 +96,70 @@ int64_t guestfs_test0rint64 (guestfs_h *g,
 }
 
 /* Test error return. */
-int64_t guestfs_test0rint64err (guestfs_h *g)
+int64_t guestfs__test0rint64err (guestfs_h *g)
 {
   error (g, "error");
   return -1;
 }
 
 /* Test normal return. */
-int guestfs_test0rbool (guestfs_h *g,
+int guestfs__test0rbool (guestfs_h *g,
 		const char *val)
 {
-  return strcmp (val, "true") == 0;
+  return STREQ (val, "true");
 }
 
 /* Test error return. */
-int guestfs_test0rboolerr (guestfs_h *g)
+int guestfs__test0rboolerr (guestfs_h *g)
 {
   error (g, "error");
   return -1;
 }
 
 /* Test normal return. */
-const char *guestfs_test0rconststring (guestfs_h *g,
+const char *guestfs__test0rconststring (guestfs_h *g,
 		const char *val)
 {
   return "static string";
 }
 
 /* Test error return. */
-const char *guestfs_test0rconststringerr (guestfs_h *g)
+const char *guestfs__test0rconststringerr (guestfs_h *g)
 {
   error (g, "error");
   return NULL;
 }
 
 /* Test normal return. */
-char *guestfs_test0rstring (guestfs_h *g,
+const char *guestfs__test0rconstoptstring (guestfs_h *g,
+		const char *val)
+{
+  return "static string";
+}
+
+/* Test error return. */
+const char *guestfs__test0rconstoptstringerr (guestfs_h *g)
+{
+  error (g, "error");
+  return NULL;
+}
+
+/* Test normal return. */
+char *guestfs__test0rstring (guestfs_h *g,
 		const char *val)
 {
   return strdup (val);
 }
 
 /* Test error return. */
-char *guestfs_test0rstringerr (guestfs_h *g)
+char *guestfs__test0rstringerr (guestfs_h *g)
 {
   error (g, "error");
   return NULL;
 }
 
 /* Test normal return. */
-char **guestfs_test0rstringlist (guestfs_h *g,
+char **guestfs__test0rstringlist (guestfs_h *g,
 		const char *val)
 {
   char **strs;
@@ -157,14 +175,14 @@ char **guestfs_test0rstringlist (guestfs_h *g,
 }
 
 /* Test error return. */
-char **guestfs_test0rstringlisterr (guestfs_h *g)
+char **guestfs__test0rstringlisterr (guestfs_h *g)
 {
   error (g, "error");
   return NULL;
 }
 
 /* Test normal return. */
-struct guestfs_lvm_pv *guestfs_test0rstruct (guestfs_h *g,
+struct guestfs_lvm_pv *guestfs__test0rstruct (guestfs_h *g,
 		const char *val)
 {
   struct guestfs_lvm_pv *r;
@@ -173,14 +191,14 @@ struct guestfs_lvm_pv *guestfs_test0rstruct (guestfs_h *g,
 }
 
 /* Test error return. */
-struct guestfs_lvm_pv *guestfs_test0rstructerr (guestfs_h *g)
+struct guestfs_lvm_pv *guestfs__test0rstructerr (guestfs_h *g)
 {
   error (g, "error");
   return NULL;
 }
 
 /* Test normal return. */
-struct guestfs_lvm_pv_list *guestfs_test0rstructlist (guestfs_h *g,
+struct guestfs_lvm_pv_list *guestfs__test0rstructlist (guestfs_h *g,
 		const char *val)
 {
   struct guestfs_lvm_pv_list *r;
@@ -191,14 +209,14 @@ struct guestfs_lvm_pv_list *guestfs_test0rstructlist (guestfs_h *g,
 }
 
 /* Test error return. */
-struct guestfs_lvm_pv_list *guestfs_test0rstructlisterr (guestfs_h *g)
+struct guestfs_lvm_pv_list *guestfs__test0rstructlisterr (guestfs_h *g)
 {
   error (g, "error");
   return NULL;
 }
 
 /* Test normal return. */
-char **guestfs_test0rhashtable (guestfs_h *g,
+char **guestfs__test0rhashtable (guestfs_h *g,
 		const char *val)
 {
   char **strs;
@@ -216,7 +234,7 @@ char **guestfs_test0rhashtable (guestfs_h *g,
 }
 
 /* Test error return. */
-char **guestfs_test0rhashtableerr (guestfs_h *g)
+char **guestfs__test0rhashtableerr (guestfs_h *g)
 {
   error (g, "error");
   return NULL;

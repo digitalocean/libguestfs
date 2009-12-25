@@ -36,11 +36,11 @@ write_cb (void *fd_ptr, const void *buf, int len)
 
 /* Has one FileIn parameter. */
 int
-do_upload (char *filename)
+do_upload (const char *filename)
 {
   int err, fd, r, is_dev;
 
-  is_dev = strncmp (filename, "/dev/", 5) == 0;
+  is_dev = STRPREFIX (filename, "/dev/");
   if (!is_dev) {
     if (!root_mounted || filename[0] != '/') {
       cancel_receive ();
@@ -88,14 +88,12 @@ do_upload (char *filename)
 
 /* Has one FileOut parameter. */
 int
-do_download (char *filename)
+do_download (const char *filename)
 {
   int fd, r, is_dev;
   char buf[GUESTFS_MAX_CHUNK_SIZE];
 
-  NEED_ROOT_OR_IS_DEVICE (filename, -1);
-
-  is_dev = strncmp (filename, "/dev/", 5) == 0;
+  is_dev = STRPREFIX (filename, "/dev/");
 
   if (!is_dev) CHROOT_IN;
   fd = open (filename, O_RDONLY);
@@ -131,6 +129,8 @@ do_download (char *filename)
     return -1;
   }
 
-  send_file_end (0);		/* Normal end of file. */
+  if (send_file_end (0))	/* Normal end of file. */
+    return -1;
+
   return 0;
 }

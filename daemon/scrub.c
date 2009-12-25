@@ -26,14 +26,20 @@
 
 #include "daemon.h"
 #include "actions.h"
+#include "optgroups.h"
 
 int
-do_scrub_device (char *device)
+optgroup_scrub_available (void)
+{
+  int r = access ("/usr/bin/scrub", X_OK);
+  return r == 0;
+}
+
+int
+do_scrub_device (const char *device)
 {
   char *err;
   int r;
-
-  IS_DEVICE (device, -1);
 
   r = command (NULL, &err, "scrub", device, NULL);
   if (r == -1) {
@@ -48,24 +54,18 @@ do_scrub_device (char *device)
 }
 
 int
-do_scrub_file (char *file)
+do_scrub_file (const char *file)
 {
   char *buf;
-  int len;
   char *err;
   int r;
 
-  NEED_ROOT (-1);
-  ABS_PATH (file, -1);
-
   /* Make the path relative to /sysroot. */
-  len = strlen (file) + 9;
-  buf = malloc (len);
+  buf = sysroot_path (file);
   if (!buf) {
     reply_with_perror ("malloc");
     return -1;
   }
-  snprintf (buf, len, "/sysroot%s", file);
 
   r = command (NULL, &err, "scrub", "-r", buf, NULL);
   free (buf);
@@ -81,24 +81,18 @@ do_scrub_file (char *file)
 }
 
 int
-do_scrub_freespace (char *dir)
+do_scrub_freespace (const char *dir)
 {
   char *buf;
-  int len;
   char *err;
   int r;
 
-  NEED_ROOT (-1);
-  ABS_PATH (dir, -1);
-
   /* Make the path relative to /sysroot. */
-  len = strlen (dir) + 9;
-  buf = malloc (len);
+  buf = sysroot_path (dir);
   if (!buf) {
     reply_with_perror ("malloc");
     return -1;
   }
-  snprintf (buf, len, "/sysroot%s", dir);
 
   r = command (NULL, &err, "scrub", "-X", buf, NULL);
   free (buf);
