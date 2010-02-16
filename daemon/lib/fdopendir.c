@@ -1,5 +1,5 @@
 /* provide a replacement fdopendir function
-   Copyright (C) 2004-2009 Free Software Foundation, Inc.
+   Copyright (C) 2004-2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -80,21 +80,21 @@ fdopendir (int fd)
 # else /* !REPLACE_FCHDIR */
       struct saved_cwd saved_cwd;
       if (save_cwd (&saved_cwd) != 0)
-	openat_save_fail (errno);
+        openat_save_fail (errno);
 
       if (fchdir (fd) != 0)
-	{
-	  dir = NULL;
-	  saved_errno = errno;
-	}
+        {
+          dir = NULL;
+          saved_errno = errno;
+        }
       else
-	{
-	  dir = opendir (".");
-	  saved_errno = errno;
+        {
+          dir = opendir (".");
+          saved_errno = errno;
 
-	  if (restore_cwd (&saved_cwd) != 0)
-	    openat_restore_fail (errno);
-	}
+          if (restore_cwd (&saved_cwd) != 0)
+            openat_restore_fail (errno);
+        }
 
       free_cwd (&saved_cwd);
 # endif /* !REPLACE_FCHDIR */

@@ -1,5 +1,5 @@
 /* Define an at-style functions like fstatat, unlinkat, fchownat, etc.
-   Copyright (C) 2006, 2009 Free Software Foundation, Inc.
+   Copyright (C) 2006, 2009-2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -22,15 +22,15 @@
 #include "save-cwd.h"
 
 #ifdef AT_FUNC_USE_F1_COND
-# define CALL_FUNC(F)				\
-  (flag == AT_FUNC_USE_F1_COND			\
-    ? AT_FUNC_F1 (F AT_FUNC_POST_FILE_ARGS)	\
+# define CALL_FUNC(F)                           \
+  (flag == AT_FUNC_USE_F1_COND                  \
+    ? AT_FUNC_F1 (F AT_FUNC_POST_FILE_ARGS)     \
     : AT_FUNC_F2 (F AT_FUNC_POST_FILE_ARGS))
-# define VALIDATE_FLAG(F)			\
-  if (flag & ~AT_FUNC_USE_F1_COND)		\
-    {						\
-      errno = EINVAL;				\
-      return FUNC_FAIL;				\
+# define VALIDATE_FLAG(F)                       \
+  if (flag & ~AT_FUNC_USE_F1_COND)              \
+    {                                           \
+      errno = EINVAL;                           \
+      return FUNC_FAIL;                         \
     }
 #else
 # define CALL_FUNC(F) (AT_FUNC_F1 (F AT_FUNC_POST_FILE_ARGS))

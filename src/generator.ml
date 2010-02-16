@@ -1,6 +1,6 @@
 #!/usr/bin/env ocaml
 (* libguestfs
- * Copyright (C) 2009 Red Hat Inc.
+ * Copyright (C) 2009-2010 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,21 +19,30 @@
 
 (* This script generates a large amount of code and documentation for
  * all the daemon actions.
- *
+ * 
  * To add a new action there are only two files you need to change,
- * this one to describe the interface (see the big table below), and
- * daemon/<somefile>.c to write the implementation.
- *
- * After editing this file, run it (./src/generator.ml) to regenerate all the
- * output files.  Note that if you are using a separate build directory you
- * must run generator.ml from the _source_ directory.
- *
+ * this one to describe the interface (see the big table of
+ * 'daemon_functions' below), and daemon/<somefile>.c to write the
+ * implementation.
+ * 
+ * After editing this file, run it (./src/generator.ml) to regenerate
+ * all the output files.  'make' will rerun this automatically when
+ * necessary.  Note that if you are using a separate build directory
+ * you must run generator.ml from the _source_ directory.
+ * 
  * IMPORTANT: This script should NOT print any warnings.  If it prints
  * warnings, you should treat them as errors.
+ *
+ * OCaml tips:
+ * (1) In emacs, install tuareg-mode to display and format OCaml code
+ * correctly.  'vim' comes with a good OCaml editing mode by default.
+ * (2) Read the resources at http://ocaml-tutorial.org/
  *)
 
 #load "unix.cma";;
 #load "str.cma";;
+#directory "+xml-light";;
+#load "xml-light.cma";;
 
 open Unix
 open Printf
@@ -480,8 +489,14 @@ image).
 
 This is equivalent to the qemu parameter
 C<-drive file=filename,cache=off,if=...>.
+
 C<cache=off> is omitted in cases where it is not supported by
 the underlying filesystem.
+
+C<if=...> is set at compile time by the configuration option
+C<./configure --with-drive-if=...>.  In the rare case where you
+might need to change this at run time, use C<guestfs_add_drive_with_if>
+or C<guestfs_add_drive_ro_with_if>.
 
 Note that this call checks for the existence of C<filename>.  This
 stops you from specifying other types of drive which are supported
@@ -496,10 +511,24 @@ This function adds a virtual CD-ROM disk image to the guest.
 
 This is equivalent to the qemu parameter C<-cdrom filename>.
 
-Note that this call checks for the existence of C<filename>.  This
+Notes:
+
+=over 4
+
+=item *
+
+This call checks for the existence of C<filename>.  This
 stops you from specifying other types of drive which are supported
 by qemu such as C<nbd:> and C<http:> URLs.  To specify those, use
-the general C<guestfs_config> call instead.");
+the general C<guestfs_config> call instead.
+
+=item *
+
+If you just want to add an ISO file (often you use this as an
+efficient way to transfer large files into the guest), then you
+should probably use C<guestfs_add_drive_ro> instead.
+
+=back");
 
   ("add_drive_ro", (RErr, [String "filename"]), -1, [FishAlias "add-ro"],
    [],
@@ -516,6 +545,11 @@ changes to be committed, although qemu can support this.
 
 This is equivalent to the qemu parameter
 C<-drive file=filename,snapshot=on,if=...>.
+
+C<if=...> is set at compile time by the configuration option
+C<./configure --with-drive-if=...>.  In the rare case where you
+might need to change this at run time, use C<guestfs_add_drive_with_if>
+or C<guestfs_add_drive_ro_with_if>.
 
 Note that this call checks for the existence of C<filename>.  This
 stops you from specifying other types of drive which are supported
@@ -863,6 +897,20 @@ qemu, which is not very helpful.");
    "get recovery process enabled flag",
    "\
 Return the recovery process enabled flag.");
+
+  ("add_drive_with_if", (RErr, [String "filename"; String "iface"]), -1, [],
+   [],
+   "add a drive specifying the QEMU block emulation to use",
+   "\
+This is the same as C<guestfs_add_drive> but it allows you
+to specify the QEMU interface emulation to use at run time.");
+
+  ("add_drive_ro_with_if", (RErr, [String "filename"; String "iface"]), -1, [],
+   [],
+   "add a drive read-only specifying the QEMU block emulation to use",
+   "\
+This is the same as C<guestfs_add_drive_ro> but it allows you
+to specify the QEMU interface emulation to use at run time.");
 
 ]
 
@@ -1317,7 +1365,11 @@ as necessary.  This is like the C<mkdir -p> shell command.");
    "change file mode",
    "\
 Change the mode (permissions) of C<path> to C<mode>.  Only
-numeric modes are supported.");
+numeric modes are supported.
+
+I<Note>: When using this command from guestfish, C<mode>
+by default would be decimal, unless you prefix it with
+C<0> to get octal, ie. use C<0700> not C<700>.");
 
   ("chown", (RErr, [Int "owner"; Int "group"; Pathname "path"]), 35, [],
    [], (* XXX Need stat command to test *)
@@ -1419,7 +1471,7 @@ on the volume group C<volgroup>, with C<size> megabytes.");
    [InitEmpty, Always, TestOutput (
       [["part_disk"; "/dev/sda"; "mbr"];
        ["mkfs"; "ext2"; "/dev/sda1"];
-       ["mount"; "/dev/sda1"; "/"];
+       ["mount_options"; ""; "/dev/sda1"; "/"];
        ["write_file"; "/new"; "new file contents"; "0"];
        ["cat"; "/new"]], "new file contents")],
    "make a filesystem",
@@ -1495,12 +1547,12 @@ use C<guestfs_upload>.");
    [InitEmpty, Always, TestOutputListOfDevices (
       [["part_disk"; "/dev/sda"; "mbr"];
        ["mkfs"; "ext2"; "/dev/sda1"];
-       ["mount"; "/dev/sda1"; "/"];
+       ["mount_options"; ""; "/dev/sda1"; "/"];
        ["mounts"]], ["/dev/sda1"]);
     InitEmpty, Always, TestOutputList (
       [["part_disk"; "/dev/sda"; "mbr"];
        ["mkfs"; "ext2"; "/dev/sda1"];
-       ["mount"; "/dev/sda1"; "/"];
+       ["mount_options"; ""; "/dev/sda1"; "/"];
        ["umount"; "/"];
        ["mounts"]], [])],
    "unmount a filesystem",
@@ -1531,11 +1583,11 @@ See also: C<guestfs_mountpoints>");
        ["mkfs"; "ext2"; "/dev/sda1"];
        ["mkfs"; "ext2"; "/dev/sda2"];
        ["mkfs"; "ext2"; "/dev/sda3"];
-       ["mount"; "/dev/sda1"; "/"];
+       ["mount_options"; ""; "/dev/sda1"; "/"];
        ["mkdir"; "/mp1"];
-       ["mount"; "/dev/sda2"; "/mp1"];
+       ["mount_options"; ""; "/dev/sda2"; "/mp1"];
        ["mkdir"; "/mp1/mp2"];
-       ["mount"; "/dev/sda3"; "/mp1/mp2"];
+       ["mount_options"; ""; "/dev/sda3"; "/mp1/mp2"];
        ["mkdir"; "/mp1/mp2/mp3"];
        ["umount_all"];
        ["mounts"]], [])],
@@ -1866,7 +1918,7 @@ This uses the L<blockdev(8)> command.");
       (* Pick a file from cwd which isn't likely to change. *)
       [["upload"; "../COPYING.LIB"; "/COPYING.LIB"];
        ["checksum"; "md5"; "/COPYING.LIB"]],
-        Digest.to_hex (Digest.file "COPYING.LIB"))],
+      Digest.to_hex (Digest.file "COPYING.LIB"))],
    "upload a file from the local machine",
    "\
 Upload local file C<filename> to C<remotefilename> on the
@@ -1883,7 +1935,7 @@ See also C<guestfs_download>.");
        ["download"; "/COPYING.LIB"; "testdownload.tmp"];
        ["upload"; "testdownload.tmp"; "/upload"];
        ["checksum"; "md5"; "/upload"]],
-        Digest.to_hex (Digest.file "COPYING.LIB"))],
+      Digest.to_hex (Digest.file "COPYING.LIB"))],
    "download a file to the local machine",
    "\
 Download file C<remotefilename> and save it as C<filename>
@@ -2392,11 +2444,11 @@ the human-readable, canonical hex dump of the file.");
    [InitNone, Always, TestOutput (
       [["part_disk"; "/dev/sda"; "mbr"];
        ["mkfs"; "ext3"; "/dev/sda1"];
-       ["mount"; "/dev/sda1"; "/"];
+       ["mount_options"; ""; "/dev/sda1"; "/"];
        ["write_file"; "/new"; "test file"; "0"];
        ["umount"; "/dev/sda1"];
        ["zerofree"; "/dev/sda1"];
-       ["mount"; "/dev/sda1"; "/"];
+       ["mount_options"; ""; "/dev/sda1"; "/"];
        ["cat"; "/new"]], "test file")],
    "zero unused inodes and disk blocks on ext2/3 filesystem",
    "\
@@ -2497,13 +2549,13 @@ are activated or deactivated.");
        ["vgcreate"; "VG"; "/dev/sda1"];
        ["lvcreate"; "LV"; "VG"; "10"];
        ["mkfs"; "ext2"; "/dev/VG/LV"];
-       ["mount"; "/dev/VG/LV"; "/"];
+       ["mount_options"; ""; "/dev/VG/LV"; "/"];
        ["write_file"; "/new"; "test content"; "0"];
        ["umount"; "/"];
        ["lvresize"; "/dev/VG/LV"; "20"];
        ["e2fsck_f"; "/dev/VG/LV"];
        ["resize2fs"; "/dev/VG/LV"];
-       ["mount"; "/dev/VG/LV"; "/"];
+       ["mount_options"; ""; "/dev/VG/LV"; "/"];
        ["cat"; "/new"]], "test content")],
    "resize an LVM logical volume",
    "\
@@ -3115,11 +3167,11 @@ a list of devices.  This one returns a hash table (map) of
 device name to directory where the device is mounted.");
 
   ("mkmountpoint", (RErr, [String "exemptpath"]), 148, [],
-  (* This is a special case: while you would expect a parameter
-   * of type "Pathname", that doesn't work, because it implies
-   * NEED_ROOT in the generated calling code in stubs.c, and
-   * this function cannot use NEED_ROOT.
-   *)
+   (* This is a special case: while you would expect a parameter
+    * of type "Pathname", that doesn't work, because it implies
+    * NEED_ROOT in the generated calling code in stubs.c, and
+    * this function cannot use NEED_ROOT.
+    *)
    [],
    "create a mountpoint",
    "\
@@ -3547,7 +3599,7 @@ and C<guestfs_setcon>");
    [InitEmpty, Always, TestOutput (
       [["part_disk"; "/dev/sda"; "mbr"];
        ["mkfs_b"; "ext2"; "4096"; "/dev/sda1"];
-       ["mount"; "/dev/sda1"; "/"];
+       ["mount_options"; ""; "/dev/sda1"; "/"];
        ["write_file"; "/new"; "new file contents"; "0"];
        ["cat"; "/new"]], "new file contents")],
    "make a filesystem with block size",
@@ -3562,7 +3614,7 @@ are C<1024>, C<2048> or C<4096> only.");
       [["sfdiskM"; "/dev/sda"; ",100 ,"];
        ["mke2journal"; "4096"; "/dev/sda1"];
        ["mke2fs_J"; "ext2"; "4096"; "/dev/sda2"; "/dev/sda1"];
-       ["mount"; "/dev/sda2"; "/"];
+       ["mount_options"; ""; "/dev/sda2"; "/"];
        ["write_file"; "/new"; "new file contents"; "0"];
        ["cat"; "/new"]], "new file contents")],
    "make ext2/3/4 external journal",
@@ -3577,7 +3629,7 @@ to the command:
       [["sfdiskM"; "/dev/sda"; ",100 ,"];
        ["mke2journal_L"; "4096"; "JOURNAL"; "/dev/sda1"];
        ["mke2fs_JL"; "ext2"; "4096"; "/dev/sda2"; "JOURNAL"];
-       ["mount"; "/dev/sda2"; "/"];
+       ["mount_options"; ""; "/dev/sda2"; "/"];
        ["write_file"; "/new"; "new file contents"; "0"];
        ["cat"; "/new"]], "new file contents")],
    "make ext2/3/4 external journal with label",
@@ -3590,7 +3642,7 @@ This creates an ext2 external journal on C<device> with label C<label>.");
        [["sfdiskM"; "/dev/sda"; ",100 ,"];
         ["mke2journal_U"; "4096"; uuid; "/dev/sda1"];
         ["mke2fs_JU"; "ext2"; "4096"; "/dev/sda2"; uuid];
-        ["mount"; "/dev/sda2"; "/"];
+        ["mount_options"; ""; "/dev/sda2"; "/"];
         ["write_file"; "/new"; "new file contents"; "0"];
         ["cat"; "/new"]], "new file contents")]),
    "make ext2/3/4 external journal with UUID",
@@ -3638,8 +3690,8 @@ was built (see C<appliance/kmod.whitelist.in> in the source).");
 
   ("echo_daemon", (RString "output", [StringList "words"]), 195, [],
    [InitNone, Always, TestOutput (
-     [["echo_daemon"; "This is a test"]], "This is a test"
-   )],
+      [["echo_daemon"; "This is a test"]], "This is a test"
+    )],
    "echo arguments back to the client",
    "\
 This command concatenate the list of C<words> passed with single spaces between
@@ -4179,6 +4231,55 @@ If the destination is a device, it must be as large or larger
 than the source file or device, otherwise the copy will fail.
 This command cannot do partial copies.");
 
+  ("filesize", (RInt64 "size", [Pathname "file"]), 218, [],
+   [InitBasicFS, Always, TestOutputInt (
+      [["write_file"; "/file"; "hello, world"; "0"];
+       ["filesize"; "/file"]], 12)],
+   "return the size of the file in bytes",
+   "\
+This command returns the size of C<file> in bytes.
+
+To get other stats about a file, use C<guestfs_stat>, C<guestfs_lstat>,
+C<guestfs_is_dir>, C<guestfs_is_file> etc.
+To get the size of block devices, use C<guestfs_blockdev_getsize64>.");
+
+  ("lvrename", (RErr, [String "logvol"; String "newlogvol"]), 219, [],
+   [InitBasicFSonLVM, Always, TestOutputList (
+      [["lvrename"; "/dev/VG/LV"; "/dev/VG/LV2"];
+       ["lvs"]], ["/dev/VG/LV2"])],
+   "rename an LVM logical volume",
+   "\
+Rename a logical volume C<logvol> with the new name C<newlogvol>.");
+
+  ("vgrename", (RErr, [String "volgroup"; String "newvolgroup"]), 220, [],
+   [InitBasicFSonLVM, Always, TestOutputList (
+      [["umount"; "/"];
+       ["vg_activate"; "false"; "VG"];
+       ["vgrename"; "VG"; "VG2"];
+       ["vg_activate"; "true"; "VG2"];
+       ["mount_options"; ""; "/dev/VG2/LV"; "/"];
+       ["vgs"]], ["VG2"])],
+   "rename an LVM volume group",
+   "\
+Rename a volume group C<volgroup> with the new name C<newvolgroup>.");
+
+  ("initrd_cat", (RBufferOut "content", [Pathname "initrdpath"; String "filename"]), 221, [],
+   [InitISOFS, Always, TestOutputBuffer (
+      [["initrd_cat"; "/initrd"; "known-4"]], "abc\ndef\nghi")],
+   "list the contents of a single file in an initrd",
+   "\
+This command unpacks the file C<filename> from the initrd file
+called C<initrdpath>.  The filename must be given I<without> the
+initial C</> character.
+
+For example, in guestfish you could use the following command
+to examine the boot script (usually called C</init>)
+contained in a Linux initrd or initramfs image:
+
+ initrd-cat /boot/initrd-<version>.img init
+
+See also C<guestfs_initrd_list>.");
+
 ]
 
 let all_functions = non_daemon_functions @ daemon_functions
@@ -4450,7 +4551,11 @@ let pod2text_memo_updated () =
  * Note we don't want to use any external OCaml libraries which
  * makes this a bit harder than it should be.
  *)
+module StringMap = Map.Make (String)
+
 let failwithf fs = ksprintf failwith fs
+
+let unique = let i = ref 0 in fun () -> incr i; !i
 
 let replace_char s c1 c2 =
   let s2 = String.copy s in
@@ -4563,6 +4668,13 @@ let mapi f xs =
     | x :: xs -> let r = f i x in r :: loop (i+1) xs
   in
   loop 0 xs
+
+let count_chars c str =
+  let count = ref 0 in
+  for i = 0 to String.length str - 1 do
+    if c = String.unsafe_get str i then incr count
+  done;
+  !count
 
 let name_of_argt = function
   | Pathname n | Device n | Dev_or_Path n | String n | OptString n
@@ -4700,6 +4812,7 @@ let check_functions () =
           "for"; "forall"; "foreign"; "fun"; "function"; "functor"; "goto";
           "hiding"; "if"; "import"; "in"; "include"; "infix"; "infixl";
           "infixr"; "inherit"; "initializer"; "inline"; "instance"; "int";
+          "interface";
           "land"; "lazy"; "let"; "long"; "lor"; "lsl"; "lsr"; "lxor";
           "match"; "mdo"; "method"; "mod"; "module"; "mutable"; "new";
           "newtype"; "object"; "of"; "open"; "or"; "private"; "qualified";
@@ -4795,26 +4908,41 @@ let check_functions () =
 
 (* 'pr' prints to the current output file. *)
 let chan = ref Pervasives.stdout
-let pr fs = ksprintf (output_string !chan) fs
+let lines = ref 0
+let pr fs =
+  ksprintf
+    (fun str ->
+       let i = count_chars '\n' str in
+       lines := !lines + i;
+       output_string !chan str
+    ) fs
+
+let copyright_years =
+  let this_year = 1900 + (localtime (time ())).tm_year in
+  if this_year > 2009 then sprintf "2009-%04d" this_year else "2009"
 
 (* Generate a header block in a number of standard styles. *)
-type comment_style = CStyle | HashStyle | OCamlStyle | HaskellStyle
-type license = GPLv2 | LGPLv2
+type comment_style =
+    CStyle | CPlusPlusStyle | HashStyle | OCamlStyle | HaskellStyle
+type license = GPLv2plus | LGPLv2plus
 
-let generate_header comment license =
+let generate_header ?(extra_inputs = []) comment license =
+  let inputs = "src/generator.ml" :: extra_inputs in
   let c = match comment with
-    | CStyle ->     pr "/* "; " *"
-    | HashStyle ->  pr "# ";  "#"
-    | OCamlStyle -> pr "(* "; " *"
-    | HaskellStyle -> pr "{- "; "  " in
+    | CStyle ->         pr "/* "; " *"
+    | CPlusPlusStyle -> pr "// "; "//"
+    | HashStyle ->      pr "# ";  "#"
+    | OCamlStyle ->     pr "(* "; " *"
+    | HaskellStyle ->   pr "{- "; "  " in
   pr "libguestfs generated file\n";
-  pr "%s WARNING: THIS FILE IS GENERATED BY 'src/generator.ml'.\n" c;
+  pr "%s WARNING: THIS FILE IS GENERATED FROM:\n" c;
+  List.iter (pr "%s   %s\n" c) inputs;
   pr "%s ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.\n" c;
   pr "%s\n" c;
-  pr "%s Copyright (C) 2009 Red Hat Inc.\n" c;
+  pr "%s Copyright (C) %s Red Hat Inc.\n" c copyright_years;
   pr "%s\n" c;
   (match license with
-   | GPLv2 ->
+   | GPLv2plus ->
        pr "%s This program is free software; you can redistribute it and/or modify\n" c;
        pr "%s it under the terms of the GNU General Public License as published by\n" c;
        pr "%s the Free Software Foundation; either version 2 of the License, or\n" c;
@@ -4829,7 +4957,7 @@ let generate_header comment license =
        pr "%s with this program; if not, write to the Free Software Foundation, Inc.,\n" c;
        pr "%s 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.\n" c;
 
-   | LGPLv2 ->
+   | LGPLv2plus ->
        pr "%s This library is free software; you can redistribute it and/or\n" c;
        pr "%s modify it under the terms of the GNU Lesser General Public\n" c;
        pr "%s License as published by the Free Software Foundation; either\n" c;
@@ -4846,6 +4974,7 @@ let generate_header comment license =
   );
   (match comment with
    | CStyle -> pr " */\n"
+   | CPlusPlusStyle
    | HashStyle -> ()
    | OCamlStyle -> pr " *)\n"
    | HaskellStyle -> pr "-}\n"
@@ -4981,7 +5110,7 @@ and generate_availability_pod () =
  * This header is NOT exported to clients, but see also generate_structs_h.
  *)
 and generate_xdr () =
-  generate_header CStyle LGPLv2;
+  generate_header CStyle LGPLv2plus;
 
   (* This has to be defined to get around a limitation in Sun's rpcgen. *)
   pr "typedef string str<>;\n";
@@ -5139,7 +5268,7 @@ struct guestfs_chunk {
 
 (* Generate the guestfs-structs.h file. *)
 and generate_structs_h () =
-  generate_header CStyle LGPLv2;
+  generate_header CStyle LGPLv2plus;
 
   (* This is a public exported header file containing various
    * structures.  The structures are carefully written to have
@@ -5187,7 +5316,7 @@ and generate_structs_h () =
 
 (* Generate the guestfs-actions.h file. *)
 and generate_actions_h () =
-  generate_header CStyle LGPLv2;
+  generate_header CStyle LGPLv2plus;
   List.iter (
     fun (shortname, style, _, _, _, _, _) ->
       let name = "guestfs_" ^ shortname in
@@ -5197,7 +5326,7 @@ and generate_actions_h () =
 
 (* Generate the guestfs-internal-actions.h file. *)
 and generate_internal_actions_h () =
-  generate_header CStyle LGPLv2;
+  generate_header CStyle LGPLv2plus;
   List.iter (
     fun (shortname, style, _, _, _, _, _) ->
       let name = "guestfs__" ^ shortname in
@@ -5207,7 +5336,7 @@ and generate_internal_actions_h () =
 
 (* Generate the client-side dispatch stubs. *)
 and generate_client_actions () =
-  generate_header CStyle LGPLv2;
+  generate_header CStyle LGPLv2plus;
 
   pr "\
 #include <stdio.h>
@@ -5559,7 +5688,7 @@ check_state (guestfs_h *g, const char *caller)
 
 (* Generate daemon/actions.h. *)
 and generate_daemon_actions_h () =
-  generate_header CStyle GPLv2;
+  generate_header CStyle GPLv2plus;
 
   pr "#include \"../src/guestfs_protocol.h\"\n";
   pr "\n";
@@ -5571,9 +5700,54 @@ and generate_daemon_actions_h () =
         name style;
   ) daemon_functions
 
+(* Generate the linker script which controls the visibility of
+ * symbols in the public ABI and ensures no other symbols get
+ * exported accidentally.
+ *)
+and generate_linker_script () =
+  generate_header HashStyle GPLv2plus;
+
+  let globals = [
+    "guestfs_create";
+    "guestfs_close";
+    "guestfs_get_error_handler";
+    "guestfs_get_out_of_memory_handler";
+    "guestfs_last_error";
+    "guestfs_set_error_handler";
+    "guestfs_set_launch_done_callback";
+    "guestfs_set_log_message_callback";
+    "guestfs_set_out_of_memory_handler";
+    "guestfs_set_subprocess_quit_callback";
+
+    (* Unofficial parts of the API: the bindings code use these
+     * functions, so it is useful to export them.
+     *)
+    "guestfs_safe_calloc";
+    "guestfs_safe_malloc";
+  ] in
+  let functions =
+    List.map (fun (name, _, _, _, _, _, _) -> "guestfs_" ^ name)
+      all_functions in
+  let structs =
+    List.concat (
+      List.map (fun (typ, _) ->
+                  ["guestfs_free_" ^ typ; "guestfs_free_" ^ typ ^ "_list"])
+        structs
+    ) in
+  let globals = List.sort compare (globals @ functions @ structs) in
+
+  pr "{\n";
+  pr "    global:\n";
+  List.iter (pr "        %s;\n") globals;
+  pr "\n";
+
+  pr "    local:\n";
+  pr "        *;\n";
+  pr "};\n"
+
 (* Generate the server-side stubs. *)
 and generate_daemon_actions () =
-  generate_header CStyle GPLv2;
+  generate_header CStyle GPLv2plus;
 
   pr "#include <config.h>\n";
   pr "\n";
@@ -5636,7 +5810,7 @@ and generate_daemon_actions () =
            pr "  memset (&args, 0, sizeof args);\n";
            pr "\n";
            pr "  if (!xdr_guestfs_%s_args (xdr_in, &args)) {\n" name;
-           pr "    reply_with_error (\"%%s: daemon failed to decode procedure arguments\", \"%s\");\n" name;
+           pr "    reply_with_error (\"daemon failed to decode procedure arguments\");\n";
            pr "    return;\n";
            pr "  }\n";
            let pr_args n =
@@ -5973,7 +6147,7 @@ and generate_daemon_actions () =
 
 (* Generate a list of function names, for debugging in the daemon.. *)
 and generate_daemon_names () =
-  generate_header CStyle GPLv2;
+  generate_header CStyle GPLv2plus;
 
   pr "#include <config.h>\n";
   pr "\n";
@@ -5991,7 +6165,7 @@ and generate_daemon_names () =
  * guestfs_available.
  *)
 and generate_daemon_optgroups_c () =
-  generate_header CStyle GPLv2;
+  generate_header CStyle GPLv2plus;
 
   pr "#include <config.h>\n";
   pr "\n";
@@ -6008,7 +6182,7 @@ and generate_daemon_optgroups_c () =
   pr "};\n"
 
 and generate_daemon_optgroups_h () =
-  generate_header CStyle GPLv2;
+  generate_header CStyle GPLv2plus;
 
   List.iter (
     fun (group, _) ->
@@ -6017,7 +6191,7 @@ and generate_daemon_optgroups_h () =
 
 (* Generate the tests. *)
 and generate_tests () =
-  generate_header CStyle GPLv2;
+  generate_header CStyle GPLv2plus;
 
   pr "\
 #include <stdio.h>
@@ -6366,7 +6540,7 @@ and generate_one_test_body name i test_name init test =
           ["lvm_remove_all"];
           ["part_disk"; "/dev/sda"; "mbr"];
           ["mkfs"; "ext2"; "/dev/sda1"];
-          ["mount"; "/dev/sda1"; "/"]]
+          ["mount_options"; ""; "/dev/sda1"; "/"]]
    | InitBasicFSonLVM ->
        pr "  /* InitBasicFSonLVM for %s: create ext2 on /dev/VG/LV */\n"
          test_name;
@@ -6379,7 +6553,7 @@ and generate_one_test_body name i test_name init test =
           ["vgcreate"; "VG"; "/dev/sda1"];
           ["lvcreate"; "LV"; "VG"; "8"];
           ["mkfs"; "ext2"; "/dev/VG/LV"];
-          ["mount"; "/dev/VG/LV"; "/"]]
+          ["mount_options"; ""; "/dev/VG/LV"; "/"]]
    | InitISOFS ->
        pr "  /* InitISOFS for %s */\n" test_name;
        List.iter (generate_test_command_call test_name)
@@ -6757,7 +6931,7 @@ and c_quote str =
 
 (* Generate a lot of different functions for guestfish. *)
 and generate_fish_cmds () =
-  generate_header CStyle GPLv2;
+  generate_header CStyle GPLv2plus;
 
   let all_functions =
     List.filter (
@@ -6768,6 +6942,8 @@ and generate_fish_cmds () =
       fun (_, _, _, flags, _, _, _) -> not (List.mem NotInFish flags)
     ) all_functions_sorted in
 
+  pr "#include <config.h>\n";
+  pr "\n";
   pr "#include <stdio.h>\n";
   pr "#include <stdlib.h>\n";
   pr "#include <string.h>\n";
@@ -6775,6 +6951,8 @@ and generate_fish_cmds () =
   pr "\n";
   pr "#include <guestfs.h>\n";
   pr "#include \"c-ctype.h\"\n";
+  pr "#include \"full-write.h\"\n";
+  pr "#include \"xstrtol.h\"\n";
   pr "#include \"fish.h\"\n";
   pr "\n";
 
@@ -6986,6 +7164,34 @@ and generate_fish_cmds () =
       pr "    fprintf (stderr, _(\"type 'help %%s' for help on %%s\\n\"), cmd, cmd);\n";
       pr "    return -1;\n";
       pr "  }\n";
+
+      let parse_integer fn fntyp rtyp range name i =
+        pr "  {\n";
+        pr "    strtol_error xerr;\n";
+        pr "    %s r;\n" fntyp;
+        pr "\n";
+        pr "    xerr = %s (argv[%d], NULL, 0, &r, \"\");\n" fn i;
+        pr "    if (xerr != LONGINT_OK) {\n";
+        pr "      fprintf (stderr,\n";
+        pr "               _(\"%%s: %%s: invalid integer parameter (%%s returned %%d)\\n\"),\n";
+        pr "               cmd, \"%s\", \"%s\", xerr);\n" name fn;
+        pr "      return -1;\n";
+        pr "    }\n";
+        (match range with
+         | None -> ()
+         | Some (min, max, comment) ->
+             pr "    /* %s */\n" comment;
+             pr "    if (r < %s || r > %s) {\n" min max;
+             pr "      fprintf (stderr, _(\"%%s: %%s: integer out of range\\n\"), cmd, \"%s\");\n"
+               name;
+             pr "      return -1;\n";
+             pr "    }\n";
+             pr "    /* The check above should ensure this assignment does not overflow. */\n";
+        );
+        pr "    %s = r;\n" name;
+        pr "  }\n";
+      in
+
       iteri (
         fun i ->
           function
@@ -7011,9 +7217,15 @@ and generate_fish_cmds () =
           | Bool name ->
               pr "  %s = is_true (argv[%d]) ? 1 : 0;\n" name i
           | Int name ->
-              pr "  %s = atoi (argv[%d]);\n" name i
+              let range =
+                let min = "(-(2LL<<30))"
+                and max = "((2LL<<30)-1)"
+                and comment =
+                  "The Int type in the generator is a signed 31 bit int." in
+                Some (min, max, comment) in
+              parse_integer "xstrtol" "long" "int" range name i
           | Int64 name ->
-              pr "  %s = atoll (argv[%d]);\n" name i
+              parse_integer "xstrtoll" "long long" "int64_t" None name i
       ) (snd style);
 
       (* Call C API function. *)
@@ -7084,7 +7296,11 @@ and generate_fish_cmds () =
            pr "  return 0;\n"
        | RBufferOut _ ->
            pr "  if (r == NULL) return -1;\n";
-           pr "  fwrite (r, size, 1, stdout);\n";
+           pr "  if (full_write (1, r, size) != size) {\n";
+           pr "    perror (\"write\");\n";
+           pr "    free (r);\n";
+           pr "    return -1;\n";
+           pr "  }\n";
            pr "  free (r);\n";
            pr "  return 0;\n"
       );
@@ -7121,7 +7337,7 @@ and generate_fish_cmds () =
 
 (* Readline completion for guestfish. *)
 and generate_fish_completion () =
-  generate_header CStyle GPLv2;
+  generate_header CStyle GPLv2plus;
 
   let all_functions =
     List.filter (
@@ -7360,7 +7576,7 @@ and generate_c_call_args ?handle ?(decl = false) style =
 
 (* Generate the OCaml bindings interface. *)
 and generate_ocaml_mli () =
-  generate_header OCamlStyle LGPLv2;
+  generate_header OCamlStyle LGPLv2plus;
 
   pr "\
 (** For API documentation you should refer to the C API
@@ -7402,7 +7618,7 @@ val close : t -> unit
 
 (* Generate the OCaml bindings implementation. *)
 and generate_ocaml_ml () =
-  generate_header OCamlStyle LGPLv2;
+  generate_header OCamlStyle LGPLv2plus;
 
   pr "\
 type t
@@ -7430,7 +7646,7 @@ let () =
 
 (* Generate the OCaml bindings C implementation. *)
 and generate_ocaml_c () =
-  generate_header CStyle LGPLv2;
+  generate_header CStyle LGPLv2plus;
 
   pr "\
 #include <stdio.h>
@@ -7782,7 +7998,7 @@ and generate_ocaml_prototype ?(is_external = false) name style =
 
 (* Generate Perl xs code, a sort of crazy variation of C with macros. *)
 and generate_perl_xs () =
-  generate_header CStyle LGPLv2;
+  generate_header CStyle LGPLv2plus;
 
   pr "\
 #include \"EXTERN.h\"
@@ -7933,7 +8149,7 @@ DESTROY (g)
            pr ";\n";
            do_cleanups ();
            pr "      if (r == -1)\n";
-           pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
+           pr "        croak (\"%%s\", guestfs_last_error (g));\n";
        | RInt n
        | RBool n ->
            pr "PREINIT:\n";
@@ -7944,7 +8160,7 @@ DESTROY (g)
            pr ";\n";
            do_cleanups ();
            pr "      if (%s == -1)\n" n;
-           pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
+           pr "        croak (\"%%s\", guestfs_last_error (g));\n";
            pr "      RETVAL = newSViv (%s);\n" n;
            pr " OUTPUT:\n";
            pr "      RETVAL\n"
@@ -7957,7 +8173,7 @@ DESTROY (g)
            pr ";\n";
            do_cleanups ();
            pr "      if (%s == -1)\n" n;
-           pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
+           pr "        croak (\"%%s\", guestfs_last_error (g));\n";
            pr "      RETVAL = my_newSVll (%s);\n" n;
            pr " OUTPUT:\n";
            pr "      RETVAL\n"
@@ -7970,7 +8186,7 @@ DESTROY (g)
            pr ";\n";
            do_cleanups ();
            pr "      if (%s == NULL)\n" n;
-           pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
+           pr "        croak (\"%%s\", guestfs_last_error (g));\n";
            pr "      RETVAL = newSVpv (%s, 0);\n" n;
            pr " OUTPUT:\n";
            pr "      RETVAL\n"
@@ -7997,7 +8213,7 @@ DESTROY (g)
            pr ";\n";
            do_cleanups ();
            pr "      if (%s == NULL)\n" n;
-           pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
+           pr "        croak (\"%%s\", guestfs_last_error (g));\n";
            pr "      RETVAL = newSVpv (%s, 0);\n" n;
            pr "      free (%s);\n" n;
            pr " OUTPUT:\n";
@@ -8012,7 +8228,7 @@ DESTROY (g)
            pr ";\n";
            do_cleanups ();
            pr "      if (%s == NULL)\n" n;
-           pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
+           pr "        croak (\"%%s\", guestfs_last_error (g));\n";
            pr "      for (n = 0; %s[n] != NULL; ++n) /**/;\n" n;
            pr "      EXTEND (SP, n);\n";
            pr "      for (i = 0; i < n; ++i) {\n";
@@ -8036,7 +8252,7 @@ DESTROY (g)
            pr ";\n";
            do_cleanups ();
            pr "      if (%s == NULL)\n" n;
-           pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
+           pr "        croak (\"%%s\", guestfs_last_error (g));\n";
            pr "      RETVAL = newSVpv (%s, size);\n" n;
            pr "      free (%s);\n" n;
            pr " OUTPUT:\n";
@@ -8057,7 +8273,7 @@ and generate_perl_struct_list_code typ cols name style n do_cleanups =
   pr ";\n";
   do_cleanups ();
   pr "      if (%s == NULL)\n" n;
-  pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
+  pr "        croak (\"%%s\", guestfs_last_error (g));\n";
   pr "      EXTEND (SP, %s->len);\n" n;
   pr "      for (i = 0; i < %s->len; ++i) {\n" n;
   pr "        hv = newHV ();\n";
@@ -8101,7 +8317,7 @@ and generate_perl_struct_code typ cols name style n do_cleanups =
   pr ";\n";
   do_cleanups ();
   pr "      if (%s == NULL)\n" n;
-  pr "        croak (\"%s: %%s\", guestfs_last_error (g));\n" name;
+  pr "        croak (\"%%s\", guestfs_last_error (g));\n";
   pr "      EXTEND (SP, 2 * %d);\n" (List.length cols);
   List.iter (
     fun ((name, _) as col) ->
@@ -8137,7 +8353,7 @@ and generate_perl_struct_code typ cols name style n do_cleanups =
 
 (* Generate Sys/Guestfs.pm. *)
 and generate_perl_pm () =
-  generate_header HashStyle LGPLv2;
+  generate_header HashStyle LGPLv2plus;
 
   pr "\
 =pod
@@ -8249,7 +8465,7 @@ sub new {
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009 Red Hat Inc.
+Copyright (C) %s Red Hat Inc.
 
 =head1 LICENSE
 
@@ -8263,7 +8479,7 @@ L<http://libguestfs.org>,
 L<Sys::Guestfs::Lib(3)>.
 
 =cut
-"
+" copyright_years
 
 and generate_perl_prototype name style =
   (match fst style with
@@ -8297,7 +8513,7 @@ and generate_perl_prototype name style =
 
 (* Generate Python C module. *)
 and generate_python_c () =
-  generate_header CStyle LGPLv2;
+  generate_header CStyle LGPLv2plus;
 
   pr "\
 #include <Python.h>
@@ -8686,7 +8902,7 @@ initlibguestfsmod (void)
 
 (* Generate Python module. *)
 and generate_python_py () =
-  generate_header HashStyle LGPLv2;
+  generate_header HashStyle LGPLv2plus;
 
   pr "\
 u\"\"\"Python bindings for libguestfs
@@ -8839,7 +9055,7 @@ and pod2text ~width name longdesc =
 
 (* Generate ruby bindings. *)
 and generate_ruby_c () =
-  generate_header CStyle LGPLv2;
+  generate_header CStyle LGPLv2plus;
 
   pr "\
 #include <stdio.h>
@@ -9111,7 +9327,7 @@ and generate_ruby_struct_list_code typ cols =
 
 (* Generate Java bindings GuestFS.java file. *)
 and generate_java_java () =
-  generate_header CStyle LGPLv2;
+  generate_header CStyle LGPLv2plus;
 
   pr "\
 package com.redhat.et.libguestfs;
@@ -9297,8 +9513,8 @@ and generate_java_prototype ?(public=false) ?(privat=false) ?(native=false)
   pr "    throws LibGuestFSException";
   if semicolon then pr ";"
 
-and generate_java_struct jtyp cols =
-  generate_header CStyle LGPLv2;
+and generate_java_struct jtyp cols () =
+  generate_header CStyle LGPLv2plus;
 
   pr "\
 package com.redhat.et.libguestfs;
@@ -9328,7 +9544,7 @@ public class %s {
   pr "}\n"
 
 and generate_java_c () =
-  generate_header CStyle LGPLv2;
+  generate_header CStyle LGPLv2plus;
 
   pr "\
 #include <stdio.h>
@@ -9682,7 +9898,7 @@ and generate_java_struct_list_return typ jtyp cols =
   pr "  return jr;\n"
 
 and generate_java_makefile_inc () =
-  generate_header HashStyle GPLv2;
+  generate_header HashStyle GPLv2plus;
 
   pr "java_built_sources = \\\n";
   List.iter (
@@ -9692,7 +9908,7 @@ and generate_java_makefile_inc () =
   pr "\tcom/redhat/et/libguestfs/GuestFS.java\n"
 
 and generate_haskell_hs () =
-  generate_header HaskellStyle LGPLv2;
+  generate_header HaskellStyle LGPLv2plus;
 
   (* XXX We only know how to generate partial FFI for Haskell
    * at the moment.  Please help out!
@@ -9899,8 +10115,243 @@ and generate_haskell_prototype ~handle ?(hs = false) style =
   );
   pr ")"
 
+and generate_csharp () =
+  generate_header CPlusPlusStyle LGPLv2plus;
+
+  (* XXX Make this configurable by the C# assembly users. *)
+  let library = "libguestfs.so.0" in
+
+  pr "\
+// These C# bindings are highly experimental at present.
+//
+// Firstly they only work on Linux (ie. Mono).  In order to get them
+// to work on Windows (ie. .Net) you would need to port the library
+// itself to Windows first.
+//
+// The second issue is that some calls are known to be incorrect and
+// can cause Mono to segfault.  Particularly: calls which pass or
+// return string[], or return any structure value.  This is because
+// we haven't worked out the correct way to do this from C#.
+//
+// The third issue is that when compiling you get a lot of warnings.
+// We are not sure whether the warnings are important or not.
+//
+// Fourthly we do not routinely build or test these bindings as part
+// of the make && make check cycle, which means that regressions might
+// go unnoticed.
+//
+// Suggestions and patches are welcome.
+
+// To compile:
+//
+// gmcs Libguestfs.cs
+// mono Libguestfs.exe
+//
+// (You'll probably want to add a Test class / static main function
+// otherwise this won't do anything useful).
+
+using System;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
+using System.Collections;
+
+namespace Guestfs
+{
+  class Error : System.ApplicationException
+  {
+    public Error (string message) : base (message) {}
+    protected Error (SerializationInfo info, StreamingContext context) {}
+  }
+
+  class Guestfs
+  {
+    IntPtr _handle;
+
+    [DllImport (\"%s\")]
+    static extern IntPtr guestfs_create ();
+
+    public Guestfs ()
+    {
+      _handle = guestfs_create ();
+      if (_handle == IntPtr.Zero)
+        throw new Error (\"could not create guestfs handle\");
+    }
+
+    [DllImport (\"%s\")]
+    static extern void guestfs_close (IntPtr h);
+
+    ~Guestfs ()
+    {
+      guestfs_close (_handle);
+    }
+
+    [DllImport (\"%s\")]
+    static extern string guestfs_last_error (IntPtr h);
+
+" library library library;
+
+  (* Generate C# structure bindings.  We prefix struct names with
+   * underscore because C# cannot have conflicting struct names and
+   * method names (eg. "class stat" and "stat").
+   *)
+  List.iter (
+    fun (typ, cols) ->
+      pr "    [StructLayout (LayoutKind.Sequential)]\n";
+      pr "    public class _%s {\n" typ;
+      List.iter (
+        function
+        | name, FChar -> pr "      char %s;\n" name
+        | name, FString -> pr "      string %s;\n" name
+        | name, FBuffer ->
+            pr "      uint %s_len;\n" name;
+            pr "      string %s;\n" name
+        | name, FUUID ->
+            pr "      [MarshalAs (UnmanagedType.ByValTStr, SizeConst=16)]\n";
+            pr "      string %s;\n" name
+        | name, FUInt32 -> pr "      uint %s;\n" name
+        | name, FInt32 -> pr "      int %s;\n" name
+        | name, (FUInt64|FBytes) -> pr "      ulong %s;\n" name
+        | name, FInt64 -> pr "      long %s;\n" name
+        | name, FOptPercent -> pr "      float %s; /* [0..100] or -1 */\n" name
+      ) cols;
+      pr "    }\n";
+      pr "\n"
+  ) structs;
+
+  (* Generate C# function bindings. *)
+  List.iter (
+    fun (name, style, _, _, _, shortdesc, _) ->
+      let rec csharp_return_type () =
+	match fst style with
+	| RErr -> "void"
+	| RBool n -> "bool"
+	| RInt n -> "int"
+	| RInt64 n -> "long"
+	| RConstString n
+	| RConstOptString n
+	| RString n
+	| RBufferOut n -> "string"
+	| RStruct (_,n) -> "_" ^ n
+	| RHashtable n -> "Hashtable"
+	| RStringList n -> "string[]"
+	| RStructList (_,n) -> sprintf "_%s[]" n
+
+      and c_return_type () =
+	match fst style with
+	| RErr
+	| RBool _
+	| RInt _ -> "int"
+	| RInt64 _ -> "long"
+	| RConstString _
+	| RConstOptString _
+	| RString _
+	| RBufferOut _ -> "string"
+	| RStruct (_,n) -> "_" ^ n
+	| RHashtable _
+	| RStringList _ -> "string[]"
+	| RStructList (_,n) -> sprintf "_%s[]" n
+    
+      and c_error_comparison () =
+	match fst style with
+	| RErr
+	| RBool _
+	| RInt _
+	| RInt64 _ -> "== -1"
+	| RConstString _
+	| RConstOptString _
+	| RString _
+	| RBufferOut _
+	| RStruct (_,_)
+	| RHashtable _
+	| RStringList _
+	| RStructList (_,_) -> "== null"
+    
+      and generate_extern_prototype () =
+	pr "    static extern %s guestfs_%s (IntPtr h"
+	  (c_return_type ()) name;
+	List.iter (
+	  function
+	  | Pathname n | Device n | Dev_or_Path n | String n | OptString n
+	  | FileIn n | FileOut n ->
+              pr ", [In] string %s" n
+	  | StringList n | DeviceList n ->
+              pr ", [In] string[] %s" n
+	  | Bool n ->
+	      pr ", bool %s" n
+	  | Int n ->
+	      pr ", int %s" n
+	  | Int64 n ->
+	      pr ", long %s" n
+	) (snd style);
+	pr ");\n"
+
+      and generate_public_prototype () =
+	pr "    public %s %s (" (csharp_return_type ()) name;
+	let comma = ref false in
+	let next () =
+	  if !comma then pr ", ";
+	  comma := true
+	in
+	List.iter (
+	  function
+	  | Pathname n | Device n | Dev_or_Path n | String n | OptString n
+	  | FileIn n | FileOut n ->
+              next (); pr "string %s" n
+	  | StringList n | DeviceList n ->
+              next (); pr "string[] %s" n
+	  | Bool n ->
+	      next (); pr "bool %s" n
+	  | Int n ->
+	      next (); pr "int %s" n
+	  | Int64 n ->
+	      next (); pr "long %s" n
+	) (snd style);
+	pr ")\n"
+
+      and generate_call () =
+	pr "guestfs_%s (_handle" name;
+	List.iter (fun arg -> pr ", %s" (name_of_argt arg)) (snd style);
+	pr ");\n";
+      in
+
+      pr "    [DllImport (\"%s\")]\n" library;
+      generate_extern_prototype ();
+      pr "\n";
+      pr "    /// <summary>\n";
+      pr "    /// %s\n" shortdesc;
+      pr "    /// </summary>\n";
+      generate_public_prototype ();
+      pr "    {\n";
+      pr "      %s r;\n" (c_return_type ());
+      pr "      r = ";
+      generate_call ();
+      pr "      if (r %s)\n" (c_error_comparison ());
+      pr "        throw new Error (guestfs_last_error (_handle));\n";
+      (match fst style with
+       | RErr -> ()
+       | RBool _ ->
+           pr "      return r != 0 ? true : false;\n"
+       | RHashtable _ ->
+           pr "      Hashtable rr = new Hashtable ();\n";
+           pr "      for (int i = 0; i < r.Length; i += 2)\n";
+           pr "        rr.Add (r[i], r[i+1]);\n";
+           pr "      return rr;\n"
+       | RInt _ | RInt64 _ | RConstString _ | RConstOptString _
+       | RString _ | RBufferOut _ | RStruct _ | RStringList _
+       | RStructList _ ->
+           pr "      return r;\n"
+      );
+      pr "    }\n";
+      pr "\n";
+  ) all_functions_sorted;
+
+  pr "  }
+}
+"
+
 and generate_bindtests () =
-  generate_header CStyle LGPLv2;
+  generate_header CStyle LGPLv2plus;
 
   pr "\
 #include <stdio.h>
@@ -10052,7 +10503,7 @@ print_strings (char *const *argv)
   ) tests
 
 and generate_ocaml_bindtests () =
-  generate_header OCamlStyle GPLv2;
+  generate_header OCamlStyle GPLv2plus;
 
   pr "\
 let () =
@@ -10085,7 +10536,7 @@ let () =
 
 and generate_perl_bindtests () =
   pr "#!/usr/bin/perl -w\n";
-  generate_header HashStyle GPLv2;
+  generate_header HashStyle GPLv2plus;
 
   pr "\
 use strict;
@@ -10118,7 +10569,7 @@ my $g = Sys::Guestfs->new ();
   pr "print \"EOF\\n\"\n"
 
 and generate_python_bindtests () =
-  generate_header HashStyle GPLv2;
+  generate_header HashStyle GPLv2plus;
 
   pr "\
 import guestfs
@@ -10149,7 +10600,7 @@ g = guestfs.GuestFS ()
   pr "print \"EOF\"\n"
 
 and generate_ruby_bindtests () =
-  generate_header HashStyle GPLv2;
+  generate_header HashStyle GPLv2plus;
 
   pr "\
 require 'guestfs'
@@ -10180,7 +10631,7 @@ g = Guestfs::create()
   pr "print \"EOF\\n\"\n"
 
 and generate_java_bindtests () =
-  generate_header CStyle GPLv2;
+  generate_header CStyle GPLv2plus;
 
   pr "\
 import com.redhat.et.libguestfs.*;
@@ -10225,7 +10676,7 @@ public class Bindtests {
 "
 
 and generate_haskell_bindtests () =
-  generate_header HaskellStyle GPLv2;
+  generate_header HaskellStyle GPLv2plus;
 
   pr "\
 module Bindtests where
@@ -10306,6 +10757,494 @@ and generate_lang_bindtests call =
 
 (* XXX Add here tests of the return and error functions. *)
 
+(* Code to generator bindings for virt-inspector.  Currently only
+ * implemented for OCaml code (for virt-p2v 2.0).
+ *)
+let rng_input = "inspector/virt-inspector.rng"
+
+(* Read the input file and parse it into internal structures.  This is
+ * by no means a complete RELAX NG parser, but is just enough to be
+ * able to parse the specific input file.
+ *)
+type rng =
+  | Element of string * rng list        (* <element name=name/> *)
+  | Attribute of string * rng list        (* <attribute name=name/> *)
+  | Interleave of rng list                (* <interleave/> *)
+  | ZeroOrMore of rng                        (* <zeroOrMore/> *)
+  | OneOrMore of rng                        (* <oneOrMore/> *)
+  | Optional of rng                        (* <optional/> *)
+  | Choice of string list                (* <choice><value/>*</choice> *)
+  | Value of string                        (* <value>str</value> *)
+  | Text                                (* <text/> *)
+
+let rec string_of_rng = function
+  | Element (name, xs) ->
+      "Element (\"" ^ name ^ "\", (" ^ string_of_rng_list xs ^ "))"
+  | Attribute (name, xs) ->
+      "Attribute (\"" ^ name ^ "\", (" ^ string_of_rng_list xs ^ "))"
+  | Interleave xs -> "Interleave (" ^ string_of_rng_list xs ^ ")"
+  | ZeroOrMore rng -> "ZeroOrMore (" ^ string_of_rng rng ^ ")"
+  | OneOrMore rng -> "OneOrMore (" ^ string_of_rng rng ^ ")"
+  | Optional rng -> "Optional (" ^ string_of_rng rng ^ ")"
+  | Choice values -> "Choice [" ^ String.concat ", " values ^ "]"
+  | Value value -> "Value \"" ^ value ^ "\""
+  | Text -> "Text"
+
+and string_of_rng_list xs =
+  String.concat ", " (List.map string_of_rng xs)
+
+let rec parse_rng ?defines context = function
+  | [] -> []
+  | Xml.Element ("element", ["name", name], children) :: rest ->
+      Element (name, parse_rng ?defines context children)
+      :: parse_rng ?defines context rest
+  | Xml.Element ("attribute", ["name", name], children) :: rest ->
+      Attribute (name, parse_rng ?defines context children)
+      :: parse_rng ?defines context rest
+  | Xml.Element ("interleave", [], children) :: rest ->
+      Interleave (parse_rng ?defines context children)
+      :: parse_rng ?defines context rest
+  | Xml.Element ("zeroOrMore", [], [child]) :: rest ->
+      let rng = parse_rng ?defines context [child] in
+      (match rng with
+       | [child] -> ZeroOrMore child :: parse_rng ?defines context rest
+       | _ ->
+           failwithf "%s: <zeroOrMore> contains more than one child element"
+             context
+      )
+  | Xml.Element ("oneOrMore", [], [child]) :: rest ->
+      let rng = parse_rng ?defines context [child] in
+      (match rng with
+       | [child] -> OneOrMore child :: parse_rng ?defines context rest
+       | _ ->
+           failwithf "%s: <oneOrMore> contains more than one child element"
+             context
+      )
+  | Xml.Element ("optional", [], [child]) :: rest ->
+      let rng = parse_rng ?defines context [child] in
+      (match rng with
+       | [child] -> Optional child :: parse_rng ?defines context rest
+       | _ ->
+           failwithf "%s: <optional> contains more than one child element"
+             context
+      )
+  | Xml.Element ("choice", [], children) :: rest ->
+      let values = List.map (
+        function Xml.Element ("value", [], [Xml.PCData value]) -> value
+        | _ ->
+            failwithf "%s: can't handle anything except <value> in <choice>"
+              context
+      ) children in
+      Choice values
+      :: parse_rng ?defines context rest
+  | Xml.Element ("value", [], [Xml.PCData value]) :: rest ->
+      Value value :: parse_rng ?defines context rest
+  | Xml.Element ("text", [], []) :: rest ->
+      Text :: parse_rng ?defines context rest
+  | Xml.Element ("ref", ["name", name], []) :: rest ->
+      (* Look up the reference.  Because of limitations in this parser,
+       * we can't handle arbitrarily nested <ref> yet.  You can only
+       * use <ref> from inside <start>.
+       *)
+      (match defines with
+       | None ->
+           failwithf "%s: contains <ref>, but no refs are defined yet" context
+       | Some map ->
+           let rng = StringMap.find name map in
+           rng @ parse_rng ?defines context rest
+      )
+  | x :: _ ->
+      failwithf "%s: can't handle '%s' in schema" context (Xml.to_string x)
+
+let grammar =
+  let xml = Xml.parse_file rng_input in
+  match xml with
+  | Xml.Element ("grammar", _,
+                 Xml.Element ("start", _, gram) :: defines) ->
+      (* The <define/> elements are referenced in the <start> section,
+       * so build a map of those first.
+       *)
+      let defines = List.fold_left (
+        fun map ->
+          function Xml.Element ("define", ["name", name], defn) ->
+            StringMap.add name defn map
+          | _ ->
+              failwithf "%s: expected <define name=name/>" rng_input
+      ) StringMap.empty defines in
+      let defines = StringMap.mapi parse_rng defines in
+
+      (* Parse the <start> clause, passing the defines. *)
+      parse_rng ~defines "<start>" gram
+  | _ ->
+      failwithf "%s: input is not <grammar><start/><define>*</grammar>"
+        rng_input
+
+let name_of_field = function
+  | Element (name, _) | Attribute (name, _)
+  | ZeroOrMore (Element (name, _))
+  | OneOrMore (Element (name, _))
+  | Optional (Element (name, _)) -> name
+  | Optional (Attribute (name, _)) -> name
+  | Text -> (* an unnamed field in an element *)
+      "data"
+  | rng ->
+      failwithf "name_of_field failed at: %s" (string_of_rng rng)
+
+(* At the moment this function only generates OCaml types.  However we
+ * should parameterize it later so it can generate types/structs in a
+ * variety of languages.
+ *)
+let generate_types xs =
+  (* A simple type is one that can be printed out directly, eg.
+   * "string option".  A complex type is one which has a name and has
+   * to be defined via another toplevel definition, eg. a struct.
+   *
+   * generate_type generates code for either simple or complex types.
+   * In the simple case, it returns the string ("string option").  In
+   * the complex case, it returns the name ("mountpoint").  In the
+   * complex case it has to print out the definition before returning,
+   * so it should only be called when we are at the beginning of a
+   * new line (BOL context).
+   *)
+  let rec generate_type = function
+    | Text ->                                (* string *)
+        "string", true
+    | Choice values ->                        (* [`val1|`val2|...] *)
+        "[" ^ String.concat "|" (List.map ((^)"`") values) ^ "]", true
+    | ZeroOrMore rng ->                        (* <rng> list *)
+        let t, is_simple = generate_type rng in
+        t ^ " list (* 0 or more *)", is_simple
+    | OneOrMore rng ->                        (* <rng> list *)
+        let t, is_simple = generate_type rng in
+        t ^ " list (* 1 or more *)", is_simple
+                                        (* virt-inspector hack: bool *)
+    | Optional (Attribute (name, [Value "1"])) ->
+        "bool", true
+    | Optional rng ->                        (* <rng> list *)
+        let t, is_simple = generate_type rng in
+        t ^ " option", is_simple
+                                        (* type name = { fields ... } *)
+    | Element (name, fields) when is_attrs_interleave fields ->
+        generate_type_struct name (get_attrs_interleave fields)
+    | Element (name, [field])                (* type name = field *)
+    | Attribute (name, [field]) ->
+        let t, is_simple = generate_type field in
+        if is_simple then (t, true)
+        else (
+          pr "type %s = %s\n" name t;
+          name, false
+        )
+    | Element (name, fields) ->              (* type name = { fields ... } *)
+        generate_type_struct name fields
+    | rng ->
+        failwithf "generate_type failed at: %s" (string_of_rng rng)
+
+  and is_attrs_interleave = function
+    | [Interleave _] -> true
+    | Attribute _ :: fields -> is_attrs_interleave fields
+    | Optional (Attribute _) :: fields -> is_attrs_interleave fields
+    | _ -> false
+
+  and get_attrs_interleave = function
+    | [Interleave fields] -> fields
+    | ((Attribute _) as field) :: fields
+    | ((Optional (Attribute _)) as field) :: fields ->
+        field :: get_attrs_interleave fields
+    | _ -> assert false
+
+  and generate_types xs =
+    List.iter (fun x -> ignore (generate_type x)) xs
+
+  and generate_type_struct name fields =
+    (* Calculate the types of the fields first.  We have to do this
+     * before printing anything so we are still in BOL context.
+     *)
+    let types = List.map fst (List.map generate_type fields) in
+
+    (* Special case of a struct containing just a string and another
+     * field.  Turn it into an assoc list.
+     *)
+    match types with
+    | ["string"; other] ->
+        let fname1, fname2 =
+          match fields with
+          | [f1; f2] -> name_of_field f1, name_of_field f2
+          | _ -> assert false in
+        pr "type %s = string * %s (* %s -> %s *)\n" name other fname1 fname2;
+        name, false
+
+    | types ->
+        pr "type %s = {\n" name;
+        List.iter (
+          fun (field, ftype) ->
+            let fname = name_of_field field in
+            pr "  %s_%s : %s;\n" name fname ftype
+        ) (List.combine fields types);
+        pr "}\n";
+        (* Return the name of this type, and
+         * false because it's not a simple type.
+         *)
+        name, false
+  in
+
+  generate_types xs
+
+let generate_parsers xs =
+  (* As for generate_type above, generate_parser makes a parser for
+   * some type, and returns the name of the parser it has generated.
+   * Because it (may) need to print something, it should always be
+   * called in BOL context.
+   *)
+  let rec generate_parser = function
+    | Text ->                                (* string *)
+        "string_child_or_empty"
+    | Choice values ->                        (* [`val1|`val2|...] *)
+        sprintf "(fun x -> match Xml.pcdata (first_child x) with %s | str -> failwith (\"unexpected field value: \" ^ str))"
+          (String.concat "|"
+             (List.map (fun v -> sprintf "%S -> `%s" v v) values))
+    | ZeroOrMore rng ->                        (* <rng> list *)
+        let pa = generate_parser rng in
+        sprintf "(fun x -> List.map %s (Xml.children x))" pa
+    | OneOrMore rng ->                        (* <rng> list *)
+        let pa = generate_parser rng in
+        sprintf "(fun x -> List.map %s (Xml.children x))" pa
+                                        (* virt-inspector hack: bool *)
+    | Optional (Attribute (name, [Value "1"])) ->
+        sprintf "(fun x -> try ignore (Xml.attrib x %S); true with Xml.No_attribute _ -> false)" name
+    | Optional rng ->                        (* <rng> list *)
+        let pa = generate_parser rng in
+        sprintf "(function None -> None | Some x -> Some (%s x))" pa
+                                        (* type name = { fields ... } *)
+    | Element (name, fields) when is_attrs_interleave fields ->
+        generate_parser_struct name (get_attrs_interleave fields)
+    | Element (name, [field]) ->        (* type name = field *)
+        let pa = generate_parser field in
+        let parser_name = sprintf "parse_%s_%d" name (unique ()) in
+        pr "let %s =\n" parser_name;
+        pr "  %s\n" pa;
+        pr "let parse_%s = %s\n" name parser_name;
+        parser_name
+    | Attribute (name, [field]) ->
+        let pa = generate_parser field in
+        let parser_name = sprintf "parse_%s_%d" name (unique ()) in
+        pr "let %s =\n" parser_name;
+        pr "  %s\n" pa;
+        pr "let parse_%s = %s\n" name parser_name;
+        parser_name
+    | Element (name, fields) ->              (* type name = { fields ... } *)
+        generate_parser_struct name ([], fields)
+    | rng ->
+        failwithf "generate_parser failed at: %s" (string_of_rng rng)
+
+  and is_attrs_interleave = function
+    | [Interleave _] -> true
+    | Attribute _ :: fields -> is_attrs_interleave fields
+    | Optional (Attribute _) :: fields -> is_attrs_interleave fields
+    | _ -> false
+
+  and get_attrs_interleave = function
+    | [Interleave fields] -> [], fields
+    | ((Attribute _) as field) :: fields
+    | ((Optional (Attribute _)) as field) :: fields ->
+        let attrs, interleaves = get_attrs_interleave fields in
+        (field :: attrs), interleaves
+    | _ -> assert false
+
+  and generate_parsers xs =
+    List.iter (fun x -> ignore (generate_parser x)) xs
+
+  and generate_parser_struct name (attrs, interleaves) =
+    (* Generate parsers for the fields first.  We have to do this
+     * before printing anything so we are still in BOL context.
+     *)
+    let fields = attrs @ interleaves in
+    let pas = List.map generate_parser fields in
+
+    (* Generate an intermediate tuple from all the fields first.
+     * If the type is just a string + another field, then we will
+     * return this directly, otherwise it is turned into a record.
+     *
+     * RELAX NG note: This code treats <interleave> and plain lists of
+     * fields the same.  In other words, it doesn't bother enforcing
+     * any ordering of fields in the XML.
+     *)
+    pr "let parse_%s x =\n" name;
+    pr "  let t = (\n    ";
+    let comma = ref false in
+    List.iter (
+      fun x ->
+        if !comma then pr ",\n    ";
+        comma := true;
+        match x with
+        | Optional (Attribute (fname, [field])), pa ->
+            pr "%s x" pa
+        | Optional (Element (fname, [field])), pa ->
+            pr "%s (optional_child %S x)" pa fname
+        | Attribute (fname, [Text]), _ ->
+            pr "attribute %S x" fname
+        | (ZeroOrMore _ | OneOrMore _), pa ->
+            pr "%s x" pa
+        | Text, pa ->
+            pr "%s x" pa
+        | (field, pa) ->
+            let fname = name_of_field field in
+            pr "%s (child %S x)" pa fname
+    ) (List.combine fields pas);
+    pr "\n  ) in\n";
+
+    (match fields with
+     | [Element (_, [Text]) | Attribute (_, [Text]); _] ->
+         pr "  t\n"
+
+     | _ ->
+         pr "  (Obj.magic t : %s)\n" name
+(*
+         List.iter (
+           function
+           | (Optional (Attribute (fname, [field])), pa) ->
+               pr "  %s_%s =\n" name fname;
+               pr "    %s x;\n" pa
+           | (Optional (Element (fname, [field])), pa) ->
+               pr "  %s_%s =\n" name fname;
+               pr "    (let x = optional_child %S x in\n" fname;
+               pr "     %s x);\n" pa
+           | (field, pa) ->
+               let fname = name_of_field field in
+               pr "  %s_%s =\n" name fname;
+               pr "    (let x = child %S x in\n" fname;
+               pr "     %s x);\n" pa
+         ) (List.combine fields pas);
+         pr "}\n"
+*)
+    );
+    sprintf "parse_%s" name
+  in
+
+  generate_parsers xs
+
+(* Generate ocaml/guestfs_inspector.mli. *)
+let generate_ocaml_inspector_mli () =
+  generate_header ~extra_inputs:[rng_input] OCamlStyle LGPLv2plus;
+
+  pr "\
+(** This is an OCaml language binding to the external [virt-inspector]
+    program.
+
+    For more information, please read the man page [virt-inspector(1)].
+*)
+
+";
+
+  generate_types grammar;
+  pr "(** The nested information returned from the {!inspect} function. *)\n";
+  pr "\n";
+
+  pr "\
+val inspect : ?connect:string -> ?xml:string -> string list -> operatingsystems
+(** To inspect a libvirt domain called [name], pass a singleton
+    list: [inspect [name]].  When using libvirt only, you may
+    optionally pass a libvirt URI using [inspect ~connect:uri ...].
+
+    To inspect a disk image or images, pass a list of the filenames
+    of the disk images: [inspect filenames]
+
+    This function inspects the given guest or disk images and
+    returns a list of operating system(s) found and a large amount
+    of information about them.  In the vast majority of cases,
+    a virtual machine only contains a single operating system.
+
+    If the optional [~xml] parameter is given, then this function
+    skips running the external virt-inspector program and just
+    parses the given XML directly (which is expected to be XML
+    produced from a previous run of virt-inspector).  The list of
+    names and connect URI are ignored in this case.
+
+    This function can throw a wide variety of exceptions, for example
+    if the external virt-inspector program cannot be found, or if
+    it doesn't generate valid XML.
+*)
+"
+
+(* Generate ocaml/guestfs_inspector.ml. *)
+let generate_ocaml_inspector_ml () =
+  generate_header ~extra_inputs:[rng_input] OCamlStyle LGPLv2plus;
+
+  pr "open Unix\n";
+  pr "\n";
+
+  generate_types grammar;
+  pr "\n";
+
+  pr "\
+(* Misc functions which are used by the parser code below. *)
+let first_child = function
+  | Xml.Element (_, _, c::_) -> c
+  | Xml.Element (name, _, []) ->
+      failwith (\"expected <\" ^ name ^ \"/> to have a child node\")
+  | Xml.PCData str ->
+      failwith (\"expected XML tag, but read PCDATA '\" ^ str ^ \"' instead\")
+
+let string_child_or_empty = function
+  | Xml.Element (_, _, [Xml.PCData s]) -> s
+  | Xml.Element (_, _, []) -> \"\"
+  | Xml.Element (x, _, _) ->
+      failwith (\"expected XML tag with a single PCDATA child, but got \" ^
+                x ^ \" instead\")
+  | Xml.PCData str ->
+      failwith (\"expected XML tag, but read PCDATA '\" ^ str ^ \"' instead\")
+
+let optional_child name xml =
+  let children = Xml.children xml in
+  try
+    Some (List.find (function
+                     | Xml.Element (n, _, _) when n = name -> true
+                     | _ -> false) children)
+  with
+    Not_found -> None
+
+let child name xml =
+  match optional_child name xml with
+  | Some c -> c
+  | None ->
+      failwith (\"mandatory field <\" ^ name ^ \"/> missing in XML output\")
+
+let attribute name xml =
+  try Xml.attrib xml name
+  with Xml.No_attribute _ ->
+    failwith (\"mandatory attribute \" ^ name ^ \" missing in XML output\")
+
+";
+
+  generate_parsers grammar;
+  pr "\n";
+
+  pr "\
+(* Run external virt-inspector, then use parser to parse the XML. *)
+let inspect ?connect ?xml names =
+  let xml =
+    match xml with
+    | None ->
+        if names = [] then invalid_arg \"inspect: no names given\";
+        let cmd = [ \"virt-inspector\"; \"--xml\" ] @
+          (match connect with None -> [] | Some uri -> [ \"--connect\"; uri ]) @
+          names in
+        let cmd = List.map Filename.quote cmd in
+        let cmd = String.concat \" \" cmd in
+        let chan = open_process_in cmd in
+        let xml = Xml.parse_in chan in
+        (match close_process_in chan with
+         | WEXITED 0 -> ()
+         | WEXITED _ -> failwith \"external virt-inspector command failed\"
+         | WSIGNALED i | WSTOPPED i ->
+             failwith (\"external virt-inspector command died or stopped on sig \" ^
+                       string_of_int i)
+        );
+        xml
+    | Some doc ->
+        Xml.parse_string doc in
+  parse_operatingsystems xml
+"
+
 (* This is used to generate the src/MAX_PROC_NR file which
  * contains the maximum procedure number, a surrogate for the
  * ABI version number.  See src/Makefile.am for the details.
@@ -10319,25 +11258,23 @@ and generate_max_proc_nr () =
 
   pr "%d\n" max_proc_nr
 
-let output_to filename =
+let output_to filename k =
   let filename_new = filename ^ ".new" in
   chan := open_out filename_new;
-  let close () =
-    close_out !chan;
-    chan := Pervasives.stdout;
+  k ();
+  close_out !chan;
+  chan := Pervasives.stdout;
 
-    (* Is the new file different from the current file? *)
-    if Sys.file_exists filename && files_equal filename filename_new then
-      unlink filename_new		(* same, so skip it *)
-    else (
-      (* different, overwrite old one *)
-      (try chmod filename 0o644 with Unix_error _ -> ());
-      rename filename_new filename;
-      chmod filename 0o444;
-      printf "written %s\n%!" filename;
-    )
-  in
-  close
+  (* Is the new file different from the current file? *)
+  if Sys.file_exists filename && files_equal filename filename_new then
+    unlink filename_new                 (* same, so skip it *)
+  else (
+    (* different, overwrite old one *)
+    (try chmod filename 0o644 with Unix_error _ -> ());
+    rename filename_new filename;
+    chmod filename 0o444;
+    printf "written %s\n%!" filename;
+  )
 
 let perror msg = function
   | Unix_error (err, _, _) ->
@@ -10373,166 +11310,61 @@ Run it from the top source directory using the command
 
   check_functions ();
 
-  let close = output_to "src/guestfs_protocol.x" in
-  generate_xdr ();
-  close ();
-
-  let close = output_to "src/guestfs-structs.h" in
-  generate_structs_h ();
-  close ();
-
-  let close = output_to "src/guestfs-actions.h" in
-  generate_actions_h ();
-  close ();
-
-  let close = output_to "src/guestfs-internal-actions.h" in
-  generate_internal_actions_h ();
-  close ();
-
-  let close = output_to "src/guestfs-actions.c" in
-  generate_client_actions ();
-  close ();
-
-  let close = output_to "daemon/actions.h" in
-  generate_daemon_actions_h ();
-  close ();
-
-  let close = output_to "daemon/stubs.c" in
-  generate_daemon_actions ();
-  close ();
-
-  let close = output_to "daemon/names.c" in
-  generate_daemon_names ();
-  close ();
-
-  let close = output_to "daemon/optgroups.c" in
-  generate_daemon_optgroups_c ();
-  close ();
-
-  let close = output_to "daemon/optgroups.h" in
-  generate_daemon_optgroups_h ();
-  close ();
-
-  let close = output_to "capitests/tests.c" in
-  generate_tests ();
-  close ();
-
-  let close = output_to "src/guestfs-bindtests.c" in
-  generate_bindtests ();
-  close ();
-
-  let close = output_to "fish/cmds.c" in
-  generate_fish_cmds ();
-  close ();
-
-  let close = output_to "fish/completion.c" in
-  generate_fish_completion ();
-  close ();
-
-  let close = output_to "guestfs-structs.pod" in
-  generate_structs_pod ();
-  close ();
-
-  let close = output_to "guestfs-actions.pod" in
-  generate_actions_pod ();
-  close ();
-
-  let close = output_to "guestfs-availability.pod" in
-  generate_availability_pod ();
-  close ();
-
-  let close = output_to "guestfish-actions.pod" in
-  generate_fish_actions_pod ();
-  close ();
-
-  let close = output_to "ocaml/guestfs.mli" in
-  generate_ocaml_mli ();
-  close ();
-
-  let close = output_to "ocaml/guestfs.ml" in
-  generate_ocaml_ml ();
-  close ();
-
-  let close = output_to "ocaml/guestfs_c_actions.c" in
-  generate_ocaml_c ();
-  close ();
-
-  let close = output_to "ocaml/bindtests.ml" in
-  generate_ocaml_bindtests ();
-  close ();
-
-  let close = output_to "perl/Guestfs.xs" in
-  generate_perl_xs ();
-  close ();
-
-  let close = output_to "perl/lib/Sys/Guestfs.pm" in
-  generate_perl_pm ();
-  close ();
-
-  let close = output_to "perl/bindtests.pl" in
-  generate_perl_bindtests ();
-  close ();
-
-  let close = output_to "python/guestfs-py.c" in
-  generate_python_c ();
-  close ();
-
-  let close = output_to "python/guestfs.py" in
-  generate_python_py ();
-  close ();
-
-  let close = output_to "python/bindtests.py" in
-  generate_python_bindtests ();
-  close ();
-
-  let close = output_to "ruby/ext/guestfs/_guestfs.c" in
-  generate_ruby_c ();
-  close ();
-
-  let close = output_to "ruby/bindtests.rb" in
-  generate_ruby_bindtests ();
-  close ();
-
-  let close = output_to "java/com/redhat/et/libguestfs/GuestFS.java" in
-  generate_java_java ();
-  close ();
+  output_to "src/guestfs_protocol.x" generate_xdr;
+  output_to "src/guestfs-structs.h" generate_structs_h;
+  output_to "src/guestfs-actions.h" generate_actions_h;
+  output_to "src/guestfs-internal-actions.h" generate_internal_actions_h;
+  output_to "src/guestfs-actions.c" generate_client_actions;
+  output_to "src/guestfs-bindtests.c" generate_bindtests;
+  output_to "src/guestfs-structs.pod" generate_structs_pod;
+  output_to "src/guestfs-actions.pod" generate_actions_pod;
+  output_to "src/guestfs-availability.pod" generate_availability_pod;
+  output_to "src/MAX_PROC_NR" generate_max_proc_nr;
+  output_to "src/libguestfs.syms" generate_linker_script;
+  output_to "daemon/actions.h" generate_daemon_actions_h;
+  output_to "daemon/stubs.c" generate_daemon_actions;
+  output_to "daemon/names.c" generate_daemon_names;
+  output_to "daemon/optgroups.c" generate_daemon_optgroups_c;
+  output_to "daemon/optgroups.h" generate_daemon_optgroups_h;
+  output_to "capitests/tests.c" generate_tests;
+  output_to "fish/cmds.c" generate_fish_cmds;
+  output_to "fish/completion.c" generate_fish_completion;
+  output_to "fish/guestfish-actions.pod" generate_fish_actions_pod;
+  output_to "ocaml/guestfs.mli" generate_ocaml_mli;
+  output_to "ocaml/guestfs.ml" generate_ocaml_ml;
+  output_to "ocaml/guestfs_c_actions.c" generate_ocaml_c;
+  output_to "ocaml/bindtests.ml" generate_ocaml_bindtests;
+  output_to "ocaml/guestfs_inspector.mli" generate_ocaml_inspector_mli;
+  output_to "ocaml/guestfs_inspector.ml" generate_ocaml_inspector_ml;
+  output_to "perl/Guestfs.xs" generate_perl_xs;
+  output_to "perl/lib/Sys/Guestfs.pm" generate_perl_pm;
+  output_to "perl/bindtests.pl" generate_perl_bindtests;
+  output_to "python/guestfs-py.c" generate_python_c;
+  output_to "python/guestfs.py" generate_python_py;
+  output_to "python/bindtests.py" generate_python_bindtests;
+  output_to "ruby/ext/guestfs/_guestfs.c" generate_ruby_c;
+  output_to "ruby/bindtests.rb" generate_ruby_bindtests;
+  output_to "java/com/redhat/et/libguestfs/GuestFS.java" generate_java_java;
 
   List.iter (
     fun (typ, jtyp) ->
       let cols = cols_of_struct typ in
       let filename = sprintf "java/com/redhat/et/libguestfs/%s.java" jtyp in
-      let close = output_to filename in
-      generate_java_struct jtyp cols;
-      close ();
+      output_to filename (generate_java_struct jtyp cols);
   ) java_structs;
 
-  let close = output_to "java/Makefile.inc" in
-  generate_java_makefile_inc ();
-  close ();
-
-  let close = output_to "java/com_redhat_et_libguestfs_GuestFS.c" in
-  generate_java_c ();
-  close ();
-
-  let close = output_to "java/Bindtests.java" in
-  generate_java_bindtests ();
-  close ();
-
-  let close = output_to "haskell/Guestfs.hs" in
-  generate_haskell_hs ();
-  close ();
-
-  let close = output_to "haskell/Bindtests.hs" in
-  generate_haskell_bindtests ();
-  close ();
-
-  let close = output_to "src/MAX_PROC_NR" in
-  generate_max_proc_nr ();
-  close ();
+  output_to "java/Makefile.inc" generate_java_makefile_inc;
+  output_to "java/com_redhat_et_libguestfs_GuestFS.c" generate_java_c;
+  output_to "java/Bindtests.java" generate_java_bindtests;
+  output_to "haskell/Guestfs.hs" generate_haskell_hs;
+  output_to "haskell/Bindtests.hs" generate_haskell_bindtests;
+  output_to "csharp/Libguestfs.cs" generate_csharp;
 
   (* Always generate this file last, and unconditionally.  It's used
    * by the Makefile to know when we must re-run the generator.
    *)
   let chan = open_out "src/stamp-generator" in
   fprintf chan "1\n";
-  close_out chan
+  close_out chan;
+
+  printf "generated %d lines of code\n" !lines

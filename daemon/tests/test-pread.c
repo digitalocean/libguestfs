@@ -1,5 +1,5 @@
 /* Test the pread function.
-   Copyright (C) 2009 Free Software Foundation, Inc.
+   Copyright (C) 2009, 2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -20,23 +20,14 @@
 
 #include <unistd.h>
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "signature.h"
+SIGNATURE_CHECK (pread, ssize_t, (int, void *, size_t, off_t));
+
 #include <sys/types.h>
 #include <fcntl.h>
 #include <errno.h>
 
-#define ASSERT(expr) \
-  do                                                                         \
-    {                                                                        \
-      if (!(expr))                                                           \
-        {                                                                    \
-          fprintf (stderr, "%s:%d: assertion failed\n", __FILE__, __LINE__); \
-          fflush (stderr);                                                   \
-          abort ();                                                          \
-        }                                                                    \
-    }                                                                        \
-  while (0)
+#include "macros.h"
 
 #define N (sizeof buf - 1)
 
@@ -65,12 +56,12 @@ main (void)
       ASSERT (init_pos == pos);
 
       for (i = 0; i < N; i++)
-	{
-	  char byte_buf;
-	  ASSERT (pread (fd, &byte_buf, 1, i) == 1);
-	  ASSERT (byte_buf == buf[i]);
-	  ASSERT (lseek (fd, 0, SEEK_CUR) == init_pos);
-	}
+        {
+          char byte_buf;
+          ASSERT (pread (fd, &byte_buf, 1, i) == 1);
+          ASSERT (byte_buf == buf[i]);
+          ASSERT (lseek (fd, 0, SEEK_CUR) == init_pos);
+        }
     }
 
   {

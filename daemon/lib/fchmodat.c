@@ -1,5 +1,5 @@
 /* Change the protections of file relative to an open directory.
-   Copyright (C) 2006, 2009 Free Software Foundation, Inc.
+   Copyright (C) 2006, 2009-2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 # undef lchmod
 # define lchmod lchmod_rpl
 static int
-lchmod (char const *f _UNUSED_PARAMETER_, mode_t m _UNUSED_PARAMETER_)
+lchmod (char const *f _GL_UNUSED, mode_t m _GL_UNUSED)
 {
   errno = ENOSYS;
   return -1;

@@ -16,8 +16,9 @@ LVs, what filesystem is in each LV, etc.).  It can also run commands
 in the context of the guest.  Also you can access filesystems over FTP.
 
 Libguestfs is a library that can be linked with C and C++ management
-programs (or management programs written in OCaml, Perl, Python, Ruby, Java
-or Haskell).  You can also use it from shell scripts or the command line.
+programs (or management programs written in OCaml, Perl, Python, Ruby,
+Java, Haskell or C#).  You can also use it from shell scripts or the
+command line.
 
 Libguestfs was written by Richard W.M. Jones (rjones@redhat.com) and
 hacked on by lots of other people.  For discussion, development,
@@ -66,11 +67,9 @@ Requirements
 
 - (Optional) xmllint to validate virt-inspector RELAX NG schema
 
-- (Optional) OCaml if you want to rebuild the generated files, and
-  also to build the OCaml bindings
-
-- (Optional) OCaml xml-light, only needed if you want to rebuild the
-  virt-inspector bindings from virt-inspector.rng.
+- (Optional) OCaml + OCaml library xml-light if you want to rebuild
+  the generated files, and also to build the OCaml bindings
+  (http://tech.motion-twin.com/xmllight.html)
 
 - (Optional) local Fedora mirror
 

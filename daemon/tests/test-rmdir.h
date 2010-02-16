@@ -1,5 +1,5 @@
 /* Tests of rmdir.
-   Copyright (C) 2009 Free Software Foundation, Inc.
+   Copyright (C) 2009, 2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -25,9 +25,6 @@
 static int
 test_rmdir_func (int (*func) (char const *name), bool print)
 {
-  /* Remove any leftovers from a previous partial run.  */
-  ASSERT (system ("rm -rf " BASE "*") == 0);
-
   /* Setup.  */
   ASSERT (mkdir (BASE "dir", 0700) == 0);
   ASSERT (close (creat (BASE "dir/file", 0600)) == 0);
@@ -80,8 +77,8 @@ test_rmdir_func (int (*func) (char const *name), bool print)
   if (symlink (BASE "dir", BASE "link") != 0)
     {
       if (print)
-	fputs ("skipping test: symlinks not supported on this file system\n",
-	       stderr);
+        fputs ("skipping test: symlinks not supported on this file system\n",
+               stderr);
       return 77;
     }
   ASSERT (mkdir (BASE "dir", 0700) == 0);

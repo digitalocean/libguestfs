@@ -1,7 +1,7 @@
 # serial 9
 
-# Copyright (C) 1998-2001, 2003-2004, 2007, 2009 Free Software
-# Foundation, Inc.
+# Copyright (C) 1998-2001, 2003-2004, 2007, 2009-2010 Free Software Foundation,
+# Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -19,15 +19,15 @@ AC_DEFUN([gl_CHECK_TYPE_STRUCT_UTIMBUF],
   AC_CACHE_CHECK([for struct utimbuf], [gl_cv_sys_struct_utimbuf],
     [AC_COMPILE_IFELSE(
        [AC_LANG_PROGRAM(
-	  [[#if HAVE_SYS_TIME_H
-	     #include <sys/time.h>
-	    #endif
-	    #include <time.h>
-	    #ifdef HAVE_UTIME_H
-	     #include <utime.h>
-	    #endif
-	  ]],
-	  [[static struct utimbuf x; x.actime = x.modtime;]])],
+          [[#if HAVE_SYS_TIME_H
+             #include <sys/time.h>
+            #endif
+            #include <time.h>
+            #ifdef HAVE_UTIME_H
+             #include <utime.h>
+            #endif
+          ]],
+          [[static struct utimbuf x; x.actime = x.modtime;]])],
        [gl_cv_sys_struct_utimbuf=yes],
        [gl_cv_sys_struct_utimbuf=no])])
 

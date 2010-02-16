@@ -1,5 +1,5 @@
 /* Test of sleep() function.
-   Copyright (C) 2007-2009 Free Software Foundation, Inc.
+   Copyright (C) 2007-2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -20,21 +20,12 @@
 
 #include <unistd.h>
 
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "signature.h"
+SIGNATURE_CHECK (sleep, unsigned int, (unsigned int));
 
-#define ASSERT(expr) \
-  do                                                                         \
-    {                                                                        \
-      if (!(expr))                                                           \
-        {                                                                    \
-          fprintf (stderr, "%s:%d: assertion failed\n", __FILE__, __LINE__); \
-          fflush (stderr);                                                   \
-          abort ();                                                          \
-        }                                                                    \
-    }                                                                        \
-  while (0)
+#include <signal.h>
+
+#include "macros.h"
 
 #if HAVE_DECL_ALARM
 static void
@@ -46,7 +37,7 @@ handle_alarm (int sig)
 #endif
 
 int
-main()
+main (void)
 {
   ASSERT (sleep (1) <= 1);
 

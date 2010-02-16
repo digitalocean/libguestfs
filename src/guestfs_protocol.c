@@ -3846,6 +3846,72 @@ xdr_guestfs_dd_args (XDR *xdrs, guestfs_dd_args *objp)
 }
 
 bool_t
+xdr_guestfs_filesize_args (XDR *xdrs, guestfs_filesize_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->file, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_filesize_ret (XDR *xdrs, guestfs_filesize_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_quad_t (xdrs, &objp->size))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_lvrename_args (XDR *xdrs, guestfs_lvrename_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->logvol, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->newlogvol, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_vgrename_args (XDR *xdrs, guestfs_vgrename_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->volgroup, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->newvolgroup, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_initrd_cat_args (XDR *xdrs, guestfs_initrd_cat_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->initrdpath, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->filename, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_initrd_cat_ret (XDR *xdrs, guestfs_initrd_cat_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_bytes (xdrs, (char **)&objp->content.content_val, (u_int *) &objp->content.content_len, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

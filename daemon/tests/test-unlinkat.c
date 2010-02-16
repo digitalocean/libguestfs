@@ -1,5 +1,5 @@
 /* Tests of unlinkat.
-   Copyright (C) 2009 Free Software Foundation, Inc.
+   Copyright (C) 2009, 2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -20,6 +20,9 @@
 
 #include <unistd.h>
 
+#include "signature.h"
+SIGNATURE_CHECK (unlinkat, int, (int, char const *, int));
+
 #include <fcntl.h>
 #include <errno.h>
 #include <stdbool.h>
@@ -28,18 +31,7 @@
 #include <sys/stat.h>
 
 #include "unlinkdir.h"
-
-#define ASSERT(expr) \
-  do                                                                         \
-    {                                                                        \
-      if (!(expr))                                                           \
-	{                                                                    \
-	  fprintf (stderr, "%s:%d: assertion failed\n", __FILE__, __LINE__);  \
-	  fflush (stderr);                                                   \
-	  abort ();                                                          \
-	}                                                                    \
-    }                                                                        \
-  while (0)
+#include "macros.h"
 
 #define BASE "test-unlinkat.t"
 
@@ -68,6 +60,10 @@ main (void)
   /* FIXME: Add tests of fd other than ".".  */
   int result1;
   int result2;
+
+  /* Remove any leftovers from a previous partial run.  */
+  system ("rm -rf " BASE "*");
+
   result1 = test_rmdir_func (rmdirat, false);
   result2 = test_unlink_func (unlinker, false);
   ASSERT (result1 == result2);
@@ -80,6 +76,6 @@ main (void)
   ASSERT (close (dfd) == 0);
   if (result1 == 77)
     fputs ("skipping test: symlinks not supported on this file system\n",
-	   stderr);
+           stderr);
   return result1;
 }

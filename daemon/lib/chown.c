@@ -1,7 +1,7 @@
 /* provide consistent interface to chown for systems that don't interpret
    an ID of -1 as meaning `don't change the corresponding ID'.
 
-   Copyright (C) 1997, 2004-2007, 2009 Free Software Foundation, Inc.
+   Copyright (C) 1997, 2004-2007, 2009-2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,8 +33,8 @@
 
 /* Simple stub that always fails with ENOSYS, for mingw.  */
 int
-chown (const char *file _UNUSED_PARAMETER_, uid_t uid _UNUSED_PARAMETER_,
-       gid_t gid _UNUSED_PARAMETER_)
+chown (const char *file _GL_UNUSED, uid_t uid _GL_UNUSED,
+       gid_t gid _GL_UNUSED)
 {
   errno = ENOSYS;
   return -1;

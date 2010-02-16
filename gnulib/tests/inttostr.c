@@ -1,6 +1,6 @@
 /* inttostr.c -- convert integers to printable strings
 
-   Copyright (C) 2001, 2006, 2008, 2009 Free Software Foundation, Inc.
+   Copyright (C) 2001, 2006, 2008, 2009, 2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ inttostr (inttype i, char *buf)
   if (i < 0)
     {
       do
-	*--p = '0' - i % 10;
+        *--p = '0' - i % 10;
       while ((i /= 10) != 0);
 
       *--p = '-';
@@ -46,7 +46,7 @@ inttostr (inttype i, char *buf)
 #endif
     {
       do
-	*--p = '0' + i % 10;
+        *--p = '0' + i % 10;
       while ((i /= 10) != 0);
     }
 

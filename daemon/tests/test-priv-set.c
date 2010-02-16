@@ -1,5 +1,5 @@
 /* Test the priv-set module.
-   Copyright (C) 2009 Free Software Foundation, Inc.
+   Copyright (C) 2009, 2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -17,28 +17,17 @@
 /* Written by David Bartley <dtbartle@csclub.uwaterloo.ca>, 2007.  */
 
 #include <config.h>
+
 #include "priv-set.h"
 
 #if HAVE_GETPPRIV
 # include <priv.h>
 #endif
 #include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <errno.h>
 #include <sys/types.h>
 
-#define ASSERT(expr) \
-  do									     \
-    {									     \
-      if (!(expr))							     \
-        {								     \
-          fprintf (stderr, "%s:%d: assertion failed\n", __FILE__, __LINE__); \
-          fflush (stderr);						     \
-          abort ();							     \
-        }								     \
-    }									     \
-  while (0)
+#include "macros.h"
 
 int
 main (void)

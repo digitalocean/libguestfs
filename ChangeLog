@@ -1,3 +1,606 @@
+2010-02-12  Richard Jones  <rjones@redhat.com>
+
+	Version 1.0.84.
+
+	daemon: Don't need to prefix error messages with the command name.
+	The RPC stubs already prefix the command name to error messages.
+	The daemon doesn't have to do this.  As a (small) benefit this also
+	makes the daemon slightly smaller.
+
+	Code in the daemon such as:
+
+	  if (argv[0] == NULL) {
+	    reply_with_error ("passed an empty list");
+	    return NULL;
+	  }
+
+	now results in error messages like this:
+
+	  ><fs> command ""
+	  libguestfs: error: command: passed an empty list
+
+	(whereas previously you would have seen ..command: command:..)
+
+	generator: Don't prefix error messages with command name.
+	The command name is already being added by the RPC stubs, so
+	adding it again in Perl and C# just results in doubled error messages
+	like:
+	  foo: foo: the error
+
+	Sys::Guestfs::Lib::open_guest: Add interface parameter.
+	This allows you to override the default QEMU block device emulation.
+
+	Sys::Guestfs::Lib::open_guest: Remove freeform parameters.
+	Remove the ability to pass freeform parameters to Sys::Virt->new.
+	We don't use it, it makes the code more complex to modify, and
+	indeed there are no other args that Sys::Virt->new supports so
+	this would never be used.
+
+	Also change $readwrite to $rw to match parameter name.
+
+	New APIs: add-drive{,-ro}-with-if allows you to set QEMU block emulation.
+	The default if=... comes from configure time (currently it
+	defaults to if=virtio).
+
+	This change allows you to set the QEMU block emulation.
+
+	We don't think this will be used very often, but virt-v2v
+	requires it in order to work around a subtle problem with
+	running 'mkinitrd' in an appliance attached to a guest.
+
+	generator: 'interface' is a reserved word in Java.
+
+	add_cdrom: Update docs for adding ISO images.
+	See also RHBZ#563450 (NB: This commit does not fix the bug).
+
+2010-02-10  Richard Jones  <rjones@redhat.com>
+
+	Use mount-options instead of mount to avoid implicit -o sync.
+	guestfs_mount adds -o sync implicitly.  This causes a very large
+	performance problem for write-intensive programs (eg. virt-v2v).
+
+	Document this as a "gotcha".
+
+	Change the tests, guestfish, Sys::Guestfs::Lib, guestmount to use
+	mount-options instead.
+
+	(Note that this gotcha does not affect mount-ro).
+
+	The source of the performance problem was first identified by
+	Matthew Booth.
+
+2010-02-09  Richard Jones  <rjones@redhat.com>
+
+	Add -enable-kvm option to qemu command line.
+	If the version of qemu being used supports -enable-kvm option,
+	then check if /dev/kvm is openable and add this option.
+
+	I have found this option makes no difference, although it is
+	*supposed* to enable KVM (hardware virtualization) support.
+
+	New API call: initrd-cat to list a file from an initrd.
+
+2010-02-08  Richard Jones  <rjones@redhat.com>
+
+	Remove invalid Plural-Forms header from ml.po.
+
+	Documentation: Added a section on libguestfs gotchas.
+
+	Make virtio block driver be the default for the appliance.
+	Previously this caused a serious performance regression,
+	but we believe this is now fixed:
+	https://bugzilla.redhat.com/show_bug.cgi?id=509383
+
+2010-02-08  Ani Peter  <apeter@redhat.com>
+
+	Added Malayalam translations (RHBZ#562710).
+
+2010-02-05  Richard Jones  <rjones@redhat.com>
+
+	Distribute hivexsh.1.html HTML file.
+
+	Update PO files.
+
+2010-02-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	RHEL5: Keep old automake happy by defining docdir
+
+2010-02-05  Richard Jones  <rjones@redhat.com>
+
+	Add scripts to EXTRA_DIST.
+
+	Update PO files.
+
+	Prepare for version 1.0.83.
+
+	Add files to EXTRA_DIST.
+
+	hivex: example6: Don't double backslashes.
+
+	hivex: example6: Hypothetical addition of keys for viostor.
+
+	hivex: Fix handling of inline VKs.
+
+	hivexsh: Set correct type for 'expandstring' values.
+
+	hivex: Documentation and cleanups.
+
+	hivex: Make limits into macros.
+
+	hivexsh: Remove unused variable.
+	This removes an unused variable left over by
+	commit ab608f3948d903af64e814b2e67949a1a71d93a4.
+
+	hivex: Complete the implementation of adding child nodes.
+
+2010-02-04  Richard Jones  <rjones@redhat.com>
+
+	hivex: More debugging around nk 'unknown2' field.
+
+	hivex: Check hash fields in lf/lh records.
+
+	hivexsh: del command: Fix error message.
+
+	hivexsh: lsval: Remove stray quotation mark.
+
+	hivexsh: cd command: fix error handling
+	The error behaviour of hivex_node_get_child is subtle, so the 'cd'
+	command wouldn't always report errors correctly.  This fixes it.
+
+	hivex: allocate_block should update valid block bitmap.
+	The internal allocate_block() function wasn't updating the bitmap,
+	so if you revisited a block which you had allocated in the same
+	session, you could get an EFAULT error.
+
+	hivex: More debug messages.
+
+	hivex: Documentation update.
+	ntreg_lf_record can have id "lf" (old-style hashes) or "lh" (new-
+	style hashes).
+
+	hivex: Some missing le32toh endianness conversions.
+
+	hivexsh: Document some peculiarities of the "cd" command.
+
+	hivex: Implement deleting child nodes.
+
+	hivex: Add flags argument to internal get_children() function.
+	When we later call get_children to visit the intermediate
+	ri/lf/lh records, we have already deleted the subkey nk-records,
+	so checking that those nk-records are still valid is not very
+	helpful.
+
+	This commit adds a flag to turn these checks off.
+
+	hivex: Don't die on valid registries which have bad declared data lengths.
+	Some apparently valid registries contain value data length
+	declarations which exceed the allocated block size for the
+	value.
+
+	Previously the code would return EFAULT for such registries.
+	However since these appear to be otherwise valid registries,
+	turn this into a warning and just use the allocated block size
+	as the data length (in other words, truncate the value).
+
+	hivex: Minimal registry example.
+	This is the smallest registry you can make and still have it
+	load correctly in Windows regedit.
+
+	hivexsh: Add 'setval' and 'commit' commands.
+	This adds the 'setval' and 'commit' commands to the hivex shell.
+
+	Also adds some example scripts showing use of these.
+
+	hivex: Begin implementation of writing to hives.
+	This implements hivex_node_set_values which is used to
+	delete the (key, value) pairs at a node and optionally
+	replace them with a new set.
+
+	This also implements hivex_commit which is used to commit
+	changes to hives back to disk.
+
+	hivex: Add HIVEX_OPEN_WRITE flag to allow hive to be opened for writing.
+	If this flag is omitted (as in the case for all existing callers)
+	then the hive is still opened read-only.
+
+	We add a 'writable' flag to the hive handle, and we change the way
+	that the hive file (data) is stored.  The data is still mmapped if
+	the file is opened read-only, since that is more efficient and allows
+	us to handle larger hives.  However if we need to write to the file
+	then we have to read it all into memory, since if we had to extend the
+	file we need to realloc that data.
+
+	Note the manpage section L</WRITING TO HIVE FILES> comes in a later
+	commit.
+
+	Tools for analyzing and reverse engineering hive files.
+	This commit is not of general interest.  It contains the tools which
+	I used to reverse engineer the hive format and to test changes.
+	Keeping these with the rest of the code is useful in case in future
+	we encounter a hive file that we fail to modify.
+
+	Note that the tools are not compiled by default.  You have to compile
+	each explicitly with:
+
+	  make -C hivex/tools <toolname>.opt
+
+	You will also need ocaml-extlib-devel and ocaml-bitstring-devel.
+
+	hivexsh: Change some exit(1) -> exit(EXIT_FAILURE)
+
+	hivexsh: Only print final \n when interactive.
+	When hivexsh was called non-interactively, it would print an
+	annoying extra line.  Only print this line if we are being
+	used interactively.
+
+	hivexsh: Change handling of prompt argument to rl_gets()
+	Make the result of isatty into a global variable (is_tty).
+
+	Change the rl_gets() function so it takes the prompt string
+	instead of a "display prompt?" flag.  rl_gets() then consults
+	the global to find out if it should display the prompt at all.
+
+	Document that this flag is clear for default keys.
+
+	Misc documentation and gitignore update.
+
+	Move htole*/le*toh macros into a separate header file.
+	This allows us to reuse these macros in hivexsh later.
+
+2010-02-04  Sandeep Shedmake  <sshedmak@redhat.com>
+
+	Add Marathi translations (RHBZ#561671).
+
+2010-02-02  Piotr Drąg  <piotrdrag@gmail.com>
+
+	Polish translations (RHBZ#502533).
+
+2010-02-02  Richard Jones  <rjones@redhat.com>
+
+	Update PO files.
+
+	Add Gujarti translations (Sweta Kothari) (RHBZ#560918).
+
+2010-02-01  Richard Jones  <rjones@redhat.com>
+
+	Update Oriya translations (thanks Manoj Kumar Giri) (RHBZ#559498).
+
+2010-01-29  Richard Jones  <rjones@redhat.com>
+
+	hivex: Reimplement hivexget as a simple shell script.
+	hivexget is currently a large C program.  Now that we have hivexsh
+	(the shell) we can reimplement hivexget as a simple bash script that
+	calls out to hivexsh.
+
+	hivex: Add 'hivexsh' program (shell for navigating registry hives).
+
+	Set locale in C programs so l10n works (RHBZ#559962).
+	This commit adds the calls to setlocale &c to all of the current
+	C programs.
+
+	It also adds l10n support to hivexget and hivexml which lacked them
+	previously.
+
+	To test this, try:
+
+	LANG=pa_IN.UTF-8 guestfish --cmd-help
+
+	(You can only do this test after installing the package, or at
+	least the 'pa.mo' mo-file in the correct place).
+
+	Another unreadable file: /var/log/yum.log
+
+	Update PO files.
+
+	Add Tamil translation (RHBZ#559877) (thanks to I.Felix)
+
+	Update Punjabi translation (RHBZ#559480) (thanks Jaswinder Singh)
+
+	Fix regressions/rhbz557655.sh when debugging is enabled (v2).
+	The previous fix didn't cope with ordinary warnings emitted by
+	qemu (eg. "open /dev/kvm: No such file or directory").  This
+	is a hopefully more complete fix for the problem.
+
+	See also commit 3cd7ce75f1ce5048a4d9f6aeaf66aff3194e1096.
+
+2010-01-28  Richard Jones  <rjones@redhat.com>
+
+	Fix regressions/rhbz557655.sh when debugging is enabled.
+	The regression test for RHBZ#557655 would fail if debugging was
+	enabled, because debug output would get mixed up with the test
+	output.
+
+	To reproduce the error do:
+
+	LIBGUESTFS_DEBUG=1 make -C regressions TESTS=rhbz557655.sh check
+
+	This commit disables debug for just this test.
+
+	Implement 'vgrename' and 'lvrename' APIs.
+
+	Version 1.0.82.
+
+	hivex: Const-correctness fix on header_checksum (thanks Jim Meyering).
+
+	hivex: Update some previously unknown nk-record fields.
+	Update these fields with what we found out from reverse engineering
+	the file.  Also bring the unknownX field names into line with
+	visualizer.ml.
+
+	hivex: Fix calculation of block size for vk data blocks.
+
+	hivex: Display incorrect block size as unsigned in an error message.
+
+	hivex: display bad block offset in hex
+
+	hivex: hive type in vk-record is an unsigned 32 bit int
+
+	hivex: Add missing le32toh conversion around field access.
+	This was missing.  It only worked because we test on a little
+	endian platform.
+
+	hivex: Clarify some more fields.
+	Taken from sentinelchicken.com documentation.
+
+	hivex: Modify children/values functions to return intermediate blocks.
+	Modify the functions that return child subnodes and values so they
+	can also be used to return a list of the intermediate blocks.  This
+	is so we can delete those intermediate blocks (in a later commit).
+
+	We also introduce an offset_list structure which is used for collecting
+	lists of offsets, ie. lists of nodes, values or blocks.
+
+	Note that this commit should not change the semantics of the code.
+
+	hivex: Add value_any callback to the visitor.
+	The visitor currently contains lots of value_* callbacks, such as
+	value_string which is called back when the value has type string.
+
+	This is fine but it makes it complicated to deal with the case where
+	you just want to see 'a value', and don't care about its type.
+
+	The value_any callback allows visitors to see values generically.
+
+	hivex: Move header checksum code into a function.
+	This function can be reused later.
+
+	hivex: page 'offset_next' field is really 'page_size'.
+	The documentation, as usual, is contradictory.  However this
+	field is definitely the page size in all observed registries.
+	Furthermore the following field marked 'unknown' is always
+	zero, although this contradicts what the sentinelchicken.com
+	paper says.
+
+	hivex: Collect more statistics about registries.
+
+	hivex: Store filename in hive handle.
+
+	Added Oriya translations (RHBZ#559498).
+	Translation by Manoj Kumar Giri.
+
+	supermin: Add special case for libgcc_s-*.so.N
+	Because this file contains the GCC version and a date, it frequently
+	changes on the host.  Create a special case so that this file is
+	matched using a wildcard for the version/date part of the name.
+
+	Added translations for Punjabi (pa-IN) (RHBZ#559480).
+	Translated by Jaswinder Singh.
+
+	Also updated pot files.
+
+2010-01-27  Richard Jones  <rjones@redhat.com>
+
+	supermin: Prevent multilib corruption (RHBZ#558593).
+	On some combination of installing, upgrading and removing the base
+	libguestfs package on x86_64, multilib can corrupt libguestfs by
+	leaving a copy of /usr/bin/libguestfs-supermin-helper around which
+	references the wrong architecture (usually, contains links to the
+	i386-based appliance, when the x86_64 appliance should be constructed).
+
+	This commit changes libguestfs-supermin-helper so that the script is
+	the same on all architectures.  Instead, the library passes the
+	differences to the script (eg. $host_cpu).  Because the i386 and
+	x86_64 libraries should be at different locations (/usr/lib vs
+	/usr/lib64) this should prevent multilib from screwing things up.
+
+	Related links:
+	https://bugzilla.redhat.com/show_bug.cgi?id=558593
+	http://rwmj.wordpress.com/2009/11/16/please-someone-shoot-multilib/#content
+	https://bugzilla.redhat.com/show_bug.cgi?id=235752
+
+	Added Telugu translations (RHBZ#559237).
+	Also ran 'make -C po update-po' to update the POT file.
+
+2010-01-25  Richard Jones  <rjones@redhat.com>
+
+	supermin: Ignore more unreadable files found on RHEL 6.
+
+	Sync to latest Gnulib.
+
+	guestfish: Use xstrtol to parse integers (RHBZ#557655).
+	Current code uses atoi to parse the generator Int type and
+	atoll to parse the generator Int64 type.  The problem with the
+	ato* functions is that they don't cope with errors very well,
+	and they cannot parse numbers that begin with 0.. or 0x..
+	for octal and hexadecimal respectively.
+
+	This replaces the atoi call with a call to Gnulib xstrtol
+	and the atoll call with a call to Gnulib xstrtoll.
+
+	The generated code looks like this for all Int arguments:
+
+	  {
+	    strtol_error xerr;
+	    long r;
+
+	    xerr = xstrtol (argv[0], NULL, 0, &r, "");
+	    if (xerr != LONGINT_OK) {
+	      fprintf (stderr,
+	               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+	               cmd, "memsize", "xstrtol", xerr);
+	      return -1;
+	    }
+	    /* The Int type in the generator is a signed 31 bit int. */
+	    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+	      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "memsize");
+	      return -1;
+	    }
+	    /* The check above should ensure this assignment does not overflow. */
+	    memsize = r;
+	  }
+
+	and like this for all Int64 arguments (note we don't need the
+	range check for these):
+
+	  {
+	    strtol_error xerr;
+	    long long r;
+
+	    xerr = xstrtoll (argv[1], NULL, 0, &r, "");
+	    if (xerr != LONGINT_OK) {
+	      fprintf (stderr,
+	               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+	               cmd, "size", "xstrtoll", xerr);
+	      return -1;
+	    }
+	    size = r;
+	  }
+
+	Note this also fixes an unrelated bug in guestfish handling of
+	RBufferOut.  We were using 'fwrite' without checking the return
+	value, and this could have caused silent failures, eg. in the case
+	where there was not enough disk space to store the resulting file,
+	or even if the program was interrupted (but continued) during the
+	write.
+
+	Replace this with Gnulib 'full-write', and check the return value
+	and report errors.
+
+	Add 'filesize' call.
+	Returns the size of a file.  You can already do this with 'stat',
+	but this call is good for scripting.
+
+2010-01-21  Richard Jones  <rjones@redhat.com>
+
+	Missing crc kernel module on RHEL 6 / Linux 2.6.32 (fixes RHBZ#557195)
+
+2010-01-15  Richard Jones  <rjones@redhat.com>
+
+	hivex: Various improvements in header parsing, thanks to better documentation.
+
+	hivex: Print header fields.  Print all offsets in hex (in debug output).
+
+	hivex: Reenable checksum calculations, but don't check result.
+
+	hivex: Update documentation.
+
+2010-01-14  Richard Jones  <rjones@redhat.com>
+
+	hivex: Send all debug messages to stderr.
+
+	hivex: Remove stray debugging message.
+
+	hivex: Documentation: Add environment variables section.
+
+	hivex: Whitespace change.
+
+	hivex: Move STR* macros into C file.
+	Don't pollute the public header file with these macros.
+
+	hivex: Small updates to the documentation.
+
+2010-01-13  Richard Jones  <rjones@redhat.com>
+
+	Fix generation of HTML documentation for website.
+
+	Add guestfs.pod and guestfish.pod to EXTRA_DIST.
+
+	Prepare for version 1.0.81.
+
+	Update to latest Gnulib.
+
+2010-01-07  Richard Jones  <rjones@redhat.com>
+
+	qemu: Upstream regression of -stdio serial option.
+	Best explained by the comment in the code:
+
+	    /* Newer versions of qemu (from around 2009/12) changed the
+	     * behaviour of monitors so that an implicit '-monitor stdio' is
+	     * assumed if we are in -nographic mode and there is no other
+	     * -monitor option.  Only a single stdio device is allowed, so
+	     * this broke the '-serial stdio' option.  There is a new flag
+	     * called -nodefaults which gets rid of all this default crud, so
+	     * let's use that to avoid this and any future surprises.
+	     */
+
+2010-01-06  Richard Jones  <rjones@redhat.com>
+
+	inspector: Update example XML and RNG schema.
+	This updates commit a59dcdbd1b0a28c960e3792165a13f2daf4f6c35.
+
+2010-01-05  Richard Jones  <rjones@redhat.com>
+
+	inspector: Make RPM application data more specific (RHBZ#552718).
+	List applications with epoch, release and arch data.
+
+	If epoch is 0, don't store this as an empty string, but as
+	undefined, and don't output empty <epoch/> element in the XML.
+
+2010-01-04  Richard Jones  <rjones@redhat.com>
+
+	Use linker script to control visibility of symbols.
+
+	generator: Move all library generation code together.
+
+	generator: Print total lines of generated code.
+
+	C#: Add documentation about experimental nature of these bindings.
+
+2010-01-02  Richard Jones  <rich@koneko.local>
+
+	Experimental C# bindings.
+	Tested in only limited situations, with Mono on Linux.
+
+2010-01-02  Richard Jones  <rjones@redhat.com>
+
+	Update copyright years.
+
+2009-12-31  Richard Jones  <rjones@redhat.com>
+
+	Move guestfs(3) and guestfish(1) man pages into subdirectories.
+	These manual pages have for a very long time 'lived' in the top
+	source directory.
+
+	Clean up this situation by moving those manual pages (plus associated
+	generated files) into the src/ and fish/ subdirectories respectively.
+
+	generator: Move src/guestfs-bindtests.c next to other src/ files.
+
+	generator: Use Continuation Passing Style (CPS) in output_to function.
+	This makes the code simpler, shorter and less error-prone.
+
+	generator: Rename GPLv2 to GPLv2plus, LGPLv2 to LGPLv2plus.
+	The licenses are "any later version", so reflect this in the
+	naming of the parameter to generate_header.
+
+	generated code: Set copyright years to 2009-xxxx when current year > 2009.
+
+	Remove separate inspector_generator.ml, combine this with generator.ml.
+	This commit combines the previously separate "inspector_generator.ml"
+	program which generated bindings for virt-inspector.
+
+	Having two separate programs caused no end of troubles for developers,
+	so we now combine them into a single program.
+
+	NOTE: OCaml xml-light is now *required* in order to rebuild the
+	generated code.
+
+	generator: Comment and whitespace changes only.
+
+2009-12-18  Richard Jones  <rjones@redhat.com>
+
+	daemon: Work around udevsettle issue (RHBZ#548121).
+
 2009-12-16  Richard Jones  <rjones@redhat.com>
 
 	Prepare for 1.0.80.

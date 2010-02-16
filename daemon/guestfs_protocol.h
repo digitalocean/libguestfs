@@ -1950,6 +1950,42 @@ struct guestfs_dd_args {
 };
 typedef struct guestfs_dd_args guestfs_dd_args;
 
+struct guestfs_filesize_args {
+	char *file;
+};
+typedef struct guestfs_filesize_args guestfs_filesize_args;
+
+struct guestfs_filesize_ret {
+	quad_t size;
+};
+typedef struct guestfs_filesize_ret guestfs_filesize_ret;
+
+struct guestfs_lvrename_args {
+	char *logvol;
+	char *newlogvol;
+};
+typedef struct guestfs_lvrename_args guestfs_lvrename_args;
+
+struct guestfs_vgrename_args {
+	char *volgroup;
+	char *newvolgroup;
+};
+typedef struct guestfs_vgrename_args guestfs_vgrename_args;
+
+struct guestfs_initrd_cat_args {
+	char *initrdpath;
+	char *filename;
+};
+typedef struct guestfs_initrd_cat_args guestfs_initrd_cat_args;
+
+struct guestfs_initrd_cat_ret {
+	struct {
+		u_int content_len;
+		char *content_val;
+	} content;
+};
+typedef struct guestfs_initrd_cat_ret guestfs_initrd_cat_ret;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -2168,7 +2204,11 @@ enum guestfs_procedure {
 	GUESTFS_PROC_FILL = 215,
 	GUESTFS_PROC_AVAILABLE = 216,
 	GUESTFS_PROC_DD = 217,
-	GUESTFS_PROC_NR_PROCS = 217 + 1,
+	GUESTFS_PROC_FILESIZE = 218,
+	GUESTFS_PROC_LVRENAME = 219,
+	GUESTFS_PROC_VGRENAME = 220,
+	GUESTFS_PROC_INITRD_CAT = 221,
+	GUESTFS_PROC_NR_PROCS = 221 + 1,
 };
 typedef enum guestfs_procedure guestfs_procedure;
 #define GUESTFS_MESSAGE_MAX 4194304
@@ -2532,6 +2572,12 @@ extern  bool_t xdr_guestfs_part_get_parttype_ret (XDR *, guestfs_part_get_partty
 extern  bool_t xdr_guestfs_fill_args (XDR *, guestfs_fill_args*);
 extern  bool_t xdr_guestfs_available_args (XDR *, guestfs_available_args*);
 extern  bool_t xdr_guestfs_dd_args (XDR *, guestfs_dd_args*);
+extern  bool_t xdr_guestfs_filesize_args (XDR *, guestfs_filesize_args*);
+extern  bool_t xdr_guestfs_filesize_ret (XDR *, guestfs_filesize_ret*);
+extern  bool_t xdr_guestfs_lvrename_args (XDR *, guestfs_lvrename_args*);
+extern  bool_t xdr_guestfs_vgrename_args (XDR *, guestfs_vgrename_args*);
+extern  bool_t xdr_guestfs_initrd_cat_args (XDR *, guestfs_initrd_cat_args*);
+extern  bool_t xdr_guestfs_initrd_cat_ret (XDR *, guestfs_initrd_cat_ret*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -2854,6 +2900,12 @@ extern bool_t xdr_guestfs_part_get_parttype_ret ();
 extern bool_t xdr_guestfs_fill_args ();
 extern bool_t xdr_guestfs_available_args ();
 extern bool_t xdr_guestfs_dd_args ();
+extern bool_t xdr_guestfs_filesize_args ();
+extern bool_t xdr_guestfs_filesize_ret ();
+extern bool_t xdr_guestfs_lvrename_args ();
+extern bool_t xdr_guestfs_vgrename_args ();
+extern bool_t xdr_guestfs_initrd_cat_args ();
+extern bool_t xdr_guestfs_initrd_cat_ret ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();
