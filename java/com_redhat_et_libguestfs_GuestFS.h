@@ -67,6 +67,8 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1direct (JNIE
 JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1direct (JNIEnv *env, jobject, jlong);
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1recovery_1proc (JNIEnv *env, jobject, jlong, jboolean);
 JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1recovery_1proc (JNIEnv *env, jobject, jlong);
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1with_1if (JNIEnv *env, jobject, jlong, jstring, jstring);
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1ro_1with_1if (JNIEnv *env, jobject, jlong, jstring, jstring);
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1mount (JNIEnv *env, jobject, jlong, jstring, jstring);
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1sync (JNIEnv *env, jobject, jlong);
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1touch (JNIEnv *env, jobject, jlong, jstring);
@@ -284,6 +286,10 @@ JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1par
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1fill (JNIEnv *env, jobject, jlong, jint, jint, jstring);
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1available (JNIEnv *env, jobject, jlong, jobjectArray);
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1dd (JNIEnv *env, jobject, jlong, jstring, jstring);
+JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1filesize (JNIEnv *env, jobject, jlong, jstring);
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1lvrename (JNIEnv *env, jobject, jlong, jstring, jstring);
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1vgrename (JNIEnv *env, jobject, jlong, jstring, jstring);
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1initrd_1cat (JNIEnv *env, jobject, jlong, jstring, jstring);
 
 #ifdef __cplusplus
 }

@@ -1,5 +1,5 @@
 /* Set the access and modification time of an open fd.
-   Copyright (C) 2009 Free Software Foundation, Inc.
+   Copyright (C) 2009, 2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,6 +32,6 @@ futimens (int fd, struct timespec const times[2])
 {
   /* fdutimens also works around bugs in native futimens, when running
      with glibc compiled against newer headers but on a Linux kernel
-     older than 2.6.26.  */
+     older than 2.6.32.  */
   return fdutimens (NULL, fd, times);
 }

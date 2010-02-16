@@ -1,5 +1,5 @@
 /* Test of glob/globfree functions.
-   Copyright (C) 2009 Free Software Foundation, Inc.
+   Copyright (C) 2009, 2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -20,22 +20,14 @@
 
 #include <glob.h>
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "signature.h"
+SIGNATURE_CHECK (glob, int, (char const *, int, int (*) (char const *, int),
+                             glob_t *));
+SIGNATURE_CHECK (globfree, void, (glob_t *));
+
 #include <string.h>
 
-#define ASSERT(expr)							\
-  do									\
-    {									\
-      if (!(expr))							\
-	{								\
-	  fprintf (stderr, "%s:%d: assertion failed\n",			\
-		   __FILE__, __LINE__);					\
-	  fflush (stderr);						\
-	  abort ();							\
-	}								\
-    }									\
-  while (0)
+#include "macros.h"
 
 #define GL_NO_SUCH_FILE "/gnulib-magic-does-not-exist"
 

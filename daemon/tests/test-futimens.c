@@ -1,5 +1,5 @@
 /* Tests of futimens.
-   Copyright (C) 2009 Free Software Foundation, Inc.
+   Copyright (C) 2009, 2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -20,6 +20,9 @@
 
 #include <sys/stat.h>
 
+#include "signature.h"
+SIGNATURE_CHECK (futimens, int, (int, struct timespec const[2]));
+
 #include <fcntl.h>
 #include <errno.h>
 #include <stdbool.h>
@@ -31,18 +34,7 @@
 #include "stat-time.h"
 #include "timespec.h"
 #include "utimecmp.h"
-
-#define ASSERT(expr) \
-  do                                                                         \
-    {                                                                        \
-      if (!(expr))                                                           \
-        {                                                                    \
-          fprintf (stderr, "%s:%d: assertion failed\n", __FILE__, __LINE__);  \
-          fflush (stderr);                                                   \
-          abort ();                                                          \
-        }                                                                    \
-    }                                                                        \
-  while (0)
+#include "macros.h"
 
 #define BASE "test-futimens.t"
 
@@ -52,7 +44,7 @@ int
 main (void)
 {
   /* Clean up any trash from prior testsuite runs.  */
-  ASSERT (system ("rm -rf " BASE "*") == 0);
+  system ("rm -rf " BASE "*");
 
   return test_futimens (futimens, true);
 }

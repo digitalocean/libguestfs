@@ -1,9 +1,9 @@
 /* Test of file timestamp modification functions.
-   Copyright (C) 2009 Free Software Foundation, Inc.
+   Copyright (C) 2009, 2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
+   the Free Software Foundation; either version 3 of the License, or
    (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -19,14 +19,18 @@
 #ifndef GL_TEST_UTIMENS_COMMON
 # define GL_TEST_UTIMENS_COMMON
 
-#include <fcntl.h>
-#include <errno.h>
-#include <string.h>
-#include <unistd.h>
+# include <fcntl.h>
+# include <errno.h>
+# include <string.h>
+# include <unistd.h>
 
-#include "stat-time.h"
-#include "timespec.h"
-#include "utimecmp.h"
+/* Gnulib modules.  */
+# include "stat-time.h"
+# include "timespec.h"
+# include "utimecmp.h"
+
+/* Gnulib test header.  */
+# include "nap.h"
 
 enum {
   BILLION = 1000 * 1000 * 1000,
@@ -44,27 +48,13 @@ enum {
                           : 0)
 };
 
-/* Sleep long enough to cross a timestamp quantization boundary on
-   most known systems with subsecond timestamp resolution.  For
-   example, ext4 has a quantization of 10 milliseconds, but a
-   resolution of 1 nanosecond.  Likewise, NTFS has a quantization as
-   slow as 15.25 milliseconds, but a resolution of 100 nanoseconds.
-   This is necessary on systems where creat or utimens with NULL
-   rounds down to the quantization boundary, but where gettime and
-   hence utimensat can inject timestamps between quantization
-   boundaries.  By ensuring we cross a boundary, we are less likely to
-   confuse utimecmp for two times that would round to the same
-   quantization boundary but are distinct based on resolution.  */
-static void
-nap (void)
-{
-  /* Systems that lack usleep also lack subsecond timestamps, and have
-     a quantization boundary equal to the resolution.  Our usage of
-     utimecmp allows equality, so no need to waste 980 milliseconds
-     if the replacement usleep rounds to 1 second.  */
-#if HAVE_USLEEP
-  usleep (20 * 1000); /* 20 milliseconds.  */
-#endif
-}
+# if (defined _WIN32 || defined __WIN32__) && !defined __CYGWIN__
+/* Skip ctime tests on native Windows, since it is either a copy of
+   mtime or birth time (depending on the file system), rather than a
+   properly tracked change time.  */
+#  define check_ctime 0
+# else
+#  define check_ctime 1
+# endif
 
 #endif /* GL_TEST_UTIMENS_COMMON */

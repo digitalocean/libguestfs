@@ -1,5 +1,5 @@
 /* Tests of mkdirat.
-   Copyright (C) 2009 Free Software Foundation, Inc.
+   Copyright (C) 2009, 2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -20,6 +20,9 @@
 
 #include <sys/stat.h>
 
+#include "signature.h"
+SIGNATURE_CHECK (mkdirat, int, (int, char const *, mode_t));
+
 #include <fcntl.h>
 #include <errno.h>
 #include <stdbool.h>
@@ -27,17 +30,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define ASSERT(expr) \
-  do                                                                         \
-    {                                                                        \
-      if (!(expr))                                                           \
-        {                                                                    \
-          fprintf (stderr, "%s:%d: assertion failed\n", __FILE__, __LINE__);  \
-          fflush (stderr);                                                   \
-          abort ();                                                          \
-        }                                                                    \
-    }                                                                        \
-  while (0)
+#include "macros.h"
 
 #define BASE "test-mkdirat.t"
 
@@ -58,7 +51,7 @@ main (void)
   int result;
 
   /* Clean up any trash from prior testsuite runs.  */
-  ASSERT (system ("rm -rf " BASE "*") == 0);
+  system ("rm -rf " BASE "*");
 
   /* Test basic mkdir functionality.  */
   result = test_mkdir (do_mkdir, false);

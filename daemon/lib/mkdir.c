@@ -1,7 +1,7 @@
 /* On some systems, mkdir ("foo/", 0700) fails because of the trailing
    slash.  On those systems, this wrapper removes the trailing slash.
 
-   Copyright (C) 2001, 2003, 2006, 2008, 2009 Free Software Foundation, Inc.
+   Copyright (C) 2001, 2003, 2006, 2008-2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@
 #include <string.h>
 
 #include "dirname.h"
-#include "xalloc.h"
 
 /* Disable the definition of mkdir to rpl_mkdir (from the <sys/stat.h>
    substitute) in this file.  Otherwise, we'd get an endless recursion.  */
@@ -40,7 +39,7 @@
    alias mkdir), only in the nonstandard io.h.  */
 #if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
 # define mkdir(name,mode) _mkdir (name)
-# define maybe_unused _UNUSED_PARAMETER_
+# define maybe_unused _GL_UNUSED
 #else
 # define maybe_unused /* empty */
 #endif

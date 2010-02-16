@@ -1,6 +1,6 @@
 /* getugroups.c -- return a list of the groups a user is in
 
-   Copyright (C) 1990, 1991, 1998-2000, 2003-2009 Free Software Foundation.
+   Copyright (C) 1990-1991, 1998-2000, 2003-2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,10 +33,10 @@
    can do is fail with ENOSYS.  */
 
 int
-getugroups (int maxcount _UNUSED_PARAMETER_,
-            gid_t *grouplist _UNUSED_PARAMETER_,
-            char const *username _UNUSED_PARAMETER_,
-            gid_t gid _UNUSED_PARAMETER_)
+getugroups (int maxcount _GL_UNUSED,
+            gid_t *grouplist _GL_UNUSED,
+            char const *username _GL_UNUSED,
+            gid_t gid _GL_UNUSED)
 {
   errno = ENOSYS;
   return -1;
@@ -45,7 +45,7 @@ getugroups (int maxcount _UNUSED_PARAMETER_,
 #else /* HAVE_GRP_H */
 # include <grp.h>
 
-# define STREQ(s1, s2) (strcmp (s1, s2) == 0)
+# define STREQ(a, b) (strcmp (a, b) == 0)
 
 /* Like `getgroups', but for user USERNAME instead of for the current
    process.  Store at most MAXCOUNT group IDs in the GROUPLIST array.
@@ -56,14 +56,14 @@ getugroups (int maxcount _UNUSED_PARAMETER_,
 
 int
 getugroups (int maxcount, gid_t *grouplist, char const *username,
-	    gid_t gid)
+            gid_t gid)
 {
   int count = 0;
 
   if (gid != (gid_t) -1)
     {
       if (maxcount != 0)
-	grouplist[count] = gid;
+        grouplist[count] = gid;
       ++count;
     }
 
@@ -76,37 +76,37 @@ getugroups (int maxcount, gid_t *grouplist, char const *username,
       errno = 0;
       grp = getgrent ();
       if (grp == NULL)
-	break;
+        break;
 
       for (cp = grp->gr_mem; *cp; ++cp)
-	{
-	  int n;
+        {
+          int n;
 
-	  if ( ! STREQ (username, *cp))
-	    continue;
+          if ( ! STREQ (username, *cp))
+            continue;
 
-	  /* See if this group number is already on the list.  */
-	  for (n = 0; n < count; ++n)
-	    if (grouplist && grouplist[n] == grp->gr_gid)
-	      break;
+          /* See if this group number is already on the list.  */
+          for (n = 0; n < count; ++n)
+            if (grouplist && grouplist[n] == grp->gr_gid)
+              break;
 
-	  /* If it's a new group number, then try to add it to the list.  */
-	  if (n == count)
-	    {
-	      if (maxcount != 0)
-		{
-		  if (count >= maxcount)
-		    goto done;
-		  grouplist[count] = grp->gr_gid;
-		}
-	      if (count == INT_MAX)
-		{
-		  errno = EOVERFLOW;
-		  goto done;
-		}
-	      count++;
-	    }
-	}
+          /* If it's a new group number, then try to add it to the list.  */
+          if (n == count)
+            {
+              if (maxcount != 0)
+                {
+                  if (count >= maxcount)
+                    goto done;
+                  grouplist[count] = grp->gr_gid;
+                }
+              if (count == INT_MAX)
+                {
+                  errno = EOVERFLOW;
+                  goto done;
+                }
+              count++;
+            }
+        }
     }
 
   if (errno != 0)

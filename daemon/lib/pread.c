@@ -1,5 +1,5 @@
 /* replacement pread function
-   Copyright (C) 2009 Free Software Foundation, Inc.
+   Copyright (C) 2009-2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ pread (int fd, void *buf, size_t nbyte, off_t offset)
   if (__libc_lseek (fd, old_offset, SEEK_SET) == (off_t) -1)
     {
       if (result == -1)
-	__set_errno (save_errno);
+        __set_errno (save_errno);
       return -1;
     }
   __set_errno (save_errno);

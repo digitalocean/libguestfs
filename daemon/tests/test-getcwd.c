@@ -1,9 +1,9 @@
 /* Test of getcwd() function.
-   Copyright (C) 2009 Free Software Foundation, Inc.
+   Copyright (C) 2009, 2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
+   the Free Software Foundation; either version 3 of the License, or
    (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -18,21 +18,14 @@
 
 #include <unistd.h>
 
+#include "signature.h"
+SIGNATURE_CHECK (getcwd, char *, (char *, size_t));
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define ASSERT(expr) \
-  do                                                                         \
-    {                                                                        \
-      if (!(expr))                                                           \
-        {                                                                    \
-          fprintf (stderr, "%s:%d: assertion failed\n", __FILE__, __LINE__); \
-          fflush (stderr);                                                   \
-          abort ();                                                          \
-        }                                                                    \
-    }                                                                        \
-  while (0)
+#include "macros.h"
 
 int
 main (int argc, char **argv)
@@ -43,7 +36,7 @@ main (int argc, char **argv)
   if (1 < argc)
     {
       if (chdir (argv[1]) == 0)
-	printf ("changed to directory %s\n", argv[1]);
+        printf ("changed to directory %s\n", argv[1]);
     }
 
   pwd1 = getcwd (NULL, 0);

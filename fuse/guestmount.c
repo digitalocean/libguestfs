@@ -896,6 +896,10 @@ usage (int status)
 int
 main (int argc, char *argv[])
 {
+  setlocale (LC_ALL, "");
+  bindtextdomain (PACKAGE, LOCALEBASEDIR);
+  textdomain (PACKAGE);
+
   enum { HELP_OPTION = CHAR_MAX + 1 };
 
   /* The command line arguments are broadly compatible with (a subset
@@ -1156,10 +1160,13 @@ mount_mps (struct mp *mp)
 
   if (mp) {
     mount_mps (mp->next);
-    if (!read_only)
-      r = guestfs_mount (g, mp->device, mp->mountpoint);
-    else
-      r = guestfs_mount_ro (g, mp->device, mp->mountpoint);
+
+    /* Don't use guestfs_mount here because that will default to mount
+     * options -o sync,noatime.  For more information, see guestfs(3)
+     * section "LIBGUESTFS GOTCHAS".
+     */
+    const char *options = read_only ? "ro" : "";
+    r = guestfs_mount_options (g, options, mp->device, mp->mountpoint);
     if (r == -1)
       exit (EXIT_FAILURE);
   }

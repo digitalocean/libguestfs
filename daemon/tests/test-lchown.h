@@ -1,5 +1,5 @@
 /* Tests of lchown.
-   Copyright (C) 2009 Free Software Foundation, Inc.
+   Copyright (C) 2009, 2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -16,54 +16,10 @@
 
 /* Written by Eric Blake <ebb9@byu.net>, 2009.  */
 
-#ifndef TEST_CHOWN_NAP
-/* Sleep long enough to notice a timestamp difference on the file
-   system in the current directory.  */
-static void
-nap (void)
-{
-  static long delay;
-  if (!delay)
-    {
-      /* Initialize only once, by sleeping for 20 milliseconds (needed
-         since xfs has a quantization of about 10 milliseconds, even
-         though it has a granularity of 1 nanosecond, and since NTFS
-         has a default quantization of 15.25 milliseconds, even though
-         it has a granularity of 100 nanoseconds).  If the seconds
-         differ, repeat the test one more time (in case we crossed a
-         quantization boundary on a file system with 1 second
-         resolution).  If we can't observe a difference in only the
-         nanoseconds, then fall back to 1 second if the time is odd,
-         and 2 seconds (needed for FAT) if time is even.  */
-      struct stat st1;
-      struct stat st2;
-      ASSERT (close (creat (BASE "tmp", 0600)) == 0);
-      ASSERT (stat (BASE "tmp", &st1) == 0);
-      ASSERT (unlink (BASE "tmp") == 0);
-      delay = 20000;
-      usleep (delay);
-      ASSERT (close (creat (BASE "tmp", 0600)) == 0);
-      ASSERT (stat (BASE "tmp", &st2) == 0);
-      ASSERT (unlink (BASE "tmp") == 0);
-      if (st1.st_mtime != st2.st_mtime)
-        {
-          /* Seconds differ, give it one more shot.  */
-          st1 = st2;
-          usleep (delay);
-          ASSERT (close (creat (BASE "tmp", 0600)) == 0);
-          ASSERT (stat (BASE "tmp", &st2) == 0);
-          ASSERT (unlink (BASE "tmp") == 0);
-        }
-      if (! (st1.st_mtime == st2.st_mtime
-             && get_stat_mtime_ns (&st1) < get_stat_mtime_ns (&st2)))
-        delay = (st1.st_mtime & 1) ? 1000000 : 2000000;
-    }
-  usleep (delay);
-}
-#endif /* !TEST_CHOWN_NAP */
+#include "nap.h"
 
 #if !HAVE_GETEGID
-# define getegid() (-1)
+# define getegid() ((gid_t) -1)
 #endif
 
 #ifndef HAVE_LCHMOD
@@ -122,8 +78,8 @@ test_lchown (int (*func) (char const *, uid_t, gid_t), bool print)
 
   ASSERT (close (creat (BASE "dir/file", 0600)) == 0);
   ASSERT (stat (BASE "dir/file", &st1) == 0);
-  ASSERT (st1.st_uid != -1);
-  ASSERT (st1.st_gid != -1);
+  ASSERT (st1.st_uid != (uid_t) -1);
+  ASSERT (st1.st_gid != (gid_t) -1);
   ASSERT (st1.st_gid == getegid ());
 
   /* Sanity check of error cases.  */
@@ -143,6 +99,7 @@ test_lchown (int (*func) (char const *, uid_t, gid_t), bool print)
   /* Check that -1 does not alter ownership.  */
   ASSERT (func (BASE "dir/file", -1, st1.st_gid) == 0);
   ASSERT (func (BASE "dir/file", st1.st_uid, -1) == 0);
+  ASSERT (func (BASE "dir/file", (uid_t) -1, (gid_t) -1) == 0);
   ASSERT (stat (BASE "dir/file", &st2) == 0);
   ASSERT (st1.st_uid == st2.st_uid);
   ASSERT (st1.st_gid == st2.st_gid);
@@ -188,21 +145,12 @@ test_lchown (int (*func) (char const *, uid_t, gid_t), bool print)
      changing group ownership of a file we own.  If we belong to at
      least two groups, then verifying the correct change is simple.
      But if we belong to only one group, then we fall back on the
-     other observable effect of lchown: the ctime must be updated.
-     Be careful of duplicates returned by getgroups.  */
-  gids_count = mgetgroups (NULL, -1, &gids);
-  if (2 <= gids_count && gids[0] == gids[1] && 2 < gids_count--)
-    gids[1] = gids[2];
-  if (1 < gids_count || (gids_count == 1 && gids[0] != st1.st_gid))
+     other observable effect of lchown: the ctime must be updated.  */
+  gids_count = mgetgroups (NULL, st1.st_gid, &gids);
+  if (1 < gids_count)
     {
-      if (gids[0] == st1.st_gid)
-        {
-          ASSERT (1 < gids_count);
-          ASSERT (gids[0] != gids[1]);
-          gids[0] = gids[1];
-        }
-      ASSERT (gids[0] != st1.st_gid);
-      ASSERT (gids[0] != -1);
+      ASSERT (gids[1] != st1.st_gid);
+      ASSERT (gids[1] != (gid_t) -1);
       ASSERT (lstat (BASE "dir/link", &st2) == 0);
       ASSERT (st1.st_uid == st2.st_uid);
       ASSERT (st1.st_gid == st2.st_gid);
@@ -211,7 +159,7 @@ test_lchown (int (*func) (char const *, uid_t, gid_t), bool print)
       ASSERT (st1.st_gid == st2.st_gid);
 
       errno = 0;
-      ASSERT (func (BASE "dir/link2/", -1, gids[0]) == -1);
+      ASSERT (func (BASE "dir/link2/", -1, gids[1]) == -1);
       ASSERT (errno == ENOTDIR);
       ASSERT (stat (BASE "dir/file", &st2) == 0);
       ASSERT (st1.st_uid == st2.st_uid);
@@ -223,7 +171,7 @@ test_lchown (int (*func) (char const *, uid_t, gid_t), bool print)
       ASSERT (st1.st_uid == st2.st_uid);
       ASSERT (st1.st_gid == st2.st_gid);
 
-      ASSERT (func (BASE "dir/link2", -1, gids[0]) == 0);
+      ASSERT (func (BASE "dir/link2", -1, gids[1]) == 0);
       ASSERT (stat (BASE "dir/file", &st2) == 0);
       ASSERT (st1.st_uid == st2.st_uid);
       ASSERT (st1.st_gid == st2.st_gid);
@@ -232,7 +180,7 @@ test_lchown (int (*func) (char const *, uid_t, gid_t), bool print)
       ASSERT (st1.st_gid == st2.st_gid);
       ASSERT (lstat (BASE "dir/link2", &st2) == 0);
       ASSERT (st1.st_uid == st2.st_uid);
-      ASSERT (gids[0] == st2.st_gid);
+      ASSERT (gids[1] == st2.st_gid);
 
       /* Trailing slash follows through to directory.  */
       ASSERT (lstat (BASE "dir/link3", &st2) == 0);
@@ -242,13 +190,13 @@ test_lchown (int (*func) (char const *, uid_t, gid_t), bool print)
       ASSERT (st1.st_uid == st2.st_uid);
       ASSERT (st1.st_gid == st2.st_gid);
 
-      ASSERT (func (BASE "dir/link3/", -1, gids[0]) == 0);
+      ASSERT (func (BASE "dir/link3/", -1, gids[1]) == 0);
       ASSERT (lstat (BASE "dir/link3", &st2) == 0);
       ASSERT (st1.st_uid == st2.st_uid);
       ASSERT (st1.st_gid == st2.st_gid);
       ASSERT (lstat (BASE "dir/sub", &st2) == 0);
       ASSERT (st1.st_uid == st2.st_uid);
-      ASSERT (gids[0] == st2.st_gid);
+      ASSERT (gids[1] == st2.st_gid);
     }
   else if (!CHOWN_CHANGE_TIME_BUG || HAVE_LCHMOD)
     {
@@ -274,7 +222,7 @@ test_lchown (int (*func) (char const *, uid_t, gid_t), bool print)
       ASSERT (l2.st_ctime == st2.st_ctime);
       ASSERT (get_stat_ctime_ns (&l2) == get_stat_ctime_ns (&st2));
 
-      ASSERT (func (BASE "dir/link2", -1, gids[0]) == 0);
+      ASSERT (func (BASE "dir/link2", -1, st1.st_gid) == 0);
       ASSERT (stat (BASE "dir/file", &st2) == 0);
       ASSERT (st1.st_ctime == st2.st_ctime);
       ASSERT (get_stat_ctime_ns (&st1) == get_stat_ctime_ns (&st2));
@@ -290,7 +238,7 @@ test_lchown (int (*func) (char const *, uid_t, gid_t), bool print)
       ASSERT (lstat (BASE "dir/sub", &st1) == 0);
       ASSERT (lstat (BASE "dir/link3", &l1) == 0);
       nap ();
-      ASSERT (func (BASE "dir/link3/", -1, gids[0]) == 0);
+      ASSERT (func (BASE "dir/link3/", -1, st1.st_gid) == 0);
       ASSERT (lstat (BASE "dir/link3", &st2) == 0);
       ASSERT (l1.st_ctime == st2.st_ctime);
       ASSERT (get_stat_ctime_ns (&l1) == get_stat_ctime_ns (&st2));

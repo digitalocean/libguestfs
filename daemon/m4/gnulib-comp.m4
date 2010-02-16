@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2009 Free Software Foundation, Inc.
+# Copyright (C) 2002-2010 Free Software Foundation, Inc.
 #
 # This file is free software, distributed under the terms of the GNU
 # General Public License.  As a special exception to the GNU General
@@ -78,6 +78,8 @@ AC_DEFUN([gl_INIT],
   gl_UNISTD_MODULE_INDICATOR([fchdir])
   gl_FUNC_FCLOSE
   gl_STDIO_MODULE_INDICATOR([fclose])
+  gl_FUNC_FCNTL
+  gl_FCNTL_MODULE_INDICATOR([fcntl])
   gl_FCNTL_H
   gl_FUNC_FDOPENDIR
   gl_DIRENT_MODULE_INDICATOR([fdopendir])
@@ -221,7 +223,6 @@ AC_DEFUN([gl_INIT],
   gl_TIMESPEC
   gl_UNISTD_H
   gl_UNISTD_SAFER
-  gl_MODULE_INDICATOR([unistd-safer])
   gl_FUNC_UNLINK
   gl_UNISTD_MODULE_INDICATOR([unlink])
   gl_UTIMENS
@@ -261,7 +262,7 @@ AC_DEFUN([gl_INIT],
     if test -n "$gl_LIBOBJS"; then
       # Remove the extension.
       sed_drop_objext='s/\.o$//;s/\.obj$//'
-      for i in `for i in $gl_LIBOBJS; do echo "$i"; done | sed "$sed_drop_objext" | sort | uniq`; do
+      for i in `for i in $gl_LIBOBJS; do echo "$i"; done | sed -e "$sed_drop_objext" | sort | uniq`; do
         gl_libobjs="$gl_libobjs $i.$ac_objext"
         gl_ltlibobjs="$gl_ltlibobjs $i.lo"
       done
@@ -289,6 +290,11 @@ AC_DEFUN([gl_INIT],
   fi
   gl_SYS_SOCKET_MODULE_INDICATOR([bind])
   AC_CHECK_FUNCS_ONCE([getegid])
+  gl_CLOEXEC
+  gl_MODULE_INDICATOR([cloexec])
+  gl_MODULE_INDICATOR([fd-safer-flag])
+  gl_FUNC_GETDTABLESIZE
+  gl_UNISTD_MODULE_INDICATOR([getdtablesize])
   gl_FUNC_GETGROUPS
   gl_UNISTD_MODULE_INDICATOR([getgroups])
   gl_FUNC_GETPAGESIZE
@@ -333,6 +339,8 @@ AC_DEFUN([gl_INIT],
   gl_PRIV_SET
   AC_CHECK_DECLS([program_invocation_name], [], [], [#include <errno.h>])
   AC_CHECK_DECLS([program_invocation_short_name], [], [], [#include <errno.h>])
+  AC_FUNC_REALLOC
+  AC_DEFINE([GNULIB_REALLOC_GNU], 1, [Define to indicate the 'realloc' module.])
   AC_CHECK_HEADERS_ONCE([unistd.h sys/wait.h])
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])
   if test "$ac_cv_header_winsock2_h" = yes; then
@@ -373,7 +381,7 @@ AC_DEFUN([gl_INIT],
     if test -n "$gltests_LIBOBJS"; then
       # Remove the extension.
       sed_drop_objext='s/\.o$//;s/\.obj$//'
-      for i in `for i in $gltests_LIBOBJS; do echo "$i"; done | sed "$sed_drop_objext" | sort | uniq`; do
+      for i in `for i in $gltests_LIBOBJS; do echo "$i"; done | sed -e "$sed_drop_objext" | sort | uniq`; do
         gltests_libobjs="$gltests_libobjs $i.$ac_objext"
         gltests_ltlibobjs="$gltests_ltlibobjs $i.lo"
       done
@@ -446,7 +454,8 @@ AC_DEFUN([gltests_LIBSOURCES], [
 # This macro records the list of files which have been installed by
 # gnulib-tool and may be removed by future gnulib-tool invocations.
 AC_DEFUN([gl_FILE_LIST], [
-  build-aux/link-warning.h
+  build-aux/arg-nonnull.h
+  build-aux/warn-on-use.h
   lib/alignof.h
   lib/alloca.c
   lib/alloca.in.h
@@ -483,6 +492,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/fchown-stub.c
   lib/fchownat.c
   lib/fclose.c
+  lib/fcntl.c
   lib/fcntl.in.h
   lib/fd-safer.c
   lib/fdopendir.c
@@ -627,6 +637,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/chdir-long.m4
   m4/chown.m4
   m4/clock_time.m4
+  m4/cloexec.m4
   m4/close.m4
   m4/codeset.m4
   m4/d-ino.m4
@@ -643,6 +654,8 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/extensions.m4
   m4/fchdir.m4
   m4/fclose.m4
+  m4/fcntl-o.m4
+  m4/fcntl.m4
   m4/fcntl_h.m4
   m4/fdopendir.m4
   m4/float_h.m4
@@ -654,6 +667,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/getcwd-path-max.m4
   m4/getcwd.m4
   m4/getdelim.m4
+  m4/getdtablesize.m4
   m4/getgroups.m4
   m4/getline.m4
   m4/getlogin_r.m4
@@ -758,6 +772,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/utimes.m4
   m4/vasnprintf.m4
   m4/vasprintf.m4
+  m4/warn-on-use.m4
   m4/warnings.m4
   m4/wchar.m4
   m4/wchar_t.m4
@@ -769,19 +784,28 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/xgetcwd.m4
   m4/xsize.m4
   tests/init.sh
+  tests/macros.h
+  tests/nap.h
+  tests/signature.h
   tests/test-alignof.c
   tests/test-alloca-opt.c
   tests/test-arpa_inet.c
+  tests/test-binary-io.c
+  tests/test-binary-io.sh
   tests/test-bitrotate.c
   tests/test-byteswap.c
   tests/test-c-ctype.c
   tests/test-chown.c
   tests/test-chown.h
+  tests/test-cloexec.c
+  tests/test-dirent.c
+  tests/test-dup-safer.c
   tests/test-dup2.c
   tests/test-errno.c
   tests/test-fchdir.c
   tests/test-fchownat.c
   tests/test-fcntl-h.c
+  tests/test-fcntl.c
   tests/test-fdopendir.c
   tests/test-fnmatch.c
   tests/test-fstatat.c
@@ -790,8 +814,10 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-getaddrinfo.c
   tests/test-getcwd.c
   tests/test-getdelim.c
+  tests/test-getdtablesize.c
   tests/test-getgroups.c
   tests/test-getline.c
+  tests/test-getlogin_r.c
   tests/test-gettimeofday.c
   tests/test-glob.c
   tests/test-hash.c
@@ -858,10 +884,12 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-symlink.c
   tests/test-symlink.h
   tests/test-symlinkat.c
+  tests/test-sys_ioctl.c
   tests/test-sys_select.c
   tests/test-sys_socket.c
   tests/test-sys_stat.c
   tests/test-sys_time.c
+  tests/test-sys_wait.c
   tests/test-time.c
   tests/test-unistd.c
   tests/test-unlink.c
@@ -879,7 +907,13 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-xalloc-die.sh
   tests/zerosize-ptr.h
   tests=lib/accept.c
+  tests=lib/binary-io.h
   tests=lib/bind.c
+  tests=lib/cloexec.c
+  tests=lib/cloexec.h
+  tests=lib/dup-safer-flag.c
+  tests=lib/fd-safer-flag.c
+  tests=lib/getdtablesize.c
   tests=lib/getgroups.c
   tests=lib/getpagesize.c
   tests=lib/getugroups.c
@@ -900,6 +934,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/priv-set.h
   tests=lib/progname.c
   tests=lib/progname.h
+  tests=lib/realloc.c
   tests=lib/setsockopt.c
   tests=lib/sys_ioctl.in.h
   tests=lib/uinttostr.c

@@ -1,5 +1,5 @@
 /* Test changing to a directory named by a file descriptor.
-   Copyright (C) 2009 Free Software Foundation, Inc.
+   Copyright (C) 2009, 2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -20,23 +20,16 @@
 
 #include <unistd.h>
 
+#include "signature.h"
+SIGNATURE_CHECK (fchdir, int, (int));
+
 #include <errno.h>
 #include <fcntl.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define ASSERT(expr) \
-  do									     \
-    {									     \
-      if (!(expr))							     \
-        {								     \
-          fprintf (stderr, "%s:%d: assertion failed\n", __FILE__, __LINE__); \
-          fflush (stderr);						     \
-          abort ();							     \
-        }								     \
-    }									     \
-  while (0)
+#include "cloexec.h"
+#include "macros.h"
 
 int
 main (void)
@@ -67,23 +60,36 @@ main (void)
       ASSERT (chdir (".." + 1 - i) == 0);
       ASSERT (fchdir (fd) == 0);
       {
-	size_t len = strlen (cwd) + 1;
-	char *new_dir = malloc (len);
-	ASSERT (new_dir);
-	ASSERT (getcwd (new_dir, len) == new_dir);
-	ASSERT (strcmp (cwd, new_dir) == 0);
-	free (new_dir);
+        size_t len = strlen (cwd) + 1;
+        char *new_dir = malloc (len);
+        ASSERT (new_dir);
+        ASSERT (getcwd (new_dir, len) == new_dir);
+        ASSERT (strcmp (cwd, new_dir) == 0);
+        free (new_dir);
       }
 
       /* For second iteration, use a cloned fd, to ensure that dup
-	 remembers whether an fd was associated with a directory.  */
+         remembers whether an fd was associated with a directory.  */
       if (!i)
-	{
-	  int new_fd = dup (fd);
-	  ASSERT (0 <= new_fd);
-	  ASSERT (close (fd) == 0);
-	  fd = new_fd;
-	}
+        {
+          int new_fd = dup (fd);
+          ASSERT (0 <= new_fd);
+          ASSERT (close (fd) == 0);
+          ASSERT (dup2 (new_fd, fd) == fd);
+          ASSERT (close (new_fd) == 0);
+          ASSERT (dup_cloexec (fd) == new_fd);
+          ASSERT (dup2 (new_fd, fd) == fd);
+          ASSERT (close (new_fd) == 0);
+          ASSERT (fcntl (fd, F_DUPFD_CLOEXEC, new_fd) == new_fd);
+          ASSERT (close (fd) == 0);
+          ASSERT (fcntl (new_fd, F_DUPFD, fd) == fd);
+          ASSERT (close (new_fd) == 0);
+#if GNULIB_DUP3
+          ASSERT (dup3 (fd, new_fd, 0) == new_fd);
+          ASSERT (dup3 (new_fd, fd, 0) == fd);
+          ASSERT (close (new_fd) == 0);
+#endif
+        }
     }
 
   free (cwd);

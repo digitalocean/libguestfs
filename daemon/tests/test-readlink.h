@@ -1,5 +1,5 @@
 /* Tests of readlink.
-   Copyright (C) 2009 Free Software Foundation, Inc.
+   Copyright (C) 2009, 2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -94,13 +94,13 @@ test_readlink (ssize_t (*func) (char const *, char *, size_t), bool print)
     result = readlink (BASE "link", buf, 1);
     if (result == -1)
       {
-	ASSERT (errno == ERANGE);
-	ASSERT (buf[0] == (char) 0xff);
+        ASSERT (errno == ERANGE);
+        ASSERT (buf[0] == (char) 0xff);
       }
     else
       {
-	ASSERT (result == 1);
-	ASSERT (buf[0] == BASE[0]);
+        ASSERT (result == 1);
+        ASSERT (buf[0] == BASE[0]);
       }
     ASSERT (buf[1] == (char) 0xff);
     ASSERT (func (BASE "link", buf, len) == len);

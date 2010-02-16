@@ -1,6 +1,6 @@
 /* mgetgroups.c -- return a list of the groups a user or current process is in
 
-   Copyright (C) 2007-2009 Free Software Foundation, Inc.
+   Copyright (C) 2007-2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -53,7 +53,8 @@ realloc_groupbuf (gid_t *g, size_t num)
    NULL, store the supplementary groups of the current process, and GID
    should be -1 or the effective group ID (getegid).  Upon failure,
    don't modify *GROUPS, set errno, and return -1.  Otherwise, return
-   the number of groups.  */
+   the number of groups.  The resulting list may contain duplicates,
+   but adjacent members will be distinct.  */
 
 int
 mgetgroups (char const *username, gid_t gid, gid_t **groups)
@@ -116,34 +117,90 @@ mgetgroups (char const *username, gid_t gid, gid_t **groups)
 
   max_n_groups = (username
                   ? getugroups (0, NULL, username, gid)
-                  : getgroups (0, NULL) + (gid != -1));
+                  : getgroups (0, NULL));
 
-  /* If we failed to count groups with NULL for a buffer,
-     try again with a non-NULL one, just in case.  */
+  /* If we failed to count groups because there is no supplemental
+     group support, then return an array containing just GID.
+     Otherwise, we fail for the same reason.  */
   if (max_n_groups < 0)
-      max_n_groups = 5;
+    {
+      if (errno == ENOSYS && (g = realloc_groupbuf (NULL, 1)))
+        {
+          *groups = g;
+          *g = gid;
+          return gid != (gid_t) -1;
+        }
+      return -1;
+    }
 
+  if (!username && gid != (gid_t) -1)
+    max_n_groups++;
   g = realloc_groupbuf (NULL, max_n_groups);
   if (g == NULL)
     return -1;
 
   ng = (username
         ? getugroups (max_n_groups, g, username, gid)
-        : getgroups (max_n_groups, g + (gid != -1)));
+        : getgroups (max_n_groups - (gid != (gid_t) -1),
+                                g + (gid != (gid_t) -1)));
 
   if (ng < 0)
     {
+      /* Failure is unexpected, but handle it anyway.  */
       int saved_errno = errno;
       free (g);
       errno = saved_errno;
       return -1;
     }
 
-  if (!username && gid != -1)
+  if (!username && gid != (gid_t) -1)
     {
       *g = gid;
       ng++;
     }
   *groups = g;
+
+  /* Reduce the number of duplicates.  On some systems, getgroups
+     returns the effective gid twice: once as the first element, and
+     once in its position within the supplementary groups.  On other
+     systems, getgroups does not return the effective gid at all,
+     which is why we provide a GID argument.  Meanwhile, the GID
+     argument, if provided, is typically any member of the
+     supplementary groups, and not necessarily the effective gid.  So,
+     the most likely duplicates are the first element with an
+     arbitrary other element, or pair-wise duplication between the
+     first and second elements returned by getgroups.  It is possible
+     that this O(n) pass will not remove all duplicates, but it is not
+     worth the effort to slow down to an O(n log n) algorithm that
+     sorts the array in place, nor the extra memory needed for
+     duplicate removal via an O(n) hash-table.  Hence, this function
+     is only documented as guaranteeing no pair-wise duplicates,
+     rather than returning the minimal set.  */
+  if (1 < ng)
+    {
+      gid_t first = *g;
+      gid_t *next;
+      gid_t *groups_end = g + ng;
+
+      for (next = g + 1; next < groups_end; next++)
+        {
+          if (*next == first || *next == *g)
+            ng--;
+          else
+            *++g = *next;
+        }
+    }
+
   return ng;
+}
+
+/* Like mgetgroups, but call xalloc_die on allocation failure.  */
+
+int
+xgetgroups (char const *username, gid_t gid, gid_t **groups)
+{
+  int result = mgetgroups (username, gid, groups);
+  if (result == -1 && errno == ENOMEM)
+    xalloc_die ();
+  return result;
 }

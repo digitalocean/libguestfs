@@ -69,19 +69,11 @@ enum hive_type {
 
 typedef enum hive_type hive_type;
 
+/* Bitmask of flags passed to hivex_open. */
 #define HIVEX_OPEN_VERBOSE      1
 #define HIVEX_OPEN_DEBUG        2
-#define HIVEX_OPEN_MSGLVL_MASK  3
-
-#define STREQ(a,b) (strcmp((a),(b)) == 0)
-#define STRCASEEQ(a,b) (strcasecmp((a),(b)) == 0)
-#define STRNEQ(a,b) (strcmp((a),(b)) != 0)
-#define STRCASENEQ(a,b) (strcasecmp((a),(b)) != 0)
-#define STREQLEN(a,b,n) (strncmp((a),(b),(n)) == 0)
-#define STRCASEEQLEN(a,b,n) (strncasecmp((a),(b),(n)) == 0)
-#define STRNEQLEN(a,b,n) (strncmp((a),(b),(n)) != 0)
-#define STRCASENEQLEN(a,b,n) (strncasecmp((a),(b),(n)) != 0)
-#define STRPREFIX(a,b) (strncmp((a),(b),strlen((b))) == 0)
+#define HIVEX_OPEN_MSGLVL_MASK  (HIVEX_OPEN_VERBOSE|HIVEX_OPEN_DEBUG)
+#define HIVEX_OPEN_WRITE        4
 
 extern hive_h *hivex_open (const char *filename, int flags);
 extern int hivex_close (hive_h *h);
@@ -110,12 +102,27 @@ struct hivex_visitor {
   int (*value_binary) (hive_h *, void *opaque, hive_node_h, hive_value_h, hive_type t, size_t len, const char *key, const char *value);
   int (*value_none) (hive_h *, void *opaque, hive_node_h, hive_value_h, hive_type t, size_t len, const char *key, const char *value);
   int (*value_other) (hive_h *, void *opaque, hive_node_h, hive_value_h, hive_type t, size_t len, const char *key, const char *value);
+  int (*value_any) (hive_h *, void *opaque, hive_node_h, hive_value_h, hive_type t, size_t len, const char *key, const char *value);
 };
 
 #define HIVEX_VISIT_SKIP_BAD 1
 
 extern int hivex_visit (hive_h *h, const struct hivex_visitor *visitor, size_t len, void *opaque, int flags);
 extern int hivex_visit_node (hive_h *h, hive_node_h node, const struct hivex_visitor *visitor, size_t len, void *opaque, int flags);
+
+extern int hivex_commit (hive_h *h, const char *filename, int flags);
+extern hive_node_h hivex_node_add_child (hive_h *h, hive_node_h parent, const char *name);
+extern int hivex_node_delete_child (hive_h *h, hive_node_h node);
+
+struct hive_set_value {
+  char *key;
+  hive_type t;
+  size_t len;
+  char *value;
+};
+typedef struct hive_set_value hive_set_value;
+
+extern int hivex_node_set_values (hive_h *h, hive_node_h node, size_t nr_values, const hive_set_value *values, int flags);
 
 #ifdef __cplusplus
 }

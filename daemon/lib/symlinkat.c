@@ -1,5 +1,5 @@
 /* Create a symlink relative to an open directory.
-   Copyright (C) 2009 Free Software Foundation, Inc.
+   Copyright (C) 2009-2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -27,8 +27,8 @@
 # include <errno.h>
 
 int
-symlinkat (char const *path1 _UNUSED_PARAMETER_, int fd _UNUSED_PARAMETER_,
-	   char const *path2 _UNUSED_PARAMETER_)
+symlinkat (char const *path1 _GL_UNUSED, int fd _GL_UNUSED,
+           char const *path2 _GL_UNUSED)
 {
   errno = ENOSYS;
   return -1;

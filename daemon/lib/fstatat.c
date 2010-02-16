@@ -1,6 +1,6 @@
 /* Work around an fstatat bug on Solaris 9.
 
-   Copyright (C) 2006, 2009 Free Software Foundation, Inc.
+   Copyright (C) 2006, 2009-2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -48,12 +48,12 @@ rpl_fstatat (int fd, char const *file, struct stat *st, int flag)
     {
       /* Fix lstat behavior.  */
       if (file[len - 1] != '/' || S_ISDIR (st->st_mode))
-	return 0;
+        return 0;
       if (!S_ISLNK (st->st_mode))
-	{
-	  errno = ENOTDIR;
-	  return -1;
-	}
+        {
+          errno = ENOTDIR;
+          return -1;
+        }
       result = fstatat (fd, file, st, flag & ~AT_SYMLINK_NOFOLLOW);
     }
   /* Fix stat behavior.  */

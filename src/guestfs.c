@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009 Red Hat Inc.
+ * Copyright (C) 2009-2010 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -748,7 +748,8 @@ guestfs__config (guestfs_h *g,
 }
 
 int
-guestfs__add_drive (guestfs_h *g, const char *filename)
+guestfs__add_drive_with_if (guestfs_h *g, const char *filename,
+                            const char *drive_if)
 {
   size_t len = strlen (filename) + 64;
   char buf[len];
@@ -771,12 +772,12 @@ guestfs__add_drive (guestfs_h *g, const char *filename)
   int fd = open (filename, O_RDONLY|O_DIRECT);
   if (fd >= 0) {
     close (fd);
-    snprintf (buf, len, "file=%s,cache=off,if=" DRIVE_IF, filename);
+    snprintf (buf, len, "file=%s,cache=off,if=%s", filename, drive_if);
   } else {
     fd = open (filename, O_RDONLY);
     if (fd >= 0) {
       close (fd);
-      snprintf (buf, len, "file=%s,if=" DRIVE_IF, filename);
+      snprintf (buf, len, "file=%s,if=%s", filename, drive_if);
     } else {
       perrorf (g, "%s", filename);
       return -1;
@@ -787,7 +788,8 @@ guestfs__add_drive (guestfs_h *g, const char *filename)
 }
 
 int
-guestfs__add_drive_ro (guestfs_h *g, const char *filename)
+guestfs__add_drive_ro_with_if (guestfs_h *g, const char *filename,
+                               const char *drive_if)
 {
   size_t len = strlen (filename) + 64;
   char buf[len];
@@ -802,9 +804,21 @@ guestfs__add_drive_ro (guestfs_h *g, const char *filename)
     return -1;
   }
 
-  snprintf (buf, len, "file=%s,snapshot=on,if=%s", filename, DRIVE_IF);
+  snprintf (buf, len, "file=%s,snapshot=on,if=%s", filename, drive_if);
 
   return guestfs__config (g, "-drive", buf);
+}
+
+int
+guestfs__add_drive (guestfs_h *g, const char *filename)
+{
+  return guestfs__add_drive_with_if (g, filename, DRIVE_IF);
+}
+
+int
+guestfs__add_drive_ro (guestfs_h *g, const char *filename)
+{
+  return guestfs__add_drive_ro_with_if (g, filename, DRIVE_IF);
 }
 
 int
@@ -858,6 +872,7 @@ static void print_timestamped_message (guestfs_h *g, const char *fs, ...);
 static int build_supermin_appliance (guestfs_h *g, const char *path, char **kernel, char **initrd);
 static int test_qemu (guestfs_h *g);
 static int qemu_supports (guestfs_h *g, const char *option);
+static int is_openable (guestfs_h *g, const char *path, int flags);
 static void print_cmdline (guestfs_h *g);
 
 static const char *kernel_name = "vmlinuz." REPO "." host_cpu;
@@ -1091,14 +1106,43 @@ guestfs__launch (guestfs_h *g)
      */
     g->cmdline[0] = g->qemu;
 
+    /* qemu sometimes needs this option to enable hardware
+     * virtualization, but some versions of 'qemu-kvm' will use KVM
+     * regardless (even where this option appears in the help text).
+     * It is rumoured that there are versions of qemu where supplying
+     * this option when hardware virtualization is not available will
+     * cause qemu to fail, so we we have to check at least that
+     * /dev/kvm is openable.  That's not reliable, since /dev/kvm
+     * might be openable by qemu but not by us (think: SELinux) in
+     * which case the user would not get hardware virtualization,
+     * although at least shouldn't fail.  A giant clusterfuck with the
+     * qemu command line, again.
+     */
+    if (qemu_supports (g, "-enable-kvm") &&
+        is_openable (g, "/dev/kvm", O_RDWR))
+      add_cmdline (g, "-enable-kvm");
+
+    /* Newer versions of qemu (from around 2009/12) changed the
+     * behaviour of monitors so that an implicit '-monitor stdio' is
+     * assumed if we are in -nographic mode and there is no other
+     * -monitor option.  Only a single stdio device is allowed, so
+     * this broke the '-serial stdio' option.  There is a new flag
+     * called -nodefaults which gets rid of all this default crud, so
+     * let's use that to avoid this and any future surprises.
+     */
+    if (qemu_supports (g, "-nodefaults"))
+      add_cmdline (g, "-nodefaults");
+
+    add_cmdline (g, "-nographic");
+    add_cmdline (g, "-serial");
+    add_cmdline (g, "stdio");
+
     snprintf (buf, sizeof buf, "%d", g->memsize);
     add_cmdline (g, "-m");
     add_cmdline (g, buf);
 
-    add_cmdline (g, "-no-reboot"); /* Force exit instead of reboot on panic */
-    add_cmdline (g, "-nographic");
-    add_cmdline (g, "-serial");
-    add_cmdline (g, "stdio");
+    /* Force exit instead of reboot on panic */
+    add_cmdline (g, "-no-reboot");
 
     /* These options recommended by KVM developers to improve reliability. */
     if (qemu_supports (g, "-no-hpet"))
@@ -1493,9 +1537,11 @@ build_supermin_appliance (guestfs_h *g, const char *path,
 
   snprintf (cmd, sizeof cmd,
             "PATH='%s':$PATH "
-            "libguestfs-supermin-helper '%s' %s %s",
+            "libguestfs-supermin-helper '%s' " host_cpu " " REPO " %s %s",
             path,
             path, *kernel, *initrd);
+  if (g->verbose)
+    print_timestamped_message (g, "%s", cmd);
 
   r = system (cmd);
   if (r == -1 || WEXITSTATUS(r) != 0) {
@@ -1630,6 +1676,20 @@ static int
 qemu_supports (guestfs_h *g, const char *option)
 {
   return g->qemu_help && strstr (g->qemu_help, option) != NULL;
+}
+
+/* Check if a file can be opened. */
+static int
+is_openable (guestfs_h *g, const char *path, int flags)
+{
+  int fd = open (path, flags);
+  if (fd == -1) {
+    if (g->verbose)
+      perror (path);
+    return 0;
+  }
+  close (fd);
+  return 1;
 }
 
 /* Check the peer effective UID for a TCP socket.  Ideally we'd like

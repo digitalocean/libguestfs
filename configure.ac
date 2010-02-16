@@ -18,7 +18,7 @@
 # major/minor/release must be numbers
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [0])
-m4_define([libguestfs_release], [80])
+m4_define([libguestfs_release], [84])
 # extra can be any string
 m4_define([libguestfs_extra],   [])
 
@@ -115,6 +115,12 @@ AC_C_PROTOTYPES
 test "x$U" != "x" && AC_MSG_ERROR([Compiler not ANSI compliant])
 
 AM_PROG_CC_C_O
+
+dnl Work out how to specify the linker script to the linker.
+VERSION_SCRIPT_FLAGS=-Wl,--version-script=
+`/usr/bin/ld --help 2>&1 | grep -- --version-script >/dev/null` || \
+    VERSION_SCRIPT_FLAGS="-Wl,-M -Wl,"
+AC_SUBST(VERSION_SCRIPT_FLAGS)
 
 dnl Check support for 64 bit file offsets.
 AC_SYS_LARGEFILE
@@ -221,13 +227,13 @@ fi
 dnl Set drive interface used by the guestfs_add_drive{,_ro} calls
 dnl ('-drive ...,if=...' option to qemu).
 dnl
-dnl NB. We will change the default in future to virtio, but at the
-dnl moment this causes a performance problem, RHBZ#509383.
+dnl If you encounter performance problems with virtio (RHBZ#509383)
+dnl then try '--with-drive-if=ide'.
 AC_ARG_WITH([drive-if],
         [AS_HELP_STRING([--with-drive-if],
-          [set default driver (ide|scsi|virtio) @<:@default=ide@:>@])],
+          [set default driver (ide|scsi|virtio) @<:@default=virtio@:>@])],
         [],
-        [with_drive_if=ide])
+        [with_drive_if=virtio])
 AC_DEFINE_UNQUOTED([DRIVE_IF],["$with_drive_if"],[Default drive interface.])
 
 dnl Set interface used by the network.  Normally you should
@@ -433,8 +439,7 @@ AC_PROG_OCAML
 AC_PROG_FINDLIB
 AM_CONDITIONAL([HAVE_OCAML],[test "x$OCAMLC" != "xno" -a "x$OCAMLFIND" != "xno"])
 
-dnl Optional xml-light for building virt-inspector language bindings
-dnl from the virt-inspector.rng file.
+dnl Optional xml-light for running the generator.
 OCAML_PKG_xml_light=no
 if test "x$OCAMLC" != "xno" -a "x$OCAMLFIND" != "xno"; then
     AC_CHECK_OCAML_PKG([xml-light])
@@ -712,8 +717,6 @@ AC_CONFIG_FILES([appliance/supermin-split.sh],
                 [chmod +x appliance/supermin-split.sh])
 AC_CONFIG_FILES([appliance/supermin-make.sh],
                 [chmod +x appliance/supermin-make.sh])
-AC_CONFIG_FILES([appliance/libguestfs-supermin-helper],
-                [chmod +x appliance/libguestfs-supermin-helper])
 AC_CONFIG_FILES([Makefile
                  src/Makefile fish/Makefile po/Makefile.in examples/Makefile
                  appliance/Makefile
@@ -734,6 +737,8 @@ AC_CONFIG_FILES([Makefile
                  gnulib/lib/Makefile
                  gnulib/tests/Makefile
                  hivex/Makefile
+                 hivex/t/Makefile
+                 hivex/tools/Makefile
                  fuse/Makefile
                  ocaml/META perl/Makefile.PL])
 AC_OUTPUT
