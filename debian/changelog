@@ -1,3 +1,30 @@
+libguestfs (1.0.84-1) unstable; urgency=low
+
+  [ Guido Günther ]
+  * [1149b4a] add missing modules for vfat
+
+  [ Laurent Léonard ]
+  * [397dbf3] Imported Upstream version 1.0.80
+  * [ca95c7a] Drop patch 0001-add-nls_base.ko-and-nls_cp437.ko-for-
+    vfat.patch. Fixed upstream.
+  * [344c7e6] Add dependency on mkisofs.
+
+  [ Guido Günther ]
+  * [5aa8061] Add missing build-deps needed for ./configure
+  * [f8a682d] Imported Upstream version 1.0.84
+  * [e35175c] No need to manually install virt-inspector anymore
+  * [de6ddf1] Depend on python-all-dev since libguestfs handles python
+    2.6 too
+  * [a2be87e] don't use the host's MAC address
+  * [88b70ef] New patch 0001-Disable-checks-for-now.patch Disable checks for
+    now
+  * [2b59394] New patch 0002-Run-debirf-as-root.patch Run debirf as root
+  * [e798002] New patch 0003-Hardcode-kernel-version.patch Hardcode kernel
+    version
+  * [602fab3] reenable patch system
+
+ -- Guido Günther <agx@sigxcpu.org>  Sat, 20 Feb 2010 14:11:50 +0100
+
 libguestfs (1.0.61-1) unstable; urgency=low
 
   * [831bc5f] Imported Upstream version 1.0.61
