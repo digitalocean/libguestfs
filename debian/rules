@@ -9,6 +9,7 @@ REPO=sid
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 include /usr/share/cdbs/1/class/python-distutils.mk
+include /usr/share/cdbs/1/rules/patchsys-quilt.mk
 
 DEBIAN_SKIP_TEST := \
 	SKIP_TEST_HEXDUMP_0 \
