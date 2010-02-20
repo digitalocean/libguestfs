@@ -1,2 +1,3 @@
 0001-Run-debirf-as-root.patch
 0002-Hardcode-kernel-version.patch
+0003-scrub-now-available-on-Debian.patch
