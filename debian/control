@@ -4,7 +4,10 @@ Priority: extra
 Maintainer: Debian Libvirt Maintainers <pkg-libvirt-maintainers@lists.alioth.debian.org>
 Uploaders: Richard Jones <rjones@redhat.com>, Guido Günther <agx@sigxcpu.org>
 Build-Depends: debhelper (>= 7), autotools-dev,
-  debirf, libreadline-dev, squashfs-tools, cdbs, libaugeas-dev, qemu, mkisofs,
+  debirf, libreadline-dev, squashfs-tools, cdbs, libaugeas-dev,
+# QEMU
+  qemu, bochsbios, vgabios,
+  mkisofs,
   libxml2-dev, pkg-config, quilt,
 # when building from git:
   automake, autoconf, libtool, ocaml,
@@ -21,7 +24,8 @@ Package: guestfish
 Section: devel
 Architecture: any
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
- libsys-virt-perl, libxml-writer-perl
+ libsys-virt-perl, libxml-writer-perl,
+ qemu-system | kvm, bochsbios, vgabios
 Description: libguestfs filesystem interactive shell
  Guestfish is a shell and command-line tool for examining and modifying
  virtual machine filesystems.  It uses libguestfs and exposes all of the
