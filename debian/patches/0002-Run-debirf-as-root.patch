@@ -1,0 +1,23 @@
+From: =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
+Date: Sat, 20 Feb 2010 14:07:41 +0100
+Subject: [PATCH] Run debirf as root
+
+to work around #561991
+---
+ appliance/make.sh.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/appliance/make.sh.in b/appliance/make.sh.in
+index 515df34..84afee4 100755
+--- a/appliance/make.sh.in
++++ b/appliance/make.sh.in
+@@ -165,7 +165,7 @@ __EOF__
+ 
+ elif [ "@DIST@" = "DEBIAN" ]; then
+   cd @top_builddir@/appliance
+-  debirf make -n debian
++  debirf make -r -w -n debian
+   mkdir -p @top_builddir@/initramfs
+   touch @top_builddir@/initramfs/fakeroot.log
+ fi
+-- 
