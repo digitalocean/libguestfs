@@ -1,2 +1,3 @@
 0001-Disable-checks-for-now.patch
 0002-Run-debirf-as-root.patch
+0003-Hardcode-kernel-version.patch
