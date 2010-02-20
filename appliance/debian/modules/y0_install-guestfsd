@@ -30,3 +30,6 @@ rm -rf "$DEBIRF_ROOT"/usr/share/man/
 echo $PWD
 install -o root -g root -m 0755 ../daemon/guestfsd "$DEBIRF_ROOT"/sbin/guestfsd
 install -o root -g root -m 0755 init "$DEBIRF_ROOT"/sbin/init
+
+# don't use the host's MAC address
+rm -rf "$DEBIRF_ROOT"/etc/udev/rules.d/*-persistent-net.rules
