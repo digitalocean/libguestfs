@@ -9,7 +9,7 @@ Build-Depends: debhelper (>= 7), autotools-dev,
 # when building from git:
   automake, autoconf, libtool, ocaml,
 # for python bindings:
-  python-dev, python-support,
+  python-all-dev, python-support,
 # for the perl bindings:
   libtest-pod-coverage-perl, libextutils-command-perl, libintl-perl, libtest-pod-perl,
 # for virt-inspector:
