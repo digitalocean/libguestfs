@@ -46,9 +46,6 @@ install/python-guestfs::
 		mv $${mod} $$(dirname $${mod})/libguestfsmod.so; \
 	done
 
-install/guestfish::
-	install -m 755 inspector/virt-inspector.pl debian/tmp/usr/bin/virt-inspector
-
 clean::
 	rm -rf appliance/debian/root \
 	       appliance/debian/nest \
