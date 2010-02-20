@@ -2,9 +2,16 @@
 
 DEB_PYTHON_SYSTEM=pysupport
 DEB_DH_INSTALL_SOURCEDIR = debian/tmp
+DEB_VENDOR=$(shell dpkg-vendor --query vendor)
 
-MIRROR=http://apt:9999/debian
-REPO=sid
+ifeq (Debian,$(DEB_VENDOR))
+  MIRROR=http://ftp.debian.org/debian
+  REPO=sid
+else
+ifeq(Ubuntu,$(DEB_VENDOR)
+   MIRROR=http://gb.archive.ubuntu.com/ubuntu/
+   REPO=karmic
+endif
 
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
