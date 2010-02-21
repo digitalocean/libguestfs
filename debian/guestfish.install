@@ -2,5 +2,6 @@ usr/bin/guestfish
 usr/bin/virt-inspector
 usr/bin/virt-df
 usr/bin/virt-cat
+usr/bin/hivex*
 usr/share/man/man1/*
 
