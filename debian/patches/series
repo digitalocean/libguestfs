@@ -1,3 +1,4 @@
 0001-Run-debirf-as-root.patch
 0002-scrub-now-available-on-Debian.patch
 0003-Adjust-error-output-for-regressions-rhbz557655.patch
+0004-Disable-fuser-tests-if-dev-fuse-doesn-t-exist.patch
