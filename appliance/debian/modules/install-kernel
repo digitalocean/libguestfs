@@ -13,7 +13,7 @@
 # The debirf scripts were written by
 # Jameson Rollins <jrollins@fifthhorseman.net>
 # and
-# Daniel Kahn Gillmor <dkg-debian.org@fifthhorseman.net>.
+# Daniel Kahn Gillmor <dkg@fifthhorseman.net>.
 #
 # They are Copyright 2007, and are all released under the GPL,
 # version 3 or later.
@@ -28,22 +28,23 @@ if [ -z "$DEBIRF_KERNEL_PACKAGE" ] ; then
     # determine kernel arch.  need everything after the kernel version
     # and debian version
     if [ -z "$DEBIRF_KERNEL_ARCH" ]; then
-	KARCH=$(uname -r | cut -d- -f3-)
+       KARCH=$(uname -r | cut -d- -f3-)
     else
-	KARCH="$DEBIRF_KERNEL_ARCH"
+       KARCH="$DEBIRF_KERNEL_ARCH"
     fi
 
     # determine the full kernel version from the dependency of the
     # generic 2.6-ARCH package in the debirf root (since it may be
     # different than what is installed on the build host)
-    KNAME=$(debirf_exec apt-cache show linux-image-2.6-"$KARCH" | grep '^Depends: ' | sed 's/^Depends: //')
+    KNAME=$(debirf_exec apt-cache show linux-image-"$KARCH" | grep '^Depends: ' | sed 's/^Depends: //' | tr ',' '\n' | tr -d ' ' | grep ^linux-image | sort -r | head -n1)
 
     # download only the desired kernel package directly into the apt
     # cache for dpkg extraction
     debirf_exec sh -c "cd /var/cache/apt/archives/ && aptitude download \"$KNAME\""
+
 else
     # install kernel deb if given at command line
-    debirf_exec sh -c "cd /var/cache/apt/archives/ && aptitude download \"$DEBIRF_KERNEL_PACKAGE\""
+    cp "$DEBIRF_KERNEL_PACKAGE" "$DEBIRF_ROOT"/var/cache/apt/archives/
 fi
 
 KPKG=$(basename "$DEBIRF_ROOT"/var/cache/apt/archives/linux-image-2.6.*)
