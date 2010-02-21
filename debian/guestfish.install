@@ -1,4 +1,5 @@
 usr/bin/guestfish
+usr/bin/guestmount
 usr/bin/virt-inspector
 usr/bin/virt-df
 usr/bin/virt-cat
