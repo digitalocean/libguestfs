@@ -1,3 +1,19 @@
+libguestfs (1.0.84-2) unstable; urgency=low
+
+  * [0195df4] Add vendor detection for Ubuntu
+  * [2fa535e] {Build-,}Depend on bochsbios and vgabios These are only
+    recommends but needed to run qemu during the tests.
+  * [ee483bf] Reenable tests
+  * [67fd975] New patch 0003-scrub-now-available-on-Debian.patch scrub now
+    available on Debian
+  * [2e9c89d] New patch 0004-Adjust-error-output-for-regressions-
+    rhbz557655.patch Adjust error output for regressions/rhbz557655
+  * [c5d5f9e] Adjust install-kernel to new debirf version
+  * [9c1fbdf] Drop Hardcode-kernel-version.patch - superflous due to previous
+    commit.
+
+ -- Guido Günther <agx@sigxcpu.org>  Sun, 21 Feb 2010 13:24:01 +0100
+
 libguestfs (1.0.84-1) unstable; urgency=low
 
   [ Guido Günther ]
