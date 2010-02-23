@@ -2,3 +2,4 @@
 0002-scrub-now-available-on-Debian.patch
 0003-Adjust-error-output-for-regressions-rhbz557655.patch
 0004-Disable-fuser-tests-if-dev-fuse-doesn-t-exist.patch
+0005-Check-for-service-and-use-it-if-it-s-there.patch
