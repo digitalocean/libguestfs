@@ -3,7 +3,7 @@ Section: libs
 Priority: extra
 Maintainer: Debian Libvirt Maintainers <pkg-libvirt-maintainers@lists.alioth.debian.org>
 Uploaders: Richard Jones <rjones@redhat.com>, Guido Günther <agx@sigxcpu.org>
-Build-Depends: debhelper (>= 7), autotools-dev,
+Build-Depends: debhelper (>= 7), autotools-dev, aptitude,
   debirf, libreadline-dev, squashfs-tools, cdbs, libaugeas-dev,
 # QEMU
   qemu, bochsbios, vgabios,
