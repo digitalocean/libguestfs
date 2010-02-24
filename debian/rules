@@ -55,5 +55,5 @@ clean::
 	       appliance/debian/*.cgz \
 	       appliance/*.bak
 	rm -rf perl/blib/ perl/*.o
-	rm -f src/.pod2text.data po/*.gmo
+	rm -f src/.pod2text.data
 	rm -f debian/check-stamp
