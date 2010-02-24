@@ -1,0 +1,44 @@
+From: =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
+Date: Tue, 23 Feb 2010 19:50:40 +0100
+Subject: [PATCH] Check for grub/menu.lst if /etc/grub.conf can't be found
+
+---
+ perl/lib/Sys/Guestfs/Lib.pm |   10 ++++++++--
+ 1 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/perl/lib/Sys/Guestfs/Lib.pm b/perl/lib/Sys/Guestfs/Lib.pm
+index e17728d..2864bfa 100644
+--- a/perl/lib/Sys/Guestfs/Lib.pm
++++ b/perl/lib/Sys/Guestfs/Lib.pm
+@@ -1525,6 +1525,12 @@ sub _check_for_kernels
+         # For every kernel we find, inspect it and add to $os->{kernels}
+ 
+         my $grub = _find_grub_prefix($g, $os);
++        my $grub_conf = "/etc/grub.conf";
++
++        # Debian and other's have no /etc/grub.conf:
++        if ( ! -f "$grub_conf" ) {
++            $grub_conf = "$grub/grub/menu.lst";
++        }
+ 
+         my @boot_configs;
+ 
+@@ -1544,7 +1550,7 @@ sub _check_for_kernels
+         my @configs = ();
+         # Get all configurations from grub
+         foreach my $bootable
+-            ($g->aug_match("/files/etc/grub.conf/title"))
++            ($g->aug_match("/files/$grub_conf/title"))
+         {
+             my %config = ();
+             $config{title} = $g->aug_get($bootable);
+@@ -1617,7 +1623,7 @@ sub _check_for_kernels
+ 
+         # Add the default configuration
+         eval {
+-            $boot{default} = $g->aug_get("/files/etc/grub.conf/default");
++            $boot{default} = $g->aug_get("/files/$grub_conf/default");
+         };
+         if($@) {
+             warn __"No grub default specified";
+-- 
