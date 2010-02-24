@@ -1,3 +1,19 @@
+libguestfs (1.0.84-4) unstable; urgency=low
+
+  * [2c44147] Build-depend on aptitude since Ubuntu needs it.
+  * [d50fd25] New patch 0005-Check-for-service-and-use-it-if-it-s- there.patch
+    Check for service and use it if it's there
+  * [40dc6b0] New patch 0006-Check-for-grub-menu.lst-if-etc-grub.conf-
+    can-t-be-fo.patch Check for grub/menu.lst if /etc/grub.conf can't be found
+  * [465def2] New patch 0007-Debina-package-format-is-called-deb-not-
+    dpkg.patch Debina package format is called 'deb' not 'dpkg'
+  * [1b7efb4] New patch 0008-Add-application-listing-for-Debian.patch Add
+    application listing for Debian
+  * [5dd34c9] Add series file
+  * [647fd84] Don't remove gmo files (Closes: #571117)
+
+ -- Guido Günther <agx@sigxcpu.org>  Wed, 24 Feb 2010 18:22:58 +0100
+
 libguestfs (1.0.84-3) unstable; urgency=low
 
   * [307bd4e] Add hivex commands.
