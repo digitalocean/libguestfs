@@ -8,9 +8,10 @@ ifeq (Debian,$(DEB_VENDOR))
   MIRROR=http://ftp.debian.org/debian
   REPO=sid
 else
-ifeq(Ubuntu,$(DEB_VENDOR)
+ifeq (Ubuntu,$(DEB_VENDOR))
    MIRROR=http://gb.archive.ubuntu.com/ubuntu/
    REPO=karmic
+endif
 endif
 
 include /usr/share/cdbs/1/rules/debhelper.mk
