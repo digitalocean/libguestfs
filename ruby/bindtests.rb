@@ -1,9 +1,9 @@
 # libguestfs generated file
 # WARNING: THIS FILE IS GENERATED FROM:
-#   src/generator.ml
+#   generator/generator_*.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2010 Red Hat Inc.
+# Copyright (C) 2009-2011 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,17 +22,17 @@
 require 'guestfs'
 
 g = Guestfs::create()
-g.test0("abc", "def", [], false, 0, 0, "123", "456")
-g.test0("abc", nil, [], false, 0, 0, "123", "456")
-g.test0("", "def", [], false, 0, 0, "123", "456")
-g.test0("", "", [], false, 0, 0, "123", "456")
-g.test0("abc", "def", ["1"], false, 0, 0, "123", "456")
-g.test0("abc", "def", ["1","2"], false, 0, 0, "123", "456")
-g.test0("abc", "def", ["1"], true, 0, 0, "123", "456")
-g.test0("abc", "def", ["1"], false, -1, -1, "123", "456")
-g.test0("abc", "def", ["1"], false, -2, -2, "123", "456")
-g.test0("abc", "def", ["1"], false, 1, 1, "123", "456")
-g.test0("abc", "def", ["1"], false, 2, 2, "123", "456")
-g.test0("abc", "def", ["1"], false, 4095, 4095, "123", "456")
-g.test0("abc", "def", ["1"], false, 0, 0, "", "")
+g.test0("abc", "def", [], false, 0, 0, "123", "456", "abc\0abc")
+g.test0("abc", nil, [], false, 0, 0, "123", "456", "abc\0abc")
+g.test0("", "def", [], false, 0, 0, "123", "456", "abc\0abc")
+g.test0("", "", [], false, 0, 0, "123", "456", "abc\0abc")
+g.test0("abc", "def", ["1"], false, 0, 0, "123", "456", "abc\0abc")
+g.test0("abc", "def", ["1","2"], false, 0, 0, "123", "456", "abc\0abc")
+g.test0("abc", "def", ["1"], true, 0, 0, "123", "456", "abc\0abc")
+g.test0("abc", "def", ["1"], false, -1, -1, "123", "456", "abc\0abc")
+g.test0("abc", "def", ["1"], false, -2, -2, "123", "456", "abc\0abc")
+g.test0("abc", "def", ["1"], false, 1, 1, "123", "456", "abc\0abc")
+g.test0("abc", "def", ["1"], false, 2, 2, "123", "456", "abc\0abc")
+g.test0("abc", "def", ["1"], false, 4095, 4095, "123", "456", "abc\0abc")
+g.test0("abc", "def", ["1"], false, 0, 0, "", "", "abc\0abc")
 print "EOF\n"

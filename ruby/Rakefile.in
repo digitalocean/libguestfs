@@ -38,7 +38,7 @@ CLOBBER.include [ "@builddir@/config.save", "@builddir@/ext/**/mkmf.log",
 # Build locally
 
 file MAKEFILE => EXT_CONF do |t|
-     unless sh "top_srcdir=$(pwd)/@top_srcdir@; top_builddir=$(pwd)/@top_builddir@; cd #{File::dirname(EXT_CONF)}; ruby #{File::basename(EXT_CONF)} --with-_guestfs-include=$top_srcdir/src --with-_guestfs-lib=$top_builddir/src/.libs"
+     unless sh "top_srcdir=$(pwd)/@top_srcdir@; top_builddir=$(pwd)/@top_builddir@; export ARCHFLAGS=\"-arch $(uname -m)\"; cd #{File::dirname(EXT_CONF)}; ruby #{File::basename(EXT_CONF)} --with-_guestfs-include=$top_srcdir/src --with-_guestfs-lib=$top_builddir/src/.libs"
          $stderr.puts "Failed to run extconf"
          break
      end
@@ -60,10 +60,23 @@ Rake::TestTask.new(:test) do |t|
 end
 task :test => :build
 
+RDOC_FILES = FileList[
+    "README.rdoc",
+    "lib/**/*.rb",
+    "ext/**/*.[ch]"
+]
+
 Rake::RDocTask.new do |rd|
     rd.main = "README.rdoc"
     rd.rdoc_dir = "doc/site/api"
-    rd.rdoc_files.include("README.rdoc", "lib/**/*.rb", "ext/**/*.[ch]")
+    rd.rdoc_files.include(RDOC_FILES)
+end
+
+Rake::RDocTask.new(:ri) do |rd|
+    rd.main = "README.rdoc"
+    rd.rdoc_dir = "doc/ri"
+    rd.options << "--ri-system"
+    rd.rdoc_files.include(RDOC_FILES)
 end
 
 # Package tasks

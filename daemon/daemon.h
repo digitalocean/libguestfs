@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,21 +21,26 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdint.h>
 #include <errno.h>
 #include <unistd.h>
 
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 
-#include "../src/guestfs_protocol.h"
+#include "guestfs_protocol.h"
 
 /*-- in guestfsd.c --*/
 extern int verbose;
 
+extern int autosync_umount;
+
 extern const char *sysroot;
-extern int sysroot_len;
+extern size_t sysroot_len;
 
 extern char *sysroot_path (const char *path);
+
+extern int is_root_device (const char *device);
 
 extern int xwrite (int sock, const void *buf, size_t len)
   __attribute__((__warn_unused_result__));
@@ -43,17 +48,21 @@ extern int xread (int sock, void *buf, size_t len)
   __attribute__((__warn_unused_result__));
 
 extern int add_string (char ***argv, int *size, int *alloc, const char *str);
-extern int count_strings (char *const *argv);
+extern size_t count_strings (char *const *argv);
 extern void sort_strings (char **argv, int len);
 extern void free_strings (char **argv);
 extern void free_stringslen (char **argv, int len);
+
+extern int is_power_of_2 (unsigned long v);
 
 #define command(out,err,name,...) commandf((out),(err),0,(name),__VA_ARGS__)
 #define commandr(out,err,name,...) commandrf((out),(err),0,(name),__VA_ARGS__)
 #define commandv(out,err,argv) commandvf((out),(err),0,(argv))
 #define commandrv(out,err,argv) commandrvf((out),(err),0,(argv))
 
-#define COMMAND_FLAG_FOLD_STDOUT_ON_STDERR 1
+#define COMMAND_FLAG_FD_MASK                   (1024-1)
+#define COMMAND_FLAG_FOLD_STDOUT_ON_STDERR     1024
+#define COMMAND_FLAG_CHROOT_COPY_FILE_TO_STDIN 2048
 
 extern int commandf (char **stdoutput, char **stderror, int flags,
                      const char *name, ...);
@@ -66,12 +75,16 @@ extern int commandrvf (char **stdoutput, char **stderror, int flags,
 
 extern char **split_lines (char *str);
 
-extern int device_name_translation (char *device, const char *func);
+extern void trim (char *str);
+
+extern int device_name_translation (char *device);
+
+extern int prog_exists (const char *prog);
 
 extern void udev_settle (void);
 
-/* This just stops gcc from giving a warning about our custom
- * printf formatters %Q and %R.  See HACKING file for more
+/* This just stops gcc from giving a warning about our custom printf
+ * formatters %Q and %R.  See guestfs(3)/EXTENDING LIBGUESTFS for more
  * info about these.
  */
 static inline int
@@ -92,9 +105,11 @@ extern const char *function_names[];
 /*-- in proto.c --*/
 extern int proc_nr;
 extern int serial;
+extern uint64_t progress_hint;
+extern uint64_t optargs_bitmask;
 
 /*-- in mount.c --*/
-extern int root_mounted;
+extern int is_root_mounted (void);
 
 /*-- in stubs.c (auto-generated) --*/
 extern void dispatch_incoming_message (XDR *);
@@ -113,6 +128,12 @@ extern struct optgroup optgroups[];
 /* Use this as a replacement for sync(2). */
 extern int sync_disks (void);
 
+/*-- in ext2.c --*/
+extern int e2prog (char *name); /* Massive hack for RHEL 5. */
+
+/*-- in lvm.c --*/
+extern int lv_canonical (const char *device, char **ret);
+
 /*-- in proto.c --*/
 extern void main_loop (int sock) __attribute__((noreturn));
 
@@ -129,14 +150,13 @@ extern void reply_with_perror_errno (int err, const char *fs, ...)
 /* daemon functions that receive files (FileIn) should call
  * receive_file for each FileIn parameter.
  */
-typedef int (*receive_cb) (void *opaque, const void *buf, int len);
+typedef int (*receive_cb) (void *opaque, const void *buf, size_t len);
 extern int receive_file (receive_cb cb, void *opaque);
 
 /* daemon functions that receive files (FileIn) can call this
- * to cancel incoming transfers (eg. if there is a local error),
- * but they MUST then call reply_with_*.
+ * to cancel incoming transfers (eg. if there is a local error).
  */
-extern void cancel_receive (void);
+extern int cancel_receive (void);
 
 /* daemon functions that return files (FileOut) should call
  * reply, then send_file_* for each FileOut parameter.
@@ -148,12 +168,36 @@ extern int send_file_end (int cancel);
 /* only call this if there is a FileOut parameter */
 extern void reply (xdrproc_t xdrp, char *ret);
 
+/* Notify progress to caller.  This function is self-rate-limiting so
+ * you can call it as often as necessary.  Actions which call this
+ * should add 'Progress' note in generator.
+ */
+extern void notify_progress (uint64_t position, uint64_t total);
+
+/* Pulse mode progress messages.
+ *
+ * Call pulse_mode_start to start sending progress messages.
+ *
+ * Call pulse_mode_end along the ordinary exit path (ie. before a
+ * reply message is sent).
+ *
+ * Call pulse_mode_cancel along all error paths *before* any reply is
+ * sent.  pulse_mode_cancel does not modify errno, so it is safe to
+ * call it before reply_with_perror.
+ *
+ * Pulse mode and ordinary notify_progress must not be mixed.
+ */
+extern void pulse_mode_start (void);
+extern void pulse_mode_end (void);
+extern void pulse_mode_cancel (void);
+
 /* Helper for functions that need a root filesystem mounted.
  * NB. Cannot be used for FileIn functions.
  */
-#define NEED_ROOT(fail_stmt)						\
+#define NEED_ROOT(cancel_stmt,fail_stmt)                                \
   do {									\
-    if (!root_mounted) {						\
+    if (!is_root_mounted ()) {						\
+      cancel_stmt;                                                      \
       reply_with_error ("%s: you must call 'mount' first to mount the root filesystem", __func__); \
       fail_stmt;							\
     }									\
@@ -163,9 +207,10 @@ extern void reply (xdrproc_t xdrp, char *ret);
 /* Helper for functions that need an argument ("path") that is absolute.
  * NB. Cannot be used for FileIn functions.
  */
-#define ABS_PATH(path,fail_stmt)					\
+#define ABS_PATH(path,cancel_stmt,fail_stmt)                            \
   do {									\
     if ((path)[0] != '/') {						\
+      cancel_stmt;                                                      \
       reply_with_error ("%s: path must start with a / character", __func__); \
       fail_stmt;							\
     }									\
@@ -178,14 +223,22 @@ extern void reply (xdrproc_t xdrp, char *ret);
  *
  * NB. Cannot be used for FileIn functions.
  */
-#define RESOLVE_DEVICE(path,fail_stmt)					\
+#define RESOLVE_DEVICE(path,cancel_stmt,fail_stmt)                      \
   do {									\
     if (STRNEQLEN ((path), "/dev/", 5)) {				\
+      cancel_stmt;                                                      \
       reply_with_error ("%s: %s: expecting a device name", __func__, (path)); \
       fail_stmt;							\
     }									\
-    if (device_name_translation ((path), __func__) == -1)		\
+    if (is_root_device (path))                                          \
+      reply_with_error ("%s: %s: device not found", __func__, path);    \
+    if (device_name_translation ((path)) == -1) {                       \
+      int err = errno;                                                  \
+      cancel_stmt;                                                      \
+      errno = err;                                                      \
+      reply_with_perror ("%s: %s", __func__, path);                     \
       fail_stmt;							\
+    }                                                                   \
   } while (0)
 
 /* Helper for functions which need either an absolute path in the
@@ -198,13 +251,13 @@ extern void reply (xdrproc_t xdrp, char *ret);
  * because we intend in future to make device parameters a distinct
  * type from filenames.
  */
-#define REQUIRE_ROOT_OR_RESOLVE_DEVICE(path,fail_stmt)			\
+#define REQUIRE_ROOT_OR_RESOLVE_DEVICE(path,cancel_stmt,fail_stmt)      \
   do {									\
     if (STREQLEN ((path), "/dev/", 5))                                  \
-      RESOLVE_DEVICE ((path), fail_stmt);				\
+      RESOLVE_DEVICE ((path), cancel_stmt, fail_stmt);                  \
     else {								\
-      NEED_ROOT (fail_stmt);						\
-      ABS_PATH ((path),fail_stmt);					\
+      NEED_ROOT (cancel_stmt, fail_stmt);                               \
+      ABS_PATH ((path), cancel_stmt, fail_stmt);                        \
     }									\
   } while (0)
 
@@ -217,17 +270,21 @@ extern void reply (xdrproc_t xdrp, char *ret);
  */
 #define CHROOT_IN				\
   do {						\
-    int __old_errno = errno;			\
-    if (chroot (sysroot) == -1)			\
-      perror ("CHROOT_IN: sysroot");		\
-    errno = __old_errno;			\
+    if (sysroot_len > 0) {                      \
+      int __old_errno = errno;			\
+      if (chroot (sysroot) == -1)               \
+        perror ("CHROOT_IN: sysroot");		\
+      errno = __old_errno;			\
+    }                                           \
   } while (0)
 #define CHROOT_OUT				\
   do {						\
-    int __old_errno = errno;			\
-    if (chroot (".") == -1)			\
-      perror ("CHROOT_OUT: .");			\
-    errno = __old_errno;			\
+    if (sysroot_len > 0) {                      \
+      int __old_errno = errno;			\
+      if (chroot (".") == -1)			\
+        perror ("CHROOT_OUT: .");               \
+      errno = __old_errno;			\
+    }                                           \
   } while (0)
 
 /* Marks functions which are not implemented.

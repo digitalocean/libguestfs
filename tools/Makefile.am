@@ -1,5 +1,5 @@
 # libguestfs virt-* tools
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2011 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,36 +17,64 @@
 
 include $(top_srcdir)/subdir-rules.mk
 
-tools = cat df edit list-filesystems ls rescue tar win-reg
+tools = \
+	edit \
+	list-filesystems \
+	list-partitions \
+	make-fs \
+	tar \
+	win-reg
 
 EXTRA_DIST = \
-	run-locally \
-	$(tools:%=virt-%)
+	$(tools:%=virt-%) \
+	test-virt-*.sh
+
+CLEANFILES = test.img
 
 if HAVE_TOOLS
 
 bin_SCRIPTS = $(tools:%=virt-%)
 
-# XXX Bug in automake?  If you list virt-cat.1 explicitly, then it
+# Manual pages and HTML files for the website.
+
+# XXX Bug in automake?  If you list virt-edit.1 explicitly, then it
 # builds and installs the man pages.  However if this is removed,
 # then the man pages are neither built nor installed.
-man_MANS = virt-cat.1 $(patsubst %,virt-%.1,$(filter-out cat,$(tools)))
+man_MANS = virt-edit.1 $(patsubst %,virt-%.1,$(filter-out edit,$(tools)))
 
 noinst_DATA = $(tools:%=$(top_builddir)/html/virt-%.1.html)
 
 virt-%.1: virt-%
-	$(POD2MAN) \
-	  --section 1 \
-	  -c "Virtualization Support" \
-	  --release "$(PACKAGE_NAME)-$(PACKAGE_VERSION)" \
-	  $< > $@-t && mv $@-t $@
+	$(top_srcdir)/podwrapper.sh \
+	  --man $@ \
+	  $<
 
 $(top_builddir)/html/virt-%.1.html: virt-%
-	mkdir -p $(top_builddir)/html
-	cd $(top_builddir) && pod2html \
-	  --css 'pod.css' \
-	  --htmldir html \
-	  --outfile html/$<.1.html \
-	  tools/$<
+	$(top_srcdir)/podwrapper.sh \
+	  --html $@ \
+	  $<
+
+# Tests.
+
+random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
+
+TESTS_ENVIRONMENT = \
+	MALLOC_PERTURB_=$(random_val) \
+	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
+	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+	PERL5LIB=$(top_builddir)/perl/blib/lib:$(top_builddir)/perl/blib/arch
+
+TESTS = test-virt-list-filesystems.sh \
+	test-virt-make-fs.sh \
+	test-virt-tar.sh
 
 endif
+
+# Make symlinks from virt-foo.pl to virt-foo.  This is just to keep
+# xgettext happy since it uses the file extension to determine the
+# implementation language of a file.
+
+all-local: $(tools:%=virt-%.pl)
+
+virt-%.pl: virt-%
+	ln -sf $< $@

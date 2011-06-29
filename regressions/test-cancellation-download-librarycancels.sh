@@ -31,7 +31,6 @@ run
 mount-ro /dev/sda /
 
 # Download a file to /dev/full.
-echo "Expect: write: /dev/full: No space left on device"
 -download /100krandom /dev/full
 
 ping-daemon

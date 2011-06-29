@@ -1,9 +1,9 @@
 {- libguestfs generated file
    WARNING: THIS FILE IS GENERATED FROM:
-     src/generator.ml
+     generator/generator_*.ml
    ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
   
-   Copyright (C) 2009-2010 Red Hat Inc.
+   Copyright (C) 2009-2011 Red Hat Inc.
   
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -25,17 +25,17 @@ import qualified Guestfs
 
 main = do
   g <- Guestfs.create
-  Guestfs.test0 g "abc" (Just "def") [] False 0 0 "123" "456"
-  Guestfs.test0 g "abc" Nothing [] False 0 0 "123" "456"
-  Guestfs.test0 g "" (Just "def") [] False 0 0 "123" "456"
-  Guestfs.test0 g "" (Just "") [] False 0 0 "123" "456"
-  Guestfs.test0 g "abc" (Just "def") ["1"] False 0 0 "123" "456"
-  Guestfs.test0 g "abc" (Just "def") ["1","2"] False 0 0 "123" "456"
-  Guestfs.test0 g "abc" (Just "def") ["1"] True 0 0 "123" "456"
-  Guestfs.test0 g "abc" (Just "def") ["1"] False (-1) (-1) "123" "456"
-  Guestfs.test0 g "abc" (Just "def") ["1"] False (-2) (-2) "123" "456"
-  Guestfs.test0 g "abc" (Just "def") ["1"] False 1 1 "123" "456"
-  Guestfs.test0 g "abc" (Just "def") ["1"] False 2 2 "123" "456"
-  Guestfs.test0 g "abc" (Just "def") ["1"] False 4095 4095 "123" "456"
-  Guestfs.test0 g "abc" (Just "def") ["1"] False 0 0 "" ""
+  Guestfs.test0 g "abc" (Just "def") [] False 0 0 "123" "456" "abc\0abc"
+  Guestfs.test0 g "abc" Nothing [] False 0 0 "123" "456" "abc\0abc"
+  Guestfs.test0 g "" (Just "def") [] False 0 0 "123" "456" "abc\0abc"
+  Guestfs.test0 g "" (Just "") [] False 0 0 "123" "456" "abc\0abc"
+  Guestfs.test0 g "abc" (Just "def") ["1"] False 0 0 "123" "456" "abc\0abc"
+  Guestfs.test0 g "abc" (Just "def") ["1","2"] False 0 0 "123" "456" "abc\0abc"
+  Guestfs.test0 g "abc" (Just "def") ["1"] True 0 0 "123" "456" "abc\0abc"
+  Guestfs.test0 g "abc" (Just "def") ["1"] False (-1) (-1) "123" "456" "abc\0abc"
+  Guestfs.test0 g "abc" (Just "def") ["1"] False (-2) (-2) "123" "456" "abc\0abc"
+  Guestfs.test0 g "abc" (Just "def") ["1"] False 1 1 "123" "456" "abc\0abc"
+  Guestfs.test0 g "abc" (Just "def") ["1"] False 2 2 "123" "456" "abc\0abc"
+  Guestfs.test0 g "abc" (Just "def") ["1"] False 4095 4095 "123" "456" "abc\0abc"
+  Guestfs.test0 g "abc" (Just "def") ["1"] False 0 0 "" "" "abc\0abc"
   putStrLn "EOF"

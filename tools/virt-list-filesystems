@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 # virt-list-filesystems
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2010 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,11 +20,10 @@ use warnings;
 use strict;
 
 use Sys::Guestfs;
-use Sys::Guestfs::Lib qw(open_guest get_partitions);
+use Sys::Guestfs::Lib qw(open_guest);
 use Pod::Usage;
 use Getopt::Long;
 use Locale::TextDomain 'libguestfs';
-use File::Temp qw/tempdir/;
 
 =encoding utf8
 
@@ -39,6 +38,9 @@ virt-list-filesystems - List filesystems in a virtual machine or disk image
  virt-list-filesystems [--options] disk.img [disk.img ...]
 
 =head1 DESCRIPTION
+
+This tool is obsolete.  Use L<virt-filesystems(1)> as a more
+flexible replacement.
 
 C<virt-list-filesystems> is a command line tool to list
 the filesystems that are contained in a virtual machine or
@@ -82,6 +84,23 @@ at all.
 
 =cut
 
+my $format;
+
+=item B<--format> raw
+
+Specify the format of disk images given on the command line.  If this
+is omitted then the format is autodetected from the content of the
+disk image.
+
+If disk images are requested from libvirt, then this program asks
+libvirt for this information.  In this case, the value of the format
+parameter is ignored.
+
+If working with untrusted raw-format guest disk images, you should
+ensure the format is always specified.
+
+=cut
+
 my $long;
 
 =item B<-l> | B<--long>
@@ -108,6 +127,7 @@ Getopt::Long::Configure ("bundling");
 GetOptions ("help|?" => \$help,
             "version" => \$version,
             "connect|c=s" => \$uri,
+            "format=s" => \$format,
             "long|l" => \$long,
             "all|a" => \$all,
     ) or pod2usage (2);
@@ -124,56 +144,26 @@ pod2usage (__"virt-list-filesystems: no image or VM name given")
 
 my $g;
 if ($uri) {
-    $g = open_guest (\@ARGV, address => $uri);
+    $g = open_guest (\@ARGV, address => $uri, format => $format);
 } else {
-    $g = open_guest (\@ARGV);
+    $g = open_guest (\@ARGV, format => $format);
 }
 
 $g->launch ();
 
-# List of partitions, LVs etc.
-my @partitions = get_partitions ($g);
+# List of filesystems.
+my %fses = $g->list_filesystems ();
 
-my @fses;
-my @not_mountable;
-my $dev;
+my ($dev, $fstype);
+foreach $dev (sort keys %fses) {
+    $fstype = $fses{$dev};
 
-# Try and mount each one, to see what's mountable.
-foreach $dev (@partitions) {
-    eval { $g->mount_ro ($dev, "/"); };
-    my $mountable = $@ ? 0 : 1;
-    $g->umount_all ();
-    if ($mountable) {
-	push @fses, $dev;
-    } else {
-	push @not_mountable, $dev;
-    }
-}
-
-foreach $dev (@fses) {
-    print canonicalize($dev);
-    if ($long) {
-	my $fstype;
-	eval { $fstype = $g->vfs_type ($dev); };
-	if ($fstype) {
-	    print " $fstype";
-	} else {
-	    print " unknown";
-	}
-    }
-    print "\n";
-}
-
-# If asked, look in the not_mountable list for potential swap devices.
-if ($all) {
-    foreach $dev (@not_mountable) {
-	my $file;
-	eval { $file = $g->file ($dev); };
-	if ($file && $file =~ /\bswap\b/) {
-	    print canonicalize($dev);
-	    print " swap" if $long;
-	    print "\n"
-	}
+    if ($all || ($fstype ne "swap" && $fstype ne "unknown")) {
+        print canonicalize($dev);
+        if ($long) {
+            print " $fstype";
+        }
+        print "\n";
     }
 }
 
@@ -184,10 +174,17 @@ sub canonicalize
     local $_ = shift;
 
     if (m{^/dev/[hv]d([a-z]\d)$}) {
-	return "/dev/sd$1";
+        return "/dev/sd$1";
     }
     $_;
 }
+
+=head1 SHELL QUOTING
+
+Libvirt guest names can contain arbitrary characters, some of which
+have meaning to the shell such as C<#> and space.  You may need to
+quote or escape these characters on the command line.  See the shell
+manual page L<sh(1)> for details.
 
 =head1 SEE ALSO
 
@@ -195,6 +192,8 @@ L<guestfs(3)>,
 L<guestfish(1)>,
 L<virt-cat(1)>,
 L<virt-tar(1)>,
+L<virt-filesystems(1)>,
+L<virt-list-partitions(1)>,
 L<Sys::Guestfs(3)>,
 L<Sys::Guestfs::Lib(3)>,
 L<Sys::Virt(3)>,
@@ -202,7 +201,7 @@ L<http://libguestfs.org/>.
 
 =head1 AUTHOR
 
-Richard W.M. Jones L<http://et.redhat.com/~rjones/>
+Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 COPYRIGHT
 

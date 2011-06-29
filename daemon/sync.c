@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,24 @@ do_sync (void)
   }
 
   return 0;
+}
+
+/* Older versions of libguestfs used to issue separate 'umount_all'
+ * and 'sync' commands just before closing the handle.  Since
+ * libguestfs 1.9.7 the library issues this 'internal_autosync'
+ * internal operation instead, allowing more control in the daemon.
+ */
+int
+do_internal_autosync (void)
+{
+  int r = 0;
+
+  if (autosync_umount)
+    r = do_umount_all ();
+
+  sync_disks ();
+
+  return r;
 }
 
 /* This is a replacement for sync(2) which is called from
@@ -85,9 +103,6 @@ sync_win32 (void)
     HANDLE drive;
     DWORD drive_type;
 
-    if (verbose)
-      fprintf (stderr, "sync_win32: examining drive %s\n", p);
-
     /* Ignore removable drives. */
     drive_type = GetDriveType (p);
     if (drive_type == DRIVE_FIXED) {
@@ -97,15 +112,13 @@ sync_win32 (void)
        */
       TCHAR volname[50];
       if (!GetVolumeNameForVolumeMountPoint (p, volname, 50))
-	return -1;
+        return -1;
 
       drive = CreateFile (volname, GENERIC_READ|GENERIC_WRITE,
                           FILE_SHARE_READ|FILE_SHARE_WRITE,
                           NULL, OPEN_EXISTING, 0, 0);
       if (drive == INVALID_HANDLE_VALUE)
         return -1;
-      if (verbose)
-        fprintf (stderr, "sync_win32: flushing %s\n", volname);
 
       BOOL r;
       /* This always fails in Wine:

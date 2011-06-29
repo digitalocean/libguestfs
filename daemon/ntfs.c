@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009 Red Hat Inc.
+ * Copyright (C) 2009-2010 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -30,8 +31,13 @@
 int
 optgroup_ntfs3g_available (void)
 {
-  int r = access ("/bin/ntfs-3g.probe", X_OK);
-  return r == 0;
+  return prog_exists ("ntfs-3g.probe");
+}
+
+int
+optgroup_ntfsprogs_available (void)
+{
+  return prog_exists ("ntfsresize");
 }
 
 int
@@ -50,5 +56,44 @@ do_ntfs_3g_probe (int rw, const char *device)
     return -1;
   }
 
+  free (err);
   return r;
+}
+
+int
+do_ntfsresize (const char *device)
+{
+  char *err;
+  int r;
+
+  r = command (NULL, &err, "ntfsresize", "-P", device, NULL);
+  if (r == -1) {
+    reply_with_error ("%s: %s", device, err);
+    free (err);
+    return -1;
+  }
+
+  free (err);
+  return 0;
+}
+
+int
+do_ntfsresize_size (const char *device, int64_t size)
+{
+  char *err;
+  int r;
+
+  char buf[32];
+  snprintf (buf, sizeof buf, "%" PRIi64, size);
+
+  r = command (NULL, &err, "ntfsresize", "-P", "--size", buf,
+               device, NULL);
+  if (r == -1) {
+    reply_with_error ("%s: %s", device, err);
+    free (err);
+    return -1;
+  }
+
+  free (err);
+  return 0;
 }

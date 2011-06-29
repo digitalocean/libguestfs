@@ -1,9 +1,9 @@
 (* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   src/generator.ml
+ *   generator/generator_*.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2010 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,17 +22,17 @@
 
 let () =
   let g = Guestfs.create () in
-  Guestfs.test0 g "abc" (Some "def") [||] false 0 0L "123" "456";
-  Guestfs.test0 g "abc" None [||] false 0 0L "123" "456";
-  Guestfs.test0 g "" (Some "def") [||] false 0 0L "123" "456";
-  Guestfs.test0 g "" (Some "") [||] false 0 0L "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 0 0L "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1";"2"|] false 0 0L "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] true 0 0L "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false (-1) (-1L) "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false (-2) (-2L) "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 1 1L "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 2 2L "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 4095 4095L "123" "456";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 0 0L "" "";
+  Guestfs.test0 g "abc" (Some "def") [||] false 0 0L "123" "456" "abc\000abc";
+  Guestfs.test0 g "abc" None [||] false 0 0L "123" "456" "abc\000abc";
+  Guestfs.test0 g "" (Some "def") [||] false 0 0L "123" "456" "abc\000abc";
+  Guestfs.test0 g "" (Some "") [||] false 0 0L "123" "456" "abc\000abc";
+  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 0 0L "123" "456" "abc\000abc";
+  Guestfs.test0 g "abc" (Some "def") [|"1";"2"|] false 0 0L "123" "456" "abc\000abc";
+  Guestfs.test0 g "abc" (Some "def") [|"1"|] true 0 0L "123" "456" "abc\000abc";
+  Guestfs.test0 g "abc" (Some "def") [|"1"|] false (-1) (-1L) "123" "456" "abc\000abc";
+  Guestfs.test0 g "abc" (Some "def") [|"1"|] false (-2) (-2L) "123" "456" "abc\000abc";
+  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 1 1L "123" "456" "abc\000abc";
+  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 2 2L "123" "456" "abc\000abc";
+  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 4095 4095L "123" "456" "abc\000abc";
+  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 0 0L "" "" "abc\000abc";
 print_endline "EOF"

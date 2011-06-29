@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,18 +31,39 @@
 
 #define MAX_ARGS 16
 
-static int
-mkfs (const char *fstype, const char *device,
-      const char **extra, size_t nr_extra)
+/* Takes optional arguments, consult optargs_bitmask. */
+int
+do_mkfs_opts (const char *fstype, const char *device, int blocksize, const char *features)
 {
   const char *argv[MAX_ARGS];
-  size_t i = 0, j;
+  size_t i = 0;
+  char blocksize_str[32];
   int r;
   char *err;
 
-  argv[i++] = "/sbin/mkfs";
+  char mke2fs[] = "mke2fs";
+  if (e2prog (mke2fs) == -1)
+    return -1;
+
+  /* For ext2/3/4 run the mke2fs program directly.  This is because
+   * the mkfs program "eats" some options, in particular the -F
+   * option.
+   */
+  if (STREQ (fstype, "ext2") || STREQ (fstype, "ext3") ||
+      STREQ (fstype, "ext4"))
+    argv[i++] = mke2fs;
+  else
+    argv[i++] = "mkfs";
+
   argv[i++] = "-t";
   argv[i++] = fstype;
+
+  /* Force mke2fs to create a filesystem, even if it thinks it
+   * shouldn't (RHBZ#690819).
+   */
+  if (STREQ (fstype, "ext2") || STREQ (fstype, "ext3") ||
+      STREQ (fstype, "ext4"))
+    argv[i++] = "-F";
 
   /* mkfs.ntfs requires the -Q argument otherwise it writes zeroes
    * to every block and does bad block detection, neither of which
@@ -72,8 +93,52 @@ mkfs (const char *fstype, const char *device,
     argv[i++] = "-O";
   }
 
-  for (j = 0; j < nr_extra; ++j)
-    argv[i++] = extra[j];
+  /* Process blocksize parameter if set. */
+  if (optargs_bitmask & GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK) {
+    if (blocksize <= 0 || !is_power_of_2 (blocksize)) {
+      reply_with_error ("block size must be > 0 and a power of 2");
+      return -1;
+    }
+
+    if (STREQ (fstype, "vfat") ||
+        STREQ (fstype, "msdos")) {
+      /* For VFAT map the blocksize into a cluster size.  However we
+       * have to determine the block device sector size in order to do
+       * this.
+       */
+      int sectorsize = do_blockdev_getss (device);
+      if (sectorsize == -1)
+        return -1;
+
+      int sectors_per_cluster = blocksize / sectorsize;
+      if (sectors_per_cluster < 1 || sectors_per_cluster > 128) {
+        reply_with_error ("unsupported cluster size for %s filesystem (requested cluster size = %d, sector size = %d, trying sectors per cluster = %d)",
+                          fstype, blocksize, sectorsize, sectors_per_cluster);
+        return -1;
+      }
+
+      snprintf (blocksize_str, sizeof blocksize_str, "%d", sectors_per_cluster);
+      argv[i++] = "-s";
+      argv[i++] = blocksize_str;
+    }
+    else if (STREQ (fstype, "ntfs")) {
+      /* For NTFS map the blocksize into a cluster size. */
+      snprintf (blocksize_str, sizeof blocksize_str, "%d", blocksize);
+      argv[i++] = "-c";
+      argv[i++] = blocksize_str;
+    }
+    else {
+      /* For all other filesystem types, try the -b option. */
+      snprintf (blocksize_str, sizeof blocksize_str, "%d", blocksize);
+      argv[i++] = "-b";
+      argv[i++] = blocksize_str;
+    }
+  }
+
+  if (optargs_bitmask & GUESTFS_MKFS_OPTS_FEATURES_BITMASK) {
+     argv[i++] = "-O";
+     argv[i++] = features;
+  }
 
   argv[i++] = device;
   argv[i++] = NULL;
@@ -95,19 +160,13 @@ mkfs (const char *fstype, const char *device,
 int
 do_mkfs (const char *fstype, const char *device)
 {
-  return mkfs (fstype, device, NULL, 0);
+  optargs_bitmask = 0;
+  return do_mkfs_opts (fstype, device, 0, 0);
 }
 
 int
 do_mkfs_b (const char *fstype, int blocksize, const char *device)
 {
-  const char *extra[2];
-  char blocksize_s[32];
-
-  snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
-
-  extra[0] = "-b";
-  extra[1] = blocksize_s;
-
-  return mkfs (fstype, device, extra, 2);
+  optargs_bitmask = GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK;
+  return do_mkfs_opts (fstype, device, blocksize, 0);
 }

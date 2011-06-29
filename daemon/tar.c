@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009 Red Hat Inc.
+ * Copyright (C) 2009-2010 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,35 +23,67 @@
 #include <string.h>
 #include <fcntl.h>
 
-#include "../src/guestfs_protocol.h"
+#include "read-file.h"
+
+#include "guestfs_protocol.h"
 #include "daemon.h"
 #include "actions.h"
+#include "optgroups.h"
+
+int
+optgroup_xz_available (void)
+{
+  return prog_exists ("xz");
+}
+
+/* Redirect errors from the tar command to the error file, then
+ * provide functions for reading it in.  We overwrite the file each
+ * time, and since it's small and stored on the appliance we don't
+ * bother to delete it.
+ */
+static const char *error_file = "/tmp/error";
+
+static char *
+read_error_file (void)
+{
+  size_t len;
+  char *str = read_file (error_file, &len);
+  if (str == NULL) {
+    str = strdup ("(no error)");
+    if (str == NULL) {
+      perror ("strdup");
+      exit (EXIT_FAILURE);
+    }
+    len = strlen (str);
+  }
+
+  /* Remove trailing \n character if any. */
+  if (len > 0 && str[len-1] == '\n')
+    str[--len] = '\0';
+
+  return str;                   /* caller frees */
+}
 
 static int
-fwrite_cb (void *fp_ptr, const void *buf, int len)
+write_cb (void *fd_ptr, const void *buf, size_t len)
 {
-  FILE *fp = *(FILE **)fp_ptr;
-  return fwrite (buf, len, 1, fp) == 1 ? 0 : -1;
+  int fd = *(int *)fd_ptr;
+  return xwrite (fd, buf, len);
 }
 
 /* Has one FileIn parameter. */
-int
-do_tar_in (const char *dir)
+static int
+do_tXz_in (const char *dir, const char *filter)
 {
   int err, r;
   FILE *fp;
   char *cmd;
 
-  if (!root_mounted || dir[0] != '/') {
-    cancel_receive ();
-    reply_with_error ("root must be mounted and path must be absolute");
-    return -1;
-  }
-
   /* "tar -C /sysroot%s -xf -" but we have to quote the dir. */
-  if (asprintf_nowarn (&cmd, "tar -C %R -xf -", dir) == -1) {
+  if (asprintf_nowarn (&cmd, "tar -C %R -%sxf - 2> %s",
+                       dir, filter, error_file) == -1) {
     err = errno;
-    cancel_receive ();
+    r = cancel_receive ();
     errno = err;
     reply_with_perror ("asprintf");
     return -1;
@@ -63,7 +95,7 @@ do_tar_in (const char *dir)
   fp = popen (cmd, "w");
   if (fp == NULL) {
     err = errno;
-    cancel_receive ();
+    r = cancel_receive ();
     errno = err;
     reply_with_perror ("%s", cmd);
     free (cmd);
@@ -71,28 +103,115 @@ do_tar_in (const char *dir)
   }
   free (cmd);
 
-  r = receive_file (fwrite_cb, &fp);
+  /* The semantics of fwrite are too undefined, so write to the
+   * file descriptor directly instead.
+   */
+  int fd = fileno (fp);
+
+  r = receive_file (write_cb, &fd);
   if (r == -1) {		/* write error */
-    err = errno;
     cancel_receive ();
-    errno = err;
-    reply_with_perror ("write: %s", dir);
+    char *errstr = read_error_file ();
+    reply_with_error ("write error on directory: %s: %s", dir, errstr);
+    free (errstr);
     pclose (fp);
     return -1;
   }
   if (r == -2) {		/* cancellation from library */
+    /* This error is ignored by the library since it initiated the
+     * cancel.  Nevertheless we must send an error reply here.
+     */
+    reply_with_error ("file upload cancelled");
     pclose (fp);
-    /* Do NOT send any error. */
     return -1;
   }
 
   if (pclose (fp) != 0) {
-    err = errno;
-    cancel_receive ();
-    errno = err;
-    reply_with_perror ("pclose: %s", dir);
+    char *errstr = read_error_file ();
+    reply_with_error ("tar subcommand failed on directory: %s: %s",
+                      dir, errstr);
+    free (errstr);
     return -1;
   }
+
+  return 0;
+}
+
+/* Has one FileIn parameter. */
+int
+do_tar_in (const char *dir)
+{
+  return do_tXz_in (dir, "");
+}
+
+/* Has one FileIn parameter. */
+int
+do_tgz_in (const char *dir)
+{
+  return do_tXz_in (dir, "z");
+}
+
+/* Has one FileIn parameter. */
+int
+do_txz_in (const char *dir)
+{
+  return do_tXz_in (dir, "J");
+}
+
+/* Has one FileOut parameter. */
+static int
+do_tXz_out (const char *dir, const char *filter)
+{
+  int r;
+  FILE *fp;
+  char *cmd;
+  char buf[GUESTFS_MAX_CHUNK_SIZE];
+
+  /* "tar -C /sysroot%s -zcf - ." but we have to quote the dir. */
+  if (asprintf_nowarn (&cmd, "tar -C %R -%scf - .", dir, filter) == -1) {
+    reply_with_perror ("asprintf");
+    return -1;
+  }
+
+  if (verbose)
+    fprintf (stderr, "%s\n", cmd);
+
+  fp = popen (cmd, "r");
+  if (fp == NULL) {
+    reply_with_perror ("%s", cmd);
+    free (cmd);
+    return -1;
+  }
+  free (cmd);
+
+  /* Now we must send the reply message, before the file contents.  After
+   * this there is no opportunity in the protocol to send any error
+   * message back.  Instead we can only cancel the transfer.
+   */
+  reply (NULL, NULL);
+
+  while ((r = fread (buf, 1, sizeof buf, fp)) > 0) {
+    if (send_file_write (buf, r) < 0) {
+      pclose (fp);
+      return -1;
+    }
+  }
+
+  if (ferror (fp)) {
+    perror (dir);
+    send_file_end (1);		/* Cancel. */
+    pclose (fp);
+    return -1;
+  }
+
+  if (pclose (fp) != 0) {
+    perror (dir);
+    send_file_end (1);		/* Cancel. */
+    return -1;
+  }
+
+  if (send_file_end (0))	/* Normal end of file. */
+    return -1;
 
   return 0;
 }
@@ -101,177 +220,19 @@ do_tar_in (const char *dir)
 int
 do_tar_out (const char *dir)
 {
-  int r;
-  FILE *fp;
-  char *cmd;
-  char buf[GUESTFS_MAX_CHUNK_SIZE];
-
-  /* "tar -C /sysroot%s -cf - ." but we have to quote the dir. */
-  if (asprintf_nowarn (&cmd, "tar -C %R -cf - .", dir) == -1) {
-    reply_with_perror ("asprintf");
-    return -1;
-  }
-
-  if (verbose)
-    fprintf (stderr, "%s\n", cmd);
-
-  fp = popen (cmd, "r");
-  if (fp == NULL) {
-    reply_with_perror ("%s", cmd);
-    free (cmd);
-    return -1;
-  }
-  free (cmd);
-
-  /* Now we must send the reply message, before the file contents.  After
-   * this there is no opportunity in the protocol to send any error
-   * message back.  Instead we can only cancel the transfer.
-   */
-  reply (NULL, NULL);
-
-  while ((r = fread (buf, 1, sizeof buf, fp)) > 0) {
-    if (send_file_write (buf, r) < 0) {
-      pclose (fp);
-      return -1;
-    }
-  }
-
-  if (ferror (fp)) {
-    perror (dir);
-    send_file_end (1);		/* Cancel. */
-    pclose (fp);
-    return -1;
-  }
-
-  if (pclose (fp) != 0) {
-    perror (dir);
-    send_file_end (1);		/* Cancel. */
-    return -1;
-  }
-
-  if (send_file_end (0))	/* Normal end of file. */
-    return -1;
-
-  return 0;
-}
-
-/* Has one FileIn parameter. */
-int
-do_tgz_in (const char *dir)
-{
-  int err, r;
-  FILE *fp;
-  char *cmd;
-
-  if (!root_mounted || dir[0] != '/') {
-    cancel_receive ();
-    reply_with_error ("root must be mounted and path must be absolute");
-    return -1;
-  }
-
-  /* "tar -C /sysroot%s -zxf -" but we have to quote the dir. */
-  if (asprintf_nowarn (&cmd, "tar -C %R -zxf -", dir) == -1) {
-    err = errno;
-    cancel_receive ();
-    errno = err;
-    reply_with_perror ("asprintf");
-    return -1;
-  }
-
-  if (verbose)
-    fprintf (stderr, "%s\n", cmd);
-
-  fp = popen (cmd, "w");
-  if (fp == NULL) {
-    err = errno;
-    cancel_receive ();
-    errno = err;
-    reply_with_perror ("%s", cmd);
-    free (cmd);
-    return -1;
-  }
-  free (cmd);
-
-  r = receive_file (fwrite_cb, &fp);
-  if (r == -1) {		/* write error */
-    err = errno;
-    cancel_receive ();
-    errno = err;
-    reply_with_perror ("write: %s", dir);
-    pclose (fp);
-    return -1;
-  }
-  if (r == -2) {		/* cancellation from library */
-    pclose (fp);
-    /* Do NOT send any error. */
-    return -1;
-  }
-
-  if (pclose (fp) != 0) {
-    err = errno;
-    cancel_receive ();
-    errno = err;
-    reply_with_perror ("pclose: %s", dir);
-    return -1;
-  }
-
-  return 0;
+  return do_tXz_out (dir, "");
 }
 
 /* Has one FileOut parameter. */
 int
 do_tgz_out (const char *dir)
 {
-  int r;
-  FILE *fp;
-  char *cmd;
-  char buf[GUESTFS_MAX_CHUNK_SIZE];
+  return do_tXz_out (dir, "z");
+}
 
-  /* "tar -C /sysroot%s -zcf - ." but we have to quote the dir. */
-  if (asprintf_nowarn (&cmd, "tar -C %R -zcf - .", dir) == -1) {
-    reply_with_perror ("asprintf");
-    return -1;
-  }
-
-  if (verbose)
-    fprintf (stderr, "%s\n", cmd);
-
-  fp = popen (cmd, "r");
-  if (fp == NULL) {
-    reply_with_perror ("%s", cmd);
-    free (cmd);
-    return -1;
-  }
-  free (cmd);
-
-  /* Now we must send the reply message, before the file contents.  After
-   * this there is no opportunity in the protocol to send any error
-   * message back.  Instead we can only cancel the transfer.
-   */
-  reply (NULL, NULL);
-
-  while ((r = fread (buf, 1, sizeof buf, fp)) > 0) {
-    if (send_file_write (buf, r) < 0) {
-      pclose (fp);
-      return -1;
-    }
-  }
-
-  if (ferror (fp)) {
-    perror (dir);
-    send_file_end (1);		/* Cancel. */
-    pclose (fp);
-    return -1;
-  }
-
-  if (pclose (fp) != 0) {
-    perror (dir);
-    send_file_end (1);		/* Cancel. */
-    return -1;
-  }
-
-  if (send_file_end (0))	/* Normal end of file. */
-    return -1;
-
-  return 0;
+/* Has one FileOut parameter. */
+int
+do_txz_out (const char *dir)
+{
+  return do_tXz_out (dir, "J");
 }

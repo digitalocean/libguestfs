@@ -26,7 +26,7 @@
 #include "fish.h"
 
 int
-do_reopen (const char *cmd, int argc, char *argv[])
+run_reopen (const char *cmd, size_t argc, char *argv[])
 {
   guestfs_h *g2;
   int r;
@@ -54,6 +54,10 @@ do_reopen (const char *cmd, int argc, char *argv[])
   if (r >= 0)
     guestfs_set_verbose (g2, r);
 
+  r = guestfs_get_trace (g);
+  if (r >= 0)
+    guestfs_set_trace (g2, r);
+
   r = guestfs_get_autosync (g);
   if (r >= 0)
     guestfs_set_autosync (g2, r);
@@ -61,6 +65,10 @@ do_reopen (const char *cmd, int argc, char *argv[])
   p = guestfs_get_path (g);
   if (p)
     guestfs_set_path (g2, p);
+
+  if (progress_bars)
+    guestfs_set_event_callback (g2, progress_callback,
+                                GUESTFS_EVENT_PROGRESS, 0, NULL);
 
   /* Close the original handle. */
   guestfs_close (g);

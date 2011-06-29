@@ -1,5 +1,5 @@
 # libguestfs-daemon
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2010 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = lib tests .
 
 libsrcdir = $(top_builddir)/../src
+generatorsrcdir = $(top_builddir)/../generator
 
 generator_built = \
 	actions.h \
@@ -28,24 +29,28 @@ generator_built = \
 
 .PHONY: force
 
-$(generator_built): $(libsrcdir)/stamp-generator
-$(libsrcdir)/stamp-generator: force
-	$(MAKE) -C $(libsrcdir) stamp-generator
+$(generator_built): $(generatorsrcdir)/stamp-generator
+$(generatorsrcdir)/stamp-generator: force
+	$(MAKE) -C $(generatorsrcdir) stamp-generator
 
 BUILT_SOURCES = \
 	$(generator_built) \
 	guestfs_protocol.c \
-	guestfs_protocol.h
+	guestfs_protocol.h \
+	errnostring_gperf.c \
+	errnostring_gperf.gperf \
+	errnostring.c \
+	errnostring.h
 
-EXTRA_DIST = $(BUILT_SOURCES)
+EXTRA_DIST = $(BUILT_SOURCES) \
+	.gitignore
 
-# This convenience library is solely to avoid compiler warnings
-# in its generated sources.
 noinst_LIBRARIES = libprotocol.a
-libprotocol_a_SOURCES = \
-	guestfs_protocol.c \
-	guestfs_protocol.h
-libprotocol_a_CFLAGS =
+
+# This convenience library is solely to compile its generated sources with
+# custom flags.
+libprotocol_a_SOURCES = guestfs_protocol.c guestfs_protocol.h
+libprotocol_a_CFLAGS = -Wall -Wno-unused -fno-strict-aliasing
 
 guestfs_protocol.c: $(libsrcdir)/guestfs_protocol.c
 	rm -f $@
@@ -58,11 +63,35 @@ $(libsrcdir)/guestfs_protocol.c: force
 $(libsrcdir)/guestfs_protocol.h: force
 	$(MAKE) -C $(libsrcdir) guestfs_protocol.h
 
+# Build the errnostring perfect hash code.  The generated code has lots
+# of warnings so we must compile it in a separate mini-library.
+noinst_LIBRARIES += liberrnostring.a
+liberrnostring_a_SOURCES = \
+	errnostring_gperf.c \
+	errnostring.h \
+	errnostring.c
+liberrnostring_a_CFLAGS =
+
+errnostring_gperf.c: errnostring_gperf.gperf
+	rm -f $@
+	$(GPERF) -t $< > $@-t
+	mv $@-t $@
+errnostring_gperf.gperf: $(libsrcdir)/errnostring_gperf.gperf
+	rm -f $@
+	ln $< $@
+errnostring.c: $(libsrcdir)/errnostring.c
+	rm -f $@
+	ln $< $@
+errnostring.h: $(libsrcdir)/errnostring.h
+	rm -f $@
+	ln $< $@
+
 noinst_PROGRAMS = guestfsd
 guestfsd_SOURCES = \
 	actions.h \
 	available.c \
 	augeas.c \
+	base64.c \
 	blkid.c \
 	blockdev.c \
 	checksum.c \
@@ -82,6 +111,7 @@ guestfsd_SOURCES = \
 	ext2.c \
 	fallocate.c \
 	file.c \
+	findfs.c \
 	fill.c \
 	find.c \
 	fsck.c \
@@ -94,9 +124,12 @@ guestfsd_SOURCES = \
 	htonl.c \
 	initrd.c \
 	inotify.c \
+	is.c \
 	link.c \
 	ls.c \
+	luks.c \
 	lvm.c \
+	lvm-filter.c \
 	mkfs.c \
 	mknod.c \
 	modprobe.c \
@@ -130,6 +163,7 @@ guestfsd_SOURCES = \
 	zero.c \
 	zerofree.c
 guestfsd_LDADD = \
+	liberrnostring.a \
 	libprotocol.a \
 	lib/libgnu.a \
 	$(GETADDRINFO_LIB) \

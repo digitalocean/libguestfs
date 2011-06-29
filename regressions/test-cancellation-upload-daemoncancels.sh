@@ -22,22 +22,14 @@
 
 set -e
 
-rm -f test.img
+rm -f test1.img
 
-../fish/guestfish <<'EOF'
-alloc test.img 10M
-run
-
-part-disk /dev/sda mbr
-mkfs ext2 /dev/sda1
-mount-options "" /dev/sda1 /
-
+../fish/guestfish -N fs -m /dev/sda1 <<'EOF'
 # Upload image, daemon should cancel because the image is too large
 # to upload into itself.
-echo "Expect: write: /test: No space left on device"
 -upload test.img /test
 
 ping-daemon
 EOF
 
-rm -f test.img
+rm -f test1.img

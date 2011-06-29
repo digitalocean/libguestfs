@@ -1,10 +1,10 @@
-prefix=/usr
+prefix=/usr/local
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 
 Name: libguestfs
-Version: 1.0.84
+Version: 1.10.4
 Description: libguestfs library for accessing and modifying VM images
 Requires:
 Cflags:

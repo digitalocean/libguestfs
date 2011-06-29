@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2011 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -86,20 +86,29 @@ function stage ()
     ((s++))
 }
 
-stage Create filesystem with some inital content
+stage Create filesystem with some initial content
 $guestfish <<EOF
   sparse "$image" 10M
   run
   part-disk /dev/sda mbr
   mkfs ext2 /dev/sda1
-  mount /dev/sda1 /
-  write-file /hello.txt hello 0
-  write-file /world.txt "hello world" 0
+  mount_options acl,user_xattr /dev/sda1 /
+  write /hello.txt hello
+  write /world.txt "hello world"
   touch /empty
+  touch /user_xattr
+  setxattr user.test hello123 8 /user_xattr
+  touch /acl
+  # XXX hack until libguestfs gets ACL support
+  debug sh "setfacl -m u:500:r /sysroot/acl" | cat > /dev/null
 EOF
 
 stage Mounting the filesystem
-$guestmount -a "$image" -m /dev/sda1 "$mp"
+$guestmount \
+    -a "$image" -m /dev/sda1:/:acl,user_xattr \
+    -o uid="$(id -u)" -o gid="$(id -g)" "$mp"
+# To debug guestmount, add this to the end of the preceding command:
+# -v -x & sleep 60
 
 stage Changing into mounted directory
 cd "$mp"
@@ -195,21 +204,46 @@ truncate -c -s 0 truncated
 [ "$(stat -c %s truncated)" -eq 0 ]
 rm -f truncated
 
-stage Checking utimens and timestamps
-for ts in 12345 1234567 987654321; do
-    # NB: It's not possible to set the ctime with touch.
-    touch -a -d @$ts timestamp
-    [ "$(stat -c %X timestamp)" -eq $ts ]
-    touch -m -d @$ts timestamp
-    [ "$(stat -c %Y timestamp)" -eq $ts ]
-    touch    -d @$ts timestamp
-    [ "$(stat -c %X timestamp)" -eq $ts ]
-    [ "$(stat -c %Y timestamp)" -eq $ts ]
-done
+# Disabled because of RHBZ#660687 on Debian.
+# stage Checking utimens and timestamps
+# for ts in 12345 1234567 987654321; do
+#     # NB: It's not possible to set the ctime with touch.
+#     touch -a -d @$ts timestamp
+#     [ "$(stat -c %X timestamp)" -eq $ts ]
+#     touch -m -d @$ts timestamp
+#     [ "$(stat -c %Y timestamp)" -eq $ts ]
+#     touch    -d @$ts timestamp
+#     [ "$(stat -c %X timestamp)" -eq $ts ]
+#     [ "$(stat -c %Y timestamp)" -eq $ts ]
+# done
+
+stage Checking writes
+cp hello.txt copy.txt
+echo >> copy.txt
+echo world >> copy.txt
+echo bigger >> copy.txt
+echo biggest >> copy.txt
+[ "$(cat copy.txt)" = "hello
+world
+bigger
+biggest" ]
+
+stage 'Checking extended attribute (xattr) read operation'
+if getfattr --help > /dev/null 2>&1 ; then
+  [ "$(getfattr -d user_xattr | grep -v ^#)" = 'user.test="hello123"' ]
+fi
+
+stage Checking POSIX ACL read operation
+if getfacl --help > /dev/null 2>&1 ; then
+  [ "$(getfacl -n acl | grep -v ^#)" = "user::rw-
+user:500:r--
+group::r--
+mask::r--
+other::r--" ]
+fi
 
 # These ones are not yet tested by the current script:
 #stage XXX statfs/statvfs
-#stage XXX xattr operations
 
 # These ones cannot easily be tested by the current script, eg because
 # this script doesn't run as root:

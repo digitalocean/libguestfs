@@ -1,9 +1,9 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   src/generator.ml
+ *   generator/generator_*.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2010 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ static void print_error (guestfs_h *g, void *data, const char *msg)
 /* FIXME: nearly identical code appears in fish.c */
 static void print_strings (char *const *argv)
 {
-  int argc;
+  size_t argc;
 
   for (argc = 0; argv[argc] != NULL; ++argc)
     printf ("\t%s\n", argv[argc]);
@@ -51,12 +51,54 @@ static void print_strings (char *const *argv)
 /*
 static void print_table (char const *const *argv)
 {
-  int i;
+  size_t i;
 
   for (i = 0; argv[i] != NULL; i += 2)
     printf ("%s: %s\n", argv[i], argv[i+1]);
 }
 */
+
+static int
+is_available (const char *group)
+{
+  const char *groups[] = { group, NULL };
+  int r;
+
+  suppress_error = 1;
+  r = guestfs_available (g, (char **) groups);
+  suppress_error = 0;
+
+  return r == 0;
+}
+
+static void
+incr (guestfs_h *g, void *iv)
+{
+  int *i = (int *) iv;
+  (*i)++;
+}
+
+/* Get md5sum of the named file. */
+static void
+md5sum (const char *filename, char *result)
+{
+  char cmd[256];
+  snprintf (cmd, sizeof cmd, "md5sum %s", filename);
+  FILE *pp = popen (cmd, "r");
+  if (pp == NULL) {
+    perror (cmd);
+    exit (EXIT_FAILURE);
+  }
+  if (fread (result, 1, 32, pp) != 32) {
+    perror ("md5sum: fread");
+    exit (EXIT_FAILURE);
+  }
+  if (pclose (pp) == -1) {
+    perror ("pclose");
+    exit (EXIT_FAILURE);
+  }
+  result[32] = '\0';
+}
 
 static void no_test_warnings (void)
 {
@@ -98,6 +140,35 @@ static void no_test_warnings (void)
   fprintf (stderr, "warning: \"guestfs_get_state\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_add_drive_with_if\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_add_drive_ro_with_if\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_os\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_get_type\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_get_arch\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_get_distro\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_get_major_version\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_get_minor_version\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_get_product_name\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_get_mountpoints\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_get_filesystems\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_set_network\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_get_network\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_list_filesystems\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_add_drive_opts\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_get_windows_systemroot\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_get_roots\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_debug_cmdline\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_add_domain\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_get_package_format\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_get_package_management\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_list_applications\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_get_hostname\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_get_format\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_is_live\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_is_netinst\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_is_multipart\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_set_attach_method\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_get_product_variant\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_get_windows_current_control_set\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_inspect_get_drive_mappings\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_ll\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_pvs_full\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_vgs_full\" has no tests\n");
@@ -124,7 +195,6 @@ static void no_test_warnings (void)
   fprintf (stderr, "warning: \"guestfs_tgz_out\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_mount_vfs\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_debug\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_grub_install\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_pvresize\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_sfdisk_N\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_sfdisk_l\" has no tests\n");
@@ -137,8 +207,8 @@ static void no_test_warnings (void)
   fprintf (stderr, "warning: \"guestfs_df\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_df_h\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_mount_loop\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_umask\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_readdir\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_sfdiskM\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_zfile\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_getxattrs\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_lgetxattrs\" has no tests\n");
@@ -160,6 +230,3890 @@ static void no_test_warnings (void)
   fprintf (stderr, "warning: \"guestfs_lxattrlist\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_readlinklist\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_part_list\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_pvuuid\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_vguuid\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_lvuuid\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_vgpvuuids\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_vglvuuids\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_txz_out\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_ntfsresize\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_aug_clear\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_debug_upload\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_base64_out\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_checksums_out\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_resize2fs_size\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_pvresize_size\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_ntfsresize_size\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_lvm_set_filter\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_lvm_clear_filter\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_luks_open\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_luks_open_ro\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_luks_close\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_luks_format\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_luks_format_cipher\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_luks_add_key\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_luks_kill_slot\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_findfs_uuid\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_findfs_label\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_getxattr\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_lgetxattr\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_resize2fs_M\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_internal_autosync\" has no tests\n");
+}
+
+static int test_mkfs_opts_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "mkfs_opts") == NULL;
+  str = getenv ("SKIP_TEST_MKFS_OPTS_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_MKFS_OPTS");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_mkfs_opts_0 (void)
+{
+  if (test_mkfs_opts_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_mkfs_opts_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_mkfs_opts_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for mkfs_opts (0) */
+  const char *expected = "new file contents";
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *fstype = "ext2";
+    const char *device = "/dev/sda1";
+    struct guestfs_mkfs_opts_argv optargs;
+    optargs.bitmask = UINT64_C(0x3);
+    optargs.blocksize = 4096;
+    optargs.features = "";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkfs_opts_argv (g, fstype, device, &optargs);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sda1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/new";
+    const char *content = "new file contents";
+    size_t content_size = 17;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/new";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_cat (g, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_mkfs_opts_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_lvm_canonical_lv_name_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "lvm_canonical_lv_name") == NULL;
+  str = getenv ("SKIP_TEST_LVM_CANONICAL_LV_NAME_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_LVM_CANONICAL_LV_NAME");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_lvm_canonical_lv_name_0 (void)
+{
+  if (test_lvm_canonical_lv_name_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_lvm_canonical_lv_name_0");
+    return 0;
+  }
+
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: %s not available)\n", "test_lvm_canonical_lv_name_0", "lvm2");
+    return 0;
+  }
+
+  /* InitBasicFSonLVM for test_lvm_canonical_lv_name_0: create ext2 on /dev/VG/LV */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda1";
+    int r;
+    suppress_error = 0;
+    r = guestfs_pvcreate (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *volgroup = "VG";
+    const char *physvols_0 = "/dev/sda1";
+    const char *const physvols[] = {
+      physvols_0,
+      NULL
+    };
+    int r;
+    suppress_error = 0;
+    r = guestfs_vgcreate (g, volgroup, (char **) physvols);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *logvol = "LV";
+    const char *volgroup = "VG";
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvcreate (g, logvol, volgroup, 8);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *fstype = "ext2";
+    const char *device = "/dev/VG/LV";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkfs (g, fstype, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/VG/LV";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for lvm_canonical_lv_name (0) */
+  const char *expected = "/dev/VG/LV";
+  {
+    const char *lvname = "/dev/mapper/VG-LV";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_lvm_canonical_lv_name (g, lvname);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_lvm_canonical_lv_name_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_lvm_canonical_lv_name_1_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "lvm_canonical_lv_name") == NULL;
+  str = getenv ("SKIP_TEST_LVM_CANONICAL_LV_NAME_1");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_LVM_CANONICAL_LV_NAME");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_lvm_canonical_lv_name_1 (void)
+{
+  if (test_lvm_canonical_lv_name_1_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_lvm_canonical_lv_name_1");
+    return 0;
+  }
+
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: %s not available)\n", "test_lvm_canonical_lv_name_1", "lvm2");
+    return 0;
+  }
+
+  /* InitBasicFSonLVM for test_lvm_canonical_lv_name_1: create ext2 on /dev/VG/LV */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda1";
+    int r;
+    suppress_error = 0;
+    r = guestfs_pvcreate (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *volgroup = "VG";
+    const char *physvols_0 = "/dev/sda1";
+    const char *const physvols[] = {
+      physvols_0,
+      NULL
+    };
+    int r;
+    suppress_error = 0;
+    r = guestfs_vgcreate (g, volgroup, (char **) physvols);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *logvol = "LV";
+    const char *volgroup = "VG";
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvcreate (g, logvol, volgroup, 8);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *fstype = "ext2";
+    const char *device = "/dev/VG/LV";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkfs (g, fstype, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/VG/LV";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for lvm_canonical_lv_name (1) */
+  const char *expected = "/dev/VG/LV";
+  {
+    const char *lvname = "/dev/VG/LV";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_lvm_canonical_lv_name (g, lvname);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_lvm_canonical_lv_name_1: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_pread_device_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "pread_device") == NULL;
+  str = getenv ("SKIP_TEST_PREAD_DEVICE_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_PREAD_DEVICE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_pread_device_0 (void)
+{
+  if (test_pread_device_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_pread_device_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_pread_device_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputBuffer for pread_device (0) */
+  const char *expected = "CD001\0";
+  {
+    const char *device = "/dev/sdd";
+    char *r;
+    size_t size;
+    suppress_error = 0;
+    r = guestfs_pread_device (g, device, 8, 32768, &size);
+    if (r == NULL)
+      return -1;
+    if (size != 8) {
+      fprintf (stderr, "test_pread_device_0: returned size of buffer wrong, expected 8 but got %zu\n", size);
+      return -1;
+    }
+    if (STRNEQLEN (r, expected, size)) {
+      fprintf (stderr, "test_pread_device_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_pwrite_device_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "pwrite_device") == NULL;
+  str = getenv ("SKIP_TEST_PWRITE_DEVICE_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_PWRITE_DEVICE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_pwrite_device_0 (void)
+{
+  if (test_pwrite_device_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_pwrite_device_0");
+    return 0;
+  }
+
+  /* InitPartition for test_pwrite_device_0: create /dev/sda1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputListOfDevices for pwrite_device (0) */
+  {
+    const char *device = "/dev/sda";
+    const char *content = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+    size_t content_size = 66;
+    int r;
+    suppress_error = 0;
+    r = guestfs_pwrite_device (g, device, content, content_size, 446);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_rereadpt (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    char **r;
+    size_t i;
+    suppress_error = 0;
+    r = guestfs_list_partitions (g);
+    if (r == NULL)
+      return -1;
+    if (!r[0]) {
+      fprintf (stderr, "test_pwrite_device_0: short list returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    {
+      const char *expected = "/dev/sdb1";
+      r[0][5] = 's';
+      if (STRNEQ (r[0], expected)) {
+        fprintf (stderr, "test_pwrite_device_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        return -1;
+      }
+    }
+    if (r[1] != NULL) {
+      fprintf (stderr, "test_pwrite_device_0: extra elements returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    for (i = 0; r[i] != NULL; ++i)
+      free (r[i]);
+    free (r);
+  }
+  return 0;
+}
+
+static int test_download_offset_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "download_offset") == NULL;
+  str = getenv ("SKIP_TEST_DOWNLOAD_OFFSET_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_DOWNLOAD_OFFSET");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_download_offset_0 (void)
+{
+  if (test_download_offset_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_download_offset_0");
+    return 0;
+  }
+
+  /* InitScratchFS for test_download_offset_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for download_offset (0) */
+  const char *expected = "603274a0c34714ef3c2d6cf741995301";
+  {
+    const char *path = "/download_offset";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/download_offset/COPYING.LIB";
+    int r;
+    suppress_error = 0;
+    r = guestfs_upload (g, "../COPYING.LIB", remotefilename);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/download_offset/COPYING.LIB";
+    int r;
+    suppress_error = 0;
+    r = guestfs_download_offset (g, remotefilename, "testdownload.tmp", 100, 25189);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/download_offset/COPYING.LIB";
+    int r;
+    suppress_error = 0;
+    r = guestfs_upload_offset (g, "testdownload.tmp", remotefilename, 100);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *csumtype = "md5";
+    const char *path = "/download_offset/COPYING.LIB";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_checksum (g, csumtype, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_download_offset_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_upload_offset_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "upload_offset") == NULL;
+  str = getenv ("SKIP_TEST_UPLOAD_OFFSET_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_UPLOAD_OFFSET");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_upload_offset_0 (void)
+{
+  if (test_upload_offset_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_upload_offset_0");
+    return 0;
+  }
+
+  /* InitScratchFS for test_upload_offset_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for upload_offset (0) */
+  const char *expected = "603274a0c34714ef3c2d6cf741995301";
+  {
+    const char *remotefilename = "/upload_offset";
+    int r;
+    suppress_error = 0;
+    r = guestfs_upload_offset (g, "../COPYING.LIB", remotefilename, 0);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *csumtype = "md5";
+    const char *path = "/upload_offset";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_checksum (g, csumtype, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_upload_offset_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_part_to_dev_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "part_to_dev") == NULL;
+  str = getenv ("SKIP_TEST_PART_TO_DEV_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_PART_TO_DEV");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_part_to_dev_0 (void)
+{
+  if (test_part_to_dev_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_part_to_dev_0");
+    return 0;
+  }
+
+  /* InitPartition for test_part_to_dev_0: create /dev/sda1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputDevice for part_to_dev (0) */
+  const char *expected = "/dev/sda";
+  {
+    const char *partition = "/dev/sda1";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_part_to_dev (g, partition);
+    if (r == NULL)
+      return -1;
+    r[5] = 's';
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_part_to_dev_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_part_to_dev_1_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "part_to_dev") == NULL;
+  str = getenv ("SKIP_TEST_PART_TO_DEV_1");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_PART_TO_DEV");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_part_to_dev_1 (void)
+{
+  if (test_part_to_dev_1_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_part_to_dev_1");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_part_to_dev_1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestLastFail for part_to_dev (1) */
+  {
+    const char *partition = "/dev/sda";
+    char *r;
+    suppress_error = 1;
+    r = guestfs_part_to_dev (g, partition);
+    if (r != NULL)
+      return -1;
+    free (r);
+  }
+  return 0;
+}
+
+static int test_is_socket_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "is_socket") == NULL;
+  str = getenv ("SKIP_TEST_IS_SOCKET_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_IS_SOCKET");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_is_socket_0 (void)
+{
+  if (test_is_socket_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_is_socket_0");
+    return 0;
+  }
+
+  /* InitISOFS for test_is_socket_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputFalse for is_socket (0) */
+  {
+    const char *path = "/directory";
+    int r;
+    suppress_error = 0;
+    r = guestfs_is_socket (g, path);
+    if (r == -1)
+      return -1;
+    if (r) {
+      fprintf (stderr, "test_is_socket_0: expected false, got true\n");
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_is_symlink_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "is_symlink") == NULL;
+  str = getenv ("SKIP_TEST_IS_SYMLINK_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_IS_SYMLINK");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_is_symlink_0 (void)
+{
+  if (test_is_symlink_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_is_symlink_0");
+    return 0;
+  }
+
+  /* InitISOFS for test_is_symlink_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputFalse for is_symlink (0) */
+  {
+    const char *path = "/directory";
+    int r;
+    suppress_error = 0;
+    r = guestfs_is_symlink (g, path);
+    if (r == -1)
+      return -1;
+    if (r) {
+      fprintf (stderr, "test_is_symlink_0: expected false, got true\n");
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_is_symlink_1_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "is_symlink") == NULL;
+  str = getenv ("SKIP_TEST_IS_SYMLINK_1");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_IS_SYMLINK");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_is_symlink_1 (void)
+{
+  if (test_is_symlink_1_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_is_symlink_1");
+    return 0;
+  }
+
+  /* InitISOFS for test_is_symlink_1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputTrue for is_symlink (1) */
+  {
+    const char *path = "/abssymlink";
+    int r;
+    suppress_error = 0;
+    r = guestfs_is_symlink (g, path);
+    if (r == -1)
+      return -1;
+    if (!r) {
+      fprintf (stderr, "test_is_symlink_1: expected true, got false\n");
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_is_fifo_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "is_fifo") == NULL;
+  str = getenv ("SKIP_TEST_IS_FIFO_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_IS_FIFO");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_is_fifo_0 (void)
+{
+  if (test_is_fifo_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_is_fifo_0");
+    return 0;
+  }
+
+  /* InitISOFS for test_is_fifo_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputFalse for is_fifo (0) */
+  {
+    const char *path = "/directory";
+    int r;
+    suppress_error = 0;
+    r = guestfs_is_fifo (g, path);
+    if (r == -1)
+      return -1;
+    if (r) {
+      fprintf (stderr, "test_is_fifo_0: expected false, got true\n");
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_is_fifo_1_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "is_fifo") == NULL;
+  str = getenv ("SKIP_TEST_IS_FIFO_1");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_IS_FIFO");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_is_fifo_1 (void)
+{
+  if (test_is_fifo_1_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_is_fifo_1");
+    return 0;
+  }
+
+  /* InitScratchFS for test_is_fifo_1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputTrue for is_fifo (1) */
+  {
+    const char *path = "/is_fifo";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkfifo (g, 511, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/is_fifo";
+    int r;
+    suppress_error = 0;
+    r = guestfs_is_fifo (g, path);
+    if (r == -1)
+      return -1;
+    if (!r) {
+      fprintf (stderr, "test_is_fifo_1: expected true, got false\n");
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_is_blockdev_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "is_blockdev") == NULL;
+  str = getenv ("SKIP_TEST_IS_BLOCKDEV_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_IS_BLOCKDEV");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_is_blockdev_0 (void)
+{
+  if (test_is_blockdev_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_is_blockdev_0");
+    return 0;
+  }
+
+  /* InitISOFS for test_is_blockdev_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputFalse for is_blockdev (0) */
+  {
+    const char *path = "/directory";
+    int r;
+    suppress_error = 0;
+    r = guestfs_is_blockdev (g, path);
+    if (r == -1)
+      return -1;
+    if (r) {
+      fprintf (stderr, "test_is_blockdev_0: expected false, got true\n");
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_is_blockdev_1_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "is_blockdev") == NULL;
+  str = getenv ("SKIP_TEST_IS_BLOCKDEV_1");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_IS_BLOCKDEV");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_is_blockdev_1 (void)
+{
+  if (test_is_blockdev_1_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_is_blockdev_1");
+    return 0;
+  }
+
+  /* InitScratchFS for test_is_blockdev_1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputTrue for is_blockdev (1) */
+  {
+    const char *path = "/is_blockdev";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mknod_b (g, 511, 99, 66, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/is_blockdev";
+    int r;
+    suppress_error = 0;
+    r = guestfs_is_blockdev (g, path);
+    if (r == -1)
+      return -1;
+    if (!r) {
+      fprintf (stderr, "test_is_blockdev_1: expected true, got false\n");
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_is_chardev_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "is_chardev") == NULL;
+  str = getenv ("SKIP_TEST_IS_CHARDEV_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_IS_CHARDEV");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_is_chardev_0 (void)
+{
+  if (test_is_chardev_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_is_chardev_0");
+    return 0;
+  }
+
+  /* InitISOFS for test_is_chardev_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputFalse for is_chardev (0) */
+  {
+    const char *path = "/directory";
+    int r;
+    suppress_error = 0;
+    r = guestfs_is_chardev (g, path);
+    if (r == -1)
+      return -1;
+    if (r) {
+      fprintf (stderr, "test_is_chardev_0: expected false, got true\n");
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_is_chardev_1_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "is_chardev") == NULL;
+  str = getenv ("SKIP_TEST_IS_CHARDEV_1");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_IS_CHARDEV");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_is_chardev_1 (void)
+{
+  if (test_is_chardev_1_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_is_chardev_1");
+    return 0;
+  }
+
+  /* InitScratchFS for test_is_chardev_1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputTrue for is_chardev (1) */
+  {
+    const char *path = "/is_chardev";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mknod_c (g, 511, 99, 66, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/is_chardev";
+    int r;
+    suppress_error = 0;
+    r = guestfs_is_chardev (g, path);
+    if (r == -1)
+      return -1;
+    if (!r) {
+      fprintf (stderr, "test_is_chardev_1: expected true, got false\n");
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_is_lv_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "is_lv") == NULL;
+  str = getenv ("SKIP_TEST_IS_LV_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_IS_LV");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_is_lv_0 (void)
+{
+  if (test_is_lv_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_is_lv_0");
+    return 0;
+  }
+
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_is_lv_0", "lvm2");
+    return 0;
+  }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: %s not available)\n", "test_is_lv_0", "lvm2");
+    return 0;
+  }
+
+  /* InitBasicFSonLVM for test_is_lv_0: create ext2 on /dev/VG/LV */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda1";
+    int r;
+    suppress_error = 0;
+    r = guestfs_pvcreate (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *volgroup = "VG";
+    const char *physvols_0 = "/dev/sda1";
+    const char *const physvols[] = {
+      physvols_0,
+      NULL
+    };
+    int r;
+    suppress_error = 0;
+    r = guestfs_vgcreate (g, volgroup, (char **) physvols);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *logvol = "LV";
+    const char *volgroup = "VG";
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvcreate (g, logvol, volgroup, 8);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *fstype = "ext2";
+    const char *device = "/dev/VG/LV";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkfs (g, fstype, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/VG/LV";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputTrue for is_lv (0) */
+  {
+    const char *device = "/dev/VG/LV";
+    int r;
+    suppress_error = 0;
+    r = guestfs_is_lv (g, device);
+    if (r == -1)
+      return -1;
+    if (!r) {
+      fprintf (stderr, "test_is_lv_0: expected true, got false\n");
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_is_lv_1_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "is_lv") == NULL;
+  str = getenv ("SKIP_TEST_IS_LV_1");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_IS_LV");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_is_lv_1 (void)
+{
+  if (test_is_lv_1_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_is_lv_1");
+    return 0;
+  }
+
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_is_lv_1", "lvm2");
+    return 0;
+  }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: %s not available)\n", "test_is_lv_1", "lvm2");
+    return 0;
+  }
+
+  /* InitBasicFSonLVM for test_is_lv_1: create ext2 on /dev/VG/LV */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda1";
+    int r;
+    suppress_error = 0;
+    r = guestfs_pvcreate (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *volgroup = "VG";
+    const char *physvols_0 = "/dev/sda1";
+    const char *const physvols[] = {
+      physvols_0,
+      NULL
+    };
+    int r;
+    suppress_error = 0;
+    r = guestfs_vgcreate (g, volgroup, (char **) physvols);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *logvol = "LV";
+    const char *volgroup = "VG";
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvcreate (g, logvol, volgroup, 8);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *fstype = "ext2";
+    const char *device = "/dev/VG/LV";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkfs (g, fstype, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/VG/LV";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputFalse for is_lv (1) */
+  {
+    const char *device = "/dev/sda1";
+    int r;
+    suppress_error = 0;
+    r = guestfs_is_lv (g, device);
+    if (r == -1)
+      return -1;
+    if (r) {
+      fprintf (stderr, "test_is_lv_1: expected false, got true\n");
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_vfs_uuid_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "vfs_uuid") == NULL;
+  str = getenv ("SKIP_TEST_VFS_UUID_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_VFS_UUID");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_vfs_uuid_0 (void)
+{
+  if (test_vfs_uuid_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_vfs_uuid_0");
+    return 0;
+  }
+
+  /* InitBasicFS for test_vfs_uuid_0: create ext2 on /dev/sda1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *fstype = "ext2";
+    const char *device = "/dev/sda1";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkfs (g, fstype, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sda1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for vfs_uuid (0) */
+  const char *expected = "10c1bbe9-cd0f-17a6-bb14-b21cdf0a458b";
+  {
+    const char *device = "/dev/sda1";
+    const char *uuid = "10c1bbe9-cd0f-17a6-bb14-b21cdf0a458b";
+    int r;
+    suppress_error = 0;
+    r = guestfs_set_e2uuid (g, device, uuid);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda1";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_vfs_uuid (g, device);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_vfs_uuid_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_vfs_label_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "vfs_label") == NULL;
+  str = getenv ("SKIP_TEST_VFS_LABEL_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_VFS_LABEL");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_vfs_label_0 (void)
+{
+  if (test_vfs_label_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_vfs_label_0");
+    return 0;
+  }
+
+  /* InitBasicFS for test_vfs_label_0: create ext2 on /dev/sda1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *fstype = "ext2";
+    const char *device = "/dev/sda1";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkfs (g, fstype, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sda1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for vfs_label (0) */
+  const char *expected = "LTEST";
+  {
+    const char *device = "/dev/sda1";
+    const char *label = "LTEST";
+    int r;
+    suppress_error = 0;
+    r = guestfs_set_e2label (g, device, label);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda1";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_vfs_label (g, device);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_vfs_label_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_fallocate64_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "fallocate64") == NULL;
+  str = getenv ("SKIP_TEST_FALLOCATE64_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FALLOCATE64");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_fallocate64_0 (void)
+{
+  if (test_fallocate64_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_fallocate64_0");
+    return 0;
+  }
+
+  /* InitScratchFS for test_fallocate64_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputStruct for fallocate64 (0) */
+  {
+    const char *path = "/fallocate64";
+    int r;
+    suppress_error = 0;
+    r = guestfs_fallocate64 (g, path, 1000000);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/fallocate64";
+    struct guestfs_stat *r;
+    suppress_error = 0;
+    r = guestfs_stat (g, path);
+    if (r == NULL)
+      return -1;
+    if (r->size != 1000000) {
+      fprintf (stderr, "test_fallocate64_0: size was %d, expected 1000000\n",
+               (int) r->size);
+      return -1;
+    }
+    guestfs_free_stat (r);
+  }
+  return 0;
+}
+
+static int test_available_all_groups_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "available_all_groups") == NULL;
+  str = getenv ("SKIP_TEST_AVAILABLE_ALL_GROUPS_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_AVAILABLE_ALL_GROUPS");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_available_all_groups_0 (void)
+{
+  if (test_available_all_groups_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_available_all_groups_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_available_all_groups_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestRun for available_all_groups (0) */
+  {
+    char **r;
+    size_t i;
+    suppress_error = 0;
+    r = guestfs_available_all_groups (g);
+    if (r == NULL)
+      return -1;
+    for (i = 0; r[i] != NULL; ++i)
+      free (r[i]);
+    free (r);
+  }
+  return 0;
+}
+
+static int test_pwrite_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "pwrite") == NULL;
+  str = getenv ("SKIP_TEST_PWRITE_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_PWRITE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_pwrite_0 (void)
+{
+  if (test_pwrite_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_pwrite_0");
+    return 0;
+  }
+
+  /* InitScratchFS for test_pwrite_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for pwrite (0) */
+  const char *expected = "new data contents";
+  {
+    const char *path = "/pwrite";
+    const char *content = "new file contents";
+    size_t content_size = 17;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/pwrite";
+    const char *content = "data";
+    size_t content_size = 4;
+    int r;
+    suppress_error = 0;
+    r = guestfs_pwrite (g, path, content, content_size, 4);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/pwrite";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_cat (g, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_pwrite_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_pwrite_1_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "pwrite") == NULL;
+  str = getenv ("SKIP_TEST_PWRITE_1");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_PWRITE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_pwrite_1 (void)
+{
+  if (test_pwrite_1_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_pwrite_1");
+    return 0;
+  }
+
+  /* InitScratchFS for test_pwrite_1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for pwrite (1) */
+  const char *expected = "new file is extended";
+  {
+    const char *path = "/pwrite2";
+    const char *content = "new file contents";
+    size_t content_size = 17;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/pwrite2";
+    const char *content = "is extended";
+    size_t content_size = 11;
+    int r;
+    suppress_error = 0;
+    r = guestfs_pwrite (g, path, content, content_size, 9);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/pwrite2";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_cat (g, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_pwrite_1: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_pwrite_2_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "pwrite") == NULL;
+  str = getenv ("SKIP_TEST_PWRITE_2");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_PWRITE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_pwrite_2 (void)
+{
+  if (test_pwrite_2_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_pwrite_2");
+    return 0;
+  }
+
+  /* InitScratchFS for test_pwrite_2 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for pwrite (2) */
+  const char *expected = "new file contents";
+  {
+    const char *path = "/pwrite3";
+    const char *content = "new file contents";
+    size_t content_size = 17;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/pwrite3";
+    const char *content = "";
+    size_t content_size = 0;
+    int r;
+    suppress_error = 0;
+    r = guestfs_pwrite (g, path, content, content_size, 4);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/pwrite3";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_cat (g, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_pwrite_2: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_write_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "write") == NULL;
+  str = getenv ("SKIP_TEST_WRITE_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_WRITE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_write_0 (void)
+{
+  if (test_write_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_write_0");
+    return 0;
+  }
+
+  /* InitScratchFS for test_write_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for write (0) */
+  const char *expected = "new file contents";
+  {
+    const char *path = "/write";
+    const char *content = "new file contents";
+    size_t content_size = 17;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/write";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_cat (g, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_write_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_write_1_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "write") == NULL;
+  str = getenv ("SKIP_TEST_WRITE_1");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_WRITE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_write_1 (void)
+{
+  if (test_write_1_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_write_1");
+    return 0;
+  }
+
+  /* InitScratchFS for test_write_1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for write (1) */
+  const char *expected = "\nnew file contents\n";
+  {
+    const char *path = "/write2";
+    const char *content = "\nnew file contents\n";
+    size_t content_size = 19;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/write2";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_cat (g, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_write_1: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_write_2_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "write") == NULL;
+  str = getenv ("SKIP_TEST_WRITE_2");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_WRITE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_write_2 (void)
+{
+  if (test_write_2_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_write_2");
+    return 0;
+  }
+
+  /* InitScratchFS for test_write_2 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for write (2) */
+  const char *expected = "\n\n";
+  {
+    const char *path = "/write3";
+    const char *content = "\n\n";
+    size_t content_size = 2;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/write3";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_cat (g, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_write_2: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_write_3_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "write") == NULL;
+  str = getenv ("SKIP_TEST_WRITE_3");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_WRITE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_write_3 (void)
+{
+  if (test_write_3_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_write_3");
+    return 0;
+  }
+
+  /* InitScratchFS for test_write_3 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for write (3) */
+  const char *expected = "";
+  {
+    const char *path = "/write4";
+    const char *content = "";
+    size_t content_size = 0;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/write4";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_cat (g, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_write_3: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_write_4_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "write") == NULL;
+  str = getenv ("SKIP_TEST_WRITE_4");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_WRITE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_write_4 (void)
+{
+  if (test_write_4_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_write_4");
+    return 0;
+  }
+
+  /* InitScratchFS for test_write_4 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for write (4) */
+  const char *expected = "\n\n\n";
+  {
+    const char *path = "/write5";
+    const char *content = "\n\n\n";
+    size_t content_size = 3;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/write5";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_cat (g, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_write_4: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_write_5_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "write") == NULL;
+  str = getenv ("SKIP_TEST_WRITE_5");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_WRITE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_write_5 (void)
+{
+  if (test_write_5_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_write_5");
+    return 0;
+  }
+
+  /* InitScratchFS for test_write_5 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for write (5) */
+  const char *expected = "\n";
+  {
+    const char *path = "/write6";
+    const char *content = "\n";
+    size_t content_size = 1;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/write6";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_cat (g, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_write_5: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_fill_pattern_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "fill_pattern") == NULL;
+  str = getenv ("SKIP_TEST_FILL_PATTERN_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILL_PATTERN");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_fill_pattern_0 (void)
+{
+  if (test_fill_pattern_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_fill_pattern_0");
+    return 0;
+  }
+
+  /* InitScratchFS for test_fill_pattern_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputBuffer for fill_pattern (0) */
+  const char *expected = "abcdefghijklmnopqrstuvwxyzab";
+  {
+    const char *pattern = "abcdefghijklmnopqrstuvwxyz";
+    const char *path = "/fill_pattern";
+    int r;
+    suppress_error = 0;
+    r = guestfs_fill_pattern (g, pattern, 28, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/fill_pattern";
+    char *r;
+    size_t size;
+    suppress_error = 0;
+    r = guestfs_read_file (g, path, &size);
+    if (r == NULL)
+      return -1;
+    if (size != 28) {
+      fprintf (stderr, "test_fill_pattern_0: returned size of buffer wrong, expected 28 but got %zu\n", size);
+      return -1;
+    }
+    if (STRNEQLEN (r, expected, size)) {
+      fprintf (stderr, "test_fill_pattern_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_base64_in_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "base64_in") == NULL;
+  str = getenv ("SKIP_TEST_BASE64_IN_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_BASE64_IN");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_base64_in_0 (void)
+{
+  if (test_base64_in_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_base64_in_0");
+    return 0;
+  }
+
+  /* InitScratchFS for test_base64_in_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for base64_in (0) */
+  const char *expected = "hello\n";
+  {
+    const char *filename = "/base64_in";
+    int r;
+    suppress_error = 0;
+    r = guestfs_base64_in (g, "../images/hello.b64", filename);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/base64_in";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_cat (g, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_base64_in_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_get_umask_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "get_umask") == NULL;
+  str = getenv ("SKIP_TEST_GET_UMASK_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_GET_UMASK");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_get_umask_0 (void)
+{
+  if (test_get_umask_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_get_umask_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_get_umask_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputInt for get_umask (0) */
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_get_umask (g);
+    if (r == -1)
+      return -1;
+    if (r != 18) {
+      fprintf (stderr, "test_get_umask_0: expected 18 but got %d\n",               (int) r);
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_lvresize_free_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "lvresize_free") == NULL;
+  str = getenv ("SKIP_TEST_LVRESIZE_FREE_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_LVRESIZE_FREE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_lvresize_free_0 (void)
+{
+  if (test_lvresize_free_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_lvresize_free_0");
+    return 0;
+  }
+
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_lvresize_free_0", "lvm2");
+    return 0;
+  }
+  /* InitNone|InitEmpty for test_lvresize_free_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestRun for lvresize_free (0) */
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda1";
+    int r;
+    suppress_error = 0;
+    r = guestfs_pvcreate (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *volgroup = "VG";
+    const char *physvols_0 = "/dev/sda1";
+    const char *const physvols[] = {
+      physvols_0,
+      NULL
+    };
+    int r;
+    suppress_error = 0;
+    r = guestfs_vgcreate (g, volgroup, (char **) physvols);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *logvol = "LV";
+    const char *volgroup = "VG";
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvcreate (g, logvol, volgroup, 10);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *lv = "/dev/VG/LV";
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvresize_free (g, lv, 100);
+    if (r == -1)
+      return -1;
+  }
+  return 0;
+}
+
+static int test_checksum_device_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "checksum_device") == NULL;
+  str = getenv ("SKIP_TEST_CHECKSUM_DEVICE_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_CHECKSUM_DEVICE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_checksum_device_0 (void)
+{
+  if (test_checksum_device_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_checksum_device_0");
+    return 0;
+  }
+
+  /* InitISOFS for test_checksum_device_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputFileMD5 for checksum_device (0) */
+  char expected[33];
+  md5sum ("../images/test.iso", expected);
+  {
+    const char *csumtype = "md5";
+    const char *device = "/dev/sdd";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_checksum_device (g, csumtype, device);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_checksum_device_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_part_get_mbr_id_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "part_get_mbr_id") == NULL;
+  str = getenv ("SKIP_TEST_PART_GET_MBR_ID_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_PART_GET_MBR_ID");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_part_get_mbr_id_0 (void)
+{
+  if (test_part_get_mbr_id_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_part_get_mbr_id_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_part_get_mbr_id_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputInt for part_get_mbr_id (0) */
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_init (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "primary";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 1, -1);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_set_mbr_id (g, device, 1, 127);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_get_mbr_id (g, device, 1);
+    if (r == -1)
+      return -1;
+    if (r != 127) {
+      fprintf (stderr, "test_part_get_mbr_id_0: expected 127 but got %d\n",               (int) r);
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_part_get_bootable_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "part_get_bootable") == NULL;
+  str = getenv ("SKIP_TEST_PART_GET_BOOTABLE_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_PART_GET_BOOTABLE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_part_get_bootable_0 (void)
+{
+  if (test_part_get_bootable_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_part_get_bootable_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_part_get_bootable_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputTrue for part_get_bootable (0) */
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_init (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "primary";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 1, -1);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_set_bootable (g, device, 1, 1);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_get_bootable (g, device, 1);
+    if (r == -1)
+      return -1;
+    if (!r) {
+      fprintf (stderr, "test_part_get_bootable_0: expected true, got false\n");
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_part_del_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "part_del") == NULL;
+  str = getenv ("SKIP_TEST_PART_DEL_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_PART_DEL");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_part_del_0 (void)
+{
+  if (test_part_del_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_part_del_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_part_del_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestRun for part_del (0) */
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_init (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "primary";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 1, -1);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_del (g, device, 1);
+    if (r == -1)
+      return -1;
+  }
+  return 0;
+}
+
+static int test_vgscan_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "vgscan") == NULL;
+  str = getenv ("SKIP_TEST_VGSCAN_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_VGSCAN");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_vgscan_0 (void)
+{
+  if (test_vgscan_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_vgscan_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_vgscan_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestRun for vgscan (0) */
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_vgscan (g);
+    if (r == -1)
+      return -1;
+  }
+  return 0;
+}
+
+static int test_txz_in_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "txz_in") == NULL;
+  str = getenv ("SKIP_TEST_TXZ_IN_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_TXZ_IN");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_txz_in_0 (void)
+{
+  if (test_txz_in_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_txz_in_0");
+    return 0;
+  }
+
+  if (!is_available ("xz")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_txz_in_0", "xz");
+    return 0;
+  }
+  /* InitScratchFS for test_txz_in_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for txz_in (0) */
+  const char *expected = "hello\n";
+  {
+    const char *path = "/txz_in";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *directory = "/txz_in";
+    int r;
+    suppress_error = 0;
+    r = guestfs_txz_in (g, "../images/helloworld.tar.xz", directory);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/txz_in/hello";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_cat (g, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_txz_in_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_zero_device_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "zero_device") == NULL;
+  str = getenv ("SKIP_TEST_ZERO_DEVICE_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_ZERO_DEVICE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_zero_device_0 (void)
+{
+  if (test_zero_device_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_zero_device_0");
+    return 0;
+  }
+
+  /* InitBasicFSonLVM for test_zero_device_0: create ext2 on /dev/VG/LV */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda1";
+    int r;
+    suppress_error = 0;
+    r = guestfs_pvcreate (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *volgroup = "VG";
+    const char *physvols_0 = "/dev/sda1";
+    const char *const physvols[] = {
+      physvols_0,
+      NULL
+    };
+    int r;
+    suppress_error = 0;
+    r = guestfs_vgcreate (g, volgroup, (char **) physvols);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *logvol = "LV";
+    const char *volgroup = "VG";
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvcreate (g, logvol, volgroup, 8);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *fstype = "ext2";
+    const char *device = "/dev/VG/LV";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkfs (g, fstype, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/VG/LV";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestRun for zero_device (0) */
+  {
+    const char *device = "/dev/VG/LV";
+    int r;
+    suppress_error = 0;
+    r = guestfs_zero_device (g, device);
+    if (r == -1)
+      return -1;
+  }
+  return 0;
+}
+
+static int test_copy_size_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "copy_size") == NULL;
+  str = getenv ("SKIP_TEST_COPY_SIZE_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_COPY_SIZE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_copy_size_0 (void)
+{
+  if (test_copy_size_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_copy_size_0");
+    return 0;
+  }
+
+  /* InitScratchFS for test_copy_size_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputBuffer for copy_size (0) */
+  const char *expected = "hello";
+  {
+    const char *path = "/copy_size";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/copy_size/src";
+    const char *content = "hello, world";
+    size_t content_size = 12;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *src = "/copy_size/src";
+    const char *dest = "/copy_size/dest";
+    int r;
+    suppress_error = 0;
+    r = guestfs_copy_size (g, src, dest, 5);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/copy_size/dest";
+    char *r;
+    size_t size;
+    suppress_error = 0;
+    r = guestfs_read_file (g, path, &size);
+    if (r == NULL)
+      return -1;
+    if (size != 5) {
+      fprintf (stderr, "test_copy_size_0: returned size of buffer wrong, expected 5 but got %zu\n", size);
+      return -1;
+    }
+    if (STRNEQLEN (r, expected, size)) {
+      fprintf (stderr, "test_copy_size_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
 }
 
 static int test_initrd_cat_0_skip (void)
@@ -395,7 +4349,7 @@ static int test_vgrename_0 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_vgs (g);
     if (r == NULL)
@@ -538,7 +4492,7 @@ static int test_lvrename_0 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_lvs (g);
     if (r == NULL)
@@ -588,7 +4542,7 @@ static int test_filesize_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_filesize_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_filesize_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -612,26 +4566,8 @@ static int test_filesize_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -641,16 +4577,17 @@ static int test_filesize_0 (void)
   }
   /* TestOutputInt for filesize (0) */
   {
-    const char *path = "/file";
+    const char *path = "/filesize";
     const char *content = "hello, world";
+    size_t content_size = 12;
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_write (g, path, content, content_size);
     if (r == -1)
       return -1;
   }
   {
-    const char *file = "/file";
+    const char *file = "/filesize";
     int64_t r;
     suppress_error = 0;
     r = guestfs_filesize (g, file);
@@ -685,7 +4622,7 @@ static int test_dd_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_dd_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_dd_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -709,26 +4646,8 @@ static int test_dd_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -739,17 +4658,26 @@ static int test_dd_0 (void)
   /* TestOutputBuffer for dd (0) */
   const char *expected = "hello, world";
   {
-    const char *path = "/src";
-    const char *content = "hello, world";
+    const char *path = "/dd";
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_mkdir (g, path);
     if (r == -1)
       return -1;
   }
   {
-    const char *src = "/src";
-    const char *dest = "/dest";
+    const char *path = "/dd/src";
+    const char *content = "hello, world";
+    size_t content_size = 12;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *src = "/dd/src";
+    const char *dest = "/dd/dest";
     int r;
     suppress_error = 0;
     r = guestfs_dd (g, src, dest);
@@ -757,7 +4685,7 @@ static int test_dd_0 (void)
       return -1;
   }
   {
-    const char *path = "/dest";
+    const char *path = "/dd/dest";
     char *r;
     size_t size;
     suppress_error = 0;
@@ -854,7 +4782,7 @@ static int test_fill_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_fill_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_fill_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -878,26 +4806,8 @@ static int test_fill_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -908,7 +4818,7 @@ static int test_fill_0 (void)
   /* TestOutputBuffer for fill (0) */
   const char *expected = "cccccccccc";
   {
-    const char *path = "/test";
+    const char *path = "/fill";
     int r;
     suppress_error = 0;
     r = guestfs_fill (g, 99, 10, path);
@@ -916,7 +4826,7 @@ static int test_fill_0 (void)
       return -1;
   }
   {
-    const char *path = "/test";
+    const char *path = "/fill";
     char *r;
     size_t size;
     suppress_error = 0;
@@ -1716,7 +5626,7 @@ static int test_mkdir_mode_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_mkdir_mode_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_mkdir_mode_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -1740,26 +5650,8 @@ static int test_mkdir_mode_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -1769,7 +5661,7 @@ static int test_mkdir_mode_0 (void)
   }
   /* TestOutputStruct for mkdir_mode (0) */
   {
-    const char *path = "/test";
+    const char *path = "/mkdir_mode";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir_mode (g, path, 73);
@@ -1777,7 +5669,7 @@ static int test_mkdir_mode_0 (void)
       return -1;
   }
   {
-    const char *path = "/test";
+    const char *path = "/mkdir_mode";
     struct guestfs_stat *r;
     suppress_error = 0;
     r = guestfs_stat (g, path);
@@ -1814,7 +5706,7 @@ static int test_utimens_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_utimens_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_utimens_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -1838,26 +5730,8 @@ static int test_utimens_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -1867,7 +5741,7 @@ static int test_utimens_0 (void)
   }
   /* TestOutputStruct for utimens (0) */
   {
-    const char *path = "/test";
+    const char *path = "/utimens";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -1875,7 +5749,7 @@ static int test_utimens_0 (void)
       return -1;
   }
   {
-    const char *path = "/test";
+    const char *path = "/utimens";
     int r;
     suppress_error = 0;
     r = guestfs_utimens (g, path, 12345, 67890, 9876, 5432);
@@ -1883,7 +5757,7 @@ static int test_utimens_0 (void)
       return -1;
   }
   {
-    const char *path = "/test";
+    const char *path = "/utimens";
     struct guestfs_stat *r;
     suppress_error = 0;
     r = guestfs_stat (g, path);
@@ -1920,7 +5794,7 @@ static int test_truncate_size_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_truncate_size_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_truncate_size_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -1944,26 +5818,8 @@ static int test_truncate_size_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -1973,7 +5829,7 @@ static int test_truncate_size_0 (void)
   }
   /* TestOutputStruct for truncate_size (0) */
   {
-    const char *path = "/test";
+    const char *path = "/truncate_size";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -1981,7 +5837,7 @@ static int test_truncate_size_0 (void)
       return -1;
   }
   {
-    const char *path = "/test";
+    const char *path = "/truncate_size";
     int r;
     suppress_error = 0;
     r = guestfs_truncate_size (g, path, 1000);
@@ -1989,7 +5845,7 @@ static int test_truncate_size_0 (void)
       return -1;
   }
   {
-    const char *path = "/test";
+    const char *path = "/truncate_size";
     struct guestfs_stat *r;
     suppress_error = 0;
     r = guestfs_stat (g, path);
@@ -2026,7 +5882,7 @@ static int test_truncate_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_truncate_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_truncate_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -2050,26 +5906,8 @@ static int test_truncate_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -2079,16 +5917,17 @@ static int test_truncate_0 (void)
   }
   /* TestOutputStruct for truncate (0) */
   {
-    const char *path = "/test";
+    const char *path = "/truncate";
     const char *content = "some stuff so size is not zero";
+    size_t content_size = 30;
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_write (g, path, content, content_size);
     if (r == -1)
       return -1;
   }
   {
-    const char *path = "/test";
+    const char *path = "/truncate";
     int r;
     suppress_error = 0;
     r = guestfs_truncate (g, path);
@@ -2096,7 +5935,7 @@ static int test_truncate_0 (void)
       return -1;
   }
   {
-    const char *path = "/test";
+    const char *path = "/truncate";
     struct guestfs_stat *r;
     suppress_error = 0;
     r = guestfs_stat (g, path);
@@ -2133,7 +5972,7 @@ static int test_vfs_type_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_vfs_type_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_vfs_type_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -2157,26 +5996,8 @@ static int test_vfs_type_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -2187,7 +6008,7 @@ static int test_vfs_type_0 (void)
   /* TestOutput for vfs_type (0) */
   const char *expected = "ext2";
   {
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     char *r;
     suppress_error = 0;
     r = guestfs_vfs_type (g, device);
@@ -2502,7 +6323,7 @@ static int test_case_sensitive_path_4 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_case_sensitive_path_4: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_case_sensitive_path_4 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -2526,26 +6347,8 @@ static int test_case_sensitive_path_4 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -2554,9 +6357,9 @@ static int test_case_sensitive_path_4 (void)
       return -1;
   }
   /* TestOutput for case_sensitive_path (4) */
-  const char *expected = "/a/bbb/c";
+  const char *expected = "/case_sensitive_path/bbb/c";
   {
-    const char *path = "/a";
+    const char *path = "/case_sensitive_path";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir (g, path);
@@ -2564,7 +6367,7 @@ static int test_case_sensitive_path_4 (void)
       return -1;
   }
   {
-    const char *path = "/a/bbb";
+    const char *path = "/case_sensitive_path/bbb";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir (g, path);
@@ -2572,7 +6375,7 @@ static int test_case_sensitive_path_4 (void)
       return -1;
   }
   {
-    const char *path = "/a/bbb/c";
+    const char *path = "/case_sensitive_path/bbb/c";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -2580,7 +6383,7 @@ static int test_case_sensitive_path_4 (void)
       return -1;
   }
   {
-    const char *path = "/A/bbB/C";
+    const char *path = "/CASE_SENSITIVE_path/bbB/C";
     char *r;
     suppress_error = 0;
     r = guestfs_case_sensitive_path (g, path);
@@ -2616,7 +6419,7 @@ static int test_case_sensitive_path_5 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_case_sensitive_path_5: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_case_sensitive_path_5 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -2640,26 +6443,8 @@ static int test_case_sensitive_path_5 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -2668,9 +6453,9 @@ static int test_case_sensitive_path_5 (void)
       return -1;
   }
   /* TestOutput for case_sensitive_path (5) */
-  const char *expected = "/a/bbb/c";
+  const char *expected = "/case_sensitive_path2/bbb/c";
   {
-    const char *path = "/a";
+    const char *path = "/case_sensitive_path2";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir (g, path);
@@ -2678,7 +6463,7 @@ static int test_case_sensitive_path_5 (void)
       return -1;
   }
   {
-    const char *path = "/a/bbb";
+    const char *path = "/case_sensitive_path2/bbb";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir (g, path);
@@ -2686,7 +6471,7 @@ static int test_case_sensitive_path_5 (void)
       return -1;
   }
   {
-    const char *path = "/a/bbb/c";
+    const char *path = "/case_sensitive_path2/bbb/c";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -2694,7 +6479,7 @@ static int test_case_sensitive_path_5 (void)
       return -1;
   }
   {
-    const char *path = "/A////bbB/C";
+    const char *path = "/case_sensitive_PATH2////bbB/C";
     char *r;
     suppress_error = 0;
     r = guestfs_case_sensitive_path (g, path);
@@ -2730,7 +6515,7 @@ static int test_case_sensitive_path_6 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_case_sensitive_path_6: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_case_sensitive_path_6 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -2754,26 +6539,8 @@ static int test_case_sensitive_path_6 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -2783,7 +6550,7 @@ static int test_case_sensitive_path_6 (void)
   }
   /* TestLastFail for case_sensitive_path (6) */
   {
-    const char *path = "/a";
+    const char *path = "/case_sensitive_path3";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir (g, path);
@@ -2791,7 +6558,7 @@ static int test_case_sensitive_path_6 (void)
       return -1;
   }
   {
-    const char *path = "/a/bbb";
+    const char *path = "/case_sensitive_path3/bbb";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir (g, path);
@@ -2799,7 +6566,7 @@ static int test_case_sensitive_path_6 (void)
       return -1;
   }
   {
-    const char *path = "/a/bbb/c";
+    const char *path = "/case_sensitive_path3/bbb/c";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -2807,7 +6574,7 @@ static int test_case_sensitive_path_6 (void)
       return -1;
   }
   {
-    const char *path = "/A/bbb/../bbb/C";
+    const char *path = "/case_SENSITIVE_path3/bbb/../bbb/C";
     char *r;
     suppress_error = 1;
     r = guestfs_case_sensitive_path (g, path);
@@ -2911,16 +6678,9 @@ static int test_modprobe_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "linuxmodules", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_modprobe_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("linuxmodules")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_modprobe_0", "linuxmodules");
+    return 0;
   }
   /* InitNone|InitEmpty for test_modprobe_0 */
   {
@@ -2978,16 +6738,9 @@ static int test_mke2journal_U_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "linuxfsuuid", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_mke2journal_U_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("linuxfsuuid")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_mke2journal_U_0", "linuxfsuuid");
+    return 0;
   }
   /* InitNone|InitEmpty for test_mke2journal_U_0 */
   {
@@ -3016,21 +6769,33 @@ static int test_mke2journal_U_0 (void)
   const char *expected = "new file contents";
   {
     const char *device = "/dev/sda";
-    const char *lines_0 = ",100";
-    const char *lines_1 = ",";
-    const char *const lines[] = {
-      lines_0,
-      lines_1,
-      NULL
-    };
+    const char *parttype = "mbr";
     int r;
     suppress_error = 0;
-    r = guestfs_sfdiskM (g, device, (char **) lines);
+    r = guestfs_part_init (g, device, parttype);
     if (r == -1)
       return -1;
   }
   {
-    const char *uuid = "7745de3f-b9f6-4b1d-9362-6510fd834c84";
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 64, 204799);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 204800, -64);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *uuid = "10c1bbe9-cd0f-17a6-bb14-b21cdf0a458b";
     const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
@@ -3041,7 +6806,7 @@ static int test_mke2journal_U_0 (void)
   {
     const char *fstype = "ext2";
     const char *device = "/dev/sda2";
-    const char *uuid = "7745de3f-b9f6-4b1d-9362-6510fd834c84";
+    const char *uuid = "10c1bbe9-cd0f-17a6-bb14-b21cdf0a458b";
     int r;
     suppress_error = 0;
     r = guestfs_mke2fs_JU (g, fstype, 4096, device, uuid);
@@ -3061,9 +6826,10 @@ static int test_mke2journal_U_0 (void)
   {
     const char *path = "/new";
     const char *content = "new file contents";
+    size_t content_size = 17;
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_write (g, path, content, content_size);
     if (r == -1)
       return -1;
   }
@@ -3131,16 +6897,28 @@ static int test_mke2journal_L_0 (void)
   const char *expected = "new file contents";
   {
     const char *device = "/dev/sda";
-    const char *lines_0 = ",100";
-    const char *lines_1 = ",";
-    const char *const lines[] = {
-      lines_0,
-      lines_1,
-      NULL
-    };
+    const char *parttype = "mbr";
     int r;
     suppress_error = 0;
-    r = guestfs_sfdiskM (g, device, (char **) lines);
+    r = guestfs_part_init (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 64, 204799);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 204800, -64);
     if (r == -1)
       return -1;
   }
@@ -3176,9 +6954,10 @@ static int test_mke2journal_L_0 (void)
   {
     const char *path = "/new";
     const char *content = "new file contents";
+    size_t content_size = 17;
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_write (g, path, content, content_size);
     if (r == -1)
       return -1;
   }
@@ -3246,16 +7025,28 @@ static int test_mke2journal_0 (void)
   const char *expected = "new file contents";
   {
     const char *device = "/dev/sda";
-    const char *lines_0 = ",100";
-    const char *lines_1 = ",";
-    const char *const lines[] = {
-      lines_0,
-      lines_1,
-      NULL
-    };
+    const char *parttype = "mbr";
     int r;
     suppress_error = 0;
-    r = guestfs_sfdiskM (g, device, (char **) lines);
+    r = guestfs_part_init (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 64, 204799);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 204800, -64);
     if (r == -1)
       return -1;
   }
@@ -3290,9 +7081,10 @@ static int test_mke2journal_0 (void)
   {
     const char *path = "/new";
     const char *content = "new file contents";
+    size_t content_size = 17;
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_write (g, path, content, content_size);
     if (r == -1)
       return -1;
   }
@@ -3389,9 +7181,10 @@ static int test_mkfs_b_0 (void)
   {
     const char *path = "/new";
     const char *content = "new file contents";
+    size_t content_size = 17;
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_write (g, path, content, content_size);
     if (r == -1)
       return -1;
   }
@@ -3407,6 +7200,275 @@ static int test_mkfs_b_0 (void)
       return -1;
     }
     free (r);
+  }
+  return 0;
+}
+
+static int test_mkfs_b_1_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "mkfs_b") == NULL;
+  str = getenv ("SKIP_TEST_MKFS_B_1");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_MKFS_B");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_mkfs_b_1 (void)
+{
+  if (test_mkfs_b_1_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_mkfs_b_1");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_mkfs_b_1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestRun for mkfs_b (1) */
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *fstype = "vfat";
+    const char *device = "/dev/sda1";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkfs_b (g, fstype, 32768, device);
+    if (r == -1)
+      return -1;
+  }
+  return 0;
+}
+
+static int test_mkfs_b_2_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "mkfs_b") == NULL;
+  str = getenv ("SKIP_TEST_MKFS_B_2");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_MKFS_B");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_mkfs_b_2 (void)
+{
+  if (test_mkfs_b_2_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_mkfs_b_2");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_mkfs_b_2 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestLastFail for mkfs_b (2) */
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *fstype = "vfat";
+    const char *device = "/dev/sda1";
+    int r;
+    suppress_error = 1;
+    r = guestfs_mkfs_b (g, fstype, 32769, device);
+    if (r != -1)
+      return -1;
+  }
+  return 0;
+}
+
+static int test_mkfs_b_3_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "mkfs_b") == NULL;
+  str = getenv ("SKIP_TEST_MKFS_B_3");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_MKFS_B");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_mkfs_b_3 (void)
+{
+  if (test_mkfs_b_3_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_mkfs_b_3");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_mkfs_b_3 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestLastFail for mkfs_b (3) */
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *fstype = "vfat";
+    const char *device = "/dev/sda1";
+    int r;
+    suppress_error = 1;
+    r = guestfs_mkfs_b (g, fstype, 33280, device);
+    if (r != -1)
+      return -1;
+  }
+  return 0;
+}
+
+static int test_mkfs_b_4_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "mkfs_b") == NULL;
+  str = getenv ("SKIP_TEST_MKFS_B_4");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_MKFS_B");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_mkfs_b_4 (void)
+{
+  if (test_mkfs_b_4_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_mkfs_b_4");
+    return 0;
+  }
+
+  if (!is_available ("ntfsprogs")) {
+    printf ("        %s skipped (reason: %s not available)\n", "test_mkfs_b_4", "ntfsprogs");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_mkfs_b_4 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestRun for mkfs_b (4) */
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *fstype = "ntfs";
+    const char *device = "/dev/sda1";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkfs_b (g, fstype, 32768, device);
+    if (r == -1)
+      return -1;
   }
   return 0;
 }
@@ -3432,18 +7494,11 @@ static int test_inotify_add_watch_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "inotify", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_inotify_add_watch_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("inotify")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_inotify_add_watch_0", "inotify");
+    return 0;
   }
-  /* InitBasicFS for test_inotify_add_watch_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_inotify_add_watch_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -3467,26 +7522,8 @@ static int test_inotify_add_watch_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -3496,6 +7533,14 @@ static int test_inotify_add_watch_0 (void)
   }
   /* TestOutputList for inotify_add_watch (0) */
   {
+    const char *path = "/inotify_add_watch";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
     int r;
     suppress_error = 0;
     r = guestfs_inotify_init (g, 0);
@@ -3503,7 +7548,7 @@ static int test_inotify_add_watch_0 (void)
       return -1;
   }
   {
-    const char *path = "/";
+    const char *path = "/inotify_add_watch";
     int64_t r;
     suppress_error = 0;
     r = guestfs_inotify_add_watch (g, path, 1073741823);
@@ -3511,7 +7556,7 @@ static int test_inotify_add_watch_0 (void)
       return -1;
   }
   {
-    const char *path = "/a";
+    const char *path = "/inotify_add_watch/a";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -3519,7 +7564,7 @@ static int test_inotify_add_watch_0 (void)
       return -1;
   }
   {
-    const char *path = "/b";
+    const char *path = "/inotify_add_watch/b";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -3528,7 +7573,7 @@ static int test_inotify_add_watch_0 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_inotify_files (g);
     if (r == NULL)
@@ -3590,16 +7635,9 @@ static int test_inotify_init_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "inotify", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_inotify_init_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("inotify")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_inotify_init_0", "inotify");
+    return 0;
   }
   /* InitISOFS for test_inotify_init_0 */
   {
@@ -3665,7 +7703,7 @@ static int test_mkswap_file_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_mkswap_file_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_mkswap_file_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -3689,26 +7727,8 @@ static int test_mkswap_file_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -3718,7 +7738,7 @@ static int test_mkswap_file_0 (void)
   }
   /* TestRun for mkswap_file (0) */
   {
-    const char *path = "/swap";
+    const char *path = "/mkswap_file";
     int r;
     suppress_error = 0;
     r = guestfs_fallocate (g, path, 8388608);
@@ -3726,10 +7746,18 @@ static int test_mkswap_file_0 (void)
       return -1;
   }
   {
-    const char *path = "/swap";
+    const char *path = "/mkswap_file";
     int r;
     suppress_error = 0;
     r = guestfs_mkswap_file (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/mkswap_file";
+    int r;
+    suppress_error = 0;
+    r = guestfs_rm (g, path);
     if (r == -1)
       return -1;
   }
@@ -3757,16 +7785,9 @@ static int test_swapon_uuid_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "linuxfsuuid", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_swapon_uuid_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("linuxfsuuid")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_swapon_uuid_0", "linuxfsuuid");
+    return 0;
   }
   /* InitNone|InitEmpty for test_swapon_uuid_0 */
   {
@@ -3793,8 +7814,8 @@ static int test_swapon_uuid_0 (void)
   }
   /* TestRun for swapon_uuid (0) */
   {
-    const char *uuid = "8111429b-ac33-4c0c-9ceb-9e0954005fda";
-    const char *device = "/dev/sdb";
+    const char *uuid = "10c1bbe9-cd0f-17a6-bb14-b21cdf0a458b";
+    const char *device = "/dev/sdc";
     int r;
     suppress_error = 0;
     r = guestfs_mkswap_U (g, uuid, device);
@@ -3802,7 +7823,7 @@ static int test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "8111429b-ac33-4c0c-9ceb-9e0954005fda";
+    const char *uuid = "10c1bbe9-cd0f-17a6-bb14-b21cdf0a458b";
     int r;
     suppress_error = 0;
     r = guestfs_swapon_uuid (g, uuid);
@@ -3810,7 +7831,7 @@ static int test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "8111429b-ac33-4c0c-9ceb-9e0954005fda";
+    const char *uuid = "10c1bbe9-cd0f-17a6-bb14-b21cdf0a458b";
     int r;
     suppress_error = 0;
     r = guestfs_swapoff_uuid (g, uuid);
@@ -3866,7 +7887,7 @@ static int test_swapon_label_0 (void)
   }
   /* TestRun for swapon_label (0) */
   {
-    const char *device = "/dev/sdb";
+    const char *device = "/dev/sda";
     const char *parttype = "mbr";
     int r;
     suppress_error = 0;
@@ -3876,7 +7897,7 @@ static int test_swapon_label_0 (void)
   }
   {
     const char *label = "swapit";
-    const char *device = "/dev/sdb1";
+    const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
     r = guestfs_mkswap_L (g, label, device);
@@ -3900,7 +7921,7 @@ static int test_swapon_label_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb";
+    const char *device = "/dev/sda";
     int r;
     suppress_error = 0;
     r = guestfs_zero (g, device);
@@ -3908,7 +7929,7 @@ static int test_swapon_label_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb";
+    const char *device = "/dev/sda";
     int r;
     suppress_error = 0;
     r = guestfs_blockdev_rereadpt (g, device);
@@ -3939,7 +7960,7 @@ static int test_swapon_file_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_swapon_file_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_swapon_file_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -3963,26 +7984,8 @@ static int test_swapon_file_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -3992,7 +7995,7 @@ static int test_swapon_file_0 (void)
   }
   /* TestRun for swapon_file (0) */
   {
-    const char *path = "/swap";
+    const char *path = "/swapon_file";
     int r;
     suppress_error = 0;
     r = guestfs_fallocate (g, path, 8388608);
@@ -4000,7 +8003,7 @@ static int test_swapon_file_0 (void)
       return -1;
   }
   {
-    const char *path = "/swap";
+    const char *path = "/swapon_file";
     int r;
     suppress_error = 0;
     r = guestfs_mkswap_file (g, path);
@@ -4008,7 +8011,7 @@ static int test_swapon_file_0 (void)
       return -1;
   }
   {
-    const char *file = "/swap";
+    const char *file = "/swapon_file";
     int r;
     suppress_error = 0;
     r = guestfs_swapon_file (g, file);
@@ -4016,10 +8019,18 @@ static int test_swapon_file_0 (void)
       return -1;
   }
   {
-    const char *file = "/swap";
+    const char *file = "/swapon_file";
     int r;
     suppress_error = 0;
     r = guestfs_swapoff_file (g, file);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/swapon_file";
+    int r;
+    suppress_error = 0;
+    r = guestfs_rm (g, path);
     if (r == -1)
       return -1;
   }
@@ -4128,7 +8139,7 @@ static int test_fallocate_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_fallocate_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_fallocate_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -4152,26 +8163,8 @@ static int test_fallocate_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -4181,7 +8174,7 @@ static int test_fallocate_0 (void)
   }
   /* TestOutputStruct for fallocate (0) */
   {
-    const char *path = "/a";
+    const char *path = "/fallocate";
     int r;
     suppress_error = 0;
     r = guestfs_fallocate (g, path, 1000000);
@@ -4189,7 +8182,7 @@ static int test_fallocate_0 (void)
       return -1;
   }
   {
-    const char *path = "/a";
+    const char *path = "/fallocate";
     struct guestfs_stat *r;
     suppress_error = 0;
     r = guestfs_stat (g, path);
@@ -4226,7 +8219,7 @@ static int test_ln_sf_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_ln_sf_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_ln_sf_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -4250,26 +8243,8 @@ static int test_ln_sf_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -4280,7 +8255,7 @@ static int test_ln_sf_0 (void)
   /* TestOutput for ln_sf (0) */
   const char *expected = "../d";
   {
-    const char *path = "/a/b";
+    const char *path = "/ln_sf/b";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir_p (g, path);
@@ -4288,7 +8263,7 @@ static int test_ln_sf_0 (void)
       return -1;
   }
   {
-    const char *path = "/a/b/c";
+    const char *path = "/ln_sf/b/c";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -4297,7 +8272,7 @@ static int test_ln_sf_0 (void)
   }
   {
     const char *target = "../d";
-    const char *linkname = "/a/b/c";
+    const char *linkname = "/ln_sf/b/c";
     int r;
     suppress_error = 0;
     r = guestfs_ln_sf (g, target, linkname);
@@ -4305,7 +8280,7 @@ static int test_ln_sf_0 (void)
       return -1;
   }
   {
-    const char *path = "/a/b/c";
+    const char *path = "/ln_sf/b/c";
     char *r;
     suppress_error = 0;
     r = guestfs_readlink (g, path);
@@ -4341,7 +8316,7 @@ static int test_ln_s_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_ln_s_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_ln_s_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -4365,26 +8340,8 @@ static int test_ln_s_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -4394,7 +8351,15 @@ static int test_ln_s_0 (void)
   }
   /* TestOutputStruct for ln_s (0) */
   {
-    const char *path = "/a";
+    const char *path = "/ln_s";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/ln_s/a";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -4403,7 +8368,7 @@ static int test_ln_s_0 (void)
   }
   {
     const char *target = "a";
-    const char *linkname = "/b";
+    const char *linkname = "/ln_s/b";
     int r;
     suppress_error = 0;
     r = guestfs_ln_s (g, target, linkname);
@@ -4411,7 +8376,7 @@ static int test_ln_s_0 (void)
       return -1;
   }
   {
-    const char *path = "/b";
+    const char *path = "/ln_s/b";
     struct guestfs_stat *r;
     suppress_error = 0;
     r = guestfs_lstat (g, path);
@@ -4448,7 +8413,7 @@ static int test_ln_f_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_ln_f_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_ln_f_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -4472,26 +8437,8 @@ static int test_ln_f_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -4501,7 +8448,15 @@ static int test_ln_f_0 (void)
   }
   /* TestOutputStruct for ln_f (0) */
   {
-    const char *path = "/a";
+    const char *path = "/ln_f";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/ln_f/a";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -4509,7 +8464,7 @@ static int test_ln_f_0 (void)
       return -1;
   }
   {
-    const char *path = "/b";
+    const char *path = "/ln_f/b";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -4517,8 +8472,8 @@ static int test_ln_f_0 (void)
       return -1;
   }
   {
-    const char *target = "/a";
-    const char *linkname = "/b";
+    const char *target = "/ln_f/a";
+    const char *linkname = "/ln_f/b";
     int r;
     suppress_error = 0;
     r = guestfs_ln_f (g, target, linkname);
@@ -4526,7 +8481,7 @@ static int test_ln_f_0 (void)
       return -1;
   }
   {
-    const char *path = "/b";
+    const char *path = "/ln_f/b";
     struct guestfs_stat *r;
     suppress_error = 0;
     r = guestfs_stat (g, path);
@@ -4563,7 +8518,7 @@ static int test_ln_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_ln_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_ln_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -4587,26 +8542,8 @@ static int test_ln_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -4616,7 +8553,15 @@ static int test_ln_0 (void)
   }
   /* TestOutputStruct for ln (0) */
   {
-    const char *path = "/a";
+    const char *path = "/ln";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/ln/a";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -4624,8 +8569,8 @@ static int test_ln_0 (void)
       return -1;
   }
   {
-    const char *target = "/a";
-    const char *linkname = "/b";
+    const char *target = "/ln/a";
+    const char *linkname = "/ln/b";
     int r;
     suppress_error = 0;
     r = guestfs_ln (g, target, linkname);
@@ -4633,7 +8578,7 @@ static int test_ln_0 (void)
       return -1;
   }
   {
-    const char *path = "/b";
+    const char *path = "/ln/b";
     struct guestfs_stat *r;
     suppress_error = 0;
     r = guestfs_stat (g, path);
@@ -4670,16 +8615,9 @@ static int test_realpath_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "realpath", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_realpath_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("realpath")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_realpath_0", "realpath");
+    return 0;
   }
   /* InitISOFS for test_realpath_0 */
   {
@@ -4789,7 +8727,7 @@ static int test_zfgrepi_0 (void)
     const char *pattern = "abc";
     const char *path = "/test-grep.txt.gz";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_zfgrepi (g, pattern, path);
     if (r == NULL)
@@ -4900,7 +8838,7 @@ static int test_zegrepi_0 (void)
     const char *regex = "abc";
     const char *path = "/test-grep.txt.gz";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_zegrepi (g, regex, path);
     if (r == NULL)
@@ -5011,7 +8949,7 @@ static int test_zgrepi_0 (void)
     const char *regex = "abc";
     const char *path = "/test-grep.txt.gz";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_zgrepi (g, regex, path);
     if (r == NULL)
@@ -5122,7 +9060,7 @@ static int test_zfgrep_0 (void)
     const char *pattern = "abc";
     const char *path = "/test-grep.txt.gz";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_zfgrep (g, pattern, path);
     if (r == NULL)
@@ -5221,7 +9159,7 @@ static int test_zegrep_0 (void)
     const char *regex = "abc";
     const char *path = "/test-grep.txt.gz";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_zegrep (g, regex, path);
     if (r == NULL)
@@ -5320,7 +9258,7 @@ static int test_zgrep_0 (void)
     const char *regex = "abc";
     const char *path = "/test-grep.txt.gz";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_zgrep (g, regex, path);
     if (r == NULL)
@@ -5419,7 +9357,7 @@ static int test_fgrepi_0 (void)
     const char *pattern = "abc";
     const char *path = "/test-grep.txt";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_fgrepi (g, pattern, path);
     if (r == NULL)
@@ -5530,7 +9468,7 @@ static int test_egrepi_0 (void)
     const char *regex = "abc";
     const char *path = "/test-grep.txt";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_egrepi (g, regex, path);
     if (r == NULL)
@@ -5641,7 +9579,7 @@ static int test_grepi_0 (void)
     const char *regex = "abc";
     const char *path = "/test-grep.txt";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_grepi (g, regex, path);
     if (r == NULL)
@@ -5752,7 +9690,7 @@ static int test_fgrep_0 (void)
     const char *pattern = "abc";
     const char *path = "/test-grep.txt";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_fgrep (g, pattern, path);
     if (r == NULL)
@@ -5851,7 +9789,7 @@ static int test_egrep_0 (void)
     const char *regex = "abc";
     const char *path = "/test-grep.txt";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_egrep (g, regex, path);
     if (r == NULL)
@@ -5950,7 +9888,7 @@ static int test_grep_0 (void)
     const char *regex = "abc";
     const char *path = "/test-grep.txt";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_grep (g, regex, path);
     if (r == NULL)
@@ -6049,13 +9987,88 @@ static int test_grep_1 (void)
     const char *regex = "nomatch";
     const char *path = "/test-grep.txt";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_grep (g, regex, path);
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
       fprintf (stderr, "test_grep_1: extra elements returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    for (i = 0; r[i] != NULL; ++i)
+      free (r[i]);
+    free (r);
+  }
+  return 0;
+}
+
+static int test_grep_2_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "grep") == NULL;
+  str = getenv ("SKIP_TEST_GREP_2");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_GREP");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_grep_2 (void)
+{
+  if (test_grep_2_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_grep_2");
+    return 0;
+  }
+
+  /* InitISOFS for test_grep_2 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputList for grep (2) */
+  {
+    const char *regex = "nomatch";
+    const char *path = "/abssymlink";
+    char **r;
+    size_t i;
+    suppress_error = 0;
+    r = guestfs_grep (g, regex, path);
+    if (r == NULL)
+      return -1;
+    if (r[0] != NULL) {
+      fprintf (stderr, "test_grep_2: extra elements returned from command\n");
       print_strings (r);
       return -1;
     }
@@ -6142,39 +10155,28 @@ static int test_read_file_0 (void)
   return 0;
 }
 
-static int test_mknod_c_0_skip (void)
+static int test_read_file_1_skip (void)
 {
   const char *str;
 
   str = getenv ("TEST_ONLY");
   if (str)
-    return strstr (str, "mknod_c") == NULL;
-  str = getenv ("SKIP_TEST_MKNOD_C_0");
+    return strstr (str, "read_file") == NULL;
+  str = getenv ("SKIP_TEST_READ_FILE_1");
   if (str && STREQ (str, "1")) return 1;
-  str = getenv ("SKIP_TEST_MKNOD_C");
+  str = getenv ("SKIP_TEST_READ_FILE");
   if (str && STREQ (str, "1")) return 1;
   return 0;
 }
 
-static int test_mknod_c_0 (void)
+static int test_read_file_1 (void)
 {
-  if (test_mknod_c_0_skip ()) {
-    printf ("        %s skipped (reason: environment variable set)\n", "test_mknod_c_0");
+  if (test_read_file_1_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_read_file_1");
     return 0;
   }
 
-  {
-    const char *groups[] = { "mknod", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_mknod_c_0", groups[0]);
-      return 0;
-    }
-  }
-  /* InitBasicFS for test_mknod_c_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_read_file_1 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -6198,26 +10200,323 @@ static int test_mknod_c_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
     int r;
     suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestLastFail for read_file (1) */
+  {
+    const char *path = "/read_file";
+    int r;
+    suppress_error = 0;
+    r = guestfs_touch (g, path);
     if (r == -1)
       return -1;
   }
   {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
+    const char *path = "/read_file";
     int r;
     suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
+    r = guestfs_truncate_size (g, path, 4194303);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/read_file";
+    char *r;
+    size_t size;
+    suppress_error = 1;
+    r = guestfs_read_file (g, path, &size);
+    if (r != NULL)
+      return -1;
+    free (r);
+  }
+  return 0;
+}
+
+static int test_read_file_2_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "read_file") == NULL;
+  str = getenv ("SKIP_TEST_READ_FILE_2");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_READ_FILE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_read_file_2 (void)
+{
+  if (test_read_file_2_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_read_file_2");
+    return 0;
+  }
+
+  /* InitScratchFS for test_read_file_2 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
     if (r == -1)
       return -1;
   }
   {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestLastFail for read_file (2) */
+  {
+    const char *path = "/read_file2";
+    int r;
+    suppress_error = 0;
+    r = guestfs_touch (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/read_file2";
+    int r;
+    suppress_error = 0;
+    r = guestfs_truncate_size (g, path, 4194304);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/read_file2";
+    char *r;
+    size_t size;
+    suppress_error = 1;
+    r = guestfs_read_file (g, path, &size);
+    if (r != NULL)
+      return -1;
+    free (r);
+  }
+  return 0;
+}
+
+static int test_read_file_3_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "read_file") == NULL;
+  str = getenv ("SKIP_TEST_READ_FILE_3");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_READ_FILE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_read_file_3 (void)
+{
+  if (test_read_file_3_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_read_file_3");
+    return 0;
+  }
+
+  /* InitScratchFS for test_read_file_3 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestLastFail for read_file (3) */
+  {
+    const char *path = "/read_file3";
+    int r;
+    suppress_error = 0;
+    r = guestfs_touch (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/read_file3";
+    int r;
+    suppress_error = 0;
+    r = guestfs_truncate_size (g, path, 41943040);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/read_file3";
+    char *r;
+    size_t size;
+    suppress_error = 1;
+    r = guestfs_read_file (g, path, &size);
+    if (r != NULL)
+      return -1;
+    free (r);
+  }
+  return 0;
+}
+
+static int test_umask_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "umask") == NULL;
+  str = getenv ("SKIP_TEST_UMASK_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_UMASK");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_umask_0 (void)
+{
+  if (test_umask_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_umask_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_umask_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputInt for umask (0) */
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umask (g, 18);
+    if (r == -1)
+      return -1;
+    if (r != 18) {
+      fprintf (stderr, "test_umask_0: expected 18 but got %d\n",               (int) r);
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_mknod_c_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "mknod_c") == NULL;
+  str = getenv ("SKIP_TEST_MKNOD_C_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_MKNOD_C");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_mknod_c_0 (void)
+{
+  if (test_mknod_c_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_mknod_c_0");
+    return 0;
+  }
+
+  if (!is_available ("mknod")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_mknod_c_0", "mknod");
+    return 0;
+  }
+  /* InitScratchFS for test_mknod_c_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -6227,7 +10526,7 @@ static int test_mknod_c_0 (void)
   }
   /* TestOutputStruct for mknod_c (0) */
   {
-    const char *path = "/node";
+    const char *path = "/mknod_c";
     int r;
     suppress_error = 0;
     r = guestfs_mknod_c (g, 511, 99, 66, path);
@@ -6235,7 +10534,7 @@ static int test_mknod_c_0 (void)
       return -1;
   }
   {
-    const char *path = "/node";
+    const char *path = "/mknod_c";
     struct guestfs_stat *r;
     suppress_error = 0;
     r = guestfs_stat (g, path);
@@ -6272,18 +10571,11 @@ static int test_mknod_b_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "mknod", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_mknod_b_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("mknod")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_mknod_b_0", "mknod");
+    return 0;
   }
-  /* InitBasicFS for test_mknod_b_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_mknod_b_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -6307,26 +10599,8 @@ static int test_mknod_b_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -6336,7 +10610,7 @@ static int test_mknod_b_0 (void)
   }
   /* TestOutputStruct for mknod_b (0) */
   {
-    const char *path = "/node";
+    const char *path = "/mknod_b";
     int r;
     suppress_error = 0;
     r = guestfs_mknod_b (g, 511, 99, 66, path);
@@ -6344,7 +10618,7 @@ static int test_mknod_b_0 (void)
       return -1;
   }
   {
-    const char *path = "/node";
+    const char *path = "/mknod_b";
     struct guestfs_stat *r;
     suppress_error = 0;
     r = guestfs_stat (g, path);
@@ -6381,18 +10655,11 @@ static int test_mkfifo_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "mknod", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_mkfifo_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("mknod")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_mkfifo_0", "mknod");
+    return 0;
   }
-  /* InitBasicFS for test_mkfifo_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_mkfifo_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -6416,26 +10683,8 @@ static int test_mkfifo_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -6445,7 +10694,7 @@ static int test_mkfifo_0 (void)
   }
   /* TestOutputStruct for mkfifo (0) */
   {
-    const char *path = "/node";
+    const char *path = "/mkfifo";
     int r;
     suppress_error = 0;
     r = guestfs_mkfifo (g, 511, path);
@@ -6453,7 +10702,7 @@ static int test_mkfifo_0 (void)
       return -1;
   }
   {
-    const char *path = "/node";
+    const char *path = "/mkfifo";
     struct guestfs_stat *r;
     suppress_error = 0;
     r = guestfs_stat (g, path);
@@ -6490,18 +10739,11 @@ static int test_mknod_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "mknod", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_mknod_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("mknod")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_mknod_0", "mknod");
+    return 0;
   }
-  /* InitBasicFS for test_mknod_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_mknod_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -6525,26 +10767,8 @@ static int test_mknod_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -6554,7 +10778,7 @@ static int test_mknod_0 (void)
   }
   /* TestOutputStruct for mknod (0) */
   {
-    const char *path = "/node";
+    const char *path = "/mknod";
     int r;
     suppress_error = 0;
     r = guestfs_mknod (g, 4607, 0, 0, path);
@@ -6562,7 +10786,7 @@ static int test_mknod_0 (void)
       return -1;
   }
   {
-    const char *path = "/node";
+    const char *path = "/mknod";
     struct guestfs_stat *r;
     suppress_error = 0;
     r = guestfs_stat (g, path);
@@ -6599,18 +10823,11 @@ static int test_mknod_1 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "mknod", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_mknod_1", groups[0]);
-      return 0;
-    }
+  if (!is_available ("mknod")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_mknod_1", "mknod");
+    return 0;
   }
-  /* InitBasicFS for test_mknod_1: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_mknod_1 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -6634,26 +10851,8 @@ static int test_mknod_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -6663,7 +10862,7 @@ static int test_mknod_1 (void)
   }
   /* TestOutputStruct for mknod (1) */
   {
-    const char *path = "/node";
+    const char *path = "/mknod2";
     int r;
     suppress_error = 0;
     r = guestfs_mknod (g, 25087, 66, 99, path);
@@ -6671,7 +10870,7 @@ static int test_mknod_1 (void)
       return -1;
   }
   {
-    const char *path = "/node";
+    const char *path = "/mknod2";
     struct guestfs_stat *r;
     suppress_error = 0;
     r = guestfs_stat (g, path);
@@ -6708,16 +10907,9 @@ static int test_mkswap_U_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "linuxfsuuid", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_mkswap_U_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("linuxfsuuid")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_mkswap_U_0", "linuxfsuuid");
+    return 0;
   }
   /* InitNone|InitEmpty for test_mkswap_U_0 */
   {
@@ -6753,7 +10945,7 @@ static int test_mkswap_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "0e99673a-04f9-4d08-b10c-9ca1b114818a";
+    const char *uuid = "10c1bbe9-cd0f-17a6-bb14-b21cdf0a458b";
     const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
@@ -6952,7 +11144,7 @@ static int test_initrd_list_0 (void)
   {
     const char *path = "/initrd";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_initrd_list (g, path);
     if (r == NULL)
@@ -7167,7 +11359,7 @@ static int test_tail_n_0 (void)
   {
     const char *path = "/10klines";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_tail_n (g, 3, path);
     if (r == NULL)
@@ -7277,7 +11469,7 @@ static int test_tail_n_1 (void)
   {
     const char *path = "/10klines";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_tail_n (g, -9998, path);
     if (r == NULL)
@@ -7387,7 +11579,7 @@ static int test_tail_n_2 (void)
   {
     const char *path = "/10klines";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_tail_n (g, 0, path);
     if (r == NULL)
@@ -7461,7 +11653,7 @@ static int test_tail_0 (void)
   {
     const char *path = "/10klines";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_tail (g, path);
     if (r == NULL)
@@ -7655,7 +11847,7 @@ static int test_head_n_0 (void)
   {
     const char *path = "/10klines";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_head_n (g, 3, path);
     if (r == NULL)
@@ -7765,7 +11957,7 @@ static int test_head_n_1 (void)
   {
     const char *path = "/10klines";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_head_n (g, -9997, path);
     if (r == NULL)
@@ -7875,7 +12067,7 @@ static int test_head_n_2 (void)
   {
     const char *path = "/10klines";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_head_n (g, 0, path);
     if (r == NULL)
@@ -7949,7 +12141,7 @@ static int test_head_0 (void)
   {
     const char *path = "/10klines";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_head (g, path);
     if (r == NULL)
@@ -8076,6 +12268,200 @@ static int test_head_0 (void)
     }
     if (r[10] != NULL) {
       fprintf (stderr, "test_head_0: extra elements returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    for (i = 0; r[i] != NULL; ++i)
+      free (r[i]);
+    free (r);
+  }
+  return 0;
+}
+
+static int test_head_1_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "head") == NULL;
+  str = getenv ("SKIP_TEST_HEAD_1");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_HEAD");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_head_1 (void)
+{
+  if (test_head_1_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_head_1");
+    return 0;
+  }
+
+  /* InitISOFS for test_head_1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputList for head (1) */
+  {
+    const char *path = "/abssymlink";
+    char **r;
+    size_t i;
+    suppress_error = 0;
+    r = guestfs_head (g, path);
+    if (r == NULL)
+      return -1;
+    if (!r[0]) {
+      fprintf (stderr, "test_head_1: short list returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    {
+      const char *expected = "0abcdefghijklmnopqrstuvwxyz";
+      if (STRNEQ (r[0], expected)) {
+        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        return -1;
+      }
+    }
+    if (!r[1]) {
+      fprintf (stderr, "test_head_1: short list returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    {
+      const char *expected = "1abcdefghijklmnopqrstuvwxyz";
+      if (STRNEQ (r[1], expected)) {
+        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        return -1;
+      }
+    }
+    if (!r[2]) {
+      fprintf (stderr, "test_head_1: short list returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    {
+      const char *expected = "2abcdefghijklmnopqrstuvwxyz";
+      if (STRNEQ (r[2], expected)) {
+        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        return -1;
+      }
+    }
+    if (!r[3]) {
+      fprintf (stderr, "test_head_1: short list returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    {
+      const char *expected = "3abcdefghijklmnopqrstuvwxyz";
+      if (STRNEQ (r[3], expected)) {
+        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[3]);
+        return -1;
+      }
+    }
+    if (!r[4]) {
+      fprintf (stderr, "test_head_1: short list returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    {
+      const char *expected = "4abcdefghijklmnopqrstuvwxyz";
+      if (STRNEQ (r[4], expected)) {
+        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[4]);
+        return -1;
+      }
+    }
+    if (!r[5]) {
+      fprintf (stderr, "test_head_1: short list returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    {
+      const char *expected = "5abcdefghijklmnopqrstuvwxyz";
+      if (STRNEQ (r[5], expected)) {
+        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[5]);
+        return -1;
+      }
+    }
+    if (!r[6]) {
+      fprintf (stderr, "test_head_1: short list returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    {
+      const char *expected = "6abcdefghijklmnopqrstuvwxyz";
+      if (STRNEQ (r[6], expected)) {
+        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[6]);
+        return -1;
+      }
+    }
+    if (!r[7]) {
+      fprintf (stderr, "test_head_1: short list returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    {
+      const char *expected = "7abcdefghijklmnopqrstuvwxyz";
+      if (STRNEQ (r[7], expected)) {
+        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[7]);
+        return -1;
+      }
+    }
+    if (!r[8]) {
+      fprintf (stderr, "test_head_1: short list returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    {
+      const char *expected = "8abcdefghijklmnopqrstuvwxyz";
+      if (STRNEQ (r[8], expected)) {
+        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[8]);
+        return -1;
+      }
+    }
+    if (!r[9]) {
+      fprintf (stderr, "test_head_1: short list returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    {
+      const char *expected = "9abcdefghijklmnopqrstuvwxyz";
+      if (STRNEQ (r[9], expected)) {
+        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[9]);
+        return -1;
+      }
+    }
+    if (r[10] != NULL) {
+      fprintf (stderr, "test_head_1: extra elements returned from command\n");
       print_strings (r);
       return -1;
     }
@@ -8293,28 +12679,28 @@ static int test_wc_l_0 (void)
   return 0;
 }
 
-static int test_mkdtemp_0_skip (void)
+static int test_wc_l_1_skip (void)
 {
   const char *str;
 
   str = getenv ("TEST_ONLY");
   if (str)
-    return strstr (str, "mkdtemp") == NULL;
-  str = getenv ("SKIP_TEST_MKDTEMP_0");
+    return strstr (str, "wc_l") == NULL;
+  str = getenv ("SKIP_TEST_WC_L_1");
   if (str && STREQ (str, "1")) return 1;
-  str = getenv ("SKIP_TEST_MKDTEMP");
+  str = getenv ("SKIP_TEST_WC_L");
   if (str && STREQ (str, "1")) return 1;
   return 0;
 }
 
-static int test_mkdtemp_0 (void)
+static int test_wc_l_1 (void)
 {
-  if (test_mkdtemp_0_skip ()) {
-    printf ("        %s skipped (reason: environment variable set)\n", "test_mkdtemp_0");
+  if (test_wc_l_1_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_wc_l_1");
     return 0;
   }
 
-  /* InitBasicFS for test_mkdtemp_0: create ext2 on /dev/sda1 */
+  /* InitISOFS for test_wc_l_1 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -8338,26 +12724,77 @@ static int test_mkdtemp_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
     int r;
     suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputInt for wc_l (1) */
+  {
+    const char *path = "/abssymlink";
+    int r;
+    suppress_error = 0;
+    r = guestfs_wc_l (g, path);
+    if (r == -1)
+      return -1;
+    if (r != 10000) {
+      fprintf (stderr, "test_wc_l_1: expected 10000 but got %d\n",               (int) r);
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int test_mkdtemp_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "mkdtemp") == NULL;
+  str = getenv ("SKIP_TEST_MKDTEMP_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_MKDTEMP");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_mkdtemp_0 (void)
+{
+  if (test_mkdtemp_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_mkdtemp_0");
+    return 0;
+  }
+
+  /* InitScratchFS for test_mkdtemp_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
     if (r == -1)
       return -1;
   }
   {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
     if (r == -1)
       return -1;
   }
   {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -8367,7 +12804,7 @@ static int test_mkdtemp_0 (void)
   }
   /* TestRun for mkdtemp (0) */
   {
-    const char *path = "/tmp";
+    const char *path = "/mkdtemp";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir (g, path);
@@ -8375,7 +12812,7 @@ static int test_mkdtemp_0 (void)
       return -1;
   }
   {
-    const char *template = "/tmp/tmpXXXXXX";
+    const char *template = "/mkdtemp/tmpXXXXXX";
     char *r;
     suppress_error = 0;
     r = guestfs_mkdtemp (g, template);
@@ -8407,18 +12844,11 @@ static int test_scrub_file_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "scrub", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_scrub_file_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("scrub")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_scrub_file_0", "scrub");
+    return 0;
   }
-  /* InitBasicFS for test_scrub_file_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_scrub_file_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -8442,26 +12872,8 @@ static int test_scrub_file_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -8471,16 +12883,17 @@ static int test_scrub_file_0 (void)
   }
   /* TestRun for scrub_file (0) */
   {
-    const char *path = "/file";
+    const char *path = "/scrub_file";
     const char *content = "content";
+    size_t content_size = 7;
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_write (g, path, content, content_size);
     if (r == -1)
       return -1;
   }
   {
-    const char *file = "/file";
+    const char *file = "/scrub_file";
     int r;
     suppress_error = 0;
     r = guestfs_scrub_file (g, file);
@@ -8511,16 +12924,9 @@ static int test_scrub_device_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "scrub", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_scrub_device_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("scrub")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_scrub_device_0", "scrub");
+    return 0;
   }
   /* InitNone|InitEmpty for test_scrub_device_0 */
   {
@@ -8578,7 +12984,7 @@ static int test_glob_expand_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_glob_expand_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_glob_expand_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -8602,26 +13008,8 @@ static int test_glob_expand_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -8631,7 +13019,7 @@ static int test_glob_expand_0 (void)
   }
   /* TestOutputList for glob_expand (0) */
   {
-    const char *path = "/a/b/c";
+    const char *path = "/glob_expand/b/c";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir_p (g, path);
@@ -8639,7 +13027,7 @@ static int test_glob_expand_0 (void)
       return -1;
   }
   {
-    const char *path = "/a/b/c/d";
+    const char *path = "/glob_expand/b/c/d";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -8647,7 +13035,7 @@ static int test_glob_expand_0 (void)
       return -1;
   }
   {
-    const char *path = "/a/b/c/e";
+    const char *path = "/glob_expand/b/c/e";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -8655,9 +13043,9 @@ static int test_glob_expand_0 (void)
       return -1;
   }
   {
-    const char *pattern = "/a/b/c/*";
+    const char *pattern = "/glob_expand/b/c/*";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_glob_expand (g, pattern);
     if (r == NULL)
@@ -8668,7 +13056,7 @@ static int test_glob_expand_0 (void)
       return -1;
     }
     {
-      const char *expected = "/a/b/c/d";
+      const char *expected = "/glob_expand/b/c/d";
       if (STRNEQ (r[0], expected)) {
         fprintf (stderr, "test_glob_expand_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
         return -1;
@@ -8680,7 +13068,7 @@ static int test_glob_expand_0 (void)
       return -1;
     }
     {
-      const char *expected = "/a/b/c/e";
+      const char *expected = "/glob_expand/b/c/e";
       if (STRNEQ (r[1], expected)) {
         fprintf (stderr, "test_glob_expand_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
         return -1;
@@ -8719,7 +13107,7 @@ static int test_glob_expand_1 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_glob_expand_1: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_glob_expand_1 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -8743,26 +13131,8 @@ static int test_glob_expand_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -8772,7 +13142,7 @@ static int test_glob_expand_1 (void)
   }
   /* TestOutputList for glob_expand (1) */
   {
-    const char *path = "/a/b/c";
+    const char *path = "/glob_expand2/b/c";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir_p (g, path);
@@ -8780,7 +13150,7 @@ static int test_glob_expand_1 (void)
       return -1;
   }
   {
-    const char *path = "/a/b/c/d";
+    const char *path = "/glob_expand2/b/c/d";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -8788,7 +13158,7 @@ static int test_glob_expand_1 (void)
       return -1;
   }
   {
-    const char *path = "/a/b/c/e";
+    const char *path = "/glob_expand2/b/c/e";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -8796,9 +13166,9 @@ static int test_glob_expand_1 (void)
       return -1;
   }
   {
-    const char *pattern = "/a/*/c/*";
+    const char *pattern = "/glob_expand2/*/c/*";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_glob_expand (g, pattern);
     if (r == NULL)
@@ -8809,7 +13179,7 @@ static int test_glob_expand_1 (void)
       return -1;
     }
     {
-      const char *expected = "/a/b/c/d";
+      const char *expected = "/glob_expand2/b/c/d";
       if (STRNEQ (r[0], expected)) {
         fprintf (stderr, "test_glob_expand_1: expected \"%s\" but got \"%s\"\n", expected, r[0]);
         return -1;
@@ -8821,7 +13191,7 @@ static int test_glob_expand_1 (void)
       return -1;
     }
     {
-      const char *expected = "/a/b/c/e";
+      const char *expected = "/glob_expand2/b/c/e";
       if (STRNEQ (r[1], expected)) {
         fprintf (stderr, "test_glob_expand_1: expected \"%s\" but got \"%s\"\n", expected, r[1]);
         return -1;
@@ -8860,7 +13230,7 @@ static int test_glob_expand_2 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_glob_expand_2: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_glob_expand_2 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -8884,26 +13254,8 @@ static int test_glob_expand_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -8913,7 +13265,7 @@ static int test_glob_expand_2 (void)
   }
   /* TestOutputList for glob_expand (2) */
   {
-    const char *path = "/a/b/c";
+    const char *path = "/glob_expand3/b/c";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir_p (g, path);
@@ -8921,7 +13273,7 @@ static int test_glob_expand_2 (void)
       return -1;
   }
   {
-    const char *path = "/a/b/c/d";
+    const char *path = "/glob_expand3/b/c/d";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -8929,7 +13281,7 @@ static int test_glob_expand_2 (void)
       return -1;
   }
   {
-    const char *path = "/a/b/c/e";
+    const char *path = "/glob_expand3/b/c/e";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -8937,9 +13289,9 @@ static int test_glob_expand_2 (void)
       return -1;
   }
   {
-    const char *pattern = "/a/*/x/*";
+    const char *pattern = "/glob_expand3/*/x/*";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_glob_expand (g, pattern);
     if (r == NULL)
@@ -8977,16 +13329,9 @@ static int test_ntfs_3g_probe_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "ntfs3g", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_ntfs_3g_probe_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("ntfs3g")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_ntfs_3g_probe_0", "ntfs3g");
+    return 0;
   }
   /* InitNone|InitEmpty for test_ntfs_3g_probe_0 */
   {
@@ -9066,16 +13411,9 @@ static int test_ntfs_3g_probe_1 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "ntfs3g", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_ntfs_3g_probe_1", groups[0]);
-      return 0;
-    }
+  if (!is_available ("ntfs3g")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_ntfs_3g_probe_1", "ntfs3g");
+    return 0;
   }
   /* InitNone|InitEmpty for test_ntfs_3g_probe_1 */
   {
@@ -9265,7 +13603,7 @@ static int test_find_0 (void)
   {
     const char *directory = "/";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_find (g, directory);
     if (r == NULL)
@@ -9394,7 +13732,7 @@ static int test_find_1 (void)
   {
     const char *directory = "/";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_find (g, directory);
     if (r == NULL)
@@ -9480,7 +13818,7 @@ static int test_find_2 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_find_2: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_find_2 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -9504,26 +13842,8 @@ static int test_find_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -9533,7 +13853,7 @@ static int test_find_2 (void)
   }
   /* TestOutputList for find (2) */
   {
-    const char *path = "/a/b/c";
+    const char *path = "/find/b/c";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir_p (g, path);
@@ -9541,7 +13861,7 @@ static int test_find_2 (void)
       return -1;
   }
   {
-    const char *path = "/a/b/c/d";
+    const char *path = "/find/b/c/d";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -9549,9 +13869,9 @@ static int test_find_2 (void)
       return -1;
   }
   {
-    const char *directory = "/a/b/";
+    const char *directory = "/find/b/";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_find (g, directory);
     if (r == NULL)
@@ -9613,16 +13933,9 @@ static int test_lvresize_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_lvresize_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_lvresize_0", "lvm2");
+    return 0;
   }
   /* InitNone|InitEmpty for test_lvresize_0 */
   {
@@ -9710,9 +14023,10 @@ static int test_lvresize_0 (void)
   {
     const char *path = "/new";
     const char *content = "test content";
+    size_t content_size = 12;
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_write (g, path, content, content_size);
     if (r == -1)
       return -1;
   }
@@ -9774,6 +14088,105 @@ static int test_lvresize_0 (void)
   return 0;
 }
 
+static int test_lvresize_1_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "lvresize") == NULL;
+  str = getenv ("SKIP_TEST_LVRESIZE_1");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_LVRESIZE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_lvresize_1 (void)
+{
+  if (test_lvresize_1_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_lvresize_1");
+    return 0;
+  }
+
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_lvresize_1", "lvm2");
+    return 0;
+  }
+  /* InitNone|InitEmpty for test_lvresize_1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestRun for lvresize (1) */
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda1";
+    int r;
+    suppress_error = 0;
+    r = guestfs_pvcreate (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *volgroup = "VG";
+    const char *physvols_0 = "/dev/sda1";
+    const char *const physvols[] = {
+      physvols_0,
+      NULL
+    };
+    int r;
+    suppress_error = 0;
+    r = guestfs_vgcreate (g, volgroup, (char **) physvols);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *logvol = "LV";
+    const char *volgroup = "VG";
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvcreate (g, logvol, volgroup, 20);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/VG/LV";
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvresize (g, device, 10);
+    if (r == -1)
+      return -1;
+  }
+  return 0;
+}
+
 static int test_zerofree_0_skip (void)
 {
   const char *str;
@@ -9795,16 +14208,9 @@ static int test_zerofree_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "zerofree", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_zerofree_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("zerofree")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_zerofree_0", "zerofree");
+    return 0;
   }
   /* InitNone|InitEmpty for test_zerofree_0 */
   {
@@ -9862,9 +14268,10 @@ static int test_zerofree_0 (void)
   {
     const char *path = "/new";
     const char *content = "test file";
+    size_t content_size = 9;
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_write (g, path, content, content_size);
     if (r == -1)
       return -1;
   }
@@ -10047,6 +14454,72 @@ static int test_hexdump_1 (void)
   return 0;
 }
 
+static int test_hexdump_2_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "hexdump") == NULL;
+  str = getenv ("SKIP_TEST_HEXDUMP_2");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_HEXDUMP");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_hexdump_2 (void)
+{
+  if (test_hexdump_2_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_hexdump_2");
+    return 0;
+  }
+
+  /* InitISOFS for test_hexdump_2 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestRun for hexdump (2) */
+  {
+    const char *path = "/abssymlink";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_hexdump (g, path);
+    if (r == NULL)
+      return -1;
+    free (r);
+  }
+  return 0;
+}
+
 static int test_strings_e_0_skip (void)
 {
   const char *str;
@@ -10105,7 +14578,7 @@ static int test_strings_e_0 (void)
     const char *encoding = "b";
     const char *path = "/known-5";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_strings_e (g, encoding, path);
     if (r == NULL)
@@ -10143,7 +14616,92 @@ static int test_strings_e_1 (void)
     return 0;
   }
 
-  printf ("        %s skipped (reason: test disabled in generator)\n", "test_strings_e_1");
+  /* InitScratchFS for test_strings_e_1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputList for strings_e (1) */
+  {
+    const char *path = "/strings_e";
+    const char *content = "\0h\0e\0l\0l\0o\0\n\0w\0o\0r\0l\0d\0\n";
+    size_t content_size = 24;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *encoding = "b";
+    const char *path = "/strings_e";
+    char **r;
+    size_t i;
+    suppress_error = 0;
+    r = guestfs_strings_e (g, encoding, path);
+    if (r == NULL)
+      return -1;
+    if (!r[0]) {
+      fprintf (stderr, "test_strings_e_1: short list returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    {
+      const char *expected = "hello";
+      if (STRNEQ (r[0], expected)) {
+        fprintf (stderr, "test_strings_e_1: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        return -1;
+      }
+    }
+    if (!r[1]) {
+      fprintf (stderr, "test_strings_e_1: short list returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    {
+      const char *expected = "world";
+      if (STRNEQ (r[1], expected)) {
+        fprintf (stderr, "test_strings_e_1: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        return -1;
+      }
+    }
+    if (r[2] != NULL) {
+      fprintf (stderr, "test_strings_e_1: extra elements returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    for (i = 0; r[i] != NULL; ++i)
+      free (r[i]);
+    free (r);
+  }
   return 0;
 }
 
@@ -10204,7 +14762,7 @@ static int test_strings_0 (void)
   {
     const char *path = "/known-5";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_strings (g, path);
     if (r == NULL)
@@ -10302,7 +14860,7 @@ static int test_strings_1 (void)
   {
     const char *path = "/empty";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_strings (g, path);
     if (r == NULL)
@@ -10312,6 +14870,75 @@ static int test_strings_1 (void)
       print_strings (r);
       return -1;
     }
+    for (i = 0; r[i] != NULL; ++i)
+      free (r[i]);
+    free (r);
+  }
+  return 0;
+}
+
+static int test_strings_2_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "strings") == NULL;
+  str = getenv ("SKIP_TEST_STRINGS_2");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_STRINGS");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_strings_2 (void)
+{
+  if (test_strings_2_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_strings_2");
+    return 0;
+  }
+
+  /* InitISOFS for test_strings_2 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestRun for strings (2) */
+  {
+    const char *path = "/abssymlink";
+    char **r;
+    size_t i;
+    suppress_error = 0;
+    r = guestfs_strings (g, path);
+    if (r == NULL)
+      return -1;
     for (i = 0; r[i] != NULL; ++i)
       free (r[i]);
     free (r);
@@ -10340,7 +14967,7 @@ static int test_equal_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_equal_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_equal_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -10364,26 +14991,8 @@ static int test_equal_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -10393,17 +15002,26 @@ static int test_equal_0 (void)
   }
   /* TestOutputTrue for equal (0) */
   {
-    const char *path = "/file1";
-    const char *content = "contents of a file";
+    const char *path = "/equal";
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_mkdir (g, path);
     if (r == -1)
       return -1;
   }
   {
-    const char *src = "/file1";
-    const char *dest = "/file2";
+    const char *path = "/equal/file1";
+    const char *content = "contents of a file";
+    size_t content_size = 18;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *src = "/equal/file1";
+    const char *dest = "/equal/file2";
     int r;
     suppress_error = 0;
     r = guestfs_cp (g, src, dest);
@@ -10411,8 +15029,8 @@ static int test_equal_0 (void)
       return -1;
   }
   {
-    const char *file1 = "/file1";
-    const char *file2 = "/file2";
+    const char *file1 = "/equal/file1";
+    const char *file2 = "/equal/file2";
     int r;
     suppress_error = 0;
     r = guestfs_equal (g, file1, file2);
@@ -10447,7 +15065,7 @@ static int test_equal_1 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_equal_1: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_equal_1 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -10471,26 +15089,8 @@ static int test_equal_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -10500,26 +15100,36 @@ static int test_equal_1 (void)
   }
   /* TestOutputFalse for equal (1) */
   {
-    const char *path = "/file1";
+    const char *path = "/equal2";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/equal2/file1";
     const char *content = "contents of a file";
+    size_t content_size = 18;
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_write (g, path, content, content_size);
     if (r == -1)
       return -1;
   }
   {
-    const char *path = "/file2";
+    const char *path = "/equal2/file2";
     const char *content = "contents of another file";
+    size_t content_size = 24;
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_write (g, path, content, content_size);
     if (r == -1)
       return -1;
   }
   {
-    const char *file1 = "/file1";
-    const char *file2 = "/file2";
+    const char *file1 = "/equal2/file1";
+    const char *file2 = "/equal2/file2";
     int r;
     suppress_error = 0;
     r = guestfs_equal (g, file1, file2);
@@ -10554,7 +15164,7 @@ static int test_equal_2 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_equal_2: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_equal_2 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -10578,26 +15188,8 @@ static int test_equal_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -10607,8 +15199,16 @@ static int test_equal_2 (void)
   }
   /* TestLastFail for equal (2) */
   {
-    const char *file1 = "/file1";
-    const char *file2 = "/file2";
+    const char *path = "/equal3";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *file1 = "/equal3/file1";
+    const char *file2 = "/equal3/file2";
     int r;
     suppress_error = 1;
     r = guestfs_equal (g, file1, file2);
@@ -10805,7 +15405,7 @@ static int test_mv_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_mv_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_mv_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -10829,26 +15429,8 @@ static int test_mv_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -10859,17 +15441,26 @@ static int test_mv_0 (void)
   /* TestOutput for mv (0) */
   const char *expected = "file content";
   {
-    const char *path = "/old";
-    const char *content = "file content";
+    const char *path = "/mv";
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_mkdir (g, path);
     if (r == -1)
       return -1;
   }
   {
-    const char *src = "/old";
-    const char *dest = "/new";
+    const char *path = "/mv/old";
+    const char *content = "file content";
+    size_t content_size = 12;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *src = "/mv/old";
+    const char *dest = "/mv/new";
     int r;
     suppress_error = 0;
     r = guestfs_mv (g, src, dest);
@@ -10877,7 +15468,7 @@ static int test_mv_0 (void)
       return -1;
   }
   {
-    const char *path = "/new";
+    const char *path = "/mv/new";
     char *r;
     suppress_error = 0;
     r = guestfs_cat (g, path);
@@ -10913,7 +15504,7 @@ static int test_mv_1 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_mv_1: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_mv_1 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -10937,26 +15528,8 @@ static int test_mv_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -10966,17 +15539,26 @@ static int test_mv_1 (void)
   }
   /* TestOutputFalse for mv (1) */
   {
-    const char *path = "/old";
-    const char *content = "file content";
+    const char *path = "/mv2";
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_mkdir (g, path);
     if (r == -1)
       return -1;
   }
   {
-    const char *src = "/old";
-    const char *dest = "/new";
+    const char *path = "/mv2/old";
+    const char *content = "file content";
+    size_t content_size = 12;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *src = "/mv2/old";
+    const char *dest = "/mv2/new";
     int r;
     suppress_error = 0;
     r = guestfs_mv (g, src, dest);
@@ -10984,7 +15566,7 @@ static int test_mv_1 (void)
       return -1;
   }
   {
-    const char *path = "/old";
+    const char *path = "/mv2/old";
     int r;
     suppress_error = 0;
     r = guestfs_is_file (g, path);
@@ -11019,7 +15601,7 @@ static int test_cp_a_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_cp_a_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_cp_a_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -11043,26 +15625,8 @@ static int test_cp_a_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -11073,7 +15637,7 @@ static int test_cp_a_0 (void)
   /* TestOutput for cp_a (0) */
   const char *expected = "file content";
   {
-    const char *path = "/olddir";
+    const char *path = "/cp_a1";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir (g, path);
@@ -11081,7 +15645,7 @@ static int test_cp_a_0 (void)
       return -1;
   }
   {
-    const char *path = "/newdir";
+    const char *path = "/cp_a2";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir (g, path);
@@ -11089,17 +15653,18 @@ static int test_cp_a_0 (void)
       return -1;
   }
   {
-    const char *path = "/olddir/file";
+    const char *path = "/cp_a1/file";
     const char *content = "file content";
+    size_t content_size = 12;
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_write (g, path, content, content_size);
     if (r == -1)
       return -1;
   }
   {
-    const char *src = "/olddir";
-    const char *dest = "/newdir";
+    const char *src = "/cp_a1";
+    const char *dest = "/cp_a2";
     int r;
     suppress_error = 0;
     r = guestfs_cp_a (g, src, dest);
@@ -11107,7 +15672,7 @@ static int test_cp_a_0 (void)
       return -1;
   }
   {
-    const char *path = "/newdir/olddir/file";
+    const char *path = "/cp_a2/cp_a1/file";
     char *r;
     suppress_error = 0;
     r = guestfs_cat (g, path);
@@ -11143,7 +15708,7 @@ static int test_cp_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_cp_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_cp_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -11167,26 +15732,8 @@ static int test_cp_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -11197,17 +15744,26 @@ static int test_cp_0 (void)
   /* TestOutput for cp (0) */
   const char *expected = "file content";
   {
-    const char *path = "/old";
-    const char *content = "file content";
+    const char *path = "/cp";
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_mkdir (g, path);
     if (r == -1)
       return -1;
   }
   {
-    const char *src = "/old";
-    const char *dest = "/new";
+    const char *path = "/cp/old";
+    const char *content = "file content";
+    size_t content_size = 12;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *src = "/cp/old";
+    const char *dest = "/cp/new";
     int r;
     suppress_error = 0;
     r = guestfs_cp (g, src, dest);
@@ -11215,7 +15771,7 @@ static int test_cp_0 (void)
       return -1;
   }
   {
-    const char *path = "/new";
+    const char *path = "/cp/new";
     char *r;
     suppress_error = 0;
     r = guestfs_cat (g, path);
@@ -11251,7 +15807,7 @@ static int test_cp_1 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_cp_1: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_cp_1 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -11275,26 +15831,8 @@ static int test_cp_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -11304,17 +15842,26 @@ static int test_cp_1 (void)
   }
   /* TestOutputTrue for cp (1) */
   {
-    const char *path = "/old";
-    const char *content = "file content";
+    const char *path = "/cp2";
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_mkdir (g, path);
     if (r == -1)
       return -1;
   }
   {
-    const char *src = "/old";
-    const char *dest = "/new";
+    const char *path = "/cp2/old";
+    const char *content = "file content";
+    size_t content_size = 12;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *src = "/cp2/old";
+    const char *dest = "/cp2/new";
     int r;
     suppress_error = 0;
     r = guestfs_cp (g, src, dest);
@@ -11322,7 +15869,7 @@ static int test_cp_1 (void)
       return -1;
   }
   {
-    const char *path = "/old";
+    const char *path = "/cp2/old";
     int r;
     suppress_error = 0;
     r = guestfs_is_file (g, path);
@@ -11357,7 +15904,7 @@ static int test_cp_2 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_cp_2: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_cp_2 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -11381,26 +15928,8 @@ static int test_cp_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -11411,16 +15940,7 @@ static int test_cp_2 (void)
   /* TestOutput for cp (2) */
   const char *expected = "file content";
   {
-    const char *path = "/old";
-    const char *content = "file content";
-    int r;
-    suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *path = "/dir";
+    const char *path = "/cp3";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir (g, path);
@@ -11428,8 +15948,26 @@ static int test_cp_2 (void)
       return -1;
   }
   {
-    const char *src = "/old";
-    const char *dest = "/dir/new";
+    const char *path = "/cp3/old";
+    const char *content = "file content";
+    size_t content_size = 12;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/cp3/dir";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *src = "/cp3/old";
+    const char *dest = "/cp3/dir/new";
     int r;
     suppress_error = 0;
     r = guestfs_cp (g, src, dest);
@@ -11437,7 +15975,7 @@ static int test_cp_2 (void)
       return -1;
   }
   {
-    const char *path = "/dir/new";
+    const char *path = "/cp3/dir/new";
     char *r;
     suppress_error = 0;
     r = guestfs_cat (g, path);
@@ -11473,7 +16011,97 @@ static int test_grub_install_0 (void)
     return 0;
   }
 
-  printf ("        %s skipped (reason: test disabled in generator)\n", "test_grub_install_0");
+  /* InitBasicFS for test_grub_install_0: create ext2 on /dev/sda1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "mbr";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *fstype = "ext2";
+    const char *device = "/dev/sda1";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkfs (g, fstype, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sda1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputTrue for grub_install (0) */
+  {
+    const char *path = "/boot/grub";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir_p (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/boot/grub/device.map";
+    const char *content = "(hd0) /dev/vda";
+    size_t content_size = 14;
+    int r;
+    suppress_error = 0;
+    r = guestfs_write (g, path, content, content_size);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *root = "/";
+    const char *device = "/dev/vda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_grub_install (g, root, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/boot";
+    int r;
+    suppress_error = 0;
+    r = guestfs_is_dir (g, path);
+    if (r == -1)
+      return -1;
+    if (!r) {
+      fprintf (stderr, "test_grub_install_0: expected true, got false\n");
+      return -1;
+    }
+  }
   return 0;
 }
 
@@ -11549,8 +16177,7 @@ static int test_zero_0 (void)
     if (r == -1)
       return -1;
   }
-  /* TestOutput for zero (0) */
-  const char *expected = "data";
+  /* TestRun for zero (0) */
   {
     const char *pathordevice = "/dev/sda1";
     int r;
@@ -11566,19 +16193,6 @@ static int test_zero_0 (void)
     r = guestfs_zero (g, device);
     if (r == -1)
       return -1;
-  }
-  {
-    const char *path = "/dev/sda1";
-    char *r;
-    suppress_error = 0;
-    r = guestfs_file (g, path);
-    if (r == NULL)
-      return -1;
-    if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_zero_0: expected \"%s\" but got \"%s\"\n", expected, r);
-      return -1;
-    }
-    free (r);
   }
   return 0;
 }
@@ -11785,6 +16399,85 @@ static int test_fsck_1 (void)
   return 0;
 }
 
+static int test_get_e2uuid_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "get_e2uuid") == NULL;
+  str = getenv ("SKIP_TEST_GET_E2UUID_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_GET_E2UUID");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_get_e2uuid_0 (void)
+{
+  if (test_get_e2uuid_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_get_e2uuid_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_get_e2uuid_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for get_e2uuid (0) */
+  const char *expected = "10c1bbe9-cd0f-17a6-bb14-b21cdf0a458b";
+  {
+    const char *device = "/dev/sdc";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mke2journal (g, 1024, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdc";
+    const char *uuid = "10c1bbe9-cd0f-17a6-bb14-b21cdf0a458b";
+    int r;
+    suppress_error = 0;
+    r = guestfs_set_e2uuid (g, device, uuid);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdc";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_get_e2uuid (g, device);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_get_e2uuid_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
 static int test_set_e2uuid_0_skip (void)
 {
   const char *str;
@@ -11858,10 +16551,10 @@ static int test_set_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for set_e2uuid (0) */
-  const char *expected = "f11ff6f8-78d9-4865-a099-e82ec8172bc3";
+  const char *expected = "10c1bbe9-cd0f-17a6-bb14-b21cdf0a458b";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "f11ff6f8-78d9-4865-a099-e82ec8172bc3";
+    const char *uuid = "10c1bbe9-cd0f-17a6-bb14-b21cdf0a458b";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
@@ -12273,16 +16966,9 @@ static int test_pvremove_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_pvremove_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_pvremove_0", "lvm2");
+    return 0;
   }
   /* InitNone|InitEmpty for test_pvremove_0 */
   {
@@ -12374,7 +17060,7 @@ static int test_pvremove_0 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_lvs (g);
     if (r == NULL)
@@ -12412,16 +17098,9 @@ static int test_pvremove_1 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_pvremove_1", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_pvremove_1", "lvm2");
+    return 0;
   }
   /* InitNone|InitEmpty for test_pvremove_1 */
   {
@@ -12513,7 +17192,7 @@ static int test_pvremove_1 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_vgs (g);
     if (r == NULL)
@@ -12551,16 +17230,9 @@ static int test_pvremove_2 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_pvremove_2", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_pvremove_2", "lvm2");
+    return 0;
   }
   /* InitNone|InitEmpty for test_pvremove_2 */
   {
@@ -12652,7 +17324,7 @@ static int test_pvremove_2 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_pvs (g);
     if (r == NULL)
@@ -12690,16 +17362,9 @@ static int test_vgremove_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_vgremove_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_vgremove_0", "lvm2");
+    return 0;
   }
   /* InitNone|InitEmpty for test_vgremove_0 */
   {
@@ -12783,7 +17448,7 @@ static int test_vgremove_0 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_lvs (g);
     if (r == NULL)
@@ -12821,16 +17486,9 @@ static int test_vgremove_1 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_vgremove_1", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_vgremove_1", "lvm2");
+    return 0;
   }
   /* InitNone|InitEmpty for test_vgremove_1 */
   {
@@ -12914,7 +17572,7 @@ static int test_vgremove_1 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_vgs (g);
     if (r == NULL)
@@ -12952,16 +17610,9 @@ static int test_lvremove_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_lvremove_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_lvremove_0", "lvm2");
+    return 0;
   }
   /* InitNone|InitEmpty for test_lvremove_0 */
   {
@@ -13045,7 +17696,7 @@ static int test_lvremove_0 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_lvs (g);
     if (r == NULL)
@@ -13095,16 +17746,9 @@ static int test_lvremove_1 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_lvremove_1", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_lvremove_1", "lvm2");
+    return 0;
   }
   /* InitNone|InitEmpty for test_lvremove_1 */
   {
@@ -13188,7 +17832,7 @@ static int test_lvremove_1 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_lvs (g);
     if (r == NULL)
@@ -13226,16 +17870,9 @@ static int test_lvremove_2 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_lvremove_2", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_lvremove_2", "lvm2");
+    return 0;
   }
   /* InitNone|InitEmpty for test_lvremove_2 */
   {
@@ -13319,7 +17956,7 @@ static int test_lvremove_2 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_vgs (g);
     if (r == NULL)
@@ -13526,9 +18163,10 @@ static int test_mount_ro_1 (void)
   {
     const char *path = "/new";
     const char *content = "data";
+    size_t content_size = 4;
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_write (g, path, content, content_size);
     if (r == -1)
       return -1;
   }
@@ -13586,7 +18224,7 @@ static int test_tgz_in_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_tgz_in_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_tgz_in_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -13610,26 +18248,8 @@ static int test_tgz_in_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -13640,7 +18260,15 @@ static int test_tgz_in_0 (void)
   /* TestOutput for tgz_in (0) */
   const char *expected = "hello\n";
   {
-    const char *directory = "/";
+    const char *path = "/tgz_in";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *directory = "/tgz_in";
     int r;
     suppress_error = 0;
     r = guestfs_tgz_in (g, "../images/helloworld.tar.gz", directory);
@@ -13648,7 +18276,7 @@ static int test_tgz_in_0 (void)
       return -1;
   }
   {
-    const char *path = "/hello";
+    const char *path = "/tgz_in/hello";
     char *r;
     suppress_error = 0;
     r = guestfs_cat (g, path);
@@ -13684,7 +18312,7 @@ static int test_tar_in_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_tar_in_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_tar_in_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -13708,26 +18336,8 @@ static int test_tar_in_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -13738,7 +18348,15 @@ static int test_tar_in_0 (void)
   /* TestOutput for tar_in (0) */
   const char *expected = "hello\n";
   {
-    const char *directory = "/";
+    const char *path = "/tar_in";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *directory = "/tar_in";
     int r;
     suppress_error = 0;
     r = guestfs_tar_in (g, "../images/helloworld.tar", directory);
@@ -13746,7 +18364,7 @@ static int test_tar_in_0 (void)
       return -1;
   }
   {
-    const char *path = "/hello";
+    const char *path = "/tar_in/hello";
     char *r;
     suppress_error = 0;
     r = guestfs_cat (g, path);
@@ -14332,28 +18950,28 @@ static int test_checksum_7 (void)
   return 0;
 }
 
-static int test_download_0_skip (void)
+static int test_checksum_8_skip (void)
 {
   const char *str;
 
   str = getenv ("TEST_ONLY");
   if (str)
-    return strstr (str, "download") == NULL;
-  str = getenv ("SKIP_TEST_DOWNLOAD_0");
+    return strstr (str, "checksum") == NULL;
+  str = getenv ("SKIP_TEST_CHECKSUM_8");
   if (str && STREQ (str, "1")) return 1;
-  str = getenv ("SKIP_TEST_DOWNLOAD");
+  str = getenv ("SKIP_TEST_CHECKSUM");
   if (str && STREQ (str, "1")) return 1;
   return 0;
 }
 
-static int test_download_0 (void)
+static int test_checksum_8 (void)
 {
-  if (test_download_0_skip ()) {
-    printf ("        %s skipped (reason: environment variable set)\n", "test_download_0");
+  if (test_checksum_8_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_checksum_8");
     return 0;
   }
 
-  /* InitBasicFS for test_download_0: create ext2 on /dev/sda1 */
+  /* InitISOFS for test_checksum_8 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -14377,26 +18995,80 @@ static int test_download_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
     int r;
     suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for checksum (8) */
+  const char *expected = "5f57d0639bc95081c53afc63a449403883818edc64da48930ad6b1a4fb49be90404686877743fbcd7c99811f3def7df7bc22635c885c6a8cf79c806b43451c1a";
+  {
+    const char *csumtype = "sha512";
+    const char *path = "/abssymlink";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_checksum (g, csumtype, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_checksum_8: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_download_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "download") == NULL;
+  str = getenv ("SKIP_TEST_DOWNLOAD_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_DOWNLOAD");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_download_0 (void)
+{
+  if (test_download_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_download_0");
+    return 0;
+  }
+
+  /* InitScratchFS for test_download_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
     if (r == -1)
       return -1;
   }
   {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
     if (r == -1)
       return -1;
   }
   {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -14407,7 +19079,15 @@ static int test_download_0 (void)
   /* TestOutput for download (0) */
   const char *expected = "603274a0c34714ef3c2d6cf741995301";
   {
-    const char *remotefilename = "/COPYING.LIB";
+    const char *path = "/download";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/download/COPYING.LIB";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "../COPYING.LIB", remotefilename);
@@ -14415,7 +19095,7 @@ static int test_download_0 (void)
       return -1;
   }
   {
-    const char *remotefilename = "/COPYING.LIB";
+    const char *remotefilename = "/download/COPYING.LIB";
     int r;
     suppress_error = 0;
     r = guestfs_download (g, remotefilename, "testdownload.tmp");
@@ -14423,7 +19103,7 @@ static int test_download_0 (void)
       return -1;
   }
   {
-    const char *remotefilename = "/upload";
+    const char *remotefilename = "/download/upload";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "testdownload.tmp", remotefilename);
@@ -14432,7 +19112,7 @@ static int test_download_0 (void)
   }
   {
     const char *csumtype = "md5";
-    const char *path = "/upload";
+    const char *path = "/download/upload";
     char *r;
     suppress_error = 0;
     r = guestfs_checksum (g, csumtype, path);
@@ -14468,7 +19148,7 @@ static int test_upload_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_upload_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_upload_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -14492,26 +19172,8 @@ static int test_upload_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -14522,7 +19184,15 @@ static int test_upload_0 (void)
   /* TestOutput for upload (0) */
   const char *expected = "603274a0c34714ef3c2d6cf741995301";
   {
-    const char *remotefilename = "/COPYING.LIB";
+    const char *path = "/upload";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/upload/COPYING.LIB";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "../COPYING.LIB", remotefilename);
@@ -14531,7 +19201,7 @@ static int test_upload_0 (void)
   }
   {
     const char *csumtype = "md5";
-    const char *path = "/COPYING.LIB";
+    const char *path = "/upload/COPYING.LIB";
     char *r;
     suppress_error = 0;
     r = guestfs_checksum (g, csumtype, path);
@@ -15336,7 +20006,7 @@ static int test_command_lines_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_lines_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_lines_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -15360,26 +20030,8 @@ static int test_command_lines_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -15389,7 +20041,15 @@ static int test_command_lines_0 (void)
   }
   /* TestOutputList for command_lines (0) */
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command_lines";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command_lines/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -15397,7 +20057,7 @@ static int test_command_lines_0 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command_lines/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -15405,7 +20065,7 @@ static int test_command_lines_0 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command_lines/test-command";
     const char *arguments_1 = "1";
     const char *const arguments[] = {
       arguments_0,
@@ -15413,7 +20073,7 @@ static int test_command_lines_0 (void)
       NULL
     };
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_command_lines (g, (char **) arguments);
     if (r == NULL)
@@ -15463,7 +20123,7 @@ static int test_command_lines_1 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_lines_1: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_lines_1 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -15487,26 +20147,8 @@ static int test_command_lines_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -15516,7 +20158,15 @@ static int test_command_lines_1 (void)
   }
   /* TestOutputList for command_lines (1) */
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command_lines2";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command_lines2/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -15524,7 +20174,7 @@ static int test_command_lines_1 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command_lines2/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -15532,7 +20182,7 @@ static int test_command_lines_1 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command_lines2/test-command";
     const char *arguments_1 = "2";
     const char *const arguments[] = {
       arguments_0,
@@ -15540,7 +20190,7 @@ static int test_command_lines_1 (void)
       NULL
     };
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_command_lines (g, (char **) arguments);
     if (r == NULL)
@@ -15590,7 +20240,7 @@ static int test_command_lines_2 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_lines_2: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_lines_2 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -15614,26 +20264,8 @@ static int test_command_lines_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -15643,7 +20275,15 @@ static int test_command_lines_2 (void)
   }
   /* TestOutputList for command_lines (2) */
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command_lines3";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command_lines3/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -15651,7 +20291,7 @@ static int test_command_lines_2 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command_lines3/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -15659,7 +20299,7 @@ static int test_command_lines_2 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command_lines3/test-command";
     const char *arguments_1 = "3";
     const char *const arguments[] = {
       arguments_0,
@@ -15667,7 +20307,7 @@ static int test_command_lines_2 (void)
       NULL
     };
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_command_lines (g, (char **) arguments);
     if (r == NULL)
@@ -15729,7 +20369,7 @@ static int test_command_lines_3 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_lines_3: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_lines_3 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -15753,26 +20393,8 @@ static int test_command_lines_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -15782,7 +20404,15 @@ static int test_command_lines_3 (void)
   }
   /* TestOutputList for command_lines (3) */
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command_lines4";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command_lines4/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -15790,7 +20420,7 @@ static int test_command_lines_3 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command_lines4/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -15798,7 +20428,7 @@ static int test_command_lines_3 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command_lines4/test-command";
     const char *arguments_1 = "4";
     const char *const arguments[] = {
       arguments_0,
@@ -15806,7 +20436,7 @@ static int test_command_lines_3 (void)
       NULL
     };
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_command_lines (g, (char **) arguments);
     if (r == NULL)
@@ -15868,7 +20498,7 @@ static int test_command_lines_4 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_lines_4: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_lines_4 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -15892,26 +20522,8 @@ static int test_command_lines_4 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -15921,7 +20533,15 @@ static int test_command_lines_4 (void)
   }
   /* TestOutputList for command_lines (4) */
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command_lines5";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command_lines5/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -15929,7 +20549,7 @@ static int test_command_lines_4 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command_lines5/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -15937,7 +20557,7 @@ static int test_command_lines_4 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command_lines5/test-command";
     const char *arguments_1 = "5";
     const char *const arguments[] = {
       arguments_0,
@@ -15945,7 +20565,7 @@ static int test_command_lines_4 (void)
       NULL
     };
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_command_lines (g, (char **) arguments);
     if (r == NULL)
@@ -16019,7 +20639,7 @@ static int test_command_lines_5 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_lines_5: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_lines_5 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -16043,26 +20663,8 @@ static int test_command_lines_5 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -16072,7 +20674,15 @@ static int test_command_lines_5 (void)
   }
   /* TestOutputList for command_lines (5) */
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command_lines6";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command_lines6/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -16080,7 +20690,7 @@ static int test_command_lines_5 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command_lines6/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -16088,7 +20698,7 @@ static int test_command_lines_5 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command_lines6/test-command";
     const char *arguments_1 = "6";
     const char *const arguments[] = {
       arguments_0,
@@ -16096,7 +20706,7 @@ static int test_command_lines_5 (void)
       NULL
     };
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_command_lines (g, (char **) arguments);
     if (r == NULL)
@@ -16182,7 +20792,7 @@ static int test_command_lines_6 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_lines_6: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_lines_6 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -16206,26 +20816,8 @@ static int test_command_lines_6 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -16235,7 +20827,15 @@ static int test_command_lines_6 (void)
   }
   /* TestOutputList for command_lines (6) */
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command_lines7";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command_lines7/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -16243,7 +20843,7 @@ static int test_command_lines_6 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command_lines7/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -16251,7 +20851,7 @@ static int test_command_lines_6 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command_lines7/test-command";
     const char *arguments_1 = "7";
     const char *const arguments[] = {
       arguments_0,
@@ -16259,7 +20859,7 @@ static int test_command_lines_6 (void)
       NULL
     };
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_command_lines (g, (char **) arguments);
     if (r == NULL)
@@ -16297,7 +20897,7 @@ static int test_command_lines_7 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_lines_7: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_lines_7 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -16321,26 +20921,8 @@ static int test_command_lines_7 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -16350,7 +20932,15 @@ static int test_command_lines_7 (void)
   }
   /* TestOutputList for command_lines (7) */
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command_lines8";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command_lines8/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -16358,7 +20948,7 @@ static int test_command_lines_7 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command_lines8/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -16366,7 +20956,7 @@ static int test_command_lines_7 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command_lines8/test-command";
     const char *arguments_1 = "8";
     const char *const arguments[] = {
       arguments_0,
@@ -16374,7 +20964,7 @@ static int test_command_lines_7 (void)
       NULL
     };
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_command_lines (g, (char **) arguments);
     if (r == NULL)
@@ -16424,7 +21014,7 @@ static int test_command_lines_8 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_lines_8: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_lines_8 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -16448,26 +21038,8 @@ static int test_command_lines_8 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -16477,7 +21049,15 @@ static int test_command_lines_8 (void)
   }
   /* TestOutputList for command_lines (8) */
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command_lines9";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command_lines9/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -16485,7 +21065,7 @@ static int test_command_lines_8 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command_lines9/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -16493,7 +21073,7 @@ static int test_command_lines_8 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command_lines9/test-command";
     const char *arguments_1 = "9";
     const char *const arguments[] = {
       arguments_0,
@@ -16501,7 +21081,7 @@ static int test_command_lines_8 (void)
       NULL
     };
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_command_lines (g, (char **) arguments);
     if (r == NULL)
@@ -16563,7 +21143,7 @@ static int test_command_lines_9 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_lines_9: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_lines_9 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -16587,26 +21167,8 @@ static int test_command_lines_9 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -16616,7 +21178,15 @@ static int test_command_lines_9 (void)
   }
   /* TestOutputList for command_lines (9) */
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command_lines10";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command_lines10/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -16624,7 +21194,7 @@ static int test_command_lines_9 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command_lines10/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -16632,7 +21202,7 @@ static int test_command_lines_9 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command_lines10/test-command";
     const char *arguments_1 = "10";
     const char *const arguments[] = {
       arguments_0,
@@ -16640,7 +21210,7 @@ static int test_command_lines_9 (void)
       NULL
     };
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_command_lines (g, (char **) arguments);
     if (r == NULL)
@@ -16702,7 +21272,7 @@ static int test_command_lines_10 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_lines_10: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_lines_10 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -16726,26 +21296,8 @@ static int test_command_lines_10 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -16755,7 +21307,15 @@ static int test_command_lines_10 (void)
   }
   /* TestOutputList for command_lines (10) */
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command_lines11";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command_lines11/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -16763,7 +21323,7 @@ static int test_command_lines_10 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command_lines11/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -16771,7 +21331,7 @@ static int test_command_lines_10 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command_lines11/test-command";
     const char *arguments_1 = "11";
     const char *const arguments[] = {
       arguments_0,
@@ -16779,7 +21339,7 @@ static int test_command_lines_10 (void)
       NULL
     };
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_command_lines (g, (char **) arguments);
     if (r == NULL)
@@ -16841,7 +21401,7 @@ static int test_command_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -16865,26 +21425,8 @@ static int test_command_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -16895,7 +21437,15 @@ static int test_command_0 (void)
   /* TestOutput for command (0) */
   const char *expected = "Result1";
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -16903,7 +21453,7 @@ static int test_command_0 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -16911,7 +21461,7 @@ static int test_command_0 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command/test-command";
     const char *arguments_1 = "1";
     const char *const arguments[] = {
       arguments_0,
@@ -16953,7 +21503,7 @@ static int test_command_1 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_1: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_1 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -16977,26 +21527,8 @@ static int test_command_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -17007,7 +21539,15 @@ static int test_command_1 (void)
   /* TestOutput for command (1) */
   const char *expected = "Result2\n";
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command2";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command2/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -17015,7 +21555,7 @@ static int test_command_1 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command2/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -17023,7 +21563,7 @@ static int test_command_1 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command2/test-command";
     const char *arguments_1 = "2";
     const char *const arguments[] = {
       arguments_0,
@@ -17065,7 +21605,7 @@ static int test_command_2 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_2: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_2 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -17089,26 +21629,8 @@ static int test_command_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -17119,7 +21641,15 @@ static int test_command_2 (void)
   /* TestOutput for command (2) */
   const char *expected = "\nResult3";
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command3";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command3/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -17127,7 +21657,7 @@ static int test_command_2 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command3/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -17135,7 +21665,7 @@ static int test_command_2 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command3/test-command";
     const char *arguments_1 = "3";
     const char *const arguments[] = {
       arguments_0,
@@ -17177,7 +21707,7 @@ static int test_command_3 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_3: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_3 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -17201,26 +21731,8 @@ static int test_command_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -17231,7 +21743,15 @@ static int test_command_3 (void)
   /* TestOutput for command (3) */
   const char *expected = "\nResult4\n";
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command4";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command4/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -17239,7 +21759,7 @@ static int test_command_3 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command4/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -17247,7 +21767,7 @@ static int test_command_3 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command4/test-command";
     const char *arguments_1 = "4";
     const char *const arguments[] = {
       arguments_0,
@@ -17289,7 +21809,7 @@ static int test_command_4 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_4: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_4 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -17313,26 +21833,8 @@ static int test_command_4 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -17343,7 +21845,15 @@ static int test_command_4 (void)
   /* TestOutput for command (4) */
   const char *expected = "\nResult5\n\n";
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command5";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command5/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -17351,7 +21861,7 @@ static int test_command_4 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command5/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -17359,7 +21869,7 @@ static int test_command_4 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command5/test-command";
     const char *arguments_1 = "5";
     const char *const arguments[] = {
       arguments_0,
@@ -17401,7 +21911,7 @@ static int test_command_5 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_5: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_5 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -17425,26 +21935,8 @@ static int test_command_5 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -17455,7 +21947,15 @@ static int test_command_5 (void)
   /* TestOutput for command (5) */
   const char *expected = "\n\nResult6\n\n";
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command6";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command6/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -17463,7 +21963,7 @@ static int test_command_5 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command6/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -17471,7 +21971,7 @@ static int test_command_5 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command6/test-command";
     const char *arguments_1 = "6";
     const char *const arguments[] = {
       arguments_0,
@@ -17513,7 +22013,7 @@ static int test_command_6 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_6: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_6 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -17537,26 +22037,8 @@ static int test_command_6 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -17567,7 +22049,15 @@ static int test_command_6 (void)
   /* TestOutput for command (6) */
   const char *expected = "";
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command7";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command7/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -17575,7 +22065,7 @@ static int test_command_6 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command7/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -17583,7 +22073,7 @@ static int test_command_6 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command7/test-command";
     const char *arguments_1 = "7";
     const char *const arguments[] = {
       arguments_0,
@@ -17625,7 +22115,7 @@ static int test_command_7 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_7: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_7 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -17649,26 +22139,8 @@ static int test_command_7 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -17679,7 +22151,15 @@ static int test_command_7 (void)
   /* TestOutput for command (7) */
   const char *expected = "\n";
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command8";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command8/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -17687,7 +22167,7 @@ static int test_command_7 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command8/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -17695,7 +22175,7 @@ static int test_command_7 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command8/test-command";
     const char *arguments_1 = "8";
     const char *const arguments[] = {
       arguments_0,
@@ -17737,7 +22217,7 @@ static int test_command_8 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_8: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_8 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -17761,26 +22241,8 @@ static int test_command_8 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -17791,7 +22253,15 @@ static int test_command_8 (void)
   /* TestOutput for command (8) */
   const char *expected = "\n\n";
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command9";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command9/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -17799,7 +22269,7 @@ static int test_command_8 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command9/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -17807,7 +22277,7 @@ static int test_command_8 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command9/test-command";
     const char *arguments_1 = "9";
     const char *const arguments[] = {
       arguments_0,
@@ -17849,7 +22319,7 @@ static int test_command_9 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_9: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_9 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -17873,26 +22343,8 @@ static int test_command_9 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -17903,7 +22355,15 @@ static int test_command_9 (void)
   /* TestOutput for command (9) */
   const char *expected = "Result10-1\nResult10-2\n";
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command10";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command10/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -17911,7 +22371,7 @@ static int test_command_9 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command10/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -17919,7 +22379,7 @@ static int test_command_9 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command10/test-command";
     const char *arguments_1 = "10";
     const char *const arguments[] = {
       arguments_0,
@@ -17961,7 +22421,7 @@ static int test_command_10 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_10: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_10 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -17985,26 +22445,8 @@ static int test_command_10 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -18015,7 +22457,15 @@ static int test_command_10 (void)
   /* TestOutput for command (10) */
   const char *expected = "Result11-1\nResult11-2";
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command11";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command11/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -18023,7 +22473,7 @@ static int test_command_10 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command11/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -18031,7 +22481,7 @@ static int test_command_10 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command11/test-command";
     const char *arguments_1 = "11";
     const char *const arguments[] = {
       arguments_0,
@@ -18073,7 +22523,7 @@ static int test_command_11 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_command_11: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_command_11 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -18097,26 +22547,8 @@ static int test_command_11 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -18126,7 +22558,15 @@ static int test_command_11 (void)
   }
   /* TestLastFail for command (11) */
   {
-    const char *remotefilename = "/test-command";
+    const char *path = "/command12";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/command12/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_upload (g, "test-command", remotefilename);
@@ -18134,7 +22574,7 @@ static int test_command_11 (void)
       return -1;
   }
   {
-    const char *path = "/test-command";
+    const char *path = "/command12/test-command";
     int r;
     suppress_error = 0;
     r = guestfs_chmod (g, 493, path);
@@ -18142,7 +22582,7 @@ static int test_command_11 (void)
       return -1;
   }
   {
-    const char *arguments_0 = "/test-command";
+    const char *arguments_0 = "/command12/test-command";
     const char *const arguments[] = {
       arguments_0,
       NULL
@@ -18365,28 +22805,28 @@ static int test_file_2 (void)
   return 0;
 }
 
-static int test_umount_all_0_skip (void)
+static int test_file_3_skip (void)
 {
   const char *str;
 
   str = getenv ("TEST_ONLY");
   if (str)
-    return strstr (str, "umount_all") == NULL;
-  str = getenv ("SKIP_TEST_UMOUNT_ALL_0");
+    return strstr (str, "file") == NULL;
+  str = getenv ("SKIP_TEST_FILE_3");
   if (str && STREQ (str, "1")) return 1;
-  str = getenv ("SKIP_TEST_UMOUNT_ALL");
+  str = getenv ("SKIP_TEST_FILE");
   if (str && STREQ (str, "1")) return 1;
   return 0;
 }
 
-static int test_umount_all_0 (void)
+static int test_file_3 (void)
 {
-  if (test_umount_all_0_skip ()) {
-    printf ("        %s skipped (reason: environment variable set)\n", "test_umount_all_0");
+  if (test_file_3_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_file_3");
     return 0;
   }
 
-  /* InitBasicFS for test_umount_all_0: create ext2 on /dev/sda1 */
+  /* InitISOFS for test_file_3 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -18410,26 +22850,150 @@ static int test_umount_all_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
     int r;
     suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for file (3) */
+  const char *expected = "symbolic link";
+  {
+    const char *path = "/abssymlink";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_file (g, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_file_3: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_file_4_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "file") == NULL;
+  str = getenv ("SKIP_TEST_FILE_4");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_file_4 (void)
+{
+  if (test_file_4_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_file_4");
+    return 0;
+  }
+
+  /* InitISOFS for test_file_4 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
     if (r == -1)
       return -1;
   }
   {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for file (4) */
+  const char *expected = "directory";
+  {
+    const char *path = "/directory";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_file (g, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_file_4: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_umount_all_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "umount_all") == NULL;
+  str = getenv ("SKIP_TEST_UMOUNT_ALL_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_UMOUNT_ALL");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_umount_all_0 (void)
+{
+  if (test_umount_all_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_umount_all_0");
+    return 0;
+  }
+
+  /* InitScratchFS for test_umount_all_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
     if (r == -1)
       return -1;
   }
   {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -18447,7 +23011,7 @@ static int test_umount_all_0 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_mounts (g);
     if (r == NULL)
@@ -18511,18 +23075,37 @@ static int test_umount_all_1 (void)
   /* TestOutputList for umount_all (1) */
   {
     const char *device = "/dev/sda";
-    const char *lines_0 = ",100";
-    const char *lines_1 = ",200";
-    const char *lines_2 = ",";
-    const char *const lines[] = {
-      lines_0,
-      lines_1,
-      lines_2,
-      NULL
-    };
+    const char *parttype = "mbr";
     int r;
     suppress_error = 0;
-    r = guestfs_sfdiskM (g, device, (char **) lines);
+    r = guestfs_part_init (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 64, 204799);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 204800, 409599);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 409600, -64);
     if (r == -1)
       return -1;
   }
@@ -18616,7 +23199,7 @@ static int test_umount_all_1 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_mounts (g);
     if (r == NULL)
@@ -18654,7 +23237,7 @@ static int test_mounts_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_mounts_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_mounts_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -18678,26 +23261,8 @@ static int test_mounts_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -18708,7 +23273,7 @@ static int test_mounts_0 (void)
   /* TestOutputListOfDevices for mounts (0) */
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_mounts (g);
     if (r == NULL)
@@ -18719,7 +23284,7 @@ static int test_mounts_0 (void)
       return -1;
     }
     {
-      const char *expected = "/dev/sda1";
+      const char *expected = "/dev/sdb1";
       r[0][5] = 's';
       if (STRNEQ (r[0], expected)) {
         fprintf (stderr, "test_mounts_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
@@ -18813,7 +23378,7 @@ static int test_umount_0 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_mounts (g);
     if (r == NULL)
@@ -18926,7 +23491,7 @@ static int test_umount_1 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_mounts (g);
     if (r == NULL)
@@ -18964,7 +23529,7 @@ static int test_write_file_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_write_file_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_write_file_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -18988,26 +23553,8 @@ static int test_write_file_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -19015,524 +23562,15 @@ static int test_write_file_0 (void)
     if (r == -1)
       return -1;
   }
-  /* TestOutput for write_file (0) */
-  const char *expected = "new file contents";
+  /* TestLastFail for write_file (0) */
   {
-    const char *path = "/new";
-    const char *content = "new file contents";
+    const char *path = "/write_file";
+    const char *content = "abc";
     int r;
-    suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
-    if (r == -1)
+    suppress_error = 1;
+    r = guestfs_write_file (g, path, content, 10000);
+    if (r != -1)
       return -1;
-  }
-  {
-    const char *path = "/new";
-    char *r;
-    suppress_error = 0;
-    r = guestfs_cat (g, path);
-    if (r == NULL)
-      return -1;
-    if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_write_file_0: expected \"%s\" but got \"%s\"\n", expected, r);
-      return -1;
-    }
-    free (r);
-  }
-  return 0;
-}
-
-static int test_write_file_1_skip (void)
-{
-  const char *str;
-
-  str = getenv ("TEST_ONLY");
-  if (str)
-    return strstr (str, "write_file") == NULL;
-  str = getenv ("SKIP_TEST_WRITE_FILE_1");
-  if (str && STREQ (str, "1")) return 1;
-  str = getenv ("SKIP_TEST_WRITE_FILE");
-  if (str && STREQ (str, "1")) return 1;
-  return 0;
-}
-
-static int test_write_file_1 (void)
-{
-  if (test_write_file_1_skip ()) {
-    printf ("        %s skipped (reason: environment variable set)\n", "test_write_file_1");
-    return 0;
-  }
-
-  /* InitBasicFS for test_write_file_1: create ext2 on /dev/sda1 */
-  {
-    const char *device = "/dev/sda";
-    int r;
-    suppress_error = 0;
-    r = guestfs_blockdev_setrw (g, device);
-    if (r == -1)
-      return -1;
-  }
-  {
-    int r;
-    suppress_error = 0;
-    r = guestfs_umount_all (g);
-    if (r == -1)
-      return -1;
-  }
-  {
-    int r;
-    suppress_error = 0;
-    r = guestfs_lvm_remove_all (g);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *options = "";
-    const char *device = "/dev/sda1";
-    const char *mountpoint = "/";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mount_options (g, options, device, mountpoint);
-    if (r == -1)
-      return -1;
-  }
-  /* TestOutput for write_file (1) */
-  const char *expected = "\nnew file contents\n";
-  {
-    const char *path = "/new";
-    const char *content = "\nnew file contents\n";
-    int r;
-    suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *path = "/new";
-    char *r;
-    suppress_error = 0;
-    r = guestfs_cat (g, path);
-    if (r == NULL)
-      return -1;
-    if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_write_file_1: expected \"%s\" but got \"%s\"\n", expected, r);
-      return -1;
-    }
-    free (r);
-  }
-  return 0;
-}
-
-static int test_write_file_2_skip (void)
-{
-  const char *str;
-
-  str = getenv ("TEST_ONLY");
-  if (str)
-    return strstr (str, "write_file") == NULL;
-  str = getenv ("SKIP_TEST_WRITE_FILE_2");
-  if (str && STREQ (str, "1")) return 1;
-  str = getenv ("SKIP_TEST_WRITE_FILE");
-  if (str && STREQ (str, "1")) return 1;
-  return 0;
-}
-
-static int test_write_file_2 (void)
-{
-  if (test_write_file_2_skip ()) {
-    printf ("        %s skipped (reason: environment variable set)\n", "test_write_file_2");
-    return 0;
-  }
-
-  /* InitBasicFS for test_write_file_2: create ext2 on /dev/sda1 */
-  {
-    const char *device = "/dev/sda";
-    int r;
-    suppress_error = 0;
-    r = guestfs_blockdev_setrw (g, device);
-    if (r == -1)
-      return -1;
-  }
-  {
-    int r;
-    suppress_error = 0;
-    r = guestfs_umount_all (g);
-    if (r == -1)
-      return -1;
-  }
-  {
-    int r;
-    suppress_error = 0;
-    r = guestfs_lvm_remove_all (g);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *options = "";
-    const char *device = "/dev/sda1";
-    const char *mountpoint = "/";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mount_options (g, options, device, mountpoint);
-    if (r == -1)
-      return -1;
-  }
-  /* TestOutput for write_file (2) */
-  const char *expected = "\n\n";
-  {
-    const char *path = "/new";
-    const char *content = "\n\n";
-    int r;
-    suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *path = "/new";
-    char *r;
-    suppress_error = 0;
-    r = guestfs_cat (g, path);
-    if (r == NULL)
-      return -1;
-    if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_write_file_2: expected \"%s\" but got \"%s\"\n", expected, r);
-      return -1;
-    }
-    free (r);
-  }
-  return 0;
-}
-
-static int test_write_file_3_skip (void)
-{
-  const char *str;
-
-  str = getenv ("TEST_ONLY");
-  if (str)
-    return strstr (str, "write_file") == NULL;
-  str = getenv ("SKIP_TEST_WRITE_FILE_3");
-  if (str && STREQ (str, "1")) return 1;
-  str = getenv ("SKIP_TEST_WRITE_FILE");
-  if (str && STREQ (str, "1")) return 1;
-  return 0;
-}
-
-static int test_write_file_3 (void)
-{
-  if (test_write_file_3_skip ()) {
-    printf ("        %s skipped (reason: environment variable set)\n", "test_write_file_3");
-    return 0;
-  }
-
-  /* InitBasicFS for test_write_file_3: create ext2 on /dev/sda1 */
-  {
-    const char *device = "/dev/sda";
-    int r;
-    suppress_error = 0;
-    r = guestfs_blockdev_setrw (g, device);
-    if (r == -1)
-      return -1;
-  }
-  {
-    int r;
-    suppress_error = 0;
-    r = guestfs_umount_all (g);
-    if (r == -1)
-      return -1;
-  }
-  {
-    int r;
-    suppress_error = 0;
-    r = guestfs_lvm_remove_all (g);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *options = "";
-    const char *device = "/dev/sda1";
-    const char *mountpoint = "/";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mount_options (g, options, device, mountpoint);
-    if (r == -1)
-      return -1;
-  }
-  /* TestOutput for write_file (3) */
-  const char *expected = "";
-  {
-    const char *path = "/new";
-    const char *content = "";
-    int r;
-    suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *path = "/new";
-    char *r;
-    suppress_error = 0;
-    r = guestfs_cat (g, path);
-    if (r == NULL)
-      return -1;
-    if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_write_file_3: expected \"%s\" but got \"%s\"\n", expected, r);
-      return -1;
-    }
-    free (r);
-  }
-  return 0;
-}
-
-static int test_write_file_4_skip (void)
-{
-  const char *str;
-
-  str = getenv ("TEST_ONLY");
-  if (str)
-    return strstr (str, "write_file") == NULL;
-  str = getenv ("SKIP_TEST_WRITE_FILE_4");
-  if (str && STREQ (str, "1")) return 1;
-  str = getenv ("SKIP_TEST_WRITE_FILE");
-  if (str && STREQ (str, "1")) return 1;
-  return 0;
-}
-
-static int test_write_file_4 (void)
-{
-  if (test_write_file_4_skip ()) {
-    printf ("        %s skipped (reason: environment variable set)\n", "test_write_file_4");
-    return 0;
-  }
-
-  /* InitBasicFS for test_write_file_4: create ext2 on /dev/sda1 */
-  {
-    const char *device = "/dev/sda";
-    int r;
-    suppress_error = 0;
-    r = guestfs_blockdev_setrw (g, device);
-    if (r == -1)
-      return -1;
-  }
-  {
-    int r;
-    suppress_error = 0;
-    r = guestfs_umount_all (g);
-    if (r == -1)
-      return -1;
-  }
-  {
-    int r;
-    suppress_error = 0;
-    r = guestfs_lvm_remove_all (g);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *options = "";
-    const char *device = "/dev/sda1";
-    const char *mountpoint = "/";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mount_options (g, options, device, mountpoint);
-    if (r == -1)
-      return -1;
-  }
-  /* TestOutput for write_file (4) */
-  const char *expected = "\n\n\n";
-  {
-    const char *path = "/new";
-    const char *content = "\n\n\n";
-    int r;
-    suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *path = "/new";
-    char *r;
-    suppress_error = 0;
-    r = guestfs_cat (g, path);
-    if (r == NULL)
-      return -1;
-    if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_write_file_4: expected \"%s\" but got \"%s\"\n", expected, r);
-      return -1;
-    }
-    free (r);
-  }
-  return 0;
-}
-
-static int test_write_file_5_skip (void)
-{
-  const char *str;
-
-  str = getenv ("TEST_ONLY");
-  if (str)
-    return strstr (str, "write_file") == NULL;
-  str = getenv ("SKIP_TEST_WRITE_FILE_5");
-  if (str && STREQ (str, "1")) return 1;
-  str = getenv ("SKIP_TEST_WRITE_FILE");
-  if (str && STREQ (str, "1")) return 1;
-  return 0;
-}
-
-static int test_write_file_5 (void)
-{
-  if (test_write_file_5_skip ()) {
-    printf ("        %s skipped (reason: environment variable set)\n", "test_write_file_5");
-    return 0;
-  }
-
-  /* InitBasicFS for test_write_file_5: create ext2 on /dev/sda1 */
-  {
-    const char *device = "/dev/sda";
-    int r;
-    suppress_error = 0;
-    r = guestfs_blockdev_setrw (g, device);
-    if (r == -1)
-      return -1;
-  }
-  {
-    int r;
-    suppress_error = 0;
-    r = guestfs_umount_all (g);
-    if (r == -1)
-      return -1;
-  }
-  {
-    int r;
-    suppress_error = 0;
-    r = guestfs_lvm_remove_all (g);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *options = "";
-    const char *device = "/dev/sda1";
-    const char *mountpoint = "/";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mount_options (g, options, device, mountpoint);
-    if (r == -1)
-      return -1;
-  }
-  /* TestOutput for write_file (5) */
-  const char *expected = "\n";
-  {
-    const char *path = "/new";
-    const char *content = "\n";
-    int r;
-    suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *path = "/new";
-    char *r;
-    suppress_error = 0;
-    r = guestfs_cat (g, path);
-    if (r == NULL)
-      return -1;
-    if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_write_file_5: expected \"%s\" but got \"%s\"\n", expected, r);
-      return -1;
-    }
-    free (r);
   }
   return 0;
 }
@@ -19614,9 +23652,10 @@ static int test_mkfs_0 (void)
   {
     const char *path = "/new";
     const char *content = "new file contents";
+    size_t content_size = 17;
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_write (g, path, content, content_size);
     if (r == -1)
       return -1;
   }
@@ -19657,16 +23696,9 @@ static int test_lvcreate_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_lvcreate_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_lvcreate_0", "lvm2");
+    return 0;
   }
   /* InitNone|InitEmpty for test_lvcreate_0 */
   {
@@ -19694,18 +23726,37 @@ static int test_lvcreate_0 (void)
   /* TestOutputList for lvcreate (0) */
   {
     const char *device = "/dev/sda";
-    const char *lines_0 = ",100";
-    const char *lines_1 = ",200";
-    const char *lines_2 = ",";
-    const char *const lines[] = {
-      lines_0,
-      lines_1,
-      lines_2,
-      NULL
-    };
+    const char *parttype = "mbr";
     int r;
     suppress_error = 0;
-    r = guestfs_sfdiskM (g, device, (char **) lines);
+    r = guestfs_part_init (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 64, 204799);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 204800, 409599);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 409600, -64);
     if (r == -1)
       return -1;
   }
@@ -19808,7 +23859,7 @@ static int test_lvcreate_0 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_lvs (g);
     if (r == NULL)
@@ -19906,16 +23957,9 @@ static int test_vgcreate_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_vgcreate_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_vgcreate_0", "lvm2");
+    return 0;
   }
   /* InitNone|InitEmpty for test_vgcreate_0 */
   {
@@ -19943,18 +23987,37 @@ static int test_vgcreate_0 (void)
   /* TestOutputList for vgcreate (0) */
   {
     const char *device = "/dev/sda";
-    const char *lines_0 = ",100";
-    const char *lines_1 = ",200";
-    const char *lines_2 = ",";
-    const char *const lines[] = {
-      lines_0,
-      lines_1,
-      lines_2,
-      NULL
-    };
+    const char *parttype = "mbr";
     int r;
     suppress_error = 0;
-    r = guestfs_sfdiskM (g, device, (char **) lines);
+    r = guestfs_part_init (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 64, 204799);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 204800, 409599);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 409600, -64);
     if (r == -1)
       return -1;
   }
@@ -20012,7 +24075,7 @@ static int test_vgcreate_0 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_vgs (g);
     if (r == NULL)
@@ -20074,16 +24137,9 @@ static int test_pvcreate_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_pvcreate_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_pvcreate_0", "lvm2");
+    return 0;
   }
   /* InitNone|InitEmpty for test_pvcreate_0 */
   {
@@ -20111,18 +24167,37 @@ static int test_pvcreate_0 (void)
   /* TestOutputListOfDevices for pvcreate (0) */
   {
     const char *device = "/dev/sda";
-    const char *lines_0 = ",100";
-    const char *lines_1 = ",200";
-    const char *lines_2 = ",";
-    const char *const lines[] = {
-      lines_0,
-      lines_1,
-      lines_2,
-      NULL
-    };
+    const char *parttype = "mbr";
     int r;
     suppress_error = 0;
-    r = guestfs_sfdiskM (g, device, (char **) lines);
+    r = guestfs_part_init (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 64, 204799);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 204800, 409599);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 409600, -64);
     if (r == -1)
       return -1;
   }
@@ -20152,7 +24227,7 @@ static int test_pvcreate_0 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_pvs (g);
     if (r == NULL)
@@ -20643,7 +24718,7 @@ static int test_mkdir_p_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_mkdir_p_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_mkdir_p_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -20667,26 +24742,8 @@ static int test_mkdir_p_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -20696,7 +24753,7 @@ static int test_mkdir_p_0 (void)
   }
   /* TestOutputTrue for mkdir_p (0) */
   {
-    const char *path = "/new/foo/bar";
+    const char *path = "/mkdir_p/foo/bar";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir_p (g, path);
@@ -20704,7 +24761,7 @@ static int test_mkdir_p_0 (void)
       return -1;
   }
   {
-    const char *path = "/new/foo/bar";
+    const char *path = "/mkdir_p/foo/bar";
     int r;
     suppress_error = 0;
     r = guestfs_is_dir (g, path);
@@ -20739,7 +24796,7 @@ static int test_mkdir_p_1 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_mkdir_p_1: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_mkdir_p_1 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -20763,26 +24820,8 @@ static int test_mkdir_p_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -20792,7 +24831,7 @@ static int test_mkdir_p_1 (void)
   }
   /* TestOutputTrue for mkdir_p (1) */
   {
-    const char *path = "/new/foo/bar";
+    const char *path = "/mkdir_p2/foo/bar";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir_p (g, path);
@@ -20800,7 +24839,7 @@ static int test_mkdir_p_1 (void)
       return -1;
   }
   {
-    const char *path = "/new/foo";
+    const char *path = "/mkdir_p2/foo";
     int r;
     suppress_error = 0;
     r = guestfs_is_dir (g, path);
@@ -20835,7 +24874,7 @@ static int test_mkdir_p_2 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_mkdir_p_2: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_mkdir_p_2 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -20859,26 +24898,8 @@ static int test_mkdir_p_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -20888,7 +24909,7 @@ static int test_mkdir_p_2 (void)
   }
   /* TestOutputTrue for mkdir_p (2) */
   {
-    const char *path = "/new/foo/bar";
+    const char *path = "/mkdir_p3/foo/bar";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir_p (g, path);
@@ -20896,7 +24917,7 @@ static int test_mkdir_p_2 (void)
       return -1;
   }
   {
-    const char *path = "/new";
+    const char *path = "/mkdir_p3";
     int r;
     suppress_error = 0;
     r = guestfs_is_dir (g, path);
@@ -20931,7 +24952,7 @@ static int test_mkdir_p_3 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_mkdir_p_3: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_mkdir_p_3 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -20955,26 +24976,8 @@ static int test_mkdir_p_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -20984,7 +24987,7 @@ static int test_mkdir_p_3 (void)
   }
   /* TestRun for mkdir_p (3) */
   {
-    const char *path = "/new";
+    const char *path = "/mkdir_p4";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir (g, path);
@@ -20992,7 +24995,7 @@ static int test_mkdir_p_3 (void)
       return -1;
   }
   {
-    const char *path = "/new";
+    const char *path = "/mkdir_p4";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir_p (g, path);
@@ -21023,7 +25026,7 @@ static int test_mkdir_p_4 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_mkdir_p_4: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_mkdir_p_4 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -21047,26 +25050,8 @@ static int test_mkdir_p_4 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -21076,7 +25061,7 @@ static int test_mkdir_p_4 (void)
   }
   /* TestLastFail for mkdir_p (4) */
   {
-    const char *path = "/new";
+    const char *path = "/mkdir_p5";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -21084,7 +25069,7 @@ static int test_mkdir_p_4 (void)
       return -1;
   }
   {
-    const char *path = "/new";
+    const char *path = "/mkdir_p5";
     int r;
     suppress_error = 1;
     r = guestfs_mkdir_p (g, path);
@@ -21115,7 +25100,7 @@ static int test_mkdir_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_mkdir_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_mkdir_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -21139,26 +25124,8 @@ static int test_mkdir_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -21168,7 +25135,7 @@ static int test_mkdir_0 (void)
   }
   /* TestOutputTrue for mkdir (0) */
   {
-    const char *path = "/new";
+    const char *path = "/mkdir";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir (g, path);
@@ -21176,7 +25143,7 @@ static int test_mkdir_0 (void)
       return -1;
   }
   {
-    const char *path = "/new";
+    const char *path = "/mkdir";
     int r;
     suppress_error = 0;
     r = guestfs_is_dir (g, path);
@@ -21211,7 +25178,7 @@ static int test_mkdir_1 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_mkdir_1: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_mkdir_1 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -21235,26 +25202,8 @@ static int test_mkdir_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -21264,7 +25213,7 @@ static int test_mkdir_1 (void)
   }
   /* TestLastFail for mkdir (1) */
   {
-    const char *path = "/new/foo/bar";
+    const char *path = "/mkdir2/foo/bar";
     int r;
     suppress_error = 1;
     r = guestfs_mkdir (g, path);
@@ -21295,7 +25244,7 @@ static int test_rm_rf_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_rm_rf_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_rm_rf_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -21319,26 +25268,8 @@ static int test_rm_rf_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -21348,7 +25279,7 @@ static int test_rm_rf_0 (void)
   }
   /* TestOutputFalse for rm_rf (0) */
   {
-    const char *path = "/new";
+    const char *path = "/rm_rf";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir (g, path);
@@ -21356,7 +25287,7 @@ static int test_rm_rf_0 (void)
       return -1;
   }
   {
-    const char *path = "/new/foo";
+    const char *path = "/rm_rf/foo";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir (g, path);
@@ -21364,7 +25295,7 @@ static int test_rm_rf_0 (void)
       return -1;
   }
   {
-    const char *path = "/new/foo/bar";
+    const char *path = "/rm_rf/foo/bar";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -21372,7 +25303,7 @@ static int test_rm_rf_0 (void)
       return -1;
   }
   {
-    const char *path = "/new";
+    const char *path = "/rm_rf";
     int r;
     suppress_error = 0;
     r = guestfs_rm_rf (g, path);
@@ -21380,7 +25311,7 @@ static int test_rm_rf_0 (void)
       return -1;
   }
   {
-    const char *path = "/new";
+    const char *path = "/rm_rf";
     int r;
     suppress_error = 0;
     r = guestfs_exists (g, path);
@@ -21415,7 +25346,7 @@ static int test_rmdir_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_rmdir_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_rmdir_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -21439,26 +25370,8 @@ static int test_rmdir_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -21468,7 +25381,7 @@ static int test_rmdir_0 (void)
   }
   /* TestRun for rmdir (0) */
   {
-    const char *path = "/new";
+    const char *path = "/rmdir";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir (g, path);
@@ -21476,7 +25389,7 @@ static int test_rmdir_0 (void)
       return -1;
   }
   {
-    const char *path = "/new";
+    const char *path = "/rmdir";
     int r;
     suppress_error = 0;
     r = guestfs_rmdir (g, path);
@@ -21507,7 +25420,7 @@ static int test_rmdir_1 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_rmdir_1: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_rmdir_1 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -21531,26 +25444,8 @@ static int test_rmdir_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -21560,7 +25455,7 @@ static int test_rmdir_1 (void)
   }
   /* TestLastFail for rmdir (1) */
   {
-    const char *path = "/new";
+    const char *path = "/rmdir2";
     int r;
     suppress_error = 1;
     r = guestfs_rmdir (g, path);
@@ -21591,7 +25486,7 @@ static int test_rmdir_2 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_rmdir_2: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_rmdir_2 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -21615,26 +25510,8 @@ static int test_rmdir_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -21644,7 +25521,15 @@ static int test_rmdir_2 (void)
   }
   /* TestLastFail for rmdir (2) */
   {
-    const char *path = "/new";
+    const char *path = "/rmdir3";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/rmdir3/new";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -21652,7 +25537,7 @@ static int test_rmdir_2 (void)
       return -1;
   }
   {
-    const char *path = "/new";
+    const char *path = "/rmdir3/new";
     int r;
     suppress_error = 1;
     r = guestfs_rmdir (g, path);
@@ -21683,7 +25568,7 @@ static int test_rm_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_rm_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_rm_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -21707,26 +25592,8 @@ static int test_rm_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -21736,7 +25603,15 @@ static int test_rm_0 (void)
   }
   /* TestRun for rm (0) */
   {
-    const char *path = "/new";
+    const char *path = "/rm";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/rm/new";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -21744,7 +25619,7 @@ static int test_rm_0 (void)
       return -1;
   }
   {
-    const char *path = "/new";
+    const char *path = "/rm/new";
     int r;
     suppress_error = 0;
     r = guestfs_rm (g, path);
@@ -21775,7 +25650,7 @@ static int test_rm_1 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_rm_1: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_rm_1 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -21799,26 +25674,8 @@ static int test_rm_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -21828,7 +25685,7 @@ static int test_rm_1 (void)
   }
   /* TestLastFail for rm (1) */
   {
-    const char *path = "/new";
+    const char *path = "/nosuchfile";
     int r;
     suppress_error = 1;
     r = guestfs_rm (g, path);
@@ -21859,7 +25716,7 @@ static int test_rm_2 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_rm_2: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_rm_2 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -21883,26 +25740,8 @@ static int test_rm_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -21912,7 +25751,7 @@ static int test_rm_2 (void)
   }
   /* TestLastFail for rm (2) */
   {
-    const char *path = "/new";
+    const char *path = "/rm2";
     int r;
     suppress_error = 0;
     r = guestfs_mkdir (g, path);
@@ -21920,7 +25759,7 @@ static int test_rm_2 (void)
       return -1;
   }
   {
-    const char *path = "/new";
+    const char *path = "/rm2";
     int r;
     suppress_error = 1;
     r = guestfs_rm (g, path);
@@ -21987,7 +25826,7 @@ static int test_read_lines_0 (void)
   {
     const char *path = "/known-4";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_read_lines (g, path);
     if (r == NULL)
@@ -22097,7 +25936,7 @@ static int test_read_lines_1 (void)
   {
     const char *path = "/empty";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_read_lines (g, path);
     if (r == NULL)
@@ -22135,16 +25974,9 @@ static int test_lvs_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_lvs_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_lvs_0", "lvm2");
+    return 0;
   }
   /* InitBasicFSonLVM for test_lvs_0: create ext2 on /dev/VG/LV */
   {
@@ -22230,7 +26062,7 @@ static int test_lvs_0 (void)
   /* TestOutputList for lvs (0) */
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_lvs (g);
     if (r == NULL)
@@ -22280,16 +26112,9 @@ static int test_lvs_1 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_lvs_1", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_lvs_1", "lvm2");
+    return 0;
   }
   /* InitNone|InitEmpty for test_lvs_1 */
   {
@@ -22317,18 +26142,37 @@ static int test_lvs_1 (void)
   /* TestOutputList for lvs (1) */
   {
     const char *device = "/dev/sda";
-    const char *lines_0 = ",100";
-    const char *lines_1 = ",200";
-    const char *lines_2 = ",";
-    const char *const lines[] = {
-      lines_0,
-      lines_1,
-      lines_2,
-      NULL
-    };
+    const char *parttype = "mbr";
     int r;
     suppress_error = 0;
-    r = guestfs_sfdiskM (g, device, (char **) lines);
+    r = guestfs_part_init (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 64, 204799);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 204800, 409599);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 409600, -64);
     if (r == -1)
       return -1;
   }
@@ -22413,7 +26257,7 @@ static int test_lvs_1 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_lvs (g);
     if (r == NULL)
@@ -22487,16 +26331,9 @@ static int test_vgs_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_vgs_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_vgs_0", "lvm2");
+    return 0;
   }
   /* InitBasicFSonLVM for test_vgs_0: create ext2 on /dev/VG/LV */
   {
@@ -22582,7 +26419,7 @@ static int test_vgs_0 (void)
   /* TestOutputList for vgs (0) */
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_vgs (g);
     if (r == NULL)
@@ -22632,16 +26469,9 @@ static int test_vgs_1 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_vgs_1", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_vgs_1", "lvm2");
+    return 0;
   }
   /* InitNone|InitEmpty for test_vgs_1 */
   {
@@ -22669,18 +26499,37 @@ static int test_vgs_1 (void)
   /* TestOutputList for vgs (1) */
   {
     const char *device = "/dev/sda";
-    const char *lines_0 = ",100";
-    const char *lines_1 = ",200";
-    const char *lines_2 = ",";
-    const char *const lines[] = {
-      lines_0,
-      lines_1,
-      lines_2,
-      NULL
-    };
+    const char *parttype = "mbr";
     int r;
     suppress_error = 0;
-    r = guestfs_sfdiskM (g, device, (char **) lines);
+    r = guestfs_part_init (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 64, 204799);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 204800, 409599);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 409600, -64);
     if (r == -1)
       return -1;
   }
@@ -22738,7 +26587,7 @@ static int test_vgs_1 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_vgs (g);
     if (r == NULL)
@@ -22800,16 +26649,9 @@ static int test_pvs_0 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_pvs_0", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_pvs_0", "lvm2");
+    return 0;
   }
   /* InitBasicFSonLVM for test_pvs_0: create ext2 on /dev/VG/LV */
   {
@@ -22895,7 +26737,7 @@ static int test_pvs_0 (void)
   /* TestOutputListOfDevices for pvs (0) */
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_pvs (g);
     if (r == NULL)
@@ -22946,16 +26788,9 @@ static int test_pvs_1 (void)
     return 0;
   }
 
-  {
-    const char *groups[] = { "lvm2", NULL };
-    int r;
-    suppress_error = 1;
-    r = guestfs_available (g, (char **) groups);
-    suppress_error = 0;
-    if (r == -1) {
-      printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_pvs_1", groups[0]);
-      return 0;
-    }
+  if (!is_available ("lvm2")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_pvs_1", "lvm2");
+    return 0;
   }
   /* InitNone|InitEmpty for test_pvs_1 */
   {
@@ -22983,18 +26818,37 @@ static int test_pvs_1 (void)
   /* TestOutputListOfDevices for pvs (1) */
   {
     const char *device = "/dev/sda";
-    const char *lines_0 = ",100";
-    const char *lines_1 = ",200";
-    const char *lines_2 = ",";
-    const char *const lines[] = {
-      lines_0,
-      lines_1,
-      lines_2,
-      NULL
-    };
+    const char *parttype = "mbr";
     int r;
     suppress_error = 0;
-    r = guestfs_sfdiskM (g, device, (char **) lines);
+    r = guestfs_part_init (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 64, 204799);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 204800, 409599);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 409600, -64);
     if (r == -1)
       return -1;
   }
@@ -23024,7 +26878,7 @@ static int test_pvs_1 (void)
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_pvs (g);
     if (r == NULL)
@@ -23155,7 +27009,7 @@ static int test_list_partitions_0 (void)
   /* TestOutputListOfDevices for list_partitions (0) */
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_list_partitions (g);
     if (r == NULL)
@@ -23173,7 +27027,20 @@ static int test_list_partitions_0 (void)
         return -1;
       }
     }
-    if (r[1] != NULL) {
+    if (!r[1]) {
+      fprintf (stderr, "test_list_partitions_0: short list returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    {
+      const char *expected = "/dev/sdb1";
+      r[1][5] = 's';
+      if (STRNEQ (r[1], expected)) {
+        fprintf (stderr, "test_list_partitions_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        return -1;
+      }
+    }
+    if (r[2] != NULL) {
       fprintf (stderr, "test_list_partitions_0: extra elements returned from command\n");
       print_strings (r);
       return -1;
@@ -23232,24 +27099,43 @@ static int test_list_partitions_1 (void)
   /* TestOutputListOfDevices for list_partitions (1) */
   {
     const char *device = "/dev/sda";
-    const char *lines_0 = ",100";
-    const char *lines_1 = ",200";
-    const char *lines_2 = ",";
-    const char *const lines[] = {
-      lines_0,
-      lines_1,
-      lines_2,
-      NULL
-    };
+    const char *parttype = "mbr";
     int r;
     suppress_error = 0;
-    r = guestfs_sfdiskM (g, device, (char **) lines);
+    r = guestfs_part_init (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 64, 204799);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 204800, 409599);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *prlogex = "p";
+    int r;
+    suppress_error = 0;
+    r = guestfs_part_add (g, device, prlogex, 409600, -64);
     if (r == -1)
       return -1;
   }
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_list_partitions (g);
     if (r == NULL)
@@ -23293,7 +27179,20 @@ static int test_list_partitions_1 (void)
         return -1;
       }
     }
-    if (r[3] != NULL) {
+    if (!r[3]) {
+      fprintf (stderr, "test_list_partitions_1: short list returned from command\n");
+      print_strings (r);
+      return -1;
+    }
+    {
+      const char *expected = "/dev/sdb1";
+      r[3][5] = 's';
+      if (STRNEQ (r[3], expected)) {
+        fprintf (stderr, "test_list_partitions_1: expected \"%s\" but got \"%s\"\n", expected, r[3]);
+        return -1;
+      }
+    }
+    if (r[4] != NULL) {
       fprintf (stderr, "test_list_partitions_1: extra elements returned from command\n");
       print_strings (r);
       return -1;
@@ -23352,7 +27251,7 @@ static int test_list_devices_0 (void)
   /* TestOutputListOfDevices for list_devices (0) */
   {
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_list_devices (g);
     if (r == NULL)
@@ -23442,7 +27341,7 @@ static int test_ls_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_ls_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_ls_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -23466,26 +27365,8 @@ static int test_ls_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -23495,7 +27376,15 @@ static int test_ls_0 (void)
   }
   /* TestOutputList for ls (0) */
   {
-    const char *path = "/new";
+    const char *path = "/ls";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/ls/new";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -23503,7 +27392,7 @@ static int test_ls_0 (void)
       return -1;
   }
   {
-    const char *path = "/newer";
+    const char *path = "/ls/newer";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -23511,7 +27400,7 @@ static int test_ls_0 (void)
       return -1;
   }
   {
-    const char *path = "/newest";
+    const char *path = "/ls/newest";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -23519,9 +27408,9 @@ static int test_ls_0 (void)
       return -1;
   }
   {
-    const char *directory = "/";
+    const char *directory = "/ls";
     char **r;
-    int i;
+    size_t i;
     suppress_error = 0;
     r = guestfs_ls (g, directory);
     if (r == NULL)
@@ -23532,7 +27421,7 @@ static int test_ls_0 (void)
       return -1;
     }
     {
-      const char *expected = "lost+found";
+      const char *expected = "new";
       if (STRNEQ (r[0], expected)) {
         fprintf (stderr, "test_ls_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
         return -1;
@@ -23544,7 +27433,7 @@ static int test_ls_0 (void)
       return -1;
     }
     {
-      const char *expected = "new";
+      const char *expected = "newer";
       if (STRNEQ (r[1], expected)) {
         fprintf (stderr, "test_ls_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
         return -1;
@@ -23556,25 +27445,13 @@ static int test_ls_0 (void)
       return -1;
     }
     {
-      const char *expected = "newer";
+      const char *expected = "newest";
       if (STRNEQ (r[2], expected)) {
         fprintf (stderr, "test_ls_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
         return -1;
       }
     }
-    if (!r[3]) {
-      fprintf (stderr, "test_ls_0: short list returned from command\n");
-      print_strings (r);
-      return -1;
-    }
-    {
-      const char *expected = "newest";
-      if (STRNEQ (r[3], expected)) {
-        fprintf (stderr, "test_ls_0: expected \"%s\" but got \"%s\"\n", expected, r[3]);
-        return -1;
-      }
-    }
-    if (r[4] != NULL) {
+    if (r[3] != NULL) {
       fprintf (stderr, "test_ls_0: extra elements returned from command\n");
       print_strings (r);
       return -1;
@@ -23678,7 +27555,7 @@ static int test_touch_0 (void)
     return 0;
   }
 
-  /* InitBasicFS for test_touch_0: create ext2 on /dev/sda1 */
+  /* InitScratchFS for test_touch_0 */
   {
     const char *device = "/dev/sda";
     int r;
@@ -23702,26 +27579,8 @@ static int test_touch_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda";
-    const char *parttype = "mbr";
-    int r;
-    suppress_error = 0;
-    r = guestfs_part_disk (g, device, parttype);
-    if (r == -1)
-      return -1;
-  }
-  {
-    const char *fstype = "ext2";
-    const char *device = "/dev/sda1";
-    int r;
-    suppress_error = 0;
-    r = guestfs_mkfs (g, fstype, device);
-    if (r == -1)
-      return -1;
-  }
-  {
     const char *options = "";
-    const char *device = "/dev/sda1";
+    const char *device = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
     suppress_error = 0;
@@ -23731,7 +27590,7 @@ static int test_touch_0 (void)
   }
   /* TestOutputTrue for touch (0) */
   {
-    const char *path = "/new";
+    const char *path = "/touch";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -23739,7 +27598,7 @@ static int test_touch_0 (void)
       return -1;
   }
   {
-    const char *path = "/new";
+    const char *path = "/touch";
     int r;
     suppress_error = 0;
     r = guestfs_exists (g, path);
@@ -23884,9 +27743,10 @@ static int test_mount_0 (void)
   {
     const char *path = "/new";
     const char *content = "new file contents";
+    size_t content_size = 17;
     int r;
     suppress_error = 0;
-    r = guestfs_write_file (g, path, content, 0);
+    r = guestfs_write (g, path, content, content_size);
     if (r == -1)
       return -1;
   }
@@ -23899,6 +27759,919 @@ static int test_mount_0 (void)
       return -1;
     if (STRNEQ (r, expected)) {
       fprintf (stderr, "test_mount_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_get_attach_method_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "get_attach_method") == NULL;
+  str = getenv ("SKIP_TEST_GET_ATTACH_METHOD_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_GET_ATTACH_METHOD");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_get_attach_method_0 (void)
+{
+  if (test_get_attach_method_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_get_attach_method_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_get_attach_method_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for get_attach_method (0) */
+  const char *expected = "appliance";
+  {
+    char *r;
+    suppress_error = 0;
+    r = guestfs_get_attach_method (g);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_get_attach_method_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_file_architecture_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "file_architecture") == NULL;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_file_architecture_0 (void)
+{
+  if (test_file_architecture_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_0");
+    return 0;
+  }
+
+  /* InitISOFS for test_file_architecture_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for file_architecture (0) */
+  const char *expected = "i386";
+  {
+    const char *filename = "/bin-i586-dynamic";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_file_architecture (g, filename);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_file_architecture_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_file_architecture_1_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "file_architecture") == NULL;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE_1");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_file_architecture_1 (void)
+{
+  if (test_file_architecture_1_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_1");
+    return 0;
+  }
+
+  /* InitISOFS for test_file_architecture_1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for file_architecture (1) */
+  const char *expected = "sparc";
+  {
+    const char *filename = "/bin-sparc-dynamic";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_file_architecture (g, filename);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_file_architecture_1: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_file_architecture_2_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "file_architecture") == NULL;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE_2");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_file_architecture_2 (void)
+{
+  if (test_file_architecture_2_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_2");
+    return 0;
+  }
+
+  /* InitISOFS for test_file_architecture_2 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for file_architecture (2) */
+  const char *expected = "i386";
+  {
+    const char *filename = "/bin-win32.exe";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_file_architecture (g, filename);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_file_architecture_2: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_file_architecture_3_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "file_architecture") == NULL;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE_3");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_file_architecture_3 (void)
+{
+  if (test_file_architecture_3_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_3");
+    return 0;
+  }
+
+  /* InitISOFS for test_file_architecture_3 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for file_architecture (3) */
+  const char *expected = "x86_64";
+  {
+    const char *filename = "/bin-win64.exe";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_file_architecture (g, filename);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_file_architecture_3: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_file_architecture_4_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "file_architecture") == NULL;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE_4");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_file_architecture_4 (void)
+{
+  if (test_file_architecture_4_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_4");
+    return 0;
+  }
+
+  /* InitISOFS for test_file_architecture_4 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for file_architecture (4) */
+  const char *expected = "x86_64";
+  {
+    const char *filename = "/bin-x86_64-dynamic";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_file_architecture (g, filename);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_file_architecture_4: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_file_architecture_5_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "file_architecture") == NULL;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE_5");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_file_architecture_5 (void)
+{
+  if (test_file_architecture_5_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_5");
+    return 0;
+  }
+
+  /* InitISOFS for test_file_architecture_5 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for file_architecture (5) */
+  const char *expected = "i386";
+  {
+    const char *filename = "/lib-i586.so";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_file_architecture (g, filename);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_file_architecture_5: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_file_architecture_6_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "file_architecture") == NULL;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE_6");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_file_architecture_6 (void)
+{
+  if (test_file_architecture_6_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_6");
+    return 0;
+  }
+
+  /* InitISOFS for test_file_architecture_6 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for file_architecture (6) */
+  const char *expected = "sparc";
+  {
+    const char *filename = "/lib-sparc.so";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_file_architecture (g, filename);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_file_architecture_6: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_file_architecture_7_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "file_architecture") == NULL;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE_7");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_file_architecture_7 (void)
+{
+  if (test_file_architecture_7_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_7");
+    return 0;
+  }
+
+  /* InitISOFS for test_file_architecture_7 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for file_architecture (7) */
+  const char *expected = "i386";
+  {
+    const char *filename = "/lib-win32.dll";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_file_architecture (g, filename);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_file_architecture_7: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_file_architecture_8_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "file_architecture") == NULL;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE_8");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_file_architecture_8 (void)
+{
+  if (test_file_architecture_8_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_8");
+    return 0;
+  }
+
+  /* InitISOFS for test_file_architecture_8 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for file_architecture (8) */
+  const char *expected = "x86_64";
+  {
+    const char *filename = "/lib-win64.dll";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_file_architecture (g, filename);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_file_architecture_8: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_file_architecture_9_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "file_architecture") == NULL;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE_9");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_file_architecture_9 (void)
+{
+  if (test_file_architecture_9_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_9");
+    return 0;
+  }
+
+  /* InitISOFS for test_file_architecture_9 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for file_architecture (9) */
+  const char *expected = "x86_64";
+  {
+    const char *filename = "/lib-x86_64.so";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_file_architecture (g, filename);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_file_architecture_9: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_file_architecture_10_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "file_architecture") == NULL;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE_10");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_file_architecture_10 (void)
+{
+  if (test_file_architecture_10_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_10");
+    return 0;
+  }
+
+  /* InitISOFS for test_file_architecture_10 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for file_architecture (10) */
+  const char *expected = "x86_64";
+  {
+    const char *filename = "/initrd-x86_64.img";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_file_architecture (g, filename);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_file_architecture_10: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int test_file_architecture_11_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "file_architecture") == NULL;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE_11");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FILE_ARCHITECTURE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_file_architecture_11 (void)
+{
+  if (test_file_architecture_11_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_11");
+    return 0;
+  }
+
+  /* InitISOFS for test_file_architecture_11 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdd";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_ro (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for file_architecture (11) */
+  const char *expected = "x86_64";
+  {
+    const char *filename = "/initrd-x86_64.img.gz";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_file_architecture (g, filename);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_file_architecture_11: expected \"%s\" but got \"%s\"\n", expected, r);
       return -1;
     }
     free (r);
@@ -24695,13 +29468,17 @@ static int test_get_autosync_0 (void)
     if (r == -1)
       return -1;
   }
-  /* TestRun for get_autosync (0) */
+  /* TestOutputTrue for get_autosync (0) */
   {
     int r;
     suppress_error = 0;
     r = guestfs_get_autosync (g);
     if (r == -1)
       return -1;
+    if (!r) {
+      fprintf (stderr, "test_get_autosync_0: expected true, got false\n");
+      return -1;
+    }
   }
   return 0;
 }
@@ -24836,22 +29613,14 @@ int main (int argc, char *argv[])
 
   guestfs_set_error_handler (g, print_error, NULL);
 
-  guestfs_set_path (g, "../appliance");
-
   filename = "test1.img";
-  fd = open (filename, O_WRONLY|O_CREAT|O_NOCTTY|O_NONBLOCK|O_TRUNC, 0666);
+  fd = open (filename, O_WRONLY|O_CREAT|O_NOCTTY|O_TRUNC, 0666);
   if (fd == -1) {
     perror (filename);
     exit (EXIT_FAILURE);
   }
-  if (lseek (fd, 524288000, SEEK_SET) == -1) {
-    perror ("lseek");
-    close (fd);
-    unlink (filename);
-    exit (EXIT_FAILURE);
-  }
-  if (write (fd, &c, 1) == -1) {
-    perror ("write");
+  if (ftruncate (fd, 524288000) == -1) {
+    perror ("ftruncate");
     close (fd);
     unlink (filename);
     exit (EXIT_FAILURE);
@@ -24867,19 +29636,13 @@ int main (int argc, char *argv[])
   }
 
   filename = "test2.img";
-  fd = open (filename, O_WRONLY|O_CREAT|O_NOCTTY|O_NONBLOCK|O_TRUNC, 0666);
+  fd = open (filename, O_WRONLY|O_CREAT|O_NOCTTY|O_TRUNC, 0666);
   if (fd == -1) {
     perror (filename);
     exit (EXIT_FAILURE);
   }
-  if (lseek (fd, 52428800, SEEK_SET) == -1) {
-    perror ("lseek");
-    close (fd);
-    unlink (filename);
-    exit (EXIT_FAILURE);
-  }
-  if (write (fd, &c, 1) == -1) {
-    perror ("write");
+  if (ftruncate (fd, 52428800) == -1) {
+    perror ("ftruncate");
     close (fd);
     unlink (filename);
     exit (EXIT_FAILURE);
@@ -24895,19 +29658,13 @@ int main (int argc, char *argv[])
   }
 
   filename = "test3.img";
-  fd = open (filename, O_WRONLY|O_CREAT|O_NOCTTY|O_NONBLOCK|O_TRUNC, 0666);
+  fd = open (filename, O_WRONLY|O_CREAT|O_NOCTTY|O_TRUNC, 0666);
   if (fd == -1) {
     perror (filename);
     exit (EXIT_FAILURE);
   }
-  if (lseek (fd, 10485760, SEEK_SET) == -1) {
-    perror ("lseek");
-    close (fd);
-    unlink (filename);
-    exit (EXIT_FAILURE);
-  }
-  if (write (fd, &c, 1) == -1) {
-    perror ("write");
+  if (ftruncate (fd, 10485760) == -1) {
+    perror ("ftruncate");
     close (fd);
     unlink (filename);
     exit (EXIT_FAILURE);
@@ -24927,1527 +29684,2617 @@ int main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
+  /* Set a timeout in case qemu hangs during launch (RHBZ#505329). */
+  alarm (600);
+
   if (guestfs_launch (g) == -1) {
     printf ("guestfs_launch FAILED\n");
     exit (EXIT_FAILURE);
   }
 
-  /* Set a timeout in case qemu hangs during launch (RHBZ#505329). */
-  alarm (600);
-
   /* Cancel previous alarm. */
   alarm (0);
 
-  nr_tests = 251;
+  /* Create ext2 filesystem on /dev/sdb1 partition. */
+  if (guestfs_part_disk (g, "/dev/sdb", "mbr") == -1) {
+    printf ("guestfs_part_disk FAILED\n");
+    exit (EXIT_FAILURE);
+  }
+  if (guestfs_mkfs (g, "ext2", "/dev/sdb1") == -1) {
+    printf ("guestfs_mkfs (/dev/sdb1) FAILED\n");
+    exit (EXIT_FAILURE);
+  }
+
+  nr_tests = 322;
 
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_mkfs_opts_0\n", test_num, nr_tests);
+  if (test_mkfs_opts_0 () == -1) {
+    printf ("test_mkfs_opts_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_lvm_canonical_lv_name_0\n", test_num, nr_tests);
+  if (test_lvm_canonical_lv_name_0 () == -1) {
+    printf ("test_lvm_canonical_lv_name_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_lvm_canonical_lv_name_1\n", test_num, nr_tests);
+  if (test_lvm_canonical_lv_name_1 () == -1) {
+    printf ("test_lvm_canonical_lv_name_1 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_pread_device_0\n", test_num, nr_tests);
+  if (test_pread_device_0 () == -1) {
+    printf ("test_pread_device_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_pwrite_device_0\n", test_num, nr_tests);
+  if (test_pwrite_device_0 () == -1) {
+    printf ("test_pwrite_device_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_download_offset_0\n", test_num, nr_tests);
+  if (test_download_offset_0 () == -1) {
+    printf ("test_download_offset_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_upload_offset_0\n", test_num, nr_tests);
+  if (test_upload_offset_0 () == -1) {
+    printf ("test_upload_offset_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_part_to_dev_0\n", test_num, nr_tests);
+  if (test_part_to_dev_0 () == -1) {
+    printf ("test_part_to_dev_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_part_to_dev_1\n", test_num, nr_tests);
+  if (test_part_to_dev_1 () == -1) {
+    printf ("test_part_to_dev_1 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_is_socket_0\n", test_num, nr_tests);
+  if (test_is_socket_0 () == -1) {
+    printf ("test_is_socket_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_is_symlink_0\n", test_num, nr_tests);
+  if (test_is_symlink_0 () == -1) {
+    printf ("test_is_symlink_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_is_symlink_1\n", test_num, nr_tests);
+  if (test_is_symlink_1 () == -1) {
+    printf ("test_is_symlink_1 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_is_fifo_0\n", test_num, nr_tests);
+  if (test_is_fifo_0 () == -1) {
+    printf ("test_is_fifo_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_is_fifo_1\n", test_num, nr_tests);
+  if (test_is_fifo_1 () == -1) {
+    printf ("test_is_fifo_1 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_is_blockdev_0\n", test_num, nr_tests);
+  if (test_is_blockdev_0 () == -1) {
+    printf ("test_is_blockdev_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_is_blockdev_1\n", test_num, nr_tests);
+  if (test_is_blockdev_1 () == -1) {
+    printf ("test_is_blockdev_1 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_is_chardev_0\n", test_num, nr_tests);
+  if (test_is_chardev_0 () == -1) {
+    printf ("test_is_chardev_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_is_chardev_1\n", test_num, nr_tests);
+  if (test_is_chardev_1 () == -1) {
+    printf ("test_is_chardev_1 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_is_lv_0\n", test_num, nr_tests);
+  if (test_is_lv_0 () == -1) {
+    printf ("test_is_lv_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_is_lv_1\n", test_num, nr_tests);
+  if (test_is_lv_1 () == -1) {
+    printf ("test_is_lv_1 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_vfs_uuid_0\n", test_num, nr_tests);
+  if (test_vfs_uuid_0 () == -1) {
+    printf ("test_vfs_uuid_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_vfs_label_0\n", test_num, nr_tests);
+  if (test_vfs_label_0 () == -1) {
+    printf ("test_vfs_label_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_fallocate64_0\n", test_num, nr_tests);
+  if (test_fallocate64_0 () == -1) {
+    printf ("test_fallocate64_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_available_all_groups_0\n", test_num, nr_tests);
+  if (test_available_all_groups_0 () == -1) {
+    printf ("test_available_all_groups_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_pwrite_0\n", test_num, nr_tests);
+  if (test_pwrite_0 () == -1) {
+    printf ("test_pwrite_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_pwrite_1\n", test_num, nr_tests);
+  if (test_pwrite_1 () == -1) {
+    printf ("test_pwrite_1 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_pwrite_2\n", test_num, nr_tests);
+  if (test_pwrite_2 () == -1) {
+    printf ("test_pwrite_2 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_write_0\n", test_num, nr_tests);
+  if (test_write_0 () == -1) {
+    printf ("test_write_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_write_1\n", test_num, nr_tests);
+  if (test_write_1 () == -1) {
+    printf ("test_write_1 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_write_2\n", test_num, nr_tests);
+  if (test_write_2 () == -1) {
+    printf ("test_write_2 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_write_3\n", test_num, nr_tests);
+  if (test_write_3 () == -1) {
+    printf ("test_write_3 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_write_4\n", test_num, nr_tests);
+  if (test_write_4 () == -1) {
+    printf ("test_write_4 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_write_5\n", test_num, nr_tests);
+  if (test_write_5 () == -1) {
+    printf ("test_write_5 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_fill_pattern_0\n", test_num, nr_tests);
+  if (test_fill_pattern_0 () == -1) {
+    printf ("test_fill_pattern_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_base64_in_0\n", test_num, nr_tests);
+  if (test_base64_in_0 () == -1) {
+    printf ("test_base64_in_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_get_umask_0\n", test_num, nr_tests);
+  if (test_get_umask_0 () == -1) {
+    printf ("test_get_umask_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_lvresize_free_0\n", test_num, nr_tests);
+  if (test_lvresize_free_0 () == -1) {
+    printf ("test_lvresize_free_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_checksum_device_0\n", test_num, nr_tests);
+  if (test_checksum_device_0 () == -1) {
+    printf ("test_checksum_device_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_part_get_mbr_id_0\n", test_num, nr_tests);
+  if (test_part_get_mbr_id_0 () == -1) {
+    printf ("test_part_get_mbr_id_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_part_get_bootable_0\n", test_num, nr_tests);
+  if (test_part_get_bootable_0 () == -1) {
+    printf ("test_part_get_bootable_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_part_del_0\n", test_num, nr_tests);
+  if (test_part_del_0 () == -1) {
+    printf ("test_part_del_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_vgscan_0\n", test_num, nr_tests);
+  if (test_vgscan_0 () == -1) {
+    printf ("test_vgscan_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_txz_in_0\n", test_num, nr_tests);
+  if (test_txz_in_0 () == -1) {
+    printf ("test_txz_in_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_zero_device_0\n", test_num, nr_tests);
+  if (test_zero_device_0 () == -1) {
+    printf ("test_zero_device_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_copy_size_0\n", test_num, nr_tests);
+  if (test_copy_size_0 () == -1) {
+    printf ("test_copy_size_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_initrd_cat_0\n", test_num, nr_tests);
   if (test_initrd_cat_0 () == -1) {
     printf ("test_initrd_cat_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_vgrename_0\n", test_num, nr_tests);
   if (test_vgrename_0 () == -1) {
     printf ("test_vgrename_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_lvrename_0\n", test_num, nr_tests);
   if (test_lvrename_0 () == -1) {
     printf ("test_lvrename_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_filesize_0\n", test_num, nr_tests);
   if (test_filesize_0 () == -1) {
     printf ("test_filesize_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_dd_0\n", test_num, nr_tests);
   if (test_dd_0 () == -1) {
     printf ("test_dd_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_available_0\n", test_num, nr_tests);
   if (test_available_0 () == -1) {
     printf ("test_available_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_fill_0\n", test_num, nr_tests);
   if (test_fill_0 () == -1) {
     printf ("test_fill_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_part_get_parttype_0\n", test_num, nr_tests);
   if (test_part_get_parttype_0 () == -1) {
     printf ("test_part_get_parttype_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_part_set_name_0\n", test_num, nr_tests);
   if (test_part_set_name_0 () == -1) {
     printf ("test_part_set_name_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_part_set_bootable_0\n", test_num, nr_tests);
   if (test_part_set_bootable_0 () == -1) {
     printf ("test_part_set_bootable_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_part_disk_0\n", test_num, nr_tests);
   if (test_part_disk_0 () == -1) {
     printf ("test_part_disk_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_part_disk_1\n", test_num, nr_tests);
   if (test_part_disk_1 () == -1) {
     printf ("test_part_disk_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_part_add_0\n", test_num, nr_tests);
   if (test_part_add_0 () == -1) {
     printf ("test_part_add_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_part_add_1\n", test_num, nr_tests);
   if (test_part_add_1 () == -1) {
     printf ("test_part_add_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_part_add_2\n", test_num, nr_tests);
   if (test_part_add_2 () == -1) {
     printf ("test_part_add_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_part_init_0\n", test_num, nr_tests);
   if (test_part_init_0 () == -1) {
     printf ("test_part_init_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_pread_0\n", test_num, nr_tests);
   if (test_pread_0 () == -1) {
     printf ("test_pread_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_pread_1\n", test_num, nr_tests);
   if (test_pread_1 () == -1) {
     printf ("test_pread_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mkdir_mode_0\n", test_num, nr_tests);
   if (test_mkdir_mode_0 () == -1) {
     printf ("test_mkdir_mode_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_utimens_0\n", test_num, nr_tests);
   if (test_utimens_0 () == -1) {
     printf ("test_utimens_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_truncate_size_0\n", test_num, nr_tests);
   if (test_truncate_size_0 () == -1) {
     printf ("test_truncate_size_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_truncate_0\n", test_num, nr_tests);
   if (test_truncate_0 () == -1) {
     printf ("test_truncate_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_vfs_type_0\n", test_num, nr_tests);
   if (test_vfs_type_0 () == -1) {
     printf ("test_vfs_type_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_case_sensitive_path_0\n", test_num, nr_tests);
   if (test_case_sensitive_path_0 () == -1) {
     printf ("test_case_sensitive_path_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_case_sensitive_path_1\n", test_num, nr_tests);
   if (test_case_sensitive_path_1 () == -1) {
     printf ("test_case_sensitive_path_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_case_sensitive_path_2\n", test_num, nr_tests);
   if (test_case_sensitive_path_2 () == -1) {
     printf ("test_case_sensitive_path_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_case_sensitive_path_3\n", test_num, nr_tests);
   if (test_case_sensitive_path_3 () == -1) {
     printf ("test_case_sensitive_path_3 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_case_sensitive_path_4\n", test_num, nr_tests);
   if (test_case_sensitive_path_4 () == -1) {
     printf ("test_case_sensitive_path_4 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_case_sensitive_path_5\n", test_num, nr_tests);
   if (test_case_sensitive_path_5 () == -1) {
     printf ("test_case_sensitive_path_5 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_case_sensitive_path_6\n", test_num, nr_tests);
   if (test_case_sensitive_path_6 () == -1) {
     printf ("test_case_sensitive_path_6 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_echo_daemon_0\n", test_num, nr_tests);
   if (test_echo_daemon_0 () == -1) {
     printf ("test_echo_daemon_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_modprobe_0\n", test_num, nr_tests);
   if (test_modprobe_0 () == -1) {
     printf ("test_modprobe_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mke2journal_U_0\n", test_num, nr_tests);
   if (test_mke2journal_U_0 () == -1) {
     printf ("test_mke2journal_U_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mke2journal_L_0\n", test_num, nr_tests);
   if (test_mke2journal_L_0 () == -1) {
     printf ("test_mke2journal_L_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mke2journal_0\n", test_num, nr_tests);
   if (test_mke2journal_0 () == -1) {
     printf ("test_mke2journal_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mkfs_b_0\n", test_num, nr_tests);
   if (test_mkfs_b_0 () == -1) {
     printf ("test_mkfs_b_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_mkfs_b_1\n", test_num, nr_tests);
+  if (test_mkfs_b_1 () == -1) {
+    printf ("test_mkfs_b_1 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_mkfs_b_2\n", test_num, nr_tests);
+  if (test_mkfs_b_2 () == -1) {
+    printf ("test_mkfs_b_2 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_mkfs_b_3\n", test_num, nr_tests);
+  if (test_mkfs_b_3 () == -1) {
+    printf ("test_mkfs_b_3 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_mkfs_b_4\n", test_num, nr_tests);
+  if (test_mkfs_b_4 () == -1) {
+    printf ("test_mkfs_b_4 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_inotify_add_watch_0\n", test_num, nr_tests);
   if (test_inotify_add_watch_0 () == -1) {
     printf ("test_inotify_add_watch_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_inotify_init_0\n", test_num, nr_tests);
   if (test_inotify_init_0 () == -1) {
     printf ("test_inotify_init_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mkswap_file_0\n", test_num, nr_tests);
   if (test_mkswap_file_0 () == -1) {
     printf ("test_mkswap_file_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_swapon_uuid_0\n", test_num, nr_tests);
   if (test_swapon_uuid_0 () == -1) {
     printf ("test_swapon_uuid_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_swapon_label_0\n", test_num, nr_tests);
   if (test_swapon_label_0 () == -1) {
     printf ("test_swapon_label_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_swapon_file_0\n", test_num, nr_tests);
   if (test_swapon_file_0 () == -1) {
     printf ("test_swapon_file_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_swapon_device_0\n", test_num, nr_tests);
   if (test_swapon_device_0 () == -1) {
     printf ("test_swapon_device_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_fallocate_0\n", test_num, nr_tests);
   if (test_fallocate_0 () == -1) {
     printf ("test_fallocate_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_ln_sf_0\n", test_num, nr_tests);
   if (test_ln_sf_0 () == -1) {
     printf ("test_ln_sf_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_ln_s_0\n", test_num, nr_tests);
   if (test_ln_s_0 () == -1) {
     printf ("test_ln_s_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_ln_f_0\n", test_num, nr_tests);
   if (test_ln_f_0 () == -1) {
     printf ("test_ln_f_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_ln_0\n", test_num, nr_tests);
   if (test_ln_0 () == -1) {
     printf ("test_ln_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_realpath_0\n", test_num, nr_tests);
   if (test_realpath_0 () == -1) {
     printf ("test_realpath_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_zfgrepi_0\n", test_num, nr_tests);
   if (test_zfgrepi_0 () == -1) {
     printf ("test_zfgrepi_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_zegrepi_0\n", test_num, nr_tests);
   if (test_zegrepi_0 () == -1) {
     printf ("test_zegrepi_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_zgrepi_0\n", test_num, nr_tests);
   if (test_zgrepi_0 () == -1) {
     printf ("test_zgrepi_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_zfgrep_0\n", test_num, nr_tests);
   if (test_zfgrep_0 () == -1) {
     printf ("test_zfgrep_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_zegrep_0\n", test_num, nr_tests);
   if (test_zegrep_0 () == -1) {
     printf ("test_zegrep_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_zgrep_0\n", test_num, nr_tests);
   if (test_zgrep_0 () == -1) {
     printf ("test_zgrep_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_fgrepi_0\n", test_num, nr_tests);
   if (test_fgrepi_0 () == -1) {
     printf ("test_fgrepi_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_egrepi_0\n", test_num, nr_tests);
   if (test_egrepi_0 () == -1) {
     printf ("test_egrepi_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_grepi_0\n", test_num, nr_tests);
   if (test_grepi_0 () == -1) {
     printf ("test_grepi_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_fgrep_0\n", test_num, nr_tests);
   if (test_fgrep_0 () == -1) {
     printf ("test_fgrep_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_egrep_0\n", test_num, nr_tests);
   if (test_egrep_0 () == -1) {
     printf ("test_egrep_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_grep_0\n", test_num, nr_tests);
   if (test_grep_0 () == -1) {
     printf ("test_grep_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_grep_1\n", test_num, nr_tests);
   if (test_grep_1 () == -1) {
     printf ("test_grep_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_grep_2\n", test_num, nr_tests);
+  if (test_grep_2 () == -1) {
+    printf ("test_grep_2 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_read_file_0\n", test_num, nr_tests);
   if (test_read_file_0 () == -1) {
     printf ("test_read_file_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_read_file_1\n", test_num, nr_tests);
+  if (test_read_file_1 () == -1) {
+    printf ("test_read_file_1 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_read_file_2\n", test_num, nr_tests);
+  if (test_read_file_2 () == -1) {
+    printf ("test_read_file_2 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_read_file_3\n", test_num, nr_tests);
+  if (test_read_file_3 () == -1) {
+    printf ("test_read_file_3 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_umask_0\n", test_num, nr_tests);
+  if (test_umask_0 () == -1) {
+    printf ("test_umask_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mknod_c_0\n", test_num, nr_tests);
   if (test_mknod_c_0 () == -1) {
     printf ("test_mknod_c_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mknod_b_0\n", test_num, nr_tests);
   if (test_mknod_b_0 () == -1) {
     printf ("test_mknod_b_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mkfifo_0\n", test_num, nr_tests);
   if (test_mkfifo_0 () == -1) {
     printf ("test_mkfifo_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mknod_0\n", test_num, nr_tests);
   if (test_mknod_0 () == -1) {
     printf ("test_mknod_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mknod_1\n", test_num, nr_tests);
   if (test_mknod_1 () == -1) {
     printf ("test_mknod_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mkswap_U_0\n", test_num, nr_tests);
   if (test_mkswap_U_0 () == -1) {
     printf ("test_mkswap_U_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mkswap_L_0\n", test_num, nr_tests);
   if (test_mkswap_L_0 () == -1) {
     printf ("test_mkswap_L_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mkswap_0\n", test_num, nr_tests);
   if (test_mkswap_0 () == -1) {
     printf ("test_mkswap_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_initrd_list_0\n", test_num, nr_tests);
   if (test_initrd_list_0 () == -1) {
     printf ("test_initrd_list_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_du_0\n", test_num, nr_tests);
   if (test_du_0 () == -1) {
     printf ("test_du_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_tail_n_0\n", test_num, nr_tests);
   if (test_tail_n_0 () == -1) {
     printf ("test_tail_n_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_tail_n_1\n", test_num, nr_tests);
   if (test_tail_n_1 () == -1) {
     printf ("test_tail_n_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_tail_n_2\n", test_num, nr_tests);
   if (test_tail_n_2 () == -1) {
     printf ("test_tail_n_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_tail_0\n", test_num, nr_tests);
   if (test_tail_0 () == -1) {
     printf ("test_tail_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_head_n_0\n", test_num, nr_tests);
   if (test_head_n_0 () == -1) {
     printf ("test_head_n_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_head_n_1\n", test_num, nr_tests);
   if (test_head_n_1 () == -1) {
     printf ("test_head_n_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_head_n_2\n", test_num, nr_tests);
   if (test_head_n_2 () == -1) {
     printf ("test_head_n_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_head_0\n", test_num, nr_tests);
   if (test_head_0 () == -1) {
     printf ("test_head_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_head_1\n", test_num, nr_tests);
+  if (test_head_1 () == -1) {
+    printf ("test_head_1 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_wc_c_0\n", test_num, nr_tests);
   if (test_wc_c_0 () == -1) {
     printf ("test_wc_c_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_wc_w_0\n", test_num, nr_tests);
   if (test_wc_w_0 () == -1) {
     printf ("test_wc_w_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_wc_l_0\n", test_num, nr_tests);
   if (test_wc_l_0 () == -1) {
     printf ("test_wc_l_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_wc_l_1\n", test_num, nr_tests);
+  if (test_wc_l_1 () == -1) {
+    printf ("test_wc_l_1 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mkdtemp_0\n", test_num, nr_tests);
   if (test_mkdtemp_0 () == -1) {
     printf ("test_mkdtemp_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_scrub_file_0\n", test_num, nr_tests);
   if (test_scrub_file_0 () == -1) {
     printf ("test_scrub_file_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_scrub_device_0\n", test_num, nr_tests);
   if (test_scrub_device_0 () == -1) {
     printf ("test_scrub_device_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_glob_expand_0\n", test_num, nr_tests);
   if (test_glob_expand_0 () == -1) {
     printf ("test_glob_expand_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_glob_expand_1\n", test_num, nr_tests);
   if (test_glob_expand_1 () == -1) {
     printf ("test_glob_expand_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_glob_expand_2\n", test_num, nr_tests);
   if (test_glob_expand_2 () == -1) {
     printf ("test_glob_expand_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_ntfs_3g_probe_0\n", test_num, nr_tests);
   if (test_ntfs_3g_probe_0 () == -1) {
     printf ("test_ntfs_3g_probe_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_ntfs_3g_probe_1\n", test_num, nr_tests);
   if (test_ntfs_3g_probe_1 () == -1) {
     printf ("test_ntfs_3g_probe_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_sleep_0\n", test_num, nr_tests);
   if (test_sleep_0 () == -1) {
     printf ("test_sleep_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_find_0\n", test_num, nr_tests);
   if (test_find_0 () == -1) {
     printf ("test_find_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_find_1\n", test_num, nr_tests);
   if (test_find_1 () == -1) {
     printf ("test_find_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_find_2\n", test_num, nr_tests);
   if (test_find_2 () == -1) {
     printf ("test_find_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_lvresize_0\n", test_num, nr_tests);
   if (test_lvresize_0 () == -1) {
     printf ("test_lvresize_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_lvresize_1\n", test_num, nr_tests);
+  if (test_lvresize_1 () == -1) {
+    printf ("test_lvresize_1 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_zerofree_0\n", test_num, nr_tests);
   if (test_zerofree_0 () == -1) {
     printf ("test_zerofree_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_hexdump_0\n", test_num, nr_tests);
   if (test_hexdump_0 () == -1) {
     printf ("test_hexdump_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_hexdump_1\n", test_num, nr_tests);
   if (test_hexdump_1 () == -1) {
     printf ("test_hexdump_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_hexdump_2\n", test_num, nr_tests);
+  if (test_hexdump_2 () == -1) {
+    printf ("test_hexdump_2 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_strings_e_0\n", test_num, nr_tests);
   if (test_strings_e_0 () == -1) {
     printf ("test_strings_e_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_strings_e_1\n", test_num, nr_tests);
   if (test_strings_e_1 () == -1) {
     printf ("test_strings_e_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_strings_0\n", test_num, nr_tests);
   if (test_strings_0 () == -1) {
     printf ("test_strings_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_strings_1\n", test_num, nr_tests);
   if (test_strings_1 () == -1) {
     printf ("test_strings_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_strings_2\n", test_num, nr_tests);
+  if (test_strings_2 () == -1) {
+    printf ("test_strings_2 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_equal_0\n", test_num, nr_tests);
   if (test_equal_0 () == -1) {
     printf ("test_equal_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_equal_1\n", test_num, nr_tests);
   if (test_equal_1 () == -1) {
     printf ("test_equal_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_equal_2\n", test_num, nr_tests);
   if (test_equal_2 () == -1) {
     printf ("test_equal_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_ping_daemon_0\n", test_num, nr_tests);
   if (test_ping_daemon_0 () == -1) {
     printf ("test_ping_daemon_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_dmesg_0\n", test_num, nr_tests);
   if (test_dmesg_0 () == -1) {
     printf ("test_dmesg_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_drop_caches_0\n", test_num, nr_tests);
   if (test_drop_caches_0 () == -1) {
     printf ("test_drop_caches_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mv_0\n", test_num, nr_tests);
   if (test_mv_0 () == -1) {
     printf ("test_mv_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mv_1\n", test_num, nr_tests);
   if (test_mv_1 () == -1) {
     printf ("test_mv_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_cp_a_0\n", test_num, nr_tests);
   if (test_cp_a_0 () == -1) {
     printf ("test_cp_a_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_cp_0\n", test_num, nr_tests);
   if (test_cp_0 () == -1) {
     printf ("test_cp_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_cp_1\n", test_num, nr_tests);
   if (test_cp_1 () == -1) {
     printf ("test_cp_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_cp_2\n", test_num, nr_tests);
   if (test_cp_2 () == -1) {
     printf ("test_cp_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_grub_install_0\n", test_num, nr_tests);
   if (test_grub_install_0 () == -1) {
     printf ("test_grub_install_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_zero_0\n", test_num, nr_tests);
   if (test_zero_0 () == -1) {
     printf ("test_zero_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_fsck_0\n", test_num, nr_tests);
   if (test_fsck_0 () == -1) {
     printf ("test_fsck_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_fsck_1\n", test_num, nr_tests);
   if (test_fsck_1 () == -1) {
     printf ("test_fsck_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_get_e2uuid_0\n", test_num, nr_tests);
+  if (test_get_e2uuid_0 () == -1) {
+    printf ("test_get_e2uuid_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_set_e2uuid_0\n", test_num, nr_tests);
   if (test_set_e2uuid_0 () == -1) {
     printf ("test_set_e2uuid_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_set_e2uuid_1\n", test_num, nr_tests);
   if (test_set_e2uuid_1 () == -1) {
     printf ("test_set_e2uuid_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_set_e2uuid_2\n", test_num, nr_tests);
   if (test_set_e2uuid_2 () == -1) {
     printf ("test_set_e2uuid_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_set_e2uuid_3\n", test_num, nr_tests);
   if (test_set_e2uuid_3 () == -1) {
     printf ("test_set_e2uuid_3 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_set_e2label_0\n", test_num, nr_tests);
   if (test_set_e2label_0 () == -1) {
     printf ("test_set_e2label_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_pvremove_0\n", test_num, nr_tests);
   if (test_pvremove_0 () == -1) {
     printf ("test_pvremove_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_pvremove_1\n", test_num, nr_tests);
   if (test_pvremove_1 () == -1) {
     printf ("test_pvremove_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_pvremove_2\n", test_num, nr_tests);
   if (test_pvremove_2 () == -1) {
     printf ("test_pvremove_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_vgremove_0\n", test_num, nr_tests);
   if (test_vgremove_0 () == -1) {
     printf ("test_vgremove_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_vgremove_1\n", test_num, nr_tests);
   if (test_vgremove_1 () == -1) {
     printf ("test_vgremove_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_lvremove_0\n", test_num, nr_tests);
   if (test_lvremove_0 () == -1) {
     printf ("test_lvremove_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_lvremove_1\n", test_num, nr_tests);
   if (test_lvremove_1 () == -1) {
     printf ("test_lvremove_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_lvremove_2\n", test_num, nr_tests);
   if (test_lvremove_2 () == -1) {
     printf ("test_lvremove_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mount_ro_0\n", test_num, nr_tests);
   if (test_mount_ro_0 () == -1) {
     printf ("test_mount_ro_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mount_ro_1\n", test_num, nr_tests);
   if (test_mount_ro_1 () == -1) {
     printf ("test_mount_ro_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_tgz_in_0\n", test_num, nr_tests);
   if (test_tgz_in_0 () == -1) {
     printf ("test_tgz_in_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_tar_in_0\n", test_num, nr_tests);
   if (test_tar_in_0 () == -1) {
     printf ("test_tar_in_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_checksum_0\n", test_num, nr_tests);
   if (test_checksum_0 () == -1) {
     printf ("test_checksum_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_checksum_1\n", test_num, nr_tests);
   if (test_checksum_1 () == -1) {
     printf ("test_checksum_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_checksum_2\n", test_num, nr_tests);
   if (test_checksum_2 () == -1) {
     printf ("test_checksum_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_checksum_3\n", test_num, nr_tests);
   if (test_checksum_3 () == -1) {
     printf ("test_checksum_3 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_checksum_4\n", test_num, nr_tests);
   if (test_checksum_4 () == -1) {
     printf ("test_checksum_4 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_checksum_5\n", test_num, nr_tests);
   if (test_checksum_5 () == -1) {
     printf ("test_checksum_5 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_checksum_6\n", test_num, nr_tests);
   if (test_checksum_6 () == -1) {
     printf ("test_checksum_6 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_checksum_7\n", test_num, nr_tests);
   if (test_checksum_7 () == -1) {
     printf ("test_checksum_7 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_checksum_8\n", test_num, nr_tests);
+  if (test_checksum_8 () == -1) {
+    printf ("test_checksum_8 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_download_0\n", test_num, nr_tests);
   if (test_download_0 () == -1) {
     printf ("test_download_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_upload_0\n", test_num, nr_tests);
   if (test_upload_0 () == -1) {
     printf ("test_upload_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_blockdev_rereadpt_0\n", test_num, nr_tests);
   if (test_blockdev_rereadpt_0 () == -1) {
     printf ("test_blockdev_rereadpt_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_blockdev_flushbufs_0\n", test_num, nr_tests);
   if (test_blockdev_flushbufs_0 () == -1) {
     printf ("test_blockdev_flushbufs_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_blockdev_getsize64_0\n", test_num, nr_tests);
   if (test_blockdev_getsize64_0 () == -1) {
     printf ("test_blockdev_getsize64_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_blockdev_getsz_0\n", test_num, nr_tests);
   if (test_blockdev_getsz_0 () == -1) {
     printf ("test_blockdev_getsz_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_blockdev_getbsz_0\n", test_num, nr_tests);
   if (test_blockdev_getbsz_0 () == -1) {
     printf ("test_blockdev_getbsz_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_blockdev_getss_0\n", test_num, nr_tests);
   if (test_blockdev_getss_0 () == -1) {
     printf ("test_blockdev_getss_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_blockdev_getro_0\n", test_num, nr_tests);
   if (test_blockdev_getro_0 () == -1) {
     printf ("test_blockdev_getro_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_blockdev_setrw_0\n", test_num, nr_tests);
   if (test_blockdev_setrw_0 () == -1) {
     printf ("test_blockdev_setrw_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_blockdev_setro_0\n", test_num, nr_tests);
   if (test_blockdev_setro_0 () == -1) {
     printf ("test_blockdev_setro_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_statvfs_0\n", test_num, nr_tests);
   if (test_statvfs_0 () == -1) {
     printf ("test_statvfs_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_lstat_0\n", test_num, nr_tests);
   if (test_lstat_0 () == -1) {
     printf ("test_lstat_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_stat_0\n", test_num, nr_tests);
   if (test_stat_0 () == -1) {
     printf ("test_stat_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_lines_0\n", test_num, nr_tests);
   if (test_command_lines_0 () == -1) {
     printf ("test_command_lines_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_lines_1\n", test_num, nr_tests);
   if (test_command_lines_1 () == -1) {
     printf ("test_command_lines_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_lines_2\n", test_num, nr_tests);
   if (test_command_lines_2 () == -1) {
     printf ("test_command_lines_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_lines_3\n", test_num, nr_tests);
   if (test_command_lines_3 () == -1) {
     printf ("test_command_lines_3 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_lines_4\n", test_num, nr_tests);
   if (test_command_lines_4 () == -1) {
     printf ("test_command_lines_4 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_lines_5\n", test_num, nr_tests);
   if (test_command_lines_5 () == -1) {
     printf ("test_command_lines_5 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_lines_6\n", test_num, nr_tests);
   if (test_command_lines_6 () == -1) {
     printf ("test_command_lines_6 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_lines_7\n", test_num, nr_tests);
   if (test_command_lines_7 () == -1) {
     printf ("test_command_lines_7 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_lines_8\n", test_num, nr_tests);
   if (test_command_lines_8 () == -1) {
     printf ("test_command_lines_8 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_lines_9\n", test_num, nr_tests);
   if (test_command_lines_9 () == -1) {
     printf ("test_command_lines_9 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_lines_10\n", test_num, nr_tests);
   if (test_command_lines_10 () == -1) {
     printf ("test_command_lines_10 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_0\n", test_num, nr_tests);
   if (test_command_0 () == -1) {
     printf ("test_command_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_1\n", test_num, nr_tests);
   if (test_command_1 () == -1) {
     printf ("test_command_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_2\n", test_num, nr_tests);
   if (test_command_2 () == -1) {
     printf ("test_command_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_3\n", test_num, nr_tests);
   if (test_command_3 () == -1) {
     printf ("test_command_3 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_4\n", test_num, nr_tests);
   if (test_command_4 () == -1) {
     printf ("test_command_4 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_5\n", test_num, nr_tests);
   if (test_command_5 () == -1) {
     printf ("test_command_5 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_6\n", test_num, nr_tests);
   if (test_command_6 () == -1) {
     printf ("test_command_6 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_7\n", test_num, nr_tests);
   if (test_command_7 () == -1) {
     printf ("test_command_7 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_8\n", test_num, nr_tests);
   if (test_command_8 () == -1) {
     printf ("test_command_8 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_9\n", test_num, nr_tests);
   if (test_command_9 () == -1) {
     printf ("test_command_9 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_10\n", test_num, nr_tests);
   if (test_command_10 () == -1) {
     printf ("test_command_10 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_command_11\n", test_num, nr_tests);
   if (test_command_11 () == -1) {
     printf ("test_command_11 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_file_0\n", test_num, nr_tests);
   if (test_file_0 () == -1) {
     printf ("test_file_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_file_1\n", test_num, nr_tests);
   if (test_file_1 () == -1) {
     printf ("test_file_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_file_2\n", test_num, nr_tests);
   if (test_file_2 () == -1) {
     printf ("test_file_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_file_3\n", test_num, nr_tests);
+  if (test_file_3 () == -1) {
+    printf ("test_file_3 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_file_4\n", test_num, nr_tests);
+  if (test_file_4 () == -1) {
+    printf ("test_file_4 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_umount_all_0\n", test_num, nr_tests);
   if (test_umount_all_0 () == -1) {
     printf ("test_umount_all_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_umount_all_1\n", test_num, nr_tests);
   if (test_umount_all_1 () == -1) {
     printf ("test_umount_all_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mounts_0\n", test_num, nr_tests);
   if (test_mounts_0 () == -1) {
     printf ("test_mounts_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_umount_0\n", test_num, nr_tests);
   if (test_umount_0 () == -1) {
     printf ("test_umount_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_umount_1\n", test_num, nr_tests);
   if (test_umount_1 () == -1) {
     printf ("test_umount_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_write_file_0\n", test_num, nr_tests);
   if (test_write_file_0 () == -1) {
     printf ("test_write_file_0 FAILED\n");
     n_failed++;
   }
   test_num++;
-  printf ("%3d/%3d test_write_file_1\n", test_num, nr_tests);
-  if (test_write_file_1 () == -1) {
-    printf ("test_write_file_1 FAILED\n");
-    n_failed++;
-  }
-  test_num++;
-  printf ("%3d/%3d test_write_file_2\n", test_num, nr_tests);
-  if (test_write_file_2 () == -1) {
-    printf ("test_write_file_2 FAILED\n");
-    n_failed++;
-  }
-  test_num++;
-  printf ("%3d/%3d test_write_file_3\n", test_num, nr_tests);
-  if (test_write_file_3 () == -1) {
-    printf ("test_write_file_3 FAILED\n");
-    n_failed++;
-  }
-  test_num++;
-  printf ("%3d/%3d test_write_file_4\n", test_num, nr_tests);
-  if (test_write_file_4 () == -1) {
-    printf ("test_write_file_4 FAILED\n");
-    n_failed++;
-  }
-  test_num++;
-  printf ("%3d/%3d test_write_file_5\n", test_num, nr_tests);
-  if (test_write_file_5 () == -1) {
-    printf ("test_write_file_5 FAILED\n");
-    n_failed++;
-  }
-  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mkfs_0\n", test_num, nr_tests);
   if (test_mkfs_0 () == -1) {
     printf ("test_mkfs_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_lvcreate_0\n", test_num, nr_tests);
   if (test_lvcreate_0 () == -1) {
     printf ("test_lvcreate_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_vgcreate_0\n", test_num, nr_tests);
   if (test_vgcreate_0 () == -1) {
     printf ("test_vgcreate_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_pvcreate_0\n", test_num, nr_tests);
   if (test_pvcreate_0 () == -1) {
     printf ("test_pvcreate_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_is_dir_0\n", test_num, nr_tests);
   if (test_is_dir_0 () == -1) {
     printf ("test_is_dir_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_is_dir_1\n", test_num, nr_tests);
   if (test_is_dir_1 () == -1) {
     printf ("test_is_dir_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_is_file_0\n", test_num, nr_tests);
   if (test_is_file_0 () == -1) {
     printf ("test_is_file_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_is_file_1\n", test_num, nr_tests);
   if (test_is_file_1 () == -1) {
     printf ("test_is_file_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_exists_0\n", test_num, nr_tests);
   if (test_exists_0 () == -1) {
     printf ("test_exists_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_exists_1\n", test_num, nr_tests);
   if (test_exists_1 () == -1) {
     printf ("test_exists_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mkdir_p_0\n", test_num, nr_tests);
   if (test_mkdir_p_0 () == -1) {
     printf ("test_mkdir_p_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mkdir_p_1\n", test_num, nr_tests);
   if (test_mkdir_p_1 () == -1) {
     printf ("test_mkdir_p_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mkdir_p_2\n", test_num, nr_tests);
   if (test_mkdir_p_2 () == -1) {
     printf ("test_mkdir_p_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mkdir_p_3\n", test_num, nr_tests);
   if (test_mkdir_p_3 () == -1) {
     printf ("test_mkdir_p_3 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mkdir_p_4\n", test_num, nr_tests);
   if (test_mkdir_p_4 () == -1) {
     printf ("test_mkdir_p_4 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mkdir_0\n", test_num, nr_tests);
   if (test_mkdir_0 () == -1) {
     printf ("test_mkdir_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mkdir_1\n", test_num, nr_tests);
   if (test_mkdir_1 () == -1) {
     printf ("test_mkdir_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_rm_rf_0\n", test_num, nr_tests);
   if (test_rm_rf_0 () == -1) {
     printf ("test_rm_rf_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_rmdir_0\n", test_num, nr_tests);
   if (test_rmdir_0 () == -1) {
     printf ("test_rmdir_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_rmdir_1\n", test_num, nr_tests);
   if (test_rmdir_1 () == -1) {
     printf ("test_rmdir_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_rmdir_2\n", test_num, nr_tests);
   if (test_rmdir_2 () == -1) {
     printf ("test_rmdir_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_rm_0\n", test_num, nr_tests);
   if (test_rm_0 () == -1) {
     printf ("test_rm_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_rm_1\n", test_num, nr_tests);
   if (test_rm_1 () == -1) {
     printf ("test_rm_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_rm_2\n", test_num, nr_tests);
   if (test_rm_2 () == -1) {
     printf ("test_rm_2 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_read_lines_0\n", test_num, nr_tests);
   if (test_read_lines_0 () == -1) {
     printf ("test_read_lines_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_read_lines_1\n", test_num, nr_tests);
   if (test_read_lines_1 () == -1) {
     printf ("test_read_lines_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_lvs_0\n", test_num, nr_tests);
   if (test_lvs_0 () == -1) {
     printf ("test_lvs_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_lvs_1\n", test_num, nr_tests);
   if (test_lvs_1 () == -1) {
     printf ("test_lvs_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_vgs_0\n", test_num, nr_tests);
   if (test_vgs_0 () == -1) {
     printf ("test_vgs_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_vgs_1\n", test_num, nr_tests);
   if (test_vgs_1 () == -1) {
     printf ("test_vgs_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_pvs_0\n", test_num, nr_tests);
   if (test_pvs_0 () == -1) {
     printf ("test_pvs_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_pvs_1\n", test_num, nr_tests);
   if (test_pvs_1 () == -1) {
     printf ("test_pvs_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_list_partitions_0\n", test_num, nr_tests);
   if (test_list_partitions_0 () == -1) {
     printf ("test_list_partitions_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_list_partitions_1\n", test_num, nr_tests);
   if (test_list_partitions_1 () == -1) {
     printf ("test_list_partitions_1 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_list_devices_0\n", test_num, nr_tests);
   if (test_list_devices_0 () == -1) {
     printf ("test_list_devices_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_ls_0\n", test_num, nr_tests);
   if (test_ls_0 () == -1) {
     printf ("test_ls_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_cat_0\n", test_num, nr_tests);
   if (test_cat_0 () == -1) {
     printf ("test_cat_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_touch_0\n", test_num, nr_tests);
   if (test_touch_0 () == -1) {
     printf ("test_touch_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_sync_0\n", test_num, nr_tests);
   if (test_sync_0 () == -1) {
     printf ("test_sync_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_mount_0\n", test_num, nr_tests);
   if (test_mount_0 () == -1) {
     printf ("test_mount_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_get_attach_method_0\n", test_num, nr_tests);
+  if (test_get_attach_method_0 () == -1) {
+    printf ("test_get_attach_method_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_file_architecture_0\n", test_num, nr_tests);
+  if (test_file_architecture_0 () == -1) {
+    printf ("test_file_architecture_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_file_architecture_1\n", test_num, nr_tests);
+  if (test_file_architecture_1 () == -1) {
+    printf ("test_file_architecture_1 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_file_architecture_2\n", test_num, nr_tests);
+  if (test_file_architecture_2 () == -1) {
+    printf ("test_file_architecture_2 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_file_architecture_3\n", test_num, nr_tests);
+  if (test_file_architecture_3 () == -1) {
+    printf ("test_file_architecture_3 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_file_architecture_4\n", test_num, nr_tests);
+  if (test_file_architecture_4 () == -1) {
+    printf ("test_file_architecture_4 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_file_architecture_5\n", test_num, nr_tests);
+  if (test_file_architecture_5 () == -1) {
+    printf ("test_file_architecture_5 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_file_architecture_6\n", test_num, nr_tests);
+  if (test_file_architecture_6 () == -1) {
+    printf ("test_file_architecture_6 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_file_architecture_7\n", test_num, nr_tests);
+  if (test_file_architecture_7 () == -1) {
+    printf ("test_file_architecture_7 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_file_architecture_8\n", test_num, nr_tests);
+  if (test_file_architecture_8 () == -1) {
+    printf ("test_file_architecture_8 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_file_architecture_9\n", test_num, nr_tests);
+  if (test_file_architecture_9 () == -1) {
+    printf ("test_file_architecture_9 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_file_architecture_10\n", test_num, nr_tests);
+  if (test_file_architecture_10 () == -1) {
+    printf ("test_file_architecture_10 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_file_architecture_11\n", test_num, nr_tests);
+  if (test_file_architecture_11 () == -1) {
+    printf ("test_file_architecture_11 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_set_recovery_proc_0\n", test_num, nr_tests);
   if (test_set_recovery_proc_0 () == -1) {
     printf ("test_set_recovery_proc_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_set_direct_0\n", test_num, nr_tests);
   if (test_set_direct_0 () == -1) {
     printf ("test_set_direct_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_set_trace_0\n", test_num, nr_tests);
   if (test_set_trace_0 () == -1) {
     printf ("test_set_trace_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_set_selinux_0\n", test_num, nr_tests);
   if (test_set_selinux_0 () == -1) {
     printf ("test_set_selinux_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_version_0\n", test_num, nr_tests);
   if (test_version_0 () == -1) {
     printf ("test_version_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_get_pid_0\n", test_num, nr_tests);
   if (test_get_pid_0 () == -1) {
     printf ("test_get_pid_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_get_memsize_0\n", test_num, nr_tests);
   if (test_get_memsize_0 () == -1) {
     printf ("test_get_memsize_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_set_memsize_0\n", test_num, nr_tests);
   if (test_set_memsize_0 () == -1) {
     printf ("test_set_memsize_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_is_busy_0\n", test_num, nr_tests);
   if (test_is_busy_0 () == -1) {
     printf ("test_is_busy_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_is_launching_0\n", test_num, nr_tests);
   if (test_is_launching_0 () == -1) {
     printf ("test_is_launching_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_is_config_0\n", test_num, nr_tests);
   if (test_is_config_0 () == -1) {
     printf ("test_is_config_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_is_ready_0\n", test_num, nr_tests);
   if (test_is_ready_0 () == -1) {
     printf ("test_is_ready_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_get_autosync_0\n", test_num, nr_tests);
   if (test_get_autosync_0 () == -1) {
     printf ("test_get_autosync_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_get_path_0\n", test_num, nr_tests);
   if (test_get_path_0 () == -1) {
     printf ("test_get_path_0 FAILED\n");
     n_failed++;
   }
   test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
   printf ("%3d/%3d test_get_qemu_0\n", test_num, nr_tests);
   if (test_get_qemu_0 () == -1) {
     printf ("test_get_qemu_0 FAILED\n");
     n_failed++;
   }
 
+  /* Check close callback is called. */
+  int close_sentinel = 1;
+  guestfs_set_close_callback (g, incr, &close_sentinel);
+
   guestfs_close (g);
+
+  if (close_sentinel != 2) {
+    fprintf (stderr, "close callback was not called\n");
+    exit (EXIT_FAILURE);
+  }
+
   unlink ("test1.img");
   unlink ("test2.img");
   unlink ("test3.img");

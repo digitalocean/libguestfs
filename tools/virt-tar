@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 # virt-tar
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2010 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,12 +20,10 @@ use warnings;
 use strict;
 
 use Sys::Guestfs;
-use Sys::Guestfs::Lib qw(open_guest get_partitions resolve_windows_path
-  inspect_all_partitions inspect_partition
-  inspect_operating_systems mount_operating_system);
+use Sys::Guestfs::Lib qw(open_guest);
 use Pod::Usage;
 use Getopt::Long;
-use File::Temp qw/tempfile/;
+use File::Basename;
 use Locale::TextDomain 'libguestfs';
 
 =encoding utf8
@@ -44,6 +42,11 @@ virt-tar - Extract or upload files to a virtual machine
 
  virt-tar [--options] disk.img [disk.img ...] -u tarball directory
 
+=head1 NOTE
+
+This tool is obsolete.  Use L<virt-copy-in(1)>, L<virt-copy-out(1)>,
+L<virt-tar-in(1)>, L<virt-tar-out(1)> as replacements.
+
 =head1 EXAMPLES
 
 Download C</home> from the VM into a local tarball:
@@ -60,12 +63,12 @@ Upload a local tarball and unpack it inside C</tmp> in the VM:
 
 =head1 WARNING
 
-You must I<not> use C<virt-tar> with the C<-u> option (upload) on live
+You must I<not> use C<virt-tar> with the I<-u> option (upload) on live
 virtual machines.  If you do this, you risk disk corruption in the VM.
 C<virt-tar> tries to stop you from doing this, but doesn't catch all
 cases.
 
-You can use C<-x> (extract) on live virtual machines, but you might
+You can use I<-x> (extract) on live virtual machines, but you might
 get inconsistent results or errors if there is filesystem activity
 inside the VM.  If the live VM is synched and quiescent, then
 C<virt-tar> will usually work, but the only way to guarantee
@@ -82,14 +85,14 @@ If you want to just view a single file, use L<virt-cat(1)>.  If you
 just want to edit a single file, use L<virt-edit(1)>.  For more
 complex cases you should look at the L<guestfish(1)> tool.
 
-There are two modes of operation: C<-x> (eXtract) downloads a
+There are two modes of operation: I<-x> (eXtract) downloads a
 directory and its contents (recursively) from the virtual machine into
-a local tarball.  C<-u> uploads from a local tarball, unpacking it
+a local tarball.  I<-u> uploads from a local tarball, unpacking it
 into a directory inside the virtual machine.  You cannot use these two
 options together.
 
-In addition, you may need to use the C<-z> (gZip) option to enable
-compression.  When uploading, you have to specify C<-z> if the upload
+In addition, you may need to use the I<-z> (gZip) option to enable
+compression.  When uploading, you have to specify I<-z> if the upload
 file is compressed because virt-tar won't detect this on its own.
 
 C<virt-tar> can only handle tar (optionally gzipped) format tarballs.
@@ -131,16 +134,33 @@ at all.
 
 =cut
 
+my $format;
+
+=item B<--format> raw
+
+Specify the format of disk images given on the command line.  If this
+is omitted then the format is autodetected from the content of the
+disk image.
+
+If disk images are requested from libvirt, then this program asks
+libvirt for this information.  In this case, the value of the format
+parameter is ignored.
+
+If working with untrusted raw-format guest disk images, you should
+ensure the format is always specified.
+
+=cut
+
 my $mode;
 
 =item B<-x> | B<--extract> | B<--download>
 
 =item B<-u> | B<--upload>
 
-Use C<-x> to extract (download) a directory from a virtual machine
+Use I<-x> to extract (download) a directory from a virtual machine
 to a local tarball.
 
-Use C<-u> to upload and unpack from a local tarball into a virtual
+Use I<-u> to upload and unpack from a local tarball into a virtual
 machine.  Please read the L</WARNING> section above before using this
 option.
 
@@ -176,6 +196,7 @@ Getopt::Long::Configure ("bundling");
 GetOptions ("help|?" => \$help,
             "version" => \$version,
             "connect|c=s" => \$uri,
+            "format=s" => \$format,
             "extract|download|x" => \&set_mode_x,
             "upload|u" => \&set_mode_u,
             "gzip|z" => \$gzip,
@@ -202,35 +223,36 @@ if ($mode eq "x") {
 } else { # $mode eq "u"
     $directory = pop @ARGV;
     $tarball = pop @ARGV;
-    die __"virt-tar: $tarball: file not found\n" unless -f $tarball;
+    die __x("virt-tar: {tarball}: file not found\n",
+            tarball => $tarball) unless -f $tarball;
 }
-die __"virt-tar: $directory: directory name must start with '/' character\n"
+die __x("virt-tar: {dir}: directory name must start with '/' character\n",
+        dir => $directory)
     unless substr ($directory, 0, 1) eq "/";
 
 my @args = (\@ARGV);
 push @args, address => $uri if $uri;
 push @args, rw => 1 if $mode eq "u";
+push @args, format => $format if defined $format;
 
 my $g = open_guest (@args);
 $g->launch ();
 
-# List of possible filesystems.
-my @partitions = get_partitions ($g);
-
-# Now query each one to build up a picture of what's in it.
-my %fses =
-    inspect_all_partitions ($g, \@partitions,
-      use_windows_registry => 0);
-
-my $oses = inspect_operating_systems ($g, \%fses);
-
-my @roots = keys %$oses;
-die __"no root device found in this operating system image\n" if @roots == 0;
-die __"multiboot operating systems are not supported by virt-tar\n" if @roots > 1;
-my $root_dev = $roots[0];
-
-my $os = $oses->{$root_dev};
-mount_operating_system ($g, $os, $mode eq "u" ? 0 : 1);
+my @roots = $g->inspect_os ();
+if (@roots == 0) {
+    die __x("{prog}: No operating system could be detected inside this disk image.\n\nThis may be because the file is not a disk image, or is not a virtual machine\nimage, or because the OS type is not understood by libguestfs.\n\nIf you feel this is an error, please file a bug report including as much\ninformation about the disk image as possible.\n",
+            prog => basename ($0));
+}
+if (@roots > 1) {
+    die __x("{prog}: multiboot operating systems are not supported.\n",
+            prog => basename ($0))
+}
+my %fses = $g->inspect_get_mountpoints ($roots[0]);
+my @fses = sort { length $a <=> length $b } keys %fses;
+my $mountopts = $mode eq "u" ? "" : "ro";
+foreach (@fses) {
+    $g->mount_options ($mountopts, $fses{$_}, $_);
+}
 
 # Do the tar command.
 if ($mode eq "x") {
@@ -254,12 +276,23 @@ undef $g;
 
 exit 0;
 
+=head1 SHELL QUOTING
+
+Libvirt guest names can contain arbitrary characters, some of which
+have meaning to the shell such as C<#> and space.  You may need to
+quote or escape these characters on the command line.  See the shell
+manual page L<sh(1)> for details.
+
 =head1 SEE ALSO
 
 L<guestfs(3)>,
 L<guestfish(1)>,
 L<virt-cat(1)>,
 L<virt-edit(1)>,
+L<virt-copy-in(1)>,
+L<virt-copy-out(1)>,
+L<virt-tar-in(1)>,
+L<virt-tar-out(1)>,
 L<Sys::Guestfs(3)>,
 L<Sys::Guestfs::Lib(3)>,
 L<Sys::Virt(3)>,
@@ -267,7 +300,7 @@ L<http://libguestfs.org/>.
 
 =head1 AUTHOR
 
-Richard W.M. Jones L<http://et.redhat.com/~rjones/>
+Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 COPYRIGHT
 

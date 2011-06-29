@@ -1,5 +1,5 @@
 /* guestfish - the filesystem interactive shell
- * Copyright (C) 2009 Red Hat Inc.
+ * Copyright (C) 2009-2010 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,10 +28,10 @@
 /* A bit tricky because in the case where there are multiple
  * paths we have to perform a Cartesian product.
  */
-static void glob_issue (char *cmd, int argc, char ***globs, int *posn, int *count, int *r);
+static void glob_issue (char *cmd, size_t argc, char ***globs, int *posn, int *count, int *r);
 
 int
-do_glob (const char *cmd, int argc, char *argv[])
+run_glob (const char *cmd, size_t argc, char *argv[])
 {
   /* For 'glob cmd foo /s* /usr/s*' this could be:
    *
@@ -46,7 +46,8 @@ do_glob (const char *cmd, int argc, char *argv[])
   char **globs[argc];
   int posn[argc];
   int count[argc];
-  int i, r = 0;
+  size_t i;
+  int r = 0;
 
   if (argc < 1) {
     fprintf (stderr, _("use 'glob command [args...]'\n"));
@@ -129,25 +130,21 @@ do_glob (const char *cmd, int argc, char *argv[])
 }
 
 static void
-glob_issue (char *cmd, int argc,
+glob_issue (char *cmd, size_t argc,
             char ***globs, int *posn, int *count,
             int *r)
 {
-  int i;
+  size_t i;
   char *argv[argc+1];
 
   argv[0] = cmd;
   argv[argc] = NULL;
 
  again:
-  printf ("%s", argv[0]);
-  for (i = 1; i < argc; ++i) {
+  for (i = 1; i < argc; ++i)
     argv[i] = globs[i][posn[i]];
-    printf (" %s", argv[i]);
-  }
-  printf ("\n");
 
-  if (issue_command (argv[0], &argv[1], NULL) == -1)
+  if (issue_command (argv[0], &argv[1], NULL, 0) == -1)
     *r = -1;			/* ... but don't exit */
 
   for (i = argc-1; i >= 1; --i) {

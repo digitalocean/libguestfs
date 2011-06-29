@@ -25,7 +25,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include "../src/guestfs_protocol.h"
+#include "guestfs_protocol.h"
 #include "daemon.h"
 #include "actions.h"
 
@@ -103,6 +103,11 @@ int
 do_mkdir_mode (const char *path, int mode)
 {
   int r;
+
+  if (mode < 0) {
+    reply_with_error ("%s: mode is negative", path);
+    return -1;
+  }
 
   CHROOT_IN;
   r = mkdir (path, mode);
@@ -183,28 +188,6 @@ do_mkdir_p (const char *path)
   }
 
   return 0;
-}
-
-int
-do_is_dir (const char *path)
-{
-  int r;
-  struct stat buf;
-
-  CHROOT_IN;
-  r = lstat (path, &buf);
-  CHROOT_OUT;
-
-  if (r == -1) {
-    if (errno != ENOENT && errno != ENOTDIR) {
-      reply_with_perror ("stat: %s", path);
-      return -1;
-    }
-    else
-      return 0;			/* Not a directory. */
-  }
-
-  return S_ISDIR (buf.st_mode);
 }
 
 char *

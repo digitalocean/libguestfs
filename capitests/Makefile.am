@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2010 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,30 +23,118 @@ BUILT_SOURCES = $(generator_built)
 
 EXTRA_DIST = $(BUILT_SOURCES)
 
-# Tests.  These are auto-generated from the test descriptions
-# in the generator.
+check_PROGRAMS = \
+	tests \
+	test-command \
+	test-just-header \
+	test-create-handle \
+	test-config \
+	test-add-drive-opts \
+	test-last-errno \
+	test-private-data \
+	test-debug-to-file
 
-check_PROGRAMS = tests test-command
+TESTS = \
+	tests \
+	test-just-header \
+	test-create-handle \
+	test-config \
+	test-add-drive-opts \
+	test-last-errno \
+	test-private-data \
+	test-debug-to-file
+
+# The API behind this test is not baked yet.
+#if HAVE_LIBVIRT
+#check_PROGRAMS += test-add-libvirt-dom
+#TESTS += test-add-libvirt-dom
+#endif
+EXTRA_DIST += test-add-libvirt-dom.c
+
+TESTS_ENVIRONMENT = \
+	SKIP_TEST_COMMAND=$(shell ldd test-command | grep -sq 'not a dynamic executable' || echo 1) \
+	SKIP_TEST_COMMAND_LINES=$(shell ldd test-command | grep -sq 'not a dynamic executable' || echo 1) \
+	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+	$(VG)
+
+#SKIP_TEST_CHECKSUM_8=$(shell if test `find ../initramfs -name squashfs.ko | wc -l` -eq 0; then echo 1; fi)
 
 tests_SOURCES = tests.c
 tests_CFLAGS = -I$(top_srcdir)/src -I$(top_builddir)/src \
   $(WARN_CFLAGS) $(WERROR_CFLAGS)
 tests_LDADD = $(top_builddir)/src/libguestfs.la
 
-TESTS = tests
-TESTS_ENVIRONMENT = \
-	SKIP_TEST_COMMAND=$(shell ldd test-command | grep -sq 'not a dynamic executable' || echo 1) \
-	SKIP_TEST_COMMAND_LINES=$(shell ldd test-command | grep -sq 'not a dynamic executable' || echo 1) \
-	SKIP_TEST_CHECKSUM_8=$(shell if test `find ../initramfs -name squashfs.ko | wc -l` -eq 0; then echo 1; fi) \
-	$(VG)
-
-# Run the tests under valgrind.
-
-valgrind:
-	$(MAKE) check VG="valgrind --quiet --leak-check=full"
-
 # This binary must be statically linked.  It is used for testing
 # the "guestfs_command" and "guestfs_command_lines" functions.
 
 test_command_SOURCES = test-command.c
 test_command_LDFLAGS = -all-static
+
+# Hand-written C API tests.
+
+test_just_header_SOURCES = test-just-header.c
+test_just_header_CFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+test_just_header_LDADD = \
+	$(top_builddir)/src/libguestfs.la
+
+test_create_handle_SOURCES = test-create-handle.c
+test_create_handle_CFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+test_create_handle_LDADD = \
+	$(top_builddir)/src/libguestfs.la
+
+test_config_SOURCES = test-config.c
+test_config_CFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+test_config_LDADD = \
+	$(top_builddir)/src/libguestfs.la
+
+test_add_drive_opts_SOURCES = test-add-drive-opts.c
+test_add_drive_opts_CFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+test_add_drive_opts_LDADD = \
+	$(top_builddir)/src/libguestfs.la
+
+test_last_errno_SOURCES = test-last-errno.c
+test_last_errno_CFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+test_last_errno_LDADD = \
+	$(top_builddir)/src/libguestfs.la
+
+test_private_data_SOURCES = test-private-data.c
+test_private_data_CFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+test_private_data_LDADD = \
+	$(top_builddir)/src/libguestfs.la
+
+test_debug_to_file_SOURCES = test-debug-to-file.c
+test_debug_to_file_CFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/gnulib/lib \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+test_debug_to_file_LDADD = \
+	$(top_builddir)/src/libguestfs.la \
+	../gnulib/lib/libgnu.la
+
+#if HAVE_LIBVIRT
+#test_add_libvirt_dom_SOURCES = test-add-libvirt-dom.c
+#test_add_libvirt_dom_CFLAGS = \
+#	-I$(top_srcdir)/src -I$(top_builddir)/src -I$(top_srcdir)/gnulib/lib \
+#	$(LIBVIRT_CFLAGS) \
+#	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+#test_add_libvirt_dom_LDADD = \
+#	$(top_builddir)/src/libguestfs.la $(LIBVIRT_LIBS) \
+#	$(LTLIBTHREAD) ../gnulib/lib/libgnu.la
+#endif
+
+# Run the tests under valgrind.
+
+valgrind:
+	$(MAKE) check VG="valgrind --quiet --leak-check=full"

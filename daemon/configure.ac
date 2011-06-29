@@ -1,5 +1,5 @@
 # libguestfs-daemon
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2011 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,12 +30,6 @@ AC_ARG_ENABLE([32bit],
   [AS_HELP_STRING([--enable-32bit], [build 32 bit binaries (gcc -m32)])],
   [export CC="gcc -m32"],
   [enable_32bit=no])
-
-dnl Enable 'debug' command.
-AC_ARG_ENABLE([debug-command],
-  [AS_HELP_STRING([--enable-debug-command], [enable the 'debug' command])],
-  [AC_DEFINE_UNQUOTED([ENABLE_DEBUG_COMMAND],[1],[Enable the 'debug' command])],
-  [])
 
 dnl Enable packet dumps when in verbose mode.  This generates lots
 dnl of debug info, only useful for people debugging the RPC mechanism.
@@ -95,6 +89,10 @@ if test "$gl_gcc_warnings" = yes; then
   # ?? -Wstrict-overflow
   nw="$nw -Wunsafe-loop-optimizations" # just a warning that an optimization
                                     # was not possible, safe to ignore
+  nw="$nw -Wlong-long"              # Allow long long since it's required
+                                    # by Python, Ruby and xstrtoll.
+  nw="$nw -Wstack-protector"        # Don't warn about stack-protector
+                                    # failures (seen on Ubuntu).
 
   gl_MANYWARN_ALL_GCC([ws])
   gl_MANYWARN_COMPLEMENT([ws], [$ws], [$nw])
@@ -141,6 +139,11 @@ AC_STRUCT_ST_BLOCKS
 AC_CHECK_MEMBER([struct stat.st_blksize],[
         AC_DEFINE([HAVE_STRUCT_STAT_ST_BLKSIZE],[1],[Define to 1 if 'st_blksize' is a member of 'struct stat'])])
 
+dnl Check for gperf.
+AC_CHECK_PROG([GPERF],[gperf],[gperf],[no])
+test "x$GPERF" = "xno" &&
+     AC_MSG_ERROR([gperf must be installed])
+
 dnl Check for Augeas (now optional).
 AC_CHECK_LIB([augeas],[aug_match],[
         LIBS="-laugeas $LIBS"
@@ -185,7 +188,9 @@ AC_CHECK_FUNCS([\
         posix_fallocate \
         realpath \
         removexattr \
+        setitimer \
         setxattr \
+        sigaction \
         statvfs \
         sync])
 

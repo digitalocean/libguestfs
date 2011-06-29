@@ -1,0 +1,182 @@
+
+=head2 alloc
+
+=head2 allocate
+
+ alloc filename size
+
+This creates an empty (zeroed) file of the given size, and then adds so it
+can be further examined.
+
+For more advanced image creation, see L<qemu-img(1)> utility.
+
+Size can be specified using standard suffixes, eg. C<1M>.
+
+To create a sparse file, use L</sparse> instead.  To create a prepared disk
+image, see L</PREPARED DISK IMAGES>.
+
+=head2 copy-in
+
+ copy-in local [local ...] /remotedir
+
+C<copy-in> copies local files or directories recursively into the disk
+image, placing them in the directory called C</remotedir> (which must
+exist).  This guestfish meta-command turns into a sequence of L</tar-in> and
+other commands as necessary.
+
+Multiple local files and directories can be specified, but the last
+parameter must always be a remote directory.  Wildcards cannot be used.
+
+=head2 copy-out
+
+ copy-out remote [remote ...] localdir
+
+C<copy-out> copies remote files or directories recursively out of the disk
+image, placing them on the host disk in a local directory called C<localdir>
+(which must exist).  This guestfish meta-command turns into a sequence of
+L</download>, L</tar-out> and other commands as necessary.
+
+Multiple remote files and directories can be specified, but the last
+parameter must always be a local directory.  To download to the current
+directory, use C<.> as in:
+
+ copy-out /home .
+
+Wildcards cannot be used in the ordinary command, but you can use them with
+the help of L</glob> like this:
+
+ glob copy-out /home/* .
+
+=head2 echo
+
+ echo [params ...]
+
+This echos the parameters to the terminal.
+
+=head2 edit
+
+=head2 vi
+
+=head2 emacs
+
+ edit filename
+
+This is used to edit a file.  It downloads the file, edits it locally using
+your editor, then uploads the result.
+
+The editor is C<$EDITOR>.  However if you use the alternate commands C<vi>
+or C<emacs> you will get those corresponding editors.
+
+=head2 glob
+
+ glob command args...
+
+Expand wildcards in any paths in the args list, and run C<command>
+repeatedly on each matching path.
+
+See L</WILDCARDS AND GLOBBING>.
+
+=head2 hexedit
+
+ hexedit <filename|device>
+ hexedit <filename|device> <max>
+ hexedit <filename|device> <start> <max>
+
+Use hexedit (a hex editor) to edit all or part of a binary file or block
+device.
+
+This command works by downloading potentially the whole file or device,
+editing it locally, then uploading it.  If the file or device is large, you
+have to specify which part you wish to edit by using C<max> and/or C<start>
+C<max> parameters.  C<start> and C<max> are specified in bytes, with the
+usual modifiers allowed such as C<1M> (1 megabyte).
+
+For example to edit the first few sectors of a disk you might do:
+
+ hexedit /dev/sda 1M
+
+which would allow you to edit anywhere within the first megabyte of the
+disk.
+
+To edit the superblock of an ext2 filesystem on C</dev/sda1>, do:
+
+ hexedit /dev/sda1 0x400 0x400
+
+(assuming the superblock is in the standard location).
+
+This command requires the external L<hexedit(1)> program.  You can specify
+another program to use by setting the C<HEXEDITOR> environment variable.
+
+See also L</hexdump>.
+
+=head2 lcd
+
+ lcd directory
+
+Change the local directory, ie. the current directory of guestfish itself.
+
+Note that C<!cd> won't do what you might expect.
+
+=head2 man
+
+=head2 manual
+
+  man
+
+Opens the manual page for guestfish.
+
+=head2 more
+
+=head2 less
+
+ more filename
+
+ less filename
+
+This is used to view a file.
+
+The default viewer is C<$PAGER>.  However if you use the alternate command
+C<less> you will get the C<less> command specifically.
+
+=head2 reopen
+
+  reopen
+
+Close and reopen the libguestfs handle.  It is not necessary to use this
+normally, because the handle is closed properly when guestfish exits.
+However this is occasionally useful for testing.
+
+=head2 sparse
+
+ sparse filename size
+
+This creates an empty sparse file of the given size, and then adds so it can
+be further examined.
+
+In all respects it works the same as the L</alloc> command, except that the
+image file is allocated sparsely, which means that disk blocks are not
+assigned to the file until they are needed.  Sparse disk files only use
+space when written to, but they are slower and there is a danger you could
+run out of real disk space during a write operation.
+
+For more advanced image creation, see L<qemu-img(1)> utility.
+
+Size can be specified using standard suffixes, eg. C<1M>.
+
+=head2 supported
+
+ supported
+
+This command returns a list of the optional groups known to the daemon, and
+indicates which ones are supported by this build of the libguestfs
+appliance.
+
+See also L<guestfs(3)/AVAILABILITY>.
+
+=head2 time
+
+ time command args...
+
+Run the command as usual, but print the elapsed time afterwards.  This can
+be useful for benchmarking operations.
+

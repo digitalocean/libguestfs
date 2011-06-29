@@ -26,7 +26,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "../src/guestfs_protocol.h"
+#include "guestfs_protocol.h"
 #include "daemon.h"
 #include "actions.h"
 #include "optgroups.h"
@@ -50,6 +50,11 @@ do_mknod (int mode, int devmajor, int devminor, const char *path)
 {
 #ifdef HAVE_MKNOD
   int r;
+
+  if (mode < 0) {
+    reply_with_error ("%s: mode is negative", path);
+    return -1;
+  }
 
   CHROOT_IN;
   r = mknod (path, mode, makedev (devmajor, devminor));

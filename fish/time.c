@@ -22,11 +22,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/time.h>
 
 #include "fish.h"
 
 int
-do_time (const char *cmd, int argc, char *argv[])
+run_time (const char *cmd, size_t argc, char *argv[])
 {
   struct timeval start_t, end_t;
   int64_t start_us, end_us, elapsed_us;
@@ -38,7 +39,7 @@ do_time (const char *cmd, int argc, char *argv[])
 
   gettimeofday (&start_t, NULL);
 
-  if (issue_command (argv[0], &argv[1], NULL) == -1)
+  if (issue_command (argv[0], &argv[1], NULL, 0) == -1)
     return -1;
 
   gettimeofday (&end_t, NULL);

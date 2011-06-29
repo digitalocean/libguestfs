@@ -1,9 +1,9 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   src/generator.ml
+ *   generator/generator_*.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2010 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,12 +31,15 @@ struct optgroup optgroups[] = {
   { "linuxfsuuid", optgroup_linuxfsuuid_available },
   { "linuxmodules", optgroup_linuxmodules_available },
   { "linuxxattrs", optgroup_linuxxattrs_available },
+  { "luks", optgroup_luks_available },
   { "lvm2", optgroup_lvm2_available },
   { "mknod", optgroup_mknod_available },
   { "ntfs3g", optgroup_ntfs3g_available },
+  { "ntfsprogs", optgroup_ntfsprogs_available },
   { "realpath", optgroup_realpath_available },
   { "scrub", optgroup_scrub_available },
   { "selinux", optgroup_selinux_available },
+  { "xz", optgroup_xz_available },
   { "zerofree", optgroup_zerofree_available },
   { NULL, NULL }
 };

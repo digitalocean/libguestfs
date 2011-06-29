@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,13 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <signal.h>
+#include <inttypes.h>
 #include <unistd.h>
 #include <errno.h>
 #include <sys/param.h>		/* defines MIN */
 #include <sys/select.h>
+#include <sys/time.h>
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 
@@ -37,11 +40,38 @@
 #include "ignore-value.h"
 
 #include "daemon.h"
-#include "../src/guestfs_protocol.h"
+#include "guestfs_protocol.h"
+#include "errnostring.h"
 
 /* The message currently being processed. */
 int proc_nr;
 int serial;
+
+/* Hint for implementing progress messages for uploaded/incoming data.
+ * The caller sets this to a value > 0 if it knows or can estimate how
+ * much data will be sent (this is not always known, eg. for uploads
+ * coming from a pipe).  If this is known then we can emit progress
+ * messages as we write the data.
+ */
+uint64_t progress_hint;
+
+/* Optional arguments bitmask.  Caller sets this to indicate which
+ * optional arguments in the guestfs_<foo>_args structure are
+ * meaningful.  Optional arguments not covered by the bitmask are set
+ * to arbitrary values and the daemon should ignore them.  If the
+ * bitmask has bits set that the daemon doesn't understand, then the
+ * whole call is rejected early in processing.
+ */
+uint64_t optargs_bitmask;
+
+/* Time at which we received the current request. */
+static struct timeval start_t;
+
+/* Time at which the last progress notification was sent. */
+static struct timeval last_progress_t;
+
+/* Counts the number of progress notifications sent during this call. */
+static int count_progress;
 
 /* The daemon communications socket. */
 static int sock;
@@ -54,18 +84,10 @@ main_loop (int _sock)
   char lenbuf[4];
   uint32_t len;
   struct guestfs_message_header hdr;
-  struct timeval start_t, end_t;
-  int64_t start_us, end_us, elapsed_us;
 
   sock = _sock;
 
   for (;;) {
-    /* Most common errors are leaked memory and leaked file descriptors,
-     * so run this between each command:
-     */
-    if (verbose && 0)
-      ignore_value (system ("ls -l /proc/self/fd"));
-
     /* Read the length word. */
     if (xread (sock, lenbuf, 4) == -1)
       exit (EXIT_FAILURE);
@@ -73,6 +95,11 @@ main_loop (int _sock)
     xdrmem_create (&xdr, lenbuf, 4, XDR_DECODE);
     xdr_u_int (&xdr, &len);
     xdr_destroy (&xdr);
+
+    if (verbose)
+      fprintf (stderr,
+	       "guestfsd: main_loop: new request, len 0x%" PRIx32 "\n",
+	       len);
 
     if (len > GUESTFS_MESSAGE_MAX) {
       fprintf (stderr, "guestfsd: incoming message is too long (%u bytes)\n",
@@ -112,9 +139,9 @@ main_loop (int _sock)
     }
 #endif
 
-    /* In verbose mode, display the time taken to run each command. */
-    if (verbose)
-      gettimeofday (&start_t, NULL);
+    gettimeofday (&start_t, NULL);
+    last_progress_t = start_t;
+    count_progress = 0;
 
     /* Decode the message header. */
     xdrmem_create (&xdr, buf, len, XDR_DECODE);
@@ -143,6 +170,8 @@ main_loop (int _sock)
 
     proc_nr = hdr.proc;
     serial = hdr.serial;
+    progress_hint = hdr.progress_hint;
+    optargs_bitmask = hdr.optargs_bitmask;
 
     /* Clear errors before we call the stub functions.  This is just
      * to ensure that we can accurately report errors in cases where
@@ -160,12 +189,16 @@ main_loop (int _sock)
 
     /* In verbose mode, display the time taken to run each command. */
     if (verbose) {
+      struct timeval end_t;
       gettimeofday (&end_t, NULL);
 
+      int64_t start_us, end_us, elapsed_us;
       start_us = (int64_t) start_t.tv_sec * 1000000 + start_t.tv_usec;
       end_us = (int64_t) end_t.tv_sec * 1000000 + end_t.tv_usec;
       elapsed_us = end_us - start_us;
-      fprintf (stderr, "proc %d (%s) took %d.%02d seconds\n",
+
+      fprintf (stderr,
+	       "guestfsd: main_loop: proc %d (%s) took %d.%02d seconds\n",
                proc_nr,
                proc_nr >= 0 && proc_nr < GUESTFS_PROC_NR_PROCS
                ? function_names[proc_nr] : "UNKNOWN PROCEDURE",
@@ -179,7 +212,7 @@ main_loop (int _sock)
   }
 }
 
-static void send_error (const char *msg);
+static void send_error (int errnum, const char *msg);
 
 void
 reply_with_error (const char *fs, ...)
@@ -191,7 +224,7 @@ reply_with_error (const char *fs, ...)
   vsnprintf (err, sizeof err, fs, args);
   va_end (args);
 
-  send_error (err);
+  send_error (0, err);
 }
 
 void
@@ -207,11 +240,11 @@ reply_with_perror_errno (int err, const char *fs, ...)
 
   snprintf (buf2, sizeof buf2, "%s: %s", buf1, strerror (err));
 
-  send_error (buf2);
+  send_error (err, buf2);
 }
 
 static void
-send_error (const char *msg)
+send_error (int errnum, const char *msg)
 {
   XDR xdr;
   char buf[GUESTFS_ERROR_LEN + 200];
@@ -236,6 +269,11 @@ send_error (const char *msg)
     exit (EXIT_FAILURE);
   }
 
+  /* These strings are not going to be freed.  We just cast them
+   * to (char *) because they are defined that way in the XDR structs.
+   */
+  err.errno_string =
+    (char *) (errnum > 0 ? guestfs___errno_to_string (errnum) : "");
   err.error_message = (char *) msg;
 
   if (!xdr_guestfs_message_error (&xdr, &err)) {
@@ -251,11 +289,11 @@ send_error (const char *msg)
   xdr_destroy (&xdr);
 
   if (xwrite (sock, lenbuf, 4) == -1) {
-    fprintf (stderr, "xwrite failed\n");
+    fprintf (stderr, "guestfsd: xwrite failed\n");
     exit (EXIT_FAILURE);
   }
   if (xwrite (sock, buf, len) == -1) {
-    fprintf (stderr, "xwrite failed\n");
+    fprintf (stderr, "guestfsd: xwrite failed\n");
     exit (EXIT_FAILURE);
   }
 }
@@ -289,7 +327,7 @@ reply (xdrproc_t xdrp, char *ret)
      * we want to return an error message instead. (RHBZ#509597).
      */
     if (!(*xdrp) (&xdr, ret)) {
-      reply_with_perror ("guestfsd: failed to encode reply body\n");
+      reply_with_error ("guestfsd: failed to encode reply body\n(maybe the reply exceeds the maximum message size in the protocol?)");
       xdr_destroy (&xdr);
       return;
     }
@@ -303,11 +341,11 @@ reply (xdrproc_t xdrp, char *ret)
   xdr_destroy (&xdr);
 
   if (xwrite (sock, lenbuf, 4) == -1) {
-    fprintf (stderr, "xwrite failed\n");
+    fprintf (stderr, "guestfsd: xwrite failed\n");
     exit (EXIT_FAILURE);
   }
   if (xwrite (sock, buf, len) == -1) {
-    fprintf (stderr, "xwrite failed\n");
+    fprintf (stderr, "guestfsd: xwrite failed\n");
     exit (EXIT_FAILURE);
   }
 }
@@ -324,6 +362,9 @@ receive_file (receive_cb cb, void *opaque)
   uint32_t len;
 
   for (;;) {
+    if (verbose)
+      fprintf (stderr, "guestfsd: receive_file: reading length word\n");
+
     /* Read the length word. */
     if (xread (sock, lenbuf, 4) == -1)
       exit (EXIT_FAILURE);
@@ -361,32 +402,49 @@ receive_file (receive_cb cb, void *opaque)
     free (buf);
 
     if (verbose)
-      printf ("receive_file: got chunk: cancel = %d, len = %d, buf = %p\n",
-              chunk.cancel, chunk.data.data_len, chunk.data.data_val);
+      fprintf (stderr,
+               "guestfsd: receive_file: got chunk: cancel = 0x%x, len = %d, buf = %p\n",
+               chunk.cancel, chunk.data.data_len, chunk.data.data_val);
+
+    if (chunk.cancel != 0 && chunk.cancel != 1) {
+      fprintf (stderr,
+               "guestfsd: receive_file: chunk.cancel != [0|1] ... "
+               "continuing even though we have probably lost synchronization with the library\n");
+      return -1;
+    }
 
     if (chunk.cancel) {
-      fprintf (stderr, "receive_file: received cancellation from library\n");
+      if (verbose)
+        fprintf (stderr,
+	  "guestfsd: receive_file: received cancellation from library\n");
       xdr_free ((xdrproc_t) xdr_guestfs_chunk, (char *) &chunk);
       return -2;
     }
     if (chunk.data.data_len == 0) {
+      if (verbose)
+        fprintf (stderr,
+		 "guestfsd: receive_file: end of file, leaving function\n");
       xdr_free ((xdrproc_t) xdr_guestfs_chunk, (char *) &chunk);
       return 0;			/* end of file */
     }
 
+    /* Note that the callback can generate progress messages. */
     if (cb)
       r = cb (opaque, chunk.data.data_val, chunk.data.data_len);
     else
       r = 0;
 
     xdr_free ((xdrproc_t) xdr_guestfs_chunk, (char *) &chunk);
-    if (r == -1)		/* write error */
+    if (r == -1) {		/* write error */
+      if (verbose)
+        fprintf (stderr, "guestfsd: receive_file: write error\n");
       return -1;
+    }
   }
 }
 
 /* Send a cancellation flag back to the library. */
-void
+int
 cancel_receive (void)
 {
   XDR xdr;
@@ -399,11 +457,11 @@ cancel_receive (void)
 
   if (xwrite (sock, fbuf, sizeof fbuf) == -1) {
     perror ("write to socket");
-    return;
+    return -1;
   }
 
   /* Keep receiving chunks and discarding, until library sees cancel. */
-  (void) receive_file (NULL, NULL);
+  return receive_file (NULL, NULL);
 }
 
 static int check_for_library_cancellation (void);
@@ -417,7 +475,7 @@ send_file_write (const void *buf, int len)
   int cancel;
 
   if (len > GUESTFS_MAX_CHUNK_SIZE) {
-    fprintf (stderr, "send_file_write: len (%d) > GUESTFS_MAX_CHUNK_SIZE (%d)\n",
+    fprintf (stderr, "guestfsd: send_file_write: len (%d) > GUESTFS_MAX_CHUNK_SIZE (%d)\n",
              len, GUESTFS_MAX_CHUNK_SIZE);
     return -1;
   }
@@ -473,7 +531,7 @@ check_for_library_cancellation (void)
   xdr_destroy (&xdr);
 
   if (flag != GUESTFS_CANCEL_FLAG) {
-    fprintf (stderr, "check_for_library_cancellation: read 0x%x from library, expected 0x%x\n",
+    fprintf (stderr, "guestfsd: check_for_library_cancellation: read 0x%x from library, expected 0x%x\n",
              flag, GUESTFS_CANCEL_FLAG);
     return 0;
   }
@@ -502,7 +560,7 @@ send_chunk (const guestfs_chunk *chunk)
 
   xdrmem_create (&xdr, buf, sizeof buf, XDR_ENCODE);
   if (!xdr_guestfs_chunk (&xdr, (guestfs_chunk *) chunk)) {
-    fprintf (stderr, "send_chunk: failed to encode chunk\n");
+    fprintf (stderr, "guestfsd: send_chunk: failed to encode chunk\n");
     xdr_destroy (&xdr);
     return -1;
   }
@@ -517,9 +575,198 @@ send_chunk (const guestfs_chunk *chunk)
   int err = (xwrite (sock, lenbuf, 4) == 0
              && xwrite (sock, buf, len) == 0 ? 0 : -1);
   if (err) {
-    fprintf (stderr, "send_chunk: write failed\n");
+    fprintf (stderr, "guestfsd: send_chunk: write failed\n");
     exit (EXIT_FAILURE);
   }
 
   return err;
 }
+
+/* Initial delay before sending notification messages, and
+ * the period at which we send them thereafter.  These times
+ * are in microseconds.
+ */
+#define NOTIFICATION_INITIAL_DELAY 2000000
+#define NOTIFICATION_PERIOD         333333
+
+void
+notify_progress (uint64_t position, uint64_t total)
+{
+  struct timeval now_t;
+  gettimeofday (&now_t, NULL);
+
+  /* Always send a notification at 100%.  This simplifies callers by
+   * allowing them to 'finish' the progress bar at 100% without
+   * needing special code.
+   */
+  if (count_progress > 0 && position == total)
+    goto send;
+
+  /* Calculate time in microseconds since the last progress message
+   * was sent out (or since the start of the call).
+   */
+  int64_t last_us, now_us, elapsed_us;
+  last_us =
+    (int64_t) last_progress_t.tv_sec * 1000000 + last_progress_t.tv_usec;
+  now_us = (int64_t) now_t.tv_sec * 1000000 + now_t.tv_usec;
+  elapsed_us = now_us - last_us;
+
+  /* Rate limit. */
+  if ((count_progress == 0 && elapsed_us < NOTIFICATION_INITIAL_DELAY) ||
+      (count_progress > 0 && elapsed_us < NOTIFICATION_PERIOD))
+    return;
+
+ send:
+  /* We're going to send a message now ... */
+  count_progress++;
+  last_progress_t = now_t;
+
+  /* Send the header word. */
+  XDR xdr;
+  char buf[128];
+  uint32_t i = GUESTFS_PROGRESS_FLAG;
+  size_t len;
+  xdrmem_create (&xdr, buf, 4, XDR_ENCODE);
+  xdr_u_int (&xdr, &i);
+  xdr_destroy (&xdr);
+
+  if (xwrite (sock, buf, 4) == -1) {
+    fprintf (stderr, "guestfsd: xwrite failed\n");
+    exit (EXIT_FAILURE);
+  }
+
+  guestfs_progress message = {
+    .proc = proc_nr,
+    .serial = serial,
+    .position = position,
+    .total = total,
+  };
+
+  xdrmem_create (&xdr, buf, sizeof buf, XDR_ENCODE);
+  if (!xdr_guestfs_progress (&xdr, &message)) {
+    fprintf (stderr, "guestfsd: xdr_guestfs_progress: failed to encode message\n");
+    xdr_destroy (&xdr);
+    return;
+  }
+  len = xdr_getpos (&xdr);
+  xdr_destroy (&xdr);
+
+  if (xwrite (sock, buf, len) == -1) {
+    fprintf (stderr, "guestfsd: xwrite failed\n");
+    exit (EXIT_FAILURE);
+  }
+}
+
+/* "Pulse mode" progress messages. */
+
+#if defined(HAVE_SETITIMER) && defined(HAVE_SIGACTION)
+
+static void async_safe_send_pulse (int sig);
+
+void
+pulse_mode_start (void)
+{
+  struct sigaction act;
+  struct itimerval it;
+
+  memset (&act, 0, sizeof act);
+  act.sa_handler = async_safe_send_pulse;
+  act.sa_flags = SA_RESTART;
+
+  if (sigaction (SIGALRM, &act, NULL) == -1) {
+    perror ("pulse_mode_start: sigaction");
+    return;
+  }
+
+  it.it_value.tv_sec = NOTIFICATION_INITIAL_DELAY / 1000000;
+  it.it_value.tv_usec = NOTIFICATION_INITIAL_DELAY % 1000000;
+  it.it_interval.tv_sec = NOTIFICATION_PERIOD / 1000000;
+  it.it_interval.tv_usec = NOTIFICATION_PERIOD % 1000000;
+
+  if (setitimer (ITIMER_REAL, &it, NULL) == -1)
+    perror ("pulse_mode_start: setitimer");
+}
+
+void
+pulse_mode_end (void)
+{
+  pulse_mode_cancel ();         /* Cancel the itimer. */
+
+  notify_progress (1, 1);
+}
+
+void
+pulse_mode_cancel (void)
+{
+  int err = errno;              /* Function must preserve errno. */
+  struct itimerval it;
+  struct sigaction act;
+
+  /* Setting it_value to zero cancels the itimer. */
+  it.it_value.tv_sec = 0;
+  it.it_value.tv_usec = 0;
+  it.it_interval.tv_sec = 0;
+  it.it_interval.tv_usec = 0;
+
+  if (setitimer (ITIMER_REAL, &it, NULL) == -1)
+    perror ("pulse_mode_cancel: setitimer");
+
+  memset (&act, 0, sizeof act);
+  act.sa_handler = SIG_DFL;
+
+  if (sigaction (SIGALRM, &act, NULL) == -1)
+    perror ("pulse_mode_cancel: sigaction");
+
+  errno = err;
+}
+
+/* Send a position = 0, total = 1 (pulse mode) message.  The tricky
+ * part is we have to do it without invoking any non-async-safe
+ * functions (see signal(7) for a list).  Therefore, KISS.
+ */
+static void
+async_safe_send_pulse (int sig)
+{
+  /* XDR is a RFC ... */
+  unsigned char msg[] = {
+    (GUESTFS_PROGRESS_FLAG & 0xff000000) >> 24,
+    (GUESTFS_PROGRESS_FLAG & 0x00ff0000) >> 16,
+    (GUESTFS_PROGRESS_FLAG & 0x0000ff00) >> 8,
+    GUESTFS_PROGRESS_FLAG & 0x000000ff,
+    (proc_nr & 0xff000000) >> 24,
+    (proc_nr & 0x00ff0000) >> 16,
+    (proc_nr & 0x0000ff00) >> 8,
+    proc_nr & 0x000000ff,
+    (serial & 0xff000000) >> 24,
+    (serial & 0x00ff0000) >> 16,
+    (serial & 0x0000ff00) >> 8,
+    serial & 0x000000ff,
+    /* 64 bit position = 0 */ 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 64 bit total = 1 */    0, 0, 0, 0, 0, 0, 0, 1
+  };
+
+  if (xwrite (sock, msg, sizeof msg) == -1)
+    exit (EXIT_FAILURE);
+}
+
+#else /* !HAVE_SETITIMER || !HAVE_SIGACTION */
+
+void
+pulse_mode_start (void)
+{
+  /* empty */
+}
+
+void
+pulse_mode_end (void)
+{
+  /* empty */
+}
+
+void
+pulse_mode_cancel (void)
+{
+  /* empty */
+}
+
+#endif /* !HAVE_SETITIMER || !HAVE_SIGACTION */

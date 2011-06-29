@@ -20,15 +20,12 @@ include $(top_srcdir)/subdir-rules.mk
 generator_built = \
 	guestfs.mli \
 	guestfs.ml \
-	guestfs_inspector.mli \
-	guestfs_inspector.ml \
 	guestfs_c_actions.c \
 	bindtests.ml
 
 EXTRA_DIST = \
 	$(generator_built) \
 	guestfs_c.c guestfs_c.h \
-	guestfs_inspector.mli guestfs_inspector.ml \
 	.depend META.in \
 	run-bindtests \
 	t/*.ml
@@ -41,11 +38,10 @@ AM_CPPFLAGS = -I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
   $(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 if HAVE_OCAML
-if HAVE_XML_LIGHT
 
 noinst_DATA = mlguestfs.cma mlguestfs.cmxa META
 
-OBJS = guestfs_c.o guestfs_c_actions.o guestfs.cmo guestfs_inspector.cmo
+OBJS = guestfs_c.o guestfs_c_actions.o guestfs.cmo
 XOBJS = $(OBJS:.cmo=.cmx)
 
 mlguestfs.cma: $(OBJS)
@@ -66,47 +62,62 @@ TESTS_ENVIRONMENT = \
 	$(VG)
 
 TESTS = run-bindtests \
-	t/guestfs_005_load t/guestfs_010_launch t/guestfs_050_lvcreate \
-	t/guestfs_060_readdir t/guestfs_500_inspect
+	t/guestfs_005_load \
+	t/guestfs_010_basic \
+	t/guestfs_070_threads \
+	t/guestfs_080_optargs \
+	t/guestfs_400_events \
+	t/guestfs_400_progress
 noinst_DATA += bindtests \
-	t/guestfs_005_load t/guestfs_010_launch t/guestfs_050_lvcreate \
-	t/guestfs_060_readdir t/guestfs_500_inspect
+	t/guestfs_005_load \
+	t/guestfs_010_basic \
+	t/guestfs_070_threads \
+	t/guestfs_080_optargs \
+	t/guestfs_400_events \
+	t/guestfs_400_progress
 
 bindtests: bindtests.cmx mlguestfs.cmxa
 	mkdir -p t
-	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package xml-light,unix -linkpkg mlguestfs.cmxa $< -o $@
+	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
 t/guestfs_005_load: t/guestfs_005_load.cmx mlguestfs.cmxa
 	mkdir -p t
-	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package xml-light,unix -linkpkg mlguestfs.cmxa $< -o $@
+	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
-t/guestfs_010_launch: t/guestfs_010_launch.cmx mlguestfs.cmxa
+t/guestfs_010_basic: t/guestfs_010_basic.cmx mlguestfs.cmxa
 	mkdir -p t
-	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package xml-light,unix -linkpkg mlguestfs.cmxa $< -o $@
+	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
-t/guestfs_050_lvcreate: t/guestfs_050_lvcreate.cmx mlguestfs.cmxa
+t/guestfs_070_threads: t/guestfs_070_threads.cmx mlguestfs.cmxa
 	mkdir -p t
-	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package xml-light,unix -linkpkg mlguestfs.cmxa $< -o $@
+	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package unix,threads -thread -linkpkg mlguestfs.cmxa $< -o $@
 
-t/guestfs_060_readdir: t/guestfs_060_readdir.cmx mlguestfs.cmxa
+t/guestfs_080_optargs: t/guestfs_080_optargs.cmx mlguestfs.cmxa
 	mkdir -p t
-	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package xml-light,unix -linkpkg mlguestfs.cmxa $< -o $@
+	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
-t/guestfs_500_inspect: t/guestfs_500_inspect.cmx mlguestfs.cmxa
+t/guestfs_400_events: t/guestfs_400_events.cmx mlguestfs.cmxa
 	mkdir -p t
-	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package xml-light,unix -linkpkg mlguestfs.cmxa $< -o $@
+	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
+
+t/guestfs_400_progress: t/guestfs_400_progress.cmx mlguestfs.cmxa
+	mkdir -p t
+	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
 # Need to rebuild the tests from source if the main library has
 # changed at all, otherwise we get inconsistent assumptions.
+t/guestfs_070_threads.cmx: t/guestfs_070_threads.ml mlguestfs.cmxa
+	$(OCAMLFIND) ocamlopt -package unix,threads -thread -linkpkg -c $< -o $@
+
 t/%.cmx: t/%.ml mlguestfs.cmxa
-	$(OCAMLFIND) ocamlopt -package xml-light,unix -linkpkg -c $< -o $@
+	$(OCAMLFIND) ocamlopt -package unix -linkpkg -c $< -o $@
 
 .mli.cmi:
-	$(OCAMLFIND) ocamlc -package xml-light,unix -c $< -o $@
+	$(OCAMLFIND) ocamlc -package unix -c $< -o $@
 .ml.cmo:
-	$(OCAMLFIND) ocamlc -package xml-light,unix -c $< -o $@
+	$(OCAMLFIND) ocamlc -package unix -c $< -o $@
 .ml.cmx:
-	$(OCAMLFIND) ocamlopt -package xml-light,unix -c $< -o $@
+	$(OCAMLFIND) ocamlopt -package unix -c $< -o $@
 
 depend: .depend
 
@@ -130,7 +141,6 @@ install-data-hook:
 
 CLEANFILES += $(noinst_DATA)
 
-endif
 endif
 
 # Tell version 3.79 and up of GNU make to not build goals in this

@@ -1,10 +1,10 @@
 #!/usr/bin/perl -w
 # libguestfs generated file
 # WARNING: THIS FILE IS GENERATED FROM:
-#   src/generator.ml
+#   generator/generator_*.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2010 Red Hat Inc.
+# Copyright (C) 2009-2011 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,17 +25,17 @@ use strict;
 use Sys::Guestfs;
 
 my $g = Sys::Guestfs->new ();
-$g->test0 ("abc", "def", [], 0, 0, 0, "123", "456");
-$g->test0 ("abc", undef, [], 0, 0, 0, "123", "456");
-$g->test0 ("", "def", [], 0, 0, 0, "123", "456");
-$g->test0 ("", "", [], 0, 0, 0, "123", "456");
-$g->test0 ("abc", "def", ["1"], 0, 0, 0, "123", "456");
-$g->test0 ("abc", "def", ["1","2"], 0, 0, 0, "123", "456");
-$g->test0 ("abc", "def", ["1"], 1, 0, 0, "123", "456");
-$g->test0 ("abc", "def", ["1"], 0, -1, -1, "123", "456");
-$g->test0 ("abc", "def", ["1"], 0, -2, -2, "123", "456");
-$g->test0 ("abc", "def", ["1"], 0, 1, 1, "123", "456");
-$g->test0 ("abc", "def", ["1"], 0, 2, 2, "123", "456");
-$g->test0 ("abc", "def", ["1"], 0, 4095, 4095, "123", "456");
-$g->test0 ("abc", "def", ["1"], 0, 0, 0, "", "");
+$g->test0 ("abc", "def", [], 0, 0, 0, "123", "456", "abc\0abc");
+$g->test0 ("abc", undef, [], 0, 0, 0, "123", "456", "abc\0abc");
+$g->test0 ("", "def", [], 0, 0, 0, "123", "456", "abc\0abc");
+$g->test0 ("", "", [], 0, 0, 0, "123", "456", "abc\0abc");
+$g->test0 ("abc", "def", ["1"], 0, 0, 0, "123", "456", "abc\0abc");
+$g->test0 ("abc", "def", ["1","2"], 0, 0, 0, "123", "456", "abc\0abc");
+$g->test0 ("abc", "def", ["1"], 1, 0, 0, "123", "456", "abc\0abc");
+$g->test0 ("abc", "def", ["1"], 0, -1, -1, "123", "456", "abc\0abc");
+$g->test0 ("abc", "def", ["1"], 0, -2, -2, "123", "456", "abc\0abc");
+$g->test0 ("abc", "def", ["1"], 0, 1, 1, "123", "456", "abc\0abc");
+$g->test0 ("abc", "def", ["1"], 0, 2, 2, "123", "456", "abc\0abc");
+$g->test0 ("abc", "def", ["1"], 0, 4095, 4095, "123", "456", "abc\0abc");
+$g->test0 ("abc", "def", ["1"], 0, 0, 0, "", "", "abc\0abc");
 print "EOF\n"

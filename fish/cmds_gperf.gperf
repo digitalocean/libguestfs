@@ -1,0 +1,1018 @@
+/* libguestfs generated file
+ * WARNING: THIS FILE IS GENERATED FROM:
+ *   generator/generator_*.ml
+ * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
+ *
+ * Copyright (C) 2009-2011 Red Hat Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
+%language=ANSI-C
+%define lookup-function-name lookup_fish_command
+%ignore-case
+%readonly-tables
+%null-strings
+
+%{
+
+#include <config.h>
+
+#include <stdlib.h>
+#include <string.h>
+
+#include "cmds_gperf.h"
+
+extern struct command_entry add_cdrom_cmd_entry;
+extern struct command_entry add_domain_cmd_entry;
+extern struct command_entry add_drive_cmd_entry;
+extern struct command_entry add_drive_opts_cmd_entry;
+extern struct command_entry add_drive_ro_cmd_entry;
+extern struct command_entry add_drive_ro_with_if_cmd_entry;
+extern struct command_entry add_drive_with_if_cmd_entry;
+extern struct command_entry alloc_cmd_entry;
+extern struct command_entry aug_clear_cmd_entry;
+extern struct command_entry aug_close_cmd_entry;
+extern struct command_entry aug_defnode_cmd_entry;
+extern struct command_entry aug_defvar_cmd_entry;
+extern struct command_entry aug_get_cmd_entry;
+extern struct command_entry aug_init_cmd_entry;
+extern struct command_entry aug_insert_cmd_entry;
+extern struct command_entry aug_load_cmd_entry;
+extern struct command_entry aug_ls_cmd_entry;
+extern struct command_entry aug_match_cmd_entry;
+extern struct command_entry aug_mv_cmd_entry;
+extern struct command_entry aug_rm_cmd_entry;
+extern struct command_entry aug_save_cmd_entry;
+extern struct command_entry aug_set_cmd_entry;
+extern struct command_entry available_cmd_entry;
+extern struct command_entry available_all_groups_cmd_entry;
+extern struct command_entry base64_in_cmd_entry;
+extern struct command_entry base64_out_cmd_entry;
+extern struct command_entry blockdev_flushbufs_cmd_entry;
+extern struct command_entry blockdev_getbsz_cmd_entry;
+extern struct command_entry blockdev_getro_cmd_entry;
+extern struct command_entry blockdev_getsize64_cmd_entry;
+extern struct command_entry blockdev_getss_cmd_entry;
+extern struct command_entry blockdev_getsz_cmd_entry;
+extern struct command_entry blockdev_rereadpt_cmd_entry;
+extern struct command_entry blockdev_setbsz_cmd_entry;
+extern struct command_entry blockdev_setro_cmd_entry;
+extern struct command_entry blockdev_setrw_cmd_entry;
+extern struct command_entry case_sensitive_path_cmd_entry;
+extern struct command_entry cat_cmd_entry;
+extern struct command_entry checksum_cmd_entry;
+extern struct command_entry checksum_device_cmd_entry;
+extern struct command_entry checksums_out_cmd_entry;
+extern struct command_entry chmod_cmd_entry;
+extern struct command_entry chown_cmd_entry;
+extern struct command_entry command_cmd_entry;
+extern struct command_entry command_lines_cmd_entry;
+extern struct command_entry config_cmd_entry;
+extern struct command_entry copy_in_cmd_entry;
+extern struct command_entry copy_out_cmd_entry;
+extern struct command_entry copy_size_cmd_entry;
+extern struct command_entry cp_cmd_entry;
+extern struct command_entry cp_a_cmd_entry;
+extern struct command_entry dd_cmd_entry;
+extern struct command_entry debug_cmd_entry;
+extern struct command_entry debug_cmdline_cmd_entry;
+extern struct command_entry debug_upload_cmd_entry;
+extern struct command_entry df_cmd_entry;
+extern struct command_entry df_h_cmd_entry;
+extern struct command_entry dmesg_cmd_entry;
+extern struct command_entry download_cmd_entry;
+extern struct command_entry download_offset_cmd_entry;
+extern struct command_entry drop_caches_cmd_entry;
+extern struct command_entry du_cmd_entry;
+extern struct command_entry e2fsck_f_cmd_entry;
+extern struct command_entry echo_cmd_entry;
+extern struct command_entry echo_daemon_cmd_entry;
+extern struct command_entry edit_cmd_entry;
+extern struct command_entry egrep_cmd_entry;
+extern struct command_entry egrepi_cmd_entry;
+extern struct command_entry equal_cmd_entry;
+extern struct command_entry exists_cmd_entry;
+extern struct command_entry fallocate_cmd_entry;
+extern struct command_entry fallocate64_cmd_entry;
+extern struct command_entry fgrep_cmd_entry;
+extern struct command_entry fgrepi_cmd_entry;
+extern struct command_entry file_cmd_entry;
+extern struct command_entry file_architecture_cmd_entry;
+extern struct command_entry filesize_cmd_entry;
+extern struct command_entry fill_cmd_entry;
+extern struct command_entry fill_pattern_cmd_entry;
+extern struct command_entry find_cmd_entry;
+extern struct command_entry find0_cmd_entry;
+extern struct command_entry findfs_label_cmd_entry;
+extern struct command_entry findfs_uuid_cmd_entry;
+extern struct command_entry fsck_cmd_entry;
+extern struct command_entry get_append_cmd_entry;
+extern struct command_entry get_attach_method_cmd_entry;
+extern struct command_entry get_autosync_cmd_entry;
+extern struct command_entry get_direct_cmd_entry;
+extern struct command_entry get_e2label_cmd_entry;
+extern struct command_entry get_e2uuid_cmd_entry;
+extern struct command_entry get_memsize_cmd_entry;
+extern struct command_entry get_network_cmd_entry;
+extern struct command_entry get_path_cmd_entry;
+extern struct command_entry get_pid_cmd_entry;
+extern struct command_entry get_qemu_cmd_entry;
+extern struct command_entry get_recovery_proc_cmd_entry;
+extern struct command_entry get_selinux_cmd_entry;
+extern struct command_entry get_state_cmd_entry;
+extern struct command_entry get_trace_cmd_entry;
+extern struct command_entry get_umask_cmd_entry;
+extern struct command_entry get_verbose_cmd_entry;
+extern struct command_entry getcon_cmd_entry;
+extern struct command_entry getxattr_cmd_entry;
+extern struct command_entry getxattrs_cmd_entry;
+extern struct command_entry glob_cmd_entry;
+extern struct command_entry glob_expand_cmd_entry;
+extern struct command_entry grep_cmd_entry;
+extern struct command_entry grepi_cmd_entry;
+extern struct command_entry grub_install_cmd_entry;
+extern struct command_entry head_cmd_entry;
+extern struct command_entry head_n_cmd_entry;
+extern struct command_entry hexdump_cmd_entry;
+extern struct command_entry hexedit_cmd_entry;
+extern struct command_entry initrd_cat_cmd_entry;
+extern struct command_entry initrd_list_cmd_entry;
+extern struct command_entry inotify_add_watch_cmd_entry;
+extern struct command_entry inotify_close_cmd_entry;
+extern struct command_entry inotify_files_cmd_entry;
+extern struct command_entry inotify_init_cmd_entry;
+extern struct command_entry inotify_read_cmd_entry;
+extern struct command_entry inotify_rm_watch_cmd_entry;
+extern struct command_entry inspect_get_arch_cmd_entry;
+extern struct command_entry inspect_get_distro_cmd_entry;
+extern struct command_entry inspect_get_drive_mappings_cmd_entry;
+extern struct command_entry inspect_get_filesystems_cmd_entry;
+extern struct command_entry inspect_get_format_cmd_entry;
+extern struct command_entry inspect_get_hostname_cmd_entry;
+extern struct command_entry inspect_get_major_version_cmd_entry;
+extern struct command_entry inspect_get_minor_version_cmd_entry;
+extern struct command_entry inspect_get_mountpoints_cmd_entry;
+extern struct command_entry inspect_get_package_format_cmd_entry;
+extern struct command_entry inspect_get_package_management_cmd_entry;
+extern struct command_entry inspect_get_product_name_cmd_entry;
+extern struct command_entry inspect_get_product_variant_cmd_entry;
+extern struct command_entry inspect_get_roots_cmd_entry;
+extern struct command_entry inspect_get_type_cmd_entry;
+extern struct command_entry inspect_get_windows_current_control_set_cmd_entry;
+extern struct command_entry inspect_get_windows_systemroot_cmd_entry;
+extern struct command_entry inspect_is_live_cmd_entry;
+extern struct command_entry inspect_is_multipart_cmd_entry;
+extern struct command_entry inspect_is_netinst_cmd_entry;
+extern struct command_entry inspect_list_applications_cmd_entry;
+extern struct command_entry inspect_os_cmd_entry;
+extern struct command_entry is_blockdev_cmd_entry;
+extern struct command_entry is_busy_cmd_entry;
+extern struct command_entry is_chardev_cmd_entry;
+extern struct command_entry is_config_cmd_entry;
+extern struct command_entry is_dir_cmd_entry;
+extern struct command_entry is_fifo_cmd_entry;
+extern struct command_entry is_file_cmd_entry;
+extern struct command_entry is_launching_cmd_entry;
+extern struct command_entry is_lv_cmd_entry;
+extern struct command_entry is_ready_cmd_entry;
+extern struct command_entry is_socket_cmd_entry;
+extern struct command_entry is_symlink_cmd_entry;
+extern struct command_entry kill_subprocess_cmd_entry;
+extern struct command_entry launch_cmd_entry;
+extern struct command_entry lcd_cmd_entry;
+extern struct command_entry lchown_cmd_entry;
+extern struct command_entry lgetxattr_cmd_entry;
+extern struct command_entry lgetxattrs_cmd_entry;
+extern struct command_entry list_devices_cmd_entry;
+extern struct command_entry list_filesystems_cmd_entry;
+extern struct command_entry list_partitions_cmd_entry;
+extern struct command_entry ll_cmd_entry;
+extern struct command_entry ln_cmd_entry;
+extern struct command_entry ln_f_cmd_entry;
+extern struct command_entry ln_s_cmd_entry;
+extern struct command_entry ln_sf_cmd_entry;
+extern struct command_entry lremovexattr_cmd_entry;
+extern struct command_entry ls_cmd_entry;
+extern struct command_entry lsetxattr_cmd_entry;
+extern struct command_entry lstat_cmd_entry;
+extern struct command_entry lstatlist_cmd_entry;
+extern struct command_entry luks_add_key_cmd_entry;
+extern struct command_entry luks_close_cmd_entry;
+extern struct command_entry luks_format_cmd_entry;
+extern struct command_entry luks_format_cipher_cmd_entry;
+extern struct command_entry luks_kill_slot_cmd_entry;
+extern struct command_entry luks_open_cmd_entry;
+extern struct command_entry luks_open_ro_cmd_entry;
+extern struct command_entry lvcreate_cmd_entry;
+extern struct command_entry lvm_canonical_lv_name_cmd_entry;
+extern struct command_entry lvm_clear_filter_cmd_entry;
+extern struct command_entry lvm_remove_all_cmd_entry;
+extern struct command_entry lvm_set_filter_cmd_entry;
+extern struct command_entry lvremove_cmd_entry;
+extern struct command_entry lvrename_cmd_entry;
+extern struct command_entry lvresize_cmd_entry;
+extern struct command_entry lvresize_free_cmd_entry;
+extern struct command_entry lvs_cmd_entry;
+extern struct command_entry lvs_full_cmd_entry;
+extern struct command_entry lvuuid_cmd_entry;
+extern struct command_entry lxattrlist_cmd_entry;
+extern struct command_entry man_cmd_entry;
+extern struct command_entry mkdir_cmd_entry;
+extern struct command_entry mkdir_mode_cmd_entry;
+extern struct command_entry mkdir_p_cmd_entry;
+extern struct command_entry mkdtemp_cmd_entry;
+extern struct command_entry mke2fs_J_cmd_entry;
+extern struct command_entry mke2fs_JL_cmd_entry;
+extern struct command_entry mke2fs_JU_cmd_entry;
+extern struct command_entry mke2journal_cmd_entry;
+extern struct command_entry mke2journal_L_cmd_entry;
+extern struct command_entry mke2journal_U_cmd_entry;
+extern struct command_entry mkfifo_cmd_entry;
+extern struct command_entry mkfs_cmd_entry;
+extern struct command_entry mkfs_b_cmd_entry;
+extern struct command_entry mkfs_opts_cmd_entry;
+extern struct command_entry mkmountpoint_cmd_entry;
+extern struct command_entry mknod_cmd_entry;
+extern struct command_entry mknod_b_cmd_entry;
+extern struct command_entry mknod_c_cmd_entry;
+extern struct command_entry mkswap_cmd_entry;
+extern struct command_entry mkswap_L_cmd_entry;
+extern struct command_entry mkswap_U_cmd_entry;
+extern struct command_entry mkswap_file_cmd_entry;
+extern struct command_entry modprobe_cmd_entry;
+extern struct command_entry more_cmd_entry;
+extern struct command_entry mount_cmd_entry;
+extern struct command_entry mount_loop_cmd_entry;
+extern struct command_entry mount_options_cmd_entry;
+extern struct command_entry mount_ro_cmd_entry;
+extern struct command_entry mount_vfs_cmd_entry;
+extern struct command_entry mountpoints_cmd_entry;
+extern struct command_entry mounts_cmd_entry;
+extern struct command_entry mv_cmd_entry;
+extern struct command_entry ntfs_3g_probe_cmd_entry;
+extern struct command_entry ntfsresize_cmd_entry;
+extern struct command_entry ntfsresize_size_cmd_entry;
+extern struct command_entry part_add_cmd_entry;
+extern struct command_entry part_del_cmd_entry;
+extern struct command_entry part_disk_cmd_entry;
+extern struct command_entry part_get_bootable_cmd_entry;
+extern struct command_entry part_get_mbr_id_cmd_entry;
+extern struct command_entry part_get_parttype_cmd_entry;
+extern struct command_entry part_init_cmd_entry;
+extern struct command_entry part_list_cmd_entry;
+extern struct command_entry part_set_bootable_cmd_entry;
+extern struct command_entry part_set_mbr_id_cmd_entry;
+extern struct command_entry part_set_name_cmd_entry;
+extern struct command_entry part_to_dev_cmd_entry;
+extern struct command_entry ping_daemon_cmd_entry;
+extern struct command_entry pread_cmd_entry;
+extern struct command_entry pread_device_cmd_entry;
+extern struct command_entry pvcreate_cmd_entry;
+extern struct command_entry pvremove_cmd_entry;
+extern struct command_entry pvresize_cmd_entry;
+extern struct command_entry pvresize_size_cmd_entry;
+extern struct command_entry pvs_cmd_entry;
+extern struct command_entry pvs_full_cmd_entry;
+extern struct command_entry pvuuid_cmd_entry;
+extern struct command_entry pwrite_cmd_entry;
+extern struct command_entry pwrite_device_cmd_entry;
+extern struct command_entry read_file_cmd_entry;
+extern struct command_entry read_lines_cmd_entry;
+extern struct command_entry readdir_cmd_entry;
+extern struct command_entry readlink_cmd_entry;
+extern struct command_entry readlinklist_cmd_entry;
+extern struct command_entry realpath_cmd_entry;
+extern struct command_entry removexattr_cmd_entry;
+extern struct command_entry reopen_cmd_entry;
+extern struct command_entry resize2fs_cmd_entry;
+extern struct command_entry resize2fs_M_cmd_entry;
+extern struct command_entry resize2fs_size_cmd_entry;
+extern struct command_entry rm_cmd_entry;
+extern struct command_entry rm_rf_cmd_entry;
+extern struct command_entry rmdir_cmd_entry;
+extern struct command_entry rmmountpoint_cmd_entry;
+extern struct command_entry scrub_device_cmd_entry;
+extern struct command_entry scrub_file_cmd_entry;
+extern struct command_entry scrub_freespace_cmd_entry;
+extern struct command_entry set_append_cmd_entry;
+extern struct command_entry set_attach_method_cmd_entry;
+extern struct command_entry set_autosync_cmd_entry;
+extern struct command_entry set_direct_cmd_entry;
+extern struct command_entry set_e2label_cmd_entry;
+extern struct command_entry set_e2uuid_cmd_entry;
+extern struct command_entry set_memsize_cmd_entry;
+extern struct command_entry set_network_cmd_entry;
+extern struct command_entry set_path_cmd_entry;
+extern struct command_entry set_qemu_cmd_entry;
+extern struct command_entry set_recovery_proc_cmd_entry;
+extern struct command_entry set_selinux_cmd_entry;
+extern struct command_entry set_trace_cmd_entry;
+extern struct command_entry set_verbose_cmd_entry;
+extern struct command_entry setcon_cmd_entry;
+extern struct command_entry setxattr_cmd_entry;
+extern struct command_entry sfdisk_cmd_entry;
+extern struct command_entry sfdiskM_cmd_entry;
+extern struct command_entry sfdisk_N_cmd_entry;
+extern struct command_entry sfdisk_disk_geometry_cmd_entry;
+extern struct command_entry sfdisk_kernel_geometry_cmd_entry;
+extern struct command_entry sfdisk_l_cmd_entry;
+extern struct command_entry sh_cmd_entry;
+extern struct command_entry sh_lines_cmd_entry;
+extern struct command_entry sleep_cmd_entry;
+extern struct command_entry sparse_cmd_entry;
+extern struct command_entry stat_cmd_entry;
+extern struct command_entry statvfs_cmd_entry;
+extern struct command_entry strings_cmd_entry;
+extern struct command_entry strings_e_cmd_entry;
+extern struct command_entry supported_cmd_entry;
+extern struct command_entry swapoff_device_cmd_entry;
+extern struct command_entry swapoff_file_cmd_entry;
+extern struct command_entry swapoff_label_cmd_entry;
+extern struct command_entry swapoff_uuid_cmd_entry;
+extern struct command_entry swapon_device_cmd_entry;
+extern struct command_entry swapon_file_cmd_entry;
+extern struct command_entry swapon_label_cmd_entry;
+extern struct command_entry swapon_uuid_cmd_entry;
+extern struct command_entry sync_cmd_entry;
+extern struct command_entry tail_cmd_entry;
+extern struct command_entry tail_n_cmd_entry;
+extern struct command_entry tar_in_cmd_entry;
+extern struct command_entry tar_out_cmd_entry;
+extern struct command_entry tgz_in_cmd_entry;
+extern struct command_entry tgz_out_cmd_entry;
+extern struct command_entry time_cmd_entry;
+extern struct command_entry touch_cmd_entry;
+extern struct command_entry truncate_cmd_entry;
+extern struct command_entry truncate_size_cmd_entry;
+extern struct command_entry tune2fs_l_cmd_entry;
+extern struct command_entry txz_in_cmd_entry;
+extern struct command_entry txz_out_cmd_entry;
+extern struct command_entry umask_cmd_entry;
+extern struct command_entry umount_cmd_entry;
+extern struct command_entry umount_all_cmd_entry;
+extern struct command_entry upload_cmd_entry;
+extern struct command_entry upload_offset_cmd_entry;
+extern struct command_entry utimens_cmd_entry;
+extern struct command_entry version_cmd_entry;
+extern struct command_entry vfs_label_cmd_entry;
+extern struct command_entry vfs_type_cmd_entry;
+extern struct command_entry vfs_uuid_cmd_entry;
+extern struct command_entry vg_activate_cmd_entry;
+extern struct command_entry vg_activate_all_cmd_entry;
+extern struct command_entry vgcreate_cmd_entry;
+extern struct command_entry vglvuuids_cmd_entry;
+extern struct command_entry vgpvuuids_cmd_entry;
+extern struct command_entry vgremove_cmd_entry;
+extern struct command_entry vgrename_cmd_entry;
+extern struct command_entry vgs_cmd_entry;
+extern struct command_entry vgs_full_cmd_entry;
+extern struct command_entry vgscan_cmd_entry;
+extern struct command_entry vguuid_cmd_entry;
+extern struct command_entry wc_c_cmd_entry;
+extern struct command_entry wc_l_cmd_entry;
+extern struct command_entry wc_w_cmd_entry;
+extern struct command_entry write_cmd_entry;
+extern struct command_entry write_file_cmd_entry;
+extern struct command_entry zegrep_cmd_entry;
+extern struct command_entry zegrepi_cmd_entry;
+extern struct command_entry zero_cmd_entry;
+extern struct command_entry zero_device_cmd_entry;
+extern struct command_entry zerofree_cmd_entry;
+extern struct command_entry zfgrep_cmd_entry;
+extern struct command_entry zfgrepi_cmd_entry;
+extern struct command_entry zfile_cmd_entry;
+extern struct command_entry zgrep_cmd_entry;
+extern struct command_entry zgrepi_cmd_entry;
+%}
+
+struct command_table;
+
+%%
+add_cdrom, &add_cdrom_cmd_entry
+add-cdrom, &add_cdrom_cmd_entry
+add_domain, &add_domain_cmd_entry
+add-domain, &add_domain_cmd_entry
+domain, &add_domain_cmd_entry
+add_drive, &add_drive_cmd_entry
+add-drive, &add_drive_cmd_entry
+add_drive_opts, &add_drive_opts_cmd_entry
+add-drive-opts, &add_drive_opts_cmd_entry
+add, &add_drive_opts_cmd_entry
+add_drive_ro, &add_drive_ro_cmd_entry
+add-drive-ro, &add_drive_ro_cmd_entry
+add-ro, &add_drive_ro_cmd_entry
+add_drive_ro_with_if, &add_drive_ro_with_if_cmd_entry
+add-drive-ro-with-if, &add_drive_ro_with_if_cmd_entry
+add_drive_with_if, &add_drive_with_if_cmd_entry
+add-drive-with-if, &add_drive_with_if_cmd_entry
+alloc, &alloc_cmd_entry
+allocate, &alloc_cmd_entry
+aug_clear, &aug_clear_cmd_entry
+aug-clear, &aug_clear_cmd_entry
+aug_close, &aug_close_cmd_entry
+aug-close, &aug_close_cmd_entry
+aug_defnode, &aug_defnode_cmd_entry
+aug-defnode, &aug_defnode_cmd_entry
+aug_defvar, &aug_defvar_cmd_entry
+aug-defvar, &aug_defvar_cmd_entry
+aug_get, &aug_get_cmd_entry
+aug-get, &aug_get_cmd_entry
+aug_init, &aug_init_cmd_entry
+aug-init, &aug_init_cmd_entry
+aug_insert, &aug_insert_cmd_entry
+aug-insert, &aug_insert_cmd_entry
+aug_load, &aug_load_cmd_entry
+aug-load, &aug_load_cmd_entry
+aug_ls, &aug_ls_cmd_entry
+aug-ls, &aug_ls_cmd_entry
+aug_match, &aug_match_cmd_entry
+aug-match, &aug_match_cmd_entry
+aug_mv, &aug_mv_cmd_entry
+aug-mv, &aug_mv_cmd_entry
+aug_rm, &aug_rm_cmd_entry
+aug-rm, &aug_rm_cmd_entry
+aug_save, &aug_save_cmd_entry
+aug-save, &aug_save_cmd_entry
+aug_set, &aug_set_cmd_entry
+aug-set, &aug_set_cmd_entry
+available, &available_cmd_entry
+available_all_groups, &available_all_groups_cmd_entry
+available-all-groups, &available_all_groups_cmd_entry
+base64_in, &base64_in_cmd_entry
+base64-in, &base64_in_cmd_entry
+base64_out, &base64_out_cmd_entry
+base64-out, &base64_out_cmd_entry
+blockdev_flushbufs, &blockdev_flushbufs_cmd_entry
+blockdev-flushbufs, &blockdev_flushbufs_cmd_entry
+blockdev_getbsz, &blockdev_getbsz_cmd_entry
+blockdev-getbsz, &blockdev_getbsz_cmd_entry
+blockdev_getro, &blockdev_getro_cmd_entry
+blockdev-getro, &blockdev_getro_cmd_entry
+blockdev_getsize64, &blockdev_getsize64_cmd_entry
+blockdev-getsize64, &blockdev_getsize64_cmd_entry
+blockdev_getss, &blockdev_getss_cmd_entry
+blockdev-getss, &blockdev_getss_cmd_entry
+blockdev_getsz, &blockdev_getsz_cmd_entry
+blockdev-getsz, &blockdev_getsz_cmd_entry
+blockdev_rereadpt, &blockdev_rereadpt_cmd_entry
+blockdev-rereadpt, &blockdev_rereadpt_cmd_entry
+blockdev_setbsz, &blockdev_setbsz_cmd_entry
+blockdev-setbsz, &blockdev_setbsz_cmd_entry
+blockdev_setro, &blockdev_setro_cmd_entry
+blockdev-setro, &blockdev_setro_cmd_entry
+blockdev_setrw, &blockdev_setrw_cmd_entry
+blockdev-setrw, &blockdev_setrw_cmd_entry
+case_sensitive_path, &case_sensitive_path_cmd_entry
+case-sensitive-path, &case_sensitive_path_cmd_entry
+cat, &cat_cmd_entry
+checksum, &checksum_cmd_entry
+checksum_device, &checksum_device_cmd_entry
+checksum-device, &checksum_device_cmd_entry
+checksums_out, &checksums_out_cmd_entry
+checksums-out, &checksums_out_cmd_entry
+chmod, &chmod_cmd_entry
+chown, &chown_cmd_entry
+command, &command_cmd_entry
+command_lines, &command_lines_cmd_entry
+command-lines, &command_lines_cmd_entry
+config, &config_cmd_entry
+copy_in, &copy_in_cmd_entry
+copy-in, &copy_in_cmd_entry
+copy_out, &copy_out_cmd_entry
+copy-out, &copy_out_cmd_entry
+copy_size, &copy_size_cmd_entry
+copy-size, &copy_size_cmd_entry
+cp, &cp_cmd_entry
+cp_a, &cp_a_cmd_entry
+cp-a, &cp_a_cmd_entry
+dd, &dd_cmd_entry
+debug, &debug_cmd_entry
+debug_cmdline, &debug_cmdline_cmd_entry
+debug-cmdline, &debug_cmdline_cmd_entry
+debug_upload, &debug_upload_cmd_entry
+debug-upload, &debug_upload_cmd_entry
+df, &df_cmd_entry
+df_h, &df_h_cmd_entry
+df-h, &df_h_cmd_entry
+dmesg, &dmesg_cmd_entry
+download, &download_cmd_entry
+download_offset, &download_offset_cmd_entry
+download-offset, &download_offset_cmd_entry
+drop_caches, &drop_caches_cmd_entry
+drop-caches, &drop_caches_cmd_entry
+du, &du_cmd_entry
+e2fsck_f, &e2fsck_f_cmd_entry
+e2fsck-f, &e2fsck_f_cmd_entry
+echo, &echo_cmd_entry
+echo_daemon, &echo_daemon_cmd_entry
+echo-daemon, &echo_daemon_cmd_entry
+edit, &edit_cmd_entry
+vi, &edit_cmd_entry
+emacs, &edit_cmd_entry
+egrep, &egrep_cmd_entry
+egrepi, &egrepi_cmd_entry
+equal, &equal_cmd_entry
+exists, &exists_cmd_entry
+fallocate, &fallocate_cmd_entry
+fallocate64, &fallocate64_cmd_entry
+fgrep, &fgrep_cmd_entry
+fgrepi, &fgrepi_cmd_entry
+file, &file_cmd_entry
+file_architecture, &file_architecture_cmd_entry
+file-architecture, &file_architecture_cmd_entry
+filesize, &filesize_cmd_entry
+fill, &fill_cmd_entry
+fill_pattern, &fill_pattern_cmd_entry
+fill-pattern, &fill_pattern_cmd_entry
+find, &find_cmd_entry
+find0, &find0_cmd_entry
+findfs_label, &findfs_label_cmd_entry
+findfs-label, &findfs_label_cmd_entry
+findfs_uuid, &findfs_uuid_cmd_entry
+findfs-uuid, &findfs_uuid_cmd_entry
+fsck, &fsck_cmd_entry
+get_append, &get_append_cmd_entry
+get-append, &get_append_cmd_entry
+get_attach_method, &get_attach_method_cmd_entry
+get-attach-method, &get_attach_method_cmd_entry
+get_autosync, &get_autosync_cmd_entry
+get-autosync, &get_autosync_cmd_entry
+get_direct, &get_direct_cmd_entry
+get-direct, &get_direct_cmd_entry
+get_e2label, &get_e2label_cmd_entry
+get-e2label, &get_e2label_cmd_entry
+get_e2uuid, &get_e2uuid_cmd_entry
+get-e2uuid, &get_e2uuid_cmd_entry
+get_memsize, &get_memsize_cmd_entry
+get-memsize, &get_memsize_cmd_entry
+get_network, &get_network_cmd_entry
+get-network, &get_network_cmd_entry
+get_path, &get_path_cmd_entry
+get-path, &get_path_cmd_entry
+get_pid, &get_pid_cmd_entry
+get-pid, &get_pid_cmd_entry
+pid, &get_pid_cmd_entry
+get_qemu, &get_qemu_cmd_entry
+get-qemu, &get_qemu_cmd_entry
+get_recovery_proc, &get_recovery_proc_cmd_entry
+get-recovery-proc, &get_recovery_proc_cmd_entry
+get_selinux, &get_selinux_cmd_entry
+get-selinux, &get_selinux_cmd_entry
+get_state, &get_state_cmd_entry
+get-state, &get_state_cmd_entry
+get_trace, &get_trace_cmd_entry
+get-trace, &get_trace_cmd_entry
+get_umask, &get_umask_cmd_entry
+get-umask, &get_umask_cmd_entry
+get_verbose, &get_verbose_cmd_entry
+get-verbose, &get_verbose_cmd_entry
+getcon, &getcon_cmd_entry
+getxattr, &getxattr_cmd_entry
+getxattrs, &getxattrs_cmd_entry
+glob, &glob_cmd_entry
+glob_expand, &glob_expand_cmd_entry
+glob-expand, &glob_expand_cmd_entry
+grep, &grep_cmd_entry
+grepi, &grepi_cmd_entry
+grub_install, &grub_install_cmd_entry
+grub-install, &grub_install_cmd_entry
+head, &head_cmd_entry
+head_n, &head_n_cmd_entry
+head-n, &head_n_cmd_entry
+hexdump, &hexdump_cmd_entry
+hexedit, &hexedit_cmd_entry
+initrd_cat, &initrd_cat_cmd_entry
+initrd-cat, &initrd_cat_cmd_entry
+initrd_list, &initrd_list_cmd_entry
+initrd-list, &initrd_list_cmd_entry
+inotify_add_watch, &inotify_add_watch_cmd_entry
+inotify-add-watch, &inotify_add_watch_cmd_entry
+inotify_close, &inotify_close_cmd_entry
+inotify-close, &inotify_close_cmd_entry
+inotify_files, &inotify_files_cmd_entry
+inotify-files, &inotify_files_cmd_entry
+inotify_init, &inotify_init_cmd_entry
+inotify-init, &inotify_init_cmd_entry
+inotify_read, &inotify_read_cmd_entry
+inotify-read, &inotify_read_cmd_entry
+inotify_rm_watch, &inotify_rm_watch_cmd_entry
+inotify-rm-watch, &inotify_rm_watch_cmd_entry
+inspect_get_arch, &inspect_get_arch_cmd_entry
+inspect-get-arch, &inspect_get_arch_cmd_entry
+inspect_get_distro, &inspect_get_distro_cmd_entry
+inspect-get-distro, &inspect_get_distro_cmd_entry
+inspect_get_drive_mappings, &inspect_get_drive_mappings_cmd_entry
+inspect-get-drive-mappings, &inspect_get_drive_mappings_cmd_entry
+inspect_get_filesystems, &inspect_get_filesystems_cmd_entry
+inspect-get-filesystems, &inspect_get_filesystems_cmd_entry
+inspect_get_format, &inspect_get_format_cmd_entry
+inspect-get-format, &inspect_get_format_cmd_entry
+inspect_get_hostname, &inspect_get_hostname_cmd_entry
+inspect-get-hostname, &inspect_get_hostname_cmd_entry
+inspect_get_major_version, &inspect_get_major_version_cmd_entry
+inspect-get-major-version, &inspect_get_major_version_cmd_entry
+inspect_get_minor_version, &inspect_get_minor_version_cmd_entry
+inspect-get-minor-version, &inspect_get_minor_version_cmd_entry
+inspect_get_mountpoints, &inspect_get_mountpoints_cmd_entry
+inspect-get-mountpoints, &inspect_get_mountpoints_cmd_entry
+inspect_get_package_format, &inspect_get_package_format_cmd_entry
+inspect-get-package-format, &inspect_get_package_format_cmd_entry
+inspect_get_package_management, &inspect_get_package_management_cmd_entry
+inspect-get-package-management, &inspect_get_package_management_cmd_entry
+inspect_get_product_name, &inspect_get_product_name_cmd_entry
+inspect-get-product-name, &inspect_get_product_name_cmd_entry
+inspect_get_product_variant, &inspect_get_product_variant_cmd_entry
+inspect-get-product-variant, &inspect_get_product_variant_cmd_entry
+inspect_get_roots, &inspect_get_roots_cmd_entry
+inspect-get-roots, &inspect_get_roots_cmd_entry
+inspect_get_type, &inspect_get_type_cmd_entry
+inspect-get-type, &inspect_get_type_cmd_entry
+inspect_get_windows_current_control_set, &inspect_get_windows_current_control_set_cmd_entry
+inspect-get-windows-current-control-set, &inspect_get_windows_current_control_set_cmd_entry
+inspect_get_windows_systemroot, &inspect_get_windows_systemroot_cmd_entry
+inspect-get-windows-systemroot, &inspect_get_windows_systemroot_cmd_entry
+inspect_is_live, &inspect_is_live_cmd_entry
+inspect-is-live, &inspect_is_live_cmd_entry
+inspect_is_multipart, &inspect_is_multipart_cmd_entry
+inspect-is-multipart, &inspect_is_multipart_cmd_entry
+inspect_is_netinst, &inspect_is_netinst_cmd_entry
+inspect-is-netinst, &inspect_is_netinst_cmd_entry
+inspect_list_applications, &inspect_list_applications_cmd_entry
+inspect-list-applications, &inspect_list_applications_cmd_entry
+inspect_os, &inspect_os_cmd_entry
+inspect-os, &inspect_os_cmd_entry
+is_blockdev, &is_blockdev_cmd_entry
+is-blockdev, &is_blockdev_cmd_entry
+is_busy, &is_busy_cmd_entry
+is-busy, &is_busy_cmd_entry
+is_chardev, &is_chardev_cmd_entry
+is-chardev, &is_chardev_cmd_entry
+is_config, &is_config_cmd_entry
+is-config, &is_config_cmd_entry
+is_dir, &is_dir_cmd_entry
+is-dir, &is_dir_cmd_entry
+is_fifo, &is_fifo_cmd_entry
+is-fifo, &is_fifo_cmd_entry
+is_file, &is_file_cmd_entry
+is-file, &is_file_cmd_entry
+is_launching, &is_launching_cmd_entry
+is-launching, &is_launching_cmd_entry
+is_lv, &is_lv_cmd_entry
+is-lv, &is_lv_cmd_entry
+is_ready, &is_ready_cmd_entry
+is-ready, &is_ready_cmd_entry
+is_socket, &is_socket_cmd_entry
+is-socket, &is_socket_cmd_entry
+is_symlink, &is_symlink_cmd_entry
+is-symlink, &is_symlink_cmd_entry
+kill_subprocess, &kill_subprocess_cmd_entry
+kill-subprocess, &kill_subprocess_cmd_entry
+launch, &launch_cmd_entry
+run, &launch_cmd_entry
+lcd, &lcd_cmd_entry
+lchown, &lchown_cmd_entry
+lgetxattr, &lgetxattr_cmd_entry
+lgetxattrs, &lgetxattrs_cmd_entry
+list_devices, &list_devices_cmd_entry
+list-devices, &list_devices_cmd_entry
+list_filesystems, &list_filesystems_cmd_entry
+list-filesystems, &list_filesystems_cmd_entry
+list_partitions, &list_partitions_cmd_entry
+list-partitions, &list_partitions_cmd_entry
+ll, &ll_cmd_entry
+ln, &ln_cmd_entry
+ln_f, &ln_f_cmd_entry
+ln-f, &ln_f_cmd_entry
+ln_s, &ln_s_cmd_entry
+ln-s, &ln_s_cmd_entry
+ln_sf, &ln_sf_cmd_entry
+ln-sf, &ln_sf_cmd_entry
+lremovexattr, &lremovexattr_cmd_entry
+ls, &ls_cmd_entry
+lsetxattr, &lsetxattr_cmd_entry
+lstat, &lstat_cmd_entry
+lstatlist, &lstatlist_cmd_entry
+luks_add_key, &luks_add_key_cmd_entry
+luks-add-key, &luks_add_key_cmd_entry
+luks_close, &luks_close_cmd_entry
+luks-close, &luks_close_cmd_entry
+luks_format, &luks_format_cmd_entry
+luks-format, &luks_format_cmd_entry
+luks_format_cipher, &luks_format_cipher_cmd_entry
+luks-format-cipher, &luks_format_cipher_cmd_entry
+luks_kill_slot, &luks_kill_slot_cmd_entry
+luks-kill-slot, &luks_kill_slot_cmd_entry
+luks_open, &luks_open_cmd_entry
+luks-open, &luks_open_cmd_entry
+luks_open_ro, &luks_open_ro_cmd_entry
+luks-open-ro, &luks_open_ro_cmd_entry
+lvcreate, &lvcreate_cmd_entry
+lvm_canonical_lv_name, &lvm_canonical_lv_name_cmd_entry
+lvm-canonical-lv-name, &lvm_canonical_lv_name_cmd_entry
+lvm_clear_filter, &lvm_clear_filter_cmd_entry
+lvm-clear-filter, &lvm_clear_filter_cmd_entry
+lvm_remove_all, &lvm_remove_all_cmd_entry
+lvm-remove-all, &lvm_remove_all_cmd_entry
+lvm_set_filter, &lvm_set_filter_cmd_entry
+lvm-set-filter, &lvm_set_filter_cmd_entry
+lvremove, &lvremove_cmd_entry
+lvrename, &lvrename_cmd_entry
+lvresize, &lvresize_cmd_entry
+lvresize_free, &lvresize_free_cmd_entry
+lvresize-free, &lvresize_free_cmd_entry
+lvs, &lvs_cmd_entry
+lvs_full, &lvs_full_cmd_entry
+lvs-full, &lvs_full_cmd_entry
+lvuuid, &lvuuid_cmd_entry
+lxattrlist, &lxattrlist_cmd_entry
+man, &man_cmd_entry
+manual, &man_cmd_entry
+mkdir, &mkdir_cmd_entry
+mkdir_mode, &mkdir_mode_cmd_entry
+mkdir-mode, &mkdir_mode_cmd_entry
+mkdir_p, &mkdir_p_cmd_entry
+mkdir-p, &mkdir_p_cmd_entry
+mkdtemp, &mkdtemp_cmd_entry
+mke2fs_J, &mke2fs_J_cmd_entry
+mke2fs-J, &mke2fs_J_cmd_entry
+mke2fs_JL, &mke2fs_JL_cmd_entry
+mke2fs-JL, &mke2fs_JL_cmd_entry
+mke2fs_JU, &mke2fs_JU_cmd_entry
+mke2fs-JU, &mke2fs_JU_cmd_entry
+mke2journal, &mke2journal_cmd_entry
+mke2journal_L, &mke2journal_L_cmd_entry
+mke2journal-L, &mke2journal_L_cmd_entry
+mke2journal_U, &mke2journal_U_cmd_entry
+mke2journal-U, &mke2journal_U_cmd_entry
+mkfifo, &mkfifo_cmd_entry
+mkfs, &mkfs_cmd_entry
+mkfs_b, &mkfs_b_cmd_entry
+mkfs-b, &mkfs_b_cmd_entry
+mkfs_opts, &mkfs_opts_cmd_entry
+mkfs-opts, &mkfs_opts_cmd_entry
+mkmountpoint, &mkmountpoint_cmd_entry
+mknod, &mknod_cmd_entry
+mknod_b, &mknod_b_cmd_entry
+mknod-b, &mknod_b_cmd_entry
+mknod_c, &mknod_c_cmd_entry
+mknod-c, &mknod_c_cmd_entry
+mkswap, &mkswap_cmd_entry
+mkswap_L, &mkswap_L_cmd_entry
+mkswap-L, &mkswap_L_cmd_entry
+mkswap_U, &mkswap_U_cmd_entry
+mkswap-U, &mkswap_U_cmd_entry
+mkswap_file, &mkswap_file_cmd_entry
+mkswap-file, &mkswap_file_cmd_entry
+modprobe, &modprobe_cmd_entry
+more, &more_cmd_entry
+less, &more_cmd_entry
+mount, &mount_cmd_entry
+mount_loop, &mount_loop_cmd_entry
+mount-loop, &mount_loop_cmd_entry
+mount_options, &mount_options_cmd_entry
+mount-options, &mount_options_cmd_entry
+mount_ro, &mount_ro_cmd_entry
+mount-ro, &mount_ro_cmd_entry
+mount_vfs, &mount_vfs_cmd_entry
+mount-vfs, &mount_vfs_cmd_entry
+mountpoints, &mountpoints_cmd_entry
+mounts, &mounts_cmd_entry
+mv, &mv_cmd_entry
+ntfs_3g_probe, &ntfs_3g_probe_cmd_entry
+ntfs-3g-probe, &ntfs_3g_probe_cmd_entry
+ntfsresize, &ntfsresize_cmd_entry
+ntfsresize_size, &ntfsresize_size_cmd_entry
+ntfsresize-size, &ntfsresize_size_cmd_entry
+part_add, &part_add_cmd_entry
+part-add, &part_add_cmd_entry
+part_del, &part_del_cmd_entry
+part-del, &part_del_cmd_entry
+part_disk, &part_disk_cmd_entry
+part-disk, &part_disk_cmd_entry
+part_get_bootable, &part_get_bootable_cmd_entry
+part-get-bootable, &part_get_bootable_cmd_entry
+part_get_mbr_id, &part_get_mbr_id_cmd_entry
+part-get-mbr-id, &part_get_mbr_id_cmd_entry
+part_get_parttype, &part_get_parttype_cmd_entry
+part-get-parttype, &part_get_parttype_cmd_entry
+part_init, &part_init_cmd_entry
+part-init, &part_init_cmd_entry
+part_list, &part_list_cmd_entry
+part-list, &part_list_cmd_entry
+part_set_bootable, &part_set_bootable_cmd_entry
+part-set-bootable, &part_set_bootable_cmd_entry
+part_set_mbr_id, &part_set_mbr_id_cmd_entry
+part-set-mbr-id, &part_set_mbr_id_cmd_entry
+part_set_name, &part_set_name_cmd_entry
+part-set-name, &part_set_name_cmd_entry
+part_to_dev, &part_to_dev_cmd_entry
+part-to-dev, &part_to_dev_cmd_entry
+ping_daemon, &ping_daemon_cmd_entry
+ping-daemon, &ping_daemon_cmd_entry
+pread, &pread_cmd_entry
+pread_device, &pread_device_cmd_entry
+pread-device, &pread_device_cmd_entry
+pvcreate, &pvcreate_cmd_entry
+pvremove, &pvremove_cmd_entry
+pvresize, &pvresize_cmd_entry
+pvresize_size, &pvresize_size_cmd_entry
+pvresize-size, &pvresize_size_cmd_entry
+pvs, &pvs_cmd_entry
+pvs_full, &pvs_full_cmd_entry
+pvs-full, &pvs_full_cmd_entry
+pvuuid, &pvuuid_cmd_entry
+pwrite, &pwrite_cmd_entry
+pwrite_device, &pwrite_device_cmd_entry
+pwrite-device, &pwrite_device_cmd_entry
+read_file, &read_file_cmd_entry
+read-file, &read_file_cmd_entry
+read_lines, &read_lines_cmd_entry
+read-lines, &read_lines_cmd_entry
+readdir, &readdir_cmd_entry
+readlink, &readlink_cmd_entry
+readlinklist, &readlinklist_cmd_entry
+realpath, &realpath_cmd_entry
+removexattr, &removexattr_cmd_entry
+reopen, &reopen_cmd_entry
+resize2fs, &resize2fs_cmd_entry
+resize2fs_M, &resize2fs_M_cmd_entry
+resize2fs-M, &resize2fs_M_cmd_entry
+resize2fs_size, &resize2fs_size_cmd_entry
+resize2fs-size, &resize2fs_size_cmd_entry
+rm, &rm_cmd_entry
+rm_rf, &rm_rf_cmd_entry
+rm-rf, &rm_rf_cmd_entry
+rmdir, &rmdir_cmd_entry
+rmmountpoint, &rmmountpoint_cmd_entry
+scrub_device, &scrub_device_cmd_entry
+scrub-device, &scrub_device_cmd_entry
+scrub_file, &scrub_file_cmd_entry
+scrub-file, &scrub_file_cmd_entry
+scrub_freespace, &scrub_freespace_cmd_entry
+scrub-freespace, &scrub_freespace_cmd_entry
+set_append, &set_append_cmd_entry
+set-append, &set_append_cmd_entry
+append, &set_append_cmd_entry
+set_attach_method, &set_attach_method_cmd_entry
+set-attach-method, &set_attach_method_cmd_entry
+attach-method, &set_attach_method_cmd_entry
+set_autosync, &set_autosync_cmd_entry
+set-autosync, &set_autosync_cmd_entry
+autosync, &set_autosync_cmd_entry
+set_direct, &set_direct_cmd_entry
+set-direct, &set_direct_cmd_entry
+direct, &set_direct_cmd_entry
+set_e2label, &set_e2label_cmd_entry
+set-e2label, &set_e2label_cmd_entry
+set_e2uuid, &set_e2uuid_cmd_entry
+set-e2uuid, &set_e2uuid_cmd_entry
+set_memsize, &set_memsize_cmd_entry
+set-memsize, &set_memsize_cmd_entry
+memsize, &set_memsize_cmd_entry
+set_network, &set_network_cmd_entry
+set-network, &set_network_cmd_entry
+network, &set_network_cmd_entry
+set_path, &set_path_cmd_entry
+set-path, &set_path_cmd_entry
+path, &set_path_cmd_entry
+set_qemu, &set_qemu_cmd_entry
+set-qemu, &set_qemu_cmd_entry
+qemu, &set_qemu_cmd_entry
+set_recovery_proc, &set_recovery_proc_cmd_entry
+set-recovery-proc, &set_recovery_proc_cmd_entry
+recovery-proc, &set_recovery_proc_cmd_entry
+set_selinux, &set_selinux_cmd_entry
+set-selinux, &set_selinux_cmd_entry
+selinux, &set_selinux_cmd_entry
+set_trace, &set_trace_cmd_entry
+set-trace, &set_trace_cmd_entry
+trace, &set_trace_cmd_entry
+set_verbose, &set_verbose_cmd_entry
+set-verbose, &set_verbose_cmd_entry
+verbose, &set_verbose_cmd_entry
+setcon, &setcon_cmd_entry
+setxattr, &setxattr_cmd_entry
+sfdisk, &sfdisk_cmd_entry
+sfdiskM, &sfdiskM_cmd_entry
+sfdisk_N, &sfdisk_N_cmd_entry
+sfdisk-N, &sfdisk_N_cmd_entry
+sfdisk_disk_geometry, &sfdisk_disk_geometry_cmd_entry
+sfdisk-disk-geometry, &sfdisk_disk_geometry_cmd_entry
+sfdisk_kernel_geometry, &sfdisk_kernel_geometry_cmd_entry
+sfdisk-kernel-geometry, &sfdisk_kernel_geometry_cmd_entry
+sfdisk_l, &sfdisk_l_cmd_entry
+sfdisk-l, &sfdisk_l_cmd_entry
+sh, &sh_cmd_entry
+sh_lines, &sh_lines_cmd_entry
+sh-lines, &sh_lines_cmd_entry
+sleep, &sleep_cmd_entry
+sparse, &sparse_cmd_entry
+stat, &stat_cmd_entry
+statvfs, &statvfs_cmd_entry
+strings, &strings_cmd_entry
+strings_e, &strings_e_cmd_entry
+strings-e, &strings_e_cmd_entry
+supported, &supported_cmd_entry
+swapoff_device, &swapoff_device_cmd_entry
+swapoff-device, &swapoff_device_cmd_entry
+swapoff_file, &swapoff_file_cmd_entry
+swapoff-file, &swapoff_file_cmd_entry
+swapoff_label, &swapoff_label_cmd_entry
+swapoff-label, &swapoff_label_cmd_entry
+swapoff_uuid, &swapoff_uuid_cmd_entry
+swapoff-uuid, &swapoff_uuid_cmd_entry
+swapon_device, &swapon_device_cmd_entry
+swapon-device, &swapon_device_cmd_entry
+swapon_file, &swapon_file_cmd_entry
+swapon-file, &swapon_file_cmd_entry
+swapon_label, &swapon_label_cmd_entry
+swapon-label, &swapon_label_cmd_entry
+swapon_uuid, &swapon_uuid_cmd_entry
+swapon-uuid, &swapon_uuid_cmd_entry
+sync, &sync_cmd_entry
+tail, &tail_cmd_entry
+tail_n, &tail_n_cmd_entry
+tail-n, &tail_n_cmd_entry
+tar_in, &tar_in_cmd_entry
+tar-in, &tar_in_cmd_entry
+tar_out, &tar_out_cmd_entry
+tar-out, &tar_out_cmd_entry
+tgz_in, &tgz_in_cmd_entry
+tgz-in, &tgz_in_cmd_entry
+tgz_out, &tgz_out_cmd_entry
+tgz-out, &tgz_out_cmd_entry
+time, &time_cmd_entry
+touch, &touch_cmd_entry
+truncate, &truncate_cmd_entry
+truncate_size, &truncate_size_cmd_entry
+truncate-size, &truncate_size_cmd_entry
+tune2fs_l, &tune2fs_l_cmd_entry
+tune2fs-l, &tune2fs_l_cmd_entry
+txz_in, &txz_in_cmd_entry
+txz-in, &txz_in_cmd_entry
+txz_out, &txz_out_cmd_entry
+txz-out, &txz_out_cmd_entry
+umask, &umask_cmd_entry
+umount, &umount_cmd_entry
+unmount, &umount_cmd_entry
+umount_all, &umount_all_cmd_entry
+umount-all, &umount_all_cmd_entry
+unmount-all, &umount_all_cmd_entry
+upload, &upload_cmd_entry
+upload_offset, &upload_offset_cmd_entry
+upload-offset, &upload_offset_cmd_entry
+utimens, &utimens_cmd_entry
+version, &version_cmd_entry
+vfs_label, &vfs_label_cmd_entry
+vfs-label, &vfs_label_cmd_entry
+vfs_type, &vfs_type_cmd_entry
+vfs-type, &vfs_type_cmd_entry
+vfs_uuid, &vfs_uuid_cmd_entry
+vfs-uuid, &vfs_uuid_cmd_entry
+vg_activate, &vg_activate_cmd_entry
+vg-activate, &vg_activate_cmd_entry
+vg_activate_all, &vg_activate_all_cmd_entry
+vg-activate-all, &vg_activate_all_cmd_entry
+vgcreate, &vgcreate_cmd_entry
+vglvuuids, &vglvuuids_cmd_entry
+vgpvuuids, &vgpvuuids_cmd_entry
+vgremove, &vgremove_cmd_entry
+vgrename, &vgrename_cmd_entry
+vgs, &vgs_cmd_entry
+vgs_full, &vgs_full_cmd_entry
+vgs-full, &vgs_full_cmd_entry
+vgscan, &vgscan_cmd_entry
+vguuid, &vguuid_cmd_entry
+wc_c, &wc_c_cmd_entry
+wc-c, &wc_c_cmd_entry
+wc_l, &wc_l_cmd_entry
+wc-l, &wc_l_cmd_entry
+wc_w, &wc_w_cmd_entry
+wc-w, &wc_w_cmd_entry
+write, &write_cmd_entry
+write_file, &write_file_cmd_entry
+write-file, &write_file_cmd_entry
+zegrep, &zegrep_cmd_entry
+zegrepi, &zegrepi_cmd_entry
+zero, &zero_cmd_entry
+zero_device, &zero_device_cmd_entry
+zero-device, &zero_device_cmd_entry
+zerofree, &zerofree_cmd_entry
+zfgrep, &zfgrep_cmd_entry
+zfgrepi, &zfgrepi_cmd_entry
+zfile, &zfile_cmd_entry
+zgrep, &zgrep_cmd_entry
+zgrepi, &zgrepi_cmd_entry

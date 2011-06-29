@@ -1,9 +1,9 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   src/generator.ml
+ *   generator/generator_*.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2010 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 
 #include "daemon.h"
 #include "c-ctype.h"
-#include "../src/guestfs_protocol.h"
+#include "guestfs_protocol.h"
 #include "actions.h"
 
 static void mount_stub (XDR *xdr_in)
@@ -43,10 +43,10 @@ static void mount_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mount_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   char *mountpoint = args.mountpoint;
 
   r = do_mount (device, mountpoint);
@@ -57,6 +57,7 @@ static void mount_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mount_args, (char *) &args);
+  return;
 }
 
 static void sync_stub (XDR *xdr_in)
@@ -69,7 +70,8 @@ static void sync_stub (XDR *xdr_in)
     goto done;
 
   reply (NULL, NULL);
-done: ;
+done:
+  return;
 }
 
 static void touch_stub (XDR *xdr_in)
@@ -81,12 +83,12 @@ static void touch_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_touch_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_touch (path);
   if (r == -1)
     /* do_touch has already called reply_with_error */
@@ -95,6 +97,7 @@ static void touch_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_touch_args, (char *) &args);
+  return;
 }
 
 static void cat_stub (XDR *xdr_in)
@@ -106,12 +109,12 @@ static void cat_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_cat_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_cat (path);
   if (r == NULL)
     /* do_cat has already called reply_with_error */
@@ -123,6 +126,7 @@ static void cat_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_cat_args, (char *) &args);
+  return;
 }
 
 static void ll_stub (XDR *xdr_in)
@@ -134,12 +138,12 @@ static void ll_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_ll_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *directory = args.directory;
-  ABS_PATH (directory, goto done);
+  ABS_PATH (directory, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_ll (directory);
   if (r == NULL)
     /* do_ll has already called reply_with_error */
@@ -151,6 +155,7 @@ static void ll_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ll_args, (char *) &args);
+  return;
 }
 
 static void ls_stub (XDR *xdr_in)
@@ -162,12 +167,12 @@ static void ls_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_ls_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *directory = args.directory;
-  ABS_PATH (directory, goto done);
+  ABS_PATH (directory, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_ls (directory);
   if (r == NULL)
     /* do_ls has already called reply_with_error */
@@ -180,6 +185,7 @@ static void ls_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ls_args, (char *) &args);
+  return;
 }
 
 static void list_devices_stub (XDR *xdr_in)
@@ -196,7 +202,8 @@ static void list_devices_stub (XDR *xdr_in)
   ret.devices.devices_val = r;
   reply ((xdrproc_t) &xdr_guestfs_list_devices_ret, (char *) &ret);
   free_strings (r);
-done: ;
+done:
+  return;
 }
 
 static void list_partitions_stub (XDR *xdr_in)
@@ -213,7 +220,8 @@ static void list_partitions_stub (XDR *xdr_in)
   ret.partitions.partitions_val = r;
   reply ((xdrproc_t) &xdr_guestfs_list_partitions_ret, (char *) &ret);
   free_strings (r);
-done: ;
+done:
+  return;
 }
 
 static void pvs_stub (XDR *xdr_in)
@@ -230,7 +238,8 @@ static void pvs_stub (XDR *xdr_in)
   ret.physvols.physvols_val = r;
   reply ((xdrproc_t) &xdr_guestfs_pvs_ret, (char *) &ret);
   free_strings (r);
-done: ;
+done:
+  return;
 }
 
 static void vgs_stub (XDR *xdr_in)
@@ -247,7 +256,8 @@ static void vgs_stub (XDR *xdr_in)
   ret.volgroups.volgroups_val = r;
   reply ((xdrproc_t) &xdr_guestfs_vgs_ret, (char *) &ret);
   free_strings (r);
-done: ;
+done:
+  return;
 }
 
 static void lvs_stub (XDR *xdr_in)
@@ -264,7 +274,8 @@ static void lvs_stub (XDR *xdr_in)
   ret.logvols.logvols_val = r;
   reply ((xdrproc_t) &xdr_guestfs_lvs_ret, (char *) &ret);
   free_strings (r);
-done: ;
+done:
+  return;
 }
 
 static void pvs_full_stub (XDR *xdr_in)
@@ -280,7 +291,8 @@ static void pvs_full_stub (XDR *xdr_in)
   ret.physvols = *r;
   reply ((xdrproc_t) xdr_guestfs_pvs_full_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_pvs_full_ret, (char *) &ret);
-done: ;
+done:
+  return;
 }
 
 static void vgs_full_stub (XDR *xdr_in)
@@ -296,7 +308,8 @@ static void vgs_full_stub (XDR *xdr_in)
   ret.volgroups = *r;
   reply ((xdrproc_t) xdr_guestfs_vgs_full_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_vgs_full_ret, (char *) &ret);
-done: ;
+done:
+  return;
 }
 
 static void lvs_full_stub (XDR *xdr_in)
@@ -312,7 +325,8 @@ static void lvs_full_stub (XDR *xdr_in)
   ret.logvols = *r;
   reply ((xdrproc_t) xdr_guestfs_lvs_full_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_lvs_full_ret, (char *) &ret);
-done: ;
+done:
+  return;
 }
 
 static void read_lines_stub (XDR *xdr_in)
@@ -324,12 +338,12 @@ static void read_lines_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_read_lines_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_read_lines (path);
   if (r == NULL)
     /* do_read_lines has already called reply_with_error */
@@ -342,6 +356,7 @@ static void read_lines_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_read_lines_args, (char *) &args);
+  return;
 }
 
 static void aug_init_stub (XDR *xdr_in)
@@ -354,13 +369,13 @@ static void aug_init_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_aug_init_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *root = args.root;
-  ABS_PATH (root, goto done);
+  ABS_PATH (root, , goto done);
   flags = args.flags;
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_aug_init (root, flags);
   if (r == -1)
     /* do_aug_init has already called reply_with_error */
@@ -369,6 +384,7 @@ static void aug_init_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_init_args, (char *) &args);
+  return;
 }
 
 static void aug_close_stub (XDR *xdr_in)
@@ -381,7 +397,8 @@ static void aug_close_stub (XDR *xdr_in)
     goto done;
 
   reply (NULL, NULL);
-done: ;
+done:
+  return;
 }
 
 static void aug_defvar_stub (XDR *xdr_in)
@@ -394,7 +411,7 @@ static void aug_defvar_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_aug_defvar_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *name = args.name;
   expr = args.expr ? *args.expr : NULL;
@@ -409,6 +426,7 @@ static void aug_defvar_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_aug_defvar_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_defvar_args, (char *) &args);
+  return;
 }
 
 static void aug_defnode_stub (XDR *xdr_in)
@@ -420,7 +438,7 @@ static void aug_defnode_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_aug_defnode_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *name = args.name;
   char *expr = args.expr;
@@ -437,6 +455,7 @@ static void aug_defnode_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_aug_defnode_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_defnode_args, (char *) &args);
+  return;
 }
 
 static void aug_get_stub (XDR *xdr_in)
@@ -448,7 +467,7 @@ static void aug_get_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_aug_get_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *augpath = args.augpath;
 
@@ -463,6 +482,7 @@ static void aug_get_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_get_args, (char *) &args);
+  return;
 }
 
 static void aug_set_stub (XDR *xdr_in)
@@ -474,7 +494,7 @@ static void aug_set_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_aug_set_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *augpath = args.augpath;
   char *val = args.val;
@@ -487,6 +507,7 @@ static void aug_set_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_set_args, (char *) &args);
+  return;
 }
 
 static void aug_insert_stub (XDR *xdr_in)
@@ -499,7 +520,7 @@ static void aug_insert_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_aug_insert_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *augpath = args.augpath;
   char *label = args.label;
@@ -513,6 +534,7 @@ static void aug_insert_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_insert_args, (char *) &args);
+  return;
 }
 
 static void aug_rm_stub (XDR *xdr_in)
@@ -524,7 +546,7 @@ static void aug_rm_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_aug_rm_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *augpath = args.augpath;
 
@@ -538,6 +560,7 @@ static void aug_rm_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_aug_rm_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_rm_args, (char *) &args);
+  return;
 }
 
 static void aug_mv_stub (XDR *xdr_in)
@@ -549,7 +572,7 @@ static void aug_mv_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_aug_mv_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *src = args.src;
   char *dest = args.dest;
@@ -562,6 +585,7 @@ static void aug_mv_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_mv_args, (char *) &args);
+  return;
 }
 
 static void aug_match_stub (XDR *xdr_in)
@@ -573,7 +597,7 @@ static void aug_match_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_aug_match_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *augpath = args.augpath;
 
@@ -589,6 +613,7 @@ static void aug_match_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_match_args, (char *) &args);
+  return;
 }
 
 static void aug_save_stub (XDR *xdr_in)
@@ -601,7 +626,8 @@ static void aug_save_stub (XDR *xdr_in)
     goto done;
 
   reply (NULL, NULL);
-done: ;
+done:
+  return;
 }
 
 static void aug_load_stub (XDR *xdr_in)
@@ -614,7 +640,8 @@ static void aug_load_stub (XDR *xdr_in)
     goto done;
 
   reply (NULL, NULL);
-done: ;
+done:
+  return;
 }
 
 static void aug_ls_stub (XDR *xdr_in)
@@ -626,7 +653,7 @@ static void aug_ls_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_aug_ls_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *augpath = args.augpath;
 
@@ -642,6 +669,7 @@ static void aug_ls_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_ls_args, (char *) &args);
+  return;
 }
 
 static void rm_stub (XDR *xdr_in)
@@ -653,12 +681,12 @@ static void rm_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_rm_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_rm (path);
   if (r == -1)
     /* do_rm has already called reply_with_error */
@@ -667,6 +695,7 @@ static void rm_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_rm_args, (char *) &args);
+  return;
 }
 
 static void rmdir_stub (XDR *xdr_in)
@@ -678,12 +707,12 @@ static void rmdir_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_rmdir_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_rmdir (path);
   if (r == -1)
     /* do_rmdir has already called reply_with_error */
@@ -692,6 +721,7 @@ static void rmdir_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_rmdir_args, (char *) &args);
+  return;
 }
 
 static void rm_rf_stub (XDR *xdr_in)
@@ -703,12 +733,12 @@ static void rm_rf_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_rm_rf_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_rm_rf (path);
   if (r == -1)
     /* do_rm_rf has already called reply_with_error */
@@ -717,6 +747,7 @@ static void rm_rf_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_rm_rf_args, (char *) &args);
+  return;
 }
 
 static void mkdir_stub (XDR *xdr_in)
@@ -728,12 +759,12 @@ static void mkdir_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mkdir_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_mkdir (path);
   if (r == -1)
     /* do_mkdir has already called reply_with_error */
@@ -742,6 +773,7 @@ static void mkdir_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkdir_args, (char *) &args);
+  return;
 }
 
 static void mkdir_p_stub (XDR *xdr_in)
@@ -753,12 +785,12 @@ static void mkdir_p_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mkdir_p_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_mkdir_p (path);
   if (r == -1)
     /* do_mkdir_p has already called reply_with_error */
@@ -767,6 +799,7 @@ static void mkdir_p_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkdir_p_args, (char *) &args);
+  return;
 }
 
 static void chmod_stub (XDR *xdr_in)
@@ -779,13 +812,13 @@ static void chmod_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_chmod_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   mode = args.mode;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_chmod (mode, path);
   if (r == -1)
     /* do_chmod has already called reply_with_error */
@@ -794,6 +827,7 @@ static void chmod_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_chmod_args, (char *) &args);
+  return;
 }
 
 static void chown_stub (XDR *xdr_in)
@@ -807,14 +841,14 @@ static void chown_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_chown_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   owner = args.owner;
   group = args.group;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_chown (owner, group, path);
   if (r == -1)
     /* do_chown has already called reply_with_error */
@@ -823,6 +857,7 @@ static void chown_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_chown_args, (char *) &args);
+  return;
 }
 
 static void exists_stub (XDR *xdr_in)
@@ -834,12 +869,12 @@ static void exists_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_exists_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_exists (path);
   if (r == -1)
     /* do_exists has already called reply_with_error */
@@ -850,6 +885,7 @@ static void exists_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_exists_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_exists_args, (char *) &args);
+  return;
 }
 
 static void is_file_stub (XDR *xdr_in)
@@ -861,12 +897,12 @@ static void is_file_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_is_file_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_is_file (path);
   if (r == -1)
     /* do_is_file has already called reply_with_error */
@@ -877,6 +913,7 @@ static void is_file_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_is_file_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_is_file_args, (char *) &args);
+  return;
 }
 
 static void is_dir_stub (XDR *xdr_in)
@@ -888,12 +925,12 @@ static void is_dir_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_is_dir_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_is_dir (path);
   if (r == -1)
     /* do_is_dir has already called reply_with_error */
@@ -904,6 +941,7 @@ static void is_dir_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_is_dir_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_is_dir_args, (char *) &args);
+  return;
 }
 
 static void pvcreate_stub (XDR *xdr_in)
@@ -915,10 +953,10 @@ static void pvcreate_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_pvcreate_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_pvcreate (device);
   if (r == -1)
@@ -928,6 +966,7 @@ static void pvcreate_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_pvcreate_args, (char *) &args);
+  return;
 }
 
 static void vgcreate_stub (XDR *xdr_in)
@@ -940,7 +979,7 @@ static void vgcreate_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_vgcreate_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *volgroup = args.volgroup;
   physvols = realloc (args.physvols.physvols_val,
@@ -952,9 +991,12 @@ static void vgcreate_stub (XDR *xdr_in)
   physvols[args.physvols.physvols_len] = NULL;
   args.physvols.physvols_val = physvols;
   /* Ensure that each is a device,
-   * and perform device name translation. */
-  { int pvi; for (pvi = 0; physvols[pvi] != NULL; ++pvi)
-    RESOLVE_DEVICE (physvols[pvi], goto done);
+   * and perform device name translation.
+   */
+  {
+    size_t i;
+    for (i = 0; physvols[i] != NULL; ++i)
+      RESOLVE_DEVICE (physvols[i], , goto done);
   }
 
   r = do_vgcreate (volgroup, physvols);
@@ -965,6 +1007,7 @@ static void vgcreate_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_vgcreate_args, (char *) &args);
+  return;
 }
 
 static void lvcreate_stub (XDR *xdr_in)
@@ -977,7 +1020,7 @@ static void lvcreate_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_lvcreate_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *logvol = args.logvol;
   char *volgroup = args.volgroup;
@@ -991,6 +1034,7 @@ static void lvcreate_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lvcreate_args, (char *) &args);
+  return;
 }
 
 static void mkfs_stub (XDR *xdr_in)
@@ -1002,11 +1046,11 @@ static void mkfs_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mkfs_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *fstype = args.fstype;
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_mkfs (fstype, device);
   if (r == -1)
@@ -1016,6 +1060,7 @@ static void mkfs_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkfs_args, (char *) &args);
+  return;
 }
 
 static void sfdisk_stub (XDR *xdr_in)
@@ -1031,10 +1076,10 @@ static void sfdisk_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_sfdisk_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   cyls = args.cyls;
   heads = args.heads;
   sectors = args.sectors;
@@ -1055,6 +1100,7 @@ static void sfdisk_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sfdisk_args, (char *) &args);
+  return;
 }
 
 static void write_file_stub (XDR *xdr_in)
@@ -1067,14 +1113,14 @@ static void write_file_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_write_file_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
   char *content = args.content;
   size = args.size;
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_write_file (path, content, size);
   if (r == -1)
     /* do_write_file has already called reply_with_error */
@@ -1083,6 +1129,7 @@ static void write_file_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_write_file_args, (char *) &args);
+  return;
 }
 
 static void umount_stub (XDR *xdr_in)
@@ -1094,7 +1141,7 @@ static void umount_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_umount_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *pathordevice = args.pathordevice;
 
@@ -1106,6 +1153,7 @@ static void umount_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_umount_args, (char *) &args);
+  return;
 }
 
 static void mounts_stub (XDR *xdr_in)
@@ -1122,7 +1170,8 @@ static void mounts_stub (XDR *xdr_in)
   ret.devices.devices_val = r;
   reply ((xdrproc_t) &xdr_guestfs_mounts_ret, (char *) &ret);
   free_strings (r);
-done: ;
+done:
+  return;
 }
 
 static void umount_all_stub (XDR *xdr_in)
@@ -1135,7 +1184,8 @@ static void umount_all_stub (XDR *xdr_in)
     goto done;
 
   reply (NULL, NULL);
-done: ;
+done:
+  return;
 }
 
 static void lvm_remove_all_stub (XDR *xdr_in)
@@ -1148,7 +1198,8 @@ static void lvm_remove_all_stub (XDR *xdr_in)
     goto done;
 
   reply (NULL, NULL);
-done: ;
+done:
+  return;
 }
 
 static void file_stub (XDR *xdr_in)
@@ -1160,10 +1211,10 @@ static void file_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_file_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  REQUIRE_ROOT_OR_RESOLVE_DEVICE (path, goto done);
+  REQUIRE_ROOT_OR_RESOLVE_DEVICE (path, , goto done);
 
   r = do_file (path);
   if (r == NULL)
@@ -1176,6 +1227,7 @@ static void file_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_file_args, (char *) &args);
+  return;
 }
 
 static void command_stub (XDR *xdr_in)
@@ -1188,7 +1240,7 @@ static void command_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_command_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   arguments = realloc (args.arguments.arguments_val,
                 sizeof (char *) * (args.arguments.arguments_len+1));
@@ -1210,6 +1262,7 @@ static void command_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_command_args, (char *) &args);
+  return;
 }
 
 static void command_lines_stub (XDR *xdr_in)
@@ -1222,7 +1275,7 @@ static void command_lines_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_command_lines_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   arguments = realloc (args.arguments.arguments_val,
                 sizeof (char *) * (args.arguments.arguments_len+1));
@@ -1245,6 +1298,7 @@ static void command_lines_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_command_lines_args, (char *) &args);
+  return;
 }
 
 static void stat_stub (XDR *xdr_in)
@@ -1256,12 +1310,12 @@ static void stat_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_stat_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_stat (path);
   if (r == NULL)
     /* do_stat has already called reply_with_error */
@@ -1273,6 +1327,7 @@ static void stat_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_stat_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_stat_args, (char *) &args);
+  return;
 }
 
 static void lstat_stub (XDR *xdr_in)
@@ -1284,12 +1339,12 @@ static void lstat_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_lstat_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_lstat (path);
   if (r == NULL)
     /* do_lstat has already called reply_with_error */
@@ -1301,6 +1356,7 @@ static void lstat_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_lstat_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lstat_args, (char *) &args);
+  return;
 }
 
 static void statvfs_stub (XDR *xdr_in)
@@ -1312,12 +1368,12 @@ static void statvfs_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_statvfs_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_statvfs (path);
   if (r == NULL)
     /* do_statvfs has already called reply_with_error */
@@ -1329,6 +1385,7 @@ static void statvfs_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_statvfs_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_statvfs_args, (char *) &args);
+  return;
 }
 
 static void tune2fs_l_stub (XDR *xdr_in)
@@ -1340,10 +1397,10 @@ static void tune2fs_l_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_tune2fs_l_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_tune2fs_l (device);
   if (r == NULL)
@@ -1357,6 +1414,7 @@ static void tune2fs_l_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_tune2fs_l_args, (char *) &args);
+  return;
 }
 
 static void blockdev_setro_stub (XDR *xdr_in)
@@ -1368,10 +1426,10 @@ static void blockdev_setro_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_blockdev_setro_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_setro (device);
   if (r == -1)
@@ -1381,6 +1439,7 @@ static void blockdev_setro_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_setro_args, (char *) &args);
+  return;
 }
 
 static void blockdev_setrw_stub (XDR *xdr_in)
@@ -1392,10 +1451,10 @@ static void blockdev_setrw_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_blockdev_setrw_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_setrw (device);
   if (r == -1)
@@ -1405,6 +1464,7 @@ static void blockdev_setrw_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_setrw_args, (char *) &args);
+  return;
 }
 
 static void blockdev_getro_stub (XDR *xdr_in)
@@ -1416,10 +1476,10 @@ static void blockdev_getro_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_blockdev_getro_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_getro (device);
   if (r == -1)
@@ -1431,6 +1491,7 @@ static void blockdev_getro_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_blockdev_getro_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_getro_args, (char *) &args);
+  return;
 }
 
 static void blockdev_getss_stub (XDR *xdr_in)
@@ -1442,10 +1503,10 @@ static void blockdev_getss_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_blockdev_getss_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_getss (device);
   if (r == -1)
@@ -1457,6 +1518,7 @@ static void blockdev_getss_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_blockdev_getss_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_getss_args, (char *) &args);
+  return;
 }
 
 static void blockdev_getbsz_stub (XDR *xdr_in)
@@ -1468,10 +1530,10 @@ static void blockdev_getbsz_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_blockdev_getbsz_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_getbsz (device);
   if (r == -1)
@@ -1483,6 +1545,7 @@ static void blockdev_getbsz_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_blockdev_getbsz_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_getbsz_args, (char *) &args);
+  return;
 }
 
 static void blockdev_setbsz_stub (XDR *xdr_in)
@@ -1495,10 +1558,10 @@ static void blockdev_setbsz_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_blockdev_setbsz_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   blocksize = args.blocksize;
 
   r = do_blockdev_setbsz (device, blocksize);
@@ -1509,6 +1572,7 @@ static void blockdev_setbsz_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_setbsz_args, (char *) &args);
+  return;
 }
 
 static void blockdev_getsz_stub (XDR *xdr_in)
@@ -1520,10 +1584,10 @@ static void blockdev_getsz_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_blockdev_getsz_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_getsz (device);
   if (r == -1)
@@ -1535,6 +1599,7 @@ static void blockdev_getsz_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_blockdev_getsz_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_getsz_args, (char *) &args);
+  return;
 }
 
 static void blockdev_getsize64_stub (XDR *xdr_in)
@@ -1546,10 +1611,10 @@ static void blockdev_getsize64_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_blockdev_getsize64_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_getsize64 (device);
   if (r == -1)
@@ -1561,6 +1626,7 @@ static void blockdev_getsize64_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_blockdev_getsize64_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_getsize64_args, (char *) &args);
+  return;
 }
 
 static void blockdev_flushbufs_stub (XDR *xdr_in)
@@ -1572,10 +1638,10 @@ static void blockdev_flushbufs_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_blockdev_flushbufs_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_flushbufs (device);
   if (r == -1)
@@ -1585,6 +1651,7 @@ static void blockdev_flushbufs_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_flushbufs_args, (char *) &args);
+  return;
 }
 
 static void blockdev_rereadpt_stub (XDR *xdr_in)
@@ -1596,10 +1663,10 @@ static void blockdev_rereadpt_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_blockdev_rereadpt_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_rereadpt (device);
   if (r == -1)
@@ -1609,6 +1676,7 @@ static void blockdev_rereadpt_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_rereadpt_args, (char *) &args);
+  return;
 }
 
 static void upload_stub (XDR *xdr_in)
@@ -1619,11 +1687,12 @@ static void upload_stub (XDR *xdr_in)
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_upload_args (xdr_in, &args)) {
+    cancel_receive ();
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *remotefilename = args.remotefilename;
-  REQUIRE_ROOT_OR_RESOLVE_DEVICE (remotefilename, goto done);
+  REQUIRE_ROOT_OR_RESOLVE_DEVICE (remotefilename, cancel_receive (), goto done);
 
   r = do_upload (remotefilename);
   if (r == -1)
@@ -1633,6 +1702,7 @@ static void upload_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_upload_args, (char *) &args);
+  return;
 }
 
 static void download_stub (XDR *xdr_in)
@@ -1644,10 +1714,10 @@ static void download_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_download_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *remotefilename = args.remotefilename;
-  REQUIRE_ROOT_OR_RESOLVE_DEVICE (remotefilename, goto done);
+  REQUIRE_ROOT_OR_RESOLVE_DEVICE (remotefilename, , goto done);
 
   r = do_download (remotefilename);
   if (r == -1)
@@ -1657,6 +1727,7 @@ static void download_stub (XDR *xdr_in)
   /* do_download has already sent a reply */
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_download_args, (char *) &args);
+  return;
 }
 
 static void checksum_stub (XDR *xdr_in)
@@ -1668,13 +1739,13 @@ static void checksum_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_checksum_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *csumtype = args.csumtype;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_checksum (csumtype, path);
   if (r == NULL)
     /* do_checksum has already called reply_with_error */
@@ -1686,6 +1757,7 @@ static void checksum_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_checksum_args, (char *) &args);
+  return;
 }
 
 static void tar_in_stub (XDR *xdr_in)
@@ -1696,11 +1768,14 @@ static void tar_in_stub (XDR *xdr_in)
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_tar_in_args (xdr_in, &args)) {
+    cancel_receive ();
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *directory = args.directory;
+  ABS_PATH (directory, cancel_receive (), goto done);
 
+  NEED_ROOT (cancel_receive (), goto done);
   r = do_tar_in (directory);
   if (r == -1)
     /* do_tar_in has already called reply_with_error */
@@ -1709,6 +1784,7 @@ static void tar_in_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_tar_in_args, (char *) &args);
+  return;
 }
 
 static void tar_out_stub (XDR *xdr_in)
@@ -1720,7 +1796,7 @@ static void tar_out_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_tar_out_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *directory = args.directory;
 
@@ -1732,6 +1808,7 @@ static void tar_out_stub (XDR *xdr_in)
   /* do_tar_out has already sent a reply */
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_tar_out_args, (char *) &args);
+  return;
 }
 
 static void tgz_in_stub (XDR *xdr_in)
@@ -1742,11 +1819,14 @@ static void tgz_in_stub (XDR *xdr_in)
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_tgz_in_args (xdr_in, &args)) {
+    cancel_receive ();
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *directory = args.directory;
+  ABS_PATH (directory, cancel_receive (), goto done);
 
+  NEED_ROOT (cancel_receive (), goto done);
   r = do_tgz_in (directory);
   if (r == -1)
     /* do_tgz_in has already called reply_with_error */
@@ -1755,6 +1835,7 @@ static void tgz_in_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_tgz_in_args, (char *) &args);
+  return;
 }
 
 static void tgz_out_stub (XDR *xdr_in)
@@ -1766,12 +1847,12 @@ static void tgz_out_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_tgz_out_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *directory = args.directory;
-  ABS_PATH (directory, goto done);
+  ABS_PATH (directory, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_tgz_out (directory);
   if (r == -1)
     /* do_tgz_out has already called reply_with_error */
@@ -1780,6 +1861,7 @@ static void tgz_out_stub (XDR *xdr_in)
   /* do_tgz_out has already sent a reply */
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_tgz_out_args, (char *) &args);
+  return;
 }
 
 static void mount_ro_stub (XDR *xdr_in)
@@ -1791,10 +1873,10 @@ static void mount_ro_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mount_ro_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   char *mountpoint = args.mountpoint;
 
   r = do_mount_ro (device, mountpoint);
@@ -1805,6 +1887,7 @@ static void mount_ro_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mount_ro_args, (char *) &args);
+  return;
 }
 
 static void mount_options_stub (XDR *xdr_in)
@@ -1816,11 +1899,11 @@ static void mount_options_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mount_options_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *options = args.options;
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   char *mountpoint = args.mountpoint;
 
   r = do_mount_options (options, device, mountpoint);
@@ -1831,6 +1914,7 @@ static void mount_options_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mount_options_args, (char *) &args);
+  return;
 }
 
 static void mount_vfs_stub (XDR *xdr_in)
@@ -1842,12 +1926,12 @@ static void mount_vfs_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mount_vfs_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *options = args.options;
   char *vfstype = args.vfstype;
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   char *mountpoint = args.mountpoint;
 
   r = do_mount_vfs (options, vfstype, device, mountpoint);
@@ -1858,6 +1942,7 @@ static void mount_vfs_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mount_vfs_args, (char *) &args);
+  return;
 }
 
 static void debug_stub (XDR *xdr_in)
@@ -1870,7 +1955,7 @@ static void debug_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_debug_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *subcmd = args.subcmd;
   extraargs = realloc (args.extraargs.extraargs_val,
@@ -1893,6 +1978,7 @@ static void debug_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_debug_args, (char *) &args);
+  return;
 }
 
 static void lvremove_stub (XDR *xdr_in)
@@ -1904,10 +1990,10 @@ static void lvremove_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_lvremove_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_lvremove (device);
   if (r == -1)
@@ -1917,6 +2003,7 @@ static void lvremove_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lvremove_args, (char *) &args);
+  return;
 }
 
 static void vgremove_stub (XDR *xdr_in)
@@ -1928,7 +2015,7 @@ static void vgremove_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_vgremove_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *vgname = args.vgname;
 
@@ -1940,6 +2027,7 @@ static void vgremove_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_vgremove_args, (char *) &args);
+  return;
 }
 
 static void pvremove_stub (XDR *xdr_in)
@@ -1951,10 +2039,10 @@ static void pvremove_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_pvremove_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_pvremove (device);
   if (r == -1)
@@ -1964,6 +2052,7 @@ static void pvremove_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_pvremove_args, (char *) &args);
+  return;
 }
 
 static void set_e2label_stub (XDR *xdr_in)
@@ -1975,10 +2064,10 @@ static void set_e2label_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_set_e2label_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   char *label = args.label;
 
   r = do_set_e2label (device, label);
@@ -1989,6 +2078,7 @@ static void set_e2label_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_set_e2label_args, (char *) &args);
+  return;
 }
 
 static void get_e2label_stub (XDR *xdr_in)
@@ -2000,10 +2090,10 @@ static void get_e2label_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_get_e2label_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_get_e2label (device);
   if (r == NULL)
@@ -2016,6 +2106,7 @@ static void get_e2label_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_get_e2label_args, (char *) &args);
+  return;
 }
 
 static void set_e2uuid_stub (XDR *xdr_in)
@@ -2027,10 +2118,10 @@ static void set_e2uuid_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_set_e2uuid_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   char *uuid = args.uuid;
 
   r = do_set_e2uuid (device, uuid);
@@ -2041,6 +2132,7 @@ static void set_e2uuid_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_set_e2uuid_args, (char *) &args);
+  return;
 }
 
 static void get_e2uuid_stub (XDR *xdr_in)
@@ -2052,10 +2144,10 @@ static void get_e2uuid_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_get_e2uuid_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_get_e2uuid (device);
   if (r == NULL)
@@ -2068,6 +2160,7 @@ static void get_e2uuid_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_get_e2uuid_args, (char *) &args);
+  return;
 }
 
 static void fsck_stub (XDR *xdr_in)
@@ -2079,11 +2172,11 @@ static void fsck_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_fsck_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *fstype = args.fstype;
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_fsck (fstype, device);
   if (r == -1)
@@ -2095,6 +2188,7 @@ static void fsck_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_fsck_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_fsck_args, (char *) &args);
+  return;
 }
 
 static void zero_stub (XDR *xdr_in)
@@ -2106,10 +2200,10 @@ static void zero_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_zero_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_zero (device);
   if (r == -1)
@@ -2119,6 +2213,7 @@ static void zero_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zero_args, (char *) &args);
+  return;
 }
 
 static void grub_install_stub (XDR *xdr_in)
@@ -2130,14 +2225,14 @@ static void grub_install_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_grub_install_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *root = args.root;
-  ABS_PATH (root, goto done);
+  ABS_PATH (root, , goto done);
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_grub_install (root, device);
   if (r == -1)
     /* do_grub_install has already called reply_with_error */
@@ -2146,6 +2241,7 @@ static void grub_install_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_grub_install_args, (char *) &args);
+  return;
 }
 
 static void cp_stub (XDR *xdr_in)
@@ -2157,14 +2253,14 @@ static void cp_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_cp_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *src = args.src;
-  ABS_PATH (src, goto done);
+  ABS_PATH (src, , goto done);
   char *dest = args.dest;
-  ABS_PATH (dest, goto done);
+  ABS_PATH (dest, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_cp (src, dest);
   if (r == -1)
     /* do_cp has already called reply_with_error */
@@ -2173,6 +2269,7 @@ static void cp_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_cp_args, (char *) &args);
+  return;
 }
 
 static void cp_a_stub (XDR *xdr_in)
@@ -2184,14 +2281,14 @@ static void cp_a_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_cp_a_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *src = args.src;
-  ABS_PATH (src, goto done);
+  ABS_PATH (src, , goto done);
   char *dest = args.dest;
-  ABS_PATH (dest, goto done);
+  ABS_PATH (dest, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_cp_a (src, dest);
   if (r == -1)
     /* do_cp_a has already called reply_with_error */
@@ -2200,6 +2297,7 @@ static void cp_a_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_cp_a_args, (char *) &args);
+  return;
 }
 
 static void mv_stub (XDR *xdr_in)
@@ -2211,14 +2309,14 @@ static void mv_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mv_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *src = args.src;
-  ABS_PATH (src, goto done);
+  ABS_PATH (src, , goto done);
   char *dest = args.dest;
-  ABS_PATH (dest, goto done);
+  ABS_PATH (dest, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_mv (src, dest);
   if (r == -1)
     /* do_mv has already called reply_with_error */
@@ -2227,6 +2325,7 @@ static void mv_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mv_args, (char *) &args);
+  return;
 }
 
 static void drop_caches_stub (XDR *xdr_in)
@@ -2239,7 +2338,7 @@ static void drop_caches_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_drop_caches_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   whattodrop = args.whattodrop;
 
@@ -2251,6 +2350,7 @@ static void drop_caches_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_drop_caches_args, (char *) &args);
+  return;
 }
 
 static void dmesg_stub (XDR *xdr_in)
@@ -2266,7 +2366,8 @@ static void dmesg_stub (XDR *xdr_in)
   ret.kmsgs = r;
   reply ((xdrproc_t) &xdr_guestfs_dmesg_ret, (char *) &ret);
   free (r);
-done: ;
+done:
+  return;
 }
 
 static void ping_daemon_stub (XDR *xdr_in)
@@ -2279,7 +2380,8 @@ static void ping_daemon_stub (XDR *xdr_in)
     goto done;
 
   reply (NULL, NULL);
-done: ;
+done:
+  return;
 }
 
 static void equal_stub (XDR *xdr_in)
@@ -2291,14 +2393,14 @@ static void equal_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_equal_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *file1 = args.file1;
-  ABS_PATH (file1, goto done);
+  ABS_PATH (file1, , goto done);
   char *file2 = args.file2;
-  ABS_PATH (file2, goto done);
+  ABS_PATH (file2, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_equal (file1, file2);
   if (r == -1)
     /* do_equal has already called reply_with_error */
@@ -2309,6 +2411,7 @@ static void equal_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_equal_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_equal_args, (char *) &args);
+  return;
 }
 
 static void strings_stub (XDR *xdr_in)
@@ -2320,12 +2423,12 @@ static void strings_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_strings_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_strings (path);
   if (r == NULL)
     /* do_strings has already called reply_with_error */
@@ -2338,6 +2441,7 @@ static void strings_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_strings_args, (char *) &args);
+  return;
 }
 
 static void strings_e_stub (XDR *xdr_in)
@@ -2349,13 +2453,13 @@ static void strings_e_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_strings_e_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *encoding = args.encoding;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_strings_e (encoding, path);
   if (r == NULL)
     /* do_strings_e has already called reply_with_error */
@@ -2368,6 +2472,7 @@ static void strings_e_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_strings_e_args, (char *) &args);
+  return;
 }
 
 static void hexdump_stub (XDR *xdr_in)
@@ -2379,12 +2484,12 @@ static void hexdump_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_hexdump_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_hexdump (path);
   if (r == NULL)
     /* do_hexdump has already called reply_with_error */
@@ -2396,6 +2501,7 @@ static void hexdump_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_hexdump_args, (char *) &args);
+  return;
 }
 
 static void zerofree_stub (XDR *xdr_in)
@@ -2407,10 +2513,10 @@ static void zerofree_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_zerofree_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_zerofree (device);
   if (r == -1)
@@ -2420,6 +2526,7 @@ static void zerofree_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zerofree_args, (char *) &args);
+  return;
 }
 
 static void pvresize_stub (XDR *xdr_in)
@@ -2431,10 +2538,10 @@ static void pvresize_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_pvresize_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_pvresize (device);
   if (r == -1)
@@ -2444,6 +2551,7 @@ static void pvresize_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_pvresize_args, (char *) &args);
+  return;
 }
 
 static void sfdisk_N_stub (XDR *xdr_in)
@@ -2459,10 +2567,10 @@ static void sfdisk_N_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_sfdisk_N_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   partnum = args.partnum;
   cyls = args.cyls;
   heads = args.heads;
@@ -2477,6 +2585,7 @@ static void sfdisk_N_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sfdisk_N_args, (char *) &args);
+  return;
 }
 
 static void sfdisk_l_stub (XDR *xdr_in)
@@ -2488,10 +2597,10 @@ static void sfdisk_l_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_sfdisk_l_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_sfdisk_l (device);
   if (r == NULL)
@@ -2504,6 +2613,7 @@ static void sfdisk_l_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sfdisk_l_args, (char *) &args);
+  return;
 }
 
 static void sfdisk_kernel_geometry_stub (XDR *xdr_in)
@@ -2515,10 +2625,10 @@ static void sfdisk_kernel_geometry_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_sfdisk_kernel_geometry_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_sfdisk_kernel_geometry (device);
   if (r == NULL)
@@ -2531,6 +2641,7 @@ static void sfdisk_kernel_geometry_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sfdisk_kernel_geometry_args, (char *) &args);
+  return;
 }
 
 static void sfdisk_disk_geometry_stub (XDR *xdr_in)
@@ -2542,10 +2653,10 @@ static void sfdisk_disk_geometry_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_sfdisk_disk_geometry_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_sfdisk_disk_geometry (device);
   if (r == NULL)
@@ -2558,6 +2669,7 @@ static void sfdisk_disk_geometry_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sfdisk_disk_geometry_args, (char *) &args);
+  return;
 }
 
 static void vg_activate_all_stub (XDR *xdr_in)
@@ -2570,7 +2682,7 @@ static void vg_activate_all_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_vg_activate_all_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   activate = args.activate;
 
@@ -2582,6 +2694,7 @@ static void vg_activate_all_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_vg_activate_all_args, (char *) &args);
+  return;
 }
 
 static void vg_activate_stub (XDR *xdr_in)
@@ -2595,7 +2708,7 @@ static void vg_activate_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_vg_activate_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   activate = args.activate;
   volgroups = realloc (args.volgroups.volgroups_val,
@@ -2615,6 +2728,7 @@ static void vg_activate_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_vg_activate_args, (char *) &args);
+  return;
 }
 
 static void lvresize_stub (XDR *xdr_in)
@@ -2627,10 +2741,10 @@ static void lvresize_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_lvresize_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   mbytes = args.mbytes;
 
   r = do_lvresize (device, mbytes);
@@ -2641,6 +2755,7 @@ static void lvresize_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lvresize_args, (char *) &args);
+  return;
 }
 
 static void resize2fs_stub (XDR *xdr_in)
@@ -2652,10 +2767,10 @@ static void resize2fs_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_resize2fs_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_resize2fs (device);
   if (r == -1)
@@ -2665,6 +2780,7 @@ static void resize2fs_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_resize2fs_args, (char *) &args);
+  return;
 }
 
 static void find_stub (XDR *xdr_in)
@@ -2676,12 +2792,12 @@ static void find_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_find_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *directory = args.directory;
-  ABS_PATH (directory, goto done);
+  ABS_PATH (directory, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_find (directory);
   if (r == NULL)
     /* do_find has already called reply_with_error */
@@ -2694,6 +2810,7 @@ static void find_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_find_args, (char *) &args);
+  return;
 }
 
 static void e2fsck_f_stub (XDR *xdr_in)
@@ -2705,10 +2822,10 @@ static void e2fsck_f_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_e2fsck_f_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_e2fsck_f (device);
   if (r == -1)
@@ -2718,6 +2835,7 @@ static void e2fsck_f_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_e2fsck_f_args, (char *) &args);
+  return;
 }
 
 static void sleep_stub (XDR *xdr_in)
@@ -2730,7 +2848,7 @@ static void sleep_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_sleep_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   secs = args.secs;
 
@@ -2742,6 +2860,7 @@ static void sleep_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sleep_args, (char *) &args);
+  return;
 }
 
 static void ntfs_3g_probe_stub (XDR *xdr_in)
@@ -2754,11 +2873,11 @@ static void ntfs_3g_probe_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_ntfs_3g_probe_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   rw = args.rw;
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_ntfs_3g_probe (rw, device);
   if (r == -1)
@@ -2770,6 +2889,7 @@ static void ntfs_3g_probe_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_ntfs_3g_probe_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ntfs_3g_probe_args, (char *) &args);
+  return;
 }
 
 static void sh_stub (XDR *xdr_in)
@@ -2781,7 +2901,7 @@ static void sh_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_sh_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *command = args.command;
 
@@ -2796,6 +2916,7 @@ static void sh_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sh_args, (char *) &args);
+  return;
 }
 
 static void sh_lines_stub (XDR *xdr_in)
@@ -2807,7 +2928,7 @@ static void sh_lines_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_sh_lines_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *command = args.command;
 
@@ -2823,6 +2944,7 @@ static void sh_lines_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sh_lines_args, (char *) &args);
+  return;
 }
 
 static void glob_expand_stub (XDR *xdr_in)
@@ -2834,12 +2956,12 @@ static void glob_expand_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_glob_expand_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *pattern = args.pattern;
-  ABS_PATH (pattern, goto done);
+  ABS_PATH (pattern, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_glob_expand (pattern);
   if (r == NULL)
     /* do_glob_expand has already called reply_with_error */
@@ -2852,6 +2974,7 @@ static void glob_expand_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_glob_expand_args, (char *) &args);
+  return;
 }
 
 static void scrub_device_stub (XDR *xdr_in)
@@ -2863,10 +2986,10 @@ static void scrub_device_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_scrub_device_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_scrub_device (device);
   if (r == -1)
@@ -2876,6 +2999,7 @@ static void scrub_device_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_scrub_device_args, (char *) &args);
+  return;
 }
 
 static void scrub_file_stub (XDR *xdr_in)
@@ -2887,12 +3011,12 @@ static void scrub_file_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_scrub_file_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *file = args.file;
-  ABS_PATH (file, goto done);
+  ABS_PATH (file, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_scrub_file (file);
   if (r == -1)
     /* do_scrub_file has already called reply_with_error */
@@ -2901,6 +3025,7 @@ static void scrub_file_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_scrub_file_args, (char *) &args);
+  return;
 }
 
 static void scrub_freespace_stub (XDR *xdr_in)
@@ -2912,12 +3037,12 @@ static void scrub_freespace_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_scrub_freespace_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *dir = args.dir;
-  ABS_PATH (dir, goto done);
+  ABS_PATH (dir, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_scrub_freespace (dir);
   if (r == -1)
     /* do_scrub_freespace has already called reply_with_error */
@@ -2926,6 +3051,7 @@ static void scrub_freespace_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_scrub_freespace_args, (char *) &args);
+  return;
 }
 
 static void mkdtemp_stub (XDR *xdr_in)
@@ -2937,12 +3063,12 @@ static void mkdtemp_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mkdtemp_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *template = args.template;
-  ABS_PATH (template, goto done);
+  ABS_PATH (template, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_mkdtemp (template);
   if (r == NULL)
     /* do_mkdtemp has already called reply_with_error */
@@ -2954,6 +3080,7 @@ static void mkdtemp_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkdtemp_args, (char *) &args);
+  return;
 }
 
 static void wc_l_stub (XDR *xdr_in)
@@ -2965,12 +3092,12 @@ static void wc_l_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_wc_l_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_wc_l (path);
   if (r == -1)
     /* do_wc_l has already called reply_with_error */
@@ -2981,6 +3108,7 @@ static void wc_l_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_wc_l_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_wc_l_args, (char *) &args);
+  return;
 }
 
 static void wc_w_stub (XDR *xdr_in)
@@ -2992,12 +3120,12 @@ static void wc_w_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_wc_w_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_wc_w (path);
   if (r == -1)
     /* do_wc_w has already called reply_with_error */
@@ -3008,6 +3136,7 @@ static void wc_w_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_wc_w_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_wc_w_args, (char *) &args);
+  return;
 }
 
 static void wc_c_stub (XDR *xdr_in)
@@ -3019,12 +3148,12 @@ static void wc_c_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_wc_c_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_wc_c (path);
   if (r == -1)
     /* do_wc_c has already called reply_with_error */
@@ -3035,6 +3164,7 @@ static void wc_c_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_wc_c_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_wc_c_args, (char *) &args);
+  return;
 }
 
 static void head_stub (XDR *xdr_in)
@@ -3046,12 +3176,12 @@ static void head_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_head_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_head (path);
   if (r == NULL)
     /* do_head has already called reply_with_error */
@@ -3064,6 +3194,7 @@ static void head_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_head_args, (char *) &args);
+  return;
 }
 
 static void head_n_stub (XDR *xdr_in)
@@ -3076,13 +3207,13 @@ static void head_n_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_head_n_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   nrlines = args.nrlines;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_head_n (nrlines, path);
   if (r == NULL)
     /* do_head_n has already called reply_with_error */
@@ -3095,6 +3226,7 @@ static void head_n_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_head_n_args, (char *) &args);
+  return;
 }
 
 static void tail_stub (XDR *xdr_in)
@@ -3106,12 +3238,12 @@ static void tail_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_tail_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_tail (path);
   if (r == NULL)
     /* do_tail has already called reply_with_error */
@@ -3124,6 +3256,7 @@ static void tail_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_tail_args, (char *) &args);
+  return;
 }
 
 static void tail_n_stub (XDR *xdr_in)
@@ -3136,13 +3269,13 @@ static void tail_n_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_tail_n_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   nrlines = args.nrlines;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_tail_n (nrlines, path);
   if (r == NULL)
     /* do_tail_n has already called reply_with_error */
@@ -3155,6 +3288,7 @@ static void tail_n_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_tail_n_args, (char *) &args);
+  return;
 }
 
 static void df_stub (XDR *xdr_in)
@@ -3170,7 +3304,8 @@ static void df_stub (XDR *xdr_in)
   ret.output = r;
   reply ((xdrproc_t) &xdr_guestfs_df_ret, (char *) &ret);
   free (r);
-done: ;
+done:
+  return;
 }
 
 static void df_h_stub (XDR *xdr_in)
@@ -3186,7 +3321,8 @@ static void df_h_stub (XDR *xdr_in)
   ret.output = r;
   reply ((xdrproc_t) &xdr_guestfs_df_h_ret, (char *) &ret);
   free (r);
-done: ;
+done:
+  return;
 }
 
 static void du_stub (XDR *xdr_in)
@@ -3198,12 +3334,12 @@ static void du_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_du_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_du (path);
   if (r == -1)
     /* do_du has already called reply_with_error */
@@ -3214,6 +3350,7 @@ static void du_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_du_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_du_args, (char *) &args);
+  return;
 }
 
 static void initrd_list_stub (XDR *xdr_in)
@@ -3225,12 +3362,12 @@ static void initrd_list_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_initrd_list_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_initrd_list (path);
   if (r == NULL)
     /* do_initrd_list has already called reply_with_error */
@@ -3243,6 +3380,7 @@ static void initrd_list_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_initrd_list_args, (char *) &args);
+  return;
 }
 
 static void mount_loop_stub (XDR *xdr_in)
@@ -3254,14 +3392,14 @@ static void mount_loop_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mount_loop_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *file = args.file;
-  ABS_PATH (file, goto done);
+  ABS_PATH (file, , goto done);
   char *mountpoint = args.mountpoint;
-  ABS_PATH (mountpoint, goto done);
+  ABS_PATH (mountpoint, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_mount_loop (file, mountpoint);
   if (r == -1)
     /* do_mount_loop has already called reply_with_error */
@@ -3270,6 +3408,7 @@ static void mount_loop_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mount_loop_args, (char *) &args);
+  return;
 }
 
 static void mkswap_stub (XDR *xdr_in)
@@ -3281,10 +3420,10 @@ static void mkswap_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mkswap_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_mkswap (device);
   if (r == -1)
@@ -3294,6 +3433,7 @@ static void mkswap_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkswap_args, (char *) &args);
+  return;
 }
 
 static void mkswap_L_stub (XDR *xdr_in)
@@ -3305,11 +3445,11 @@ static void mkswap_L_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mkswap_L_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *label = args.label;
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_mkswap_L (label, device);
   if (r == -1)
@@ -3319,6 +3459,7 @@ static void mkswap_L_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkswap_L_args, (char *) &args);
+  return;
 }
 
 static void mkswap_U_stub (XDR *xdr_in)
@@ -3330,11 +3471,11 @@ static void mkswap_U_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mkswap_U_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *uuid = args.uuid;
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_mkswap_U (uuid, device);
   if (r == -1)
@@ -3344,6 +3485,7 @@ static void mkswap_U_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkswap_U_args, (char *) &args);
+  return;
 }
 
 static void mknod_stub (XDR *xdr_in)
@@ -3358,15 +3500,15 @@ static void mknod_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mknod_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   mode = args.mode;
   devmajor = args.devmajor;
   devminor = args.devminor;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_mknod (mode, devmajor, devminor, path);
   if (r == -1)
     /* do_mknod has already called reply_with_error */
@@ -3375,6 +3517,7 @@ static void mknod_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mknod_args, (char *) &args);
+  return;
 }
 
 static void mkfifo_stub (XDR *xdr_in)
@@ -3387,13 +3530,13 @@ static void mkfifo_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mkfifo_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   mode = args.mode;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_mkfifo (mode, path);
   if (r == -1)
     /* do_mkfifo has already called reply_with_error */
@@ -3402,6 +3545,7 @@ static void mkfifo_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkfifo_args, (char *) &args);
+  return;
 }
 
 static void mknod_b_stub (XDR *xdr_in)
@@ -3416,15 +3560,15 @@ static void mknod_b_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mknod_b_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   mode = args.mode;
   devmajor = args.devmajor;
   devminor = args.devminor;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_mknod_b (mode, devmajor, devminor, path);
   if (r == -1)
     /* do_mknod_b has already called reply_with_error */
@@ -3433,6 +3577,7 @@ static void mknod_b_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mknod_b_args, (char *) &args);
+  return;
 }
 
 static void mknod_c_stub (XDR *xdr_in)
@@ -3447,15 +3592,15 @@ static void mknod_c_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mknod_c_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   mode = args.mode;
   devmajor = args.devmajor;
   devminor = args.devminor;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_mknod_c (mode, devmajor, devminor, path);
   if (r == -1)
     /* do_mknod_c has already called reply_with_error */
@@ -3464,6 +3609,7 @@ static void mknod_c_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mknod_c_args, (char *) &args);
+  return;
 }
 
 static void umask_stub (XDR *xdr_in)
@@ -3476,7 +3622,7 @@ static void umask_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_umask_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   mask = args.mask;
 
@@ -3490,6 +3636,7 @@ static void umask_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_umask_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_umask_args, (char *) &args);
+  return;
 }
 
 static void readdir_stub (XDR *xdr_in)
@@ -3501,12 +3648,12 @@ static void readdir_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_readdir_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *dir = args.dir;
-  ABS_PATH (dir, goto done);
+  ABS_PATH (dir, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_readdir (dir);
   if (r == NULL)
     /* do_readdir has already called reply_with_error */
@@ -3518,6 +3665,7 @@ static void readdir_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_readdir_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_readdir_args, (char *) &args);
+  return;
 }
 
 static void sfdiskM_stub (XDR *xdr_in)
@@ -3530,10 +3678,10 @@ static void sfdiskM_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_sfdiskM_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   lines = realloc (args.lines.lines_val,
                 sizeof (char *) * (args.lines.lines_len+1));
   if (lines == NULL) {
@@ -3551,6 +3699,7 @@ static void sfdiskM_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sfdiskM_args, (char *) &args);
+  return;
 }
 
 static void zfile_stub (XDR *xdr_in)
@@ -3562,13 +3711,13 @@ static void zfile_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_zfile_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *meth = args.meth;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_zfile (meth, path);
   if (r == NULL)
     /* do_zfile has already called reply_with_error */
@@ -3580,6 +3729,7 @@ static void zfile_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zfile_args, (char *) &args);
+  return;
 }
 
 static void getxattrs_stub (XDR *xdr_in)
@@ -3591,12 +3741,12 @@ static void getxattrs_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_getxattrs_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_getxattrs (path);
   if (r == NULL)
     /* do_getxattrs has already called reply_with_error */
@@ -3608,6 +3758,7 @@ static void getxattrs_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_getxattrs_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_getxattrs_args, (char *) &args);
+  return;
 }
 
 static void lgetxattrs_stub (XDR *xdr_in)
@@ -3619,12 +3770,12 @@ static void lgetxattrs_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_lgetxattrs_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_lgetxattrs (path);
   if (r == NULL)
     /* do_lgetxattrs has already called reply_with_error */
@@ -3636,6 +3787,7 @@ static void lgetxattrs_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_lgetxattrs_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lgetxattrs_args, (char *) &args);
+  return;
 }
 
 static void setxattr_stub (XDR *xdr_in)
@@ -3648,15 +3800,15 @@ static void setxattr_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_setxattr_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *xattr = args.xattr;
   char *val = args.val;
   vallen = args.vallen;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_setxattr (xattr, val, vallen, path);
   if (r == -1)
     /* do_setxattr has already called reply_with_error */
@@ -3665,6 +3817,7 @@ static void setxattr_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_setxattr_args, (char *) &args);
+  return;
 }
 
 static void lsetxattr_stub (XDR *xdr_in)
@@ -3677,15 +3830,15 @@ static void lsetxattr_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_lsetxattr_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *xattr = args.xattr;
   char *val = args.val;
   vallen = args.vallen;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_lsetxattr (xattr, val, vallen, path);
   if (r == -1)
     /* do_lsetxattr has already called reply_with_error */
@@ -3694,6 +3847,7 @@ static void lsetxattr_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lsetxattr_args, (char *) &args);
+  return;
 }
 
 static void removexattr_stub (XDR *xdr_in)
@@ -3705,13 +3859,13 @@ static void removexattr_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_removexattr_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *xattr = args.xattr;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_removexattr (xattr, path);
   if (r == -1)
     /* do_removexattr has already called reply_with_error */
@@ -3720,6 +3874,7 @@ static void removexattr_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_removexattr_args, (char *) &args);
+  return;
 }
 
 static void lremovexattr_stub (XDR *xdr_in)
@@ -3731,13 +3886,13 @@ static void lremovexattr_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_lremovexattr_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *xattr = args.xattr;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_lremovexattr (xattr, path);
   if (r == -1)
     /* do_lremovexattr has already called reply_with_error */
@@ -3746,6 +3901,7 @@ static void lremovexattr_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lremovexattr_args, (char *) &args);
+  return;
 }
 
 static void mountpoints_stub (XDR *xdr_in)
@@ -3762,7 +3918,8 @@ static void mountpoints_stub (XDR *xdr_in)
   ret.mps.mps_val = r;
   reply ((xdrproc_t) &xdr_guestfs_mountpoints_ret, (char *) &ret);
   free_strings (r);
-done: ;
+done:
+  return;
 }
 
 static void mkmountpoint_stub (XDR *xdr_in)
@@ -3774,7 +3931,7 @@ static void mkmountpoint_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mkmountpoint_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *exemptpath = args.exemptpath;
 
@@ -3786,6 +3943,7 @@ static void mkmountpoint_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkmountpoint_args, (char *) &args);
+  return;
 }
 
 static void rmmountpoint_stub (XDR *xdr_in)
@@ -3797,7 +3955,7 @@ static void rmmountpoint_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_rmmountpoint_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *exemptpath = args.exemptpath;
 
@@ -3809,6 +3967,7 @@ static void rmmountpoint_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_rmmountpoint_args, (char *) &args);
+  return;
 }
 
 static void read_file_stub (XDR *xdr_in)
@@ -3821,12 +3980,12 @@ static void read_file_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_read_file_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_read_file (path, &size);
   /* size == 0 && r == NULL could be a non-error case (just
    * an ordinary zero-length buffer), so be careful ...
@@ -3842,6 +4001,7 @@ static void read_file_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_read_file_args, (char *) &args);
+  return;
 }
 
 static void grep_stub (XDR *xdr_in)
@@ -3853,13 +4013,13 @@ static void grep_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_grep_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *regex = args.regex;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_grep (regex, path);
   if (r == NULL)
     /* do_grep has already called reply_with_error */
@@ -3872,6 +4032,7 @@ static void grep_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_grep_args, (char *) &args);
+  return;
 }
 
 static void egrep_stub (XDR *xdr_in)
@@ -3883,13 +4044,13 @@ static void egrep_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_egrep_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *regex = args.regex;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_egrep (regex, path);
   if (r == NULL)
     /* do_egrep has already called reply_with_error */
@@ -3902,6 +4063,7 @@ static void egrep_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_egrep_args, (char *) &args);
+  return;
 }
 
 static void fgrep_stub (XDR *xdr_in)
@@ -3913,13 +4075,13 @@ static void fgrep_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_fgrep_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *pattern = args.pattern;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_fgrep (pattern, path);
   if (r == NULL)
     /* do_fgrep has already called reply_with_error */
@@ -3932,6 +4094,7 @@ static void fgrep_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_fgrep_args, (char *) &args);
+  return;
 }
 
 static void grepi_stub (XDR *xdr_in)
@@ -3943,13 +4106,13 @@ static void grepi_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_grepi_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *regex = args.regex;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_grepi (regex, path);
   if (r == NULL)
     /* do_grepi has already called reply_with_error */
@@ -3962,6 +4125,7 @@ static void grepi_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_grepi_args, (char *) &args);
+  return;
 }
 
 static void egrepi_stub (XDR *xdr_in)
@@ -3973,13 +4137,13 @@ static void egrepi_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_egrepi_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *regex = args.regex;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_egrepi (regex, path);
   if (r == NULL)
     /* do_egrepi has already called reply_with_error */
@@ -3992,6 +4156,7 @@ static void egrepi_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_egrepi_args, (char *) &args);
+  return;
 }
 
 static void fgrepi_stub (XDR *xdr_in)
@@ -4003,13 +4168,13 @@ static void fgrepi_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_fgrepi_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *pattern = args.pattern;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_fgrepi (pattern, path);
   if (r == NULL)
     /* do_fgrepi has already called reply_with_error */
@@ -4022,6 +4187,7 @@ static void fgrepi_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_fgrepi_args, (char *) &args);
+  return;
 }
 
 static void zgrep_stub (XDR *xdr_in)
@@ -4033,13 +4199,13 @@ static void zgrep_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_zgrep_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *regex = args.regex;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_zgrep (regex, path);
   if (r == NULL)
     /* do_zgrep has already called reply_with_error */
@@ -4052,6 +4218,7 @@ static void zgrep_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zgrep_args, (char *) &args);
+  return;
 }
 
 static void zegrep_stub (XDR *xdr_in)
@@ -4063,13 +4230,13 @@ static void zegrep_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_zegrep_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *regex = args.regex;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_zegrep (regex, path);
   if (r == NULL)
     /* do_zegrep has already called reply_with_error */
@@ -4082,6 +4249,7 @@ static void zegrep_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zegrep_args, (char *) &args);
+  return;
 }
 
 static void zfgrep_stub (XDR *xdr_in)
@@ -4093,13 +4261,13 @@ static void zfgrep_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_zfgrep_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *pattern = args.pattern;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_zfgrep (pattern, path);
   if (r == NULL)
     /* do_zfgrep has already called reply_with_error */
@@ -4112,6 +4280,7 @@ static void zfgrep_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zfgrep_args, (char *) &args);
+  return;
 }
 
 static void zgrepi_stub (XDR *xdr_in)
@@ -4123,13 +4292,13 @@ static void zgrepi_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_zgrepi_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *regex = args.regex;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_zgrepi (regex, path);
   if (r == NULL)
     /* do_zgrepi has already called reply_with_error */
@@ -4142,6 +4311,7 @@ static void zgrepi_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zgrepi_args, (char *) &args);
+  return;
 }
 
 static void zegrepi_stub (XDR *xdr_in)
@@ -4153,13 +4323,13 @@ static void zegrepi_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_zegrepi_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *regex = args.regex;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_zegrepi (regex, path);
   if (r == NULL)
     /* do_zegrepi has already called reply_with_error */
@@ -4172,6 +4342,7 @@ static void zegrepi_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zegrepi_args, (char *) &args);
+  return;
 }
 
 static void zfgrepi_stub (XDR *xdr_in)
@@ -4183,13 +4354,13 @@ static void zfgrepi_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_zfgrepi_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *pattern = args.pattern;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_zfgrepi (pattern, path);
   if (r == NULL)
     /* do_zfgrepi has already called reply_with_error */
@@ -4202,6 +4373,7 @@ static void zfgrepi_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zfgrepi_args, (char *) &args);
+  return;
 }
 
 static void realpath_stub (XDR *xdr_in)
@@ -4213,12 +4385,12 @@ static void realpath_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_realpath_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_realpath (path);
   if (r == NULL)
     /* do_realpath has already called reply_with_error */
@@ -4230,6 +4402,7 @@ static void realpath_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_realpath_args, (char *) &args);
+  return;
 }
 
 static void ln_stub (XDR *xdr_in)
@@ -4241,13 +4414,13 @@ static void ln_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_ln_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *target = args.target;
   char *linkname = args.linkname;
-  ABS_PATH (linkname, goto done);
+  ABS_PATH (linkname, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_ln (target, linkname);
   if (r == -1)
     /* do_ln has already called reply_with_error */
@@ -4256,6 +4429,7 @@ static void ln_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ln_args, (char *) &args);
+  return;
 }
 
 static void ln_f_stub (XDR *xdr_in)
@@ -4267,13 +4441,13 @@ static void ln_f_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_ln_f_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *target = args.target;
   char *linkname = args.linkname;
-  ABS_PATH (linkname, goto done);
+  ABS_PATH (linkname, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_ln_f (target, linkname);
   if (r == -1)
     /* do_ln_f has already called reply_with_error */
@@ -4282,6 +4456,7 @@ static void ln_f_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ln_f_args, (char *) &args);
+  return;
 }
 
 static void ln_s_stub (XDR *xdr_in)
@@ -4293,13 +4468,13 @@ static void ln_s_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_ln_s_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *target = args.target;
   char *linkname = args.linkname;
-  ABS_PATH (linkname, goto done);
+  ABS_PATH (linkname, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_ln_s (target, linkname);
   if (r == -1)
     /* do_ln_s has already called reply_with_error */
@@ -4308,6 +4483,7 @@ static void ln_s_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ln_s_args, (char *) &args);
+  return;
 }
 
 static void ln_sf_stub (XDR *xdr_in)
@@ -4319,13 +4495,13 @@ static void ln_sf_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_ln_sf_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *target = args.target;
   char *linkname = args.linkname;
-  ABS_PATH (linkname, goto done);
+  ABS_PATH (linkname, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_ln_sf (target, linkname);
   if (r == -1)
     /* do_ln_sf has already called reply_with_error */
@@ -4334,6 +4510,7 @@ static void ln_sf_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ln_sf_args, (char *) &args);
+  return;
 }
 
 static void readlink_stub (XDR *xdr_in)
@@ -4345,12 +4522,12 @@ static void readlink_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_readlink_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_readlink (path);
   if (r == NULL)
     /* do_readlink has already called reply_with_error */
@@ -4362,6 +4539,7 @@ static void readlink_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_readlink_args, (char *) &args);
+  return;
 }
 
 static void fallocate_stub (XDR *xdr_in)
@@ -4374,13 +4552,13 @@ static void fallocate_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_fallocate_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
   len = args.len;
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_fallocate (path, len);
   if (r == -1)
     /* do_fallocate has already called reply_with_error */
@@ -4389,6 +4567,7 @@ static void fallocate_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_fallocate_args, (char *) &args);
+  return;
 }
 
 static void swapon_device_stub (XDR *xdr_in)
@@ -4400,10 +4579,10 @@ static void swapon_device_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_swapon_device_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_swapon_device (device);
   if (r == -1)
@@ -4413,6 +4592,7 @@ static void swapon_device_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_swapon_device_args, (char *) &args);
+  return;
 }
 
 static void swapoff_device_stub (XDR *xdr_in)
@@ -4424,10 +4604,10 @@ static void swapoff_device_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_swapoff_device_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_swapoff_device (device);
   if (r == -1)
@@ -4437,6 +4617,7 @@ static void swapoff_device_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_swapoff_device_args, (char *) &args);
+  return;
 }
 
 static void swapon_file_stub (XDR *xdr_in)
@@ -4448,12 +4629,12 @@ static void swapon_file_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_swapon_file_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *file = args.file;
-  ABS_PATH (file, goto done);
+  ABS_PATH (file, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_swapon_file (file);
   if (r == -1)
     /* do_swapon_file has already called reply_with_error */
@@ -4462,6 +4643,7 @@ static void swapon_file_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_swapon_file_args, (char *) &args);
+  return;
 }
 
 static void swapoff_file_stub (XDR *xdr_in)
@@ -4473,12 +4655,12 @@ static void swapoff_file_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_swapoff_file_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *file = args.file;
-  ABS_PATH (file, goto done);
+  ABS_PATH (file, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_swapoff_file (file);
   if (r == -1)
     /* do_swapoff_file has already called reply_with_error */
@@ -4487,6 +4669,7 @@ static void swapoff_file_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_swapoff_file_args, (char *) &args);
+  return;
 }
 
 static void swapon_label_stub (XDR *xdr_in)
@@ -4498,7 +4681,7 @@ static void swapon_label_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_swapon_label_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *label = args.label;
 
@@ -4510,6 +4693,7 @@ static void swapon_label_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_swapon_label_args, (char *) &args);
+  return;
 }
 
 static void swapoff_label_stub (XDR *xdr_in)
@@ -4521,7 +4705,7 @@ static void swapoff_label_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_swapoff_label_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *label = args.label;
 
@@ -4533,6 +4717,7 @@ static void swapoff_label_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_swapoff_label_args, (char *) &args);
+  return;
 }
 
 static void swapon_uuid_stub (XDR *xdr_in)
@@ -4544,7 +4729,7 @@ static void swapon_uuid_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_swapon_uuid_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *uuid = args.uuid;
 
@@ -4556,6 +4741,7 @@ static void swapon_uuid_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_swapon_uuid_args, (char *) &args);
+  return;
 }
 
 static void swapoff_uuid_stub (XDR *xdr_in)
@@ -4567,7 +4753,7 @@ static void swapoff_uuid_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_swapoff_uuid_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *uuid = args.uuid;
 
@@ -4579,6 +4765,7 @@ static void swapoff_uuid_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_swapoff_uuid_args, (char *) &args);
+  return;
 }
 
 static void mkswap_file_stub (XDR *xdr_in)
@@ -4590,12 +4777,12 @@ static void mkswap_file_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mkswap_file_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_mkswap_file (path);
   if (r == -1)
     /* do_mkswap_file has already called reply_with_error */
@@ -4604,6 +4791,7 @@ static void mkswap_file_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkswap_file_args, (char *) &args);
+  return;
 }
 
 static void inotify_init_stub (XDR *xdr_in)
@@ -4616,7 +4804,7 @@ static void inotify_init_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_inotify_init_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   maxevents = args.maxevents;
 
@@ -4628,6 +4816,7 @@ static void inotify_init_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_inotify_init_args, (char *) &args);
+  return;
 }
 
 static void inotify_add_watch_stub (XDR *xdr_in)
@@ -4640,13 +4829,13 @@ static void inotify_add_watch_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_inotify_add_watch_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
   mask = args.mask;
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_inotify_add_watch (path, mask);
   if (r == -1)
     /* do_inotify_add_watch has already called reply_with_error */
@@ -4657,6 +4846,7 @@ static void inotify_add_watch_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_inotify_add_watch_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_inotify_add_watch_args, (char *) &args);
+  return;
 }
 
 static void inotify_rm_watch_stub (XDR *xdr_in)
@@ -4669,7 +4859,7 @@ static void inotify_rm_watch_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_inotify_rm_watch_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   wd = args.wd;
 
@@ -4681,6 +4871,7 @@ static void inotify_rm_watch_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_inotify_rm_watch_args, (char *) &args);
+  return;
 }
 
 static void inotify_read_stub (XDR *xdr_in)
@@ -4696,7 +4887,8 @@ static void inotify_read_stub (XDR *xdr_in)
   ret.events = *r;
   reply ((xdrproc_t) xdr_guestfs_inotify_read_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_inotify_read_ret, (char *) &ret);
-done: ;
+done:
+  return;
 }
 
 static void inotify_files_stub (XDR *xdr_in)
@@ -4713,7 +4905,8 @@ static void inotify_files_stub (XDR *xdr_in)
   ret.paths.paths_val = r;
   reply ((xdrproc_t) &xdr_guestfs_inotify_files_ret, (char *) &ret);
   free_strings (r);
-done: ;
+done:
+  return;
 }
 
 static void inotify_close_stub (XDR *xdr_in)
@@ -4726,7 +4919,8 @@ static void inotify_close_stub (XDR *xdr_in)
     goto done;
 
   reply (NULL, NULL);
-done: ;
+done:
+  return;
 }
 
 static void setcon_stub (XDR *xdr_in)
@@ -4738,7 +4932,7 @@ static void setcon_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_setcon_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *context = args.context;
 
@@ -4750,6 +4944,7 @@ static void setcon_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_setcon_args, (char *) &args);
+  return;
 }
 
 static void getcon_stub (XDR *xdr_in)
@@ -4765,7 +4960,8 @@ static void getcon_stub (XDR *xdr_in)
   ret.context = r;
   reply ((xdrproc_t) &xdr_guestfs_getcon_ret, (char *) &ret);
   free (r);
-done: ;
+done:
+  return;
 }
 
 static void mkfs_b_stub (XDR *xdr_in)
@@ -4778,12 +4974,12 @@ static void mkfs_b_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mkfs_b_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *fstype = args.fstype;
   blocksize = args.blocksize;
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_mkfs_b (fstype, blocksize, device);
   if (r == -1)
@@ -4793,6 +4989,7 @@ static void mkfs_b_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkfs_b_args, (char *) &args);
+  return;
 }
 
 static void mke2journal_stub (XDR *xdr_in)
@@ -4805,11 +5002,11 @@ static void mke2journal_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mke2journal_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   blocksize = args.blocksize;
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_mke2journal (blocksize, device);
   if (r == -1)
@@ -4819,6 +5016,7 @@ static void mke2journal_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mke2journal_args, (char *) &args);
+  return;
 }
 
 static void mke2journal_L_stub (XDR *xdr_in)
@@ -4831,12 +5029,12 @@ static void mke2journal_L_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mke2journal_L_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   blocksize = args.blocksize;
   char *label = args.label;
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_mke2journal_L (blocksize, label, device);
   if (r == -1)
@@ -4846,6 +5044,7 @@ static void mke2journal_L_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mke2journal_L_args, (char *) &args);
+  return;
 }
 
 static void mke2journal_U_stub (XDR *xdr_in)
@@ -4858,12 +5057,12 @@ static void mke2journal_U_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mke2journal_U_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   blocksize = args.blocksize;
   char *uuid = args.uuid;
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_mke2journal_U (blocksize, uuid, device);
   if (r == -1)
@@ -4873,6 +5072,7 @@ static void mke2journal_U_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mke2journal_U_args, (char *) &args);
+  return;
 }
 
 static void mke2fs_J_stub (XDR *xdr_in)
@@ -4885,14 +5085,14 @@ static void mke2fs_J_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mke2fs_J_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *fstype = args.fstype;
   blocksize = args.blocksize;
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   char *journal = args.journal;
-  RESOLVE_DEVICE (journal, goto done);
+  RESOLVE_DEVICE (journal, , goto done);
 
   r = do_mke2fs_J (fstype, blocksize, device, journal);
   if (r == -1)
@@ -4902,6 +5102,7 @@ static void mke2fs_J_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mke2fs_J_args, (char *) &args);
+  return;
 }
 
 static void mke2fs_JL_stub (XDR *xdr_in)
@@ -4914,12 +5115,12 @@ static void mke2fs_JL_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mke2fs_JL_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *fstype = args.fstype;
   blocksize = args.blocksize;
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   char *label = args.label;
 
   r = do_mke2fs_JL (fstype, blocksize, device, label);
@@ -4930,6 +5131,7 @@ static void mke2fs_JL_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mke2fs_JL_args, (char *) &args);
+  return;
 }
 
 static void mke2fs_JU_stub (XDR *xdr_in)
@@ -4942,12 +5144,12 @@ static void mke2fs_JU_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mke2fs_JU_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *fstype = args.fstype;
   blocksize = args.blocksize;
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   char *uuid = args.uuid;
 
   r = do_mke2fs_JU (fstype, blocksize, device, uuid);
@@ -4958,6 +5160,7 @@ static void mke2fs_JU_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mke2fs_JU_args, (char *) &args);
+  return;
 }
 
 static void modprobe_stub (XDR *xdr_in)
@@ -4969,7 +5172,7 @@ static void modprobe_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_modprobe_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *modulename = args.modulename;
 
@@ -4981,6 +5184,7 @@ static void modprobe_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_modprobe_args, (char *) &args);
+  return;
 }
 
 static void echo_daemon_stub (XDR *xdr_in)
@@ -4993,7 +5197,7 @@ static void echo_daemon_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_echo_daemon_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   words = realloc (args.words.words_val,
                 sizeof (char *) * (args.words.words_len+1));
@@ -5015,6 +5219,7 @@ static void echo_daemon_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_echo_daemon_args, (char *) &args);
+  return;
 }
 
 static void find0_stub (XDR *xdr_in)
@@ -5026,12 +5231,12 @@ static void find0_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_find0_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *directory = args.directory;
-  ABS_PATH (directory, goto done);
+  ABS_PATH (directory, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_find0 (directory);
   if (r == -1)
     /* do_find0 has already called reply_with_error */
@@ -5040,6 +5245,7 @@ static void find0_stub (XDR *xdr_in)
   /* do_find0 has already sent a reply */
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_find0_args, (char *) &args);
+  return;
 }
 
 static void case_sensitive_path_stub (XDR *xdr_in)
@@ -5051,12 +5257,12 @@ static void case_sensitive_path_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_case_sensitive_path_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_case_sensitive_path (path);
   if (r == NULL)
     /* do_case_sensitive_path has already called reply_with_error */
@@ -5068,6 +5274,7 @@ static void case_sensitive_path_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_case_sensitive_path_args, (char *) &args);
+  return;
 }
 
 static void vfs_type_stub (XDR *xdr_in)
@@ -5079,10 +5286,10 @@ static void vfs_type_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_vfs_type_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_vfs_type (device);
   if (r == NULL)
@@ -5095,6 +5302,7 @@ static void vfs_type_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_vfs_type_args, (char *) &args);
+  return;
 }
 
 static void truncate_stub (XDR *xdr_in)
@@ -5106,12 +5314,12 @@ static void truncate_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_truncate_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_truncate (path);
   if (r == -1)
     /* do_truncate has already called reply_with_error */
@@ -5120,6 +5328,7 @@ static void truncate_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_truncate_args, (char *) &args);
+  return;
 }
 
 static void truncate_size_stub (XDR *xdr_in)
@@ -5132,13 +5341,13 @@ static void truncate_size_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_truncate_size_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
   size = args.size;
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_truncate_size (path, size);
   if (r == -1)
     /* do_truncate_size has already called reply_with_error */
@@ -5147,6 +5356,7 @@ static void truncate_size_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_truncate_size_args, (char *) &args);
+  return;
 }
 
 static void utimens_stub (XDR *xdr_in)
@@ -5162,16 +5372,16 @@ static void utimens_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_utimens_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
   atsecs = args.atsecs;
   atnsecs = args.atnsecs;
   mtsecs = args.mtsecs;
   mtnsecs = args.mtnsecs;
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_utimens (path, atsecs, atnsecs, mtsecs, mtnsecs);
   if (r == -1)
     /* do_utimens has already called reply_with_error */
@@ -5180,6 +5390,7 @@ static void utimens_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_utimens_args, (char *) &args);
+  return;
 }
 
 static void mkdir_mode_stub (XDR *xdr_in)
@@ -5192,13 +5403,13 @@ static void mkdir_mode_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_mkdir_mode_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
   mode = args.mode;
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_mkdir_mode (path, mode);
   if (r == -1)
     /* do_mkdir_mode has already called reply_with_error */
@@ -5207,6 +5418,7 @@ static void mkdir_mode_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkdir_mode_args, (char *) &args);
+  return;
 }
 
 static void lchown_stub (XDR *xdr_in)
@@ -5220,14 +5432,14 @@ static void lchown_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_lchown_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   owner = args.owner;
   group = args.group;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_lchown (owner, group, path);
   if (r == -1)
     /* do_lchown has already called reply_with_error */
@@ -5236,6 +5448,7 @@ static void lchown_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lchown_args, (char *) &args);
+  return;
 }
 
 static void lstatlist_stub (XDR *xdr_in)
@@ -5248,10 +5461,10 @@ static void lstatlist_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_lstatlist_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
   names = realloc (args.names.names_val,
                 sizeof (char *) * (args.names.names_len+1));
   if (names == NULL) {
@@ -5261,7 +5474,7 @@ static void lstatlist_stub (XDR *xdr_in)
   names[args.names.names_len] = NULL;
   args.names.names_val = names;
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_lstatlist (path, names);
   if (r == NULL)
     /* do_lstatlist has already called reply_with_error */
@@ -5273,6 +5486,7 @@ static void lstatlist_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_lstatlist_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lstatlist_args, (char *) &args);
+  return;
 }
 
 static void lxattrlist_stub (XDR *xdr_in)
@@ -5285,10 +5499,10 @@ static void lxattrlist_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_lxattrlist_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
   names = realloc (args.names.names_val,
                 sizeof (char *) * (args.names.names_len+1));
   if (names == NULL) {
@@ -5298,7 +5512,7 @@ static void lxattrlist_stub (XDR *xdr_in)
   names[args.names.names_len] = NULL;
   args.names.names_val = names;
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_lxattrlist (path, names);
   if (r == NULL)
     /* do_lxattrlist has already called reply_with_error */
@@ -5310,6 +5524,7 @@ static void lxattrlist_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_lxattrlist_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lxattrlist_args, (char *) &args);
+  return;
 }
 
 static void readlinklist_stub (XDR *xdr_in)
@@ -5322,10 +5537,10 @@ static void readlinklist_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_readlinklist_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
   names = realloc (args.names.names_val,
                 sizeof (char *) * (args.names.names_len+1));
   if (names == NULL) {
@@ -5335,7 +5550,7 @@ static void readlinklist_stub (XDR *xdr_in)
   names[args.names.names_len] = NULL;
   args.names.names_val = names;
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_readlinklist (path, names);
   if (r == NULL)
     /* do_readlinklist has already called reply_with_error */
@@ -5348,6 +5563,7 @@ static void readlinklist_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_readlinklist_args, (char *) &args);
+  return;
 }
 
 static void pread_stub (XDR *xdr_in)
@@ -5362,14 +5578,14 @@ static void pread_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_pread_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
   count = args.count;
   offset = args.offset;
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_pread (path, count, offset, &size);
   /* size == 0 && r == NULL could be a non-error case (just
    * an ordinary zero-length buffer), so be careful ...
@@ -5385,6 +5601,7 @@ static void pread_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_pread_args, (char *) &args);
+  return;
 }
 
 static void part_init_stub (XDR *xdr_in)
@@ -5396,10 +5613,10 @@ static void part_init_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_part_init_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   char *parttype = args.parttype;
 
   r = do_part_init (device, parttype);
@@ -5410,6 +5627,7 @@ static void part_init_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_init_args, (char *) &args);
+  return;
 }
 
 static void part_add_stub (XDR *xdr_in)
@@ -5423,10 +5641,10 @@ static void part_add_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_part_add_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   char *prlogex = args.prlogex;
   startsect = args.startsect;
   endsect = args.endsect;
@@ -5439,6 +5657,7 @@ static void part_add_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_add_args, (char *) &args);
+  return;
 }
 
 static void part_disk_stub (XDR *xdr_in)
@@ -5450,10 +5669,10 @@ static void part_disk_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_part_disk_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   char *parttype = args.parttype;
 
   r = do_part_disk (device, parttype);
@@ -5464,6 +5683,7 @@ static void part_disk_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_disk_args, (char *) &args);
+  return;
 }
 
 static void part_set_bootable_stub (XDR *xdr_in)
@@ -5477,10 +5697,10 @@ static void part_set_bootable_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_part_set_bootable_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   partnum = args.partnum;
   bootable = args.bootable;
 
@@ -5492,6 +5712,7 @@ static void part_set_bootable_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_set_bootable_args, (char *) &args);
+  return;
 }
 
 static void part_set_name_stub (XDR *xdr_in)
@@ -5504,10 +5725,10 @@ static void part_set_name_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_part_set_name_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
   partnum = args.partnum;
   char *name = args.name;
 
@@ -5519,6 +5740,7 @@ static void part_set_name_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_set_name_args, (char *) &args);
+  return;
 }
 
 static void part_list_stub (XDR *xdr_in)
@@ -5530,10 +5752,10 @@ static void part_list_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_part_list_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_part_list (device);
   if (r == NULL)
@@ -5546,6 +5768,7 @@ static void part_list_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_part_list_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_list_args, (char *) &args);
+  return;
 }
 
 static void part_get_parttype_stub (XDR *xdr_in)
@@ -5557,10 +5780,10 @@ static void part_get_parttype_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_part_get_parttype_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *device = args.device;
-  RESOLVE_DEVICE (device, goto done);
+  RESOLVE_DEVICE (device, , goto done);
 
   r = do_part_get_parttype (device);
   if (r == NULL)
@@ -5573,6 +5796,7 @@ static void part_get_parttype_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_get_parttype_args, (char *) &args);
+  return;
 }
 
 static void fill_stub (XDR *xdr_in)
@@ -5586,14 +5810,14 @@ static void fill_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_fill_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   c = args.c;
   len = args.len;
   char *path = args.path;
-  ABS_PATH (path, goto done);
+  ABS_PATH (path, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_fill (c, len, path);
   if (r == -1)
     /* do_fill has already called reply_with_error */
@@ -5602,6 +5826,7 @@ static void fill_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_fill_args, (char *) &args);
+  return;
 }
 
 static void available_stub (XDR *xdr_in)
@@ -5614,7 +5839,7 @@ static void available_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_available_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   groups = realloc (args.groups.groups_val,
                 sizeof (char *) * (args.groups.groups_len+1));
@@ -5633,6 +5858,7 @@ static void available_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_available_args, (char *) &args);
+  return;
 }
 
 static void dd_stub (XDR *xdr_in)
@@ -5644,12 +5870,12 @@ static void dd_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_dd_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *src = args.src;
-  REQUIRE_ROOT_OR_RESOLVE_DEVICE (src, goto done);
+  REQUIRE_ROOT_OR_RESOLVE_DEVICE (src, , goto done);
   char *dest = args.dest;
-  REQUIRE_ROOT_OR_RESOLVE_DEVICE (dest, goto done);
+  REQUIRE_ROOT_OR_RESOLVE_DEVICE (dest, , goto done);
 
   r = do_dd (src, dest);
   if (r == -1)
@@ -5659,6 +5885,7 @@ static void dd_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_dd_args, (char *) &args);
+  return;
 }
 
 static void filesize_stub (XDR *xdr_in)
@@ -5670,12 +5897,12 @@ static void filesize_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_filesize_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *file = args.file;
-  ABS_PATH (file, goto done);
+  ABS_PATH (file, , goto done);
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_filesize (file);
   if (r == -1)
     /* do_filesize has already called reply_with_error */
@@ -5686,6 +5913,7 @@ static void filesize_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_filesize_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_filesize_args, (char *) &args);
+  return;
 }
 
 static void lvrename_stub (XDR *xdr_in)
@@ -5697,7 +5925,7 @@ static void lvrename_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_lvrename_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *logvol = args.logvol;
   char *newlogvol = args.newlogvol;
@@ -5710,6 +5938,7 @@ static void lvrename_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lvrename_args, (char *) &args);
+  return;
 }
 
 static void vgrename_stub (XDR *xdr_in)
@@ -5721,7 +5950,7 @@ static void vgrename_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_vgrename_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *volgroup = args.volgroup;
   char *newvolgroup = args.newvolgroup;
@@ -5734,6 +5963,7 @@ static void vgrename_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_vgrename_args, (char *) &args);
+  return;
 }
 
 static void initrd_cat_stub (XDR *xdr_in)
@@ -5746,13 +5976,13 @@ static void initrd_cat_stub (XDR *xdr_in)
 
   if (!xdr_guestfs_initrd_cat_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
-    return;
+    goto done;
   }
   char *initrdpath = args.initrdpath;
-  ABS_PATH (initrdpath, goto done);
+  ABS_PATH (initrdpath, , goto done);
   char *filename = args.filename;
 
-  NEED_ROOT (goto done);
+  NEED_ROOT (, goto done);
   r = do_initrd_cat (initrdpath, filename, &size);
   /* size == 0 && r == NULL could be a non-error case (just
    * an ordinary zero-length buffer), so be careful ...
@@ -5768,6 +5998,1679 @@ static void initrd_cat_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_initrd_cat_args, (char *) &args);
+  return;
+}
+
+static void pvuuid_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_pvuuid_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_pvuuid_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+
+  r = do_pvuuid (device);
+  if (r == NULL)
+    /* do_pvuuid has already called reply_with_error */
+    goto done;
+
+  struct guestfs_pvuuid_ret ret;
+  ret.uuid = r;
+  reply ((xdrproc_t) &xdr_guestfs_pvuuid_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_pvuuid_args, (char *) &args);
+  return;
+}
+
+static void vguuid_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_vguuid_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_vguuid_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *vgname = args.vgname;
+
+  r = do_vguuid (vgname);
+  if (r == NULL)
+    /* do_vguuid has already called reply_with_error */
+    goto done;
+
+  struct guestfs_vguuid_ret ret;
+  ret.uuid = r;
+  reply ((xdrproc_t) &xdr_guestfs_vguuid_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_vguuid_args, (char *) &args);
+  return;
+}
+
+static void lvuuid_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_lvuuid_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_lvuuid_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+
+  r = do_lvuuid (device);
+  if (r == NULL)
+    /* do_lvuuid has already called reply_with_error */
+    goto done;
+
+  struct guestfs_lvuuid_ret ret;
+  ret.uuid = r;
+  reply ((xdrproc_t) &xdr_guestfs_lvuuid_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_lvuuid_args, (char *) &args);
+  return;
+}
+
+static void vgpvuuids_stub (XDR *xdr_in)
+{
+  char **r;
+  struct guestfs_vgpvuuids_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_vgpvuuids_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *vgname = args.vgname;
+
+  r = do_vgpvuuids (vgname);
+  if (r == NULL)
+    /* do_vgpvuuids has already called reply_with_error */
+    goto done;
+
+  struct guestfs_vgpvuuids_ret ret;
+  ret.uuids.uuids_len = count_strings (r);
+  ret.uuids.uuids_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_vgpvuuids_ret, (char *) &ret);
+  free_strings (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_vgpvuuids_args, (char *) &args);
+  return;
+}
+
+static void vglvuuids_stub (XDR *xdr_in)
+{
+  char **r;
+  struct guestfs_vglvuuids_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_vglvuuids_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *vgname = args.vgname;
+
+  r = do_vglvuuids (vgname);
+  if (r == NULL)
+    /* do_vglvuuids has already called reply_with_error */
+    goto done;
+
+  struct guestfs_vglvuuids_ret ret;
+  ret.uuids.uuids_len = count_strings (r);
+  ret.uuids.uuids_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_vglvuuids_ret, (char *) &ret);
+  free_strings (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_vglvuuids_args, (char *) &args);
+  return;
+}
+
+static void copy_size_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_copy_size_args args;
+  int64_t size;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_copy_size_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *src = args.src;
+  REQUIRE_ROOT_OR_RESOLVE_DEVICE (src, , goto done);
+  char *dest = args.dest;
+  REQUIRE_ROOT_OR_RESOLVE_DEVICE (dest, , goto done);
+  size = args.size;
+
+  r = do_copy_size (src, dest, size);
+  if (r == -1)
+    /* do_copy_size has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_copy_size_args, (char *) &args);
+  return;
+}
+
+static void zero_device_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_zero_device_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_zero_device_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+
+  r = do_zero_device (device);
+  if (r == -1)
+    /* do_zero_device has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_zero_device_args, (char *) &args);
+  return;
+}
+
+static void txz_in_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_txz_in_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_txz_in_args (xdr_in, &args)) {
+    cancel_receive ();
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *directory = args.directory;
+  ABS_PATH (directory, cancel_receive (), goto done);
+
+  NEED_ROOT (cancel_receive (), goto done);
+  r = do_txz_in (directory);
+  if (r == -1)
+    /* do_txz_in has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_txz_in_args, (char *) &args);
+  return;
+}
+
+static void txz_out_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_txz_out_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_txz_out_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *directory = args.directory;
+  ABS_PATH (directory, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_txz_out (directory);
+  if (r == -1)
+    /* do_txz_out has already called reply_with_error */
+    goto done;
+
+  /* do_txz_out has already sent a reply */
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_txz_out_args, (char *) &args);
+  return;
+}
+
+static void ntfsresize_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_ntfsresize_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_ntfsresize_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+
+  r = do_ntfsresize (device);
+  if (r == -1)
+    /* do_ntfsresize has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_ntfsresize_args, (char *) &args);
+  return;
+}
+
+static void vgscan_stub (XDR *xdr_in)
+{
+  int r;
+
+  r = do_vgscan ();
+  if (r == -1)
+    /* do_vgscan has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  return;
+}
+
+static void part_del_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_part_del_args args;
+  int partnum;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_part_del_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  partnum = args.partnum;
+
+  r = do_part_del (device, partnum);
+  if (r == -1)
+    /* do_part_del has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_part_del_args, (char *) &args);
+  return;
+}
+
+static void part_get_bootable_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_part_get_bootable_args args;
+  int partnum;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_part_get_bootable_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  partnum = args.partnum;
+
+  r = do_part_get_bootable (device, partnum);
+  if (r == -1)
+    /* do_part_get_bootable has already called reply_with_error */
+    goto done;
+
+  struct guestfs_part_get_bootable_ret ret;
+  ret.bootable = r;
+  reply ((xdrproc_t) &xdr_guestfs_part_get_bootable_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_part_get_bootable_args, (char *) &args);
+  return;
+}
+
+static void part_get_mbr_id_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_part_get_mbr_id_args args;
+  int partnum;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_part_get_mbr_id_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  partnum = args.partnum;
+
+  r = do_part_get_mbr_id (device, partnum);
+  if (r == -1)
+    /* do_part_get_mbr_id has already called reply_with_error */
+    goto done;
+
+  struct guestfs_part_get_mbr_id_ret ret;
+  ret.idbyte = r;
+  reply ((xdrproc_t) &xdr_guestfs_part_get_mbr_id_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_part_get_mbr_id_args, (char *) &args);
+  return;
+}
+
+static void part_set_mbr_id_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_part_set_mbr_id_args args;
+  int partnum;
+  int idbyte;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_part_set_mbr_id_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  partnum = args.partnum;
+  idbyte = args.idbyte;
+
+  r = do_part_set_mbr_id (device, partnum, idbyte);
+  if (r == -1)
+    /* do_part_set_mbr_id has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_part_set_mbr_id_args, (char *) &args);
+  return;
+}
+
+static void checksum_device_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_checksum_device_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_checksum_device_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *csumtype = args.csumtype;
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+
+  r = do_checksum_device (csumtype, device);
+  if (r == NULL)
+    /* do_checksum_device has already called reply_with_error */
+    goto done;
+
+  struct guestfs_checksum_device_ret ret;
+  ret.checksum = r;
+  reply ((xdrproc_t) &xdr_guestfs_checksum_device_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_checksum_device_args, (char *) &args);
+  return;
+}
+
+static void lvresize_free_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_lvresize_free_args args;
+  int percent;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_lvresize_free_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *lv = args.lv;
+  RESOLVE_DEVICE (lv, , goto done);
+  percent = args.percent;
+
+  r = do_lvresize_free (lv, percent);
+  if (r == -1)
+    /* do_lvresize_free has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_lvresize_free_args, (char *) &args);
+  return;
+}
+
+static void aug_clear_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_aug_clear_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_aug_clear_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *augpath = args.augpath;
+
+  r = do_aug_clear (augpath);
+  if (r == -1)
+    /* do_aug_clear has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_aug_clear_args, (char *) &args);
+  return;
+}
+
+static void get_umask_stub (XDR *xdr_in)
+{
+  int r;
+
+  r = do_get_umask ();
+  if (r == -1)
+    /* do_get_umask has already called reply_with_error */
+    goto done;
+
+  struct guestfs_get_umask_ret ret;
+  ret.mask = r;
+  reply ((xdrproc_t) &xdr_guestfs_get_umask_ret, (char *) &ret);
+done:
+  return;
+}
+
+static void debug_upload_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_debug_upload_args args;
+  int mode;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_debug_upload_args (xdr_in, &args)) {
+    cancel_receive ();
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *tmpname = args.tmpname;
+  mode = args.mode;
+
+  r = do_debug_upload (tmpname, mode);
+  if (r == -1)
+    /* do_debug_upload has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_debug_upload_args, (char *) &args);
+  return;
+}
+
+static void base64_in_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_base64_in_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_base64_in_args (xdr_in, &args)) {
+    cancel_receive ();
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *filename = args.filename;
+  ABS_PATH (filename, cancel_receive (), goto done);
+
+  NEED_ROOT (cancel_receive (), goto done);
+  r = do_base64_in (filename);
+  if (r == -1)
+    /* do_base64_in has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_base64_in_args, (char *) &args);
+  return;
+}
+
+static void base64_out_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_base64_out_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_base64_out_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *filename = args.filename;
+  ABS_PATH (filename, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_base64_out (filename);
+  if (r == -1)
+    /* do_base64_out has already called reply_with_error */
+    goto done;
+
+  /* do_base64_out has already sent a reply */
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_base64_out_args, (char *) &args);
+  return;
+}
+
+static void checksums_out_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_checksums_out_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_checksums_out_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *csumtype = args.csumtype;
+  char *directory = args.directory;
+  ABS_PATH (directory, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_checksums_out (csumtype, directory);
+  if (r == -1)
+    /* do_checksums_out has already called reply_with_error */
+    goto done;
+
+  /* do_checksums_out has already sent a reply */
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_checksums_out_args, (char *) &args);
+  return;
+}
+
+static void fill_pattern_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_fill_pattern_args args;
+  int len;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_fill_pattern_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *pattern = args.pattern;
+  len = args.len;
+  char *path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_fill_pattern (pattern, len, path);
+  if (r == -1)
+    /* do_fill_pattern has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_fill_pattern_args, (char *) &args);
+  return;
+}
+
+static void write_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_write_args args;
+  const char *content;
+  size_t content_size;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_write_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *path = args.path;
+  ABS_PATH (path, , goto done);
+  content = args.content.content_val;
+  content_size = args.content.content_len;
+
+  NEED_ROOT (, goto done);
+  r = do_write (path, content, content_size);
+  if (r == -1)
+    /* do_write has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_write_args, (char *) &args);
+  return;
+}
+
+static void pwrite_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_pwrite_args args;
+  const char *content;
+  size_t content_size;
+  int64_t offset;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_pwrite_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *path = args.path;
+  ABS_PATH (path, , goto done);
+  content = args.content.content_val;
+  content_size = args.content.content_len;
+  offset = args.offset;
+
+  NEED_ROOT (, goto done);
+  r = do_pwrite (path, content, content_size, offset);
+  if (r == -1)
+    /* do_pwrite has already called reply_with_error */
+    goto done;
+
+  struct guestfs_pwrite_ret ret;
+  ret.nbytes = r;
+  reply ((xdrproc_t) &xdr_guestfs_pwrite_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_pwrite_args, (char *) &args);
+  return;
+}
+
+static void resize2fs_size_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_resize2fs_size_args args;
+  int64_t size;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_resize2fs_size_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  size = args.size;
+
+  r = do_resize2fs_size (device, size);
+  if (r == -1)
+    /* do_resize2fs_size has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_resize2fs_size_args, (char *) &args);
+  return;
+}
+
+static void pvresize_size_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_pvresize_size_args args;
+  int64_t size;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_pvresize_size_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  size = args.size;
+
+  r = do_pvresize_size (device, size);
+  if (r == -1)
+    /* do_pvresize_size has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_pvresize_size_args, (char *) &args);
+  return;
+}
+
+static void ntfsresize_size_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_ntfsresize_size_args args;
+  int64_t size;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_ntfsresize_size_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  size = args.size;
+
+  r = do_ntfsresize_size (device, size);
+  if (r == -1)
+    /* do_ntfsresize_size has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_ntfsresize_size_args, (char *) &args);
+  return;
+}
+
+static void available_all_groups_stub (XDR *xdr_in)
+{
+  char **r;
+
+  r = do_available_all_groups ();
+  if (r == NULL)
+    /* do_available_all_groups has already called reply_with_error */
+    goto done;
+
+  struct guestfs_available_all_groups_ret ret;
+  ret.groups.groups_len = count_strings (r);
+  ret.groups.groups_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_available_all_groups_ret, (char *) &ret);
+  free_strings (r);
+done:
+  return;
+}
+
+static void fallocate64_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_fallocate64_args args;
+  int64_t len;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_fallocate64_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *path = args.path;
+  ABS_PATH (path, , goto done);
+  len = args.len;
+
+  NEED_ROOT (, goto done);
+  r = do_fallocate64 (path, len);
+  if (r == -1)
+    /* do_fallocate64 has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_fallocate64_args, (char *) &args);
+  return;
+}
+
+static void vfs_label_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_vfs_label_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_vfs_label_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+
+  r = do_vfs_label (device);
+  if (r == NULL)
+    /* do_vfs_label has already called reply_with_error */
+    goto done;
+
+  struct guestfs_vfs_label_ret ret;
+  ret.label = r;
+  reply ((xdrproc_t) &xdr_guestfs_vfs_label_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_vfs_label_args, (char *) &args);
+  return;
+}
+
+static void vfs_uuid_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_vfs_uuid_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_vfs_uuid_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+
+  r = do_vfs_uuid (device);
+  if (r == NULL)
+    /* do_vfs_uuid has already called reply_with_error */
+    goto done;
+
+  struct guestfs_vfs_uuid_ret ret;
+  ret.uuid = r;
+  reply ((xdrproc_t) &xdr_guestfs_vfs_uuid_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_vfs_uuid_args, (char *) &args);
+  return;
+}
+
+static void lvm_set_filter_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_lvm_set_filter_args args;
+  char **devices;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_lvm_set_filter_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  devices = realloc (args.devices.devices_val,
+                sizeof (char *) * (args.devices.devices_len+1));
+  if (devices == NULL) {
+    reply_with_perror ("realloc");
+    goto done;
+  }
+  devices[args.devices.devices_len] = NULL;
+  args.devices.devices_val = devices;
+  /* Ensure that each is a device,
+   * and perform device name translation.
+   */
+  {
+    size_t i;
+    for (i = 0; devices[i] != NULL; ++i)
+      RESOLVE_DEVICE (devices[i], , goto done);
+  }
+
+  r = do_lvm_set_filter (devices);
+  if (r == -1)
+    /* do_lvm_set_filter has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_lvm_set_filter_args, (char *) &args);
+  return;
+}
+
+static void lvm_clear_filter_stub (XDR *xdr_in)
+{
+  int r;
+
+  r = do_lvm_clear_filter ();
+  if (r == -1)
+    /* do_lvm_clear_filter has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  return;
+}
+
+static void luks_open_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_luks_open_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_luks_open_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  char *key = args.key;
+  char *mapname = args.mapname;
+
+  r = do_luks_open (device, key, mapname);
+  if (r == -1)
+    /* do_luks_open has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_luks_open_args, (char *) &args);
+  return;
+}
+
+static void luks_open_ro_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_luks_open_ro_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_luks_open_ro_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  char *key = args.key;
+  char *mapname = args.mapname;
+
+  r = do_luks_open_ro (device, key, mapname);
+  if (r == -1)
+    /* do_luks_open_ro has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_luks_open_ro_args, (char *) &args);
+  return;
+}
+
+static void luks_close_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_luks_close_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_luks_close_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+
+  r = do_luks_close (device);
+  if (r == -1)
+    /* do_luks_close has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_luks_close_args, (char *) &args);
+  return;
+}
+
+static void luks_format_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_luks_format_args args;
+  int keyslot;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_luks_format_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  char *key = args.key;
+  keyslot = args.keyslot;
+
+  r = do_luks_format (device, key, keyslot);
+  if (r == -1)
+    /* do_luks_format has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_luks_format_args, (char *) &args);
+  return;
+}
+
+static void luks_format_cipher_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_luks_format_cipher_args args;
+  int keyslot;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_luks_format_cipher_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  char *key = args.key;
+  keyslot = args.keyslot;
+  char *cipher = args.cipher;
+
+  r = do_luks_format_cipher (device, key, keyslot, cipher);
+  if (r == -1)
+    /* do_luks_format_cipher has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_luks_format_cipher_args, (char *) &args);
+  return;
+}
+
+static void luks_add_key_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_luks_add_key_args args;
+  int keyslot;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_luks_add_key_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  char *key = args.key;
+  char *newkey = args.newkey;
+  keyslot = args.keyslot;
+
+  r = do_luks_add_key (device, key, newkey, keyslot);
+  if (r == -1)
+    /* do_luks_add_key has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_luks_add_key_args, (char *) &args);
+  return;
+}
+
+static void luks_kill_slot_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_luks_kill_slot_args args;
+  int keyslot;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_luks_kill_slot_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  char *key = args.key;
+  keyslot = args.keyslot;
+
+  r = do_luks_kill_slot (device, key, keyslot);
+  if (r == -1)
+    /* do_luks_kill_slot has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_luks_kill_slot_args, (char *) &args);
+  return;
+}
+
+static void is_lv_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_is_lv_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_is_lv_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+
+  r = do_is_lv (device);
+  if (r == -1)
+    /* do_is_lv has already called reply_with_error */
+    goto done;
+
+  struct guestfs_is_lv_ret ret;
+  ret.lvflag = r;
+  reply ((xdrproc_t) &xdr_guestfs_is_lv_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_is_lv_args, (char *) &args);
+  return;
+}
+
+static void findfs_uuid_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_findfs_uuid_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_findfs_uuid_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *uuid = args.uuid;
+
+  r = do_findfs_uuid (uuid);
+  if (r == NULL)
+    /* do_findfs_uuid has already called reply_with_error */
+    goto done;
+
+  struct guestfs_findfs_uuid_ret ret;
+  ret.device = r;
+  reply ((xdrproc_t) &xdr_guestfs_findfs_uuid_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_findfs_uuid_args, (char *) &args);
+  return;
+}
+
+static void findfs_label_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_findfs_label_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_findfs_label_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *label = args.label;
+
+  r = do_findfs_label (label);
+  if (r == NULL)
+    /* do_findfs_label has already called reply_with_error */
+    goto done;
+
+  struct guestfs_findfs_label_ret ret;
+  ret.device = r;
+  reply ((xdrproc_t) &xdr_guestfs_findfs_label_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_findfs_label_args, (char *) &args);
+  return;
+}
+
+static void is_chardev_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_is_chardev_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_is_chardev_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_is_chardev (path);
+  if (r == -1)
+    /* do_is_chardev has already called reply_with_error */
+    goto done;
+
+  struct guestfs_is_chardev_ret ret;
+  ret.flag = r;
+  reply ((xdrproc_t) &xdr_guestfs_is_chardev_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_is_chardev_args, (char *) &args);
+  return;
+}
+
+static void is_blockdev_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_is_blockdev_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_is_blockdev_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_is_blockdev (path);
+  if (r == -1)
+    /* do_is_blockdev has already called reply_with_error */
+    goto done;
+
+  struct guestfs_is_blockdev_ret ret;
+  ret.flag = r;
+  reply ((xdrproc_t) &xdr_guestfs_is_blockdev_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_is_blockdev_args, (char *) &args);
+  return;
+}
+
+static void is_fifo_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_is_fifo_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_is_fifo_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_is_fifo (path);
+  if (r == -1)
+    /* do_is_fifo has already called reply_with_error */
+    goto done;
+
+  struct guestfs_is_fifo_ret ret;
+  ret.flag = r;
+  reply ((xdrproc_t) &xdr_guestfs_is_fifo_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_is_fifo_args, (char *) &args);
+  return;
+}
+
+static void is_symlink_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_is_symlink_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_is_symlink_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_is_symlink (path);
+  if (r == -1)
+    /* do_is_symlink has already called reply_with_error */
+    goto done;
+
+  struct guestfs_is_symlink_ret ret;
+  ret.flag = r;
+  reply ((xdrproc_t) &xdr_guestfs_is_symlink_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_is_symlink_args, (char *) &args);
+  return;
+}
+
+static void is_socket_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_is_socket_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_is_socket_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_is_socket (path);
+  if (r == -1)
+    /* do_is_socket has already called reply_with_error */
+    goto done;
+
+  struct guestfs_is_socket_ret ret;
+  ret.flag = r;
+  reply ((xdrproc_t) &xdr_guestfs_is_socket_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_is_socket_args, (char *) &args);
+  return;
+}
+
+static void part_to_dev_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_part_to_dev_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_part_to_dev_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *partition = args.partition;
+  RESOLVE_DEVICE (partition, , goto done);
+
+  r = do_part_to_dev (partition);
+  if (r == NULL)
+    /* do_part_to_dev has already called reply_with_error */
+    goto done;
+
+  struct guestfs_part_to_dev_ret ret;
+  ret.device = r;
+  reply ((xdrproc_t) &xdr_guestfs_part_to_dev_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_part_to_dev_args, (char *) &args);
+  return;
+}
+
+static void upload_offset_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_upload_offset_args args;
+  int64_t offset;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_upload_offset_args (xdr_in, &args)) {
+    cancel_receive ();
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *remotefilename = args.remotefilename;
+  REQUIRE_ROOT_OR_RESOLVE_DEVICE (remotefilename, cancel_receive (), goto done);
+  offset = args.offset;
+
+  r = do_upload_offset (remotefilename, offset);
+  if (r == -1)
+    /* do_upload_offset has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_upload_offset_args, (char *) &args);
+  return;
+}
+
+static void download_offset_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_download_offset_args args;
+  int64_t offset;
+  int64_t size;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_download_offset_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *remotefilename = args.remotefilename;
+  REQUIRE_ROOT_OR_RESOLVE_DEVICE (remotefilename, , goto done);
+  offset = args.offset;
+  size = args.size;
+
+  r = do_download_offset (remotefilename, offset, size);
+  if (r == -1)
+    /* do_download_offset has already called reply_with_error */
+    goto done;
+
+  /* do_download_offset has already sent a reply */
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_download_offset_args, (char *) &args);
+  return;
+}
+
+static void pwrite_device_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_pwrite_device_args args;
+  const char *content;
+  size_t content_size;
+  int64_t offset;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_pwrite_device_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  content = args.content.content_val;
+  content_size = args.content.content_len;
+  offset = args.offset;
+
+  r = do_pwrite_device (device, content, content_size, offset);
+  if (r == -1)
+    /* do_pwrite_device has already called reply_with_error */
+    goto done;
+
+  struct guestfs_pwrite_device_ret ret;
+  ret.nbytes = r;
+  reply ((xdrproc_t) &xdr_guestfs_pwrite_device_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_pwrite_device_args, (char *) &args);
+  return;
+}
+
+static void pread_device_stub (XDR *xdr_in)
+{
+  size_t size = 1;
+  char *r;
+  struct guestfs_pread_device_args args;
+  int count;
+  int64_t offset;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_pread_device_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  count = args.count;
+  offset = args.offset;
+
+  r = do_pread_device (device, count, offset, &size);
+  /* size == 0 && r == NULL could be a non-error case (just
+   * an ordinary zero-length buffer), so be careful ...
+   */
+  if (size == 1 && r == NULL)
+    /* do_pread_device has already called reply_with_error */
+    goto done;
+
+  struct guestfs_pread_device_ret ret;
+  ret.content.content_val = r;
+  ret.content.content_len = size;
+  reply ((xdrproc_t) &xdr_guestfs_pread_device_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_pread_device_args, (char *) &args);
+  return;
+}
+
+static void lvm_canonical_lv_name_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_lvm_canonical_lv_name_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_lvm_canonical_lv_name_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *lvname = args.lvname;
+  RESOLVE_DEVICE (lvname, , goto done);
+
+  r = do_lvm_canonical_lv_name (lvname);
+  if (r == NULL)
+    /* do_lvm_canonical_lv_name has already called reply_with_error */
+    goto done;
+
+  struct guestfs_lvm_canonical_lv_name_ret ret;
+  ret.lv = r;
+  reply ((xdrproc_t) &xdr_guestfs_lvm_canonical_lv_name_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_lvm_canonical_lv_name_args, (char *) &args);
+  return;
+}
+
+static void mkfs_opts_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_mkfs_opts_args args;
+  int blocksize;
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffc)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_mkfs_opts_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *fstype = args.fstype;
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  blocksize = args.blocksize;
+  char *features = args.features;
+
+  r = do_mkfs_opts (fstype, device, blocksize, features);
+  if (r == -1)
+    /* do_mkfs_opts has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_mkfs_opts_args, (char *) &args);
+  return;
+}
+
+static void getxattr_stub (XDR *xdr_in)
+{
+  size_t size = 1;
+  char *r;
+  struct guestfs_getxattr_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_getxattr_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *path = args.path;
+  ABS_PATH (path, , goto done);
+  char *name = args.name;
+
+  NEED_ROOT (, goto done);
+  r = do_getxattr (path, name, &size);
+  /* size == 0 && r == NULL could be a non-error case (just
+   * an ordinary zero-length buffer), so be careful ...
+   */
+  if (size == 1 && r == NULL)
+    /* do_getxattr has already called reply_with_error */
+    goto done;
+
+  struct guestfs_getxattr_ret ret;
+  ret.xattr.xattr_val = r;
+  ret.xattr.xattr_len = size;
+  reply ((xdrproc_t) &xdr_guestfs_getxattr_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_getxattr_args, (char *) &args);
+  return;
+}
+
+static void lgetxattr_stub (XDR *xdr_in)
+{
+  size_t size = 1;
+  char *r;
+  struct guestfs_lgetxattr_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_lgetxattr_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *path = args.path;
+  ABS_PATH (path, , goto done);
+  char *name = args.name;
+
+  NEED_ROOT (, goto done);
+  r = do_lgetxattr (path, name, &size);
+  /* size == 0 && r == NULL could be a non-error case (just
+   * an ordinary zero-length buffer), so be careful ...
+   */
+  if (size == 1 && r == NULL)
+    /* do_lgetxattr has already called reply_with_error */
+    goto done;
+
+  struct guestfs_lgetxattr_ret ret;
+  ret.xattr.xattr_val = r;
+  ret.xattr.xattr_len = size;
+  reply ((xdrproc_t) &xdr_guestfs_lgetxattr_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_lgetxattr_args, (char *) &args);
+  return;
+}
+
+static void resize2fs_M_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_resize2fs_M_args args;
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_resize2fs_M_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+
+  r = do_resize2fs_M (device);
+  if (r == -1)
+    /* do_resize2fs_M has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_resize2fs_M_args, (char *) &args);
+  return;
+}
+
+static void internal_autosync_stub (XDR *xdr_in)
+{
+  int r;
+
+  r = do_internal_autosync ();
+  if (r == -1)
+    /* do_internal_autosync has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  return;
 }
 
 void dispatch_incoming_message (XDR *xdr_in)
@@ -6436,6 +8339,189 @@ void dispatch_incoming_message (XDR *xdr_in)
     case GUESTFS_PROC_INITRD_CAT:
       initrd_cat_stub (xdr_in);
       break;
+    case GUESTFS_PROC_PVUUID:
+      pvuuid_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_VGUUID:
+      vguuid_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LVUUID:
+      lvuuid_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_VGPVUUIDS:
+      vgpvuuids_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_VGLVUUIDS:
+      vglvuuids_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_COPY_SIZE:
+      copy_size_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_ZERO_DEVICE:
+      zero_device_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_TXZ_IN:
+      txz_in_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_TXZ_OUT:
+      txz_out_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_NTFSRESIZE:
+      ntfsresize_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_VGSCAN:
+      vgscan_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PART_DEL:
+      part_del_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PART_GET_BOOTABLE:
+      part_get_bootable_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PART_GET_MBR_ID:
+      part_get_mbr_id_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PART_SET_MBR_ID:
+      part_set_mbr_id_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_CHECKSUM_DEVICE:
+      checksum_device_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LVRESIZE_FREE:
+      lvresize_free_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_AUG_CLEAR:
+      aug_clear_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_GET_UMASK:
+      get_umask_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_DEBUG_UPLOAD:
+      debug_upload_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BASE64_IN:
+      base64_in_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BASE64_OUT:
+      base64_out_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_CHECKSUMS_OUT:
+      checksums_out_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_FILL_PATTERN:
+      fill_pattern_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_WRITE:
+      write_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PWRITE:
+      pwrite_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_RESIZE2FS_SIZE:
+      resize2fs_size_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PVRESIZE_SIZE:
+      pvresize_size_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_NTFSRESIZE_SIZE:
+      ntfsresize_size_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_AVAILABLE_ALL_GROUPS:
+      available_all_groups_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_FALLOCATE64:
+      fallocate64_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_VFS_LABEL:
+      vfs_label_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_VFS_UUID:
+      vfs_uuid_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LVM_SET_FILTER:
+      lvm_set_filter_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LVM_CLEAR_FILTER:
+      lvm_clear_filter_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LUKS_OPEN:
+      luks_open_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LUKS_OPEN_RO:
+      luks_open_ro_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LUKS_CLOSE:
+      luks_close_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LUKS_FORMAT:
+      luks_format_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LUKS_FORMAT_CIPHER:
+      luks_format_cipher_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LUKS_ADD_KEY:
+      luks_add_key_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LUKS_KILL_SLOT:
+      luks_kill_slot_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_IS_LV:
+      is_lv_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_FINDFS_UUID:
+      findfs_uuid_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_FINDFS_LABEL:
+      findfs_label_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_IS_CHARDEV:
+      is_chardev_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_IS_BLOCKDEV:
+      is_blockdev_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_IS_FIFO:
+      is_fifo_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_IS_SYMLINK:
+      is_symlink_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_IS_SOCKET:
+      is_socket_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PART_TO_DEV:
+      part_to_dev_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_UPLOAD_OFFSET:
+      upload_offset_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_DOWNLOAD_OFFSET:
+      download_offset_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PWRITE_DEVICE:
+      pwrite_device_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PREAD_DEVICE:
+      pread_device_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LVM_CANONICAL_LV_NAME:
+      lvm_canonical_lv_name_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_MKFS_OPTS:
+      mkfs_opts_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_GETXATTR:
+      getxattr_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LGETXATTR:
+      lgetxattr_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_RESIZE2FS_M:
+      resize2fs_M_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INTERNAL_AUTOSYNC:
+      internal_autosync_stub (xdr_in);
+      break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);
   }
@@ -6446,7 +8532,7 @@ static const char *lvm_pv_cols = "pv_name,pv_uuid,pv_fmt,pv_size,dev_size,pv_fre
 static int lvm_tokenize_pv (char *str, guestfs_int_lvm_pv *r)
 {
   char *tok, *p, *next;
-  int i, j;
+  size_t i, j;
 
   if (!str) {
     fprintf (stderr, "%s: failed: passed a NULL string\n", __func__);
@@ -6658,7 +8744,7 @@ parse_command_line_pvs (void)
   ret->guestfs_int_lvm_pv_list_val = NULL;
 
   r = command (&out, &err,
-	       "/sbin/lvm", "pvs",
+	       "lvm", "pvs",
 	       "-o", lvm_pv_cols, "--unbuffered", "--noheadings",
 	       "--nosuffix", "--separator", ",", "--units", "b", NULL);
   if (r == -1) {
@@ -6725,7 +8811,7 @@ static const char *lvm_vg_cols = "vg_name,vg_uuid,vg_fmt,vg_attr,vg_size,vg_free
 static int lvm_tokenize_vg (char *str, guestfs_int_lvm_vg *r)
 {
   char *tok, *p, *next;
-  int i, j;
+  size_t i, j;
 
   if (!str) {
     fprintf (stderr, "%s: failed: passed a NULL string\n", __func__);
@@ -6998,7 +9084,7 @@ parse_command_line_vgs (void)
   ret->guestfs_int_lvm_vg_list_val = NULL;
 
   r = command (&out, &err,
-	       "/sbin/lvm", "vgs",
+	       "lvm", "vgs",
 	       "-o", lvm_vg_cols, "--unbuffered", "--noheadings",
 	       "--nosuffix", "--separator", ",", "--units", "b", NULL);
   if (r == -1) {
@@ -7065,7 +9151,7 @@ static const char *lvm_lv_cols = "lv_name,lv_uuid,lv_attr,lv_major,lv_minor,lv_k
 static int lvm_tokenize_lv (char *str, guestfs_int_lvm_lv *r)
 {
   char *tok, *p, *next;
-  int i, j;
+  size_t i, j;
 
   if (!str) {
     fprintf (stderr, "%s: failed: passed a NULL string\n", __func__);
@@ -7308,7 +9394,7 @@ parse_command_line_lvs (void)
   ret->guestfs_int_lvm_lv_list_val = NULL;
 
   r = command (&out, &err,
-	       "/sbin/lvm", "lvs",
+	       "lvm", "lvs",
 	       "-o", lvm_lv_cols, "--unbuffered", "--noheadings",
 	       "--nosuffix", "--separator", ",", "--units", "b", NULL);
   if (r == -1) {

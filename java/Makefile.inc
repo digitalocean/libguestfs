@@ -1,9 +1,9 @@
 # libguestfs generated file
 # WARNING: THIS FILE IS GENERATED FROM:
-#   src/generator.ml
+#   generator/generator_*.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2010 Red Hat Inc.
+# Copyright (C) 2009-2011 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,4 +31,5 @@ java_built_sources = \
 	com/redhat/et/libguestfs/XAttr.java \
 	com/redhat/et/libguestfs/INotifyEvent.java \
 	com/redhat/et/libguestfs/Partition.java \
+	com/redhat/et/libguestfs/Application.java \
 	com/redhat/et/libguestfs/GuestFS.java

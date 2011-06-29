@@ -1,77 +1,65 @@
-Libguestfs is a library for accessing and modifying guest disk images.
-Amongst the things this is good for: making batch configuration
-changes to guests, getting disk used/free statistics (see also:
-virt-df), migrating between virtualization systems (see also:
-virt-p2v), performing partial backups, performing partial guest
-clones, cloning guests and changing registry/UUID/hostname info, and
-much else besides.
-
-Libguestfs uses Linux kernel and qemu code, and can access any type of
-guest filesystem that Linux and qemu can, including but not limited
-to: ext2/3/4, btrfs, FAT and NTFS, LVM, many different disk partition
-schemes, qcow, qcow2, vmdk.
-
-Libguestfs provides ways to enumerate guest storage (eg. partitions,
-LVs, what filesystem is in each LV, etc.).  It can also run commands
-in the context of the guest.  Also you can access filesystems over FTP.
-
-Libguestfs is a library that can be linked with C and C++ management
-programs (or management programs written in OCaml, Perl, Python, Ruby,
-Java, Haskell or C#).  You can also use it from shell scripts or the
-command line.
-
-Libguestfs was written by Richard W.M. Jones (rjones@redhat.com) and
-hacked on by lots of other people.  For discussion, development,
-patches, etc. please use the mailing list:
-
-  http://www.redhat.com/mailman/listinfo/libguestfs
-
-
-Home page
-----------------------------------------------------------------------
+Libguestfs is tools and a library for accessing and modifying guest
+disk images.  For more information see the home page:
 
   http://libguestfs.org/
+
+For discussion, development, patches, etc. please use the mailing
+list:
+
+  http://www.redhat.com/mailman/listinfo/libguestfs
 
 
 Requirements
 ----------------------------------------------------------------------
 
-- recent QEMU >= 0.10 with vmchannel support
-  http://lists.gnu.org/archive/html/qemu-devel/2009-02/msg01042.html
+- recent QEMU >= 0.13 with virtio-serial support
 
-- febootstrap >= 2.3
+- kernel >= 2.6.34 with virtio-serial support enabled.  virtio-block
+  support is not required but comes highly recommended.
 
-- fakeroot
-
-- fakechroot >= 2.9
+- febootstrap >= 3.0 (recommended >= 3.3)
+     *NB*: febootstrap 2.x WILL NOT WORK
+           febootstrap 3.x is distro-independent, and is required on
+             Debian and other distros too
 
 - XDR, rpcgen (on Linux these are provided by glibc)
 
+- pcre (Perl Compatible Regular Expressions C library) (optional)
+
+- libmagic (the library that corresponds to the 'file' command) (optional)
+
+- libvirt (optional)
+
+- libxml2 (optional)
+
+- libconfig (optional, to parse /etc/libguestfs-tools.conf)
+
+- Augeas (http://augeas.net/) (optional)
+
+- gperf
+
 - squashfs-tools (mksquashfs only)
 
-- genisoimage / mkisofs
+- genisoimage (NOT mkisofs any more)
 
-- libxml2
+- hivex >= 1.2.1 (http://libguestfs.org/download)
+
+- (Optional) Berkeley DB 'db_dump' and 'db_load' utilities
+  (db4-utils or db4.X-util or similar)
 
 - (Optional) FUSE to build the FUSE module
 
-- (Optional) Augeas (http://augeas.net/)
-
-- perldoc (pod2man, pod2text) to generate the manual pages and
-  other documentation.
+- perldoc (pod2man, pod2text, pod2html) to generate the manual pages
+  and other documentation.
 
 - (Optional) Readline to have nicer command-line editing in guestfish.
 
-- (Optional) 'reged' program from chntpw to decode Windows registry
-  entries (http://home.eunet.no/~pnordahl/ntpasswd/)
-
 - (Optional) xmllint to validate virt-inspector RELAX NG schema
 
-- (Optional) OCaml + OCaml library xml-light if you want to rebuild
-  the generated files, and also to build the OCaml bindings
-  (http://tech.motion-twin.com/xmllight.html)
+- (Optional) OCaml if you want to rebuild the generated files, and
+  also to build the OCaml bindings
 
-- (Optional) local Fedora mirror
+- (Optional) OCaml PCRE bindings (ocaml-pcre).
 
 - (Optional) Perl if you want to build the perl bindings
 
@@ -84,10 +72,25 @@ bindings
 
 - (Optional) GHC if you want to build the Haskell bindings
 
-- (Optional) Perl XML::XPath, Sys::Virt modules (for libvirt support
-in virt-inspector).
+- (Optional) Perl Sys::Virt module.
+
+- (Optional) Perl Win::Hivex module.
+
+- (Optional) Perl Pod::Usage module.
+
+- (Optional) Perl Test::More module (from perl Test::Simple).
+
+- (Optional) Perl String::ShellQuote module.
 
 - (Optional, but highly recommended) perl-libintl for translating perl code.
+
+- po4a for translating manpages and POD files.
+  This is optional when compiling from the tarball, but mandatory
+  if you compile from git.
+
+- (Optional) PHP, phpize if you want to build the PHP bindings
+
+- (Optional, but highly recommended) getfacl, getfattr
 
 Running ./configure will check you have all the requirements installed
 on your machine.
@@ -98,12 +101,8 @@ Building
 
 Then make the daemon, library and root filesystem:
 
-  ./configure [--with-mirror=URI]
+  ./configure
   make
-
-Use the optional --with-mirror parameter to specify the URI of a local
-Fedora mirror.  See the discussion of the MIRROR parameter in the
-febootstrap(8) manpage.
 
 Finally run the tests:
 
@@ -114,39 +113,35 @@ this command as root:
 
   make install
 
+You can run guestfish, guestmount and the virt tools without needing
+to install, using the "run" script in the top directory.  This script
+sets up some environment variables.  For example:
 
-Fedora
-----------------------------------------------------------------------
+  ./run ./fish/guestfish [usual guestfish args ...]
 
-We provide packages for Fedora >= 11 in Fedora.  Use those, or build
-from our source RPMs - it's far simpler that way.
+  ./run ./inspector/virt-inspector [usual virt-inspector args ...]
 
-You can compile libguestfs on Fedora 10 but you cannot use it with the
-version of qemu in Fedora 10.  You need to compile your own qemu, see
-section 'qemu' below.
+If you are already in the fish/ subdirectory, then the following
+command will also work:
 
+  ../run ./guestfish [...]
 
-RHEL / EPEL / CentOS etc
-----------------------------------------------------------------------
+You can also make a symlink (note: NOT a hard link) from your $PATH to
+the run script, eg:
 
-We provide packages in EPEL which cover RHEL/CentOS >= 5.  Use those
-or build from our source RPMs.
+  cd ~/bin
+  ln -s ~/libguestfs/run libguestfs-run
+  cd ~/libguestfs
+  libguestfs-run ./inspector/virt-inspector [...]
 
+You can also run the C programs under valgrind like this:
 
-Debian
-----------------------------------------------------------------------
+  ./run valgrind [valgrind opts...] ./cat/virt-cat [virt-cat opts...]
 
-libguestfs is now built as a package in Debian by Guido Gunther and
-the other Debian libvirt maintainers.  See:
+This also works with sudo (eg. if you need root access for libvirt or
+to access a block device):
 
-http://wiki.debian.org/Teams/DebianLibvirtTeam#Packages
-
-You can build for Debian in two different ways, either building a
-Fedora-based appliance using febootstrap, yum, rpm, fakeroot,
-fakechroot (all packaged in Debian).  However the recommended way is
-to build a Debian-based appliance using debootstrap and debirf.
-
-Both ways are supported by the configure script.
+  sudo ./run ./cat/virt-cat -d LinuxGuest /etc/passwd
 
 
 qemu
@@ -204,88 +199,23 @@ In libguestfs >= 1.0.71 we don't require any vmchannel implementation,
 as long as qemu has been compiled with support for SLIRP (user mode
 networking, or "-net user"), which is almost always the case.
 
-However we still offer the ability to use vmchannel, and in future we
-may add support for other types of qemu, which is useful in a few
-cases, specifically where qemu packagers decide to compile out support
-for SLIRP (qemu packagers: please don't do this).
+In libguestfs >= 1.5.4 we switched again to using qemu's virtio-serial
+and removed all the other vmchannels and the SLIRP channel.
 
 
 Supermin appliance
 ----------------------------------------------------------------------
 
-If you configure with --enable-supermin then we will build a supermin
-appliance (supermin = super-minimized).  This is a very specialized
-appliance which is built on-the-fly at runtime (specifically, when you
-call guestfs_launch).
-
-The normal appliance is a self-contained Linux operating system, based
-on the Fedora/RHEL/CentOS Linux distro.  So it contains a complete
-copy of all the libraries and programs needed, like kernel, libc,
-bash, coreutils etc etc.
-
-The supermin appliance removes the kernel and all the executable
-libraries and programs from the appliance.  That just leaves a
-skeleton of config files and some data files, which is obviously
-massively smaller than the normal appliance.  At runtime we rebuild
-the appliance on-the-fly from the libraries and programs on the host
-(eg. pulling in the real /lib/libc.so, the real /bin/bash etc.)
-
-Although this process of rebuilding the appliance each time sounds
-slow, it turns out to be faster than using the prebuilt appliance.
-(Most of the saving comes from not compressing the appliance - it
-transpires that decompressing the appliance is the slowest part of the
-whole boot sequence).  On my machine, a new appliance can be built in
-under a fifth of a second, and the boot time is several seconds
-shorter.
-
-The big advantage of the supermin appliance for distributions like
-Fedora is that it gets security fixes automatically from the host, so
-there is no need to rebuild the whole of libguestfs for a security
-update in some underlying library.
-
-There are several DISADVANTAGES:
-
-It won't work at all except in very narrow, controlled cases like the
-Fedora packaging case.  We control the dependencies of the libguestfs
-RPM tightly to ensure that the required binaries are actually present
-on the host.
-
-Furthermore there are certain unlikely changes in the packages on the
-host which could break a supermin appliance, eg. an updated library
-which depends on an additional data file.
-
-Also supermin appliances are subjected to changes in the host kernel
-which might break compatibility with qemu -- these are, of course,
-real bugs in any case.
-
-Lastly, supermin appliances really can't be moved between branches of
-distributions (eg. built on Fedora 12 and moved to Fedora 10) because
-they are not self-contained and they rely on certain libraries being
-around.  You shouldn't do this anyway.
-
-Use supermin appliances with caution.
-
-
-Notes on cross-architecture support
-----------------------------------------------------------------------
-
-At the moment we basically don't support cross-architecture or
-32-on-64.  This limits what is possible for some guests.  Filesystem
-operations and FTP export will work fine, but running commands in
-guests may not be possible.
-
-To enable this requires work for cross-architecture and 32-on-64
-support in febootstrap, fakeroot and fakechroot.
-
-The daemon/ directory contains its own configure script.  This is so
-that in future we will be able to cross-compile the daemon.
+In libguestfs >= 1.7.19 the supermin appliance is the default and only
+supported form of appliance.  For more information see febootstrap
+(http://people.redhat.com/~rjones/febootstrap/).
 
 
 Mirroring tip
 ----------------------------------------------------------------------
 
 On my machines I can usually rebuild the appliance in around 3
-minutes.  If it takes much longer for you, use a local Fedora mirror
+minutes.  If it takes much longer for you, use a local distro mirror
 or squid.
 
 To use squid to cache yum downloads, read this first:
@@ -309,21 +239,14 @@ distributions.  Non-Linux ports are trickier, but we will accept
 patches if they aren't too invasive.
 
 The main porting issues are with the dependencies needed to build the
-appliance.  You will need to find or port the following packages
-first:
-
- - fakeroot
- - fakechroot
- - python
- - rpm-python    http://www.rpm.org/
- - yum           http://yum.baseurl.org/
- - febootstrap   http://et.redhat.com/~rjones/febootstrap/
+appliance.  You will need to port the febootstrap first
+(http://people.redhat.com/~rjones/febootstrap/).
 
 
 Copyright and license information
 ----------------------------------------------------------------------
 
-Copyright (C) 2009 Red Hat Inc.
+Copyright (C) 2009-2011 Red Hat Inc.
 
 The library is distributed under the LGPLv2+.  The programs are
 distributed under the GPLv2+.  Please see the files COPYING and

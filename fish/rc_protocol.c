@@ -6,7 +6,7 @@
 #include "rc_protocol.h"
 
 bool_t
-xdr_str (XDR *xdrs, str *objp)
+xdr_guestfish_str (XDR *xdrs, guestfish_str *objp)
 {
 	register int32_t *buf;
 
@@ -33,7 +33,7 @@ xdr_guestfish_call (XDR *xdrs, guestfish_call *objp)
 	 if (!xdr_string (xdrs, &objp->cmd, ~0))
 		 return FALSE;
 	 if (!xdr_array (xdrs, (char **)&objp->args.args_val, (u_int *) &objp->args.args_len, ~0,
-		sizeof (str), (xdrproc_t) xdr_str))
+		sizeof (guestfish_str), (xdrproc_t) xdr_guestfish_str))
 		 return FALSE;
 	 if (!xdr_bool (xdrs, &objp->exit_on_error))
 		 return FALSE;

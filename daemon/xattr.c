@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "../src/guestfs_protocol.h"
+#include "guestfs_protocol.h"
 #include "daemon.h"
 #include "actions.h"
 #include "optgroups.h"
@@ -405,28 +405,6 @@ do_lxattrlist (const char *path, char *const *names)
     }
   }
 
-  /* If verbose, debug what we're about to send back. */
-  if (verbose) {
-    fprintf (stderr, "lxattrlist: returning: [\n");
-    for (k = 0; k < ret->guestfs_int_xattr_list_len; ++k) {
-      const guestfs_int_xattr *entry = &ret->guestfs_int_xattr_list_val[k];
-      if (STRNEQ (entry[0].attrname, "")) {
-        fprintf (stderr, "ERROR: expecting empty attrname at k = %zu\n", k);
-        break;
-      }
-      fprintf (stderr, "  %zu: special attrval = %s\n",
-               k, entry[0].attrval.attrval_val);
-      for (i = 1; k+i < ret->guestfs_int_xattr_list_len; ++i) {
-        if (STREQ (entry[i].attrname, ""))
-          break;
-        fprintf (stderr, "    name %s, value length %d\n",
-                 entry[i].attrname, entry[i].attrval.attrval_len);
-      }
-      k += i-1;
-    }
-    fprintf (stderr, "]\n");
-  }
-
   return ret;
 
  error:
@@ -446,6 +424,90 @@ do_lxattrlist (const char *path, char *const *names)
   reply_with_error ("no support for llistxattr and lgetxattr");
   return NULL;
 #endif
+}
+
+char *
+do_getxattr (const char *path, const char *name, size_t *size_r)
+{
+  ssize_t r;
+  char *buf;
+  size_t len;
+
+  CHROOT_IN;
+  r = getxattr (path, name, NULL, 0);
+  CHROOT_OUT;
+  if (r == -1) {
+    reply_with_perror ("getxattr");
+    return NULL;
+  }
+
+  len = r;
+  buf = malloc (len);
+  if (buf == NULL) {
+    reply_with_perror ("malloc");
+    return NULL;
+  }
+
+  CHROOT_IN;
+  r = getxattr (path, name, buf, len);
+  CHROOT_OUT;
+  if (r == -1) {
+    reply_with_perror ("getxattr");
+    free (buf);
+    return NULL;
+  }
+
+  if (len != (size_t) r) {
+    reply_with_error ("getxattr: unexpected size (%zu/%zd)", len, r);
+    free (buf);
+    return NULL;
+  }
+
+  /* Must set size_r last thing before returning. */
+  *size_r = len;
+  return buf; /* caller frees */
+}
+
+char *
+do_lgetxattr (const char *path, const char *name, size_t *size_r)
+{
+  ssize_t r;
+  char *buf;
+  size_t len;
+
+  CHROOT_IN;
+  r = lgetxattr (path, name, NULL, 0);
+  CHROOT_OUT;
+  if (r == -1) {
+    reply_with_perror ("lgetxattr");
+    return NULL;
+  }
+
+  len = r;
+  buf = malloc (len);
+  if (buf == NULL) {
+    reply_with_perror ("malloc");
+    return NULL;
+  }
+
+  CHROOT_IN;
+  r = lgetxattr (path, name, buf, len);
+  CHROOT_OUT;
+  if (r == -1) {
+    reply_with_perror ("lgetxattr");
+    free (buf);
+    return NULL;
+  }
+
+  if (len != (size_t) r) {
+    reply_with_error ("lgetxattr: unexpected size (%zu/%zd)", len, r);
+    free (buf);
+    return NULL;
+  }
+
+  /* Must set size_r last thing before returning. */
+  *size_r = len;
+  return buf; /* caller frees */
 }
 
 #else /* no xattr.h */
@@ -493,6 +555,18 @@ do_lremovexattr (const char *xattr, const char *path)
 
 guestfs_int_xattr_list *
 do_lxattrlist (const char *path, char *const *names)
+{
+  NOT_AVAILABLE (NULL);
+}
+
+char *
+do_getxattr (const char *path, const char *name, size_t *size_r)
+{
+  NOT_AVAILABLE (NULL);
+}
+
+char *
+do_lgetxattr (const char *path, const char *name, size_t *size_r)
 {
   NOT_AVAILABLE (NULL);
 }

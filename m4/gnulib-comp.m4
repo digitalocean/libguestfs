@@ -26,8 +26,250 @@ AC_DEFUN([gl_EARLY],
   m4_pattern_allow([^gl_LTLIBOBJS$])dnl a variable
   AC_REQUIRE([AC_PROG_RANLIB])
   AC_REQUIRE([AM_PROG_CC_C_O])
+  # Code from module alignof:
+  # Code from module alignof-tests:
+  # Code from module alloca-opt:
+  # Code from module alloca-opt-tests:
+  # Code from module arg-nonnull:
+  # Code from module argmatch:
+  # Code from module argmatch-tests:
+  # Code from module arpa_inet:
+  # Code from module arpa_inet-tests:
+  # Code from module binary-io:
+  # Code from module binary-io-tests:
+  # Code from module bitrotate:
+  # Code from module bitrotate-tests:
+  # Code from module c++defs:
+  # Code from module c-ctype:
+  # Code from module c-ctype-tests:
+  # Code from module chdir-long:
+  # Code from module chown:
+  # Code from module chown-tests:
+  # Code from module cloexec:
+  # Code from module cloexec-tests:
+  # Code from module close:
+  # Code from module close-hook:
+  # Code from module close-stream:
+  # Code from module closeout:
+  # Code from module configmake:
+  # Code from module cycle-check:
+  # Code from module d-ino:
+  # Code from module d-type:
+  # Code from module dev-ino:
+  # Code from module dirent:
+  # Code from module dirent-safer:
+  # Code from module dirent-safer-tests:
+  # Code from module dirent-tests:
+  # Code from module dirfd:
+  # Code from module dirname-lgpl:
+  # Code from module double-slash-root:
+  # Code from module dup2:
+  # Code from module dup2-tests:
+  # Code from module environ:
+  # Code from module environ-tests:
+  # Code from module errno:
+  # Code from module errno-tests:
+  # Code from module error:
+  # Code from module exitfail:
+  # Code from module extensions:
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
+  # Code from module fchdir:
+  # Code from module fchdir-tests:
+  # Code from module fclose:
+  # Code from module fcntl:
+  # Code from module fcntl-h:
+  # Code from module fcntl-h-tests:
+  # Code from module fcntl-safer:
+  # Code from module fcntl-safer-tests:
+  # Code from module fcntl-tests:
+  # Code from module fd-safer-flag:
+  # Code from module fdopendir:
+  # Code from module fdopendir-tests:
+  # Code from module filevercmp:
+  # Code from module filevercmp-tests:
+  # Code from module float:
+  # Code from module fpending:
+  # Code from module fpending-tests:
+  # Code from module fts:
+  # Code from module full-read:
+  # Code from module full-write:
+  # Code from module getcwd:
+  # Code from module getcwd-tests:
+  # Code from module getdtablesize:
+  # Code from module getdtablesize-tests:
+  # Code from module getgroups:
+  # Code from module getgroups-tests:
+  # Code from module getopt-gnu:
+  # Code from module getopt-posix:
+  # Code from module getopt-posix-tests:
+  # Code from module getpagesize:
+  # Code from module gettext-h:
+  # Code from module getugroups:
+  # Code from module gitlog-to-changelog:
+  # Code from module gnu-make:
+  # Code from module gnumakefile:
+  # Code from module hash:
+  # Code from module hash-pjw:
+  # Code from module hash-tests:
+  # Code from module havelib:
+  # Code from module human:
+  # Code from module i-ring:
+  # Code from module i-ring-tests:
+  # Code from module ignore-value:
+  # Code from module include_next:
+  # Code from module inline:
+  # Code from module intprops:
+  # Code from module inttostr:
+  # Code from module inttypes:
+  # Code from module inttypes-tests:
+  # Code from module lchown:
+  # Code from module lchown-tests:
+  # Code from module localcharset:
+  # Code from module lock:
+  # Code from module lock-tests:
+  # Code from module lstat:
+  # Code from module lstat-tests:
+  # Code from module maintainer-makefile:
+  # Code from module malloc-posix:
+  # Code from module malloca:
+  # Code from module malloca-tests:
+  # Code from module manywarnings:
+  # Code from module mbrtowc:
+  # Code from module mbrtowc-tests:
+  # Code from module mbsinit:
+  # Code from module mbsinit-tests:
+  # Code from module memchr:
+  # Code from module memchr-tests:
+  # Code from module mempcpy:
+  # Code from module memrchr:
+  # Code from module memrchr-tests:
+  # Code from module mgetgroups:
+  # Code from module mkdir:
+  # Code from module mkdir-tests:
+  # Code from module multiarch:
+  # Code from module netinet_in:
+  # Code from module netinet_in-tests:
+  # Code from module open:
+  # Code from module open-tests:
+  # Code from module openat:
+  # Code from module openat-die:
+  # Code from module openat-safer:
+  # Code from module openat-safer-tests:
+  # Code from module openat-tests:
+  # Code from module pathmax:
+  # Code from module priv-set:
+  # Code from module priv-set-tests:
+  # Code from module progname:
+  # Code from module putenv:
+  # Code from module quote:
+  # Code from module quotearg:
+  # Code from module quotearg-simple:
+  # Code from module quotearg-simple-tests:
+  # Code from module rawmemchr:
+  # Code from module rawmemchr-tests:
+  # Code from module realloc:
+  # Code from module realloc-posix:
+  # Code from module rmdir:
+  # Code from module rmdir-tests:
+  # Code from module safe-read:
+  # Code from module safe-write:
+  # Code from module same-inode:
+  # Code from module save-cwd:
+  # Code from module setenv:
+  # Code from module setenv-tests:
+  # Code from module size_max:
+  # Code from module sleep:
+  # Code from module sleep-tests:
+  # Code from module ssize_t:
+  # Code from module stat:
+  # Code from module stat-tests:
+  # Code from module stat-time:
+  # Code from module stat-time-tests:
+  # Code from module stdarg:
+  dnl Some compilers (e.g., AIX 5.3 cc) need to be in c99 mode
+  dnl for the builtin va_copy to work.  With Autoconf 2.60 or later,
+  dnl AC_PROG_CC_STDC arranges for this.  With older Autoconf AC_PROG_CC_STDC
+  dnl shouldn't hurt, though installers are on their own to set c99 mode.
+  AC_REQUIRE([AC_PROG_CC_STDC])
+  # Code from module stdbool:
+  # Code from module stdbool-tests:
+  # Code from module stddef:
+  # Code from module stddef-tests:
+  # Code from module stdint:
+  # Code from module stdint-tests:
+  # Code from module stdio:
+  # Code from module stdio-tests:
+  # Code from module stdlib:
+  # Code from module stdlib-tests:
+  # Code from module strchrnul:
+  # Code from module strchrnul-tests:
+  # Code from module strdup-posix:
+  # Code from module streq:
+  # Code from module strerror:
+  # Code from module strerror-tests:
+  # Code from module string:
+  # Code from module string-tests:
+  # Code from module strndup:
+  # Code from module strnlen:
+  # Code from module strtoimax:
+  # Code from module strtol:
+  # Code from module strtoll:
+  # Code from module strtoul:
+  # Code from module strtoull:
+  # Code from module strtoumax:
+  # Code from module symlink:
+  # Code from module symlink-tests:
+  # Code from module sys_socket:
+  # Code from module sys_socket-tests:
+  # Code from module sys_stat:
+  # Code from module sys_stat-tests:
+  # Code from module thread:
+  # Code from module threadlib:
   gl_THREADLIB_EARLY
+  # Code from module time:
+  # Code from module time-tests:
+  # Code from module unistd:
+  # Code from module unistd-safer:
+  # Code from module unistd-safer-tests:
+  # Code from module unistd-tests:
+  # Code from module unlink:
+  # Code from module unlink-tests:
+  # Code from module unlinkdir:
+  # Code from module unsetenv:
+  # Code from module unsetenv-tests:
+  # Code from module useless-if-before-free:
+  # Code from module usleep:
+  # Code from module usleep-tests:
+  # Code from module vasnprintf:
+  # Code from module vasnprintf-tests:
+  # Code from module vasprintf:
+  # Code from module vasprintf-tests:
+  # Code from module vc-list-files:
+  # Code from module vc-list-files-tests:
+  # Code from module verify:
+  # Code from module verify-tests:
+  # Code from module warn-on-use:
+  # Code from module warnings:
+  # Code from module wchar:
+  # Code from module wchar-tests:
+  # Code from module wctob:
+  # Code from module wctype:
+  # Code from module wctype-tests:
+  # Code from module write:
+  # Code from module xalloc:
+  # Code from module xalloc-die:
+  # Code from module xalloc-die-tests:
+  # Code from module xgetcwd:
+  # Code from module xsize:
+  # Code from module xstrtol:
+  # Code from module xstrtol-tests:
+  # Code from module xstrtoll:
+  # Code from module xstrtoll-tests:
+  # Code from module xstrtoumax:
+  # Code from module xstrtoumax-tests:
+  # Code from module xvasprintf:
+  # Code from module xvasprintf-tests:
+  # Code from module yield:
 ])
 
 # This macro should be invoked from ./configure.ac, in the section
@@ -36,6 +278,7 @@ AC_DEFUN([gl_INIT],
 [
   AM_CONDITIONAL([GL_COND_LIBTOOL], [true])
   gl_cond_libtool=true
+  gl_m4_base='m4'
   m4_pushdef([AC_LIBOBJ], m4_defn([gl_LIBOBJ]))
   m4_pushdef([AC_REPLACE_FUNCS], m4_defn([gl_REPLACE_FUNCS]))
   m4_pushdef([AC_LIBSOURCES], m4_defn([gl_LIBSOURCES]))
@@ -43,27 +286,117 @@ AC_DEFUN([gl_INIT],
   m4_pushdef([gl_LIBSOURCES_DIR], [])
   gl_COMMON
   gl_source_base='gnulib/lib'
+  # Code from module alignof:
+  # Code from module alloca-opt:
   gl_FUNC_ALLOCA
+  # Code from module arg-nonnull:
+  # Code from module argmatch:
+  gl_ARGMATCH
+  # Code from module arpa_inet:
   gl_HEADER_ARPA_INET
   AC_PROG_MKDIR_P
+  # Code from module bitrotate:
   AC_REQUIRE([AC_C_INLINE])
+  # Code from module c++defs:
+  # Code from module c-ctype:
+  # Code from module chdir-long:
+  gl_FUNC_CHDIR_LONG
+  # Code from module chown:
+  gl_FUNC_CHOWN
+  gl_UNISTD_MODULE_INDICATOR([chown])
+  # Code from module cloexec:
+  gl_CLOEXEC
+  gl_MODULE_INDICATOR_FOR_TESTS([cloexec])
+  # Code from module close:
+  gl_FUNC_CLOSE
+  gl_UNISTD_MODULE_INDICATOR([close])
+  # Code from module close-hook:
+  # Code from module close-stream:
   gl_CLOSE_STREAM
   gl_MODULE_INDICATOR([close-stream])
+  # Code from module closeout:
   gl_CLOSEOUT
+  # Code from module configmake:
+  # Code from module cycle-check:
+  gl_CYCLE_CHECK
+  # Code from module d-ino:
+  gl_CHECK_TYPE_STRUCT_DIRENT_D_INO
+  # Code from module d-type:
+  gl_CHECK_TYPE_STRUCT_DIRENT_D_TYPE
+  # Code from module dev-ino:
+  # Code from module dirent:
+  gl_DIRENT_H
+  # Code from module dirent-safer:
+  gl_DIRENT_SAFER
+  gl_MODULE_INDICATOR([dirent-safer])
+  # Code from module dirfd:
+  gl_FUNC_DIRFD
+  gl_DIRENT_MODULE_INDICATOR([dirfd])
+  # Code from module dirname-lgpl:
+  gl_DIRNAME_LGPL
+  # Code from module double-slash-root:
+  gl_DOUBLE_SLASH_ROOT
+  # Code from module dup2:
+  gl_FUNC_DUP2
+  gl_UNISTD_MODULE_INDICATOR([dup2])
+  # Code from module environ:
+  gl_ENVIRON
+  gl_UNISTD_MODULE_INDICATOR([environ])
+  # Code from module errno:
   gl_HEADER_ERRNO_H
+  # Code from module error:
   gl_ERROR
   m4_ifdef([AM_XGETTEXT_OPTION],
     [AM_][XGETTEXT_OPTION([--flag=error:3:c-format])
      AM_][XGETTEXT_OPTION([--flag=error_at_line:5:c-format])])
-  gl_EXITFAIL
+  # Code from module exitfail:
+  # Code from module extensions:
+  # Code from module fchdir:
+  gl_FUNC_FCHDIR
+  gl_UNISTD_MODULE_INDICATOR([fchdir])
+  # Code from module fclose:
+  gl_FUNC_FCLOSE
+  gl_STDIO_MODULE_INDICATOR([fclose])
+  # Code from module fcntl:
+  gl_FUNC_FCNTL
+  gl_FCNTL_MODULE_INDICATOR([fcntl])
+  # Code from module fcntl-h:
+  gl_FCNTL_H
+  # Code from module fcntl-safer:
+  gl_FCNTL_SAFER
+  gl_MODULE_INDICATOR([fcntl-safer])
+  # Code from module fdopendir:
+  gl_FUNC_FDOPENDIR
+  gl_DIRENT_MODULE_INDICATOR([fdopendir])
+  gl_MODULE_INDICATOR([fdopendir])
+  # Code from module filevercmp:
+  AC_REQUIRE([AC_C_INLINE])
+  # Code from module float:
   gl_FLOAT_H
+  # Code from module fpending:
   gl_FUNC_FPENDING
+  # Code from module fts:
+  gl_FUNC_FTS
+  # Code from module full-read:
+  # Code from module full-write:
+  # Code from module getcwd:
+  gl_FUNC_GETCWD
+  gl_UNISTD_MODULE_INDICATOR([getcwd])
+  # Code from module getdtablesize:
+  gl_FUNC_GETDTABLESIZE
+  gl_UNISTD_MODULE_INDICATOR([getdtablesize])
+  # Code from module getopt-gnu:
   gl_FUNC_GETOPT_GNU
-  gl_MODULE_INDICATOR([getopt-gnu])
+  gl_MODULE_INDICATOR_FOR_TESTS([getopt-gnu])
+  # Code from module getopt-posix:
   gl_FUNC_GETOPT_POSIX
+  # Code from module gettext-h:
   AC_SUBST([LIBINTL])
   AC_SUBST([LTLIBINTL])
+  # Code from module gitlog-to-changelog:
+  # Code from module gnu-make:
   gl_GNU_MAKE
+  # Code from module gnumakefile:
   # Autoconf 2.61a.99 and earlier don't support linking a file only
   # in VPATH builds.  But since GNUmakefile is for maintainer use
   # only, it does not matter if we skip the link with older autoconf.
@@ -74,76 +407,214 @@ AC_DEFUN([gl_INIT],
   	m4_defn([m4_PACKAGE_VERSION])), [1], [],
         [AC_CONFIG_LINKS([$GNUmakefile:$GNUmakefile], [],
   	[GNUmakefile=$GNUmakefile])])
+  # Code from module hash:
   gl_HASH
+  # Code from module hash-pjw:
+  # Code from module havelib:
+  # Code from module human:
+  gl_HUMAN
+  # Code from module i-ring:
+  gl_I_RING
+  # Code from module ignore-value:
   AC_REQUIRE([AC_C_INLINE])
+  # Code from module include_next:
+  # Code from module inline:
   gl_INLINE
+  # Code from module intprops:
+  # Code from module inttypes:
   gl_INTTYPES_H
+  # Code from module lchown:
+  gl_FUNC_LCHOWN
+  gl_UNISTD_MODULE_INDICATOR([lchown])
+  # Code from module localcharset:
   gl_LOCALCHARSET
   LOCALCHARSET_TESTS_ENVIRONMENT="CHARSETALIASDIR=\"\$(top_builddir)/$gl_source_base\""
   AC_SUBST([LOCALCHARSET_TESTS_ENVIRONMENT])
+  # Code from module lock:
   gl_LOCK
+  # Code from module lstat:
+  gl_FUNC_LSTAT
+  gl_SYS_STAT_MODULE_INDICATOR([lstat])
+  # Code from module maintainer-makefile:
+  AC_CONFIG_COMMANDS_PRE([m4_ifdef([AH_HEADER],
+    [AC_SUBST([CONFIG_INCLUDE], m4_defn([AH_HEADER]))])])
+  # Code from module malloc-posix:
+  gl_FUNC_MALLOC_POSIX
+  gl_STDLIB_MODULE_INDICATOR([malloc-posix])
+  # Code from module malloca:
+  gl_MALLOCA
+  # Code from module manywarnings:
+  # Code from module mbrtowc:
   gl_FUNC_MBRTOWC
   gl_WCHAR_MODULE_INDICATOR([mbrtowc])
+  # Code from module mbsinit:
   gl_FUNC_MBSINIT
   gl_WCHAR_MODULE_INDICATOR([mbsinit])
+  # Code from module memchr:
   gl_FUNC_MEMCHR
   gl_STRING_MODULE_INDICATOR([memchr])
+  # Code from module mempcpy:
+  gl_FUNC_MEMPCPY
+  gl_STRING_MODULE_INDICATOR([mempcpy])
+  # Code from module memrchr:
+  gl_FUNC_MEMRCHR
+  gl_STRING_MODULE_INDICATOR([memrchr])
+  # Code from module mkdir:
+  gl_FUNC_MKDIR
+  # Code from module multiarch:
   gl_MULTIARCH
+  # Code from module netinet_in:
   gl_HEADER_NETINET_IN
   AC_PROG_MKDIR_P
+  # Code from module open:
+  gl_FUNC_OPEN
+  gl_FCNTL_MODULE_INDICATOR([open])
+  # Code from module openat:
+  gl_FUNC_OPENAT
+  # Code from module openat-die:
+  # Code from module openat-safer:
+  gl_OPENAT_SAFER
+  gl_MODULE_INDICATOR([openat-safer])
+  # Code from module progname:
   AC_CHECK_DECLS([program_invocation_name], [], [], [#include <errno.h>])
   AC_CHECK_DECLS([program_invocation_short_name], [], [], [#include <errno.h>])
+  # Code from module quote:
+  gl_QUOTE
+  # Code from module quotearg:
   gl_QUOTEARG
+  # Code from module quotearg-simple:
+  # Code from module rawmemchr:
   gl_FUNC_RAWMEMCHR
   gl_STRING_MODULE_INDICATOR([rawmemchr])
+  # Code from module realloc-posix:
+  gl_FUNC_REALLOC_POSIX
+  gl_STDLIB_MODULE_INDICATOR([realloc-posix])
+  # Code from module rmdir:
+  gl_FUNC_RMDIR
+  gl_UNISTD_MODULE_INDICATOR([rmdir])
+  # Code from module safe-read:
   gl_SAFE_READ
+  # Code from module safe-write:
   gl_SAFE_WRITE
+  # Code from module same-inode:
+  # Code from module save-cwd:
+  gl_SAVE_CWD
+  # Code from module setenv:
+  gl_FUNC_SETENV
+  gl_STDLIB_MODULE_INDICATOR([setenv])
+  # Code from module size_max:
   gl_SIZE_MAX
+  # Code from module ssize_t:
   gt_TYPE_SSIZE_T
+  # Code from module stat:
+  gl_FUNC_STAT
+  gl_SYS_STAT_MODULE_INDICATOR([stat])
+  # Code from module stdarg:
+  gl_STDARG_H
+  # Code from module stdbool:
   AM_STDBOOL_H
+  # Code from module stddef:
   gl_STDDEF_H
+  # Code from module stdint:
   gl_STDINT_H
+  # Code from module stdio:
   gl_STDIO_H
+  # Code from module stdlib:
   gl_STDLIB_H
+  # Code from module strchrnul:
   gl_FUNC_STRCHRNUL
   gl_STRING_MODULE_INDICATOR([strchrnul])
+  # Code from module strdup-posix:
+  gl_FUNC_STRDUP_POSIX
+  gl_STRING_MODULE_INDICATOR([strdup])
+  # Code from module streq:
+  # Code from module strerror:
   gl_FUNC_STRERROR
   gl_STRING_MODULE_INDICATOR([strerror])
+  # Code from module string:
   gl_HEADER_STRING_H
+  # Code from module strndup:
   gl_FUNC_STRNDUP
   gl_STRING_MODULE_INDICATOR([strndup])
+  # Code from module strnlen:
   gl_FUNC_STRNLEN
   gl_STRING_MODULE_INDICATOR([strnlen])
+  # Code from module strtoimax:
+  gl_FUNC_STRTOIMAX
+  gl_INTTYPES_MODULE_INDICATOR([strtoimax])
+  # Code from module strtol:
   gl_FUNC_STRTOL
+  # Code from module strtoll:
   gl_FUNC_STRTOLL
   gl_STDLIB_MODULE_INDICATOR([strtoll])
+  # Code from module strtoul:
   gl_FUNC_STRTOUL
+  # Code from module strtoull:
   gl_FUNC_STRTOULL
   gl_STDLIB_MODULE_INDICATOR([strtoull])
+  # Code from module strtoumax:
+  gl_FUNC_STRTOUMAX
+  gl_INTTYPES_MODULE_INDICATOR([strtoumax])
+  # Code from module sys_socket:
   gl_HEADER_SYS_SOCKET
   AC_PROG_MKDIR_P
+  # Code from module sys_stat:
+  gl_HEADER_SYS_STAT_H
+  AC_PROG_MKDIR_P
+  # Code from module threadlib:
   gl_THREADLIB
+  # Code from module time:
+  gl_HEADER_TIME_H
+  # Code from module unistd:
   gl_UNISTD_H
+  # Code from module unistd-safer:
+  gl_UNISTD_SAFER
+  # Code from module unlink:
+  gl_FUNC_UNLINK
+  gl_UNISTD_MODULE_INDICATOR([unlink])
+  # Code from module useless-if-before-free:
+  # Code from module vasnprintf:
   gl_FUNC_VASNPRINTF
+  # Code from module vasprintf:
   gl_FUNC_VASPRINTF
   gl_STDIO_MODULE_INDICATOR([vasprintf])
   m4_ifdef([AM_XGETTEXT_OPTION],
     [AM_][XGETTEXT_OPTION([--flag=asprintf:2:c-format])
      AM_][XGETTEXT_OPTION([--flag=vasprintf:2:c-format])])
+  # Code from module vc-list-files:
+  # Code from module verify:
+  # Code from module warn-on-use:
+  # Code from module warnings:
   AC_SUBST([WARN_CFLAGS])
+  # Code from module wchar:
   gl_WCHAR_H
+  # Code from module wctype:
   gl_WCTYPE_H
+  # Code from module write:
   gl_FUNC_WRITE
   gl_UNISTD_MODULE_INDICATOR([write])
+  # Code from module xalloc:
   gl_XALLOC
+  # Code from module xalloc-die:
+  # Code from module xgetcwd:
+  gl_XGETCWD
+  # Code from module xsize:
   gl_XSIZE
+  # Code from module xstrtol:
   gl_XSTRTOL
+  # Code from module xstrtoll:
   AC_LIBOBJ([xstrtoll])
   AC_LIBOBJ([xstrtoull])
   AC_TYPE_LONG_LONG_INT
   test $ac_cv_type_long_long_int = no \
     && AC_MSG_ERROR(
         [you lack long long support; required by gnulib's xstrtoll module])
+  # Code from module xstrtoumax:
+  # Code from module xvasprintf:
+  gl_XVASPRINTF
+  m4_ifdef([AM_XGETTEXT_OPTION],
+    [AM_][XGETTEXT_OPTION([--flag=xasprintf:1:c-format])])
+  # End of code from modules
   m4_ifval(gl_LIBSOURCES_LIST, [
     m4_syscmd([test ! -d ]m4_defn([gl_LIBSOURCES_DIR])[ ||
       for gl_file in ]gl_LIBSOURCES_LIST[ ; do
@@ -183,52 +654,59 @@ AC_DEFUN([gl_INIT],
   m4_pushdef([gltests_LIBSOURCES_DIR], [])
   gl_COMMON
   gl_source_base='gnulib/tests'
-  gl_FUNC_DUP2
-  gl_UNISTD_MODULE_INDICATOR([dup2])
-  gl_ENVIRON
-  gl_UNISTD_MODULE_INDICATOR([environ])
-  gl_FCNTL_H
-  dnl you must add AM_GNU_GETTEXT([external]) or similar to configure.ac.
-  AM_GNU_GETTEXT_VERSION([0.17])
+changequote(,)dnl
+  gltests_WITNESS=IN_`echo "${PACKAGE-$PACKAGE_TARNAME}" | LC_ALL=C tr abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ | LC_ALL=C sed -e 's/[^A-Z0-9_]/_/g'`_GNULIB_TESTS
+changequote([, ])dnl
+  AC_SUBST([gltests_WITNESS])
+  gl_module_indicator_condition=$gltests_WITNESS
+  m4_pushdef([gl_MODULE_INDICATOR_CONDITION], [$gl_module_indicator_condition])
+  AC_CHECK_FUNCS_ONCE([getegid])
+  gl_MODULE_INDICATOR([fd-safer-flag])
+  gl_FUNC_GETGROUPS
+  gl_UNISTD_MODULE_INDICATOR([getgroups])
+  gl_FUNC_GETPAGESIZE
+  gl_UNISTD_MODULE_INDICATOR([getpagesize])
+  gl_GETUGROUPS
   gl_INTTOSTR
-  gl_FUNC_LSTAT
-  gl_SYS_STAT_MODULE_INDICATOR([lstat])
-  gl_FUNC_MALLOC_POSIX
-  gl_STDLIB_MODULE_INDICATOR([malloc-posix])
-  gl_MALLOCA
+  AC_CHECK_FUNCS_ONCE([getegid])
   gt_LOCALE_FR
   gt_LOCALE_FR_UTF8
   gt_LOCALE_JA
   gt_LOCALE_ZH_CN
   gt_LOCALE_FR_UTF8
-  gl_FUNC_OPEN
-  gl_MODULE_INDICATOR([open])
-  gl_FCNTL_MODULE_INDICATOR([open])
+  gl_FUNC_MMAP_ANON
+  AC_CHECK_HEADERS_ONCE([sys/mman.h])
+  AC_CHECK_FUNCS_ONCE([mprotect])
+  gl_MGETGROUPS
+  AC_CHECK_FUNCS_ONCE([getegid])
   gl_PATHMAX
+  gl_PRIV_SET
   gl_FUNC_PUTENV
   gl_STDLIB_MODULE_INDICATOR([putenv])
-  gt_LOCALE_FR
-  gt_LOCALE_FR_UTF8
-  gl_FUNC_SETENV
-  gl_STDLIB_MODULE_INDICATOR([setenv])
-  gl_FUNC_STAT
-  gl_SYS_STAT_MODULE_INDICATOR([stat])
+  AC_FUNC_REALLOC
+  AC_DEFINE([GNULIB_REALLOC_GNU], 1, [Define to indicate the 'realloc' module.])
+  gl_FUNC_SLEEP
+  gl_UNISTD_MODULE_INDICATOR([sleep])
+  AC_CHECK_DECLS_ONCE([alarm])
+  gl_STAT_TIME
+  gl_STAT_BIRTHTIME
   gt_TYPE_WCHAR_T
   gt_TYPE_WINT_T
   gl_FUNC_SYMLINK
   gl_UNISTD_MODULE_INDICATOR([symlink])
   AC_CHECK_FUNCS_ONCE([shutdown])
-  gl_HEADER_SYS_STAT_H
-  AC_PROG_MKDIR_P
   gl_THREAD
-  gl_HEADER_TIME_H
+  gl_UNLINKDIR
   gl_FUNC_UNSETENV
   gl_STDLIB_MODULE_INDICATOR([unsetenv])
+  gl_FUNC_USLEEP
+  gl_UNISTD_MODULE_INDICATOR([usleep])
   abs_aux_dir=`cd "$ac_aux_dir"; pwd`
   AC_SUBST([abs_aux_dir])
   gl_FUNC_WCTOB
   gl_WCHAR_MODULE_INDICATOR([wctob])
   gl_YIELD
+  m4_popdef([gl_MODULE_INDICATOR_CONDITION])
   m4_ifval(gltests_LIBSOURCES_LIST, [
     m4_syscmd([test ! -d ]m4_defn([gltests_LIBSOURCES_DIR])[ ||
       for gl_file in ]gltests_LIBSOURCES_LIST[ ; do
@@ -321,6 +799,7 @@ AC_DEFUN([gltests_LIBSOURCES], [
 # gnulib-tool and may be removed by future gnulib-tool invocations.
 AC_DEFUN([gl_FILE_LIST], [
   build-aux/arg-nonnull.h
+  build-aux/c++defs.h
   build-aux/config.rpath
   build-aux/gitlog-to-changelog
   build-aux/useless-if-before-free
@@ -328,30 +807,73 @@ AC_DEFUN([gl_FILE_LIST], [
   build-aux/warn-on-use.h
   lib/alignof.h
   lib/alloca.in.h
+  lib/argmatch.c
+  lib/argmatch.h
   lib/arpa_inet.in.h
   lib/asnprintf.c
   lib/asprintf.c
+  lib/at-func.c
+  lib/basename-lgpl.c
   lib/bitrotate.h
   lib/c-ctype.c
   lib/c-ctype.h
+  lib/chdir-long.c
+  lib/chdir-long.h
+  lib/chown.c
+  lib/cloexec.c
+  lib/cloexec.h
+  lib/close-hook.c
+  lib/close-hook.h
   lib/close-stream.c
   lib/close-stream.h
+  lib/close.c
   lib/closeout.c
   lib/closeout.h
   lib/config.charset
+  lib/creat-safer.c
+  lib/cycle-check.c
+  lib/cycle-check.h
+  lib/dev-ino.h
+  lib/dirent--.h
+  lib/dirent-safer.h
+  lib/dirent.in.h
+  lib/dirfd.c
+  lib/dirname-lgpl.c
+  lib/dirname.h
+  lib/dup-safer.c
+  lib/dup2.c
   lib/errno.in.h
   lib/error.c
   lib/error.h
   lib/exitfail.c
   lib/exitfail.h
+  lib/fchdir.c
+  lib/fchmodat.c
+  lib/fchown-stub.c
+  lib/fchownat.c
+  lib/fclose.c
+  lib/fcntl--.h
+  lib/fcntl-safer.h
+  lib/fcntl.c
+  lib/fcntl.in.h
+  lib/fd-safer.c
+  lib/fdopendir.c
+  lib/filevercmp.c
+  lib/filevercmp.h
   lib/float+.h
   lib/float.in.h
   lib/fpending.c
   lib/fpending.h
+  lib/fstatat.c
+  lib/fts-cycle.c
+  lib/fts.c
+  lib/fts_.h
   lib/full-read.c
   lib/full-read.h
   lib/full-write.c
   lib/full-write.h
+  lib/getcwd.c
+  lib/getdtablesize.c
   lib/getopt.c
   lib/getopt.in.h
   lib/getopt1.c
@@ -364,33 +886,67 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/hash-pjw.h
   lib/hash.c
   lib/hash.h
+  lib/human.c
+  lib/human.h
+  lib/i-ring.c
+  lib/i-ring.h
   lib/ignore-value.h
   lib/intprops.h
   lib/inttypes.in.h
+  lib/lchown.c
   lib/localcharset.c
   lib/localcharset.h
+  lib/lstat.c
+  lib/malloc.c
+  lib/malloca.c
+  lib/malloca.h
+  lib/malloca.valgrind
   lib/mbrtowc.c
   lib/mbsinit.c
   lib/memchr.c
   lib/memchr.valgrind
+  lib/mempcpy.c
+  lib/memrchr.c
+  lib/mkdir.c
+  lib/mkdirat.c
   lib/netinet_in.in.h
+  lib/open-safer.c
+  lib/open.c
+  lib/openat-die.c
+  lib/openat-priv.h
+  lib/openat-proc.c
+  lib/openat-safer.c
+  lib/openat.c
+  lib/openat.h
+  lib/opendir-safer.c
+  lib/pipe-safer.c
   lib/printf-args.c
   lib/printf-args.h
   lib/printf-parse.c
   lib/printf-parse.h
   lib/progname.c
   lib/progname.h
+  lib/quote.c
+  lib/quote.h
   lib/quotearg.c
   lib/quotearg.h
   lib/rawmemchr.c
   lib/rawmemchr.valgrind
+  lib/realloc.c
   lib/ref-add.sin
   lib/ref-del.sin
+  lib/rmdir.c
   lib/safe-read.c
   lib/safe-read.h
   lib/safe-write.c
   lib/safe-write.h
+  lib/same-inode.h
+  lib/save-cwd.c
+  lib/save-cwd.h
+  lib/setenv.c
   lib/size_max.h
+  lib/stat.c
+  lib/stdarg.in.h
   lib/stdbool.in.h
   lib/stddef.in.h
   lib/stdint.in.h
@@ -399,17 +955,27 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/stdlib.in.h
   lib/strchrnul.c
   lib/strchrnul.valgrind
+  lib/strdup.c
   lib/streq.h
   lib/strerror.c
   lib/string.in.h
+  lib/stripslash.c
   lib/strndup.c
   lib/strnlen.c
+  lib/strtoimax.c
   lib/strtol.c
   lib/strtoll.c
   lib/strtoul.c
   lib/strtoull.c
+  lib/strtoumax.c
   lib/sys_socket.in.h
+  lib/sys_stat.in.h
+  lib/time.in.h
+  lib/unistd--.h
+  lib/unistd-safer.h
   lib/unistd.in.h
+  lib/unlink.c
+  lib/unlinkat.c
   lib/vasnprintf.c
   lib/vasnprintf.h
   lib/vasprintf.c
@@ -419,6 +985,9 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/write.c
   lib/xalloc-die.c
   lib/xalloc.h
+  lib/xasprintf.c
+  lib/xgetcwd.c
+  lib/xgetcwd.h
   lib/xmalloc.c
   lib/xsize.h
   lib/xstrtol-error.c
@@ -427,45 +996,68 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/xstrtoll.c
   lib/xstrtoul.c
   lib/xstrtoull.c
+  lib/xstrtoumax.c
+  lib/xvasprintf.c
+  lib/xvasprintf.h
   m4/00gnulib.m4
   m4/alloca.m4
+  m4/argmatch.m4
   m4/arpa_inet_h.m4
+  m4/asm-underscore.m4
+  m4/chdir-long.m4
+  m4/chown.m4
+  m4/cloexec.m4
   m4/close-stream.m4
+  m4/close.m4
   m4/closeout.m4
   m4/codeset.m4
+  m4/cycle-check.m4
+  m4/d-ino.m4
+  m4/d-type.m4
+  m4/dirent-safer.m4
+  m4/dirent_h.m4
+  m4/dirfd.m4
+  m4/dirname.m4
   m4/dos.m4
+  m4/double-slash-root.m4
   m4/dup2.m4
   m4/eealloc.m4
   m4/environ.m4
   m4/errno_h.m4
   m4/error.m4
-  m4/exitfail.m4
   m4/extensions.m4
+  m4/fchdir.m4
+  m4/fclose.m4
   m4/fcntl-o.m4
+  m4/fcntl-safer.m4
+  m4/fcntl.m4
   m4/fcntl_h.m4
+  m4/fdopendir.m4
   m4/float_h.m4
   m4/fpending.m4
+  m4/fts.m4
+  m4/getcwd-abort-bug.m4
+  m4/getcwd-path-max.m4
+  m4/getcwd.m4
+  m4/getdtablesize.m4
+  m4/getgroups.m4
   m4/getopt.m4
-  m4/gettext.m4
-  m4/glibc2.m4
+  m4/getpagesize.m4
+  m4/getugroups.m4
   m4/glibc21.m4
   m4/gnu-make.m4
   m4/gnulib-common.m4
   m4/hash.m4
-  m4/iconv.m4
+  m4/human.m4
+  m4/i-ring.m4
   m4/include_next.m4
   m4/inline.m4
-  m4/intdiv0.m4
-  m4/intl.m4
-  m4/intldir.m4
-  m4/intlmacosx.m4
-  m4/intmax.m4
   m4/intmax_t.m4
   m4/inttostr.m4
   m4/inttypes-pri.m4
   m4/inttypes.m4
   m4/inttypes_h.m4
-  m4/lcmessage.m4
+  m4/lchown.m4
   m4/lib-ld.m4
   m4/lib-link.m4
   m4/lib-prefix.m4
@@ -483,27 +1075,37 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/mbsinit.m4
   m4/mbstate_t.m4
   m4/memchr.m4
+  m4/mempcpy.m4
+  m4/memrchr.m4
+  m4/mgetgroups.m4
+  m4/mkdir.m4
   m4/mmap-anon.m4
   m4/mode_t.m4
   m4/multiarch.m4
   m4/netinet_in_h.m4
-  m4/nls.m4
   m4/onceonly.m4
   m4/open.m4
+  m4/openat.m4
   m4/pathmax.m4
-  m4/po.m4
-  m4/printf-posix.m4
-  m4/progtest.m4
+  m4/printf.m4
+  m4/priv-set.m4
   m4/putenv.m4
+  m4/quote.m4
   m4/quotearg.m4
   m4/rawmemchr.m4
+  m4/realloc.m4
+  m4/rmdir.m4
   m4/safe-read.m4
   m4/safe-write.m4
+  m4/save-cwd.m4
   m4/setenv.m4
   m4/size_max.m4
+  m4/sleep.m4
   m4/sockpfaf.m4
   m4/ssize_t.m4
+  m4/stat-time.m4
   m4/stat.m4
+  m4/stdarg.m4
   m4/stdbool.m4
   m4/stddef_h.m4
   m4/stdint.m4
@@ -511,60 +1113,86 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/stdio_h.m4
   m4/stdlib_h.m4
   m4/strchrnul.m4
+  m4/strdup.m4
   m4/strerror.m4
   m4/string_h.m4
   m4/strndup.m4
   m4/strnlen.m4
+  m4/strtoimax.m4
   m4/strtol.m4
   m4/strtoll.m4
   m4/strtoul.m4
   m4/strtoull.m4
+  m4/strtoumax.m4
   m4/symlink.m4
   m4/sys_socket_h.m4
   m4/sys_stat_h.m4
   m4/thread.m4
   m4/threadlib.m4
   m4/time_h.m4
-  m4/uintmax_t.m4
+  m4/unistd-safer.m4
   m4/unistd_h.m4
+  m4/unlink.m4
+  m4/unlinkdir.m4
+  m4/usleep.m4
   m4/vasnprintf.m4
   m4/vasprintf.m4
-  m4/visibility.m4
   m4/warn-on-use.m4
   m4/warnings.m4
-  m4/wchar.m4
+  m4/wchar_h.m4
   m4/wchar_t.m4
   m4/wctob.m4
-  m4/wctype.m4
+  m4/wctype_h.m4
   m4/wint_t.m4
   m4/write.m4
   m4/xalloc.m4
+  m4/xgetcwd.m4
   m4/xsize.m4
   m4/xstrtol.m4
+  m4/xvasprintf.m4
   m4/yield.m4
   tests/init.sh
-  tests/locale/fr/LC_MESSAGES/test-quotearg.mo
-  tests/locale/fr/LC_MESSAGES/test-quotearg.po
   tests/macros.h
+  tests/nap.h
   tests/signature.h
   tests/test-alignof.c
   tests/test-alloca-opt.c
+  tests/test-argmatch.c
   tests/test-arpa_inet.c
   tests/test-binary-io.c
   tests/test-binary-io.sh
   tests/test-bitrotate.c
   tests/test-c-ctype.c
+  tests/test-chown.c
+  tests/test-chown.h
+  tests/test-cloexec.c
+  tests/test-dirent-safer.c
+  tests/test-dirent.c
+  tests/test-dup-safer.c
   tests/test-dup2.c
   tests/test-environ.c
   tests/test-errno.c
+  tests/test-fchdir.c
+  tests/test-fchownat.c
   tests/test-fcntl-h.c
+  tests/test-fcntl-safer.c
+  tests/test-fcntl.c
+  tests/test-fdopendir.c
+  tests/test-filevercmp.c
   tests/test-fpending.c
   tests/test-fpending.sh
+  tests/test-fstatat.c
+  tests/test-getcwd.c
+  tests/test-getdtablesize.c
+  tests/test-getgroups.c
   tests/test-getopt.c
   tests/test-getopt.h
   tests/test-getopt_long.h
   tests/test-hash.c
+  tests/test-i-ring.c
   tests/test-inttypes.c
+  tests/test-lchown.c
+  tests/test-lchown.h
   tests/test-lock.c
   tests/test-lstat.c
   tests/test-lstat.h
@@ -577,13 +1205,24 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-mbsinit.c
   tests/test-mbsinit.sh
   tests/test-memchr.c
+  tests/test-memrchr.c
+  tests/test-mkdir.c
+  tests/test-mkdir.h
+  tests/test-mkdirat.c
   tests/test-netinet_in.c
   tests/test-open.c
   tests/test-open.h
-  tests/test-quotearg.c
-  tests/test-quotearg.sh
+  tests/test-openat-safer.c
+  tests/test-openat.c
+  tests/test-priv-set.c
+  tests/test-quotearg-simple.c
+  tests/test-quotearg.h
   tests/test-rawmemchr.c
+  tests/test-rmdir.c
+  tests/test-rmdir.h
   tests/test-setenv.c
+  tests/test-sleep.c
+  tests/test-stat-time.c
   tests/test-stat.c
   tests/test-stat.h
   tests/test-stdbool.c
@@ -600,11 +1239,17 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-sys_stat.c
   tests/test-time.c
   tests/test-unistd.c
+  tests/test-unlink.c
+  tests/test-unlink.h
+  tests/test-unlinkat.c
   tests/test-unsetenv.c
+  tests/test-usleep.c
   tests/test-vasnprintf.c
   tests/test-vasprintf.c
   tests/test-vc-list-files-cvs.sh
   tests/test-vc-list-files-git.sh
+  tests/test-verify.c
+  tests/test-verify.sh
   tests/test-wchar.c
   tests/test-wctype.c
   tests/test-xalloc-die.c
@@ -615,34 +1260,40 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-xstrtoll.sh
   tests/test-xstrtoul.c
   tests/test-xstrtoull.c
+  tests/test-xstrtoumax.c
+  tests/test-xstrtoumax.sh
+  tests/test-xvasprintf.c
   tests/zerosize-ptr.h
   tests=lib/binary-io.h
-  tests=lib/dup2.c
-  tests=lib/fcntl.in.h
+  tests=lib/dup-safer-flag.c
+  tests=lib/fd-safer-flag.c
+  tests=lib/getgroups.c
+  tests=lib/getpagesize.c
+  tests=lib/getugroups.c
+  tests=lib/getugroups.h
   tests=lib/glthread/thread.c
   tests=lib/glthread/thread.h
   tests=lib/glthread/yield.h
   tests=lib/imaxtostr.c
   tests=lib/inttostr.c
   tests=lib/inttostr.h
-  tests=lib/lstat.c
-  tests=lib/malloc.c
-  tests=lib/malloca.c
-  tests=lib/malloca.h
-  tests=lib/malloca.valgrind
+  tests=lib/mgetgroups.c
+  tests=lib/mgetgroups.h
   tests=lib/offtostr.c
-  tests=lib/open.c
   tests=lib/pathmax.h
+  tests=lib/priv-set.c
+  tests=lib/priv-set.h
   tests=lib/putenv.c
-  tests=lib/same-inode.h
-  tests=lib/setenv.c
-  tests=lib/stat.c
+  tests=lib/realloc.c
+  tests=lib/sleep.c
+  tests=lib/stat-time.h
   tests=lib/symlink.c
-  tests=lib/sys_stat.in.h
-  tests=lib/time.in.h
   tests=lib/uinttostr.c
   tests=lib/umaxtostr.c
+  tests=lib/unlinkdir.c
+  tests=lib/unlinkdir.h
   tests=lib/unsetenv.c
+  tests=lib/usleep.c
   tests=lib/wctob.c
   top/GNUmakefile
   top/maint.mk

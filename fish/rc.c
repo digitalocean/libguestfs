@@ -177,14 +177,15 @@ rc_listen (void)
   char sockpath[128];
   pid_t pid;
   struct sockaddr_un addr;
-  int sock, s, i;
+  int sock, s;
+  size_t i;
   FILE *fp;
   XDR xdr, xdr2;
   guestfish_hello hello;
   guestfish_call call;
   guestfish_reply reply;
   char **argv;
-  int argc;
+  size_t argc;
 
   memset (&hello, 0, sizeof hello);
   memset (&call, 0, sizeof call);
@@ -197,7 +198,12 @@ rc_listen (void)
 
   if (pid > 0) {
     /* Parent process. */
-    printf ("export GUESTFISH_PID=%d\n", pid);
+
+    if (!remote_control_csh)
+      printf ("GUESTFISH_PID=%d; export GUESTFISH_PID\n", pid);
+    else
+      printf ("setenv GUESTFISH_PID %d\n", pid);
+
     fflush (stdout);
     _exit (0);
   }
@@ -278,7 +284,7 @@ rc_listen (void)
         }
 
         /* Run the command. */
-        reply.r = issue_command (call.cmd, argv, NULL);
+        reply.r = issue_command (call.cmd, argv, NULL, 0);
 
         xdr_free ((xdrproc_t) xdr_guestfish_call, (char *) &call);
 
@@ -307,7 +313,7 @@ rc_listen (void)
 
 /* Remote control client. */
 int
-rc_remote (int pid, const char *cmd, int argc, char *argv[],
+rc_remote (int pid, const char *cmd, size_t argc, char *argv[],
            int exit_on_error)
 {
   guestfish_hello hello;

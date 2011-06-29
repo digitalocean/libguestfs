@@ -24,9 +24,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <dirent.h>
+#include <sys/resource.h>
 
-#include "../src/guestfs_protocol.h"
+#include "guestfs_protocol.h"
 #include "daemon.h"
 #include "actions.h"
 
@@ -36,44 +38,46 @@
  * to find out what you can do.
  *
  * Commands always output a freeform string.
+ *
+ * Since libguestfs 1.5.7, the debug command has been enabled
+ * by default for all builds (previously you had to enable it
+ * in configure).  This command is not part of the stable ABI
+ * and may change at any time.
  */
 
-#if ENABLE_DEBUG_COMMAND
 struct cmd {
   const char *cmd;
   char * (*f) (const char *subcmd, int argc, char *const *const argv);
 };
 
 static char *debug_help (const char *subcmd, int argc, char *const *const argv);
+static char *debug_core_pattern (const char *subcmd, int argc, char *const *const argv);
 static char *debug_env (const char *subcmd, int argc, char *const *const argv);
 static char *debug_fds (const char *subcmd, int argc, char *const *const argv);
 static char *debug_ls (const char *subcmd, int argc, char *const *const argv);
 static char *debug_ll (const char *subcmd, int argc, char *const *const argv);
+static char *debug_progress (const char *subcmd, int argc, char *const *const argv);
+static char *debug_qtrace (const char *subcmd, int argc, char *const *const argv);
 static char *debug_segv (const char *subcmd, int argc, char *const *const argv);
 static char *debug_sh (const char *subcmd, int argc, char *const *const argv);
 
 static struct cmd cmds[] = {
   { "help", debug_help },
+  { "core_pattern", debug_core_pattern },
   { "env", debug_env },
   { "fds", debug_fds },
   { "ls", debug_ls },
   { "ll", debug_ll },
+  { "progress", debug_progress },
+  { "qtrace", debug_qtrace },
   { "segv", debug_segv },
   { "sh", debug_sh },
   { NULL, NULL }
 };
-#endif
-
-#if ! ENABLE_DEBUG_COMMAND
-# define MAYBE_UNUSED ATTRIBUTE_UNUSED
-#else
-# define MAYBE_UNUSED /* empty */
-#endif
 
 char *
-do_debug (const char *subcmd MAYBE_UNUSED, char *const *argv MAYBE_UNUSED)
+do_debug (const char *subcmd, char *const *argv)
 {
-#if ENABLE_DEBUG_COMMAND
   int argc, i;
 
   for (i = argc = 0; argv[i] != NULL; ++i)
@@ -86,13 +90,8 @@ do_debug (const char *subcmd MAYBE_UNUSED, char *const *argv MAYBE_UNUSED)
 
   reply_with_error ("use 'debug help' to list the supported commands");
   return NULL;
-#else
-  reply_with_error ("guestfsd was not configured with --enable-debug-command");
-  return NULL;
-#endif
 }
 
-#if ENABLE_DEBUG_COMMAND
 static char *
 debug_help (const char *subcmd, int argc, char *const *const argv)
 {
@@ -203,21 +202,17 @@ debug_segv (const char *subcmd, int argc, char *const *const argv)
  *
  * Note this is somewhat different from the ordinary guestfs_sh command
  * because it's not using the guest shell, and is not chrooted.
- *
- * Also we ignore any errors and you can see the full output if you
- * add 2>&1 to the end of the command string.
  */
 static char *
 debug_sh (const char *subcmd, int argc, char *const *const argv)
 {
-  char *cmd;
-  int len, i, j;
-  char *out;
-
   if (argc < 1) {
     reply_with_error ("sh: expecting a command to run");
     return NULL;
   }
+
+  char *cmd;
+  int len, i, j;
 
   /* guestfish splits the parameter(s) into a list of strings,
    * and we have to reassemble them here.  Not ideal. XXX
@@ -238,9 +233,27 @@ debug_sh (const char *subcmd, int argc, char *const *const argv)
   }
   cmd[j-1] = '\0';
 
-  command (&out, NULL, "/bin/sh", "-c", cmd, NULL);
+  /* Set up some environment variables. */
+  setenv ("root", sysroot, 1);
+  if (access ("/sys/block/sda", F_OK) == 0)
+    setenv ("sd", "sd", 1);
+  else if (access ("/sys/block/hda", F_OK) == 0)
+    setenv ("sd", "hd", 1);
+  else if (access ("/sys/block/vda", F_OK) == 0)
+    setenv ("sd", "vd", 1);
+
+  char *err;
+  int r = commandf (NULL, &err, COMMAND_FLAG_FOLD_STDOUT_ON_STDERR,
+                    "/bin/sh", "-c", cmd, NULL);
   free (cmd);
-  return out;
+
+  if (r == -1) {
+    reply_with_error ("%s", err);
+    free (err);
+    return NULL;
+  }
+
+  return err;
 }
 
 /* Print the environment that commands get (by running external printenv). */
@@ -323,4 +336,222 @@ debug_ll (const char *subcmd, int argc, char *const *const argv)
   return out;
 }
 
-#endif /* ENABLE_DEBUG_COMMAND */
+/* Generate progress notification messages in order to test progress bars. */
+static char *
+debug_progress (const char *subcmd, int argc, char *const *const argv)
+{
+  if (argc < 1) {
+  error:
+    reply_with_error ("progress: expecting arg (time in seconds as string)");
+    return NULL;
+  }
+
+  char *secs_str = argv[0];
+  unsigned secs;
+  if (sscanf (secs_str, "%u", &secs) != 1 || secs == 0)
+    goto error;
+
+  unsigned i;
+  unsigned tsecs = secs * 10;   /* 1/10ths of seconds */
+  for (i = 1; i <= tsecs; ++i) {
+    usleep (100000);
+    notify_progress ((uint64_t) i, (uint64_t) tsecs);
+  }
+
+  char *ret = strdup ("ok");
+  if (ret == NULL) {
+    reply_with_perror ("strdup");
+    return NULL;
+  }
+
+  return ret;
+}
+
+/* Enable core dumping to the given core pattern.
+ * Note that this pattern is relative to any chroot of the process which
+ * crashes. This means that if you want to write the core file to the guest's
+ * storage the pattern must start with /sysroot only if the command which
+ * crashes doesn't chroot.
+ */
+static char *
+debug_core_pattern (const char *subcmd, int argc, char *const *const argv)
+{
+  if (argc < 1) {
+    reply_with_error ("core_pattern: expecting a core pattern");
+    return NULL;
+  }
+
+  const char *pattern = argv[0];
+  const size_t pattern_len = strlen(pattern);
+
+#define CORE_PATTERN "/proc/sys/kernel/core_pattern"
+  int fd = open (CORE_PATTERN, O_WRONLY);
+  if (fd == -1) {
+    reply_with_perror ("open: " CORE_PATTERN);
+    return NULL;
+  }
+  if (write (fd, pattern, pattern_len) < (ssize_t) pattern_len) {
+    reply_with_perror ("write: " CORE_PATTERN);
+    return NULL;
+  }
+  if (close (fd) == -1) {
+    reply_with_perror ("close: " CORE_PATTERN);
+    return NULL;
+  }
+
+  struct rlimit limit = {
+    .rlim_cur = RLIM_INFINITY,
+    .rlim_max = RLIM_INFINITY
+  };
+  if (setrlimit (RLIMIT_CORE, &limit) == -1) {
+    reply_with_perror ("setrlimit (RLIMIT_CORE)");
+    return NULL;
+  }
+
+  char *ret = strdup ("ok");
+  if (NULL == ret) {
+    reply_with_perror ("strdup");
+    return NULL;
+  }
+
+  return ret;
+}
+
+static int
+write_cb (void *fd_ptr, const void *buf, size_t len)
+{
+  int fd = *(int *)fd_ptr;
+  return xwrite (fd, buf, len);
+}
+
+/* This requires a non-upstream qemu patch.  See contrib/visualize-alignment/
+ * directory in the libguestfs source tree.
+ */
+static char *
+debug_qtrace (const char *subcmd, int argc, char *const *const argv)
+{
+  int enable;
+
+  if (argc != 2) {
+  bad_args:
+    reply_with_error ("qtrace <device> <on|off>");
+    return NULL;
+  }
+
+  if (STREQ (argv[1], "on"))
+    enable = 1;
+  else if (STREQ (argv[1], "off"))
+    enable = 0;
+  else
+    goto bad_args;
+
+  /* This does a sync and flushes all caches. */
+  if (do_drop_caches (3) == -1)
+    return NULL;
+
+  /* Note this doesn't do device name translation or check this is a device. */
+  int fd = open (argv[0], O_RDONLY | O_DIRECT);
+  if (fd == -1) {
+    reply_with_perror ("qtrace: %s: open", argv[0]);
+    return NULL;
+  }
+
+  /* The pattern of reads is what signals to the analysis program that
+   * tracing should be started or stopped.  Note this assumes both 512
+   * byte sectors, and that O_DIRECT will let us do 512 byte aligned
+   * reads.  We ought to read the sector size of the device and use
+   * that instead (XXX).  The analysis program currently assumes 512
+   * byte sectors anyway.
+   */
+#define QTRACE_SIZE 512
+  const int patterns[2][5] = {
+    { 2, 15, 21, 2, -1 }, /* disable trace */
+    { 2, 21, 15, 2, -1 }  /* enable trace */
+  };
+  void *buf;
+  size_t i;
+
+  /* For O_DIRECT, buffer must be aligned too (thanks Matt).
+   * Note posix_memalign has this strange errno behaviour.
+   */
+  errno = posix_memalign (&buf, QTRACE_SIZE, QTRACE_SIZE);
+  if (errno != 0) {
+    reply_with_perror ("posix_memalign");
+    close (fd);
+    return NULL;
+  }
+
+  for (i = 0; patterns[enable][i] >= 0; ++i) {
+    if (lseek (fd, patterns[enable][i]*QTRACE_SIZE, SEEK_SET) == -1) {
+      reply_with_perror ("qtrace: %s: lseek", argv[0]);
+      close (fd);
+      free (buf);
+      return NULL;
+    }
+
+    if (read (fd, buf, QTRACE_SIZE) == -1) {
+      reply_with_perror ("qtrace: %s: read", argv[0]);
+      close (fd);
+      free (buf);
+      return NULL;
+    }
+  }
+
+  close (fd);
+  free (buf);
+
+  /* This does a sync and flushes all caches. */
+  if (do_drop_caches (3) == -1)
+    return NULL;
+
+  char *ret = strdup ("ok");
+  if (NULL == ret) {
+    reply_with_perror ("strdup");
+    return NULL;
+  }
+
+  return ret;
+}
+
+/* Has one FileIn parameter. */
+int
+do_debug_upload (const char *filename, int mode)
+{
+  /* Not chrooted - this command lets you upload a file to anywhere
+   * in the appliance.
+   */
+  int fd = open (filename, O_WRONLY|O_CREAT|O_TRUNC|O_NOCTTY, mode);
+
+  if (fd == -1) {
+    int err = errno;
+    cancel_receive ();
+    errno = err;
+    reply_with_perror ("%s", filename);
+    return -1;
+  }
+
+  int r = receive_file (write_cb, &fd);
+  if (r == -1) {		/* write error */
+    int err = errno;
+    cancel_receive ();
+    errno = err;
+    reply_with_error ("write error: %s", filename);
+    close (fd);
+    return -1;
+  }
+  if (r == -2) {		/* cancellation from library */
+    /* This error is ignored by the library since it initiated the
+     * cancel.  Nevertheless we must send an error reply here.
+     */
+    reply_with_error ("file upload cancelled");
+    close (fd);
+    return -1;
+  }
+
+  if (close (fd) == -1) {
+    reply_with_perror ("close: %s", filename);
+    return -1;
+  }
+
+  return 0;
+}

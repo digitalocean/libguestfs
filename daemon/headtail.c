@@ -22,28 +22,30 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 
-#include "../src/guestfs_protocol.h"
+#include "guestfs_protocol.h"
 #include "daemon.h"
 #include "actions.h"
 
 static char **
 headtail (const char *prog, const char *flag, const char *n, const char *path)
 {
-  char *buf;
   char *out, *err;
-  int r;
+  int fd, flags, r;
   char **lines;
 
-  /* Make the path relative to /sysroot. */
-  buf = sysroot_path (path);
-  if (!buf) {
-    reply_with_perror ("malloc");
+  CHROOT_IN;
+  fd = open (path, O_RDONLY);
+  CHROOT_OUT;
+
+  if (fd == -1) {
+    reply_with_perror ("%s", path);
     return NULL;
   }
 
-  r = command (&out, &err, prog, flag, n, buf, NULL);
-  free (buf);
+  flags = COMMAND_FLAG_CHROOT_COPY_FILE_TO_STDIN | fd;
+  r = commandf (&out, &err, flags, prog, flag, n, NULL);
   if (r == -1) {
     reply_with_error ("%s %s %s: %s", prog, flag, n, err);
     free (out);

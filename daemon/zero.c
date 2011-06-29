@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -41,12 +42,61 @@ do_zero (const char *device)
 
   memset (buf, 0, sizeof buf);
 
-  for (i = 0; i < 32; ++i)
+  for (i = 0; i < 32; ++i) {
     if (write (fd, buf, sizeof buf) != sizeof buf) {
       reply_with_perror ("write: %s", device);
       close (fd);
       return -1;
     }
+    notify_progress ((uint64_t) i, 32);
+  }
+
+  if (close (fd) == -1) {
+    reply_with_perror ("close: %s", device);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_zero_device (const char *device)
+{
+  int64_t ssize = do_blockdev_getsize64 (device);
+  if (ssize == -1)
+    return -1;
+  uint64_t size = (uint64_t) ssize;
+
+  int fd = open (device, O_WRONLY);
+  if (fd == -1) {
+    reply_with_perror ("%s", device);
+    return -1;
+  }
+
+  char buf[1024*1024];
+  memset (buf, 0, sizeof buf);
+
+  uint64_t pos = 0;
+
+  while (pos < size) {
+    uint64_t n64 = size - pos;
+    size_t n;
+    if (n64 > sizeof buf)
+      n = sizeof buf;
+    else
+      n = (size_t) n64; /* safe because of if condition */
+
+    ssize_t r = write (fd, buf, n);
+    if (r == -1) {
+      reply_with_perror ("write: %s (with %" PRId64 " bytes left to write)",
+                         device, size);
+      close (fd);
+      return -1;
+    }
+
+    pos += r;
+    notify_progress (pos, size);
+  }
 
   if (close (fd) == -1) {
     reply_with_perror ("close: %s", device);

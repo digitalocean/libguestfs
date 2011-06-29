@@ -1,9 +1,9 @@
 {- libguestfs generated file
    WARNING: THIS FILE IS GENERATED FROM:
-     src/generator.ml
+     generator/generator_*.ml
    ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
   
-   Copyright (C) 2009-2010 Red Hat Inc.
+   Copyright (C) 2009-2011 Red Hat Inc.
   
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -52,6 +52,10 @@ module Guestfs (
   set_recovery_proc,
   add_drive_with_if,
   add_drive_ro_with_if,
+  inspect_get_major_version,
+  inspect_get_minor_version,
+  set_network,
+  set_attach_method,
   mount,
   sync,
   touch,
@@ -187,7 +191,44 @@ module Guestfs (
   dd,
   filesize,
   lvrename,
-  vgrename
+  vgrename,
+  copy_size,
+  zero_device,
+  txz_in,
+  txz_out,
+  ntfsresize,
+  vgscan,
+  part_del,
+  part_get_mbr_id,
+  part_set_mbr_id,
+  lvresize_free,
+  aug_clear,
+  get_umask,
+  debug_upload,
+  base64_in,
+  base64_out,
+  checksums_out,
+  fill_pattern,
+  write,
+  pwrite,
+  resize2fs_size,
+  pvresize_size,
+  ntfsresize_size,
+  fallocate64,
+  lvm_set_filter,
+  lvm_clear_filter,
+  luks_open,
+  luks_open_ro,
+  luks_close,
+  luks_format,
+  luks_format_cipher,
+  luks_add_key,
+  luks_kill_slot,
+  upload_offset,
+  download_offset,
+  pwrite_device,
+  resize2fs_M,
+  internal_autosync
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -198,7 +239,7 @@ import Prelude hiding (truncate)
 import Foreign
 import Foreign.C
 import Foreign.C.Types
-import IO
+import System.IO
 import Control.Exception
 import Data.Typeable
 
@@ -245,11 +286,11 @@ last_error h = do
     else peekCString str
 
 foreign import ccall unsafe "guestfs_test0" c_test0
-  :: GuestfsP -> CString -> CString -> Ptr CString -> CInt -> CInt -> CInt -> CString -> CString -> IO (CInt)
+  :: GuestfsP -> CString -> CString -> Ptr CString -> CInt -> CInt -> CInt -> CString -> CString -> CString -> CInt -> IO (CInt)
 
-test0 :: GuestfsH -> String -> Maybe String -> [String] -> Bool -> Int -> Int -> String -> String -> IO ()
-test0 h str optstr strlist b integer integer64 filein fileout = do
-  r <- withCString str $ \str -> maybeWith withCString optstr $ \optstr -> withMany withCString strlist $ \strlist -> withArray0 nullPtr strlist $ \strlist -> withCString filein $ \filein -> withCString fileout $ \fileout -> withForeignPtr h (\p -> c_test0 p str optstr strlist (fromBool b) (fromIntegral integer) (fromIntegral integer64) filein fileout)
+test0 :: GuestfsH -> String -> Maybe String -> [String] -> Bool -> Int -> Int -> String -> String -> String -> IO ()
+test0 h str optstr strlist b integer integer64 filein fileout bufferin = do
+  r <- withCString str $ \str -> maybeWith withCString optstr $ \optstr -> withMany withCString strlist $ \strlist -> withArray0 nullPtr strlist $ \strlist -> withCString filein $ \filein -> withCString fileout $ \fileout -> withCStringLen bufferin $ \(bufferin, bufferin_size) -> withForeignPtr h (\p -> c_test0 p str optstr strlist (fromBool b) (fromIntegral integer) (fromIntegral integer64) filein fileout bufferin (fromIntegral bufferin_size))
   if (r == -1)
     then do
       err <- last_error h
@@ -391,9 +432,9 @@ config h qemuparam qemuvalue = do
 foreign import ccall unsafe "guestfs_set_qemu" c_set_qemu
   :: GuestfsP -> CString -> IO (CInt)
 
-set_qemu :: GuestfsH -> String -> IO ()
+set_qemu :: GuestfsH -> Maybe String -> IO ()
 set_qemu h qemu = do
-  r <- withCString qemu $ \qemu -> withForeignPtr h (\p -> c_set_qemu p qemu)
+  r <- maybeWith withCString qemu $ \qemu -> withForeignPtr h (\p -> c_set_qemu p qemu)
   if (r == -1)
     then do
       err <- last_error h
@@ -403,9 +444,9 @@ set_qemu h qemu = do
 foreign import ccall unsafe "guestfs_set_path" c_set_path
   :: GuestfsP -> CString -> IO (CInt)
 
-set_path :: GuestfsH -> String -> IO ()
+set_path :: GuestfsH -> Maybe String -> IO ()
 set_path h searchpath = do
-  r <- withCString searchpath $ \searchpath -> withForeignPtr h (\p -> c_set_path p searchpath)
+  r <- maybeWith withCString searchpath $ \searchpath -> withForeignPtr h (\p -> c_set_path p searchpath)
   if (r == -1)
     then do
       err <- last_error h
@@ -562,6 +603,54 @@ foreign import ccall unsafe "guestfs_add_drive_ro_with_if" c_add_drive_ro_with_i
 add_drive_ro_with_if :: GuestfsH -> String -> String -> IO ()
 add_drive_ro_with_if h filename iface = do
   r <- withCString filename $ \filename -> withCString iface $ \iface -> withForeignPtr h (\p -> c_add_drive_ro_with_if p filename iface)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_inspect_get_major_version" c_inspect_get_major_version
+  :: GuestfsP -> CString -> IO (CInt)
+
+inspect_get_major_version :: GuestfsH -> String -> IO (Int)
+inspect_get_major_version h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_major_version p root)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs_inspect_get_minor_version" c_inspect_get_minor_version
+  :: GuestfsP -> CString -> IO (CInt)
+
+inspect_get_minor_version :: GuestfsH -> String -> IO (Int)
+inspect_get_minor_version h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_minor_version p root)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs_set_network" c_set_network
+  :: GuestfsP -> CInt -> IO (CInt)
+
+set_network :: GuestfsH -> Bool -> IO ()
+set_network h network = do
+  r <- withForeignPtr h (\p -> c_set_network p (fromBool network))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_set_attach_method" c_set_attach_method
+  :: GuestfsP -> CString -> IO (CInt)
+
+set_attach_method :: GuestfsH -> String -> IO ()
+set_attach_method h attachmethod = do
+  r <- withCString attachmethod $ \attachmethod -> withForeignPtr h (\p -> c_set_attach_method p attachmethod)
   if (r == -1)
     then do
       err <- last_error h
@@ -2194,6 +2283,450 @@ foreign import ccall unsafe "guestfs_vgrename" c_vgrename
 vgrename :: GuestfsH -> String -> String -> IO ()
 vgrename h volgroup newvolgroup = do
   r <- withCString volgroup $ \volgroup -> withCString newvolgroup $ \newvolgroup -> withForeignPtr h (\p -> c_vgrename p volgroup newvolgroup)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_copy_size" c_copy_size
+  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+
+copy_size :: GuestfsH -> String -> String -> Int -> IO ()
+copy_size h src dest size = do
+  r <- withCString src $ \src -> withCString dest $ \dest -> withForeignPtr h (\p -> c_copy_size p src dest (fromIntegral size))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_zero_device" c_zero_device
+  :: GuestfsP -> CString -> IO (CInt)
+
+zero_device :: GuestfsH -> String -> IO ()
+zero_device h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_zero_device p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_txz_in" c_txz_in
+  :: GuestfsP -> CString -> CString -> IO (CInt)
+
+txz_in :: GuestfsH -> String -> String -> IO ()
+txz_in h tarball directory = do
+  r <- withCString tarball $ \tarball -> withCString directory $ \directory -> withForeignPtr h (\p -> c_txz_in p tarball directory)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_txz_out" c_txz_out
+  :: GuestfsP -> CString -> CString -> IO (CInt)
+
+txz_out :: GuestfsH -> String -> String -> IO ()
+txz_out h directory tarball = do
+  r <- withCString directory $ \directory -> withCString tarball $ \tarball -> withForeignPtr h (\p -> c_txz_out p directory tarball)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_ntfsresize" c_ntfsresize
+  :: GuestfsP -> CString -> IO (CInt)
+
+ntfsresize :: GuestfsH -> String -> IO ()
+ntfsresize h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_ntfsresize p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_vgscan" c_vgscan
+  :: GuestfsP -> IO (CInt)
+
+vgscan :: GuestfsH -> IO ()
+vgscan h = do
+  r <- withForeignPtr h (\p -> c_vgscan p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_part_del" c_part_del
+  :: GuestfsP -> CString -> CInt -> IO (CInt)
+
+part_del :: GuestfsH -> String -> Int -> IO ()
+part_del h device partnum = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_del p device (fromIntegral partnum))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_part_get_mbr_id" c_part_get_mbr_id
+  :: GuestfsP -> CString -> CInt -> IO (CInt)
+
+part_get_mbr_id :: GuestfsH -> String -> Int -> IO (Int)
+part_get_mbr_id h device partnum = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_get_mbr_id p device (fromIntegral partnum))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs_part_set_mbr_id" c_part_set_mbr_id
+  :: GuestfsP -> CString -> CInt -> CInt -> IO (CInt)
+
+part_set_mbr_id :: GuestfsH -> String -> Int -> Int -> IO ()
+part_set_mbr_id h device partnum idbyte = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_set_mbr_id p device (fromIntegral partnum) (fromIntegral idbyte))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_lvresize_free" c_lvresize_free
+  :: GuestfsP -> CString -> CInt -> IO (CInt)
+
+lvresize_free :: GuestfsH -> String -> Int -> IO ()
+lvresize_free h lv percent = do
+  r <- withCString lv $ \lv -> withForeignPtr h (\p -> c_lvresize_free p lv (fromIntegral percent))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_aug_clear" c_aug_clear
+  :: GuestfsP -> CString -> IO (CInt)
+
+aug_clear :: GuestfsH -> String -> IO ()
+aug_clear h augpath = do
+  r <- withCString augpath $ \augpath -> withForeignPtr h (\p -> c_aug_clear p augpath)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_get_umask" c_get_umask
+  :: GuestfsP -> IO (CInt)
+
+get_umask :: GuestfsH -> IO (Int)
+get_umask h = do
+  r <- withForeignPtr h (\p -> c_get_umask p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs_debug_upload" c_debug_upload
+  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+
+debug_upload :: GuestfsH -> String -> String -> Int -> IO ()
+debug_upload h filename tmpname mode = do
+  r <- withCString filename $ \filename -> withCString tmpname $ \tmpname -> withForeignPtr h (\p -> c_debug_upload p filename tmpname (fromIntegral mode))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_base64_in" c_base64_in
+  :: GuestfsP -> CString -> CString -> IO (CInt)
+
+base64_in :: GuestfsH -> String -> String -> IO ()
+base64_in h base64file filename = do
+  r <- withCString base64file $ \base64file -> withCString filename $ \filename -> withForeignPtr h (\p -> c_base64_in p base64file filename)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_base64_out" c_base64_out
+  :: GuestfsP -> CString -> CString -> IO (CInt)
+
+base64_out :: GuestfsH -> String -> String -> IO ()
+base64_out h filename base64file = do
+  r <- withCString filename $ \filename -> withCString base64file $ \base64file -> withForeignPtr h (\p -> c_base64_out p filename base64file)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_checksums_out" c_checksums_out
+  :: GuestfsP -> CString -> CString -> CString -> IO (CInt)
+
+checksums_out :: GuestfsH -> String -> String -> String -> IO ()
+checksums_out h csumtype directory sumsfile = do
+  r <- withCString csumtype $ \csumtype -> withCString directory $ \directory -> withCString sumsfile $ \sumsfile -> withForeignPtr h (\p -> c_checksums_out p csumtype directory sumsfile)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_fill_pattern" c_fill_pattern
+  :: GuestfsP -> CString -> CInt -> CString -> IO (CInt)
+
+fill_pattern :: GuestfsH -> String -> Int -> String -> IO ()
+fill_pattern h pattern len path = do
+  r <- withCString pattern $ \pattern -> withCString path $ \path -> withForeignPtr h (\p -> c_fill_pattern p pattern (fromIntegral len) path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_write" c_write
+  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+
+write :: GuestfsH -> String -> String -> IO ()
+write h path content = do
+  r <- withCString path $ \path -> withCStringLen content $ \(content, content_size) -> withForeignPtr h (\p -> c_write p path content (fromIntegral content_size))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_pwrite" c_pwrite
+  :: GuestfsP -> CString -> CString -> CInt -> CInt -> IO (CInt)
+
+pwrite :: GuestfsH -> String -> String -> Int -> IO (Int)
+pwrite h path content offset = do
+  r <- withCString path $ \path -> withCStringLen content $ \(content, content_size) -> withForeignPtr h (\p -> c_pwrite p path content (fromIntegral content_size) (fromIntegral offset))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs_resize2fs_size" c_resize2fs_size
+  :: GuestfsP -> CString -> CInt -> IO (CInt)
+
+resize2fs_size :: GuestfsH -> String -> Int -> IO ()
+resize2fs_size h device size = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_resize2fs_size p device (fromIntegral size))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_pvresize_size" c_pvresize_size
+  :: GuestfsP -> CString -> CInt -> IO (CInt)
+
+pvresize_size :: GuestfsH -> String -> Int -> IO ()
+pvresize_size h device size = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_pvresize_size p device (fromIntegral size))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_ntfsresize_size" c_ntfsresize_size
+  :: GuestfsP -> CString -> CInt -> IO (CInt)
+
+ntfsresize_size :: GuestfsH -> String -> Int -> IO ()
+ntfsresize_size h device size = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_ntfsresize_size p device (fromIntegral size))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_fallocate64" c_fallocate64
+  :: GuestfsP -> CString -> CInt -> IO (CInt)
+
+fallocate64 :: GuestfsH -> String -> Int -> IO ()
+fallocate64 h path len = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_fallocate64 p path (fromIntegral len))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_lvm_set_filter" c_lvm_set_filter
+  :: GuestfsP -> Ptr CString -> IO (CInt)
+
+lvm_set_filter :: GuestfsH -> [String] -> IO ()
+lvm_set_filter h devices = do
+  r <- withMany withCString devices $ \devices -> withArray0 nullPtr devices $ \devices -> withForeignPtr h (\p -> c_lvm_set_filter p devices)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_lvm_clear_filter" c_lvm_clear_filter
+  :: GuestfsP -> IO (CInt)
+
+lvm_clear_filter :: GuestfsH -> IO ()
+lvm_clear_filter h = do
+  r <- withForeignPtr h (\p -> c_lvm_clear_filter p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_luks_open" c_luks_open
+  :: GuestfsP -> CString -> CString -> CString -> IO (CInt)
+
+luks_open :: GuestfsH -> String -> String -> String -> IO ()
+luks_open h device key mapname = do
+  r <- withCString device $ \device -> withCString key $ \key -> withCString mapname $ \mapname -> withForeignPtr h (\p -> c_luks_open p device key mapname)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_luks_open_ro" c_luks_open_ro
+  :: GuestfsP -> CString -> CString -> CString -> IO (CInt)
+
+luks_open_ro :: GuestfsH -> String -> String -> String -> IO ()
+luks_open_ro h device key mapname = do
+  r <- withCString device $ \device -> withCString key $ \key -> withCString mapname $ \mapname -> withForeignPtr h (\p -> c_luks_open_ro p device key mapname)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_luks_close" c_luks_close
+  :: GuestfsP -> CString -> IO (CInt)
+
+luks_close :: GuestfsH -> String -> IO ()
+luks_close h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_luks_close p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_luks_format" c_luks_format
+  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+
+luks_format :: GuestfsH -> String -> String -> Int -> IO ()
+luks_format h device key keyslot = do
+  r <- withCString device $ \device -> withCString key $ \key -> withForeignPtr h (\p -> c_luks_format p device key (fromIntegral keyslot))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_luks_format_cipher" c_luks_format_cipher
+  :: GuestfsP -> CString -> CString -> CInt -> CString -> IO (CInt)
+
+luks_format_cipher :: GuestfsH -> String -> String -> Int -> String -> IO ()
+luks_format_cipher h device key keyslot cipher = do
+  r <- withCString device $ \device -> withCString key $ \key -> withCString cipher $ \cipher -> withForeignPtr h (\p -> c_luks_format_cipher p device key (fromIntegral keyslot) cipher)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_luks_add_key" c_luks_add_key
+  :: GuestfsP -> CString -> CString -> CString -> CInt -> IO (CInt)
+
+luks_add_key :: GuestfsH -> String -> String -> String -> Int -> IO ()
+luks_add_key h device key newkey keyslot = do
+  r <- withCString device $ \device -> withCString key $ \key -> withCString newkey $ \newkey -> withForeignPtr h (\p -> c_luks_add_key p device key newkey (fromIntegral keyslot))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_luks_kill_slot" c_luks_kill_slot
+  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+
+luks_kill_slot :: GuestfsH -> String -> String -> Int -> IO ()
+luks_kill_slot h device key keyslot = do
+  r <- withCString device $ \device -> withCString key $ \key -> withForeignPtr h (\p -> c_luks_kill_slot p device key (fromIntegral keyslot))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_upload_offset" c_upload_offset
+  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+
+upload_offset :: GuestfsH -> String -> String -> Int -> IO ()
+upload_offset h filename remotefilename offset = do
+  r <- withCString filename $ \filename -> withCString remotefilename $ \remotefilename -> withForeignPtr h (\p -> c_upload_offset p filename remotefilename (fromIntegral offset))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_download_offset" c_download_offset
+  :: GuestfsP -> CString -> CString -> CInt -> CInt -> IO (CInt)
+
+download_offset :: GuestfsH -> String -> String -> Int -> Int -> IO ()
+download_offset h remotefilename filename offset size = do
+  r <- withCString remotefilename $ \remotefilename -> withCString filename $ \filename -> withForeignPtr h (\p -> c_download_offset p remotefilename filename (fromIntegral offset) (fromIntegral size))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_pwrite_device" c_pwrite_device
+  :: GuestfsP -> CString -> CString -> CInt -> CInt -> IO (CInt)
+
+pwrite_device :: GuestfsH -> String -> String -> Int -> IO (Int)
+pwrite_device h device content offset = do
+  r <- withCString device $ \device -> withCStringLen content $ \(content, content_size) -> withForeignPtr h (\p -> c_pwrite_device p device content (fromIntegral content_size) (fromIntegral offset))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs_resize2fs_M" c_resize2fs_M
+  :: GuestfsP -> CString -> IO (CInt)
+
+resize2fs_M :: GuestfsH -> String -> IO ()
+resize2fs_M h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_resize2fs_M p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_internal_autosync" c_internal_autosync
+  :: GuestfsP -> IO (CInt)
+
+internal_autosync :: GuestfsH -> IO ()
+internal_autosync h = do
+  r <- withForeignPtr h (\p -> c_internal_autosync p)
   if (r == -1)
     then do
       err <- last_error h

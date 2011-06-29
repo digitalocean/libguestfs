@@ -20,18 +20,14 @@
 
 set -e
 
-rm -f test.pid test.img
+rm -f test.pid test1.img
 
-../fish/guestfish <<'EOF'
-alloc test.img 10M
-run
-
+../fish/guestfish -N disk <<'EOF'
 # Kill subprocess.
 pid | cat > test.pid
 ! kill $(cat test.pid) ; sleep 2
 
 # XXX The following sleep should NOT be necessary.
-echo "Expect an error from the next command"
 -sleep 1
 
 # We should now be able to rerun the subprocess.
@@ -39,4 +35,4 @@ run
 ping-daemon
 EOF
 
-rm -f test.pid test.img
+rm -f test.pid test1.img
