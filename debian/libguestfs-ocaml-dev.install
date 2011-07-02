@@ -1,0 +1,4 @@
+usr/lib/ocaml/guestfs/META
+usr/lib/ocaml/guestfs/*guestfs*.a
+usr/lib/ocaml/guestfs/*guestfs*.cm*
+usr/lib/ocaml/guestfs/*guestfs*.ml*
