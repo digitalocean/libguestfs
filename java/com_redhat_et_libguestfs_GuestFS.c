@@ -5540,7 +5540,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1read_1file
     throw_exception (env, guestfs_last_error (g));
     return NULL;
   }
-  jr = (*env)->NewStringUTF (env, r); /* XXX size */
+  jr = (*env)->NewStringUTF (env, r); // XXX size
   free (r);
   return jr;
 }
@@ -7002,7 +7002,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1pread
     throw_exception (env, guestfs_last_error (g));
     return NULL;
   }
-  jr = (*env)->NewStringUTF (env, r); /* XXX size */
+  jr = (*env)->NewStringUTF (env, r); // XXX size
   free (r);
   return jr;
 }
@@ -7321,7 +7321,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1initrd_1cat
     throw_exception (env, guestfs_last_error (g));
     return NULL;
   }
-  jr = (*env)->NewStringUTF (env, r); /* XXX size */
+  jr = (*env)->NewStringUTF (env, r); // XXX size
   free (r);
   return jr;
 }
@@ -8485,7 +8485,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1pread_1device
     throw_exception (env, guestfs_last_error (g));
     return NULL;
   }
-  jr = (*env)->NewStringUTF (env, r); /* XXX size */
+  jr = (*env)->NewStringUTF (env, r); // XXX size
   free (r);
   return jr;
 }
@@ -8555,7 +8555,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1getxattr
     throw_exception (env, guestfs_last_error (g));
     return NULL;
   }
-  jr = (*env)->NewStringUTF (env, r); /* XXX size */
+  jr = (*env)->NewStringUTF (env, r); // XXX size
   free (r);
   return jr;
 }
@@ -8580,7 +8580,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1lgetxattr
     throw_exception (env, guestfs_last_error (g));
     return NULL;
   }
-  jr = (*env)->NewStringUTF (env, r); /* XXX size */
+  jr = (*env)->NewStringUTF (env, r); // XXX size
   free (r);
   return jr;
 }

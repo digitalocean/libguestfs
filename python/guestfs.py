@@ -4325,8 +4325,18 @@ class GuestFS:
 
     def ntfsresize (self, device):
         u"""This command resizes an NTFS filesystem, expanding or
-        shrinking it to the size of the underlying device. See
-        also ntfsresize(8).
+        shrinking it to the size of the underlying device.
+        
+        *Note:* After the resize operation, the filesystem is
+        marked as requiring a consistency check (for safety).
+        You have to boot into Windows to perform this check and
+        clear this condition. Furthermore, ntfsresize refuses to
+        resize filesystems which have been marked in this way.
+        So in effect it is not possible to call ntfsresize
+        multiple times on a single filesystem without booting
+        into Windows between each resize.
+        
+        See also ntfsresize(8).
         """
         return libguestfsmod.ntfsresize (self._o, device)
 

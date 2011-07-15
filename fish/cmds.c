@@ -2248,7 +2248,7 @@ struct command_entry txz_out_cmd_entry = {
 
 struct command_entry ntfsresize_cmd_entry = {
   .name = "ntfsresize",
-  .help = "NAME\n    ntfsresize - resize an NTFS filesystem\n\nSYNOPSIS\n     ntfsresize device\n\nDESCRIPTION\n    This command resizes an NTFS filesystem, expanding or shrinking it to\n    the size of the underlying device. See also ntfsresize(8).\n\n",
+  .help = "NAME\n    ntfsresize - resize an NTFS filesystem\n\nSYNOPSIS\n     ntfsresize device\n\nDESCRIPTION\n    This command resizes an NTFS filesystem, expanding or shrinking it to\n    the size of the underlying device.\n\n    *Note:* After the resize operation, the filesystem is marked as\n    requiring a consistency check (for safety). You have to boot into\n    Windows to perform this check and clear this condition. Furthermore,\n    ntfsresize refuses to resize filesystems which have been marked in this\n    way. So in effect it is not possible to call ntfsresize multiple times\n    on a single filesystem without booting into Windows between each resize.\n\n    See also ntfsresize(8).\n\n",
   .run = run_ntfsresize
 };
 

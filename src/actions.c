@@ -656,12 +656,14 @@ guestfs_test0rstringlist (guestfs_h *g,
 
       trace_fp = trace_open (g);
       fprintf (trace_fp, "%s = ", "test0rstringlist");
-      fputs ("[\"", trace_fp);
+      fputs ("[", trace_fp);
       for (i = 0; r[i]; ++i) {
-        if (i > 0) fputs ("\", \"", trace_fp);
+        if (i > 0) fputs (", ", trace_fp);
+        fputs ("\"", trace_fp);
         fputs (r[i], trace_fp);
+        fputs ("\"", trace_fp);
       }
-      fputs ("\"]", trace_fp);
+      fputs ("]", trace_fp);
       trace_send_line (g);
     }
 
@@ -695,12 +697,14 @@ guestfs_test0rstringlisterr (guestfs_h *g)
 
       trace_fp = trace_open (g);
       fprintf (trace_fp, "%s = ", "test0rstringlisterr");
-      fputs ("[\"", trace_fp);
+      fputs ("[", trace_fp);
       for (i = 0; r[i]; ++i) {
-        if (i > 0) fputs ("\", \"", trace_fp);
+        if (i > 0) fputs (", ", trace_fp);
+        fputs ("\"", trace_fp);
         fputs (r[i], trace_fp);
+        fputs ("\"", trace_fp);
       }
-      fputs ("\"]", trace_fp);
+      fputs ("]", trace_fp);
       trace_send_line (g);
     }
 
@@ -886,12 +890,14 @@ guestfs_test0rhashtable (guestfs_h *g,
 
       trace_fp = trace_open (g);
       fprintf (trace_fp, "%s = ", "test0rhashtable");
-      fputs ("[\"", trace_fp);
+      fputs ("[", trace_fp);
       for (i = 0; r[i]; ++i) {
-        if (i > 0) fputs ("\", \"", trace_fp);
+        if (i > 0) fputs (", ", trace_fp);
+        fputs ("\"", trace_fp);
         fputs (r[i], trace_fp);
+        fputs ("\"", trace_fp);
       }
-      fputs ("\"]", trace_fp);
+      fputs ("]", trace_fp);
       trace_send_line (g);
     }
 
@@ -925,12 +931,14 @@ guestfs_test0rhashtableerr (guestfs_h *g)
 
       trace_fp = trace_open (g);
       fprintf (trace_fp, "%s = ", "test0rhashtableerr");
-      fputs ("[\"", trace_fp);
+      fputs ("[", trace_fp);
       for (i = 0; r[i]; ++i) {
-        if (i > 0) fputs ("\", \"", trace_fp);
+        if (i > 0) fputs (", ", trace_fp);
+        fputs ("\"", trace_fp);
         fputs (r[i], trace_fp);
+        fputs ("\"", trace_fp);
       }
-      fputs ("\"]", trace_fp);
+      fputs ("]", trace_fp);
       trace_send_line (g);
     }
 
@@ -2238,12 +2246,14 @@ guestfs_inspect_os (guestfs_h *g)
 
       trace_fp = trace_open (g);
       fprintf (trace_fp, "%s = ", "inspect_os");
-      fputs ("[\"", trace_fp);
+      fputs ("[", trace_fp);
       for (i = 0; r[i]; ++i) {
-        if (i > 0) fputs ("\", \"", trace_fp);
+        if (i > 0) fputs (", ", trace_fp);
+        fputs ("\"", trace_fp);
         fputs (r[i], trace_fp);
+        fputs ("\"", trace_fp);
       }
-      fputs ("\"]", trace_fp);
+      fputs ("]", trace_fp);
       trace_send_line (g);
     }
 
@@ -2525,12 +2535,14 @@ guestfs_inspect_get_mountpoints (guestfs_h *g,
 
       trace_fp = trace_open (g);
       fprintf (trace_fp, "%s = ", "inspect_get_mountpoints");
-      fputs ("[\"", trace_fp);
+      fputs ("[", trace_fp);
       for (i = 0; r[i]; ++i) {
-        if (i > 0) fputs ("\", \"", trace_fp);
+        if (i > 0) fputs (", ", trace_fp);
+        fputs ("\"", trace_fp);
         fputs (r[i], trace_fp);
+        fputs ("\"", trace_fp);
       }
-      fputs ("\"]", trace_fp);
+      fputs ("]", trace_fp);
       trace_send_line (g);
     }
 
@@ -2572,12 +2584,14 @@ guestfs_inspect_get_filesystems (guestfs_h *g,
 
       trace_fp = trace_open (g);
       fprintf (trace_fp, "%s = ", "inspect_get_filesystems");
-      fputs ("[\"", trace_fp);
+      fputs ("[", trace_fp);
       for (i = 0; r[i]; ++i) {
-        if (i > 0) fputs ("\", \"", trace_fp);
+        if (i > 0) fputs (", ", trace_fp);
+        fputs ("\"", trace_fp);
         fputs (r[i], trace_fp);
+        fputs ("\"", trace_fp);
       }
-      fputs ("\"]", trace_fp);
+      fputs ("]", trace_fp);
       trace_send_line (g);
     }
 
@@ -2677,12 +2691,14 @@ guestfs_list_filesystems (guestfs_h *g)
 
       trace_fp = trace_open (g);
       fprintf (trace_fp, "%s = ", "list_filesystems");
-      fputs ("[\"", trace_fp);
+      fputs ("[", trace_fp);
       for (i = 0; r[i]; ++i) {
-        if (i > 0) fputs ("\", \"", trace_fp);
+        if (i > 0) fputs (", ", trace_fp);
+        fputs ("\"", trace_fp);
         fputs (r[i], trace_fp);
+        fputs ("\"", trace_fp);
       }
-      fputs ("\"]", trace_fp);
+      fputs ("]", trace_fp);
       trace_send_line (g);
     }
 
@@ -2821,12 +2837,14 @@ guestfs_inspect_get_roots (guestfs_h *g)
 
       trace_fp = trace_open (g);
       fprintf (trace_fp, "%s = ", "inspect_get_roots");
-      fputs ("[\"", trace_fp);
+      fputs ("[", trace_fp);
       for (i = 0; r[i]; ++i) {
-        if (i > 0) fputs ("\", \"", trace_fp);
+        if (i > 0) fputs (", ", trace_fp);
+        fputs ("\"", trace_fp);
         fputs (r[i], trace_fp);
+        fputs ("\"", trace_fp);
       }
-      fputs ("\"]", trace_fp);
+      fputs ("]", trace_fp);
       trace_send_line (g);
     }
 
@@ -2860,12 +2878,14 @@ guestfs_debug_cmdline (guestfs_h *g)
 
       trace_fp = trace_open (g);
       fprintf (trace_fp, "%s = ", "debug_cmdline");
-      fputs ("[\"", trace_fp);
+      fputs ("[", trace_fp);
       for (i = 0; r[i]; ++i) {
-        if (i > 0) fputs ("\", \"", trace_fp);
+        if (i > 0) fputs (", ", trace_fp);
+        fputs ("\"", trace_fp);
         fputs (r[i], trace_fp);
+        fputs ("\"", trace_fp);
       }
-      fputs ("\"]", trace_fp);
+      fputs ("]", trace_fp);
       trace_send_line (g);
     }
 
@@ -3446,12 +3466,14 @@ guestfs_inspect_get_drive_mappings (guestfs_h *g,
 
       trace_fp = trace_open (g);
       fprintf (trace_fp, "%s = ", "inspect_get_drive_mappings");
-      fputs ("[\"", trace_fp);
+      fputs ("[", trace_fp);
       for (i = 0; r[i]; ++i) {
-        if (i > 0) fputs ("\", \"", trace_fp);
+        if (i > 0) fputs (", ", trace_fp);
+        fputs ("\"", trace_fp);
         fputs (r[i], trace_fp);
+        fputs ("\"", trace_fp);
       }
-      fputs ("\"]", trace_fp);
+      fputs ("]", trace_fp);
       trace_send_line (g);
     }
 
@@ -4055,12 +4077,14 @@ guestfs_ls (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "ls");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -4156,12 +4180,14 @@ guestfs_list_devices (guestfs_h *g)
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "list_devices");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -4257,12 +4283,14 @@ guestfs_list_partitions (guestfs_h *g)
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "list_partitions");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -4358,12 +4386,14 @@ guestfs_pvs (guestfs_h *g)
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "pvs");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -4459,12 +4489,14 @@ guestfs_vgs (guestfs_h *g)
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "vgs");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -4560,12 +4592,14 @@ guestfs_lvs (guestfs_h *g)
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "lvs");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -4942,12 +4976,14 @@ guestfs_read_lines (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "read_lines");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -5984,12 +6020,14 @@ guestfs_aug_match (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "aug_match");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -6270,12 +6308,14 @@ guestfs_aug_ls (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "aug_ls");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -8125,12 +8165,14 @@ guestfs_mounts (guestfs_h *g)
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "mounts");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -8629,12 +8671,14 @@ guestfs_command_lines (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "command_lines");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -9044,12 +9088,14 @@ guestfs_tune2fs_l (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "tune2fs_l");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -13139,12 +13185,14 @@ guestfs_strings (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "strings");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -13259,12 +13307,14 @@ guestfs_strings_e (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "strings_e");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -14486,12 +14536,14 @@ guestfs_find (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "find");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -14991,12 +15043,14 @@ guestfs_sh_lines (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "sh_lines");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -15103,12 +15157,14 @@ guestfs_glob_expand (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "glob_expand");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -15909,12 +15965,14 @@ guestfs_head (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "head");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -16024,12 +16082,14 @@ guestfs_head_n (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "head_n");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -16136,12 +16196,14 @@ guestfs_tail (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "tail");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -16251,12 +16313,14 @@ guestfs_tail_n (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "tail_n");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -16641,12 +16705,14 @@ guestfs_initrd_list (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "initrd_list");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -18646,12 +18712,14 @@ guestfs_mountpoints (guestfs_h *g)
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "mountpoints");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -19076,12 +19144,14 @@ guestfs_grep (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "grep");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -19196,12 +19266,14 @@ guestfs_egrep (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "egrep");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -19316,12 +19388,14 @@ guestfs_fgrep (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "fgrep");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -19436,12 +19510,14 @@ guestfs_grepi (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "grepi");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -19556,12 +19632,14 @@ guestfs_egrepi (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "egrepi");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -19676,12 +19754,14 @@ guestfs_fgrepi (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "fgrepi");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -19796,12 +19876,14 @@ guestfs_zgrep (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "zgrep");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -19916,12 +19998,14 @@ guestfs_zegrep (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "zegrep");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -20036,12 +20120,14 @@ guestfs_zfgrep (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "zfgrep");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -20156,12 +20242,14 @@ guestfs_zgrepi (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "zgrepi");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -20276,12 +20364,14 @@ guestfs_zegrepi (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "zegrepi");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -20396,12 +20486,14 @@ guestfs_zfgrepi (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "zfgrepi");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -22481,12 +22573,14 @@ guestfs_inotify_files (guestfs_h *g)
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "inotify_files");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -24933,12 +25027,14 @@ guestfs_readlinklist (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "readlinklist");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -26954,12 +27050,14 @@ guestfs_vgpvuuids (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "vgpvuuids");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -27066,12 +27164,14 @@ guestfs_vglvuuids (guestfs_h *g,
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "vglvuuids");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 
@@ -29741,12 +29841,14 @@ guestfs_available_all_groups (guestfs_h *g)
 
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "available_all_groups");
-    fputs ("[\"", trace_fp);
+    fputs ("[", trace_fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs ("\", \"", trace_fp);
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
       fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
     }
-    fputs ("\"]", trace_fp);
+    fputs ("]", trace_fp);
     trace_send_line (g);
   }
 

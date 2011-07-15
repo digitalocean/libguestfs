@@ -39,6 +39,11 @@ static void mount_stub (XDR *xdr_in)
   int r;
   struct guestfs_mount_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_mount_args (xdr_in, &args)) {
@@ -64,6 +69,11 @@ static void sync_stub (XDR *xdr_in)
 {
   int r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_sync ();
   if (r == -1)
     /* do_sync has already called reply_with_error */
@@ -78,6 +88,11 @@ static void touch_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_touch_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -104,6 +119,11 @@ static void cat_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_cat_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -134,6 +154,11 @@ static void ll_stub (XDR *xdr_in)
   char *r;
   struct guestfs_ll_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_ll_args (xdr_in, &args)) {
@@ -162,6 +187,11 @@ static void ls_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_ls_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -192,6 +222,11 @@ static void list_devices_stub (XDR *xdr_in)
 {
   char **r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_list_devices ();
   if (r == NULL)
     /* do_list_devices has already called reply_with_error */
@@ -209,6 +244,11 @@ done:
 static void list_partitions_stub (XDR *xdr_in)
 {
   char **r;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   r = do_list_partitions ();
   if (r == NULL)
@@ -228,6 +268,11 @@ static void pvs_stub (XDR *xdr_in)
 {
   char **r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_pvs ();
   if (r == NULL)
     /* do_pvs has already called reply_with_error */
@@ -245,6 +290,11 @@ done:
 static void vgs_stub (XDR *xdr_in)
 {
   char **r;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   r = do_vgs ();
   if (r == NULL)
@@ -264,6 +314,11 @@ static void lvs_stub (XDR *xdr_in)
 {
   char **r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_lvs ();
   if (r == NULL)
     /* do_lvs has already called reply_with_error */
@@ -282,6 +337,11 @@ static void pvs_full_stub (XDR *xdr_in)
 {
   guestfs_int_lvm_pv_list *r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_pvs_full ();
   if (r == NULL)
     /* do_pvs_full has already called reply_with_error */
@@ -298,6 +358,11 @@ done:
 static void vgs_full_stub (XDR *xdr_in)
 {
   guestfs_int_lvm_vg_list *r;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   r = do_vgs_full ();
   if (r == NULL)
@@ -316,6 +381,11 @@ static void lvs_full_stub (XDR *xdr_in)
 {
   guestfs_int_lvm_lv_list *r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_lvs_full ();
   if (r == NULL)
     /* do_lvs_full has already called reply_with_error */
@@ -333,6 +403,11 @@ static void read_lines_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_read_lines_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -365,6 +440,11 @@ static void aug_init_stub (XDR *xdr_in)
   struct guestfs_aug_init_args args;
   int flags;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_aug_init_args (xdr_in, &args)) {
@@ -391,6 +471,11 @@ static void aug_close_stub (XDR *xdr_in)
 {
   int r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_aug_close ();
   if (r == -1)
     /* do_aug_close has already called reply_with_error */
@@ -406,6 +491,11 @@ static void aug_defvar_stub (XDR *xdr_in)
   int r;
   struct guestfs_aug_defvar_args args;
   char *expr;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -433,6 +523,11 @@ static void aug_defnode_stub (XDR *xdr_in)
 {
   guestfs_int_int_bool *r;
   struct guestfs_aug_defnode_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -463,6 +558,11 @@ static void aug_get_stub (XDR *xdr_in)
   char *r;
   struct guestfs_aug_get_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_aug_get_args (xdr_in, &args)) {
@@ -490,6 +590,11 @@ static void aug_set_stub (XDR *xdr_in)
   int r;
   struct guestfs_aug_set_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_aug_set_args (xdr_in, &args)) {
@@ -515,6 +620,11 @@ static void aug_insert_stub (XDR *xdr_in)
   int r;
   struct guestfs_aug_insert_args args;
   int before;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -542,6 +652,11 @@ static void aug_rm_stub (XDR *xdr_in)
   int r;
   struct guestfs_aug_rm_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_aug_rm_args (xdr_in, &args)) {
@@ -568,6 +683,11 @@ static void aug_mv_stub (XDR *xdr_in)
   int r;
   struct guestfs_aug_mv_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_aug_mv_args (xdr_in, &args)) {
@@ -592,6 +712,11 @@ static void aug_match_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_aug_match_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -620,6 +745,11 @@ static void aug_save_stub (XDR *xdr_in)
 {
   int r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_aug_save ();
   if (r == -1)
     /* do_aug_save has already called reply_with_error */
@@ -633,6 +763,11 @@ done:
 static void aug_load_stub (XDR *xdr_in)
 {
   int r;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   r = do_aug_load ();
   if (r == -1)
@@ -648,6 +783,11 @@ static void aug_ls_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_aug_ls_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -677,6 +817,11 @@ static void rm_stub (XDR *xdr_in)
   int r;
   struct guestfs_rm_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_rm_args (xdr_in, &args)) {
@@ -702,6 +847,11 @@ static void rmdir_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_rmdir_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -729,6 +879,11 @@ static void rm_rf_stub (XDR *xdr_in)
   int r;
   struct guestfs_rm_rf_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_rm_rf_args (xdr_in, &args)) {
@@ -754,6 +909,11 @@ static void mkdir_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkdir_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -781,6 +941,11 @@ static void mkdir_p_stub (XDR *xdr_in)
   int r;
   struct guestfs_mkdir_p_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_mkdir_p_args (xdr_in, &args)) {
@@ -807,6 +972,11 @@ static void chmod_stub (XDR *xdr_in)
   int r;
   struct guestfs_chmod_args args;
   int mode;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -837,6 +1007,11 @@ static void chown_stub (XDR *xdr_in)
   int owner;
   int group;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_chown_args (xdr_in, &args)) {
@@ -864,6 +1039,11 @@ static void exists_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_exists_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -893,6 +1073,11 @@ static void is_file_stub (XDR *xdr_in)
   int r;
   struct guestfs_is_file_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_is_file_args (xdr_in, &args)) {
@@ -920,6 +1105,11 @@ static void is_dir_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_dir_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -949,6 +1139,11 @@ static void pvcreate_stub (XDR *xdr_in)
   int r;
   struct guestfs_pvcreate_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_pvcreate_args (xdr_in, &args)) {
@@ -974,6 +1169,11 @@ static void vgcreate_stub (XDR *xdr_in)
   int r;
   struct guestfs_vgcreate_args args;
   char **physvols;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -1016,6 +1216,11 @@ static void lvcreate_stub (XDR *xdr_in)
   struct guestfs_lvcreate_args args;
   int mbytes;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_lvcreate_args (xdr_in, &args)) {
@@ -1041,6 +1246,11 @@ static void mkfs_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkfs_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -1071,6 +1281,11 @@ static void sfdisk_stub (XDR *xdr_in)
   int heads;
   int sectors;
   char **lines;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -1109,6 +1324,11 @@ static void write_file_stub (XDR *xdr_in)
   struct guestfs_write_file_args args;
   int size;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_write_file_args (xdr_in, &args)) {
@@ -1137,6 +1357,11 @@ static void umount_stub (XDR *xdr_in)
   int r;
   struct guestfs_umount_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_umount_args (xdr_in, &args)) {
@@ -1160,6 +1385,11 @@ static void mounts_stub (XDR *xdr_in)
 {
   char **r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_mounts ();
   if (r == NULL)
     /* do_mounts has already called reply_with_error */
@@ -1178,6 +1408,11 @@ static void umount_all_stub (XDR *xdr_in)
 {
   int r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_umount_all ();
   if (r == -1)
     /* do_umount_all has already called reply_with_error */
@@ -1191,6 +1426,11 @@ done:
 static void lvm_remove_all_stub (XDR *xdr_in)
 {
   int r;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   r = do_lvm_remove_all ();
   if (r == -1)
@@ -1206,6 +1446,11 @@ static void file_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_file_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -1235,6 +1480,11 @@ static void command_stub (XDR *xdr_in)
   char *r;
   struct guestfs_command_args args;
   char **arguments;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -1271,6 +1521,11 @@ static void command_lines_stub (XDR *xdr_in)
   struct guestfs_command_lines_args args;
   char **arguments;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_command_lines_args (xdr_in, &args)) {
@@ -1306,6 +1561,11 @@ static void stat_stub (XDR *xdr_in)
   guestfs_int_stat *r;
   struct guestfs_stat_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_stat_args (xdr_in, &args)) {
@@ -1334,6 +1594,11 @@ static void lstat_stub (XDR *xdr_in)
 {
   guestfs_int_stat *r;
   struct guestfs_lstat_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -1364,6 +1629,11 @@ static void statvfs_stub (XDR *xdr_in)
   guestfs_int_statvfs *r;
   struct guestfs_statvfs_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_statvfs_args (xdr_in, &args)) {
@@ -1392,6 +1662,11 @@ static void tune2fs_l_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_tune2fs_l_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -1422,6 +1697,11 @@ static void blockdev_setro_stub (XDR *xdr_in)
   int r;
   struct guestfs_blockdev_setro_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_blockdev_setro_args (xdr_in, &args)) {
@@ -1447,6 +1727,11 @@ static void blockdev_setrw_stub (XDR *xdr_in)
   int r;
   struct guestfs_blockdev_setrw_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_blockdev_setrw_args (xdr_in, &args)) {
@@ -1471,6 +1756,11 @@ static void blockdev_getro_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_getro_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -1499,6 +1789,11 @@ static void blockdev_getss_stub (XDR *xdr_in)
   int r;
   struct guestfs_blockdev_getss_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_blockdev_getss_args (xdr_in, &args)) {
@@ -1525,6 +1820,11 @@ static void blockdev_getbsz_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_getbsz_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -1554,6 +1854,11 @@ static void blockdev_setbsz_stub (XDR *xdr_in)
   struct guestfs_blockdev_setbsz_args args;
   int blocksize;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_blockdev_setbsz_args (xdr_in, &args)) {
@@ -1579,6 +1884,11 @@ static void blockdev_getsz_stub (XDR *xdr_in)
 {
   int64_t r;
   struct guestfs_blockdev_getsz_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -1607,6 +1917,11 @@ static void blockdev_getsize64_stub (XDR *xdr_in)
   int64_t r;
   struct guestfs_blockdev_getsize64_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_blockdev_getsize64_args (xdr_in, &args)) {
@@ -1634,6 +1949,11 @@ static void blockdev_flushbufs_stub (XDR *xdr_in)
   int r;
   struct guestfs_blockdev_flushbufs_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_blockdev_flushbufs_args (xdr_in, &args)) {
@@ -1659,6 +1979,11 @@ static void blockdev_rereadpt_stub (XDR *xdr_in)
   int r;
   struct guestfs_blockdev_rereadpt_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_blockdev_rereadpt_args (xdr_in, &args)) {
@@ -1683,6 +2008,12 @@ static void upload_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_upload_args args;
+
+  if (optargs_bitmask != 0) {
+    cancel_receive ();
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -1710,6 +2041,11 @@ static void download_stub (XDR *xdr_in)
   int r;
   struct guestfs_download_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_download_args (xdr_in, &args)) {
@@ -1734,6 +2070,11 @@ static void checksum_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_checksum_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -1765,6 +2106,12 @@ static void tar_in_stub (XDR *xdr_in)
   int r;
   struct guestfs_tar_in_args args;
 
+  if (optargs_bitmask != 0) {
+    cancel_receive ();
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_tar_in_args (xdr_in, &args)) {
@@ -1792,6 +2139,11 @@ static void tar_out_stub (XDR *xdr_in)
   int r;
   struct guestfs_tar_out_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_tar_out_args (xdr_in, &args)) {
@@ -1815,6 +2167,12 @@ static void tgz_in_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_tgz_in_args args;
+
+  if (optargs_bitmask != 0) {
+    cancel_receive ();
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -1843,6 +2201,11 @@ static void tgz_out_stub (XDR *xdr_in)
   int r;
   struct guestfs_tgz_out_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_tgz_out_args (xdr_in, &args)) {
@@ -1868,6 +2231,11 @@ static void mount_ro_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mount_ro_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -1895,6 +2263,11 @@ static void mount_options_stub (XDR *xdr_in)
   int r;
   struct guestfs_mount_options_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_mount_options_args (xdr_in, &args)) {
@@ -1921,6 +2294,11 @@ static void mount_vfs_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mount_vfs_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -1950,6 +2328,11 @@ static void debug_stub (XDR *xdr_in)
   char *r;
   struct guestfs_debug_args args;
   char **extraargs;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -1986,6 +2369,11 @@ static void lvremove_stub (XDR *xdr_in)
   int r;
   struct guestfs_lvremove_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_lvremove_args (xdr_in, &args)) {
@@ -2011,6 +2399,11 @@ static void vgremove_stub (XDR *xdr_in)
   int r;
   struct guestfs_vgremove_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_vgremove_args (xdr_in, &args)) {
@@ -2034,6 +2427,11 @@ static void pvremove_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_pvremove_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -2060,6 +2458,11 @@ static void set_e2label_stub (XDR *xdr_in)
   int r;
   struct guestfs_set_e2label_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_set_e2label_args (xdr_in, &args)) {
@@ -2085,6 +2488,11 @@ static void get_e2label_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_get_e2label_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -2114,6 +2522,11 @@ static void set_e2uuid_stub (XDR *xdr_in)
   int r;
   struct guestfs_set_e2uuid_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_set_e2uuid_args (xdr_in, &args)) {
@@ -2139,6 +2552,11 @@ static void get_e2uuid_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_get_e2uuid_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -2168,6 +2586,11 @@ static void fsck_stub (XDR *xdr_in)
   int r;
   struct guestfs_fsck_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_fsck_args (xdr_in, &args)) {
@@ -2196,6 +2619,11 @@ static void zero_stub (XDR *xdr_in)
   int r;
   struct guestfs_zero_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_zero_args (xdr_in, &args)) {
@@ -2220,6 +2648,11 @@ static void grub_install_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_grub_install_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -2249,6 +2682,11 @@ static void cp_stub (XDR *xdr_in)
   int r;
   struct guestfs_cp_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_cp_args (xdr_in, &args)) {
@@ -2277,6 +2715,11 @@ static void cp_a_stub (XDR *xdr_in)
   int r;
   struct guestfs_cp_a_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_cp_a_args (xdr_in, &args)) {
@@ -2304,6 +2747,11 @@ static void mv_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mv_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -2334,6 +2782,11 @@ static void drop_caches_stub (XDR *xdr_in)
   struct guestfs_drop_caches_args args;
   int whattodrop;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_drop_caches_args (xdr_in, &args)) {
@@ -2357,6 +2810,11 @@ static void dmesg_stub (XDR *xdr_in)
 {
   char *r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_dmesg ();
   if (r == NULL)
     /* do_dmesg has already called reply_with_error */
@@ -2374,6 +2832,11 @@ static void ping_daemon_stub (XDR *xdr_in)
 {
   int r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_ping_daemon ();
   if (r == -1)
     /* do_ping_daemon has already called reply_with_error */
@@ -2388,6 +2851,11 @@ static void equal_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_equal_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -2419,6 +2887,11 @@ static void strings_stub (XDR *xdr_in)
   char **r;
   struct guestfs_strings_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_strings_args (xdr_in, &args)) {
@@ -2448,6 +2921,11 @@ static void strings_e_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_strings_e_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -2480,6 +2958,11 @@ static void hexdump_stub (XDR *xdr_in)
   char *r;
   struct guestfs_hexdump_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_hexdump_args (xdr_in, &args)) {
@@ -2509,6 +2992,11 @@ static void zerofree_stub (XDR *xdr_in)
   int r;
   struct guestfs_zerofree_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_zerofree_args (xdr_in, &args)) {
@@ -2533,6 +3021,11 @@ static void pvresize_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_pvresize_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -2562,6 +3055,11 @@ static void sfdisk_N_stub (XDR *xdr_in)
   int cyls;
   int heads;
   int sectors;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -2593,6 +3091,11 @@ static void sfdisk_l_stub (XDR *xdr_in)
   char *r;
   struct guestfs_sfdisk_l_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_sfdisk_l_args (xdr_in, &args)) {
@@ -2621,6 +3124,11 @@ static void sfdisk_kernel_geometry_stub (XDR *xdr_in)
   char *r;
   struct guestfs_sfdisk_kernel_geometry_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_sfdisk_kernel_geometry_args (xdr_in, &args)) {
@@ -2648,6 +3156,11 @@ static void sfdisk_disk_geometry_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_sfdisk_disk_geometry_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -2678,6 +3191,11 @@ static void vg_activate_all_stub (XDR *xdr_in)
   struct guestfs_vg_activate_all_args args;
   int activate;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_vg_activate_all_args (xdr_in, &args)) {
@@ -2703,6 +3221,11 @@ static void vg_activate_stub (XDR *xdr_in)
   struct guestfs_vg_activate_args args;
   int activate;
   char **volgroups;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -2737,6 +3260,11 @@ static void lvresize_stub (XDR *xdr_in)
   struct guestfs_lvresize_args args;
   int mbytes;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_lvresize_args (xdr_in, &args)) {
@@ -2763,6 +3291,11 @@ static void resize2fs_stub (XDR *xdr_in)
   int r;
   struct guestfs_resize2fs_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_resize2fs_args (xdr_in, &args)) {
@@ -2787,6 +3320,11 @@ static void find_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_find_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -2818,6 +3356,11 @@ static void e2fsck_f_stub (XDR *xdr_in)
   int r;
   struct guestfs_e2fsck_f_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_e2fsck_f_args (xdr_in, &args)) {
@@ -2844,6 +3387,11 @@ static void sleep_stub (XDR *xdr_in)
   struct guestfs_sleep_args args;
   int secs;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_sleep_args (xdr_in, &args)) {
@@ -2868,6 +3416,11 @@ static void ntfs_3g_probe_stub (XDR *xdr_in)
   int r;
   struct guestfs_ntfs_3g_probe_args args;
   int rw;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -2897,6 +3450,11 @@ static void sh_stub (XDR *xdr_in)
   char *r;
   struct guestfs_sh_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_sh_args (xdr_in, &args)) {
@@ -2923,6 +3481,11 @@ static void sh_lines_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_sh_lines_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -2951,6 +3514,11 @@ static void glob_expand_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_glob_expand_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -2982,6 +3550,11 @@ static void scrub_device_stub (XDR *xdr_in)
   int r;
   struct guestfs_scrub_device_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_scrub_device_args (xdr_in, &args)) {
@@ -3006,6 +3579,11 @@ static void scrub_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_scrub_file_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -3033,6 +3611,11 @@ static void scrub_freespace_stub (XDR *xdr_in)
   int r;
   struct guestfs_scrub_freespace_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_scrub_freespace_args (xdr_in, &args)) {
@@ -3058,6 +3641,11 @@ static void mkdtemp_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_mkdtemp_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -3088,6 +3676,11 @@ static void wc_l_stub (XDR *xdr_in)
   int r;
   struct guestfs_wc_l_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_wc_l_args (xdr_in, &args)) {
@@ -3115,6 +3708,11 @@ static void wc_w_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_wc_w_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -3144,6 +3742,11 @@ static void wc_c_stub (XDR *xdr_in)
   int r;
   struct guestfs_wc_c_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_wc_c_args (xdr_in, &args)) {
@@ -3171,6 +3774,11 @@ static void head_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_head_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -3203,6 +3811,11 @@ static void head_n_stub (XDR *xdr_in)
   struct guestfs_head_n_args args;
   int nrlines;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_head_n_args (xdr_in, &args)) {
@@ -3233,6 +3846,11 @@ static void tail_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_tail_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -3265,6 +3883,11 @@ static void tail_n_stub (XDR *xdr_in)
   struct guestfs_tail_n_args args;
   int nrlines;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_tail_n_args (xdr_in, &args)) {
@@ -3295,6 +3918,11 @@ static void df_stub (XDR *xdr_in)
 {
   char *r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_df ();
   if (r == NULL)
     /* do_df has already called reply_with_error */
@@ -3311,6 +3939,11 @@ done:
 static void df_h_stub (XDR *xdr_in)
 {
   char *r;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   r = do_df_h ();
   if (r == NULL)
@@ -3329,6 +3962,11 @@ static void du_stub (XDR *xdr_in)
 {
   int64_t r;
   struct guestfs_du_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -3357,6 +3995,11 @@ static void initrd_list_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_initrd_list_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -3388,6 +4031,11 @@ static void mount_loop_stub (XDR *xdr_in)
   int r;
   struct guestfs_mount_loop_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_mount_loop_args (xdr_in, &args)) {
@@ -3416,6 +4064,11 @@ static void mkswap_stub (XDR *xdr_in)
   int r;
   struct guestfs_mkswap_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_mkswap_args (xdr_in, &args)) {
@@ -3440,6 +4093,11 @@ static void mkswap_L_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkswap_L_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -3466,6 +4124,11 @@ static void mkswap_U_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkswap_U_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -3495,6 +4158,11 @@ static void mknod_stub (XDR *xdr_in)
   int mode;
   int devmajor;
   int devminor;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -3526,6 +4194,11 @@ static void mkfifo_stub (XDR *xdr_in)
   struct guestfs_mkfifo_args args;
   int mode;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_mkfifo_args (xdr_in, &args)) {
@@ -3555,6 +4228,11 @@ static void mknod_b_stub (XDR *xdr_in)
   int mode;
   int devmajor;
   int devminor;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -3588,6 +4266,11 @@ static void mknod_c_stub (XDR *xdr_in)
   int devmajor;
   int devminor;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_mknod_c_args (xdr_in, &args)) {
@@ -3618,6 +4301,11 @@ static void umask_stub (XDR *xdr_in)
   struct guestfs_umask_args args;
   int mask;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_umask_args (xdr_in, &args)) {
@@ -3643,6 +4331,11 @@ static void readdir_stub (XDR *xdr_in)
 {
   guestfs_int_dirent_list *r;
   struct guestfs_readdir_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -3673,6 +4366,11 @@ static void sfdiskM_stub (XDR *xdr_in)
   int r;
   struct guestfs_sfdiskM_args args;
   char **lines;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -3707,6 +4405,11 @@ static void zfile_stub (XDR *xdr_in)
   char *r;
   struct guestfs_zfile_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_zfile_args (xdr_in, &args)) {
@@ -3737,6 +4440,11 @@ static void getxattrs_stub (XDR *xdr_in)
   guestfs_int_xattr_list *r;
   struct guestfs_getxattrs_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_getxattrs_args (xdr_in, &args)) {
@@ -3765,6 +4473,11 @@ static void lgetxattrs_stub (XDR *xdr_in)
 {
   guestfs_int_xattr_list *r;
   struct guestfs_lgetxattrs_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -3796,6 +4509,11 @@ static void setxattr_stub (XDR *xdr_in)
   struct guestfs_setxattr_args args;
   int vallen;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_setxattr_args (xdr_in, &args)) {
@@ -3826,6 +4544,11 @@ static void lsetxattr_stub (XDR *xdr_in)
   struct guestfs_lsetxattr_args args;
   int vallen;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_lsetxattr_args (xdr_in, &args)) {
@@ -3855,6 +4578,11 @@ static void removexattr_stub (XDR *xdr_in)
   int r;
   struct guestfs_removexattr_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_removexattr_args (xdr_in, &args)) {
@@ -3882,6 +4610,11 @@ static void lremovexattr_stub (XDR *xdr_in)
   int r;
   struct guestfs_lremovexattr_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_lremovexattr_args (xdr_in, &args)) {
@@ -3908,6 +4641,11 @@ static void mountpoints_stub (XDR *xdr_in)
 {
   char **r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_mountpoints ();
   if (r == NULL)
     /* do_mountpoints has already called reply_with_error */
@@ -3926,6 +4664,11 @@ static void mkmountpoint_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkmountpoint_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -3951,6 +4694,11 @@ static void rmmountpoint_stub (XDR *xdr_in)
   int r;
   struct guestfs_rmmountpoint_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_rmmountpoint_args (xdr_in, &args)) {
@@ -3975,6 +4723,11 @@ static void read_file_stub (XDR *xdr_in)
   size_t size = 1;
   char *r;
   struct guestfs_read_file_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -4009,6 +4762,11 @@ static void grep_stub (XDR *xdr_in)
   char **r;
   struct guestfs_grep_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_grep_args (xdr_in, &args)) {
@@ -4039,6 +4797,11 @@ static void egrep_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_egrep_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -4071,6 +4834,11 @@ static void fgrep_stub (XDR *xdr_in)
   char **r;
   struct guestfs_fgrep_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_fgrep_args (xdr_in, &args)) {
@@ -4101,6 +4869,11 @@ static void grepi_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_grepi_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -4133,6 +4906,11 @@ static void egrepi_stub (XDR *xdr_in)
   char **r;
   struct guestfs_egrepi_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_egrepi_args (xdr_in, &args)) {
@@ -4163,6 +4941,11 @@ static void fgrepi_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_fgrepi_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -4195,6 +4978,11 @@ static void zgrep_stub (XDR *xdr_in)
   char **r;
   struct guestfs_zgrep_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_zgrep_args (xdr_in, &args)) {
@@ -4225,6 +5013,11 @@ static void zegrep_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_zegrep_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -4257,6 +5050,11 @@ static void zfgrep_stub (XDR *xdr_in)
   char **r;
   struct guestfs_zfgrep_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_zfgrep_args (xdr_in, &args)) {
@@ -4287,6 +5085,11 @@ static void zgrepi_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_zgrepi_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -4319,6 +5122,11 @@ static void zegrepi_stub (XDR *xdr_in)
   char **r;
   struct guestfs_zegrepi_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_zegrepi_args (xdr_in, &args)) {
@@ -4349,6 +5157,11 @@ static void zfgrepi_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_zfgrepi_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -4381,6 +5194,11 @@ static void realpath_stub (XDR *xdr_in)
   char *r;
   struct guestfs_realpath_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_realpath_args (xdr_in, &args)) {
@@ -4410,6 +5228,11 @@ static void ln_stub (XDR *xdr_in)
   int r;
   struct guestfs_ln_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_ln_args (xdr_in, &args)) {
@@ -4436,6 +5259,11 @@ static void ln_f_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ln_f_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -4464,6 +5292,11 @@ static void ln_s_stub (XDR *xdr_in)
   int r;
   struct guestfs_ln_s_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_ln_s_args (xdr_in, &args)) {
@@ -4491,6 +5324,11 @@ static void ln_sf_stub (XDR *xdr_in)
   int r;
   struct guestfs_ln_sf_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_ln_sf_args (xdr_in, &args)) {
@@ -4517,6 +5355,11 @@ static void readlink_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_readlink_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -4548,6 +5391,11 @@ static void fallocate_stub (XDR *xdr_in)
   struct guestfs_fallocate_args args;
   int len;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_fallocate_args (xdr_in, &args)) {
@@ -4575,6 +5423,11 @@ static void swapon_device_stub (XDR *xdr_in)
   int r;
   struct guestfs_swapon_device_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_swapon_device_args (xdr_in, &args)) {
@@ -4600,6 +5453,11 @@ static void swapoff_device_stub (XDR *xdr_in)
   int r;
   struct guestfs_swapoff_device_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_swapoff_device_args (xdr_in, &args)) {
@@ -4624,6 +5482,11 @@ static void swapon_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapon_file_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -4651,6 +5514,11 @@ static void swapoff_file_stub (XDR *xdr_in)
   int r;
   struct guestfs_swapoff_file_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_swapoff_file_args (xdr_in, &args)) {
@@ -4677,6 +5545,11 @@ static void swapon_label_stub (XDR *xdr_in)
   int r;
   struct guestfs_swapon_label_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_swapon_label_args (xdr_in, &args)) {
@@ -4700,6 +5573,11 @@ static void swapoff_label_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapoff_label_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -4725,6 +5603,11 @@ static void swapon_uuid_stub (XDR *xdr_in)
   int r;
   struct guestfs_swapon_uuid_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_swapon_uuid_args (xdr_in, &args)) {
@@ -4749,6 +5632,11 @@ static void swapoff_uuid_stub (XDR *xdr_in)
   int r;
   struct guestfs_swapoff_uuid_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_swapoff_uuid_args (xdr_in, &args)) {
@@ -4772,6 +5660,11 @@ static void mkswap_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkswap_file_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -4800,6 +5693,11 @@ static void inotify_init_stub (XDR *xdr_in)
   struct guestfs_inotify_init_args args;
   int maxevents;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_inotify_init_args (xdr_in, &args)) {
@@ -4824,6 +5722,11 @@ static void inotify_add_watch_stub (XDR *xdr_in)
   int64_t r;
   struct guestfs_inotify_add_watch_args args;
   int mask;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -4855,6 +5758,11 @@ static void inotify_rm_watch_stub (XDR *xdr_in)
   struct guestfs_inotify_rm_watch_args args;
   int wd;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_inotify_rm_watch_args (xdr_in, &args)) {
@@ -4878,6 +5786,11 @@ static void inotify_read_stub (XDR *xdr_in)
 {
   guestfs_int_inotify_event_list *r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_inotify_read ();
   if (r == NULL)
     /* do_inotify_read has already called reply_with_error */
@@ -4894,6 +5807,11 @@ done:
 static void inotify_files_stub (XDR *xdr_in)
 {
   char **r;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   r = do_inotify_files ();
   if (r == NULL)
@@ -4913,6 +5831,11 @@ static void inotify_close_stub (XDR *xdr_in)
 {
   int r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_inotify_close ();
   if (r == -1)
     /* do_inotify_close has already called reply_with_error */
@@ -4927,6 +5850,11 @@ static void setcon_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_setcon_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -4951,6 +5879,11 @@ static void getcon_stub (XDR *xdr_in)
 {
   char *r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_getcon ();
   if (r == NULL)
     /* do_getcon has already called reply_with_error */
@@ -4969,6 +5902,11 @@ static void mkfs_b_stub (XDR *xdr_in)
   int r;
   struct guestfs_mkfs_b_args args;
   int blocksize;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -4998,6 +5936,11 @@ static void mke2journal_stub (XDR *xdr_in)
   struct guestfs_mke2journal_args args;
   int blocksize;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_mke2journal_args (xdr_in, &args)) {
@@ -5024,6 +5967,11 @@ static void mke2journal_L_stub (XDR *xdr_in)
   int r;
   struct guestfs_mke2journal_L_args args;
   int blocksize;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -5053,6 +6001,11 @@ static void mke2journal_U_stub (XDR *xdr_in)
   struct guestfs_mke2journal_U_args args;
   int blocksize;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_mke2journal_U_args (xdr_in, &args)) {
@@ -5080,6 +6033,11 @@ static void mke2fs_J_stub (XDR *xdr_in)
   int r;
   struct guestfs_mke2fs_J_args args;
   int blocksize;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -5111,6 +6069,11 @@ static void mke2fs_JL_stub (XDR *xdr_in)
   struct guestfs_mke2fs_JL_args args;
   int blocksize;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_mke2fs_JL_args (xdr_in, &args)) {
@@ -5140,6 +6103,11 @@ static void mke2fs_JU_stub (XDR *xdr_in)
   struct guestfs_mke2fs_JU_args args;
   int blocksize;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_mke2fs_JU_args (xdr_in, &args)) {
@@ -5168,6 +6136,11 @@ static void modprobe_stub (XDR *xdr_in)
   int r;
   struct guestfs_modprobe_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_modprobe_args (xdr_in, &args)) {
@@ -5192,6 +6165,11 @@ static void echo_daemon_stub (XDR *xdr_in)
   char *r;
   struct guestfs_echo_daemon_args args;
   char **words;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -5227,6 +6205,11 @@ static void find0_stub (XDR *xdr_in)
   int r;
   struct guestfs_find0_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_find0_args (xdr_in, &args)) {
@@ -5252,6 +6235,11 @@ static void case_sensitive_path_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_case_sensitive_path_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -5282,6 +6270,11 @@ static void vfs_type_stub (XDR *xdr_in)
   char *r;
   struct guestfs_vfs_type_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_vfs_type_args (xdr_in, &args)) {
@@ -5310,6 +6303,11 @@ static void truncate_stub (XDR *xdr_in)
   int r;
   struct guestfs_truncate_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_truncate_args (xdr_in, &args)) {
@@ -5336,6 +6334,11 @@ static void truncate_size_stub (XDR *xdr_in)
   int r;
   struct guestfs_truncate_size_args args;
   int64_t size;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -5368,6 +6371,11 @@ static void utimens_stub (XDR *xdr_in)
   int64_t mtsecs;
   int64_t mtnsecs;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_utimens_args (xdr_in, &args)) {
@@ -5399,6 +6407,11 @@ static void mkdir_mode_stub (XDR *xdr_in)
   struct guestfs_mkdir_mode_args args;
   int mode;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_mkdir_mode_args (xdr_in, &args)) {
@@ -5428,6 +6441,11 @@ static void lchown_stub (XDR *xdr_in)
   int owner;
   int group;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_lchown_args (xdr_in, &args)) {
@@ -5456,6 +6474,11 @@ static void lstatlist_stub (XDR *xdr_in)
   guestfs_int_stat_list *r;
   struct guestfs_lstatlist_args args;
   char **names;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -5495,6 +6518,11 @@ static void lxattrlist_stub (XDR *xdr_in)
   struct guestfs_lxattrlist_args args;
   char **names;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_lxattrlist_args (xdr_in, &args)) {
@@ -5532,6 +6560,11 @@ static void readlinklist_stub (XDR *xdr_in)
   char **r;
   struct guestfs_readlinklist_args args;
   char **names;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -5574,6 +6607,11 @@ static void pread_stub (XDR *xdr_in)
   int count;
   int64_t offset;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_pread_args (xdr_in, &args)) {
@@ -5609,6 +6647,11 @@ static void part_init_stub (XDR *xdr_in)
   int r;
   struct guestfs_part_init_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_part_init_args (xdr_in, &args)) {
@@ -5636,6 +6679,11 @@ static void part_add_stub (XDR *xdr_in)
   struct guestfs_part_add_args args;
   int64_t startsect;
   int64_t endsect;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -5665,6 +6713,11 @@ static void part_disk_stub (XDR *xdr_in)
   int r;
   struct guestfs_part_disk_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_part_disk_args (xdr_in, &args)) {
@@ -5692,6 +6745,11 @@ static void part_set_bootable_stub (XDR *xdr_in)
   struct guestfs_part_set_bootable_args args;
   int partnum;
   int bootable;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -5721,6 +6779,11 @@ static void part_set_name_stub (XDR *xdr_in)
   struct guestfs_part_set_name_args args;
   int partnum;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_part_set_name_args (xdr_in, &args)) {
@@ -5747,6 +6810,11 @@ static void part_list_stub (XDR *xdr_in)
 {
   guestfs_int_partition_list *r;
   struct guestfs_part_list_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -5775,6 +6843,11 @@ static void part_get_parttype_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_part_get_parttype_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -5806,6 +6879,11 @@ static void fill_stub (XDR *xdr_in)
   int c;
   int len;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_fill_args (xdr_in, &args)) {
@@ -5834,6 +6912,11 @@ static void available_stub (XDR *xdr_in)
   int r;
   struct guestfs_available_args args;
   char **groups;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -5866,6 +6949,11 @@ static void dd_stub (XDR *xdr_in)
   int r;
   struct guestfs_dd_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_dd_args (xdr_in, &args)) {
@@ -5892,6 +6980,11 @@ static void filesize_stub (XDR *xdr_in)
 {
   int64_t r;
   struct guestfs_filesize_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -5921,6 +7014,11 @@ static void lvrename_stub (XDR *xdr_in)
   int r;
   struct guestfs_lvrename_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_lvrename_args (xdr_in, &args)) {
@@ -5945,6 +7043,11 @@ static void vgrename_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_vgrename_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -5971,6 +7074,11 @@ static void initrd_cat_stub (XDR *xdr_in)
   size_t size = 1;
   char *r;
   struct guestfs_initrd_cat_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6006,6 +7114,11 @@ static void pvuuid_stub (XDR *xdr_in)
   char *r;
   struct guestfs_pvuuid_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_pvuuid_args (xdr_in, &args)) {
@@ -6034,6 +7147,11 @@ static void vguuid_stub (XDR *xdr_in)
   char *r;
   struct guestfs_vguuid_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_vguuid_args (xdr_in, &args)) {
@@ -6060,6 +7178,11 @@ static void lvuuid_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_lvuuid_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6089,6 +7212,11 @@ static void vgpvuuids_stub (XDR *xdr_in)
   char **r;
   struct guestfs_vgpvuuids_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_vgpvuuids_args (xdr_in, &args)) {
@@ -6116,6 +7244,11 @@ static void vglvuuids_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_vglvuuids_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6146,6 +7279,11 @@ static void copy_size_stub (XDR *xdr_in)
   struct guestfs_copy_size_args args;
   int64_t size;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_copy_size_args (xdr_in, &args)) {
@@ -6174,6 +7312,11 @@ static void zero_device_stub (XDR *xdr_in)
   int r;
   struct guestfs_zero_device_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_zero_device_args (xdr_in, &args)) {
@@ -6198,6 +7341,12 @@ static void txz_in_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_txz_in_args args;
+
+  if (optargs_bitmask != 0) {
+    cancel_receive ();
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6226,6 +7375,11 @@ static void txz_out_stub (XDR *xdr_in)
   int r;
   struct guestfs_txz_out_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_txz_out_args (xdr_in, &args)) {
@@ -6252,6 +7406,11 @@ static void ntfsresize_stub (XDR *xdr_in)
   int r;
   struct guestfs_ntfsresize_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_ntfsresize_args (xdr_in, &args)) {
@@ -6276,6 +7435,11 @@ static void vgscan_stub (XDR *xdr_in)
 {
   int r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_vgscan ();
   if (r == -1)
     /* do_vgscan has already called reply_with_error */
@@ -6291,6 +7455,11 @@ static void part_del_stub (XDR *xdr_in)
   int r;
   struct guestfs_part_del_args args;
   int partnum;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6318,6 +7487,11 @@ static void part_get_bootable_stub (XDR *xdr_in)
   int r;
   struct guestfs_part_get_bootable_args args;
   int partnum;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6347,6 +7521,11 @@ static void part_get_mbr_id_stub (XDR *xdr_in)
   int r;
   struct guestfs_part_get_mbr_id_args args;
   int partnum;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6378,6 +7557,11 @@ static void part_set_mbr_id_stub (XDR *xdr_in)
   int partnum;
   int idbyte;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_part_set_mbr_id_args (xdr_in, &args)) {
@@ -6404,6 +7588,11 @@ static void checksum_device_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_checksum_device_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6435,6 +7624,11 @@ static void lvresize_free_stub (XDR *xdr_in)
   struct guestfs_lvresize_free_args args;
   int percent;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_lvresize_free_args (xdr_in, &args)) {
@@ -6461,6 +7655,11 @@ static void aug_clear_stub (XDR *xdr_in)
   int r;
   struct guestfs_aug_clear_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_aug_clear_args (xdr_in, &args)) {
@@ -6484,6 +7683,11 @@ static void get_umask_stub (XDR *xdr_in)
 {
   int r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_get_umask ();
   if (r == -1)
     /* do_get_umask has already called reply_with_error */
@@ -6501,6 +7705,12 @@ static void debug_upload_stub (XDR *xdr_in)
   int r;
   struct guestfs_debug_upload_args args;
   int mode;
+
+  if (optargs_bitmask != 0) {
+    cancel_receive ();
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6527,6 +7737,12 @@ static void base64_in_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_base64_in_args args;
+
+  if (optargs_bitmask != 0) {
+    cancel_receive ();
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6555,6 +7771,11 @@ static void base64_out_stub (XDR *xdr_in)
   int r;
   struct guestfs_base64_out_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_base64_out_args (xdr_in, &args)) {
@@ -6580,6 +7801,11 @@ static void checksums_out_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_checksums_out_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6608,6 +7834,11 @@ static void fill_pattern_stub (XDR *xdr_in)
   int r;
   struct guestfs_fill_pattern_args args;
   int len;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6639,6 +7870,11 @@ static void write_stub (XDR *xdr_in)
   const char *content;
   size_t content_size;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_write_args (xdr_in, &args)) {
@@ -6669,6 +7905,11 @@ static void pwrite_stub (XDR *xdr_in)
   const char *content;
   size_t content_size;
   int64_t offset;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6702,6 +7943,11 @@ static void resize2fs_size_stub (XDR *xdr_in)
   struct guestfs_resize2fs_size_args args;
   int64_t size;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_resize2fs_size_args (xdr_in, &args)) {
@@ -6728,6 +7974,11 @@ static void pvresize_size_stub (XDR *xdr_in)
   int r;
   struct guestfs_pvresize_size_args args;
   int64_t size;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6756,6 +8007,11 @@ static void ntfsresize_size_stub (XDR *xdr_in)
   struct guestfs_ntfsresize_size_args args;
   int64_t size;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_ntfsresize_size_args (xdr_in, &args)) {
@@ -6781,6 +8037,11 @@ static void available_all_groups_stub (XDR *xdr_in)
 {
   char **r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_available_all_groups ();
   if (r == NULL)
     /* do_available_all_groups has already called reply_with_error */
@@ -6800,6 +8061,11 @@ static void fallocate64_stub (XDR *xdr_in)
   int r;
   struct guestfs_fallocate64_args args;
   int64_t len;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6827,6 +8093,11 @@ static void vfs_label_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_vfs_label_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6856,6 +8127,11 @@ static void vfs_uuid_stub (XDR *xdr_in)
   char *r;
   struct guestfs_vfs_uuid_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_vfs_uuid_args (xdr_in, &args)) {
@@ -6884,6 +8160,11 @@ static void lvm_set_filter_stub (XDR *xdr_in)
   int r;
   struct guestfs_lvm_set_filter_args args;
   char **devices;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6923,6 +8204,11 @@ static void lvm_clear_filter_stub (XDR *xdr_in)
 {
   int r;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   r = do_lvm_clear_filter ();
   if (r == -1)
     /* do_lvm_clear_filter has already called reply_with_error */
@@ -6937,6 +8223,11 @@ static void luks_open_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_luks_open_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -6965,6 +8256,11 @@ static void luks_open_ro_stub (XDR *xdr_in)
   int r;
   struct guestfs_luks_open_ro_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_luks_open_ro_args (xdr_in, &args)) {
@@ -6992,6 +8288,11 @@ static void luks_close_stub (XDR *xdr_in)
   int r;
   struct guestfs_luks_close_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_luks_close_args (xdr_in, &args)) {
@@ -7017,6 +8318,11 @@ static void luks_format_stub (XDR *xdr_in)
   int r;
   struct guestfs_luks_format_args args;
   int keyslot;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -7045,6 +8351,11 @@ static void luks_format_cipher_stub (XDR *xdr_in)
   int r;
   struct guestfs_luks_format_cipher_args args;
   int keyslot;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -7075,6 +8386,11 @@ static void luks_add_key_stub (XDR *xdr_in)
   struct guestfs_luks_add_key_args args;
   int keyslot;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_luks_add_key_args (xdr_in, &args)) {
@@ -7104,6 +8420,11 @@ static void luks_kill_slot_stub (XDR *xdr_in)
   struct guestfs_luks_kill_slot_args args;
   int keyslot;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_luks_kill_slot_args (xdr_in, &args)) {
@@ -7130,6 +8451,11 @@ static void is_lv_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_lv_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -7158,6 +8484,11 @@ static void findfs_uuid_stub (XDR *xdr_in)
   char *r;
   struct guestfs_findfs_uuid_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_findfs_uuid_args (xdr_in, &args)) {
@@ -7185,6 +8516,11 @@ static void findfs_label_stub (XDR *xdr_in)
   char *r;
   struct guestfs_findfs_label_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_findfs_label_args (xdr_in, &args)) {
@@ -7211,6 +8547,11 @@ static void is_chardev_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_chardev_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -7240,6 +8581,11 @@ static void is_blockdev_stub (XDR *xdr_in)
   int r;
   struct guestfs_is_blockdev_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_is_blockdev_args (xdr_in, &args)) {
@@ -7267,6 +8613,11 @@ static void is_fifo_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_fifo_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -7296,6 +8647,11 @@ static void is_symlink_stub (XDR *xdr_in)
   int r;
   struct guestfs_is_symlink_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_is_symlink_args (xdr_in, &args)) {
@@ -7324,6 +8680,11 @@ static void is_socket_stub (XDR *xdr_in)
   int r;
   struct guestfs_is_socket_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_is_socket_args (xdr_in, &args)) {
@@ -7351,6 +8712,11 @@ static void part_to_dev_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_part_to_dev_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -7381,6 +8747,12 @@ static void upload_offset_stub (XDR *xdr_in)
   struct guestfs_upload_offset_args args;
   int64_t offset;
 
+  if (optargs_bitmask != 0) {
+    cancel_receive ();
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_upload_offset_args (xdr_in, &args)) {
@@ -7409,6 +8781,11 @@ static void download_offset_stub (XDR *xdr_in)
   struct guestfs_download_offset_args args;
   int64_t offset;
   int64_t size;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -7439,6 +8816,11 @@ static void pwrite_device_stub (XDR *xdr_in)
   const char *content;
   size_t content_size;
   int64_t offset;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -7473,6 +8855,11 @@ static void pread_device_stub (XDR *xdr_in)
   int count;
   int64_t offset;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_pread_device_args (xdr_in, &args)) {
@@ -7506,6 +8893,11 @@ static void lvm_canonical_lv_name_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_lvm_canonical_lv_name_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   memset (&args, 0, sizeof args);
 
@@ -7570,6 +8962,11 @@ static void getxattr_stub (XDR *xdr_in)
   char *r;
   struct guestfs_getxattr_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_getxattr_args (xdr_in, &args)) {
@@ -7605,6 +9002,11 @@ static void lgetxattr_stub (XDR *xdr_in)
   char *r;
   struct guestfs_lgetxattr_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_lgetxattr_args (xdr_in, &args)) {
@@ -7639,6 +9041,11 @@ static void resize2fs_M_stub (XDR *xdr_in)
   int r;
   struct guestfs_resize2fs_M_args args;
 
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
   memset (&args, 0, sizeof args);
 
   if (!xdr_guestfs_resize2fs_M_args (xdr_in, &args)) {
@@ -7662,6 +9069,11 @@ done:
 static void internal_autosync_stub (XDR *xdr_in)
 {
   int r;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
 
   r = do_internal_autosync ();
   if (r == -1)

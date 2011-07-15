@@ -1,3 +1,82 @@
+2011-07-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Add systemd to get /sbin/reboot for virt-rescue (RHBZ#661280). (cherry picked from commit aa8a9ebf29b7fdc97467e911560a1a7a774e9e1f)
+
+	part-get-bootable: Fix when partitions are missing or unordered (RHBZ#602997). (cherry picked from commit 511c82df46f5c6f4a7f984fdb81d4691038ed6da)
+
+	Document that ntfsresize cannot be used multiple times (RHBZ#685009). (cherry picked from commit 2ba2ddf2113db7bb2afe3f739dc3cbaa5416a4ba)
+
+	protocol: Force optargs_bitmask to be passed as 0 for non-opt actions.
+	If the action doesn't take optional arguments, nevertheless force the
+	optargs_bitmask field in the header to be passed as 0, and give an
+	error if not.
+	(cherry picked from commit 0344248af55802bbbd816b349ec1ba9305996f6e)
+
+	capitests: Allow tests to properly test optional arguments.
+	For optional arguments, you can now specify empty string to mean no
+	argument, except for String optional arguments where you must use
+	"NOARG" (empty string meaning a supplied empty string argument).
+	(cherry picked from commit f7a11c60437afa700775eaa86a9be1a543427959)
+
+	Add caution subdirectory containing safety and liveness tests.
+	Not that I'm paranoid about qemu breaking snapshots of anything like
+	that ...
+	(cherry picked from commit f3ada2c7653866f2529c9f18aaa99f76cd984844)
+
+	Change download_to_tmp so it can work with multi-root operating systems.
+	The previous guestfs___download_to_tmp function did not handle
+	multiboot correctly.  In particular it used the same cache name
+	for downloaded files from different roots, which could have caused
+	things like applications in each root to be confused.
+
+	This changes the function so that the cache filename is prefixed
+	with the root / fs number, eg. $tmpdir/0-Name instead of $tmpdir/Name.
+
+	This change also requires the function to return the new name, so
+	all places in the code which called this function had to be
+	updated.
+
+	This updates and fixes commit 3c1f762abed92f7a358f3bc93e3396d0606b18ad.
+
+	(Cherry picked and backported from
+	commit 5f26270c343bf543a7bf20cf3e6f182f6282f8ea)
+
+	generator: Fix functions with both RBufferOut and optional args.
+	No current function returns RBufferOut and has optional args.  Such
+	functions would be generated incorrectly.
+
+	RBufferOut implies a silent "size_t *size_r" argument is added after
+	the regular arguments and before the optional arguments.  Various
+	changes to the code generator need to be made to take this into
+	account.
+	(cherry picked from commit adb5db58d850ce6d15380177a63c68276f863c98)
+
+	inspector: Fix comment in virt-inspector.rng.
+	The comment referred to the command line syntax of the old
+	virt-inspector.
+	(cherry picked from commit ea96c7acf7a332c08c2214796add647224a2ede0)
+
+	Revert "Lib.pm: unknown filesystem label SWAP-sda2 (RHBZ#666578)"
+	This reverts commit 5cab0d6c807d8a3bf9690375c663d11a10e21656.
+	(cherry picked from commit 123610f1b5133a9e541a245467f60d065ea96575)
+
+	trace: Print empty list correctly.
+	Empty lists returned by RStringList and RHashtable functions
+	were incorrectly printed as [""].
+
+	Fix this so they are printed as [] instead.
+	(cherry picked from commit 56b94f5f6aa7981533ad867cc908c6e9cca2ba42)
+
+	perl: Ignore MYMETA.yml.
+	This file is created by one of the build tools used by Perl 5.14.
+	(cherry picked from commit cabfaa857fbd325bd0303fa56b28df8ce52aab33)
+
+	perl: Don't use qw() as parentheses.
+	In Perl 5.14:
+
+	Use of qw(...) as parentheses is deprecated at perl/blib/lib/Sys/Guestfs/Lib.pm line 1111.
+	(cherry picked from commit 5c3c7e8825341e18c9449976f8a321a04cc78d79)
+
 2011-06-13  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.10.4.

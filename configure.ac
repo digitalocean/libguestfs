@@ -18,7 +18,7 @@
 # major/minor/release must be numbers
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [10])
-m4_define([libguestfs_release], [4])
+m4_define([libguestfs_release], [5])
 # extra can be any string
 m4_define([libguestfs_extra],   [])
 
@@ -823,6 +823,7 @@ AC_CONFIG_FILES([Makefile
                  appliance/Makefile
                  capitests/Makefile
                  cat/Makefile
+                 caution/Makefile
                  csharp/Makefile
                  debian/changelog
                  df/Makefile
