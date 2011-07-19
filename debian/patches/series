@@ -1,0 +1,9 @@
+0001-Disable-fuser-tests-if-dev-fuse-doesn-t-exist.patch
+0002-Mount-run-as-tmpfs-inside-appliance-workaround-for-f.patch
+0003-update-gnulib-code-and-test-readlink.patch
+0004-disable-apparently-broken-getlogin_r-test-from-gnuli.patch
+0005-configure.ac-use-Python-mechanism-to-determine-PYTHO.patch
+0006-configure.ac-do-not-generate-debian-changelog.patch
+0007-Do-not-run-appliance-related-checks-if-not-building-.patch
+0008-check-for-febootstrap-etc.-even-if-not-building-appl.patch
+0009-regenerated-auto-related-files.patch

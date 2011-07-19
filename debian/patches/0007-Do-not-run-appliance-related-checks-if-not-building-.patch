@@ -1,0 +1,161 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Thu, 21 Jul 2011 09:01:19 +0200
+Subject: Do not run appliance-related checks if not building appliance
+
+---
+ Makefile.am        |    5 ++++-
+ cat/Makefile.am    |    2 ++
+ df/Makefile.am     |    2 ++
+ images/Makefile.am |    2 ++
+ ocaml/Makefile.am  |   10 +++++++---
+ perl/Makefile.am   |   10 ++++++++--
+ python/Makefile.am |    8 ++++++--
+ resize/Makefile.am |    2 ++
+ tools/Makefile.am  |    2 ++
+ 9 files changed, 35 insertions(+), 8 deletions(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index b2d1f74..3ebf6ba 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -30,7 +30,10 @@ SUBDIRS += appliance
+ endif
+ 
+ # Tests and the test-tool.
+-SUBDIRS += gnulib/tests capitests caution regressions test-tool
++SUBDIRS += gnulib/tests test-tool
++if ENABLE_APPLIANCE
++SUBDIRS += capitests caution regressions
++endif
+ 
+ # Guestfish.
+ SUBDIRS += fish
+diff --git a/cat/Makefile.am b/cat/Makefile.am
+index a049a61..c3ff177 100644
+--- a/cat/Makefile.am
++++ b/cat/Makefile.am
+@@ -132,4 +132,6 @@ TESTS_ENVIRONMENT = \
+ 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
+ 	LIBGUESTFS_PATH=$(top_builddir)/appliance
+ 
++if ENABLE_APPLIANCE
+ TESTS = test-virt-cat.sh test-virt-filesystems.sh test-virt-ls.sh
++endif ENABLE_APPLIANCE
+diff --git a/df/Makefile.am b/df/Makefile.am
+index 69c6140..86d55fa 100644
+--- a/df/Makefile.am
++++ b/df/Makefile.am
+@@ -80,4 +80,6 @@ TESTS_ENVIRONMENT = \
+ 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
+ 	LIBGUESTFS_PATH=$(top_builddir)/appliance
+ 
++if ENABLE_APPLIANCE
+ TESTS = test-virt-df.sh
++endif ENABLE_APPLIANCE
+diff --git a/images/Makefile.am b/images/Makefile.am
+index e4a910a..35fa2be 100644
+--- a/images/Makefile.am
++++ b/images/Makefile.am
+@@ -54,7 +54,9 @@ noinst_DATA = test.iso
+ 
+ # This is 'check_DATA' because we don't need it until 'make check'
+ # time and we need the tools we have built in order to make it.
++if ENABLE_APPLIANCE
+ check_DATA = debian.img fedora.img ubuntu.img windows.img
++endif ENABLE_APPLIANCE
+ 
+ CLEANFILES = \
+ 	test.iso test.sqsh \
+diff --git a/ocaml/Makefile.am b/ocaml/Makefile.am
+index c07b9c5..9187f34 100644
+--- a/ocaml/Makefile.am
++++ b/ocaml/Makefile.am
+@@ -63,11 +63,15 @@ TESTS_ENVIRONMENT = \
+ 
+ TESTS = run-bindtests \
+ 	t/guestfs_005_load \
+-	t/guestfs_010_basic \
+-	t/guestfs_070_threads \
+ 	t/guestfs_080_optargs \
+-	t/guestfs_400_events \
++	t/guestfs_400_events
++
++if ENABLE_APPLIANCE
++TESTS += t/guestfs_010_basic \
++	t/guestfs_070_threads \
+ 	t/guestfs_400_progress
++endif
++
+ noinst_DATA += bindtests \
+ 	t/guestfs_005_load \
+ 	t/guestfs_010_basic \
+diff --git a/perl/Makefile.am b/perl/Makefile.am
+index c192290..3e1c99a 100644
+--- a/perl/Makefile.am
++++ b/perl/Makefile.am
+@@ -48,9 +48,15 @@ src_deps: $(top_builddir)/src/libguestfs.la $(generator_built)
+ test_images:
+ 	$(MAKE) -C $(top_builddir)/images
+ 
+-TESTS = run-bindtests run-perl-tests
++TESTS = run-bindtests
++test_prereq = src_deps all test_images
+ 
+-$(TESTS): src_deps all appliance test_images
++if ENABLE_APPLIANCE
++test_prereq += appliance
++TESTS += run-perl-tests
++endif
++
++$(TESTS): $(test_prereq)
+ 
+ TESTS_ENVIRONMENT = \
+ 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
+diff --git a/python/Makefile.am b/python/Makefile.am
+index 76b92fd..21db292 100644
+--- a/python/Makefile.am
++++ b/python/Makefile.am
+@@ -48,6 +48,10 @@ TESTS_ENVIRONMENT = \
+ 	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+ 	PYTHONPATH=$(builddir):$(builddir)/.libs
+ 
+-TESTS = run-bindtests run-python-tests
++TESTS = run-bindtests
+ 
+-endif
++if ENABLE_APPLIANCE
++TESTS += run-python-tests
++endif ENABLE_APPLIANCE
++
++endif HAVE_PYTHON
+diff --git a/resize/Makefile.am b/resize/Makefile.am
+index 8418cb4..41749ba 100644
+--- a/resize/Makefile.am
++++ b/resize/Makefile.am
+@@ -85,7 +85,9 @@ TESTS_ENVIRONMENT = \
+ 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
+ 	LIBGUESTFS_PATH=$(top_builddir)/appliance
+ 
++if ENABLE_APPLIANCE
+ TESTS = test-virt-resize.sh
++endif
+ 
+ # Dependencies.
+ depend: .depend
+diff --git a/tools/Makefile.am b/tools/Makefile.am
+index 6441333..485e795 100644
+--- a/tools/Makefile.am
++++ b/tools/Makefile.am
+@@ -64,9 +64,11 @@ TESTS_ENVIRONMENT = \
+ 	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+ 	PERL5LIB=$(top_builddir)/perl/blib/lib:$(top_builddir)/perl/blib/arch
+ 
++if ENABLE_APPLIANCE
+ TESTS = test-virt-list-filesystems.sh \
+ 	test-virt-make-fs.sh \
+ 	test-virt-tar.sh
++endif ENABLE_APPLIANCE
+ 
+ endif
+ 
+-- 

@@ -1,0 +1,21 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Tue, 19 Jul 2011 20:48:13 +0200
+Subject: configure.ac: do not generate debian/changelog
+
+---
+ configure.ac |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 6fd12ab..5452f6d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -812,7 +812,6 @@ AC_CONFIG_FILES([Makefile
+                  cat/Makefile
+                  caution/Makefile
+                  csharp/Makefile
+-                 debian/changelog
+                  df/Makefile
+                  examples/Makefile
+                  fish/Makefile
+-- 
