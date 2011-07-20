@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,6 @@
  */
 
 #include <config.h>
-
-#define _BSD_SOURCE		/* for daemon(3) */
 
 #ifdef HAVE_WINDOWS_H
 # include <windows.h>
@@ -41,6 +39,7 @@
 #include <sys/wait.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <errno.h>
 
 #ifdef HAVE_PRINTF_H
 # include <printf.h>
@@ -55,18 +54,20 @@
 
 static char *read_cmdline (void);
 
-/* Also in guestfs.c */
-#define GUESTFWD_ADDR "10.0.2.4"
-#define GUESTFWD_PORT "6666"
-
-/* This is only a hint.  If not defined, ignore it. */
-#ifndef AI_ADDRCONFIG
-# define AI_ADDRCONFIG 0
-#endif
-
 #ifndef MAX
 # define MAX(a,b) ((a)>(b)?(a):(b))
 #endif
+
+/* Not the end of the world if this open flag is not defined. */
+#ifndef O_CLOEXEC
+# define O_CLOEXEC 0
+#endif
+
+/* If root device is an ext2 filesystem, this is the major and minor.
+ * This is so we can ignore this device from the point of view of the
+ * user, eg. in guestfs_list_devices and many other places.
+ */
+static dev_t root_device = 0;
 
 int verbose = 0;
 
@@ -81,17 +82,6 @@ static int print_arginfo (const struct printf_info *info, size_t n, int *argtype
 #error "HAVE_REGISTER_PRINTF_{SPECIFIER|FUNCTION} not defined"
 #endif
 #endif
-
-#ifdef WIN32
-static int
-daemon (int nochdir, int noclose)
-{
-  fprintf (stderr,
-           "On Windows the daemon does not support forking into the "
-           "background.\nYou *must* run the daemon with the -f option.\n");
-  exit (EXIT_FAILURE);
-}
-#endif /* WIN32 */
 
 #ifdef WIN32
 static int
@@ -113,7 +103,10 @@ winsock_init (void)
 
 /* Location to mount root device. */
 const char *sysroot = "/sysroot"; /* No trailing slash. */
-int sysroot_len = 8;
+size_t sysroot_len = 8;
+
+/* If set (the default), do 'umount-all' when performing autosync. */
+int autosync_umount = 1;
 
 /* Not used explicitly, but required by the gnulib 'error' module. */
 const char *program_name = "guestfsd";
@@ -122,24 +115,22 @@ static void
 usage (void)
 {
   fprintf (stderr,
-    "guestfsd [-f|--foreground] [-c|--channel vmchannel] [-v|--verbose]\n");
+    "guestfsd [-r] [-v|--verbose]\n");
 }
 
 int
 main (int argc, char *argv[])
 {
-  static const char *options = "fc:v?";
+  static const char *options = "rv?";
   static const struct option long_options[] = {
-    { "channel", required_argument, 0, 'c' },
-    { "foreground", 0, 0, 'f' },
     { "help", 0, 0, '?' },
     { "verbose", 0, 0, 'v' },
     { 0, 0, 0, 0 }
   };
   int c;
-  int dont_fork = 0;
   char *cmdline;
-  char *vmchannel = NULL;
+
+  ignore_value (chdir ("/"));
 
   if (winsock_init () == -1)
     error (EXIT_FAILURE, 0, "winsock initialization failed");
@@ -157,17 +148,22 @@ main (int argc, char *argv[])
 #endif
 #endif
 
+  struct stat statbuf;
+  if (stat ("/", &statbuf) == 0)
+    root_device = statbuf.st_dev;
+
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, NULL);
     if (c == -1) break;
 
     switch (c) {
-    case 'c':
-      vmchannel = optarg;
-      break;
-
-    case 'f':
-      dont_fork = 1;
+      /* The -r flag is used when running standalone.  It changes
+       * several aspects of the daemon.
+       */
+    case 'r':
+      sysroot = "";
+      sysroot_len = 0;
+      autosync_umount = 0;
       break;
 
     case 'v':
@@ -220,10 +216,14 @@ main (int argc, char *argv[])
   /* Set up a basic environment.  After we are called by /init the
    * environment is essentially empty.
    * https://bugzilla.redhat.com/show_bug.cgi?id=502074#c5
+   *
+   * NOTE: if you change $PATH, you must also change 'prog_exists'
+   * function below.
    */
-  setenv ("PATH", "/usr/bin:/bin", 1);
+  setenv ("PATH", "/sbin:/usr/sbin:/bin:/usr/bin", 1);
   setenv ("SHELL", "/bin/sh", 1);
   setenv ("LC_ALL", "C", 1);
+  setenv ("TERM", "dumb", 1);
 
 #ifndef WIN32
   /* We document that umask defaults to 022 (it should be this anyway). */
@@ -236,118 +236,13 @@ main (int argc, char *argv[])
   _umask (0);
 #endif
 
-  /* Get the vmchannel string.
-   *
-   * Sources:
-   *   --channel/-c option on the command line
-   *   guestfs_vmchannel=... from the kernel command line
-   *   guestfs=... from the kernel command line
-   *   built-in default
-   *
-   * At the moment we expect this to contain "tcp:ip:port" but in
-   * future it might contain a device name, eg. "/dev/vcon4" for
-   * virtio-console vmchannel.
-   */
-  if (vmchannel == NULL && cmdline) {
-    char *p;
-    size_t len;
-
-    p = strstr (cmdline, "guestfs_vmchannel=");
-    if (p) {
-      len = strcspn (p + 18, " \t\n");
-      vmchannel = strndup (p + 18, len);
-      if (!vmchannel) {
-        perror ("strndup");
-        exit (EXIT_FAILURE);
-      }
-    }
-
-    /* Old libraries passed guestfs=host:port.  Rewrite it as tcp:host:port. */
-    if (vmchannel == NULL) {
-      /* We will rewrite it part of the "guestfs=" string with
-       *                       "tcp:"       hence p + 4 below.    */
-      p = strstr (cmdline, "guestfs=");
-      if (p) {
-        len = strcspn (p + 4, " \t\n");
-        vmchannel = strndup (p + 4, len);
-        if (!vmchannel) {
-          perror ("strndup");
-          exit (EXIT_FAILURE);
-        }
-        memcpy (vmchannel, "tcp:", 4);
-      }
-    }
-  }
-
-  /* Default vmchannel. */
-  if (vmchannel == NULL) {
-    vmchannel = strdup ("tcp:" GUESTFWD_ADDR ":" GUESTFWD_PORT);
-    if (!vmchannel) {
-      perror ("strdup");
-      exit (EXIT_FAILURE);
-    }
-  }
-
-  if (verbose)
-    printf ("vmchannel: %s\n", vmchannel);
-
-  /* Connect to vmchannel. */
-  int sock = -1;
-
-  if (STREQLEN (vmchannel, "tcp:", 4)) {
-    /* Resolve the hostname. */
-    struct addrinfo *res, *rr;
-    struct addrinfo hints;
-    int r;
-    char *host, *port;
-
-    host = vmchannel+4;
-    port = strchr (host, ':');
-    if (port) {
-      port[0] = '\0';
-      port++;
-    } else {
-      fprintf (stderr, "vmchannel: expecting \"tcp:<ip>:<port>\": %s\n",
-               vmchannel);
-      exit (EXIT_FAILURE);
-    }
-
-    memset (&hints, 0, sizeof hints);
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_ADDRCONFIG;
-    r = getaddrinfo (host, port, &hints, &res);
-    if (r != 0) {
-      fprintf (stderr, "%s:%s: %s\n",
-               host, port, gai_strerror (r));
-      exit (EXIT_FAILURE);
-    }
-
-    /* Connect to the given TCP socket. */
-    for (rr = res; rr != NULL; rr = rr->ai_next) {
-      sock = socket (rr->ai_family, rr->ai_socktype, rr->ai_protocol);
-      if (sock != -1) {
-        if (connect (sock, rr->ai_addr, rr->ai_addrlen) == 0)
-          break;
-        perror ("connect");
-
-        close (sock);
-        sock = -1;
-      }
-    }
-    freeaddrinfo (res);
-  } else {
-    fprintf (stderr,
-             "unknown vmchannel connection type: %s\n"
-             "expecting \"tcp:<ip>:<port>\"\n",
-             vmchannel);
-    exit (EXIT_FAILURE);
-  }
-
+  /* Connect to virtio-serial channel. */
+  int sock = open ("/dev/virtio-ports/org.libguestfs.channel.0",
+                   O_RDWR | O_CLOEXEC);
   if (sock == -1) {
     fprintf (stderr,
              "\n"
-             "Failed to connect to any vmchannel implementation.\n"
-             "vmchannel: %s\n"
+             "Failed to connect to virtio-serial channel.\n"
              "\n"
              "This is a fatal error and the appliance will now exit.\n"
              "\n"
@@ -357,8 +252,8 @@ main (int argc, char *argv[])
              "'libguestfs-test-tool' and provide the complete, unedited\n"
              "output to the libguestfs developers, either in a bug report\n"
              "or on the libguestfs redhat com mailing list.\n"
-             "\n",
-             vmchannel);
+             "\n");
+    perror ("/dev/virtio-ports/org.libguestfs.channel.0");
     exit (EXIT_FAILURE);
   }
 
@@ -371,18 +266,12 @@ main (int argc, char *argv[])
   xdrmem_create (&xdr, lenbuf, sizeof lenbuf, XDR_ENCODE);
   xdr_u_int (&xdr, &len);
 
-  if (xwrite (sock, lenbuf, sizeof lenbuf) == -1)
+  if (xwrite (sock, lenbuf, sizeof lenbuf) == -1) {
+    perror ("xwrite");
     exit (EXIT_FAILURE);
+  }
 
   xdr_destroy (&xdr);
-
-  /* Fork into the background. */
-  if (!dont_fork) {
-    if (daemon (0, 1) == -1) {
-      perror ("daemon");
-      exit (EXIT_FAILURE);
-    }
-  }
 
   /* Enter the main loop, reading and performing actions. */
   main_loop (sock);
@@ -437,6 +326,22 @@ read_cmdline (void)
   }
 
   return r;
+}
+
+/* Return true iff device is the root device (and therefore should be
+ * ignored from the point of view of user calls).
+ */
+int
+is_root_device (const char *device)
+{
+  struct stat statbuf;
+  if (stat (device, &statbuf) == -1) {
+    perror (device);
+    return 0;
+  }
+  if (statbuf.st_rdev == root_device)
+    return 1;
+  return 0;
 }
 
 /* Turn "/path" into "/sysroot/path".
@@ -524,6 +429,7 @@ add_string (char ***argv, int *size, int *alloc, const char *str)
     if (new_str == NULL) {
       reply_with_perror ("strdup");
       free_strings (*argv);
+      return -1;
     }
   } else
     new_str = NULL;
@@ -534,14 +440,21 @@ add_string (char ***argv, int *size, int *alloc, const char *str)
   return 0;
 }
 
-int
+size_t
 count_strings (char *const *argv)
 {
-  int argc;
+  size_t argc;
 
   for (argc = 0; argv[argc] != NULL; ++argc)
     ;
   return argc;
+}
+
+/* http://graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2 */
+int
+is_power_of_2 (unsigned long v)
+{
+  return v && ((v & (v - 1)) == 0);
 }
 
 static int
@@ -706,6 +619,14 @@ commandvf (char **stdoutput, char **stderror, int flags,
  * error messages in the *stderror buffer.  If using this flag,
  * you should pass stdoutput as NULL because nothing could ever be
  * captured in that buffer.
+ *
+ * COMMAND_FLAG_CHROOT_COPY_FILE_TO_STDIN: For running external
+ * commands on chrooted files correctly (see RHBZ#579608) specifying
+ * this flag causes another process to be forked which chroots into
+ * sysroot and just copies the input file to stdin of the specified
+ * command.  The file descriptor is ORed with the flags, and that file
+ * descriptor is always closed by this function.  See hexdump.c for an
+ * example of usage.
  */
 int
 commandrvf (char **stdoutput, char **stderror, int flags,
@@ -713,7 +634,9 @@ commandrvf (char **stdoutput, char **stderror, int flags,
 {
   int so_size = 0, se_size = 0;
   int so_fd[2], se_fd[2];
-  pid_t pid;
+  int flag_copy_stdin = flags & COMMAND_FLAG_CHROOT_COPY_FILE_TO_STDIN;
+  int stdin_fd[2] = { -1, -1 };
+  pid_t pid, stdin_pid = -1;
   int r, quit, i;
   fd_set rset, rset2;
   char buf[256];
@@ -729,24 +652,45 @@ commandrvf (char **stdoutput, char **stderror, int flags,
     printf ("\n");
   }
 
+  /* Note: abort is used in a few places along the error paths early
+   * in this function.  This is because (a) cleaning up correctly is
+   * very complex at these places and (b) abort is used when a
+   * resource problems is indicated which would be due to much more
+   * serious issues - eg. memory or file descriptor leaks.  We
+   * wouldn't expect fork(2) or pipe(2) to fail in normal
+   * circumstances.
+   */
+
   if (pipe (so_fd) == -1 || pipe (se_fd) == -1) {
-    perror ("pipe");
-    return -1;
+    error (0, errno, "pipe");
+    abort ();
+  }
+
+  if (flag_copy_stdin) {
+    if (pipe (stdin_fd) == -1) {
+      error (0, errno, "pipe");
+      abort ();
+    }
   }
 
   pid = fork ();
   if (pid == -1) {
-    perror ("fork");
-    close (so_fd[0]);
-    close (so_fd[1]);
-    close (se_fd[0]);
-    close (se_fd[1]);
-    return -1;
+    error (0, errno, "fork");
+    abort ();
   }
 
-  if (pid == 0) {		/* Child process. */
+  if (pid == 0) {		/* Child process running the command. */
+    signal (SIGALRM, SIG_DFL);
+    signal (SIGPIPE, SIG_DFL);
     close (0);
-    open ("/dev/null", O_RDONLY); /* Set stdin to /dev/null (ignore failure) */
+    if (flag_copy_stdin) {
+      dup2 (stdin_fd[0], 0);
+      close (stdin_fd[0]);
+      close (stdin_fd[1]);
+    } else {
+      /* Set stdin to /dev/null (ignore failure) */
+      ignore_value (open ("/dev/null", O_RDONLY));
+    }
     close (so_fd[0]);
     close (se_fd[0]);
     if (!(flags & COMMAND_FLAG_FOLD_STDOUT_ON_STDERR))
@@ -759,7 +703,61 @@ commandrvf (char **stdoutput, char **stderror, int flags,
 
     execvp (argv[0], (void *) argv);
     perror (argv[0]);
-    _exit (1);
+    _exit (EXIT_FAILURE);
+  }
+
+  if (flag_copy_stdin) {
+    int fd = flags & COMMAND_FLAG_FD_MASK;
+
+    stdin_pid = fork ();
+    if (stdin_pid == -1) {
+      error (0, errno, "fork");
+      abort ();
+    }
+
+    if (stdin_pid == 0) {       /* Child process copying stdin. */
+      close (so_fd[0]);
+      close (so_fd[1]);
+      close (se_fd[0]);
+      close (se_fd[1]);
+
+      close (1);
+      dup2 (stdin_fd[1], 1);
+      close (stdin_fd[0]);
+      close (stdin_fd[1]);
+
+      if (chroot (sysroot) == -1) {
+        perror ("chroot");
+        _exit (EXIT_FAILURE);
+      }
+
+      ssize_t n;
+      char buffer[BUFSIZ];
+      while ((n = read (fd, buffer, sizeof buffer)) > 0) {
+        if (xwrite (1, buffer, n) == -1)
+          /* EPIPE error indicates the command process has exited
+           * early.  If the command process fails that will be caught
+           * by the daemon, and if not, then it's not an error.
+           */
+          _exit (errno == EPIPE ? EXIT_SUCCESS : EXIT_FAILURE);
+      }
+
+      if (n == -1) {
+        perror ("read");
+        _exit (EXIT_FAILURE);
+      }
+
+      if (close (fd) == -1) {
+        perror ("close");
+        _exit (EXIT_FAILURE);
+      }
+
+      _exit (EXIT_SUCCESS);
+    }
+
+    close (fd);
+    close (stdin_fd[0]);
+    close (stdin_fd[1]);
   }
 
   /* Parent process. */
@@ -772,16 +770,33 @@ commandrvf (char **stdoutput, char **stderror, int flags,
 
   quit = 0;
   while (quit < 2) {
+  again:
     rset2 = rset;
     r = select (MAX (so_fd[0], se_fd[0]) + 1, &rset2, NULL, NULL, NULL);
     if (r == -1) {
+      if (errno == EINTR)
+        goto again;
+
       perror ("select");
     quit:
-      if (stdoutput) free (*stdoutput);
-      if (stderror) free (*stderror);
+      if (stdoutput) {
+        free (*stdoutput);
+        *stdoutput = NULL;
+      }
+      if (stderror) {
+        free (*stderror);
+        /* Need to return non-NULL *stderror here since most callers
+         * will try to print and then free the err string.
+         * Unfortunately recovery from strdup failure here is not
+         * possible.
+         */
+        *stderror = strdup ("error running external command, "
+                            "see debug output for details");
+      }
       close (so_fd[0]);
       close (se_fd[0]);
       waitpid (pid, NULL, 0);
+      if (stdin_pid >= 0) waitpid (stdin_pid, NULL, 0);
       return -1;
     }
 
@@ -862,6 +877,23 @@ commandrvf (char **stdoutput, char **stderror, int flags,
     }
   }
 
+  if (flag_copy_stdin) {
+    /* Check copy process didn't fail. */
+    if (waitpid (stdin_pid, &r, 0) != stdin_pid) {
+      perror ("waitpid");
+      kill (pid, 9);
+      waitpid (pid, NULL, 0);
+      return -1;
+    }
+
+    if (!WIFEXITED (r) || WEXITSTATUS (r) != 0) {
+      fprintf (stderr, "failed copying from input file, see earlier messages\n");
+      kill (pid, 9);
+      waitpid (pid, NULL, 0);
+      return -1;
+    }
+  }
+
   /* Get the exit status of the command. */
   if (waitpid (pid, &r, 0) != pid) {
     perror ("waitpid");
@@ -928,8 +960,31 @@ split_lines (char *str)
   return lines;
 }
 
+/* Skip leading and trailing whitespace, updating the original string
+ * in-place.
+ */
+void
+trim (char *str)
+{
+  size_t len = strlen (str);
+
+  while (len > 0 && c_isspace (str[len-1])) {
+    str[len-1] = '\0';
+    len--;
+  }
+
+  const char *p = str;
+  while (*p && c_isspace (*p)) {
+    p++;
+    len--;
+  }
+
+  memmove (str, p, len+1);
+}
+
 /* printf helper function so we can use %Q ("quoted") and %R to print
- * shell-quoted strings.  See HACKING file for more details.
+ * shell-quoted strings.  See guestfs(3)/EXTENDING LIBGUESTFS for more
+ * details.
  */
 static int
 print_shell_quote (FILE *stream,
@@ -996,42 +1051,55 @@ print_arginfo (const struct printf_info *info, size_t n, int *argtypes)
  * the device nodes themselves will exist in the appliance.
  */
 int
-device_name_translation (char *device, const char *func)
+device_name_translation (char *device)
 {
   int fd;
 
   fd = open (device, O_RDONLY);
   if (fd >= 0) {
+  close_ok:
     close (fd);
     return 0;
   }
 
-  if (errno != ENXIO && errno != ENOENT) {
-  error:
-    reply_with_perror ("%s: %s", func, device);
+  if (errno != ENXIO && errno != ENOENT)
     return -1;
-  }
 
   /* If the name begins with "/dev/sd" then try the alternatives. */
   if (STRNEQLEN (device, "/dev/sd", 7))
-    goto error;
+    return -1;
 
   device[5] = 'h';		/* /dev/hd (old IDE driver) */
   fd = open (device, O_RDONLY);
-  if (fd >= 0) {
-    close (fd);
-    return 0;
-  }
+  if (fd >= 0)
+    goto close_ok;
 
   device[5] = 'v';		/* /dev/vd (for virtio devices) */
   fd = open (device, O_RDONLY);
-  if (fd >= 0) {
-    close (fd);
-    return 0;
-  }
+  if (fd >= 0)
+    goto close_ok;
 
   device[5] = 's';		/* Restore original device name. */
-  goto error;
+  return -1;
+}
+
+/* Check program exists and is executable on $PATH.  Actually, we
+ * just assume PATH contains the default entries (see main() above).
+ */
+int
+prog_exists (const char *prog)
+{
+  static const char * const dirs[] =
+    { "/sbin", "/usr/sbin", "/bin", "/usr/bin" };
+  size_t i;
+  char buf[1024];
+
+  for (i = 0; i < sizeof dirs / sizeof dirs[0]; ++i) {
+    snprintf (buf, sizeof buf, "%s/%s", dirs[i], prog);
+    if (access (buf, X_OK) == 0)
+      return 1;
+  }
+  return 0;
 }
 
 /* LVM and other commands aren't synchronous, especially when udev is
@@ -1051,6 +1119,6 @@ device_name_translation (char *device, const char *func)
 void
 udev_settle (void)
 {
-  (void) command (NULL, NULL, "/sbin/udevadm", "settle", NULL);
-  (void) command (NULL, NULL, "/sbin/udevsettle", NULL);
+  (void) command (NULL, NULL, "udevadm", "settle", NULL);
+  (void) command (NULL, NULL, "udevsettle", NULL);
 }

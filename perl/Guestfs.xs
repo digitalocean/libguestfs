@@ -1,9 +1,9 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   src/generator.ml
+ *   generator/generator_*.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2010 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -87,6 +87,87 @@ XS_unpack_charPtrPtr (SV *arg) {
   return ret;
 }
 
+/* http://www.perlmonks.org/?node=338857 */
+static void
+_event_callback_wrapper (guestfs_h *g,
+                         void *cb,
+                         uint64_t event,
+                         int event_handle,
+                         int flags,
+                         const char *buf, size_t buf_len,
+                         const uint64_t *array, size_t array_len)
+{
+  dSP;
+  ENTER;
+  SAVETMPS;
+  PUSHMARK (SP);
+  XPUSHs (sv_2mortal (my_newSVull (event)));
+  XPUSHs (sv_2mortal (newSViv (event_handle)));
+  XPUSHs (sv_2mortal (newSVpvn (buf ? buf : "", buf_len)));
+  AV *av = newAV ();
+  size_t i;
+  for (i = 0; i < array_len; ++i)
+    av_push (av, my_newSVull (array[i]));
+  XPUSHs (sv_2mortal (newRV ((SV *) av)));
+  PUTBACK;
+  call_sv ((SV *) cb, G_VOID | G_DISCARD | G_EVAL);
+  FREETMPS;
+  LEAVE;
+}
+
+static SV **
+get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
+{
+  SV **r;
+  size_t i;
+  const char *key;
+  SV *cb;
+
+  /* Count the length of the array that will be needed. */
+  *len_rtn = 0;
+  cb = guestfs_first_private (g, &key);
+  while (cb != NULL) {
+    if (strncmp (key, "_perl_event_", strlen ("_perl_event_")) == 0)
+      (*len_rtn)++;
+    cb = guestfs_next_private (g, &key);
+  }
+
+  /* Copy them into the return array. */
+  r = guestfs_safe_malloc (g, sizeof (SV *) * (*len_rtn));
+
+  i = 0;
+  cb = guestfs_first_private (g, &key);
+  while (cb != NULL) {
+    if (strncmp (key, "_perl_event_", strlen ("_perl_event_")) == 0) {
+      r[i] = cb;
+      i++;
+    }
+    cb = guestfs_next_private (g, &key);
+  }
+
+  return r;
+}
+
+static void
+_close_handle (guestfs_h *g)
+{
+  size_t i, len;
+  SV **cbs;
+
+  assert (g != NULL);
+
+  /* As in the OCaml bindings, there is a hard to solve case where the
+   * caller can delete a callback from within the callback, resulting
+   * in a double-free here.  XXX
+   */
+  cbs = get_all_event_callbacks (g, &len);
+
+  guestfs_close (g);
+
+  for (i = 0; i < len; ++i)
+    SvREFCNT_dec (cbs[i]);
+}
+
 MODULE = Sys::Guestfs  PACKAGE = Sys::Guestfs
 
 PROTOTYPES: ENABLE
@@ -102,13 +183,87 @@ _create ()
       RETVAL
 
 void
-DESTROY (g)
-      guestfs_h *g;
+DESTROY (sv)
+      SV *sv;
  PPCODE:
-      guestfs_close (g);
+      /* For the 'g' argument above we do the conversion explicitly and
+       * don't rely on the typemap, because if the handle has been
+       * explicitly closed we don't want the typemap conversion to
+       * display an error.
+       */
+      HV *hv = (HV *) SvRV (sv);
+      SV **svp = hv_fetch (hv, "_g", 2, 0);
+      if (svp != NULL) {
+        guestfs_h *g = (guestfs_h *) SvIV (*svp);
+        _close_handle (g);
+      }
 
 void
-test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout)
+close (g)
+      guestfs_h *g;
+ PPCODE:
+      _close_handle (g);
+      /* Avoid double-free in DESTROY method. */
+      HV *hv = (HV *) SvRV (ST(0));
+      (void) hv_delete (hv, "_g", 2, G_DISCARD);
+
+SV *
+set_event_callback (g, cb, event_bitmask)
+      guestfs_h *g;
+      SV *cb;
+      int event_bitmask;
+PREINIT:
+      int eh;
+      char key[64];
+   CODE:
+      eh = guestfs_set_event_callback (g, _event_callback_wrapper,
+                                       event_bitmask, 0, cb);
+      if (eh == -1)
+        croak ("%s", guestfs_last_error (g));
+
+      /* Increase the refcount for this callback, since we are storing
+       * it in the opaque C libguestfs handle.  We need to remember that
+       * we did this, so we can decrease the refcount for all undeleted
+       * callbacks left around at close time (see _close_handle).
+       */
+      SvREFCNT_inc (cb);
+
+      snprintf (key, sizeof key, "_perl_event_%d", eh);
+      guestfs_set_private (g, key, cb);
+
+      RETVAL = newSViv (eh);
+ OUTPUT:
+      RETVAL
+
+void
+delete_event_callback (g, event_handle)
+      guestfs_h *g;
+      int event_handle;
+PREINIT:
+      char key[64];
+      SV *cb;
+   CODE:
+      snprintf (key, sizeof key, "_perl_event_%d", event_handle);
+      cb = guestfs_get_private (g, key);
+      if (cb) {
+        SvREFCNT_dec (cb);
+        guestfs_set_private (g, key, NULL);
+        guestfs_delete_event_callback (g, event_handle);
+      }
+
+SV *
+last_errno (g)
+      guestfs_h *g;
+PREINIT:
+      int errnum;
+   CODE:
+      errnum = guestfs_last_errno (g);
+      RETVAL = newSViv (errnum);
+ OUTPUT:
+      RETVAL
+
+void
+test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin)
       guestfs_h *g;
       char *str;
       char *optstr = SvOK(ST(2)) ? SvPV_nolen(ST(2)) : NULL;
@@ -118,10 +273,12 @@ test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout)
       int64_t integer64;
       char *filein;
       char *fileout;
+      char *bufferin;
+      size_t bufferin_size = SvCUR (ST(9));
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout);
+      r = guestfs_test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size);
       free (strlist);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
@@ -131,12 +288,12 @@ test0rint (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
-      int valout;
+      int r;
    CODE:
-      valout = guestfs_test0rint (g, val);
-      if (valout == -1)
+      r = guestfs_test0rint (g, val);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (valout);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -144,12 +301,12 @@ SV *
 test0rinterr (g)
       guestfs_h *g;
 PREINIT:
-      int valout;
+      int r;
    CODE:
-      valout = guestfs_test0rinterr (g);
-      if (valout == -1)
+      r = guestfs_test0rinterr (g);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (valout);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -158,12 +315,12 @@ test0rint64 (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
-      int64_t valout;
+      int64_t r;
    CODE:
-      valout = guestfs_test0rint64 (g, val);
-      if (valout == -1)
+      r = guestfs_test0rint64 (g, val);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = my_newSVll (valout);
+      RETVAL = my_newSVll (r);
  OUTPUT:
       RETVAL
 
@@ -171,12 +328,12 @@ SV *
 test0rint64err (g)
       guestfs_h *g;
 PREINIT:
-      int64_t valout;
+      int64_t r;
    CODE:
-      valout = guestfs_test0rint64err (g);
-      if (valout == -1)
+      r = guestfs_test0rint64err (g);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = my_newSVll (valout);
+      RETVAL = my_newSVll (r);
  OUTPUT:
       RETVAL
 
@@ -185,12 +342,12 @@ test0rbool (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
-      int valout;
+      int r;
    CODE:
-      valout = guestfs_test0rbool (g, val);
-      if (valout == -1)
+      r = guestfs_test0rbool (g, val);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (valout);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -198,12 +355,12 @@ SV *
 test0rboolerr (g)
       guestfs_h *g;
 PREINIT:
-      int valout;
+      int r;
    CODE:
-      valout = guestfs_test0rboolerr (g);
-      if (valout == -1)
+      r = guestfs_test0rboolerr (g);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (valout);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -212,12 +369,12 @@ test0rconststring (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
-      const char *valout;
+      const char *r;
    CODE:
-      valout = guestfs_test0rconststring (g, val);
-      if (valout == NULL)
+      r = guestfs_test0rconststring (g, val);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (valout, 0);
+      RETVAL = newSVpv (r, 0);
  OUTPUT:
       RETVAL
 
@@ -225,12 +382,12 @@ SV *
 test0rconststringerr (g)
       guestfs_h *g;
 PREINIT:
-      const char *valout;
+      const char *r;
    CODE:
-      valout = guestfs_test0rconststringerr (g);
-      if (valout == NULL)
+      r = guestfs_test0rconststringerr (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (valout, 0);
+      RETVAL = newSVpv (r, 0);
  OUTPUT:
       RETVAL
 
@@ -239,13 +396,13 @@ test0rconstoptstring (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
-      const char *valout;
+      const char *r;
    CODE:
-      valout = guestfs_test0rconstoptstring (g, val);
-      if (valout == NULL)
+      r = guestfs_test0rconstoptstring (g, val);
+      if (r == NULL)
         RETVAL = &PL_sv_undef;
       else
-        RETVAL = newSVpv (valout, 0);
+        RETVAL = newSVpv (r, 0);
  OUTPUT:
       RETVAL
 
@@ -253,13 +410,13 @@ SV *
 test0rconstoptstringerr (g)
       guestfs_h *g;
 PREINIT:
-      const char *valout;
+      const char *r;
    CODE:
-      valout = guestfs_test0rconstoptstringerr (g);
-      if (valout == NULL)
+      r = guestfs_test0rconstoptstringerr (g);
+      if (r == NULL)
         RETVAL = &PL_sv_undef;
       else
-        RETVAL = newSVpv (valout, 0);
+        RETVAL = newSVpv (r, 0);
  OUTPUT:
       RETVAL
 
@@ -268,13 +425,13 @@ test0rstring (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
-      char *valout;
+      char *r;
    CODE:
-      valout = guestfs_test0rstring (g, val);
-      if (valout == NULL)
+      r = guestfs_test0rstring (g, val);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (valout, 0);
-      free (valout);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -282,13 +439,13 @@ SV *
 test0rstringerr (g)
       guestfs_h *g;
 PREINIT:
-      char *valout;
+      char *r;
    CODE:
-      valout = guestfs_test0rstringerr (g);
-      if (valout == NULL)
+      r = guestfs_test0rstringerr (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (valout, 0);
-      free (valout);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -297,220 +454,220 @@ test0rstringlist (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
-      char **valout;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      valout = guestfs_test0rstringlist (g, val);
-      if (valout == NULL)
+      r = guestfs_test0rstringlist (g, val);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; valout[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (valout[i], 0)));
-        free (valout[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (valout);
+      free (r);
 
 void
 test0rstringlisterr (g)
       guestfs_h *g;
 PREINIT:
-      char **valout;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      valout = guestfs_test0rstringlisterr (g);
-      if (valout == NULL)
+      r = guestfs_test0rstringlisterr (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; valout[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (valout[i], 0)));
-        free (valout[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (valout);
+      free (r);
 
 void
 test0rstruct (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
-      struct guestfs_lvm_pv *valout;
+      struct guestfs_lvm_pv *r;
  PPCODE:
-      valout = guestfs_test0rstruct (g, val);
-      if (valout == NULL)
+      r = guestfs_test0rstruct (g, val);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       EXTEND (SP, 2 * 14);
       PUSHs (sv_2mortal (newSVpv ("pv_name", 0)));
-      PUSHs (sv_2mortal (newSVpv (valout->pv_name, 0)));
+      PUSHs (sv_2mortal (newSVpv (r->pv_name, 0)));
       PUSHs (sv_2mortal (newSVpv ("pv_uuid", 0)));
-      PUSHs (sv_2mortal (newSVpv (valout->pv_uuid, 32)));
+      PUSHs (sv_2mortal (newSVpv (r->pv_uuid, 32)));
       PUSHs (sv_2mortal (newSVpv ("pv_fmt", 0)));
-      PUSHs (sv_2mortal (newSVpv (valout->pv_fmt, 0)));
+      PUSHs (sv_2mortal (newSVpv (r->pv_fmt, 0)));
       PUSHs (sv_2mortal (newSVpv ("pv_size", 0)));
-      PUSHs (sv_2mortal (my_newSVull (valout->pv_size)));
+      PUSHs (sv_2mortal (my_newSVull (r->pv_size)));
       PUSHs (sv_2mortal (newSVpv ("dev_size", 0)));
-      PUSHs (sv_2mortal (my_newSVull (valout->dev_size)));
+      PUSHs (sv_2mortal (my_newSVull (r->dev_size)));
       PUSHs (sv_2mortal (newSVpv ("pv_free", 0)));
-      PUSHs (sv_2mortal (my_newSVull (valout->pv_free)));
+      PUSHs (sv_2mortal (my_newSVull (r->pv_free)));
       PUSHs (sv_2mortal (newSVpv ("pv_used", 0)));
-      PUSHs (sv_2mortal (my_newSVull (valout->pv_used)));
+      PUSHs (sv_2mortal (my_newSVull (r->pv_used)));
       PUSHs (sv_2mortal (newSVpv ("pv_attr", 0)));
-      PUSHs (sv_2mortal (newSVpv (valout->pv_attr, 0)));
+      PUSHs (sv_2mortal (newSVpv (r->pv_attr, 0)));
       PUSHs (sv_2mortal (newSVpv ("pv_pe_count", 0)));
-      PUSHs (sv_2mortal (my_newSVll (valout->pv_pe_count)));
+      PUSHs (sv_2mortal (my_newSVll (r->pv_pe_count)));
       PUSHs (sv_2mortal (newSVpv ("pv_pe_alloc_count", 0)));
-      PUSHs (sv_2mortal (my_newSVll (valout->pv_pe_alloc_count)));
+      PUSHs (sv_2mortal (my_newSVll (r->pv_pe_alloc_count)));
       PUSHs (sv_2mortal (newSVpv ("pv_tags", 0)));
-      PUSHs (sv_2mortal (newSVpv (valout->pv_tags, 0)));
+      PUSHs (sv_2mortal (newSVpv (r->pv_tags, 0)));
       PUSHs (sv_2mortal (newSVpv ("pe_start", 0)));
-      PUSHs (sv_2mortal (my_newSVull (valout->pe_start)));
+      PUSHs (sv_2mortal (my_newSVull (r->pe_start)));
       PUSHs (sv_2mortal (newSVpv ("pv_mda_count", 0)));
-      PUSHs (sv_2mortal (my_newSVll (valout->pv_mda_count)));
+      PUSHs (sv_2mortal (my_newSVll (r->pv_mda_count)));
       PUSHs (sv_2mortal (newSVpv ("pv_mda_free", 0)));
-      PUSHs (sv_2mortal (my_newSVull (valout->pv_mda_free)));
-      free (valout);
+      PUSHs (sv_2mortal (my_newSVull (r->pv_mda_free)));
+      free (r);
 
 void
 test0rstructerr (g)
       guestfs_h *g;
 PREINIT:
-      struct guestfs_lvm_pv *valout;
+      struct guestfs_lvm_pv *r;
  PPCODE:
-      valout = guestfs_test0rstructerr (g);
-      if (valout == NULL)
+      r = guestfs_test0rstructerr (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       EXTEND (SP, 2 * 14);
       PUSHs (sv_2mortal (newSVpv ("pv_name", 0)));
-      PUSHs (sv_2mortal (newSVpv (valout->pv_name, 0)));
+      PUSHs (sv_2mortal (newSVpv (r->pv_name, 0)));
       PUSHs (sv_2mortal (newSVpv ("pv_uuid", 0)));
-      PUSHs (sv_2mortal (newSVpv (valout->pv_uuid, 32)));
+      PUSHs (sv_2mortal (newSVpv (r->pv_uuid, 32)));
       PUSHs (sv_2mortal (newSVpv ("pv_fmt", 0)));
-      PUSHs (sv_2mortal (newSVpv (valout->pv_fmt, 0)));
+      PUSHs (sv_2mortal (newSVpv (r->pv_fmt, 0)));
       PUSHs (sv_2mortal (newSVpv ("pv_size", 0)));
-      PUSHs (sv_2mortal (my_newSVull (valout->pv_size)));
+      PUSHs (sv_2mortal (my_newSVull (r->pv_size)));
       PUSHs (sv_2mortal (newSVpv ("dev_size", 0)));
-      PUSHs (sv_2mortal (my_newSVull (valout->dev_size)));
+      PUSHs (sv_2mortal (my_newSVull (r->dev_size)));
       PUSHs (sv_2mortal (newSVpv ("pv_free", 0)));
-      PUSHs (sv_2mortal (my_newSVull (valout->pv_free)));
+      PUSHs (sv_2mortal (my_newSVull (r->pv_free)));
       PUSHs (sv_2mortal (newSVpv ("pv_used", 0)));
-      PUSHs (sv_2mortal (my_newSVull (valout->pv_used)));
+      PUSHs (sv_2mortal (my_newSVull (r->pv_used)));
       PUSHs (sv_2mortal (newSVpv ("pv_attr", 0)));
-      PUSHs (sv_2mortal (newSVpv (valout->pv_attr, 0)));
+      PUSHs (sv_2mortal (newSVpv (r->pv_attr, 0)));
       PUSHs (sv_2mortal (newSVpv ("pv_pe_count", 0)));
-      PUSHs (sv_2mortal (my_newSVll (valout->pv_pe_count)));
+      PUSHs (sv_2mortal (my_newSVll (r->pv_pe_count)));
       PUSHs (sv_2mortal (newSVpv ("pv_pe_alloc_count", 0)));
-      PUSHs (sv_2mortal (my_newSVll (valout->pv_pe_alloc_count)));
+      PUSHs (sv_2mortal (my_newSVll (r->pv_pe_alloc_count)));
       PUSHs (sv_2mortal (newSVpv ("pv_tags", 0)));
-      PUSHs (sv_2mortal (newSVpv (valout->pv_tags, 0)));
+      PUSHs (sv_2mortal (newSVpv (r->pv_tags, 0)));
       PUSHs (sv_2mortal (newSVpv ("pe_start", 0)));
-      PUSHs (sv_2mortal (my_newSVull (valout->pe_start)));
+      PUSHs (sv_2mortal (my_newSVull (r->pe_start)));
       PUSHs (sv_2mortal (newSVpv ("pv_mda_count", 0)));
-      PUSHs (sv_2mortal (my_newSVll (valout->pv_mda_count)));
+      PUSHs (sv_2mortal (my_newSVll (r->pv_mda_count)));
       PUSHs (sv_2mortal (newSVpv ("pv_mda_free", 0)));
-      PUSHs (sv_2mortal (my_newSVull (valout->pv_mda_free)));
-      free (valout);
+      PUSHs (sv_2mortal (my_newSVull (r->pv_mda_free)));
+      free (r);
 
 void
 test0rstructlist (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
-      struct guestfs_lvm_pv_list *valout;
-      int i;
+      struct guestfs_lvm_pv_list *r;
+      size_t i;
       HV *hv;
  PPCODE:
-      valout = guestfs_test0rstructlist (g, val);
-      if (valout == NULL)
+      r = guestfs_test0rstructlist (g, val);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      EXTEND (SP, valout->len);
-      for (i = 0; i < valout->len; ++i) {
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
         hv = newHV ();
-        (void) hv_store (hv, "pv_name", 7, newSVpv (valout->val[i].pv_name, 0), 0);
-        (void) hv_store (hv, "pv_uuid", 7, newSVpv (valout->val[i].pv_uuid, 32), 0);
-        (void) hv_store (hv, "pv_fmt", 6, newSVpv (valout->val[i].pv_fmt, 0), 0);
-        (void) hv_store (hv, "pv_size", 7, my_newSVull (valout->val[i].pv_size), 0);
-        (void) hv_store (hv, "dev_size", 8, my_newSVull (valout->val[i].dev_size), 0);
-        (void) hv_store (hv, "pv_free", 7, my_newSVull (valout->val[i].pv_free), 0);
-        (void) hv_store (hv, "pv_used", 7, my_newSVull (valout->val[i].pv_used), 0);
-        (void) hv_store (hv, "pv_attr", 7, newSVpv (valout->val[i].pv_attr, 0), 0);
-        (void) hv_store (hv, "pv_pe_count", 11, my_newSVll (valout->val[i].pv_pe_count), 0);
-        (void) hv_store (hv, "pv_pe_alloc_count", 17, my_newSVll (valout->val[i].pv_pe_alloc_count), 0);
-        (void) hv_store (hv, "pv_tags", 7, newSVpv (valout->val[i].pv_tags, 0), 0);
-        (void) hv_store (hv, "pe_start", 8, my_newSVull (valout->val[i].pe_start), 0);
-        (void) hv_store (hv, "pv_mda_count", 12, my_newSVll (valout->val[i].pv_mda_count), 0);
-        (void) hv_store (hv, "pv_mda_free", 11, my_newSVull (valout->val[i].pv_mda_free), 0);
+        (void) hv_store (hv, "pv_name", 7, newSVpv (r->val[i].pv_name, 0), 0);
+        (void) hv_store (hv, "pv_uuid", 7, newSVpv (r->val[i].pv_uuid, 32), 0);
+        (void) hv_store (hv, "pv_fmt", 6, newSVpv (r->val[i].pv_fmt, 0), 0);
+        (void) hv_store (hv, "pv_size", 7, my_newSVull (r->val[i].pv_size), 0);
+        (void) hv_store (hv, "dev_size", 8, my_newSVull (r->val[i].dev_size), 0);
+        (void) hv_store (hv, "pv_free", 7, my_newSVull (r->val[i].pv_free), 0);
+        (void) hv_store (hv, "pv_used", 7, my_newSVull (r->val[i].pv_used), 0);
+        (void) hv_store (hv, "pv_attr", 7, newSVpv (r->val[i].pv_attr, 0), 0);
+        (void) hv_store (hv, "pv_pe_count", 11, my_newSVll (r->val[i].pv_pe_count), 0);
+        (void) hv_store (hv, "pv_pe_alloc_count", 17, my_newSVll (r->val[i].pv_pe_alloc_count), 0);
+        (void) hv_store (hv, "pv_tags", 7, newSVpv (r->val[i].pv_tags, 0), 0);
+        (void) hv_store (hv, "pe_start", 8, my_newSVull (r->val[i].pe_start), 0);
+        (void) hv_store (hv, "pv_mda_count", 12, my_newSVll (r->val[i].pv_mda_count), 0);
+        (void) hv_store (hv, "pv_mda_free", 11, my_newSVull (r->val[i].pv_mda_free), 0);
         PUSHs (sv_2mortal (newRV ((SV *) hv)));
       }
-      guestfs_free_lvm_pv_list (valout);
+      guestfs_free_lvm_pv_list (r);
 
 void
 test0rstructlisterr (g)
       guestfs_h *g;
 PREINIT:
-      struct guestfs_lvm_pv_list *valout;
-      int i;
+      struct guestfs_lvm_pv_list *r;
+      size_t i;
       HV *hv;
  PPCODE:
-      valout = guestfs_test0rstructlisterr (g);
-      if (valout == NULL)
+      r = guestfs_test0rstructlisterr (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      EXTEND (SP, valout->len);
-      for (i = 0; i < valout->len; ++i) {
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
         hv = newHV ();
-        (void) hv_store (hv, "pv_name", 7, newSVpv (valout->val[i].pv_name, 0), 0);
-        (void) hv_store (hv, "pv_uuid", 7, newSVpv (valout->val[i].pv_uuid, 32), 0);
-        (void) hv_store (hv, "pv_fmt", 6, newSVpv (valout->val[i].pv_fmt, 0), 0);
-        (void) hv_store (hv, "pv_size", 7, my_newSVull (valout->val[i].pv_size), 0);
-        (void) hv_store (hv, "dev_size", 8, my_newSVull (valout->val[i].dev_size), 0);
-        (void) hv_store (hv, "pv_free", 7, my_newSVull (valout->val[i].pv_free), 0);
-        (void) hv_store (hv, "pv_used", 7, my_newSVull (valout->val[i].pv_used), 0);
-        (void) hv_store (hv, "pv_attr", 7, newSVpv (valout->val[i].pv_attr, 0), 0);
-        (void) hv_store (hv, "pv_pe_count", 11, my_newSVll (valout->val[i].pv_pe_count), 0);
-        (void) hv_store (hv, "pv_pe_alloc_count", 17, my_newSVll (valout->val[i].pv_pe_alloc_count), 0);
-        (void) hv_store (hv, "pv_tags", 7, newSVpv (valout->val[i].pv_tags, 0), 0);
-        (void) hv_store (hv, "pe_start", 8, my_newSVull (valout->val[i].pe_start), 0);
-        (void) hv_store (hv, "pv_mda_count", 12, my_newSVll (valout->val[i].pv_mda_count), 0);
-        (void) hv_store (hv, "pv_mda_free", 11, my_newSVull (valout->val[i].pv_mda_free), 0);
+        (void) hv_store (hv, "pv_name", 7, newSVpv (r->val[i].pv_name, 0), 0);
+        (void) hv_store (hv, "pv_uuid", 7, newSVpv (r->val[i].pv_uuid, 32), 0);
+        (void) hv_store (hv, "pv_fmt", 6, newSVpv (r->val[i].pv_fmt, 0), 0);
+        (void) hv_store (hv, "pv_size", 7, my_newSVull (r->val[i].pv_size), 0);
+        (void) hv_store (hv, "dev_size", 8, my_newSVull (r->val[i].dev_size), 0);
+        (void) hv_store (hv, "pv_free", 7, my_newSVull (r->val[i].pv_free), 0);
+        (void) hv_store (hv, "pv_used", 7, my_newSVull (r->val[i].pv_used), 0);
+        (void) hv_store (hv, "pv_attr", 7, newSVpv (r->val[i].pv_attr, 0), 0);
+        (void) hv_store (hv, "pv_pe_count", 11, my_newSVll (r->val[i].pv_pe_count), 0);
+        (void) hv_store (hv, "pv_pe_alloc_count", 17, my_newSVll (r->val[i].pv_pe_alloc_count), 0);
+        (void) hv_store (hv, "pv_tags", 7, newSVpv (r->val[i].pv_tags, 0), 0);
+        (void) hv_store (hv, "pe_start", 8, my_newSVull (r->val[i].pe_start), 0);
+        (void) hv_store (hv, "pv_mda_count", 12, my_newSVll (r->val[i].pv_mda_count), 0);
+        (void) hv_store (hv, "pv_mda_free", 11, my_newSVull (r->val[i].pv_mda_free), 0);
         PUSHs (sv_2mortal (newRV ((SV *) hv)));
       }
-      guestfs_free_lvm_pv_list (valout);
+      guestfs_free_lvm_pv_list (r);
 
 void
 test0rhashtable (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
-      char **valout;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      valout = guestfs_test0rhashtable (g, val);
-      if (valout == NULL)
+      r = guestfs_test0rhashtable (g, val);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; valout[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (valout[i], 0)));
-        free (valout[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (valout);
+      free (r);
 
 void
 test0rhashtableerr (g)
       guestfs_h *g;
 PREINIT:
-      char **valout;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      valout = guestfs_test0rhashtableerr (g);
-      if (valout == NULL)
+      r = guestfs_test0rhashtableerr (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; valout[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (valout[i], 0)));
-        free (valout[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (valout);
+      free (r);
 
 void
 launch (g)
@@ -590,7 +747,7 @@ PREINIT:
 void
 set_qemu (g, qemu)
       guestfs_h *g;
-      char *qemu;
+      char *qemu = SvOK(ST(1)) ? SvPV_nolen(ST(1)) : NULL;
 PREINIT:
       int r;
  PPCODE:
@@ -602,19 +759,19 @@ SV *
 get_qemu (g)
       guestfs_h *g;
 PREINIT:
-      const char *qemu;
+      const char *r;
    CODE:
-      qemu = guestfs_get_qemu (g);
-      if (qemu == NULL)
+      r = guestfs_get_qemu (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (qemu, 0);
+      RETVAL = newSVpv (r, 0);
  OUTPUT:
       RETVAL
 
 void
 set_path (g, searchpath)
       guestfs_h *g;
-      char *searchpath;
+      char *searchpath = SvOK(ST(1)) ? SvPV_nolen(ST(1)) : NULL;
 PREINIT:
       int r;
  PPCODE:
@@ -626,12 +783,12 @@ SV *
 get_path (g)
       guestfs_h *g;
 PREINIT:
-      const char *path;
+      const char *r;
    CODE:
-      path = guestfs_get_path (g);
-      if (path == NULL)
+      r = guestfs_get_path (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (path, 0);
+      RETVAL = newSVpv (r, 0);
  OUTPUT:
       RETVAL
 
@@ -650,13 +807,13 @@ SV *
 get_append (g)
       guestfs_h *g;
 PREINIT:
-      const char *append;
+      const char *r;
    CODE:
-      append = guestfs_get_append (g);
-      if (append == NULL)
+      r = guestfs_get_append (g);
+      if (r == NULL)
         RETVAL = &PL_sv_undef;
       else
-        RETVAL = newSVpv (append, 0);
+        RETVAL = newSVpv (r, 0);
  OUTPUT:
       RETVAL
 
@@ -675,12 +832,12 @@ SV *
 get_autosync (g)
       guestfs_h *g;
 PREINIT:
-      int autosync;
+      int r;
    CODE:
-      autosync = guestfs_get_autosync (g);
-      if (autosync == -1)
+      r = guestfs_get_autosync (g);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (autosync);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -699,12 +856,12 @@ SV *
 get_verbose (g)
       guestfs_h *g;
 PREINIT:
-      int verbose;
+      int r;
    CODE:
-      verbose = guestfs_get_verbose (g);
-      if (verbose == -1)
+      r = guestfs_get_verbose (g);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (verbose);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -712,12 +869,12 @@ SV *
 is_ready (g)
       guestfs_h *g;
 PREINIT:
-      int ready;
+      int r;
    CODE:
-      ready = guestfs_is_ready (g);
-      if (ready == -1)
+      r = guestfs_is_ready (g);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (ready);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -725,12 +882,12 @@ SV *
 is_config (g)
       guestfs_h *g;
 PREINIT:
-      int config;
+      int r;
    CODE:
-      config = guestfs_is_config (g);
-      if (config == -1)
+      r = guestfs_is_config (g);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (config);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -738,12 +895,12 @@ SV *
 is_launching (g)
       guestfs_h *g;
 PREINIT:
-      int launching;
+      int r;
    CODE:
-      launching = guestfs_is_launching (g);
-      if (launching == -1)
+      r = guestfs_is_launching (g);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (launching);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -751,12 +908,12 @@ SV *
 is_busy (g)
       guestfs_h *g;
 PREINIT:
-      int busy;
+      int r;
    CODE:
-      busy = guestfs_is_busy (g);
-      if (busy == -1)
+      r = guestfs_is_busy (g);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (busy);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -764,12 +921,12 @@ SV *
 get_state (g)
       guestfs_h *g;
 PREINIT:
-      int state;
+      int r;
    CODE:
-      state = guestfs_get_state (g);
-      if (state == -1)
+      r = guestfs_get_state (g);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (state);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -788,12 +945,12 @@ SV *
 get_memsize (g)
       guestfs_h *g;
 PREINIT:
-      int memsize;
+      int r;
    CODE:
-      memsize = guestfs_get_memsize (g);
-      if (memsize == -1)
+      r = guestfs_get_memsize (g);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (memsize);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -801,12 +958,12 @@ SV *
 get_pid (g)
       guestfs_h *g;
 PREINIT:
-      int pid;
+      int r;
    CODE:
-      pid = guestfs_get_pid (g);
-      if (pid == -1)
+      r = guestfs_get_pid (g);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (pid);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -814,21 +971,21 @@ void
 version (g)
       guestfs_h *g;
 PREINIT:
-      struct guestfs_version *version;
+      struct guestfs_version *r;
  PPCODE:
-      version = guestfs_version (g);
-      if (version == NULL)
+      r = guestfs_version (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       EXTEND (SP, 2 * 4);
       PUSHs (sv_2mortal (newSVpv ("major", 0)));
-      PUSHs (sv_2mortal (my_newSVll (version->major)));
+      PUSHs (sv_2mortal (my_newSVll (r->major)));
       PUSHs (sv_2mortal (newSVpv ("minor", 0)));
-      PUSHs (sv_2mortal (my_newSVll (version->minor)));
+      PUSHs (sv_2mortal (my_newSVll (r->minor)));
       PUSHs (sv_2mortal (newSVpv ("release", 0)));
-      PUSHs (sv_2mortal (my_newSVll (version->release)));
+      PUSHs (sv_2mortal (my_newSVll (r->release)));
       PUSHs (sv_2mortal (newSVpv ("extra", 0)));
-      PUSHs (sv_2mortal (newSVpv (version->extra, 0)));
-      free (version);
+      PUSHs (sv_2mortal (newSVpv (r->extra, 0)));
+      free (r);
 
 void
 set_selinux (g, selinux)
@@ -845,12 +1002,12 @@ SV *
 get_selinux (g)
       guestfs_h *g;
 PREINIT:
-      int selinux;
+      int r;
    CODE:
-      selinux = guestfs_get_selinux (g);
-      if (selinux == -1)
+      r = guestfs_get_selinux (g);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (selinux);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -869,12 +1026,12 @@ SV *
 get_trace (g)
       guestfs_h *g;
 PREINIT:
-      int trace;
+      int r;
    CODE:
-      trace = guestfs_get_trace (g);
-      if (trace == -1)
+      r = guestfs_get_trace (g);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (trace);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -893,12 +1050,12 @@ SV *
 get_direct (g)
       guestfs_h *g;
 PREINIT:
-      int direct;
+      int r;
    CODE:
-      direct = guestfs_get_direct (g);
-      if (direct == -1)
+      r = guestfs_get_direct (g);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (direct);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -917,12 +1074,12 @@ SV *
 get_recovery_proc (g)
       guestfs_h *g;
 PREINIT:
-      int recoveryproc;
+      int r;
    CODE:
-      recoveryproc = guestfs_get_recovery_proc (g);
-      if (recoveryproc == -1)
+      r = guestfs_get_recovery_proc (g);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (recoveryproc);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -949,6 +1106,552 @@ PREINIT:
       r = guestfs_add_drive_ro_with_if (g, filename, iface);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
+
+SV *
+file_architecture (g, filename)
+      guestfs_h *g;
+      char *filename;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_file_architecture (g, filename);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+inspect_os (g)
+      guestfs_h *g;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_inspect_os (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+SV *
+inspect_get_type (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_inspect_get_type (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+inspect_get_arch (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_inspect_get_arch (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+inspect_get_distro (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_inspect_get_distro (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+inspect_get_major_version (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_inspect_get_major_version (g, root);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+inspect_get_minor_version (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_inspect_get_minor_version (g, root);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+inspect_get_product_name (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_inspect_get_product_name (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+inspect_get_mountpoints (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_inspect_get_mountpoints (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+void
+inspect_get_filesystems (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_inspect_get_filesystems (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+void
+set_network (g, network)
+      guestfs_h *g;
+      int network;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_network (g, network);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+get_network (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_get_network (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+void
+list_filesystems (g)
+      guestfs_h *g;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_list_filesystems (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+void
+add_drive_opts (g, filename, ...)
+      guestfs_h *g;
+      char *filename;
+PREINIT:
+      int r;
+      struct guestfs_add_drive_opts_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (strcmp (this_arg, "readonly") == 0) {
+          optargs_s.readonly = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK;
+        }
+        else if (strcmp (this_arg, "format") == 0) {
+          optargs_s.format = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK;
+        }
+        else if (strcmp (this_arg, "iface") == 0) {
+          optargs_s.iface = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_add_drive_opts_argv (g, filename, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+inspect_get_windows_systemroot (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_inspect_get_windows_systemroot (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+inspect_get_roots (g)
+      guestfs_h *g;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_inspect_get_roots (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+void
+debug_cmdline (g)
+      guestfs_h *g;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_debug_cmdline (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+SV *
+add_domain (g, dom, ...)
+      guestfs_h *g;
+      char *dom;
+PREINIT:
+      int r;
+      struct guestfs_add_domain_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_add_domain_argv *optargs = &optargs_s;
+      size_t items_i;
+   CODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (strcmp (this_arg, "libvirturi") == 0) {
+          optargs_s.libvirturi = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DOMAIN_LIBVIRTURI_BITMASK;
+        }
+        else if (strcmp (this_arg, "readonly") == 0) {
+          optargs_s.readonly = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DOMAIN_READONLY_BITMASK;
+        }
+        else if (strcmp (this_arg, "iface") == 0) {
+          optargs_s.iface = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DOMAIN_IFACE_BITMASK;
+        }
+        else if (strcmp (this_arg, "live") == 0) {
+          optargs_s.live = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DOMAIN_LIVE_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_add_domain_argv (g, dom, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+inspect_get_package_format (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_inspect_get_package_format (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+inspect_get_package_management (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_inspect_get_package_management (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+inspect_list_applications (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      struct guestfs_application_list *r;
+      size_t i;
+      HV *hv;
+ PPCODE:
+      r = guestfs_inspect_list_applications (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
+        hv = newHV ();
+        (void) hv_store (hv, "app_name", 8, newSVpv (r->val[i].app_name, 0), 0);
+        (void) hv_store (hv, "app_display_name", 16, newSVpv (r->val[i].app_display_name, 0), 0);
+        (void) hv_store (hv, "app_epoch", 9, newSVnv (r->val[i].app_epoch), 0);
+        (void) hv_store (hv, "app_version", 11, newSVpv (r->val[i].app_version, 0), 0);
+        (void) hv_store (hv, "app_release", 11, newSVpv (r->val[i].app_release, 0), 0);
+        (void) hv_store (hv, "app_install_path", 16, newSVpv (r->val[i].app_install_path, 0), 0);
+        (void) hv_store (hv, "app_trans_path", 14, newSVpv (r->val[i].app_trans_path, 0), 0);
+        (void) hv_store (hv, "app_publisher", 13, newSVpv (r->val[i].app_publisher, 0), 0);
+        (void) hv_store (hv, "app_url", 7, newSVpv (r->val[i].app_url, 0), 0);
+        (void) hv_store (hv, "app_source_package", 18, newSVpv (r->val[i].app_source_package, 0), 0);
+        (void) hv_store (hv, "app_summary", 11, newSVpv (r->val[i].app_summary, 0), 0);
+        (void) hv_store (hv, "app_description", 15, newSVpv (r->val[i].app_description, 0), 0);
+        PUSHs (sv_2mortal (newRV ((SV *) hv)));
+      }
+      guestfs_free_application_list (r);
+
+SV *
+inspect_get_hostname (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_inspect_get_hostname (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+inspect_get_format (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_inspect_get_format (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+inspect_is_live (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_inspect_is_live (g, root);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+inspect_is_netinst (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_inspect_is_netinst (g, root);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+inspect_is_multipart (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_inspect_is_multipart (g, root);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+void
+set_attach_method (g, attachmethod)
+      guestfs_h *g;
+      char *attachmethod;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_attach_method (g, attachmethod);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+get_attach_method (g)
+      guestfs_h *g;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_get_attach_method (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+inspect_get_product_variant (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_inspect_get_product_variant (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+inspect_get_windows_current_control_set (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_inspect_get_windows_current_control_set (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+inspect_get_drive_mappings (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_inspect_get_drive_mappings (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
 
 void
 mount (g, device, mountpoint)
@@ -988,13 +1691,13 @@ cat (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      char *content;
+      char *r;
    CODE:
-      content = guestfs_cat (g, path);
-      if (content == NULL)
+      r = guestfs_cat (g, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (content, 0);
-      free (content);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -1003,13 +1706,13 @@ ll (g, directory)
       guestfs_h *g;
       char *directory;
 PREINIT:
-      char *listing;
+      char *r;
    CODE:
-      listing = guestfs_ll (g, directory);
-      if (listing == NULL)
+      r = guestfs_ll (g, directory);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (listing, 0);
-      free (listing);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -1018,231 +1721,231 @@ ls (g, directory)
       guestfs_h *g;
       char *directory;
 PREINIT:
-      char **listing;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      listing = guestfs_ls (g, directory);
-      if (listing == NULL)
+      r = guestfs_ls (g, directory);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; listing[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (listing[i], 0)));
-        free (listing[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (listing);
+      free (r);
 
 void
 list_devices (g)
       guestfs_h *g;
 PREINIT:
-      char **devices;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      devices = guestfs_list_devices (g);
-      if (devices == NULL)
+      r = guestfs_list_devices (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; devices[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (devices[i], 0)));
-        free (devices[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (devices);
+      free (r);
 
 void
 list_partitions (g)
       guestfs_h *g;
 PREINIT:
-      char **partitions;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      partitions = guestfs_list_partitions (g);
-      if (partitions == NULL)
+      r = guestfs_list_partitions (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; partitions[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (partitions[i], 0)));
-        free (partitions[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (partitions);
+      free (r);
 
 void
 pvs (g)
       guestfs_h *g;
 PREINIT:
-      char **physvols;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      physvols = guestfs_pvs (g);
-      if (physvols == NULL)
+      r = guestfs_pvs (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; physvols[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (physvols[i], 0)));
-        free (physvols[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (physvols);
+      free (r);
 
 void
 vgs (g)
       guestfs_h *g;
 PREINIT:
-      char **volgroups;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      volgroups = guestfs_vgs (g);
-      if (volgroups == NULL)
+      r = guestfs_vgs (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; volgroups[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (volgroups[i], 0)));
-        free (volgroups[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (volgroups);
+      free (r);
 
 void
 lvs (g)
       guestfs_h *g;
 PREINIT:
-      char **logvols;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      logvols = guestfs_lvs (g);
-      if (logvols == NULL)
+      r = guestfs_lvs (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; logvols[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (logvols[i], 0)));
-        free (logvols[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (logvols);
+      free (r);
 
 void
 pvs_full (g)
       guestfs_h *g;
 PREINIT:
-      struct guestfs_lvm_pv_list *physvols;
-      int i;
+      struct guestfs_lvm_pv_list *r;
+      size_t i;
       HV *hv;
  PPCODE:
-      physvols = guestfs_pvs_full (g);
-      if (physvols == NULL)
+      r = guestfs_pvs_full (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      EXTEND (SP, physvols->len);
-      for (i = 0; i < physvols->len; ++i) {
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
         hv = newHV ();
-        (void) hv_store (hv, "pv_name", 7, newSVpv (physvols->val[i].pv_name, 0), 0);
-        (void) hv_store (hv, "pv_uuid", 7, newSVpv (physvols->val[i].pv_uuid, 32), 0);
-        (void) hv_store (hv, "pv_fmt", 6, newSVpv (physvols->val[i].pv_fmt, 0), 0);
-        (void) hv_store (hv, "pv_size", 7, my_newSVull (physvols->val[i].pv_size), 0);
-        (void) hv_store (hv, "dev_size", 8, my_newSVull (physvols->val[i].dev_size), 0);
-        (void) hv_store (hv, "pv_free", 7, my_newSVull (physvols->val[i].pv_free), 0);
-        (void) hv_store (hv, "pv_used", 7, my_newSVull (physvols->val[i].pv_used), 0);
-        (void) hv_store (hv, "pv_attr", 7, newSVpv (physvols->val[i].pv_attr, 0), 0);
-        (void) hv_store (hv, "pv_pe_count", 11, my_newSVll (physvols->val[i].pv_pe_count), 0);
-        (void) hv_store (hv, "pv_pe_alloc_count", 17, my_newSVll (physvols->val[i].pv_pe_alloc_count), 0);
-        (void) hv_store (hv, "pv_tags", 7, newSVpv (physvols->val[i].pv_tags, 0), 0);
-        (void) hv_store (hv, "pe_start", 8, my_newSVull (physvols->val[i].pe_start), 0);
-        (void) hv_store (hv, "pv_mda_count", 12, my_newSVll (physvols->val[i].pv_mda_count), 0);
-        (void) hv_store (hv, "pv_mda_free", 11, my_newSVull (physvols->val[i].pv_mda_free), 0);
+        (void) hv_store (hv, "pv_name", 7, newSVpv (r->val[i].pv_name, 0), 0);
+        (void) hv_store (hv, "pv_uuid", 7, newSVpv (r->val[i].pv_uuid, 32), 0);
+        (void) hv_store (hv, "pv_fmt", 6, newSVpv (r->val[i].pv_fmt, 0), 0);
+        (void) hv_store (hv, "pv_size", 7, my_newSVull (r->val[i].pv_size), 0);
+        (void) hv_store (hv, "dev_size", 8, my_newSVull (r->val[i].dev_size), 0);
+        (void) hv_store (hv, "pv_free", 7, my_newSVull (r->val[i].pv_free), 0);
+        (void) hv_store (hv, "pv_used", 7, my_newSVull (r->val[i].pv_used), 0);
+        (void) hv_store (hv, "pv_attr", 7, newSVpv (r->val[i].pv_attr, 0), 0);
+        (void) hv_store (hv, "pv_pe_count", 11, my_newSVll (r->val[i].pv_pe_count), 0);
+        (void) hv_store (hv, "pv_pe_alloc_count", 17, my_newSVll (r->val[i].pv_pe_alloc_count), 0);
+        (void) hv_store (hv, "pv_tags", 7, newSVpv (r->val[i].pv_tags, 0), 0);
+        (void) hv_store (hv, "pe_start", 8, my_newSVull (r->val[i].pe_start), 0);
+        (void) hv_store (hv, "pv_mda_count", 12, my_newSVll (r->val[i].pv_mda_count), 0);
+        (void) hv_store (hv, "pv_mda_free", 11, my_newSVull (r->val[i].pv_mda_free), 0);
         PUSHs (sv_2mortal (newRV ((SV *) hv)));
       }
-      guestfs_free_lvm_pv_list (physvols);
+      guestfs_free_lvm_pv_list (r);
 
 void
 vgs_full (g)
       guestfs_h *g;
 PREINIT:
-      struct guestfs_lvm_vg_list *volgroups;
-      int i;
+      struct guestfs_lvm_vg_list *r;
+      size_t i;
       HV *hv;
  PPCODE:
-      volgroups = guestfs_vgs_full (g);
-      if (volgroups == NULL)
+      r = guestfs_vgs_full (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      EXTEND (SP, volgroups->len);
-      for (i = 0; i < volgroups->len; ++i) {
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
         hv = newHV ();
-        (void) hv_store (hv, "vg_name", 7, newSVpv (volgroups->val[i].vg_name, 0), 0);
-        (void) hv_store (hv, "vg_uuid", 7, newSVpv (volgroups->val[i].vg_uuid, 32), 0);
-        (void) hv_store (hv, "vg_fmt", 6, newSVpv (volgroups->val[i].vg_fmt, 0), 0);
-        (void) hv_store (hv, "vg_attr", 7, newSVpv (volgroups->val[i].vg_attr, 0), 0);
-        (void) hv_store (hv, "vg_size", 7, my_newSVull (volgroups->val[i].vg_size), 0);
-        (void) hv_store (hv, "vg_free", 7, my_newSVull (volgroups->val[i].vg_free), 0);
-        (void) hv_store (hv, "vg_sysid", 8, newSVpv (volgroups->val[i].vg_sysid, 0), 0);
-        (void) hv_store (hv, "vg_extent_size", 14, my_newSVull (volgroups->val[i].vg_extent_size), 0);
-        (void) hv_store (hv, "vg_extent_count", 15, my_newSVll (volgroups->val[i].vg_extent_count), 0);
-        (void) hv_store (hv, "vg_free_count", 13, my_newSVll (volgroups->val[i].vg_free_count), 0);
-        (void) hv_store (hv, "max_lv", 6, my_newSVll (volgroups->val[i].max_lv), 0);
-        (void) hv_store (hv, "max_pv", 6, my_newSVll (volgroups->val[i].max_pv), 0);
-        (void) hv_store (hv, "pv_count", 8, my_newSVll (volgroups->val[i].pv_count), 0);
-        (void) hv_store (hv, "lv_count", 8, my_newSVll (volgroups->val[i].lv_count), 0);
-        (void) hv_store (hv, "snap_count", 10, my_newSVll (volgroups->val[i].snap_count), 0);
-        (void) hv_store (hv, "vg_seqno", 8, my_newSVll (volgroups->val[i].vg_seqno), 0);
-        (void) hv_store (hv, "vg_tags", 7, newSVpv (volgroups->val[i].vg_tags, 0), 0);
-        (void) hv_store (hv, "vg_mda_count", 12, my_newSVll (volgroups->val[i].vg_mda_count), 0);
-        (void) hv_store (hv, "vg_mda_free", 11, my_newSVull (volgroups->val[i].vg_mda_free), 0);
+        (void) hv_store (hv, "vg_name", 7, newSVpv (r->val[i].vg_name, 0), 0);
+        (void) hv_store (hv, "vg_uuid", 7, newSVpv (r->val[i].vg_uuid, 32), 0);
+        (void) hv_store (hv, "vg_fmt", 6, newSVpv (r->val[i].vg_fmt, 0), 0);
+        (void) hv_store (hv, "vg_attr", 7, newSVpv (r->val[i].vg_attr, 0), 0);
+        (void) hv_store (hv, "vg_size", 7, my_newSVull (r->val[i].vg_size), 0);
+        (void) hv_store (hv, "vg_free", 7, my_newSVull (r->val[i].vg_free), 0);
+        (void) hv_store (hv, "vg_sysid", 8, newSVpv (r->val[i].vg_sysid, 0), 0);
+        (void) hv_store (hv, "vg_extent_size", 14, my_newSVull (r->val[i].vg_extent_size), 0);
+        (void) hv_store (hv, "vg_extent_count", 15, my_newSVll (r->val[i].vg_extent_count), 0);
+        (void) hv_store (hv, "vg_free_count", 13, my_newSVll (r->val[i].vg_free_count), 0);
+        (void) hv_store (hv, "max_lv", 6, my_newSVll (r->val[i].max_lv), 0);
+        (void) hv_store (hv, "max_pv", 6, my_newSVll (r->val[i].max_pv), 0);
+        (void) hv_store (hv, "pv_count", 8, my_newSVll (r->val[i].pv_count), 0);
+        (void) hv_store (hv, "lv_count", 8, my_newSVll (r->val[i].lv_count), 0);
+        (void) hv_store (hv, "snap_count", 10, my_newSVll (r->val[i].snap_count), 0);
+        (void) hv_store (hv, "vg_seqno", 8, my_newSVll (r->val[i].vg_seqno), 0);
+        (void) hv_store (hv, "vg_tags", 7, newSVpv (r->val[i].vg_tags, 0), 0);
+        (void) hv_store (hv, "vg_mda_count", 12, my_newSVll (r->val[i].vg_mda_count), 0);
+        (void) hv_store (hv, "vg_mda_free", 11, my_newSVull (r->val[i].vg_mda_free), 0);
         PUSHs (sv_2mortal (newRV ((SV *) hv)));
       }
-      guestfs_free_lvm_vg_list (volgroups);
+      guestfs_free_lvm_vg_list (r);
 
 void
 lvs_full (g)
       guestfs_h *g;
 PREINIT:
-      struct guestfs_lvm_lv_list *logvols;
-      int i;
+      struct guestfs_lvm_lv_list *r;
+      size_t i;
       HV *hv;
  PPCODE:
-      logvols = guestfs_lvs_full (g);
-      if (logvols == NULL)
+      r = guestfs_lvs_full (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      EXTEND (SP, logvols->len);
-      for (i = 0; i < logvols->len; ++i) {
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
         hv = newHV ();
-        (void) hv_store (hv, "lv_name", 7, newSVpv (logvols->val[i].lv_name, 0), 0);
-        (void) hv_store (hv, "lv_uuid", 7, newSVpv (logvols->val[i].lv_uuid, 32), 0);
-        (void) hv_store (hv, "lv_attr", 7, newSVpv (logvols->val[i].lv_attr, 0), 0);
-        (void) hv_store (hv, "lv_major", 8, my_newSVll (logvols->val[i].lv_major), 0);
-        (void) hv_store (hv, "lv_minor", 8, my_newSVll (logvols->val[i].lv_minor), 0);
-        (void) hv_store (hv, "lv_kernel_major", 15, my_newSVll (logvols->val[i].lv_kernel_major), 0);
-        (void) hv_store (hv, "lv_kernel_minor", 15, my_newSVll (logvols->val[i].lv_kernel_minor), 0);
-        (void) hv_store (hv, "lv_size", 7, my_newSVull (logvols->val[i].lv_size), 0);
-        (void) hv_store (hv, "seg_count", 9, my_newSVll (logvols->val[i].seg_count), 0);
-        (void) hv_store (hv, "origin", 6, newSVpv (logvols->val[i].origin, 0), 0);
-        (void) hv_store (hv, "snap_percent", 12, newSVnv (logvols->val[i].snap_percent), 0);
-        (void) hv_store (hv, "copy_percent", 12, newSVnv (logvols->val[i].copy_percent), 0);
-        (void) hv_store (hv, "move_pv", 7, newSVpv (logvols->val[i].move_pv, 0), 0);
-        (void) hv_store (hv, "lv_tags", 7, newSVpv (logvols->val[i].lv_tags, 0), 0);
-        (void) hv_store (hv, "mirror_log", 10, newSVpv (logvols->val[i].mirror_log, 0), 0);
-        (void) hv_store (hv, "modules", 7, newSVpv (logvols->val[i].modules, 0), 0);
+        (void) hv_store (hv, "lv_name", 7, newSVpv (r->val[i].lv_name, 0), 0);
+        (void) hv_store (hv, "lv_uuid", 7, newSVpv (r->val[i].lv_uuid, 32), 0);
+        (void) hv_store (hv, "lv_attr", 7, newSVpv (r->val[i].lv_attr, 0), 0);
+        (void) hv_store (hv, "lv_major", 8, my_newSVll (r->val[i].lv_major), 0);
+        (void) hv_store (hv, "lv_minor", 8, my_newSVll (r->val[i].lv_minor), 0);
+        (void) hv_store (hv, "lv_kernel_major", 15, my_newSVll (r->val[i].lv_kernel_major), 0);
+        (void) hv_store (hv, "lv_kernel_minor", 15, my_newSVll (r->val[i].lv_kernel_minor), 0);
+        (void) hv_store (hv, "lv_size", 7, my_newSVull (r->val[i].lv_size), 0);
+        (void) hv_store (hv, "seg_count", 9, my_newSVll (r->val[i].seg_count), 0);
+        (void) hv_store (hv, "origin", 6, newSVpv (r->val[i].origin, 0), 0);
+        (void) hv_store (hv, "snap_percent", 12, newSVnv (r->val[i].snap_percent), 0);
+        (void) hv_store (hv, "copy_percent", 12, newSVnv (r->val[i].copy_percent), 0);
+        (void) hv_store (hv, "move_pv", 7, newSVpv (r->val[i].move_pv, 0), 0);
+        (void) hv_store (hv, "lv_tags", 7, newSVpv (r->val[i].lv_tags, 0), 0);
+        (void) hv_store (hv, "mirror_log", 10, newSVpv (r->val[i].mirror_log, 0), 0);
+        (void) hv_store (hv, "modules", 7, newSVpv (r->val[i].modules, 0), 0);
         PUSHs (sv_2mortal (newRV ((SV *) hv)));
       }
-      guestfs_free_lvm_lv_list (logvols);
+      guestfs_free_lvm_lv_list (r);
 
 void
 read_lines (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_read_lines (g, path);
-      if (lines == NULL)
+      r = guestfs_read_lines (g, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 void
 aug_init (g, root, flags)
@@ -1272,12 +1975,12 @@ aug_defvar (g, name, expr)
       char *name;
       char *expr = SvOK(ST(2)) ? SvPV_nolen(ST(2)) : NULL;
 PREINIT:
-      int nrnodes;
+      int r;
    CODE:
-      nrnodes = guestfs_aug_defvar (g, name, expr);
-      if (nrnodes == -1)
+      r = guestfs_aug_defvar (g, name, expr);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (nrnodes);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -1288,30 +1991,30 @@ aug_defnode (g, name, expr, val)
       char *expr;
       char *val;
 PREINIT:
-      struct guestfs_int_bool *nrnodescreated;
+      struct guestfs_int_bool *r;
  PPCODE:
-      nrnodescreated = guestfs_aug_defnode (g, name, expr, val);
-      if (nrnodescreated == NULL)
+      r = guestfs_aug_defnode (g, name, expr, val);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       EXTEND (SP, 2 * 2);
       PUSHs (sv_2mortal (newSVpv ("i", 0)));
-      PUSHs (sv_2mortal (newSVnv (nrnodescreated->i)));
+      PUSHs (sv_2mortal (newSVnv (r->i)));
       PUSHs (sv_2mortal (newSVpv ("b", 0)));
-      PUSHs (sv_2mortal (newSVnv (nrnodescreated->b)));
-      free (nrnodescreated);
+      PUSHs (sv_2mortal (newSVnv (r->b)));
+      free (r);
 
 SV *
 aug_get (g, augpath)
       guestfs_h *g;
       char *augpath;
 PREINIT:
-      char *val;
+      char *r;
    CODE:
-      val = guestfs_aug_get (g, augpath);
-      if (val == NULL)
+      r = guestfs_aug_get (g, augpath);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (val, 0);
-      free (val);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -1345,12 +2048,12 @@ aug_rm (g, augpath)
       guestfs_h *g;
       char *augpath;
 PREINIT:
-      int nrnodes;
+      int r;
    CODE:
-      nrnodes = guestfs_aug_rm (g, augpath);
-      if (nrnodes == -1)
+      r = guestfs_aug_rm (g, augpath);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (nrnodes);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -1371,19 +2074,19 @@ aug_match (g, augpath)
       guestfs_h *g;
       char *augpath;
 PREINIT:
-      char **matches;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      matches = guestfs_aug_match (g, augpath);
-      if (matches == NULL)
+      r = guestfs_aug_match (g, augpath);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; matches[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (matches[i], 0)));
-        free (matches[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (matches);
+      free (r);
 
 void
 aug_save (g)
@@ -1410,19 +2113,19 @@ aug_ls (g, augpath)
       guestfs_h *g;
       char *augpath;
 PREINIT:
-      char **matches;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      matches = guestfs_aug_ls (g, augpath);
-      if (matches == NULL)
+      r = guestfs_aug_ls (g, augpath);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; matches[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (matches[i], 0)));
-        free (matches[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (matches);
+      free (r);
 
 void
 rm (g, path)
@@ -1509,12 +2212,12 @@ exists (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      int existsflag;
+      int r;
    CODE:
-      existsflag = guestfs_exists (g, path);
-      if (existsflag == -1)
+      r = guestfs_exists (g, path);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (existsflag);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -1523,12 +2226,12 @@ is_file (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      int fileflag;
+      int r;
    CODE:
-      fileflag = guestfs_is_file (g, path);
-      if (fileflag == -1)
+      r = guestfs_is_file (g, path);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (fileflag);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -1537,12 +2240,12 @@ is_dir (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      int dirflag;
+      int r;
    CODE:
-      dirflag = guestfs_is_dir (g, path);
-      if (dirflag == -1)
+      r = guestfs_is_dir (g, path);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (dirflag);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -1639,19 +2342,19 @@ void
 mounts (g)
       guestfs_h *g;
 PREINIT:
-      char **devices;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      devices = guestfs_mounts (g);
-      if (devices == NULL)
+      r = guestfs_mounts (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; devices[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (devices[i], 0)));
-        free (devices[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (devices);
+      free (r);
 
 void
 umount_all (g)
@@ -1678,13 +2381,13 @@ file (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      char *description;
+      char *r;
    CODE:
-      description = guestfs_file (g, path);
-      if (description == NULL)
+      r = guestfs_file (g, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (description, 0);
-      free (description);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -1693,14 +2396,14 @@ command (g, arguments)
       guestfs_h *g;
       char **arguments;
 PREINIT:
-      char *output;
+      char *r;
    CODE:
-      output = guestfs_command (g, arguments);
+      r = guestfs_command (g, arguments);
       free (arguments);
-      if (output == NULL)
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (output, 0);
-      free (output);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -1709,152 +2412,152 @@ command_lines (g, arguments)
       guestfs_h *g;
       char **arguments;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_command_lines (g, arguments);
+      r = guestfs_command_lines (g, arguments);
       free (arguments);
-      if (lines == NULL)
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 void
 stat (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      struct guestfs_stat *statbuf;
+      struct guestfs_stat *r;
  PPCODE:
-      statbuf = guestfs_stat (g, path);
-      if (statbuf == NULL)
+      r = guestfs_stat (g, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       EXTEND (SP, 2 * 13);
       PUSHs (sv_2mortal (newSVpv ("dev", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->dev)));
+      PUSHs (sv_2mortal (my_newSVll (r->dev)));
       PUSHs (sv_2mortal (newSVpv ("ino", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->ino)));
+      PUSHs (sv_2mortal (my_newSVll (r->ino)));
       PUSHs (sv_2mortal (newSVpv ("mode", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->mode)));
+      PUSHs (sv_2mortal (my_newSVll (r->mode)));
       PUSHs (sv_2mortal (newSVpv ("nlink", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->nlink)));
+      PUSHs (sv_2mortal (my_newSVll (r->nlink)));
       PUSHs (sv_2mortal (newSVpv ("uid", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->uid)));
+      PUSHs (sv_2mortal (my_newSVll (r->uid)));
       PUSHs (sv_2mortal (newSVpv ("gid", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->gid)));
+      PUSHs (sv_2mortal (my_newSVll (r->gid)));
       PUSHs (sv_2mortal (newSVpv ("rdev", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->rdev)));
+      PUSHs (sv_2mortal (my_newSVll (r->rdev)));
       PUSHs (sv_2mortal (newSVpv ("size", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->size)));
+      PUSHs (sv_2mortal (my_newSVll (r->size)));
       PUSHs (sv_2mortal (newSVpv ("blksize", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->blksize)));
+      PUSHs (sv_2mortal (my_newSVll (r->blksize)));
       PUSHs (sv_2mortal (newSVpv ("blocks", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->blocks)));
+      PUSHs (sv_2mortal (my_newSVll (r->blocks)));
       PUSHs (sv_2mortal (newSVpv ("atime", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->atime)));
+      PUSHs (sv_2mortal (my_newSVll (r->atime)));
       PUSHs (sv_2mortal (newSVpv ("mtime", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->mtime)));
+      PUSHs (sv_2mortal (my_newSVll (r->mtime)));
       PUSHs (sv_2mortal (newSVpv ("ctime", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->ctime)));
-      free (statbuf);
+      PUSHs (sv_2mortal (my_newSVll (r->ctime)));
+      free (r);
 
 void
 lstat (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      struct guestfs_stat *statbuf;
+      struct guestfs_stat *r;
  PPCODE:
-      statbuf = guestfs_lstat (g, path);
-      if (statbuf == NULL)
+      r = guestfs_lstat (g, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       EXTEND (SP, 2 * 13);
       PUSHs (sv_2mortal (newSVpv ("dev", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->dev)));
+      PUSHs (sv_2mortal (my_newSVll (r->dev)));
       PUSHs (sv_2mortal (newSVpv ("ino", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->ino)));
+      PUSHs (sv_2mortal (my_newSVll (r->ino)));
       PUSHs (sv_2mortal (newSVpv ("mode", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->mode)));
+      PUSHs (sv_2mortal (my_newSVll (r->mode)));
       PUSHs (sv_2mortal (newSVpv ("nlink", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->nlink)));
+      PUSHs (sv_2mortal (my_newSVll (r->nlink)));
       PUSHs (sv_2mortal (newSVpv ("uid", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->uid)));
+      PUSHs (sv_2mortal (my_newSVll (r->uid)));
       PUSHs (sv_2mortal (newSVpv ("gid", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->gid)));
+      PUSHs (sv_2mortal (my_newSVll (r->gid)));
       PUSHs (sv_2mortal (newSVpv ("rdev", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->rdev)));
+      PUSHs (sv_2mortal (my_newSVll (r->rdev)));
       PUSHs (sv_2mortal (newSVpv ("size", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->size)));
+      PUSHs (sv_2mortal (my_newSVll (r->size)));
       PUSHs (sv_2mortal (newSVpv ("blksize", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->blksize)));
+      PUSHs (sv_2mortal (my_newSVll (r->blksize)));
       PUSHs (sv_2mortal (newSVpv ("blocks", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->blocks)));
+      PUSHs (sv_2mortal (my_newSVll (r->blocks)));
       PUSHs (sv_2mortal (newSVpv ("atime", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->atime)));
+      PUSHs (sv_2mortal (my_newSVll (r->atime)));
       PUSHs (sv_2mortal (newSVpv ("mtime", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->mtime)));
+      PUSHs (sv_2mortal (my_newSVll (r->mtime)));
       PUSHs (sv_2mortal (newSVpv ("ctime", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->ctime)));
-      free (statbuf);
+      PUSHs (sv_2mortal (my_newSVll (r->ctime)));
+      free (r);
 
 void
 statvfs (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      struct guestfs_statvfs *statbuf;
+      struct guestfs_statvfs *r;
  PPCODE:
-      statbuf = guestfs_statvfs (g, path);
-      if (statbuf == NULL)
+      r = guestfs_statvfs (g, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       EXTEND (SP, 2 * 11);
       PUSHs (sv_2mortal (newSVpv ("bsize", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->bsize)));
+      PUSHs (sv_2mortal (my_newSVll (r->bsize)));
       PUSHs (sv_2mortal (newSVpv ("frsize", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->frsize)));
+      PUSHs (sv_2mortal (my_newSVll (r->frsize)));
       PUSHs (sv_2mortal (newSVpv ("blocks", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->blocks)));
+      PUSHs (sv_2mortal (my_newSVll (r->blocks)));
       PUSHs (sv_2mortal (newSVpv ("bfree", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->bfree)));
+      PUSHs (sv_2mortal (my_newSVll (r->bfree)));
       PUSHs (sv_2mortal (newSVpv ("bavail", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->bavail)));
+      PUSHs (sv_2mortal (my_newSVll (r->bavail)));
       PUSHs (sv_2mortal (newSVpv ("files", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->files)));
+      PUSHs (sv_2mortal (my_newSVll (r->files)));
       PUSHs (sv_2mortal (newSVpv ("ffree", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->ffree)));
+      PUSHs (sv_2mortal (my_newSVll (r->ffree)));
       PUSHs (sv_2mortal (newSVpv ("favail", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->favail)));
+      PUSHs (sv_2mortal (my_newSVll (r->favail)));
       PUSHs (sv_2mortal (newSVpv ("fsid", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->fsid)));
+      PUSHs (sv_2mortal (my_newSVll (r->fsid)));
       PUSHs (sv_2mortal (newSVpv ("flag", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->flag)));
+      PUSHs (sv_2mortal (my_newSVll (r->flag)));
       PUSHs (sv_2mortal (newSVpv ("namemax", 0)));
-      PUSHs (sv_2mortal (my_newSVll (statbuf->namemax)));
-      free (statbuf);
+      PUSHs (sv_2mortal (my_newSVll (r->namemax)));
+      free (r);
 
 void
 tune2fs_l (g, device)
       guestfs_h *g;
       char *device;
 PREINIT:
-      char **superblock;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      superblock = guestfs_tune2fs_l (g, device);
-      if (superblock == NULL)
+      r = guestfs_tune2fs_l (g, device);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; superblock[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (superblock[i], 0)));
-        free (superblock[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (superblock);
+      free (r);
 
 void
 blockdev_setro (g, device)
@@ -1883,12 +2586,12 @@ blockdev_getro (g, device)
       guestfs_h *g;
       char *device;
 PREINIT:
-      int ro;
+      int r;
    CODE:
-      ro = guestfs_blockdev_getro (g, device);
-      if (ro == -1)
+      r = guestfs_blockdev_getro (g, device);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (ro);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -1897,12 +2600,12 @@ blockdev_getss (g, device)
       guestfs_h *g;
       char *device;
 PREINIT:
-      int sectorsize;
+      int r;
    CODE:
-      sectorsize = guestfs_blockdev_getss (g, device);
-      if (sectorsize == -1)
+      r = guestfs_blockdev_getss (g, device);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (sectorsize);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -1911,12 +2614,12 @@ blockdev_getbsz (g, device)
       guestfs_h *g;
       char *device;
 PREINIT:
-      int blocksize;
+      int r;
    CODE:
-      blocksize = guestfs_blockdev_getbsz (g, device);
-      if (blocksize == -1)
+      r = guestfs_blockdev_getbsz (g, device);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (blocksize);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -1937,12 +2640,12 @@ blockdev_getsz (g, device)
       guestfs_h *g;
       char *device;
 PREINIT:
-      int64_t sizeinsectors;
+      int64_t r;
    CODE:
-      sizeinsectors = guestfs_blockdev_getsz (g, device);
-      if (sizeinsectors == -1)
+      r = guestfs_blockdev_getsz (g, device);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = my_newSVll (sizeinsectors);
+      RETVAL = my_newSVll (r);
  OUTPUT:
       RETVAL
 
@@ -1951,12 +2654,12 @@ blockdev_getsize64 (g, device)
       guestfs_h *g;
       char *device;
 PREINIT:
-      int64_t sizeinbytes;
+      int64_t r;
    CODE:
-      sizeinbytes = guestfs_blockdev_getsize64 (g, device);
-      if (sizeinbytes == -1)
+      r = guestfs_blockdev_getsize64 (g, device);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = my_newSVll (sizeinbytes);
+      RETVAL = my_newSVll (r);
  OUTPUT:
       RETVAL
 
@@ -2012,13 +2715,13 @@ checksum (g, csumtype, path)
       char *csumtype;
       char *path;
 PREINIT:
-      char *checksum;
+      char *r;
    CODE:
-      checksum = guestfs_checksum (g, csumtype, path);
-      if (checksum == NULL)
+      r = guestfs_checksum (g, csumtype, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (checksum, 0);
-      free (checksum);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -2115,14 +2818,14 @@ debug (g, subcmd, extraargs)
       char *subcmd;
       char **extraargs;
 PREINIT:
-      char *result;
+      char *r;
    CODE:
-      result = guestfs_debug (g, subcmd, extraargs);
+      r = guestfs_debug (g, subcmd, extraargs);
       free (extraargs);
-      if (result == NULL)
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (result, 0);
-      free (result);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -2176,13 +2879,13 @@ get_e2label (g, device)
       guestfs_h *g;
       char *device;
 PREINIT:
-      char *label;
+      char *r;
    CODE:
-      label = guestfs_get_e2label (g, device);
-      if (label == NULL)
+      r = guestfs_get_e2label (g, device);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (label, 0);
-      free (label);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -2203,13 +2906,13 @@ get_e2uuid (g, device)
       guestfs_h *g;
       char *device;
 PREINIT:
-      char *uuid;
+      char *r;
    CODE:
-      uuid = guestfs_get_e2uuid (g, device);
-      if (uuid == NULL)
+      r = guestfs_get_e2uuid (g, device);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (uuid, 0);
-      free (uuid);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -2219,12 +2922,12 @@ fsck (g, fstype, device)
       char *fstype;
       char *device;
 PREINIT:
-      int status;
+      int r;
    CODE:
-      status = guestfs_fsck (g, fstype, device);
-      if (status == -1)
+      r = guestfs_fsck (g, fstype, device);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (status);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -2302,13 +3005,13 @@ SV *
 dmesg (g)
       guestfs_h *g;
 PREINIT:
-      char *kmsgs;
+      char *r;
    CODE:
-      kmsgs = guestfs_dmesg (g);
-      if (kmsgs == NULL)
+      r = guestfs_dmesg (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (kmsgs, 0);
-      free (kmsgs);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -2328,12 +3031,12 @@ equal (g, file1, file2)
       char *file1;
       char *file2;
 PREINIT:
-      int equality;
+      int r;
    CODE:
-      equality = guestfs_equal (g, file1, file2);
-      if (equality == -1)
+      r = guestfs_equal (g, file1, file2);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (equality);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -2342,19 +3045,19 @@ strings (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      char **stringsout;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      stringsout = guestfs_strings (g, path);
-      if (stringsout == NULL)
+      r = guestfs_strings (g, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; stringsout[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (stringsout[i], 0)));
-        free (stringsout[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (stringsout);
+      free (r);
 
 void
 strings_e (g, encoding, path)
@@ -2362,32 +3065,32 @@ strings_e (g, encoding, path)
       char *encoding;
       char *path;
 PREINIT:
-      char **stringsout;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      stringsout = guestfs_strings_e (g, encoding, path);
-      if (stringsout == NULL)
+      r = guestfs_strings_e (g, encoding, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; stringsout[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (stringsout[i], 0)));
-        free (stringsout[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (stringsout);
+      free (r);
 
 SV *
 hexdump (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      char *dump;
+      char *r;
    CODE:
-      dump = guestfs_hexdump (g, path);
-      if (dump == NULL)
+      r = guestfs_hexdump (g, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (dump, 0);
-      free (dump);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -2434,13 +3137,13 @@ sfdisk_l (g, device)
       guestfs_h *g;
       char *device;
 PREINIT:
-      char *partitions;
+      char *r;
    CODE:
-      partitions = guestfs_sfdisk_l (g, device);
-      if (partitions == NULL)
+      r = guestfs_sfdisk_l (g, device);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (partitions, 0);
-      free (partitions);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -2449,13 +3152,13 @@ sfdisk_kernel_geometry (g, device)
       guestfs_h *g;
       char *device;
 PREINIT:
-      char *partitions;
+      char *r;
    CODE:
-      partitions = guestfs_sfdisk_kernel_geometry (g, device);
-      if (partitions == NULL)
+      r = guestfs_sfdisk_kernel_geometry (g, device);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (partitions, 0);
-      free (partitions);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -2464,13 +3167,13 @@ sfdisk_disk_geometry (g, device)
       guestfs_h *g;
       char *device;
 PREINIT:
-      char *partitions;
+      char *r;
    CODE:
-      partitions = guestfs_sfdisk_disk_geometry (g, device);
-      if (partitions == NULL)
+      r = guestfs_sfdisk_disk_geometry (g, device);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (partitions, 0);
-      free (partitions);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -2526,19 +3229,19 @@ find (g, directory)
       guestfs_h *g;
       char *directory;
 PREINIT:
-      char **names;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      names = guestfs_find (g, directory);
-      if (names == NULL)
+      r = guestfs_find (g, directory);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; names[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (names[i], 0)));
-        free (names[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (names);
+      free (r);
 
 void
 e2fsck_f (g, device)
@@ -2568,12 +3271,12 @@ ntfs_3g_probe (g, rw, device)
       int rw;
       char *device;
 PREINIT:
-      int status;
+      int r;
    CODE:
-      status = guestfs_ntfs_3g_probe (g, rw, device);
-      if (status == -1)
+      r = guestfs_ntfs_3g_probe (g, rw, device);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (status);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -2582,13 +3285,13 @@ sh (g, command)
       guestfs_h *g;
       char *command;
 PREINIT:
-      char *output;
+      char *r;
    CODE:
-      output = guestfs_sh (g, command);
-      if (output == NULL)
+      r = guestfs_sh (g, command);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (output, 0);
-      free (output);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -2597,38 +3300,38 @@ sh_lines (g, command)
       guestfs_h *g;
       char *command;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_sh_lines (g, command);
-      if (lines == NULL)
+      r = guestfs_sh_lines (g, command);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 void
 glob_expand (g, pattern)
       guestfs_h *g;
       char *pattern;
 PREINIT:
-      char **paths;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      paths = guestfs_glob_expand (g, pattern);
-      if (paths == NULL)
+      r = guestfs_glob_expand (g, pattern);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; paths[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (paths[i], 0)));
-        free (paths[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (paths);
+      free (r);
 
 void
 scrub_device (g, device)
@@ -2668,13 +3371,13 @@ mkdtemp (g, template)
       guestfs_h *g;
       char *template;
 PREINIT:
-      char *dir;
+      char *r;
    CODE:
-      dir = guestfs_mkdtemp (g, template);
-      if (dir == NULL)
+      r = guestfs_mkdtemp (g, template);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (dir, 0);
-      free (dir);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -2683,12 +3386,12 @@ wc_l (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      int lines;
+      int r;
    CODE:
-      lines = guestfs_wc_l (g, path);
-      if (lines == -1)
+      r = guestfs_wc_l (g, path);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (lines);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -2697,12 +3400,12 @@ wc_w (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      int words;
+      int r;
    CODE:
-      words = guestfs_wc_w (g, path);
-      if (words == -1)
+      r = guestfs_wc_w (g, path);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (words);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -2711,12 +3414,12 @@ wc_c (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      int chars;
+      int r;
    CODE:
-      chars = guestfs_wc_c (g, path);
-      if (chars == -1)
+      r = guestfs_wc_c (g, path);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (chars);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -2725,19 +3428,19 @@ head (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_head (g, path);
-      if (lines == NULL)
+      r = guestfs_head (g, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 void
 head_n (g, nrlines, path)
@@ -2745,38 +3448,38 @@ head_n (g, nrlines, path)
       int nrlines;
       char *path;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_head_n (g, nrlines, path);
-      if (lines == NULL)
+      r = guestfs_head_n (g, nrlines, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 void
 tail (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_tail (g, path);
-      if (lines == NULL)
+      r = guestfs_tail (g, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 void
 tail_n (g, nrlines, path)
@@ -2784,31 +3487,31 @@ tail_n (g, nrlines, path)
       int nrlines;
       char *path;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_tail_n (g, nrlines, path);
-      if (lines == NULL)
+      r = guestfs_tail_n (g, nrlines, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 SV *
 df (g)
       guestfs_h *g;
 PREINIT:
-      char *output;
+      char *r;
    CODE:
-      output = guestfs_df (g);
-      if (output == NULL)
+      r = guestfs_df (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (output, 0);
-      free (output);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -2816,13 +3519,13 @@ SV *
 df_h (g)
       guestfs_h *g;
 PREINIT:
-      char *output;
+      char *r;
    CODE:
-      output = guestfs_df_h (g);
-      if (output == NULL)
+      r = guestfs_df_h (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (output, 0);
-      free (output);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -2831,12 +3534,12 @@ du (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      int64_t sizekb;
+      int64_t r;
    CODE:
-      sizekb = guestfs_du (g, path);
-      if (sizekb == -1)
+      r = guestfs_du (g, path);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = my_newSVll (sizekb);
+      RETVAL = my_newSVll (r);
  OUTPUT:
       RETVAL
 
@@ -2845,19 +3548,19 @@ initrd_list (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      char **filenames;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      filenames = guestfs_initrd_list (g, path);
-      if (filenames == NULL)
+      r = guestfs_initrd_list (g, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; filenames[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (filenames[i], 0)));
-        free (filenames[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (filenames);
+      free (r);
 
 void
 mount_loop (g, file, mountpoint)
@@ -2965,12 +3668,12 @@ umask (g, mask)
       guestfs_h *g;
       int mask;
 PREINIT:
-      int oldmask;
+      int r;
    CODE:
-      oldmask = guestfs_umask (g, mask);
-      if (oldmask == -1)
+      r = guestfs_umask (g, mask);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSViv (oldmask);
+      RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
 
@@ -2979,22 +3682,22 @@ readdir (g, dir)
       guestfs_h *g;
       char *dir;
 PREINIT:
-      struct guestfs_dirent_list *entries;
-      int i;
+      struct guestfs_dirent_list *r;
+      size_t i;
       HV *hv;
  PPCODE:
-      entries = guestfs_readdir (g, dir);
-      if (entries == NULL)
+      r = guestfs_readdir (g, dir);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      EXTEND (SP, entries->len);
-      for (i = 0; i < entries->len; ++i) {
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
         hv = newHV ();
-        (void) hv_store (hv, "ino", 3, my_newSVll (entries->val[i].ino), 0);
-        (void) hv_store (hv, "ftyp", 4, newSVpv (&entries->val[i].ftyp, 1), 0);
-        (void) hv_store (hv, "name", 4, newSVpv (entries->val[i].name, 0), 0);
+        (void) hv_store (hv, "ino", 3, my_newSVll (r->val[i].ino), 0);
+        (void) hv_store (hv, "ftyp", 4, newSVpv (&r->val[i].ftyp, 1), 0);
+        (void) hv_store (hv, "name", 4, newSVpv (r->val[i].name, 0), 0);
         PUSHs (sv_2mortal (newRV ((SV *) hv)));
       }
-      guestfs_free_dirent_list (entries);
+      guestfs_free_dirent_list (r);
 
 void
 sfdiskM (g, device, lines)
@@ -3015,13 +3718,13 @@ zfile (g, meth, path)
       char *meth;
       char *path;
 PREINIT:
-      char *description;
+      char *r;
    CODE:
-      description = guestfs_zfile (g, meth, path);
-      if (description == NULL)
+      r = guestfs_zfile (g, meth, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (description, 0);
-      free (description);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -3030,42 +3733,42 @@ getxattrs (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      struct guestfs_xattr_list *xattrs;
-      int i;
+      struct guestfs_xattr_list *r;
+      size_t i;
       HV *hv;
  PPCODE:
-      xattrs = guestfs_getxattrs (g, path);
-      if (xattrs == NULL)
+      r = guestfs_getxattrs (g, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      EXTEND (SP, xattrs->len);
-      for (i = 0; i < xattrs->len; ++i) {
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
         hv = newHV ();
-        (void) hv_store (hv, "attrname", 8, newSVpv (xattrs->val[i].attrname, 0), 0);
-        (void) hv_store (hv, "attrval", 7, newSVpv (xattrs->val[i].attrval, xattrs->val[i].attrval_len), 0);
+        (void) hv_store (hv, "attrname", 8, newSVpv (r->val[i].attrname, 0), 0);
+        (void) hv_store (hv, "attrval", 7, newSVpvn (r->val[i].attrval, r->val[i].attrval_len), 0);
         PUSHs (sv_2mortal (newRV ((SV *) hv)));
       }
-      guestfs_free_xattr_list (xattrs);
+      guestfs_free_xattr_list (r);
 
 void
 lgetxattrs (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      struct guestfs_xattr_list *xattrs;
-      int i;
+      struct guestfs_xattr_list *r;
+      size_t i;
       HV *hv;
  PPCODE:
-      xattrs = guestfs_lgetxattrs (g, path);
-      if (xattrs == NULL)
+      r = guestfs_lgetxattrs (g, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      EXTEND (SP, xattrs->len);
-      for (i = 0; i < xattrs->len; ++i) {
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
         hv = newHV ();
-        (void) hv_store (hv, "attrname", 8, newSVpv (xattrs->val[i].attrname, 0), 0);
-        (void) hv_store (hv, "attrval", 7, newSVpv (xattrs->val[i].attrval, xattrs->val[i].attrval_len), 0);
+        (void) hv_store (hv, "attrname", 8, newSVpv (r->val[i].attrname, 0), 0);
+        (void) hv_store (hv, "attrval", 7, newSVpvn (r->val[i].attrval, r->val[i].attrval_len), 0);
         PUSHs (sv_2mortal (newRV ((SV *) hv)));
       }
-      guestfs_free_xattr_list (xattrs);
+      guestfs_free_xattr_list (r);
 
 void
 setxattr (g, xattr, val, vallen, path)
@@ -3123,19 +3826,19 @@ void
 mountpoints (g)
       guestfs_h *g;
 PREINIT:
-      char **mps;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      mps = guestfs_mountpoints (g);
-      if (mps == NULL)
+      r = guestfs_mountpoints (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; mps[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (mps[i], 0)));
-        free (mps[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (mps);
+      free (r);
 
 void
 mkmountpoint (g, exemptpath)
@@ -3164,14 +3867,14 @@ read_file (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      char *content;
+      char *r;
       size_t size;
    CODE:
-      content = guestfs_read_file (g, path, &size);
-      if (content == NULL)
+      r = guestfs_read_file (g, path, &size);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (content, size);
-      free (content);
+      RETVAL = newSVpvn (r, size);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -3181,19 +3884,19 @@ grep (g, regex, path)
       char *regex;
       char *path;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_grep (g, regex, path);
-      if (lines == NULL)
+      r = guestfs_grep (g, regex, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 void
 egrep (g, regex, path)
@@ -3201,19 +3904,19 @@ egrep (g, regex, path)
       char *regex;
       char *path;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_egrep (g, regex, path);
-      if (lines == NULL)
+      r = guestfs_egrep (g, regex, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 void
 fgrep (g, pattern, path)
@@ -3221,19 +3924,19 @@ fgrep (g, pattern, path)
       char *pattern;
       char *path;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_fgrep (g, pattern, path);
-      if (lines == NULL)
+      r = guestfs_fgrep (g, pattern, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 void
 grepi (g, regex, path)
@@ -3241,19 +3944,19 @@ grepi (g, regex, path)
       char *regex;
       char *path;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_grepi (g, regex, path);
-      if (lines == NULL)
+      r = guestfs_grepi (g, regex, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 void
 egrepi (g, regex, path)
@@ -3261,19 +3964,19 @@ egrepi (g, regex, path)
       char *regex;
       char *path;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_egrepi (g, regex, path);
-      if (lines == NULL)
+      r = guestfs_egrepi (g, regex, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 void
 fgrepi (g, pattern, path)
@@ -3281,19 +3984,19 @@ fgrepi (g, pattern, path)
       char *pattern;
       char *path;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_fgrepi (g, pattern, path);
-      if (lines == NULL)
+      r = guestfs_fgrepi (g, pattern, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 void
 zgrep (g, regex, path)
@@ -3301,19 +4004,19 @@ zgrep (g, regex, path)
       char *regex;
       char *path;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_zgrep (g, regex, path);
-      if (lines == NULL)
+      r = guestfs_zgrep (g, regex, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 void
 zegrep (g, regex, path)
@@ -3321,19 +4024,19 @@ zegrep (g, regex, path)
       char *regex;
       char *path;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_zegrep (g, regex, path);
-      if (lines == NULL)
+      r = guestfs_zegrep (g, regex, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 void
 zfgrep (g, pattern, path)
@@ -3341,19 +4044,19 @@ zfgrep (g, pattern, path)
       char *pattern;
       char *path;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_zfgrep (g, pattern, path);
-      if (lines == NULL)
+      r = guestfs_zfgrep (g, pattern, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 void
 zgrepi (g, regex, path)
@@ -3361,19 +4064,19 @@ zgrepi (g, regex, path)
       char *regex;
       char *path;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_zgrepi (g, regex, path);
-      if (lines == NULL)
+      r = guestfs_zgrepi (g, regex, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 void
 zegrepi (g, regex, path)
@@ -3381,19 +4084,19 @@ zegrepi (g, regex, path)
       char *regex;
       char *path;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_zegrepi (g, regex, path);
-      if (lines == NULL)
+      r = guestfs_zegrepi (g, regex, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 void
 zfgrepi (g, pattern, path)
@@ -3401,32 +4104,32 @@ zfgrepi (g, pattern, path)
       char *pattern;
       char *path;
 PREINIT:
-      char **lines;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      lines = guestfs_zfgrepi (g, pattern, path);
-      if (lines == NULL)
+      r = guestfs_zfgrepi (g, pattern, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; lines[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (lines[i], 0)));
-        free (lines[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (lines);
+      free (r);
 
 SV *
 realpath (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      char *rpath;
+      char *r;
    CODE:
-      rpath = guestfs_realpath (g, path);
-      if (rpath == NULL)
+      r = guestfs_realpath (g, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (rpath, 0);
-      free (rpath);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -3483,13 +4186,13 @@ readlink (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      char *link;
+      char *r;
    CODE:
-      link = guestfs_readlink (g, path);
-      if (link == NULL)
+      r = guestfs_readlink (g, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (link, 0);
-      free (link);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -3621,12 +4324,12 @@ inotify_add_watch (g, path, mask)
       char *path;
       int mask;
 PREINIT:
-      int64_t wd;
+      int64_t r;
    CODE:
-      wd = guestfs_inotify_add_watch (g, path, mask);
-      if (wd == -1)
+      r = guestfs_inotify_add_watch (g, path, mask);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = my_newSVll (wd);
+      RETVAL = my_newSVll (r);
  OUTPUT:
       RETVAL
 
@@ -3645,41 +4348,41 @@ void
 inotify_read (g)
       guestfs_h *g;
 PREINIT:
-      struct guestfs_inotify_event_list *events;
-      int i;
+      struct guestfs_inotify_event_list *r;
+      size_t i;
       HV *hv;
  PPCODE:
-      events = guestfs_inotify_read (g);
-      if (events == NULL)
+      r = guestfs_inotify_read (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      EXTEND (SP, events->len);
-      for (i = 0; i < events->len; ++i) {
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
         hv = newHV ();
-        (void) hv_store (hv, "in_wd", 5, my_newSVll (events->val[i].in_wd), 0);
-        (void) hv_store (hv, "in_mask", 7, newSVnv (events->val[i].in_mask), 0);
-        (void) hv_store (hv, "in_cookie", 9, newSVnv (events->val[i].in_cookie), 0);
-        (void) hv_store (hv, "in_name", 7, newSVpv (events->val[i].in_name, 0), 0);
+        (void) hv_store (hv, "in_wd", 5, my_newSVll (r->val[i].in_wd), 0);
+        (void) hv_store (hv, "in_mask", 7, newSVnv (r->val[i].in_mask), 0);
+        (void) hv_store (hv, "in_cookie", 9, newSVnv (r->val[i].in_cookie), 0);
+        (void) hv_store (hv, "in_name", 7, newSVpv (r->val[i].in_name, 0), 0);
         PUSHs (sv_2mortal (newRV ((SV *) hv)));
       }
-      guestfs_free_inotify_event_list (events);
+      guestfs_free_inotify_event_list (r);
 
 void
 inotify_files (g)
       guestfs_h *g;
 PREINIT:
-      char **paths;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      paths = guestfs_inotify_files (g);
-      if (paths == NULL)
+      r = guestfs_inotify_files (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; paths[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (paths[i], 0)));
-        free (paths[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (paths);
+      free (r);
 
 void
 inotify_close (g)
@@ -3706,13 +4409,13 @@ SV *
 getcon (g)
       guestfs_h *g;
 PREINIT:
-      char *context;
+      char *r;
    CODE:
-      context = guestfs_getcon (g);
-      if (context == NULL)
+      r = guestfs_getcon (g);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (context, 0);
-      free (context);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -3825,14 +4528,14 @@ echo_daemon (g, words)
       guestfs_h *g;
       char **words;
 PREINIT:
-      char *output;
+      char *r;
    CODE:
-      output = guestfs_echo_daemon (g, words);
+      r = guestfs_echo_daemon (g, words);
       free (words);
-      if (output == NULL)
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (output, 0);
-      free (output);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -3853,13 +4556,13 @@ case_sensitive_path (g, path)
       guestfs_h *g;
       char *path;
 PREINIT:
-      char *rpath;
+      char *r;
    CODE:
-      rpath = guestfs_case_sensitive_path (g, path);
-      if (rpath == NULL)
+      r = guestfs_case_sensitive_path (g, path);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (rpath, 0);
-      free (rpath);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -3868,13 +4571,13 @@ vfs_type (g, device)
       guestfs_h *g;
       char *device;
 PREINIT:
-      char *fstype;
+      char *r;
    CODE:
-      fstype = guestfs_vfs_type (g, device);
-      if (fstype == NULL)
+      r = guestfs_vfs_type (g, device);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (fstype, 0);
-      free (fstype);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -3947,33 +4650,33 @@ lstatlist (g, path, names)
       char *path;
       char **names;
 PREINIT:
-      struct guestfs_stat_list *statbufs;
-      int i;
+      struct guestfs_stat_list *r;
+      size_t i;
       HV *hv;
  PPCODE:
-      statbufs = guestfs_lstatlist (g, path, names);
+      r = guestfs_lstatlist (g, path, names);
       free (names);
-      if (statbufs == NULL)
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      EXTEND (SP, statbufs->len);
-      for (i = 0; i < statbufs->len; ++i) {
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
         hv = newHV ();
-        (void) hv_store (hv, "dev", 3, my_newSVll (statbufs->val[i].dev), 0);
-        (void) hv_store (hv, "ino", 3, my_newSVll (statbufs->val[i].ino), 0);
-        (void) hv_store (hv, "mode", 4, my_newSVll (statbufs->val[i].mode), 0);
-        (void) hv_store (hv, "nlink", 5, my_newSVll (statbufs->val[i].nlink), 0);
-        (void) hv_store (hv, "uid", 3, my_newSVll (statbufs->val[i].uid), 0);
-        (void) hv_store (hv, "gid", 3, my_newSVll (statbufs->val[i].gid), 0);
-        (void) hv_store (hv, "rdev", 4, my_newSVll (statbufs->val[i].rdev), 0);
-        (void) hv_store (hv, "size", 4, my_newSVll (statbufs->val[i].size), 0);
-        (void) hv_store (hv, "blksize", 7, my_newSVll (statbufs->val[i].blksize), 0);
-        (void) hv_store (hv, "blocks", 6, my_newSVll (statbufs->val[i].blocks), 0);
-        (void) hv_store (hv, "atime", 5, my_newSVll (statbufs->val[i].atime), 0);
-        (void) hv_store (hv, "mtime", 5, my_newSVll (statbufs->val[i].mtime), 0);
-        (void) hv_store (hv, "ctime", 5, my_newSVll (statbufs->val[i].ctime), 0);
+        (void) hv_store (hv, "dev", 3, my_newSVll (r->val[i].dev), 0);
+        (void) hv_store (hv, "ino", 3, my_newSVll (r->val[i].ino), 0);
+        (void) hv_store (hv, "mode", 4, my_newSVll (r->val[i].mode), 0);
+        (void) hv_store (hv, "nlink", 5, my_newSVll (r->val[i].nlink), 0);
+        (void) hv_store (hv, "uid", 3, my_newSVll (r->val[i].uid), 0);
+        (void) hv_store (hv, "gid", 3, my_newSVll (r->val[i].gid), 0);
+        (void) hv_store (hv, "rdev", 4, my_newSVll (r->val[i].rdev), 0);
+        (void) hv_store (hv, "size", 4, my_newSVll (r->val[i].size), 0);
+        (void) hv_store (hv, "blksize", 7, my_newSVll (r->val[i].blksize), 0);
+        (void) hv_store (hv, "blocks", 6, my_newSVll (r->val[i].blocks), 0);
+        (void) hv_store (hv, "atime", 5, my_newSVll (r->val[i].atime), 0);
+        (void) hv_store (hv, "mtime", 5, my_newSVll (r->val[i].mtime), 0);
+        (void) hv_store (hv, "ctime", 5, my_newSVll (r->val[i].ctime), 0);
         PUSHs (sv_2mortal (newRV ((SV *) hv)));
       }
-      guestfs_free_stat_list (statbufs);
+      guestfs_free_stat_list (r);
 
 void
 lxattrlist (g, path, names)
@@ -3981,22 +4684,22 @@ lxattrlist (g, path, names)
       char *path;
       char **names;
 PREINIT:
-      struct guestfs_xattr_list *xattrs;
-      int i;
+      struct guestfs_xattr_list *r;
+      size_t i;
       HV *hv;
  PPCODE:
-      xattrs = guestfs_lxattrlist (g, path, names);
+      r = guestfs_lxattrlist (g, path, names);
       free (names);
-      if (xattrs == NULL)
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      EXTEND (SP, xattrs->len);
-      for (i = 0; i < xattrs->len; ++i) {
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
         hv = newHV ();
-        (void) hv_store (hv, "attrname", 8, newSVpv (xattrs->val[i].attrname, 0), 0);
-        (void) hv_store (hv, "attrval", 7, newSVpv (xattrs->val[i].attrval, xattrs->val[i].attrval_len), 0);
+        (void) hv_store (hv, "attrname", 8, newSVpv (r->val[i].attrname, 0), 0);
+        (void) hv_store (hv, "attrval", 7, newSVpvn (r->val[i].attrval, r->val[i].attrval_len), 0);
         PUSHs (sv_2mortal (newRV ((SV *) hv)));
       }
-      guestfs_free_xattr_list (xattrs);
+      guestfs_free_xattr_list (r);
 
 void
 readlinklist (g, path, names)
@@ -4004,20 +4707,20 @@ readlinklist (g, path, names)
       char *path;
       char **names;
 PREINIT:
-      char **links;
-      int i, n;
+      char **r;
+      size_t i, n;
  PPCODE:
-      links = guestfs_readlinklist (g, path, names);
+      r = guestfs_readlinklist (g, path, names);
       free (names);
-      if (links == NULL)
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      for (n = 0; links[n] != NULL; ++n) /**/;
+      for (n = 0; r[n] != NULL; ++n) /**/;
       EXTEND (SP, n);
       for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (links[i], 0)));
-        free (links[i]);
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
       }
-      free (links);
+      free (r);
 
 SV *
 pread (g, path, count, offset)
@@ -4026,14 +4729,14 @@ pread (g, path, count, offset)
       int count;
       int64_t offset;
 PREINIT:
-      char *content;
+      char *r;
       size_t size;
    CODE:
-      content = guestfs_pread (g, path, count, offset, &size);
-      if (content == NULL)
+      r = guestfs_pread (g, path, count, offset, &size);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (content, size);
-      free (content);
+      RETVAL = newSVpvn (r, size);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -4106,36 +4809,36 @@ part_list (g, device)
       guestfs_h *g;
       char *device;
 PREINIT:
-      struct guestfs_partition_list *partitions;
-      int i;
+      struct guestfs_partition_list *r;
+      size_t i;
       HV *hv;
  PPCODE:
-      partitions = guestfs_part_list (g, device);
-      if (partitions == NULL)
+      r = guestfs_part_list (g, device);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      EXTEND (SP, partitions->len);
-      for (i = 0; i < partitions->len; ++i) {
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
         hv = newHV ();
-        (void) hv_store (hv, "part_num", 8, newSVnv (partitions->val[i].part_num), 0);
-        (void) hv_store (hv, "part_start", 10, my_newSVull (partitions->val[i].part_start), 0);
-        (void) hv_store (hv, "part_end", 8, my_newSVull (partitions->val[i].part_end), 0);
-        (void) hv_store (hv, "part_size", 9, my_newSVull (partitions->val[i].part_size), 0);
+        (void) hv_store (hv, "part_num", 8, newSVnv (r->val[i].part_num), 0);
+        (void) hv_store (hv, "part_start", 10, my_newSVull (r->val[i].part_start), 0);
+        (void) hv_store (hv, "part_end", 8, my_newSVull (r->val[i].part_end), 0);
+        (void) hv_store (hv, "part_size", 9, my_newSVull (r->val[i].part_size), 0);
         PUSHs (sv_2mortal (newRV ((SV *) hv)));
       }
-      guestfs_free_partition_list (partitions);
+      guestfs_free_partition_list (r);
 
 SV *
 part_get_parttype (g, device)
       guestfs_h *g;
       char *device;
 PREINIT:
-      char *parttype;
+      char *r;
    CODE:
-      parttype = guestfs_part_get_parttype (g, device);
-      if (parttype == NULL)
+      r = guestfs_part_get_parttype (g, device);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (parttype, 0);
-      free (parttype);
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 
@@ -4181,12 +4884,12 @@ filesize (g, file)
       guestfs_h *g;
       char *file;
 PREINIT:
-      int64_t size;
+      int64_t r;
    CODE:
-      size = guestfs_filesize (g, file);
-      if (size == -1)
+      r = guestfs_filesize (g, file);
+      if (r == -1)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = my_newSVll (size);
+      RETVAL = my_newSVll (r);
  OUTPUT:
       RETVAL
 
@@ -4220,14 +4923,873 @@ initrd_cat (g, initrdpath, filename)
       char *initrdpath;
       char *filename;
 PREINIT:
-      char *content;
+      char *r;
       size_t size;
    CODE:
-      content = guestfs_initrd_cat (g, initrdpath, filename, &size);
-      if (content == NULL)
+      r = guestfs_initrd_cat (g, initrdpath, filename, &size);
+      if (r == NULL)
         croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (content, size);
-      free (content);
+      RETVAL = newSVpvn (r, size);
+      free (r);
  OUTPUT:
       RETVAL
+
+SV *
+pvuuid (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_pvuuid (g, device);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+vguuid (g, vgname)
+      guestfs_h *g;
+      char *vgname;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_vguuid (g, vgname);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+lvuuid (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_lvuuid (g, device);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+vgpvuuids (g, vgname)
+      guestfs_h *g;
+      char *vgname;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_vgpvuuids (g, vgname);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+void
+vglvuuids (g, vgname)
+      guestfs_h *g;
+      char *vgname;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_vglvuuids (g, vgname);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+void
+copy_size (g, src, dest, size)
+      guestfs_h *g;
+      char *src;
+      char *dest;
+      int64_t size;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_copy_size (g, src, dest, size);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+zero_device (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_zero_device (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+txz_in (g, tarball, directory)
+      guestfs_h *g;
+      char *tarball;
+      char *directory;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_txz_in (g, tarball, directory);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+txz_out (g, directory, tarball)
+      guestfs_h *g;
+      char *directory;
+      char *tarball;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_txz_out (g, directory, tarball);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+ntfsresize (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_ntfsresize (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+vgscan (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_vgscan (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+part_del (g, device, partnum)
+      guestfs_h *g;
+      char *device;
+      int partnum;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_part_del (g, device, partnum);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+part_get_bootable (g, device, partnum)
+      guestfs_h *g;
+      char *device;
+      int partnum;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_part_get_bootable (g, device, partnum);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+part_get_mbr_id (g, device, partnum)
+      guestfs_h *g;
+      char *device;
+      int partnum;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_part_get_mbr_id (g, device, partnum);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+void
+part_set_mbr_id (g, device, partnum, idbyte)
+      guestfs_h *g;
+      char *device;
+      int partnum;
+      int idbyte;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_part_set_mbr_id (g, device, partnum, idbyte);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+checksum_device (g, csumtype, device)
+      guestfs_h *g;
+      char *csumtype;
+      char *device;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_checksum_device (g, csumtype, device);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+lvresize_free (g, lv, percent)
+      guestfs_h *g;
+      char *lv;
+      int percent;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_lvresize_free (g, lv, percent);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+aug_clear (g, augpath)
+      guestfs_h *g;
+      char *augpath;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_aug_clear (g, augpath);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+get_umask (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_get_umask (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+void
+debug_upload (g, filename, tmpname, mode)
+      guestfs_h *g;
+      char *filename;
+      char *tmpname;
+      int mode;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_debug_upload (g, filename, tmpname, mode);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+base64_in (g, base64file, filename)
+      guestfs_h *g;
+      char *base64file;
+      char *filename;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_base64_in (g, base64file, filename);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+base64_out (g, filename, base64file)
+      guestfs_h *g;
+      char *filename;
+      char *base64file;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_base64_out (g, filename, base64file);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+checksums_out (g, csumtype, directory, sumsfile)
+      guestfs_h *g;
+      char *csumtype;
+      char *directory;
+      char *sumsfile;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_checksums_out (g, csumtype, directory, sumsfile);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+fill_pattern (g, pattern, len, path)
+      guestfs_h *g;
+      char *pattern;
+      int len;
+      char *path;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_fill_pattern (g, pattern, len, path);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+write (g, path, content)
+      guestfs_h *g;
+      char *path;
+      char *content;
+      size_t content_size = SvCUR (ST(2));
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_write (g, path, content, content_size);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+pwrite (g, path, content, offset)
+      guestfs_h *g;
+      char *path;
+      char *content;
+      size_t content_size = SvCUR (ST(2));
+      int64_t offset;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_pwrite (g, path, content, content_size, offset);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+void
+resize2fs_size (g, device, size)
+      guestfs_h *g;
+      char *device;
+      int64_t size;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_resize2fs_size (g, device, size);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+pvresize_size (g, device, size)
+      guestfs_h *g;
+      char *device;
+      int64_t size;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_pvresize_size (g, device, size);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+ntfsresize_size (g, device, size)
+      guestfs_h *g;
+      char *device;
+      int64_t size;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_ntfsresize_size (g, device, size);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+available_all_groups (g)
+      guestfs_h *g;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_available_all_groups (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+void
+fallocate64 (g, path, len)
+      guestfs_h *g;
+      char *path;
+      int64_t len;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_fallocate64 (g, path, len);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+vfs_label (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_vfs_label (g, device);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+vfs_uuid (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_vfs_uuid (g, device);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+lvm_set_filter (g, devices)
+      guestfs_h *g;
+      char **devices;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_lvm_set_filter (g, devices);
+      free (devices);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+lvm_clear_filter (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_lvm_clear_filter (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+luks_open (g, device, key, mapname)
+      guestfs_h *g;
+      char *device;
+      char *key;
+      char *mapname;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_luks_open (g, device, key, mapname);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+luks_open_ro (g, device, key, mapname)
+      guestfs_h *g;
+      char *device;
+      char *key;
+      char *mapname;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_luks_open_ro (g, device, key, mapname);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+luks_close (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_luks_close (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+luks_format (g, device, key, keyslot)
+      guestfs_h *g;
+      char *device;
+      char *key;
+      int keyslot;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_luks_format (g, device, key, keyslot);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+luks_format_cipher (g, device, key, keyslot, cipher)
+      guestfs_h *g;
+      char *device;
+      char *key;
+      int keyslot;
+      char *cipher;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_luks_format_cipher (g, device, key, keyslot, cipher);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+luks_add_key (g, device, key, newkey, keyslot)
+      guestfs_h *g;
+      char *device;
+      char *key;
+      char *newkey;
+      int keyslot;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_luks_add_key (g, device, key, newkey, keyslot);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+luks_kill_slot (g, device, key, keyslot)
+      guestfs_h *g;
+      char *device;
+      char *key;
+      int keyslot;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_luks_kill_slot (g, device, key, keyslot);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+is_lv (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_is_lv (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+findfs_uuid (g, uuid)
+      guestfs_h *g;
+      char *uuid;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_findfs_uuid (g, uuid);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+findfs_label (g, label)
+      guestfs_h *g;
+      char *label;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_findfs_label (g, label);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+is_chardev (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_is_chardev (g, path);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+is_blockdev (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_is_blockdev (g, path);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+is_fifo (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_is_fifo (g, path);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+is_symlink (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_is_symlink (g, path);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+is_socket (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_is_socket (g, path);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+part_to_dev (g, partition)
+      guestfs_h *g;
+      char *partition;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_part_to_dev (g, partition);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+upload_offset (g, filename, remotefilename, offset)
+      guestfs_h *g;
+      char *filename;
+      char *remotefilename;
+      int64_t offset;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_upload_offset (g, filename, remotefilename, offset);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+download_offset (g, remotefilename, filename, offset, size)
+      guestfs_h *g;
+      char *remotefilename;
+      char *filename;
+      int64_t offset;
+      int64_t size;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_download_offset (g, remotefilename, filename, offset, size);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+pwrite_device (g, device, content, offset)
+      guestfs_h *g;
+      char *device;
+      char *content;
+      size_t content_size = SvCUR (ST(2));
+      int64_t offset;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_pwrite_device (g, device, content, content_size, offset);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+pread_device (g, device, count, offset)
+      guestfs_h *g;
+      char *device;
+      int count;
+      int64_t offset;
+PREINIT:
+      char *r;
+      size_t size;
+   CODE:
+      r = guestfs_pread_device (g, device, count, offset, &size);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpvn (r, size);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+lvm_canonical_lv_name (g, lvname)
+      guestfs_h *g;
+      char *lvname;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_lvm_canonical_lv_name (g, lvname);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+mkfs_opts (g, fstype, device, ...)
+      guestfs_h *g;
+      char *fstype;
+      char *device;
+PREINIT:
+      int r;
+      struct guestfs_mkfs_opts_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_mkfs_opts_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (strcmp (this_arg, "blocksize") == 0) {
+          optargs_s.blocksize = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK;
+        }
+        else if (strcmp (this_arg, "features") == 0) {
+          optargs_s.features = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_MKFS_OPTS_FEATURES_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_mkfs_opts_argv (g, fstype, device, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+getxattr (g, path, name)
+      guestfs_h *g;
+      char *path;
+      char *name;
+PREINIT:
+      char *r;
+      size_t size;
+   CODE:
+      r = guestfs_getxattr (g, path, name, &size);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpvn (r, size);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+lgetxattr (g, path, name)
+      guestfs_h *g;
+      char *path;
+      char *name;
+PREINIT:
+      char *r;
+      size_t size;
+   CODE:
+      r = guestfs_lgetxattr (g, path, name, &size);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpvn (r, size);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+resize2fs_M (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_resize2fs_M (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+internal_autosync (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_internal_autosync (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
 

@@ -45,17 +45,10 @@ get-memsize
 -set-memsize 07777770000000000000
 -set-memsize ABC
 -set-memsize 09
--set-memsize 123K
 -set-memsize 123L
 EOF
 
-../fish/guestfish >> test.out 2>> test.err <<EOF
-alloc test1.img 10M
-run
-part-disk /dev/sda mbr
-mkfs ext2 /dev/sda1
-mount /dev/sda1 /
-
+../fish/guestfish -N fs -m /dev/sda1 >> test.out 2>> test.err <<EOF
 touch /test
 
 # truncate-size takes an Int64 argument
@@ -75,7 +68,6 @@ filesize /test
 # these should all provoke parse errors:
 -truncate-size /test ABC
 -truncate-size /test 09
--truncate-size /test 123K
 -truncate-size /test 123L
 EOF
 
@@ -85,9 +77,10 @@ EOF
 # number of truncate_size.
 mv test.err test.err~
 grep -E 'set[-_]memsize|truncate[-_]size' test.err~ |
+  grep -Ev 'libguestfs: trace:' |
   grep -Ev 'proc 200' > test.err
 rm test.err~
 
-diff -u test.out rhbz557655-expected.stdout
-diff -u test.err rhbz557655-expected.stderr
+diff -u rhbz557655-expected.stdout test.out
+diff -u rhbz557655-expected.stderr test.err
 rm test.out test.err test1.img

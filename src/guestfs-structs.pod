@@ -240,3 +240,28 @@
  void guestfs_free_partition (struct guestfs_free_partition *);
  void guestfs_free_partition_list (struct guestfs_free_partition_list *);
 
+=head2 guestfs_application
+
+ struct guestfs_application {
+   char *app_name;
+   char *app_display_name;
+   int32_t app_epoch;
+   char *app_version;
+   char *app_release;
+   char *app_install_path;
+   char *app_trans_path;
+   char *app_publisher;
+   char *app_url;
+   char *app_source_package;
+   char *app_summary;
+   char *app_description;
+ };
+ 
+ struct guestfs_application_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_application *val; /* Elements. */
+ };
+ 
+ void guestfs_free_application (struct guestfs_free_application *);
+ void guestfs_free_application_list (struct guestfs_free_application_list *);
+

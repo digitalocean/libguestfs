@@ -210,6 +210,26 @@ do_aug_set (const char *path, const char *val)
 }
 
 int
+do_aug_clear (const char *path)
+{
+#ifdef HAVE_AUGEAS
+  int r;
+
+  NEED_AUG (-1);
+
+  r = aug_set (aug, path, NULL);
+  if (r == -1) {
+    reply_with_error ("Augeas clear failed");
+    return -1;
+  }
+
+  return 0;
+#else
+  NOT_AVAILABLE (-1);
+#endif
+}
+
+int
 do_aug_insert (const char *path, const char *label, int before)
 {
 #ifdef HAVE_AUGEAS
@@ -348,7 +368,9 @@ do_aug_ls (const char *path)
 
   NEED_AUG (NULL);
 
-  ABS_PATH (path, return NULL);
+  /* Note that path might also be a previously defined variable
+   * (defined with aug_defvar).  See RHBZ#580016.
+   */
 
   len = strlen (path);
 
@@ -358,9 +380,8 @@ do_aug_ls (const char *path)
     return NULL;
   }
 
-  if (len == 1)
-    /* we know path must be "/" because of ABS_PATH above */
-    matches = do_aug_match ("/");
+  if (STREQ (path, "/"))
+    matches = do_aug_match ("/*");
   else {
     len += 3;			/* / * + terminating \0 */
     buf = malloc (len);

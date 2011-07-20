@@ -1,9 +1,9 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   src/generator.ml
+ *   generator/generator_*.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2010 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@
 package com.redhat.et.libguestfs;
 
 import java.util.HashMap;
+import java.util.Map;
 import com.redhat.et.libguestfs.LibGuestFSException;
 import com.redhat.et.libguestfs.PV;
 import com.redhat.et.libguestfs.VG;
@@ -83,17 +84,17 @@ public class GuestFS {
     close ();
   }
 
-public void test0 (String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout)
+  public void test0 (String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout, byte[] bufferin)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("test0: handle is closed");
-    _test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout);
+    _test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin);
   }
-  private native void _test0 (long g, String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout)
+  private native void _test0 (long g, String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout, byte[] bufferin)
     throws LibGuestFSException;
 
-public int test0rint (String val)
+  public int test0rint (String val)
     throws LibGuestFSException
   {
     if (g == 0)
@@ -103,7 +104,7 @@ public int test0rint (String val)
   private native int _test0rint (long g, String val)
     throws LibGuestFSException;
 
-public int test0rinterr ()
+  public int test0rinterr ()
     throws LibGuestFSException
   {
     if (g == 0)
@@ -113,7 +114,7 @@ public int test0rinterr ()
   private native int _test0rinterr (long g)
     throws LibGuestFSException;
 
-public long test0rint64 (String val)
+  public long test0rint64 (String val)
     throws LibGuestFSException
   {
     if (g == 0)
@@ -123,7 +124,7 @@ public long test0rint64 (String val)
   private native long _test0rint64 (long g, String val)
     throws LibGuestFSException;
 
-public long test0rint64err ()
+  public long test0rint64err ()
     throws LibGuestFSException
   {
     if (g == 0)
@@ -133,7 +134,7 @@ public long test0rint64err ()
   private native long _test0rint64err (long g)
     throws LibGuestFSException;
 
-public boolean test0rbool (String val)
+  public boolean test0rbool (String val)
     throws LibGuestFSException
   {
     if (g == 0)
@@ -143,7 +144,7 @@ public boolean test0rbool (String val)
   private native boolean _test0rbool (long g, String val)
     throws LibGuestFSException;
 
-public boolean test0rboolerr ()
+  public boolean test0rboolerr ()
     throws LibGuestFSException
   {
     if (g == 0)
@@ -153,7 +154,7 @@ public boolean test0rboolerr ()
   private native boolean _test0rboolerr (long g)
     throws LibGuestFSException;
 
-public String test0rconststring (String val)
+  public String test0rconststring (String val)
     throws LibGuestFSException
   {
     if (g == 0)
@@ -163,7 +164,7 @@ public String test0rconststring (String val)
   private native String _test0rconststring (long g, String val)
     throws LibGuestFSException;
 
-public String test0rconststringerr ()
+  public String test0rconststringerr ()
     throws LibGuestFSException
   {
     if (g == 0)
@@ -173,7 +174,7 @@ public String test0rconststringerr ()
   private native String _test0rconststringerr (long g)
     throws LibGuestFSException;
 
-public String test0rconstoptstring (String val)
+  public String test0rconstoptstring (String val)
     throws LibGuestFSException
   {
     if (g == 0)
@@ -183,7 +184,7 @@ public String test0rconstoptstring (String val)
   private native String _test0rconstoptstring (long g, String val)
     throws LibGuestFSException;
 
-public String test0rconstoptstringerr ()
+  public String test0rconstoptstringerr ()
     throws LibGuestFSException
   {
     if (g == 0)
@@ -193,7 +194,7 @@ public String test0rconstoptstringerr ()
   private native String _test0rconstoptstringerr (long g)
     throws LibGuestFSException;
 
-public String test0rstring (String val)
+  public String test0rstring (String val)
     throws LibGuestFSException
   {
     if (g == 0)
@@ -203,7 +204,7 @@ public String test0rstring (String val)
   private native String _test0rstring (long g, String val)
     throws LibGuestFSException;
 
-public String test0rstringerr ()
+  public String test0rstringerr ()
     throws LibGuestFSException
   {
     if (g == 0)
@@ -213,7 +214,7 @@ public String test0rstringerr ()
   private native String _test0rstringerr (long g)
     throws LibGuestFSException;
 
-public String[] test0rstringlist (String val)
+  public String[] test0rstringlist (String val)
     throws LibGuestFSException
   {
     if (g == 0)
@@ -223,7 +224,7 @@ public String[] test0rstringlist (String val)
   private native String[] _test0rstringlist (long g, String val)
     throws LibGuestFSException;
 
-public String[] test0rstringlisterr ()
+  public String[] test0rstringlisterr ()
     throws LibGuestFSException
   {
     if (g == 0)
@@ -233,7 +234,7 @@ public String[] test0rstringlisterr ()
   private native String[] _test0rstringlisterr (long g)
     throws LibGuestFSException;
 
-public PV test0rstruct (String val)
+  public PV test0rstruct (String val)
     throws LibGuestFSException
   {
     if (g == 0)
@@ -243,7 +244,7 @@ public PV test0rstruct (String val)
   private native PV _test0rstruct (long g, String val)
     throws LibGuestFSException;
 
-public PV test0rstructerr ()
+  public PV test0rstructerr ()
     throws LibGuestFSException
   {
     if (g == 0)
@@ -253,7 +254,7 @@ public PV test0rstructerr ()
   private native PV _test0rstructerr (long g)
     throws LibGuestFSException;
 
-public PV[] test0rstructlist (String val)
+  public PV[] test0rstructlist (String val)
     throws LibGuestFSException
   {
     if (g == 0)
@@ -263,7 +264,7 @@ public PV[] test0rstructlist (String val)
   private native PV[] _test0rstructlist (long g, String val)
     throws LibGuestFSException;
 
-public PV[] test0rstructlisterr ()
+  public PV[] test0rstructlisterr ()
     throws LibGuestFSException
   {
     if (g == 0)
@@ -273,24 +274,34 @@ public PV[] test0rstructlisterr ()
   private native PV[] _test0rstructlisterr (long g)
     throws LibGuestFSException;
 
-public HashMap<String,String> test0rhashtable (String val)
+  public Map<String,String> test0rhashtable (String val)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rhashtable: handle is closed");
-    return _test0rhashtable (g, val);
+    String[] r = _test0rhashtable (g, val);
+
+    HashMap rhash = new HashMap ();
+    for (int i = 0; i < r.length; i += 2)
+      rhash.put (r[i], r[i+1]);
+    return rhash;
   }
-  private native HashMap<String,String> _test0rhashtable (long g, String val)
+  private native String[] _test0rhashtable (long g, String val)
     throws LibGuestFSException;
 
-public HashMap<String,String> test0rhashtableerr ()
+  public Map<String,String> test0rhashtableerr ()
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rhashtableerr: handle is closed");
-    return _test0rhashtableerr (g);
+    String[] r = _test0rhashtableerr (g);
+
+    HashMap rhash = new HashMap ();
+    for (int i = 0; i < r.length; i += 2)
+      rhash.put (r[i], r[i+1]);
+    return rhash;
   }
-  private native HashMap<String,String> _test0rhashtableerr (long g)
+  private native String[] _test0rhashtableerr (long g)
     throws LibGuestFSException;
 
   /**
@@ -328,6 +339,13 @@ public HashMap<String,String> test0rhashtableerr ()
    * can just remove them, unless you want to retain
    * compatibility with older versions of the API.
    * <p>
+   * This function is deprecated. In new code, use the
+   * "launch" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public void wait_ready ()
@@ -361,34 +379,18 @@ public HashMap<String,String> test0rhashtableerr ()
   /**
    * add an image to examine or modify
    * <p>
-   * This function adds a virtual machine disk image
-   * "filename" to the guest. The first time you call this
-   * function, the disk appears as IDE disk 0 ("/dev/sda") in
-   * the guest, the second time as "/dev/sdb", and so on.
+   * This function is the equivalent of calling
+   * "g.add_drive_opts" with no optional parameters, so the
+   * disk is added writable, with the format being detected
+   * automatically.
    * <p>
-   * You don't necessarily need to be root when using
-   * libguestfs. However you obviously do need sufficient
-   * permissions to access the filename for whatever
-   * operations you want to perform (ie. read access if you
-   * just want to read the image or write access if you want
-   * to modify the image).
-   * <p>
-   * This is equivalent to the qemu parameter "-drive
-   * file=filename,cache=off,if=...".
-   * <p>
-   * "cache=off" is omitted in cases where it is not
-   * supported by the underlying filesystem.
-   * <p>
-   * "if=..." is set at compile time by the configuration
-   * option "./configure --with-drive-if=...". In the rare
-   * case where you might need to change this at run time,
-   * use "g.add_drive_with_if" or "g.add_drive_ro_with_if".
-   * <p>
-   * Note that this call checks for the existence of
-   * "filename". This stops you from specifying other types
-   * of drive which are supported by qemu such as "nbd:" and
-   * "http:" URLs. To specify those, use the general
-   * "g.config" call instead.
+   * Automatic detection of the format opens you up to a
+   * potential security hole when dealing with untrusted
+   * raw-format images. See CVE-2010-3851 and RHBZ#642934.
+   * Specifying the format closes this security hole.
+   * Therefore you should think about replacing calls to this
+   * function with calls to "g.add_drive_opts", and
+   * specifying the format.
    * <p>
    * @throws LibGuestFSException
    */
@@ -408,8 +410,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * This function adds a virtual CD-ROM disk image to the
    * guest.
    * <p>
-   * This is equivalent to the qemu parameter "-cdrom
-   * filename".
+   * This is equivalent to the qemu parameter *-cdrom
+   * filename*.
    * <p>
    * Notes:
    * <p>
@@ -423,6 +425,13 @@ public HashMap<String,String> test0rhashtableerr ()
    * this as an efficient way to transfer large files
    * into the guest), then you should probably use
    * "g.add_drive_ro" instead.
+   * <p>
+   * This function is deprecated. In new code, use the
+   * "add_drive_opts" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -439,29 +448,11 @@ public HashMap<String,String> test0rhashtableerr ()
   /**
    * add a drive in snapshot mode (read-only)
    * <p>
-   * This adds a drive in snapshot mode, making it
-   * effectively read-only.
-   * <p>
-   * Note that writes to the device are allowed, and will be
-   * seen for the duration of the guestfs handle, but they
-   * are written to a temporary file which is discarded as
-   * soon as the guestfs handle is closed. We don't currently
-   * have any method to enable changes to be committed,
-   * although qemu can support this.
-   * <p>
-   * This is equivalent to the qemu parameter "-drive
-   * file=filename,snapshot=on,if=...".
-   * <p>
-   * "if=..." is set at compile time by the configuration
-   * option "./configure --with-drive-if=...". In the rare
-   * case where you might need to change this at run time,
-   * use "g.add_drive_with_if" or "g.add_drive_ro_with_if".
-   * <p>
-   * Note that this call checks for the existence of
-   * "filename". This stops you from specifying other types
-   * of drive which are supported by qemu such as "nbd:" and
-   * "http:" URLs. To specify those, use the general
-   * "g.config" call instead.
+   * This function is the equivalent of calling
+   * "g.add_drive_opts" with the optional parameter
+   * "GUESTFS_ADD_DRIVE_OPTS_READONLY" set to 1, so the disk
+   * is added read-only, with the format being detected
+   * automatically.
    * <p>
    * @throws LibGuestFSException
    */
@@ -479,7 +470,7 @@ public HashMap<String,String> test0rhashtableerr ()
    * add qemu parameters
    * <p>
    * This can be used to add arbitrary qemu command line
-   * parameters of the form "-param value". Actually it's not
+   * parameters of the form *-param value*. Actually it's not
    * quite arbitrary - we prevent you from setting some
    * parameters which would interfere with parameters that we
    * use.
@@ -514,6 +505,15 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * Setting "qemu" to "NULL" restores the default qemu
    * binary.
+   * <p>
+   * Note that you should call this function as early as
+   * possible after creating the handle. This is because some
+   * pre-launch operations depend on testing qemu features
+   * (by running "qemu -help"). If the qemu binary changes,
+   * we don't retest features, and so you might see
+   * inconsistent results. Using the environment variable
+   * "LIBGUESTFS_QEMU" is safest of all since that picks the
+   * qemu binary at the same time as the handle is created.
    * <p>
    * @throws LibGuestFSException
    */
@@ -638,12 +638,12 @@ public HashMap<String,String> test0rhashtableerr ()
    * set autosync mode
    * <p>
    * If "autosync" is true, this enables autosync. Libguestfs
-   * will make a best effort attempt to run "g.umount_all"
-   * followed by "g.sync" when the handle is closed (also if
-   * the program exits without closing handles).
+   * will make a best effort attempt to make filesystems
+   * consistent and synchronized when the handle is closed
+   * (also if the program exits without closing handles).
    * <p>
-   * This is disabled by default (except in guestfish where
-   * it is enabled by default).
+   * This is enabled by default (since libguestfs 1.5.24,
+   * previously it was disabled by default).
    * <p>
    * @throws LibGuestFSException
    */
@@ -677,11 +677,14 @@ public HashMap<String,String> test0rhashtableerr ()
   /**
    * set verbose mode
    * <p>
-   * If "verbose" is true, this turns on verbose messages (to
-   * "stderr").
+   * If "verbose" is true, this turns on verbose messages.
    * <p>
    * Verbose messages are disabled unless the environment
    * variable "LIBGUESTFS_DEBUG" is defined and set to 1.
+   * <p>
+   * Verbose messages are normally sent to "stderr", unless
+   * you register a callback to send them somewhere else (see
+   * "g.set_event_callback").
    * <p>
    * @throws LibGuestFSException
    */
@@ -898,9 +901,9 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * This call was added in version 1.0.58. In previous
    * versions of libguestfs there was no way to get the
-   * version number. From C code you can use ELF weak linking
-   * tricks to find out if this symbol exists (if it doesn't,
-   * then it's an earlier version).
+   * version number. From C code you can use dynamic linker
+   * functions to find out if this symbol exists (if it
+   * doesn't, then it's an earlier version).
    * <p>
    * The call returns a structure with four elements. The
    * first three ("major", "minor" and "release") are numbers
@@ -911,8 +914,12 @@ public HashMap<String,String> test0rhashtableerr ()
    * To construct the original version string:
    * "$major.$minor.$release$extra"
    * <p>
+   * See also: "LIBGUESTFS VERSION NUMBERS" in guestfs(3).
+   * <p>
    * *Note:* Don't use this call to test for availability of
-   * features. Distro backports makes this unreliable. Use
+   * features. In enterprise distributions we backport
+   * features from later versions into earlier versions,
+   * making this an unreliable way to test for features. Use
    * "g.available" instead.
    * <p>
    * @throws LibGuestFSException
@@ -977,12 +984,8 @@ public HashMap<String,String> test0rhashtableerr ()
   /**
    * enable or disable command traces
    * <p>
-   * If the command trace flag is set to 1, then commands are
-   * printed on stdout before they are executed in a format
-   * which is very similar to the one used by guestfish. In
-   * other words, you can run a program with this enabled,
-   * and you will get out a script which you can feed to
-   * guestfish to perform the same set of actions.
+   * If the command trace flag is set to 1, then libguestfs
+   * calls, parameters and return values are traced.
    * <p>
    * If you want to trace C API calls into libguestfs (and
    * other libraries) then possibly a better way is to use
@@ -990,6 +993,10 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * Command traces are disabled unless the environment
    * variable "LIBGUESTFS_TRACE" is defined and set to 1.
+   * <p>
+   * Trace messages are normally sent to "stderr", unless you
+   * register a callback to send them somewhere else (see
+   * "g.set_event_callback").
    * <p>
    * @throws LibGuestFSException
    */
@@ -1119,6 +1126,13 @@ public HashMap<String,String> test0rhashtableerr ()
    * This is the same as "g.add_drive" but it allows you to
    * specify the QEMU interface emulation to use at run time.
    * <p>
+   * This function is deprecated. In new code, use the
+   * "add_drive_opts" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public void add_drive_with_if (String filename, String iface)
@@ -1138,6 +1152,13 @@ public HashMap<String,String> test0rhashtableerr ()
    * to specify the QEMU interface emulation to use at run
    * time.
    * <p>
+   * This function is deprecated. In new code, use the
+   * "add_drive_opts" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public void add_drive_ro_with_if (String filename, String iface)
@@ -1148,6 +1169,1212 @@ public HashMap<String,String> test0rhashtableerr ()
     _add_drive_ro_with_if (g, filename, iface);
   }
   private native void _add_drive_ro_with_if (long g, String filename, String iface)
+    throws LibGuestFSException;
+
+  /**
+   * detect the architecture of a binary file
+   * <p>
+   * This detects the architecture of the binary "filename",
+   * and returns it if known.
+   * <p>
+   * Currently defined architectures are:
+   * <p>
+   * "i386"
+   * This string is returned for all 32 bit i386, i486,
+   * i586, i686 binaries irrespective of the precise
+   * processor requirements of the binary.
+   * <p>
+   * "x86_64"
+   * 64 bit x86-64.
+   * <p>
+   * "sparc"
+   * 32 bit SPARC.
+   * <p>
+   * "sparc64"
+   * 64 bit SPARC V9 and above.
+   * <p>
+   * "ia64"
+   * Intel Itanium.
+   * <p>
+   * "ppc"
+   * 32 bit Power PC.
+   * <p>
+   * "ppc64"
+   * 64 bit Power PC.
+   * <p>
+   * Libguestfs may return other architecture strings in
+   * future.
+   * <p>
+   * The function works on at least the following types of
+   * files:
+   * <p>
+   * *   many types of Un*x and Linux binary
+   * <p>
+   * *   many types of Un*x and Linux shared library
+   * <p>
+   * *   Windows Win32 and Win64 binaries
+   * <p>
+   * *   Windows Win32 and Win64 DLLs
+   * <p>
+   * Win32 binaries and DLLs return "i386".
+   * <p>
+   * Win64 binaries and DLLs return "x86_64".
+   * <p>
+   * *   Linux kernel modules
+   * <p>
+   * *   Linux new-style initrd images
+   * <p>
+   * *   some non-x86 Linux vmlinuz kernels
+   * <p>
+   * What it can't do currently:
+   * <p>
+   * *   static libraries (libfoo.a)
+   * <p>
+   * *   Linux old-style initrd as compressed ext2 filesystem
+   * (RHEL 3)
+   * <p>
+   * *   x86 Linux vmlinuz kernels
+   * <p>
+   * x86 vmlinuz images (bzImage format) consist of a mix
+   * of 16-, 32- and compressed code, and are horribly
+   * hard to unpack. If you want to find the architecture
+   * of a kernel, use the architecture of the associated
+   * initrd or kernel module(s) instead.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String file_architecture (String filename)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("file_architecture: handle is closed");
+    return _file_architecture (g, filename);
+  }
+  private native String _file_architecture (long g, String filename)
+    throws LibGuestFSException;
+
+  /**
+   * inspect disk and return list of operating systems found
+   * <p>
+   * This function uses other libguestfs functions and
+   * certain heuristics to inspect the disk(s) (usually disks
+   * belonging to a virtual machine), looking for operating
+   * systems.
+   * <p>
+   * The list returned is empty if no operating systems were
+   * found.
+   * <p>
+   * If one operating system was found, then this returns a
+   * list with a single element, which is the name of the
+   * root filesystem of this operating system. It is also
+   * possible for this function to return a list containing
+   * more than one element, indicating a dual-boot or
+   * multi-boot virtual machine, with each element being the
+   * root filesystem of one of the operating systems.
+   * <p>
+   * You can pass the root string(s) returned to other
+   * "g.inspect_get_*" functions in order to query further
+   * information about each operating system, such as the
+   * name and version.
+   * <p>
+   * This function uses other libguestfs features such as
+   * "g.mount_ro" and "g.umount_all" in order to mount and
+   * unmount filesystems and look at the contents. This
+   * should be called with no disks currently mounted. The
+   * function may also use Augeas, so any existing Augeas
+   * handle will be closed.
+   * <p>
+   * This function cannot decrypt encrypted disks. The caller
+   * must do that first (supplying the necessary keys) if the
+   * disk is encrypted.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * See also "g.list_filesystems".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] inspect_os ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_os: handle is closed");
+    return _inspect_os (g);
+  }
+  private native String[] _inspect_os (long g)
+    throws LibGuestFSException;
+
+  /**
+   * get type of inspected operating system
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * This returns the type of the inspected operating system.
+   * Currently defined types are:
+   * <p>
+   * "linux"
+   * Any Linux-based operating system.
+   * <p>
+   * "windows"
+   * Any Microsoft Windows operating system.
+   * <p>
+   * "freebsd"
+   * FreeBSD.
+   * <p>
+   * "unknown"
+   * The operating system type could not be determined.
+   * <p>
+   * Future versions of libguestfs may return other strings
+   * here. The caller should be prepared to handle any
+   * string.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String inspect_get_type (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_type: handle is closed");
+    return _inspect_get_type (g, root);
+  }
+  private native String _inspect_get_type (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get architecture of inspected operating system
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * This returns the architecture of the inspected operating
+   * system. The possible return values are listed under
+   * "g.file_architecture".
+   * <p>
+   * If the architecture could not be determined, then the
+   * string "unknown" is returned.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String inspect_get_arch (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_arch: handle is closed");
+    return _inspect_get_arch (g, root);
+  }
+  private native String _inspect_get_arch (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get distro of inspected operating system
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * This returns the distro (distribution) of the inspected
+   * operating system.
+   * <p>
+   * Currently defined distros are:
+   * <p>
+   * "archlinux"
+   * Arch Linux.
+   * <p>
+   * "centos"
+   * CentOS.
+   * <p>
+   * "debian"
+   * Debian.
+   * <p>
+   * "fedora"
+   * Fedora.
+   * <p>
+   * "gentoo"
+   * Gentoo.
+   * <p>
+   * "linuxmint"
+   * Linux Mint.
+   * <p>
+   * "mandriva"
+   * Mandriva.
+   * <p>
+   * "meego"
+   * MeeGo.
+   * <p>
+   * "pardus"
+   * Pardus.
+   * <p>
+   * "redhat-based"
+   * Some Red Hat-derived distro.
+   * <p>
+   * "rhel"
+   * Red Hat Enterprise Linux.
+   * <p>
+   * "scientificlinux"
+   * Scientific Linux.
+   * <p>
+   * "slackware"
+   * Slackware.
+   * <p>
+   * "ubuntu"
+   * Ubuntu.
+   * <p>
+   * "unknown"
+   * The distro could not be determined.
+   * <p>
+   * "windows"
+   * Windows does not have distributions. This string is
+   * returned if the OS type is Windows.
+   * <p>
+   * Future versions of libguestfs may return other strings
+   * here. The caller should be prepared to handle any
+   * string.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String inspect_get_distro (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_distro: handle is closed");
+    return _inspect_get_distro (g, root);
+  }
+  private native String _inspect_get_distro (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get major version of inspected operating system
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * This returns the major version number of the inspected
+   * operating system.
+   * <p>
+   * Windows uses a consistent versioning scheme which is
+   * *not* reflected in the popular public names used by the
+   * operating system. Notably the operating system known as
+   * "Windows 7" is really version 6.1 (ie. major = 6, minor
+   * = 1). You can find out the real versions corresponding
+   * to releases of Windows by consulting Wikipedia or MSDN.
+   * <p>
+   * If the version could not be determined, then 0 is
+   * returned.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public int inspect_get_major_version (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_major_version: handle is closed");
+    return _inspect_get_major_version (g, root);
+  }
+  private native int _inspect_get_major_version (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get minor version of inspected operating system
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * This returns the minor version number of the inspected
+   * operating system.
+   * <p>
+   * If the version could not be determined, then 0 is
+   * returned.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * See also "g.inspect_get_major_version".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public int inspect_get_minor_version (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_minor_version: handle is closed");
+    return _inspect_get_minor_version (g, root);
+  }
+  private native int _inspect_get_minor_version (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get product name of inspected operating system
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * This returns the product name of the inspected operating
+   * system. The product name is generally some freeform
+   * string which can be displayed to the user, but should
+   * not be parsed by programs.
+   * <p>
+   * If the product name could not be determined, then the
+   * string "unknown" is returned.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String inspect_get_product_name (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_product_name: handle is closed");
+    return _inspect_get_product_name (g, root);
+  }
+  private native String _inspect_get_product_name (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get mountpoints of inspected operating system
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * This returns a hash of where we think the filesystems
+   * associated with this operating system should be mounted.
+   * Callers should note that this is at best an educated
+   * guess made by reading configuration files such as
+   * "/etc/fstab". *In particular note* that this may return
+   * filesystems which are non-existent or not mountable and
+   * callers should be prepared to handle or ignore failures
+   * if they try to mount them.
+   * <p>
+   * Each element in the returned hashtable has a key which
+   * is the path of the mountpoint (eg. "/boot") and a value
+   * which is the filesystem that would be mounted there (eg.
+   * "/dev/sda1").
+   * <p>
+   * Non-mounted devices such as swap devices are *not*
+   * returned in this list.
+   * <p>
+   * For operating systems like Windows which still use drive
+   * letters, this call will only return an entry for the
+   * first drive "mounted on" "/". For information about the
+   * mapping of drive letters to partitions, see
+   * "g.inspect_get_drive_mappings".
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * See also "g.inspect_get_filesystems".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public Map<String,String> inspect_get_mountpoints (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_mountpoints: handle is closed");
+    String[] r = _inspect_get_mountpoints (g, root);
+
+    HashMap rhash = new HashMap ();
+    for (int i = 0; i < r.length; i += 2)
+      rhash.put (r[i], r[i+1]);
+    return rhash;
+  }
+  private native String[] _inspect_get_mountpoints (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get filesystems associated with inspected operating system
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * This returns a list of all the filesystems that we think
+   * are associated with this operating system. This includes
+   * the root filesystem, other ordinary filesystems, and
+   * non-mounted devices like swap partitions.
+   * <p>
+   * In the case of a multi-boot virtual machine, it is
+   * possible for a filesystem to be shared between operating
+   * systems.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * See also "g.inspect_get_mountpoints".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] inspect_get_filesystems (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_filesystems: handle is closed");
+    return _inspect_get_filesystems (g, root);
+  }
+  private native String[] _inspect_get_filesystems (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * set enable network flag
+   * <p>
+   * If "network" is true, then the network is enabled in the
+   * libguestfs appliance. The default is false.
+   * <p>
+   * This affects whether commands are able to access the
+   * network (see "RUNNING COMMANDS" in guestfs(3)).
+   * <p>
+   * You must call this before calling "g.launch", otherwise
+   * it has no effect.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_network (boolean network)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_network: handle is closed");
+    _set_network (g, network);
+  }
+  private native void _set_network (long g, boolean network)
+    throws LibGuestFSException;
+
+  /**
+   * get enable network flag
+   * <p>
+   * This returns the enable network flag.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean get_network ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_network: handle is closed");
+    return _get_network (g);
+  }
+  private native boolean _get_network (long g)
+    throws LibGuestFSException;
+
+  /**
+   * list filesystems
+   * <p>
+   * This inspection command looks for filesystems on
+   * partitions, block devices and logical volumes, returning
+   * a list of devices containing filesystems and their type.
+   * <p>
+   * The return value is a hash, where the keys are the
+   * devices containing filesystems, and the values are the
+   * filesystem types. For example:
+   * <p>
+   * "/dev/sda1" => "ntfs"
+   * "/dev/sda2" => "ext2"
+   * "/dev/vg_guest/lv_root" => "ext4"
+   * "/dev/vg_guest/lv_swap" => "swap"
+   * <p>
+   * The value can have the special value "unknown", meaning
+   * the content of the device is undetermined or empty.
+   * "swap" means a Linux swap partition.
+   * <p>
+   * This command runs other libguestfs commands, which might
+   * include "g.mount" and "g.umount", and therefore you
+   * should use this soon after launch and only when nothing
+   * is mounted.
+   * <p>
+   * Not all of the filesystems returned will be mountable.
+   * In particular, swap partitions are returned in the list.
+   * Also this command does not check that each filesystem
+   * found is valid and mountable, and some filesystems might
+   * be mountable but require special options. Filesystems
+   * may not all belong to a single logical operating system
+   * (use "g.inspect_os" to look for OSes).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public Map<String,String> list_filesystems ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("list_filesystems: handle is closed");
+    String[] r = _list_filesystems (g);
+
+    HashMap rhash = new HashMap ();
+    for (int i = 0; i < r.length; i += 2)
+      rhash.put (r[i], r[i+1]);
+    return rhash;
+  }
+  private native String[] _list_filesystems (long g)
+    throws LibGuestFSException;
+
+  /**
+   * add an image to examine or modify
+   * <p>
+   * This function adds a virtual machine disk image
+   * "filename" to libguestfs. The first time you call this
+   * function, the disk appears as "/dev/sda", the second
+   * time as "/dev/sdb", and so on.
+   * <p>
+   * You don't necessarily need to be root when using
+   * libguestfs. However you obviously do need sufficient
+   * permissions to access the filename for whatever
+   * operations you want to perform (ie. read access if you
+   * just want to read the image or write access if you want
+   * to modify the image).
+   * <p>
+   * This call checks that "filename" exists.
+   * <p>
+   * The optional arguments are:
+   * <p>
+   * "readonly"
+   * If true then the image is treated as read-only.
+   * Writes are still allowed, but they are stored in a
+   * temporary snapshot overlay which is discarded at the
+   * end. The disk that you add is not modified.
+   * <p>
+   * "format"
+   * This forces the image format. If you omit this (or
+   * use "g.add_drive" or "g.add_drive_ro") then the
+   * format is automatically detected. Possible formats
+   * include "raw" and "qcow2".
+   * <p>
+   * Automatic detection of the format opens you up to a
+   * potential security hole when dealing with untrusted
+   * raw-format images. See CVE-2010-3851 and
+   * RHBZ#642934. Specifying the format closes this
+   * security hole.
+   * <p>
+   * "iface"
+   * This rarely-used option lets you emulate the
+   * behaviour of the deprecated "g.add_drive_with_if"
+   * call (q.v.)
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void add_drive_opts (String filename, HashMap optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("add_drive_opts: handle is closed");
+    _add_drive_opts (g, filename, optargs);
+  }
+  private native void _add_drive_opts (long g, String filename, HashMap optargs)
+    throws LibGuestFSException;
+
+  /**
+   * get Windows systemroot of inspected operating system
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * This returns the Windows systemroot of the inspected
+   * guest. The systemroot is a directory path such as
+   * "/WINDOWS".
+   * <p>
+   * This call assumes that the guest is Windows and that the
+   * systemroot could be determined by inspection. If this is
+   * not the case then an error is returned.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String inspect_get_windows_systemroot (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_windows_systemroot: handle is closed");
+    return _inspect_get_windows_systemroot (g, root);
+  }
+  private native String _inspect_get_windows_systemroot (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * return list of operating systems found by last inspection
+   * <p>
+   * This function is a convenient way to get the list of
+   * root devices, as returned from a previous call to
+   * "g.inspect_os", but without redoing the whole inspection
+   * process.
+   * <p>
+   * This returns an empty list if either no root devices
+   * were found or the caller has not called "g.inspect_os".
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] inspect_get_roots ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_roots: handle is closed");
+    return _inspect_get_roots (g);
+  }
+  private native String[] _inspect_get_roots (long g)
+    throws LibGuestFSException;
+
+  public String[] debug_cmdline ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("debug_cmdline: handle is closed");
+    return _debug_cmdline (g);
+  }
+  private native String[] _debug_cmdline (long g)
+    throws LibGuestFSException;
+
+  /**
+   * add the disk(s) from a named libvirt domain
+   * <p>
+   * This function adds the disk(s) attached to the named
+   * libvirt domain "dom". It works by connecting to libvirt,
+   * requesting the domain and domain XML from libvirt,
+   * parsing it for disks, and calling "g.add_drive_opts" on
+   * each one.
+   * <p>
+   * The number of disks added is returned. This operation is
+   * atomic: if an error is returned, then no disks are
+   * added.
+   * <p>
+   * This function does some minimal checks to make sure the
+   * libvirt domain is not running (unless "readonly" is
+   * true). In a future version we will try to acquire the
+   * libvirt lock on each disk.
+   * <p>
+   * Disks must be accessible locally. This often means that
+   * adding disks from a remote libvirt connection (see
+   * <http://libvirt.org/remote.html>) will fail unless those
+   * disks are accessible via the same device path locally
+   * too.
+   * <p>
+   * The optional "libvirturi" parameter sets the libvirt URI
+   * (see <http://libvirt.org/uri.html>). If this is not set
+   * then we connect to the default libvirt URI (or one set
+   * through an environment variable, see the libvirt
+   * documentation for full details).
+   * <p>
+   * The optional "live" flag controls whether this call will
+   * try to connect to a running virtual machine "guestfsd"
+   * process if it sees a suitable <channel> element in the
+   * libvirt XML definition. The default (if the flag is
+   * omitted) is never to try. See "ATTACHING TO RUNNING
+   * DAEMONS" in guestfs(3) for more information.
+   * <p>
+   * The other optional parameters are passed directly
+   * through to "g.add_drive_opts".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public int add_domain (String dom, HashMap optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("add_domain: handle is closed");
+    return _add_domain (g, dom, optargs);
+  }
+  private native int _add_domain (long g, String dom, HashMap optargs)
+    throws LibGuestFSException;
+
+  /**
+   * get package format used by the operating system
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * This function and "g.inspect_get_package_management"
+   * return the package format and package management tool
+   * used by the inspected operating system. For example for
+   * Fedora these functions would return "rpm" (package
+   * format) and "yum" (package management).
+   * <p>
+   * This returns the string "unknown" if we could not
+   * determine the package format *or* if the operating
+   * system does not have a real packaging system (eg.
+   * Windows).
+   * <p>
+   * Possible strings include: "rpm", "deb", "ebuild",
+   * "pisi", "pacman". Future versions of libguestfs may
+   * return other strings.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String inspect_get_package_format (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_package_format: handle is closed");
+    return _inspect_get_package_format (g, root);
+  }
+  private native String _inspect_get_package_format (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get package management tool used by the operating system
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * "g.inspect_get_package_format" and this function return
+   * the package format and package management tool used by
+   * the inspected operating system. For example for Fedora
+   * these functions would return "rpm" (package format) and
+   * "yum" (package management).
+   * <p>
+   * This returns the string "unknown" if we could not
+   * determine the package management tool *or* if the
+   * operating system does not have a real packaging system
+   * (eg. Windows).
+   * <p>
+   * Possible strings include: "yum", "up2date", "apt" (for
+   * all Debian derivatives), "portage", "pisi", "pacman",
+   * "urpmi". Future versions of libguestfs may return other
+   * strings.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String inspect_get_package_management (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_package_management: handle is closed");
+    return _inspect_get_package_management (g, root);
+  }
+  private native String _inspect_get_package_management (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get list of applications installed in the operating system
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * Return the list of applications installed in the
+   * operating system.
+   * <p>
+   * *Note:* This call works differently from other parts of
+   * the inspection API. You have to call "g.inspect_os",
+   * then "g.inspect_get_mountpoints", then mount up the
+   * disks, before calling this. Listing applications is a
+   * significantly more difficult operation which requires
+   * access to the full filesystem. Also note that unlike the
+   * other "g.inspect_get_*" calls which are just returning
+   * data cached in the libguestfs handle, this call actually
+   * reads parts of the mounted filesystems during the call.
+   * <p>
+   * This returns an empty list if the inspection code was
+   * not able to determine the list of applications.
+   * <p>
+   * The application structure contains the following fields:
+   * <p>
+   * "app_name"
+   * The name of the application. For Red Hat-derived and
+   * Debian-derived Linux guests, this is the package
+   * name.
+   * <p>
+   * "app_display_name"
+   * The display name of the application, sometimes
+   * localized to the install language of the guest
+   * operating system.
+   * <p>
+   * If unavailable this is returned as an empty string
+   * "". Callers needing to display something can use
+   * "app_name" instead.
+   * <p>
+   * "app_epoch"
+   * For package managers which use epochs, this contains
+   * the epoch of the package (an integer). If
+   * unavailable, this is returned as 0.
+   * <p>
+   * "app_version"
+   * The version string of the application or package. If
+   * unavailable this is returned as an empty string "".
+   * <p>
+   * "app_release"
+   * The release string of the application or package,
+   * for package managers that use this. If unavailable
+   * this is returned as an empty string "".
+   * <p>
+   * "app_install_path"
+   * The installation path of the application (on
+   * operating systems such as Windows which use
+   * installation paths). This path is in the format used
+   * by the guest operating system, it is not a
+   * libguestfs path.
+   * <p>
+   * If unavailable this is returned as an empty string
+   * "".
+   * <p>
+   * "app_trans_path"
+   * The install path translated into a libguestfs path.
+   * If unavailable this is returned as an empty string
+   * "".
+   * <p>
+   * "app_publisher"
+   * The name of the publisher of the application, for
+   * package managers that use this. If unavailable this
+   * is returned as an empty string "".
+   * <p>
+   * "app_url"
+   * The URL (eg. upstream URL) of the application. If
+   * unavailable this is returned as an empty string "".
+   * <p>
+   * "app_source_package"
+   * For packaging systems which support this, the name
+   * of the source package. If unavailable this is
+   * returned as an empty string "".
+   * <p>
+   * "app_summary"
+   * A short (usually one line) description of the
+   * application or package. If unavailable this is
+   * returned as an empty string "".
+   * <p>
+   * "app_description"
+   * A longer description of the application or package.
+   * If unavailable this is returned as an empty string
+   * "".
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public Application[] inspect_list_applications (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_list_applications: handle is closed");
+    return _inspect_list_applications (g, root);
+  }
+  private native Application[] _inspect_list_applications (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get hostname of the operating system
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * This function returns the hostname of the operating
+   * system as found by inspection of the guest's
+   * configuration files.
+   * <p>
+   * If the hostname could not be determined, then the string
+   * "unknown" is returned.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String inspect_get_hostname (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_hostname: handle is closed");
+    return _inspect_get_hostname (g, root);
+  }
+  private native String _inspect_get_hostname (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get format of inspected operating system
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * This returns the format of the inspected operating
+   * system. You can use it to detect install images, live
+   * CDs and similar.
+   * <p>
+   * Currently defined formats are:
+   * <p>
+   * "installed"
+   * This is an installed operating system.
+   * <p>
+   * "installer"
+   * The disk image being inspected is not an installed
+   * operating system, but a *bootable* install disk,
+   * live CD, or similar.
+   * <p>
+   * "unknown"
+   * The format of this disk image is not known.
+   * <p>
+   * Future versions of libguestfs may return other strings
+   * here. The caller should be prepared to handle any
+   * string.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String inspect_get_format (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_format: handle is closed");
+    return _inspect_get_format (g, root);
+  }
+  private native String _inspect_get_format (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get live flag for install disk
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * If "g.inspect_get_format" returns "installer" (this is
+   * an install disk), then this returns true if a live image
+   * was detected on the disk.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean inspect_is_live (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_is_live: handle is closed");
+    return _inspect_is_live (g, root);
+  }
+  private native boolean _inspect_is_live (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get netinst (network installer) flag for install disk
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * If "g.inspect_get_format" returns "installer" (this is
+   * an install disk), then this returns true if the disk is
+   * a network installer, ie. not a self-contained install CD
+   * but one which is likely to require network access to
+   * complete the install.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean inspect_is_netinst (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_is_netinst: handle is closed");
+    return _inspect_is_netinst (g, root);
+  }
+  private native boolean _inspect_is_netinst (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get multipart flag for install disk
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * If "g.inspect_get_format" returns "installer" (this is
+   * an install disk), then this returns true if the disk is
+   * part of a set.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean inspect_is_multipart (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_is_multipart: handle is closed");
+    return _inspect_is_multipart (g, root);
+  }
+  private native boolean _inspect_is_multipart (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * set the attach method
+   * <p>
+   * Set the method that libguestfs uses to connect to the
+   * back end guestfsd daemon. Possible methods are:
+   * <p>
+   * "appliance"
+   * Launch an appliance and connect to it. This is the
+   * ordinary method and the default.
+   * <p>
+   * "unix:*path*"
+   * Connect to the Unix domain socket *path*.
+   * <p>
+   * This method lets you connect to an existing daemon
+   * or (using virtio-serial) to a live guest. For more
+   * information, see "ATTACHING TO RUNNING DAEMONS" in
+   * guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_attach_method (String attachmethod)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_attach_method: handle is closed");
+    _set_attach_method (g, attachmethod);
+  }
+  private native void _set_attach_method (long g, String attachmethod)
+    throws LibGuestFSException;
+
+  /**
+   * get the attach method
+   * <p>
+   * Return the current attach method. See
+   * "g.set_attach_method".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String get_attach_method ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_attach_method: handle is closed");
+    return _get_attach_method (g);
+  }
+  private native String _get_attach_method (long g)
+    throws LibGuestFSException;
+
+  /**
+   * get product variant of inspected operating system
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * This returns the product variant of the inspected
+   * operating system.
+   * <p>
+   * For Windows guests, this returns the contents of the
+   * Registry key "HKLM\Software\Microsoft\Windows
+   * NT\CurrentVersion" "InstallationType" which is usually a
+   * string such as "Client" or "Server" (other values are
+   * possible). This can be used to distinguish consumer and
+   * enterprise versions of Windows that have the same
+   * version number (for example, Windows 7 and Windows 2008
+   * Server are both version 6.1, but the former is "Client"
+   * and the latter is "Server").
+   * <p>
+   * For enterprise Linux guests, in future we intend this to
+   * return the product variant such as "Desktop", "Server"
+   * and so on. But this is not implemented at present.
+   * <p>
+   * If the product variant could not be determined, then the
+   * string "unknown" is returned.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * See also "g.inspect_get_product_name",
+   * "g.inspect_get_major_version".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String inspect_get_product_variant (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_product_variant: handle is closed");
+    return _inspect_get_product_variant (g, root);
+  }
+  private native String _inspect_get_product_variant (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get Windows CurrentControlSet of inspected operating system
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * This returns the Windows CurrentControlSet of the
+   * inspected guest. The CurrentControlSet is a registry key
+   * name such as "ControlSet001".
+   * <p>
+   * This call assumes that the guest is Windows and that the
+   * Registry could be examined by inspection. If this is not
+   * the case then an error is returned.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String inspect_get_windows_current_control_set (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_windows_current_control_set: handle is closed");
+    return _inspect_get_windows_current_control_set (g, root);
+  }
+  private native String _inspect_get_windows_current_control_set (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get drive letter mappings
+   * <p>
+   * This function should only be called with a root device
+   * string as returned by "g.inspect_os".
+   * <p>
+   * This call is useful for Windows which uses a primitive
+   * system of assigning drive letters (like "C:") to
+   * partitions. This inspection API examines the Windows
+   * Registry to find out how disks/partitions are mapped to
+   * drive letters, and returns a hash table as in the
+   * example below:
+   * <p>
+   * C      =>     /dev/vda2
+   * E      =>     /dev/vdb1
+   * F      =>     /dev/vdc1
+   * <p>
+   * Note that keys are drive letters. For Windows, the key
+   * is case insensitive and just contains the drive letter,
+   * without the customary colon separator character.
+   * <p>
+   * In future we may support other operating systems that
+   * also used drive letters, but the keys for those might
+   * not be case insensitive and might be longer than 1
+   * character. For example in OS-9, hard drives were named
+   * "h0", "h1" etc.
+   * <p>
+   * For Windows guests, currently only hard drive mappings
+   * are returned. Removable disks (eg. DVD-ROMs) are
+   * ignored.
+   * <p>
+   * For guests that do not use drive mappings, or if the
+   * drive mappings could not be determined, this returns an
+   * empty hash table.
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * See also "g.inspect_get_mountpoints",
+   * "g.inspect_get_filesystems".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public Map<String,String> inspect_get_drive_mappings (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_drive_mappings: handle is closed");
+    String[] r = _inspect_get_drive_mappings (g, root);
+
+    HashMap rhash = new HashMap ();
+    for (int i = 0; i < r.length; i += 2)
+      rhash.put (r[i], r[i+1]);
+    return rhash;
+  }
+  private native String[] _inspect_get_drive_mappings (long g, String root)
     throws LibGuestFSException;
 
   /**
@@ -1168,8 +2395,22 @@ public HashMap<String,String> test0rhashtableerr ()
    * The mounted filesystem is writable, if we have
    * sufficient permissions on the underlying device.
    * <p>
-   * The filesystem options "sync" and "noatime" are set with
-   * this call, in order to improve reliability.
+   * Important note: When you use this call, the filesystem
+   * options "sync" and "noatime" are set implicitly. This
+   * was originally done because we thought it would improve
+   * reliability, but it turns out that *-o sync* has a very
+   * large negative performance impact and negligible effect
+   * on reliability. Therefore we recommend that you avoid
+   * using "g.mount" in any code that needs performance, and
+   * instead use "g.mount_options" (use an empty string for
+   * the first parameter if you don't want any options).
+   * <p>
+   * This function is deprecated. In new code, use the
+   * "mount_options" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -1211,6 +2452,10 @@ public HashMap<String,String> test0rhashtableerr ()
    * update the timestamps on a file, or, if the file does
    * not exist, to create a new zero-length file.
    * <p>
+   * This command only works on regular files, and will fail
+   * on other file types such as directories, symbolic links,
+   * block special etc.
+   * <p>
    * @throws LibGuestFSException
    */
   public void touch (String path)
@@ -1235,8 +2480,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * have a more complex interface.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -1299,7 +2544,10 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * List all the block devices.
    * <p>
-   * The full block device names are returned, eg. "/dev/sda"
+   * The full block device names are returned, eg.
+   * "/dev/sda".
+   * <p>
+   * See also "g.list_filesystems".
    * <p>
    * @throws LibGuestFSException
    */
@@ -1323,6 +2571,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * This does not return logical volumes. For that you will
    * need to call "g.lvs".
+   * <p>
+   * See also "g.list_filesystems".
    * <p>
    * @throws LibGuestFSException
    */
@@ -1391,7 +2641,7 @@ public HashMap<String,String> test0rhashtableerr ()
    * This returns a list of the logical volume device names
    * (eg. "/dev/VolGroup00/LogVol00").
    * <p>
-   * See also "g.lvs_full".
+   * See also "g.lvs_full", "g.list_filesystems".
    * <p>
    * @throws LibGuestFSException
    */
@@ -1633,7 +2883,12 @@ public HashMap<String,String> test0rhashtableerr ()
   /**
    * set Augeas path to value
    * <p>
-   * Set the value associated with "path" to "value".
+   * Set the value associated with "path" to "val".
+   * <p>
+   * In the Augeas API, it is possible to clear a node by
+   * setting the value to NULL. Due to an oversight in the
+   * libguestfs API you cannot do that with this call.
+   * Instead you must use the "g.aug_clear" call.
    * <p>
    * @throws LibGuestFSException
    */
@@ -1885,6 +3140,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * by default would be decimal, unless you prefix it with 0
    * to get octal, ie. use 0700 not 700.
    * <p>
+   * The mode actually set is affected by the umask.
+   * <p>
    * @throws LibGuestFSException
    */
   public void chmod (int mode, String path)
@@ -1940,11 +3197,11 @@ public HashMap<String,String> test0rhashtableerr ()
     throws LibGuestFSException;
 
   /**
-   * test if file exists
+   * test if a regular file
    * <p>
-   * This returns "true" if and only if there is a file with
-   * the given "path" name. Note that it returns false for
-   * other objects like directories.
+   * This returns "true" if and only if there is a regular
+   * file with the given "path" name. Note that it returns
+   * false for other objects like directories.
    * <p>
    * See also "g.stat".
    * <p>
@@ -1961,7 +3218,7 @@ public HashMap<String,String> test0rhashtableerr ()
     throws LibGuestFSException;
 
   /**
-   * test if file exists
+   * test if a directory
    * <p>
    * This returns "true" if and only if there is a directory
    * with the given "path" name. Note that it returns false
@@ -2019,10 +3276,10 @@ public HashMap<String,String> test0rhashtableerr ()
     throws LibGuestFSException;
 
   /**
-   * create an LVM volume group
+   * create an LVM logical volume
    * <p>
-   * This creates an LVM volume group called "logvol" on the
-   * volume group "volgroup", with "size" megabytes.
+   * This creates an LVM logical volume called "logvol" on
+   * the volume group "volgroup", with "size" megabytes.
    * <p>
    * @throws LibGuestFSException
    */
@@ -2086,6 +3343,13 @@ public HashMap<String,String> test0rhashtableerr ()
    * This command is dangerous. Without careful use you can
    * easily destroy all your data.
    * <p>
+   * This function is deprecated. In new code, use the
+   * "part_add" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public void sfdisk (String device, int cyls, int heads, int sectors, String[] lines)
@@ -2111,12 +3375,18 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * *NB.* Owing to a bug, writing content containing ASCII
    * NUL characters does *not* work, even if the length is
-   * specified. We hope to resolve this bug in a future
-   * version. In the meantime use "g.upload".
+   * specified.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
+   * <p>
+   * This function is deprecated. In new code, use the
+   * "write" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -2216,16 +3486,22 @@ public HashMap<String,String> test0rhashtableerr ()
    * determine file type
    * <p>
    * This call uses the standard file(1) command to determine
-   * the type or contents of the file. This also works on
-   * devices, for example to find out whether a partition
-   * contains a filesystem.
+   * the type or contents of the file.
    * <p>
    * This call will also transparently look inside various
    * types of compressed file.
    * <p>
-   * The exact command which runs is "file -zbsL path". Note
-   * in particular that the filename is not prepended to the
-   * output (the "-b" option).
+   * The exact command which runs is "file -zb path". Note in
+   * particular that the filename is not prepended to the
+   * output (the *-b* option).
+   * <p>
+   * The output depends on the output of the underlying
+   * file(1) command and it can change in future in ways
+   * beyond our control. In other words, the output is not
+   * guaranteed by the ABI.
+   * <p>
+   * See also: file(1), "g.vfs_type", "g.lstat", "g.is_file",
+   * "g.is_blockdev" (etc).
    * <p>
    * @throws LibGuestFSException
    */
@@ -2273,8 +3549,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * the right locations.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -2297,8 +3573,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * See also: "g.sh_lines"
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -2390,14 +3666,19 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * @throws LibGuestFSException
    */
-  public HashMap<String,String> tune2fs_l (String device)
+  public Map<String,String> tune2fs_l (String device)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("tune2fs_l: handle is closed");
-    return _tune2fs_l (g, device);
+    String[] r = _tune2fs_l (g, device);
+
+    HashMap rhash = new HashMap ();
+    for (int i = 0; i < r.length; i += 2)
+      rhash.put (r[i], r[i+1]);
+    return rhash;
   }
-  private native HashMap<String,String> _tune2fs_l (long g, String device)
+  private native String[] _tune2fs_l (long g, String device)
     throws LibGuestFSException;
 
   /**
@@ -2692,6 +3973,12 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * The checksum is returned as a printable string.
    * <p>
+   * To get the checksum for a device, use
+   * "g.checksum_device".
+   * <p>
+   * To get the checksums for many files, use
+   * "g.checksums_out".
+   * <p>
    * @throws LibGuestFSException
    */
   public String checksum (String csumtype, String path)
@@ -2710,7 +3997,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * This command uploads and unpacks local file "tarfile"
    * (an *uncompressed* tar file) into "directory".
    * <p>
-   * To upload a compressed tarball, use "g.tgz_in".
+   * To upload a compressed tarball, use "g.tgz_in" or
+   * "g.txz_in".
    * <p>
    * @throws LibGuestFSException
    */
@@ -2730,7 +4018,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * This command packs the contents of "directory" and
    * downloads it to local file "tarfile".
    * <p>
-   * To download a compressed tarball, use "g.tgz_out".
+   * To download a compressed tarball, use "g.tgz_out" or
+   * "g.txz_out".
    * <p>
    * @throws LibGuestFSException
    */
@@ -2809,6 +4098,10 @@ public HashMap<String,String> test0rhashtableerr ()
    * you to set the mount options as for the mount(8) *-o*
    * flag.
    * <p>
+   * If the "options" parameter is an empty string, then no
+   * options are passed (all options default to whatever the
+   * filesystem uses).
+   * <p>
    * @throws LibGuestFSException
    */
   public void mount_options (String options, String device, String mountpoint)
@@ -2840,19 +4133,6 @@ public HashMap<String,String> test0rhashtableerr ()
   private native void _mount_vfs (long g, String options, String vfstype, String device, String mountpoint)
     throws LibGuestFSException;
 
-  /**
-   * debugging and internals
-   * <p>
-   * The "g.debug" command exposes some internals of
-   * "guestfsd" (the guestfs daemon) that runs inside the
-   * qemu subprocess.
-   * <p>
-   * There is no comprehensive help for this command. You
-   * have to look at the file "daemon/debug.c" in the
-   * libguestfs source to find out what you can do.
-   * <p>
-   * @throws LibGuestFSException
-   */
   public String debug (String subcmd, String[] extraargs)
     throws LibGuestFSException
   {
@@ -2954,6 +4234,13 @@ public HashMap<String,String> test0rhashtableerr ()
    * This returns the ext2/3/4 filesystem label of the
    * filesystem on "device".
    * <p>
+   * This function is deprecated. In new code, use the
+   * "vfs_label" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public String get_e2label (String device)
@@ -2994,6 +4281,13 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * This returns the ext2/3/4 filesystem UUID of the
    * filesystem on "device".
+   * <p>
+   * This function is deprecated. In new code, use the
+   * "vfs_uuid" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -3053,7 +4347,7 @@ public HashMap<String,String> test0rhashtableerr ()
    * sufficient to remove any partition tables, filesystem
    * superblocks and so on.
    * <p>
-   * See also: "g.scrub_device".
+   * See also: "g.zero_device", "g.scrub_device".
    * <p>
    * @throws LibGuestFSException
    */
@@ -3073,6 +4367,18 @@ public HashMap<String,String> test0rhashtableerr ()
    * This command installs GRUB (the Grand Unified
    * Bootloader) on "device", with the root directory being
    * "root".
+   * <p>
+   * Note: If grub-install reports the error "No suitable
+   * drive was found in the generated device map." it may be
+   * that you need to create a "/boot/grub/device.map" file
+   * first that contains the mapping between grub device
+   * names and Linux device names. It is usually sufficient
+   * to create a file containing:
+   * <p>
+   * (hd0) /dev/vda
+   * <p>
+   * replacing "/dev/vda" with the name of the installation
+   * device.
    * <p>
    * @throws LibGuestFSException
    */
@@ -3238,8 +4544,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * the list of printable strings found.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -3257,19 +4563,34 @@ public HashMap<String,String> test0rhashtableerr ()
    * print the printable strings in a file
    * <p>
    * This is like the "g.strings" command, but allows you to
-   * specify the encoding.
+   * specify the encoding of strings that are looked for in
+   * the source file "path".
    * <p>
-   * See the strings(1) manpage for the full list of
-   * encodings.
+   * Allowed encodings are:
    * <p>
-   * Commonly useful encodings are "l" (lower case L) which
-   * will show strings inside Windows/x86 files.
+   * s   Single 7-bit-byte characters like ASCII and the
+   * ASCII-compatible parts of ISO-8859-X (this is what
+   * "g.strings" uses).
+   * <p>
+   * S   Single 8-bit-byte characters.
+   * <p>
+   * b   16-bit big endian strings such as those encoded in
+   * UTF-16BE or UCS-2BE.
+   * <p>
+   * l (lower case letter L)
+   * 16-bit little endian such as UTF-16LE and UCS-2LE.
+   * This is useful for examining binaries in Windows
+   * guests.
+   * <p>
+   * B   32-bit big endian such as UCS-4BE.
+   * <p>
+   * L   32-bit little endian such as UCS-4LE.
    * <p>
    * The returned strings are transcoded to UTF-8.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -3290,8 +4611,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * is the human-readable, canonical hex dump of the file.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -3364,6 +4685,13 @@ public HashMap<String,String> test0rhashtableerr ()
    * This command is dangerous. Without careful use you can
    * easily destroy all your data.
    * <p>
+   * This function is deprecated. In new code, use the
+   * "part_add" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public void sfdisk_N (String device, int partnum, int cyls, int heads, int sectors, String line)
@@ -3384,6 +4712,13 @@ public HashMap<String,String> test0rhashtableerr ()
    * not intended to be parsed.
    * <p>
    * See also: "g.part_list"
+   * <p>
+   * This function is deprecated. In new code, use the
+   * "part_list" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -3512,10 +4847,10 @@ public HashMap<String,String> test0rhashtableerr ()
     throws LibGuestFSException;
 
   /**
-   * resize an ext2/ext3 filesystem
+   * resize an ext2, ext3 or ext4 filesystem
    * <p>
-   * This resizes an ext2 or ext3 filesystem to match the
-   * size of the underlying device.
+   * This resizes an ext2, ext3 or ext4 filesystem to match
+   * the size of the underlying device.
    * <p>
    * *Note:* It is sometimes required that you run
    * "g.e2fsck_f" on the "device" before calling this
@@ -3568,8 +4903,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * See also "g.find0".
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -3587,8 +4922,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * check an ext2/ext3 filesystem
    * <p>
    * This runs "e2fsck -p -f device", ie. runs the ext2/ext3
-   * filesystem checker on "device", noninteractively ("-p"),
-   * even if the filesystem appears to be clean ("-f").
+   * filesystem checker on "device", noninteractively (*-p*),
+   * even if the filesystem appears to be clean (*-f*).
    * <p>
    * This command is only needed because of "g.resize2fs"
    * (q.v.). Normally you should use "g.fsck".
@@ -3892,8 +5227,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * as a list of strings.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -3921,8 +5256,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * empty list.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -3943,8 +5278,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * as a list of strings.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -3972,8 +5307,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * empty list.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -3995,7 +5330,7 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * This command is mostly useful for interactive sessions.
    * It is *not* intended that you try to parse the output
-   * string. Use "statvfs" from programs.
+   * string. Use "g.statvfs" from programs.
    * <p>
    * @throws LibGuestFSException
    */
@@ -4017,7 +5352,7 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * This command is mostly useful for interactive sessions.
    * It is *not* intended that you try to parse the output
-   * string. Use "statvfs" from programs.
+   * string. Use "g.statvfs" from programs.
    * <p>
    * @throws LibGuestFSException
    */
@@ -4167,6 +5502,16 @@ public HashMap<String,String> test0rhashtableerr ()
    * device major and minor numbers, only used when creating
    * block and character special devices.
    * <p>
+   * Note that, just like mknod(2), the mode must be bitwise
+   * OR'd with S_IFBLK, S_IFCHR, S_IFIFO or S_IFSOCK
+   * (otherwise this call just creates a regular file). These
+   * constants are available in the standard Linux header
+   * files, or you can use "g.mknod_b", "g.mknod_c" or
+   * "g.mkfifo" which are wrappers around this command which
+   * bitwise OR in the appropriate constant for you.
+   * <p>
+   * The mode actually set is affected by the umask.
+   * <p>
    * @throws LibGuestFSException
    */
   public void mknod (int mode, int devmajor, int devminor, String path)
@@ -4185,6 +5530,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * This call creates a FIFO (named pipe) called "path" with
    * mode "mode". It is just a convenient wrapper around
    * "g.mknod".
+   * <p>
+   * The mode actually set is affected by the umask.
    * <p>
    * @throws LibGuestFSException
    */
@@ -4206,6 +5553,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * "devminor". It is just a convenient wrapper around
    * "g.mknod".
    * <p>
+   * The mode actually set is affected by the umask.
+   * <p>
    * @throws LibGuestFSException
    */
   public void mknod_b (int mode, int devmajor, int devminor, String path)
@@ -4225,6 +5574,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * mode "mode" and device major/minor "devmajor" and
    * "devminor". It is just a convenient wrapper around
    * "g.mknod".
+   * <p>
+   * The mode actually set is affected by the umask.
    * <p>
    * @throws LibGuestFSException
    */
@@ -4253,7 +5604,7 @@ public HashMap<String,String> test0rhashtableerr ()
    * means that directories and device nodes will be created
    * with 0644 or 0755 mode even if you specify 0777.
    * <p>
-   * See also umask(2), "g.mknod", "g.mkdir".
+   * See also "g.get_umask", umask(2), "g.mknod", "g.mkdir".
    * <p>
    * This call returns the previous umask.
    * <p>
@@ -4299,8 +5650,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * 'u' Unknown file type
    * <p>
-   * '?' The readdir(3) returned a "d_type" field with an
-   * unexpected value
+   * '?' The readdir(3) call returned a "d_type" field with
+   * an unexpected value
    * <p>
    * This function is primarily intended for use by programs.
    * To get a simple list of names, use "g.ls". To get a
@@ -4332,6 +5683,13 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * This command is dangerous. Without careful use you can
    * easily destroy all your data.
+   * <p>
+   * This function is deprecated. In new code, use the
+   * "part_add" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -4505,14 +5863,19 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * @throws LibGuestFSException
    */
-  public HashMap<String,String> mountpoints ()
+  public Map<String,String> mountpoints ()
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("mountpoints: handle is closed");
-    return _mountpoints (g);
+    String[] r = _mountpoints (g);
+
+    HashMap rhash = new HashMap ();
+    for (int i = 0; i < r.length; i += 2)
+      rhash.put (r[i], r[i+1]);
+    return rhash;
   }
-  private native HashMap<String,String> _mountpoints (long g)
+  private native String[] _mountpoints (long g)
     throws LibGuestFSException;
 
   /**
@@ -4534,14 +5897,33 @@ public HashMap<String,String> test0rhashtableerr ()
    * add-ro Fedora-11-i686-Live.iso
    * run
    * mkmountpoint /cd
-   * mkmountpoint /squash
-   * mkmountpoint /ext3
+   * mkmountpoint /sqsh
+   * mkmountpoint /ext3fs
    * mount /dev/sda /cd
-   * mount-loop /cd/LiveOS/squashfs.img /squash
-   * mount-loop /squash/LiveOS/ext3fs.img /ext3
+   * mount-loop /cd/LiveOS/squashfs.img /sqsh
+   * mount-loop /sqsh/LiveOS/ext3fs.img /ext3fs
    * <p>
-   * The inner filesystem is now unpacked under the /ext3
+   * The inner filesystem is now unpacked under the /ext3fs
    * mountpoint.
+   * <p>
+   * "g.mkmountpoint" is not compatible with "g.umount_all".
+   * You may get unexpected errors if you try to mix these
+   * calls. It is safest to manually unmount filesystems and
+   * remove mountpoints after use.
+   * <p>
+   * "g.umount_all" unmounts filesystems by sorting the paths
+   * longest first, so for this to work for manual
+   * mountpoints, you must ensure that the innermost
+   * mountpoints have the longest pathnames, as in the
+   * example code above.
+   * <p>
+   * For more details see
+   * <https://bugzilla.redhat.com/show_bug.cgi?id=599503>
+   * <p>
+   * Autosync [see "g.set_autosync", this is set by default
+   * on handles] can cause "g.umount_all" to be called when
+   * the handle is closed which can also trigger these
+   * issues.
    * <p>
    * @throws LibGuestFSException
    */
@@ -4586,8 +5968,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * total size of file that can be handled.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -4608,8 +5990,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * matching lines.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -4630,8 +6012,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * matching lines.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -4652,8 +6034,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * matching lines.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -4674,8 +6056,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * the matching lines.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -4696,8 +6078,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * the matching lines.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -4718,8 +6100,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * the matching lines.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -4740,8 +6122,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * matching lines.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -4762,8 +6144,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * matching lines.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -4784,8 +6166,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * matching lines.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -4806,8 +6188,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * the matching lines.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -4828,8 +6210,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * the matching lines.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -4850,8 +6232,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * the matching lines.
    * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -4905,7 +6287,7 @@ public HashMap<String,String> test0rhashtableerr ()
    * create a hard link
    * <p>
    * This command creates a hard link using the "ln -f"
-   * command. The "-f" option removes the link ("linkname")
+   * command. The *-f* option removes the link ("linkname")
    * if it exists already.
    * <p>
    * @throws LibGuestFSException
@@ -4942,7 +6324,7 @@ public HashMap<String,String> test0rhashtableerr ()
    * create a symbolic link
    * <p>
    * This command creates a symbolic link using the "ln -sf"
-   * command, The "-f" option removes the link ("linkname")
+   * command, The *-f* option removes the link ("linkname")
    * if it exists already.
    * <p>
    * @throws LibGuestFSException
@@ -4984,6 +6366,13 @@ public HashMap<String,String> test0rhashtableerr ()
    * Do not confuse this with the guestfish-specific "alloc"
    * command which allocates a file in the host and attaches
    * it as a device.
+   * <p>
+   * This function is deprecated. In new code, use the
+   * "fallocate64" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -5377,6 +6766,16 @@ public HashMap<String,String> test0rhashtableerr ()
    * Supported block sizes depend on the filesystem type, but
    * typically they are 1024, 2048 or 4096 only.
    * <p>
+   * For VFAT and NTFS the "blocksize" parameter is treated
+   * as the requested cluster size.
+   * <p>
+   * This function is deprecated. In new code, use the
+   * "mkfs_opts" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public void mkfs_b (String fstype, int blocksize, String device)
@@ -5532,9 +6931,9 @@ public HashMap<String,String> test0rhashtableerr ()
   /**
    * echo arguments back to the client
    * <p>
-   * This command concatenate the list of "words" passed with
-   * single spaces between them and returns the resulting
-   * string.
+   * This command concatenates the list of "words" passed
+   * with single spaces between them and returns the
+   * resulting string.
    * <p>
    * You can use this command to test the connection through
    * to the daemon.
@@ -5638,12 +7037,14 @@ public HashMap<String,String> test0rhashtableerr ()
   /**
    * get the Linux VFS type corresponding to a mounted device
    * <p>
-   * This command gets the block device type corresponding to
-   * a mounted device called "device".
+   * This command gets the filesystem type corresponding to
+   * the filesystem on "device".
    * <p>
-   * Usually the result is the name of the Linux VFS module
-   * that is used to mount this device (probably determined
-   * automatically if you used the "g.mount" call).
+   * For most filesystems, the result is the name of the
+   * Linux VFS module which would be used to mount this
+   * filesystem if you mounted it without specifying the
+   * filesystem type. For example a string such as "ext3" or
+   * "ntfs".
    * <p>
    * @throws LibGuestFSException
    */
@@ -5679,9 +7080,14 @@ public HashMap<String,String> test0rhashtableerr ()
    * truncate a file to a particular size
    * <p>
    * This command truncates "path" to size "size" bytes. The
-   * file must exist already. If the file is smaller than
-   * "size" then the file is extended to the required size
-   * with null bytes.
+   * file must exist already.
+   * <p>
+   * If the current file size is less than "size" then the
+   * file is extended to the required size with zero bytes.
+   * This creates a sparse file (ie. disk blocks are not
+   * allocated for the file until you write to it). To create
+   * a non-sparse file of zeroes, use "g.fallocate64"
+   * instead.
    * <p>
    * @throws LibGuestFSException
    */
@@ -5731,8 +7137,13 @@ public HashMap<String,String> test0rhashtableerr ()
    * create a directory with a particular mode
    * <p>
    * This command creates a directory, setting the initial
-   * permissions of the directory to "mode". See also
-   * "g.mkdir".
+   * permissions of the directory to "mode".
+   * <p>
+   * For common Linux filesystems, the actual mode which is
+   * set will be "mode & ~umask & 01777". Non-native-Linux
+   * filesystems may interpret the mode in other ways.
+   * <p>
+   * See also "g.mkdir", "g.umask"
    * <p>
    * @throws LibGuestFSException
    */
@@ -5854,7 +7265,7 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * On return you get a list of strings, with a one-to-one
    * correspondence to the "names" list. Each string is the
-   * value of the symbol link.
+   * value of the symbolic link.
    * <p>
    * If the readlink(2) operation fails on any name, then the
    * corresponding result string is the empty string "".
@@ -5892,9 +7303,11 @@ public HashMap<String,String> test0rhashtableerr ()
    * This may read fewer bytes than requested. For further
    * details see the pread(2) system call.
    * <p>
+   * See also "g.pwrite", "g.pread_device".
+   * <p>
    * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. To transfer
-   * large files you should use FTP.
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -6033,11 +7446,9 @@ public HashMap<String,String> test0rhashtableerr ()
    * "partnum" on device "device". Note that partitions are
    * numbered from 1.
    * <p>
-   * The bootable flag is used by some PC BIOSes to determine
-   * which partition to boot from. It is by no means
-   * universally recognized, and in any case if your
-   * operating system installed a boot sector on the device
-   * itself, then that takes precedence.
+   * The bootable flag is used by some operating systems
+   * (notably Windows) to determine which partition to boot
+   * from. It is by no means universally recognized.
    * <p>
    * @throws LibGuestFSException
    */
@@ -6140,7 +7551,9 @@ public HashMap<String,String> test0rhashtableerr ()
    * where "c" must be a number in the range "[0..255]".
    * <p>
    * To fill a file with zero bytes (sparsely), it is much
-   * more efficient to use "g.truncate_size".
+   * more efficient to use "g.truncate_size". To create a
+   * file with a pattern of repeating bytes use
+   * "g.fill_pattern".
    * <p>
    * @throws LibGuestFSException
    */
@@ -6164,7 +7577,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * The libguestfs groups, and the functions that those
    * groups correspond to, are listed in "AVAILABILITY" in
-   * guestfs(3).
+   * guestfs(3). You can also fetch this list at runtime by
+   * calling "g.available_all_groups".
    * <p>
    * The argument "groups" is a list of group names, eg:
    * "["inotify", "augeas"]" would check for the availability
@@ -6227,7 +7641,8 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * If the destination is a device, it must be as large or
    * larger than the source file or device, otherwise the
-   * copy will fail. This command cannot do partial copies.
+   * copy will fail. This command cannot do partial copies
+   * (see "g.copy_size").
    * <p>
    * @throws LibGuestFSException
    */
@@ -6313,6 +7728,10 @@ public HashMap<String,String> test0rhashtableerr ()
    * <p>
    * See also "g.initrd_list".
    * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
+   * <p>
    * @throws LibGuestFSException
    */
   public String initrd_cat (String initrdpath, String filename)
@@ -6323,6 +7742,1398 @@ public HashMap<String,String> test0rhashtableerr ()
     return _initrd_cat (g, initrdpath, filename);
   }
   private native String _initrd_cat (long g, String initrdpath, String filename)
+    throws LibGuestFSException;
+
+  /**
+   * get the UUID of a physical volume
+   * <p>
+   * This command returns the UUID of the LVM PV "device".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String pvuuid (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("pvuuid: handle is closed");
+    return _pvuuid (g, device);
+  }
+  private native String _pvuuid (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * get the UUID of a volume group
+   * <p>
+   * This command returns the UUID of the LVM VG named
+   * "vgname".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String vguuid (String vgname)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("vguuid: handle is closed");
+    return _vguuid (g, vgname);
+  }
+  private native String _vguuid (long g, String vgname)
+    throws LibGuestFSException;
+
+  /**
+   * get the UUID of a logical volume
+   * <p>
+   * This command returns the UUID of the LVM LV "device".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String lvuuid (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lvuuid: handle is closed");
+    return _lvuuid (g, device);
+  }
+  private native String _lvuuid (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * get the PV UUIDs containing the volume group
+   * <p>
+   * Given a VG called "vgname", this returns the UUIDs of
+   * all the physical volumes that this volume group resides
+   * on.
+   * <p>
+   * You can use this along with "g.pvs" and "g.pvuuid" calls
+   * to associate physical volumes and volume groups.
+   * <p>
+   * See also "g.vglvuuids".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] vgpvuuids (String vgname)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("vgpvuuids: handle is closed");
+    return _vgpvuuids (g, vgname);
+  }
+  private native String[] _vgpvuuids (long g, String vgname)
+    throws LibGuestFSException;
+
+  /**
+   * get the LV UUIDs of all LVs in the volume group
+   * <p>
+   * Given a VG called "vgname", this returns the UUIDs of
+   * all the logical volumes created in this volume group.
+   * <p>
+   * You can use this along with "g.lvs" and "g.lvuuid" calls
+   * to associate logical volumes and volume groups.
+   * <p>
+   * See also "g.vgpvuuids".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] vglvuuids (String vgname)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("vglvuuids: handle is closed");
+    return _vglvuuids (g, vgname);
+  }
+  private native String[] _vglvuuids (long g, String vgname)
+    throws LibGuestFSException;
+
+  /**
+   * copy size bytes from source to destination using dd
+   * <p>
+   * This command copies exactly "size" bytes from one source
+   * device or file "src" to another destination device or
+   * file "dest".
+   * <p>
+   * Note this will fail if the source is too short or if the
+   * destination is not large enough.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void copy_size (String src, String dest, long size)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("copy_size: handle is closed");
+    _copy_size (g, src, dest, size);
+  }
+  private native void _copy_size (long g, String src, String dest, long size)
+    throws LibGuestFSException;
+
+  /**
+   * write zeroes to an entire device
+   * <p>
+   * This command writes zeroes over the entire "device".
+   * Compare with "g.zero" which just zeroes the first few
+   * blocks of a device.
+   * <p>
+   * This command is dangerous. Without careful use you can
+   * easily destroy all your data.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void zero_device (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("zero_device: handle is closed");
+    _zero_device (g, device);
+  }
+  private native void _zero_device (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * unpack compressed tarball to directory
+   * <p>
+   * This command uploads and unpacks local file "tarball"
+   * (an *xz compressed* tar file) into "directory".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void txz_in (String tarball, String directory)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("txz_in: handle is closed");
+    _txz_in (g, tarball, directory);
+  }
+  private native void _txz_in (long g, String tarball, String directory)
+    throws LibGuestFSException;
+
+  /**
+   * pack directory into compressed tarball
+   * <p>
+   * This command packs the contents of "directory" and
+   * downloads it to local file "tarball" (as an xz
+   * compressed tar archive).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void txz_out (String directory, String tarball)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("txz_out: handle is closed");
+    _txz_out (g, directory, tarball);
+  }
+  private native void _txz_out (long g, String directory, String tarball)
+    throws LibGuestFSException;
+
+  /**
+   * resize an NTFS filesystem
+   * <p>
+   * This command resizes an NTFS filesystem, expanding or
+   * shrinking it to the size of the underlying device.
+   * <p>
+   * *Note:* After the resize operation, the filesystem is
+   * marked as requiring a consistency check (for safety).
+   * You have to boot into Windows to perform this check and
+   * clear this condition. Furthermore, ntfsresize refuses to
+   * resize filesystems which have been marked in this way.
+   * So in effect it is not possible to call ntfsresize
+   * multiple times on a single filesystem without booting
+   * into Windows between each resize.
+   * <p>
+   * See also ntfsresize(8).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void ntfsresize (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ntfsresize: handle is closed");
+    _ntfsresize (g, device);
+  }
+  private native void _ntfsresize (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * rescan for LVM physical volumes, volume groups and logical volumes
+   * <p>
+   * This rescans all block devices and rebuilds the list of
+   * LVM physical volumes, volume groups and logical volumes.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void vgscan ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("vgscan: handle is closed");
+    _vgscan (g);
+  }
+  private native void _vgscan (long g)
+    throws LibGuestFSException;
+
+  /**
+   * delete a partition
+   * <p>
+   * This command deletes the partition numbered "partnum" on
+   * "device".
+   * <p>
+   * Note that in the case of MBR partitioning, deleting an
+   * extended partition also deletes any logical partitions
+   * it contains.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void part_del (String device, int partnum)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_del: handle is closed");
+    _part_del (g, device, partnum);
+  }
+  private native void _part_del (long g, String device, int partnum)
+    throws LibGuestFSException;
+
+  /**
+   * return true if a partition is bootable
+   * <p>
+   * This command returns true if the partition "partnum" on
+   * "device" has the bootable flag set.
+   * <p>
+   * See also "g.part_set_bootable".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean part_get_bootable (String device, int partnum)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_get_bootable: handle is closed");
+    return _part_get_bootable (g, device, partnum);
+  }
+  private native boolean _part_get_bootable (long g, String device, int partnum)
+    throws LibGuestFSException;
+
+  /**
+   * get the MBR type byte (ID byte) from a partition
+   * <p>
+   * Returns the MBR type byte (also known as the ID byte)
+   * from the numbered partition "partnum".
+   * <p>
+   * Note that only MBR (old DOS-style) partitions have type
+   * bytes. You will get undefined results for other
+   * partition table types (see "g.part_get_parttype").
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public int part_get_mbr_id (String device, int partnum)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_get_mbr_id: handle is closed");
+    return _part_get_mbr_id (g, device, partnum);
+  }
+  private native int _part_get_mbr_id (long g, String device, int partnum)
+    throws LibGuestFSException;
+
+  /**
+   * set the MBR type byte (ID byte) of a partition
+   * <p>
+   * Sets the MBR type byte (also known as the ID byte) of
+   * the numbered partition "partnum" to "idbyte". Note that
+   * the type bytes quoted in most documentation are in fact
+   * hexadecimal numbers, but usually documented without any
+   * leading "0x" which might be confusing.
+   * <p>
+   * Note that only MBR (old DOS-style) partitions have type
+   * bytes. You will get undefined results for other
+   * partition table types (see "g.part_get_parttype").
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void part_set_mbr_id (String device, int partnum, int idbyte)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_set_mbr_id: handle is closed");
+    _part_set_mbr_id (g, device, partnum, idbyte);
+  }
+  private native void _part_set_mbr_id (long g, String device, int partnum, int idbyte)
+    throws LibGuestFSException;
+
+  /**
+   * compute MD5, SHAx or CRC checksum of the contents of a device
+   * <p>
+   * This call computes the MD5, SHAx or CRC checksum of the
+   * contents of the device named "device". For the types of
+   * checksums supported see the "g.checksum" command.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String checksum_device (String csumtype, String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("checksum_device: handle is closed");
+    return _checksum_device (g, csumtype, device);
+  }
+  private native String _checksum_device (long g, String csumtype, String device)
+    throws LibGuestFSException;
+
+  /**
+   * expand an LV to fill free space
+   * <p>
+   * This expands an existing logical volume "lv" so that it
+   * fills "pc"% of the remaining free space in the volume
+   * group. Commonly you would call this with pc = 100 which
+   * expands the logical volume as much as possible, using
+   * all remaining free space in the volume group.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void lvresize_free (String lv, int percent)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lvresize_free: handle is closed");
+    _lvresize_free (g, lv, percent);
+  }
+  private native void _lvresize_free (long g, String lv, int percent)
+    throws LibGuestFSException;
+
+  /**
+   * clear Augeas path
+   * <p>
+   * Set the value associated with "path" to "NULL". This is
+   * the same as the augtool(1) "clear" command.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void aug_clear (String augpath)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("aug_clear: handle is closed");
+    _aug_clear (g, augpath);
+  }
+  private native void _aug_clear (long g, String augpath)
+    throws LibGuestFSException;
+
+  /**
+   * get the current umask
+   * <p>
+   * Return the current umask. By default the umask is 022
+   * unless it has been set by calling "g.umask".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public int get_umask ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_umask: handle is closed");
+    return _get_umask (g);
+  }
+  private native int _get_umask (long g)
+    throws LibGuestFSException;
+
+  public void debug_upload (String filename, String tmpname, int mode)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("debug_upload: handle is closed");
+    _debug_upload (g, filename, tmpname, mode);
+  }
+  private native void _debug_upload (long g, String filename, String tmpname, int mode)
+    throws LibGuestFSException;
+
+  /**
+   * upload base64-encoded data to file
+   * <p>
+   * This command uploads base64-encoded data from
+   * "base64file" to "filename".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void base64_in (String base64file, String filename)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("base64_in: handle is closed");
+    _base64_in (g, base64file, filename);
+  }
+  private native void _base64_in (long g, String base64file, String filename)
+    throws LibGuestFSException;
+
+  /**
+   * download file and encode as base64
+   * <p>
+   * This command downloads the contents of "filename",
+   * writing it out to local file "base64file" encoded as
+   * base64.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void base64_out (String filename, String base64file)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("base64_out: handle is closed");
+    _base64_out (g, filename, base64file);
+  }
+  private native void _base64_out (long g, String filename, String base64file)
+    throws LibGuestFSException;
+
+  /**
+   * compute MD5, SHAx or CRC checksum of files in a directory
+   * <p>
+   * This command computes the checksums of all regular files
+   * in "directory" and then emits a list of those checksums
+   * to the local output file "sumsfile".
+   * <p>
+   * This can be used for verifying the integrity of a
+   * virtual machine. However to be properly secure you
+   * should pay attention to the output of the checksum
+   * command (it uses the ones from GNU coreutils). In
+   * particular when the filename is not printable, coreutils
+   * uses a special backslash syntax. For more information,
+   * see the GNU coreutils info file.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void checksums_out (String csumtype, String directory, String sumsfile)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("checksums_out: handle is closed");
+    _checksums_out (g, csumtype, directory, sumsfile);
+  }
+  private native void _checksums_out (long g, String csumtype, String directory, String sumsfile)
+    throws LibGuestFSException;
+
+  /**
+   * fill a file with a repeating pattern of bytes
+   * <p>
+   * This function is like "g.fill" except that it creates a
+   * new file of length "len" containing the repeating
+   * pattern of bytes in "pattern". The pattern is truncated
+   * if necessary to ensure the length of the file is exactly
+   * "len" bytes.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void fill_pattern (String pattern, int len, String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("fill_pattern: handle is closed");
+    _fill_pattern (g, pattern, len, path);
+  }
+  private native void _fill_pattern (long g, String pattern, int len, String path)
+    throws LibGuestFSException;
+
+  /**
+   * create a new file
+   * <p>
+   * This call creates a file called "path". The content of
+   * the file is the string "content" (which can contain any
+   * 8 bit data).
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void write (String path, byte[] content)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("write: handle is closed");
+    _write (g, path, content);
+  }
+  private native void _write (long g, String path, byte[] content)
+    throws LibGuestFSException;
+
+  /**
+   * write to part of a file
+   * <p>
+   * This command writes to part of a file. It writes the
+   * data buffer "content" to the file "path" starting at
+   * offset "offset".
+   * <p>
+   * This command implements the pwrite(2) system call, and
+   * like that system call it may not write the full data
+   * requested. The return value is the number of bytes that
+   * were actually written to the file. This could even be 0,
+   * although short writes are unlikely for regular files in
+   * ordinary circumstances.
+   * <p>
+   * See also "g.pread", "g.pwrite_device".
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public int pwrite (String path, byte[] content, long offset)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("pwrite: handle is closed");
+    return _pwrite (g, path, content, offset);
+  }
+  private native int _pwrite (long g, String path, byte[] content, long offset)
+    throws LibGuestFSException;
+
+  /**
+   * resize an ext2, ext3 or ext4 filesystem (with size)
+   * <p>
+   * This command is the same as "g.resize2fs" except that it
+   * allows you to specify the new size (in bytes)
+   * explicitly.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void resize2fs_size (String device, long size)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("resize2fs_size: handle is closed");
+    _resize2fs_size (g, device, size);
+  }
+  private native void _resize2fs_size (long g, String device, long size)
+    throws LibGuestFSException;
+
+  /**
+   * resize an LVM physical volume (with size)
+   * <p>
+   * This command is the same as "g.pvresize" except that it
+   * allows you to specify the new size (in bytes)
+   * explicitly.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void pvresize_size (String device, long size)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("pvresize_size: handle is closed");
+    _pvresize_size (g, device, size);
+  }
+  private native void _pvresize_size (long g, String device, long size)
+    throws LibGuestFSException;
+
+  /**
+   * resize an NTFS filesystem (with size)
+   * <p>
+   * This command is the same as "g.ntfsresize" except that
+   * it allows you to specify the new size (in bytes)
+   * explicitly.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void ntfsresize_size (String device, long size)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ntfsresize_size: handle is closed");
+    _ntfsresize_size (g, device, size);
+  }
+  private native void _ntfsresize_size (long g, String device, long size)
+    throws LibGuestFSException;
+
+  /**
+   * return a list of all optional groups
+   * <p>
+   * This command returns a list of all optional groups that
+   * this daemon knows about. Note this returns both
+   * supported and unsupported groups. To find out which ones
+   * the daemon can actually support you have to call
+   * "g.available" on each member of the returned list.
+   * <p>
+   * See also "g.available" and "AVAILABILITY" in guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] available_all_groups ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("available_all_groups: handle is closed");
+    return _available_all_groups (g);
+  }
+  private native String[] _available_all_groups (long g)
+    throws LibGuestFSException;
+
+  /**
+   * preallocate a file in the guest filesystem
+   * <p>
+   * This command preallocates a file (containing zero bytes)
+   * named "path" of size "len" bytes. If the file exists
+   * already, it is overwritten.
+   * <p>
+   * Note that this call allocates disk blocks for the file.
+   * To create a sparse file use "g.truncate_size" instead.
+   * <p>
+   * The deprecated call "g.fallocate" does the same, but
+   * owing to an oversight it only allowed 30 bit lengths to
+   * be specified, effectively limiting the maximum size of
+   * files created through that call to 1GB.
+   * <p>
+   * Do not confuse this with the guestfish-specific "alloc"
+   * and "sparse" commands which create a file in the host
+   * and attach it as a device.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void fallocate64 (String path, long len)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("fallocate64: handle is closed");
+    _fallocate64 (g, path, len);
+  }
+  private native void _fallocate64 (long g, String path, long len)
+    throws LibGuestFSException;
+
+  /**
+   * get the filesystem label
+   * <p>
+   * This returns the filesystem label of the filesystem on
+   * "device".
+   * <p>
+   * If the filesystem is unlabeled, this returns the empty
+   * string.
+   * <p>
+   * To find a filesystem from the label, use
+   * "g.findfs_label".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String vfs_label (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("vfs_label: handle is closed");
+    return _vfs_label (g, device);
+  }
+  private native String _vfs_label (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * get the filesystem UUID
+   * <p>
+   * This returns the filesystem UUID of the filesystem on
+   * "device".
+   * <p>
+   * If the filesystem does not have a UUID, this returns the
+   * empty string.
+   * <p>
+   * To find a filesystem from the UUID, use "g.findfs_uuid".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String vfs_uuid (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("vfs_uuid: handle is closed");
+    return _vfs_uuid (g, device);
+  }
+  private native String _vfs_uuid (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * set LVM device filter
+   * <p>
+   * This sets the LVM device filter so that LVM will only be
+   * able to "see" the block devices in the list "devices",
+   * and will ignore all other attached block devices.
+   * <p>
+   * Where disk image(s) contain duplicate PVs or VGs, this
+   * command is useful to get LVM to ignore the duplicates,
+   * otherwise LVM can get confused. Note also there are two
+   * types of duplication possible: either cloned PVs/VGs
+   * which have identical UUIDs; or VGs that are not cloned
+   * but just happen to have the same name. In normal
+   * operation you cannot create this situation, but you can
+   * do it outside LVM, eg. by cloning disk images or by bit
+   * twiddling inside the LVM metadata.
+   * <p>
+   * This command also clears the LVM cache and performs a
+   * volume group scan.
+   * <p>
+   * You can filter whole block devices or individual
+   * partitions.
+   * <p>
+   * You cannot use this if any VG is currently in use (eg.
+   * contains a mounted filesystem), even if you are not
+   * filtering out that VG.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void lvm_set_filter (String[] devices)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lvm_set_filter: handle is closed");
+    _lvm_set_filter (g, devices);
+  }
+  private native void _lvm_set_filter (long g, String[] devices)
+    throws LibGuestFSException;
+
+  /**
+   * clear LVM device filter
+   * <p>
+   * This undoes the effect of "g.lvm_set_filter". LVM will
+   * be able to see every block device.
+   * <p>
+   * This command also clears the LVM cache and performs a
+   * volume group scan.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void lvm_clear_filter ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lvm_clear_filter: handle is closed");
+    _lvm_clear_filter (g);
+  }
+  private native void _lvm_clear_filter (long g)
+    throws LibGuestFSException;
+
+  /**
+   * open a LUKS-encrypted block device
+   * <p>
+   * This command opens a block device which has been
+   * encrypted according to the Linux Unified Key Setup
+   * (LUKS) standard.
+   * <p>
+   * "device" is the encrypted block device or partition.
+   * <p>
+   * The caller must supply one of the keys associated with
+   * the LUKS block device, in the "key" parameter.
+   * <p>
+   * This creates a new block device called
+   * "/dev/mapper/mapname". Reads and writes to this block
+   * device are decrypted from and encrypted to the
+   * underlying "device" respectively.
+   * <p>
+   * If this block device contains LVM volume groups, then
+   * calling "g.vgscan" followed by "g.vg_activate_all" will
+   * make them visible.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void luks_open (String device, String key, String mapname)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("luks_open: handle is closed");
+    _luks_open (g, device, key, mapname);
+  }
+  private native void _luks_open (long g, String device, String key, String mapname)
+    throws LibGuestFSException;
+
+  /**
+   * open a LUKS-encrypted block device read-only
+   * <p>
+   * This is the same as "g.luks_open" except that a
+   * read-only mapping is created.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void luks_open_ro (String device, String key, String mapname)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("luks_open_ro: handle is closed");
+    _luks_open_ro (g, device, key, mapname);
+  }
+  private native void _luks_open_ro (long g, String device, String key, String mapname)
+    throws LibGuestFSException;
+
+  /**
+   * close a LUKS device
+   * <p>
+   * This closes a LUKS device that was created earlier by
+   * "g.luks_open" or "g.luks_open_ro". The "device"
+   * parameter must be the name of the LUKS mapping device
+   * (ie. "/dev/mapper/mapname") and *not* the name of the
+   * underlying block device.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void luks_close (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("luks_close: handle is closed");
+    _luks_close (g, device);
+  }
+  private native void _luks_close (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * format a block device as a LUKS encrypted device
+   * <p>
+   * This command erases existing data on "device" and
+   * formats the device as a LUKS encrypted device. "key" is
+   * the initial key, which is added to key slot "slot".
+   * (LUKS supports 8 key slots, numbered 0-7).
+   * <p>
+   * This command is dangerous. Without careful use you can
+   * easily destroy all your data.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void luks_format (String device, String key, int keyslot)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("luks_format: handle is closed");
+    _luks_format (g, device, key, keyslot);
+  }
+  private native void _luks_format (long g, String device, String key, int keyslot)
+    throws LibGuestFSException;
+
+  /**
+   * format a block device as a LUKS encrypted device
+   * <p>
+   * This command is the same as "g.luks_format" but it also
+   * allows you to set the "cipher" used.
+   * <p>
+   * This command is dangerous. Without careful use you can
+   * easily destroy all your data.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void luks_format_cipher (String device, String key, int keyslot, String cipher)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("luks_format_cipher: handle is closed");
+    _luks_format_cipher (g, device, key, keyslot, cipher);
+  }
+  private native void _luks_format_cipher (long g, String device, String key, int keyslot, String cipher)
+    throws LibGuestFSException;
+
+  /**
+   * add a key on a LUKS encrypted device
+   * <p>
+   * This command adds a new key on LUKS device "device".
+   * "key" is any existing key, and is used to access the
+   * device. "newkey" is the new key to add. "keyslot" is the
+   * key slot that will be replaced.
+   * <p>
+   * Note that if "keyslot" already contains a key, then this
+   * command will fail. You have to use "g.luks_kill_slot"
+   * first to remove that key.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void luks_add_key (String device, String key, String newkey, int keyslot)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("luks_add_key: handle is closed");
+    _luks_add_key (g, device, key, newkey, keyslot);
+  }
+  private native void _luks_add_key (long g, String device, String key, String newkey, int keyslot)
+    throws LibGuestFSException;
+
+  /**
+   * remove a key from a LUKS encrypted device
+   * <p>
+   * This command deletes the key in key slot "keyslot" from
+   * the encrypted LUKS device "device". "key" must be one of
+   * the *other* keys.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void luks_kill_slot (String device, String key, int keyslot)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("luks_kill_slot: handle is closed");
+    _luks_kill_slot (g, device, key, keyslot);
+  }
+  private native void _luks_kill_slot (long g, String device, String key, int keyslot)
+    throws LibGuestFSException;
+
+  /**
+   * test if device is a logical volume
+   * <p>
+   * This command tests whether "device" is a logical volume,
+   * and returns true iff this is the case.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean is_lv (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("is_lv: handle is closed");
+    return _is_lv (g, device);
+  }
+  private native boolean _is_lv (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * find a filesystem by UUID
+   * <p>
+   * This command searches the filesystems and returns the
+   * one which has the given UUID. An error is returned if no
+   * such filesystem can be found.
+   * <p>
+   * To find the UUID of a filesystem, use "g.vfs_uuid".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String findfs_uuid (String uuid)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("findfs_uuid: handle is closed");
+    return _findfs_uuid (g, uuid);
+  }
+  private native String _findfs_uuid (long g, String uuid)
+    throws LibGuestFSException;
+
+  /**
+   * find a filesystem by label
+   * <p>
+   * This command searches the filesystems and returns the
+   * one which has the given label. An error is returned if
+   * no such filesystem can be found.
+   * <p>
+   * To find the label of a filesystem, use "g.vfs_label".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String findfs_label (String label)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("findfs_label: handle is closed");
+    return _findfs_label (g, label);
+  }
+  private native String _findfs_label (long g, String label)
+    throws LibGuestFSException;
+
+  /**
+   * test if character device
+   * <p>
+   * This returns "true" if and only if there is a character
+   * device with the given "path" name.
+   * <p>
+   * See also "g.stat".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean is_chardev (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("is_chardev: handle is closed");
+    return _is_chardev (g, path);
+  }
+  private native boolean _is_chardev (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * test if block device
+   * <p>
+   * This returns "true" if and only if there is a block
+   * device with the given "path" name.
+   * <p>
+   * See also "g.stat".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean is_blockdev (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("is_blockdev: handle is closed");
+    return _is_blockdev (g, path);
+  }
+  private native boolean _is_blockdev (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * test if FIFO (named pipe)
+   * <p>
+   * This returns "true" if and only if there is a FIFO
+   * (named pipe) with the given "path" name.
+   * <p>
+   * See also "g.stat".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean is_fifo (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("is_fifo: handle is closed");
+    return _is_fifo (g, path);
+  }
+  private native boolean _is_fifo (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * test if symbolic link
+   * <p>
+   * This returns "true" if and only if there is a symbolic
+   * link with the given "path" name.
+   * <p>
+   * See also "g.stat".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean is_symlink (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("is_symlink: handle is closed");
+    return _is_symlink (g, path);
+  }
+  private native boolean _is_symlink (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * test if socket
+   * <p>
+   * This returns "true" if and only if there is a Unix
+   * domain socket with the given "path" name.
+   * <p>
+   * See also "g.stat".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean is_socket (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("is_socket: handle is closed");
+    return _is_socket (g, path);
+  }
+  private native boolean _is_socket (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * convert partition name to device name
+   * <p>
+   * This function takes a partition name (eg. "/dev/sdb1")
+   * and removes the partition number, returning the device
+   * name (eg. "/dev/sdb").
+   * <p>
+   * The named partition must exist, for example as a string
+   * returned from "g.list_partitions".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String part_to_dev (String partition)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_to_dev: handle is closed");
+    return _part_to_dev (g, partition);
+  }
+  private native String _part_to_dev (long g, String partition)
+    throws LibGuestFSException;
+
+  /**
+   * upload a file from the local machine with offset
+   * <p>
+   * Upload local file "filename" to "remotefilename" on the
+   * filesystem.
+   * <p>
+   * "remotefilename" is overwritten starting at the byte
+   * "offset" specified. The intention is to overwrite parts
+   * of existing files or devices, although if a non-existant
+   * file is specified then it is created with a "hole"
+   * before "offset". The size of the data written is
+   * implicit in the size of the source "filename".
+   * <p>
+   * Note that there is no limit on the amount of data that
+   * can be uploaded with this call, unlike with "g.pwrite",
+   * and this call always writes the full amount unless an
+   * error occurs.
+   * <p>
+   * See also "g.upload", "g.pwrite".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void upload_offset (String filename, String remotefilename, long offset)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("upload_offset: handle is closed");
+    _upload_offset (g, filename, remotefilename, offset);
+  }
+  private native void _upload_offset (long g, String filename, String remotefilename, long offset)
+    throws LibGuestFSException;
+
+  /**
+   * download a file to the local machine with offset and size
+   * <p>
+   * Download file "remotefilename" and save it as "filename"
+   * on the local machine.
+   * <p>
+   * "remotefilename" is read for "size" bytes starting at
+   * "offset" (this region must be within the file or
+   * device).
+   * <p>
+   * Note that there is no limit on the amount of data that
+   * can be downloaded with this call, unlike with "g.pread",
+   * and this call always reads the full amount unless an
+   * error occurs.
+   * <p>
+   * See also "g.download", "g.pread".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void download_offset (String remotefilename, String filename, long offset, long size)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("download_offset: handle is closed");
+    _download_offset (g, remotefilename, filename, offset, size);
+  }
+  private native void _download_offset (long g, String remotefilename, String filename, long offset, long size)
+    throws LibGuestFSException;
+
+  /**
+   * write to part of a device
+   * <p>
+   * This command writes to part of a device. It writes the
+   * data buffer "content" to "device" starting at offset
+   * "offset".
+   * <p>
+   * This command implements the pwrite(2) system call, and
+   * like that system call it may not write the full data
+   * requested (although short writes to disk devices and
+   * partitions are probably impossible with standard Linux
+   * kernels).
+   * <p>
+   * See also "g.pwrite".
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public int pwrite_device (String device, byte[] content, long offset)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("pwrite_device: handle is closed");
+    return _pwrite_device (g, device, content, offset);
+  }
+  private native int _pwrite_device (long g, String device, byte[] content, long offset)
+    throws LibGuestFSException;
+
+  /**
+   * read part of a device
+   * <p>
+   * This command lets you read part of a file. It reads
+   * "count" bytes of "device", starting at "offset".
+   * <p>
+   * This may read fewer bytes than requested. For further
+   * details see the pread(2) system call.
+   * <p>
+   * See also "g.pread".
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String pread_device (String device, int count, long offset)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("pread_device: handle is closed");
+    return _pread_device (g, device, count, offset);
+  }
+  private native String _pread_device (long g, String device, int count, long offset)
+    throws LibGuestFSException;
+
+  /**
+   * get canonical name of an LV
+   * <p>
+   * This converts alternative naming schemes for LVs that
+   * you might find to the canonical name. For example,
+   * "/dev/mapper/VG-LV" is converted to "/dev/VG/LV".
+   * <p>
+   * This command returns an error if the "lvname" parameter
+   * does not refer to a logical volume.
+   * <p>
+   * See also "g.is_lv".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String lvm_canonical_lv_name (String lvname)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lvm_canonical_lv_name: handle is closed");
+    return _lvm_canonical_lv_name (g, lvname);
+  }
+  private native String _lvm_canonical_lv_name (long g, String lvname)
+    throws LibGuestFSException;
+
+  /**
+   * make a filesystem
+   * <p>
+   * This function creates a filesystem on "device". The
+   * filesystem type is "fstype", for example "ext3".
+   * <p>
+   * The optional arguments are:
+   * <p>
+   * "blocksize"
+   * The filesystem block size. Supported block sizes
+   * depend on the filesystem type, but typically they
+   * are 1024, 2048 or 4096 for Linux ext2/3 filesystems.
+   * <p>
+   * For VFAT and NTFS the "blocksize" parameter is
+   * treated as the requested cluster size.
+   * <p>
+   * For UFS block sizes, please see mkfs.ufs(8).
+   * <p>
+   * "features"
+   * This passes the *-O* parameter to the external mkfs
+   * program.
+   * <p>
+   * For certain filesystem types, this allows extra
+   * filesystem features to be selected. See mke2fs(8)
+   * and mkfs.ufs(8) for more details.
+   * <p>
+   * You cannot use this optional parameter with the
+   * "gfs" or "gfs2" filesystem type.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void mkfs_opts (String fstype, String device, HashMap optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mkfs_opts: handle is closed");
+    _mkfs_opts (g, fstype, device, optargs);
+  }
+  private native void _mkfs_opts (long g, String fstype, String device, HashMap optargs)
+    throws LibGuestFSException;
+
+  /**
+   * get a single extended attribute
+   * <p>
+   * Get a single extended attribute from file "path" named
+   * "name". This call follows symlinks. If you want to
+   * lookup an extended attribute for the symlink itself, use
+   * "g.lgetxattr".
+   * <p>
+   * Normally it is better to get all extended attributes
+   * from a file in one go by calling "g.getxattrs". However
+   * some Linux filesystem implementations are buggy and do
+   * not provide a way to list out attributes. For these
+   * filesystems (notably ntfs-3g) you have to know the names
+   * of the extended attributes you want in advance and call
+   * this function.
+   * <p>
+   * Extended attribute values are blobs of binary data. If
+   * there is no extended attribute named "name", this
+   * returns an error.
+   * <p>
+   * See also: "g.getxattrs", "g.lgetxattr", attr(5).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String getxattr (String path, String name)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("getxattr: handle is closed");
+    return _getxattr (g, path, name);
+  }
+  private native String _getxattr (long g, String path, String name)
+    throws LibGuestFSException;
+
+  /**
+   * get a single extended attribute
+   * <p>
+   * Get a single extended attribute from file "path" named
+   * "name". If "path" is a symlink, then this call returns
+   * an extended attribute from the symlink.
+   * <p>
+   * Normally it is better to get all extended attributes
+   * from a file in one go by calling "g.getxattrs". However
+   * some Linux filesystem implementations are buggy and do
+   * not provide a way to list out attributes. For these
+   * filesystems (notably ntfs-3g) you have to know the names
+   * of the extended attributes you want in advance and call
+   * this function.
+   * <p>
+   * Extended attribute values are blobs of binary data. If
+   * there is no extended attribute named "name", this
+   * returns an error.
+   * <p>
+   * See also: "g.lgetxattrs", "g.getxattr", attr(5).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String lgetxattr (String path, String name)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lgetxattr: handle is closed");
+    return _lgetxattr (g, path, name);
+  }
+  private native String _lgetxattr (long g, String path, String name)
+    throws LibGuestFSException;
+
+  /**
+   * resize an ext2, ext3 or ext4 filesystem to the minimum size
+   * <p>
+   * This command is the same as "g.resize2fs", but the
+   * filesystem is resized to its minimum size. This works
+   * like the *-M* option to the "resize2fs" command.
+   * <p>
+   * To get the resulting size of the filesystem you should
+   * call "g.tune2fs_l" and read the "Block size" and "Block
+   * count" values. These two numbers, multiplied together,
+   * give the resulting size of the minimal filesystem in
+   * bytes.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void resize2fs_M (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("resize2fs_M: handle is closed");
+    _resize2fs_M (g, device);
+  }
+  private native void _resize2fs_M (long g, String device)
+    throws LibGuestFSException;
+
+  public void internal_autosync ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("internal_autosync: handle is closed");
+    _internal_autosync (g);
+  }
+  private native void _internal_autosync (long g)
     throws LibGuestFSException;
 
 }

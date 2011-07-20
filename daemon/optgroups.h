@@ -1,9 +1,9 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   src/generator.ml
+ *   generator/generator_*.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2010 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,10 +25,13 @@ extern int optgroup_inotify_available (void);
 extern int optgroup_linuxfsuuid_available (void);
 extern int optgroup_linuxmodules_available (void);
 extern int optgroup_linuxxattrs_available (void);
+extern int optgroup_luks_available (void);
 extern int optgroup_lvm2_available (void);
 extern int optgroup_mknod_available (void);
 extern int optgroup_ntfs3g_available (void);
+extern int optgroup_ntfsprogs_available (void);
 extern int optgroup_realpath_available (void);
 extern int optgroup_scrub_available (void);
 extern int optgroup_selinux_available (void);
+extern int optgroup_xz_available (void);
 extern int optgroup_zerofree_available (void);

@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../src/guestfs_protocol.h"
+#include "guestfs_protocol.h"
 #include "daemon.h"
 #include "actions.h"
 
@@ -52,4 +52,22 @@ do_available (char *const *groups)
   }
 
   return 0;
+}
+
+char **
+do_available_all_groups (void)
+{
+  size_t i;
+  char **groups = NULL;
+  int size = 0, alloc = 0;
+
+  for (i = 0; optgroups[i].group != NULL; ++i) {
+    if (add_string (&groups, &size, &alloc, optgroups[i].group) == -1)
+      return NULL;
+  }
+
+  if (add_string (&groups, &size, &alloc, NULL) == -1)
+    return NULL;
+
+  return groups;                /* caller frees */
 }

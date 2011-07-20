@@ -33,13 +33,13 @@ EXTRA_DIST = \
 
 if HAVE_PYTHON
 
-pythondir = $(PYTHON_SITE_PACKAGES)
+pythondir = $(PYTHON_INSTALLDIR)
 
 python_DATA = guestfs.py
 
 python_LTLIBRARIES = libguestfsmod.la
 
-libguestfsmod_la_SOURCES = guestfs-py.c
+libguestfsmod_la_SOURCES = guestfs-py.c guestfs-py.h guestfs-py-byhand.c
 libguestfsmod_la_CFLAGS = -Wall -I$(PYTHON_INCLUDEDIR) \
 			  -I$(top_srcdir)/src -I$(top_builddir)/src
 libguestfsmod_la_LIBADD = $(top_builddir)/src/libguestfs.la

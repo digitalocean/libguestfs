@@ -1,5 +1,5 @@
 /* guestmount - mount guests using libguestfs and FUSE
- * Copyright (C) 2009 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <unistd.h>
 #include <getopt.h>
@@ -40,6 +41,8 @@
 #include <assert.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <locale.h>
+#include <libintl.h>
 
 #include <fuse.h>
 #include <guestfs.h>
@@ -47,6 +50,7 @@
 #include "progname.h"
 
 #include "guestmount.h"
+#include "options.h"
 #include "dircache.h"
 
 /* See <attr/xattr.h> */
@@ -54,45 +58,27 @@
 #define ENOATTR ENODATA
 #endif
 
-static guestfs_h *g = NULL;
-static int read_only = 0;
+guestfs_h *g = NULL;
+int read_only = 0;
+int live = 0;
 int verbose = 0;
+int inspector = 0;
+int keys_from_stdin = 0;
+int echo_keys = 0;
+const char *libvirt_uri;
 int dir_cache_timeout = 60;
+static int trace_calls = 0;
 
-/* This is ugly: guestfs errors are strings, FUSE wants -errno.  We
- * have to do the conversion as best we can.
- */
-#define MAX_ERRNO 256
+#define TRACE_CALL(fs,...)                                              \
+  if (trace_calls) {                                                    \
+    fprintf (stderr, "%s: %s (" fs ")\n",                               \
+             program_name, __func__, __VA_ARGS__);                      \
+  }
 
 static int
 error (void)
 {
-  int i;
-  const char *err = guestfs_last_error (g);
-
-  if (!err)
-    return -EINVAL;
-
-  if (verbose)
-    fprintf (stderr, "%s\n", err);
-
-  /* Add a few of our own ... */
-
-  /* This indicates guestfsd died.  Translate into a hard EIO error.
-   * Arguably we could relaunch the guest if we hit this error.
-   */
-  if (strstr (err, "call launch before using this function"))
-    return -EIO;
-
-  /* See if it matches an errno string in the host. */
-  for (i = 0; i < MAX_ERRNO; ++i) {
-    const char *e = strerror (i);
-    if (e && strstr (err, e) != NULL)
-      return -i;
-  }
-
-  /* Too bad, return a generic error. */
-  return -EINVAL;
+  return -guestfs_last_errno (g);
 }
 
 static struct guestfs_xattr_list *
@@ -129,6 +115,8 @@ static int
 fg_readdir (const char *path, void *buf, fuse_fill_dir_t filler,
             off_t offset, struct fuse_file_info *fi)
 {
+  TRACE_CALL ("%s, %p, %ld", path, buf, (long) offset);
+
   time_t now;
   time (&now);
 
@@ -250,6 +238,8 @@ fg_readdir (const char *path, void *buf, fuse_fill_dir_t filler,
 static int
 fg_getattr (const char *path, struct stat *statbuf)
 {
+  TRACE_CALL ("%s, %p", path, statbuf);
+
   const struct stat *buf;
 
   buf = lsc_lookup (path);
@@ -290,6 +280,8 @@ fg_getattr (const char *path, struct stat *statbuf)
 static int
 fg_access (const char *path, int mask)
 {
+  TRACE_CALL ("%s, %d", path, mask);
+
   struct stat statbuf;
   int r;
 
@@ -325,6 +317,8 @@ fg_access (const char *path, int mask)
 static int
 fg_readlink (const char *path, char *buf, size_t size)
 {
+  TRACE_CALL ("%s, %p, %zu", path, buf, size);
+
   const char *r;
   int free_it = 0;
 
@@ -357,6 +351,8 @@ fg_readlink (const char *path, char *buf, size_t size)
 static int
 fg_mknod (const char *path, mode_t mode, dev_t rdev)
 {
+  TRACE_CALL ("%s, 0%o, 0x%lx", path, mode, (long) rdev);
+
   int r;
 
   if (read_only) return -EROFS;
@@ -373,6 +369,8 @@ fg_mknod (const char *path, mode_t mode, dev_t rdev)
 static int
 fg_mkdir (const char *path, mode_t mode)
 {
+  TRACE_CALL ("%s, 0%o", path, mode);
+
   int r;
 
   if (read_only) return -EROFS;
@@ -389,6 +387,8 @@ fg_mkdir (const char *path, mode_t mode)
 static int
 fg_unlink (const char *path)
 {
+  TRACE_CALL ("%s", path);
+
   int r;
 
   if (read_only) return -EROFS;
@@ -405,6 +405,8 @@ fg_unlink (const char *path)
 static int
 fg_rmdir (const char *path)
 {
+  TRACE_CALL ("%s", path);
+
   int r;
 
   if (read_only) return -EROFS;
@@ -421,6 +423,8 @@ fg_rmdir (const char *path)
 static int
 fg_symlink (const char *from, const char *to)
 {
+  TRACE_CALL ("%s, %s", from, to);
+
   int r;
 
   if (read_only) return -EROFS;
@@ -437,6 +441,8 @@ fg_symlink (const char *from, const char *to)
 static int
 fg_rename (const char *from, const char *to)
 {
+  TRACE_CALL ("%s, %s", from, to);
+
   int r;
 
   if (read_only) return -EROFS;
@@ -458,6 +464,8 @@ fg_rename (const char *from, const char *to)
 static int
 fg_link (const char *from, const char *to)
 {
+  TRACE_CALL ("%s, %s", from, to);
+
   int r;
 
   if (read_only) return -EROFS;
@@ -475,6 +483,8 @@ fg_link (const char *from, const char *to)
 static int
 fg_chmod (const char *path, mode_t mode)
 {
+  TRACE_CALL ("%s, 0%o", path, mode);
+
   int r;
 
   if (read_only) return -EROFS;
@@ -491,6 +501,8 @@ fg_chmod (const char *path, mode_t mode)
 static int
 fg_chown (const char *path, uid_t uid, gid_t gid)
 {
+  TRACE_CALL ("%s, %ld, %ld", path, (long) uid, (long) gid);
+
   int r;
 
   if (read_only) return -EROFS;
@@ -507,6 +519,8 @@ fg_chown (const char *path, uid_t uid, gid_t gid)
 static int
 fg_truncate (const char *path, off_t size)
 {
+  TRACE_CALL ("%s, %ld", path, (long) size);
+
   int r;
 
   if (read_only) return -EROFS;
@@ -523,6 +537,9 @@ fg_truncate (const char *path, off_t size)
 static int
 fg_utimens (const char *path, const struct timespec ts[2])
 {
+  TRACE_CALL ("%s, [{ %ld, %ld }, { %ld, %ld }]",
+              path, ts[0].tv_sec, ts[0].tv_nsec, ts[1].tv_sec, ts[1].tv_nsec);
+
   int r;
 
   if (read_only) return -EROFS;
@@ -558,53 +575,18 @@ fg_utimens (const char *path, const struct timespec ts[2])
   return 0;
 }
 
-/* This call is quite hard to emulate through the guestfs(3) API.  In
- * one sense it's a little like access (see above) because it tests
- * whether opening a file would succeed given the flags.  But it also
- * has side effects such as truncating the file if O_TRUNC is given.
- * Therefore we need to emulate it ... painfully.
+/* All this function needs to do is to check that the requested open
+ * flags are valid.  See the notes in <fuse/fuse.h>.
  */
 static int
 fg_open (const char *path, struct fuse_file_info *fi)
 {
-  int r, exists;
+  TRACE_CALL ("%s, 0%o", path, fi->flags);
+             
+  int flags = fi->flags & 3;
 
-  if (fi->flags & O_WRONLY) {
-    if (read_only)
-      return -EROFS;
-  }
-
-  exists = guestfs_exists (g, path);
-  if (exists == -1)
-    return error ();
-
-  if (fi->flags & O_CREAT) {
-    if (read_only)
-      return -EROFS;
-
-    dir_cache_invalidate (path);
-
-    /* Exclusive?  File must not exist already. */
-    if (fi->flags & O_EXCL) {
-      if (exists)
-        return -EEXIST;
-    }
-
-    /* Create?  Touch it and optionally truncate it. */
-    r = guestfs_touch (g, path);
-    if (r == -1)
-      return error ();
-
-    if (fi->flags & O_TRUNC) {
-      r = guestfs_truncate (g, path);
-      if (r == -1)
-        return error ();
-    }
-  } else {
-    /* Not create, just check it exists. */
-    if (!exists)
-      return -ENOENT;
-  }
+  if (read_only && flags != O_RDONLY)
+    return -EROFS;
 
   return 0;
 }
@@ -613,6 +595,8 @@ static int
 fg_read (const char *path, char *buf, size_t size, off_t offset,
          struct fuse_file_info *fi)
 {
+  TRACE_CALL ("%s, %p, %zu, %ld", path, buf, size, offset);
+             
   char *r;
   size_t rsize;
 
@@ -648,16 +632,30 @@ static int
 fg_write (const char *path, const char *buf, size_t size,
           off_t offset, struct fuse_file_info *fi)
 {
+  TRACE_CALL ("%s, %p, %zu, %ld", path, buf, size, offset);
+
   if (read_only) return -EROFS;
 
   dir_cache_invalidate (path);
 
-  return -ENOSYS;               /* XXX */
+  /* See fg_read. */
+  const size_t limit = 2 * 1024 * 1024;
+  if (size > limit)
+    size = limit;
+
+  int r;
+  r = guestfs_pwrite (g, path, buf, size, offset);
+  if (r == -1)
+    return error ();
+
+  return r;
 }
 
 static int
 fg_statfs (const char *path, struct statvfs *stbuf)
 {
+  TRACE_CALL ("%s, %p", path, stbuf);
+
   struct guestfs_statvfs *r;
 
   r = guestfs_statvfs (g, path);
@@ -684,6 +682,8 @@ fg_statfs (const char *path, struct statvfs *stbuf)
 static int
 fg_release (const char *path, struct fuse_file_info *fi)
 {
+  TRACE_CALL ("%s", path);
+
   /* Just a stub. This method is optional and can safely be left
    * unimplemented.
    */
@@ -694,6 +694,8 @@ fg_release (const char *path, struct fuse_file_info *fi)
 static int fg_fsync(const char *path, int isdatasync,
                      struct fuse_file_info *fi)
 {
+  TRACE_CALL ("%s, %d", path, isdatasync);
+
   int r;
 
   r = guestfs_sync (g);
@@ -707,6 +709,8 @@ static int
 fg_setxattr (const char *path, const char *name, const char *value,
              size_t size, int flags)
 {
+  TRACE_CALL ("%s, %s, %p, %zu", path, name, value, size);
+
   int r;
 
   if (read_only) return -EROFS;
@@ -729,6 +733,8 @@ static int
 fg_getxattr (const char *path, const char *name, char *value,
              size_t size)
 {
+  TRACE_CALL ("%s, %s, %p, %zu", path, name, value, size);
+
   const struct guestfs_xattr_list *xattrs;
   int free_attrs = 0;
 
@@ -740,19 +746,41 @@ fg_getxattr (const char *path, const char *name, char *value,
     free_attrs = 1;
   }
 
+  /* Find the matching attribute (index in 'i'). */
+  ssize_t r;
   size_t i;
-  int r = -ENOATTR;
   for (i = 0; i < xattrs->len; ++i) {
-    if (STREQ (xattrs->val[i].attrname, name)) {
-      size_t sz = xattrs->val[i].attrval_len;
-      if (sz > size)
-        sz = size;
-      memcpy (value, xattrs->val[i].attrval, sz);
-      r = 0;
+    if (STREQ (xattrs->val[i].attrname, name))
       break;
-    }
   }
 
+  if (i == xattrs->len) {       /* not found */
+    r = -ENOATTR;
+    goto out;
+  }
+
+  /* The getxattr man page is unclear, but if value == NULL then we
+   * return the space required (the caller then makes a second syscall
+   * after allocating the required amount of space).  If value != NULL
+   * then it's not clear what we should do, but it appears we should
+   * copy as much as possible and return -ERANGE if there's not enough
+   * space in the buffer.
+   */
+  size_t sz = xattrs->val[i].attrval_len;
+  if (value == NULL) {
+    r = sz;
+    goto out;
+  }
+
+  if (sz <= size)
+    r = sz;
+  else {
+    r = -ERANGE;
+    sz = size;
+  }
+  memcpy (value, xattrs->val[i].attrval, sz);
+
+out:
   if (free_attrs)
     guestfs_free_xattr_list ((struct guestfs_xattr_list *) xattrs);
 
@@ -763,6 +791,8 @@ fg_getxattr (const char *path, const char *name, char *value,
 static int
 fg_listxattr (const char *path, char *list, size_t size)
 {
+  TRACE_CALL ("%s, %p, %zu", path, list, size);
+
   const struct guestfs_xattr_list *xattrs;
   int free_attrs = 0;
 
@@ -774,30 +804,54 @@ fg_listxattr (const char *path, char *list, size_t size)
     free_attrs = 1;
   }
 
+  /* Calculate how much space is required to hold the result. */
+  size_t space = 0;
+  size_t len;
   size_t i;
-  ssize_t copied = 0;
   for (i = 0; i < xattrs->len; ++i) {
-    size_t len = strlen (xattrs->val[i].attrname) + 1;
+    len = strlen (xattrs->val[i].attrname) + 1;
+    space += len;
+  }
+
+  /* The listxattr man page is unclear, but if list == NULL then we
+   * return the space required (the caller then makes a second syscall
+   * after allocating the required amount of space).  If list != NULL
+   * then it's not clear what we should do, but it appears we should
+   * copy as much as possible and return -ERANGE if there's not enough
+   * space in the buffer.
+   */
+  ssize_t r;
+  if (list == NULL) {
+    r = space;
+    goto out;
+  }
+
+  r = 0;
+  for (i = 0; i < xattrs->len; ++i) {
+    len = strlen (xattrs->val[i].attrname) + 1;
     if (size >= len) {
       memcpy (list, xattrs->val[i].attrname, len);
       size -= len;
       list += len;
-      copied += len;
+      r += len;
     } else {
-      copied = -ERANGE;
+      r = -ERANGE;
       break;
     }
   }
 
+ out:
   if (free_attrs)
     guestfs_free_xattr_list ((struct guestfs_xattr_list *) xattrs);
 
-  return copied;
+  return r;
 }
 
 static int
 fg_removexattr(const char *path, const char *name)
 {
+  TRACE_CALL ("%s, %s", path, name);
+
   int r;
 
   if (read_only) return -EROFS;
@@ -839,20 +893,6 @@ static struct fuse_operations fg_operations = {
   .removexattr	= fg_removexattr,
 };
 
-struct drv {
-  struct drv *next;
-  char *filename;
-};
-
-struct mp {
-  struct mp *next;
-  char *device;
-  char *mountpoint;
-};
-
-static void add_drives (struct drv *);
-static void mount_mps (struct mp *);
-
 static void __attribute__((noreturn))
 fuse_help (void)
 {
@@ -871,22 +911,30 @@ usage (int status)
     fprintf (stdout,
            _("%s: FUSE module for libguestfs\n"
              "%s lets you mount a virtual machine filesystem\n"
-             "Copyright (C) 2009 Red Hat Inc.\n"
+             "Copyright (C) 2009-2010 Red Hat Inc.\n"
              "Usage:\n"
              "  %s [--options] [-- [--FUSE-options]] mountpoint\n"
              "Options:\n"
              "  -a|--add image       Add image\n"
+             "  -c|--connect uri     Specify libvirt URI for -d option\n"
              "  --dir-cache-timeout  Set readdir cache timeout (default 5 sec)\n"
+             "  -d|--domain guest    Add disks from libvirt guest\n"
+             "  --echo-keys          Don't turn off echo for passphrases\n"
+             "  --format[=raw|..]    Force disk format for -a option\n"
              "  --fuse-help          Display extra FUSE options\n"
+             "  -i|--inspector       Automatically mount filesystems\n"
              "  --help               Display help message and exit\n"
-             "  -m|--mount dev[:mnt] Mount dev on mnt (if omitted, /)\n"
+             "  --keys-from-stdin    Read passphrases from stdin\n"
+             "  --live               Connect to a live virtual machine\n"
+             "  -m|--mount dev[:mnt[:opts]] Mount dev on mnt (if omitted, /)\n"
              "  -n|--no-sync         Don't autosync\n"
              "  -o|--option opt      Pass extra option to FUSE\n"
              "  -r|--ro              Mount read-only\n"
              "  --selinux            Enable SELinux support\n"
-             "  --trace              Trace guestfs API calls (to stderr)\n"
              "  -v|--verbose         Verbose messages\n"
              "  -V|--version         Display version and exit\n"
+             "  -w|--rw              Mount read-write\n"
+             "  -x|--trace           Trace guestfs API calls\n"
              ),
              program_name, program_name, program_name);
   }
@@ -900,23 +948,33 @@ main (int argc, char *argv[])
   bindtextdomain (PACKAGE, LOCALEBASEDIR);
   textdomain (PACKAGE);
 
+  parse_config ();
+
   enum { HELP_OPTION = CHAR_MAX + 1 };
 
   /* The command line arguments are broadly compatible with (a subset
    * of) guestfish.  Thus we have to deal mainly with -a, -m and --ro.
    */
-  static const char *options = "a:m:no:rv?V";
+  static const char *options = "a:c:d:im:no:rv?Vwx";
   static const struct option long_options[] = {
     { "add", 1, 0, 'a' },
+    { "connect", 1, 0, 'c' },
     { "dir-cache-timeout", 1, 0, 0 },
+    { "domain", 1, 0, 'd' },
+    { "echo-keys", 0, 0, 0 },
+    { "format", 2, 0, 0 },
     { "fuse-help", 0, 0, 0 },
     { "help", 0, 0, HELP_OPTION },
+    { "inspector", 0, 0, 'i' },
+    { "keys-from-stdin", 0, 0, 0 },
+    { "live", 0, 0, 0 },
     { "mount", 1, 0, 'm' },
     { "no-sync", 0, 0, 'n' },
     { "option", 1, 0, 'o' },
     { "ro", 0, 0, 'r' },
+    { "rw", 0, 0, 'w' },
     { "selinux", 0, 0, 0 },
-    { "trace", 0, 0, 0 },
+    { "trace", 0, 0, 'x' },
     { "verbose", 0, 0, 'v' },
     { "version", 0, 0, 'V' },
     { 0, 0, 0, 0 }
@@ -927,7 +985,8 @@ main (int argc, char *argv[])
   struct mp *mps = NULL;
   struct mp *mp;
   char *p;
-  int c, i, r;
+  const char *format = NULL;
+  int c, r;
   int option_index;
   struct sigaction sa;
 
@@ -966,7 +1025,6 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  guestfs_set_autosync (g, 1);
   guestfs_set_recovery_proc (g, 0);
 
   ADD_FUSE_ARG (program_name);
@@ -975,19 +1033,6 @@ main (int argc, char *argv[])
    * to be very expensive.
    */
   ADD_FUSE_ARG ("-s");
-
-  /* If developing, add ./appliance to the path.  Note that libtools
-   * interferes with this because uninstalled guestfish is a shell
-   * script that runs the real program with an absolute path.  Detect
-   * that too.
-   *
-   * BUT if LIBGUESTFS_PATH environment variable is already set by
-   * the user, then don't override it.
-   */
-  if (getenv ("LIBGUESTFS_PATH") == NULL &&
-      argv[0] &&
-      (argv[0][0] != '/' || strstr (argv[0], "/.libs/lt-") != NULL))
-    guestfs_set_path (g, "appliance:" GUESTFS_DEFAULT_PATH);
 
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
@@ -1001,12 +1046,18 @@ main (int argc, char *argv[])
         fuse_help ();
       else if (STREQ (long_options[option_index].name, "selinux"))
         guestfs_set_selinux (g, 1);
-      else if (STREQ (long_options[option_index].name, "trace")) {
-        ADD_FUSE_ARG ("-f");
-        guestfs_set_trace (g, 1);
-        guestfs_set_recovery_proc (g, 1);
-      }
-      else {
+      else if (STREQ (long_options[option_index].name, "format")) {
+        if (!optarg || STREQ (optarg, ""))
+          format = NULL;
+        else
+          format = optarg;
+      } else if (STREQ (long_options[option_index].name, "keys-from-stdin")) {
+        keys_from_stdin = 1;
+      } else if (STREQ (long_options[option_index].name, "echo-keys")) {
+        echo_keys = 1;
+      } else if (STREQ (long_options[option_index].name, "live")) {
+        live = 1;
+      } else {
         fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
                  program_name, long_options[option_index].name, option_index);
         exit (EXIT_FAILURE);
@@ -1014,39 +1065,27 @@ main (int argc, char *argv[])
       break;
 
     case 'a':
-      if (access (optarg, R_OK) != 0) {
-        perror (optarg);
-        exit (EXIT_FAILURE);
-      }
-      drv = malloc (sizeof (struct drv));
-      if (!drv) {
-        perror ("malloc");
-        exit (EXIT_FAILURE);
-      }
-      drv->filename = optarg;
-      drv->next = drvs;
-      drvs = drv;
+      OPTION_a;
+      break;
+
+    case 'c':
+      OPTION_c;
+      break;
+
+    case 'd':
+      OPTION_d;
+      break;
+
+    case 'i':
+      OPTION_i;
       break;
 
     case 'm':
-      mp = malloc (sizeof (struct mp));
-      if (!mp) {
-        perror ("malloc");
-        exit (EXIT_FAILURE);
-      }
-      p = strchr (optarg, ':');
-      if (p) {
-        *p = '\0';
-        mp->mountpoint = p+1;
-      } else
-        mp->mountpoint = bad_cast ("/");
-      mp->device = optarg;
-      mp->next = mps;
-      mps = mp;
+      OPTION_m;
       break;
 
     case 'n':
-      guestfs_set_autosync (g, 0);
+      OPTION_n;
       break;
 
     case 'o':
@@ -1055,17 +1094,27 @@ main (int argc, char *argv[])
       break;
 
     case 'r':
-      read_only = 1;
+      OPTION_r;
       break;
 
     case 'v':
-      verbose++;
-      guestfs_set_verbose (g, verbose);
+      OPTION_v;
       break;
 
     case 'V':
-      printf ("%s %s\n", program_name, PACKAGE_VERSION);
-      exit (EXIT_SUCCESS);
+      OPTION_V;
+      break;
+
+    case 'w':
+      OPTION_w;
+      break;
+
+    case 'x':
+      OPTION_x;
+      ADD_FUSE_ARG ("-f");
+      guestfs_set_recovery_proc (g, 1);
+      trace_calls = 1;
+      break;
 
     case HELP_OPTION:
       usage (EXIT_SUCCESS);
@@ -1075,10 +1124,10 @@ main (int argc, char *argv[])
     }
   }
 
-  /* We must have at least one -a and at least one -m. */
-  if (!drvs || !mps) {
+  /* Check we have the right options. */
+  if (!drvs || !(mps || inspector)) {
     fprintf (stderr,
-             _("%s: must have at least one -a and at least one -m option\n"),
+             _("%s: must have at least one -a/-d and at least one -m/-i option\n"),
              program_name);
     exit (EXIT_FAILURE);
   }
@@ -1092,10 +1141,15 @@ main (int argc, char *argv[])
   }
 
   /* Do the guest drives and mountpoints. */
-  add_drives (drvs);
+  add_drives (drvs, 'a');
   if (guestfs_launch (g) == -1)
     exit (EXIT_FAILURE);
+  if (inspector)
+    inspect_mount ();
   mount_mps (mps);
+
+  free_drives (drvs);
+  free_mps (mps);
 
   /* FUSE example does this, not clear if it's necessary, but ... */
   if (guestfs_umask (g, 0) == -1)
@@ -1133,41 +1187,4 @@ main (int argc, char *argv[])
   free_dir_caches ();
 
   exit (r == -1 ? 1 : 0);
-}
-
-/* List is built in reverse order, so add them in reverse order. */
-static void
-add_drives (struct drv *drv)
-{
-  int r;
-
-  if (drv) {
-    add_drives (drv->next);
-    if (!read_only)
-      r = guestfs_add_drive (g, drv->filename);
-    else
-      r = guestfs_add_drive_ro (g, drv->filename);
-    if (r == -1)
-      exit (EXIT_FAILURE);
-  }
-}
-
-/* List is built in reverse order, so mount them in reverse order. */
-static void
-mount_mps (struct mp *mp)
-{
-  int r;
-
-  if (mp) {
-    mount_mps (mp->next);
-
-    /* Don't use guestfs_mount here because that will default to mount
-     * options -o sync,noatime.  For more information, see guestfs(3)
-     * section "LIBGUESTFS GOTCHAS".
-     */
-    const char *options = read_only ? "ro" : "";
-    r = guestfs_mount_options (g, options, mp->device, mp->mountpoint);
-    if (r == -1)
-      exit (EXIT_FAILURE);
-  }
 }

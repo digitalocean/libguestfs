@@ -1,5 +1,5 @@
 # Sys::Guestfs::Lib
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2010 Red Hat Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -20,6 +20,15 @@ package Sys::Guestfs::Lib;
 use strict;
 use warnings;
 
+# The minor part of this version number is incremented when some
+# change is made to this module.  The major part is incremented if we
+# make a change which is not backwards compatible.  It is not related
+# to the libguestfs version number.
+use vars qw($VERSION);
+$VERSION = '0.3';
+
+use Carp qw(croak);
+
 use Sys::Guestfs;
 use File::Temp qw/tempdir/;
 use Locale::TextDomain 'libguestfs';
@@ -28,6 +37,7 @@ use Locale::TextDomain 'libguestfs';
 eval "use Sys::Virt;";
 eval "use XML::XPath;";
 eval "use XML::XPath::XMLParser;";
+eval "use Win::Hivex;";
 
 =pod
 
@@ -37,13 +47,9 @@ Sys::Guestfs::Lib - Useful functions for using libguestfs from Perl
 
 =head1 SYNOPSIS
 
- use Sys::Guestfs::Lib qw(open_guest inspect_all_partitions ...);
+ use Sys::Guestfs::Lib qw(open_guest ...);
 
  $g = open_guest ($name);
-
- %fses = inspect_all_partitions ($g, \@partitions);
-
-(and many more calls - see the rest of this manpage)
 
 =head1 DESCRIPTION
 
@@ -54,6 +60,14 @@ with libvirt.
 The basic libguestfs API is not covered by this manpage.  Please refer
 instead to L<Sys::Guestfs(3)> and L<guestfs(3)>.  The libvirt API is
 also not covered.  For that, see L<Sys::Virt(3)>.
+
+=head1 DEPRECATION OF SOME FUNCTIONS
+
+This module contains functions and code to perform inspection of guest
+images.  Since libguestfs 1.5.3 this ability has moved into the core
+API (see L<guestfs(3)/INSPECTION>).  The inspection functions in this
+module are deprecated and will not be updated.  Each deprecated
+function is marked in the documentation below.
 
 =head1 BASIC FUNCTIONS
 
@@ -78,7 +92,7 @@ use vars qw(@EXPORT_OK @ISA);
 
  $g = open_guest ($name, address => $uri, ...);
 
- $g = open_guest ([$img1, $img2, ...], address => $uri, ...);
+ $g = open_guest ([$img1, $img2, ...], address => $uri, format => $format, ...);
 
  ($g, $conn, $dom, @images) = open_guest ($name);
 
@@ -93,7 +107,8 @@ block.
 
 The first parameter is either a string referring to a libvirt domain
 or a disk image, or (if a guest has several disk images) an arrayref
-C<[$img1, $img2, ...]>.
+C<[$img1, $img2, ...]>.  For disk images, if the C<format> parameter
+is specified then that format is forced.
 
 The handle is I<read-only> by default.  Use the optional parameter
 C<rw =E<gt> 1> to open a read-write handle.  However if you open a
@@ -110,16 +125,16 @@ The implicit libvirt handle is closed after this function, I<unless>
 you call the function in C<wantarray> context, in which case the
 function returns a tuple of: the open libguestfs handle, the open
 libvirt handle, and the open libvirt domain handle, and a list of
-images.  (This is useful if you want to do other things like pulling
-the XML description of the guest).  Note that if this is a straight
-disk image, then C<$conn> and C<$dom> will be C<undef>.
+[image,format] pairs.  (This is useful if you want to do other things
+like pulling the XML description of the guest).  Note that if this is
+a straight disk image, then C<$conn> and C<$dom> will be C<undef>.
 
 If the C<Sys::Virt> module is not available, then libvirt is bypassed,
 and this function can only open disk images.
 
-The optional C<interface> parameter can be used to open devices with
-C<add_drive{,_ro}_with_if>.  See
-L<Sys::Guestfs/guestfs_add_drive_with_if> for more details.
+The optional C<interface> parameter can be used to open devices with a
+specified qemu interface.  See L<Sys::Guestfs/guestfs_add_drive_opts>
+for more details.
 
 =cut
 
@@ -132,6 +147,7 @@ sub open_guest
     my $rw = $params{rw};
     my $address = $params{address};
     my $interface = $params{interface};
+    my $format = $params{format}; # undef == autodetect
 
     my @images = ();
     if (ref ($first) eq "ARRAY") {
@@ -139,17 +155,26 @@ sub open_guest
     } elsif (ref ($first) eq "SCALAR") {
         @images = ($first);
     } else {
-        die __"open_guest: first parameter must be a string or an arrayref"
+        croak __"open_guest: first parameter must be a string or an arrayref"
+    }
+
+    # Check each element of @images is defined.
+    # (See https://bugzilla.redhat.com/show_bug.cgi?id=601092#c3).
+    foreach (@images) {
+        croak __"open_guest: first argument contains undefined element"
+            unless defined $_;
     }
 
     my ($conn, $dom);
 
     if (-e $images[0]) {
         foreach (@images) {
-            die __x("guest image {imagename} does not exist or is not readable",
+            croak __x("guest image {imagename} does not exist or is not readable",
                     imagename => $_)
                 unless -r $_;
         }
+
+        @images = map { [ $_, $format ] } @images;
     } else {
         die __"open_guest: no libvirt support (install Sys::Virt, XML::XPath and XML::XPath::XMLParser)"
             unless exists $INC{"Sys/Virt.pm"} &&
@@ -194,32 +219,41 @@ sub open_guest
         my $xml = $dom->get_xml_description ();
 
         my $p = XML::XPath->new (xml => $xml);
-        my @disks = $p->findnodes ('//devices/disk/source/@dev');
-        push (@disks, $p->findnodes ('//devices/disk/source/@file'));
+        my $nodes = $p->find ('//devices/disk');
+
+        my @disks = ();
+        my $node;
+        foreach $node ($nodes->get_nodelist) {
+            # The filename can be in dev or file attribute, hence:
+            my $filename = $p->find ('./source/@dev', $node);
+            unless ($filename) {
+                $filename = $p->find ('./source/@file', $node);
+                next unless $filename;
+            }
+            $filename = $filename->to_literal;
+
+            # Get the disk format (may not be set).
+            my $format = $p->find ('./driver/@type', $node);
+            $format = $format->to_literal if $format;
+
+            push @disks, [ $filename, $format ];
+        }
 
         die __x("{imagename} seems to have no disk devices\n",
                 imagename => $images[0])
             unless @disks;
 
-        @images = map { $_->getData } @disks;
+        @images = @disks;
     }
 
     # We've now got the list of @images, so feed them to libguestfs.
     my $g = Sys::Guestfs->new ();
     foreach (@images) {
-        if ($rw) {
-            if ($interface) {
-                $g->add_drive_with_if ($_, $interface);
-            } else {
-                $g->add_drive ($_);
-            }
-        } else {
-            if ($interface) {
-                $g->add_drive_ro_with_if ($_, $interface);
-            } else {
-                $g->add_drive_ro ($_);
-            }
-        }
+        my @args = ($_->[0]);
+        push @args, format => $_->[1] if defined $_->[1];
+        push @args, readonly => 1 unless $rw;
+        push @args, iface => $interface if defined $interface;
+        $g->add_drive_opts (@args);
     }
 
     return wantarray ? ($g, $conn, $dom, @images) : $g
@@ -251,21 +285,25 @@ sub feature_available {
 
 =head2 get_partitions
 
- @partitions = get_partitions ($g);
-
-This function takes an open libguestfs handle C<$g> and returns all
-partitions and logical volumes found on it.
-
-What is returned is everything that could contain a filesystem (or
-swap).  Physical volumes are excluded from the list, and so are any
-devices which are partitioned (eg. C</dev/sda> would not be returned
-if C</dev/sda1> exists).
+This function is deprecated.  It will not be updated in future
+versions of libguestfs.  New code should not use this function.  Use
+the core API function L<Sys::Guestfs(3)/list_filesystems> instead.
 
 =cut
 
 sub get_partitions
 {
+    local $_;
     my $g = shift;
+
+    # Look to see if any devices directly contain filesystems (RHBZ#590167).
+    my @devices = $g->list_devices ();
+    my @fses_on_device = ();
+    foreach (@devices) {
+        eval { $g->mount_ro ($_, "/"); };
+        push @fses_on_device, $_ unless $@;
+        $g->umount_all ();
+    }
 
     my @partitions = $g->list_partitions ();
     my @pvs = $g->pvs ();
@@ -274,7 +312,7 @@ sub get_partitions
     my @lvs;
     @lvs = $g->lvs () if feature_available ($g, "lvm2");
 
-    return sort (@lvs, @partitions);
+    return sort (@fses_on_device, @lvs, @partitions);
 }
 
 sub _is_pv {
@@ -319,269 +357,27 @@ sub resolve_windows_path
 
 =head2 file_architecture
 
- $arch = file_architecture ($g, $path)
+Deprecated function.  Replace any calls to this function with:
 
-The C<file_architecture> function lets you get the architecture for a
-particular binary or library in the guest.  By "architecture" we mean
-what processor it is compiled for (eg. C<i586> or C<x86_64>).
-
-The function works on at least the following types of files:
-
-=over 4
-
-=item *
-
-many types of Un*x binary
-
-=item *
-
-many types of Un*x shared library
-
-=item *
-
-Windows Win32 and Win64 binaries
-
-=item *
-
-Windows Win32 and Win64 DLLs
-
-Win32 binaries and DLLs return C<i386>.
-
-Win64 binaries and DLLs return C<x86_64>.
-
-=item *
-
-Linux kernel modules
-
-=item *
-
-Linux new-style initrd images
-
-=item *
-
-some non-x86 Linux vmlinuz kernels
-
-=back
-
-What it can't do currently:
-
-=over 4
-
-=item *
-
-static libraries (libfoo.a)
-
-=item *
-
-Linux old-style initrd as compressed ext2 filesystem (RHEL 3)
-
-=item *
-
-x86 Linux vmlinuz kernels
-
-x86 vmlinuz images (bzImage format) consist of a mix of 16-, 32- and
-compressed code, and are horribly hard to unpack.  If you want to find
-the architecture of a kernel, use the architecture of the associated
-initrd or kernel module(s) instead.
-
-=back
+ $g->file_architecture ($path);
 
 =cut
 
-sub _elf_arch_to_canonical
-{
-    local $_ = shift;
-
-    if ($_ eq "Intel 80386") {
-        return "i386";
-    } elsif ($_ eq "Intel 80486") {
-        return "i486";	# probably not in the wild
-    } elsif ($_ eq "x86-64") {
-        return "x86_64";
-    } elsif ($_ eq "AMD x86-64") {
-        return "x86_64";
-    } elsif (/SPARC32/) {
-        return "sparc";
-    } elsif (/SPARC V9/) {
-        return "sparc64";
-    } elsif ($_ eq "IA-64") {
-        return "ia64";
-    } elsif (/64.*PowerPC/) {
-        return "ppc64";
-    } elsif (/PowerPC/) {
-        return "ppc";
-    } else {
-        warn __x("returning non-canonical architecture type '{arch}'",
-                 arch => $_);
-        return $_;
-    }
-}
-
-my @_initrd_binaries = ("nash", "modprobe", "sh", "bash");
-
 sub file_architecture
 {
-    local $_;
     my $g = shift;
     my $path = shift;
 
-    # Our basic tool is 'file' ...
-    my $file = $g->file ($path);
-
-    if ($file =~ /ELF.*(?:executable|shared object|relocatable), (.+?),/) {
-        # ELF executable or shared object.  We need to convert
-        # what file(1) prints into the canonical form.
-        return _elf_arch_to_canonical ($1);
-    } elsif ($file =~ /PE32 executable/) {
-        return "i386";		# Win32 executable or DLL
-    } elsif ($file =~ /PE32\+ executable/) {
-        return "x86_64";	# Win64 executable or DLL
-    }
-
-    elsif ($file =~ /cpio archive/) {
-        # Probably an initrd.
-        my $zcat = "cat";
-        if ($file =~ /gzip/) {
-            $zcat = "zcat";
-        } elsif ($file =~ /bzip2/) {
-            $zcat = "bzcat";
-        }
-
-        # Download and unpack it to find a binary file.
-        my $dir = tempdir (CLEANUP => 1);
-        $g->download ($path, "$dir/initrd");
-
-        my $bins = join " ", map { "bin/$_" } @_initrd_binaries;
-        my $cmd = "cd $dir && $zcat initrd | cpio --quiet -id $bins";
-        my $r = system ($cmd);
-        die __x("cpio command failed: {error}", error => $?)
-            unless $r == 0;
-
-        foreach my $bin (@_initrd_binaries) {
-            if (-f "$dir/bin/$bin") {
-                $_ = `file $dir/bin/$bin`;
-                if (/ELF.*executable, (.+?),/) {
-                    return _elf_arch_to_canonical ($1);
-                }
-            }
-        }
-
-        die __x("file_architecture: no known binaries found in initrd image: {path}",
-                path => $path);
-    }
-
-    die __x("file_architecture: unknown architecture: {path}",
-            path => $path);
+    return $g->file_architecture ($path);
 }
 
 =head1 OPERATING SYSTEM INSPECTION FUNCTIONS
 
-The functions in this section can be used to inspect the operating
-system(s) available inside a virtual machine image.  For example, you
-can find out if the VM is Linux or Windows, how the partitions are
-meant to be mounted, and what applications are installed.
-
-If you just want a simple command-line interface to this
-functionality, use the L<virt-inspector(1)> tool.  The documentation
-below covers the case where you want to access this functionality from
-a Perl program.
-
-Once you have the list of partitions (from C<get_partitions>) there
-are several steps involved:
-
-=over 4
-
-=item 1.
-
-Look at each partition separately and find out what is on it.
-
-The information you get back includes whether the partition contains a
-filesystem or swapspace, what sort of filesystem (eg. ext3, ntfs), and
-a first pass guess at the content of the filesystem (eg. Linux boot,
-Windows root).
-
-The result of this step is a C<%fs> hash of information, one hash for
-each partition.
-
-See: C<inspect_partition>, C<inspect_all_partitions>
-
-=item 2.
-
-Work out the relationship between partitions.
-
-In this step we work out how partitions are related to each other.  In
-the case of a single-boot VM, we work out how the partitions are
-mounted in respect of each other (eg. C</dev/sda1> is mounted as
-C</boot>).  In the case of a multi-boot VM where there are several
-roots, we may identify several operating system roots, and mountpoints
-can even be shared.
-
-The result of this step is a single hash called C<%oses> which is
-described in more detail below, but at the top level looks like:
-
- %oses = {
-   '/dev/VG/Root1' => \%os1,
-   '/dev/VG/Root2' => \%os2,
- }
-
- %os1 = {
-   os => 'linux',
-   mounts => {
-     '/' => '/dev/VG/Root1',
-     '/boot' => '/dev/sda1',
-   },
-   ...
- }
-
-(example shows a multi-boot VM containing two root partitions).
-
-See: C<inspect_operating_systems>
-
-=item 3.
-
-Mount up the disks.
-
-Previous to this point we've essentially been looking at each
-partition in isolation.  Now we construct a true guest filesystem by
-mounting up all of the disks.  Only once everything is mounted up can
-we run commands in the OS context to do more detailed inspection.
-
-See: C<mount_operating_system>
-
-=item 4.
-
-Check for kernels and applications.
-
-This step now does more detailed inspection, where we can look for
-kernels, applications and more installed in the guest.
-
-The result of this is an enhanced C<%os> hash.
-
-See: C<inspect_in_detail>
-
-=item 5.
-
-Generate output.
-
-This library does not contain functions for generating output based on
-the analysis steps above.  Use a command line tool such as
-L<virt-inspector(1)> to get useful output.
-
-=back
-
 =head2 inspect_all_partitions
 
- %fses = inspect_all_partitions ($g, \@partitions);
-
- %fses = inspect_all_partitions ($g, \@partitions, use_windows_registry => 1);
-
-This calls C<inspect_partition> for each partition in the list
-C<@partitions>.
-
-The result is a hash which maps partition name to C<\%fs> hashref.
-
-The contents of the C<%fs> hash and the meaning of the
-C<use_windows_registry> flag are explained below.
+This function is deprecated.  It will not be updated in future
+versions of libguestfs.  New code should not use this function.  Use
+the core API functions instead, see L<guestfs(3)/INSPECTION>.
 
 =cut
 
@@ -601,104 +397,14 @@ sub inspect_all_partitions
     my $g = shift;
     my $parts = shift;
     my @parts = @$parts;
-    return map { _canonical_dev ($_) => inspect_partition ($g, $_, @_) } @parts;
+    return map { _canonical_dev ($_) => inspect_partition ($g, $_) } @parts;
 }
 
 =head2 inspect_partition
 
- \%fs = inspect_partition ($g, $partition);
-
- \%fs = inspect_partition ($g, $partition, use_windows_registry => 1);
-
-This function inspects the device named C<$partition> in isolation and
-tries to determine what it is.  It returns information such as whether
-the partition is formatted, and with what, whether it is mountable,
-and what it appears to contain (eg. a Windows root, or a Linux /usr).
-
-If C<use_windows_registry> is set to 1, then we will try to download
-and parse the content of the Windows registry (for Windows root
-devices).  However since this is an expensive and error-prone
-operation, we don't do this by default.  It also requires the external
-program C<reged>, patched to remove numerous crashing bugs in the
-upstream version.
-
-The returned value is a hashref C<\%fs> which may contain the
-following top-level keys (any key can be missing):
-
-=over 4
-
-=item fstype
-
-Filesystem type, eg. "ext2" or "ntfs"
-
-=item fsos
-
-Apparent filesystem OS, eg. "linux" or "windows"
-
-=item is_swap
-
-If set, the partition is a swap partition.
-
-=item uuid
-
-Filesystem UUID.
-
-=item label
-
-Filesystem label.
-
-=item is_mountable
-
-If set, the partition could be mounted by libguestfs.
-
-=item content
-
-Filesystem content, if we could determine it.  One of: "linux-grub",
-"linux-root", "linux-usrlocal", "linux-usr", "windows-root".
-
-=item osdistro
-
-(For Linux root partitions only).
-Operating system distribution.  One of: "fedora", "rhel", "centos",
-"scientific", "debian".
-
-=item package_format
-
-(For Linux root partitions only)
-The package format used by the guest distribution. One of: "rpm", "dpkg".
-
-=item package_management
-
-(For Linux root partitions only)
-The package management tool used by the guest distribution. One of: "rhn",
-"yum", "apt".
-
-=item os_major_version
-
-(For root partitions only).
-Operating system major version number.
-
-=item os_minor_version
-
-(For root partitions only).
-Operating system minor version number.
-
-=item fstab
-
-(For Linux root partitions only).
-The contents of the C</etc/fstab> file.
-
-=item boot_ini
-
-(For Windows root partitions only).
-The contents of the C</boot.ini> (NTLDR) file.
-
-=item registry
-
-The value is an arrayref, which is a list of Windows registry
-file contents, in Windows C<.REG> format.
-
-=back
+This function is deprecated.  It will not be updated in future
+versions of libguestfs.  New code should not use this function.  Use
+the core API functions instead, see L<guestfs(3)/INSPECTION>.
 
 =cut
 
@@ -707,9 +413,6 @@ sub inspect_partition
     local $_;
     my $g = shift;
     my $dev = shift;		# LV or partition name.
-    my %params = @_;
-
-    my $use_windows_registry = $params{use_windows_registry};
 
     my %r;			# Result hash.
 
@@ -791,7 +494,7 @@ sub inspect_partition
             $r{fsos} = "windows";
             $r{content} = "windows-root";
             $r{is_root} = 1;
-            _check_windows_root ($g, \%r, $use_windows_registry);
+            _check_windows_root ($g, \%r);
             goto OUT;
         }
     }
@@ -814,16 +517,19 @@ sub _check_linux_root
 
         $_ = $g->cat ("/etc/redhat-release");
         if (/Fedora release (\d+)(?:\.(\d+))?/) {
+            chomp; $r->{product_name} = $_;
             $r->{osdistro} = "fedora";
             $r->{os_major_version} = "$1";
             $r->{os_minor_version} = "$2" if(defined($2));
             $r->{package_management} = "yum";
         }
 
-        elsif (/(Red Hat Enterprise Linux|CentOS|Scientific Linux)/) {
+        elsif (/(Red Hat|CentOS|Scientific Linux)/) {
+            chomp; $r->{product_name} = $_;
+
             my $distro = $1;
 
-            if($distro eq "Red Hat Enterprise Linux") {
+            if($distro eq "Red Hat") {
                 $r->{osdistro} = "rhel";
             }
 
@@ -869,11 +575,12 @@ sub _check_linux_root
             $r->{osdistro} = "redhat-based";
         }
     } elsif ($g->is_file ("/etc/debian_version")) {
-        $r->{package_format} = "dpkg";
+        $r->{package_format} = "deb";
         $r->{package_management} = "apt";
 
         $_ = $g->cat ("/etc/debian_version");
         if (/(\d+)\.(\d+)/) {
+            chomp; $r->{product_name} = $_;
             $r->{osdistro} = "debian";
             $r->{os_major_version} = "$1";
             $r->{os_minor_version} = "$2";
@@ -920,24 +627,23 @@ sub _check_linux_root
 # Windows installations and their %systemroot%s in a simple text
 # format.
 #
-# XXX We could parse this better.  This won't work if /boot.ini is on
-# a different drive from the %systemroot%, and in other unusual cases.
+# XXX We don't handle the case where /boot.ini is on a different
+# partition very well (Windows Vista and later).
 
 sub _check_windows_root
 {
     local $_;
     my $g = shift;
     my $r = shift;
-    my $use_windows_registry = shift;
 
     my $boot_ini = resolve_windows_path ($g, "/boot.ini");
     $r->{boot_ini} = $boot_ini;
 
+    my $systemroot;
     if (defined $r->{boot_ini}) {
         $_ = $g->cat ($boot_ini);
         my @lines = split /\n/;
         my $section;
-        my $systemroot;
         foreach (@lines) {
             if (m/\[.*\]/) {
                 $section = $1;
@@ -949,15 +655,24 @@ sub _check_windows_root
                 last;
             }
         }
+    }
 
-        if (defined $systemroot) {
-            $r->{systemroot} = resolve_windows_path ($g, "/$systemroot");
-            if (defined $r->{systemroot}) {
-                _check_windows_arch ($g, $r, $r->{systemroot});
-                if ($use_windows_registry) {
-                    _check_windows_registry ($g, $r, $r->{systemroot});
-                }
+    if (!defined $systemroot) {
+        # Last ditch ... try to guess %systemroot% location.
+        foreach ("windows", "winnt") {
+            my $dir = resolve_windows_path ($g, "/$_/system32");
+            if (defined $dir) {
+                $systemroot = $_;
+                last;
             }
+        }
+    }
+
+    if (defined $systemroot) {
+        $r->{systemroot} = resolve_windows_path ($g, "/$systemroot");
+        if (defined $r->{systemroot}) {
+            _check_windows_arch ($g, $r, $r->{systemroot});
+            _check_windows_registry ($g, $r, $r->{systemroot});
         }
     }
 }
@@ -984,72 +699,90 @@ sub _check_windows_registry
     my $systemroot = shift;
 
     # Download the system registry files.  Only download the
-    # interesting ones, and we don't bother with user profiles at all.
+    # interesting ones (SOFTWARE and SYSTEM).  We don't bother with
+    # the user ones.
+
+    return unless exists $INC{"Win/Hivex.pm"};
 
     my $configdir = resolve_windows_path ($g, "$systemroot/system32/config");
-    if (defined $configdir) {
-        my $softwaredir = resolve_windows_path ($g, "$configdir/software");
-        if (defined $softwaredir) {
-            _load_windows_registry ($g, $r, $softwaredir,
-                                    "HKEY_LOCAL_MACHINE\\SOFTWARE");
+    return unless defined $configdir;
+
+    my $tmpdir = tempdir (CLEANUP => 1);
+
+    my $software = resolve_windows_path ($g, "$configdir/software");
+    my $software_hive;
+    if (defined $software) {
+        eval {
+            $g->download ($software, "$tmpdir/software");
+            $software_hive = Win::Hivex->open ("$tmpdir/software");
+        };
+        warn "$@\n" if $@;
+        $r->{windows_software_hive} = $software;
+    }
+
+    my $system = resolve_windows_path ($g, "$configdir/system");
+    my $system_hive;
+    if (defined $system) {
+        eval {
+            $g->download ($system, "$tmpdir/system");
+            $system_hive = Win::Hivex->open ("$tmpdir/system");
+        };
+        warn "$@\n" if $@;
+        $r->{windows_system_hive} = $system;
+    }
+
+    # Get the ProductName, major and minor version, etc.
+    if (defined $software_hive) {
+        my $cv_node;
+        eval {
+            $cv_node = $software_hive->root;
+            $cv_node = $software_hive->node_get_child ($cv_node, $_)
+                foreach ("Microsoft", "Windows NT", "CurrentVersion");
+        };
+        warn "$@\n" if $@;
+
+        if ($cv_node) {
+            my @values = $software_hive->node_values ($cv_node);
+
+            foreach (@values) {
+                my $k = $software_hive->value_key ($_);
+                if ($k eq "ProductName") {
+                    $_ = $software_hive->value_string ($_);
+                    $r->{product_name} = $_ if defined $_;
+                } elsif ($k eq "CurrentVersion") {
+                    $_ = $software_hive->value_string ($_);
+                    if (defined $_ && m/^(\d+)\.(\d+)/) {
+                        $r->{os_major_version} = $1;
+                        $r->{os_minor_version} = $2;
+                    }
+                } elsif ($k eq "CurrentBuild") {
+                    $_ = $software_hive->value_string ($_);
+                    $r->{windows_current_build} = $_ if defined $_;
+                } elsif ($k eq "SoftwareType") {
+                    $_ = $software_hive->value_string ($_);
+                    $r->{windows_software_type} = $_ if defined $_;
+                } elsif ($k eq "CurrentType") {
+                    $_ = $software_hive->value_string ($_);
+                    $r->{windows_current_type} = $_ if defined $_;
+                } elsif ($k eq "RegisteredOwner") {
+                    $_ = $software_hive->value_string ($_);
+                    $r->{windows_registered_owner} = $_ if defined $_;
+                } elsif ($k eq "RegisteredOrganization") {
+                    $_ = $software_hive->value_string ($_);
+                    $r->{windows_registered_organization} = $_ if defined $_;
+                } elsif ($k eq "InstallationType") {
+                    $_ = $software_hive->value_string ($_);
+                    $r->{windows_installation_type} = $_ if defined $_;
+                } elsif ($k eq "EditionID") {
+                    $_ = $software_hive->value_string ($_);
+                    $r->{windows_edition_id} = $_ if defined $_;
+                } elsif ($k eq "ProductID") {
+                    $_ = $software_hive->value_string ($_);
+                    $r->{windows_product_id} = $_ if defined $_;
+                }
+            }
         }
-        my $systemdir = resolve_windows_path ($g, "$configdir/system");
-        if (defined $systemdir) {
-            _load_windows_registry ($g, $r, $systemdir,
-                                    "HKEY_LOCAL_MACHINE\\System");
-        }
     }
-}
-
-sub _load_windows_registry
-{
-    local $_;
-    my $g = shift;
-    my $r = shift;
-    my $regfile = shift;
-    my $prefix = shift;
-
-    my $dir = tempdir (CLEANUP => 1);
-
-    $g->download ($regfile, "$dir/reg");
-
-    # 'reged' command is particularly noisy.  Redirect stdout and
-    # stderr to /dev/null temporarily.
-    open SAVEOUT, ">&STDOUT";
-    open SAVEERR, ">&STDERR";
-    open STDOUT, ">/dev/null";
-    open STDERR, ">/dev/null";
-
-    my @cmd = ("reged", "-x", "$dir/reg", "$prefix", "\\", "$dir/out");
-    my $res = system (@cmd);
-
-    close STDOUT;
-    close STDERR;
-    open STDOUT, ">&SAVEOUT";
-    open STDERR, ">&SAVEERR";
-    close SAVEOUT;
-    close SAVEERR;
-
-    unless ($res == 0) {
-        warn __x("reged command failed: {errormsg}", errormsg => $?);
-        return;
-    }
-
-    # Some versions of reged segfault on inputs.  If that happens we
-    # may get no / partial output file.  Anyway, if it exists, load
-    # it.
-    my $content;
-    unless (open F, "$dir/out") {
-        warn __x("no output from reged command: {errormsg}", errormsg => $!);
-        return;
-    }
-    { local $/ = undef; $content = <F>; }
-    close F;
-
-    my @registry = ();
-    @registry = @{$r->{registry}} if exists $r->{registry};
-    push @registry, $content;
-    $r->{registry} = \@registry;
 }
 
 sub _check_grub
@@ -1063,78 +796,9 @@ sub _check_grub
 
 =head2 inspect_operating_systems
 
- \%oses = inspect_operating_systems ($g, \%fses);
-
-This function works out how partitions are related to each other.  In
-the case of a single-boot VM, we work out how the partitions are
-mounted in respect of each other (eg. C</dev/sda1> is mounted as
-C</boot>).  In the case of a multi-boot VM where there are several
-roots, we may identify several operating system roots, and mountpoints
-can even be shared.
-
-This function returns a hashref C<\%oses> which at the top level looks
-like:
-
- %oses = {
-   '/dev/VG/Root' => \%os,
- }
-
-(There can be multiple roots for a multi-boot VM).
-
-The C<\%os> hash contains the following keys (any can be omitted):
-
-=over 4
-
-=item os
-
-Operating system type, eg. "linux", "windows".
-
-=item arch
-
-Operating system userspace architecture, eg. "i386", "x86_64".
-
-=item distro
-
-Operating system distribution, eg. "debian".
-
-=item major_version
-
-Operating system major version, eg. "4".
-
-=item minor_version
-
-Operating system minor version, eg "3".
-
-=item root
-
-The value is a reference to the root partition C<%fs> hash.
-
-=item root_device
-
-The value is the name of the root partition (as a string).
-
-=item mounts
-
-Mountpoints.
-The value is a hashref like this:
-
- mounts => {
-   '/' => '/dev/VG/Root',
-   '/boot' => '/dev/sda1',
- }
-
-=item filesystems
-
-Filesystems (including swap devices and unmounted partitions).
-The value is a hashref like this:
-
- filesystems => {
-   '/dev/sda1' => \%fs,
-   '/dev/VG/Root' => \%fs,
-   '/dev/VG/Swap' => \%fs,
- }
-
-=back
+This function is deprecated.  It will not be updated in future
+versions of libguestfs.  New code should not use this function.  Use
+the core API functions instead, see L<guestfs(3)/INSPECTION>.
 
 =cut
 
@@ -1158,6 +822,11 @@ sub inspect_operating_systems
         }
     }
 
+    # If we didn't find any operating systems then it's an error (RHBZ#591142).
+    if (0 == keys %oses) {
+        die __"No operating system could be detected inside this disk image.\n\nThis may be because the file is not a disk image, or is not a virtual machine\nimage, or because the OS type is not understood by virt-inspector.\n\nIf you feel this is an error, please file a bug report including as much\ninformation about the disk image as possible.\n";
+    }
+
     return \%oses;
 }
 
@@ -1168,6 +837,8 @@ sub _get_os_version
     my $r = shift;
 
     $r->{os} = $r->{root}->{fsos} if exists $r->{root}->{fsos};
+    $r->{product_name} = $r->{root}->{product_name}
+        if exists $r->{root}->{product_name};
     $r->{distro} = $r->{root}->{osdistro} if exists $r->{root}->{osdistro};
     $r->{major_version} = $r->{root}->{os_major_version}
         if exists $r->{root}->{os_major_version};
@@ -1196,7 +867,7 @@ sub _assign_mount_points
         foreach (@fstab) {
             my ($spec, $file) = @$_;
 
-            my ($dev, $fs) = _find_filesystem ($g, $fses, $spec);
+            my ($dev, $fs) = _find_filesystem ($g, $fses, $spec, $file);
             if ($dev) {
                 $r->{mounts}->{$file} = $dev;
                 $r->{filesystems}->{$dev} = $fs;
@@ -1217,6 +888,7 @@ sub _find_filesystem
     my $g = shift;
     my $fses = shift;
     local $_ = shift;
+    my $file = shift;
 
     if (/^LABEL=(.*)/) {
         my $label = $1;
@@ -1250,6 +922,9 @@ sub _find_filesystem
         if (m{^/dev/hd(.*)} && exists $fses->{"/dev/sd$1"}) {
             return ("/dev/sd$1", $fses->{"/dev/sd$1"});
         }
+        if (m{^/dev/vd(.*)} && exists $fses->{"/dev/sd$1"}) {
+            return ("/dev/sd$1", $fses->{"/dev/sd$1"});
+        }
         if (m{^/dev/xvd(.*)} && exists $fses->{"/dev/sd$1"}) {
             return ("/dev/sd$1", $fses->{"/dev/sd$1"});
         }
@@ -1257,7 +932,9 @@ sub _find_filesystem
             return ("/dev/$1/$2", $fses->{"/dev/$1/$2"});
         }
 
+	return () if $file =~ (/media\/cdrom/);
         return () if m{/dev/cdrom};
+        return () if m{/dev/fd0};
 
         warn __x("unknown filesystem {fs}\n", fs => $_);
         return ();
@@ -1266,17 +943,9 @@ sub _find_filesystem
 
 =head2 mount_operating_system
 
- mount_operating_system ($g, \%os, [$ro]);
-
-This function mounts the operating system described in the
-C<%os> hash according to the C<mounts> table in that hash (see
-C<inspect_operating_systems>).
-
-The partitions are mounted read-only unless the third parameter
-is specified as zero explicitly.
-
-To reverse the effect of this call, use the standard
-libguestfs API call C<$g-E<gt>umount_all ()>.
+This function is deprecated.  It will not be updated in future
+versions of libguestfs.  New code should not use this function.  Use
+the core API functions instead, see L<guestfs(3)/INSPECTION>.
 
 =cut
 
@@ -1306,107 +975,9 @@ sub mount_operating_system
 
 =head2 inspect_in_detail
 
- mount_operating_system ($g, \%os);
- inspect_in_detail ($g, \%os);
- $g->umount_all ();
-
-The C<inspect_in_detail> function inspects the mounted operating
-system for installed applications, installed kernels, kernel modules,
-system architecture, and more.
-
-It adds extra keys to the existing C<%os> hash reflecting what it
-finds.  These extra keys are:
-
-=over 4
-
-=item apps
-
-List of applications.
-
-=item boot
-
-Boot configurations. A hash containing:
-
-=over 4
-
-=item configs
-
-An array of boot configurations. Each array entry is a hash containing:
-
-=over 4
-
-=item initrd
-
-A reference to the expanded initrd structure (see below) for the initrd used by
-this boot configuration.
-
-=item kernel
-
-A reference to the expanded kernel structure (see below) for the kernel used by
-this boot configuration.
-
-=item title
-
-The human readable name of the configuration.
-
-=item cmdline
-
-The kernel command line.
-
-=back
-
-=item default
-
-The index of the default configuration in the configs array.
-
-=item grub_fs
-
-The path of the filesystem containing the grub partition.
-
-=back
-
-=item kernels
-
-List of kernels.
-
-This is a hash of kernel version =E<gt> a hash with the following keys:
-
-=over 4
-
-=item version
-
-Kernel version.
-
-=item arch
-
-Kernel architecture (eg. C<x86-64>).
-
-=item modules
-
-List of modules.
-
-=item path
-
-The path to the kernel's vmlinuz file.
-
-=item package
-
-If the kernel was installed in a package, the name of that package.
-
-=back
-
-=item modprobe_aliases
-
-(For Linux VMs).
-The contents of the modprobe configuration.
-
-=item initrd_modules
-
-(For Linux VMs).
-The kernel modules installed in the initrd.  The value is
-a hashref of kernel version to list of modules.
-
-=back
+This function is deprecated.  It will not be updated in future
+versions of libguestfs.  New code should not use this function.  Use
+the core API functions instead, see L<guestfs(3)/INSPECTION>.
 
 =cut
 
@@ -1435,10 +1006,17 @@ sub _check_for_applications
     if ($osn eq "linux") {
         my $package_format = $os->{package_format};
         if (defined $package_format && $package_format eq "rpm") {
-            my @lines = $g->command_lines
-                (["rpm",
-                  "-q", "-a",
-                  "--qf", "%{name} %{epoch} %{version} %{release} %{arch}\n"]);
+            my @lines = ();
+            eval {
+                @lines = $g->command_lines
+                    (["rpm",
+                      "-q", "-a", "--qf",
+                      "%{name} %{epoch} %{version} %{release} %{arch}\n"]);
+            };
+
+            warn(__x("Error running rpm -qa: {error}", error => $@)) if ($@);
+
+            @lines = sort @lines;
             foreach (@lines) {
                 if (m/^(.*) (.*) (.*) (.*) (.*)$/) {
                     my $epoch = $2;
@@ -1451,6 +1029,30 @@ sub _check_for_applications
                         arch => $5
                     };
                     push @apps, $app
+                }
+            }
+        } elsif (defined $package_format && $package_format eq "deb") {
+            my @lines = ();
+            eval {
+                @lines = $g->command_lines
+                    (["dpkg-query",
+                      "-f", '${Package} ${Version} ${Architecture} ${Status}\n',
+                      "-W"]);
+            };
+
+            warn(__x("Error running dpkg-query: {error}", error => $@)) if ($@);
+
+            @lines = sort @lines;
+            foreach (@lines) {
+                if (m/^(.*) (.*) (.*) (.*) (.*) (.*)$/) {
+                    if ( $6 eq "installed" ) {
+                        my $app = {
+                            name => $1,
+                            version => $2,
+                            arch => $3
+                        };
+                        push @apps, $app
+                    }
                 }
             }
         }
@@ -1506,7 +1108,7 @@ sub _find_grub_prefix
     die(__"Can't find grub on guest") unless($g->exists('/boot/grub/menu.lst'));
 
     # Look for the most specific mount point in mounts
-    foreach my $path qw(/boot/grub /boot /) {
+    foreach my $path (qw(/boot/grub /boot /)) {
         if(exists($mounts->{$path})) {
             return "" if($path eq '/');
             return $path;
@@ -1525,6 +1127,12 @@ sub _check_for_kernels
         # For every kernel we find, inspect it and add to $os->{kernels}
 
         my $grub = _find_grub_prefix($g, $os);
+        my $grub_conf = "/etc/grub.conf";
+
+        # Debian and other's have no /etc/grub.conf:
+        if ( ! -f "$grub_conf" ) {
+            $grub_conf = "$grub/grub/menu.lst";
+        }
 
         my @boot_configs;
 
@@ -1544,7 +1152,7 @@ sub _check_for_kernels
         my @configs = ();
         # Get all configurations from grub
         foreach my $bootable
-            ($g->aug_match("/files/etc/grub.conf/title"))
+            ($g->aug_match("/files/$grub_conf/title"))
         {
             my %config = ();
             $config{title} = $g->aug_get($bootable);
@@ -1578,8 +1186,14 @@ sub _check_for_kernels
                 }
                 $config{cmdline} = join(' ', @args) if(scalar(@args) > 0);
 
-                my $kernel =
-                    inspect_linux_kernel($g, $path, $os->{package_format});
+                my $kernel;
+                if ($g->exists($path)) {
+                    $kernel =
+                        inspect_linux_kernel($g, $path, $os->{package_format});
+                } else {
+                    warn __x("grub refers to {path}, which doesn't exist\n",
+                             path => $path);
+                }
 
                 # Check the kernel was recognised
                 if(defined($kernel)) {
@@ -1617,11 +1231,8 @@ sub _check_for_kernels
 
         # Add the default configuration
         eval {
-            $boot{default} = $g->aug_get("/files/etc/grub.conf/default");
+            $boot{default} = $g->aug_get("/files/$grub_conf/default");
         };
-        if($@) {
-            warn __"No grub default specified";
-        }
 
         $os->{boot} = \%boot;
     }
@@ -1633,11 +1244,9 @@ sub _check_for_kernels
 
 =head2 inspect_linux_kernel
 
- my $kernel_hash = inspect_linux_kernel($g, $vmlinuz_path, $package_format);
-
-inspect_linux_kernel returns a hash describing the target linux kernel. For the
-contents of the hash, see the I<kernels> structure described under
-L</inspect_in_detail>.
+This function is deprecated.  It will not be updated in future
+versions of libguestfs.  New code should not use this function.  Use
+the core API functions instead, see L<guestfs(3)/INSPECTION>.
 
 =cut
 
@@ -1728,13 +1337,6 @@ sub _find_modprobe_aliases
     # Initialise augeas
     $g->aug_init("/", 16);
 
-    # Register additional paths to the Modprobe lens
-    $g->aug_set("/augeas/load/Modprobe/incl[last()+1]", "/etc/modules.conf");
-    $g->aug_set("/augeas/load/Modprobe/incl[last()+1]", "/etc/conf.modules");
-
-    # Make augeas reload
-    $g->aug_load();
-
     my %modprobe_aliases;
 
     for my $pattern qw(/files/etc/conf.modules/alias
@@ -1775,7 +1377,7 @@ sub _inspect_initrd
     # Disregard old-style compressed ext2 files and only work with real
     # compressed cpio files, since cpio takes ages to (fail to) process anything
     # else.
-    if ($g->file ($path) =~ /cpio/) {
+    if ($g->exists($path) && $g->file($path) =~ /cpio/) {
         eval {
             @modules = $g->initrd_list ($path);
         };
@@ -1798,7 +1400,7 @@ sub _inspect_initrd
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009 Red Hat Inc.
+Copyright (C) 2009-2010 Red Hat Inc.
 
 =head1 LICENSE
 

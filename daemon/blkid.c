@@ -27,14 +27,22 @@
 #include "daemon.h"
 #include "actions.h"
 
-char *
-do_vfs_type (const char *device)
+static char *
+get_blkid_tag (const char *device, const char *tag)
 {
   char *out, *err;
   int r;
 
+  /* Kill the cache file, forcing blkid to reread values from the
+   * original filesystems.  In blkid there is a '-p' option which is
+   * supposed to do this, but (a) it doesn't work and (b) that option
+   * is not supported in RHEL 5.
+   */
+  unlink ("/etc/blkid/blkid.tab"); /* Red Hat, Fedora */
+  unlink ("/etc/blkid.tab"); /* Debian */
+
   r = command (&out, &err,
-               "/sbin/blkid", "-o", "value", "-s", "TYPE", device, NULL);
+               "blkid", "-o", "value", "-s", tag, device, NULL);
   if (r == -1) {
     reply_with_error ("%s: %s", device, err);
     free (out);
@@ -50,4 +58,22 @@ do_vfs_type (const char *device)
     out[len-1] = '\0';
 
   return out;                   /* caller frees */
+}
+
+char *
+do_vfs_type (const char *device)
+{
+  return get_blkid_tag (device, "TYPE");
+}
+
+char *
+do_vfs_label (const char *device)
+{
+  return get_blkid_tag (device, "LABEL");
+}
+
+char *
+do_vfs_uuid (const char *device)
+{
+  return get_blkid_tag (device, "UUID");
 }

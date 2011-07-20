@@ -1,9 +1,9 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   src/generator.ml
+ *   generator/generator_*.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2010 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,9 +40,7 @@ static const char *const commands[] = {
   "run",
   "kill-subprocess",
   "add-drive",
-  "add",
   "add-cdrom",
-  "cdrom",
   "add-drive-ro",
   "add-ro",
   "config",
@@ -86,6 +84,41 @@ static const char *const commands[] = {
   "get-recovery-proc",
   "add-drive-with-if",
   "add-drive-ro-with-if",
+  "file-architecture",
+  "inspect-os",
+  "inspect-get-type",
+  "inspect-get-arch",
+  "inspect-get-distro",
+  "inspect-get-major-version",
+  "inspect-get-minor-version",
+  "inspect-get-product-name",
+  "inspect-get-mountpoints",
+  "inspect-get-filesystems",
+  "set-network",
+  "network",
+  "get-network",
+  "list-filesystems",
+  "add-drive-opts",
+  "add",
+  "inspect-get-windows-systemroot",
+  "inspect-get-roots",
+  "debug-cmdline",
+  "add-domain",
+  "domain",
+  "inspect-get-package-format",
+  "inspect-get-package-management",
+  "inspect-list-applications",
+  "inspect-get-hostname",
+  "inspect-get-format",
+  "inspect-is-live",
+  "inspect-is-netinst",
+  "inspect-is-multipart",
+  "set-attach-method",
+  "attach-method",
+  "get-attach-method",
+  "inspect-get-product-variant",
+  "inspect-get-windows-current-control-set",
+  "inspect-get-drive-mappings",
   "mount",
   "sync",
   "touch",
@@ -309,13 +342,92 @@ static const char *const commands[] = {
   "lvrename",
   "vgrename",
   "initrd-cat",
+  "pvuuid",
+  "vguuid",
+  "lvuuid",
+  "vgpvuuids",
+  "vglvuuids",
+  "copy-size",
+  "zero-device",
+  "txz-in",
+  "txz-out",
+  "ntfsresize",
+  "vgscan",
+  "part-del",
+  "part-get-bootable",
+  "part-get-mbr-id",
+  "part-set-mbr-id",
+  "checksum-device",
+  "lvresize-free",
+  "aug-clear",
+  "get-umask",
+  "debug-upload",
+  "base64-in",
+  "base64-out",
+  "checksums-out",
+  "fill-pattern",
+  "write",
+  "pwrite",
+  "resize2fs-size",
+  "pvresize-size",
+  "ntfsresize-size",
+  "available-all-groups",
+  "fallocate64",
+  "vfs-label",
+  "vfs-uuid",
+  "lvm-set-filter",
+  "lvm-clear-filter",
+  "luks-open",
+  "luks-open-ro",
+  "luks-close",
+  "luks-format",
+  "luks-format-cipher",
+  "luks-add-key",
+  "luks-kill-slot",
+  "is-lv",
+  "findfs-uuid",
+  "findfs-label",
+  "is-chardev",
+  "is-blockdev",
+  "is-fifo",
+  "is-symlink",
+  "is-socket",
+  "part-to-dev",
+  "upload-offset",
+  "download-offset",
+  "pwrite-device",
+  "pread-device",
+  "lvm-canonical-lv-name",
+  "mkfs-opts",
+  "getxattr",
+  "lgetxattr",
+  "resize2fs-M",
+  "alloc",
+  "allocate",
+  "copy-in",
+  "copy-out",
+  "echo",
+  "edit",
+  "vi",
+  "emacs",
+  "glob",
+  "hexedit",
+  "lcd",
+  "man",
+  "manual",
+  "more",
+  "less",
+  "reopen",
+  "sparse",
+  "supported",
+  "time",
   NULL
 };
 
 static char *
 generator (const char *text, int state)
 {
-  static int index, len;
+  static size_t index, len;
   const char *name;
 
   if (!state) {
@@ -336,7 +448,16 @@ generator (const char *text, int state)
 
 #endif /* HAVE_LIBREADLINE */
 
-char **do_completion (const char *text, int start, int end)
+#ifdef HAVE_RL_COMPLETION_MATCHES
+#define RL_COMPLETION_MATCHES rl_completion_matches
+#else
+#ifdef HAVE_COMPLETION_MATCHES
+#define RL_COMPLETION_MATCHES completion_matches
+#endif
+#endif /* else just fail if we don't have either symbol */
+
+char **
+do_completion (const char *text, int start, int end)
 {
   char **matches = NULL;
 
@@ -344,9 +465,9 @@ char **do_completion (const char *text, int start, int end)
   rl_completion_append_character = ' ';
 
   if (start == 0)
-    matches = rl_completion_matches (text, generator);
+    matches = RL_COMPLETION_MATCHES (text, generator);
   else if (complete_dest_paths)
-    matches = rl_completion_matches (text, complete_dest_paths_generator);
+    matches = RL_COMPLETION_MATCHES (text, complete_dest_paths_generator);
 #endif
 
   return matches;

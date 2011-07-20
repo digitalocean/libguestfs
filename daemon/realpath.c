@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,10 +92,6 @@ do_case_sensitive_path (const char *path)
       continue;
     }
 
-    if (verbose)
-      fprintf (stderr, "case_sensitive_path: path = %s, next = %zu, i = %zu\n",
-               path, next, i);
-
     if ((i == 1 && path[0] == '.') ||
         (i == 2 && path[0] == '.' && path[1] == '.')) {
       reply_with_error ("path contained . or .. elements");
@@ -183,7 +179,8 @@ do_case_sensitive_path (const char *path)
     }
   }
 
-  close (fd_cwd);
+  if (fd_cwd >= 0)
+    close (fd_cwd);
 
   ret[next] = '\0';
   char *retp = strdup (ret);
@@ -194,6 +191,8 @@ do_case_sensitive_path (const char *path)
   return retp;                  /* caller frees */
 
  error:
-  close (fd_cwd);
+  if (fd_cwd >= 0)
+    close (fd_cwd);
+
   return NULL;
 }

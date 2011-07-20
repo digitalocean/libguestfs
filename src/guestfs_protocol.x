@@ -1,9 +1,9 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   src/generator.ml
+ *   generator/generator_*.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2010 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-typedef string str<>;
+typedef string guestfs_str<>;
 
 struct guestfs_int_int_bool {
   int i;
@@ -169,6 +169,23 @@ struct guestfs_int_partition {
 
 typedef struct guestfs_int_partition guestfs_int_partition_list<>;
 
+struct guestfs_int_application {
+  string app_name<>;
+  string app_display_name<>;
+  int app_epoch;
+  string app_version<>;
+  string app_release<>;
+  string app_install_path<>;
+  string app_trans_path<>;
+  string app_publisher<>;
+  string app_url<>;
+  string app_source_package<>;
+  string app_summary<>;
+  string app_description<>;
+};
+
+typedef struct guestfs_int_application guestfs_int_application_list<>;
+
 struct guestfs_mount_args {
   string device<>;
   string mountpoint<>;
@@ -199,27 +216,27 @@ struct guestfs_ls_args {
 };
 
 struct guestfs_ls_ret {
-  str listing<>;
+  guestfs_str listing<>;
 };
 
 struct guestfs_list_devices_ret {
-  str devices<>;
+  guestfs_str devices<>;
 };
 
 struct guestfs_list_partitions_ret {
-  str partitions<>;
+  guestfs_str partitions<>;
 };
 
 struct guestfs_pvs_ret {
-  str physvols<>;
+  guestfs_str physvols<>;
 };
 
 struct guestfs_vgs_ret {
-  str volgroups<>;
+  guestfs_str volgroups<>;
 };
 
 struct guestfs_lvs_ret {
-  str logvols<>;
+  guestfs_str logvols<>;
 };
 
 struct guestfs_pvs_full_ret {
@@ -239,7 +256,7 @@ struct guestfs_read_lines_args {
 };
 
 struct guestfs_read_lines_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_aug_init_args {
@@ -249,7 +266,7 @@ struct guestfs_aug_init_args {
 
 struct guestfs_aug_defvar_args {
   string name<>;
-  str *expr;
+  guestfs_str *expr;
 };
 
 struct guestfs_aug_defvar_ret {
@@ -303,7 +320,7 @@ struct guestfs_aug_match_args {
 };
 
 struct guestfs_aug_match_ret {
-  str matches<>;
+  guestfs_str matches<>;
 };
 
 struct guestfs_aug_ls_args {
@@ -311,7 +328,7 @@ struct guestfs_aug_ls_args {
 };
 
 struct guestfs_aug_ls_ret {
-  str matches<>;
+  guestfs_str matches<>;
 };
 
 struct guestfs_rm_args {
@@ -375,7 +392,7 @@ struct guestfs_pvcreate_args {
 
 struct guestfs_vgcreate_args {
   string volgroup<>;
-  str physvols<>;
+  guestfs_str physvols<>;
 };
 
 struct guestfs_lvcreate_args {
@@ -394,7 +411,7 @@ struct guestfs_sfdisk_args {
   int cyls;
   int heads;
   int sectors;
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_write_file_args {
@@ -408,7 +425,7 @@ struct guestfs_umount_args {
 };
 
 struct guestfs_mounts_ret {
-  str devices<>;
+  guestfs_str devices<>;
 };
 
 struct guestfs_file_args {
@@ -420,7 +437,7 @@ struct guestfs_file_ret {
 };
 
 struct guestfs_command_args {
-  str arguments<>;
+  guestfs_str arguments<>;
 };
 
 struct guestfs_command_ret {
@@ -428,11 +445,11 @@ struct guestfs_command_ret {
 };
 
 struct guestfs_command_lines_args {
-  str arguments<>;
+  guestfs_str arguments<>;
 };
 
 struct guestfs_command_lines_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_stat_args {
@@ -464,7 +481,7 @@ struct guestfs_tune2fs_l_args {
 };
 
 struct guestfs_tune2fs_l_ret {
-  str superblock<>;
+  guestfs_str superblock<>;
 };
 
 struct guestfs_blockdev_setro_args {
@@ -581,7 +598,7 @@ struct guestfs_mount_vfs_args {
 
 struct guestfs_debug_args {
   string subcmd<>;
-  str extraargs<>;
+  guestfs_str extraargs<>;
 };
 
 struct guestfs_debug_ret {
@@ -681,7 +698,7 @@ struct guestfs_strings_args {
 };
 
 struct guestfs_strings_ret {
-  str stringsout<>;
+  guestfs_str stringsout<>;
 };
 
 struct guestfs_strings_e_args {
@@ -690,7 +707,7 @@ struct guestfs_strings_e_args {
 };
 
 struct guestfs_strings_e_ret {
-  str stringsout<>;
+  guestfs_str stringsout<>;
 };
 
 struct guestfs_hexdump_args {
@@ -748,7 +765,7 @@ struct guestfs_vg_activate_all_args {
 
 struct guestfs_vg_activate_args {
   bool activate;
-  str volgroups<>;
+  guestfs_str volgroups<>;
 };
 
 struct guestfs_lvresize_args {
@@ -765,7 +782,7 @@ struct guestfs_find_args {
 };
 
 struct guestfs_find_ret {
-  str names<>;
+  guestfs_str names<>;
 };
 
 struct guestfs_e2fsck_f_args {
@@ -798,7 +815,7 @@ struct guestfs_sh_lines_args {
 };
 
 struct guestfs_sh_lines_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_glob_expand_args {
@@ -806,7 +823,7 @@ struct guestfs_glob_expand_args {
 };
 
 struct guestfs_glob_expand_ret {
-  str paths<>;
+  guestfs_str paths<>;
 };
 
 struct guestfs_scrub_device_args {
@@ -858,7 +875,7 @@ struct guestfs_head_args {
 };
 
 struct guestfs_head_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_head_n_args {
@@ -867,7 +884,7 @@ struct guestfs_head_n_args {
 };
 
 struct guestfs_head_n_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_tail_args {
@@ -875,7 +892,7 @@ struct guestfs_tail_args {
 };
 
 struct guestfs_tail_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_tail_n_args {
@@ -884,7 +901,7 @@ struct guestfs_tail_n_args {
 };
 
 struct guestfs_tail_n_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_df_ret {
@@ -908,7 +925,7 @@ struct guestfs_initrd_list_args {
 };
 
 struct guestfs_initrd_list_ret {
-  str filenames<>;
+  guestfs_str filenames<>;
 };
 
 struct guestfs_mount_loop_args {
@@ -974,7 +991,7 @@ struct guestfs_readdir_ret {
 
 struct guestfs_sfdiskM_args {
   string device<>;
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_zfile_args {
@@ -1027,7 +1044,7 @@ struct guestfs_lremovexattr_args {
 };
 
 struct guestfs_mountpoints_ret {
-  str mps<>;
+  guestfs_str mps<>;
 };
 
 struct guestfs_mkmountpoint_args {
@@ -1052,7 +1069,7 @@ struct guestfs_grep_args {
 };
 
 struct guestfs_grep_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_egrep_args {
@@ -1061,7 +1078,7 @@ struct guestfs_egrep_args {
 };
 
 struct guestfs_egrep_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_fgrep_args {
@@ -1070,7 +1087,7 @@ struct guestfs_fgrep_args {
 };
 
 struct guestfs_fgrep_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_grepi_args {
@@ -1079,7 +1096,7 @@ struct guestfs_grepi_args {
 };
 
 struct guestfs_grepi_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_egrepi_args {
@@ -1088,7 +1105,7 @@ struct guestfs_egrepi_args {
 };
 
 struct guestfs_egrepi_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_fgrepi_args {
@@ -1097,7 +1114,7 @@ struct guestfs_fgrepi_args {
 };
 
 struct guestfs_fgrepi_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_zgrep_args {
@@ -1106,7 +1123,7 @@ struct guestfs_zgrep_args {
 };
 
 struct guestfs_zgrep_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_zegrep_args {
@@ -1115,7 +1132,7 @@ struct guestfs_zegrep_args {
 };
 
 struct guestfs_zegrep_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_zfgrep_args {
@@ -1124,7 +1141,7 @@ struct guestfs_zfgrep_args {
 };
 
 struct guestfs_zfgrep_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_zgrepi_args {
@@ -1133,7 +1150,7 @@ struct guestfs_zgrepi_args {
 };
 
 struct guestfs_zgrepi_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_zegrepi_args {
@@ -1142,7 +1159,7 @@ struct guestfs_zegrepi_args {
 };
 
 struct guestfs_zegrepi_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_zfgrepi_args {
@@ -1151,7 +1168,7 @@ struct guestfs_zfgrepi_args {
 };
 
 struct guestfs_zfgrepi_ret {
-  str lines<>;
+  guestfs_str lines<>;
 };
 
 struct guestfs_realpath_args {
@@ -1253,7 +1270,7 @@ struct guestfs_inotify_read_ret {
 };
 
 struct guestfs_inotify_files_ret {
-  str paths<>;
+  guestfs_str paths<>;
 };
 
 struct guestfs_setcon_args {
@@ -1313,7 +1330,7 @@ struct guestfs_modprobe_args {
 };
 
 struct guestfs_echo_daemon_args {
-  str words<>;
+  guestfs_str words<>;
 };
 
 struct guestfs_echo_daemon_ret {
@@ -1370,7 +1387,7 @@ struct guestfs_lchown_args {
 
 struct guestfs_lstatlist_args {
   string path<>;
-  str names<>;
+  guestfs_str names<>;
 };
 
 struct guestfs_lstatlist_ret {
@@ -1379,7 +1396,7 @@ struct guestfs_lstatlist_ret {
 
 struct guestfs_lxattrlist_args {
   string path<>;
-  str names<>;
+  guestfs_str names<>;
 };
 
 struct guestfs_lxattrlist_ret {
@@ -1388,11 +1405,11 @@ struct guestfs_lxattrlist_ret {
 
 struct guestfs_readlinklist_args {
   string path<>;
-  str names<>;
+  guestfs_str names<>;
 };
 
 struct guestfs_readlinklist_ret {
-  str links<>;
+  guestfs_str links<>;
 };
 
 struct guestfs_pread_args {
@@ -1457,7 +1474,7 @@ struct guestfs_fill_args {
 };
 
 struct guestfs_available_args {
-  str groups<>;
+  guestfs_str groups<>;
 };
 
 struct guestfs_dd_args {
@@ -1490,6 +1507,384 @@ struct guestfs_initrd_cat_args {
 
 struct guestfs_initrd_cat_ret {
   opaque content<>;
+};
+
+struct guestfs_pvuuid_args {
+  string device<>;
+};
+
+struct guestfs_pvuuid_ret {
+  string uuid<>;
+};
+
+struct guestfs_vguuid_args {
+  string vgname<>;
+};
+
+struct guestfs_vguuid_ret {
+  string uuid<>;
+};
+
+struct guestfs_lvuuid_args {
+  string device<>;
+};
+
+struct guestfs_lvuuid_ret {
+  string uuid<>;
+};
+
+struct guestfs_vgpvuuids_args {
+  string vgname<>;
+};
+
+struct guestfs_vgpvuuids_ret {
+  guestfs_str uuids<>;
+};
+
+struct guestfs_vglvuuids_args {
+  string vgname<>;
+};
+
+struct guestfs_vglvuuids_ret {
+  guestfs_str uuids<>;
+};
+
+struct guestfs_copy_size_args {
+  string src<>;
+  string dest<>;
+  hyper size;
+};
+
+struct guestfs_zero_device_args {
+  string device<>;
+};
+
+struct guestfs_txz_in_args {
+  string directory<>;
+};
+
+struct guestfs_txz_out_args {
+  string directory<>;
+};
+
+struct guestfs_ntfsresize_args {
+  string device<>;
+};
+
+struct guestfs_part_del_args {
+  string device<>;
+  int partnum;
+};
+
+struct guestfs_part_get_bootable_args {
+  string device<>;
+  int partnum;
+};
+
+struct guestfs_part_get_bootable_ret {
+  bool bootable;
+};
+
+struct guestfs_part_get_mbr_id_args {
+  string device<>;
+  int partnum;
+};
+
+struct guestfs_part_get_mbr_id_ret {
+  int idbyte;
+};
+
+struct guestfs_part_set_mbr_id_args {
+  string device<>;
+  int partnum;
+  int idbyte;
+};
+
+struct guestfs_checksum_device_args {
+  string csumtype<>;
+  string device<>;
+};
+
+struct guestfs_checksum_device_ret {
+  string checksum<>;
+};
+
+struct guestfs_lvresize_free_args {
+  string lv<>;
+  int percent;
+};
+
+struct guestfs_aug_clear_args {
+  string augpath<>;
+};
+
+struct guestfs_get_umask_ret {
+  int mask;
+};
+
+struct guestfs_debug_upload_args {
+  string tmpname<>;
+  int mode;
+};
+
+struct guestfs_base64_in_args {
+  string filename<>;
+};
+
+struct guestfs_base64_out_args {
+  string filename<>;
+};
+
+struct guestfs_checksums_out_args {
+  string csumtype<>;
+  string directory<>;
+};
+
+struct guestfs_fill_pattern_args {
+  string pattern<>;
+  int len;
+  string path<>;
+};
+
+struct guestfs_write_args {
+  string path<>;
+  opaque content<>;
+};
+
+struct guestfs_pwrite_args {
+  string path<>;
+  opaque content<>;
+  hyper offset;
+};
+
+struct guestfs_pwrite_ret {
+  int nbytes;
+};
+
+struct guestfs_resize2fs_size_args {
+  string device<>;
+  hyper size;
+};
+
+struct guestfs_pvresize_size_args {
+  string device<>;
+  hyper size;
+};
+
+struct guestfs_ntfsresize_size_args {
+  string device<>;
+  hyper size;
+};
+
+struct guestfs_available_all_groups_ret {
+  guestfs_str groups<>;
+};
+
+struct guestfs_fallocate64_args {
+  string path<>;
+  hyper len;
+};
+
+struct guestfs_vfs_label_args {
+  string device<>;
+};
+
+struct guestfs_vfs_label_ret {
+  string label<>;
+};
+
+struct guestfs_vfs_uuid_args {
+  string device<>;
+};
+
+struct guestfs_vfs_uuid_ret {
+  string uuid<>;
+};
+
+struct guestfs_lvm_set_filter_args {
+  guestfs_str devices<>;
+};
+
+struct guestfs_luks_open_args {
+  string device<>;
+  string key<>;
+  string mapname<>;
+};
+
+struct guestfs_luks_open_ro_args {
+  string device<>;
+  string key<>;
+  string mapname<>;
+};
+
+struct guestfs_luks_close_args {
+  string device<>;
+};
+
+struct guestfs_luks_format_args {
+  string device<>;
+  string key<>;
+  int keyslot;
+};
+
+struct guestfs_luks_format_cipher_args {
+  string device<>;
+  string key<>;
+  int keyslot;
+  string cipher<>;
+};
+
+struct guestfs_luks_add_key_args {
+  string device<>;
+  string key<>;
+  string newkey<>;
+  int keyslot;
+};
+
+struct guestfs_luks_kill_slot_args {
+  string device<>;
+  string key<>;
+  int keyslot;
+};
+
+struct guestfs_is_lv_args {
+  string device<>;
+};
+
+struct guestfs_is_lv_ret {
+  bool lvflag;
+};
+
+struct guestfs_findfs_uuid_args {
+  string uuid<>;
+};
+
+struct guestfs_findfs_uuid_ret {
+  string device<>;
+};
+
+struct guestfs_findfs_label_args {
+  string label<>;
+};
+
+struct guestfs_findfs_label_ret {
+  string device<>;
+};
+
+struct guestfs_is_chardev_args {
+  string path<>;
+};
+
+struct guestfs_is_chardev_ret {
+  bool flag;
+};
+
+struct guestfs_is_blockdev_args {
+  string path<>;
+};
+
+struct guestfs_is_blockdev_ret {
+  bool flag;
+};
+
+struct guestfs_is_fifo_args {
+  string path<>;
+};
+
+struct guestfs_is_fifo_ret {
+  bool flag;
+};
+
+struct guestfs_is_symlink_args {
+  string path<>;
+};
+
+struct guestfs_is_symlink_ret {
+  bool flag;
+};
+
+struct guestfs_is_socket_args {
+  string path<>;
+};
+
+struct guestfs_is_socket_ret {
+  bool flag;
+};
+
+struct guestfs_part_to_dev_args {
+  string partition<>;
+};
+
+struct guestfs_part_to_dev_ret {
+  string device<>;
+};
+
+struct guestfs_upload_offset_args {
+  string remotefilename<>;
+  hyper offset;
+};
+
+struct guestfs_download_offset_args {
+  string remotefilename<>;
+  hyper offset;
+  hyper size;
+};
+
+struct guestfs_pwrite_device_args {
+  string device<>;
+  opaque content<>;
+  hyper offset;
+};
+
+struct guestfs_pwrite_device_ret {
+  int nbytes;
+};
+
+struct guestfs_pread_device_args {
+  string device<>;
+  int count;
+  hyper offset;
+};
+
+struct guestfs_pread_device_ret {
+  opaque content<>;
+};
+
+struct guestfs_lvm_canonical_lv_name_args {
+  string lvname<>;
+};
+
+struct guestfs_lvm_canonical_lv_name_ret {
+  string lv<>;
+};
+
+struct guestfs_mkfs_opts_args {
+  string fstype<>;
+  string device<>;
+  int blocksize;
+  string features<>;
+};
+
+struct guestfs_getxattr_args {
+  string path<>;
+  string name<>;
+};
+
+struct guestfs_getxattr_ret {
+  opaque xattr<>;
+};
+
+struct guestfs_lgetxattr_args {
+  string path<>;
+  string name<>;
+};
+
+struct guestfs_lgetxattr_ret {
+  opaque xattr<>;
+};
+
+struct guestfs_resize2fs_M_args {
+  string device<>;
 };
 
 enum guestfs_procedure {
@@ -1714,6 +2109,67 @@ enum guestfs_procedure {
   GUESTFS_PROC_LVRENAME = 219,
   GUESTFS_PROC_VGRENAME = 220,
   GUESTFS_PROC_INITRD_CAT = 221,
+  GUESTFS_PROC_PVUUID = 222,
+  GUESTFS_PROC_VGUUID = 223,
+  GUESTFS_PROC_LVUUID = 224,
+  GUESTFS_PROC_VGPVUUIDS = 225,
+  GUESTFS_PROC_VGLVUUIDS = 226,
+  GUESTFS_PROC_COPY_SIZE = 227,
+  GUESTFS_PROC_ZERO_DEVICE = 228,
+  GUESTFS_PROC_TXZ_IN = 229,
+  GUESTFS_PROC_TXZ_OUT = 230,
+  GUESTFS_PROC_NTFSRESIZE = 231,
+  GUESTFS_PROC_VGSCAN = 232,
+  GUESTFS_PROC_PART_DEL = 233,
+  GUESTFS_PROC_PART_GET_BOOTABLE = 234,
+  GUESTFS_PROC_PART_GET_MBR_ID = 235,
+  GUESTFS_PROC_PART_SET_MBR_ID = 236,
+  GUESTFS_PROC_CHECKSUM_DEVICE = 237,
+  GUESTFS_PROC_LVRESIZE_FREE = 238,
+  GUESTFS_PROC_AUG_CLEAR = 239,
+  GUESTFS_PROC_GET_UMASK = 240,
+  GUESTFS_PROC_DEBUG_UPLOAD = 241,
+  GUESTFS_PROC_BASE64_IN = 242,
+  GUESTFS_PROC_BASE64_OUT = 243,
+  GUESTFS_PROC_CHECKSUMS_OUT = 244,
+  GUESTFS_PROC_FILL_PATTERN = 245,
+  GUESTFS_PROC_WRITE = 246,
+  GUESTFS_PROC_PWRITE = 247,
+  GUESTFS_PROC_RESIZE2FS_SIZE = 248,
+  GUESTFS_PROC_PVRESIZE_SIZE = 249,
+  GUESTFS_PROC_NTFSRESIZE_SIZE = 250,
+  GUESTFS_PROC_AVAILABLE_ALL_GROUPS = 251,
+  GUESTFS_PROC_FALLOCATE64 = 252,
+  GUESTFS_PROC_VFS_LABEL = 253,
+  GUESTFS_PROC_VFS_UUID = 254,
+  GUESTFS_PROC_LVM_SET_FILTER = 255,
+  GUESTFS_PROC_LVM_CLEAR_FILTER = 256,
+  GUESTFS_PROC_LUKS_OPEN = 257,
+  GUESTFS_PROC_LUKS_OPEN_RO = 258,
+  GUESTFS_PROC_LUKS_CLOSE = 259,
+  GUESTFS_PROC_LUKS_FORMAT = 260,
+  GUESTFS_PROC_LUKS_FORMAT_CIPHER = 261,
+  GUESTFS_PROC_LUKS_ADD_KEY = 262,
+  GUESTFS_PROC_LUKS_KILL_SLOT = 263,
+  GUESTFS_PROC_IS_LV = 264,
+  GUESTFS_PROC_FINDFS_UUID = 265,
+  GUESTFS_PROC_FINDFS_LABEL = 266,
+  GUESTFS_PROC_IS_CHARDEV = 267,
+  GUESTFS_PROC_IS_BLOCKDEV = 268,
+  GUESTFS_PROC_IS_FIFO = 269,
+  GUESTFS_PROC_IS_SYMLINK = 270,
+  GUESTFS_PROC_IS_SOCKET = 271,
+  GUESTFS_PROC_PART_TO_DEV = 272,
+  GUESTFS_PROC_UPLOAD_OFFSET = 273,
+  GUESTFS_PROC_DOWNLOAD_OFFSET = 274,
+  GUESTFS_PROC_PWRITE_DEVICE = 275,
+  GUESTFS_PROC_PREAD_DEVICE = 276,
+  GUESTFS_PROC_LVM_CANONICAL_LV_NAME = 277,
+  GUESTFS_PROC_MKFS_OPTS = 278,
+  GUESTFS_PROC_GETXATTR = 279,
+  GUESTFS_PROC_LGETXATTR = 280,
+  GUESTFS_PROC_RESIZE2FS_M = 281,
+  GUESTFS_PROC_INTERNAL_AUTOSYNC = 282,
   GUESTFS_PROC_NR_PROCS
 };
 
@@ -1724,11 +2180,12 @@ const GUESTFS_MESSAGE_MAX = 4194304;
  */
 
 const GUESTFS_PROGRAM = 0x2000F5F5;
-const GUESTFS_PROTOCOL_VERSION = 1;
+const GUESTFS_PROTOCOL_VERSION = 4;
 
 /* These constants must be larger than any possible message length. */
 const GUESTFS_LAUNCH_FLAG = 0xf5f55ff5;
 const GUESTFS_CANCEL_FLAG = 0xffffeeee;
+const GUESTFS_PROGRESS_FLAG = 0xffff5555;
 
 enum guestfs_message_direction {
   GUESTFS_DIRECTION_CALL = 0,        /* client -> daemon */
@@ -1740,9 +2197,11 @@ enum guestfs_message_status {
   GUESTFS_STATUS_ERROR = 1
 };
 
-const GUESTFS_ERROR_LEN = 256;
+const GUESTFS_ERROR_LEN = 65536;
 
 struct guestfs_message_error {
+  string errno_string<32>;           /* errno eg. "EINVAL", empty string
+                                        if errno not available */
   string error_message<GUESTFS_ERROR_LEN>;
 };
 
@@ -1752,6 +2211,8 @@ struct guestfs_message_header {
   guestfs_procedure proc;            /* GUESTFS_PROC_x */
   guestfs_message_direction direction;
   unsigned serial;                   /* message serial number */
+  unsigned hyper progress_hint;      /* upload hint for progress bar */
+  unsigned hyper optargs_bitmask;    /* bitmask for optional args */
   guestfs_message_status status;
 };
 
@@ -1761,4 +2222,27 @@ struct guestfs_chunk {
   int cancel;			     /* if non-zero, transfer is cancelled */
   /* data size is 0 bytes if the transfer has finished successfully */
   opaque data<GUESTFS_MAX_CHUNK_SIZE>;
+};
+
+/* Progress notifications.  Daemon self-limits these messages to
+ * at most one per second.  The daemon can send these messages
+ * at any time, and the caller should discard unexpected messages.
+ * 'position' and 'total' have undefined units; however they may
+ * have meaning for some calls.
+ *
+ * Notes:
+ *
+ * (1) guestfs___recv_from_daemon assumes the XDR-encoded
+ * structure is 24 bytes long.
+ *
+ * (2) daemon/proto.c:async_safe_send_pulse assumes the progress
+ * message is laid out precisely in this way.  So if you change
+ * this then you'd better change that function as well.
+ */
+struct guestfs_progress {
+  guestfs_procedure proc;            /* @0:  GUESTFS_PROC_x */
+  unsigned serial;                   /* @4:  message serial number */
+  unsigned hyper position;           /* @8:  0 <= position <= total */
+  unsigned hyper total;              /* @16: total size of operation */
+                                     /* @24: size of structure */
 };

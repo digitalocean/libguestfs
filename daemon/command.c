@@ -22,9 +22,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../src/guestfs_protocol.h"
+#include "guestfs_protocol.h"
 #include "daemon.h"
 #include "actions.h"
+
+#include "ignore-value.h"
+
+static inline void
+umount_ignore_fail (const char *path)
+{
+  ignore_value (command (NULL, NULL, "umount", path, NULL));
+}
 
 char *
 do_command (char *const *argv)
@@ -36,7 +44,7 @@ do_command (char *const *argv)
   int dev_ok, dev_pts_ok, proc_ok, selinux_ok, sys_ok;
 
   /* We need a root filesystem mounted to do this. */
-  NEED_ROOT (return NULL);
+  NEED_ROOT (, return NULL);
 
   /* Conveniently, argv is already a NULL-terminated argv-style array
    * of parameters, so we can pass it straight in to our internal
@@ -88,11 +96,11 @@ do_command (char *const *argv)
   r = commandv (&out, &err, (const char * const *) argv);
   CHROOT_OUT;
 
-  if (sys_ok) command (NULL, NULL, "umount", sysroot_sys, NULL);
-  if (selinux_ok) command (NULL, NULL, "umount", sysroot_selinux, NULL);
-  if (proc_ok) command (NULL, NULL, "umount", sysroot_proc, NULL);
-  if (dev_pts_ok) command (NULL, NULL, "umount", sysroot_dev_pts, NULL);
-  if (dev_ok) command (NULL, NULL, "umount", sysroot_dev, NULL);
+  if (sys_ok) umount_ignore_fail (sysroot_sys);
+  if (selinux_ok) umount_ignore_fail (sysroot_selinux);
+  if (proc_ok) umount_ignore_fail (sysroot_proc);
+  if (dev_pts_ok) umount_ignore_fail (sysroot_dev_pts);
+  if (dev_ok) umount_ignore_fail (sysroot_dev);
 
   free (sysroot_dev);
   free (sysroot_dev_pts);

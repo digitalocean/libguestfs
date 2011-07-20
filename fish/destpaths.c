@@ -71,6 +71,14 @@ free_words (struct word *words, size_t nr_words)
     free (words[i].name);
   free (words);
 }
+
+static int
+compare_words (const void *vp1, const void *vp2)
+{
+  const struct word *w1 = (const struct word *) vp1;
+  const struct word *w2 = (const struct word *) vp2;
+  return strcmp (w1->name, w2->name);
+}
 #endif
 
 char *
@@ -212,6 +220,9 @@ complete_dest_paths_generator (const char *text, int state)
   /* This inhibits ordinary (local filename) completion. */
   rl_attempted_completion_over = 1;
 
+  /* Sort the words so the list is stable over multiple calls. */
+  qsort (words, nr_words, sizeof (struct word), compare_words);
+
   /* Complete the string. */
   while (index < nr_words) {
     struct word *word;
@@ -219,7 +230,20 @@ complete_dest_paths_generator (const char *text, int state)
     word = &words[index];
     index++;
 
-    if (STRCASEEQLEN (word->name, text, len)) {
+    /* Whether we should match case insensitively here or not is
+     * determined by the value of the completion-ignore-case readline
+     * variable.  Default to case insensitive.  (See: RHBZ#582993).
+     */
+    char *cic_var = rl_variable_value ("completion-ignore-case");
+    int cic = 1;
+    if (cic_var && STREQ (cic_var, "off"))
+      cic = 0;
+
+    int matches =
+      cic ? STRCASEEQLEN (word->name, text, len)
+          : STREQLEN (word->name, text, len);
+
+    if (matches) {
       if (word->is_dir)
         rl_completion_append_character = '/';
 

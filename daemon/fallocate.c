@@ -23,12 +23,24 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <errno.h>
 
 #include "daemon.h"
 #include "actions.h"
 
 int
 do_fallocate (const char *path, int len)
+{
+  if (len < 0) {
+    reply_with_error ("length < 0");
+    return -1;
+  }
+
+  return do_fallocate64 (path, len);
+}
+
+int
+do_fallocate64 (const char *path, int64_t len)
 {
   int fd;
 
@@ -41,10 +53,9 @@ do_fallocate (const char *path, int len)
   }
 
 #ifdef HAVE_POSIX_FALLOCATE
-  int r;
-
-  r = posix_fallocate (fd, 0, len);
-  if (r == -1) {
+  int err = posix_fallocate (fd, 0, len);
+  if (err != 0) {
+    errno = err;
     reply_with_perror ("%s", path);
     close (fd);
     return -1;

@@ -20,13 +20,43 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 #include <string.h>
 #include <unistd.h>
 
-#include "../src/guestfs_protocol.h"
+#include "guestfs_protocol.h"
 #include "daemon.h"
 #include "c-ctype.h"
 #include "actions.h"
+
+/* Confirmed this is true up to ext4 from the Linux sources. */
+#define EXT2_LABEL_MAX 16
+
+/* Choose which tools like mke2fs to use.  For RHEL 5 (only) there
+ * is a special set of tools which support ext2/3/4.  eg. On RHEL 5,
+ * mke2fs only supports ext2/3, but mke4fs supports ext2/3/4.
+ *
+ * We specify e4fsprogs in the package list to ensure it is loaded
+ * if it exists.
+ */
+int
+e2prog (char *name)
+{
+  char *p = strstr (name, "e2");
+  if (!p) return 0;
+  p++;
+
+  *p = '4';
+  if (prog_exists (name))
+    return 0;
+
+  *p = '2';
+  if (prog_exists (name))
+    return 0;
+
+  reply_with_error ("cannot find required program %s", name);
+  return -1;
+}
 
 char **
 do_tune2fs_l (const char *device)
@@ -37,7 +67,11 @@ do_tune2fs_l (const char *device)
   char **ret = NULL;
   int size = 0, alloc = 0;
 
-  r = command (&out, &err, "/sbin/tune2fs", "-l", device, NULL);
+  char prog[] = "tune2fs";
+  if (e2prog (prog) == -1)
+    return NULL;
+
+  r = command (&out, &err, prog, "-l", device, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     free (err);
@@ -49,7 +83,7 @@ do_tune2fs_l (const char *device)
   p = out;
 
   /* Discard the first line if it contains "tune2fs ...". */
-  if (STREQLEN (p, "tune2fs ", 8)) {
+  if (STRPREFIX (p, "tune2fs ") || STRPREFIX (p, "tune4fs ")) {
     p = strchr (p, '\n');
     if (p) p++;
     else {
@@ -121,7 +155,17 @@ do_set_e2label (const char *device, const char *label)
   int r;
   char *err;
 
-  r = command (NULL, &err, "/sbin/e2label", device, label, NULL);
+  char prog[] = "e2label";
+  if (e2prog (prog) == -1)
+    return -1;
+
+  if (strlen (label) > EXT2_LABEL_MAX) {
+    reply_with_error ("%s: ext2 labels are limited to %d bytes",
+                      label, EXT2_LABEL_MAX);
+    return -1;
+  }
+
+  r = command (NULL, &err, prog, device, label, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     free (err);
@@ -135,25 +179,7 @@ do_set_e2label (const char *device, const char *label)
 char *
 do_get_e2label (const char *device)
 {
-  int r, len;
-  char *out, *err;
-
-  r = command (&out, &err, "/sbin/e2label", device, NULL);
-  if (r == -1) {
-    reply_with_error ("%s", err);
-    free (out);
-    free (err);
-    return NULL;
-  }
-
-  free (err);
-
-  /* Remove any trailing \n from the label. */
-  len = strlen (out);
-  if (len > 0 && out[len-1] == '\n')
-    out[len-1] = '\0';
-
-  return out;			/* caller frees */
+  return do_vfs_label (device);
 }
 
 int
@@ -162,7 +188,11 @@ do_set_e2uuid (const char *device, const char *uuid)
   int r;
   char *err;
 
-  r = command (NULL, &err, "/sbin/tune2fs", "-U", uuid, device, NULL);
+  char prog[] = "tune2fs";
+  if (e2prog (prog) == -1)
+    return -1;
+
+  r = command (NULL, &err, prog, "-U", uuid, device, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     free (err);
@@ -176,62 +206,7 @@ do_set_e2uuid (const char *device, const char *uuid)
 char *
 do_get_e2uuid (const char *device)
 {
-  int r;
-  char *out, *err, *p, *q;
-
-  /* It's not so straightforward to get the volume UUID.  We have
-   * to use tune2fs -l and then look for a particular string in
-   * the output.
-   */
-
-  r = command (&out, &err, "/sbin/tune2fs", "-l", device, NULL);
-  if (r == -1) {
-    reply_with_error ("%s", err);
-    free (out);
-    free (err);
-    return NULL;
-  }
-
-  free (err);
-
-  /* Look for /\nFilesystem UUID:\s+/ in the output. */
-  p = strstr (out, "\nFilesystem UUID:");
-  if (p == NULL) {
-    reply_with_error ("no Filesystem UUID in the output of tune2fs -l");
-    free (out);
-    return NULL;
-  }
-
-  p += 17;
-  while (*p && c_isspace (*p))
-    p++;
-  if (!*p) {
-    reply_with_error ("malformed Filesystem UUID in the output of tune2fs -l");
-    free (out);
-    return NULL;
-  }
-
-  /* Now 'p' hopefully points to the start of the UUID. */
-  q = p;
-  while (*q && (c_isxdigit (*q) || *q == '-'))
-    q++;
-  if (!*q) {
-    reply_with_error ("malformed Filesystem UUID in the output of tune2fs -l");
-    free (out);
-    return NULL;
-  }
-
-  *q = '\0';
-
-  p = strdup (p);
-  if (!p) {
-    reply_with_perror ("strdup");
-    free (out);
-    return NULL;
-  }
-
-  free (out);
-  return p;			/* caller frees */
+  return do_vfs_uuid (device);
 }
 
 int
@@ -240,7 +215,67 @@ do_resize2fs (const char *device)
   char *err;
   int r;
 
-  r = command (NULL, &err, "/sbin/resize2fs", device, NULL);
+  char prog[] = "resize2fs";
+  if (e2prog (prog) == -1)
+    return -1;
+
+  r = command (NULL, &err, prog, device, NULL);
+  if (r == -1) {
+    reply_with_error ("%s", err);
+    free (err);
+    return -1;
+  }
+
+  free (err);
+  return 0;
+}
+
+int
+do_resize2fs_size (const char *device, int64_t size)
+{
+  char *err;
+  int r;
+
+  char prog[] = "resize2fs";
+  if (e2prog (prog) == -1)
+    return -1;
+
+  /* resize2fs itself may impose additional limits.  Since we are
+   * going to use the 'K' suffix however we can only work with whole
+   * kilobytes.
+   */
+  if (size & 1023) {
+    reply_with_error ("%" PRIi64 ": size must be a round number of kilobytes",
+                      size);
+    return -1;
+  }
+  size /= 1024;
+
+  char buf[32];
+  snprintf (buf, sizeof buf, "%" PRIi64 "K", size);
+
+  r = command (NULL, &err, prog, device, buf, NULL);
+  if (r == -1) {
+    reply_with_error ("%s", err);
+    free (err);
+    return -1;
+  }
+
+  free (err);
+  return 0;
+}
+
+int
+do_resize2fs_M (const char *device)
+{
+  char *err;
+  int r;
+
+  char prog[] = "resize2fs";
+  if (e2prog (prog) == -1)
+    return -1;
+
+  r = command (NULL, &err, prog, "-M" , device, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     free (err);
@@ -257,8 +292,19 @@ do_e2fsck_f (const char *device)
   char *err;
   int r;
 
-  r = command (NULL, &err, "/sbin/e2fsck", "-p", "-f", device, NULL);
-  if (r == -1) {
+  char prog[] = "e2fsck";
+  if (e2prog (prog) == -1)
+    return -1;
+
+  /* 0 = no errors, 1 = errors corrected.
+   *
+   * >= 4 means uncorrected or other errors.
+   *
+   * 2, 3 means errors were corrected and we require a reboot.  This is
+   * a difficult corner case.
+   */
+  r = commandr (NULL, &err, prog, "-p", "-f", device, NULL);
+  if (r == -1 || r >= 2) {
     reply_with_error ("%s", err);
     free (err);
     return -1;
@@ -274,11 +320,15 @@ do_mke2journal (int blocksize, const char *device)
   char *err;
   int r;
 
+  char prog[] = "mke2fs";
+  if (e2prog (prog) == -1)
+    return -1;
+
   char blocksize_s[32];
   snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
 
   r = command (NULL, &err,
-               "/sbin/mke2fs", "-O", "journal_dev", "-b", blocksize_s,
+               prog, "-O", "journal_dev", "-b", blocksize_s,
                device, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
@@ -296,11 +346,21 @@ do_mke2journal_L (int blocksize, const char *label, const char *device)
   char *err;
   int r;
 
+  char prog[] = "mke2fs";
+  if (e2prog (prog) == -1)
+    return -1;
+
+  if (strlen (label) > EXT2_LABEL_MAX) {
+    reply_with_error ("%s: ext2 labels are limited to %d bytes",
+                      label, EXT2_LABEL_MAX);
+    return -1;
+  }
+
   char blocksize_s[32];
   snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
 
   r = command (NULL, &err,
-               "/sbin/mke2fs", "-O", "journal_dev", "-b", blocksize_s,
+               prog, "-O", "journal_dev", "-b", blocksize_s,
                "-L", label,
                device, NULL);
   if (r == -1) {
@@ -319,11 +379,15 @@ do_mke2journal_U (int blocksize, const char *uuid, const char *device)
   char *err;
   int r;
 
+  char prog[] = "mke2fs";
+  if (e2prog (prog) == -1)
+    return -1;
+
   char blocksize_s[32];
   snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
 
   r = command (NULL, &err,
-               "/sbin/mke2fs", "-O", "journal_dev", "-b", blocksize_s,
+               prog, "-O", "journal_dev", "-b", blocksize_s,
                "-U", uuid,
                device, NULL);
   if (r == -1) {
@@ -336,40 +400,6 @@ do_mke2journal_U (int blocksize, const char *uuid, const char *device)
   return 0;
 }
 
-/* Run mke2fs to create a filesystem of type fstype, where fstype
- * is the string "ext2", "ext3" or "ext4".
- *
- * This is more complex than it seems.
- *
- * On RHEL 5, the -t option was deprecated.  Moreover RHEL <= 5.4
- * systems have a bug where the -t option doesn't work (it doesn't
- * correctly ignore the following argument).
- *
- * On RHEL 5, to create an ext4dev filesystem you have to use
- * the special command /sbin/mke4fs.  This can also create ext2/3
- * using the '-t fstype' option.
- *
- * On Fedora 11+, mke4fs was renamed mke2fs, and it can use the
- * '-t fstype' option to specify the filesystem type.
- *
- * So it seems best to run /sbin/mke4fs if it exists, or /sbin/mke2fs
- * otherwise.  We specify e4fsprogs in the package list to ensure it
- * is loaded if it exists.
- */
-static const char *
-get_mke2fs (void)
-{
-  static const char *const progs[] = { "/sbin/mke4fs", "/sbin/mke2fs", NULL };
-  int i;
-
-  for (i = 0; progs[i]; ++i)
-    if (access (progs[i], F_OK) == 0)
-      return progs[i];
-
-  reply_with_error ("no mke2fs binary found in appliance");
-  return NULL;
-}
-
 int
 do_mke2fs_J (const char *fstype, int blocksize, const char *device,
              const char *journal)
@@ -377,8 +407,9 @@ do_mke2fs_J (const char *fstype, int blocksize, const char *device,
   char *err;
   int r;
 
-  const char *prog = get_mke2fs ();
-  if (!prog) return -1;
+  char prog[] = "mke2fs";
+  if (e2prog (prog) == -1)
+    return -1;
 
   char blocksize_s[32];
   snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
@@ -407,8 +438,15 @@ do_mke2fs_JL (const char *fstype, int blocksize, const char *device,
   char *err;
   int r;
 
-  const char *prog = get_mke2fs ();
-  if (!prog) return -1;
+  char prog[] = "mke2fs";
+  if (e2prog (prog) == -1)
+    return -1;
+
+  if (strlen (label) > EXT2_LABEL_MAX) {
+    reply_with_error ("%s: ext2 labels are limited to %d bytes",
+                      label, EXT2_LABEL_MAX);
+    return -1;
+  }
 
   char blocksize_s[32];
   snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
@@ -437,8 +475,9 @@ do_mke2fs_JU (const char *fstype, int blocksize, const char *device,
   char *err;
   int r;
 
-  const char *prog = get_mke2fs ();
-  if (!prog) return -1;
+  char prog[] = "mke2fs";
+  if (e2prog (prog) == -1)
+    return -1;
 
   char blocksize_s[32];
   snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);

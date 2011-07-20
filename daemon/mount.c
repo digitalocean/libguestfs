@@ -24,12 +24,46 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <mntent.h>
 
 #include "daemon.h"
 #include "actions.h"
 
-/* You must mount something on "/" first, hence: */
-int root_mounted = 0;
+/* You must mount something on "/" first before many operations.
+ * Hence we have an internal function which can test if something is
+ * mounted on *or under* the sysroot directory.  (It has to be *or
+ * under* because of mkmountpoint and friends).
+ */
+int
+is_root_mounted (void)
+{
+  FILE *fp;
+  struct mntent *m;
+
+  /* NB: Eventually we should aim to parse /proc/self/mountinfo, but
+   * that requires custom parsing code.
+   */
+  fp = setmntent ("/proc/mounts", "r");
+  if (fp == NULL) {
+    perror ("/proc/mounts");
+    exit (EXIT_FAILURE);
+  }
+
+  while ((m = getmntent (fp)) != NULL) {
+    /* Allow a mount directory like "/sysroot". */
+    if (sysroot_len > 0 && STREQ (m->mnt_dir, sysroot)) {
+    gotit:
+      endmntent (fp);
+      return 1;
+    }
+    /* Or allow a mount directory like "/sysroot/...". */
+    if (STRPREFIX (m->mnt_dir, sysroot) && m->mnt_dir[sysroot_len] == '/')
+      goto gotit;
+  }
+
+  endmntent (fp);
+  return 0;
+}
 
 /* The "simple mount" call offers no complex options, you can just
  * mount a device on a mountpoint.  The variations like mount_ro,
@@ -44,22 +78,28 @@ int
 do_mount_vfs (const char *options, const char *vfstype,
               const char *device, const char *mountpoint)
 {
-  int r, is_root;
+  int r;
   char *mp;
   char *error;
+  struct stat statbuf;
 
-  ABS_PATH (mountpoint, return -1);
-
-  is_root = STREQ (mountpoint, "/");
-
-  if (!root_mounted && !is_root) {
-    reply_with_error ("you must mount something on / first");
-    return -1;
-  }
+  ABS_PATH (mountpoint, , return -1);
 
   mp = sysroot_path (mountpoint);
   if (!mp) {
     reply_with_perror ("malloc");
+    return -1;
+  }
+
+  /* Check the mountpoint exists and is a directory. */
+  if (stat (mp, &statbuf) == -1) {
+    reply_with_perror ("mount: %s", mountpoint);
+    free (mp);
+    return -1;
+  }
+  if (!S_ISDIR (statbuf.st_mode)) {
+    reply_with_perror ("mount: %s: mount point is not a directory", mountpoint);
+    free (mp);
     return -1;
   }
 
@@ -76,9 +116,7 @@ do_mount_vfs (const char *options, const char *vfstype,
     return -1;
   }
 
-  if (is_root)
-    root_mounted = 1;
-
+  free (error);
   return 0;
 }
 
@@ -121,7 +159,7 @@ do_umount (const char *pathordevice)
   }
 
   if (is_dev)
-    RESOLVE_DEVICE (buf, { free (buf); return -1; });
+    RESOLVE_DEVICE (buf, , { free (buf); return -1; });
 
   r = command (NULL, &err, "umount", buf, NULL);
   free (buf);
@@ -134,75 +172,75 @@ do_umount (const char *pathordevice)
 
   free (err);
 
-  /* update root_mounted? */
-
   return 0;
 }
 
+/* Implement 'mounts' (mp==0) and 'mountpoints' (mp==1) calls. */
 static char **
 mounts_or_mountpoints (int mp)
 {
-  char *out, *err;
-  int r;
+  FILE *fp;
+  struct mntent *m;
   char **ret = NULL;
   int size = 0, alloc = 0;
-  char *p, *pend, *p2;
-  int len;
-  char matching[5 + sysroot_len];
+  size_t i;
+  int r;
 
-  r = command (&out, &err, "mount", NULL);
-  if (r == -1) {
-    reply_with_error ("mount: %s", err);
-    free (out);
-    free (err);
-    return NULL;
+  /* NB: Eventually we should aim to parse /proc/self/mountinfo, but
+   * that requires custom parsing code.
+   */
+  fp = setmntent ("/proc/mounts", "r");
+  if (fp == NULL) {
+    perror ("/proc/mounts");
+    exit (EXIT_FAILURE);
   }
 
-  free (err);
-
-  /* Lines have the format:
-   *   /dev/foo on /mountpoint type ...
-   */
-  snprintf (matching, 5 + sysroot_len, " on %s", sysroot);
-
-  p = out;
-  while (p) {
-    pend = strchr (p, '\n');
-    if (pend) {
-      *pend = '\0';
-      pend++;
-    }
-
-    p2 = strstr (p, matching);
-    if (p2 != NULL) {
-      *p2 = '\0';
-      if (add_string (&ret, &size, &alloc, p) == -1) {
-        free (out);
+  while ((m = getmntent (fp)) != NULL) {
+    /* Allow a mount directory like "/sysroot". */
+    if (sysroot_len > 0 && STREQ (m->mnt_dir, sysroot)) {
+      if (add_string (&ret, &size, &alloc, m->mnt_fsname) == -1) {
+      error:
+        endmntent (fp);
         return NULL;
       }
-      if (mp) {
-        p2 += 4 + sysroot_len;	/* skip " on /sysroot" */
-        len = strcspn (p2, " ");
-
-        if (len == 0)		/* .. just /sysroot, so we turn it into "/" */
-          p2 = (char *) "/";
-        else
-          p2[len] = '\0';
-
-        if (add_string (&ret, &size, &alloc, p2) == -1) {
-          free (out);
-          return NULL;
-        }
-      }
+      if (mp &&
+          add_string (&ret, &size, &alloc, "/") == -1)
+        goto error;
     }
-
-    p = pend;
+    /* Or allow a mount directory like "/sysroot/...". */
+    if (STRPREFIX (m->mnt_dir, sysroot) && m->mnt_dir[sysroot_len] == '/') {
+      if (add_string (&ret, &size, &alloc, m->mnt_fsname) == -1)
+        goto error;
+      if (mp &&
+          add_string (&ret, &size, &alloc, &m->mnt_dir[sysroot_len]) == -1)
+        goto error;
+    }
   }
 
-  free (out);
+  endmntent (fp);
 
   if (add_string (&ret, &size, &alloc, NULL) == -1)
     return NULL;
+
+  /* Convert /dev/mapper LV paths into canonical paths (RHBZ#646432). */
+  for (i = 0; ret[i] != NULL; i += mp ? 2 : 1) {
+    if (STRPREFIX (ret[i], "/dev/mapper/") || STRPREFIX (ret[i], "/dev/dm-")) {
+      char *canonical;
+      r = lv_canonical (ret[i], &canonical);
+      if (r == -1) {
+        free_strings (ret);
+        return NULL;
+      }
+      if (r == 1) {
+        free (ret[i]);
+        ret[i] = canonical;
+      }
+      /* Ignore the case where r == 0.  This might happen where
+       * eg. a LUKS /dev/mapper device is mounted, but that won't
+       * correspond to any LV.
+       */
+    }
+  }
 
   return ret;
 }
@@ -242,50 +280,40 @@ compare_longest_first (const void *vp1, const void *vp2)
 int
 do_umount_all (void)
 {
-  char *out, *err;
-  int i, r;
+  FILE *fp;
+  struct mntent *m;
   char **mounts = NULL;
   int size = 0, alloc = 0;
-  char *p, *p2, *p3, *pend;
-  char matching[5 + sysroot_len];
+  char *err;
+  int i, r;
 
-  r = command (&out, &err, "mount", NULL);
-  if (r == -1) {
-    reply_with_error ("mount: %s", err);
-    free (out);
-    free (err);
-    return -1;
+  /* NB: Eventually we should aim to parse /proc/self/mountinfo, but
+   * that requires custom parsing code.
+   */
+  fp = setmntent ("/proc/mounts", "r");
+  if (fp == NULL) {
+    perror ("/proc/mounts");
+    exit (EXIT_FAILURE);
   }
 
-  free (err);
-
-  /* Lines have the format:
-   *   /dev/foo on /mountpoint type ...
-   */
-  snprintf (matching, 5 + sysroot_len, " on %s", sysroot);
-
-  p = out;
-  while (p) {
-    pend = strchr (p, '\n');
-    if (pend) {
-      *pend = '\0';
-      pend++;
-    }
-
-    p2 = strstr (p, matching);
-    if (p2 != NULL) {
-      p2 += 4;
-      p3 = p2 + strcspn (p2, " ");
-      *p3 = '\0';
-      if (add_string (&mounts, &size, &alloc, p2) == -1) {
-        free (out);
+  while ((m = getmntent (fp)) != NULL) {
+    /* Allow a mount directory like "/sysroot". */
+    if (sysroot_len > 0 && STREQ (m->mnt_dir, sysroot)) {
+      if (add_string (&mounts, &size, &alloc, m->mnt_dir) == -1) {
+        endmntent (fp);
         return -1;
       }
     }
-
-    p = pend;
+    /* Or allow a mount directory like "/sysroot/...". */
+    if (STRPREFIX (m->mnt_dir, sysroot) && m->mnt_dir[sysroot_len] == '/') {
+      if (add_string (&mounts, &size, &alloc, m->mnt_dir) == -1) {
+        endmntent (fp);
+        return -1;
+      }
+    }
   }
-  free (out);
+
+  endmntent (fp);
 
   qsort (mounts, size, sizeof (char *), compare_longest_first);
 
@@ -302,9 +330,6 @@ do_umount_all (void)
   }
 
   free_stringslen (mounts, size);
-
-  /* We've unmounted root now, so ... */
-  root_mounted = 0;
 
   return 0;
 }
@@ -328,7 +353,7 @@ do_mount_loop (const char *file, const char *mountpoint)
   }
 
   buf = sysroot_path (file);
-  if (!file) {
+  if (!buf) {
     reply_with_perror ("malloc");
     free (mp);
     return -1;
@@ -343,12 +368,13 @@ do_mount_loop (const char *file, const char *mountpoint)
     return -1;
   }
 
+  free (error);
   return 0;
 }
 
 /* Specialized calls mkmountpoint and rmmountpoint are really
- * variations on mkdir and rmdir which do no checking and (in the
- * mkmountpoint case) set the root_mounted flag.
+ * variations on mkdir and rmdir which do no checking of the
+ * is_root_mounted() flag.
  */
 int
 do_mkmountpoint (const char *path)
@@ -356,7 +382,7 @@ do_mkmountpoint (const char *path)
   int r;
 
   /* NEED_ROOT (return -1); - we don't want this test for this call. */
-  ABS_PATH (path, return -1);
+  ABS_PATH (path, , return -1);
 
   CHROOT_IN;
   r = mkdir (path, 0777);
@@ -367,11 +393,6 @@ do_mkmountpoint (const char *path)
     return -1;
   }
 
-  /* Set the flag so that filesystems can be mounted here,
-   * not just on /sysroot.
-   */
-  root_mounted = 1;
-
   return 0;
 }
 
@@ -381,7 +402,7 @@ do_rmmountpoint (const char *path)
   int r;
 
   /* NEED_ROOT (return -1); - we don't want this test for this call. */
-  ABS_PATH (path, return -1);
+  ABS_PATH (path, , return -1);
 
   CHROOT_IN;
   r = rmdir (path);

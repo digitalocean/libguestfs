@@ -1,9 +1,9 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   src/generator.ml
+ *   generator/generator_*.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2010 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "../src/guestfs_protocol.h"
+#include "guestfs_protocol.h"
 
+#define GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_MKFS_OPTS_FEATURES_BITMASK (UINT64_C(1)<<1)
 extern int do_mount (const char *device, const char *mountpoint);
 extern int do_sync (void);
 extern int do_touch (const char *path);
@@ -243,3 +245,64 @@ extern int64_t do_filesize (const char *file);
 extern int do_lvrename (const char *logvol, const char *newlogvol);
 extern int do_vgrename (const char *volgroup, const char *newvolgroup);
 extern char *do_initrd_cat (const char *initrdpath, const char *filename, size_t *size_r);
+extern char *do_pvuuid (const char *device);
+extern char *do_vguuid (const char *vgname);
+extern char *do_lvuuid (const char *device);
+extern char **do_vgpvuuids (const char *vgname);
+extern char **do_vglvuuids (const char *vgname);
+extern int do_copy_size (const char *src, const char *dest, int64_t size);
+extern int do_zero_device (const char *device);
+extern int do_txz_in (const char *directory);
+extern int do_txz_out (const char *directory);
+extern int do_ntfsresize (const char *device);
+extern int do_vgscan (void);
+extern int do_part_del (const char *device, int partnum);
+extern int do_part_get_bootable (const char *device, int partnum);
+extern int do_part_get_mbr_id (const char *device, int partnum);
+extern int do_part_set_mbr_id (const char *device, int partnum, int idbyte);
+extern char *do_checksum_device (const char *csumtype, const char *device);
+extern int do_lvresize_free (const char *lv, int percent);
+extern int do_aug_clear (const char *augpath);
+extern int do_get_umask (void);
+extern int do_debug_upload (const char *tmpname, int mode);
+extern int do_base64_in (const char *filename);
+extern int do_base64_out (const char *filename);
+extern int do_checksums_out (const char *csumtype, const char *directory);
+extern int do_fill_pattern (const char *pattern, int len, const char *path);
+extern int do_write (const char *path, const char *content, size_t content_size);
+extern int do_pwrite (const char *path, const char *content, size_t content_size, int64_t offset);
+extern int do_resize2fs_size (const char *device, int64_t size);
+extern int do_pvresize_size (const char *device, int64_t size);
+extern int do_ntfsresize_size (const char *device, int64_t size);
+extern char **do_available_all_groups (void);
+extern int do_fallocate64 (const char *path, int64_t len);
+extern char *do_vfs_label (const char *device);
+extern char *do_vfs_uuid (const char *device);
+extern int do_lvm_set_filter (char *const *devices);
+extern int do_lvm_clear_filter (void);
+extern int do_luks_open (const char *device, const char *key, const char *mapname);
+extern int do_luks_open_ro (const char *device, const char *key, const char *mapname);
+extern int do_luks_close (const char *device);
+extern int do_luks_format (const char *device, const char *key, int keyslot);
+extern int do_luks_format_cipher (const char *device, const char *key, int keyslot, const char *cipher);
+extern int do_luks_add_key (const char *device, const char *key, const char *newkey, int keyslot);
+extern int do_luks_kill_slot (const char *device, const char *key, int keyslot);
+extern int do_is_lv (const char *device);
+extern char *do_findfs_uuid (const char *uuid);
+extern char *do_findfs_label (const char *label);
+extern int do_is_chardev (const char *path);
+extern int do_is_blockdev (const char *path);
+extern int do_is_fifo (const char *path);
+extern int do_is_symlink (const char *path);
+extern int do_is_socket (const char *path);
+extern char *do_part_to_dev (const char *partition);
+extern int do_upload_offset (const char *remotefilename, int64_t offset);
+extern int do_download_offset (const char *remotefilename, int64_t offset, int64_t size);
+extern int do_pwrite_device (const char *device, const char *content, size_t content_size, int64_t offset);
+extern char *do_pread_device (const char *device, int count, int64_t offset, size_t *size_r);
+extern char *do_lvm_canonical_lv_name (const char *lvname);
+extern int do_mkfs_opts (const char *fstype, const char *device, int blocksize, const char *features);
+extern char *do_getxattr (const char *path, const char *name, size_t *size_r);
+extern char *do_lgetxattr (const char *path, const char *name, size_t *size_r);
+extern int do_resize2fs_M (const char *device);
+extern int do_internal_autosync (void);

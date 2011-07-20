@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2011 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,11 +19,24 @@ include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = guestmount.pod test-fuse.sh
 
+CLEANFILES = stamp-guestmount.pod
+
 if HAVE_FUSE
 
 bin_PROGRAMS = guestmount
 
+# These source files (all related to option parsing) are shared
+# between guestfish and guestmount.
+SHARED_SOURCE_FILES = \
+	../fish/config.c \
+	../fish/inspect.c \
+	../fish/keys.c \
+	../fish/options.h \
+	../fish/options.c \
+	../fish/virt.c
+
 guestmount_SOURCES = \
+	$(SHARED_SOURCE_FILES) \
 	dircache.c \
 	dircache.h \
 	guestmount.c \
@@ -31,39 +44,32 @@ guestmount_SOURCES = \
 
 guestmount_CFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/fish \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
-	-DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"' \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	$(FUSE_CFLAGS) \
+	$(LIBCONFIG_CFLAGS) \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 guestmount_LDADD = \
 	$(FUSE_LIBS) -lulockmgr \
+	$(LIBCONFIG_LIBS) \
 	$(top_builddir)/src/libguestfs.la \
 	../gnulib/lib/libgnu.la
 
 # Documentation.
 
 man_MANS = guestmount.1
+noinst_DATA = $(top_builddir)/html/guestmount.1.html
 
-guestmount.1: guestmount.pod
-	$(POD2MAN) \
-	  --section 1 \
-	  -c "Virtualization Support" \
-	  --name "guestmount" \
-	  --release "$(PACKAGE_NAME)-$(PACKAGE_VERSION)" \
-	  $< > $@-t; mv $@-t $@
+guestmount.1 $(top_builddir)/html/guestmount.1.html: stamp-guestmount.pod
 
-noinst_DATA = \
-	$(top_builddir)/html/guestmount.1.html
-
-$(top_builddir)/html/guestmount.1.html: guestmount.pod
-	mkdir -p $(top_builddir)/html
-	cd $(top_builddir) && pod2html \
-	  --css 'pod.css' \
-	  --htmldir html \
-	  --outfile html/guestmount.1.html \
-	  fuse/guestmount.pod
+stamp-guestmount.pod: guestmount.pod
+	$(top_srcdir)/podwrapper.sh \
+	  --man guestmount.1 \
+	  --html $(top_builddir)/html/guestmount.1.html \
+	  $<
+	touch $@
 
 # Tests.
 

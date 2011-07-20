@@ -1,5 +1,5 @@
 /* guestfish - the filesystem interactive shell
- * Copyright (C) 2009 Red Hat Inc.
+ * Copyright (C) 2009-2011 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,12 +28,12 @@
 #include "fish.h"
 
 int
-do_more (const char *cmd, int argc, char *argv[])
+run_more (const char *cmd, size_t argc, char *argv[])
 {
-  char filename[] = "/tmp/guestfishXXXXXX";
+  TMP_TEMPLATE_ON_STACK (filename);
   char buf[256];
+  char *remote;
   const char *pager;
-  char *content;
   int r, fd;
 
   if (argc != 1) {
@@ -50,31 +50,34 @@ do_more (const char *cmd, int argc, char *argv[])
       pager = "more";
   }
 
+  remote = argv[0];
+
+  /* Allow win:... prefix on remote. */
+  remote = win_prefix (remote);
+  if (remote == NULL)
+    return -1;
+
   /* Download the file and write it to a temporary. */
   fd = mkstemp (filename);
   if (fd == -1) {
     perror ("mkstemp");
+    free (remote);
     return -1;
   }
 
-  if ((content = guestfs_cat (g, argv[0])) == NULL) {
+  snprintf (buf, sizeof buf, "/dev/fd/%d", fd);
+
+  if (guestfs_download (g, remote, buf) == -1) {
     close (fd);
     unlink (filename);
+    free (remote);
     return -1;
   }
-
-  if (xwrite (fd, content, strlen (content)) == -1) {
-    close (fd);
-    unlink (filename);
-    free (content);
-    return -1;
-  }
-
-  free (content);
 
   if (close (fd) == -1) {
     perror (filename);
     unlink (filename);
+    free (remote);
     return -1;
   }
 
@@ -86,8 +89,10 @@ do_more (const char *cmd, int argc, char *argv[])
   unlink (filename);
   if (r != 0) {
     perror (buf);
+    free (remote);
     return -1;
   }
 
+  free (remote);
   return 0;
 }

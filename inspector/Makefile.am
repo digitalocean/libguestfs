@@ -1,5 +1,5 @@
 # libguestfs virt-inspector
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2011 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,44 +17,101 @@
 
 include $(top_srcdir)/subdir-rules.mk
 
+EXAMPLE_XML = \
+	example-debian.xml \
+	example-fedora.xml \
+	example-ubuntu.xml \
+	example-windows.xml \
+	example-debian-netinst-cd.xml \
+	example-fedora-dvd.xml \
+	example-fedora-netinst-cd.xml \
+	example-rhel-6-dvd.xml \
+	example-rhel-6-netinst-cd.xml \
+	example-ubuntu-live-cd.xml \
+	example-windows-2003-x64-cd.xml \
+	example-windows-2003-x86-cd.xml \
+	example-windows-xp-cd.xml
+
 EXTRA_DIST = \
-	run-inspector-locally \
-	virt-inspector
+	virt-inspector.pod
+
+CLEANFILES = stamp-virt-inspector.pod
 
 docdir = @docdir@
 dist_doc_DATA = \
 	virt-inspector.rng \
-	example1.xml example2.xml example3.xml example4.xml
+	$(EXAMPLE_XML)
 
-if HAVE_INSPECTOR
+if HAVE_LIBXML2
 
-bin_SCRIPTS = virt-inspector
+bin_PROGRAMS = virt-inspector
+
+SHARED_SOURCE_FILES = \
+	../fish/config.c \
+	../fish/inspect.c \
+	../fish/keys.c \
+	../fish/options.h \
+	../fish/options.c \
+	../fish/virt.c
+
+virt_inspector_SOURCES = \
+	$(SHARED_SOURCE_FILES) \
+	virt-inspector.c
+
+virt_inspector_CFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/fish \
+	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
+	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
+	$(LIBXML2_CFLAGS) \
+	$(LIBCONFIG_CFLAGS) \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+
+virt_inspector_LDADD = \
+	$(LIBCONFIG_LIBS) \
+	$(top_builddir)/src/libguestfs.la \
+	$(LIBXML2_LIBS) \
+	../gnulib/lib/libgnu.la
+
+# Manual pages and HTML files for the website.
 man_MANS = virt-inspector.1
+noinst_DATA = $(top_builddir)/html/virt-inspector.1.html
 
-noinst_DATA = \
-	$(top_builddir)/html/virt-inspector.1.html
+virt-inspector.1 $(top_builddir)/html/virt-inspector.1.html: stamp-virt-inspector.pod
 
-virt-inspector.1: virt-inspector
-	$(POD2MAN) \
-	  --section 1 \
-	  -c "Virtualization Support" \
-	  --release "$(PACKAGE_NAME)-$(PACKAGE_VERSION)" \
-	  $< > $@-t && mv $@-t $@
-
-$(top_builddir)/html/virt-inspector.1.html: virt-inspector
-	mkdir -p $(top_builddir)/html
-	cd $(top_builddir) && pod2html \
-	  --css 'pod.css' \
-	  --title 'virt-inspector, display OS version, kernel, drivers, mount points, applications, etc. in a virtual machine' \
-	  --htmldir html \
-	  --outfile html/virt-inspector.1.html \
-	  inspector/$<
+stamp-virt-inspector.pod: virt-inspector.pod
+	$(top_srcdir)/podwrapper.sh \
+	  --man virt-inspector.1 \
+	  --html $(top_builddir)/html/virt-inspector.1.html \
+	  $<
+	touch $@
 
 if HAVE_XMLLINT
 
-TESTS = example1.xml example2.xml example3.xml example4.xml
+TESTS = $(EXAMPLE_XML)
 TESTS_ENVIRONMENT = $(XMLLINT) --noout --relaxng virt-inspector.rng
 
 endif
 
 endif
+
+# These rules require virt-inspector so there is no good time that we
+# can run them.  Instead you can run them by hand.
+
+example-debian.xml:
+	rm -f $@ $@-t
+	../run $(builddir)/virt-inspector ../images/debian.img > $@-t
+	mv $@-t $@
+example-fedora.xml:
+	rm -f $@ $@-t
+	../run $(builddir)/virt-inspector ../images/fedora.img > $@-t
+	mv $@-t $@
+example-ubuntu.xml:
+	rm -f $@ $@-t
+	../run $(builddir)/virt-inspector ../images/ubuntu.img > $@-t
+	mv $@-t $@
+example-windows.xml:
+	rm -f $@ $@-t
+	../run $(builddir)/virt-inspector ../images/windows.img | \
+	    fgrep -v '<uuid>' > $@-t
+	mv $@-t $@

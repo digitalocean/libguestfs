@@ -1,11 +1,11 @@
 <grammar xmlns="http://relaxng.org/ns/structure/1.0">
   <!-- -*- xml -*-
-  This is a RELAX NG schema for the output of 'virt-inspector - -xml'.
+  This is a RELAX NG schema for the output of 'virt-inspector'.
 
   To validate an existing document against this schema, you can
   use xmllint, like this:
 
-    virt-inspector - -xml Foo > output.xml
+    virt-inspector -d Foo > output.xml
     xmllint - -noout - -relaxng virt-inspector.rng output.xml
 
   (Note that because of limitations of XML, I have had to put spaces
@@ -23,30 +23,33 @@
         <element name="operatingsystem">
           <interleave>
 
-            <!-- required fields for an operating system -->
+            <optional><element name="root"><text/></element></optional>
             <element name="name">
               <choice>
                 <value>linux</value>
                 <value>windows</value>
               </choice>
             </element>
-            <element name="arch"><text/></element>
-            <element name="root"><text/></element>
-
-            <!-- optional fields for an operating system -->
+            <optional><element name="arch"><text/></element></optional>
             <optional><element name="distro"><text/></element></optional>
-            <optional><element name="major_version"><text/></element></optional>
-            <optional><element name="minor_version"><text/></element></optional>
+            <optional><element name="product_name"><text/></element></optional>
+            <optional><element name="product_variant"><text/></element></optional>
+            <element name="major_version"><text/></element>
+            <element name="minor_version"><text/></element>
+            <optional><element name="windows_systemroot"><text/></element></optional>
+            <optional><element name="windows_current_control_set"><text/></element></optional>
             <optional><element name="package_format"><text/></element></optional>
             <optional><element name="package_management"><text/></element></optional>
+            <optional><element name="hostname"><text/></element></optional>
+            <optional><element name="format"><text/></element></optional>
+            <optional><element name="live"><empty/></element></optional>
+            <optional><element name="netinst"><empty/></element></optional>
+            <optional><element name="multipart"><empty/></element></optional>
 
             <ref name="mountpoints"/>
             <ref name="filesystems"/>
+            <optional><ref name="drive_mappings"/></optional>
             <optional><ref name="applications"/></optional>
-            <optional><ref name="modprobealiases"/></optional>
-            <optional><ref name="initrds"/></optional>
-            <optional><ref name="kernels"/></optional>
-            <optional><ref name="boot"/></optional>
 
           </interleave>
         </element>
@@ -73,12 +76,22 @@
         <element name="filesystem">
           <attribute name="dev"><text/></attribute>
           <interleave>
-            <element name="type"><text/></element>
-            <optional><element name="content"><text/></element></optional>
+            <optional><element name="type"><text/></element></optional>
             <optional><element name="label"><text/></element></optional>
             <optional><element name="uuid"><text/></element></optional>
-            <optional><element name="spec"><text/></element></optional>
           </interleave>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <!-- drive mappings (for Windows) -->
+  <define name="drive_mappings">
+    <element name="drive_mappings">
+      <oneOrMore>
+        <element name="drive_mapping">
+          <attribute name="name"><text/></attribute>
+          <text/>
         </element>
       </oneOrMore>
     </element>
@@ -90,79 +103,16 @@
       <zeroOrMore>
         <element name="application">
           <element name="name"><text/></element>
+          <optional><element name="display_name"><text/></element></optional>
           <optional><element name="epoch"><text/></element></optional>
-          <element name="version"><text/></element>
-          <element name="release"><text/></element>
-          <element name="arch"><text/></element>
-        </element>
-      </zeroOrMore>
-    </element>
-  </define>
-
-  <!-- contents of /etc/modprobe* -->
-  <define name="modprobealiases">
-    <element name="modprobealiases">
-      <zeroOrMore>
-        <element name="alias">
-          <attribute name="device"><text/></attribute>
-          <interleave>
-            <element name="modulename"><text/></element>
-            <optional><element name="augeas"><text/></element></optional>
-            <element name="file"><text/></element>
-          </interleave>
-        </element>
-      </zeroOrMore>
-    </element>
-  </define>
-
-  <!-- initrd images found -->
-  <define name="initrds">
-    <element name="initrds">
-      <zeroOrMore>
-        <element name="initrd">
-          <attribute name="version"><text/></attribute>
-          <zeroOrMore>
-            <element name="module"><text/></element>
-          </zeroOrMore>
-        </element>
-      </zeroOrMore>
-    </element>
-  </define>
-
-  <!-- boot configurations -->
-  <define name="boot">
-    <element name="boot">
-      <zeroOrMore>
-        <element name="config">
-          <optional>
-            <attribute name="default"><value>1</value></attribute>
-          </optional>
-          <interleave>
-            <element name="title"><text/></element>
-            <element name="kernel"><text/></element>
-            <element name="cmdline"><text/></element>
-          </interleave>
-        </element>
-      </zeroOrMore>
-    </element>
-  </define>
-
-  <!-- kernels -->
-  <define name="kernels">
-    <element name="kernels">
-      <zeroOrMore>
-        <element name="kernel">
-          <attribute name="version"><text/></attribute>
-          <attribute name="arch"><text/></attribute>
-          <interleave>
-            <element name="modules">
-              <zeroOrMore>
-                <element name="module"><text/></element>
-              </zeroOrMore>
-            </element>
-            <optional><element name="path"><text/></element></optional>
-            <optional><element name="package"><text/></element></optional>
-          </interleave>
+          <optional><element name="version"><text/></element></optional>
+          <optional><element name="release"><text/></element></optional>
+          <optional><element name="install_path"><text/></element></optional>
+          <optional><element name="publisher"><text/></element></optional>
+          <optional><element name="url"><text/></element></optional>
+          <optional><element name="source_package"><text/></element></optional>
+          <optional><element name="summary"><text/></element></optional>
+          <optional><element name="description"><text/></element></optional>
         </element>
       </zeroOrMore>
     </element>

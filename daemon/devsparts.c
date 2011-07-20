@@ -26,6 +26,8 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
+#include "c-ctype.h"
+
 #include "daemon.h"
 #include "actions.h"
 
@@ -60,6 +62,10 @@ foreach_block_device (block_dev_func_t func)
       char dev_path[256];
       snprintf (dev_path, sizeof dev_path, "/dev/%s", d->d_name);
 
+      /* Ignore the root device. */
+      if (is_root_device (dev_path))
+        continue;
+
       /* RHBZ#514505: Some versions of qemu <= 0.10 add a
        * CD-ROM device even though we didn't request it.  Try to
        * detect this by seeing if the device contains media.
@@ -83,6 +89,7 @@ foreach_block_device (block_dev_func_t func)
   if(0 != errno) {
     reply_with_perror ("readdir: /sys/block");
     free_stringslen(r, size);
+    closedir (dir);
     return NULL;
   }
 
@@ -99,8 +106,9 @@ foreach_block_device (block_dev_func_t func)
     return NULL;
   }
 
-  /* Sort the devices */
-  sort_strings (r, size);
+  /* Sort the devices.  Note that r might be NULL if there are no devices. */
+  if (r != NULL)
+    sort_strings (r, size);
 
   /* NULL terminate the list */
   if (add_string (&r, &size, &alloc, NULL) == -1) {
@@ -168,6 +176,7 @@ add_partitions(const char *device,
   if(0 != errno) {
       reply_with_perror ("readdir: %s", devdir);
       free_stringslen(*r, *size);
+      closedir (dir);
       return -1;
   }
 
@@ -185,4 +194,29 @@ char **
 do_list_partitions (void)
 {
   return foreach_block_device(add_partitions);
+}
+
+char *
+do_part_to_dev (const char *part)
+{
+  int err = 1;
+  size_t n = strlen (part);
+
+  while (n >= 1 && c_isdigit (part[n-1])) {
+    err = 0;
+    n--;
+  }
+
+  if (err) {
+    reply_with_error ("device name is not a partition");
+    return NULL;
+  }
+
+  char *r = strndup (part, n);
+  if (r == NULL) {
+    reply_with_perror ("strdup");
+    return NULL;
+  }
+
+  return r;
 }

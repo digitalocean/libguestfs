@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2011 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,19 +19,59 @@ include $(top_srcdir)/subdir-rules.mk
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = gnulib/lib hivex src daemon appliance fish po examples images \
-	gnulib/tests capitests regressions test-tool
+# Basic source for the library.
+SUBDIRS = gnulib/lib images generator src examples po
 
-# NB: Must build inspector directory after perl and before ocaml.
-# We could relax this if we combined the inspector_generator with
-# the ordinary generator, but that brings other problems.
+if ENABLE_DAEMON
+SUBDIRS += daemon
+endif
+if ENABLE_APPLIANCE
+SUBDIRS += appliance
+endif
+
+# Tests and the test-tool.
+SUBDIRS += gnulib/tests capitests caution regressions test-tool
+
+# Guestfish.
+SUBDIRS += fish
+
+# virt-tools in C.
+SUBDIRS += cat df inspector rescue
+
+# Language bindings.
 if HAVE_PERL
-SUBDIRS += perl
+SUBDIRS += perl perl/examples
+endif
+if HAVE_OCAML
+SUBDIRS += ocaml ocaml/examples
+endif
+if HAVE_PYTHON
+SUBDIRS += python python/examples
+endif
+if HAVE_RUBY
+SUBDIRS += ruby ruby/examples
+endif
+if HAVE_JAVA
+SUBDIRS += java
+endif
+if HAVE_HASKELL
+SUBDIRS += haskell
+endif
+if HAVE_PHP
+SUBDIRS += php
 endif
 
-if HAVE_INSPECTOR
-SUBDIRS += inspector
+# Unconditional because nothing is built yet.
+SUBDIRS += csharp
+
+# virt-resize 2.0 is written in OCaml.
+if HAVE_OCAML
+if HAVE_OCAML_PCRE
+SUBDIRS += resize
 endif
+endif
+
+# Perl tools and guestmount.
 if HAVE_TOOLS
 SUBDIRS += tools
 endif
@@ -40,70 +80,58 @@ if HAVE_FUSE
 SUBDIRS += fuse
 endif
 
-if HAVE_OCAML
-SUBDIRS += ocaml ocaml/examples
-endif
-if HAVE_PYTHON
-SUBDIRS += python
-endif
-if HAVE_RUBY
-SUBDIRS += ruby
-endif
-if HAVE_JAVA
-SUBDIRS += java
-endif
-if HAVE_HASKELL
-SUBDIRS += haskell
+# po-docs must come after tools, inspector.
+if HAVE_PO4A
+SUBDIRS += po-docs
 endif
 
 EXTRA_DIST = \
 	$(generator_built) \
+	BUGS HACKING RELEASE-NOTES ROADMAP TODO \
+	.gitignore \
+	bugs-in-changelog.sh \
+	autogen.sh \
+	bindtests \
+	contrib/README \
+	debian/.gitignore \
+	debian/changelog \
+	debian/compat \
+	debian/control \
+	debian/copyright \
+	debian/docs \
+	debian/guestfish.dirs \
+	debian/guestfish.install \
+	debian/guestmount.dirs \
+	debian/guestmount.install \
+	debian/libguestfs-dev.dirs \
+	debian/libguestfs-dev.install \
+	debian/libguestfs-doc.docs \
+	debian/libguestfs-perl.examples \
+	debian/libguestfs-perl.install \
+	debian/libguestfs-tools.dirs \
+	debian/libguestfs-tools.install \
+	debian/libguestfs0.dirs \
+	debian/libguestfs0.install \
+	debian/patches/series \
+	debian/python-guestfs.install \
+	debian/pyversions \
+	debian/rules \
+	debian/shlibs.local \
+	debian/watch \
 	html/pod.css \
-	HACKING TODO \
+	html/recipes.css \
 	libguestfs.pc libguestfs.pc.in \
+	libtool-kill-dependency_libs.sh \
+	logo/fish.svg logo/fish.png \
+	make-recipes.sh \
+	m4/.gitignore \
 	recipes/LICENSE \
 	recipes/README \
 	recipes/*.html \
 	recipes/*.sh \
 	recipes/*.example \
-	html/recipes.css \
-	make-recipes.sh \
-	contrib/README \
-	bindtests
-
-# HTML versions of manual pages.
-
-noinst_DATA = html/guestfs.3.html html/guestfish.1.html
-
-html/guestfs.3.html: src/guestfs.pod \
-		src/guestfs-actions.pod \
-		src/guestfs-availability.pod \
-		src/guestfs-structs.pod
-	mkdir -p html
-	sed \
-	  -e '/@ACTIONS@/rsrc/guestfs-actions.pod' \
-	  -e 's/@ACTIONS@//' \
-	  -e '/@AVAILABILITY@/rsrc/guestfs-availability.pod' \
-	  -e 's/@AVAILABILITY@//' \
-	  -e '/@STRUCTS@/rsrc/guestfs-structs.pod' \
-	  -e 's/@STRUCTS@//' \
-	  < $< | \
-	pod2html \
-	  --css 'pod.css' \
-	  --title "libguestfs API documentation" \
-	  --htmldir html \
-	  --outfile $@
-
-html/guestfish.1.html: fish/guestfish.pod fish/guestfish-actions.pod
-	mkdir -p html
-	sed \
-	  -e '/@ACTIONS@/rfish/guestfish-actions.pod' -e 's/@ACTIONS@//' \
-	  < $< | \
-	pod2html \
-	  --css 'pod.css' \
-	  --title "guestfish, libguestfs filesystem interactive shell" \
-	  --htmldir html \
-	  --outfile $@
+	run \
+	update-bugs.sh
 
 # Recipes web page.
 html/recipes.html: $(wildcard recipes/*.sh) $(wildcard recipes/*.html) $(wildcard recipes/*.example) Makefile make-recipes.sh
@@ -114,25 +142,34 @@ html/recipes.html: $(wildcard recipes/*.sh) $(wildcard recipes/*.html) $(wildcar
 
 HTMLFILES = \
 	html/guestfs.3.html \
+	html/guestfs-examples.3.html \
+	html/guestfs-ocaml.3.html \
+	html/guestfs-perl.3.html \
+	html/guestfs-python.3.html \
+	html/guestfs-ruby.3.html \
 	html/guestfish.1.html \
 	html/guestmount.1.html \
-	html/hivex.3.html \
-	html/hivexget.1.html \
-	html/hivexml.1.html \
-	html/hivexsh.1.html \
 	html/virt-cat.1.html \
+	html/virt-copy-in.1.html \
+	html/virt-copy-out.1.html \
 	html/virt-df.1.html \
 	html/virt-edit.1.html \
+	html/virt-filesystems.1.html \
 	html/virt-inspector.1.html \
 	html/virt-list-filesystems.1.html \
+	html/virt-list-partitions.1.html \
 	html/virt-ls.1.html \
+	html/virt-make-fs.1.html \
 	html/virt-rescue.1.html \
+	html/virt-resize.1.html \
 	html/virt-tar.1.html \
+	html/virt-tar-in.1.html \
+	html/virt-tar-out.1.html \
 	html/virt-win-reg.1.html \
 	html/recipes.html \
 	html/pod.css html/recipes.css
 
-TEXTFILES = README TODO HACKING
+TEXTFILES = BUGS README RELEASE-NOTES ROADMAP TODO
 
 WEBSITEDIR = $(HOME)/d/redhat/websites/libguestfs
 
@@ -145,26 +182,25 @@ website: $(HTMLFILES) $(TEXTFILES)
 	    -e "s/SUBST_DATE/$$date/" \
 	< index.html.in > index.html
 
-# Generate the ChangeLog automatically from the gitlog.
-
+# When doing 'make dist' update a few files automatically.
 dist-hook:
 	$(top_srcdir)/build-aux/gitlog-to-changelog > ChangeLog
 	cp ChangeLog $(distdir)/ChangeLog
+	$(top_srcdir)/update-bugs.sh > BUGS-t
+	mv BUGS-t BUGS
+	cp BUGS $(distdir)/BUGS
+	git log --pretty="format:%an" | sort -u | \
+		grep -v rjones | \
+		grep -v "Richard Jones" \
+		> AUTHORS-t
+	mv AUTHORS-t AUTHORS
+	cp AUTHORS $(distdir)/AUTHORS
 
 # Update the list of translatable files in po/POTFILES.in.
 all-local:
 	cd $(srcdir); \
 	find $(DIST_SUBDIRS) \
-	    -name '*.c' -o -name '*.pl' -o -name '*.pm' -o \
-	    -name 'virt-cat' -o \
-	    -name 'virt-df' -o \
-	    -name 'virt-edit' -o \
-	    -name 'virt-inspector' -o \
-	    -name 'virt-list-filesystems' -o \
-	    -name 'virt-ls' -o \
-	    -name 'virt-rescue' -o \
-	    -name 'virt-tar' -o \
-	    -name 'virt-win-reg' | \
+	    -name '*.c' -o -name '*.pl' -o -name '*.pm' | \
 	grep -v '^perl/blib/' | \
 	grep -v '^capitests/' | \
 	grep -v '^daemon/lib/' | \
@@ -175,6 +211,7 @@ all-local:
 	grep -v '/guestfs_protocol.c' | \
 	grep -v '/rc_protocol.c' | \
 	grep -v 'appliance/debian/root' | \
+	grep -v '^po-docs/' | \
 	LC_ALL=C sort | \
 	sed 's,^\./,,' > po/POTFILES.in
 
@@ -185,11 +222,25 @@ pkgconfig_DATA = libguestfs.pc
 
 # Make clean.
 
-CLEANFILES = $(fs_DATA) \
-	emptydisk \
+CLEANFILES = \
 	pod2htm?.tmp \
-	html/*.html \
-	guestfs.3 guestfish.1
+	html/*.html
 
-clean-local:
-	rm -rf initramfs
+# If you don't want to run all of the tests ('make check') then this
+# will just run libguestfs-test-tool for a quick check.  Note this
+# is NOT a substitute for proper testing!
+
+quickcheck:
+	./run test-tool/libguestfs-test-tool
+
+# Make binary distribution.
+
+BINTMPDIR = /tmp/libguestfs-bin
+bindist:
+	rm -rf $(BINTMPDIR)
+	mkdir $(BINTMPDIR)
+	$(MAKE)
+	$(MAKE) DESTDIR=$(BINTMPDIR) install
+	-find $(BINTMPDIR) -type d -exec rmdir --ignore-fail-on-non-empty {} \;
+	(cd $(BINTMPDIR) && tar cf - .) | \
+	  gzip -c -9 > libguestfs-$(VERSION)-$(DISTRO)-$(host_cpu).tar.gz
