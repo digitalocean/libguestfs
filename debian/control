@@ -3,37 +3,32 @@ Section: libs
 Priority: extra
 Maintainer: Debian Libvirt Maintainers <pkg-libvirt-maintainers@lists.alioth.debian.org>
 Uploaders: Richard Jones <rjones@redhat.com>, Guido Günther <agx@sigxcpu.org>, Hilko Bengen <bengen@debian.org>
-Build-Depends: debhelper (>= 7), autotools-dev, aptitude,
-  debirf, libreadline-dev, squashfs-tools, cdbs, libaugeas-dev,
-# QEMU
-  qemu, bochsbios, vgabios,
-  mkisofs,
-  libxml2-dev, pkg-config, quilt,
-# when building from git:
-  automake, autoconf, libtool, ocaml,
-# for python bindings:
-  python-all-dev, python-support,
-# for the perl bindings:
+Build-Depends: debhelper (>= 7.0.50~), autotools-dev, aptitude,
+  febootstrap (>= 3.2),
+  libreadline-dev, libaugeas-dev, libhivex-dev, libvirt-dev,
+  libmagic-dev, libncurses5-dev, libpcre3-dev, libxml2-dev,
+  libconfig-dev,
+  automake, autoconf, libtool,
+  gperf,
+  qemu-kvm (>= 0.13),
+  genisoimage, pkg-config,
+  ocaml, ocaml-findlib, libpcre-ocaml-dev
+  python-all-dev,
   libtest-pod-coverage-perl, libextutils-command-perl, libintl-perl, libtest-pod-perl,
-# for virt-inspector:
-  libsys-virt-perl, libxml-writer-perl,
-# FUSE
+  libstring-shellquote-perl,
+  libsys-virt-perl, libwin-hivex-perl,
   libfuse-dev, fuse-utils 
 Homepage: http://libguestfs.org
-Standards-Version: 3.8.2
+Standards-Version: 3.9.2
 
 Package: guestfish
 Section: devel
 Architecture: any
-Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
- libsys-virt-perl, libxml-writer-perl,
- qemu-system | kvm, bochsbios, vgabios
+Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: libguestfs filesystem interactive shell
  Guestfish is a shell and command-line tool for examining and modifying
  virtual machine filesystems.  It uses libguestfs and exposes all of the
  functionality of the guestfs API, see guestfs(3).
- .
- This package also contains virt-inspector, a tool to examine virtual machines.
 
 Package: libguestfs-dev
 Section: libdevel
@@ -60,7 +55,44 @@ Description: library for accessing and modifying guest disk images
 
 Package: libguestfs0
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends},
+  febootstrap (>= 3.2),
+  qemu-kvm (>= 0.13),
+  linux-image-2.6-amd64 (>= 2.6.36) [amd64], 
+  linux-image-2.6-686 (>= 2.6.36) [i386], 
+  bsdmainutils,
+  btrfs-tools,
+  cryptsetup,
+  diffutils,
+# gfs-tools,
+# gfs2-tools,
+  grub-pc,
+# hfsplus,
+  iproute,
+  libaugeas0,
+# nilfs2-tools,
+  ntfs-3g,
+  ntfsprogs,
+  reiserfsprogs,
+  udev,
+  vim-tiny,
+  xz-utils,
+  zfs-fuse,
+  binutils,
+  cpio,
+  dosfstools,
+  file,
+  jfsutils,
+  lsof,
+  lvm2,
+  module-init-tools,
+  net-tools,
+  parted,
+  procps,
+  scrub,
+  strace,
+  xfsprogs,
+  zerofree
 Description: library for accessing and modifying guest disk images
  libguestfs is a library for accessing and modifying guest disk images. Amongst
  the things this is good for: making batch configuration changes to guests,
@@ -77,6 +109,26 @@ Description: library for accessing and modifying guest disk images
  libguestfs provides ways to enumerate guest storage (eg. partitions, LVs, what
  filesystem is in each LV, etc.). It can also run commands in the context of 
  the guest. Also you can upload and download files and directories.
+
+Package: guestmount
+Section: devel
+Architecture: any
+Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Description: mount guest filesystem using libguestfs and FUSE
+ The guestmount program can be used to mount virtual machine filesystems
+ and other disk images on the host.  It uses libguestfs for access to
+ the guest filesystem, and FUSE (the "filesystem in userspace") to make
+ it appear as a mountable device.
+
+Package: libguestfs-tools
+Section: devel
+Architecture: any
+Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
+ libsys-virt-perl, libguestfs-perl (= ${binary:Version})
+Description: libguestfs virt tools
+ This package contains virt tools including virt-cat, virt-df, virt-edit,
+ virt-filesystems, virt-inspector, virt-ls, virt-make-fs, virt-rescue,
+ virt-resize, virt-tar and virt-win-reg.
 
 Package: libguestfs0-dbg
 Section: debug
