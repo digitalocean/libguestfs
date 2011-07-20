@@ -1,8 +1,0 @@
-0001-Run-debirf-as-root.patch
-0002-scrub-now-available-on-Debian.patch
-0003-Adjust-error-output-for-regressions-rhbz557655.patch
-0004-Disable-fuser-tests-if-dev-fuse-doesn-t-exist.patch
-0005-Check-for-service-and-use-it-if-it-s-there.patch
-0006-Check-for-grub-menu.lst-if-etc-grub.conf-can-t-be-fo.patch
-0007-Debina-package-format-is-called-deb-not-dpkg.patch
-0008-Add-application-listing-for-Debian.patch
