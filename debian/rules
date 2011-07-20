@@ -14,5 +14,19 @@ override_dh_auto_configure:
 override_dh_strip:
 	dh_strip --dbg-package=libguestfs0-dbg
 
+override_dh_install:
+# workaround for #635316
+	rm debian/tmp/usr/lib/python2.6/dist-packages/libguestfsmod.a \
+	   debian/tmp/usr/lib/python2.6/dist-packages/libguestfsmod.la \
+	   debian/tmp/usr/lib/python2.6/dist-packages/libguestfsmod.so \
+	   debian/tmp/usr/lib/python2.6/dist-packages/libguestfsmod.so.0
+	mv debian/tmp/usr/lib/python2.6/dist-packages/libguestfsmod.so.0.0.0 \
+	   debian/tmp/usr/lib/python2.6/dist-packages/libguestfsmod.so
+
+	dh_install
+
+override_dh_python2:
+	dh_python2 --no-guessing-versions
+
 %:
-	dh --with=autotools-dev,ocaml,python2 $@
+	dh --without=python-support --with=autotools-dev,ocaml,python2 $@

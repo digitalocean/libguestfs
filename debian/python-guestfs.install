@@ -1,2 +1,1 @@
-usr/share/pyshared/*.py
-usr/share/pyshared/*.so*
+usr/lib/python*
