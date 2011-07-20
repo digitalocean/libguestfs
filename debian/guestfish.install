@@ -1,6 +1,2 @@
 usr/bin/guestfish
-usr/bin/guestmount
-usr/bin/virt-*
-usr/bin/hivex*
-usr/share/man/man1/*
-
+usr/share/man/man1/guestfish*
