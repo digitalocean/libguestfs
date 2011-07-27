@@ -2813,14 +2813,14 @@ use in case C</var/tmp> is not large enough.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
-L<guestfs-examples(3)>, L<guestfs-ocaml(3)>, L<guestfs-python(3)>,
-L<guestfs-ruby(3)>, L<guestfish(1)>, L<guestmount(1)>, L<virt-cat(1)>,
-L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-df(1)>, L<virt-edit(1)>,
-L<virt-filesystems(1)>, L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
-L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
-L<virt-rescue(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
-L<virt-win-reg(1)>, L<qemu(1)>, L<febootstrap(1)>, L<hivex(3)>,
-L<http://libguestfs.org/>.
+L<guestfs-examples(3)>, L<guestfs-ocaml(3)>, L<guestfs-perl(3)>,
+L<guestfs-python(3)>, L<guestfs-ruby(3)>, L<guestfish(1)>, L<guestmount(1)>,
+L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-df(1)>,
+L<virt-edit(1)>, L<virt-filesystems(1)>, L<virt-inspector(1)>,
+L<virt-list-filesystems(1)>, L<virt-list-partitions(1)>, L<virt-ls(1)>,
+L<virt-make-fs(1)>, L<virt-rescue(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>,
+L<virt-tar-out(1)>, L<virt-win-reg(1)>, L<qemu(1)>, L<febootstrap(1)>,
+L<hivex(3)>, L<http://libguestfs.org/>.
 
 Tools with a similar purpose: L<fdisk(8)>, L<parted(8)>, L<kpartx(8)>,
 L<lvm(8)>, L<disktype(1)>.

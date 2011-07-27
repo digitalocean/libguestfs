@@ -1,4 +1,110 @@
+2011-07-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.10.6.
+
+	perl: Fix another place where qw() was used as parentheses.
+	This is a fix for Perl 5.14.
+
+	See previous commit 5c3c7e8825341e18c9449976f8a321a04cc78d79.
+	(cherry picked from commit c70532ab4b3d977ed7484e473107808b22d90a2a)
+
+	ocaml: Fix locking in event callbacks.
+	We weren't acquiring the GC lock around some allocations, resulting in
+	segfaults when an event callback ran at the same time as a main thread
+	allocation or garbage collection.
+
+	In particular this fixes a noticable crash in guestfs-browser.
+
+	(Cherry picked from commit 2b8b3f9794ceb43eabd3083e225c669896d8b186).
+
+	virt-df: Re-add documentation for --csv option.
+	The documentation for the --csv option disappeared between 1.6 and 1.8
+	when we rewrote virt-df in C.  Re-add it from 1.6 sources.
+	(cherry picked from commit 01f6bce19dbfaf42fa4908683f3cc8785585d023)
+
+	test-tool: Print FEBOOTSTRAP_* environment variables (RHBZ#671082). (cherry picked from commit 15289d4b726d7c38702794df23c61ae40879a46c)
+
+	perl: Fix CCFLAGS for Perl 5.14.
+	A change to ExtUtils::CBuilder in Perl 5.14 causes CCFLAGS to
+	completely replace, rather than appending, the C flags.
+
+	The unfortunate consequence of this is that vital flags such as
+	-D_FILE_OFFSET_BITS=64 are missing.  For 32 bit code, this means you
+	get binary-incompatible code that completely fails to load.
+
+	For further analysis see:
+
+	http://www.nntp.perl.org/group/perl.perl5.porters/2011/04/msg171535.html
+
+	This commit changes CCFLAGS so that it appends to the existing
+	$Config{ccflags} instead of replacing it.  On earlier versions of Perl
+	this means we get two copies of the flags, which is unfortunate but
+	should be safe.
+	(cherry picked from commit 8386a57458aceb768f0e59aa090a15a544f7466e)
+
+	build: Redirect ./configure errors in general to config.log. (cherry picked from commit 71eb0bf45649eefa1f0cd4b1372cfc2653c8e7a5)
+
+	build: Send failed Perl test configure output to config.log. (cherry picked from commit 610642491a4846f45c7b233060ffde46f6ca09f0)
+
+	build: Allow 'make quickcheck' test-tool args to be overridden.
+	A typical use for this is for packagers who want to increase
+	the default timeout:
+
+	  make quickcheck QUICKCHECK_TEST_TOOL_ARGS="-t 300"
+	(cherry picked from commit 806b6e01506dea4eae68ac3e468d9398d63cafcb)
+
+	blkid: Use -c /dev/null option to kill the cache.
+	On recent Debian, /etc/blkid.tab is now a symlink to /dev/.blkid.tab.
+	Rather than chasing the cache file around (it may move to /run in future)
+	use the -c /dev/null option to stop blkid from reading the cache.
+	(cherry picked from commit 1d0f398d8e3c74ce6a70cbbb8d9b8ae07c6d7ef6)
+
+	blkid: Detect when value not found and return empty string.
+	If the blkid command returns 2, that means the value was not found.
+
+	Note that this changes the output of the vfs-type API when the
+	filesystem has no type (eg when it is empty).  Previously this would
+	return an error.  Now it returns empty string "".
+
+	We did not document this either way.  Making it return empty string is
+	consistent with vfs-label and vfs-uuid.
+
+	This change broke list-filesystems, since that code was assuming that
+	vfs-type could only return a filesystem type or an error.
+	(cherry picked from commit 168fd4ad5d1e5da93e11388095d41aaa8f804ceb)
+
+	appliance: Capture stderr from qemu to the event system. (cherry picked from commit 8b2e60ce4b46e86da093ee64d4e0b0ae3c998d55)
+
+	appliance: Document pipe fds. (cherry picked from commit 70daccfe4e9939078436c2830928d8e53432dd84)
+
+	Partially revert d82438431c1551610eb7d9945fa76d6387534582.
+	It appears qemu-kvm does *not* require -machine accel=tcg option.
+	That problem disappeared after upgrading seabios(!)  However leave the
+	test for qemu -help option, since that's useful to determine if qemu
+	is completely broken or not.
+	(cherry picked from commit 5dec7842655dd872bb0fd9fe07f6a9eab6b13bfd)
+
+	build: Fix virtio-serial test for qemu 0.15.
+	Now qemu 0.15 won't even start up unless the -machine accel=... option
+	is specified.  Essentially this is a regression in qemu.
+	(cherry picked from commit d82438431c1551610eb7d9945fa76d6387534582)
+
+	Add missing reference to guestfs-perl(3) to guestfs(3). (cherry picked from commit a548c9668315844763456c15e89e35e9702b851a)
+
+	fish: Add is_interactive flag.
+	Decide early (before launch) if this is going to be an interactive
+	session, and set the is_interactive flag.
+	(cherry picked from commit e187aa8431ccf0436d9aee03ee1e80b79f148217)
+
+	guestfs.h: Add missing extern keyword before event functions. (cherry picked from commit 4b53a3737b76cad7aca407a0d9e37fed1d42ef69)
+
+	mkfs: Don't die if mke2fs is not available.
+	Allow other types of filesystems to be created.
+	(cherry picked from commit c6340f45007b0ab7e1c5391cf78afc10a816553f)
+
 2011-07-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.10.5.
 
 	appliance: Add systemd to get /sbin/reboot for virt-rescue (RHBZ#661280). (cherry picked from commit aa8a9ebf29b7fdc97467e911560a1a7a774e9e1f)
 
