@@ -23,7 +23,7 @@ Standards-Version: 3.9.2
 
 Package: guestfish
 Section: devel
-Architecture: any
+Architecture: i386 amd64
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: libguestfs filesystem interactive shell
  Guestfish is a shell and command-line tool for examining and modifying
@@ -32,7 +32,7 @@ Description: libguestfs filesystem interactive shell
 
 Package: libguestfs-dev
 Section: libdevel
-Architecture: any
+Architecture: i386 amd64
 Depends: libguestfs0 (= ${binary:Version}), ${misc:Depends}
 Description: library for accessing and modifying guest disk images
  libguestfs is a library for accessing and modifying guest disk images. Amongst
@@ -54,7 +54,7 @@ Description: library for accessing and modifying guest disk images
  This package contains the development headers.
 
 Package: libguestfs0
-Architecture: any
+Architecture: i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends},
   febootstrap (>= 3.2),
   qemu-kvm (>= 0.13),
@@ -112,7 +112,7 @@ Description: library for accessing and modifying guest disk images
 
 Package: guestmount
 Section: devel
-Architecture: any
+Architecture: i386 amd64
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: mount guest filesystem using libguestfs and FUSE
  The guestmount program can be used to mount virtual machine filesystems
@@ -122,7 +122,7 @@ Description: mount guest filesystem using libguestfs and FUSE
 
 Package: libguestfs-tools
 Section: devel
-Architecture: any
+Architecture: i386 amd64
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
  libsys-virt-perl, libguestfs-perl (= ${binary:Version})
 Description: libguestfs virt tools
@@ -132,7 +132,7 @@ Description: libguestfs virt tools
 
 Package: libguestfs0-dbg
 Section: debug
-Architecture: any
+Architecture: i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version})
 Description: library for accessing and modifying guest disk images
  libguestfs is a library for accessing and modifying guest disk images. Amongst
@@ -179,7 +179,7 @@ Description: library for accessing and modifying guest disk images
 Package: python-guestfs
 Section: python
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version})
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, libguestfs0 (= ${binary:Version})
 Provides: python-libguestfs
 Conflicts: python-libguestfs
 Description: library for accessing and modifying guest disk images
@@ -203,7 +203,7 @@ Description: library for accessing and modifying guest disk images
  
 Package: libguestfs-perl
 Section: perl
-Architecture: any
+Architecture: i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version}),
  ${perl:Depends}
 Description: library for accessing and modifying guest disk images
@@ -227,7 +227,7 @@ Description: library for accessing and modifying guest disk images
  
 Package: libguestfs-ocaml
 Section: ocaml
-Architecture: any
+Architecture: i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version}),
  ${ocaml:Depends}
 Provides: ${ocaml:Provides}
@@ -252,7 +252,7 @@ Description: library for accessing and modifying guest disk images
  
 Package: libguestfs-ocaml-dev
 Section: ocaml
-Architecture: any
+Architecture: i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version}),
  ${ocaml:Depends}
 Provides: ${ocaml:Provides}
