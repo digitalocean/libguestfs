@@ -5,6 +5,7 @@ override_dh_auto_clean:
 
 override_dh_auto_configure:
 	dh_auto_configure -- \
+		--disable-appliance  \
 		--with-readline	     \
 		--with-java-home=no  \
 		--disable-ruby       \
@@ -16,6 +17,11 @@ override_dh_strip:
 
 override_dh_auto_build:
 	$(MAKE) INSTALLDIRS=vendor LD_RUN_PATH=""
+# build part of appliance
+	$(MAKE) -C appliance \
+		make.sh \
+		packagelist excludelist \
+		supermin.d/daemon.img supermin.d/init.img
 
 override_dh_install:
 # workaround for #635316
