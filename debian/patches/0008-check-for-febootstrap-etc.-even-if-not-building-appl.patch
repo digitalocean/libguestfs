@@ -7,7 +7,7 @@ Subject: check for febootstrap etc. even if not building appliance
  1 files changed, 32 insertions(+), 31 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index 5452f6d..a9ea1a7 100644
+index 369fa21..e6ef0c8 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -180,46 +180,47 @@ AC_ARG_ENABLE([appliance],

@@ -3,18 +3,16 @@ Date: Wed, 6 Jul 2011 09:30:04 +0200
 Subject: configure.ac: use Python mechanism to determine PYTHON_INSTALLDIR
 
 ---
- configure.ac |   19 +++----------------
- 1 files changed, 3 insertions(+), 16 deletions(-)
+ configure.ac |   18 ++----------------
+ 1 files changed, 2 insertions(+), 16 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index 544b434..6fd12ab 100644
+index 544b434..2a755c3 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -562,23 +562,10 @@ AS_IF([test "x$enable_python" != "xno"],
- 			AC_MSG_NOTICE([Python install dir $PYTHON_INSTALLDIR])],
+@@ -563,22 +563,8 @@ AS_IF([test "x$enable_python" != "xno"],
  			[PYTHON_INSTALLDIR=check])
  
-+            AC_MSG_WARN([XXX PYTHON_INSTALLDIR=$PYTHON_INSTALLDIR])
  	    if test "x$PYTHON_INSTALLDIR" = "xcheck"; then
 -	        PYTHON_INSTALLDIR=
 -                for d in \

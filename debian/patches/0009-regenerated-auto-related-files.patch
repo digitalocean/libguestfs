@@ -3,19 +3,19 @@ Date: Thu, 21 Jul 2011 09:06:44 +0200
 Subject: regenerated auto*-related files
 
 ---
- Makefile.in        |   51 ++++++++++++-------------
+ Makefile.in        |   51 ++++++++++++--------------
  aclocal.m4         |   14 ++++---
  cat/Makefile.in    |    2 +-
- configure          |  104 +++++++++++++++++++++++++--------------------------
- daemon/configure   |   10 +----
+ configure          |  102 +++++++++++++++++++++++++---------------------------
+ daemon/configure   |   10 +-----
  df/Makefile.in     |    2 +-
  images/Makefile.in |    2 +-
- ocaml/Makefile.in  |   19 ++++-----
- perl/Makefile.in   |    7 ++-
+ ocaml/Makefile.in  |   19 +++++-----
+ perl/Makefile.in   |    7 +++-
  python/Makefile.in |    3 +-
  resize/Makefile.in |    2 +-
- tools/Makefile.in  |    6 +-
- 12 files changed, 107 insertions(+), 115 deletions(-)
+ tools/Makefile.in  |    6 ++--
+ 12 files changed, 105 insertions(+), 115 deletions(-)
 
 diff --git a/Makefile.in b/Makefile.in
 index 14441ea..f8c1120 100644
@@ -185,7 +185,7 @@ index 67fabff..5cc0364 100644
  
  .SUFFIXES:
 diff --git a/configure b/configure
-index d3f1684..1aafee1 100755
+index d3f1684..26bbe39 100755
 --- a/configure
 +++ b/configure
 @@ -32526,8 +32526,7 @@ fi
@@ -434,12 +434,9 @@ index d3f1684..1aafee1 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$FUSE_PKG_ERRORS" >&5
-@@ -37137,26 +37151,11 @@ else
- fi
+@@ -37138,25 +37152,8 @@ fi
  
  
-+            { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: XXX PYTHON_INSTALLDIR=$PYTHON_INSTALLDIR" >&5
-+$as_echo "$as_me: WARNING: XXX PYTHON_INSTALLDIR=$PYTHON_INSTALLDIR" >&2;}
  	    if test "x$PYTHON_INSTALLDIR" = "xcheck"; then
 -	        PYTHON_INSTALLDIR=
 -                for d in \
@@ -465,7 +462,7 @@ index d3f1684..1aafee1 100755
                  if test "x$PYTHON_INSTALLDIR" = "x"; then
                      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Python site-packages directory not found" >&5
  $as_echo "$as_me: WARNING: Python site-packages directory not found" >&2;}
-@@ -37663,7 +37662,7 @@ ac_config_headers="$ac_config_headers config.h"
+@@ -37663,7 +37660,7 @@ ac_config_headers="$ac_config_headers config.h"
  
  ac_config_files="$ac_config_files podwrapper.sh"
  
@@ -474,7 +471,7 @@ index d3f1684..1aafee1 100755
  
  cat >confcache <<\_ACEOF
  # This file is a shell script that caches the results of configure
-@@ -38813,7 +38812,6 @@ do
+@@ -38813,7 +38810,6 @@ do
      "cat/Makefile") CONFIG_FILES="$CONFIG_FILES cat/Makefile" ;;
      "caution/Makefile") CONFIG_FILES="$CONFIG_FILES caution/Makefile" ;;
      "csharp/Makefile") CONFIG_FILES="$CONFIG_FILES csharp/Makefile" ;;
