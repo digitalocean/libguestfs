@@ -1,7 +1,7 @@
-This package was debianized by Richard Jones <rjones@redhat.com> on
-Sun, 24 May 2009 21:43:45 +0100.
+This package was debianized by Hilko Bengen, based on work done by
+Richard Jones <rjones@redhat.com>.
 
-It was downloaded from http://et.redhat.com/~rjones/libguestfs/
+It was downloaded from http://libguestfs.org/download/
 
 Upstream Authors:
 
@@ -10,15 +10,24 @@ Upstream Authors:
 
 Copyright:
 
-    Copyright (C) 2009 Red Hat Inc.
+    Copyright (C) 2009-2011 Red Hat Inc.
 
 License:
 
-    LGPL (v2+)
+    The library is distributed under the LGPLv2+. The programs are
+    distributed under the GPLv2+.
 
 The Debian packaging is:
 
     Copyright (C) 2009 Richard Jones <rjones@redhat.com>
+    Copyright (C) 2011 Hilko Bengen <bengen@debian.org>
 
-and is licensed under the GPL version 3, 
-see `/usr/share/common-licenses/GPL-3'.
+and is licensed under the GPL version 3.
+
+On Debian systems, the complete text of the GNU General Public License
+version 2, the GNU Lesser General Public License, and the General
+Public License version 3 can be found
+in"/usr/share/common-licenses/GPL-2",
+"/usr/share/common-licenses/LGPL-2", and
+"/usr/share/common-licenses/GPL-3", respectively.
+
