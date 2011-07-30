@@ -18,7 +18,7 @@ Subject: regenerated auto*-related files
  12 files changed, 105 insertions(+), 115 deletions(-)
 
 diff --git a/Makefile.in b/Makefile.in
-index 14441ea..f8c1120 100644
+index de73f39..59048f0 100644
 --- a/Makefile.in
 +++ b/Makefile.in
 @@ -71,33 +71,33 @@ host_triplet = @host@
@@ -185,7 +185,7 @@ index 67fabff..5cc0364 100644
  
  .SUFFIXES:
 diff --git a/configure b/configure
-index d3f1684..26bbe39 100755
+index 87cfd33..7e24d81 100755
 --- a/configure
 +++ b/configure
 @@ -32526,8 +32526,7 @@ fi
@@ -204,7 +204,7 @@ index d3f1684..26bbe39 100755
  
 -    test "x$FEBOOTSTRAP" = "xno" &&
 -        as_fn_error $? "febootstrap must be installed" "$LINENO" 5
--        $FEBOOTSTRAP --version >/dev/null 2>&1 ||
+-        $FEBOOTSTRAP --version >&5 2>&1 ||
 -        as_fn_error $? "febootstrap >= 3.0 must be installed, your version is too old" "$LINENO" 5
  
 -        { $as_echo "$as_me:${as_lineno-$LINENO}: checking if user requested febootstrap --yum-config option" >&5
@@ -225,7 +225,7 @@ index d3f1684..26bbe39 100755
 +if test "x$enable_appliance" = "xyes"; then
 +    test "x$FEBOOTSTRAP" = "xno" &&
 +        as_fn_error $? "febootstrap must be installed" "$LINENO" 5
-+        $FEBOOTSTRAP --version >/dev/null 2>&1 ||
++        $FEBOOTSTRAP --version >&5 2>&1 ||
 +        as_fn_error $? "febootstrap >= 3.0 must be installed, your version is too old" "$LINENO" 5
 +fi
 +
@@ -234,7 +234,7 @@ index d3f1684..26bbe39 100755
 -    DISTRO=REDHAT
 -    if test -f /etc/debian_version; then
 -        DISTRO=DEBIAN
--	if grep -q 'DISTRIB_ID=Ubuntu' /etc/lsb-release 2>/dev/null; then
+-	if grep -q 'DISTRIB_ID=Ubuntu' /etc/lsb-release 2>&5; then
 -            DISTRO=UBUNTU
 -	fi
 -    fi
@@ -243,7 +243,7 @@ index d3f1684..26bbe39 100755
 +DISTRO=REDHAT
 +if test -f /etc/debian_version; then
 +    DISTRO=DEBIAN
-+    if grep -q 'DISTRIB_ID=Ubuntu' /etc/lsb-release 2>/dev/null; then
++    if grep -q 'DISTRIB_ID=Ubuntu' /etc/lsb-release 2>&5; then
 +        DISTRO=UBUNTU
      fi
 -    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $DISTRO" >&5
@@ -258,7 +258,7 @@ index d3f1684..26bbe39 100755
  
  # Extract the first word of "rpcgen", so it can be a program name with args.
  set dummy rpcgen; ac_word=$2
-@@ -35286,6 +35287,7 @@ fi
+@@ -35304,6 +35305,7 @@ fi
  
  
  
@@ -266,7 +266,7 @@ index d3f1684..26bbe39 100755
  if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
  	if test -n "$ac_tool_prefix"; then
    # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
-@@ -35414,6 +35416,7 @@ if test -n "$PCRE_CFLAGS"; then
+@@ -35432,6 +35434,7 @@ if test -n "$PCRE_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_PCRE_CFLAGS=`$PKG_CONFIG --cflags "libpcre" 2>/dev/null`
@@ -274,7 +274,7 @@ index d3f1684..26bbe39 100755
  else
    pkg_failed=yes
  fi
-@@ -35430,6 +35433,7 @@ if test -n "$PCRE_LIBS"; then
+@@ -35448,6 +35451,7 @@ if test -n "$PCRE_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_PCRE_LIBS=`$PKG_CONFIG --libs "libpcre" 2>/dev/null`
@@ -282,7 +282,7 @@ index d3f1684..26bbe39 100755
  else
    pkg_failed=yes
  fi
-@@ -35449,9 +35453,9 @@ else
+@@ -35467,9 +35471,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -294,7 +294,7 @@ index d3f1684..26bbe39 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$PCRE_PKG_ERRORS" >&5
-@@ -35491,6 +35495,7 @@ if test -n "$LIBVIRT_CFLAGS"; then
+@@ -35509,6 +35513,7 @@ if test -n "$LIBVIRT_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBVIRT_CFLAGS=`$PKG_CONFIG --cflags "libvirt" 2>/dev/null`
@@ -302,7 +302,7 @@ index d3f1684..26bbe39 100755
  else
    pkg_failed=yes
  fi
-@@ -35507,6 +35512,7 @@ if test -n "$LIBVIRT_LIBS"; then
+@@ -35525,6 +35530,7 @@ if test -n "$LIBVIRT_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBVIRT_LIBS=`$PKG_CONFIG --libs "libvirt" 2>/dev/null`
@@ -310,7 +310,7 @@ index d3f1684..26bbe39 100755
  else
    pkg_failed=yes
  fi
-@@ -35526,9 +35532,9 @@ else
+@@ -35544,9 +35550,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -322,7 +322,7 @@ index d3f1684..26bbe39 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBVIRT_PKG_ERRORS" >&5
-@@ -35576,6 +35582,7 @@ if test -n "$LIBXML2_CFLAGS"; then
+@@ -35594,6 +35600,7 @@ if test -n "$LIBXML2_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBXML2_CFLAGS=`$PKG_CONFIG --cflags "libxml-2.0" 2>/dev/null`
@@ -330,7 +330,7 @@ index d3f1684..26bbe39 100755
  else
    pkg_failed=yes
  fi
-@@ -35592,6 +35599,7 @@ if test -n "$LIBXML2_LIBS"; then
+@@ -35610,6 +35617,7 @@ if test -n "$LIBXML2_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBXML2_LIBS=`$PKG_CONFIG --libs "libxml-2.0" 2>/dev/null`
@@ -338,7 +338,7 @@ index d3f1684..26bbe39 100755
  else
    pkg_failed=yes
  fi
-@@ -35611,9 +35619,9 @@ else
+@@ -35629,9 +35637,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -350,7 +350,7 @@ index d3f1684..26bbe39 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBXML2_PKG_ERRORS" >&5
-@@ -35661,6 +35669,7 @@ if test -n "$LIBCONFIG_CFLAGS"; then
+@@ -35679,6 +35687,7 @@ if test -n "$LIBCONFIG_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBCONFIG_CFLAGS=`$PKG_CONFIG --cflags "libconfig" 2>/dev/null`
@@ -358,7 +358,7 @@ index d3f1684..26bbe39 100755
  else
    pkg_failed=yes
  fi
-@@ -35677,6 +35686,7 @@ if test -n "$LIBCONFIG_LIBS"; then
+@@ -35695,6 +35704,7 @@ if test -n "$LIBCONFIG_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBCONFIG_LIBS=`$PKG_CONFIG --libs "libconfig" 2>/dev/null`
@@ -366,7 +366,7 @@ index d3f1684..26bbe39 100755
  else
    pkg_failed=yes
  fi
-@@ -35696,9 +35706,9 @@ else
+@@ -35714,9 +35724,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -378,7 +378,7 @@ index d3f1684..26bbe39 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBCONFIG_PKG_ERRORS" >&5
-@@ -35746,6 +35756,7 @@ if test -n "$HIVEX_CFLAGS"; then
+@@ -35764,6 +35774,7 @@ if test -n "$HIVEX_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_HIVEX_CFLAGS=`$PKG_CONFIG --cflags "hivex" 2>/dev/null`
@@ -386,7 +386,7 @@ index d3f1684..26bbe39 100755
  else
    pkg_failed=yes
  fi
-@@ -35762,6 +35773,7 @@ if test -n "$HIVEX_LIBS"; then
+@@ -35780,6 +35791,7 @@ if test -n "$HIVEX_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_HIVEX_LIBS=`$PKG_CONFIG --libs "hivex" 2>/dev/null`
@@ -394,7 +394,7 @@ index d3f1684..26bbe39 100755
  else
    pkg_failed=yes
  fi
-@@ -35781,9 +35793,9 @@ else
+@@ -35799,9 +35811,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -406,7 +406,7 @@ index d3f1684..26bbe39 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$HIVEX_PKG_ERRORS" >&5
-@@ -35839,6 +35851,7 @@ if test -n "$FUSE_CFLAGS"; then
+@@ -35857,6 +35869,7 @@ if test -n "$FUSE_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_FUSE_CFLAGS=`$PKG_CONFIG --cflags "fuse" 2>/dev/null`
@@ -414,7 +414,7 @@ index d3f1684..26bbe39 100755
  else
    pkg_failed=yes
  fi
-@@ -35855,6 +35868,7 @@ if test -n "$FUSE_LIBS"; then
+@@ -35873,6 +35886,7 @@ if test -n "$FUSE_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_FUSE_LIBS=`$PKG_CONFIG --libs "fuse" 2>/dev/null`
@@ -422,7 +422,7 @@ index d3f1684..26bbe39 100755
  else
    pkg_failed=yes
  fi
-@@ -35874,9 +35888,9 @@ else
+@@ -35892,9 +35906,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -434,7 +434,7 @@ index d3f1684..26bbe39 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$FUSE_PKG_ERRORS" >&5
-@@ -37138,25 +37152,8 @@ fi
+@@ -37156,25 +37170,8 @@ fi
  
  
  	    if test "x$PYTHON_INSTALLDIR" = "xcheck"; then
@@ -462,7 +462,7 @@ index d3f1684..26bbe39 100755
                  if test "x$PYTHON_INSTALLDIR" = "x"; then
                      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Python site-packages directory not found" >&5
  $as_echo "$as_me: WARNING: Python site-packages directory not found" >&2;}
-@@ -37663,7 +37660,7 @@ ac_config_headers="$ac_config_headers config.h"
+@@ -37681,7 +37678,7 @@ ac_config_headers="$ac_config_headers config.h"
  
  ac_config_files="$ac_config_files podwrapper.sh"
  
@@ -471,7 +471,7 @@ index d3f1684..26bbe39 100755
  
  cat >confcache <<\_ACEOF
  # This file is a shell script that caches the results of configure
-@@ -38813,7 +38810,6 @@ do
+@@ -38831,7 +38828,6 @@ do
      "cat/Makefile") CONFIG_FILES="$CONFIG_FILES cat/Makefile" ;;
      "caution/Makefile") CONFIG_FILES="$CONFIG_FILES caution/Makefile" ;;
      "csharp/Makefile") CONFIG_FILES="$CONFIG_FILES csharp/Makefile" ;;

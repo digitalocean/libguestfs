@@ -7,10 +7,10 @@ Subject: configure.ac: use Python mechanism to determine PYTHON_INSTALLDIR
  1 files changed, 2 insertions(+), 16 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index 544b434..2a755c3 100644
+index 28561a6..b521578 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -563,22 +563,8 @@ AS_IF([test "x$enable_python" != "xno"],
+@@ -576,22 +576,8 @@ AS_IF([test "x$enable_python" != "xno"],
  			[PYTHON_INSTALLDIR=check])
  
  	    if test "x$PYTHON_INSTALLDIR" = "xcheck"; then

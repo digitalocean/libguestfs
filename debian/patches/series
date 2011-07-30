@@ -1,4 +1,4 @@
-0001-Disable-fuser-tests-if-dev-fuse-doesn-t-exist.patch
+0001-Disable-fuse-tests-if-dev-fuse-doesn-t-exist.patch
 0002-Mount-run-as-tmpfs-inside-appliance-workaround-for-f.patch
 0003-update-gnulib-code-and-test-readlink.patch
 0004-disable-apparently-broken-getlogin_r-test-from-gnuli.patch

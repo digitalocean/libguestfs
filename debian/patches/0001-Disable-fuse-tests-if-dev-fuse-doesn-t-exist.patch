@@ -1,6 +1,6 @@
 From: =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
 Date: Sun, 21 Feb 2010 19:29:30 +0100
-Subject: Disable fuser tests if /dev/fuse doesn't exist
+Subject: Disable fuse tests if /dev/fuse doesn't exist
 
 e.g. when running in a chroot.
 ---
@@ -8,14 +8,14 @@ e.g. when running in a chroot.
  1 files changed, 5 insertions(+), 0 deletions(-)
 
 diff --git a/fuse/test-fuse.sh b/fuse/test-fuse.sh
-index 0a429f7..5a7a63d 100755
+index 0a429f7..b292677 100755
 --- a/fuse/test-fuse.sh
 +++ b/fuse/test-fuse.sh
 @@ -45,6 +45,11 @@ if [ ! -x "$guestfish" -o ! -x "$guestmount" ]; then
      exit 1
  fi
  
-+if [ ! -c /dev/fuser ]; then
++if [ ! -c /dev/fuse ]; then
 +    echo "/dev/fuse does not exist skipping tests."
 +    exit 0
 +fi

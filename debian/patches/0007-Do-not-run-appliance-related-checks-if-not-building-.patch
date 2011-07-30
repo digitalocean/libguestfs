@@ -15,7 +15,7 @@ Subject: Do not run appliance-related checks if not building appliance
  9 files changed, 35 insertions(+), 8 deletions(-)
 
 diff --git a/Makefile.am b/Makefile.am
-index b2d1f74..3ebf6ba 100644
+index 7a1afbc..4ac3f86 100644
 --- a/Makefile.am
 +++ b/Makefile.am
 @@ -30,7 +30,10 @@ SUBDIRS += appliance
