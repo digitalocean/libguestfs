@@ -253,7 +253,9 @@ Description: library for accessing and modifying guest disk images
 Package: libguestfs-ocaml-dev
 Section: ocaml
 Architecture: i386 amd64
-Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version}),
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libguestfs0 (= ${binary:Version}),
+ libguestfs-dev (= ${binary:Version}), 
  ${ocaml:Depends}
 Provides: ${ocaml:Provides}
 Description: library for accessing and modifying guest disk images
