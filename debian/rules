@@ -24,13 +24,7 @@ override_dh_auto_build:
 		supermin.d/daemon.img supermin.d/init.img
 
 override_dh_install:
-# workaround for #635316
-	rm debian/tmp/usr/lib/python2.6/dist-packages/libguestfsmod.a \
-	   debian/tmp/usr/lib/python2.6/dist-packages/libguestfsmod.la \
-	   debian/tmp/usr/lib/python2.6/dist-packages/libguestfsmod.so \
-	   debian/tmp/usr/lib/python2.6/dist-packages/libguestfsmod.so.0
-	mv debian/tmp/usr/lib/python2.6/dist-packages/libguestfsmod.so.0.0.0 \
-	   debian/tmp/usr/lib/python2.6/dist-packages/libguestfsmod.so
+	rm debian/tmp/usr/lib/python2.6/dist-packages/libguestfsmod.la
 
 # Workaround for:
 # W: libguestfs-perl: script-not-executable usr/lib/perl5/Sys/bindtests.pl

@@ -12,10 +12,10 @@ Subject: regenerated auto*-related files
  images/Makefile.in |    2 +-
  ocaml/Makefile.in  |   19 +++++-----
  perl/Makefile.in   |    7 +++-
- python/Makefile.in |    3 +-
+ python/Makefile.in |    8 +++--
  resize/Makefile.in |    2 +-
  tools/Makefile.in  |    6 ++--
- 12 files changed, 105 insertions(+), 115 deletions(-)
+ 12 files changed, 108 insertions(+), 117 deletions(-)
 
 diff --git a/Makefile.in b/Makefile.in
 index de73f39..59048f0 100644
@@ -610,7 +610,7 @@ index 11487b7..8d0e963 100644
  @HAVE_PERL_TRUE@all: Makefile-pl src_deps
  @HAVE_PERL_TRUE@	$(MAKE) -f Makefile-pl
 diff --git a/python/Makefile.in b/python/Makefile.in
-index 722582f..6660e84 100644
+index 722582f..2cb3373 100644
 --- a/python/Makefile.in
 +++ b/python/Makefile.in
 @@ -71,6 +71,7 @@ build_triplet = @build@
@@ -621,7 +621,23 @@ index 722582f..6660e84 100644
  subdir = python
  ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
  am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
-@@ -1027,7 +1028,7 @@ EXTRA_DIST = \
+@@ -200,8 +201,8 @@ am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
+ am__v_lt_0 = --silent
+ libguestfsmod_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+ 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+-	$(libguestfsmod_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+-	-o $@
++	$(libguestfsmod_la_CFLAGS) $(CFLAGS) \
++	$(libguestfsmod_la_LDFLAGS) $(LDFLAGS) -o $@
+ @HAVE_PYTHON_TRUE@am_libguestfsmod_la_rpath = -rpath $(pythondir)
+ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+ depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
+@@ -1023,11 +1024,12 @@ EXTRA_DIST = \
+ @HAVE_PYTHON_TRUE@			  -I$(top_srcdir)/src -I$(top_builddir)/src
+ 
+ @HAVE_PYTHON_TRUE@libguestfsmod_la_LIBADD = $(top_builddir)/src/libguestfs.la
++@HAVE_PYTHON_TRUE@libguestfsmod_la_LDFLAGS = -avoid-version -shared
+ @HAVE_PYTHON_TRUE@TESTS_ENVIRONMENT = \
  @HAVE_PYTHON_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
  @HAVE_PYTHON_TRUE@	PYTHONPATH=$(builddir):$(builddir)/.libs
  

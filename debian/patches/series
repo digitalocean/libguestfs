@@ -6,4 +6,5 @@
 0006-configure.ac-do-not-generate-debian-changelog.patch
 0007-Do-not-run-appliance-related-checks-if-not-building-.patch
 0008-check-for-febootstrap-etc.-even-if-not-building-appl.patch
-0009-regenerated-auto-related-files.patch
+0009-python-don-t-build-static-library-don-t-build-.so.0..patch
+0010-regenerated-auto-related-files.patch
