@@ -11,3 +11,4 @@ appliance/packagelist usr/lib/guestfs
 appliance/excludelist usr/lib/guestfs
 appliance/supermin.d/init.img   usr/lib/guestfs/supermin.d
 appliance/supermin.d/daemon.img usr/lib/guestfs/supermin.d
+debian/update-guestfs-appliance usr/sbin

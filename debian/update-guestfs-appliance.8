@@ -1,0 +1,37 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.TH LIBGUESTFS 8 "August 2011"
+.SH NAME
+update-guestfs-appliance \- update the supermin appliance used by
+libguestfs
+.SH SYNOPSIS
+.B update-guestfs-appliance
+.SH DESCRIPTION
+\fBupdate-guestfs-appliance\fP creates or updates the supermin
+appliance for use with libguestfs. It uses \fBfebootstrap\fP for this,
+therefore access to the package repository is needed.
+.PP
+A supermin appliance contains only lists of files and directories. The
+contents of the referenced files are only copied into an ad-hoc
+filesystem whenever libguestfs starts a virtual machine. Therefore,
+calling \fBupdate-guestfs-appliance\fP is only needed after libguestfs
+has been installed or when the filesystem layouts or dependencies of
+needed packages on the host system have been changed.
+.PP
+.SH FILES
+.BR /usr/lib/guestfs/make.sh
+(the script that does the actual work),
+.nh
+.nf
+.BR /usr/lib/guestfs/supermin.d/hostfiles
+.BR /usr/lib/guestfs/supermin.d/base.img
+.fi
+.hy
+.SH SEE ALSO
+.BR guestfish (1),
+.BR guestmount (1),
+.BR febootstrap (8),
+.BR febootstrap-supermin-helper (8).
+.SH AUTHOR
+\fBupdate-guestfs-appliance\fP and this manual page were written by
+Hilko Bengen <bengen@debian.org>, for the Debian project (and may be
+used by others).

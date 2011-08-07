@@ -1,16 +1,9 @@
 libguestfs for Debian
 =====================
 
-The base.img file is not shipped as part of the libguestfs package
-because it contains copies of material from several other .deb
-packages. However, the script that is 
+libguestfs needs a supermin appliance to perform its work. To generate
+or update it, simply run:
 
-To generate or update this file, it, run the following command (as
-root):
+# update-guestfs-appliance
 
-# ( cd /usr/lib/guestfs; ./make.sh )
-
-I realize that this is a sub-optimal solution and promise to improve
-it in one of the next revisions.
-
- -- Hilko Bengen <bengen@debian.org>, Fri, 29 Jul 2011 18:29:54 +0200
+ -- Hilko Bengen <bengen@debian.org>, Sun,  7 Aug 2011 13:34:13 +0200
