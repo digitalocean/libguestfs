@@ -1,3 +1,11 @@
+libguestfs (1.10.6-3) experimental; urgency=low
+
+  * [f1217be] Fixed building of Python binding
+  * [6a5de14] Added update-guestfs-appliance
+  * [e6743be] Integrated update-guestfs-appliance using debconf.
+
+ -- Hilko Bengen <bengen@debian.org>  Sun, 07 Aug 2011 19:00:18 +0200
+
 libguestfs (1.10.6-2) experimental; urgency=low
 
   * [3de1b06] Added missing dependency for libguestfs-ocaml-dev, thanks to
