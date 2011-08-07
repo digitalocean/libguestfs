@@ -1,0 +1,31 @@
+#!/bin/sh
+
+set -e
+
+case "$1" in
+    configure|reconfigure)
+        . /usr/share/debconf/confmodule
+        db_get libguestfs/update-appliance
+        if [ "$RET" = true ]; then
+            update-guestfs-appliance >&2 || true
+        fi
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0
+
+
+
+
+
+

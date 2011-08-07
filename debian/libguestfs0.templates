@@ -1,0 +1,10 @@
+Template: libguestfs/update-appliance
+Type: boolean
+Default: false
+_Description: Create or update supermin appliance now?
+ libguestfs needs a supermin appliance to perform its work. To
+ generate or update it, network access to a package repository is
+ needed.
+ .
+ update-guestfs-appliance(8) can also be used at a later time to
+ create or update the supermin appliance.
