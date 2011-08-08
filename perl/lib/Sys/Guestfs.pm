@@ -267,7 +267,7 @@ should probably use C<$h-E<gt>add_drive_ro> instead.
 =back
 
 This function is deprecated.
-In new code, use the C<add_drive_opts> call instead.
+In new code, use the L</add_drive_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -377,7 +377,7 @@ This is the same as C<$h-E<gt>add_drive_ro> but it allows you
 to specify the QEMU interface emulation to use at run time.
 
 This function is deprecated.
-In new code, use the C<add_drive_opts> call instead.
+In new code, use the L</add_drive_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -389,7 +389,7 @@ This is the same as C<$h-E<gt>add_drive> but it allows you
 to specify the QEMU interface emulation to use at run time.
 
 This function is deprecated.
-In new code, use the C<add_drive_opts> call instead.
+In new code, use the L</add_drive_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -1048,7 +1048,7 @@ C<alloc> command which allocates a file in the host and
 attaches it as a device.
 
 This function is deprecated.
-In new code, use the C<fallocate64> call instead.
+In new code, use the L</fallocate64> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -1370,7 +1370,7 @@ This returns the ext2/3/4 filesystem label of the filesystem on
 C<device>.
 
 This function is deprecated.
-In new code, use the C<vfs_label> call instead.
+In new code, use the L</vfs_label> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -1382,7 +1382,7 @@ This returns the ext2/3/4 filesystem UUID of the filesystem on
 C<device>.
 
 This function is deprecated.
-In new code, use the C<vfs_uuid> call instead.
+In new code, use the L</vfs_uuid> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -2807,7 +2807,7 @@ For VFAT and NTFS the C<blocksize> parameter is treated as
 the requested cluster size.
 
 This function is deprecated.
-In new code, use the C<mkfs_opts> call instead.
+In new code, use the L</mkfs_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -2980,7 +2980,7 @@ use C<$h-E<gt>mount_options> (use an empty string for the first
 parameter if you don't want any options).
 
 This function is deprecated.
-In new code, use the C<mount_options> call instead.
+In new code, use the L</mount_options> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -3801,7 +3801,7 @@ B<This command is dangerous.  Without careful use you
 can easily destroy all your data>.
 
 This function is deprecated.
-In new code, use the C<part_add> call instead.
+In new code, use the L</part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -3822,7 +3822,7 @@ B<This command is dangerous.  Without careful use you
 can easily destroy all your data>.
 
 This function is deprecated.
-In new code, use the C<part_add> call instead.
+In new code, use the L</part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -3842,7 +3842,7 @@ B<This command is dangerous.  Without careful use you
 can easily destroy all your data>.
 
 This function is deprecated.
-In new code, use the C<part_add> call instead.
+In new code, use the L</part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -3874,7 +3874,7 @@ not intended to be parsed.
 See also: C<$h-E<gt>part_list>
 
 This function is deprecated.
-In new code, use the C<part_list> call instead.
+In new code, use the L</part_list> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -4361,7 +4361,7 @@ remove them, unless you want to retain compatibility with older
 versions of the API.
 
 This function is deprecated.
-In new code, use the C<launch> call instead.
+In new code, use the L</launch> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -4407,7 +4407,7 @@ Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 This function is deprecated.
-In new code, use the C<write> call instead.
+In new code, use the L</write> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -4488,7 +4488,7 @@ Since 1.0.63, use C<$h-E<gt>file> instead which can now
 process compressed files.
 
 This function is deprecated.
-In new code, use the C<file> call instead.
+In new code, use the L</file> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
