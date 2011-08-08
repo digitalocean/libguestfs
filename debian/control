@@ -23,7 +23,7 @@ Homepage: http://libguestfs.org
 Standards-Version: 3.9.2
 
 Package: guestfish
-Section: devel
+Section: admin
 Architecture: i386 amd64
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: libguestfs filesystem interactive shell
@@ -55,6 +55,7 @@ Description: library for accessing and modifying guest disk images
  This package contains the development headers.
 
 Package: libguestfs0
+Section: libs
 Architecture: i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends},
   febootstrap (>= 3.2),
@@ -112,7 +113,7 @@ Description: library for accessing and modifying guest disk images
  the guest. Also you can upload and download files and directories.
 
 Package: guestmount
-Section: devel
+Section: admin
 Architecture: i386 amd64
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: mount guest filesystem using libguestfs and FUSE
@@ -122,7 +123,7 @@ Description: mount guest filesystem using libguestfs and FUSE
  it appear as a mountable device.
 
 Package: libguestfs-tools
-Section: devel
+Section: admin
 Architecture: i386 amd64
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
  libsys-virt-perl, libguestfs-perl (= ${binary:Version})
@@ -179,7 +180,7 @@ Description: library for accessing and modifying guest disk images
 
 Package: python-guestfs
 Section: python
-Architecture: any
+Architecture: i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, libguestfs0 (= ${binary:Version})
 Provides: python-libguestfs
 Conflicts: python-libguestfs
