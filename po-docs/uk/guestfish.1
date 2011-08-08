@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfish 1"
-.TH guestfish 1 "2011-07-27" "libguestfs-1.10.6" "Virtualization Support"
+.TH guestfish 1 "2011-08-07" "libguestfs-1.10.7" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -1318,7 +1318,7 @@ If you just want to add an \s-1ISO\s0 file (often you use this as an efficient w
 to transfer large files into the guest), then you should probably use
 \&\*(L"add-drive-ro\*(R" instead.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`add_drive_opts\*(C'\fR call
+This function is deprecated.  In new code, use the \*(L"add_drive_opts\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -1442,7 +1442,7 @@ is added read-only, with the format being detected automatically.
 This is the same as \*(L"add-drive-ro\*(R" but it allows you to specify the \s-1QEMU\s0
 interface emulation to use at run time.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`add_drive_opts\*(C'\fR call
+This function is deprecated.  In new code, use the \*(L"add_drive_opts\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -1457,7 +1457,7 @@ these functions.
 This is the same as \*(L"add-drive\*(R" but it allows you to specify the \s-1QEMU\s0
 interface emulation to use at run time.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`add_drive_opts\*(C'\fR call
+This function is deprecated.  In new code, use the \*(L"add_drive_opts\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -2226,7 +2226,7 @@ size \f(CW\*(C`len\*(C'\fR bytes.  If the file exists already, it is overwritten
 Do not confuse this with the guestfish-specific \f(CW\*(C`alloc\*(C'\fR command which
 allocates a file in the host and attaches it as a device.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`fallocate64\*(C'\fR call
+This function is deprecated.  In new code, use the \*(L"fallocate64\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -2539,7 +2539,7 @@ Return the direct appliance mode flag.
 .PP
 This returns the ext2/3/4 filesystem label of the filesystem on \f(CW\*(C`device\*(C'\fR.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`vfs_label\*(C'\fR call
+This function is deprecated.  In new code, use the \*(L"vfs_label\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -2553,7 +2553,8 @@ these functions.
 .PP
 This returns the ext2/3/4 filesystem \s-1UUID\s0 of the filesystem on \f(CW\*(C`device\*(C'\fR.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`vfs_uuid\*(C'\fR call instead.
+This function is deprecated.  In new code, use the \*(L"vfs_uuid\*(R" call
+instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4242,7 +4243,7 @@ filesystem type, but typically they are \f(CW1024\fR, \f(CW2048\fR or \f(CW4096\
 For \s-1VFAT\s0 and \s-1NTFS\s0 the \f(CW\*(C`blocksize\*(C'\fR parameter is treated as the requested
 cluster size.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`mkfs_opts\*(C'\fR call
+This function is deprecated.  In new code, use the \*(L"mkfs_opts\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -4439,7 +4440,7 @@ reliability.  Therefore we recommend that you avoid using \*(L"mount\*(R" in any
 code that needs performance, and instead use \*(L"mount-options\*(R" (use an empty
 string for the first parameter if you don't want any options).
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`mount_options\*(C'\fR call
+This function is deprecated.  In new code, use the \*(L"mount_options\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -5396,7 +5397,8 @@ See also: \*(L"sfdisk-l\*(R", \*(L"sfdisk-N\*(R", \*(L"part-init\*(R"
 \&\fBThis command is dangerous.  Without careful use you can easily destroy all
 your data\fR.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`part_add\*(C'\fR call instead.
+This function is deprecated.  In new code, use the \*(L"part_add\*(R" call
+instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -5417,7 +5419,8 @@ See also: \*(L"sfdisk\*(R", the \fIsfdisk\fR\|(8) manpage and \*(L"part-disk\*(R
 \&\fBThis command is dangerous.  Without careful use you can easily destroy all
 your data\fR.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`part_add\*(C'\fR call instead.
+This function is deprecated.  In new code, use the \*(L"part_add\*(R" call
+instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -5439,7 +5442,8 @@ See also: \*(L"part-add\*(R"
 \&\fBThis command is dangerous.  Without careful use you can easily destroy all
 your data\fR.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`part_add\*(C'\fR call instead.
+This function is deprecated.  In new code, use the \*(L"part_add\*(R" call
+instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -5476,7 +5480,7 @@ of the \fIsfdisk\fR\|(8) command.  It is not intended to be parsed.
 .PP
 See also: \*(L"part-list\*(R"
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`part_list\*(C'\fR call
+This function is deprecated.  In new code, use the \*(L"part_list\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -6130,7 +6134,7 @@ As a special case, if \f(CW\*(C`size\*(C'\fR is \f(CW0\fR then the length is cal
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`write\*(C'\fR call instead.
+This function is deprecated.  In new code, use the \*(L"write\*(R" call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -6225,7 +6229,7 @@ This command runs \f(CW\*(C`file\*(C'\fR after first decompressing \f(CW\*(C`pat
 .PP
 Since 1.0.63, use \*(L"file\*(R" instead which can now process compressed files.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`file\*(C'\fR call instead.
+This function is deprecated.  In new code, use the \*(L"file\*(R" call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
