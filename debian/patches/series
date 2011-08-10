@@ -8,3 +8,4 @@
 0008-check-for-febootstrap-etc.-even-if-not-building-appl.patch
 0009-python-don-t-build-static-library-don-t-build-.so.0..patch
 0010-regenerated-auto-related-files.patch
+0011-Fix-for-systemd-based-Debian-systems.patch
