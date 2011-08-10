@@ -9,13 +9,14 @@ Subject: regenerated auto*-related files
  configure          |  102 +++++++++++++++++++++++++---------------------------
  daemon/configure   |   10 +-----
  df/Makefile.in     |    2 +-
+ fuse/Makefile.in   |    2 +-
  images/Makefile.in |    2 +-
  ocaml/Makefile.in  |   19 +++++-----
  perl/Makefile.in   |    7 +++-
  python/Makefile.in |    8 +++--
  resize/Makefile.in |    2 +-
  tools/Makefile.in  |    6 ++--
- 12 files changed, 108 insertions(+), 117 deletions(-)
+ 13 files changed, 109 insertions(+), 118 deletions(-)
 
 diff --git a/Makefile.in b/Makefile.in
 index de73f39..59048f0 100644
@@ -185,7 +186,7 @@ index 67fabff..5cc0364 100644
  
  .SUFFIXES:
 diff --git a/configure b/configure
-index 87cfd33..7e24d81 100755
+index 9579c95..5213c2a 100755
 --- a/configure
 +++ b/configure
 @@ -32526,8 +32526,7 @@ fi
@@ -520,6 +521,19 @@ index 51eeb16..77841fc 100644
  all: all-am
  
  .SUFFIXES:
+diff --git a/fuse/Makefile.in b/fuse/Makefile.in
+index 82ca47c..a18ec4b 100644
+--- a/fuse/Makefile.in
++++ b/fuse/Makefile.in
+@@ -1056,7 +1056,7 @@ CLEANFILES = stamp-guestmount.pod
+ @HAVE_FUSE_TRUE@noinst_DATA = $(top_builddir)/html/guestmount.1.html
+ 
+ # Tests.
+-@HAVE_FUSE_TRUE@TESTS = test-fuse.sh
++@ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@TESTS = test-fuse.sh
+ @HAVE_FUSE_TRUE@TESTS_ENVIRONMENT = \
+ @HAVE_FUSE_TRUE@	top_builddir=..
+ 
 diff --git a/images/Makefile.in b/images/Makefile.in
 index a917b83..37d16ff 100644
 --- a/images/Makefile.in

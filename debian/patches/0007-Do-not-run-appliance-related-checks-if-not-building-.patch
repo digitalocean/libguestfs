@@ -6,13 +6,14 @@ Subject: Do not run appliance-related checks if not building appliance
  Makefile.am        |    5 ++++-
  cat/Makefile.am    |    2 ++
  df/Makefile.am     |    2 ++
+ fuse/Makefile.am   |    4 +++-
  images/Makefile.am |    2 ++
  ocaml/Makefile.am  |   10 +++++++---
  perl/Makefile.am   |   10 ++++++++--
  python/Makefile.am |    8 ++++++--
  resize/Makefile.am |    2 ++
  tools/Makefile.am  |    2 ++
- 9 files changed, 35 insertions(+), 8 deletions(-)
+ 10 files changed, 38 insertions(+), 9 deletions(-)
 
 diff --git a/Makefile.am b/Makefile.am
 index 7a1afbc..4ac3f86 100644
@@ -52,6 +53,22 @@ index 69c6140..86d55fa 100644
 +if ENABLE_APPLIANCE
  TESTS = test-virt-df.sh
 +endif ENABLE_APPLIANCE
+diff --git a/fuse/Makefile.am b/fuse/Makefile.am
+index c860f24..83dfd8f 100644
+--- a/fuse/Makefile.am
++++ b/fuse/Makefile.am
+@@ -73,8 +73,10 @@ stamp-guestmount.pod: guestmount.pod
+ 
+ # Tests.
+ 
++if ENABLE_APPLIANCE
+ TESTS = test-fuse.sh
++endif ENABLE_APPLIANCE
+ TESTS_ENVIRONMENT = \
+ 	top_builddir=..
+ 
+-endif
++endif HAVE_FUSE
 diff --git a/images/Makefile.am b/images/Makefile.am
 index e4a910a..35fa2be 100644
 --- a/images/Makefile.am
