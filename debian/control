@@ -126,7 +126,9 @@ Package: libguestfs-tools
 Section: admin
 Architecture: i386 amd64
 Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
- libsys-virt-perl, libguestfs-perl (= ${binary:Version})
+ libsys-virt-perl, libguestfs-perl (= ${binary:Version}),
+ libwin-hivex-perl,
+ libintl-perl, libstring-shellquote-perl
 Description: libguestfs virt tools
  This package contains virt tools including virt-cat, virt-df, virt-edit,
  virt-filesystems, virt-inspector, virt-ls, virt-make-fs, virt-rescue,
@@ -207,7 +209,10 @@ Package: libguestfs-perl
 Section: perl
 Architecture: i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}, libguestfs0 (= ${binary:Version}),
- ${perl:Depends}
+ ${perl:Depends},
+ libxml-xpath-perl,
+ libwin-hivex-perl,
+ libsys-virt-perl
 Description: library for accessing and modifying guest disk images
  libguestfs is a library for accessing and modifying guest disk images. Amongst
  the things this is good for: making batch configuration changes to guests,
