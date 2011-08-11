@@ -2,4 +2,6 @@
 
 set -e
 
-( cd /usr/lib/guestfs; ./make.sh )
+cd /usr/lib/guestfs
+chmod 022
+./make.sh
