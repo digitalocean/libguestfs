@@ -60,8 +60,6 @@ Architecture: i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends},
   febootstrap (>= 3.2),
   qemu-kvm (>= 0.13),
-  linux-image-2.6-amd64 (>= 2.6.36) [amd64], 
-  linux-image-2.6-686 (>= 2.6.36) [i386], 
   bsdmainutils,
   btrfs-tools,
   cryptsetup,
