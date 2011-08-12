@@ -6,6 +6,7 @@ Subject: Do not run appliance-related checks if not building appliance
  Makefile.am        |    5 ++++-
  cat/Makefile.am    |    2 ++
  df/Makefile.am     |    2 ++
+ edit/Makefile.am   |    2 ++
  fuse/Makefile.am   |    4 +++-
  images/Makefile.am |    2 ++
  ocaml/Makefile.am  |   10 +++++++---
@@ -13,10 +14,10 @@ Subject: Do not run appliance-related checks if not building appliance
  python/Makefile.am |    8 ++++++--
  resize/Makefile.am |    2 ++
  tools/Makefile.am  |    2 ++
- 10 files changed, 38 insertions(+), 9 deletions(-)
+ 11 files changed, 40 insertions(+), 9 deletions(-)
 
 diff --git a/Makefile.am b/Makefile.am
-index 7a1afbc..4ac3f86 100644
+index ca31727..1c5e873 100644
 --- a/Makefile.am
 +++ b/Makefile.am
 @@ -30,7 +30,10 @@ SUBDIRS += appliance
@@ -32,10 +33,10 @@ index 7a1afbc..4ac3f86 100644
  # Guestfish.
  SUBDIRS += fish
 diff --git a/cat/Makefile.am b/cat/Makefile.am
-index a049a61..c3ff177 100644
+index bf1d57c..7796675 100644
 --- a/cat/Makefile.am
 +++ b/cat/Makefile.am
-@@ -132,4 +132,6 @@ TESTS_ENVIRONMENT = \
+@@ -135,4 +135,6 @@ TESTS_ENVIRONMENT = \
  	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
  	LIBGUESTFS_PATH=$(top_builddir)/appliance
  
@@ -43,21 +44,32 @@ index a049a61..c3ff177 100644
  TESTS = test-virt-cat.sh test-virt-filesystems.sh test-virt-ls.sh
 +endif ENABLE_APPLIANCE
 diff --git a/df/Makefile.am b/df/Makefile.am
-index 69c6140..86d55fa 100644
+index 1711798..59350ff 100644
 --- a/df/Makefile.am
 +++ b/df/Makefile.am
-@@ -80,4 +80,6 @@ TESTS_ENVIRONMENT = \
+@@ -81,4 +81,6 @@ TESTS_ENVIRONMENT = \
  	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
  	LIBGUESTFS_PATH=$(top_builddir)/appliance
  
 +if ENABLE_APPLIANCE
  TESTS = test-virt-df.sh
 +endif ENABLE_APPLIANCE
+diff --git a/edit/Makefile.am b/edit/Makefile.am
+index 62b5376..c1f1272 100644
+--- a/edit/Makefile.am
++++ b/edit/Makefile.am
+@@ -73,4 +73,6 @@ TESTS_ENVIRONMENT = \
+ 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
+ 	LIBGUESTFS_PATH=$(top_builddir)/appliance
+ 
++if ENABLE_APPLIANCE
+ TESTS = test-virt-edit.sh
++endif ENABLE_APPLIANCE
 diff --git a/fuse/Makefile.am b/fuse/Makefile.am
-index c860f24..83dfd8f 100644
+index b7558ee..5439011 100644
 --- a/fuse/Makefile.am
 +++ b/fuse/Makefile.am
-@@ -73,8 +73,10 @@ stamp-guestmount.pod: guestmount.pod
+@@ -74,8 +74,10 @@ stamp-guestmount.pod: guestmount.pod
  
  # Tests.
  
@@ -70,10 +82,10 @@ index c860f24..83dfd8f 100644
 -endif
 +endif HAVE_FUSE
 diff --git a/images/Makefile.am b/images/Makefile.am
-index e4a910a..35fa2be 100644
+index 622d288..45df114 100644
 --- a/images/Makefile.am
 +++ b/images/Makefile.am
-@@ -54,7 +54,9 @@ noinst_DATA = test.iso
+@@ -56,7 +56,9 @@ noinst_DATA = test.iso
  
  # This is 'check_DATA' because we don't need it until 'make check'
  # time and we need the tools we have built in order to make it.
@@ -84,10 +96,10 @@ index e4a910a..35fa2be 100644
  CLEANFILES = \
  	test.iso test.sqsh \
 diff --git a/ocaml/Makefile.am b/ocaml/Makefile.am
-index c07b9c5..9187f34 100644
+index 252a337..d594b77 100644
 --- a/ocaml/Makefile.am
 +++ b/ocaml/Makefile.am
-@@ -63,11 +63,15 @@ TESTS_ENVIRONMENT = \
+@@ -74,11 +74,15 @@ TESTS_ENVIRONMENT = \
  
  TESTS = run-bindtests \
  	t/guestfs_005_load \
@@ -129,10 +141,10 @@ index c192290..3e1c99a 100644
  TESTS_ENVIRONMENT = \
  	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
 diff --git a/python/Makefile.am b/python/Makefile.am
-index 76b92fd..21db292 100644
+index e995927..94c400f 100644
 --- a/python/Makefile.am
 +++ b/python/Makefile.am
-@@ -48,6 +48,10 @@ TESTS_ENVIRONMENT = \
+@@ -49,6 +49,10 @@ TESTS_ENVIRONMENT = \
  	LIBGUESTFS_PATH=$(top_builddir)/appliance \
  	PYTHONPATH=$(builddir):$(builddir)/.libs
  
@@ -160,10 +172,10 @@ index 8418cb4..41749ba 100644
  # Dependencies.
  depend: .depend
 diff --git a/tools/Makefile.am b/tools/Makefile.am
-index 6441333..485e795 100644
+index 7904f1c..04a4bba 100644
 --- a/tools/Makefile.am
 +++ b/tools/Makefile.am
-@@ -64,9 +64,11 @@ TESTS_ENVIRONMENT = \
+@@ -63,9 +63,11 @@ TESTS_ENVIRONMENT = \
  	LIBGUESTFS_PATH=$(top_builddir)/appliance \
  	PERL5LIB=$(top_builddir)/perl/blib/lib:$(top_builddir)/perl/blib/arch
  

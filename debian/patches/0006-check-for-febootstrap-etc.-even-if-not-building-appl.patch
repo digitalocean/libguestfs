@@ -7,10 +7,10 @@ Subject: check for febootstrap etc. even if not building appliance
  1 files changed, 32 insertions(+), 31 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index bcadc56..fa1e625 100644
+index e2563ec..eeffeb2 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -180,46 +180,47 @@ AC_ARG_ENABLE([appliance],
+@@ -182,46 +182,47 @@ AC_ARG_ENABLE([appliance],
  AM_CONDITIONAL([ENABLE_APPLIANCE],[test "x$enable_appliance" = "xyes"])
  AC_MSG_RESULT([$enable_appliance])
  
