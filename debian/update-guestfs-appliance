@@ -3,5 +3,5 @@
 set -e
 
 cd /usr/lib/guestfs
-chmod 022
+umask 022
 ./make.sh
