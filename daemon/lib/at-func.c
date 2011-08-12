@@ -1,5 +1,5 @@
 /* Define an at-style functions like fstatat, unlinkat, fchownat, etc.
-   Copyright (C) 2006, 2009-2010 Free Software Foundation, Inc.
+   Copyright (C) 2006, 2009-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 
 /* written by Jim Meyering */
 
-#include "dirname.h" /* solely for definition of IS_ABSOLUTE_FILE_NAME */
+#include "dosname.h" /* solely for definition of IS_ABSOLUTE_FILE_NAME */
 #include "openat.h"
 #include "openat-priv.h"
 #include "save-cwd.h"

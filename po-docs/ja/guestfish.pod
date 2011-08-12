@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head1 名前
 
@@ -196,6 +197,8 @@ section L</REMOTE CONTROL AND CSH> below.
 Add disks from the named libvirt domain.  If the I<--ro> option is also
 used, then any libvirt domain can be used.  However in write mode, only
 libvirt domains which are shut down can be named here.
+
+Domain UUIDs can be used instead of names.
 
 Using this flag is mostly equivalent to using the C<add-domain> command,
 with C<readonly:true> if the I<--ro> flag was given, and with C<format:...>
@@ -469,7 +472,7 @@ image read-only you have to do I<-a image --ro>.
 This matters: If you accidentally open a live VM disk image writable then
 you will cause irreversible disk corruption.
 
-By libguestfs 1.12 we intend to change the default the other way.  Disk
+In a future libguestfs we intend to change the default the other way.  Disk
 images will be opened read-only.  You will have to either specify
 I<guestfish --rw>, I<guestmount --rw>, I<virt-rescue --rw>, or change the
 configuration file C</etc/libguestfs-tools.conf> in order to get write
@@ -503,6 +506,62 @@ literal single quote must be escaped with a backslash.
  vgcreate VG "/dev/sda1 /dev/sdb1"
  command "/bin/echo 'foo      bar'"
  command "/bin/echo \'foo\'"
+
+=head2 ESCAPE SEQUENCES IN DOUBLE QUOTED ARGUMENTS
+
+In double-quoted arguments (only) use backslash to insert special
+characters:
+
+=over 4
+
+=item C<\a>
+
+Alert (bell) character.
+
+=item C<\b>
+
+Backspace character.
+
+=item C<\f>
+
+Form feed character.
+
+=item C<\n>
+
+Newline character.
+
+=item C<\r>
+
+Carriage return character.
+
+=item C<\t>
+
+Horizontal tab character.
+
+=item C<\v>
+
+Vertical tab character.
+
+=item C<\">
+
+A literal double quote character.
+
+=item C<\ooo>
+
+A character with octal value I<ooo>.  There must be precisely 3 octal digits
+(unlike C).
+
+=item C<\xhh>
+
+A character with hex value I<hh>.  There must be precisely 2 hex digits.
+
+In the current implementation C<\000> and C<\x00> cannot be used in strings.
+
+=item C<\\>
+
+A literal backslash character.
+
+=back
 
 =head1 OPTIONAL ARGUMENTS
 
@@ -996,6 +1055,21 @@ was an error.
 The C<edit> command uses C<$EDITOR> as the editor.  If not set, it uses
 C<vi>.
 
+=item FEBOOTSTRAP_KERNEL
+
+=item FEBOOTSTRAP_MODULES
+
+These two environment variables allow the kernel that libguestfs uses in the
+appliance to be selected.  If C<$FEBOOTSTRAP_KERNEL> is not set, then the
+most recent host kernel is chosen.  For more information about kernel
+selection, see L<febootstrap-supermin-helper(8)>.  This feature is only
+available in febootstrap E<ge> 3.8.
+
+=item GUESTFISH_DISPLAY_IMAGE
+
+The C<display> command uses C<$GUESTFISH_DISPLAY_IMAGE> to display images.
+If not set, it uses L<display(1)>.
+
 =item GUESTFISH_PID
 
 Used with the I<--remote> option to specify the remote guestfish process to
@@ -1123,7 +1197,8 @@ L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-df(1)>, L<virt-edit(1)>,
 L<virt-filesystems(1)>, L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
 L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
 L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>,
-L<virt-tar-out(1)>, L<virt-win-reg(1)>, L<hexedit(1)>.
+L<virt-tar-out(1)>, L<virt-win-reg(1)>, L<display(1)>, L<hexedit(1)>,
+L<febootstrap-supermin-helper(8)>.
 
 =head1 AUTHORS
 

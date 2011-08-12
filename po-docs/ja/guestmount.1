@@ -62,13 +62,13 @@
 .\" ========================================================================
 .\"
 .IX Title "guestmount 1"
-.TH guestmount 1 "2011-08-07" "libguestfs-1.10.7" "Virtualization Support"
+.TH guestmount 1 "2011-08-07" "libguestfs-1.12.3" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
-.SH "åå"
-.IX Header "åå"
+.SH "名前"
+.IX Header "名前"
 guestmount \- Mount a guest filesystem on the host using \s-1FUSE\s0 and libguestfs
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
@@ -160,21 +160,35 @@ option when mounting:
 .Ve
 .SH "OPTIONS"
 .IX Header "OPTIONS"
-.IP "\fB\-a image\fR | \fB\-\-add image\fR" 4
-.IX Item "-a image | --add image"
+.IP "\fB\-a image\fR" 4
+.IX Item "-a image"
+.PD 0
+.IP "\fB\-\-add image\fR" 4
+.IX Item "--add image"
+.PD
 Add a block device or virtual machine image.
 .Sp
 The format of the disk image is auto-detected.  To override this and force a
 particular format use the \fI\-\-format=..\fR option.
-.IP "\fB\-c \s-1URI\s0\fR | \fB\-\-connect \s-1URI\s0\fR" 4
-.IX Item "-c URI | --connect URI"
+.IP "\fB\-c \s-1URI\s0\fR" 4
+.IX Item "-c URI"
+.PD 0
+.IP "\fB\-\-connect \s-1URI\s0\fR" 4
+.IX Item "--connect URI"
+.PD
 When used in conjunction with the \fI\-d\fR option, this specifies the libvirt
 \&\s-1URI\s0 to use.  The default is to use the default libvirt connection.
-.IP "\fB\-d libvirt-domain\fR | \fB\-\-domain libvirt-domain\fR" 4
-.IX Item "-d libvirt-domain | --domain libvirt-domain"
+.IP "\fB\-d libvirt-domain\fR" 4
+.IX Item "-d libvirt-domain"
+.PD 0
+.IP "\fB\-\-domain libvirt-domain\fR" 4
+.IX Item "--domain libvirt-domain"
+.PD
 Add disks from the named libvirt domain.  If the \fI\-\-ro\fR option is also
 used, then any libvirt domain can be used.  However in write mode, only
 libvirt domains which are shut down can be named here.
+.Sp
+Domain UUIDs can be used instead of names.
 .IP "\fB\-\-dir\-cache\-timeout N\fR" 4
 .IX Item "--dir-cache-timeout N"
 Set the readdir cache timeout to \fIN\fR seconds, the default being 60
@@ -192,8 +206,12 @@ When prompting for keys and passphrases, guestfish normally turns echoing
 off so you cannot see what you are typing.  If you are not worried about
 Tempest attacks and there is no one else in the room you can specify this
 flag to see what you are typing.
-.IP "\fB\-\-format=raw|qcow2|..\fR | \fB\-\-format\fR" 4
-.IX Item "--format=raw|qcow2|.. | --format"
+.IP "\fB\-\-format=raw|qcow2|..\fR" 4
+.IX Item "--format=raw|qcow2|.."
+.PD 0
+.IP "\fB\-\-format\fR" 4
+.IX Item "--format"
+.PD
 The default for the \fI\-a\fR option is to auto-detect the format of the disk
 image.  Using this forces the disk format for \fI\-a\fR options which follow on
 the command line.  Using \fI\-\-format\fR with no argument switches back to
@@ -209,8 +227,12 @@ Display help on special \s-1FUSE\s0 options (see \fI\-o\fR below).
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
 Display brief help and exit.
-.IP "\fB\-i\fR | \fB\-\-inspector\fR" 4
-.IX Item "-i | --inspector"
+.IP "\fB\-i\fR" 4
+.IX Item "-i"
+.PD 0
+.IP "\fB\-\-inspector\fR" 4
+.IX Item "--inspector"
+.PD
 Using \fIvirt\-inspector\fR\|(1) code, inspect the disks looking for an operating
 system and mount filesystems as they would be mounted on the real virtual
 machine.
@@ -244,13 +266,21 @@ and/or extended attributes if the filesystem can support them:
 .Vb 1
 \& \-m /dev/sda1:/:acl,user_xattr
 .Ve
-.IP "\fB\-n\fR | \fB\-\-no\-sync\fR" 4
-.IX Item "-n | --no-sync"
+.IP "\fB\-n\fR" 4
+.IX Item "-n"
+.PD 0
+.IP "\fB\-\-no\-sync\fR" 4
+.IX Item "--no-sync"
+.PD
 By default, we attempt to sync the guest disk when the \s-1FUSE\s0 mountpoint is
 unmounted.  If you specify this option, then we don't attempt to sync the
 disk.  See the discussion of autosync in the \fIguestfs\fR\|(3) manpage.
-.IP "\fB\-o option\fR | \fB\-\-option option\fR" 4
-.IX Item "-o option | --option option"
+.IP "\fB\-o option\fR" 4
+.IX Item "-o option"
+.PD 0
+.IP "\fB\-\-option option\fR" 4
+.IX Item "--option option"
+.PD
 Pass extra options to \s-1FUSE\s0.
 .Sp
 To get a list of all the extra options supported by \s-1FUSE\s0, use the command
@@ -281,8 +311,12 @@ the chosen values.
 .RE
 .RS 4
 .RE
-.IP "\fB\-r\fR | \fB\-\-ro\fR" 4
-.IX Item "-r | --ro"
+.IP "\fB\-r\fR" 4
+.IX Item "-r"
+.PD 0
+.IP "\fB\-\-ro\fR" 4
+.IX Item "--ro"
+.PD
 Add devices and mount everything read-only.  Also disallow writes and make
 the disk appear read-only to \s-1FUSE\s0.
 .Sp
@@ -295,20 +329,36 @@ See also \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1
 .IP "\fB\-\-selinux\fR" 4
 .IX Item "--selinux"
 Enable SELinux support for the guest.
-.IP "\fB\-v\fR | \fB\-\-verbose\fR" 4
-.IX Item "-v | --verbose"
+.IP "\fB\-v\fR" 4
+.IX Item "-v"
+.PD 0
+.IP "\fB\-\-verbose\fR" 4
+.IX Item "--verbose"
+.PD
 Enable verbose messages from underlying libguestfs.
-.IP "\fB\-V\fR | \fB\-\-version\fR" 4
-.IX Item "-V | --version"
+.IP "\fB\-V\fR" 4
+.IX Item "-V"
+.PD 0
+.IP "\fB\-\-version\fR" 4
+.IX Item "--version"
+.PD
 Display the program version and exit.
-.IP "\fB\-w\fR | \fB\-\-rw\fR" 4
-.IX Item "-w | --rw"
+.IP "\fB\-w\fR" 4
+.IX Item "-w"
+.PD 0
+.IP "\fB\-\-rw\fR" 4
+.IX Item "--rw"
+.PD
 This changes the \fI\-a\fR, \fI\-d\fR and \fI\-m\fR options so that disks are added and
 mounts are done read-write.
 .Sp
 See \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" in \fIguestfish\fR\|(1).
-.IP "\fB\-x\fR | \fB\-\-trace\fR" 4
-.IX Item "-x | --trace"
+.IP "\fB\-x\fR" 4
+.IX Item "-x"
+.PD 0
+.IP "\fB\-\-trace\fR" 4
+.IX Item "--trace"
+.PD
 Trace libguestfs calls and entry into each \s-1FUSE\s0 function.
 .Sp
 This also stops the daemon from forking into the background.

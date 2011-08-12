@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head1 名前
 
@@ -81,7 +82,9 @@ Display brief help.
 
 Display version number and exit.
 
-=item B<--connect URI> | B<-c URI>
+=item B<-c URI>
+
+=item B<--connect URI>
 
 If using libvirt, connect to the given I<URI>.  If omitted, then we connect
 to the default libvirt hypervisor.
@@ -101,9 +104,15 @@ ignored.
 If working with untrusted raw-format guest disk images, you should ensure
 the format is always specified.
 
-=item B<-x> | B<--extract> | B<--download>
+=item B<-x>
 
-=item B<-u> | B<--upload>
+=item B<--extract>
+
+=item B<--download>
+
+=item B<-u>
+
+=item B<--upload>
 
 Use I<-x> to extract (download) a directory from a virtual machine to a
 local tarball.
@@ -113,7 +122,9 @@ Please read the L</WARNING> section above before using this option.
 
 You must specify exactly one of these options.
 
-=item B<-z> | B<--gzip>
+=item B<-z>
+
+=item B<--gzip>
 
 Specify that the input or output tarball is gzip-compressed.
 

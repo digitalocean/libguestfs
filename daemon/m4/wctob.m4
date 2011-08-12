@@ -1,5 +1,5 @@
-# wctob.m4 serial 5
-dnl Copyright (C) 2008-2010 Free Software Foundation, Inc.
+# wctob.m4 serial 8
+dnl Copyright (C) 2008-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -11,7 +11,6 @@ AC_DEFUN([gl_FUNC_WCTOB],
   AC_CHECK_FUNCS_ONCE([wctob])
   if test $ac_cv_func_wctob = no; then
     HAVE_DECL_WCTOB=0
-    gl_REPLACE_WCHAR_H
     AC_LIBOBJ([wctob])
     gl_PREREQ_WCTOB
   else
@@ -38,8 +37,16 @@ changequote(,)dnl
 changequote([,])dnl
         case "$host_os" in
           cygwin*)
-            AC_TRY_RUN([
+            AC_RUN_IFELSE(
+              [AC_LANG_SOURCE([[
 #include <locale.h>
+/* Tru64 with Desktop Toolkit C has a bug: <stdio.h> must be included before
+   <wchar.h>.
+   BSD/OS 4.0.1 has a bug: <stddef.h>, <stdio.h> and <time.h> must be
+   included before <wchar.h>.  */
+#include <stddef.h>
+#include <stdio.h>
+#include <time.h>
 #include <wchar.h>
 
 register long global __asm__ ("%ebx");
@@ -54,13 +61,24 @@ int main ()
   if (global != 0x12345678)
     return 2;
   return 0;
-}], [:], [gl_cv_func_wctob_works=no], [:])
+}]])],
+              [:],
+              [gl_cv_func_wctob_works=no],
+              [:])
             ;;
         esac
         if test "$gl_cv_func_wctob_works" != no && test $LOCALE_FR != none; then
-          AC_TRY_RUN([
+          AC_RUN_IFELSE(
+            [AC_LANG_SOURCE([[
 #include <locale.h>
 #include <string.h>
+/* Tru64 with Desktop Toolkit C has a bug: <stdio.h> must be included before
+   <wchar.h>.
+   BSD/OS 4.0.1 has a bug: <stddef.h>, <stdio.h> and <time.h> must be
+   included before <wchar.h>.  */
+#include <stddef.h>
+#include <stdio.h>
+#include <time.h>
 #include <wchar.h>
 int main ()
 {
@@ -73,7 +91,7 @@ int main ()
           return 1;
     }
   return 0;
-}],
+}]])],
             [gl_cv_func_wctob_works=yes],
             [gl_cv_func_wctob_works=no],
             [:])
@@ -84,7 +102,6 @@ int main ()
       *) REPLACE_WCTOB=1 ;;
     esac
     if test $REPLACE_WCTOB = 1; then
-      gl_REPLACE_WCHAR_H
       AC_LIBOBJ([wctob])
       gl_PREREQ_WCTOB
     else
@@ -102,7 +119,6 @@ int main ()
 ])
       if test $ac_cv_have_decl_wctob != yes; then
         HAVE_DECL_WCTOB=0
-        gl_REPLACE_WCHAR_H
       fi
     fi
   fi

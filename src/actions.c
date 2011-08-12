@@ -2925,7 +2925,7 @@ guestfs_add_domain_argv (guestfs_h *g,
     return -1;
   }
 
-  if (optargs->bitmask & UINT64_C(0xfffffffffffffff0)) {
+  if (optargs->bitmask & UINT64_C(0xffffffffffffffe0)) {
     error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
            "add_domain", "add_domain");
     return -1;
@@ -2943,6 +2943,8 @@ guestfs_add_domain_argv (guestfs_h *g,
       fprintf (trace_fp, " \"%s:%s\"", "iface", optargs->iface);
     if (optargs->bitmask & GUESTFS_ADD_DOMAIN_LIVE_BITMASK)
       fprintf (trace_fp, " \"%s:%s\"", "live", optargs->live ? "true" : "false");
+    if (optargs->bitmask & GUESTFS_ADD_DOMAIN_ALLOWUUID_BITMASK)
+      fprintf (trace_fp, " \"%s:%s\"", "allowuuid", optargs->allowuuid ? "true" : "false");
     trace_send_line (g);
   }
 
@@ -3481,6 +3483,124 @@ guestfs_inspect_get_drive_mappings (guestfs_h *g,
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "inspect_get_drive_mappings", "NULL");
+  }
+
+  return r;
+}
+
+char *
+guestfs_inspect_get_icon_argv (guestfs_h *g,
+                               const char *root,
+                               size_t *size_r,
+                               const struct guestfs_inspect_get_icon_argv *optargs)
+{
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  char *r;
+
+  if (root == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "inspect_get_icon", "root");
+    return NULL;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffffc)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "inspect_get_icon", "inspect_get_icon");
+    return NULL;
+  }
+
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s", "inspect_get_icon");
+    fprintf (trace_fp, " \"%s\"", root);
+    if (optargs->bitmask & GUESTFS_INSPECT_GET_ICON_FAVICON_BITMASK)
+      fprintf (trace_fp, " \"%s:%s\"", "favicon", optargs->favicon ? "true" : "false");
+    if (optargs->bitmask & GUESTFS_INSPECT_GET_ICON_HIGHQUALITY_BITMASK)
+      fprintf (trace_fp, " \"%s:%s\"", "highquality", optargs->highquality ? "true" : "false");
+    trace_send_line (g);
+  }
+
+  r = guestfs__inspect_get_icon (g, root, size_r, optargs);
+
+  if (r != NULL) {
+    if (trace_flag) {
+      trace_fp = trace_open (g);
+      fprintf (trace_fp, "%s = ", "inspect_get_icon");
+      guestfs___print_BufferOut (trace_fp, r, *size_r);
+      trace_send_line (g);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "inspect_get_icon", "NULL");
+  }
+
+  return r;
+}
+
+int
+guestfs_set_pgroup (guestfs_h *g,
+                    int pgroup)
+{
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  int r;
+
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s", "set_pgroup");
+    fputs (pgroup ? " true" : " false", trace_fp);
+    trace_send_line (g);
+  }
+
+  r = guestfs__set_pgroup (g, pgroup);
+
+  if (r != -1) {
+    if (trace_flag) {
+      trace_fp = trace_open (g);
+      fprintf (trace_fp, "%s = ", "set_pgroup");
+      fprintf (trace_fp, "%d", r);
+      trace_send_line (g);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "set_pgroup", "-1");
+  }
+
+  return r;
+}
+
+int
+guestfs_get_pgroup (guestfs_h *g)
+{
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  int r;
+
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s", "get_pgroup");
+    trace_send_line (g);
+  }
+
+  r = guestfs__get_pgroup (g);
+
+  if (r != -1) {
+    if (trace_flag) {
+      trace_fp = trace_open (g);
+      fprintf (trace_fp, "%s = ", "get_pgroup");
+      fprintf (trace_fp, "%d", r);
+      trace_send_line (g);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "get_pgroup", "-1");
   }
 
   return r;
@@ -32650,7 +32770,7 @@ guestfs_mkfs_opts_argv (guestfs_h *g,
     return -1;
   }
 
-  if (optargs->bitmask & UINT64_C(0xfffffffffffffffc)) {
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffff0)) {
     error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
            "mkfs_opts", "mkfs_opts");
     return -1;
@@ -32665,6 +32785,10 @@ guestfs_mkfs_opts_argv (guestfs_h *g,
       fprintf (trace_fp, " \"%s:%d\"", "blocksize", optargs->blocksize);
     if (optargs->bitmask & GUESTFS_MKFS_OPTS_FEATURES_BITMASK)
       fprintf (trace_fp, " \"%s:%s\"", "features", optargs->features);
+    if (optargs->bitmask & GUESTFS_MKFS_OPTS_INODE_BITMASK)
+      fprintf (trace_fp, " \"%s:%d\"", "inode", optargs->inode);
+    if (optargs->bitmask & GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK)
+      fprintf (trace_fp, " \"%s:%d\"", "sectorsize", optargs->sectorsize);
     trace_send_line (g);
   }
 
@@ -32686,6 +32810,14 @@ guestfs_mkfs_opts_argv (guestfs_h *g,
     args.features = (char *) optargs->features;
   else
     args.features = (char *) "";
+  if ((optargs->bitmask & GUESTFS_MKFS_OPTS_INODE_BITMASK))
+    args.inode = optargs->inode;
+  else
+    args.inode = 0;
+  if ((optargs->bitmask & GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK))
+    args.sectorsize = optargs->sectorsize;
+  else
+    args.sectorsize = 0;
   serial = guestfs___send (g, GUESTFS_PROC_MKFS_OPTS,
                            progress_hint, optargs->bitmask,
                            (xdrproc_t) xdr_guestfs_mkfs_opts_args, (char *) &args);
@@ -33177,6 +33309,883 @@ guestfs_internal_autosync (guestfs_h *g)
   return ret_v;
 }
 
+int
+guestfs_is_zero (guestfs_h *g,
+                 const char *path)
+{
+  struct guestfs_is_zero_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_is_zero_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  if (path == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "is_zero", "path");
+    return -1;
+  }
+
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s", "is_zero");
+    fprintf (trace_fp, " \"%s\"", path);
+    trace_send_line (g);
+  }
+
+  if (check_state (g, "is_zero") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "is_zero", "-1");
+    return -1;
+  }
+  guestfs___set_busy (g);
+
+  args.path = (char *) path;
+  serial = guestfs___send (g, GUESTFS_PROC_IS_ZERO,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_is_zero_args, (char *) &args);
+  if (serial == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "is_zero", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "is_zero", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_is_zero_ret, (char *) &ret);
+  if (r == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "is_zero", "-1");
+    return -1;
+  }
+
+  if (check_reply_header (g, &hdr, GUESTFS_PROC_IS_ZERO, serial) == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "is_zero", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "is_zero", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "is_zero", err.error_message);
+    else
+      guestfs_error_errno (g, errnum, "%s: %s", "is_zero",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    guestfs___end_busy (g);
+    return -1;
+  }
+
+  guestfs___end_busy (g);
+  ret_v = ret.zeroflag;
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s = ", "is_zero");
+    fprintf (trace_fp, "%d", ret_v);
+    trace_send_line (g);
+  }
+
+  return ret_v;
+}
+
+int
+guestfs_is_zero_device (guestfs_h *g,
+                        const char *device)
+{
+  struct guestfs_is_zero_device_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_is_zero_device_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  if (device == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "is_zero_device", "device");
+    return -1;
+  }
+
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s", "is_zero_device");
+    fprintf (trace_fp, " \"%s\"", device);
+    trace_send_line (g);
+  }
+
+  if (check_state (g, "is_zero_device") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "is_zero_device", "-1");
+    return -1;
+  }
+  guestfs___set_busy (g);
+
+  args.device = (char *) device;
+  serial = guestfs___send (g, GUESTFS_PROC_IS_ZERO_DEVICE,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_is_zero_device_args, (char *) &args);
+  if (serial == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "is_zero_device", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "is_zero_device", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_is_zero_device_ret, (char *) &ret);
+  if (r == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "is_zero_device", "-1");
+    return -1;
+  }
+
+  if (check_reply_header (g, &hdr, GUESTFS_PROC_IS_ZERO_DEVICE, serial) == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "is_zero_device", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "is_zero_device", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "is_zero_device", err.error_message);
+    else
+      guestfs_error_errno (g, errnum, "%s: %s", "is_zero_device",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    guestfs___end_busy (g);
+    return -1;
+  }
+
+  guestfs___end_busy (g);
+  ret_v = ret.zeroflag;
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s = ", "is_zero_device");
+    fprintf (trace_fp, "%d", ret_v);
+    trace_send_line (g);
+  }
+
+  return ret_v;
+}
+
+char **
+guestfs_list_9p (guestfs_h *g)
+{
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_list_9p_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  char **ret_v;
+  const uint64_t progress_hint = 0;
+
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s", "list_9p");
+    trace_send_line (g);
+  }
+
+  if (check_state (g, "list_9p") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "list_9p", "NULL");
+    return NULL;
+  }
+  guestfs___set_busy (g);
+
+  serial = guestfs___send (g, GUESTFS_PROC_LIST_9P, progress_hint, 0,
+                           NULL, NULL);
+  if (serial == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "list_9p", "NULL");
+    return NULL;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "list_9p", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_list_9p_ret, (char *) &ret);
+  if (r == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "list_9p", "NULL");
+    return NULL;
+  }
+
+  if (check_reply_header (g, &hdr, GUESTFS_PROC_LIST_9P, serial) == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "list_9p", "NULL");
+    return NULL;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "list_9p", "NULL");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "list_9p", err.error_message);
+    else
+      guestfs_error_errno (g, errnum, "%s: %s", "list_9p",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    guestfs___end_busy (g);
+    return NULL;
+  }
+
+  guestfs___end_busy (g);
+  /* caller will free this, but we need to add a NULL entry */
+  ret.mounttags.mounttags_val =
+    safe_realloc (g, ret.mounttags.mounttags_val,
+                  sizeof (char *) * (ret.mounttags.mounttags_len + 1));
+  ret.mounttags.mounttags_val[ret.mounttags.mounttags_len] = NULL;
+  ret_v = ret.mounttags.mounttags_val;
+  if (trace_flag) {
+    size_t i;
+
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s = ", "list_9p");
+    fputs ("[", trace_fp);
+    for (i = 0; ret_v[i]; ++i) {
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
+      fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
+    }
+    fputs ("]", trace_fp);
+    trace_send_line (g);
+  }
+
+  return ret_v;
+}
+
+int
+guestfs_mount_9p_argv (guestfs_h *g,
+                       const char *mounttag,
+                       const char *mountpoint,
+                       const struct guestfs_mount_9p_argv *optargs)
+{
+  struct guestfs_mount_9p_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  if (mounttag == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "mount_9p", "mounttag");
+    return -1;
+  }
+  if (mountpoint == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "mount_9p", "mountpoint");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_MOUNT_9P_OPTIONS_BITMASK) &&
+      optargs->options == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "mount_9p", "options");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffffe)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "mount_9p", "mount_9p");
+    return -1;
+  }
+
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s", "mount_9p");
+    fprintf (trace_fp, " \"%s\"", mounttag);
+    fprintf (trace_fp, " \"%s\"", mountpoint);
+    if (optargs->bitmask & GUESTFS_MOUNT_9P_OPTIONS_BITMASK)
+      fprintf (trace_fp, " \"%s:%s\"", "options", optargs->options);
+    trace_send_line (g);
+  }
+
+  if (check_state (g, "mount_9p") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "mount_9p", "-1");
+    return -1;
+  }
+  guestfs___set_busy (g);
+
+  args.mounttag = (char *) mounttag;
+  args.mountpoint = (char *) mountpoint;
+  if ((optargs->bitmask & GUESTFS_MOUNT_9P_OPTIONS_BITMASK))
+    args.options = (char *) optargs->options;
+  else
+    args.options = (char *) "";
+  serial = guestfs___send (g, GUESTFS_PROC_MOUNT_9P,
+                           progress_hint, optargs->bitmask,
+                           (xdrproc_t) xdr_guestfs_mount_9p_args, (char *) &args);
+  if (serial == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "mount_9p", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "mount_9p", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "mount_9p", "-1");
+    return -1;
+  }
+
+  if (check_reply_header (g, &hdr, GUESTFS_PROC_MOUNT_9P, serial) == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "mount_9p", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "mount_9p", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "mount_9p", err.error_message);
+    else
+      guestfs_error_errno (g, errnum, "%s: %s", "mount_9p",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    guestfs___end_busy (g);
+    return -1;
+  }
+
+  guestfs___end_busy (g);
+  ret_v = 0;
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s = ", "mount_9p");
+    fprintf (trace_fp, "%d", ret_v);
+    trace_send_line (g);
+  }
+
+  return ret_v;
+}
+
+char **
+guestfs_list_dm_devices (guestfs_h *g)
+{
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_list_dm_devices_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  char **ret_v;
+  const uint64_t progress_hint = 0;
+
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s", "list_dm_devices");
+    trace_send_line (g);
+  }
+
+  if (check_state (g, "list_dm_devices") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "list_dm_devices", "NULL");
+    return NULL;
+  }
+  guestfs___set_busy (g);
+
+  serial = guestfs___send (g, GUESTFS_PROC_LIST_DM_DEVICES, progress_hint, 0,
+                           NULL, NULL);
+  if (serial == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "list_dm_devices", "NULL");
+    return NULL;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "list_dm_devices", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_list_dm_devices_ret, (char *) &ret);
+  if (r == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "list_dm_devices", "NULL");
+    return NULL;
+  }
+
+  if (check_reply_header (g, &hdr, GUESTFS_PROC_LIST_DM_DEVICES, serial) == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "list_dm_devices", "NULL");
+    return NULL;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "list_dm_devices", "NULL");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "list_dm_devices", err.error_message);
+    else
+      guestfs_error_errno (g, errnum, "%s: %s", "list_dm_devices",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    guestfs___end_busy (g);
+    return NULL;
+  }
+
+  guestfs___end_busy (g);
+  /* caller will free this, but we need to add a NULL entry */
+  ret.devices.devices_val =
+    safe_realloc (g, ret.devices.devices_val,
+                  sizeof (char *) * (ret.devices.devices_len + 1));
+  ret.devices.devices_val[ret.devices.devices_len] = NULL;
+  ret_v = ret.devices.devices_val;
+  if (trace_flag) {
+    size_t i;
+
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s = ", "list_dm_devices");
+    fputs ("[", trace_fp);
+    for (i = 0; ret_v[i]; ++i) {
+      if (i > 0) fputs (", ", trace_fp);
+      fputs ("\"", trace_fp);
+      fputs (ret_v[i], trace_fp);
+      fputs ("\"", trace_fp);
+    }
+    fputs ("]", trace_fp);
+    trace_send_line (g);
+  }
+
+  return ret_v;
+}
+
+int
+guestfs_ntfsresize_opts_argv (guestfs_h *g,
+                              const char *device,
+                              const struct guestfs_ntfsresize_opts_argv *optargs)
+{
+  struct guestfs_ntfsresize_opts_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  if (device == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "ntfsresize_opts", "device");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffffc)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "ntfsresize_opts", "ntfsresize_opts");
+    return -1;
+  }
+
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s", "ntfsresize_opts");
+    fprintf (trace_fp, " \"%s\"", device);
+    if (optargs->bitmask & GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK)
+      fprintf (trace_fp, " \"%s:%" PRIi64 "\"", "size", optargs->size);
+    if (optargs->bitmask & GUESTFS_NTFSRESIZE_OPTS_FORCE_BITMASK)
+      fprintf (trace_fp, " \"%s:%s\"", "force", optargs->force ? "true" : "false");
+    trace_send_line (g);
+  }
+
+  if (check_state (g, "ntfsresize_opts") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "ntfsresize_opts", "-1");
+    return -1;
+  }
+  guestfs___set_busy (g);
+
+  args.device = (char *) device;
+  if ((optargs->bitmask & GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK))
+    args.size = optargs->size;
+  else
+    args.size = 0;
+  if ((optargs->bitmask & GUESTFS_NTFSRESIZE_OPTS_FORCE_BITMASK))
+    args.force = optargs->force;
+  else
+    args.force = 0;
+  serial = guestfs___send (g, GUESTFS_PROC_NTFSRESIZE_OPTS,
+                           progress_hint, optargs->bitmask,
+                           (xdrproc_t) xdr_guestfs_ntfsresize_opts_args, (char *) &args);
+  if (serial == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "ntfsresize_opts", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "ntfsresize_opts", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "ntfsresize_opts", "-1");
+    return -1;
+  }
+
+  if (check_reply_header (g, &hdr, GUESTFS_PROC_NTFSRESIZE_OPTS, serial) == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "ntfsresize_opts", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "ntfsresize_opts", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "ntfsresize_opts", err.error_message);
+    else
+      guestfs_error_errno (g, errnum, "%s: %s", "ntfsresize_opts",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    guestfs___end_busy (g);
+    return -1;
+  }
+
+  guestfs___end_busy (g);
+  ret_v = 0;
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s = ", "ntfsresize_opts");
+    fprintf (trace_fp, "%d", ret_v);
+    trace_send_line (g);
+  }
+
+  return ret_v;
+}
+
+int
+guestfs_btrfs_filesystem_resize_argv (guestfs_h *g,
+                                      const char *mountpoint,
+                                      const struct guestfs_btrfs_filesystem_resize_argv *optargs)
+{
+  struct guestfs_btrfs_filesystem_resize_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  if (mountpoint == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "btrfs_filesystem_resize", "mountpoint");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffffe)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "btrfs_filesystem_resize", "btrfs_filesystem_resize");
+    return -1;
+  }
+
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s", "btrfs_filesystem_resize");
+    fprintf (trace_fp, " \"%s\"", mountpoint);
+    if (optargs->bitmask & GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK)
+      fprintf (trace_fp, " \"%s:%" PRIi64 "\"", "size", optargs->size);
+    trace_send_line (g);
+  }
+
+  if (check_state (g, "btrfs_filesystem_resize") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_filesystem_resize", "-1");
+    return -1;
+  }
+  guestfs___set_busy (g);
+
+  args.mountpoint = (char *) mountpoint;
+  if ((optargs->bitmask & GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK))
+    args.size = optargs->size;
+  else
+    args.size = 0;
+  serial = guestfs___send (g, GUESTFS_PROC_BTRFS_FILESYSTEM_RESIZE,
+                           progress_hint, optargs->bitmask,
+                           (xdrproc_t) xdr_guestfs_btrfs_filesystem_resize_args, (char *) &args);
+  if (serial == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_filesystem_resize", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "btrfs_filesystem_resize", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_filesystem_resize", "-1");
+    return -1;
+  }
+
+  if (check_reply_header (g, &hdr, GUESTFS_PROC_BTRFS_FILESYSTEM_RESIZE, serial) == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_filesystem_resize", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "btrfs_filesystem_resize", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "btrfs_filesystem_resize", err.error_message);
+    else
+      guestfs_error_errno (g, errnum, "%s: %s", "btrfs_filesystem_resize",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    guestfs___end_busy (g);
+    return -1;
+  }
+
+  guestfs___end_busy (g);
+  ret_v = 0;
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s = ", "btrfs_filesystem_resize");
+    fprintf (trace_fp, "%d", ret_v);
+    trace_send_line (g);
+  }
+
+  return ret_v;
+}
+
+int
+guestfs_write_append (guestfs_h *g,
+                      const char *path,
+                      const char *content,
+                      size_t content_size)
+{
+  struct guestfs_write_append_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  if (path == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "write_append", "path");
+    return -1;
+  }
+  if (content == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "write_append", "content");
+    return -1;
+  }
+
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s", "write_append");
+    fprintf (trace_fp, " \"%s\"", path);
+    fputc (' ', trace_fp);
+    guestfs___print_BufferIn (trace_fp, content, content_size);
+    trace_send_line (g);
+  }
+
+  if (check_state (g, "write_append") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "write_append", "-1");
+    return -1;
+  }
+  guestfs___set_busy (g);
+
+  args.path = (char *) path;
+  /* Just catch grossly large sizes. XDR encoding will make this precise. */
+  if (content_size >= GUESTFS_MESSAGE_MAX) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "write_append", "-1");
+    error (g, "%s: size of input buffer too large", "write_append");
+    guestfs___end_busy (g);
+    return -1;
+  }
+  args.content.content_val = (char *) content;
+  args.content.content_len = content_size;
+  serial = guestfs___send (g, GUESTFS_PROC_WRITE_APPEND,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_write_append_args, (char *) &args);
+  if (serial == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "write_append", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "write_append", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "write_append", "-1");
+    return -1;
+  }
+
+  if (check_reply_header (g, &hdr, GUESTFS_PROC_WRITE_APPEND, serial) == -1) {
+    guestfs___end_busy (g);
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "write_append", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "write_append", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "write_append", err.error_message);
+    else
+      guestfs_error_errno (g, errnum, "%s: %s", "write_append",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    guestfs___end_busy (g);
+    return -1;
+  }
+
+  guestfs___end_busy (g);
+  ret_v = 0;
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s = ", "write_append");
+    fprintf (trace_fp, "%d", ret_v);
+    trace_send_line (g);
+  }
+
+  return ret_v;
+}
+
 /* Structure-freeing functions.  These rely on the fact that the
  * structure format is identical to the XDR format.  See note in
  * generator.ml.
@@ -33389,6 +34398,9 @@ guestfs_add_domain_va (guestfs_h *g,
     case GUESTFS_ADD_DOMAIN_LIVE:
       optargs_s.live = va_arg (args, int);
       break;
+    case GUESTFS_ADD_DOMAIN_ALLOWUUID:
+      optargs_s.allowuuid = va_arg (args, int);
+      break;
     default:
       error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
              "add_domain", i);
@@ -33462,6 +34474,107 @@ guestfs_add_drive_opts_va (guestfs_h *g,
 }
 
 int
+guestfs_btrfs_filesystem_resize (guestfs_h *g,
+                                 const char *mountpoint,
+                                 ...)
+{
+  va_list optargs;
+
+  va_start (optargs, mountpoint);
+  int r = guestfs_btrfs_filesystem_resize_va (g, mountpoint, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_btrfs_filesystem_resize_va (guestfs_h *g,
+                                    const char *mountpoint,
+                                    va_list args)
+{
+  struct guestfs_btrfs_filesystem_resize_argv optargs_s;
+  struct guestfs_btrfs_filesystem_resize_argv *optargs = &optargs_s;
+  int i;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE:
+      optargs_s.size = va_arg (args, int64_t);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "btrfs_filesystem_resize", i);
+      return -1;
+    }
+
+    uint64_t i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "btrfs_filesystem_resize");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_btrfs_filesystem_resize_argv (g, mountpoint, optargs);
+}
+
+char *
+guestfs_inspect_get_icon (guestfs_h *g,
+                          const char *root,
+                          size_t *size_r,
+                          ...)
+{
+  va_list optargs;
+
+  va_start (optargs, size_r);
+  char *r = guestfs_inspect_get_icon_va (g, root, size_r, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+char *
+guestfs_inspect_get_icon_va (guestfs_h *g,
+                             const char *root,
+                             size_t *size_r,
+                             va_list args)
+{
+  struct guestfs_inspect_get_icon_argv optargs_s;
+  struct guestfs_inspect_get_icon_argv *optargs = &optargs_s;
+  int i;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_INSPECT_GET_ICON_FAVICON:
+      optargs_s.favicon = va_arg (args, int);
+      break;
+    case GUESTFS_INSPECT_GET_ICON_HIGHQUALITY:
+      optargs_s.highquality = va_arg (args, int);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "inspect_get_icon", i);
+      return NULL;
+    }
+
+    uint64_t i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "inspect_get_icon");
+      return NULL;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_inspect_get_icon_argv (g, root, size_r, optargs);
+}
+
+int
 guestfs_mkfs_opts (guestfs_h *g,
                    const char *fstype,
                    const char *device,
@@ -33496,6 +34609,12 @@ guestfs_mkfs_opts_va (guestfs_h *g,
     case GUESTFS_MKFS_OPTS_FEATURES:
       optargs_s.features = va_arg (args, const char *);
       break;
+    case GUESTFS_MKFS_OPTS_INODE:
+      optargs_s.inode = va_arg (args, int);
+      break;
+    case GUESTFS_MKFS_OPTS_SECTORSIZE:
+      optargs_s.sectorsize = va_arg (args, int);
+      break;
     default:
       error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
              "mkfs_opts", i);
@@ -33512,5 +34631,106 @@ guestfs_mkfs_opts_va (guestfs_h *g,
   }
 
   return guestfs_mkfs_opts_argv (g, fstype, device, optargs);
+}
+
+int
+guestfs_mount_9p (guestfs_h *g,
+                  const char *mounttag,
+                  const char *mountpoint,
+                  ...)
+{
+  va_list optargs;
+
+  va_start (optargs, mountpoint);
+  int r = guestfs_mount_9p_va (g, mounttag, mountpoint, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_mount_9p_va (guestfs_h *g,
+                     const char *mounttag,
+                     const char *mountpoint,
+                     va_list args)
+{
+  struct guestfs_mount_9p_argv optargs_s;
+  struct guestfs_mount_9p_argv *optargs = &optargs_s;
+  int i;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_MOUNT_9P_OPTIONS:
+      optargs_s.options = va_arg (args, const char *);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "mount_9p", i);
+      return -1;
+    }
+
+    uint64_t i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "mount_9p");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_mount_9p_argv (g, mounttag, mountpoint, optargs);
+}
+
+int
+guestfs_ntfsresize_opts (guestfs_h *g,
+                         const char *device,
+                         ...)
+{
+  va_list optargs;
+
+  va_start (optargs, device);
+  int r = guestfs_ntfsresize_opts_va (g, device, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_ntfsresize_opts_va (guestfs_h *g,
+                            const char *device,
+                            va_list args)
+{
+  struct guestfs_ntfsresize_opts_argv optargs_s;
+  struct guestfs_ntfsresize_opts_argv *optargs = &optargs_s;
+  int i;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_NTFSRESIZE_OPTS_SIZE:
+      optargs_s.size = va_arg (args, int64_t);
+      break;
+    case GUESTFS_NTFSRESIZE_OPTS_FORCE:
+      optargs_s.force = va_arg (args, int);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "ntfsresize_opts", i);
+      return -1;
+    }
+
+    uint64_t i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "ntfsresize_opts");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_ntfsresize_opts_argv (g, device, optargs);
 }
 

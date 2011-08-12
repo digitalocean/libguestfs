@@ -1,15 +1,14 @@
-# unlink.m4 serial 4
-dnl Copyright (C) 2009, 2010 Free Software Foundation, Inc.
+# unlink.m4 serial 7
+dnl Copyright (C) 2009-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
 AC_DEFUN([gl_FUNC_UNLINK],
 [
-  AC_REQUIRE([gl_AC_DOS])
   AC_REQUIRE([gl_UNISTD_H_DEFAULTS])
   AC_REQUIRE([AC_CANONICAL_HOST])
-  dnl Detect Solaris 9 and FreeBSD 7.2 bug.
+  dnl Detect FreeBSD 7.2, AIX 7.1, Solaris 9 bug.
   AC_CACHE_CHECK([whether unlink honors trailing slashes],
     [gl_cv_func_unlink_honors_slashes],
     [touch conftest.file
@@ -21,18 +20,27 @@ AC_DEFUN([gl_FUNC_UNLINK],
        [AC_LANG_PROGRAM(
          [[#include <unistd.h>
            #include <errno.h>
-]], [[if (!unlink ("conftest.file/") || errno != ENOTDIR) return 1;
+         ]],
+         [[int result = 0;
+           if (!unlink ("conftest.file/"))
+             result |= 1;
+           else if (errno != ENOTDIR)
+             result |= 2;
 #if HAVE_LSTAT
-      if (!unlink ("conftest.lnk/") || errno != ENOTDIR) return 2;
+           if (!unlink ("conftest.lnk/"))
+             result |= 4;
+           else if (errno != ENOTDIR)
+             result |= 8;
 #endif
-      ]])],
+           return result;
+         ]])],
       [gl_cv_func_unlink_honors_slashes=yes],
       [gl_cv_func_unlink_honors_slashes=no],
       [gl_cv_func_unlink_honors_slashes="guessing no"])
      rm -f conftest.file conftest.lnk])
   dnl Detect MacOS X 10.5.6 bug: On read-write HFS mounts, unlink("..") or
   dnl unlink("../..") succeeds without doing anything.
-  AC_CACHE_CHECK([whether unlink of a parent directory fails is it should],
+  AC_CACHE_CHECK([whether unlink of a parent directory fails as it should],
     [gl_cv_func_unlink_parent_fails],
     [case "$host_os" in
        darwin*)
@@ -65,9 +73,12 @@ AC_DEFUN([gl_FUNC_UNLINK],
                 #include <unistd.h>
                 int main ()
                 {
+                  int result = 0;
                   if (chdir (getenv ("GL_SUBDIR_FOR_UNLINK")) != 0)
-                    return 1;
-                  return unlink ("..") == 0;
+                    result |= 1;
+                  else if (unlink ("..") == 0)
+                    result |= 2;
+                  return result;
                 }
               ]])],
              [gl_cv_func_unlink_parent_fails=yes],

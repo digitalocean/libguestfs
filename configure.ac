@@ -17,8 +17,8 @@
 
 # major/minor/release must be numbers
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [10])
-m4_define([libguestfs_release], [7])
+m4_define([libguestfs_minor],   [12])
+m4_define([libguestfs_release], [3])
 # extra can be any string
 m4_define([libguestfs_extra],   [])
 
@@ -107,6 +107,8 @@ if test "$gl_gcc_warnings" = yes; then
                                     # by Python, Ruby and xstrtoll.
   nw="$nw -Wstack-protector"        # Don't warn about stack-protector
                                     # failures (seen on Ubuntu).
+  nw="$nw -Wmissing-noreturn"       # Don't warn about missed noreturn funcs
+                                    # (seen on Ubuntu).
 
   gl_MANYWARN_ALL_GCC([ws])
   gl_MANYWARN_COMPLEMENT([ws], [$ws], [$nw])
@@ -409,6 +411,9 @@ AS_IF([test "x$with_readline" != xno],
 dnl For i18n.
 AM_GNU_GETTEXT([external])
 
+dnl Check for PCRE (required)
+PKG_CHECK_MODULES([PCRE], [libpcre])
+
 dnl libmagic (highly recommended)
 AC_CHECK_LIB([magic],[magic_file],
         [AC_CHECK_HEADER([magic.h],
@@ -417,14 +422,6 @@ AC_CHECK_LIB([magic],[magic_file],
                 ], [])
         ],
         [AC_MSG_WARN([libmagic not found, some core features will be disabled])])
-
-dnl Check for PCRE (highly recommended)
-PKG_CHECK_MODULES([PCRE], [libpcre],
-        [AC_SUBST([PCRE_CFLAGS])
-         AC_SUBST([PCRE_LIBS])
-         AC_DEFINE([HAVE_PCRE],[1],[PCRE found at compile time.])
-        ],
-        [AC_MSG_WARN([PCRE not found, some core features will be disabled])])
 
 dnl libvirt (highly recommended)
 PKG_CHECK_MODULES([LIBVIRT], [libvirt],
@@ -497,6 +494,8 @@ AM_CONDITIONAL([HAVE_OCAML],
                [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno"])
 AM_CONDITIONAL([HAVE_OCAML_PCRE],
                [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && test "x$OCAML_PKG_pcre" != "xno"])
+AM_CONDITIONAL([HAVE_OCAMLDOC],
+               [test "x$OCAMLDOC" != "xno"])
 
 dnl Check for Perl (optional, for Perl bindings).
 PERL=no
@@ -551,22 +550,13 @@ AS_IF([test "x$enable_python" != "xno"],
             PYTHON_VERSION=`$PYTHON -c "import sys; print sys.version[[0:3]]"`
 	    AC_MSG_RESULT([$PYTHON_VERSION])
 
-            for d in \
-                $PYTHON_PREFIX/include/python$PYTHON_VERSION \
-                /usr/include/python$PYTHON_VERSION \
-                /usr/local/include/python$PYTHON_VERSION
-            do
-                AC_MSG_CHECKING([Python.h in $d])
-                if test -r "$d/Python.h"; then
-                    AC_MSG_RESULT([found])
-                    PYTHON_INCLUDEDIR=$d
-                    break
-                fi
-                AC_MSG_RESULT([not found])
-            done
-            if test "x$PYTHON_INCLUDEDIR" = "x"; then
-                AC_MSG_WARN([Python include directory not found])
+            AC_MSG_CHECKING([for Python include path])
+            if test -z "$PYTHON_INCLUDEDIR"; then
+                python_path=`$PYTHON -c "import distutils.sysconfig; \
+                                         print (distutils.sysconfig.get_python_inc ());"`
+                PYTHON_INCLUDEDIR=$python_path
             fi
+            AC_MSG_RESULT([$PYTHON_INCLUDEDIR])
 
             AC_ARG_WITH([python-installdir],
                         [AS_HELP_STRING([--with-python-installdir],
@@ -577,24 +567,12 @@ AS_IF([test "x$enable_python" != "xno"],
 
 	    if test "x$PYTHON_INSTALLDIR" = "xcheck"; then
 	        PYTHON_INSTALLDIR=
-                for d in \
-                    $PYTHON_PREFIX/lib64/python$PYTHON_VERSION/site-packages \
-                    $PYTHON_PREFIX/lib/python$PYTHON_VERSION/site-packages \
-                    /usr/lib64/python$PYTHON_VERSION/site-packages \
-                    /usr/lib/python$PYTHON_VERSION/site-packages \
-                    /usr/local/lib/python$PYTHON_VERSION/site-packages
-                do
-                    AC_MSG_CHECKING([for $d])
-                    if test -d "$d"; then
-                        AC_MSG_RESULT([found])
-                        PYTHON_INSTALLDIR=$d
-                        break
-                    fi
-                    AC_MSG_RESULT([not found])
-                done
-                if test "x$PYTHON_INSTALLDIR" = "x"; then
-                    AC_MSG_WARN([Python site-packages directory not found])
+                AC_MSG_CHECKING([for Python site-packages path])
+                if test -z "$PYTHON_INSTALLDIR"; then
+                    PYTHON_INSTALLDIR=`$PYTHON -c "import distutils.sysconfig; \
+                                                   print (distutils.sysconfig.get_python_lib(1,0));"`
                 fi
+                AC_MSG_RESULT([$PYTHON_INSTALLDIR])
             fi
 
             old_LIBS="$LIBS"
@@ -840,6 +818,7 @@ AC_CONFIG_FILES([Makefile
                  csharp/Makefile
                  debian/changelog
                  df/Makefile
+                 edit/Makefile
                  examples/Makefile
                  fish/Makefile
                  fuse/Makefile
@@ -850,6 +829,7 @@ AC_CONFIG_FILES([Makefile
                  images/Makefile
                  inspector/Makefile
                  java/Makefile
+                 java/examples/Makefile
                  libguestfs.pc
                  ocaml/META
                  ocaml/Makefile

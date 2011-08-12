@@ -42,10 +42,12 @@ TESTS = \
 	test-find0.sh \
 	test-guestfish-a.sh \
 	test-guestfish-d.sh \
+	test-guestfish-escapes.sh \
 	test-guestfish-tilde.sh \
 	test-inspect-fstab.sh \
 	test-launch-race.pl \
 	test-luks.sh \
+	test-luks-list.sh \
 	test-lvm-filtering.sh \
 	test-lvm-mapping.pl \
 	test-noexec-stack.pl \

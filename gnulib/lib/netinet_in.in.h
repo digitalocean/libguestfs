@@ -1,5 +1,5 @@
 /* Substitute for <netinet/in.h>.
-   Copyright (C) 2007-2010 Free Software Foundation, Inc.
+   Copyright (C) 2007-2011 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,11 +15,12 @@
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-#ifndef _GL_NETINET_IN_H
+#ifndef _@GUARD_PREFIX@_NETINET_IN_H
 
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 #endif
+@PRAGMA_COLUMNS@
 
 #if @HAVE_NETINET_IN_H@
 
@@ -32,8 +33,8 @@
 
 #endif
 
-#ifndef _GL_NETINET_IN_H
-#define _GL_NETINET_IN_H
+#ifndef _@GUARD_PREFIX@_NETINET_IN_H
+#define _@GUARD_PREFIX@_NETINET_IN_H
 
 #if !@HAVE_NETINET_IN_H@
 
@@ -43,5 +44,5 @@
 
 #endif
 
-#endif /* _GL_NETINET_IN_H */
-#endif /* _GL_NETINET_IN_H */
+#endif /* _@GUARD_PREFIX@_NETINET_IN_H */
+#endif /* _@GUARD_PREFIX@_NETINET_IN_H */

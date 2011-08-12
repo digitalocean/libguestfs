@@ -62,13 +62,13 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-list-partitions.pl 1"
-.TH virt-list-partitions.pl 1 "2011-08-07" "libguestfs-1.10.7" "Virtualization Support"
+.TH virt-list-partitions.pl 1 "2011-08-07" "libguestfs-1.12.3" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
-.SH "åå"
-.IX Header "åå"
+.SH "名前"
+.IX Header "名前"
 virt-list-partitions \- List partitions in a virtual machine or disk image
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
@@ -97,8 +97,12 @@ Display brief help.
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
 Display version number and exit.
-.IP "\fB\-\-connect \s-1URI\s0\fR | \fB\-c \s-1URI\s0\fR" 4
-.IX Item "--connect URI | -c URI"
+.IP "\fB\-c \s-1URI\s0\fR" 4
+.IX Item "-c URI"
+.PD 0
+.IP "\fB\-\-connect \s-1URI\s0\fR" 4
+.IX Item "--connect URI"
+.PD
 If using libvirt, connect to the given \fI\s-1URI\s0\fR.  If omitted, then we connect
 to the default libvirt hypervisor.
 .Sp
@@ -115,15 +119,27 @@ ignored.
 .Sp
 If working with untrusted raw-format guest disk images, you should ensure
 the format is always specified.
-.IP "\fB\-h\fR | \fB\-\-human\-readable\fR" 4
-.IX Item "-h | --human-readable"
+.IP "\fB\-h\fR" 4
+.IX Item "-h"
+.PD 0
+.IP "\fB\-\-human\-readable\fR" 4
+.IX Item "--human-readable"
+.PD
 Show sizes in human-readable form (eg. \*(L"1G\*(R").
-.IP "\fB\-l\fR | \fB\-\-long\fR" 4
-.IX Item "-l | --long"
+.IP "\fB\-l\fR" 4
+.IX Item "-l"
+.PD 0
+.IP "\fB\-\-long\fR" 4
+.IX Item "--long"
+.PD
 With this option, \f(CW\*(C`virt\-list\-partitions\*(C'\fR displays the type and size of each
 partition too (where \*(L"type\*(R" means \f(CW\*(C`ext3\*(C'\fR, \f(CW\*(C`pv\*(C'\fR etc.)
-.IP "\fB\-t\fR | \fB\-\-total\fR" 4
-.IX Item "-t | --total"
+.IP "\fB\-t\fR" 4
+.IX Item "-t"
+.PD 0
+.IP "\fB\-\-total\fR" 4
+.IX Item "--total"
+.PD
 Display the total size of each block device (as a separate row or rows).
 .SH "SHELL QUOTING"
 .IX Header "SHELL QUOTING"

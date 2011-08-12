@@ -1,6 +1,6 @@
 /* Traverse a file hierarchy.
 
-   Copyright (C) 2004-2010 Free Software Foundation, Inc.
+   Copyright (C) 2004-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -55,9 +55,14 @@
 #  undef __THROW
 #  define __THROW
 #  undef __BEGIN_DECLS
-#  define __BEGIN_DECLS
 #  undef __END_DECLS
-#  define __END_DECLS
+#  ifdef __cplusplus
+#   define __BEGIN_DECLS extern "C" {
+#   define __END_DECLS }
+#  else
+#   define __BEGIN_DECLS
+#   define __END_DECLS
+#  endif
 # endif
 
 # include <stddef.h>

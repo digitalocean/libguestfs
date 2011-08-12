@@ -133,6 +133,7 @@ libguestfs_la_SOURCES = \
 	inspect_fs_cd.c \
 	inspect_fs_unix.c \
 	inspect_fs_windows.c \
+	inspect_icon.c \
 	launch.c \
 	listfs.c \
 	match.c \
@@ -151,6 +152,7 @@ libguestfs_la_LIBADD += liberrnostring.la libprotocol.la
 
 libguestfs_la_CFLAGS = \
   -DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"' \
+  -DGUESTFS_WARN_DEPRECATED=1 \
   $(HIVEX_CFLAGS) $(AUGEAS_CFLAGS) $(PCRE_CFLAGS) \
   $(LIBVIRT_CFLAGS) $(LIBXML2_CFLAGS) \
   $(WARN_CFLAGS) $(WERROR_CFLAGS)

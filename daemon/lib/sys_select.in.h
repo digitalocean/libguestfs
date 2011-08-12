@@ -1,5 +1,5 @@
 /* Substitute for <sys/select.h>.
-   Copyright (C) 2007-2010 Free Software Foundation, Inc.
+   Copyright (C) 2007-2011 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 # if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 # endif
+@PRAGMA_COLUMNS@
 
 /* On OSF/1, <sys/types.h> and <sys/time.h> include <sys/select.h>.
    Simply delegate to the system's header in this case.  */
@@ -33,7 +34,7 @@
 
 #else
 
-#ifndef _GL_SYS_SELECT_H
+#ifndef _@GUARD_PREFIX@_SYS_SELECT_H
 
 #if @HAVE_SYS_SELECT_H@
 
@@ -43,15 +44,18 @@
 
 /* On OSF/1 4.0, <sys/select.h> provides only a forward declaration
    of 'struct timeval', and no definition of this type.
+   Also, MacOS X, AIX, HP-UX, IRIX, Solaris, Interix declare select()
+   in <sys/time.h>.
    But avoid namespace pollution on glibc systems.  */
 # ifndef __GLIBC__
 #  include <sys/time.h>
 # endif
 
-/* On Solaris 10, <sys/select.h> provides an FD_ZERO implementation
+/* On AIX 7 and Solaris 10, <sys/select.h> provides an FD_ZERO implementation
    that relies on memset(), but without including <string.h>.
-   But avoid namespace pollution on glibc systems.  */
-# ifndef __GLIBC__
+   But in any case avoid namespace pollution on glibc systems.  */
+# if (defined __OpenBSD__ || defined _AIX || defined __sun || defined __osf__ || defined __BEOS__) \
+     && ! defined __GLIBC__
 #  include <string.h>
 # endif
 
@@ -60,11 +64,22 @@
 
 #endif
 
-#ifndef _GL_SYS_SELECT_H
-#define _GL_SYS_SELECT_H
+#ifndef _@GUARD_PREFIX@_SYS_SELECT_H
+#define _@GUARD_PREFIX@_SYS_SELECT_H
 
-#if !@HAVE_SYS_SELECT_H@ || @REPLACE_SELECT@
+#if !@HAVE_SYS_SELECT_H@
 /* A platform that lacks <sys/select.h>.  */
+/* Get the 'struct timeval' and 'fd_set' types and the FD_* macros
+   on most platforms.  */
+# include <sys/time.h>
+/* On HP-UX 11, <sys/time.h> provides an FD_ZERO implementation
+   that relies on memset(), but without including <string.h>.  */
+# if defined __hpux
+#  include <string.h>
+# endif
+/* On native Windows platforms:
+   Get the 'fd_set' type.  Also, gnulib's <sys/socket.h> redefines select
+   so as to hide the declaration from <winsock2.h>.  */
 # include <sys/socket.h>
 #endif
 
@@ -74,7 +89,7 @@
 
 
 #if @GNULIB_SELECT@
-# if @HAVE_WINSOCK2_H@ || @REPLACE_SELECT@
+# if @REPLACE_SELECT@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef select
 #   define select rpl_select
@@ -100,6 +115,6 @@ _GL_WARN_ON_USE (select, "select is not always POSIX compliant - "
 #endif
 
 
-#endif /* _GL_SYS_SELECT_H */
-#endif /* _GL_SYS_SELECT_H */
+#endif /* _@GUARD_PREFIX@_SYS_SELECT_H */
+#endif /* _@GUARD_PREFIX@_SYS_SELECT_H */
 #endif /* OSF/1 */

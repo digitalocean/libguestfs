@@ -26,20 +26,28 @@ CLEANFILES = *.1 *.3
 MANPAGES = \
 	guestfs.3 \
 	guestfish.1 \
+	virt-copy-in.1 \
+	virt-copy-out.1 \
+	virt-tar-in.1 \
+	virt-tar-out.1 \
 	libguestfs-test-tool.1 \
 	guestmount.1 \
-	$(patsubst %.pl,%.1,$(wildcard virt-*.pl))
+	$(patsubst %.pl,%.1,$(wildcard virt-*.pl)) \
+	virt-cat.1 \
+	virt-df.1 \
+	virt-edit.1 \
+	virt-filesystems.1 \
+	virt-inspector.1 \
+	virt-ls.1 \
+	virt-rescue.1 \
+	virt-resize.1
 
 # Ship the POD files and the translated manpages in the tarball.  This
 # just simplifies building from the tarball, at a small cost in extra
 # size.
 EXTRA_DIST = \
 	$(MANPAGES) \
-	guestfs.pod guestfs-actions.pod guestfs-availability.pod guestfs-structs.pod \
-	guestfish.pod guestfish-actions.pod guestfish-commands.pod \
-	guestmount.pod \
-	libguestfs-test-tool.pod \
-	$(wildcard virt-*.pl)
+	$(shell for f in `cat ../podfiles`; do basename $$f; done)
 
 all-local: $(MANPAGES)
 
@@ -59,20 +67,11 @@ guestfish.1: guestfish.pod guestfish-actions.pod guestfish-commands.pod
 	  --insert guestfish-commands.pod:@FISH_COMMANDS@ \
 	  $<
 
-guestmount.1: guestmount.pod
-	$(top_srcdir)/podwrapper.sh \
-	  --man $@ \
-	  $<
+%.1: %.pod
+	$(top_srcdir)/podwrapper.sh --man $@ $<
 
-libguestfs-test-tool.1: libguestfs-test-tool.pod
-	$(top_srcdir)/podwrapper.sh \
-	  --man $@ \
-	  $<
-
-virt-%.1: virt-%.pl
-	$(top_srcdir)/podwrapper.sh \
-	  --man $@ \
-	  $<
+%.1: %.pl
+	$(top_srcdir)/podwrapper.sh --man $@ $<
 
 # XXX Can automake do this properly?
 install-data-hook:

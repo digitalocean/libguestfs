@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head1 名前
 
@@ -33,7 +34,9 @@ Display brief help.
 
 Display version number and exit.
 
-=item B<--connect URI> | B<-c URI>
+=item B<-c URI>
+
+=item B<--connect URI>
 
 If using libvirt, connect to the given I<URI>.  If omitted, then we connect
 to the default libvirt hypervisor.
@@ -53,12 +56,16 @@ ignored.
 If working with untrusted raw-format guest disk images, you should ensure
 the format is always specified.
 
-=item B<-l> | B<--long>
+=item B<-l>
+
+=item B<--long>
 
 With this option, C<virt-list-filesystems> displays the type of each
 filesystem too (where "type" means C<ext3>, C<xfs> etc.)
 
-=item B<-a> | B<--all>
+=item B<-a>
+
+=item B<--all>
 
 Normally we only show mountable filesystems.  If this option is given then
 swap devices are shown too.

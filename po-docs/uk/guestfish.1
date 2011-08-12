@@ -62,16 +62,16 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfish 1"
-.TH guestfish 1 "2011-08-07" "libguestfs-1.10.7" "Virtualization Support"
+.TH guestfish 1 "2011-08-07" "libguestfs-1.12.3" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
-.SH "ÐÐÐÐÐ"
-.IX Header "ÐÐÐÐÐ"
+.SH "НАЗВА"
+.IX Header "НАЗВА"
 guestfish \- the libguestfs Filesystem Interactive SHell
-.SH "ÐÐÐ ÐÐ¢ÐÐÐ ÐÐÐÐ¡"
-.IX Header "ÐÐÐ ÐÐ¢ÐÐÐ ÐÐÐÐ¡"
+.SH "КОРОТКИЙ ОПИС"
+.IX Header "КОРОТКИЙ ОПИС"
 .Vb 1
 \& guestfish [\-\-options] [commands]
 \&
@@ -87,14 +87,14 @@ guestfish \- the libguestfs Filesystem Interactive SHell
 \&
 \& guestfish \-d libvirt\-domain \-i
 .Ve
-.SH "WARNING"
-.IX Header "WARNING"
+.SH "ПОПЕРЕДЖЕННЯ"
+.IX Header "ПОПЕРЕДЖЕННЯ"
 Using guestfish in read/write mode on live virtual machines can be
 dangerous, potentially causing disk corruption.  Use the \fI\-\-ro\fR (read-only)
 option to use guestfish safely if the disk image or virtual machine might be
 live.
-.SH "ÐÐÐÐ¡"
-.IX Header "ÐÐÐÐ¡"
+.SH "ОПИС"
+.IX Header "ОПИС"
 Guestfish is a shell and command-line tool for examining and modifying
 virtual machine filesystems.  It uses libguestfs and exposes all of the
 functionality of the guestfs \s-1API\s0, see \fIguestfs\fR\|(3).
@@ -103,8 +103,8 @@ Guestfish gives you structured access to the libguestfs \s-1API\s0, from shell
 scripts or the command line or interactively.  If you want to rescue a
 broken virtual machine image, you should look at the \fIvirt\-rescue\fR\|(1)
 command.
-.SH "EXAMPLES"
-.IX Header "EXAMPLES"
+.SH "ПРИКЛАДИ"
+.IX Header "ПРИКЛАДИ"
 .SS "As an interactive shell"
 .IX Subsection "As an interactive shell"
 .Vb 1
@@ -219,16 +219,16 @@ To list what is available do:
 .Vb 1
 \& guestfish \-N help | less
 .Ve
-.SS "Remote control"
-.IX Subsection "Remote control"
+.SS "Дистанційне керування"
+.IX Subsection "Дистанційне керування"
 .Vb 4
 \& eval "\`guestfish \-\-listen\`"
 \& guestfish \-\-remote add\-ro disk.img
 \& guestfish \-\-remote run
 \& guestfish \-\-remote lvs
 .Ve
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+.SH "ПАРАМЕТРИ"
+.IX Header "ПАРАМЕТРИ"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
 Displays general help on options.
@@ -239,18 +239,18 @@ Displays general help on options.
 .IX Item "--cmd-help"
 .PD
 Lists all available guestfish commands.
-.IP "\fB\-h cmd\fR" 4
-.IX Item "-h cmd"
+.IP "\fB\-h команда\fR" 4
+.IX Item "-h команда"
 .PD 0
-.IP "\fB\-\-cmd\-help cmd\fR" 4
-.IX Item "--cmd-help cmd"
+.IP "\fB\-\-cmd\-help команда\fR" 4
+.IX Item "--cmd-help команда"
 .PD
 Displays detailed help on a single command \f(CW\*(C`cmd\*(C'\fR.
-.IP "\fB\-a image\fR" 4
-.IX Item "-a image"
+.IP "\fB\-a образ\fR" 4
+.IX Item "-a образ"
 .PD 0
-.IP "\fB\-\-add image\fR" 4
-.IX Item "--add image"
+.IP "\fB\-\-add образ\fR" 4
+.IX Item "--add образ"
 .PD
 Add a block device or virtual machine image to the shell.
 .Sp
@@ -260,11 +260,11 @@ particular format use the \fI\-\-format=..\fR option.
 Using this flag is mostly equivalent to using the \f(CW\*(C`add\*(C'\fR command, with
 \&\f(CW\*(C`readonly:true\*(C'\fR if the \fI\-\-ro\fR flag was given, and with \f(CW\*(C`format:...\*(C'\fR if
 the \fI\-\-format=...\fR flag was given.
-.IP "\fB\-c \s-1URI\s0\fR" 4
-.IX Item "-c URI"
+.IP "\fB\-c адреса\fR" 4
+.IX Item "-c адреса"
 .PD 0
-.IP "\fB\-\-connect \s-1URI\s0\fR" 4
-.IX Item "--connect URI"
+.IP "\fB\-\-connect адреса\fR" 4
+.IX Item "--connect адреса"
 .PD
 When used in conjunction with the \fI\-d\fR option, this specifies the libvirt
 \&\s-1URI\s0 to use.  The default is to use the default libvirt connection.
@@ -272,15 +272,17 @@ When used in conjunction with the \fI\-d\fR option, this specifies the libvirt
 .IX Item "--csh"
 If using the \fI\-\-listen\fR option and a csh-like shell, use this option.  See
 section \*(L"\s-1REMOTE\s0 \s-1CONTROL\s0 \s-1AND\s0 \s-1CSH\s0\*(R" below.
-.IP "\fB\-d libvirt-domain\fR" 4
-.IX Item "-d libvirt-domain"
+.IP "\fB\-d домен\-libvirt\fR" 4
+.IX Item "-d домен-libvirt"
 .PD 0
-.IP "\fB\-\-domain libvirt-domain\fR" 4
-.IX Item "--domain libvirt-domain"
+.IP "\fB\-\-domain домен\-libvirt\fR" 4
+.IX Item "--domain домен-libvirt"
 .PD
 Add disks from the named libvirt domain.  If the \fI\-\-ro\fR option is also
 used, then any libvirt domain can be used.  However in write mode, only
 libvirt domains which are shut down can be named here.
+.Sp
+Domain UUIDs can be used instead of names.
 .Sp
 Using this flag is mostly equivalent to using the \f(CW\*(C`add\-domain\*(C'\fR command,
 with \f(CW\*(C`readonly:true\*(C'\fR if the \fI\-\-ro\fR flag was given, and with \f(CW\*(C`format:...\*(C'\fR
@@ -301,11 +303,11 @@ When prompting for keys and passphrases, guestfish normally turns echoing
 off so you cannot see what you are typing.  If you are not worried about
 Tempest attacks and there is no one else in the room you can specify this
 flag to see what you are typing.
-.IP "\fB\-f file\fR" 4
-.IX Item "-f file"
+.IP "\fB\-f файл\fR" 4
+.IX Item "-f файл"
 .PD 0
-.IP "\fB\-\-file file\fR" 4
-.IX Item "--file file"
+.IP "\fB\-\-file файл\fR" 4
+.IX Item "--file файл"
 .PD
 Read commands from \f(CW\*(C`file\*(C'\fR.  To write pure guestfish scripts, use:
 .Sp
@@ -323,7 +325,7 @@ image.  Using this forces the disk format for \fI\-a\fR options which follow on
 the command line.  Using \fI\-\-format\fR with no argument switches back to
 auto-detection for subsequent \fI\-a\fR options.
 .Sp
-ÐÑÐ¸ÐºÐ»Ð°Ð´:
+Приклад:
 .Sp
 .Vb 1
 \& guestfish \-\-format=raw \-a disk.img
@@ -432,11 +434,11 @@ Using this flag is equivalent to using the \f(CW\*(C`mount\-options\*(C'\fR comm
 .PD
 Disable autosync.  This is enabled by default.  See the discussion of
 autosync in the \fIguestfs\fR\|(3) manpage.
-.IP "\fB\-N type\fR" 4
-.IX Item "-N type"
+.IP "\fB\-N тип\fR" 4
+.IX Item "-N тип"
 .PD 0
-.IP "\fB\-\-new type\fR" 4
-.IX Item "--new type"
+.IP "\fB\-\-new тип\fR" 4
+.IX Item "--new тип"
 .IP "\fB\-N help\fR" 4
 .IX Item "-N help"
 .PD
@@ -557,7 +559,7 @@ image read-only you have to do \fI\-a image \-\-ro\fR.
 This matters: If you accidentally open a live \s-1VM\s0 disk image writable then
 you will cause irreversible disk corruption.
 .PP
-By libguestfs 1.12 we intend to change the default the other way.  Disk
+In a future libguestfs we intend to change the default the other way.  Disk
 images will be opened read-only.  You will have to either specify
 \&\fIguestfish \-\-rw\fR, \fIguestmount \-\-rw\fR, \fIvirt-rescue \-\-rw\fR, or change the
 configuration file \f(CW\*(C`/etc/libguestfs\-tools.conf\*(C'\fR in order to get write
@@ -594,6 +596,57 @@ literal single quote must be escaped with a backslash.
 \& command "/bin/echo \*(Aqfoo      bar\*(Aq"
 \& command "/bin/echo \e\*(Aqfoo\e\*(Aq"
 .Ve
+.SS "\s-1ESCAPE\s0 \s-1SEQUENCES\s0 \s-1IN\s0 \s-1DOUBLE\s0 \s-1QUOTED\s0 \s-1ARGUMENTS\s0"
+.IX Subsection "ESCAPE SEQUENCES IN DOUBLE QUOTED ARGUMENTS"
+In double-quoted arguments (only) use backslash to insert special
+characters:
+.ie n .IP """\ea""" 4
+.el .IP "\f(CW\ea\fR" 4
+.IX Item "a"
+Alert (bell) character.
+.ie n .IP """\eb""" 4
+.el .IP "\f(CW\eb\fR" 4
+.IX Item "b"
+Backspace character.
+.ie n .IP """\ef""" 4
+.el .IP "\f(CW\ef\fR" 4
+.IX Item "f"
+Form feed character.
+.ie n .IP """\en""" 4
+.el .IP "\f(CW\en\fR" 4
+.IX Item "n"
+Newline character.
+.ie n .IP """\er""" 4
+.el .IP "\f(CW\er\fR" 4
+.IX Item "r"
+Carriage return character.
+.ie n .IP """\et""" 4
+.el .IP "\f(CW\et\fR" 4
+.IX Item "t"
+Horizontal tab character.
+.ie n .IP """\ev""" 4
+.el .IP "\f(CW\ev\fR" 4
+.IX Item "v"
+Vertical tab character.
+.ie n .IP """\e""""" 4
+.el .IP "\f(CW\e""\fR" 4
+.IX Item """"
+A literal double quote character.
+.ie n .IP """\eooo""" 4
+.el .IP "\f(CW\eooo\fR" 4
+.IX Item "ooo"
+A character with octal value \fIooo\fR.  There must be precisely 3 octal digits
+(unlike C).
+.ie n .IP """\exhh""" 4
+.el .IP "\f(CW\exhh\fR" 4
+.IX Item "xhh"
+A character with hex value \fIhh\fR.  There must be precisely 2 hex digits.
+.Sp
+In the current implementation \f(CW\*(C`\e000\*(C'\fR and \f(CW\*(C`\ex00\*(C'\fR cannot be used in strings.
+.ie n .IP """\e\e""" 4
+.el .IP "\f(CW\e\e\fR" 4
+.IX Item ""
+A literal backslash character.
 .SH "OPTIONAL ARGUMENTS"
 .IX Header "OPTIONAL ARGUMENTS"
 Some commands take optional arguments.  These arguments appear in this
@@ -609,63 +662,63 @@ documentation as \f(CW\*(C`[argname:..]\*(C'\fR.  You can use them as in these e
 .PP
 Each optional argument can appear at most once.  All optional arguments must
 appear after the required ones.
-.SH "NUMBERS"
-.IX Header "NUMBERS"
+.SH "ЧИСЛА"
+.IX Header "ЧИСЛА"
 This section applies to all commands which can take integers as parameters.
 .SS "\s-1SIZE\s0 \s-1SUFFIX\s0"
 .IX Subsection "SIZE SUFFIX"
 When the command takes a parameter measured in bytes, you can use one of the
 following suffixes to specify kilobytes, megabytes and larger sizes:
-.IP "\fBk\fR or \fBK\fR or \fBKiB\fR" 4
-.IX Item "k or K or KiB"
+.IP "\fBk\fR, \fBK\fR або \fBKiB\fR" 4
+.IX Item "k, K або KiB"
 The size in kilobytes (multiplied by 1024).
 .IP "\fB\s-1KB\s0\fR" 4
 .IX Item "KB"
 The size in \s-1SI\s0 1000 byte units.
-.IP "\fBM\fR or \fBMiB\fR" 4
-.IX Item "M or MiB"
+.IP "\fBM\fR або \fBMiB\fR" 4
+.IX Item "M або MiB"
 The size in megabytes (multiplied by 1048576).
 .IP "\fB\s-1MB\s0\fR" 4
 .IX Item "MB"
 The size in \s-1SI\s0 1000000 byte units.
-.IP "\fBG\fR or \fBGiB\fR" 4
-.IX Item "G or GiB"
-The size in gigabytes (multiplied by 2**30).
+.IP "\fBG\fR або \fBGiB\fR" 4
+.IX Item "G або GiB"
+Розмір у гігабайтах (з множником 2**30).
 .IP "\fB\s-1GB\s0\fR" 4
 .IX Item "GB"
-The size in \s-1SI\s0 10**9 byte units.
-.IP "\fBT\fR or \fBTiB\fR" 4
-.IX Item "T or TiB"
-The size in terabytes (multiplied by 2**40).
+Розмір у одиницях СІ: 10**9 байтів.
+.IP "\fBT\fR або \fBTiB\fR" 4
+.IX Item "T або TiB"
+Розмір у терабайтах (з множником 2**40).
 .IP "\fB\s-1TB\s0\fR" 4
 .IX Item "TB"
 The size in \s-1SI\s0 10**12 byte units.
-.IP "\fBP\fR or \fBPiB\fR" 4
-.IX Item "P or PiB"
+.IP "\fBP\fR або \fBPiB\fR" 4
+.IX Item "P або PiB"
 The size in petabytes (multiplied by 2**50).
 .IP "\fB\s-1PB\s0\fR" 4
 .IX Item "PB"
 The size in \s-1SI\s0 10**15 byte units.
-.IP "\fBE\fR or \fBEiB\fR" 4
-.IX Item "E or EiB"
+.IP "\fBE\fR або \fBEiB\fR" 4
+.IX Item "E або EiB"
 The size in exabytes (multiplied by 2**60).
 .IP "\fB\s-1EB\s0\fR" 4
 .IX Item "EB"
 The size in \s-1SI\s0 10**18 byte units.
-.IP "\fBZ\fR or \fBZiB\fR" 4
-.IX Item "Z or ZiB"
+.IP "\fBZ\fR або \fBZiB\fR" 4
+.IX Item "Z або ZiB"
 The size in zettabytes (multiplied by 2**70).
 .IP "\fB\s-1ZB\s0\fR" 4
 .IX Item "ZB"
 The size in \s-1SI\s0 10**21 byte units.
-.IP "\fBY\fR or \fBYiB\fR" 4
-.IX Item "Y or YiB"
+.IP "\fBY\fR або \fBYiB\fR" 4
+.IX Item "Y або YiB"
 The size in yottabytes (multiplied by 2**80).
 .IP "\fB\s-1YB\s0\fR" 4
 .IX Item "YB"
 The size in \s-1SI\s0 10**24 byte units.
 .PP
-ÐÑÐ¸ÐºÐ»Ð°Ð´:
+Приклад:
 .PP
 .Vb 1
 \& truncate\-size /file 1G
@@ -731,8 +784,8 @@ many times), equivalent to:
 .PP
 If you have several parameters, each containing a wildcard, then glob will
 perform a Cartesian product.
-.SH "COMMENTS"
-.IX Header "COMMENTS"
+.SH "КОМЕНТАРІ"
+.IX Header "КОМЕНТАРІ"
 Any line which starts with a \fI#\fR character is treated as a comment and
 ignored.  The \fI#\fR can optionally be preceeded by whitespace, but \fBnot\fR by
 a command.  For example:
@@ -788,8 +841,8 @@ script first (ie. remove the initial \f(CW\*(C`<\*(C'\fR character so it is just
 ordinary \fI!\fR local command), see what guestfish commands it would run, and
 when you are happy with those prepend the \f(CW\*(C`<\*(C'\fR character to run the
 guestfish commands for real.
-.SH "PIPES"
-.IX Header "PIPES"
+.SH "КАНАЛИ"
+.IX Header "КАНАЛИ"
 Use \f(CW\*(C`command <space> | command\*(C'\fR to pipe the output of the first
 command (a guestfish command) to the second command (any host command).  For
 example:
@@ -834,8 +887,8 @@ eg:
 .Vb 1
 \& echo "~"
 .Ve
-.SH "ENCRYPTED DISKS"
-.IX Header "ENCRYPTED DISKS"
+.SH "ЗАШИФРОВАНІ ДИСКИ"
+.IX Header "ЗАШИФРОВАНІ ДИСКИ"
 Libguestfs has some support for Linux guests encrypted according to the
 Linux Unified Key Setup (\s-1LUKS\s0) standard, which includes nearly all whole
 disk encryption systems used by modern Linux guests.  Currently only
@@ -1033,8 +1086,8 @@ use the \f(CW\*(C`mount /dev/sda1 /\*(C'\fR command or add the \fI\-m /dev/sda1\
 .PP
 If any \fI\-N\fR or \fI\-\-new\fR options are given, the guest is automatically
 launched.
-.SS "\s-1EXAMPLES\s0"
-.IX Subsection "EXAMPLES"
+.SS "ПРИКЛАДИ"
+.IX Subsection "ПРИКЛАДИ"
 Create a 100MB disk with an ext4\-formatted partition:
 .PP
 .Vb 1
@@ -1083,10 +1136,10 @@ words, they are not part of the \fIguestfs\fR\|(3) \s-1API\s0.
 .IX Subsection "help"
 .Vb 2
 \& help
-\& help cmd
+\& help команда
 .Ve
 .PP
-Without any parameter, this provides general help.
+Без параметра показує загальну довідкову інформацію.
 .PP
 With a \f(CW\*(C`cmd\*(C'\fR parameter, this displays detailed help for that command.
 .SS "quit | exit"
@@ -1147,10 +1200,27 @@ the help of \*(L"glob\*(R" like this:
 .Vb 1
 \& glob copy\-out /home/* .
 .Ve
+.SS "display"
+.IX Subsection "display"
+.Vb 1
+\& display filename
+.Ve
+.PP
+Use \f(CW\*(C`display\*(C'\fR (a graphical display program) to display an image file.  It
+downloads the file, and runs \f(CW\*(C`display\*(C'\fR on it.
+.PP
+To use an alternative program, set the \f(CW\*(C`GUESTFISH_DISPLAY_IMAGE\*(C'\fR
+environment variable.  For example to use the \s-1GNOME\s0 display program:
+.PP
+.Vb 1
+\& export GUESTFISH_DISPLAY_IMAGE=eog
+.Ve
+.PP
+See also \fIdisplay\fR\|(1).
 .SS "echo"
 .IX Subsection "echo"
 .Vb 1
-\& echo [params ...]
+\& echo [параметри...]
 .Ve
 .PP
 This echos the parameters to the terminal.
@@ -1161,7 +1231,7 @@ This echos the parameters to the terminal.
 .SS "emacs"
 .IX Subsection "emacs"
 .Vb 1
-\& edit filename
+\& edit назва_файла
 .Ve
 .PP
 This is used to edit a file.  It downloads the file, edits it locally using
@@ -1172,13 +1242,13 @@ or \f(CW\*(C`emacs\*(C'\fR you will get those corresponding editors.
 .SS "glob"
 .IX Subsection "glob"
 .Vb 1
-\& glob command args...
+\& glob команда параметри...
 .Ve
 .PP
 Expand wildcards in any paths in the args list, and run \f(CW\*(C`command\*(C'\fR
 repeatedly on each matching path.
 .PP
-See \*(L"\s-1WILDCARDS\s0 \s-1AND\s0 \s-1GLOBBING\s0\*(R".
+Див. \*(L"\s-1WILDCARDS\s0 \s-1AND\s0 \s-1GLOBBING\s0\*(R".
 .SS "hexedit"
 .IX Subsection "hexedit"
 .Vb 3
@@ -1216,7 +1286,7 @@ To edit the superblock of an ext2 filesystem on \f(CW\*(C`/dev/sda1\*(C'\fR, do:
 This command requires the external \fIhexedit\fR\|(1) program.  You can specify
 another program to use by setting the \f(CW\*(C`HEXEDITOR\*(C'\fR environment variable.
 .PP
-See also \*(L"hexdump\*(R".
+Див. також \*(L"hexdump\*(R".
 .SS "lcd"
 .IX Subsection "lcd"
 .Vb 1
@@ -1295,8 +1365,8 @@ See also \*(L"\s-1AVAILABILITY\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
 Run the command as usual, but print the elapsed time afterwards.  This can
 be useful for benchmarking operations.
-.SH "COMMANDS"
-.IX Header "COMMANDS"
+.SH "КОМАНДИ"
+.IX Header "КОМАНДИ"
 .SS "add-cdrom"
 .IX Subsection "add-cdrom"
 .Vb 1
@@ -1307,7 +1377,7 @@ This function adds a virtual CD-ROM disk image to the guest.
 .PP
 This is equivalent to the qemu parameter \fI\-cdrom filename\fR.
 .PP
-ÐÐ¾ÑÐ°ÑÐºÐ¸:
+Нотатки:
 .IP "\(bu" 4
 This call checks for the existence of \f(CW\*(C`filename\*(C'\fR.  This stops you from
 specifying other types of drive which are supported by qemu such as \f(CW\*(C`nbd:\*(C'\fR
@@ -1329,7 +1399,7 @@ these functions.
 .SS "domain"
 .IX Subsection "domain"
 .Vb 1
-\& add\-domain dom [libvirturi:..] [readonly:..] [iface:..] [live:..]
+\& add\-domain dom [libvirturi:..] [readonly:..] [iface:..] [live:..] [allowuuid:..]
 .Ve
 .PP
 This function adds the disk(s) attached to the named libvirt domain \f(CW\*(C`dom\*(C'\fR.
@@ -1358,6 +1428,11 @@ a running virtual machine \f(CW\*(C`guestfsd\*(C'\fR process if it sees a suitab
 the flag is omitted) is never to try.  See \*(L"\s-1ATTACHING\s0 \s-1TO\s0 \s-1RUNNING\s0
 \&\s-1DAEMONS\s0\*(R" in \fIguestfs\fR\|(3) for more information.
 .PP
+If the \f(CW\*(C`allowuuid\*(C'\fR flag is true (default is false) then a \s-1UUID\s0 \fImay\fR be
+passed instead of the domain name.  The \f(CW\*(C`dom\*(C'\fR string is treated as a \s-1UUID\s0
+first and looked up, and if that lookup fails then we treat \f(CW\*(C`dom\*(C'\fR as a name
+as usual.
+.PP
 The other optional parameters are passed directly through to
 \&\*(L"add-drive-opts\*(R".
 .PP
@@ -1366,7 +1441,7 @@ This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 .SS "add-drive"
 .IX Subsection "add-drive"
 .Vb 1
-\& add\-drive filename
+\& add\-drive назва_файла
 .Ve
 .PP
 This function is the equivalent of calling \*(L"add-drive-opts\*(R" with no
@@ -1575,7 +1650,7 @@ be a label, ie. not contain \f(CW\*(C`/\*(C'\fR, \f(CW\*(C`*\*(C'\fR or end with
 \& aug\-load
 .Ve
 .PP
-ÐÐ°Ð²Ð°Ð½ÑÐ°Ð¶Ð¸ÑÐ¸ ÑÐ°Ð¹Ð»Ð¸ Ð´Ð¾ ÑÑÑÐ°ÑÑÑÑ.
+Завантажити файли до ієрархії.
 .PP
 See \f(CW\*(C`aug_load\*(C'\fR in the Augeas documentation for the full gory details.
 .SS "aug-ls"
@@ -1659,7 +1734,7 @@ in the appliance.
 If an unknown group name is included in the list of groups then an error is
 always returned.
 .PP
-\&\fIÐÐ¾ÑÐ°ÑÐºÐ¸:\fR
+\&\fIНотатки:\fR
 .IP "\(bu" 4
 You must call \*(L"launch\*(R" before calling this function.
 .Sp
@@ -1814,6 +1889,29 @@ This uses the \fIblockdev\fR\|(8) command.
 Sets the block device named \f(CW\*(C`device\*(C'\fR to read-write.
 .PP
 This uses the \fIblockdev\fR\|(8) command.
+.SS "btrfs-filesystem-resize"
+.IX Subsection "btrfs-filesystem-resize"
+.Vb 1
+\& btrfs\-filesystem\-resize mountpoint [size:..]
+.Ve
+.PP
+This command resizes a btrfs filesystem.
+.PP
+Note that unlike other resize calls, the filesystem has to be mounted and
+the parameter is the mountpoint not the device (this is a requirement of
+btrfs itself).
+.PP
+The optional parameters are:
+.ie n .IP """size""" 4
+.el .IP "\f(CWsize\fR" 4
+.IX Item "size"
+The new size (in bytes) of the filesystem.  If omitted, the filesystem is
+resized to the maximum size.
+.PP
+See also \fIbtrfs\fR\|(8).
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
 .SS "case-sensitive-path"
 .IX Subsection "case-sensitive-path"
 .Vb 1
@@ -1850,7 +1948,7 @@ See also \*(L"realpath\*(R".
 .SS "cat"
 .IX Subsection "cat"
 .Vb 1
-\& cat path
+\& cat шлях
 .Ve
 .PP
 Return the contents of the file named \f(CW\*(C`path\*(C'\fR.
@@ -2139,7 +2237,7 @@ maximum guest memory is freed.
 .SS "du"
 .IX Subsection "du"
 .Vb 1
-\& du path
+\& du шлях
 .Ve
 .PP
 This command runs the \f(CW\*(C`du \-s\*(C'\fR command to estimate file space usage for
@@ -2197,7 +2295,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .SS "equal"
 .IX Subsection "equal"
 .Vb 1
-\& equal file1 file2
+\& equal файл1 файл2
 .Ve
 .PP
 This compares the two files \f(CW\*(C`file1\*(C'\fR and \f(CW\*(C`file2\*(C'\fR and returns true if their
@@ -2207,17 +2305,17 @@ The external \fIcmp\fR\|(1) program is used for the comparison.
 .SS "exists"
 .IX Subsection "exists"
 .Vb 1
-\& exists path
+\& exists шлях
 .Ve
 .PP
 This returns \f(CW\*(C`true\*(C'\fR if and only if there is a file, directory (or anything)
 with the given \f(CW\*(C`path\*(C'\fR name.
 .PP
-See also \*(L"is-file\*(R", \*(L"is-dir\*(R", \*(L"stat\*(R".
+Див. також \*(L"is-file\*(R", \*(L"is-dir\*(R", \*(L"stat\*(R".
 .SS "fallocate"
 .IX Subsection "fallocate"
 .Vb 1
-\& fallocate path len
+\& fallocate шлях довжина
 .Ve
 .PP
 This command preallocates a file (containing zero bytes) named \f(CW\*(C`path\*(C'\fR of
@@ -2235,7 +2333,7 @@ these functions.
 .SS "fallocate64"
 .IX Subsection "fallocate64"
 .Vb 1
-\& fallocate64 path len
+\& fallocate64 шлях довжина
 .Ve
 .PP
 This command preallocates a file (containing zero bytes) named \f(CW\*(C`path\*(C'\fR of
@@ -2253,7 +2351,7 @@ commands which create a file in the host and attach it as a device.
 .SS "fgrep"
 .IX Subsection "fgrep"
 .Vb 1
-\& fgrep pattern path
+\& fgrep шаблон шлях
 .Ve
 .PP
 This calls the external \f(CW\*(C`fgrep\*(C'\fR program and returns the matching lines.
@@ -2263,7 +2361,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .SS "fgrepi"
 .IX Subsection "fgrepi"
 .Vb 1
-\& fgrepi pattern path
+\& fgrepi шаблон шлях
 .Ve
 .PP
 This calls the external \f(CW\*(C`fgrep \-i\*(C'\fR program and returns the matching lines.
@@ -2273,7 +2371,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .SS "file"
 .IX Subsection "file"
 .Vb 1
-\& file path
+\& file шлях
 .Ve
 .PP
 This call uses the standard \fIfile\fR\|(1) command to determine the type or
@@ -2290,11 +2388,11 @@ can change in future in ways beyond our control.  In other words, the output
 is not guaranteed by the \s-1ABI\s0.
 .PP
 See also: \fIfile\fR\|(1), \*(L"vfs-type\*(R", \*(L"lstat\*(R", \*(L"is-file\*(R", \*(L"is-blockdev\*(R"
-(etc).
+(etc), \*(L"is-zero\*(R".
 .SS "file-architecture"
 .IX Subsection "file-architecture"
 .Vb 1
-\& file\-architecture filename
+\& file\-architecture назва_файла
 .Ve
 .PP
 This detects the architecture of the binary \f(CW\*(C`filename\*(C'\fR, and returns it if
@@ -2368,7 +2466,7 @@ kernel module(s) instead.
 .SS "filesize"
 .IX Subsection "filesize"
 .Vb 1
-\& filesize file
+\& filesize файл
 .Ve
 .PP
 This command returns the size of \f(CW\*(C`file\*(C'\fR in bytes.
@@ -2402,7 +2500,7 @@ bytes.
 .SS "find"
 .IX Subsection "find"
 .Vb 1
-\& find directory
+\& find каталог
 .Ve
 .PP
 This command lists out all files and directories, recursively, starting at
@@ -2432,14 +2530,14 @@ If \f(CW\*(C`directory\*(C'\fR is not a directory, then this command returns an 
 .PP
 The returned list is sorted.
 .PP
-See also \*(L"find0\*(R".
+Див. також \*(L"find0\*(R".
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .SS "find0"
 .IX Subsection "find0"
 .Vb 1
-\& find0 directory (files|\-)
+\& find0 каталог (файли|\-)
 .Ve
 .PP
 This command lists out all files and directories, recursively, starting at
@@ -2461,13 +2559,13 @@ Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "findfs-label"
 .IX Subsection "findfs-label"
 .Vb 1
-\& findfs\-label label
+\& findfs\-label мітка
 .Ve
 .PP
 This command searches the filesystems and returns the one which has the
 given label.  An error is returned if no such filesystem can be found.
 .PP
-To find the label of a filesystem, use \*(L"vfs-label\*(R".
+Для визначення мітки файлової системи скористайтеся \*(L"vfs-label\*(R".
 .SS "findfs-uuid"
 .IX Subsection "findfs-uuid"
 .Vb 1
@@ -2477,11 +2575,11 @@ To find the label of a filesystem, use \*(L"vfs-label\*(R".
 This command searches the filesystems and returns the one which has the
 given \s-1UUID\s0.  An error is returned if no such filesystem can be found.
 .PP
-To find the \s-1UUID\s0 of a filesystem, use \*(L"vfs-uuid\*(R".
+Для визначення \s-1UUID\s0 файлової системи скористайтеся \*(L"vfs-uuid\*(R".
 .SS "fsck"
 .IX Subsection "fsck"
 .Vb 1
-\& fsck fstype device
+\& fsck тип_файлової_системи пристрій
 .Ve
 .PP
 This runs the filesystem checker (fsck) on \f(CW\*(C`device\*(C'\fR which should have
@@ -2490,7 +2588,7 @@ filesystem type \f(CW\*(C`fstype\*(C'\fR.
 The returned integer is the status.  See \fIfsck\fR\|(8) for the list of status
 codes from \f(CW\*(C`fsck\*(C'\fR.
 .PP
-ÐÐ¾ÑÐ°ÑÐºÐ¸:
+Нотатки:
 .IP "\(bu" 4
 Multiple status codes can be summed together.
 .IP "\(bu" 4
@@ -2534,7 +2632,7 @@ Return the direct appliance mode flag.
 .SS "get\-e2label"
 .IX Subsection "get-e2label"
 .Vb 1
-\& get\-e2label device
+\& get\-e2label пристрій
 .Ve
 .PP
 This returns the ext2/3/4 filesystem label of the filesystem on \f(CW\*(C`device\*(C'\fR.
@@ -2548,7 +2646,7 @@ these functions.
 .SS "get\-e2uuid"
 .IX Subsection "get-e2uuid"
 .Vb 1
-\& get\-e2uuid device
+\& get\-e2uuid пристрій
 .Ve
 .PP
 This returns the ext2/3/4 filesystem \s-1UUID\s0 of the filesystem on \f(CW\*(C`device\*(C'\fR.
@@ -2589,6 +2687,13 @@ Return the current search path.
 .PP
 This is always non-NULL.  If it wasn't set already, then this will return
 the default path.
+.SS "get-pgroup"
+.IX Subsection "get-pgroup"
+.Vb 1
+\& get\-pgroup
+.Ve
+.PP
+This returns the process group flag.
 .SS "get-pid"
 .IX Subsection "get-pid"
 .SS "pid"
@@ -2672,7 +2777,7 @@ See the documentation about \s-1SELINUX\s0 in \fIguestfs\fR\|(3), and \*(L"setco
 .SS "getxattr"
 .IX Subsection "getxattr"
 .Vb 1
-\& getxattr path name
+\& getxattr шлях назва
 .Ve
 .PP
 Get a single extended attribute from file \f(CW\*(C`path\*(C'\fR named \f(CW\*(C`name\*(C'\fR.  This call
@@ -2688,11 +2793,11 @@ attributes you want in advance and call this function.
 Extended attribute values are blobs of binary data.  If there is no extended
 attribute named \f(CW\*(C`name\*(C'\fR, this returns an error.
 .PP
-See also: \*(L"getxattrs\*(R", \*(L"lgetxattr\*(R", \fIattr\fR\|(5).
+Див. також \*(L"getxattrs\*(R", \*(L"lgetxattr\*(R", \fIattr\fR\|(5).
 .SS "getxattrs"
 .IX Subsection "getxattrs"
 .Vb 1
-\& getxattrs path
+\& getxattrs шлях
 .Ve
 .PP
 This call lists the extended attributes of the file or directory \f(CW\*(C`path\*(C'\fR.
@@ -2700,11 +2805,11 @@ This call lists the extended attributes of the file or directory \f(CW\*(C`path\
 At the system call level, this is a combination of the \fIlistxattr\fR\|(2) and
 \&\fIgetxattr\fR\|(2) calls.
 .PP
-See also: \*(L"lgetxattrs\*(R", \fIattr\fR\|(5).
+Див. також \*(L"lgetxattrs\*(R", \fIattr\fR\|(5).
 .SS "glob-expand"
 .IX Subsection "glob-expand"
 .Vb 1
-\& glob\-expand pattern
+\& glob\-expand шаблон
 .Ve
 .PP
 This command searches for all the pathnames matching \f(CW\*(C`pattern\*(C'\fR according to
@@ -2717,7 +2822,7 @@ It is just a wrapper around the C \fIglob\fR\|(3) function with flags
 .SS "grep"
 .IX Subsection "grep"
 .Vb 1
-\& grep regex path
+\& grepi формальний_вираз шлях
 .Ve
 .PP
 This calls the external \f(CW\*(C`grep\*(C'\fR program and returns the matching lines.
@@ -2727,7 +2832,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .SS "grepi"
 .IX Subsection "grepi"
 .Vb 1
-\& grepi regex path
+\& grepi формальний_вираз шлях
 .Ve
 .PP
 This calls the external \f(CW\*(C`grep \-i\*(C'\fR program and returns the matching lines.
@@ -2737,7 +2842,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .SS "grub-install"
 .IX Subsection "grub-install"
 .Vb 1
-\& grub\-install root device
+\& grub\-install кореневий пристрій
 .Ve
 .PP
 This command installs \s-1GRUB\s0 (the Grand Unified Bootloader) on \f(CW\*(C`device\*(C'\fR, with
@@ -2757,7 +2862,7 @@ replacing \f(CW\*(C`/dev/vda\*(C'\fR with the name of the installation device.
 .SS "head"
 .IX Subsection "head"
 .Vb 1
-\& head path
+\& head шлях
 .Ve
 .PP
 This command returns up to the first 10 lines of a file as a list of
@@ -2784,7 +2889,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .SS "hexdump"
 .IX Subsection "hexdump"
 .Vb 1
-\& hexdump path
+\& hexdump шлях
 .Ve
 .PP
 This runs \f(CW\*(C`hexdump \-C\*(C'\fR on the given \f(CW\*(C`path\*(C'\fR.  The result is the
@@ -2795,7 +2900,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .SS "initrd-cat"
 .IX Subsection "initrd-cat"
 .Vb 1
-\& initrd\-cat initrdpath filename
+\& initrd\-cat шлях_initrd назва_файла
 .Ve
 .PP
 This command unpacks the file \f(CW\*(C`filename\*(C'\fR from the initrd file called
@@ -2810,14 +2915,14 @@ initramfs image:
 \& initrd\-cat /boot/initrd\-<version>.img init
 .Ve
 .PP
-See also \*(L"initrd-list\*(R".
+Див. також \*(L"initrd-list\*(R".
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .SS "initrd-list"
 .IX Subsection "initrd-list"
 .Vb 1
-\& initrd\-list path
+\& initrd\-list шлях
 .Ve
 .PP
 This command lists out files contained in an initrd.
@@ -2832,7 +2937,7 @@ files).
 .SS "inotify-add-watch"
 .IX Subsection "inotify-add-watch"
 .Vb 1
-\& inotify\-add\-watch path mask
+\& inotify\-add\-watch шлях маска
 .Ve
 .PP
 Watch \f(CW\*(C`path\*(C'\fR for the events listed in \f(CW\*(C`mask\*(C'\fR.
@@ -2916,11 +3021,8 @@ Remove a previously defined inotify watch.  See \*(L"inotify-add-watch\*(R".
 .SS "inspect-get-arch"
 .IX Subsection "inspect-get-arch"
 .Vb 1
-\& inspect\-get\-arch root
+\& inspect\-get\-arch корінь
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 This returns the architecture of the inspected operating system.  The
 possible return values are listed under \*(L"file-architecture\*(R".
@@ -2932,11 +3034,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-get-distro"
 .IX Subsection "inspect-get-distro"
 .Vb 1
-\& inspect\-get\-distro root
+\& inspect\-get\-distro корінь
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 This returns the distro (distribution) of the inspected operating system.
 .PP
@@ -2980,7 +3079,7 @@ Pardus.
 .ie n .IP """redhat-based""" 4
 .el .IP "``redhat-based''" 4
 .IX Item "redhat-based"
-ÐÐ¸ÑÑÑÐ¸Ð±ÑÑÐ¸Ð², ÑÐ¾ Ð¿Ð¾ÑÐ¾Ð´Ð¸ÑÑ Ð²ÑÐ´ Red Hat.
+Дистрибутив, що походить від Red Hat.
 .ie n .IP """rhel""" 4
 .el .IP "``rhel''" 4
 .IX Item "rhel"
@@ -3000,7 +3099,7 @@ Ubuntu.
 .ie n .IP """unknown""" 4
 .el .IP "``unknown''" 4
 .IX Item "unknown"
-ÐÐ¸ÑÑÑÐ¸Ð±ÑÑÐ¸Ð², ÑÐ¸Ð¿ ÑÐºÐ¾Ð³Ð¾ Ð½Ðµ Ð²Ð´Ð°Ð»Ð¾ÑÑ Ð²Ð¸Ð·Ð½Ð°ÑÐ¸ÑÐ¸.
+Дистрибутив, тип якого не вдалося визначити.
 .ie n .IP """windows""" 4
 .el .IP "``windows''" 4
 .IX Item "windows"
@@ -3016,9 +3115,6 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .Vb 1
 \& inspect\-get\-drive\-mappings root
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 This call is useful for Windows which uses a primitive system of assigning
 drive letters (like \*(L"C:\*(R") to partitions.  This inspection \s-1API\s0 examines the
@@ -3051,11 +3147,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details. 
 .SS "inspect-get-filesystems"
 .IX Subsection "inspect-get-filesystems"
 .Vb 1
-\& inspect\-get\-filesystems root
+\& inspect\-get\-filesystems корінь
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 This returns a list of all the filesystems that we think are associated with
 this operating system.  This includes the root filesystem, other ordinary
@@ -3069,11 +3162,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details. 
 .SS "inspect-get-format"
 .IX Subsection "inspect-get-format"
 .Vb 1
-\& inspect\-get\-format root
+\& inspect\-get\-format корінь
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 This returns the format of the inspected operating system.  You can use it
 to detect install images, live CDs and similar.
@@ -3082,7 +3172,7 @@ Currently defined formats are:
 .ie n .IP """installed""" 4
 .el .IP "``installed''" 4
 .IX Item "installed"
-Ð¦Ðµ Ð²ÑÑÐ°Ð½Ð¾Ð²Ð»ÐµÐ½Ð° Ð¾Ð¿ÐµÑÐ°ÑÑÐ¹Ð½Ð° ÑÐ¸ÑÑÐµÐ¼Ð°.
+Це встановлена операційна система.
 .ie n .IP """installer""" 4
 .el .IP "``installer''" 4
 .IX Item "installer"
@@ -3100,11 +3190,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-get-hostname"
 .IX Subsection "inspect-get-hostname"
 .Vb 1
-\& inspect\-get\-hostname root
+\& inspect\-get\-hostname корінь
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 This function returns the hostname of the operating system as found by
 inspection of the guest's configuration files.
@@ -3113,14 +3200,62 @@ If the hostname could not be determined, then the string \f(CW\*(C`unknown\*(C'\
 returned.
 .PP
 Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
+.SS "inspect-get-icon"
+.IX Subsection "inspect-get-icon"
+.Vb 1
+\& inspect\-get\-icon root [favicon:..] [highquality:..]
+.Ve
+.PP
+This function returns an icon corresponding to the inspected operating
+system.  The icon is returned as a buffer containing a \s-1PNG\s0 image (re-encoded
+to \s-1PNG\s0 if necessary).
+.PP
+If it was not possible to get an icon this function returns a zero-length
+(non-NULL) buffer.  \fICallers must check for this case\fR.
+.PP
+Libguestfs will start by looking for a file called \f(CW\*(C`/etc/favicon.png\*(C'\fR or
+\&\f(CW\*(C`C:\eetc\efavicon.png\*(C'\fR and if it has the correct format, the contents of this
+file will be returned.  You can disable favicons by passing the optional
+\&\f(CW\*(C`favicon\*(C'\fR boolean as false (default is true).
+.PP
+If finding the favicon fails, then we look in other places in the guest for
+a suitable icon.
+.PP
+If the optional \f(CW\*(C`highquality\*(C'\fR boolean is true then only high quality icons
+are returned, which means only icons of high resolution with an alpha
+channel.  The default (false) is to return any icon we can, even if it is of
+substandard quality.
+.PP
+Нотатки:
+.IP "\(bu" 4
+Unlike most other inspection \s-1API\s0 calls, the guest's disks must be mounted up
+before you call this, since it needs to read information from the guest
+filesystem during the call.
+.IP "\(bu" 4
+\&\fBSecurity:\fR The icon data comes from the untrusted guest, and should be
+treated with caution.  \s-1PNG\s0 files have been known to contain exploits.
+Ensure that libpng (or other relevant libraries) are fully up to date before
+trying to process or display the icon.
+.IP "\(bu" 4
+The \s-1PNG\s0 image returned can be any size.  It might not be square.  Libguestfs
+tries to return the largest, highest quality icon available.  The
+application must scale the icon to the required size.
+.IP "\(bu" 4
+Extracting icons from Windows guests requires the external \f(CW\*(C`wrestool\*(C'\fR
+program from the \f(CW\*(C`icoutils\*(C'\fR package, and several programs (\f(CW\*(C`bmptopnm\*(C'\fR,
+\&\f(CW\*(C`pnmtopng\*(C'\fR, \f(CW\*(C`pamcut\*(C'\fR)  from the \f(CW\*(C`netpbm\*(C'\fR package.  These must be
+installed separately.
+.IP "\(bu" 4
+Operating system icons are usually trademarks.  Seek legal advice before
+using trademarks in applications.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
 .SS "inspect-get-major-version"
 .IX Subsection "inspect-get-major-version"
 .Vb 1
-\& inspect\-get\-major\-version root
+\& inspect\-get\-major\-version корінь
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 This returns the major version number of the inspected operating system.
 .PP
@@ -3136,11 +3271,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-get-minor-version"
 .IX Subsection "inspect-get-minor-version"
 .Vb 1
-\& inspect\-get\-minor\-version root
+\& inspect\-get\-minor\-version корінь
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 This returns the minor version number of the inspected operating system.
 .PP
@@ -3151,11 +3283,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details. 
 .SS "inspect-get-mountpoints"
 .IX Subsection "inspect-get-mountpoints"
 .Vb 1
-\& inspect\-get\-mountpoints root
+\& inspect\-get\-mountpoints корінь
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 This returns a hash of where we think the filesystems associated with this
 operating system should be mounted.  Callers should note that this is at
@@ -3180,11 +3309,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details. 
 .SS "inspect-get-package-format"
 .IX Subsection "inspect-get-package-format"
 .Vb 1
-\& inspect\-get\-package\-format root
+\& inspect\-get\-package\-format корінь
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 This function and \*(L"inspect-get-package-management\*(R" return the package
 format and package management tool used by the inspected operating system.
@@ -3202,11 +3328,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-get-package-management"
 .IX Subsection "inspect-get-package-management"
 .Vb 1
-\& inspect\-get\-package\-management root
+\& inspect\-get\-package\-management корінь
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 \&\*(L"inspect-get-package-format\*(R" and this function return the package format
 and package management tool used by the inspected operating system.  For
@@ -3225,11 +3348,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-get-product-name"
 .IX Subsection "inspect-get-product-name"
 .Vb 1
-\& inspect\-get\-product\-name root
+\& inspect\-get\-product\-name корінь
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 This returns the product name of the inspected operating system.  The
 product name is generally some freeform string which can be displayed to the
@@ -3244,9 +3364,6 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .Vb 1
 \& inspect\-get\-product\-variant root
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 This returns the product variant of the inspected operating system.
 .PP
@@ -3284,11 +3401,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-get-type"
 .IX Subsection "inspect-get-type"
 .Vb 1
-\& inspect\-get\-type root
+\& inspect\-get\-type корінь
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 This returns the type of the inspected operating system.  Currently defined
 types are:
@@ -3319,9 +3433,6 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 \& inspect\-get\-windows\-current\-control\-set root
 .Ve
 .PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
-.PP
 This returns the Windows CurrentControlSet of the inspected guest.  The
 CurrentControlSet is a registry key name such as \f(CW\*(C`ControlSet001\*(C'\fR.
 .PP
@@ -3332,11 +3443,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-get-windows-systemroot"
 .IX Subsection "inspect-get-windows-systemroot"
 .Vb 1
-\& inspect\-get\-windows\-systemroot root
+\& inspect\-get\-windows\-systemroot корінь
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 This returns the Windows systemroot of the inspected guest.  The systemroot
 is a directory path such as \f(CW\*(C`/WINDOWS\*(C'\fR.
@@ -3349,11 +3457,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-is-live"
 .IX Subsection "inspect-is-live"
 .Vb 1
-\& inspect\-is\-live root
+\& inspect\-is\-live корінь
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 If \*(L"inspect-get-format\*(R" returns \f(CW\*(C`installer\*(C'\fR (this is an install disk),
 then this returns true if a live image was detected on the disk.
@@ -3362,11 +3467,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-is-multipart"
 .IX Subsection "inspect-is-multipart"
 .Vb 1
-\& inspect\-is\-multipart root
+\& inspect\-is\-multipart корінь
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 If \*(L"inspect-get-format\*(R" returns \f(CW\*(C`installer\*(C'\fR (this is an install disk),
 then this returns true if the disk is part of a set.
@@ -3375,11 +3477,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-is-netinst"
 .IX Subsection "inspect-is-netinst"
 .Vb 1
-\& inspect\-is\-netinst root
+\& inspect\-is\-netinst корінь
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 If \*(L"inspect-get-format\*(R" returns \f(CW\*(C`installer\*(C'\fR (this is an install disk),
 then this returns true if the disk is a network installer, ie. not a
@@ -3390,11 +3489,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-list-applications"
 .IX Subsection "inspect-list-applications"
 .Vb 1
-\& inspect\-list\-applications root
+\& inspect\-list\-applications кореневий_каталог
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\*(L"inspect-os\*(R".
 .PP
 Return the list of applications installed in the operating system.
 .PP
@@ -3510,17 +3606,17 @@ This function cannot decrypt encrypted disks.  The caller must do that first
 .PP
 Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .PP
-See also \*(L"list-filesystems\*(R".
+Див. також \*(L"list-filesystems\*(R".
 .SS "is-blockdev"
 .IX Subsection "is-blockdev"
 .Vb 1
-\& is\-blockdev path
+\& is\-blockdev шлях
 .Ve
 .PP
 This returns \f(CW\*(C`true\*(C'\fR if and only if there is a block device with the given
 \&\f(CW\*(C`path\*(C'\fR name.
 .PP
-See also \*(L"stat\*(R".
+Див. також \*(L"stat\*(R".
 .SS "is-busy"
 .IX Subsection "is-busy"
 .Vb 1
@@ -3534,13 +3630,13 @@ For more information on states, see \fIguestfs\fR\|(3).
 .SS "is-chardev"
 .IX Subsection "is-chardev"
 .Vb 1
-\& is\-chardev path
+\& is\-chardev шлях
 .Ve
 .PP
 This returns \f(CW\*(C`true\*(C'\fR if and only if there is a character device with the
 given \f(CW\*(C`path\*(C'\fR name.
 .PP
-See also \*(L"stat\*(R".
+Див. також \*(L"stat\*(R".
 .SS "is-config"
 .IX Subsection "is-config"
 .Vb 1
@@ -3554,34 +3650,34 @@ For more information on states, see \fIguestfs\fR\|(3).
 .SS "is-dir"
 .IX Subsection "is-dir"
 .Vb 1
-\& is\-dir path
+\& is\-dir шлях
 .Ve
 .PP
 This returns \f(CW\*(C`true\*(C'\fR if and only if there is a directory with the given
 \&\f(CW\*(C`path\*(C'\fR name.  Note that it returns false for other objects like files.
 .PP
-See also \*(L"stat\*(R".
+Див. також \*(L"stat\*(R".
 .SS "is-fifo"
 .IX Subsection "is-fifo"
 .Vb 1
-\& is\-fifo path
+\& is\-fifo шлях
 .Ve
 .PP
 This returns \f(CW\*(C`true\*(C'\fR if and only if there is a \s-1FIFO\s0 (named pipe)  with the
 given \f(CW\*(C`path\*(C'\fR name.
 .PP
-See also \*(L"stat\*(R".
+Див. також \*(L"stat\*(R".
 .SS "is-file"
 .IX Subsection "is-file"
 .Vb 1
-\& is\-file path
+\& is\-file шлях
 .Ve
 .PP
 This returns \f(CW\*(C`true\*(C'\fR if and only if there is a regular file with the given
 \&\f(CW\*(C`path\*(C'\fR name.  Note that it returns false for other objects like
 directories.
 .PP
-See also \*(L"stat\*(R".
+Див. також \*(L"stat\*(R".
 .SS "is-launching"
 .IX Subsection "is-launching"
 .Vb 1
@@ -3595,7 +3691,7 @@ For more information on states, see \fIguestfs\fR\|(3).
 .SS "is-lv"
 .IX Subsection "is-lv"
 .Vb 1
-\& is\-lv device
+\& is\-lv пристрій
 .Ve
 .PP
 This command tests whether \f(CW\*(C`device\*(C'\fR is a logical volume, and returns true
@@ -3613,23 +3709,40 @@ For more information on states, see \fIguestfs\fR\|(3).
 .SS "is-socket"
 .IX Subsection "is-socket"
 .Vb 1
-\& is\-socket path
+\& is\-socket шлях
 .Ve
 .PP
 This returns \f(CW\*(C`true\*(C'\fR if and only if there is a Unix domain socket with the
 given \f(CW\*(C`path\*(C'\fR name.
 .PP
-See also \*(L"stat\*(R".
+Див. також \*(L"stat\*(R".
 .SS "is-symlink"
 .IX Subsection "is-symlink"
 .Vb 1
-\& is\-symlink path
+\& is\-symlink шлях
 .Ve
 .PP
 This returns \f(CW\*(C`true\*(C'\fR if and only if there is a symbolic link with the given
 \&\f(CW\*(C`path\*(C'\fR name.
 .PP
-See also \*(L"stat\*(R".
+Див. також \*(L"stat\*(R".
+.SS "is-zero"
+.IX Subsection "is-zero"
+.Vb 1
+\& is\-zero path
+.Ve
+.PP
+This returns true iff the file exists and the file is empty or it contains
+all zero bytes.
+.SS "is-zero-device"
+.IX Subsection "is-zero-device"
+.Vb 1
+\& is\-zero\-device device
+.Ve
+.PP
+This returns true iff the device exists and contains all zero bytes.
+.PP
+Note that for large devices this can take a long time to run.
 .SS "kill-subprocess"
 .IX Subsection "kill-subprocess"
 .Vb 1
@@ -3653,7 +3766,7 @@ before performing any actions.
 .SS "lchown"
 .IX Subsection "lchown"
 .Vb 1
-\& lchown owner group path
+\& lchown власник група шлях
 .Ve
 .PP
 Change the file owner to \f(CW\*(C`owner\*(C'\fR and group to \f(CW\*(C`group\*(C'\fR.  This is like
@@ -3666,7 +3779,7 @@ this relatively easy).
 .SS "lgetxattr"
 .IX Subsection "lgetxattr"
 .Vb 1
-\& lgetxattr path name
+\& lgetxattr шлях назва
 .Ve
 .PP
 Get a single extended attribute from file \f(CW\*(C`path\*(C'\fR named \f(CW\*(C`name\*(C'\fR.  If \f(CW\*(C`path\*(C'\fR
@@ -3681,15 +3794,23 @@ attributes you want in advance and call this function.
 Extended attribute values are blobs of binary data.  If there is no extended
 attribute named \f(CW\*(C`name\*(C'\fR, this returns an error.
 .PP
-See also: \*(L"lgetxattrs\*(R", \*(L"getxattr\*(R", \fIattr\fR\|(5).
+Див. також \*(L"lgetxattrs\*(R", \*(L"getxattr\*(R", \fIattr\fR\|(5).
 .SS "lgetxattrs"
 .IX Subsection "lgetxattrs"
 .Vb 1
-\& lgetxattrs path
+\& lgetxattrs шлях
 .Ve
 .PP
 This is the same as \*(L"getxattrs\*(R", but if \f(CW\*(C`path\*(C'\fR is a symbolic link, then
 it returns the extended attributes of the link itself.
+.SS "list\-9p"
+.IX Subsection "list-9p"
+.Vb 1
+\& list\-9p
+.Ve
+.PP
+List all 9p filesystems attached to the guest.  A list of mount tags is
+returned.
 .SS "list-devices"
 .IX Subsection "list-devices"
 .Vb 1
@@ -3700,7 +3821,20 @@ List all the block devices.
 .PP
 The full block device names are returned, eg. \f(CW\*(C`/dev/sda\*(C'\fR.
 .PP
-See also \*(L"list-filesystems\*(R".
+Див. також \*(L"list-filesystems\*(R".
+.SS "list-dm-devices"
+.IX Subsection "list-dm-devices"
+.Vb 1
+\& list\-dm\-devices
+.Ve
+.PP
+List all device mapper devices.
+.PP
+The returned list contains \f(CW\*(C`/dev/mapper/*\*(C'\fR devices, eg. ones created by a
+previous call to \*(L"luks-open\*(R".
+.PP
+Device mapper devices which correspond to logical volumes are \fInot\fR
+returned in this list.  Call \*(L"lvs\*(R" if you want to list logical volumes.
 .SS "list-filesystems"
 .IX Subsection "list-filesystems"
 .Vb 1
@@ -3746,11 +3880,11 @@ The full partition device names are returned, eg. \f(CW\*(C`/dev/sda1\*(C'\fR
 This does not return logical volumes.  For that you will need to call
 \&\*(L"lvs\*(R".
 .PP
-See also \*(L"list-filesystems\*(R".
+Див. також \*(L"list-filesystems\*(R".
 .SS "ll"
 .IX Subsection "ll"
 .Vb 1
-\& ll directory
+\& ll каталог
 .Ve
 .PP
 List the files in \f(CW\*(C`directory\*(C'\fR (relative to the root directory, there is no
@@ -3761,14 +3895,14 @@ intended that you try to parse the output string.
 .SS "ln"
 .IX Subsection "ln"
 .Vb 1
-\& ln target linkname
+\& ln призначення назва_посилання
 .Ve
 .PP
 This command creates a hard link using the \f(CW\*(C`ln\*(C'\fR command.
 .SS "ln-f"
 .IX Subsection "ln-f"
 .Vb 1
-\& ln\-f target linkname
+\& ln\-f призначення назва_посилання
 .Ve
 .PP
 This command creates a hard link using the \f(CW\*(C`ln \-f\*(C'\fR command.  The \fI\-f\fR
@@ -3776,14 +3910,14 @@ option removes the link (\f(CW\*(C`linkname\*(C'\fR) if it exists already.
 .SS "ln-s"
 .IX Subsection "ln-s"
 .Vb 1
-\& ln\-s target linkname
+\& ln\-s призначення назва_посилання
 .Ve
 .PP
 This command creates a symbolic link using the \f(CW\*(C`ln \-s\*(C'\fR command.
 .SS "ln-sf"
 .IX Subsection "ln-sf"
 .Vb 1
-\& ln\-sf target linkname
+\& ln\-sf призначення назва_посилання
 .Ve
 .PP
 This command creates a symbolic link using the \f(CW\*(C`ln \-sf\*(C'\fR command, The \fI\-f\fR
@@ -3799,7 +3933,7 @@ it removes an extended attribute of the link itself.
 .SS "ls"
 .IX Subsection "ls"
 .Vb 1
-\& ls directory
+\& ls каталог
 .Ve
 .PP
 List the files in \f(CW\*(C`directory\*(C'\fR (relative to the root directory, there is no
@@ -3819,7 +3953,7 @@ sets an extended attribute of the link itself.
 .SS "lstat"
 .IX Subsection "lstat"
 .Vb 1
-\& lstat path
+\& lstat шлях
 .Ve
 .PP
 Returns file information for the given \f(CW\*(C`path\*(C'\fR.
@@ -3866,7 +4000,7 @@ prompt for these separately.
 .SS "luks-close"
 .IX Subsection "luks-close"
 .Vb 1
-\& luks\-close device
+\& luks\-close пристрій
 .Ve
 .PP
 This closes a \s-1LUKS\s0 device that was created earlier by \*(L"luks-open\*(R" or
@@ -3934,6 +4068,8 @@ underlying \f(CW\*(C`device\*(C'\fR respectively.
 If this block device contains \s-1LVM\s0 volume groups, then calling \*(L"vgscan\*(R"
 followed by \*(L"vg-activate-all\*(R" will make them visible.
 .PP
+Use \*(L"list-dm-devices\*(R" to list all device mapper devices.
+.PP
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
 .SS "luks-open-ro"
@@ -3968,7 +4104,7 @@ canonical name.  For example, \f(CW\*(C`/dev/mapper/VG\-LV\*(C'\fR is converted 
 This command returns an error if the \f(CW\*(C`lvname\*(C'\fR parameter does not refer to a
 logical volume.
 .PP
-See also \*(L"is-lv\*(R".
+Див. також \*(L"is-lv\*(R".
 .SS "lvm-clear-filter"
 .IX Subsection "lvm-clear-filter"
 .Vb 1
@@ -3993,7 +4129,7 @@ your data\fR.
 .SS "lvm-set-filter"
 .IX Subsection "lvm-set-filter"
 .Vb 1
-\& lvm\-set\-filter \*(Aqdevices ...\*(Aq
+\& lvm\-set\-filter \*(Aqпристрої...\*(Aq
 .Ve
 .PP
 This sets the \s-1LVM\s0 device filter so that \s-1LVM\s0 will only be able to \*(L"see\*(R" the
@@ -4017,7 +4153,7 @@ filesystem), even if you are not filtering out that \s-1VG\s0.
 .SS "lvremove"
 .IX Subsection "lvremove"
 .Vb 1
-\& lvremove device
+\& lvremove пристрій
 .Ve
 .PP
 Remove an \s-1LVM\s0 logical volume \f(CW\*(C`device\*(C'\fR, where \f(CW\*(C`device\*(C'\fR is the path to the
@@ -4062,7 +4198,7 @@ List all the logical volumes detected.  This is the equivalent of the
 This returns a list of the logical volume device names
 (eg. \f(CW\*(C`/dev/VolGroup00/LogVol00\*(C'\fR).
 .PP
-See also \*(L"lvs-full\*(R", \*(L"list-filesystems\*(R".
+Див. також \*(L"lvs-full\*(R", \*(L"list-filesystems\*(R".
 .SS "lvs-full"
 .IX Subsection "lvs-full"
 .Vb 1
@@ -4074,7 +4210,7 @@ List all the logical volumes detected.  This is the equivalent of the
 .SS "lvuuid"
 .IX Subsection "lvuuid"
 .Vb 1
-\& lvuuid device
+\& lvuuid пристрій
 .Ve
 .PP
 This command returns the \s-1UUID\s0 of the \s-1LVM\s0 \s-1LV\s0 \f(CW\*(C`device\*(C'\fR.
@@ -4105,14 +4241,14 @@ names.
 .SS "mkdir"
 .IX Subsection "mkdir"
 .Vb 1
-\& mkdir path
+\& mkdir шлях
 .Ve
 .PP
 Create a directory named \f(CW\*(C`path\*(C'\fR.
 .SS "mkdir-mode"
 .IX Subsection "mkdir-mode"
 .Vb 1
-\& mkdir\-mode path mode
+\& mkdir\-mode шлях режим
 .Ve
 .PP
 This command creates a directory, setting the initial permissions of the
@@ -4122,11 +4258,11 @@ For common Linux filesystems, the actual mode which is set will be \f(CW\*(C`mod
 ~umask & 01777\*(C'\fR.  Non-native-Linux filesystems may interpret the mode in
 other ways.
 .PP
-See also \*(L"mkdir\*(R", \*(L"umask\*(R"
+Див. також \*(L"mkdir\*(R", \*(L"umask\*(R"
 .SS "mkdir-p"
 .IX Subsection "mkdir-p"
 .Vb 1
-\& mkdir\-p path
+\& mkdir\-p шлях
 .Ve
 .PP
 Create a directory named \f(CW\*(C`path\*(C'\fR, creating any parent directories as
@@ -4134,7 +4270,7 @@ necessary.  This is like the \f(CW\*(C`mkdir \-p\*(C'\fR shell command.
 .SS "mkdtemp"
 .IX Subsection "mkdtemp"
 .Vb 1
-\& mkdtemp template
+\& mkdtemp шаблон
 .Ve
 .PP
 This command creates a temporary directory.  The \f(CW\*(C`template\*(C'\fR parameter
@@ -4162,10 +4298,10 @@ This creates an ext2/3/4 filesystem on \f(CW\*(C`device\*(C'\fR with an external
 \&\f(CW\*(C`journal\*(C'\fR.  It is equivalent to the command:
 .PP
 .Vb 1
-\& mke2fs \-t fstype \-b blocksize \-J device=<journal> <device>
+\& mke2fs \-t fstype \-b blocksize \-J device=<журнал> <пристрій>
 .Ve
 .PP
-See also \*(L"mke2journal\*(R".
+Див. також \*(L"mke2journal\*(R".
 .SS "mke2fs\-JL"
 .IX Subsection "mke2fs-JL"
 .Vb 1
@@ -4175,7 +4311,7 @@ See also \*(L"mke2journal\*(R".
 This creates an ext2/3/4 filesystem on \f(CW\*(C`device\*(C'\fR with an external journal on
 the journal labeled \f(CW\*(C`label\*(C'\fR.
 .PP
-See also \*(L"mke2journal\-L\*(R".
+Див. також \*(L"mke2journal\-L\*(R".
 .SS "mke2fs\-JU"
 .IX Subsection "mke2fs-JU"
 .Vb 1
@@ -4185,7 +4321,7 @@ See also \*(L"mke2journal\-L\*(R".
 This creates an ext2/3/4 filesystem on \f(CW\*(C`device\*(C'\fR with an external journal on
 the journal with \s-1UUID\s0 \f(CW\*(C`uuid\*(C'\fR.
 .PP
-See also \*(L"mke2journal\-U\*(R".
+Див. також \*(L"mke2journal\-U\*(R".
 .SS "mke2journal"
 .IX Subsection "mke2journal"
 .Vb 1
@@ -4215,7 +4351,7 @@ This creates an ext2 external journal on \f(CW\*(C`device\*(C'\fR with \s-1UUID\
 .SS "mkfifo"
 .IX Subsection "mkfifo"
 .Vb 1
-\& mkfifo mode path
+\& mkfifo режим шлях
 .Ve
 .PP
 This call creates a \s-1FIFO\s0 (named pipe) called \f(CW\*(C`path\*(C'\fR with mode \f(CW\*(C`mode\*(C'\fR.  It
@@ -4225,7 +4361,7 @@ The mode actually set is affected by the umask.
 .SS "mkfs"
 .IX Subsection "mkfs"
 .Vb 1
-\& mkfs fstype device
+\& mkfs тип_файлової_системи пристрій
 .Ve
 .PP
 This creates a filesystem on \f(CW\*(C`device\*(C'\fR (usually a partition or \s-1LVM\s0 logical
@@ -4252,7 +4388,7 @@ these functions.
 .SS "mkfs-opts"
 .IX Subsection "mkfs-opts"
 .Vb 1
-\& mkfs\-opts fstype device [blocksize:..] [features:..]
+\& mkfs\-opts fstype device [blocksize:..] [features:..] [inode:..] [sectorsize:..]
 .Ve
 .PP
 This function creates a filesystem on \f(CW\*(C`device\*(C'\fR.  The filesystem type is
@@ -4280,6 +4416,16 @@ selected.  See \fImke2fs\fR\|(8) and \fImkfs.ufs\fR\|(8) for more details.
 .Sp
 You cannot use this optional parameter with the \f(CW\*(C`gfs\*(C'\fR or \f(CW\*(C`gfs2\*(C'\fR filesystem
 type.
+.ie n .IP """inode""" 4
+.el .IP "\f(CWinode\fR" 4
+.IX Item "inode"
+This passes the \fI\-I\fR parameter to the external \fImke2fs\fR\|(8) program which
+sets the inode size (only for ext2/3/4 filesystems at present).
+.ie n .IP """sectorsize""" 4
+.el .IP "\f(CWsectorsize\fR" 4
+.IX Item "sectorsize"
+This passes the \fI\-S\fR parameter to external \fImkfs.ufs\fR\|(8) program, which
+sets sector size for ufs filesystem.
 .PP
 This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 \&\s-1ARGUMENTS\s0\*(R".
@@ -4372,14 +4518,14 @@ The mode actually set is affected by the umask.
 .SS "mkswap"
 .IX Subsection "mkswap"
 .Vb 1
-\& mkswap device
+\& mkswap пристрій
 .Ve
 .PP
 Create a swap partition on \f(CW\*(C`device\*(C'\fR.
 .SS "mkswap-L"
 .IX Subsection "mkswap-L"
 .Vb 1
-\& mkswap\-L label device
+\& mkswap\-L мітка пристрій
 .Ve
 .PP
 Create a swap partition on \f(CW\*(C`device\*(C'\fR with label \f(CW\*(C`label\*(C'\fR.
@@ -4390,24 +4536,24 @@ the kernel or swap tools.
 .SS "mkswap-U"
 .IX Subsection "mkswap-U"
 .Vb 1
-\& mkswap\-U uuid device
+\& mkswap\-U uuid пристрій
 .Ve
 .PP
 Create a swap partition on \f(CW\*(C`device\*(C'\fR with \s-1UUID\s0 \f(CW\*(C`uuid\*(C'\fR.
 .SS "mkswap-file"
 .IX Subsection "mkswap-file"
 .Vb 1
-\& mkswap\-file path
+\& mkswap\-file шлях
 .Ve
 .PP
-Create a swap file.
+Створити файл резервної пам’яті.
 .PP
 This command just writes a swap file signature to an existing file.  To
 create the file itself, use something like \*(L"fallocate\*(R".
 .SS "modprobe"
 .IX Subsection "modprobe"
 .Vb 1
-\& modprobe modulename
+\& modprobe назва_модуля
 .Ve
 .PP
 This loads a kernel module in the appliance.
@@ -4417,7 +4563,7 @@ The kernel module must have been whitelisted when libguestfs was built (see
 .SS "mount"
 .IX Subsection "mount"
 .Vb 1
-\& mount device mountpoint
+\& mount пристрій точка_монтування
 .Ve
 .PP
 Mount a guest disk at a position in the filesystem.  Block devices are named
@@ -4446,6 +4592,21 @@ instead.
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+.SS "mount\-9p"
+.IX Subsection "mount-9p"
+.Vb 1
+\& mount\-9p mounttag mountpoint [options:..]
+.Ve
+.PP
+Mount the virtio\-9p filesystem with the tag \f(CW\*(C`mounttag\*(C'\fR on the directory
+\&\f(CW\*(C`mountpoint\*(C'\fR.
+.PP
+If required, \f(CW\*(C`trans=virtio\*(C'\fR will be automatically added to the options.
+Any other options required can be passed in the optional \f(CW\*(C`options\*(C'\fR
+parameter.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
 .SS "mount-loop"
 .IX Subsection "mount-loop"
 .Vb 1
@@ -4469,7 +4630,7 @@ If the \f(CW\*(C`options\*(C'\fR parameter is an empty string, then no options a
 .SS "mount-ro"
 .IX Subsection "mount-ro"
 .Vb 1
-\& mount\-ro device mountpoint
+\& mount\-ro пристрій точка_монтування
 .Ve
 .PP
 This is the same as the \*(L"mount\*(R" command, but it mounts the filesystem with
@@ -4502,11 +4663,11 @@ of devices (eg. \f(CW\*(C`/dev/sda1\*(C'\fR, \f(CW\*(C`/dev/VG/LV\*(C'\fR).
 .PP
 Some internal mounts are not shown.
 .PP
-See also: \*(L"mountpoints\*(R"
+Див. також \*(L"mountpoints\*(R"
 .SS "mv"
 .IX Subsection "mv"
 .Vb 1
-\& mv src dest
+\& mv джерело призначення
 .Ve
 .PP
 This moves a file from \f(CW\*(C`src\*(C'\fR to \f(CW\*(C`dest\*(C'\fR where \f(CW\*(C`dest\*(C'\fR is either a
@@ -4530,7 +4691,7 @@ some non-zero value documented in the \fIntfs\-3g.probe\fR\|(8) manual page.
 .SS "ntfsresize"
 .IX Subsection "ntfsresize"
 .Vb 1
-\& ntfsresize device
+\& ntfsresize пристрій
 .Ve
 .PP
 This command resizes an \s-1NTFS\s0 filesystem, expanding or shrinking it to the
@@ -4544,6 +4705,44 @@ not possible to call ntfsresize multiple times on a single filesystem
 without booting into Windows between each resize.
 .PP
 See also \fIntfsresize\fR\|(8).
+.PP
+This function is deprecated.  In new code, use the \*(L"ntfsresize_opts\*(R" call
+instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+.SS "ntfsresize-opts"
+.IX Subsection "ntfsresize-opts"
+.Vb 1
+\& ntfsresize\-opts device [size:..] [force:..]
+.Ve
+.PP
+This command resizes an \s-1NTFS\s0 filesystem, expanding or shrinking it to the
+size of the underlying device.
+.PP
+The optional parameters are:
+.ie n .IP """size""" 4
+.el .IP "\f(CWsize\fR" 4
+.IX Item "size"
+The new size (in bytes) of the filesystem.  If omitted, the filesystem is
+resized to fit the container (eg. partition).
+.ie n .IP """force""" 4
+.el .IP "\f(CWforce\fR" 4
+.IX Item "force"
+If this option is true, then force the resize of the filesystem even if the
+filesystem is marked as requiring a consistency check.
+.Sp
+After the resize operation, the filesystem is always marked as requiring a
+consistency check (for safety).  You have to boot into Windows to perform
+this check and clear this condition.  If you \fIdon't\fR set the \f(CW\*(C`force\*(C'\fR
+option then it is not possible to call \*(L"ntfsresize-opts\*(R" multiple times on
+a single filesystem without booting into Windows between each resize.
+.PP
+See also \fIntfsresize\fR\|(8).
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
 .SS "ntfsresize-size"
 .IX Subsection "ntfsresize-size"
 .Vb 1
@@ -4552,6 +4751,13 @@ See also \fIntfsresize\fR\|(8).
 .PP
 This command is the same as \*(L"ntfsresize\*(R" except that it allows you to
 specify the new size (in bytes) explicitly.
+.PP
+This function is deprecated.  In new code, use the \*(L"ntfsresize_opts\*(R" call
+instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 .SS "part-add"
 .IX Subsection "part-add"
 .Vb 1
@@ -4584,7 +4790,7 @@ also deletes any logical partitions it contains.
 .SS "part-disk"
 .IX Subsection "part-disk"
 .Vb 1
-\& part\-disk device parttype
+\& part\-disk пристрій тип_розділу
 .Ve
 .PP
 This command is simply a combination of \*(L"part-init\*(R" followed by
@@ -4604,7 +4810,7 @@ your data\fR.
 This command returns true if the partition \f(CW\*(C`partnum\*(C'\fR on \f(CW\*(C`device\*(C'\fR has the
 bootable flag set.
 .PP
-See also \*(L"part-set-bootable\*(R".
+Див. також \*(L"part-set-bootable\*(R".
 .SS "part-get-mbr-id"
 .IX Subsection "part-get-mbr-id"
 .Vb 1
@@ -4620,7 +4826,7 @@ undefined results for other partition table types (see
 .SS "part-get-parttype"
 .IX Subsection "part-get-parttype"
 .Vb 1
-\& part\-get\-parttype device
+\& part\-get\-parttype пристрій
 .Ve
 .PP
 This command examines the partition table on \f(CW\*(C`device\*(C'\fR and returns the
@@ -4643,15 +4849,23 @@ Initially there are no partitions.  Following this, you should call
 \&\*(L"part-add\*(R" for each partition required.
 .PP
 Possible values for \f(CW\*(C`parttype\*(C'\fR are:
-.IP "\fBefi\fR | \fBgpt\fR" 4
-.IX Item "efi | gpt"
+.IP "\fBefi\fR" 4
+.IX Item "efi"
+.PD 0
+.IP "\fBgpt\fR" 4
+.IX Item "gpt"
+.PD
 Intel \s-1EFI\s0 / \s-1GPT\s0 partition table.
 .Sp
 This is recommended for >= 2 \s-1TB\s0 partitions that will be accessed from Linux
 and Intel-based Mac \s-1OS\s0 X.  It also has limited backwards compatibility with
 the \f(CW\*(C`mbr\*(C'\fR format.
-.IP "\fBmbr\fR | \fBmsdos\fR" 4
-.IX Item "mbr | msdos"
+.IP "\fBmbr\fR" 4
+.IX Item "mbr"
+.PD 0
+.IP "\fBmsdos\fR" 4
+.IX Item "msdos"
+.PD
 The standard \s-1PC\s0 \*(L"Master Boot Record\*(R" (\s-1MBR\s0) format used by MS-DOS and
 Windows.  This partition type will \fBonly\fR work for device sizes up to 2
 \&\s-1TB\s0.  For large disks we recommend using \f(CW\*(C`gpt\*(C'\fR.
@@ -4659,28 +4873,32 @@ Windows.  This partition type will \fBonly\fR work for device sizes up to 2
 Other partition table types that may work but are not supported include:
 .IP "\fBaix\fR" 4
 .IX Item "aix"
-\&\s-1AIX\s0 disk labels.
-.IP "\fBamiga\fR | \fBrdb\fR" 4
-.IX Item "amiga | rdb"
-Amiga \*(L"Rigid Disk Block\*(R" format.
+Мітки дисків \s-1AIX\s0.
+.IP "\fBamiga\fR" 4
+.IX Item "amiga"
+.PD 0
+.IP "\fBrdb\fR" 4
+.IX Item "rdb"
+.PD
+Формат \*(L"Rigid Disk Block\*(R" Amiga.
 .IP "\fBbsd\fR" 4
 .IX Item "bsd"
-\&\s-1BSD\s0 disk labels.
+Мітки дисків \s-1BSD\s0.
 .IP "\fBdasd\fR" 4
 .IX Item "dasd"
-\&\s-1DASD\s0, used on \s-1IBM\s0 mainframes.
+\&\s-1DASD\s0, використовувалися у мейнфреймах \s-1IBM\s0.
 .IP "\fBdvh\fR" 4
 .IX Item "dvh"
-\&\s-1MIPS/SGI\s0 volumes.
+Томи \s-1MIPS/SGI\s0.
 .IP "\fBmac\fR" 4
 .IX Item "mac"
-Old Mac partition format.  Modern Macs use \f(CW\*(C`gpt\*(C'\fR.
+Старий формат розділів Mac. Сучасні системи Mac використовують \f(CW\*(C`gpt\*(C'\fR.
 .IP "\fBpc98\fR" 4
 .IX Item "pc98"
-\&\s-1NEC\s0 \s-1PC\-98\s0 format, common in Japan apparently.
+Формат \s-1NEC\s0 \s-1PC\-98\s0, поширений у Японії.
 .IP "\fBsun\fR" 4
 .IX Item "sun"
-Sun disk labels.
+Мітки дисків Sun.
 .SS "part-list"
 .IX Subsection "part-list"
 .Vb 1
@@ -4744,7 +4962,7 @@ This works on \f(CW\*(C`gpt\*(C'\fR but not on \f(CW\*(C`mbr\*(C'\fR partitions.
 .SS "part-to-dev"
 .IX Subsection "part-to-dev"
 .Vb 1
-\& part\-to\-dev partition
+\& part\-to\-dev розділ
 .Ve
 .PP
 This function takes a partition name (eg. \*(L"/dev/sdb1\*(R") and removes the
@@ -4774,7 +4992,7 @@ file, starting at \f(CW\*(C`offset\*(C'\fR, from file \f(CW\*(C`path\*(C'\fR.
 This may read fewer bytes than requested.  For further details see the
 \&\fIpread\fR\|(2) system call.
 .PP
-See also \*(L"pwrite\*(R", \*(L"pread-device\*(R".
+Див. також \*(L"pwrite\*(R", \*(L"pread-device\*(R".
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -4790,14 +5008,14 @@ This command lets you read part of a file.  It reads \f(CW\*(C`count\*(C'\fR byt
 This may read fewer bytes than requested.  For further details see the
 \&\fIpread\fR\|(2) system call.
 .PP
-See also \*(L"pread\*(R".
+Див. також \*(L"pread\*(R".
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .SS "pvcreate"
 .IX Subsection "pvcreate"
 .Vb 1
-\& pvcreate device
+\& pvcreate пристрій
 .Ve
 .PP
 This creates an \s-1LVM\s0 physical volume on the named \f(CW\*(C`device\*(C'\fR, where \f(CW\*(C`device\*(C'\fR
@@ -4805,7 +5023,7 @@ should usually be a partition name such as \f(CW\*(C`/dev/sda1\*(C'\fR.
 .SS "pvremove"
 .IX Subsection "pvremove"
 .Vb 1
-\& pvremove device
+\& pvremove пристрій
 .Ve
 .PP
 This wipes a physical volume \f(CW\*(C`device\*(C'\fR so that \s-1LVM\s0 will no longer recognise
@@ -4817,7 +5035,7 @@ first.
 .SS "pvresize"
 .IX Subsection "pvresize"
 .Vb 1
-\& pvresize device
+\& pvresize пристрій
 .Ve
 .PP
 This resizes (expands or shrinks) an existing \s-1LVM\s0 physical volume to match
@@ -4842,7 +5060,7 @@ List all the physical volumes detected.  This is the equivalent of the
 This returns a list of just the device names that contain PVs
 (eg. \f(CW\*(C`/dev/sda2\*(C'\fR).
 .PP
-See also \*(L"pvs-full\*(R".
+Див. також \*(L"pvs-full\*(R".
 .SS "pvs-full"
 .IX Subsection "pvs-full"
 .Vb 1
@@ -4854,7 +5072,7 @@ List all the physical volumes detected.  This is the equivalent of the
 .SS "pvuuid"
 .IX Subsection "pvuuid"
 .Vb 1
-\& pvuuid device
+\& pvuuid пристрій
 .Ve
 .PP
 This command returns the \s-1UUID\s0 of the \s-1LVM\s0 \s-1PV\s0 \f(CW\*(C`device\*(C'\fR.
@@ -4873,7 +5091,7 @@ number of bytes that were actually written to the file.  This could even be
 0, although short writes are unlikely for regular files in ordinary
 circumstances.
 .PP
-See also \*(L"pread\*(R", \*(L"pwrite-device\*(R".
+Див. також \*(L"pread\*(R", \*(L"pwrite-device\*(R".
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -4890,14 +5108,14 @@ This command implements the \fIpwrite\fR\|(2) system call, and like that system
 call it may not write the full data requested (although short writes to disk
 devices and partitions are probably impossible with standard Linux kernels).
 .PP
-See also \*(L"pwrite\*(R".
+Див. також \*(L"pwrite\*(R".
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .SS "read-file"
 .IX Subsection "read-file"
 .Vb 1
-\& read\-file path
+\& read\-file шлях
 .Ve
 .PP
 This calls returns the contents of the file \f(CW\*(C`path\*(C'\fR as a buffer.
@@ -4911,7 +5129,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .SS "read-lines"
 .IX Subsection "read-lines"
 .Vb 1
-\& read\-lines path
+\& read\-lines шлях
 .Ve
 .PP
 Return the contents of the file named \f(CW\*(C`path\*(C'\fR.
@@ -4926,7 +5144,7 @@ interface.
 .SS "readdir"
 .IX Subsection "readdir"
 .Vb 1
-\& readdir dir
+\& readdir каталог
 .Ve
 .PP
 This returns the list of directory entries in directory \f(CW\*(C`dir\*(C'\fR.
@@ -4939,28 +5157,28 @@ Also this call returns basic file type information about each file.  The
 \&\f(CW\*(C`ftyp\*(C'\fR field will contain one of the following characters:
 .IP "'b'" 4
 .IX Item "'b'"
-Block special
+Блоковий особливий
 .IP "'c'" 4
 .IX Item "'c'"
-Char special
+Символьний особливий
 .IP "'d'" 4
 .IX Item "'d'"
-Directory
+Каталог
 .IP "'f'" 4
 .IX Item "'f'"
-\&\s-1FIFO\s0 (named pipe)
+\&\s-1FIFO\s0 (іменований канал)
 .IP "'l'" 4
 .IX Item "'l'"
-Symbolic link
+Символічне посилання
 .IP "'r'" 4
 .IX Item "'r'"
-Regular file
+Звичайний файл
 .IP "'s'" 4
 .IX Item "'s'"
-Socket
+Сокет
 .IP "'u'" 4
 .IX Item "'u'"
-Unknown file type
+Невідомий тип файла
 .IP "'?'" 4
 The \fIreaddir\fR\|(3) call returned a \f(CW\*(C`d_type\*(C'\fR field with an unexpected value
 .PP
@@ -4970,7 +5188,7 @@ consumption, use \*(L"ll\*(R".
 .SS "readlink"
 .IX Subsection "readlink"
 .Vb 1
-\& readlink path
+\& readlink шлях
 .Ve
 .PP
 This command reads the target of a symbolic link.
@@ -5000,7 +5218,7 @@ fail.  The caller must split up such requests into smaller groups of names.
 .SS "realpath"
 .IX Subsection "realpath"
 .Vb 1
-\& realpath path
+\& realpath шлях
 .Ve
 .PP
 Return the canonicalized absolute pathname of \f(CW\*(C`path\*(C'\fR.  The returned path
@@ -5013,11 +5231,11 @@ has no \f(CW\*(C`.\*(C'\fR, \f(CW\*(C`..\*(C'\fR or symbolic link path elements.
 .PP
 This call removes the extended attribute named \f(CW\*(C`xattr\*(C'\fR of the file \f(CW\*(C`path\*(C'\fR.
 .PP
-See also: \*(L"lremovexattr\*(R", \fIattr\fR\|(5).
+Див. також \*(L"lremovexattr\*(R", \fIattr\fR\|(5).
 .SS "resize2fs"
 .IX Subsection "resize2fs"
 .Vb 1
-\& resize2fs device
+\& resize2fs пристрій
 .Ve
 .PP
 This resizes an ext2, ext3 or ext4 filesystem to match the size of the
@@ -5030,7 +5248,7 @@ to call \*(L"e2fsck\-f\*(R" before calling this function.
 .SS "resize2fs\-M"
 .IX Subsection "resize2fs-M"
 .Vb 1
-\& resize2fs\-M device
+\& resize2fs\-M пристрій
 .Ve
 .PP
 This command is the same as \*(L"resize2fs\*(R", but the filesystem is resized to
@@ -5052,14 +5270,14 @@ specify the new size (in bytes) explicitly.
 .SS "rm"
 .IX Subsection "rm"
 .Vb 1
-\& rm path
+\& rm шлях
 .Ve
 .PP
 Remove the single file \f(CW\*(C`path\*(C'\fR.
 .SS "rm-rf"
 .IX Subsection "rm-rf"
 .Vb 1
-\& rm\-rf path
+\& rm\-rf шлях
 .Ve
 .PP
 Remove the file or directory \f(CW\*(C`path\*(C'\fR, recursively removing the contents if
@@ -5067,7 +5285,7 @@ its a directory.  This is like the \f(CW\*(C`rm \-rf\*(C'\fR shell command.
 .SS "rmdir"
 .IX Subsection "rmdir"
 .Vb 1
-\& rmdir path
+\& rmdir шлях
 .Ve
 .PP
 Remove the single directory \f(CW\*(C`path\*(C'\fR.
@@ -5082,7 +5300,7 @@ This calls removes a mountpoint that was previously created with
 .SS "scrub-device"
 .IX Subsection "scrub-device"
 .Vb 1
-\& scrub\-device device
+\& scrub\-device пристрій
 .Ve
 .PP
 This command writes patterns over \f(CW\*(C`device\*(C'\fR to make data retrieval more
@@ -5096,7 +5314,7 @@ your data\fR.
 .SS "scrub-file"
 .IX Subsection "scrub-file"
 .Vb 1
-\& scrub\-file file
+\& scrub\-file файл
 .Ve
 .PP
 This command writes patterns over a file to make data retrieval more
@@ -5109,7 +5327,7 @@ more details.
 .SS "scrub-freespace"
 .IX Subsection "scrub-freespace"
 .Vb 1
-\& scrub\-freespace dir
+\& scrub\-freespace каталог
 .Ve
 .PP
 This command creates the directory \f(CW\*(C`dir\*(C'\fR and then fills it with files until
@@ -5150,10 +5368,10 @@ daemon.  Possible methods are:
 .IX Item "appliance"
 Launch an appliance and connect to it.  This is the ordinary method and the
 default.
-.ie n .IP """unix:\f(CIpath\f(CW""" 4
-.el .IP "\f(CWunix:\f(CIpath\f(CW\fR" 4
-.IX Item "unix:path"
-Connect to the Unix domain socket \fIpath\fR.
+.ie n .IP """unix:\f(CIшлях\f(CW""" 4
+.el .IP "\f(CWunix:\f(CIшлях\f(CW\fR" 4
+.IX Item "unix:шлях"
+Встановити з’єднання з сокетом домену Unix \fIшлях\fR.
 .Sp
 This method lets you connect to an existing daemon or (using virtio-serial)
 to a live guest.  For more information, see \*(L"\s-1ATTACHING\s0 \s-1TO\s0
@@ -5256,6 +5474,22 @@ The default is \f(CW\*(C`$libdir/guestfs\*(C'\fR unless overridden by setting
 \&\f(CW\*(C`LIBGUESTFS_PATH\*(C'\fR environment variable.
 .PP
 Setting \f(CW\*(C`path\*(C'\fR to \f(CW\*(C`NULL\*(C'\fR restores the default path.
+.SS "set-pgroup"
+.IX Subsection "set-pgroup"
+.SS "pgroup"
+.IX Subsection "pgroup"
+.Vb 1
+\& set\-pgroup true|false
+.Ve
+.PP
+If \f(CW\*(C`pgroup\*(C'\fR is true, child processes are placed into their own process
+group.
+.PP
+The practical upshot of this is that signals like \f(CW\*(C`SIGINT\*(C'\fR (from users
+pressing \f(CW\*(C`^C\*(C'\fR) won't be received by the child process.
+.PP
+The default for this flag is false, because usually you want \f(CW\*(C`^C\*(C'\fR to kill
+the subprocess.
 .SS "set-qemu"
 .IX Subsection "set-qemu"
 .SS "qemu"
@@ -5350,7 +5584,7 @@ callback to send them somewhere else (see \*(L"set-event-callback\*(R").
 .SS "setcon"
 .IX Subsection "setcon"
 .Vb 1
-\& setcon context
+\& setcon контекст
 .Ve
 .PP
 This sets the SELinux security context of the daemon to the string
@@ -5366,7 +5600,7 @@ See the documentation about \s-1SELINUX\s0 in \fIguestfs\fR\|(3).
 This call sets the extended attribute named \f(CW\*(C`xattr\*(C'\fR of the file \f(CW\*(C`path\*(C'\fR to
 the value \f(CW\*(C`val\*(C'\fR (of length \f(CW\*(C`vallen\*(C'\fR).  The value is arbitrary 8 bit data.
 .PP
-See also: \*(L"lsetxattr\*(R", \fIattr\fR\|(5).
+Див. також \*(L"lsetxattr\*(R", \fIattr\fR\|(5).
 .SS "sfdisk"
 .IX Subsection "sfdisk"
 .Vb 1
@@ -5392,7 +5626,7 @@ To create a single partition occupying the whole disk, you would pass
 \&\f(CW\*(C`lines\*(C'\fR as a single element list, when the single element being the string
 \&\f(CW\*(C`,\*(C'\fR (comma).
 .PP
-See also: \*(L"sfdisk-l\*(R", \*(L"sfdisk-N\*(R", \*(L"part-init\*(R"
+Див. також \*(L"sfdisk-l\*(R", \*(L"sfdisk-N\*(R", \*(L"part-init\*(R"
 .PP
 \&\fBThis command is dangerous.  Without careful use you can easily destroy all
 your data\fR.
@@ -5414,7 +5648,7 @@ sizes are specified in megabytes only (rounded to the nearest cylinder) and
 you don't need to specify the cyls, heads and sectors parameters which were
 rarely if ever used anyway.
 .PP
-See also: \*(L"sfdisk\*(R", the \fIsfdisk\fR\|(8) manpage and \*(L"part-disk\*(R"
+Див також \*(L"sfdisk\*(R", сторінку довідки (man) \fIsfdisk\fR\|(8) та \*(L"part-disk\*(R"
 .PP
 \&\fBThis command is dangerous.  Without careful use you can easily destroy all
 your data\fR.
@@ -5437,7 +5671,7 @@ This runs \fIsfdisk\fR\|(8) option to modify just the single partition \f(CW\*(C
 For other parameters, see \*(L"sfdisk\*(R".  You should usually pass \f(CW0\fR for the
 cyls/heads/sectors parameters.
 .PP
-See also: \*(L"part-add\*(R"
+Див. також \*(L"part-add\*(R"
 .PP
 \&\fBThis command is dangerous.  Without careful use you can easily destroy all
 your data\fR.
@@ -5451,7 +5685,7 @@ these functions.
 .SS "sfdisk-disk-geometry"
 .IX Subsection "sfdisk-disk-geometry"
 .Vb 1
-\& sfdisk\-disk\-geometry device
+\& sfdisk\-disk\-geometry пристрій
 .Ve
 .PP
 This displays the disk geometry of \f(CW\*(C`device\*(C'\fR read from the partition table.
@@ -5463,7 +5697,7 @@ The result is in human-readable format, and not designed to be parsed.
 .SS "sfdisk-kernel-geometry"
 .IX Subsection "sfdisk-kernel-geometry"
 .Vb 1
-\& sfdisk\-kernel\-geometry device
+\& sfdisk\-kernel\-geometry пристрій
 .Ve
 .PP
 This displays the kernel's idea of the geometry of \f(CW\*(C`device\*(C'\fR.
@@ -5472,13 +5706,13 @@ The result is in human-readable format, and not designed to be parsed.
 .SS "sfdisk-l"
 .IX Subsection "sfdisk-l"
 .Vb 1
-\& sfdisk\-l device
+\& sfdisk\-l пристрій
 .Ve
 .PP
 This displays the partition table on \f(CW\*(C`device\*(C'\fR, in the human-readable output
 of the \fIsfdisk\fR\|(8) command.  It is not intended to be parsed.
 .PP
-See also: \*(L"part-list\*(R"
+Див. також \*(L"part-list\*(R"
 .PP
 This function is deprecated.  In new code, use the \*(L"part_list\*(R" call
 instead.
@@ -5489,7 +5723,7 @@ these functions.
 .SS "sh"
 .IX Subsection "sh"
 .Vb 1
-\& sh command
+\& sh команда
 .Ve
 .PP
 This call runs a command from the guest filesystem via the guest's
@@ -5508,23 +5742,23 @@ All the provisos about \*(L"command\*(R" apply to this call.
 .SS "sh-lines"
 .IX Subsection "sh-lines"
 .Vb 1
-\& sh\-lines command
+\& sh\-lines команда
 .Ve
 .PP
 This is the same as \*(L"sh\*(R", but splits the result into a list of lines.
 .PP
-See also: \*(L"command-lines\*(R"
+Див. також \*(L"command-lines\*(R"
 .SS "sleep"
 .IX Subsection "sleep"
 .Vb 1
-\& sleep secs
+\& sleep час_у_секундах
 .Ve
 .PP
 Sleep for \f(CW\*(C`secs\*(C'\fR seconds.
 .SS "stat"
 .IX Subsection "stat"
 .Vb 1
-\& stat path
+\& stat шлях
 .Ve
 .PP
 Returns file information for the given \f(CW\*(C`path\*(C'\fR.
@@ -5533,7 +5767,7 @@ This is the same as the \f(CWstat(2)\fR system call.
 .SS "statvfs"
 .IX Subsection "statvfs"
 .Vb 1
-\& statvfs path
+\& statvfs шлях
 .Ve
 .PP
 Returns file system statistics for any mounted file system.  \f(CW\*(C`path\*(C'\fR should
@@ -5544,7 +5778,7 @@ This is the same as the \f(CWstatvfs(2)\fR system call.
 .SS "strings"
 .IX Subsection "strings"
 .Vb 1
-\& strings path
+\& strings шлях
 .Ve
 .PP
 This runs the \fIstrings\fR\|(1) command on a file and returns the list of
@@ -5555,20 +5789,20 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .SS "strings-e"
 .IX Subsection "strings-e"
 .Vb 1
-\& strings\-e encoding path
+\& strings\-e кодування шлях
 .Ve
 .PP
 This is like the \*(L"strings\*(R" command, but allows you to specify the encoding
 of strings that are looked for in the source file \f(CW\*(C`path\*(C'\fR.
 .PP
-Allowed encodings are:
+Можливими кодуваннями є:
 .IP "s" 4
 .IX Item "s"
 Single 7\-bit\-byte characters like \s-1ASCII\s0 and the ASCII-compatible parts of
 \&\s-1ISO\-8859\-X\s0 (this is what \*(L"strings\*(R" uses).
 .IP "S" 4
 .IX Item "S"
-Single 8\-bit\-byte characters.
+Окремі 8\-бітові\-байтові символи.
 .IP "b" 4
 .IX Item "b"
 16\-bit big endian strings such as those encoded in \s-1UTF\-16BE\s0 or \s-1UCS\-2BE\s0.
@@ -5590,7 +5824,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .SS "swapoff-device"
 .IX Subsection "swapoff-device"
 .Vb 1
-\& swapoff\-device device
+\& swapoff\-device пристрій
 .Ve
 .PP
 This command disables the libguestfs appliance swap device or partition
@@ -5598,14 +5832,14 @@ named \f(CW\*(C`device\*(C'\fR.  See \*(L"swapon-device\*(R".
 .SS "swapoff-file"
 .IX Subsection "swapoff-file"
 .Vb 1
-\& swapoff\-file file
+\& swapoff\-file файл
 .Ve
 .PP
 This command disables the libguestfs appliance swap on file.
 .SS "swapoff-label"
 .IX Subsection "swapoff-label"
 .Vb 1
-\& swapoff\-label label
+\& swapoff\-label мітка
 .Ve
 .PP
 This command disables the libguestfs appliance swap on labeled swap
@@ -5621,7 +5855,7 @@ This command disables the libguestfs appliance swap partition with the given
 .SS "swapon-device"
 .IX Subsection "swapon-device"
 .Vb 1
-\& swapon\-device device
+\& swapon\-device пристрій
 .Ve
 .PP
 This command enables the libguestfs appliance to use the swap device or
@@ -5636,14 +5870,14 @@ host device to the guest and swap on that.
 .SS "swapon-file"
 .IX Subsection "swapon-file"
 .Vb 1
-\& swapon\-file file
+\& swapon\-file файл
 .Ve
 .PP
 This command enables swap to a file.  See \*(L"swapon-device\*(R" for other notes.
 .SS "swapon-label"
 .IX Subsection "swapon-label"
 .Vb 1
-\& swapon\-label label
+\& swapon\-label мітка
 .Ve
 .PP
 This command enables swap to a labeled swap partition.  See
@@ -5670,7 +5904,7 @@ closing the handle.
 .SS "tail"
 .IX Subsection "tail"
 .Vb 1
-\& tail path
+\& tail шлях
 .Ve
 .PP
 This command returns up to the last 10 lines of a file as a list of strings.
@@ -5696,7 +5930,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .SS "tar-in"
 .IX Subsection "tar-in"
 .Vb 1
-\& tar\-in (tarfile|\-) directory
+\& tar\-in (файл_tar|\-) каталог
 .Ve
 .PP
 This command uploads and unpacks local file \f(CW\*(C`tarfile\*(C'\fR (an \fIuncompressed\fR
@@ -5708,7 +5942,7 @@ Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "tar-out"
 .IX Subsection "tar-out"
 .Vb 1
-\& tar\-out directory (tarfile|\-)
+\& tar\-out каталог (файл tar|\-)
 .Ve
 .PP
 This command packs the contents of \f(CW\*(C`directory\*(C'\fR and downloads it to local
@@ -5720,7 +5954,7 @@ Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "tgz-in"
 .IX Subsection "tgz-in"
 .Vb 1
-\& tgz\-in (tarball|\-) directory
+\& tgz\-in (архів tar|\-) каталог
 .Ve
 .PP
 This command uploads and unpacks local file \f(CW\*(C`tarball\*(C'\fR (a \fIgzip compressed\fR
@@ -5732,7 +5966,7 @@ Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "tgz-out"
 .IX Subsection "tgz-out"
 .Vb 1
-\& tgz\-out directory (tarball|\-)
+\& tgz\-out каталог (архів tar|\-)
 .Ve
 .PP
 This command packs the contents of \f(CW\*(C`directory\*(C'\fR and downloads it to local
@@ -5744,7 +5978,7 @@ Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "touch"
 .IX Subsection "touch"
 .Vb 1
-\& touch path
+\& touch шлях
 .Ve
 .PP
 Touch acts like the \fItouch\fR\|(1) command.  It can be used to update the
@@ -5756,7 +5990,7 @@ such as directories, symbolic links, block special etc.
 .SS "truncate"
 .IX Subsection "truncate"
 .Vb 1
-\& truncate path
+\& truncate шлях
 .Ve
 .PP
 This command truncates \f(CW\*(C`path\*(C'\fR to a zero-length file.  The file must exist
@@ -5764,7 +5998,7 @@ already.
 .SS "truncate-size"
 .IX Subsection "truncate-size"
 .Vb 1
-\& truncate\-size path size
+\& truncate\-size шлях розмір
 .Ve
 .PP
 This command truncates \f(CW\*(C`path\*(C'\fR to size \f(CW\*(C`size\*(C'\fR bytes.  The file must exist
@@ -5777,7 +6011,7 @@ non-sparse file of zeroes, use \*(L"fallocate64\*(R" instead.
 .SS "tune2fs\-l"
 .IX Subsection "tune2fs-l"
 .Vb 1
-\& tune2fs\-l device
+\& tune2fs\-l пристрій
 .Ve
 .PP
 This returns the contents of the ext2, ext3 or ext4 filesystem superblock on
@@ -5790,7 +6024,7 @@ and the filesystem itself.
 .SS "txz-in"
 .IX Subsection "txz-in"
 .Vb 1
-\& txz\-in (tarball|\-) directory
+\& txz\-in (архів tar|\-) каталог
 .Ve
 .PP
 This command uploads and unpacks local file \f(CW\*(C`tarball\*(C'\fR (an \fIxz compressed\fR
@@ -5800,7 +6034,7 @@ Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "txz-out"
 .IX Subsection "txz-out"
 .Vb 1
-\& txz\-out directory (tarball|\-)
+\& txz\-out каталог (архів tar|\-)
 .Ve
 .PP
 This command packs the contents of \f(CW\*(C`directory\*(C'\fR and downloads it to local
@@ -5810,7 +6044,7 @@ Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "umask"
 .IX Subsection "umask"
 .Vb 1
-\& umask mask
+\& umask маска
 .Ve
 .PP
 This function sets the mask used for creating new files and device nodes to
@@ -5824,7 +6058,7 @@ The default umask is \f(CW022\fR.  This is important because it means that
 directories and device nodes will be created with \f(CW0644\fR or \f(CW0755\fR mode
 even if you specify \f(CW0777\fR.
 .PP
-See also \*(L"get-umask\*(R", \fIumask\fR\|(2), \*(L"mknod\*(R", \*(L"mkdir\*(R".
+Див. також \*(L"get-umask\*(R", \fIumask\fR\|(2), \*(L"mknod\*(R", \*(L"mkdir\*(R".
 .PP
 This call returns the previous umask.
 .SS "umount"
@@ -5832,7 +6066,7 @@ This call returns the previous umask.
 .SS "unmount"
 .IX Subsection "unmount"
 .Vb 1
-\& umount pathordevice
+\& umount шлях_або_пристрій
 .Ve
 .PP
 This unmounts the given filesystem.  The filesystem may be specified either
@@ -5851,20 +6085,20 @@ Some internal mounts are not unmounted by this call.
 .SS "upload"
 .IX Subsection "upload"
 .Vb 1
-\& upload (filename|\-) remotefilename
+\& upload (назва_файла|\-) назва_віддаленого_файла
 .Ve
 .PP
 Upload local file \f(CW\*(C`filename\*(C'\fR to \f(CW\*(C`remotefilename\*(C'\fR on the filesystem.
 .PP
 \&\f(CW\*(C`filename\*(C'\fR can also be a named pipe.
 .PP
-See also \*(L"download\*(R".
+Див. також \*(L"download\*(R".
 .PP
 Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "upload-offset"
 .IX Subsection "upload-offset"
 .Vb 1
-\& upload\-offset (filename|\-) remotefilename offset
+\& upload\-offset (назва_файла|\-) назва_віддаленого_файла відступ
 .Ve
 .PP
 Upload local file \f(CW\*(C`filename\*(C'\fR to \f(CW\*(C`remotefilename\*(C'\fR on the filesystem.
@@ -5879,7 +6113,7 @@ Note that there is no limit on the amount of data that can be uploaded with
 this call, unlike with \*(L"pwrite\*(R", and this call always writes the full
 amount unless an error occurs.
 .PP
-See also \*(L"upload\*(R", \*(L"pwrite\*(R".
+Див. також \*(L"upload\*(R", \*(L"pwrite\*(R".
 .PP
 Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "utimens"
@@ -5937,7 +6171,7 @@ earlier versions, making this an unreliable way to test for features.  Use
 .SS "vfs-label"
 .IX Subsection "vfs-label"
 .Vb 1
-\& vfs\-label device
+\& vfs\-label пристрій
 .Ve
 .PP
 This returns the filesystem label of the filesystem on \f(CW\*(C`device\*(C'\fR.
@@ -5948,7 +6182,7 @@ To find a filesystem from the label, use \*(L"findfs-label\*(R".
 .SS "vfs-type"
 .IX Subsection "vfs-type"
 .Vb 1
-\& vfs\-type device
+\& vfs\-type пристрій
 .Ve
 .PP
 This command gets the filesystem type corresponding to the filesystem on
@@ -5960,7 +6194,7 @@ the filesystem type.  For example a string such as \f(CW\*(C`ext3\*(C'\fR or \f(
 .SS "vfs-uuid"
 .IX Subsection "vfs-uuid"
 .Vb 1
-\& vfs\-uuid device
+\& vfs\-uuid пристрій
 .Ve
 .PP
 This returns the filesystem \s-1UUID\s0 of the filesystem on \f(CW\*(C`device\*(C'\fR.
@@ -5975,9 +6209,7 @@ To find a filesystem from the \s-1UUID\s0, use \*(L"findfs-uuid\*(R".
 .Ve
 .PP
 This command activates or (if \f(CW\*(C`activate\*(C'\fR is false) deactivates all logical
-volumes in the listed volume groups \f(CW\*(C`volgroups\*(C'\fR.  If activated, then they
-are made known to the kernel, ie. they appear as \f(CW\*(C`/dev/mapper\*(C'\fR devices.  If
-deactivated, then those devices disappear.
+volumes in the listed volume groups \f(CW\*(C`volgroups\*(C'\fR.
 .PP
 This command is the same as running \f(CW\*(C`vgchange \-a y|n volgroups...\*(C'\fR
 .PP
@@ -5990,9 +6222,7 @@ activated or deactivated.
 .Ve
 .PP
 This command activates or (if \f(CW\*(C`activate\*(C'\fR is false) deactivates all logical
-volumes in all volume groups.  If activated, then they are made known to the
-kernel, ie. they appear as \f(CW\*(C`/dev/mapper\*(C'\fR devices.  If deactivated, then
-those devices disappear.
+volumes in all volume groups.
 .PP
 This command is the same as running \f(CW\*(C`vgchange \-a y|n\*(C'\fR
 .SS "vgcreate"
@@ -6015,7 +6245,7 @@ volumes created in this volume group.
 You can use this along with \*(L"lvs\*(R" and \*(L"lvuuid\*(R" calls to associate
 logical volumes and volume groups.
 .PP
-See also \*(L"vgpvuuids\*(R".
+Див. також \*(L"vgpvuuids\*(R".
 .SS "vgpvuuids"
 .IX Subsection "vgpvuuids"
 .Vb 1
@@ -6028,7 +6258,7 @@ volumes that this volume group resides on.
 You can use this along with \*(L"pvs\*(R" and \*(L"pvuuid\*(R" calls to associate
 physical volumes and volume groups.
 .PP
-See also \*(L"vglvuuids\*(R".
+Див. також \*(L"vglvuuids\*(R".
 .SS "vgremove"
 .IX Subsection "vgremove"
 .Vb 1
@@ -6057,7 +6287,7 @@ List all the volumes groups detected.  This is the equivalent of the
 This returns a list of just the volume group names that were detected
 (eg. \f(CW\*(C`VolGroup00\*(C'\fR).
 .PP
-See also \*(L"vgs-full\*(R".
+Див. також \*(L"vgs-full\*(R".
 .SS "vgs-full"
 .IX Subsection "vgs-full"
 .Vb 1
@@ -6084,7 +6314,7 @@ This command returns the \s-1UUID\s0 of the \s-1LVM\s0 \s-1VG\s0 named \f(CW\*(C
 .SS "wc-c"
 .IX Subsection "wc-c"
 .Vb 1
-\& wc\-c path
+\& wc\-c шлях
 .Ve
 .PP
 This command counts the characters in a file, using the \f(CW\*(C`wc \-c\*(C'\fR external
@@ -6092,7 +6322,7 @@ command.
 .SS "wc-l"
 .IX Subsection "wc-l"
 .Vb 1
-\& wc\-l path
+\& wc\-l шлях
 .Ve
 .PP
 This command counts the lines in a file, using the \f(CW\*(C`wc \-l\*(C'\fR external
@@ -6100,7 +6330,7 @@ command.
 .SS "wc-w"
 .IX Subsection "wc-w"
 .Vb 1
-\& wc\-w path
+\& wc\-w шлях
 .Ve
 .PP
 This command counts the words in a file, using the \f(CW\*(C`wc \-w\*(C'\fR external
@@ -6108,11 +6338,26 @@ command.
 .SS "write"
 .IX Subsection "write"
 .Vb 1
-\& write path content
+\& write шлях дані
 .Ve
 .PP
 This call creates a file called \f(CW\*(C`path\*(C'\fR.  The content of the file is the
 string \f(CW\*(C`content\*(C'\fR (which can contain any 8 bit data).
+.PP
+See also \*(L"write-append\*(R".
+.PP
+Because of the message protocol, there is a transfer limit of somewhere
+between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
+.SS "write-append"
+.IX Subsection "write-append"
+.Vb 1
+\& write\-append path content
+.Ve
+.PP
+This call appends \f(CW\*(C`content\*(C'\fR to the end of file \f(CW\*(C`path\*(C'\fR.  If \f(CW\*(C`path\*(C'\fR does
+not exist, then a new file is created.
+.PP
+See also \*(L"write\*(R".
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -6142,7 +6387,7 @@ these functions.
 .SS "zegrep"
 .IX Subsection "zegrep"
 .Vb 1
-\& zegrep regex path
+\& zegrep формальний_вираз шлях
 .Ve
 .PP
 This calls the external \f(CW\*(C`zegrep\*(C'\fR program and returns the matching lines.
@@ -6162,7 +6407,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .SS "zero"
 .IX Subsection "zero"
 .Vb 1
-\& zero device
+\& zero пристрій
 .Ve
 .PP
 This command writes zeroes over the first few blocks of \f(CW\*(C`device\*(C'\fR.
@@ -6171,11 +6416,11 @@ How many blocks are zeroed isn't specified (but it's \fInot\fR enough to
 securely wipe the device).  It should be sufficient to remove any partition
 tables, filesystem superblocks and so on.
 .PP
-See also: \*(L"zero-device\*(R", \*(L"scrub-device\*(R".
+See also: \*(L"zero-device\*(R", \*(L"scrub-device\*(R", \*(L"is-zero-device\*(R"
 .SS "zero-device"
 .IX Subsection "zero-device"
 .Vb 1
-\& zero\-device device
+\& zero\-device пристрій
 .Ve
 .PP
 This command writes zeroes over the entire \f(CW\*(C`device\*(C'\fR.  Compare with \*(L"zero\*(R"
@@ -6186,7 +6431,7 @@ your data\fR.
 .SS "zerofree"
 .IX Subsection "zerofree"
 .Vb 1
-\& zerofree device
+\& zerofree пристрій
 .Ve
 .PP
 This runs the \fIzerofree\fR program on \f(CW\*(C`device\*(C'\fR.  This program claims to zero
@@ -6200,7 +6445,7 @@ the filesystem.
 .SS "zfgrep"
 .IX Subsection "zfgrep"
 .Vb 1
-\& zfgrep pattern path
+\& zfgrep шаблон шлях
 .Ve
 .PP
 This calls the external \f(CW\*(C`zfgrep\*(C'\fR program and returns the matching lines.
@@ -6210,7 +6455,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .SS "zfgrepi"
 .IX Subsection "zfgrepi"
 .Vb 1
-\& zfgrepi pattern path
+\& zfgrepi шаблон шлях
 .Ve
 .PP
 This calls the external \f(CW\*(C`zfgrep \-i\*(C'\fR program and returns the matching lines.
@@ -6220,7 +6465,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .SS "zfile"
 .IX Subsection "zfile"
 .Vb 1
-\& zfile meth path
+\& zfile метод шлях
 .Ve
 .PP
 This command runs \f(CW\*(C`file\*(C'\fR after first decompressing \f(CW\*(C`path\*(C'\fR using \f(CW\*(C`method\*(C'\fR.
@@ -6237,7 +6482,7 @@ these functions.
 .SS "zgrep"
 .IX Subsection "zgrep"
 .Vb 1
-\& zgrep regex path
+\& zgrep формальний_вираз шлях
 .Ve
 .PP
 This calls the external \f(CW\*(C`zgrep\*(C'\fR program and returns the matching lines.
@@ -6247,23 +6492,38 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .SS "zgrepi"
 .IX Subsection "zgrepi"
 .Vb 1
-\& zgrepi regex path
+\& zgrepi формальний_вираз шлях
 .Ve
 .PP
 This calls the external \f(CW\*(C`zgrep \-i\*(C'\fR program and returns the matching lines.
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
-.SH "EXIT CODE"
-.IX Header "EXIT CODE"
+.SH "КОД ВИХОДУ"
+.IX Header "КОД ВИХОДУ"
 guestfish returns 0 if the commands completed without error, or 1 if there
 was an error.
-.SH "ÐÐÐÐÐÐ Ð¡ÐÐ ÐÐÐÐÐÐ©Ð"
-.IX Header "ÐÐÐÐÐÐ Ð¡ÐÐ ÐÐÐÐÐÐ©Ð"
-.IP "\s-1EDITOR\s0" 4
-.IX Item "EDITOR"
+.SH "ЗМІННІ СЕРЕДОВИЩА"
+.IX Header "ЗМІННІ СЕРЕДОВИЩА"
+.IP "РЕДАКТОР" 4
+.IX Item "РЕДАКТОР"
 The \f(CW\*(C`edit\*(C'\fR command uses \f(CW$EDITOR\fR as the editor.  If not set, it uses
 \&\f(CW\*(C`vi\*(C'\fR.
+.IP "\s-1FEBOOTSTRAP_KERNEL\s0" 4
+.IX Item "FEBOOTSTRAP_KERNEL"
+.PD 0
+.IP "\s-1FEBOOTSTRAP_MODULES\s0" 4
+.IX Item "FEBOOTSTRAP_MODULES"
+.PD
+These two environment variables allow the kernel that libguestfs uses in the
+appliance to be selected.  If \f(CW$FEBOOTSTRAP_KERNEL\fR is not set, then the
+most recent host kernel is chosen.  For more information about kernel
+selection, see \fIfebootstrap\-supermin\-helper\fR\|(8).  This feature is only
+available in febootstrap ≥ 3.8.
+.IP "\s-1GUESTFISH_DISPLAY_IMAGE\s0" 4
+.IX Item "GUESTFISH_DISPLAY_IMAGE"
+The \f(CW\*(C`display\*(C'\fR command uses \f(CW$GUESTFISH_DISPLAY_IMAGE\fR to display images.
+If not set, it uses \fIdisplay\fR\|(1).
 .IP "\s-1GUESTFISH_PID\s0" 4
 .IX Item "GUESTFISH_PID"
 Used with the \fI\-\-remote\fR option to specify the remote guestfish process to
@@ -6272,8 +6532,8 @@ control.  See section \*(L"\s-1REMOTE\s0 \s-1CONTROL\s0 \s-1GUESTFISH\s0 \s-1OVE
 .IX Item "HEXEDITOR"
 The \*(L"hexedit\*(R" command uses \f(CW$HEXEDITOR\fR as the external hex editor.  If
 not specified, the external \fIhexedit\fR\|(1) program is used.
-.IP "\s-1HOME\s0" 4
-.IX Item "HOME"
+.IP "ДОМІВКА" 4
+.IX Item "ДОМІВКА"
 If compiled with \s-1GNU\s0 readline support, various files in the home directory
 can be used.  See \*(L"\s-1FILES\s0\*(R".
 .IP "\s-1LIBGUESTFS_APPEND\s0" 4
@@ -6301,8 +6561,8 @@ which was found at compile time by the configure script is used.
 .IP "\s-1LIBGUESTFS_TRACE\s0" 4
 .IX Item "LIBGUESTFS_TRACE"
 Set \f(CW\*(C`LIBGUESTFS_TRACE=1\*(C'\fR to enable command traces.
-.IP "\s-1PAGER\s0" 4
-.IX Item "PAGER"
+.IP "РОЗБИТТЯ НА СТОРІНКИ" 4
+.IX Item "РОЗБИТТЯ НА СТОРІНКИ"
 The \f(CW\*(C`more\*(C'\fR command uses \f(CW$PAGER\fR as the pager.  If not set, it uses
 \&\f(CW\*(C`more\*(C'\fR.
 .IP "\s-1TMPDIR\s0" 4
@@ -6314,8 +6574,8 @@ If libguestfs was compiled to use the supermin appliance then the real
 appliance is cached in this directory, shared between all handles belonging
 to the same \s-1EUID\s0.  You can use \f(CW$TMPDIR\fR to configure another directory to
 use in case \f(CW\*(C`/var/tmp\*(C'\fR is not large enough.
-.SH "FILES"
-.IX Header "FILES"
+.SH "ФАЙЛИ"
+.IX Header "ФАЙЛИ"
 .ie n .IP "$HOME/.libguestfs\-tools.rc" 4
 .el .IP "\f(CW$HOME\fR/.libguestfs\-tools.rc" 4
 .IX Item "$HOME/.libguestfs-tools.rc"
@@ -6377,19 +6637,20 @@ When using the \fI\-N\fR or \fI\-\-new\fR option, the prepared disk or filesyste
 will be created in the file \f(CW\*(C`test1.img\*(C'\fR in the current directory.  The
 second use of \fI\-N\fR will use \f(CW\*(C`test2.img\*(C'\fR and so on.  Any existing file with
 the same name will be overwritten.
-.SH "Ð¢ÐÐÐÐ ÐÐÐ ÐÐÐÐ¯ÐÐ¬Ð¢Ð"
-.IX Header "Ð¢ÐÐÐÐ ÐÐÐ ÐÐÐÐ¯ÐÐ¬Ð¢Ð"
+.SH "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
+.IX Header "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 \&\fIguestfs\fR\|(3), <http://libguestfs.org/>, \fIvirt\-cat\fR\|(1),
 \&\fIvirt\-copy\-in\fR\|(1), \fIvirt\-copy\-out\fR\|(1), \fIvirt\-df\fR\|(1), \fIvirt\-edit\fR\|(1),
 \&\fIvirt\-filesystems\fR\|(1), \fIvirt\-inspector\fR\|(1), \fIvirt\-list\-filesystems\fR\|(1),
 \&\fIvirt\-list\-partitions\fR\|(1), \fIvirt\-ls\fR\|(1), \fIvirt\-make\-fs\fR\|(1),
 \&\fIvirt\-rescue\fR\|(1), \fIvirt\-resize\fR\|(1), \fIvirt\-tar\fR\|(1), \fIvirt\-tar\-in\fR\|(1),
-\&\fIvirt\-tar\-out\fR\|(1), \fIvirt\-win\-reg\fR\|(1), \fIhexedit\fR\|(1).
-.SH "ÐÐÐ¢ÐÐ Ð"
-.IX Header "ÐÐÐ¢ÐÐ Ð"
+\&\fIvirt\-tar\-out\fR\|(1), \fIvirt\-win\-reg\fR\|(1), \fIdisplay\fR\|(1), \fIhexedit\fR\|(1),
+\&\fIfebootstrap\-supermin\-helper\fR\|(8).
+.SH "АВТОРИ"
+.IX Header "АВТОРИ"
 Richard W.M. Jones (\f(CW\*(C`rjones at redhat dot com\*(C'\fR)
-.SH "ÐÐÐ¢ÐÐ Ð¡Ð¬ÐÐ ÐÐ ÐÐÐ"
-.IX Header "ÐÐÐ¢ÐÐ Ð¡Ð¬ÐÐ ÐÐ ÐÐÐ"
+.SH "АВТОРСЬКІ ПРАВА"
+.IX Header "АВТОРСЬКІ ПРАВА"
 Copyright (C) 2009\-2011 Red Hat Inc.  <http://libguestfs.org/>
 .PP
 This program is free software; you can redistribute it and/or modify it
@@ -6397,10 +6658,10 @@ under the terms of the \s-1GNU\s0 General Public License as published by the Fre
 Software Foundation; either version 2 of the License, or (at your option)
 any later version.
 .PP
-This program is distributed in the hope that it will be useful, but \s-1WITHOUT\s0
-\&\s-1ANY\s0 \s-1WARRANTY\s0; without even the implied warranty of \s-1MERCHANTABILITY\s0 or
-\&\s-1FITNESS\s0 \s-1FOR\s0 A \s-1PARTICULAR\s0 \s-1PURPOSE\s0.  See the \s-1GNU\s0 General Public License for
-more details.
+Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
+БУДЬ\-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
+ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
+про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
 You should have received a copy of the \s-1GNU\s0 General Public License along with
 this program; if not, write to the Free Software Foundation, Inc., 675 Mass

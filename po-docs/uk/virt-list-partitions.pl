@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head1 НАЗВА
 
@@ -5,9 +6,9 @@ virt-list-partitions - List partitions in a virtual machine or disk image
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-list-partitions [--options] domname
+ virt-list-partitions [--параметри] назва_домену
 
- virt-list-partitions [--options] disk.img [disk.img ...]
+ virt-list-partitions [--параметри] диск.img [диск.img ...]
 
 =head1 ОПИС
 
@@ -22,7 +23,7 @@ C<virt-list-partitions> is just a simple wrapper around L<libguestfs(3)>
 functionality.  For more complex cases you should look at the
 L<guestfish(1)> tool.
 
-=head1 OPTIONS
+=head1 ПАРАМЕТРИ
 
 =over 4
 
@@ -32,9 +33,11 @@ Display brief help.
 
 =item B<--version>
 
-Display version number and exit.
+Показати дані щодо версії і завершити роботу.
 
-=item B<--connect URI> | B<-c URI>
+=item B<-c адреса>
+
+=item B<--connect адреса>
 
 If using libvirt, connect to the given I<URI>.  If omitted, then we connect
 to the default libvirt hypervisor.
@@ -54,16 +57,22 @@ ignored.
 If working with untrusted raw-format guest disk images, you should ensure
 the format is always specified.
 
-=item B<-h> | B<--human-readable>
+=item B<-h>
+
+=item B<--human-readable>
 
 Show sizes in human-readable form (eg. "1G").
 
-=item B<-l> | B<--long>
+=item B<-l>
+
+=item B<--long>
 
 With this option, C<virt-list-partitions> displays the type and size of each
 partition too (where "type" means C<ext3>, C<pv> etc.)
 
-=item B<-t> | B<--total>
+=item B<-t>
+
+=item B<--total>
 
 Display the total size of each block device (as a separate row or rows).
 
@@ -82,23 +91,23 @@ L<guestfs(3)>, L<guestfish(1)>, L<virt-filesystems(1)>,
 L<virt-list-filesystems(1)>, L<virt-resize(1)>, L<Sys::Guestfs(3)>,
 L<Sys::Guestfs::Lib(3)>, L<Sys::Virt(3)>, L<http://libguestfs.org/>.
 
-=head1 AUTHOR
+=head1 АВТОР
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2010 Red Hat Inc.
+© Red Hat Inc., 2009–2010
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
 Software Foundation; either version 2 of the License, or (at your option)
 any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-more details.
+Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
+БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
+ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
+про це можна дізнатися з GNU General Public License.
 
 You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc., 675 Mass

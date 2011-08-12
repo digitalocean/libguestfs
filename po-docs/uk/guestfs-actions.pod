@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head2 guestfs_add_cdrom
 
@@ -54,6 +55,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_ADD_DOMAIN_READONLY, int readonly,
  GUESTFS_ADD_DOMAIN_IFACE, const char *iface,
  GUESTFS_ADD_DOMAIN_LIVE, int live,
+ GUESTFS_ADD_DOMAIN_ALLOWUUID, int allowuuid,
 
 This function adds the disk(s) attached to the named libvirt domain C<dom>.
 It works by connecting to libvirt, requesting the domain and domain XML from
@@ -82,6 +84,11 @@ E<lt>channelE<gt> element in the libvirt XML definition.  The default (if
 the flag is omitted) is never to try.  See L<guestfs(3)/ATTACHING TO RUNNING
 DAEMONS> for more information.
 
+If the C<allowuuid> flag is true (default is false) then a UUID I<may> be
+passed instead of the domain name.  The C<dom> string is treated as a UUID
+first and looked up, and if that lookup fails then we treat C<dom> as a name
+as usual.
+
 The other optional parameters are passed directly through to
 C<guestfs_add_drive_opts>.
 
@@ -98,7 +105,7 @@ On error this function returns -1.
 
 This is the "va_list variant" of L</guestfs_add_domain>.
 
-See L</CALLS WITH OPTIONAL ARGUMENTS>.
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_add_domain_argv
 
@@ -109,7 +116,7 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 This is the "argv variant" of L</guestfs_add_domain>.
 
-See L</CALLS WITH OPTIONAL ARGUMENTS>.
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_add_drive
 
@@ -197,7 +204,7 @@ This function returns 0 on success or -1 on error.
 
 This is the "va_list variant" of L</guestfs_add_drive_opts>.
 
-See L</CALLS WITH OPTIONAL ARGUMENTS>.
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_add_drive_opts_argv
 
@@ -208,7 +215,7 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 This is the "argv variant" of L</guestfs_add_drive_opts>.
 
-See L</CALLS WITH OPTIONAL ARGUMENTS>.
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_add_drive_ro
 
@@ -784,6 +791,64 @@ This uses the L<blockdev(8)> command.
 This function returns 0 on success or -1 on error.
 
 (Added in 0.9.3)
+
+=head2 guestfs_btrfs_filesystem_resize
+
+ int
+ guestfs_btrfs_filesystem_resize (guestfs_h *g,
+                                  const char *mountpoint,
+                                  ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE, int64_t size,
+
+This command resizes a btrfs filesystem.
+
+Note that unlike other resize calls, the filesystem has to be mounted and
+the parameter is the mountpoint not the device (this is a requirement of
+btrfs itself).
+
+The optional parameters are:
+
+=over 4
+
+=item C<size>
+
+The new size (in bytes) of the filesystem.  If omitted, the filesystem is
+resized to the maximum size.
+
+=back
+
+See also L<btrfs(8)>.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.11.17)
+
+=head2 guestfs_btrfs_filesystem_resize_va
+
+ int
+ guestfs_btrfs_filesystem_resize_va (guestfs_h *g,
+                                     const char *mountpoint,
+                                     va_list args);
+
+This is the "va_list variant" of L</guestfs_btrfs_filesystem_resize>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_btrfs_filesystem_resize_argv
+
+ int
+ guestfs_btrfs_filesystem_resize_argv (guestfs_h *g,
+                                       const char *mountpoint,
+                                       const struct guestfs_btrfs_filesystem_resize_argv *optargs);
+
+This is the "argv variant" of L</guestfs_btrfs_filesystem_resize>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_case_sensitive_path
 
@@ -1476,7 +1541,7 @@ can change in future in ways beyond our control.  In other words, the output
 is not guaranteed by the ABI.
 
 See also: L<file(1)>, C<guestfs_vfs_type>, C<guestfs_lstat>,
-C<guestfs_is_file>, C<guestfs_is_blockdev> (etc).
+C<guestfs_is_file>, C<guestfs_is_blockdev> (etc), C<guestfs_is_zero>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
@@ -1833,6 +1898,8 @@ Return the current attach method.  See C<guestfs_set_attach_method>.
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
+(Added in 1.9.8)
+
 =head2 guestfs_get_autosync
 
  int
@@ -1937,6 +2004,17 @@ This function returns a string, or NULL on error.  The string is owned by
 the guest handle and must I<not> be freed.
 
 (Added in 0.3)
+
+=head2 guestfs_get_pgroup
+
+ int
+ guestfs_get_pgroup (guestfs_h *g);
+
+This returns the process group flag.
+
+This function returns a C truth value on success or -1 on error.
+
+(Added in 1.11.18)
 
 =head2 guestfs_get_pid
 
@@ -2415,9 +2493,6 @@ This function returns 0 on success or -1 on error.
  guestfs_inspect_get_arch (guestfs_h *g,
                            const char *root);
 
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
-
 This returns the architecture of the inspected operating system.  The
 possible return values are listed under C<guestfs_file_architecture>.
 
@@ -2436,9 +2511,6 @@ the returned string after use>.
  char *
  guestfs_inspect_get_distro (guestfs_h *g,
                              const char *root);
-
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
 
 This returns the distro (distribution) of the inspected operating system.
 
@@ -2529,9 +2601,6 @@ the returned string after use>.
  guestfs_inspect_get_drive_mappings (guestfs_h *g,
                                      const char *root);
 
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
-
 This call is useful for Windows which uses a primitive system of assigning
 drive letters (like "C:") to partitions.  This inspection API examines the
 Windows Registry to find out how disks/partitions are mapped to drive
@@ -2564,14 +2633,13 @@ was an error.  The array of strings will always have length C<2n+1>, where
 C<n> keys and values alternate, followed by the trailing NULL entry.  I<The
 caller must free the strings and the array after use>.
 
+(Added in 1.9.17)
+
 =head2 guestfs_inspect_get_filesystems
 
  char **
  guestfs_inspect_get_filesystems (guestfs_h *g,
                                   const char *root);
-
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
 
 This returns a list of all the filesystems that we think are associated with
 this operating system.  This includes the root filesystem, other ordinary
@@ -2594,9 +2662,6 @@ strings and the array after use>.
  char *
  guestfs_inspect_get_format (guestfs_h *g,
                              const char *root);
-
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
 
 This returns the format of the inspected operating system.  You can use it
 to detect install images, live CDs and similar.
@@ -2628,14 +2693,13 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
+(Added in 1.9.4)
+
 =head2 guestfs_inspect_get_hostname
 
  char *
  guestfs_inspect_get_hostname (guestfs_h *g,
                                const char *root);
-
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
 
 This function returns the hostname of the operating system as found by
 inspection of the guest's configuration files.
@@ -2650,14 +2714,113 @@ the returned string after use>.
 
 (Added in 1.7.9)
 
+=head2 guestfs_inspect_get_icon
+
+ char *
+ guestfs_inspect_get_icon (guestfs_h *g,
+                           const char *root,
+                           size_t *size_r,
+                           ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_INSPECT_GET_ICON_FAVICON, int favicon,
+ GUESTFS_INSPECT_GET_ICON_HIGHQUALITY, int highquality,
+
+This function returns an icon corresponding to the inspected operating
+system.  The icon is returned as a buffer containing a PNG image (re-encoded
+to PNG if necessary).
+
+If it was not possible to get an icon this function returns a zero-length
+(non-NULL) buffer.  I<Callers must check for this case>.
+
+Libguestfs will start by looking for a file called C</etc/favicon.png> or
+C<C:\etc\favicon.png> and if it has the correct format, the contents of this
+file will be returned.  You can disable favicons by passing the optional
+C<favicon> boolean as false (default is true).
+
+If finding the favicon fails, then we look in other places in the guest for
+a suitable icon.
+
+If the optional C<highquality> boolean is true then only high quality icons
+are returned, which means only icons of high resolution with an alpha
+channel.  The default (false) is to return any icon we can, even if it is of
+substandard quality.
+
+Нотатки:
+
+=over 4
+
+=item *
+
+Unlike most other inspection API calls, the guest's disks must be mounted up
+before you call this, since it needs to read information from the guest
+filesystem during the call.
+
+=item *
+
+B<Security:> The icon data comes from the untrusted guest, and should be
+treated with caution.  PNG files have been known to contain exploits.
+Ensure that libpng (or other relevant libraries) are fully up to date before
+trying to process or display the icon.
+
+=item *
+
+The PNG image returned can be any size.  It might not be square.  Libguestfs
+tries to return the largest, highest quality icon available.  The
+application must scale the icon to the required size.
+
+=item *
+
+Extracting icons from Windows guests requires the external C<wrestool>
+program from the C<icoutils> package, and several programs (C<bmptopnm>,
+C<pnmtopng>, C<pamcut>)  from the C<netpbm> package.  These must be
+installed separately.
+
+=item *
+
+Operating system icons are usually trademarks.  Seek legal advice before
+using trademarks in applications.
+
+=back
+
+This function returns a buffer, or NULL on error.  The size of the returned
+buffer is written to C<*size_r>.  I<The caller must free the returned buffer
+after use>.
+
+(Added in 1.11.12)
+
+=head2 guestfs_inspect_get_icon_va
+
+ char *
+ guestfs_inspect_get_icon_va (guestfs_h *g,
+                              const char *root,
+                              size_t *size_r,
+                              va_list args);
+
+This is the "va_list variant" of L</guestfs_inspect_get_icon>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_inspect_get_icon_argv
+
+ char *
+ guestfs_inspect_get_icon_argv (guestfs_h *g,
+                                const char *root,
+                                size_t *size_r,
+                                const struct guestfs_inspect_get_icon_argv *optargs);
+
+This is the "argv variant" of L</guestfs_inspect_get_icon>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
 =head2 guestfs_inspect_get_major_version
 
  int
  guestfs_inspect_get_major_version (guestfs_h *g,
                                     const char *root);
-
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
 
 This returns the major version number of the inspected operating system.
 
@@ -2681,9 +2844,6 @@ On error this function returns -1.
  guestfs_inspect_get_minor_version (guestfs_h *g,
                                     const char *root);
 
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
-
 This returns the minor version number of the inspected operating system.
 
 If the version could not be determined, then C<0> is returned.
@@ -2700,9 +2860,6 @@ On error this function returns -1.
  char **
  guestfs_inspect_get_mountpoints (guestfs_h *g,
                                   const char *root);
-
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
 
 This returns a hash of where we think the filesystems associated with this
 operating system should be mounted.  Callers should note that this is at
@@ -2738,9 +2895,6 @@ caller must free the strings and the array after use>.
  guestfs_inspect_get_package_format (guestfs_h *g,
                                      const char *root);
 
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
-
 This function and C<guestfs_inspect_get_package_management> return the
 package format and package management tool used by the inspected operating
 system.  For example for Fedora these functions would return C<rpm> (package
@@ -2765,9 +2919,6 @@ the returned string after use>.
  char *
  guestfs_inspect_get_package_management (guestfs_h *g,
                                          const char *root);
-
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
 
 C<guestfs_inspect_get_package_format> and this function return the package
 format and package management tool used by the inspected operating system.
@@ -2795,9 +2946,6 @@ the returned string after use>.
  guestfs_inspect_get_product_name (guestfs_h *g,
                                    const char *root);
 
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
-
 This returns the product name of the inspected operating system.  The
 product name is generally some freeform string which can be displayed to the
 user, but should not be parsed by programs.
@@ -2817,9 +2965,6 @@ the returned string after use>.
  char *
  guestfs_inspect_get_product_variant (guestfs_h *g,
                                       const char *root);
-
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
 
 This returns the product variant of the inspected operating system.
 
@@ -2843,6 +2988,8 @@ C<guestfs_inspect_get_product_name>, C<guestfs_inspect_get_major_version>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
+
+(Added in 1.9.13)
 
 =head2 guestfs_inspect_get_roots
 
@@ -2869,9 +3016,6 @@ strings and the array after use>.
  char *
  guestfs_inspect_get_type (guestfs_h *g,
                            const char *root);
-
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
 
 This returns the type of the inspected operating system.  Currently defined
 types are:
@@ -2912,9 +3056,6 @@ the returned string after use>.
  guestfs_inspect_get_windows_current_control_set (guestfs_h *g,
                                                   const char *root);
 
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
-
 This returns the Windows CurrentControlSet of the inspected guest.  The
 CurrentControlSet is a registry key name such as C<ControlSet001>.
 
@@ -2926,14 +3067,13 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
+(Added in 1.9.17)
+
 =head2 guestfs_inspect_get_windows_systemroot
 
  char *
  guestfs_inspect_get_windows_systemroot (guestfs_h *g,
                                          const char *root);
-
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
 
 This returns the Windows systemroot of the inspected guest.  The systemroot
 is a directory path such as C</WINDOWS>.
@@ -2955,9 +3095,6 @@ the returned string after use>.
  guestfs_inspect_is_live (guestfs_h *g,
                           const char *root);
 
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
-
 If C<guestfs_inspect_get_format> returns C<installer> (this is an install
 disk), then this returns true if a live image was detected on the disk.
 
@@ -2965,14 +3102,13 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 This function returns a C truth value on success or -1 on error.
 
+(Added in 1.9.4)
+
 =head2 guestfs_inspect_is_multipart
 
  int
  guestfs_inspect_is_multipart (guestfs_h *g,
                                const char *root);
-
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
 
 If C<guestfs_inspect_get_format> returns C<installer> (this is an install
 disk), then this returns true if the disk is part of a set.
@@ -2981,14 +3117,13 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 This function returns a C truth value on success or -1 on error.
 
+(Added in 1.9.4)
+
 =head2 guestfs_inspect_is_netinst
 
  int
  guestfs_inspect_is_netinst (guestfs_h *g,
                              const char *root);
-
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
 
 If C<guestfs_inspect_get_format> returns C<installer> (this is an install
 disk), then this returns true if the disk is a network installer, ie. not a
@@ -2999,14 +3134,13 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 This function returns a C truth value on success or -1 on error.
 
+(Added in 1.9.4)
+
 =head2 guestfs_inspect_list_applications
 
  struct guestfs_application_list *
  guestfs_inspect_list_applications (guestfs_h *g,
                                     const char *root);
-
-This function should only be called with a root device string as returned by
-C<guestfs_inspect_os>.
 
 Return the list of applications installed in the operating system.
 
@@ -3316,6 +3450,33 @@ This function returns a C truth value on success or -1 on error.
 
 (Added in 1.5.10)
 
+=head2 guestfs_is_zero
+
+ int
+ guestfs_is_zero (guestfs_h *g,
+                  const char *path);
+
+This returns true iff the file exists and the file is empty or it contains
+all zero bytes.
+
+This function returns a C truth value on success or -1 on error.
+
+(Added in 1.11.8)
+
+=head2 guestfs_is_zero_device
+
+ int
+ guestfs_is_zero_device (guestfs_h *g,
+                         const char *device);
+
+This returns true iff the device exists and contains all zero bytes.
+
+Note that for large devices this can take a long time to run.
+
+This function returns a C truth value on success or -1 on error.
+
+(Added in 1.11.8)
+
 =head2 guestfs_kill_subprocess
 
  int
@@ -3409,6 +3570,20 @@ an error.  I<The caller must call C<guestfs_free_xattr_list> after use>.
 
 (Added in 1.0.59)
 
+=head2 guestfs_list_9p
+
+ char **
+ guestfs_list_9p (guestfs_h *g);
+
+List all 9p filesystems attached to the guest.  A list of mount tags is
+returned.
+
+This function returns a NULL-terminated array of strings (like
+L<environ(3)>), or NULL if there was an error.  I<The caller must free the
+strings and the array after use>.
+
+(Added in 1.11.12)
+
 =head2 guestfs_list_devices
 
  char **
@@ -3425,6 +3600,26 @@ L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
 (Added in 0.4)
+
+=head2 guestfs_list_dm_devices
+
+ char **
+ guestfs_list_dm_devices (guestfs_h *g);
+
+List all device mapper devices.
+
+The returned list contains C</dev/mapper/*> devices, eg. ones created by a
+previous call to C<guestfs_luks_open>.
+
+Device mapper devices which correspond to logical volumes are I<not>
+returned in this list.  Call C<guestfs_lvs> if you want to list logical
+volumes.
+
+This function returns a NULL-terminated array of strings (like
+L<environ(3)>), or NULL if there was an error.  I<The caller must free the
+strings and the array after use>.
+
+(Added in 1.11.15)
 
 =head2 guestfs_list_filesystems
 
@@ -3620,7 +3815,7 @@ This is the same as the C<lstat(2)> system call.
 This function returns a C<struct guestfs_stat *>, or NULL if there was an
 error.  I<The caller must call C<guestfs_free_stat> after use>.
 
-(Added in 0.9.2)
+(Додано у 0.9.2)
 
 =head2 guestfs_lstatlist
 
@@ -3671,7 +3866,7 @@ This function takes a key or passphrase parameter which could contain
 sensitive material.  Read the section L</KEYS AND PASSPHRASES> for more
 information.
 
-(Added in 1.5.2)
+(Додано у 1.5.2)
 
 =head2 guestfs_luks_close
 
@@ -3686,7 +3881,7 @@ underlying block device.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.5.1)
+(Додано у 1.5.1)
 
 =head2 guestfs_luks_format
 
@@ -3709,7 +3904,7 @@ This function takes a key or passphrase parameter which could contain
 sensitive material.  Read the section L</KEYS AND PASSPHRASES> for more
 information.
 
-(Added in 1.5.2)
+(Додано у 1.5.2)
 
 =head2 guestfs_luks_format_cipher
 
@@ -3732,7 +3927,7 @@ This function takes a key or passphrase parameter which could contain
 sensitive material.  Read the section L</KEYS AND PASSPHRASES> for more
 information.
 
-(Added in 1.5.2)
+(Додано у 1.5.2)
 
 =head2 guestfs_luks_kill_slot
 
@@ -3751,7 +3946,7 @@ This function takes a key or passphrase parameter which could contain
 sensitive material.  Read the section L</KEYS AND PASSPHRASES> for more
 information.
 
-(Added in 1.5.2)
+(Додано у 1.5.2)
 
 =head2 guestfs_luks_open
 
@@ -3777,13 +3972,15 @@ If this block device contains LVM volume groups, then calling
 C<guestfs_vgscan> followed by C<guestfs_vg_activate_all> will make them
 visible.
 
+Use C<guestfs_list_dm_devices> to list all device mapper devices.
+
 This function returns 0 on success or -1 on error.
 
 This function takes a key or passphrase parameter which could contain
 sensitive material.  Read the section L</KEYS AND PASSPHRASES> for more
 information.
 
-(Added in 1.5.1)
+(Додано у 1.5.1)
 
 =head2 guestfs_luks_open_ro
 
@@ -3802,7 +3999,7 @@ This function takes a key or passphrase parameter which could contain
 sensitive material.  Read the section L</KEYS AND PASSPHRASES> for more
 information.
 
-(Added in 1.5.1)
+(Додано у 1.5.1)
 
 =head2 guestfs_lvcreate
 
@@ -3837,7 +4034,7 @@ See also C<guestfs_is_lv>.
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
-(Added in 1.5.24)
+(Додано у 1.5.24)
 
 =head2 guestfs_lvm_clear_filter
 
@@ -3851,7 +4048,7 @@ This command also clears the LVM cache and performs a volume group scan.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.5.1)
+(Додано у 1.5.1)
 
 =head2 guestfs_lvm_remove_all
 
@@ -3895,7 +4092,7 @@ filesystem), even if you are not filtering out that VG.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.5.1)
+(Додано у 1.5.1)
 
 =head2 guestfs_lvremove
 
@@ -3911,7 +4108,7 @@ C</dev/VG>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.13)
+(Додано у 1.0.13)
 
 =head2 guestfs_lvrename
 
@@ -3924,7 +4121,7 @@ Rename a logical volume C<logvol> with the new name C<newlogvol>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.83)
+(Додано у 1.0.83)
 
 =head2 guestfs_lvresize
 
@@ -3954,7 +4151,7 @@ remaining free space in the volume group.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.3.3)
+(Додано у 1.3.3)
 
 =head2 guestfs_lvs
 
@@ -4117,13 +4314,13 @@ the returned string after use>.
 This creates an ext2/3/4 filesystem on C<device> with an external journal on
 C<journal>.  It is equivalent to the command:
 
- mke2fs -t fstype -b blocksize -J device=<journal> <device>
+ mke2fs -t fstype -b blocksize -J device=<журнал> <пристрій>
 
 See also C<guestfs_mke2journal>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.68)
+(Додано у 1.0.68)
 
 =head2 guestfs_mke2fs_JL
 
@@ -4141,7 +4338,7 @@ See also C<guestfs_mke2journal_L>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.68)
+(Додано у 1.0.68)
 
 =head2 guestfs_mke2fs_JU
 
@@ -4159,7 +4356,7 @@ See also C<guestfs_mke2journal_U>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.68)
+(Додано у 1.0.68)
 
 =head2 guestfs_mke2journal
 
@@ -4175,7 +4372,7 @@ command:
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.68)
+(Додано у 1.0.68)
 
 =head2 guestfs_mke2journal_L
 
@@ -4189,7 +4386,7 @@ This creates an ext2 external journal on C<device> with label C<label>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.68)
+(Додано у 1.0.68)
 
 =head2 guestfs_mke2journal_U
 
@@ -4203,7 +4400,7 @@ This creates an ext2 external journal on C<device> with UUID C<uuid>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.68)
+(Додано у 1.0.68)
 
 =head2 guestfs_mkfifo
 
@@ -4259,7 +4456,7 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
-(Added in 1.0.68)
+(Додано у 1.0.68)
 
 =head2 guestfs_mkfs_opts
 
@@ -4275,6 +4472,8 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
  GUESTFS_MKFS_OPTS_BLOCKSIZE, int blocksize,
  GUESTFS_MKFS_OPTS_FEATURES, const char *features,
+ GUESTFS_MKFS_OPTS_INODE, int inode,
+ GUESTFS_MKFS_OPTS_SECTORSIZE, int sectorsize,
 
 This function creates a filesystem on C<device>.  The filesystem type is
 C<fstype>, for example C<ext3>.
@@ -4304,11 +4503,21 @@ selected.  See L<mke2fs(8)> and L<mkfs.ufs(8)> for more details.
 You cannot use this optional parameter with the C<gfs> or C<gfs2> filesystem
 type.
 
+=item C<inode>
+
+This passes the I<-I> parameter to the external L<mke2fs(8)> program which
+sets the inode size (only for ext2/3/4 filesystems at present).
+
+=item C<sectorsize>
+
+This passes the I<-S> parameter to external L<mkfs.ufs(8)> program, which
+sets sector size for ufs filesystem.
+
 =back
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.7.19)
+(Додано у 1.7.19)
 
 =head2 guestfs_mkfs_opts_va
 
@@ -4320,7 +4529,7 @@ This function returns 0 on success or -1 on error.
 
 This is the "va_list variant" of L</guestfs_mkfs_opts>.
 
-See L</CALLS WITH OPTIONAL ARGUMENTS>.
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_mkfs_opts_argv
 
@@ -4332,7 +4541,7 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 This is the "argv variant" of L</guestfs_mkfs_opts>.
 
-See L</CALLS WITH OPTIONAL ARGUMENTS>.
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_mkmountpoint
 
@@ -4380,7 +4589,7 @@ can also trigger these issues.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.62)
+(Додано у 1.0.62)
 
 =head2 guestfs_mknod
 
@@ -4497,7 +4706,7 @@ This function returns 0 on success or -1 on error.
  guestfs_mkswap_file (guestfs_h *g,
                       const char *path);
 
-Create a swap file.
+Створити файл резервної пам’яті.
 
 This command just writes a swap file signature to an existing file.  To
 create the file itself, use something like C<guestfs_fallocate>.
@@ -4519,7 +4728,7 @@ C<appliance/kmod.whitelist.in> in the source).
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.68)
+(Додано у 1.0.68)
 
 =head2 guestfs_mount
 
@@ -4558,6 +4767,55 @@ they are deprecated indicates that there are problems with correct use of
 these functions.
 
 (Added in 0.3)
+
+=head2 guestfs_mount_9p
+
+ int
+ guestfs_mount_9p (guestfs_h *g,
+                   const char *mounttag,
+                   const char *mountpoint,
+                   ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_MOUNT_9P_OPTIONS, const char *options,
+
+Mount the virtio-9p filesystem with the tag C<mounttag> on the directory
+C<mountpoint>.
+
+If required, C<trans=virtio> will be automatically added to the options.
+Any other options required can be passed in the optional C<options>
+parameter.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.11.12)
+
+=head2 guestfs_mount_9p_va
+
+ int
+ guestfs_mount_9p_va (guestfs_h *g,
+                      const char *mounttag,
+                      const char *mountpoint,
+                      va_list args);
+
+This is the "va_list variant" of L</guestfs_mount_9p>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_mount_9p_argv
+
+ int
+ guestfs_mount_9p_argv (guestfs_h *g,
+                        const char *mounttag,
+                        const char *mountpoint,
+                        const struct guestfs_mount_9p_argv *optargs);
+
+This is the "argv variant" of L</guestfs_mount_9p>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_mount_loop
 
@@ -4637,7 +4895,7 @@ was an error.  The array of strings will always have length C<2n+1>, where
 C<n> keys and values alternate, followed by the trailing NULL entry.  I<The
 caller must free the strings and the array after use>.
 
-(Added in 1.0.62)
+(Додано у 1.0.62)
 
 =head2 guestfs_mounts
 
@@ -4713,7 +4971,82 @@ See also L<ntfsresize(8)>.
 
 This function returns 0 on success or -1 on error.
 
+This function is deprecated.  In new code, use the
+L</guestfs_ntfsresize_opts> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 (Added in 1.3.2)
+
+=head2 guestfs_ntfsresize_opts
+
+ int
+ guestfs_ntfsresize_opts (guestfs_h *g,
+                          const char *device,
+                          ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_NTFSRESIZE_OPTS_SIZE, int64_t size,
+ GUESTFS_NTFSRESIZE_OPTS_FORCE, int force,
+
+This command resizes an NTFS filesystem, expanding or shrinking it to the
+size of the underlying device.
+
+The optional parameters are:
+
+=over 4
+
+=item C<size>
+
+The new size (in bytes) of the filesystem.  If omitted, the filesystem is
+resized to fit the container (eg. partition).
+
+=item C<force>
+
+If this option is true, then force the resize of the filesystem even if the
+filesystem is marked as requiring a consistency check.
+
+After the resize operation, the filesystem is always marked as requiring a
+consistency check (for safety).  You have to boot into Windows to perform
+this check and clear this condition.  If you I<don't> set the C<force>
+option then it is not possible to call C<guestfs_ntfsresize_opts> multiple
+times on a single filesystem without booting into Windows between each
+resize.
+
+=back
+
+See also L<ntfsresize(8)>.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.11.15)
+
+=head2 guestfs_ntfsresize_opts_va
+
+ int
+ guestfs_ntfsresize_opts_va (guestfs_h *g,
+                             const char *device,
+                             va_list args);
+
+This is the "va_list variant" of L</guestfs_ntfsresize_opts>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_ntfsresize_opts_argv
+
+ int
+ guestfs_ntfsresize_opts_argv (guestfs_h *g,
+                               const char *device,
+                               const struct guestfs_ntfsresize_opts_argv *optargs);
+
+This is the "argv variant" of L</guestfs_ntfsresize_opts>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_ntfsresize_size
 
@@ -4726,6 +5059,13 @@ This command is the same as C<guestfs_ntfsresize> except that it allows you
 to specify the new size (in bytes) explicitly.
 
 This function returns 0 on success or -1 on error.
+
+This function is deprecated.  In new code, use the
+L</guestfs_ntfsresize_opts> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 (Added in 1.3.14)
 
@@ -4863,7 +5203,9 @@ Possible values for C<parttype> are:
 
 =over 4
 
-=item B<efi> | B<gpt>
+=item B<efi>
+
+=item B<gpt>
 
 Intel EFI / GPT partition table.
 
@@ -4871,7 +5213,9 @@ This is recommended for >= 2 TB partitions that will be accessed from Linux
 and Intel-based Mac OS X.  It also has limited backwards compatibility with
 the C<mbr> format.
 
-=item B<mbr> | B<msdos>
+=item B<mbr>
+
+=item B<msdos>
 
 The standard PC "Master Boot Record" (MBR) format used by MS-DOS and
 Windows.  This partition type will B<only> work for device sizes up to 2
@@ -4885,35 +5229,37 @@ Other partition table types that may work but are not supported include:
 
 =item B<aix>
 
-AIX disk labels.
+Мітки дисків AIX.
 
-=item B<amiga> | B<rdb>
+=item B<amiga>
 
-Amiga "Rigid Disk Block" format.
+=item B<rdb>
+
+Формат "Rigid Disk Block" Amiga.
 
 =item B<bsd>
 
-BSD disk labels.
+Мітки дисків BSD.
 
 =item B<dasd>
 
-DASD, used on IBM mainframes.
+DASD, використовувалися у мейнфреймах IBM.
 
 =item B<dvh>
 
-MIPS/SGI volumes.
+Томи MIPS/SGI.
 
 =item B<mac>
 
-Old Mac partition format.  Modern Macs use C<gpt>.
+Старий формат розділів Mac. Сучасні системи Mac використовують C<gpt>.
 
 =item B<pc98>
 
-NEC PC-98 format, common in Japan apparently.
+Формат NEC PC-98, поширений у Японії.
 
 =item B<sun>
 
-Sun disk labels.
+Мітки дисків Sun.
 
 =back
 
@@ -5128,7 +5474,7 @@ first.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.13)
+(Додано у 1.0.13)
 
 =head2 guestfs_pvresize
 
@@ -5318,35 +5664,35 @@ C<ftyp> field will contain one of the following characters:
 
 =item 'b'
 
-Block special
+Блоковий особливий
 
 =item 'c'
 
-Char special
+Символьний особливий
 
 =item 'd'
 
-Directory
+Каталог
 
 =item 'f'
 
-FIFO (named pipe)
+FIFO (іменований канал)
 
 =item 'l'
 
-Symbolic link
+Символічне посилання
 
 =item 'r'
 
-Regular file
+Звичайний файл
 
 =item 's'
 
-Socket
+Сокет
 
 =item 'u'
 
-Unknown file type
+Невідомий тип файла
 
 =item '?'
 
@@ -5472,6 +5818,8 @@ minimal filesystem in bytes.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.9.4)
+
 =head2 guestfs_resize2fs_size
 
  int
@@ -5534,7 +5882,7 @@ C<guestfs_mkmountpoint>.  See C<guestfs_mkmountpoint> for full details.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.62)
+(Додано у 1.0.62)
 
 =head2 guestfs_scrub_device
 
@@ -5626,9 +5974,9 @@ daemon.  Possible methods are:
 Launch an appliance and connect to it.  This is the ordinary method and the
 default.
 
-=item C<unix:I<path>>
+=item C<unix:I<шлях>>
 
-Connect to the Unix domain socket I<path>.
+Встановити з’єднання з сокетом домену Unix I<шлях>.
 
 This method lets you connect to an existing daemon or (using virtio-serial)
 to a live guest.  For more information, see L<guestfs(3)/ATTACHING TO
@@ -5637,6 +5985,8 @@ RUNNING DAEMONS>.
 =back
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.9.8)
 
 =head2 guestfs_set_autosync
 
@@ -5764,6 +6114,25 @@ Setting C<path> to C<NULL> restores the default path.
 This function returns 0 on success or -1 on error.
 
 (Added in 0.3)
+
+=head2 guestfs_set_pgroup
+
+ int
+ guestfs_set_pgroup (guestfs_h *g,
+                     int pgroup);
+
+If C<pgroup> is true, child processes are placed into their own process
+group.
+
+The practical upshot of this is that signals like C<SIGINT> (from users
+pressing C<^C>) won't be received by the child process.
+
+The default for this flag is false, because usually you want C<^C> to kill
+the subprocess.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.11.18)
 
 =head2 guestfs_set_qemu
 
@@ -6133,7 +6502,7 @@ This is the same as the C<stat(2)> system call.
 This function returns a C<struct guestfs_stat *>, or NULL if there was an
 error.  I<The caller must call C<guestfs_free_stat> after use>.
 
-(Added in 0.9.2)
+(Додано у 0.9.2)
 
 =head2 guestfs_statvfs
 
@@ -6150,7 +6519,7 @@ This is the same as the C<statvfs(2)> system call.
 This function returns a C<struct guestfs_statvfs *>, or NULL if there was an
 error.  I<The caller must call C<guestfs_free_statvfs> after use>.
 
-(Added in 0.9.2)
+(Додано у 0.9.2)
 
 =head2 guestfs_strings
 
@@ -6180,7 +6549,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 This is like the C<guestfs_strings> command, but allows you to specify the
 encoding of strings that are looked for in the source file C<path>.
 
-Allowed encodings are:
+Можливими кодуваннями є:
 
 =over 4
 
@@ -6191,7 +6560,7 @@ ISO-8859-X (this is what C<guestfs_strings> uses).
 
 =item S
 
-Single 8-bit-byte characters.
+Окремі 8-бітові-байтові символи.
 
 =item b
 
@@ -6522,7 +6891,7 @@ was an error.  The array of strings will always have length C<2n+1>, where
 C<n> keys and values alternate, followed by the trailing NULL entry.  I<The
 caller must free the strings and the array after use>.
 
-(Added in 0.9.2)
+(Додано у 0.9.2)
 
 =head2 guestfs_txz_in
 
@@ -6783,9 +7152,7 @@ the returned string after use>.
                       char *const *volgroups);
 
 This command activates or (if C<activate> is false) deactivates all logical
-volumes in the listed volume groups C<volgroups>.  If activated, then they
-are made known to the kernel, ie. they appear as C</dev/mapper> devices.  If
-deactivated, then those devices disappear.
+volumes in the listed volume groups C<volgroups>.
 
 This command is the same as running C<vgchange -a y|n volgroups...>
 
@@ -6803,9 +7170,7 @@ This function returns 0 on success or -1 on error.
                           int activate);
 
 This command activates or (if C<activate> is false) deactivates all logical
-volumes in all volume groups.  If activated, then they are made known to the
-kernel, ie. they appear as C</dev/mapper> devices.  If deactivated, then
-those devices disappear.
+volumes in all volume groups.
 
 This command is the same as running C<vgchange -a y|n>
 
@@ -6879,7 +7244,7 @@ This also forcibly removes all logical volumes in the volume group (if any).
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.13)
+(Додано у 1.0.13)
 
 =head2 guestfs_vgrename
 
@@ -6892,7 +7257,7 @@ Rename a volume group C<volgroup> with the new name C<newvolgroup>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.83)
+(Додано у 1.0.83)
 
 =head2 guestfs_vgs
 
@@ -7027,12 +7392,34 @@ On error this function returns -1.
 This call creates a file called C<path>.  The content of the file is the
 string C<content> (which can contain any 8 bit data).
 
+See also C<guestfs_write_append>.
+
 This function returns 0 on success or -1 on error.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 (Added in 1.3.14)
+
+=head2 guestfs_write_append
+
+ int
+ guestfs_write_append (guestfs_h *g,
+                       const char *path,
+                       const char *content,
+                       size_t content_size);
+
+This call appends C<content> to the end of file C<path>.  If C<path> does
+not exist, then a new file is created.
+
+See also C<guestfs_write>.
+
+This function returns 0 on success or -1 on error.
+
+Because of the message protocol, there is a transfer limit of somewhere
+between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+(Added in 1.11.18)
 
 =head2 guestfs_write_file
 
@@ -7113,7 +7500,8 @@ How many blocks are zeroed isn't specified (but it's I<not> enough to
 securely wipe the device).  It should be sufficient to remove any partition
 tables, filesystem superblocks and so on.
 
-See also: C<guestfs_zero_device>, C<guestfs_scrub_device>.
+See also: C<guestfs_zero_device>, C<guestfs_scrub_device>,
+C<guestfs_is_zero_device>
 
 This function returns 0 on success or -1 on error.
 
@@ -7143,7 +7531,7 @@ L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 B<This command is dangerous.  Without careful use you can easily destroy all
 your data>.
 
-(Added in 1.3.1)
+(Додано у 1.3.1)
 
 =head2 guestfs_zerofree
 

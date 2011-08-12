@@ -108,3 +108,6 @@ extern char *guestfs__get_attach_method (guestfs_h *g);
 extern char *guestfs__inspect_get_product_variant (guestfs_h *g, const char *root);
 extern char *guestfs__inspect_get_windows_current_control_set (guestfs_h *g, const char *root);
 extern char **guestfs__inspect_get_drive_mappings (guestfs_h *g, const char *root);
+extern char *guestfs__inspect_get_icon (guestfs_h *g, const char *root, size_t *size_r, const struct guestfs_inspect_get_icon_argv *optargs);
+extern int guestfs__set_pgroup (guestfs_h *g, int pgroup);
+extern int guestfs__get_pgroup (guestfs_h *g);

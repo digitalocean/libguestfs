@@ -747,6 +747,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_filesystem_resize (IntPtr h, [In] string mountpoint);
+
+    /// <summary>
+    /// resize a btrfs filesystem
+    /// </summary>
+    public void btrfs_filesystem_resize (string mountpoint)
+    {
+      int r;
+      r = guestfs_btrfs_filesystem_resize (_handle, mountpoint);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string guestfs_case_sensitive_path (IntPtr h, [In] string path);
 
     /// <summary>
@@ -1524,6 +1538,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_get_pgroup (IntPtr h);
+
+    /// <summary>
+    /// get process group flag
+    /// </summary>
+    public bool get_pgroup ()
+    {
+      int r;
+      r = guestfs_get_pgroup (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_get_pid (IntPtr h);
 
     /// <summary>
@@ -2003,6 +2032,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_inspect_get_icon (IntPtr h, [In] string root);
+
+    /// <summary>
+    /// get the icon corresponding to this operating system
+    /// </summary>
+    public string inspect_get_icon (string root)
+    {
+      string r;
+      r = guestfs_inspect_get_icon (_handle, root);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_inspect_get_major_version (IntPtr h, [In] string root);
 
     /// <summary>
@@ -2440,6 +2484,36 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_is_zero (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// test if a file contains all zero bytes
+    /// </summary>
+    public bool is_zero (string path)
+    {
+      int r;
+      r = guestfs_is_zero (_handle, path);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_is_zero_device (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// test if a device contains all zero bytes
+    /// </summary>
+    public bool is_zero_device (string device)
+    {
+      int r;
+      r = guestfs_is_zero_device (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_kill_subprocess (IntPtr h);
 
     /// <summary>
@@ -2512,6 +2586,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_list_9p (IntPtr h);
+
+    /// <summary>
+    /// list 9p filesystems
+    /// </summary>
+    public string[] list_9p ()
+    {
+      string[] r;
+      r = guestfs_list_9p (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string[] guestfs_list_devices (IntPtr h);
 
     /// <summary>
@@ -2521,6 +2610,21 @@ namespace Guestfs
     {
       string[] r;
       r = guestfs_list_devices (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_list_dm_devices (IntPtr h);
+
+    /// <summary>
+    /// list device mapper devices
+    /// </summary>
+    public string[] list_dm_devices ()
+    {
+      string[] r;
+      r = guestfs_list_dm_devices (_handle);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
@@ -3326,6 +3430,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_mount_9p (IntPtr h, [In] string mounttag, [In] string mountpoint);
+
+    /// <summary>
+    /// mount 9p filesystem
+    /// </summary>
+    public void mount_9p (string mounttag, string mountpoint)
+    {
+      int r;
+      r = guestfs_mount_9p (_handle, mounttag, mountpoint);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_mount_loop (IntPtr h, [In] string file, [In] string mountpoint);
 
     /// <summary>
@@ -3453,6 +3571,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_ntfsresize (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_ntfsresize_opts (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// resize an NTFS filesystem
+    /// </summary>
+    public void ntfsresize_opts (string device)
+    {
+      int r;
+      r = guestfs_ntfsresize_opts (_handle, device);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -4185,6 +4317,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_set_path (_handle, searchpath);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_pgroup (IntPtr h, bool pgroup);
+
+    /// <summary>
+    /// set process group flag
+    /// </summary>
+    public void set_pgroup (bool pgroup)
+    {
+      int r;
+      r = guestfs_set_pgroup (_handle, pgroup);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -5471,6 +5617,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_write (_handle, path, content);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_write_append (IntPtr h, [In] string path, [In] string content);
+
+    /// <summary>
+    /// append content to end of file
+    /// </summary>
+    public void write_append (string path, string content)
+    {
+      int r;
+      r = guestfs_write_append (_handle, path, content);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }

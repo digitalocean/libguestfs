@@ -62,17 +62,17 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-win-reg.pl 1"
-.TH virt-win-reg.pl 1 "2011-08-07" "libguestfs-1.10.7" "Virtualization Support"
+.TH virt-win-reg.pl 1 "2011-08-07" "libguestfs-1.12.3" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
-.SH "ÐÐÐÐÐ"
-.IX Header "ÐÐÐÐÐ"
+.SH "НАЗВА"
+.IX Header "НАЗВА"
 virt-win-reg \- Export and merge Windows Registry entries from a Windows
 guest
-.SH "ÐÐÐ ÐÐ¢ÐÐÐ ÐÐÐÐ¡"
-.IX Header "ÐÐÐ ÐÐ¢ÐÐÐ ÐÐÐÐ¡"
+.SH "КОРОТКИЙ ОПИС"
+.IX Header "КОРОТКИЙ ОПИС"
 .Vb 1
 \& virt\-win\-reg domname \*(AqHKLM\ePath\eTo\eSubkey\*(Aq
 \&
@@ -84,8 +84,8 @@ guest
 \&
 \& virt\-win\-reg [\-\-options] disk.img ... # instead of domname
 .Ve
-.SH "WARNING"
-.IX Header "WARNING"
+.SH "ПОПЕРЕДЖЕННЯ"
+.IX Header "ПОПЕРЕДЖЕННЯ"
 You must \fInot\fR use \f(CW\*(C`virt\-win\-reg\*(C'\fR with the \fI\-\-merge\fR option on live
 virtual machines.  If you do this, you \fIwill\fR get irreversible disk
 corruption in the \s-1VM\s0.  \f(CW\*(C`virt\-win\-reg\*(C'\fR tries to stop you from doing this,
@@ -95,8 +95,8 @@ Modifying the Windows Registry is an inherently risky operation.  The format
 is deliberately obscure and undocumented, and Registry changes can leave the
 system unbootable.  Therefore when using the \fI\-\-merge\fR option, make sure
 you have a reliable backup first.
-.SH "ÐÐÐÐ¡"
-.IX Header "ÐÐÐÐ¡"
+.SH "ОПИС"
+.IX Header "ОПИС"
 This program can export and merge Windows Registry entries from a Windows
 guest.
 .PP
@@ -124,26 +124,30 @@ Registry:
 .Vb 1
 \& $ virt\-win\-reg \-\-merge Windows7 changes.reg
 .Ve
-.SS "\s-1NOTE\s0"
-.IX Subsection "NOTE"
+.SS "ПРИМІТКА"
+.IX Subsection "ПРИМІТКА"
 This program is only meant for simple access to the registry.  If you want
 to do complicated things with the registry, we suggest you download the
 Registry hive files from the guest using \fIlibguestfs\fR\|(3) or \fIguestfish\fR\|(1)
 and access them locally, eg. using \fIhivex\fR\|(3), \fIhivexsh\fR\|(1) or
 \&\fIhivexregedit\fR\|(1).
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+.SH "ПАРАМЕТРИ"
+.IX Header "ПАРАМЕТРИ"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
 Display brief help.
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
-Display version number and exit.
+Показати дані щодо версії і завершити роботу.
 .IP "\fB\-\-debug\fR" 4
 .IX Item "--debug"
 Enable debugging messages.
-.IP "\fB\-\-connect \s-1URI\s0\fR | \fB\-c \s-1URI\s0\fR" 4
-.IX Item "--connect URI | -c URI"
+.IP "\fB\-c адреса\fR" 4
+.IX Item "-c адреса"
+.PD 0
+.IP "\fB\-\-connect адреса\fR" 4
+.IX Item "--connect адреса"
+.PD
 If using libvirt, connect to the given \fI\s-1URI\s0\fR.  If omitted, then we connect
 to the default libvirt hypervisor.
 .Sp
@@ -177,22 +181,74 @@ used in the hive file.  This is explained in detail in
 .Sp
 The default is to use \s-1UTF\-16LE\s0, which should work with recent versions of
 Windows.
+.IP "\fB\-\-unsafe\-printable\-strings\fR" 4
+.IX Item "--unsafe-printable-strings"
+When exporting (only), assume strings are \s-1UTF\-16LE\s0 and print them as strings
+instead of hex sequences.  Remove the final zero codepoint from strings if
+present.
+.Sp
+This is unsafe and does not preserve the fidelity of strings in the original
+Registry for various reasons:
+.RS 4
+.IP "\(bu" 4
+Assumes the original encoding is \s-1UTF\-16LE\s0.  \s-1ASCII\s0 strings and strings in
+other encodings will be corrupted by this transformation.
+.IP "\(bu" 4
+Assumes that everything which has type 1 or 2 is really a string and that
+everything else is not a string, but the type field in real Registries is
+not reliable.
+.IP "\(bu" 4
+Loses information about whether a zero codepoint followed the string in the
+Registry or not.
+.RE
+.RS 4
+.Sp
+This all happens because the Registry itself contains no information about
+how strings are encoded (see \*(L"\s-1ENCODING\s0 \s-1STRINGS\s0\*(R" in \fIWin::Hivex::Regedit\fR\|(3)).
+.Sp
+You should only use this option for quick hacking and debugging of the
+Registry contents, and \fInever\fR use it if the output is going to be passed
+into another program or stored in another Registry.
+.RE
 .SH "SUPPORTED SYSTEMS"
 .IX Header "SUPPORTED SYSTEMS"
 The program currently supports Windows NT-derived guests starting with
 Windows \s-1XP\s0 through to at least Windows 7.
 .PP
-Registry support is done for \f(CW\*(C`HKEY_LOCAL_MACHINE\eSAM\*(C'\fR,
-\&\f(CW\*(C`HKEY_LOCAL_MACHINE\eSECURITY\*(C'\fR, \f(CW\*(C`HKEY_LOCAL_MACHINE\eSOFTWARE\*(C'\fR,
-\&\f(CW\*(C`HKEY_LOCAL_MACHINE\eSYSTEM\*(C'\fR and \f(CW\*(C`HKEY_USERS\e.DEFAULT\*(C'\fR.
+The following Registry keys are supported:
+.ie n .IP """HKEY_LOCAL_MACHINE\eSAM""" 4
+.el .IP "\f(CWHKEY_LOCAL_MACHINE\eSAM\fR" 4
+.IX Item "HKEY_LOCAL_MACHINESAM"
+.PD 0
+.ie n .IP """HKEY_LOCAL_MACHINE\eSECURITY""" 4
+.el .IP "\f(CWHKEY_LOCAL_MACHINE\eSECURITY\fR" 4
+.IX Item "HKEY_LOCAL_MACHINESECURITY"
+.ie n .IP """HKEY_LOCAL_MACHINE\eSOFTWARE""" 4
+.el .IP "\f(CWHKEY_LOCAL_MACHINE\eSOFTWARE\fR" 4
+.IX Item "HKEY_LOCAL_MACHINESOFTWARE"
+.ie n .IP """HKEY_LOCAL_MACHINE\eSYSTEM""" 4
+.el .IP "\f(CWHKEY_LOCAL_MACHINE\eSYSTEM\fR" 4
+.IX Item "HKEY_LOCAL_MACHINESYSTEM"
+.ie n .IP """HKEY_USERS\e.DEFAULT""" 4
+.el .IP "\f(CWHKEY_USERS\e.DEFAULT\fR" 4
+.IX Item "HKEY_USERS.DEFAULT"
+.ie n .IP """HKEY_USERS\e\f(CISID\f(CW""" 4
+.el .IP "\f(CWHKEY_USERS\e\f(CISID\f(CW\fR" 4
+.IX Item "HKEY_USERSSID"
+.PD
+where \fI\s-1SID\s0\fR is a Windows User \s-1SID\s0 (eg. \f(CW\*(C`S\-1\-5\-18\*(C'\fR).
+.ie n .IP """HKEY_USERS\e\f(CIusername\f(CW""" 4
+.el .IP "\f(CWHKEY_USERS\e\f(CIusername\f(CW\fR" 4
+.IX Item "HKEY_USERSusername"
+where \fIusername\fR is a local user name (this is a libguestfs extension).
 .PP
 You can use \f(CW\*(C`HKLM\*(C'\fR as a shorthand for \f(CW\*(C`HKEY_LOCAL_MACHINE\*(C'\fR, and \f(CW\*(C`HKU\*(C'\fR for
 \&\f(CW\*(C`HKEY_USERS\*(C'\fR.
 .PP
-\&\f(CW\*(C`HKEY_USERS\e$SID\*(C'\fR and \f(CW\*(C`HKEY_CURRENT_USER\*(C'\fR are \fBnot\fR supported at this
-time.
-.SH "ENCODING"
-.IX Header "ENCODING"
+The literal keys \f(CW\*(C`HKEY_USERS\e$SID\*(C'\fR and \f(CW\*(C`HKEY_CURRENT_USER\*(C'\fR are not
+supported (there is no \*(L"current user\*(R").
+.SH "КОДУВАННЯ"
+.IX Header "КОДУВАННЯ"
 \&\f(CW\*(C`virt\-win\-reg\*(C'\fR expects that regedit files have already been reencoded in
 the local encoding.  Usually on Linux hosts, this means \s-1UTF\-8\s0 with
 Unix-style line endings.  Since Windows regedit files are often in \s-1UTF\-16LE\s0
@@ -319,7 +375,7 @@ using the RHSrvAny service wrapper.
 \& EOF
 .Ve
 .PP
-ÐÐ¾ÑÐ°ÑÐºÐ¸:
+Нотатки:
 .IP "\(bu" 4
 For use of \f(CW\*(C`ControlSet001\*(C'\fR see the section above in this manual page.  You
 may need to adjust this according to the control set that is in use by the
@@ -349,14 +405,14 @@ Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
-.SH "Ð¢ÐÐÐÐ ÐÐÐ ÐÐÐÐ¯ÐÐ¬Ð¢Ð"
-.IX Header "Ð¢ÐÐÐÐ ÐÐÐ ÐÐÐÐ¯ÐÐ¬Ð¢Ð"
+.SH "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
+.IX Header "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 \&\fIhivex\fR\|(3), \fIhivexsh\fR\|(1), \fIhivexregedit\fR\|(1), \fIguestfs\fR\|(3),
 \&\fIguestfish\fR\|(1), \fIvirt\-cat\fR\|(1), \fISys::Guestfs\fR\|(3),
 \&\fISys::Guestfs::Lib\fR\|(3), \fIWin::Hivex\fR\|(3), \fIWin::Hivex::Regedit\fR\|(3),
 \&\fISys::Virt\fR\|(3), <http://libguestfs.org/>.
-.SH "ÐÐÐÐ"
-.IX Header "ÐÐÐÐ"
+.SH "ВАДИ"
+.IX Header "ВАДИ"
 When reporting bugs, please enable debugging and capture the \fIcomplete\fR
 output:
 .PP
@@ -367,11 +423,11 @@ output:
 .PP
 Attach /tmp/virt\-win\-reg.log to a new bug report at
 <https://bugzilla.redhat.com/>
-.SH "AUTHOR"
-.IX Header "AUTHOR"
+.SH "АВТОР"
+.IX Header "АВТОР"
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
-.SH "ÐÐÐ¢ÐÐ Ð¡Ð¬ÐÐ ÐÐ ÐÐÐ"
-.IX Header "ÐÐÐ¢ÐÐ Ð¡Ð¬ÐÐ ÐÐ ÐÐÐ"
+.SH "АВТОРСЬКІ ПРАВА"
+.IX Header "АВТОРСЬКІ ПРАВА"
 Copyright (C) 2010 Red Hat Inc.
 .PP
 This program is free software; you can redistribute it and/or modify it
@@ -379,10 +435,10 @@ under the terms of the \s-1GNU\s0 General Public License as published by the Fre
 Software Foundation; either version 2 of the License, or (at your option)
 any later version.
 .PP
-This program is distributed in the hope that it will be useful, but \s-1WITHOUT\s0
-\&\s-1ANY\s0 \s-1WARRANTY\s0; without even the implied warranty of \s-1MERCHANTABILITY\s0 or
-\&\s-1FITNESS\s0 \s-1FOR\s0 A \s-1PARTICULAR\s0 \s-1PURPOSE\s0.  See the \s-1GNU\s0 General Public License for
-more details.
+Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
+БУДЬ\-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
+ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
+про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
 You should have received a copy of the \s-1GNU\s0 General Public License along with
 this program; if not, write to the Free Software Foundation, Inc., 675 Mass

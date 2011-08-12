@@ -62,13 +62,13 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-list-filesystems.pl 1"
-.TH virt-list-filesystems.pl 1 "2011-08-07" "libguestfs-1.10.7" "Virtualization Support"
+.TH virt-list-filesystems.pl 1 "2011-08-07" "libguestfs-1.12.3" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
-.SH "åå"
-.IX Header "åå"
+.SH "名前"
+.IX Header "名前"
 virt-list-filesystems \- List filesystems in a virtual machine or disk image
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
@@ -96,8 +96,12 @@ Display brief help.
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
 Display version number and exit.
-.IP "\fB\-\-connect \s-1URI\s0\fR | \fB\-c \s-1URI\s0\fR" 4
-.IX Item "--connect URI | -c URI"
+.IP "\fB\-c \s-1URI\s0\fR" 4
+.IX Item "-c URI"
+.PD 0
+.IP "\fB\-\-connect \s-1URI\s0\fR" 4
+.IX Item "--connect URI"
+.PD
 If using libvirt, connect to the given \fI\s-1URI\s0\fR.  If omitted, then we connect
 to the default libvirt hypervisor.
 .Sp
@@ -114,12 +118,20 @@ ignored.
 .Sp
 If working with untrusted raw-format guest disk images, you should ensure
 the format is always specified.
-.IP "\fB\-l\fR | \fB\-\-long\fR" 4
-.IX Item "-l | --long"
+.IP "\fB\-l\fR" 4
+.IX Item "-l"
+.PD 0
+.IP "\fB\-\-long\fR" 4
+.IX Item "--long"
+.PD
 With this option, \f(CW\*(C`virt\-list\-filesystems\*(C'\fR displays the type of each
 filesystem too (where \*(L"type\*(R" means \f(CW\*(C`ext3\*(C'\fR, \f(CW\*(C`xfs\*(C'\fR etc.)
-.IP "\fB\-a\fR | \fB\-\-all\fR" 4
-.IX Item "-a | --all"
+.IP "\fB\-a\fR" 4
+.IX Item "-a"
+.PD 0
+.IP "\fB\-\-all\fR" 4
+.IX Item "--all"
+.PD
 Normally we only show mountable filesystems.  If this option is given then
 swap devices are shown too.
 .SH "SHELL QUOTING"

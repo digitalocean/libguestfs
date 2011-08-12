@@ -431,3 +431,82 @@ guestfish drive letters
 
 There should be an option to mount all Windows drives as separate
 paths, like C: => /c/, D: => /d/ etc.
+
+More inspection features
+------------------------
+
+- last shutdown time
+- DHCP address
+- last time the software was updated
+- last user who logged in
+- lastlog, last, who
+
+Integrate virt-inspector with CMDBs
+-----------------------------------
+
+Either integrate virt-inspector with Configuration Management
+Databases (CMDBs) or at least check that virt-inspector produces the
+right range of data so that integration would be possible.  The
+standards for CMDBs come from the DMTF, see eg:
+
+http://dmtf.org/news/pr/2009/7/dmtf-releases-cmdbf-standard-federating-configuration-management-data
+
+Efficient way to visit all files
+--------------------------------
+
+https://rwmj.wordpress.com/2010/12/15/tip-audit-virtual-machine-for-setuid-files/#content
+
+A naive method would look like:
+
+  g#visit ~return_stats:true "/" (
+    fun pathname stat ->
+      ...
+  )
+
+However this has two disadvantages:
+
+ - requires hand-written custom bindings in each language
+ - unclear about locking, thread-safety and re-entrancy of handle g
+
+A better way would be to have some sort of explicit "download all
+filenames and stat structures", which could then be iterated over:
+
+  let files = g#find_opts ~return_stats:true "/" in
+  List.iter (
+    fun pathname stat ->
+      ...
+  )
+
+The problem with this is that 'files' is going to be larger than a
+protocol buffer.
+
+This leads to thinking about changes to the protocol / generator to
+make this simpler.  The proposal would be to add RBigStringList,
+RBigStructList [or RBig (Ranytype ...)].  These would work like
+FileOut, in that they would use file streaming to stream XDR
+structures (probably written to a file on the library side).
+Generated code would hide most of the implementation.
+
+We also need to think about security issues: is it possible for the
+daemon to keep sending back data forever, and if so what happens on
+the library side.
+
+[Users can now use virt-ls to solve some of these problems, but it is
+not a general solution at the API level]
+
+Interactive disk creator
+------------------------
+
+An interactive disk creator program.
+
+Attach method for disconnected operation
+----------------------------------------
+
+http://libguestfs.org/guestfs.3.html#guestfs_set_attach_method
+
+"Librarian" has an idea that he should be able to attach to a regular
+appliance, but disconnect from it and reconnect to it later.  This
+would be some sort of modified attach method (see link above).
+
+The complexity here is that we would no longer have access to
+stdin/stdout (or we'd have to direct that somewhere else).

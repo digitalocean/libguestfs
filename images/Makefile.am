@@ -42,6 +42,8 @@ EXTRA_DIST = \
 	guest-aux/make-fedora-img.sh \
 	guest-aux/fedora-name.db.txt \
 	guest-aux/fedora-name.db \
+	guest-aux/fedora-packages.db.txt \
+	guest-aux/fedora-packages.db \
 	guest-aux/make-ubuntu-img.sh \
 	guest-aux/make-windows-img.sh \
 	guest-aux/windows-software \
@@ -168,12 +170,19 @@ $(builddir)/test-grep.txt.gz: test-grep.txt
 	mv $@-t $@
 
 # Make a (dummy) Fedora image.
-fedora.img: guest-aux/make-fedora-img.sh guest-aux/fedora-name.db
+fedora.img: guest-aux/make-fedora-img.sh \
+		guest-aux/fedora-name.db \
+		guest-aux/fedora-packages.db
 	LIBGUESTFS_PATH=../appliance \
 	LD_LIBRARY_PATH=../src/.libs \
 	bash $<
 
 guest-aux/fedora-name.db: guest-aux/fedora-name.db.txt
+	rm -f $@ $@-t
+	$(DB_LOAD) $@-t < $<
+	mv $@-t $@
+
+guest-aux/fedora-packages.db: guest-aux/fedora-packages.db.txt
 	rm -f $@ $@-t
 	$(DB_LOAD) $@-t < $<
 	mv $@-t $@

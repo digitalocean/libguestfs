@@ -63,6 +63,7 @@
 #include <netinet/in.h>
 
 #include "c-ctype.h"
+#include "ignore-value.h"
 #include "glthread/lock.h"
 
 #include "guestfs.h"
@@ -74,6 +75,34 @@ static int launch_appliance (guestfs_h *g);
 static int64_t timeval_diff (const struct timeval *x, const struct timeval *y);
 static int connect_unix_socket (guestfs_h *g, const char *sock);
 static int qemu_supports (guestfs_h *g, const char *option);
+
+#if 0
+static int qemu_supports_re (guestfs_h *g, const pcre *option_regex);
+
+static void compile_regexps (void) __attribute__((constructor));
+static void free_regexps (void) __attribute__((destructor));
+
+static void
+compile_regexps (void)
+{
+  const char *err;
+  int offset;
+
+#define COMPILE(re,pattern,options)                                     \
+  do {                                                                  \
+    re = pcre_compile ((pattern), (options), &err, &offset, NULL);      \
+    if (re == NULL) {                                                   \
+      ignore_value (write (2, err, strlen (err)));                      \
+      abort ();                                                         \
+    }                                                                   \
+  } while (0)
+}
+
+static void
+free_regexps (void)
+{
+}
+#endif
 
 /* Add a string to the current command line. */
 static void
@@ -653,12 +682,9 @@ launch_appliance (guestfs_h *g)
       close (rfd[1]);
     }
 
-#if 0
-    /* Set up a new process group, so we can signal this process
-     * and all subprocesses (eg. if qemu is really a shell script).
-     */
-    setpgid (0, 0);
-#endif
+    /* Put qemu in a new process group. */
+    if (g->pgroup)
+      setpgid (0, 0);
 
     setenv ("LC_ALL", "C", 1);
 
@@ -686,6 +712,14 @@ launch_appliance (guestfs_h *g)
     if (r == 0) {
       pid_t qemu_pid = g->pid;
       pid_t parent_pid = getppid ();
+
+      /* It would be nice to be able to put this in the same process
+       * group as qemu (ie. setpgid (0, qemu_pid)).  However this is
+       * not possible because we don't have any guarantee here that
+       * the qemu process has started yet.
+       */
+      if (g->pgroup)
+        setpgid (0, 0);
 
       /* Writing to argv is hideously complicated and error prone.  See:
        * http://git.postgresql.org/gitweb/?p=postgresql.git;a=blob;f=src/backend/utils/misc/ps_status.c;hb=HEAD
@@ -1124,6 +1158,20 @@ qemu_supports (guestfs_h *g, const char *option)
 
   return strstr (g->qemu_help, option) != NULL;
 }
+
+#if 0
+/* As above but using a regex instead of a fixed string. */
+static int
+qemu_supports_re (guestfs_h *g, const pcre *option_regex)
+{
+  if (!g->qemu_help) {
+    if (test_qemu (g) == -1)
+      return -1;
+  }
+
+  return match (g, g->qemu_help, option_regex);
+}
+#endif
 
 /* Check if a file can be opened. */
 static int

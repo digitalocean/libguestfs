@@ -1863,6 +1863,8 @@ struct guestfs_mkfs_opts_args {
   string device<>;
   int blocksize;
   string features<>;
+  int inode;
+  int sectorsize;
 };
 
 struct guestfs_getxattr_args {
@@ -1885,6 +1887,52 @@ struct guestfs_lgetxattr_ret {
 
 struct guestfs_resize2fs_M_args {
   string device<>;
+};
+
+struct guestfs_is_zero_args {
+  string path<>;
+};
+
+struct guestfs_is_zero_ret {
+  bool zeroflag;
+};
+
+struct guestfs_is_zero_device_args {
+  string device<>;
+};
+
+struct guestfs_is_zero_device_ret {
+  bool zeroflag;
+};
+
+struct guestfs_list_9p_ret {
+  guestfs_str mounttags<>;
+};
+
+struct guestfs_mount_9p_args {
+  string mounttag<>;
+  string mountpoint<>;
+  string options<>;
+};
+
+struct guestfs_list_dm_devices_ret {
+  guestfs_str devices<>;
+};
+
+struct guestfs_ntfsresize_opts_args {
+  string device<>;
+  hyper size;
+  bool force;
+};
+
+struct guestfs_btrfs_filesystem_resize_args {
+  string mountpoint<>;
+  hyper size;
+};
+
+struct guestfs_write_append_args {
+  string path<>;
+  opaque content<>;
 };
 
 enum guestfs_procedure {
@@ -2170,6 +2218,14 @@ enum guestfs_procedure {
   GUESTFS_PROC_LGETXATTR = 280,
   GUESTFS_PROC_RESIZE2FS_M = 281,
   GUESTFS_PROC_INTERNAL_AUTOSYNC = 282,
+  GUESTFS_PROC_IS_ZERO = 283,
+  GUESTFS_PROC_IS_ZERO_DEVICE = 284,
+  GUESTFS_PROC_LIST_9P = 285,
+  GUESTFS_PROC_MOUNT_9P = 286,
+  GUESTFS_PROC_LIST_DM_DEVICES = 287,
+  GUESTFS_PROC_NTFSRESIZE_OPTS = 288,
+  GUESTFS_PROC_BTRFS_FILESYSTEM_RESIZE = 289,
+  GUESTFS_PROC_WRITE_APPEND = 290,
   GUESTFS_PROC_NR_PROCS
 };
 

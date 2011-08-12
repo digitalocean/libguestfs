@@ -308,4 +308,12 @@ const char *function_names[] = {
   [280] = "lgetxattr",
   [281] = "resize2fs_M",
   [282] = "internal_autosync",
+  [283] = "is_zero",
+  [284] = "is_zero_device",
+  [285] = "list_9p",
+  [286] = "mount_9p",
+  [287] = "list_dm_devices",
+  [288] = "ntfsresize_opts",
+  [289] = "btrfs_filesystem_resize",
+  [290] = "write_append",
 };

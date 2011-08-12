@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head1 НАЗВА
 
@@ -32,7 +33,7 @@ B<complete, unedited> output of the test tool into a bug report.  More
 information about reporting bugs can be found on the
 L<http://libguestfs.org/> website.
 
-=head1 OPTIONS
+=head1 ПАРАМЕТРИ
 
 =over 4
 
@@ -40,7 +41,7 @@ L<http://libguestfs.org/> website.
 
 Display short usage information and exit.
 
-=item I<--qemu qemu_binary>
+=item I<--qemu виконуваний_файл_qemu>
 
 If you have downloaded another qemu binary, point this option at the full
 path of the binary to try it.
@@ -71,7 +72,7 @@ write a qemu wrapper script (see section I<QEMU WRAPPERS> in
 L<guestfs(3)>).  libguestfs-test-tool writes a temporary qemu wrapper script
 when you use either of the I<--qemudir> or I<--qemu> options.
 
-=head1 EXIT CODE
+=head1 КОД ВИХОДУ
 
 libguestfs-test-tool returns I<0> if the tests completed without error, or
 I<1> if there was an error.
@@ -98,10 +99,10 @@ under the terms of the GNU General Public License as published by the Free
 Software Foundation; either version 2 of the License, or (at your option)
 any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-more details.
+Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
+БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
+ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
+про це можна дізнатися з GNU General Public License.
 
 You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc., 675 Mass

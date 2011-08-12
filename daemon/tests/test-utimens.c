@@ -1,5 +1,5 @@
 /* Tests of utimens.
-   Copyright (C) 2009, 2010 Free Software Foundation, Inc.
+   Copyright (C) 2009-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,11 +33,11 @@
 #include "test-lutimens.h"
 #include "test-utimens.h"
 
-/* Wrap gl_futimens to behave like futimens.  */
+/* Wrap fdutimens to behave like futimens.  */
 static int
 do_futimens (int fd, struct timespec const times[2])
 {
-  return gl_futimens (fd, NULL, times);
+  return fdutimens (fd, NULL, times);
 }
 
 /* Test the use of file descriptors alongside a name.  */
@@ -49,7 +49,7 @@ do_fdutimens (char const *name, struct timespec const times[2])
   if (fd < 0)
     fd = open (name, O_RDONLY);
   errno = 0;
-  result = fdutimens (name, fd, times);
+  result = fdutimens (fd, name, times);
   if (0 <= fd)
     {
       int saved_errno = errno;

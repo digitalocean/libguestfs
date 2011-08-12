@@ -1,6 +1,6 @@
 /* Create /proc/self/fd-related names for subfiles of open directories.
 
-   Copyright (C) 2006, 2009-2010 Free Software Foundation, Inc.
+   Copyright (C) 2006, 2009-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,13 +26,11 @@
 #include <fcntl.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include "dirname.h"
 #include "intprops.h"
-#include "same-inode.h"
-#include "xalloc.h"
 
 /* The results of open() in this file are not used with fchdir,
    and we do not leak fds to any single-threaded code that could use stdio,
@@ -52,7 +50,8 @@
 /* Set BUF to the expansion of PROC_SELF_FD_FORMAT, using FD and FILE
    respectively for %d and %s.  If successful, return BUF if the
    result fits in BUF, dynamically allocated memory otherwise.  But
-   return NULL if /proc is not reliable.  */
+   return NULL if /proc is not reliable, either because the operating
+   system support is lacking or because memory is low.  */
 char *
 openat_proc_name (char buf[OPENAT_BUFFER_SIZE], int fd, char const *file)
 {
@@ -75,20 +74,20 @@ openat_proc_name (char buf[OPENAT_BUFFER_SIZE], int fd, char const *file)
          problem is exhibited on code that built on Solaris 8 and
          running on Solaris 10.  */
 
-      int proc_self_fd = open ("/proc/self/fd", O_RDONLY);
+      int proc_self_fd = open ("/proc/self/fd",
+                               O_SEARCH | O_DIRECTORY | O_NOCTTY | O_NONBLOCK);
       if (proc_self_fd < 0)
         proc_status = -1;
       else
         {
-          struct stat proc_self_fd_dotdot_st;
-          struct stat proc_self_st;
-          char dotdot_buf[PROC_SELF_FD_NAME_SIZE_BOUND (sizeof ".." - 1)];
-          sprintf (dotdot_buf, PROC_SELF_FD_FORMAT, proc_self_fd, "..");
-          proc_status =
-            ((stat (dotdot_buf, &proc_self_fd_dotdot_st) == 0
-              && stat ("/proc/self", &proc_self_st) == 0
-              && SAME_INODE (proc_self_fd_dotdot_st, proc_self_st))
-             ? 1 : -1);
+          /* Detect whether /proc/self/fd/%i/../fd exists, where %i is the
+             number of a file descriptor open on /proc/self/fd.  On Linux,
+             that name resolves to /proc/self/fd, which was opened above.
+             However, on Solaris, it may resolve to /proc/self/fd/fd, which
+             cannot exist, since all names in /proc/self/fd are numeric.  */
+          char dotdot_buf[PROC_SELF_FD_NAME_SIZE_BOUND (sizeof "../fd" - 1)];
+          sprintf (dotdot_buf, PROC_SELF_FD_FORMAT, proc_self_fd, "../fd");
+          proc_status = access (dotdot_buf, F_OK) ? -1 : 1;
           close (proc_self_fd);
         }
     }
@@ -98,7 +97,13 @@ openat_proc_name (char buf[OPENAT_BUFFER_SIZE], int fd, char const *file)
   else
     {
       size_t bufsize = PROC_SELF_FD_NAME_SIZE_BOUND (strlen (file));
-      char *result = (bufsize < OPENAT_BUFFER_SIZE ? buf : xmalloc (bufsize));
+      char *result = buf;
+      if (OPENAT_BUFFER_SIZE < bufsize)
+        {
+          result = malloc (bufsize);
+          if (! result)
+            return NULL;
+        }
       sprintf (result, PROC_SELF_FD_FORMAT, fd, file);
       return result;
     }

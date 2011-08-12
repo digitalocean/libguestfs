@@ -86,14 +86,21 @@ errnostring.h: $(libsrcdir)/errnostring.h
 	rm -f $@
 	ln $< $@
 
+if INSTALL_DAEMON
+sbin_PROGRAMS = guestfsd
+else
 noinst_PROGRAMS = guestfsd
+endif
+
 guestfsd_SOURCES = \
+	9p.c \
 	actions.h \
 	available.c \
 	augeas.c \
 	base64.c \
 	blkid.c \
 	blockdev.c \
+	btrfs.c \
 	checksum.c \
 	cmp.c \
 	command.c \

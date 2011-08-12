@@ -2462,6 +2462,8 @@ struct guestfs_mkfs_opts_args {
 	char *device;
 	int blocksize;
 	char *features;
+	int inode;
+	int sectorsize;
 };
 typedef struct guestfs_mkfs_opts_args guestfs_mkfs_opts_args;
 
@@ -2497,6 +2499,71 @@ struct guestfs_resize2fs_M_args {
 	char *device;
 };
 typedef struct guestfs_resize2fs_M_args guestfs_resize2fs_M_args;
+
+struct guestfs_is_zero_args {
+	char *path;
+};
+typedef struct guestfs_is_zero_args guestfs_is_zero_args;
+
+struct guestfs_is_zero_ret {
+	bool_t zeroflag;
+};
+typedef struct guestfs_is_zero_ret guestfs_is_zero_ret;
+
+struct guestfs_is_zero_device_args {
+	char *device;
+};
+typedef struct guestfs_is_zero_device_args guestfs_is_zero_device_args;
+
+struct guestfs_is_zero_device_ret {
+	bool_t zeroflag;
+};
+typedef struct guestfs_is_zero_device_ret guestfs_is_zero_device_ret;
+
+struct guestfs_list_9p_ret {
+	struct {
+		u_int mounttags_len;
+		guestfs_str *mounttags_val;
+	} mounttags;
+};
+typedef struct guestfs_list_9p_ret guestfs_list_9p_ret;
+
+struct guestfs_mount_9p_args {
+	char *mounttag;
+	char *mountpoint;
+	char *options;
+};
+typedef struct guestfs_mount_9p_args guestfs_mount_9p_args;
+
+struct guestfs_list_dm_devices_ret {
+	struct {
+		u_int devices_len;
+		guestfs_str *devices_val;
+	} devices;
+};
+typedef struct guestfs_list_dm_devices_ret guestfs_list_dm_devices_ret;
+
+struct guestfs_ntfsresize_opts_args {
+	char *device;
+	quad_t size;
+	bool_t force;
+};
+typedef struct guestfs_ntfsresize_opts_args guestfs_ntfsresize_opts_args;
+
+struct guestfs_btrfs_filesystem_resize_args {
+	char *mountpoint;
+	quad_t size;
+};
+typedef struct guestfs_btrfs_filesystem_resize_args guestfs_btrfs_filesystem_resize_args;
+
+struct guestfs_write_append_args {
+	char *path;
+	struct {
+		u_int content_len;
+		char *content_val;
+	} content;
+};
+typedef struct guestfs_write_append_args guestfs_write_append_args;
 
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
@@ -2781,7 +2848,15 @@ enum guestfs_procedure {
 	GUESTFS_PROC_LGETXATTR = 280,
 	GUESTFS_PROC_RESIZE2FS_M = 281,
 	GUESTFS_PROC_INTERNAL_AUTOSYNC = 282,
-	GUESTFS_PROC_NR_PROCS = 282 + 1,
+	GUESTFS_PROC_IS_ZERO = 283,
+	GUESTFS_PROC_IS_ZERO_DEVICE = 284,
+	GUESTFS_PROC_LIST_9P = 285,
+	GUESTFS_PROC_MOUNT_9P = 286,
+	GUESTFS_PROC_LIST_DM_DEVICES = 287,
+	GUESTFS_PROC_NTFSRESIZE_OPTS = 288,
+	GUESTFS_PROC_BTRFS_FILESYSTEM_RESIZE = 289,
+	GUESTFS_PROC_WRITE_APPEND = 290,
+	GUESTFS_PROC_NR_PROCS = 290 + 1,
 };
 typedef enum guestfs_procedure guestfs_procedure;
 #define GUESTFS_MESSAGE_MAX 4194304
@@ -3248,6 +3323,16 @@ extern  bool_t xdr_guestfs_getxattr_ret (XDR *, guestfs_getxattr_ret*);
 extern  bool_t xdr_guestfs_lgetxattr_args (XDR *, guestfs_lgetxattr_args*);
 extern  bool_t xdr_guestfs_lgetxattr_ret (XDR *, guestfs_lgetxattr_ret*);
 extern  bool_t xdr_guestfs_resize2fs_M_args (XDR *, guestfs_resize2fs_M_args*);
+extern  bool_t xdr_guestfs_is_zero_args (XDR *, guestfs_is_zero_args*);
+extern  bool_t xdr_guestfs_is_zero_ret (XDR *, guestfs_is_zero_ret*);
+extern  bool_t xdr_guestfs_is_zero_device_args (XDR *, guestfs_is_zero_device_args*);
+extern  bool_t xdr_guestfs_is_zero_device_ret (XDR *, guestfs_is_zero_device_ret*);
+extern  bool_t xdr_guestfs_list_9p_ret (XDR *, guestfs_list_9p_ret*);
+extern  bool_t xdr_guestfs_mount_9p_args (XDR *, guestfs_mount_9p_args*);
+extern  bool_t xdr_guestfs_list_dm_devices_ret (XDR *, guestfs_list_dm_devices_ret*);
+extern  bool_t xdr_guestfs_ntfsresize_opts_args (XDR *, guestfs_ntfsresize_opts_args*);
+extern  bool_t xdr_guestfs_btrfs_filesystem_resize_args (XDR *, guestfs_btrfs_filesystem_resize_args*);
+extern  bool_t xdr_guestfs_write_append_args (XDR *, guestfs_write_append_args*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -3662,6 +3747,16 @@ extern bool_t xdr_guestfs_getxattr_ret ();
 extern bool_t xdr_guestfs_lgetxattr_args ();
 extern bool_t xdr_guestfs_lgetxattr_ret ();
 extern bool_t xdr_guestfs_resize2fs_M_args ();
+extern bool_t xdr_guestfs_is_zero_args ();
+extern bool_t xdr_guestfs_is_zero_ret ();
+extern bool_t xdr_guestfs_is_zero_device_args ();
+extern bool_t xdr_guestfs_is_zero_device_ret ();
+extern bool_t xdr_guestfs_list_9p_ret ();
+extern bool_t xdr_guestfs_mount_9p_args ();
+extern bool_t xdr_guestfs_list_dm_devices_ret ();
+extern bool_t xdr_guestfs_ntfsresize_opts_args ();
+extern bool_t xdr_guestfs_btrfs_filesystem_resize_args ();
+extern bool_t xdr_guestfs_write_append_args ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head1 НАЗВА
 
@@ -11,7 +12,7 @@ guestmount - Mount a guest filesystem on the host using FUSE and libguestfs
 
  guestmount [--options] -d Guest -i [--ro] mountpoint
 
-=head1 WARNING
+=head1 ПОПЕРЕДЖЕННЯ
 
 You must I<not> use C<guestmount> in read-write mode on live virtual
 machines.  If you do this, you risk disk corruption in the VM.
@@ -34,7 +35,7 @@ by you, and the filesystem will not be visible to any other users unless you
 make certain global configuration changes to C</etc/fuse.conf>.  To unmount
 the filesystem, use the C<fusermount -u> command.
 
-=head1 EXAMPLES
+=head1 ПРИКЛАДИ
 
 For a typical Windows guest which has its main filesystem on the first
 partition:
@@ -68,7 +69,7 @@ If you want to debug the program, we recommend:
 
  guestmount [...] --trace --verbose /mnt
 
-=head1 NOTES
+=head1 ПРИМІТКИ
 
 =head2 Other users cannot see the filesystem by default
 
@@ -78,27 +79,35 @@ option when mounting:
 
  sudo guestmount [...] -o allow_other /mnt
 
-=head1 OPTIONS
+=head1 ПАРАМЕТРИ
 
 =over 4
 
-=item B<-a image> | B<--add image>
+=item B<-a образ>
+
+=item B<--add образ>
 
 Add a block device or virtual machine image.
 
 The format of the disk image is auto-detected.  To override this and force a
 particular format use the I<--format=..> option.
 
-=item B<-c URI> | B<--connect URI>
+=item B<-c адреса>
+
+=item B<--connect адреса>
 
 When used in conjunction with the I<-d> option, this specifies the libvirt
 URI to use.  The default is to use the default libvirt connection.
 
-=item B<-d libvirt-domain> | B<--domain libvirt-domain>
+=item B<-d домен-libvirt>
+
+=item B<--domain домен-libvirt>
 
 Add disks from the named libvirt domain.  If the I<--ro> option is also
 used, then any libvirt domain can be used.  However in write mode, only
 libvirt domains which are shut down can be named here.
+
+Domain UUIDs can be used instead of names.
 
 =item B<--dir-cache-timeout N>
 
@@ -119,7 +128,9 @@ off so you cannot see what you are typing.  If you are not worried about
 Tempest attacks and there is no one else in the room you can specify this
 flag to see what you are typing.
 
-=item B<--format=raw|qcow2|..> | B<--format>
+=item B<--format=raw|qcow2|..>
+
+=item B<--format>
 
 The default for the I<-a> option is to auto-detect the format of the disk
 image.  Using this forces the disk format for I<-a> options which follow on
@@ -139,7 +150,9 @@ Display help on special FUSE options (see I<-o> below).
 
 Display brief help and exit.
 
-=item B<-i> | B<--inspector>
+=item B<-i>
+
+=item B<--inspector>
 
 Using L<virt-inspector(1)> code, inspect the disks looking for an operating
 system and mount filesystems as they would be mounted on the real virtual
@@ -174,13 +187,17 @@ and/or extended attributes if the filesystem can support them:
 
  -m /dev/sda1:/:acl,user_xattr
 
-=item B<-n> | B<--no-sync>
+=item B<-n>
+
+=item B<--no-sync>
 
 By default, we attempt to sync the guest disk when the FUSE mountpoint is
 unmounted.  If you specify this option, then we don't attempt to sync the
 disk.  See the discussion of autosync in the L<guestfs(3)> manpage.
 
-=item B<-o option> | B<--option option>
+=item B<-o option>
+
+=item B<--option option>
 
 Pass extra options to FUSE.
 
@@ -215,7 +232,9 @@ the chosen values.
 
 =back
 
-=item B<-r> | B<--ro>
+=item B<-r>
+
+=item B<--ro>
 
 Add devices and mount everything read-only.  Also disallow writes and make
 the disk appear read-only to FUSE.
@@ -231,22 +250,30 @@ See also L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
 
 Enable SELinux support for the guest.
 
-=item B<-v> | B<--verbose>
+=item B<-v>
+
+=item B<--verbose>
 
 Enable verbose messages from underlying libguestfs.
 
-=item B<-V> | B<--version>
+=item B<-V>
+
+=item B<--version>
 
 Display the program version and exit.
 
-=item B<-w> | B<--rw>
+=item B<-w>
+
+=item B<--rw>
 
 This changes the I<-a>, I<-d> and I<-m> options so that disks are added and
 mounts are done read-write.
 
 See L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
 
-=item B<-x> | B<--trace>
+=item B<-x>
+
+=item B<--trace>
 
 Trace libguestfs calls and entry into each FUSE function.
 
@@ -254,7 +281,7 @@ This also stops the daemon from forking into the background.
 
 =back
 
-=head1 FILES
+=head1 ФАЙЛИ
 
 =over 4
 
@@ -288,10 +315,10 @@ under the terms of the GNU General Public License as published by the Free
 Software Foundation; either version 2 of the License, or (at your option)
 any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-more details.
+Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
+БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
+ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
+про це можна дізнатися з GNU General Public License.
 
 You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc., 675 Mass

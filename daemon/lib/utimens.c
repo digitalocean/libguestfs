@@ -1,6 +1,6 @@
 /* Set file access and modification times.
 
-   Copyright (C) 2003-2010 Free Software Foundation, Inc.
+   Copyright (C) 2003-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the
@@ -164,7 +164,7 @@ update_timespec (struct stat const *statbuf, struct timespec *ts[2])
    Return 0 on success, -1 (setting errno) on failure.  */
 
 int
-fdutimens (char const *file, int fd, struct timespec const timespec[2])
+fdutimens (int fd, char const *file, struct timespec const timespec[2])
 {
   struct timespec adjusted_timespec[2];
   struct timespec *ts = timespec ? adjusted_timespec : NULL;
@@ -330,12 +330,53 @@ fdutimens (char const *file, int fd, struct timespec const timespec[2])
            worth optimizing, and who knows what other messed-up systems
            are out there?  So play it safe and fall back on the code
            below.  */
-# if HAVE_FUTIMESAT && !FUTIMESAT_NULL_BUG
-        if (futimesat (fd, NULL, t) == 0)
-          return 0;
-# elif HAVE_FUTIMES
+
+# if (HAVE_FUTIMESAT && !FUTIMESAT_NULL_BUG) || HAVE_FUTIMES
+#  if HAVE_FUTIMESAT && !FUTIMESAT_NULL_BUG
+#   undef futimes
+#   define futimes(fd, t) futimesat (fd, NULL, t)
+#  endif
         if (futimes (fd, t) == 0)
-          return 0;
+          {
+#  if __linux__ && __GLIBC__
+            /* Work around a longstanding glibc bug, still present as
+               of 2010-12-27.  On older Linux kernels that lack both
+               utimensat and utimes, glibc's futimes rounds instead of
+               truncating when falling back on utime.  The same bug
+               occurs in futimesat with a null 2nd arg.  */
+            if (t)
+              {
+                bool abig = 500000 <= t[0].tv_usec;
+                bool mbig = 500000 <= t[1].tv_usec;
+                if ((abig | mbig) && fstat (fd, &st) == 0)
+                  {
+                    /* If these two subtractions overflow, they'll
+                       track the overflows inside the buggy glibc.  */
+                    time_t adiff = st.st_atime - t[0].tv_sec;
+                    time_t mdiff = st.st_mtime - t[1].tv_sec;
+
+                    struct timeval *tt = NULL;
+                    struct timeval truncated_timeval[2];
+                    truncated_timeval[0] = t[0];
+                    truncated_timeval[1] = t[1];
+                    if (abig && adiff == 1 && get_stat_atime_ns (&st) == 0)
+                      {
+                        tt = truncated_timeval;
+                        tt[0].tv_usec = 0;
+                      }
+                    if (mbig && mdiff == 1 && get_stat_mtime_ns (&st) == 0)
+                      {
+                        tt = truncated_timeval;
+                        tt[1].tv_usec = 0;
+                      }
+                    if (tt)
+                      futimes (fd, tt);
+                  }
+              }
+#  endif
+
+            return 0;
+          }
 # endif
       }
 #endif /* HAVE_FUTIMESAT || HAVE_WORKING_UTIMES */
@@ -370,28 +411,12 @@ fdutimens (char const *file, int fd, struct timespec const timespec[2])
   }
 }
 
-/* Set the access and modification time stamps of FD (a.k.a. FILE) to be
-   TIMESPEC[0] and TIMESPEC[1], respectively.
-   FD must be either negative -- in which case it is ignored --
-   or a file descriptor that is open on FILE.
-   If FD is nonnegative, then FILE can be NULL, which means
-   use just futimes (or equivalent) instead of utimes (or equivalent),
-   and fail if on an old system without futimes (or equivalent).
-   If TIMESPEC is null, set the time stamps to the current time.
-   Return 0 on success, -1 (setting errno) on failure.  */
-
-int
-gl_futimens (int fd, char const *file, struct timespec const timespec[2])
-{
-  return fdutimens (file, fd, timespec);
-}
-
 /* Set the access and modification time stamps of FILE to be
    TIMESPEC[0] and TIMESPEC[1], respectively.  */
 int
 utimens (char const *file, struct timespec const timespec[2])
 {
-  return fdutimens (file, -1, timespec);
+  return fdutimens (-1, file, timespec);
 }
 
 /* Set the access and modification time stamps of FILE to be
@@ -417,7 +442,7 @@ lutimens (char const *file, struct timespec const timespec[2])
 
   /* The Linux kernel did not support symlink timestamps until
      utimensat, in version 2.6.22, so we don't need to mimic
-     gl_futimens' worry about buggy NFS clients.  But we do have to
+     fdutimens' worry about buggy NFS clients.  But we do have to
      worry about bogus return values.  */
 
 #if HAVE_UTIMENSAT
@@ -507,7 +532,7 @@ lutimens (char const *file, struct timespec const timespec[2])
   if (!(adjustment_needed || REPLACE_FUNC_STAT_FILE) && lstat (file, &st))
     return -1;
   if (!S_ISLNK (st.st_mode))
-    return fdutimens (file, -1, ts);
+    return fdutimens (-1, file, ts);
   errno = ENOSYS;
   return -1;
 }

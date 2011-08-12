@@ -75,6 +75,7 @@ guestfish_SOURCES = \
 	cmds_gperf.h \
 	copy.c \
 	destpaths.c \
+	display.c \
 	echo.c \
 	edit.c \
 	fish.c \
@@ -115,6 +116,7 @@ cmds_gperf.c: cmds_gperf.gperf
 	mv $@-t $@
 
 guestfish_CFLAGS = \
+	-DGUESTFS_WARN_DEPRECATED=1 \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	-I$(top_srcdir)/fish -I$(top_builddir)/fish \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \

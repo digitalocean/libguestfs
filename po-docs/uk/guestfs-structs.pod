@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head2 guestfs_int_bool
 

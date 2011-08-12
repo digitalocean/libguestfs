@@ -62,16 +62,16 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-tar.pl 1"
-.TH virt-tar.pl 1 "2011-08-07" "libguestfs-1.10.7" "Virtualization Support"
+.TH virt-tar.pl 1 "2011-08-07" "libguestfs-1.12.3" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
-.SH "ÐÐÐÐÐ"
-.IX Header "ÐÐÐÐÐ"
+.SH "НАЗВА"
+.IX Header "НАЗВА"
 virt-tar \- Extract or upload files to a virtual machine
-.SH "ÐÐÐ ÐÐ¢ÐÐÐ ÐÐÐÐ¡"
-.IX Header "ÐÐÐ ÐÐ¢ÐÐÐ ÐÐÐÐ¡"
+.SH "КОРОТКИЙ ОПИС"
+.IX Header "КОРОТКИЙ ОПИС"
 .Vb 1
 \& virt\-tar [\-\-options] \-x domname directory tarball
 \&
@@ -81,12 +81,12 @@ virt-tar \- Extract or upload files to a virtual machine
 \&
 \& virt\-tar [\-\-options] disk.img [disk.img ...] \-u tarball directory
 .Ve
-.SH "NOTE"
-.IX Header "NOTE"
+.SH "ПРИМІТКА"
+.IX Header "ПРИМІТКА"
 This tool is obsolete.  Use \fIvirt\-copy\-in\fR\|(1), \fIvirt\-copy\-out\fR\|(1),
 \&\fIvirt\-tar\-in\fR\|(1), \fIvirt\-tar\-out\fR\|(1) as replacements.
-.SH "EXAMPLES"
-.IX Header "EXAMPLES"
+.SH "ПРИКЛАДИ"
+.IX Header "ПРИКЛАДИ"
 Download \f(CW\*(C`/home\*(C'\fR from the \s-1VM\s0 into a local tarball:
 .PP
 .Vb 1
@@ -102,8 +102,8 @@ Upload a local tarball and unpack it inside \f(CW\*(C`/tmp\*(C'\fR in the \s-1VM
 \&
 \& virt\-tar \-zu domname uploadstuff.tar.gz /tmp
 .Ve
-.SH "WARNING"
-.IX Header "WARNING"
+.SH "ПОПЕРЕДЖЕННЯ"
+.IX Header "ПОПЕРЕДЖЕННЯ"
 You must \fInot\fR use \f(CW\*(C`virt\-tar\*(C'\fR with the \fI\-u\fR option (upload) on live
 virtual machines.  If you do this, you risk disk corruption in the \s-1VM\s0.
 \&\f(CW\*(C`virt\-tar\*(C'\fR tries to stop you from doing this, but doesn't catch all cases.
@@ -113,8 +113,8 @@ inconsistent results or errors if there is filesystem activity inside the
 \&\s-1VM\s0.  If the live \s-1VM\s0 is synched and quiescent, then \f(CW\*(C`virt\-tar\*(C'\fR will usually
 work, but the only way to guarantee consistent results is if the virtual
 machine is shut down.
-.SH "ÐÐÐÐ¡"
-.IX Header "ÐÐÐÐ¡"
+.SH "ОПИС"
+.IX Header "ОПИС"
 \&\f(CW\*(C`virt\-tar\*(C'\fR is a general purpose archive tool for downloading and uploading
 parts of a guest filesystem.  There are many possibilities: making backups,
 uploading data files, snooping on guest activity, fixing or customizing
@@ -137,16 +137,20 @@ is compressed because virt-tar won't detect this on its own.
 example it cannot do PKZip files or bzip2 compression.  If you want that
 then you'll have to rebuild the tarballs yourself.  (This is a limitation of
 the \fIlibguestfs\fR\|(3) \s-1API\s0).
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+.SH "ПАРАМЕТРИ"
+.IX Header "ПАРАМЕТРИ"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
 Display brief help.
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
-Display version number and exit.
-.IP "\fB\-\-connect \s-1URI\s0\fR | \fB\-c \s-1URI\s0\fR" 4
-.IX Item "--connect URI | -c URI"
+Показати дані щодо версії і завершити роботу.
+.IP "\fB\-c адреса\fR" 4
+.IX Item "-c адреса"
+.PD 0
+.IP "\fB\-\-connect адреса\fR" 4
+.IX Item "--connect адреса"
+.PD
 If using libvirt, connect to the given \fI\s-1URI\s0\fR.  If omitted, then we connect
 to the default libvirt hypervisor.
 .Sp
@@ -163,11 +167,17 @@ ignored.
 .Sp
 If working with untrusted raw-format guest disk images, you should ensure
 the format is always specified.
-.IP "\fB\-x\fR | \fB\-\-extract\fR | \fB\-\-download\fR" 4
-.IX Item "-x | --extract | --download"
+.IP "\fB\-x\fR" 4
+.IX Item "-x"
 .PD 0
-.IP "\fB\-u\fR | \fB\-\-upload\fR" 4
-.IX Item "-u | --upload"
+.IP "\fB\-\-extract\fR" 4
+.IX Item "--extract"
+.IP "\fB\-\-download\fR" 4
+.IX Item "--download"
+.IP "\fB\-u\fR" 4
+.IX Item "-u"
+.IP "\fB\-\-upload\fR" 4
+.IX Item "--upload"
 .PD
 Use \fI\-x\fR to extract (download) a directory from a virtual machine to a
 local tarball.
@@ -176,8 +186,12 @@ Use \fI\-u\fR to upload and unpack from a local tarball into a virtual machine.
 Please read the \*(L"\s-1WARNING\s0\*(R" section above before using this option.
 .Sp
 You must specify exactly one of these options.
-.IP "\fB\-z\fR | \fB\-\-gzip\fR" 4
-.IX Item "-z | --gzip"
+.IP "\fB\-z\fR" 4
+.IX Item "-z"
+.PD 0
+.IP "\fB\-\-gzip\fR" 4
+.IX Item "--gzip"
+.PD
 Specify that the input or output tarball is gzip-compressed.
 .SH "SHELL QUOTING"
 .IX Header "SHELL QUOTING"
@@ -185,28 +199,28 @@ Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
-.SH "Ð¢ÐÐÐÐ ÐÐÐ ÐÐÐÐ¯ÐÐ¬Ð¢Ð"
-.IX Header "Ð¢ÐÐÐÐ ÐÐÐ ÐÐÐÐ¯ÐÐ¬Ð¢Ð"
+.SH "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
+.IX Header "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 \&\fIguestfs\fR\|(3), \fIguestfish\fR\|(1), \fIvirt\-cat\fR\|(1), \fIvirt\-edit\fR\|(1),
 \&\fIvirt\-copy\-in\fR\|(1), \fIvirt\-copy\-out\fR\|(1), \fIvirt\-tar\-in\fR\|(1),
 \&\fIvirt\-tar\-out\fR\|(1), \fISys::Guestfs\fR\|(3), \fISys::Guestfs::Lib\fR\|(3),
 \&\fISys::Virt\fR\|(3), <http://libguestfs.org/>.
-.SH "AUTHOR"
-.IX Header "AUTHOR"
+.SH "АВТОР"
+.IX Header "АВТОР"
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
-.SH "ÐÐÐ¢ÐÐ Ð¡Ð¬ÐÐ ÐÐ ÐÐÐ"
-.IX Header "ÐÐÐ¢ÐÐ Ð¡Ð¬ÐÐ ÐÐ ÐÐÐ"
-Copyright (C) 2009 Red Hat Inc.
+.SH "АВТОРСЬКІ ПРАВА"
+.IX Header "АВТОРСЬКІ ПРАВА"
+© Red Hat Inc., 2009
 .PP
 This program is free software; you can redistribute it and/or modify it
 under the terms of the \s-1GNU\s0 General Public License as published by the Free
 Software Foundation; either version 2 of the License, or (at your option)
 any later version.
 .PP
-This program is distributed in the hope that it will be useful, but \s-1WITHOUT\s0
-\&\s-1ANY\s0 \s-1WARRANTY\s0; without even the implied warranty of \s-1MERCHANTABILITY\s0 or
-\&\s-1FITNESS\s0 \s-1FOR\s0 A \s-1PARTICULAR\s0 \s-1PURPOSE\s0.  See the \s-1GNU\s0 General Public License for
-more details.
+Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
+БУДЬ\-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
+ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
+про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
 You should have received a copy of the \s-1GNU\s0 General Public License along with
 this program; if not, write to the Free Software Foundation, Inc., 675 Mass

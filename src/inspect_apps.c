@@ -29,9 +29,7 @@
 #include <errno.h>
 #include <endian.h>
 
-#ifdef HAVE_PCRE
 #include <pcre.h>
-#endif
 
 #ifdef HAVE_HIVEX
 #include <hivex.h>
@@ -46,7 +44,7 @@
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 
-#if defined(HAVE_PCRE) && defined(HAVE_HIVEX)
+#if defined(HAVE_HIVEX)
 
 #ifdef DB_DUMP
 static struct guestfs_application_list *list_applications_rpm (guestfs_h *g, struct inspect_fs *fs);
@@ -127,23 +125,136 @@ guestfs__inspect_list_applications (guestfs_h *g, const char *root)
 
 #ifdef DB_DUMP
 
+/* This data comes from the Name database, and contains the application
+ * names and the first 4 bytes of the link field.
+ */
+struct rpm_names_list {
+  struct rpm_name *names;
+  size_t len;
+};
+struct rpm_name {
+  char *name;
+  char link[4];
+};
+
+static void
+free_rpm_names_list (struct rpm_names_list *list)
+{
+  size_t i;
+
+  for (i = 0; i < list->len; ++i)
+    free (list->names[i].name);
+  free (list->names);
+}
+
+static int
+compare_links (const void *av, const void *bv)
+{
+  const struct rpm_name *a = av;
+  const struct rpm_name *b = bv;
+  return memcmp (a->link, b->link, 4);
+}
+
 static int
 read_rpm_name (guestfs_h *g,
                const unsigned char *key, size_t keylen,
                const unsigned char *value, size_t valuelen,
-               void *appsv)
+               void *listv)
 {
-  struct guestfs_application_list *apps = appsv;
+  struct rpm_names_list *list = listv;
   char *name;
+
+  /* Ignore bogus entries. */
+  if (keylen == 0 || valuelen < 4)
+    return 0;
 
   /* The name (key) field won't be NUL-terminated, so we must do that. */
   name = safe_malloc (g, keylen+1);
   memcpy (name, key, keylen);
   name[keylen] = '\0';
 
-  add_application (g, apps, name, "", 0, "", "", "", "", "", "");
+  list->names = safe_realloc (g, list->names,
+                              (list->len + 1) * sizeof (struct rpm_name));
+  list->names[list->len].name = name;
+  memcpy (list->names[list->len].link, value, 4);
+  list->len++;
 
-  free (name);
+  return 0;
+}
+
+struct read_package_data {
+  struct rpm_names_list *list;
+  struct guestfs_application_list *apps;
+};
+
+static int
+read_package (guestfs_h *g,
+              const unsigned char *key, size_t keylen,
+              const unsigned char *value, size_t valuelen,
+              void *datav)
+{
+  struct read_package_data *data = datav;
+  struct rpm_name nkey, *entry;
+  char *p;
+  size_t len;
+  ssize_t max;
+  char *nul_name_nul, *version, *release;
+
+  /* This function reads one (key, value) pair from the Packages
+   * database.  The key is the link field (see struct rpm_name).  The
+   * value is a long binary string, but we can extract the version
+   * number from it as below.  First we have to look up the link field
+   * in the list of links (which is sorted by link field).
+   */
+
+  /* Ignore bogus entries. */
+  if (keylen < 4 || valuelen == 0)
+    return 0;
+
+  /* Look up the link (key) in the list. */
+  memcpy (nkey.link, key, 4);
+  entry = bsearch (&nkey, data->list->names, data->list->len,
+                   sizeof (struct rpm_name), compare_links);
+  if (!entry)
+    return 0;                   /* Not found - ignore it. */
+
+  /* We found a matching link entry, so that gives us the application
+   * name (entry->name).  Now we can get other data for this
+   * application out of the binary value string.  XXX This is a real
+   * hack.
+   */
+
+  /* Look for \0<name>\0 */
+  len = strlen (entry->name);
+  nul_name_nul = safe_malloc (g, len + 2);
+  nul_name_nul[0] = '\0';
+  memcpy (&nul_name_nul[1], entry->name, len);
+  nul_name_nul[len+1] = '\0';
+  p = memmem (value, valuelen, nul_name_nul, len+2);
+  free (nul_name_nul);
+  if (!p)
+    return 0;
+
+  /* Following that are \0-delimited version and release fields. */
+  p += len + 2; /* Note we have to skip \0 + name + \0. */
+  max = valuelen - (p - (char *) value);
+  if (max < 0)
+    max = 0;
+  version = safe_strndup (g, p, max);
+
+  len = strlen (version);
+  p += len + 1;
+  max = valuelen - (p - (char *) value);
+  if (max < 0)
+    max = 0;
+  release = safe_strndup (g, p, max);
+
+  /* Add the application and what we know. */
+  add_application (g, data->apps, entry->name, "", 0, version, release,
+                   "", "", "", "");
+
+  free (version);
+  free (release);
 
   return 0;
 }
@@ -151,27 +262,53 @@ read_rpm_name (guestfs_h *g,
 static struct guestfs_application_list *
 list_applications_rpm (guestfs_h *g, struct inspect_fs *fs)
 {
-  char *Name = NULL;
+  char *Name = NULL, *Packages = NULL;
+  struct rpm_names_list list = { .names = NULL, .len = 0 };
+  struct guestfs_application_list *apps = NULL;
 
   Name = guestfs___download_to_tmp (g, fs,
                                     "/var/lib/rpm/Name", "rpm_Name",
                                     MAX_PKG_DB_SIZE);
   if (Name == NULL)
-    return NULL;
+    goto error;
+
+  Packages = guestfs___download_to_tmp (g, fs,
+                                        "/var/lib/rpm/Packages", "rpm_Packages",
+                                        MAX_PKG_DB_SIZE);
+  if (Packages == NULL)
+    goto error;
+
+  /* Read Name database. */
+  if (guestfs___read_db_dump (g, Name, &list, read_rpm_name) == -1)
+    goto error;
+
+  /* Sort the names by link field for fast searching. */
+  qsort (list.names, list.len, sizeof (struct rpm_name), compare_links);
 
   /* Allocate 'apps' list. */
-  struct guestfs_application_list *apps;
   apps = safe_malloc (g, sizeof *apps);
   apps->len = 0;
   apps->val = NULL;
 
-  if (guestfs___read_db_dump (g, Name, apps, read_rpm_name) == -1) {
-    guestfs_free_application_list (apps);
-    free (Name);
-    return NULL;
-  }
+  /* Read Packages database. */
+  struct read_package_data data = { .list = &list, .apps = apps };
+  if (guestfs___read_db_dump (g, Packages, &data, read_package) == -1)
+    goto error;
+
+  free (Name);
+  free (Packages);
+  free_rpm_names_list (&list);
 
   return apps;
+
+ error:
+  free (Name);
+  free (Packages);
+  free_rpm_names_list (&list);
+  if (apps != NULL)
+    guestfs_free_application_list (apps);
+
+  return NULL;
 }
 
 #endif /* defined DB_DUMP */
@@ -462,12 +599,12 @@ sort_applications (struct guestfs_application_list *apps)
            compare_applications);
 }
 
-#else /* no PCRE or hivex at compile time */
+#else /* no hivex at compile time */
 
 /* XXX These functions should be in an optgroup. */
 
 #define NOT_IMPL(r)                                                     \
-  error (g, _("inspection API not available since this version of libguestfs was compiled without PCRE or hivex libraries")); \
+  error (g, _("inspection API not available since this version of libguestfs was compiled without the hivex library")); \
   return r
 
 struct guestfs_application_list *
@@ -476,4 +613,4 @@ guestfs__inspect_list_applications (guestfs_h *g, const char *root)
   NOT_IMPL(NULL);
 }
 
-#endif /* no PCRE or hivex at compile time */
+#endif /* no hivex at compile time */

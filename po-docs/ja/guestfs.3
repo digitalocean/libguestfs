@@ -62,13 +62,13 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfs 3"
-.TH guestfs 3 "2011-08-07" "libguestfs-1.10.7" "Virtualization Support"
+.TH guestfs 3 "2011-08-07" "libguestfs-1.12.3" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
-.SH "åå"
-.IX Header "åå"
+.SH "名前"
+.IX Header "名前"
 guestfs \- Library for accessing and modifying virtual machine images
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
@@ -735,7 +735,7 @@ looking for help to complete this binding.
 .IP "\fBJava\fR" 4
 .IX Item "Java"
 Full documentation is contained in the Javadoc which is distributed with
-libguestfs.
+libguestfs.  For examples, see \fIguestfs\-java\fR\|(3).
 .IP "\fBOCaml\fR" 4
 .IX Item "OCaml"
 See \fIguestfs\-ocaml\fR\|(3).
@@ -1438,11 +1438,12 @@ You may supply a list of optional arguments to this call.  Use zero or more
 of the following pairs of parameters, and terminate the list with \f(CW\*(C`\-1\*(C'\fR on
 its own.  See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
 .PP
-.Vb 4
+.Vb 5
 \& GUESTFS_ADD_DOMAIN_LIBVIRTURI, const char *libvirturi,
 \& GUESTFS_ADD_DOMAIN_READONLY, int readonly,
 \& GUESTFS_ADD_DOMAIN_IFACE, const char *iface,
 \& GUESTFS_ADD_DOMAIN_LIVE, int live,
+\& GUESTFS_ADD_DOMAIN_ALLOWUUID, int allowuuid,
 .Ve
 .PP
 This function adds the disk(s) attached to the named libvirt domain \f(CW\*(C`dom\*(C'\fR.
@@ -1471,6 +1472,11 @@ a running virtual machine \f(CW\*(C`guestfsd\*(C'\fR process if it sees a suitab
 <channel> element in the libvirt \s-1XML\s0 definition.  The default (if
 the flag is omitted) is never to try.  See \*(L"\s-1ATTACHING\s0 \s-1TO\s0 \s-1RUNNING\s0
 \&\s-1DAEMONS\s0\*(R" in \fIguestfs\fR\|(3) for more information.
+.PP
+If the \f(CW\*(C`allowuuid\*(C'\fR flag is true (default is false) then a \s-1UUID\s0 \fImay\fR be
+passed instead of the domain name.  The \f(CW\*(C`dom\*(C'\fR string is treated as a \s-1UUID\s0
+first and looked up, and if that lookup fails then we treat \f(CW\*(C`dom\*(C'\fR as a name
+as usual.
 .PP
 The other optional parameters are passed directly through to
 \&\f(CW\*(C`guestfs_add_drive_opts\*(C'\fR.
@@ -2193,6 +2199,65 @@ This uses the \fIblockdev\fR\|(8) command.
 This function returns 0 on success or \-1 on error.
 .PP
 (Added in 0.9.3)
+.SS "guestfs_btrfs_filesystem_resize"
+.IX Subsection "guestfs_btrfs_filesystem_resize"
+.Vb 4
+\& int
+\& guestfs_btrfs_filesystem_resize (guestfs_h *g,
+\&                                  const char *mountpoint,
+\&                                  ...);
+.Ve
+.PP
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with \f(CW\*(C`\-1\*(C'\fR on
+its own.  See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.PP
+.Vb 1
+\& GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE, int64_t size,
+.Ve
+.PP
+This command resizes a btrfs filesystem.
+.PP
+Note that unlike other resize calls, the filesystem has to be mounted and
+the parameter is the mountpoint not the device (this is a requirement of
+btrfs itself).
+.PP
+The optional parameters are:
+.ie n .IP """size""" 4
+.el .IP "\f(CWsize\fR" 4
+.IX Item "size"
+The new size (in bytes) of the filesystem.  If omitted, the filesystem is
+resized to the maximum size.
+.PP
+See also \fIbtrfs\fR\|(8).
+.PP
+This function returns 0 on success or \-1 on error.
+.PP
+(Added in 1.11.17)
+.SS "guestfs_btrfs_filesystem_resize_va"
+.IX Subsection "guestfs_btrfs_filesystem_resize_va"
+.Vb 4
+\& int
+\& guestfs_btrfs_filesystem_resize_va (guestfs_h *g,
+\&                                     const char *mountpoint,
+\&                                     va_list args);
+.Ve
+.PP
+This is the \*(L"va_list variant\*(R" of \*(L"guestfs_btrfs_filesystem_resize\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_btrfs_filesystem_resize_argv"
+.IX Subsection "guestfs_btrfs_filesystem_resize_argv"
+.Vb 4
+\& int
+\& guestfs_btrfs_filesystem_resize_argv (guestfs_h *g,
+\&                                       const char *mountpoint,
+\&                                       const struct guestfs_btrfs_filesystem_resize_argv *optargs);
+.Ve
+.PP
+This is the \*(L"argv variant\*(R" of \*(L"guestfs_btrfs_filesystem_resize\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
 .SS "guestfs_case_sensitive_path"
 .IX Subsection "guestfs_case_sensitive_path"
 .Vb 3
@@ -2913,7 +2978,7 @@ can change in future in ways beyond our control.  In other words, the output
 is not guaranteed by the \s-1ABI\s0.
 .PP
 See also: \fIfile\fR\|(1), \f(CW\*(C`guestfs_vfs_type\*(C'\fR, \f(CW\*(C`guestfs_lstat\*(C'\fR,
-\&\f(CW\*(C`guestfs_is_file\*(C'\fR, \f(CW\*(C`guestfs_is_blockdev\*(C'\fR (etc).
+\&\f(CW\*(C`guestfs_is_file\*(C'\fR, \f(CW\*(C`guestfs_is_blockdev\*(C'\fR (etc), \f(CW\*(C`guestfs_is_zero\*(C'\fR.
 .PP
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
@@ -3230,6 +3295,8 @@ Return the current attach method.  See \f(CW\*(C`guestfs_set_attach_method\*(C'\
 .PP
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
+.PP
+(Added in 1.9.8)
 .SS "guestfs_get_autosync"
 .IX Subsection "guestfs_get_autosync"
 .Vb 2
@@ -3342,6 +3409,18 @@ This function returns a string, or \s-1NULL\s0 on error.  The string is owned by
 the guest handle and must \fInot\fR be freed.
 .PP
 (Added in 0.3)
+.SS "guestfs_get_pgroup"
+.IX Subsection "guestfs_get_pgroup"
+.Vb 2
+\& int
+\& guestfs_get_pgroup (guestfs_h *g);
+.Ve
+.PP
+This returns the process group flag.
+.PP
+This function returns a C truth value on success or \-1 on error.
+.PP
+(Added in 1.11.18)
 .SS "guestfs_get_pid"
 .IX Subsection "guestfs_get_pid"
 .Vb 2
@@ -3851,9 +3930,6 @@ This function returns 0 on success or \-1 on error.
 \&                           const char *root);
 .Ve
 .PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
-.PP
 This returns the architecture of the inspected operating system.  The
 possible return values are listed under \f(CW\*(C`guestfs_file_architecture\*(C'\fR.
 .PP
@@ -3873,9 +3949,6 @@ the returned string after use\fR.
 \& guestfs_inspect_get_distro (guestfs_h *g,
 \&                             const char *root);
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
 .PP
 This returns the distro (distribution) of the inspected operating system.
 .PP
@@ -3963,9 +4036,6 @@ the returned string after use\fR.
 \&                                     const char *root);
 .Ve
 .PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
-.PP
 This call is useful for Windows which uses a primitive system of assigning
 drive letters (like \*(L"C:\*(R") to partitions.  This inspection \s-1API\s0 examines the
 Windows Registry to find out how disks/partitions are mapped to drive
@@ -3999,6 +4069,8 @@ This function returns a NULL-terminated array of strings, or \s-1NULL\s0 if ther
 was an error.  The array of strings will always have length \f(CW\*(C`2n+1\*(C'\fR, where
 \&\f(CW\*(C`n\*(C'\fR keys and values alternate, followed by the trailing \s-1NULL\s0 entry.  \fIThe
 caller must free the strings and the array after use\fR.
+.PP
+(Added in 1.9.17)
 .SS "guestfs_inspect_get_filesystems"
 .IX Subsection "guestfs_inspect_get_filesystems"
 .Vb 3
@@ -4006,9 +4078,6 @@ caller must free the strings and the array after use\fR.
 \& guestfs_inspect_get_filesystems (guestfs_h *g,
 \&                                  const char *root);
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
 .PP
 This returns a list of all the filesystems that we think are associated with
 this operating system.  This includes the root filesystem, other ordinary
@@ -4032,9 +4101,6 @@ strings and the array after use\fR.
 \& guestfs_inspect_get_format (guestfs_h *g,
 \&                             const char *root);
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
 .PP
 This returns the format of the inspected operating system.  You can use it
 to detect install images, live CDs and similar.
@@ -4061,6 +4127,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .PP
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
+.PP
+(Added in 1.9.4)
 .SS "guestfs_inspect_get_hostname"
 .IX Subsection "guestfs_inspect_get_hostname"
 .Vb 3
@@ -4068,9 +4136,6 @@ the returned string after use\fR.
 \& guestfs_inspect_get_hostname (guestfs_h *g,
 \&                               const char *root);
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
 .PP
 This function returns the hostname of the operating system as found by
 inspection of the guest's configuration files.
@@ -4084,6 +4149,99 @@ This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must fre
 the returned string after use\fR.
 .PP
 (Added in 1.7.9)
+.SS "guestfs_inspect_get_icon"
+.IX Subsection "guestfs_inspect_get_icon"
+.Vb 5
+\& char *
+\& guestfs_inspect_get_icon (guestfs_h *g,
+\&                           const char *root,
+\&                           size_t *size_r,
+\&                           ...);
+.Ve
+.PP
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with \f(CW\*(C`\-1\*(C'\fR on
+its own.  See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.PP
+.Vb 2
+\& GUESTFS_INSPECT_GET_ICON_FAVICON, int favicon,
+\& GUESTFS_INSPECT_GET_ICON_HIGHQUALITY, int highquality,
+.Ve
+.PP
+This function returns an icon corresponding to the inspected operating
+system.  The icon is returned as a buffer containing a \s-1PNG\s0 image (re-encoded
+to \s-1PNG\s0 if necessary).
+.PP
+If it was not possible to get an icon this function returns a zero-length
+(non-NULL) buffer.  \fICallers must check for this case\fR.
+.PP
+Libguestfs will start by looking for a file called \f(CW\*(C`/etc/favicon.png\*(C'\fR or
+\&\f(CW\*(C`C:\eetc\efavicon.png\*(C'\fR and if it has the correct format, the contents of this
+file will be returned.  You can disable favicons by passing the optional
+\&\f(CW\*(C`favicon\*(C'\fR boolean as false (default is true).
+.PP
+If finding the favicon fails, then we look in other places in the guest for
+a suitable icon.
+.PP
+If the optional \f(CW\*(C`highquality\*(C'\fR boolean is true then only high quality icons
+are returned, which means only icons of high resolution with an alpha
+channel.  The default (false) is to return any icon we can, even if it is of
+substandard quality.
+.PP
+Notes:
+.IP "\(bu" 4
+Unlike most other inspection \s-1API\s0 calls, the guest's disks must be mounted up
+before you call this, since it needs to read information from the guest
+filesystem during the call.
+.IP "\(bu" 4
+\&\fBSecurity:\fR The icon data comes from the untrusted guest, and should be
+treated with caution.  \s-1PNG\s0 files have been known to contain exploits.
+Ensure that libpng (or other relevant libraries) are fully up to date before
+trying to process or display the icon.
+.IP "\(bu" 4
+The \s-1PNG\s0 image returned can be any size.  It might not be square.  Libguestfs
+tries to return the largest, highest quality icon available.  The
+application must scale the icon to the required size.
+.IP "\(bu" 4
+Extracting icons from Windows guests requires the external \f(CW\*(C`wrestool\*(C'\fR
+program from the \f(CW\*(C`icoutils\*(C'\fR package, and several programs (\f(CW\*(C`bmptopnm\*(C'\fR,
+\&\f(CW\*(C`pnmtopng\*(C'\fR, \f(CW\*(C`pamcut\*(C'\fR)  from the \f(CW\*(C`netpbm\*(C'\fR package.  These must be
+installed separately.
+.IP "\(bu" 4
+Operating system icons are usually trademarks.  Seek legal advice before
+using trademarks in applications.
+.PP
+This function returns a buffer, or \s-1NULL\s0 on error.  The size of the returned
+buffer is written to \f(CW*size_r\fR.  \fIThe caller must free the returned buffer
+after use\fR.
+.PP
+(Added in 1.11.12)
+.SS "guestfs_inspect_get_icon_va"
+.IX Subsection "guestfs_inspect_get_icon_va"
+.Vb 5
+\& char *
+\& guestfs_inspect_get_icon_va (guestfs_h *g,
+\&                              const char *root,
+\&                              size_t *size_r,
+\&                              va_list args);
+.Ve
+.PP
+This is the \*(L"va_list variant\*(R" of \*(L"guestfs_inspect_get_icon\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_inspect_get_icon_argv"
+.IX Subsection "guestfs_inspect_get_icon_argv"
+.Vb 5
+\& char *
+\& guestfs_inspect_get_icon_argv (guestfs_h *g,
+\&                                const char *root,
+\&                                size_t *size_r,
+\&                                const struct guestfs_inspect_get_icon_argv *optargs);
+.Ve
+.PP
+This is the \*(L"argv variant\*(R" of \*(L"guestfs_inspect_get_icon\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
 .SS "guestfs_inspect_get_major_version"
 .IX Subsection "guestfs_inspect_get_major_version"
 .Vb 3
@@ -4091,9 +4249,6 @@ the returned string after use\fR.
 \& guestfs_inspect_get_major_version (guestfs_h *g,
 \&                                    const char *root);
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
 .PP
 This returns the major version number of the inspected operating system.
 .PP
@@ -4118,9 +4273,6 @@ On error this function returns \-1.
 \&                                    const char *root);
 .Ve
 .PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
-.PP
 This returns the minor version number of the inspected operating system.
 .PP
 If the version could not be determined, then \f(CW0\fR is returned.
@@ -4138,9 +4290,6 @@ On error this function returns \-1.
 \& guestfs_inspect_get_mountpoints (guestfs_h *g,
 \&                                  const char *root);
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
 .PP
 This returns a hash of where we think the filesystems associated with this
 operating system should be mounted.  Callers should note that this is at
@@ -4177,9 +4326,6 @@ caller must free the strings and the array after use\fR.
 \&                                     const char *root);
 .Ve
 .PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
-.PP
 This function and \f(CW\*(C`guestfs_inspect_get_package_management\*(C'\fR return the
 package format and package management tool used by the inspected operating
 system.  For example for Fedora these functions would return \f(CW\*(C`rpm\*(C'\fR (package
@@ -4205,9 +4351,6 @@ the returned string after use\fR.
 \& guestfs_inspect_get_package_management (guestfs_h *g,
 \&                                         const char *root);
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
 .PP
 \&\f(CW\*(C`guestfs_inspect_get_package_format\*(C'\fR and this function return the package
 format and package management tool used by the inspected operating system.
@@ -4236,9 +4379,6 @@ the returned string after use\fR.
 \&                                   const char *root);
 .Ve
 .PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
-.PP
 This returns the product name of the inspected operating system.  The
 product name is generally some freeform string which can be displayed to the
 user, but should not be parsed by programs.
@@ -4259,9 +4399,6 @@ the returned string after use\fR.
 \& guestfs_inspect_get_product_variant (guestfs_h *g,
 \&                                      const char *root);
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
 .PP
 This returns the product variant of the inspected operating system.
 .PP
@@ -4285,6 +4422,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details. 
 .PP
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
+.PP
+(Added in 1.9.13)
 .SS "guestfs_inspect_get_roots"
 .IX Subsection "guestfs_inspect_get_roots"
 .Vb 2
@@ -4313,9 +4452,6 @@ strings and the array after use\fR.
 \& guestfs_inspect_get_type (guestfs_h *g,
 \&                           const char *root);
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
 .PP
 This returns the type of the inspected operating system.  Currently defined
 types are:
@@ -4353,9 +4489,6 @@ the returned string after use\fR.
 \&                                                  const char *root);
 .Ve
 .PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
-.PP
 This returns the Windows CurrentControlSet of the inspected guest.  The
 CurrentControlSet is a registry key name such as \f(CW\*(C`ControlSet001\*(C'\fR.
 .PP
@@ -4366,6 +4499,8 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .PP
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
+.PP
+(Added in 1.9.17)
 .SS "guestfs_inspect_get_windows_systemroot"
 .IX Subsection "guestfs_inspect_get_windows_systemroot"
 .Vb 3
@@ -4373,9 +4508,6 @@ the returned string after use\fR.
 \& guestfs_inspect_get_windows_systemroot (guestfs_h *g,
 \&                                         const char *root);
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
 .PP
 This returns the Windows systemroot of the inspected guest.  The systemroot
 is a directory path such as \f(CW\*(C`/WINDOWS\*(C'\fR.
@@ -4398,15 +4530,14 @@ the returned string after use\fR.
 \&                          const char *root);
 .Ve
 .PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
-.PP
 If \f(CW\*(C`guestfs_inspect_get_format\*(C'\fR returns \f(CW\*(C`installer\*(C'\fR (this is an install
 disk), then this returns true if a live image was detected on the disk.
 .PP
 Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .PP
 This function returns a C truth value on success or \-1 on error.
+.PP
+(Added in 1.9.4)
 .SS "guestfs_inspect_is_multipart"
 .IX Subsection "guestfs_inspect_is_multipart"
 .Vb 3
@@ -4415,15 +4546,14 @@ This function returns a C truth value on success or \-1 on error.
 \&                               const char *root);
 .Ve
 .PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
-.PP
 If \f(CW\*(C`guestfs_inspect_get_format\*(C'\fR returns \f(CW\*(C`installer\*(C'\fR (this is an install
 disk), then this returns true if the disk is part of a set.
 .PP
 Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .PP
 This function returns a C truth value on success or \-1 on error.
+.PP
+(Added in 1.9.4)
 .SS "guestfs_inspect_is_netinst"
 .IX Subsection "guestfs_inspect_is_netinst"
 .Vb 3
@@ -4431,9 +4561,6 @@ This function returns a C truth value on success or \-1 on error.
 \& guestfs_inspect_is_netinst (guestfs_h *g,
 \&                             const char *root);
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
 .PP
 If \f(CW\*(C`guestfs_inspect_get_format\*(C'\fR returns \f(CW\*(C`installer\*(C'\fR (this is an install
 disk), then this returns true if the disk is a network installer, ie. not a
@@ -4443,6 +4570,8 @@ to complete the install.
 Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .PP
 This function returns a C truth value on success or \-1 on error.
+.PP
+(Added in 1.9.4)
 .SS "guestfs_inspect_list_applications"
 .IX Subsection "guestfs_inspect_list_applications"
 .Vb 3
@@ -4450,9 +4579,6 @@ This function returns a C truth value on success or \-1 on error.
 \& guestfs_inspect_list_applications (guestfs_h *g,
 \&                                    const char *root);
 .Ve
-.PP
-This function should only be called with a root device string as returned by
-\&\f(CW\*(C`guestfs_inspect_os\*(C'\fR.
 .PP
 Return the list of applications installed in the operating system.
 .PP
@@ -4770,6 +4896,35 @@ See also \f(CW\*(C`guestfs_stat\*(C'\fR.
 This function returns a C truth value on success or \-1 on error.
 .PP
 (Added in 1.5.10)
+.SS "guestfs_is_zero"
+.IX Subsection "guestfs_is_zero"
+.Vb 3
+\& int
+\& guestfs_is_zero (guestfs_h *g,
+\&                  const char *path);
+.Ve
+.PP
+This returns true iff the file exists and the file is empty or it contains
+all zero bytes.
+.PP
+This function returns a C truth value on success or \-1 on error.
+.PP
+(Added in 1.11.8)
+.SS "guestfs_is_zero_device"
+.IX Subsection "guestfs_is_zero_device"
+.Vb 3
+\& int
+\& guestfs_is_zero_device (guestfs_h *g,
+\&                         const char *device);
+.Ve
+.PP
+This returns true iff the device exists and contains all zero bytes.
+.PP
+Note that for large devices this can take a long time to run.
+.PP
+This function returns a C truth value on success or \-1 on error.
+.PP
+(Added in 1.11.8)
 .SS "guestfs_kill_subprocess"
 .IX Subsection "guestfs_kill_subprocess"
 .Vb 2
@@ -4868,6 +5023,21 @@ This function returns a \f(CW\*(C`struct guestfs_xattr_list *\*(C'\fR, or \s-1NU
 an error.  \fIThe caller must call \f(CI\*(C`guestfs_free_xattr_list\*(C'\fI after use\fR.
 .PP
 (Added in 1.0.59)
+.SS "guestfs_list_9p"
+.IX Subsection "guestfs_list_9p"
+.Vb 2
+\& char **
+\& guestfs_list_9p (guestfs_h *g);
+.Ve
+.PP
+List all 9p filesystems attached to the guest.  A list of mount tags is
+returned.
+.PP
+This function returns a NULL-terminated array of strings (like
+\&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
+strings and the array after use\fR.
+.PP
+(Added in 1.11.12)
 .SS "guestfs_list_devices"
 .IX Subsection "guestfs_list_devices"
 .Vb 2
@@ -4886,6 +5056,27 @@ This function returns a NULL-terminated array of strings (like
 strings and the array after use\fR.
 .PP
 (Added in 0.4)
+.SS "guestfs_list_dm_devices"
+.IX Subsection "guestfs_list_dm_devices"
+.Vb 2
+\& char **
+\& guestfs_list_dm_devices (guestfs_h *g);
+.Ve
+.PP
+List all device mapper devices.
+.PP
+The returned list contains \f(CW\*(C`/dev/mapper/*\*(C'\fR devices, eg. ones created by a
+previous call to \f(CW\*(C`guestfs_luks_open\*(C'\fR.
+.PP
+Device mapper devices which correspond to logical volumes are \fInot\fR
+returned in this list.  Call \f(CW\*(C`guestfs_lvs\*(C'\fR if you want to list logical
+volumes.
+.PP
+This function returns a NULL-terminated array of strings (like
+\&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
+strings and the array after use\fR.
+.PP
+(Added in 1.11.15)
 .SS "guestfs_list_filesystems"
 .IX Subsection "guestfs_list_filesystems"
 .Vb 2
@@ -5257,6 +5448,8 @@ underlying \f(CW\*(C`device\*(C'\fR respectively.
 If this block device contains \s-1LVM\s0 volume groups, then calling
 \&\f(CW\*(C`guestfs_vgscan\*(C'\fR followed by \f(CW\*(C`guestfs_vg_activate_all\*(C'\fR will make them
 visible.
+.PP
+Use \f(CW\*(C`guestfs_list_dm_devices\*(C'\fR to list all device mapper devices.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
@@ -5786,9 +5979,11 @@ You may supply a list of optional arguments to this call.  Use zero or more
 of the following pairs of parameters, and terminate the list with \f(CW\*(C`\-1\*(C'\fR on
 its own.  See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
 .PP
-.Vb 2
+.Vb 4
 \& GUESTFS_MKFS_OPTS_BLOCKSIZE, int blocksize,
 \& GUESTFS_MKFS_OPTS_FEATURES, const char *features,
+\& GUESTFS_MKFS_OPTS_INODE, int inode,
+\& GUESTFS_MKFS_OPTS_SECTORSIZE, int sectorsize,
 .Ve
 .PP
 This function creates a filesystem on \f(CW\*(C`device\*(C'\fR.  The filesystem type is
@@ -5816,6 +6011,16 @@ selected.  See \fImke2fs\fR\|(8) and \fImkfs.ufs\fR\|(8) for more details.
 .Sp
 You cannot use this optional parameter with the \f(CW\*(C`gfs\*(C'\fR or \f(CW\*(C`gfs2\*(C'\fR filesystem
 type.
+.ie n .IP """inode""" 4
+.el .IP "\f(CWinode\fR" 4
+.IX Item "inode"
+This passes the \fI\-I\fR parameter to the external \fImke2fs\fR\|(8) program which
+sets the inode size (only for ext2/3/4 filesystems at present).
+.ie n .IP """sectorsize""" 4
+.el .IP "\f(CWsectorsize\fR" 4
+.IX Item "sectorsize"
+This passes the \fI\-S\fR parameter to external \fImkfs.ufs\fR\|(8) program, which
+sets sector size for ufs filesystem.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
@@ -6083,6 +6288,60 @@ they are deprecated indicates that there are problems with correct use of
 these functions.
 .PP
 (Added in 0.3)
+.SS "guestfs_mount_9p"
+.IX Subsection "guestfs_mount_9p"
+.Vb 5
+\& int
+\& guestfs_mount_9p (guestfs_h *g,
+\&                   const char *mounttag,
+\&                   const char *mountpoint,
+\&                   ...);
+.Ve
+.PP
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with \f(CW\*(C`\-1\*(C'\fR on
+its own.  See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.PP
+.Vb 1
+\& GUESTFS_MOUNT_9P_OPTIONS, const char *options,
+.Ve
+.PP
+Mount the virtio\-9p filesystem with the tag \f(CW\*(C`mounttag\*(C'\fR on the directory
+\&\f(CW\*(C`mountpoint\*(C'\fR.
+.PP
+If required, \f(CW\*(C`trans=virtio\*(C'\fR will be automatically added to the options.
+Any other options required can be passed in the optional \f(CW\*(C`options\*(C'\fR
+parameter.
+.PP
+This function returns 0 on success or \-1 on error.
+.PP
+(Added in 1.11.12)
+.SS "guestfs_mount_9p_va"
+.IX Subsection "guestfs_mount_9p_va"
+.Vb 5
+\& int
+\& guestfs_mount_9p_va (guestfs_h *g,
+\&                      const char *mounttag,
+\&                      const char *mountpoint,
+\&                      va_list args);
+.Ve
+.PP
+This is the \*(L"va_list variant\*(R" of \*(L"guestfs_mount_9p\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_mount_9p_argv"
+.IX Subsection "guestfs_mount_9p_argv"
+.Vb 5
+\& int
+\& guestfs_mount_9p_argv (guestfs_h *g,
+\&                        const char *mounttag,
+\&                        const char *mountpoint,
+\&                        const struct guestfs_mount_9p_argv *optargs);
+.Ve
+.PP
+This is the \*(L"argv variant\*(R" of \*(L"guestfs_mount_9p\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
 .SS "guestfs_mount_loop"
 .IX Subsection "guestfs_mount_loop"
 .Vb 4
@@ -6247,7 +6506,83 @@ See also \fIntfsresize\fR\|(8).
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
+This function is deprecated.  In new code, use the
+\&\*(L"guestfs_ntfsresize_opts\*(R" call instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+.PP
 (Added in 1.3.2)
+.SS "guestfs_ntfsresize_opts"
+.IX Subsection "guestfs_ntfsresize_opts"
+.Vb 4
+\& int
+\& guestfs_ntfsresize_opts (guestfs_h *g,
+\&                          const char *device,
+\&                          ...);
+.Ve
+.PP
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with \f(CW\*(C`\-1\*(C'\fR on
+its own.  See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.PP
+.Vb 2
+\& GUESTFS_NTFSRESIZE_OPTS_SIZE, int64_t size,
+\& GUESTFS_NTFSRESIZE_OPTS_FORCE, int force,
+.Ve
+.PP
+This command resizes an \s-1NTFS\s0 filesystem, expanding or shrinking it to the
+size of the underlying device.
+.PP
+The optional parameters are:
+.ie n .IP """size""" 4
+.el .IP "\f(CWsize\fR" 4
+.IX Item "size"
+The new size (in bytes) of the filesystem.  If omitted, the filesystem is
+resized to fit the container (eg. partition).
+.ie n .IP """force""" 4
+.el .IP "\f(CWforce\fR" 4
+.IX Item "force"
+If this option is true, then force the resize of the filesystem even if the
+filesystem is marked as requiring a consistency check.
+.Sp
+After the resize operation, the filesystem is always marked as requiring a
+consistency check (for safety).  You have to boot into Windows to perform
+this check and clear this condition.  If you \fIdon't\fR set the \f(CW\*(C`force\*(C'\fR
+option then it is not possible to call \f(CW\*(C`guestfs_ntfsresize_opts\*(C'\fR multiple
+times on a single filesystem without booting into Windows between each
+resize.
+.PP
+See also \fIntfsresize\fR\|(8).
+.PP
+This function returns 0 on success or \-1 on error.
+.PP
+(Added in 1.11.15)
+.SS "guestfs_ntfsresize_opts_va"
+.IX Subsection "guestfs_ntfsresize_opts_va"
+.Vb 4
+\& int
+\& guestfs_ntfsresize_opts_va (guestfs_h *g,
+\&                             const char *device,
+\&                             va_list args);
+.Ve
+.PP
+This is the \*(L"va_list variant\*(R" of \*(L"guestfs_ntfsresize_opts\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_ntfsresize_opts_argv"
+.IX Subsection "guestfs_ntfsresize_opts_argv"
+.Vb 4
+\& int
+\& guestfs_ntfsresize_opts_argv (guestfs_h *g,
+\&                               const char *device,
+\&                               const struct guestfs_ntfsresize_opts_argv *optargs);
+.Ve
+.PP
+This is the \*(L"argv variant\*(R" of \*(L"guestfs_ntfsresize_opts\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
 .SS "guestfs_ntfsresize_size"
 .IX Subsection "guestfs_ntfsresize_size"
 .Vb 4
@@ -6261,6 +6596,13 @@ This command is the same as \f(CW\*(C`guestfs_ntfsresize\*(C'\fR except that it 
 to specify the new size (in bytes) explicitly.
 .PP
 This function returns 0 on success or \-1 on error.
+.PP
+This function is deprecated.  In new code, use the
+\&\*(L"guestfs_ntfsresize_opts\*(R" call instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 .PP
 (Added in 1.3.14)
 .SS "guestfs_part_add"
@@ -6402,15 +6744,23 @@ Initially there are no partitions.  Following this, you should call
 \&\f(CW\*(C`guestfs_part_add\*(C'\fR for each partition required.
 .PP
 Possible values for \f(CW\*(C`parttype\*(C'\fR are:
-.IP "\fBefi\fR | \fBgpt\fR" 4
-.IX Item "efi | gpt"
+.IP "\fBefi\fR" 4
+.IX Item "efi"
+.PD 0
+.IP "\fBgpt\fR" 4
+.IX Item "gpt"
+.PD
 Intel \s-1EFI\s0 / \s-1GPT\s0 partition table.
 .Sp
 This is recommended for >= 2 \s-1TB\s0 partitions that will be accessed from Linux
 and Intel-based Mac \s-1OS\s0 X.  It also has limited backwards compatibility with
 the \f(CW\*(C`mbr\*(C'\fR format.
-.IP "\fBmbr\fR | \fBmsdos\fR" 4
-.IX Item "mbr | msdos"
+.IP "\fBmbr\fR" 4
+.IX Item "mbr"
+.PD 0
+.IP "\fBmsdos\fR" 4
+.IX Item "msdos"
+.PD
 The standard \s-1PC\s0 \*(L"Master Boot Record\*(R" (\s-1MBR\s0) format used by MS-DOS and
 Windows.  This partition type will \fBonly\fR work for device sizes up to 2
 \&\s-1TB\s0.  For large disks we recommend using \f(CW\*(C`gpt\*(C'\fR.
@@ -6419,8 +6769,12 @@ Other partition table types that may work but are not supported include:
 .IP "\fBaix\fR" 4
 .IX Item "aix"
 \&\s-1AIX\s0 disk labels.
-.IP "\fBamiga\fR | \fBrdb\fR" 4
-.IX Item "amiga | rdb"
+.IP "\fBamiga\fR" 4
+.IX Item "amiga"
+.PD 0
+.IP "\fBrdb\fR" 4
+.IX Item "rdb"
+.PD
 Amiga \*(L"Rigid Disk Block\*(R" format.
 .IP "\fBbsd\fR" 4
 .IX Item "bsd"
@@ -6999,6 +7353,8 @@ These two numbers, multiplied together, give the resulting size of the
 minimal filesystem in bytes.
 .PP
 This function returns 0 on success or \-1 on error.
+.PP
+(Added in 1.9.4)
 .SS "guestfs_resize2fs_size"
 .IX Subsection "guestfs_resize2fs_size"
 .Vb 4
@@ -7171,6 +7527,8 @@ to a live guest.  For more information, see \*(L"\s-1ATTACHING\s0 \s-1TO\s0
 \&\s-1RUNNING\s0 \s-1DAEMONS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
 This function returns 0 on success or \-1 on error.
+.PP
+(Added in 1.9.8)
 .SS "guestfs_set_autosync"
 .IX Subsection "guestfs_set_autosync"
 .Vb 3
@@ -7305,6 +7663,26 @@ Setting \f(CW\*(C`path\*(C'\fR to \f(CW\*(C`NULL\*(C'\fR restores the default pa
 This function returns 0 on success or \-1 on error.
 .PP
 (Added in 0.3)
+.SS "guestfs_set_pgroup"
+.IX Subsection "guestfs_set_pgroup"
+.Vb 3
+\& int
+\& guestfs_set_pgroup (guestfs_h *g,
+\&                     int pgroup);
+.Ve
+.PP
+If \f(CW\*(C`pgroup\*(C'\fR is true, child processes are placed into their own process
+group.
+.PP
+The practical upshot of this is that signals like \f(CW\*(C`SIGINT\*(C'\fR (from users
+pressing \f(CW\*(C`^C\*(C'\fR) won't be received by the child process.
+.PP
+The default for this flag is false, because usually you want \f(CW\*(C`^C\*(C'\fR to kill
+the subprocess.
+.PP
+This function returns 0 on success or \-1 on error.
+.PP
+(Added in 1.11.18)
 .SS "guestfs_set_qemu"
 .IX Subsection "guestfs_set_qemu"
 .Vb 3
@@ -8368,9 +8746,7 @@ the returned string after use\fR.
 .Ve
 .PP
 This command activates or (if \f(CW\*(C`activate\*(C'\fR is false) deactivates all logical
-volumes in the listed volume groups \f(CW\*(C`volgroups\*(C'\fR.  If activated, then they
-are made known to the kernel, ie. they appear as \f(CW\*(C`/dev/mapper\*(C'\fR devices.  If
-deactivated, then those devices disappear.
+volumes in the listed volume groups \f(CW\*(C`volgroups\*(C'\fR.
 .PP
 This command is the same as running \f(CW\*(C`vgchange \-a y|n volgroups...\*(C'\fR
 .PP
@@ -8389,9 +8765,7 @@ This function returns 0 on success or \-1 on error.
 .Ve
 .PP
 This command activates or (if \f(CW\*(C`activate\*(C'\fR is false) deactivates all logical
-volumes in all volume groups.  If activated, then they are made known to the
-kernel, ie. they appear as \f(CW\*(C`/dev/mapper\*(C'\fR devices.  If deactivated, then
-those devices disappear.
+volumes in all volume groups.
 .PP
 This command is the same as running \f(CW\*(C`vgchange \-a y|n\*(C'\fR
 .PP
@@ -8627,12 +9001,35 @@ On error this function returns \-1.
 This call creates a file called \f(CW\*(C`path\*(C'\fR.  The content of the file is the
 string \f(CW\*(C`content\*(C'\fR (which can contain any 8 bit data).
 .PP
+See also \f(CW\*(C`guestfs_write_append\*(C'\fR.
+.PP
 This function returns 0 on success or \-1 on error.
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
 (Added in 1.3.14)
+.SS "guestfs_write_append"
+.IX Subsection "guestfs_write_append"
+.Vb 5
+\& int
+\& guestfs_write_append (guestfs_h *g,
+\&                       const char *path,
+\&                       const char *content,
+\&                       size_t content_size);
+.Ve
+.PP
+This call appends \f(CW\*(C`content\*(C'\fR to the end of file \f(CW\*(C`path\*(C'\fR.  If \f(CW\*(C`path\*(C'\fR does
+not exist, then a new file is created.
+.PP
+See also \f(CW\*(C`guestfs_write\*(C'\fR.
+.PP
+This function returns 0 on success or \-1 on error.
+.PP
+Because of the message protocol, there is a transfer limit of somewhere
+between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
+.PP
+(Added in 1.11.18)
 .SS "guestfs_write_file"
 .IX Subsection "guestfs_write_file"
 .Vb 5
@@ -8717,7 +9114,8 @@ How many blocks are zeroed isn't specified (but it's \fInot\fR enough to
 securely wipe the device).  It should be sufficient to remove any partition
 tables, filesystem superblocks and so on.
 .PP
-See also: \f(CW\*(C`guestfs_zero_device\*(C'\fR, \f(CW\*(C`guestfs_scrub_device\*(C'\fR.
+See also: \f(CW\*(C`guestfs_zero_device\*(C'\fR, \f(CW\*(C`guestfs_scrub_device\*(C'\fR,
+\&\f(CW\*(C`guestfs_is_zero_device\*(C'\fR
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
@@ -9167,6 +9565,9 @@ The following functions: \*(L"guestfs_aug_clear\*(R" \*(L"guestfs_aug_close\*(R"
 \&\*(L"guestfs_aug_init\*(R" \*(L"guestfs_aug_insert\*(R" \*(L"guestfs_aug_load\*(R"
 \&\*(L"guestfs_aug_ls\*(R" \*(L"guestfs_aug_match\*(R" \*(L"guestfs_aug_mv\*(R"
 \&\*(L"guestfs_aug_rm\*(R" \*(L"guestfs_aug_save\*(R" \*(L"guestfs_aug_set\*(R"
+.IP "\fBbtrfs\fR" 4
+.IX Item "btrfs"
+The following functions: \*(L"guestfs_btrfs_filesystem_resize\*(R"
 .IP "\fBinotify\fR" 4
 .IX Item "inotify"
 The following functions: \*(L"guestfs_inotify_add_watch\*(R"
@@ -9209,7 +9610,8 @@ The following functions: \*(L"guestfs_mkfifo\*(R" \*(L"guestfs_mknod\*(R"
 The following functions: \*(L"guestfs_ntfs_3g_probe\*(R"
 .IP "\fBntfsprogs\fR" 4
 .IX Item "ntfsprogs"
-The following functions: \*(L"guestfs_ntfsresize\*(R" \*(L"guestfs_ntfsresize_size\*(R"
+The following functions: \*(L"guestfs_ntfsresize\*(R" \*(L"guestfs_ntfsresize_opts\*(R"
+\&\*(L"guestfs_ntfsresize_size\*(R"
 .IP "\fBrealpath\fR" 4
 .IX Item "realpath"
 The following functions: \*(L"guestfs_realpath\*(R"
@@ -9409,7 +9811,7 @@ functions \f(CW\*(C`guestfs_set_log_message_callback\*(C'\fR,
 \&\f(CW\*(C`guestfs_set_subprocess_quit_callback\*(C'\fR,
 \&\f(CW\*(C`guestfs_set_launch_done_callback\*(C'\fR, \f(CW\*(C`guestfs_set_close_callback\*(C'\fR and
 \&\f(CW\*(C`guestfs_set_progress_callback\*(C'\fR are no longer documented in this manual
-page.
+page.  Because of the \s-1ABI\s0 guarantee, the old functions continue to work.
 .PP
 Handles generate events when certain things happen, such as log messages
 being generated, progress messages during long-running operations, or the
@@ -9665,6 +10067,42 @@ example, messages are directed to syslog:
 \&     syslog (priority, "event 0x%lx: %s", event, buf);
 \& }
 .Ve
+.SH "CANCELLING LONG TRANSFERS"
+.IX Header "CANCELLING LONG TRANSFERS"
+Some operations can be cancelled by the caller while they are in progress.
+Currently only operations that involve uploading or downloading data can be
+cancelled (technically: operations that have \f(CW\*(C`FileIn\*(C'\fR or \f(CW\*(C`FileOut\*(C'\fR
+parameters in the generator).
+.SS "guestfs_user_cancel"
+.IX Subsection "guestfs_user_cancel"
+.Vb 1
+\& void guestfs_user_cancel (guestfs_h *g);
+.Ve
+.PP
+\&\f(CW\*(C`guestfs_user_cancel\*(C'\fR cancels the current upload or download operation.
+.PP
+Unlike most other libguestfs calls, this function is signal safe and thread
+safe.  You can call it from a signal handler or from another thread, without
+needing to do any locking.
+.PP
+The transfer that was in progress (if there is one) will stop shortly
+afterwards, and will return an error.  The errno (see
+\&\*(L"guestfs_last_errno\*(R") is set to \f(CW\*(C`EINTR\*(C'\fR, so you can test for this to find
+out if the operation was cancelled or failed because of another error.
+.PP
+No cleanup is performed: for example, if a file was being uploaded then
+after cancellation there may be a partially uploaded file.  It is the
+caller's responsibility to clean up if necessary.
+.PP
+There are two common places that you might call \f(CW\*(C`guestfs_user_cancel\*(C'\fR.
+.PP
+In an interactive text-based program, you might call it from a \f(CW\*(C`SIGINT\*(C'\fR
+signal handler so that pressing \f(CW\*(C`^C\*(C'\fR cancels the current operation.  (You
+also need to call \*(L"guestfs_set_pgroup\*(R" so that child processes don't
+receive the \f(CW\*(C`^C\*(C'\fR signal).
+.PP
+In a graphical program, when the main thread is displaying a progress bar
+with a cancel button, wire up the cancel button to call this function.
 .SH "PRIVATE DATA AREA"
 .IX Header "PRIVATE DATA AREA"
 You can attach named pieces of private data to the libguestfs handle, fetch
@@ -10364,6 +10802,10 @@ actions.
 .el .IP "\f(CWdf\fR" 4
 .IX Item "df"
 \&\fIvirt\-df\fR\|(1) command and documentation.
+.ie n .IP """edit""" 4
+.el .IP "\f(CWedit\fR" 4
+.IX Item "edit"
+\&\fIvirt\-edit\fR\|(1) command and documentation.
 .ie n .IP """examples""" 4
 .el .IP "\f(CWexamples\fR" 4
 .IX Item "examples"
@@ -10459,6 +10901,47 @@ with libguestfs.
 .IX Item "ruby"
 .PD
 Language bindings.
+.SS "\s-1MAKING\s0 A \s-1STABLE\s0 \s-1RELEASE\s0"
+.IX Subsection "MAKING A STABLE RELEASE"
+When we make a stable release, there are several steps documented here.  See
+\&\*(L"\s-1LIBGUESTFS\s0 \s-1VERSION\s0 \s-1NUMBERS\s0\*(R" for general information about the stable
+branch policy.
+.IP "\(bu" 4
+Check \f(CW\*(C`make && make check\*(C'\fR works on at least Fedora, Debian and Ubuntu.
+.IP "\(bu" 4
+Finalize RELEASE-NOTES.
+.IP "\(bu" 4
+Update \s-1ROADMAP\s0.
+.IP "\(bu" 4
+Run \f(CW\*(C`src/api\-support/update\-from\-tarballs.sh\*(C'\fR.
+.IP "\(bu" 4
+Push and pull from Transifex.
+.Sp
+Run:
+.Sp
+.Vb 1
+\& tx push \-s
+.Ve
+.Sp
+to push the latest \s-1POT\s0 files to Transifex.  Then run:
+.Sp
+.Vb 1
+\& ./tx\-pull.sh
+.Ve
+.Sp
+which is a wrapper to pull the latest translated \f(CW\*(C`*.po\*(C'\fR files.
+.IP "\(bu" 4
+Create new stable and development directories under
+<http://libguestfs.org/download>.
+.IP "\(bu" 4
+Create the branch in git:
+.Sp
+.Vb 4
+\& git tag \-a 1.XX.0 \-m "Version 1.XX.0 (stable)"
+\& git tag \-a 1.YY.0 \-m "Version 1.YY.0 (development)"
+\& git branch stable\-1.XX
+\& git push origin tag 1.XX.0 1.YY.0 stable\-1.XX
+.Ve
 .SH "LIMITS"
 .IX Header "LIMITS"
 .SS "\s-1PROTOCOL\s0 \s-1LIMITS\s0"
@@ -10549,6 +11032,17 @@ memory and disk space on the host, and should not be reached in practice.
 See the source code for more information.
 .SH "ENVIRONMENT VARIABLES"
 .IX Header "ENVIRONMENT VARIABLES"
+.IP "\s-1FEBOOTSTRAP_KERNEL\s0" 4
+.IX Item "FEBOOTSTRAP_KERNEL"
+.PD 0
+.IP "\s-1FEBOOTSTRAP_MODULES\s0" 4
+.IX Item "FEBOOTSTRAP_MODULES"
+.PD
+These two environment variables allow the kernel that libguestfs uses in the
+appliance to be selected.  If \f(CW$FEBOOTSTRAP_KERNEL\fR is not set, then the
+most recent host kernel is chosen.  For more information about kernel
+selection, see \fIfebootstrap\-supermin\-helper\fR\|(8).  This feature is only
+available in febootstrap ≥ 3.8.
 .IP "\s-1LIBGUESTFS_APPEND\s0" 4
 .IX Item "LIBGUESTFS_APPEND"
 Pass additional options to the guest kernel.
@@ -10588,14 +11082,15 @@ to the same \s-1EUID\s0.  You can use \f(CW$TMPDIR\fR to configure another direc
 use in case \f(CW\*(C`/var/tmp\*(C'\fR is not large enough.
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
-\&\fIguestfs\-examples\fR\|(3), \fIguestfs\-ocaml\fR\|(3), \fIguestfs\-perl\fR\|(3),
-\&\fIguestfs\-python\fR\|(3), \fIguestfs\-ruby\fR\|(3), \fIguestfish\fR\|(1), \fIguestmount\fR\|(1),
-\&\fIvirt\-cat\fR\|(1), \fIvirt\-copy\-in\fR\|(1), \fIvirt\-copy\-out\fR\|(1), \fIvirt\-df\fR\|(1),
-\&\fIvirt\-edit\fR\|(1), \fIvirt\-filesystems\fR\|(1), \fIvirt\-inspector\fR\|(1),
-\&\fIvirt\-list\-filesystems\fR\|(1), \fIvirt\-list\-partitions\fR\|(1), \fIvirt\-ls\fR\|(1),
-\&\fIvirt\-make\-fs\fR\|(1), \fIvirt\-rescue\fR\|(1), \fIvirt\-tar\fR\|(1), \fIvirt\-tar\-in\fR\|(1),
-\&\fIvirt\-tar\-out\fR\|(1), \fIvirt\-win\-reg\fR\|(1), \fIqemu\fR\|(1), \fIfebootstrap\fR\|(1),
-\&\fIhivex\fR\|(3), <http://libguestfs.org/>.
+\&\fIguestfs\-examples\fR\|(3), \fIguestfs\-java\fR\|(3), \fIguestfs\-ocaml\fR\|(3),
+\&\fIguestfs\-perl\fR\|(3), \fIguestfs\-python\fR\|(3), \fIguestfs\-ruby\fR\|(3),
+\&\fIguestfish\fR\|(1), \fIguestmount\fR\|(1), \fIvirt\-cat\fR\|(1), \fIvirt\-copy\-in\fR\|(1),
+\&\fIvirt\-copy\-out\fR\|(1), \fIvirt\-df\fR\|(1), \fIvirt\-edit\fR\|(1), \fIvirt\-filesystems\fR\|(1),
+\&\fIvirt\-inspector\fR\|(1), \fIvirt\-list\-filesystems\fR\|(1),
+\&\fIvirt\-list\-partitions\fR\|(1), \fIvirt\-ls\fR\|(1), \fIvirt\-make\-fs\fR\|(1),
+\&\fIvirt\-rescue\fR\|(1), \fIvirt\-tar\fR\|(1), \fIvirt\-tar\-in\fR\|(1), \fIvirt\-tar\-out\fR\|(1),
+\&\fIvirt\-win\-reg\fR\|(1), \fIqemu\fR\|(1), \fIfebootstrap\fR\|(1),
+\&\fIfebootstrap\-supermin\-helper\fR\|(8), \fIhivex\fR\|(3), <http://libguestfs.org/>.
 .PP
 Tools with a similar purpose: \fIfdisk\fR\|(8), \fIparted\fR\|(8), \fIkpartx\fR\|(8),
 \&\fIlvm\fR\|(8), \fIdisktype\fR\|(1).

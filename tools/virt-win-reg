@@ -125,7 +125,9 @@ Enable debugging messages.
 
 my $uri;
 
-=item B<--connect URI> | B<-c URI>
+=item B<-c URI>
+
+=item B<--connect URI>
 
 If using libvirt, connect to the given I<URI>.  If omitted, then we
 connect to the default libvirt hypervisor.
@@ -177,6 +179,47 @@ L<Win::Hivex::Regedit(3)/ENCODING STRINGS>.
 The default is to use UTF-16LE, which should work with recent versions
 of Windows.
 
+=cut
+
+my $unsafe_printable_strings;
+
+=item B<--unsafe-printable-strings>
+
+When exporting (only), assume strings are UTF-16LE and print them as
+strings instead of hex sequences.  Remove the final zero codepoint
+from strings if present.
+
+This is unsafe and does not preserve the fidelity of strings in the
+original Registry for various reasons:
+
+=over 4
+
+=item *
+
+Assumes the original encoding is UTF-16LE.  ASCII strings and strings
+in other encodings will be corrupted by this transformation.
+
+=item *
+
+Assumes that everything which has type 1 or 2 is really a string
+and that everything else is not a string, but the type field in
+real Registries is not reliable.
+
+=item *
+
+Loses information about whether a zero codepoint followed the string
+in the Registry or not.
+
+=back
+
+This all happens because the Registry itself contains no information
+about how strings are encoded (see
+L<Win::Hivex::Regedit(3)/ENCODING STRINGS>).
+
+You should only use this option for quick hacking and debugging of the
+Registry contents, and I<never> use it if the output is going to be
+passed into another program or stored in another Registry.
+
 =back
 
 =cut
@@ -188,6 +231,7 @@ GetOptions ("help|?" => \$help,
             "format=s" => \$format,
             "merge" => \$merge,
             "encoding=s" => \$encoding,
+            "unsafe-printable-strings" => \$unsafe_printable_strings,
     ) or pod2usage (2);
 pod2usage (1) if $help;
 if ($version) {
@@ -233,7 +277,10 @@ my $systemroot = $g->inspect_get_windows_systemroot ($roots[0]);
 # Create a working directory to store the downloaded registry files.
 my $tmpdir = tempdir (CLEANUP => 1);
 
-# Only used when merging to map downloaded hive names to hive handles.
+# Used when merging (only) to map from the downloaded hiveshortname to
+# various properties about the hive.  The key is hiveshortname.  The
+# value is a hashref containing {h} (hive handle) and {hivefile} (full
+# hive path on the Windows side).
 my %hives;
 
 if (!$merge) {                  # Export mode.
@@ -244,22 +291,25 @@ if (!$merge) {                  # Export mode.
     my $name = shift @ARGV; # or undef
 
     # Map this to the hive name.  This function dies on failure.
-    my ($hivename, $prefix);
-    ($hivename, $path, $prefix) = map_path_to_hive ($path);
+    my ($hiveshortname, $hivefile, $prefix);
+    ($hiveshortname, $hivefile, $path, $prefix) = map_path_to_hive ($path);
 
     # Download the chosen hive.
-    download_hive ($hivename);
+    download_hive ($hivefile, $hiveshortname);
 
     # Open it.
-    my $h = Win::Hivex->open ("$tmpdir/$hivename", debug => $debug);
+    my $h = Win::Hivex->open ("$tmpdir/$hiveshortname", debug => $debug);
 
     unless ($name) {
         # Export it.
-        warn "exporting $path from $hivename with prefix $prefix ..." if $debug;
-        reg_export ($h, $path, \*STDOUT, prefix => $prefix);
+        warn "exporting $path from $hiveshortname with prefix $prefix ..."
+            if $debug;
+        reg_export ($h, $path, \*STDOUT,
+                    prefix => $prefix,
+                    unsafe_printable_strings => $unsafe_printable_strings);
     } else {
         # Export a single key using hivexget.
-        my @args = ("hivexget", "$tmpdir/$hivename", $path, $name);
+        my @args = ("hivexget", "$tmpdir/$hiveshortname", $path, $name);
         warn "running ", join (" ", @args), " ..." if $debug;
         system (@args) == 0 or die "hivexget failed: $?"
     }
@@ -276,17 +326,15 @@ else {                          # Import mode.
 
     # Now we've done importing, commit all the hive handles and
     # close them all.
-    $_->commit (undef) foreach values %hives;
-    %hives = ();
+    foreach (values %hives) {
+        my $h = $_->{h};
+        delete $_->{h};
+        $h->commit (undef);
+    }
 
-    # Look in the tmpdir for all the hive files which have been
-    # downloaded / modified by the import mapper, and upload
-    # each one.
-    opendir my $dh, $tmpdir or die "$tmpdir: $!";
-    foreach (readdir $dh) {
-        unless (/^\./) {
-            upload_hive ($_)
-        }
+    # Upload all the downloaded hives.
+    foreach my $hiveshortname (keys %hives) {
+        upload_hive ($hiveshortname, $hives{$hiveshortname}->{hivefile})
     }
 
     # Sync everything.
@@ -301,18 +349,19 @@ sub import_mapper
 {
     local $_ = shift;
 
-    my ($hivename, $path, $prefix) = map_path_to_hive ($_);
+    my ($hiveshortname, $hivefile, $path, $prefix) = map_path_to_hive ($_);
 
     # Need to download this hive?
-    unless (-f "$tmpdir/$hivename") {
-        download_hive ($hivename);
+    unless (-f "$tmpdir/$hiveshortname") {
+        download_hive ($hivefile, $hiveshortname);
 
-        my $h = Win::Hivex->open ("$tmpdir/$hivename",
+        my $h = Win::Hivex->open ("$tmpdir/$hiveshortname",
                                   write => 1, debug => $debug);
-        $hives{$hivename} = $h;
+        my %hash = ( h => $h, hivefile => $hivefile );
+        $hives{$hiveshortname} = \%hash;
     }
 
-    return ($hives{$hivename}, $path);
+    return ($hives{$hiveshortname}->{h}, $path);
 }
 
 # Given a path, map that to the name of the hive and the true path
@@ -320,57 +369,162 @@ sub import_mapper
 sub map_path_to_hive
 {
     local $_ = shift;
-    my ($hivename, $prefix);
+    my ($hiveshortname, $hivefile, $path, $prefix);
 
     if (/^\\?(?:HKEY_LOCAL_MACHINE|HKLM)\\SAM(\\.*)?$/i) {
-        $hivename = "sam";
-        $_ = defined $1 ? $1 : "\\";
+        $hiveshortname = "sam";
+        $hivefile = "$systemroot/system32/config/$hiveshortname";
+        $path = defined $1 ? $1 : "\\";
         $prefix = "HKEY_LOCAL_MACHINE\\SAM";
     }
     elsif (/^\\?(?:HKEY_LOCAL_MACHINE|HKLM)\\SECURITY(\\.*)?$/i) {
-        $hivename = "security";
-        $_ = defined $1 ? $1 : "\\";
+        $hiveshortname = "security";
+        $hivefile = "$systemroot/system32/config/$hiveshortname";
+        $path = defined $1 ? $1 : "\\";
         $prefix = "HKEY_LOCAL_MACHINE\\SECURITY";
     }
     elsif (/^\\?(?:HKEY_LOCAL_MACHINE|HKLM)\\SOFTWARE(\\.*)?$/i) {
-        $hivename = "software";
-        $_ = defined $1 ? $1 : "\\";
+        $hiveshortname = "software";
+        $hivefile = "$systemroot/system32/config/$hiveshortname";
+        $path = defined $1 ? $1 : "\\";
         $prefix = "HKEY_LOCAL_MACHINE\\SOFTWARE";
     }
     elsif (/^\\?(?:HKEY_LOCAL_MACHINE|HKLM)\\SYSTEM(\\.*)?$/i) {
-        $hivename = "system";
-        $_ = defined $1 ? $1 : "\\";
+        $hiveshortname = "system";
+        $hivefile = "$systemroot/system32/config/$hiveshortname";
+        $path = defined $1 ? $1 : "\\";
         $prefix = "HKEY_LOCAL_MACHINE\\SYSTEM";
     }
     elsif (/^\\?(?:HKEY_USERS|HKU)\\.DEFAULT(\\.*)?$/i) {
-        $hivename = "default";
-        $_ = defined $1 ? $1 : "\\";
+        $hiveshortname = "default";
+        $hivefile = "$systemroot/system32/config/$hiveshortname";
+        $path = defined $1 ? $1 : "\\";
         $prefix = "HKEY_LOCAL_MACHINE\\.DEFAULT";
+    }
+    elsif (/^\\?(?:HKEY_USERS|HKU)\\(S-1-5-[-\d]+)(\\.*)?$/i) {
+        my $sid = $1;
+        $hiveshortname = $sid;
+        $prefix = "HKEY_USERS\\$sid";
+        $path = defined $2 ? $2 : "\\";
+        # This requires a recursive call to download the SOFTWARE hive.
+        $hivefile = lookup_pip_of_user_sid ($sid) . "/ntuser.dat";
+    }
+    elsif (/^\\?(?:HKEY_USERS|HKU)\\LocalSystem(\\.*)?$/i) {
+        my $sid = "S-1-5-18";
+        $hiveshortname = $sid;
+        $prefix = "HKEY_USERS\\$sid";
+        $path = defined $1 ? $1 : "\\";
+        # This requires a recursive call to download the SOFTWARE hive.
+        $hivefile = lookup_pip_of_user_sid ($sid) . "/ntuser.dat";
+    }
+    elsif (/^\\?(?:HKEY_USERS|HKU)\\LocalService(\\.*)?$/i) {
+        my $sid = "S-1-5-19";
+        $hiveshortname = $sid;
+        $prefix = "HKEY_USERS\\$sid";
+        $path = defined $1 ? $1 : "\\";
+        # This requires a recursive call to download the SOFTWARE hive.
+        $hivefile = lookup_pip_of_user_sid ($sid) . "/ntuser.dat";
+    }
+    elsif (/^\\?(?:HKEY_USERS|HKU)\\NetworkService(\\.*)?$/i) {
+        my $sid = "S-1-5-20";
+        $hiveshortname = $sid;
+        $prefix = "HKEY_USERS\\$sid";
+        $path = defined $1 ? $1 : "\\";
+        # This requires a recursive call to download the SOFTWARE hive.
+        $hivefile = lookup_pip_of_user_sid ($sid) . "/ntuser.dat";
+    }
+    elsif (/^\\?(?:HKEY_USERS|HKU)\\(.*?)(\\.*)?$/i) {
+        $hiveshortname = "user_$1";
+        $prefix = "HKEY_USERS\\$1";
+        $path = defined $2 ? $2 : "\\";
+        # XXX We should probably look this up properly.
+        if (is_dir_nocase ("/Users/$1")) {
+            $hivefile = "/Users/$1/ntuser.dat"
+        } elsif (is_dir_nocase ("/Documents and Settings/$1")) {
+            $hivefile = "/Documents and Settings/$1/ntuser.dat"
+        } else {
+            die __x("virt-win-reg: {p}: cannot find user directory\n",
+                    p => $1)
+        }
     }
     else {
         die __x("virt-win-reg: {p}: not a supported Windows Registry path\n",
                 p => $_)
     }
 
-    return ($hivename, $_, $prefix);
+    return ($hiveshortname, $hivefile, $path, $prefix);
+}
+
+# Given a User SID, consult
+# HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$sid
+# and return the ProfileImagePath value.
+sub lookup_pip_of_user_sid
+{
+    local $_;
+    my $sid = shift;
+
+    my $path =
+        "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\\".
+        $sid;
+
+    my ($hiveshortname, $hivefile, $prefix);
+    ($hiveshortname, $hivefile, $path, $prefix) = map_path_to_hive ($path);
+
+    download_hive ($hivefile, $hiveshortname)
+        unless -f "$tmpdir/$hiveshortname";
+
+    my @args = ("$tmpdir/$hiveshortname", $path, "ProfileImagePath");
+    warn "running hivexget ", join (" ", @args), " ..." if $debug;
+
+    my $fh;
+    open $fh, "-|", "hivexget", @args
+        or die "hivexget: see earlier errors: $!";
+    $_ = <$fh>;
+    close $fh or die "hivexget: see earlier errors: $!";
+
+    chomp;
+
+    # The contents of the registry are a windows path, possibly
+    # containing %systemroot% and %systemdrive% (on Win XP).  Expand
+    # it and remove some other windows-isms.  The caller will do
+    # case_sensitive_path for us, so we don't need to do that.
+    s/%systemroot%/$systemroot/i;
+    s/%systemdrive%//i;
+    s/^c://i;
+    s,\\,/,g;
+
+    $_;
+}
+
+sub is_dir_nocase
+{
+    local $_;
+    my $dir = shift;
+
+    my $windir;
+    eval { $windir = $g->case_sensitive_path ($dir); };
+    if ($@) {
+        return 0;
+    }
+    return $g->is_dir ($windir);
 }
 
 # Download a named hive file.  Die on failure.
 sub download_hive
 {
     local $_;
-    my $hivename = shift;
+    my $hivefile = shift;
+    my $hiveshortname = shift;
 
-    my $winfile_before = "$systemroot/system32/config/$hivename";
     my $winfile;
-    eval { $winfile = $g->case_sensitive_path ($winfile_before); };
+    eval { $winfile = $g->case_sensitive_path ($hivefile); };
     if ($@) {
         die __x("virt-win-reg: {p}: file not found in guest: {err}\n",
-                p => $winfile_before, err => $@);
+                p => $hivefile, err => $@);
     }
 
     warn "downloading $winfile ..." if $debug;
-    eval { $g->download ($winfile, "$tmpdir/$hivename"); };
+    eval { $g->download ($winfile, "$tmpdir/$hiveshortname"); };
     if ($@) {
         die __x("virt-win-reg: {p}: could not download registry file: {err}\n",
                 p => $winfile, err => $@);
@@ -381,18 +535,18 @@ sub download_hive
 sub upload_hive
 {
     local $_;
-    my $hivename = shift;
+    my $hiveshortname = shift;
+    my $hivefile = shift;
 
-    my $winfile_before = "$systemroot/system32/config/$hivename";
     my $winfile;
-    eval { $winfile = $g->case_sensitive_path ($winfile_before); };
+    eval { $winfile = $g->case_sensitive_path ($hivefile); };
     if ($@) {
         die __x("virt-win-reg: {p}: file not found in guest: {err}\n",
-                p => $winfile_before, err => $@);
+                p => $hivefile, err => $@);
     }
 
     warn "uploading $winfile ..." if $debug;
-    eval { $g->upload ("$tmpdir/$hivename", $winfile); };
+    eval { $g->upload ("$tmpdir/$hiveshortname", $winfile); };
     if ($@) {
         die __x("virt-win-reg: {p}: could not upload registry file: {err}\n",
                 p => $winfile, err => $@);
@@ -404,15 +558,35 @@ sub upload_hive
 The program currently supports Windows NT-derived guests starting with
 Windows XP through to at least Windows 7.
 
-Registry support is done for C<HKEY_LOCAL_MACHINE\SAM>,
-C<HKEY_LOCAL_MACHINE\SECURITY>, C<HKEY_LOCAL_MACHINE\SOFTWARE>,
-C<HKEY_LOCAL_MACHINE\SYSTEM> and C<HKEY_USERS\.DEFAULT>.
+The following Registry keys are supported:
+
+=over 4
+
+=item C<HKEY_LOCAL_MACHINE\SAM>
+
+=item C<HKEY_LOCAL_MACHINE\SECURITY>
+
+=item C<HKEY_LOCAL_MACHINE\SOFTWARE>
+
+=item C<HKEY_LOCAL_MACHINE\SYSTEM>
+
+=item C<HKEY_USERS\.DEFAULT>
+
+=item C<HKEY_USERS\I<SID>>
+
+where I<SID> is a Windows User SID (eg. C<S-1-5-18>).
+
+=item C<HKEY_USERS\I<username>>
+
+where I<username> is a local user name (this is a libguestfs extension).
+
+=back
 
 You can use C<HKLM> as a shorthand for C<HKEY_LOCAL_MACHINE>, and
 C<HKU> for C<HKEY_USERS>.
 
-C<HKEY_USERS\$SID> and C<HKEY_CURRENT_USER> are B<not> supported at
-this time.
+The literal keys C<HKEY_USERS\$SID> and C<HKEY_CURRENT_USER> are not
+supported (there is no "current user").
 
 =head1 ENCODING
 

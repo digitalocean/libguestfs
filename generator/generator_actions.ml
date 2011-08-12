@@ -726,9 +726,6 @@ See also C<guestfs_list_filesystems>.");
    [],
    "get type of inspected operating system",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 This returns the type of the inspected operating system.
 Currently defined types are:
 
@@ -761,9 +758,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.");
    [],
    "get architecture of inspected operating system",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 This returns the architecture of the inspected operating system.
 The possible return values are listed under
 C<guestfs_file_architecture>.
@@ -777,9 +771,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.");
    [],
    "get distro of inspected operating system",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 This returns the distro (distribution) of the inspected operating
 system.
 
@@ -863,9 +854,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.");
    [],
    "get major version of inspected operating system",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 This returns the major version number of the inspected operating
 system.
 
@@ -884,9 +872,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.");
    [],
    "get minor version of inspected operating system",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 This returns the minor version number of the inspected operating
 system.
 
@@ -899,9 +884,6 @@ See also C<guestfs_inspect_get_major_version>.");
    [],
    "get product name of inspected operating system",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 This returns the product name of the inspected operating
 system.  The product name is generally some freeform string
 which can be displayed to the user, but should not be
@@ -916,9 +898,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.");
    [],
    "get mountpoints of inspected operating system",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 This returns a hash of where we think the filesystems
 associated with this operating system should be mounted.
 Callers should note that this is at best an educated guess
@@ -949,9 +928,6 @@ See also C<guestfs_inspect_get_filesystems>.");
    [],
    "get filesystems associated with inspected operating system",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 This returns a list of all the filesystems that we think
 are associated with this operating system.  This includes
 the root filesystem, other ordinary filesystems, and
@@ -1064,9 +1040,6 @@ deprecated C<guestfs_add_drive_with_if> call (q.v.)
    [],
    "get Windows systemroot of inspected operating system",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 This returns the Windows systemroot of the inspected guest.
 The systemroot is a directory path such as C</WINDOWS>.
 
@@ -1096,7 +1069,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.");
 This returns the internal QEMU command line.  'debug' commands are
 not part of the formal API and can be removed or changed at any time.");
 
-  ("add_domain", (RInt "nrdisks", [String "dom"], [String "libvirturi"; Bool "readonly"; String "iface"; Bool "live"]), -1, [FishAlias "domain"],
+  ("add_domain", (RInt "nrdisks", [String "dom"], [String "libvirturi"; Bool "readonly"; String "iface"; Bool "live"; Bool "allowuuid"]), -1, [FishAlias "domain"],
    [],
    "add the disk(s) from a named libvirt domain",
    "\
@@ -1129,6 +1102,11 @@ it sees a suitable E<lt>channelE<gt> element in the libvirt
 XML definition.  The default (if the flag is omitted) is never
 to try.  See L<guestfs(3)/ATTACHING TO RUNNING DAEMONS> for more
 information.
+
+If the C<allowuuid> flag is true (default is false) then a UUID
+I<may> be passed instead of the domain name.  The C<dom> string is
+treated as a UUID first and looked up, and if that lookup fails
+then we treat C<dom> as a name as usual.
 
 The other optional parameters are passed directly through to
 C<guestfs_add_drive_opts>.");
@@ -1173,9 +1151,6 @@ C<guestfs_add_drive_opts>.");
    [],
    "get package format used by the operating system",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 This function and C<guestfs_inspect_get_package_management> return
 the package format and package management tool used by the
 inspected operating system.  For example for Fedora these
@@ -1195,9 +1170,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.");
    [],
    "get package management tool used by the operating system",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 C<guestfs_inspect_get_package_format> and this function return
 the package format and package management tool used by the
 inspected operating system.  For example for Fedora these
@@ -1219,9 +1191,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.");
    [],
    "get list of applications installed in the operating system",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 Return the list of applications installed in the operating system.
 
 I<Note:> This call works differently from other parts of the
@@ -1318,9 +1287,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.");
    [],
    "get hostname of the operating system",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 This function returns the hostname of the operating system
 as found by inspection of the guest's configuration files.
 
@@ -1333,9 +1299,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.");
    [],
    "get format of inspected operating system",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 This returns the format of the inspected operating system.  You
 can use it to detect install images, live CDs and similar.
 
@@ -1367,9 +1330,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.");
    [],
    "get live flag for install disk",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 If C<guestfs_inspect_get_format> returns C<installer> (this
 is an install disk), then this returns true if a live image
 was detected on the disk.
@@ -1380,9 +1340,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.");
    [],
    "get netinst (network installer) flag for install disk",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 If C<guestfs_inspect_get_format> returns C<installer> (this
 is an install disk), then this returns true if the disk is
 a network installer, ie. not a self-contained install CD but
@@ -1395,9 +1352,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.");
    [],
    "get multipart flag for install disk",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 If C<guestfs_inspect_get_format> returns C<installer> (this
 is an install disk), then this returns true if the disk is
 part of a set.
@@ -1439,9 +1393,6 @@ Return the current attach method.  See C<guestfs_set_attach_method>.");
    [],
    "get product variant of inspected operating system",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 This returns the product variant of the inspected operating
 system.
 
@@ -1469,9 +1420,6 @@ C<guestfs_inspect_get_major_version>.");
    [],
    "get Windows CurrentControlSet of inspected operating system",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 This returns the Windows CurrentControlSet of the inspected guest.
 The CurrentControlSet is a registry key name such as C<ControlSet001>.
 
@@ -1485,9 +1433,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.");
    [],
    "get drive letter mappings",
    "\
-This function should only be called with a root device string
-as returned by C<guestfs_inspect_os>.
-
 This call is useful for Windows which uses a primitive system
 of assigning drive letters (like \"C:\") to partitions.
 This inspection API examines the Windows Registry to find out
@@ -1516,6 +1461,89 @@ could not be determined, this returns an empty hash table.
 Please read L<guestfs(3)/INSPECTION> for more details.
 See also C<guestfs_inspect_get_mountpoints>,
 C<guestfs_inspect_get_filesystems>.");
+
+  ("inspect_get_icon", (RBufferOut "icon", [Device "root"],  [Bool "favicon"; Bool "highquality"]), -1, [],
+   [],
+   "get the icon corresponding to this operating system",
+   "\
+This function returns an icon corresponding to the inspected
+operating system.  The icon is returned as a buffer containing a
+PNG image (re-encoded to PNG if necessary).
+
+If it was not possible to get an icon this function returns a
+zero-length (non-NULL) buffer.  I<Callers must check for this case>.
+
+Libguestfs will start by looking for a file called
+C</etc/favicon.png> or C<C:\\etc\\favicon.png>
+and if it has the correct format, the contents of this file will
+be returned.  You can disable favicons by passing the
+optional C<favicon> boolean as false (default is true).
+
+If finding the favicon fails, then we look in other places in the
+guest for a suitable icon.
+
+If the optional C<highquality> boolean is true then
+only high quality icons are returned, which means only icons of
+high resolution with an alpha channel.  The default (false) is
+to return any icon we can, even if it is of substandard quality.
+
+Notes:
+
+=over 4
+
+=item *
+
+Unlike most other inspection API calls, the guest's disks must be
+mounted up before you call this, since it needs to read information
+from the guest filesystem during the call.
+
+=item *
+
+B<Security:> The icon data comes from the untrusted guest,
+and should be treated with caution.  PNG files have been
+known to contain exploits.  Ensure that libpng (or other relevant
+libraries) are fully up to date before trying to process or
+display the icon.
+
+=item *
+
+The PNG image returned can be any size.  It might not be square.
+Libguestfs tries to return the largest, highest quality
+icon available.  The application must scale the icon to the
+required size.
+
+=item *
+
+Extracting icons from Windows guests requires the external
+C<wrestool> program from the C<icoutils> package, and
+several programs (C<bmptopnm>, C<pnmtopng>, C<pamcut>)
+from the C<netpbm> package.  These must be installed separately.
+
+=item *
+
+Operating system icons are usually trademarks.  Seek legal
+advice before using trademarks in applications.
+
+=back");
+
+  ("set_pgroup", (RErr, [Bool "pgroup"], []), -1, [FishAlias "pgroup"],
+   [],
+   "set process group flag",
+   "\
+If C<pgroup> is true, child processes are placed into
+their own process group.
+
+The practical upshot of this is that signals like C<SIGINT> (from
+users pressing C<^C>) won't be received by the child process.
+
+The default for this flag is false, because usually you want
+C<^C> to kill the subprocess.");
+
+  ("get_pgroup", (RBool "pgroup", [], []), -1, [],
+   [],
+   "get process group flag",
+   "\
+This returns the process group flag.");
 
 ]
 
@@ -2268,7 +2296,7 @@ command and it can change in future in ways beyond our control.
 In other words, the output is not guaranteed by the ABI.
 
 See also: L<file(1)>, C<guestfs_vfs_type>, C<guestfs_lstat>,
-C<guestfs_is_file>, C<guestfs_is_blockdev> (etc).");
+C<guestfs_is_file>, C<guestfs_is_blockdev> (etc), C<guestfs_is_zero>.");
 
   ("command", (RString "output", [StringList "arguments"], []), 50, [ProtocolLimitWarning],
    [InitScratchFS, Always, TestOutput (
@@ -2973,7 +3001,8 @@ How many blocks are zeroed isn't specified (but it's I<not> enough
 to securely wipe the device).  It should be sufficient to remove
 any partition tables, filesystem superblocks and so on.
 
-See also: C<guestfs_zero_device>, C<guestfs_scrub_device>.");
+See also: C<guestfs_zero_device>, C<guestfs_scrub_device>,
+C<guestfs_is_zero_device>");
 
   ("grub_install", (RErr, [Pathname "root"; Device "device"], []), 86, [],
    (* See:
@@ -3268,9 +3297,6 @@ be parsed.");
    "\
 This command activates or (if C<activate> is false) deactivates
 all logical volumes in all volume groups.
-If activated, then they are made known to the
-kernel, ie. they appear as C</dev/mapper> devices.  If deactivated,
-then those devices disappear.
 
 This command is the same as running C<vgchange -a y|n>");
 
@@ -3280,9 +3306,6 @@ This command is the same as running C<vgchange -a y|n>");
    "\
 This command activates or (if C<activate> is false) deactivates
 all logical volumes in the listed volume groups C<volgroups>.
-If activated, then they are made known to the
-kernel, ie. they appear as C</dev/mapper> devices.  If deactivated,
-then those devices disappear.
 
 This command is the same as running C<vgchange -a y|n volgroups...>
 
@@ -4820,7 +4843,9 @@ Possible values for C<parttype> are:
 
 =over 4
 
-=item B<efi> | B<gpt>
+=item B<efi>
+
+=item B<gpt>
 
 Intel EFI / GPT partition table.
 
@@ -4828,7 +4853,9 @@ This is recommended for >= 2 TB partitions that will be accessed
 from Linux and Intel-based Mac OS X.  It also has limited backwards
 compatibility with the C<mbr> format.
 
-=item B<mbr> | B<msdos>
+=item B<mbr>
+
+=item B<msdos>
 
 The standard PC \"Master Boot Record\" (MBR) format used
 by MS-DOS and Windows.  This partition type will B<only> work
@@ -4846,7 +4873,9 @@ supported include:
 
 AIX disk labels.
 
-=item B<amiga> | B<rdb>
+=item B<amiga>
+
+=item B<rdb>
 
 Amiga \"Rigid Disk Block\" format.
 
@@ -5214,7 +5243,7 @@ I<xz compressed> tar file) into C<directory>.");
 This command packs the contents of C<directory> and downloads
 it to local file C<tarball> (as an xz compressed tar archive).");
 
-  ("ntfsresize", (RErr, [Device "device"], []), 231, [Optional "ntfsprogs"],
+  ("ntfsresize", (RErr, [Device "device"], []), 231, [Optional "ntfsprogs"; DeprecatedBy "ntfsresize_opts"],
    [],
    "resize an NTFS filesystem",
    "\
@@ -5410,7 +5439,9 @@ to ensure the length of the file is exactly C<len> bytes.");
    "create a new file",
    "\
 This call creates a file called C<path>.  The content of the
-file is the string C<content> (which can contain any 8 bit data).");
+file is the string C<content> (which can contain any 8 bit data).
+
+See also C<guestfs_write_append>.");
 
   ("pwrite", (RInt "nbytes", [Pathname "path"; BufferIn "content"; Int64 "offset"], []), 247, [ProtocolLimitWarning],
    [InitScratchFS, Always, TestOutput (
@@ -5452,7 +5483,7 @@ allows you to specify the new size (in bytes) explicitly.");
 This command is the same as C<guestfs_pvresize> except that it
 allows you to specify the new size (in bytes) explicitly.");
 
-  ("ntfsresize_size", (RErr, [Device "device"; Int64 "size"], []), 250, [Optional "ntfsprogs"],
+  ("ntfsresize_size", (RErr, [Device "device"; Int64 "size"], []), 250, [Optional "ntfsprogs"; DeprecatedBy "ntfsresize_opts"],
    [],
    "resize an NTFS filesystem (with size)",
    "\
@@ -5579,7 +5610,10 @@ encrypted to the underlying C<device> respectively.
 
 If this block device contains LVM volume groups, then
 calling C<guestfs_vgscan> followed by C<guestfs_vg_activate_all>
-will make them visible.");
+will make them visible.
+
+Use C<guestfs_list_dm_devices> to list all device mapper
+devices.");
 
   ("luks_open_ro", (RErr, [Device "device"; Key "key"; String "mapname"], []), 258, [Optional "luks"],
    [],
@@ -5837,10 +5871,10 @@ not refer to a logical volume.
 
 See also C<guestfs_is_lv>.");
 
-  ("mkfs_opts", (RErr, [String "fstype"; Device "device"], [Int "blocksize"; String "features"]), 278, [],
+  ("mkfs_opts", (RErr, [String "fstype"; Device "device"], [Int "blocksize"; String "features"; Int "inode"; Int "sectorsize"]), 278, [],
    [InitEmpty, Always, TestOutput (
       [["part_disk"; "/dev/sda"; "mbr"];
-       ["mkfs_opts"; "ext2"; "/dev/sda1"; "4096"; ""];
+       ["mkfs_opts"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""];
        ["mount_options"; ""; "/dev/sda1"; "/"];
        ["write"; "/new"; "new file contents"];
        ["cat"; "/new"]], "new file contents")],
@@ -5874,6 +5908,16 @@ for more details.
 
 You cannot use this optional parameter with the C<gfs> or
 C<gfs2> filesystem type.
+
+=item C<inode>
+
+This passes the I<-I> parameter to the external L<mke2fs(8)> program
+which sets the inode size (only for ext2/3/4 filesystems at present).
+
+=item C<sectorsize>
+
+This passes the I<-S> parameter to external L<mkfs.ufs(8)> program,
+which sets sector size for ufs filesystem.
 
 =back");
 
@@ -5939,6 +5983,129 @@ handle is closed.  You should not call this command directly.
 Instead, use the autosync flag (C<guestfs_set_autosync>) to
 control whether or not this operation is performed when the
 handle is closed.");
+
+  ("is_zero", (RBool "zeroflag", [Pathname "path"], []), 283, [],
+   [InitISOFS, Always, TestOutputTrue (
+      [["is_zero"; "/100kallzeroes"]]);
+    InitISOFS, Always, TestOutputFalse (
+      [["is_zero"; "/100kallspaces"]])],
+   "test if a file contains all zero bytes",
+   "\
+This returns true iff the file exists and the file is empty or
+it contains all zero bytes.");
+
+  ("is_zero_device", (RBool "zeroflag", [Device "device"], []), 284, [],
+   [InitBasicFS, Always, TestOutputTrue (
+      [["umount"; "/dev/sda1"];
+       ["zero_device"; "/dev/sda1"];
+       ["is_zero_device"; "/dev/sda1"]]);
+    InitBasicFS, Always, TestOutputFalse (
+      [["is_zero_device"; "/dev/sda1"]])],
+   "test if a device contains all zero bytes",
+   "\
+This returns true iff the device exists and contains all zero bytes.
+
+Note that for large devices this can take a long time to run.");
+
+  ("list_9p", (RStringList "mounttags", [], []), 285, [],
+   [],
+   "list 9p filesystems",
+   "\
+List all 9p filesystems attached to the guest.  A list of
+mount tags is returned.");
+
+  ("mount_9p", (RErr, [String "mounttag"; String "mountpoint"], [String "options"]), 286, [],
+   [],
+   "mount 9p filesystem",
+   "\
+Mount the virtio-9p filesystem with the tag C<mounttag> on the
+directory C<mountpoint>.
+
+If required, C<trans=virtio> will be automatically added to the options.
+Any other options required can be passed in the optional C<options>
+parameter.");
+
+  ("list_dm_devices", (RStringList "devices", [], []), 287, [],
+   [],
+   "list device mapper devices",
+   "\
+List all device mapper devices.
+
+The returned list contains C</dev/mapper/*> devices, eg. ones created
+by a previous call to C<guestfs_luks_open>.
+
+Device mapper devices which correspond to logical volumes are I<not>
+returned in this list.  Call C<guestfs_lvs> if you want to list logical
+volumes.");
+
+  ("ntfsresize_opts", (RErr, [Device "device"], [Int64 "size"; Bool "force"]), 288, [Optional "ntfsprogs"],
+   [],
+   "resize an NTFS filesystem",
+   "\
+This command resizes an NTFS filesystem, expanding or
+shrinking it to the size of the underlying device.
+
+The optional parameters are:
+
+=over 4
+
+=item C<size>
+
+The new size (in bytes) of the filesystem.  If omitted, the filesystem
+is resized to fit the container (eg. partition).
+
+=item C<force>
+
+If this option is true, then force the resize of the filesystem
+even if the filesystem is marked as requiring a consistency check.
+
+After the resize operation, the filesystem is always marked
+as requiring a consistency check (for safety).  You have to boot
+into Windows to perform this check and clear this condition.
+If you I<don't> set the C<force> option then it is not
+possible to call C<guestfs_ntfsresize_opts> multiple times on a
+single filesystem without booting into Windows between each resize.
+
+=back
+
+See also L<ntfsresize(8)>.");
+
+  ("btrfs_filesystem_resize", (RErr, [Pathname "mountpoint"], [Int64 "size"]), 289, [Optional "btrfs"],
+   [],
+   "resize a btrfs filesystem",
+   "\
+This command resizes a btrfs filesystem.
+
+Note that unlike other resize calls, the filesystem has to be
+mounted and the parameter is the mountpoint not the device
+(this is a requirement of btrfs itself).
+
+The optional parameters are:
+
+=over 4
+
+=item C<size>
+
+The new size (in bytes) of the filesystem.  If omitted, the filesystem
+is resized to the maximum size.
+
+=back
+
+See also L<btrfs(8)>.");
+
+  ("write_append", (RErr, [Pathname "path"; BufferIn "content"], []), 290, [ProtocolLimitWarning],
+   [InitScratchFS, Always, TestOutput (
+      [["write"; "/write_append"; "line1\n"];
+       ["write_append"; "/write_append"; "line2\n"];
+       ["write_append"; "/write_append"; "line3a"];
+       ["write_append"; "/write_append"; "line3b\n"];
+       ["cat"; "/write_append"]], "line1\nline2\nline3aline3b\n")],
+   "append content to end of file",
+   "\
+This call appends C<content> to the end of file C<path>.  If
+C<path> does not exist, then a new file is created.
+
+See also C<guestfs_write>.");
 
 ]
 
@@ -6017,6 +6184,20 @@ Wildcards cannot be used in the ordinary command, but you can use
 them with the help of L</glob> like this:
 
  glob copy-out /home/* .");
+
+  ("display", (RErr,[], []), -1, [], [],
+   "display an image",
+   " display filename
+
+Use C<display> (a graphical display program) to display an image
+file.  It downloads the file, and runs C<display> on it.
+
+To use an alternative program, set the C<GUESTFISH_DISPLAY_IMAGE>
+environment variable.  For example to use the GNOME display program:
+
+ export GUESTFISH_DISPLAY_IMAGE=eog
+
+See also L<display(1)>.");
 
   ("echo", (RErr,[], []), -1, [], [],
    "display a line of text",

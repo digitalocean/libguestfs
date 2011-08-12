@@ -175,6 +175,13 @@ guestfs_close (guestfs_h *g)
     return;
   }
 
+  if (g->trace) {
+    const char trace_msg[] = "close";
+
+    guestfs___call_callbacks_message (g, GUESTFS_EVENT_TRACE,
+                                      trace_msg, strlen (trace_msg));
+  }
+
   debug (g, "closing guestfs handle %p (state %d)", g, g->state);
 
   /* Try to sync if autosync flag is set. */
@@ -571,6 +578,12 @@ guestfs_get_error_handler (guestfs_h *g, void **data_rtn)
   return g->error_cb;
 }
 
+void
+guestfs_user_cancel (guestfs_h *g)
+{
+  g->user_cancel = 1;
+}
+
 int
 guestfs__set_verbose (guestfs_h *g, int v)
 {
@@ -792,6 +805,19 @@ guestfs__get_attach_method (guestfs_h *g)
   }
 
   return ret;
+}
+
+int
+guestfs__set_pgroup (guestfs_h *g, int v)
+{
+  g->pgroup = !!v;
+  return 0;
+}
+
+int
+guestfs__get_pgroup (guestfs_h *g)
+{
+  return g->pgroup;
 }
 
 /* Note the private data area is allocated lazily, since the vast

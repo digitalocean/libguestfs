@@ -68,6 +68,17 @@ logvols = g.lvs ()
 
 import libguestfsmod
 
+EVENT_CLOSE = 0x1
+EVENT_SUBPROCESS_QUIT = 0x2
+EVENT_LAUNCH_DONE = 0x4
+EVENT_PROGRESS = 0x8
+EVENT_APPLIANCE = 0x10
+EVENT_LIBRARY = 0x20
+EVENT_TRACE = 0x40
+
+class ClosedHandle(ValueError):
+    pass
+
 class GuestFS:
     """Instances of this class are libguestfs API handles."""
 
@@ -76,70 +87,141 @@ class GuestFS:
         self._o = libguestfsmod.create ()
 
     def __del__ (self):
+        if self._o:
+            libguestfsmod.close (self._o)
+
+    def _check_not_closed (self):
+        if not self._o:
+            raise ClosedHandle ("GuestFS: method called on closed handle")
+
+    def close (self):
+        u"""Explicitly close the guestfs handle.
+
+        The handle is closed implicitly when its reference count goes
+        to zero (eg. when it goes out of scope or the program ends).
+
+        This call is only needed if you want to force the handle to
+        close now.  After calling this, the program must not call
+        any method on the handle (except the implicit call to
+        __del__ which happens when the final reference is cleaned up).
+        """
+        self._check_not_closed ()
         libguestfsmod.close (self._o)
+        self._o = None
+
+    def set_event_callback (self, cb, event_bitmask):
+        u"""Register an event callback.
+
+        Register "cb" as a callback function for all of the
+        events in "event_bitmask".  "event_bitmask" should be
+        one or more "guestfs.EVENT_*" flags logically or'd together.
+
+        This function returns an event handle which can be used
+        to delete the callback (see "delete_event_callback").
+
+        The callback function receives 4 parameters:
+
+        cb (event, event_handle, buf, array)
+
+        "event" is one of the "EVENT_*" flags.  "buf" is a
+        message buffer (only for some types of events).  "array"
+        is an array of integers (only for some types of events).
+
+        You should read the documentation for
+        "guestfs_set_event_callback" in guestfs(3) before using
+        this function.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.set_event_callback (self._o, cb, event_bitmask)
+
+    def delete_event_callback (self, event_handle):
+        u"""Delete an event callback."""
+        self._check_not_closed ()
+        libguestfsmod.delete_event_callback (self._o, event_handle)
 
     def test0 (self, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin):
         strlist = list (strlist)
+        self._check_not_closed ()
         return libguestfsmod.test0 (self._o, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin)
 
     def test0rint (self, val):
+        self._check_not_closed ()
         return libguestfsmod.test0rint (self._o, val)
 
     def test0rinterr (self):
+        self._check_not_closed ()
         return libguestfsmod.test0rinterr (self._o)
 
     def test0rint64 (self, val):
+        self._check_not_closed ()
         return libguestfsmod.test0rint64 (self._o, val)
 
     def test0rint64err (self):
+        self._check_not_closed ()
         return libguestfsmod.test0rint64err (self._o)
 
     def test0rbool (self, val):
+        self._check_not_closed ()
         return libguestfsmod.test0rbool (self._o, val)
 
     def test0rboolerr (self):
+        self._check_not_closed ()
         return libguestfsmod.test0rboolerr (self._o)
 
     def test0rconststring (self, val):
+        self._check_not_closed ()
         return libguestfsmod.test0rconststring (self._o, val)
 
     def test0rconststringerr (self):
+        self._check_not_closed ()
         return libguestfsmod.test0rconststringerr (self._o)
 
     def test0rconstoptstring (self, val):
+        self._check_not_closed ()
         return libguestfsmod.test0rconstoptstring (self._o, val)
 
     def test0rconstoptstringerr (self):
+        self._check_not_closed ()
         return libguestfsmod.test0rconstoptstringerr (self._o)
 
     def test0rstring (self, val):
+        self._check_not_closed ()
         return libguestfsmod.test0rstring (self._o, val)
 
     def test0rstringerr (self):
+        self._check_not_closed ()
         return libguestfsmod.test0rstringerr (self._o)
 
     def test0rstringlist (self, val):
+        self._check_not_closed ()
         return libguestfsmod.test0rstringlist (self._o, val)
 
     def test0rstringlisterr (self):
+        self._check_not_closed ()
         return libguestfsmod.test0rstringlisterr (self._o)
 
     def test0rstruct (self, val):
+        self._check_not_closed ()
         return libguestfsmod.test0rstruct (self._o, val)
 
     def test0rstructerr (self):
+        self._check_not_closed ()
         return libguestfsmod.test0rstructerr (self._o)
 
     def test0rstructlist (self, val):
+        self._check_not_closed ()
         return libguestfsmod.test0rstructlist (self._o, val)
 
     def test0rstructlisterr (self):
+        self._check_not_closed ()
         return libguestfsmod.test0rstructlisterr (self._o)
 
     def test0rhashtable (self, val):
+        self._check_not_closed ()
         return libguestfsmod.test0rhashtable (self._o, val)
 
     def test0rhashtableerr (self):
+        self._check_not_closed ()
         return libguestfsmod.test0rhashtableerr (self._o)
 
     def launch (self):
@@ -149,6 +231,7 @@ class GuestFS:
         You should call this after configuring the handle (eg.
         adding drives) but before performing any actions.
         """
+        self._check_not_closed ()
         return libguestfsmod.launch (self._o)
 
     def wait_ready (self):
@@ -170,12 +253,14 @@ class GuestFS:
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
         """
+        self._check_not_closed ()
         return libguestfsmod.wait_ready (self._o)
 
     def kill_subprocess (self):
         u"""This kills the qemu subprocess. You should never need to
         call this.
         """
+        self._check_not_closed ()
         return libguestfsmod.kill_subprocess (self._o)
 
     def add_drive (self, filename):
@@ -192,6 +277,7 @@ class GuestFS:
         function with calls to "g.add_drive_opts", and
         specifying the format.
         """
+        self._check_not_closed ()
         return libguestfsmod.add_drive (self._o, filename)
 
     def add_cdrom (self, filename):
@@ -221,6 +307,7 @@ class GuestFS:
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
         """
+        self._check_not_closed ()
         return libguestfsmod.add_cdrom (self._o, filename)
 
     def add_drive_ro (self, filename):
@@ -230,6 +317,7 @@ class GuestFS:
         is added read-only, with the format being detected
         automatically.
         """
+        self._check_not_closed ()
         return libguestfsmod.add_drive_ro (self._o, filename)
 
     def config (self, qemuparam, qemuvalue):
@@ -244,6 +332,7 @@ class GuestFS:
         
         "value" can be NULL.
         """
+        self._check_not_closed ()
         return libguestfsmod.config (self._o, qemuparam, qemuvalue)
 
     def set_qemu (self, qemu):
@@ -267,6 +356,7 @@ class GuestFS:
         "LIBGUESTFS_QEMU" is safest of all since that picks the
         qemu binary at the same time as the handle is created.
         """
+        self._check_not_closed ()
         return libguestfsmod.set_qemu (self._o, qemu)
 
     def get_qemu (self):
@@ -275,6 +365,7 @@ class GuestFS:
         This is always non-NULL. If it wasn't set already, then
         this will return the default qemu binary name.
         """
+        self._check_not_closed ()
         return libguestfsmod.get_qemu (self._o)
 
     def set_path (self, searchpath):
@@ -286,6 +377,7 @@ class GuestFS:
         
         Setting "path" to "NULL" restores the default path.
         """
+        self._check_not_closed ()
         return libguestfsmod.set_path (self._o, searchpath)
 
     def get_path (self):
@@ -294,6 +386,7 @@ class GuestFS:
         This is always non-NULL. If it wasn't set already, then
         this will return the default path.
         """
+        self._check_not_closed ()
         return libguestfsmod.get_path (self._o)
 
     def set_append (self, append):
@@ -306,6 +399,7 @@ class GuestFS:
         Setting "append" to "NULL" means *no* additional options
         are passed (libguestfs always adds a few of its own).
         """
+        self._check_not_closed ()
         return libguestfsmod.set_append (self._o, append)
 
     def get_append (self):
@@ -314,6 +408,7 @@ class GuestFS:
         
         If "NULL" then no options are added.
         """
+        self._check_not_closed ()
         return libguestfsmod.get_append (self._o)
 
     def set_autosync (self, autosync):
@@ -325,11 +420,13 @@ class GuestFS:
         This is enabled by default (since libguestfs 1.5.24,
         previously it was disabled by default).
         """
+        self._check_not_closed ()
         return libguestfsmod.set_autosync (self._o, autosync)
 
     def get_autosync (self):
         u"""Get the autosync flag.
         """
+        self._check_not_closed ()
         return libguestfsmod.get_autosync (self._o)
 
     def set_verbose (self, verbose):
@@ -342,11 +439,13 @@ class GuestFS:
         you register a callback to send them somewhere else (see
         "g.set_event_callback").
         """
+        self._check_not_closed ()
         return libguestfsmod.set_verbose (self._o, verbose)
 
     def get_verbose (self):
         u"""This returns the verbose messages flag.
         """
+        self._check_not_closed ()
         return libguestfsmod.get_verbose (self._o)
 
     def is_ready (self):
@@ -355,6 +454,7 @@ class GuestFS:
         
         For more information on states, see guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.is_ready (self._o)
 
     def is_config (self):
@@ -363,6 +463,7 @@ class GuestFS:
         
         For more information on states, see guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.is_config (self._o)
 
     def is_launching (self):
@@ -371,6 +472,7 @@ class GuestFS:
         
         For more information on states, see guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.is_launching (self._o)
 
     def is_busy (self):
@@ -379,6 +481,7 @@ class GuestFS:
         
         For more information on states, see guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.is_busy (self._o)
 
     def get_state (self):
@@ -388,6 +491,7 @@ class GuestFS:
         
         For more information on states, see guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.get_state (self._o)
 
     def set_memsize (self, memsize):
@@ -402,6 +506,7 @@ class GuestFS:
         For more information on the architecture of libguestfs,
         see guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.set_memsize (self._o, memsize)
 
     def get_memsize (self):
@@ -415,6 +520,7 @@ class GuestFS:
         For more information on the architecture of libguestfs,
         see guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.get_memsize (self._o)
 
     def get_pid (self):
@@ -423,6 +529,7 @@ class GuestFS:
         
         This is an internal call used for debugging and testing.
         """
+        self._check_not_closed ()
         return libguestfsmod.get_pid (self._o)
 
     def version (self):
@@ -461,6 +568,7 @@ class GuestFS:
         This function returns a dictionary, with keys matching
         the various fields in the guestfs_version structure.
         """
+        self._check_not_closed ()
         return libguestfsmod.version (self._o)
 
     def set_selinux (self, selinux):
@@ -474,6 +582,7 @@ class GuestFS:
         For more information on the architecture of libguestfs,
         see guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.set_selinux (self._o, selinux)
 
     def get_selinux (self):
@@ -484,6 +593,7 @@ class GuestFS:
         For more information on the architecture of libguestfs,
         see guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.get_selinux (self._o)
 
     def set_trace (self, trace):
@@ -501,11 +611,13 @@ class GuestFS:
         register a callback to send them somewhere else (see
         "g.set_event_callback").
         """
+        self._check_not_closed ()
         return libguestfsmod.set_trace (self._o, trace)
 
     def get_trace (self):
         u"""Return the command trace flag.
         """
+        self._check_not_closed ()
         return libguestfsmod.get_trace (self._o)
 
     def set_direct (self, direct):
@@ -522,11 +634,13 @@ class GuestFS:
         
         The default is disabled.
         """
+        self._check_not_closed ()
         return libguestfsmod.set_direct (self._o, direct)
 
     def get_direct (self):
         u"""Return the direct appliance mode flag.
         """
+        self._check_not_closed ()
         return libguestfsmod.get_direct (self._o)
 
     def set_recovery_proc (self, recoveryproc):
@@ -546,11 +660,13 @@ class GuestFS:
         disappeared and so kills qemu, which is not very
         helpful.
         """
+        self._check_not_closed ()
         return libguestfsmod.set_recovery_proc (self._o, recoveryproc)
 
     def get_recovery_proc (self):
         u"""Return the recovery process enabled flag.
         """
+        self._check_not_closed ()
         return libguestfsmod.get_recovery_proc (self._o)
 
     def add_drive_with_if (self, filename, iface):
@@ -564,6 +680,7 @@ class GuestFS:
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
         """
+        self._check_not_closed ()
         return libguestfsmod.add_drive_with_if (self._o, filename, iface)
 
     def add_drive_ro_with_if (self, filename, iface):
@@ -578,6 +695,7 @@ class GuestFS:
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
         """
+        self._check_not_closed ()
         return libguestfsmod.add_drive_ro_with_if (self._o, filename, iface)
 
     def file_architecture (self, filename):
@@ -648,6 +766,7 @@ class GuestFS:
         of a kernel, use the architecture of the associated
         initrd or kernel module(s) instead.
         """
+        self._check_not_closed ()
         return libguestfsmod.file_architecture (self._o, filename)
 
     def inspect_os (self):
@@ -689,13 +808,11 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_os (self._o)
 
     def inspect_get_type (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        This returns the type of the inspected operating system.
+        u"""This returns the type of the inspected operating system.
         Currently defined types are:
         
         "linux"
@@ -716,13 +833,11 @@ class GuestFS:
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_get_type (self._o, root)
 
     def inspect_get_arch (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        This returns the architecture of the inspected operating
+        u"""This returns the architecture of the inspected operating
         system. The possible return values are listed under
         "g.file_architecture".
         
@@ -731,13 +846,11 @@ class GuestFS:
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_get_arch (self._o, root)
 
     def inspect_get_distro (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        This returns the distro (distribution) of the inspected
+        u"""This returns the distro (distribution) of the inspected
         operating system.
         
         Currently defined distros are:
@@ -797,13 +910,11 @@ class GuestFS:
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_get_distro (self._o, root)
 
     def inspect_get_major_version (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        This returns the major version number of the inspected
+        u"""This returns the major version number of the inspected
         operating system.
         
         Windows uses a consistent versioning scheme which is
@@ -818,13 +929,11 @@ class GuestFS:
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_get_major_version (self._o, root)
 
     def inspect_get_minor_version (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        This returns the minor version number of the inspected
+        u"""This returns the minor version number of the inspected
         operating system.
         
         If the version could not be determined, then 0 is
@@ -833,13 +942,11 @@ class GuestFS:
         Please read "INSPECTION" in guestfs(3) for more details.
         See also "g.inspect_get_major_version".
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_get_minor_version (self._o, root)
 
     def inspect_get_product_name (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        This returns the product name of the inspected operating
+        u"""This returns the product name of the inspected operating
         system. The product name is generally some freeform
         string which can be displayed to the user, but should
         not be parsed by programs.
@@ -849,13 +956,11 @@ class GuestFS:
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_get_product_name (self._o, root)
 
     def inspect_get_mountpoints (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        This returns a hash of where we think the filesystems
+        u"""This returns a hash of where we think the filesystems
         associated with this operating system should be mounted.
         Callers should note that this is at best an educated
         guess made by reading configuration files such as
@@ -883,13 +988,11 @@ class GuestFS:
         
         This function returns a dictionary.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_get_mountpoints (self._o, root)
 
     def inspect_get_filesystems (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        This returns a list of all the filesystems that we think
+        u"""This returns a list of all the filesystems that we think
         are associated with this operating system. This includes
         the root filesystem, other ordinary filesystems, and
         non-mounted devices like swap partitions.
@@ -903,6 +1006,7 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_get_filesystems (self._o, root)
 
     def set_network (self, network):
@@ -915,11 +1019,13 @@ class GuestFS:
         You must call this before calling "g.launch", otherwise
         it has no effect.
         """
+        self._check_not_closed ()
         return libguestfsmod.set_network (self._o, network)
 
     def get_network (self):
         u"""This returns the enable network flag.
         """
+        self._check_not_closed ()
         return libguestfsmod.get_network (self._o)
 
     def list_filesystems (self):
@@ -955,6 +1061,7 @@ class GuestFS:
         
         This function returns a dictionary.
         """
+        self._check_not_closed ()
         return libguestfsmod.list_filesystems (self._o)
 
     def add_drive_opts (self, filename, readonly=-1, format=None, iface=None):
@@ -997,13 +1104,11 @@ class GuestFS:
         behaviour of the deprecated "g.add_drive_with_if"
         call (q.v.)
         """
+        self._check_not_closed ()
         return libguestfsmod.add_drive_opts (self._o, filename, readonly, format, iface)
 
     def inspect_get_windows_systemroot (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        This returns the Windows systemroot of the inspected
+        u"""This returns the Windows systemroot of the inspected
         guest. The systemroot is a directory path such as
         "/WINDOWS".
         
@@ -1013,6 +1118,7 @@ class GuestFS:
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_get_windows_systemroot (self._o, root)
 
     def inspect_get_roots (self):
@@ -1028,12 +1134,14 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_get_roots (self._o)
 
     def debug_cmdline (self):
+        self._check_not_closed ()
         return libguestfsmod.debug_cmdline (self._o)
 
-    def add_domain (self, dom, libvirturi=None, readonly=-1, iface=None, live=-1):
+    def add_domain (self, dom, libvirturi=None, readonly=-1, iface=None, live=-1, allowuuid=-1):
         u"""This function adds the disk(s) attached to the named
         libvirt domain "dom". It works by connecting to libvirt,
         requesting the domain and domain XML from libvirt,
@@ -1068,16 +1176,20 @@ class GuestFS:
         omitted) is never to try. See "ATTACHING TO RUNNING
         DAEMONS" in guestfs(3) for more information.
         
+        If the "allowuuid" flag is true (default is false) then
+        a UUID *may* be passed instead of the domain name. The
+        "dom" string is treated as a UUID first and looked up,
+        and if that lookup fails then we treat "dom" as a name
+        as usual.
+        
         The other optional parameters are passed directly
         through to "g.add_drive_opts".
         """
-        return libguestfsmod.add_domain (self._o, dom, libvirturi, readonly, iface, live)
+        self._check_not_closed ()
+        return libguestfsmod.add_domain (self._o, dom, libvirturi, readonly, iface, live, allowuuid)
 
     def inspect_get_package_format (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        This function and "g.inspect_get_package_management"
+        u"""This function and "g.inspect_get_package_management"
         return the package format and package management tool
         used by the inspected operating system. For example for
         Fedora these functions would return "rpm" (package
@@ -1094,13 +1206,11 @@ class GuestFS:
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_get_package_format (self._o, root)
 
     def inspect_get_package_management (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        "g.inspect_get_package_format" and this function return
+        u""""g.inspect_get_package_format" and this function return
         the package format and package management tool used by
         the inspected operating system. For example for Fedora
         these functions would return "rpm" (package format) and
@@ -1118,13 +1228,11 @@ class GuestFS:
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_get_package_management (self._o, root)
 
     def inspect_list_applications (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        Return the list of applications installed in the
+        u"""Return the list of applications installed in the
         operating system.
         
         *Note:* This call works differently from other parts of
@@ -1214,13 +1322,11 @@ class GuestFS:
         This function returns a list of applications. Each
         application is represented as a dictionary.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_list_applications (self._o, root)
 
     def inspect_get_hostname (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        This function returns the hostname of the operating
+        u"""This function returns the hostname of the operating
         system as found by inspection of the guest's
         configuration files.
         
@@ -1229,13 +1335,11 @@ class GuestFS:
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_get_hostname (self._o, root)
 
     def inspect_get_format (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        This returns the format of the inspected operating
+        u"""This returns the format of the inspected operating
         system. You can use it to detect install images, live
         CDs and similar.
         
@@ -1258,25 +1362,21 @@ class GuestFS:
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_get_format (self._o, root)
 
     def inspect_is_live (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        If "g.inspect_get_format" returns "installer" (this is
+        u"""If "g.inspect_get_format" returns "installer" (this is
         an install disk), then this returns true if a live image
         was detected on the disk.
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_is_live (self._o, root)
 
     def inspect_is_netinst (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        If "g.inspect_get_format" returns "installer" (this is
+        u"""If "g.inspect_get_format" returns "installer" (this is
         an install disk), then this returns true if the disk is
         a network installer, ie. not a self-contained install CD
         but one which is likely to require network access to
@@ -1284,18 +1384,17 @@ class GuestFS:
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_is_netinst (self._o, root)
 
     def inspect_is_multipart (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        If "g.inspect_get_format" returns "installer" (this is
+        u"""If "g.inspect_get_format" returns "installer" (this is
         an install disk), then this returns true if the disk is
         part of a set.
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_is_multipart (self._o, root)
 
     def set_attach_method (self, attachmethod):
@@ -1314,19 +1413,18 @@ class GuestFS:
         information, see "ATTACHING TO RUNNING DAEMONS" in
         guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.set_attach_method (self._o, attachmethod)
 
     def get_attach_method (self):
         u"""Return the current attach method. See
         "g.set_attach_method".
         """
+        self._check_not_closed ()
         return libguestfsmod.get_attach_method (self._o)
 
     def inspect_get_product_variant (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        This returns the product variant of the inspected
+        u"""This returns the product variant of the inspected
         operating system.
         
         For Windows guests, this returns the contents of the
@@ -1350,13 +1448,11 @@ class GuestFS:
         See also "g.inspect_get_product_name",
         "g.inspect_get_major_version".
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_get_product_variant (self._o, root)
 
     def inspect_get_windows_current_control_set (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        This returns the Windows CurrentControlSet of the
+        u"""This returns the Windows CurrentControlSet of the
         inspected guest. The CurrentControlSet is a registry key
         name such as "ControlSet001".
         
@@ -1366,13 +1462,11 @@ class GuestFS:
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_get_windows_current_control_set (self._o, root)
 
     def inspect_get_drive_mappings (self, root):
-        u"""This function should only be called with a root device
-        string as returned by "g.inspect_os".
-        
-        This call is useful for Windows which uses a primitive
+        u"""This call is useful for Windows which uses a primitive
         system of assigning drive letters (like "C:") to
         partitions. This inspection API examines the Windows
         Registry to find out how disks/partitions are mapped to
@@ -1407,7 +1501,84 @@ class GuestFS:
         
         This function returns a dictionary.
         """
+        self._check_not_closed ()
         return libguestfsmod.inspect_get_drive_mappings (self._o, root)
+
+    def inspect_get_icon (self, root, favicon=-1, highquality=-1):
+        u"""This function returns an icon corresponding to the
+        inspected operating system. The icon is returned as a
+        buffer containing a PNG image (re-encoded to PNG if
+        necessary).
+        
+        If it was not possible to get an icon this function
+        returns a zero-length (non-NULL) buffer. *Callers must
+        check for this case*.
+        
+        Libguestfs will start by looking for a file called
+        "/etc/favicon.png" or "C:\\etc\\favicon.png" and if it has
+        the correct format, the contents of this file will be
+        returned. You can disable favicons by passing the
+        optional "favicon" boolean as false (default is true).
+        
+        If finding the favicon fails, then we look in other
+        places in the guest for a suitable icon.
+        
+        If the optional "highquality" boolean is true then only
+        high quality icons are returned, which means only icons
+        of high resolution with an alpha channel. The default
+        (false) is to return any icon we can, even if it is of
+        substandard quality.
+        
+        Notes:
+        
+        *   Unlike most other inspection API calls, the guest's
+        disks must be mounted up before you call this, since
+        it needs to read information from the guest
+        filesystem during the call.
+        
+        *   Security: The icon data comes from the untrusted
+        guest, and should be treated with caution. PNG files
+        have been known to contain exploits. Ensure that
+        libpng (or other relevant libraries) are fully up to
+        date before trying to process or display the icon.
+        
+        *   The PNG image returned can be any size. It might not
+        be square. Libguestfs tries to return the largest,
+        highest quality icon available. The application must
+        scale the icon to the required size.
+        
+        *   Extracting icons from Windows guests requires the
+        external "wrestool" program from the "icoutils"
+        package, and several programs ("bmptopnm",
+        "pnmtopng", "pamcut") from the "netpbm" package.
+        These must be installed separately.
+        
+        *   Operating system icons are usually trademarks. Seek
+        legal advice before using trademarks in
+        applications.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.inspect_get_icon (self._o, root, favicon, highquality)
+
+    def set_pgroup (self, pgroup):
+        u"""If "pgroup" is true, child processes are placed into
+        their own process group.
+        
+        The practical upshot of this is that signals like
+        "SIGINT" (from users pressing "^C") won't be received by
+        the child process.
+        
+        The default for this flag is false, because usually you
+        want "^C" to kill the subprocess.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.set_pgroup (self._o, pgroup)
+
+    def get_pgroup (self):
+        u"""This returns the process group flag.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.get_pgroup (self._o)
 
     def mount (self, device, mountpoint):
         u"""Mount a guest disk at a position in the filesystem.
@@ -1442,6 +1613,7 @@ class GuestFS:
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
         """
+        self._check_not_closed ()
         return libguestfsmod.mount (self._o, device, mountpoint)
 
     def sync (self):
@@ -1451,6 +1623,7 @@ class GuestFS:
         You should always call this if you have modified a disk
         image, before closing the handle.
         """
+        self._check_not_closed ()
         return libguestfsmod.sync (self._o)
 
     def touch (self, path):
@@ -1462,6 +1635,7 @@ class GuestFS:
         on other file types such as directories, symbolic links,
         block special etc.
         """
+        self._check_not_closed ()
         return libguestfsmod.touch (self._o, path)
 
     def cat (self, path):
@@ -1477,6 +1651,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.cat (self._o, path)
 
     def ll (self, directory):
@@ -1487,6 +1662,7 @@ class GuestFS:
         It is *not* intended that you try to parse the output
         string.
         """
+        self._check_not_closed ()
         return libguestfsmod.ll (self._o, directory)
 
     def ls (self, directory):
@@ -1499,6 +1675,7 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.ls (self._o, directory)
 
     def list_devices (self):
@@ -1511,6 +1688,7 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.list_devices (self._o)
 
     def list_partitions (self):
@@ -1526,6 +1704,7 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.list_partitions (self._o)
 
     def pvs (self):
@@ -1539,6 +1718,7 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.pvs (self._o)
 
     def vgs (self):
@@ -1552,6 +1732,7 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.vgs (self._o)
 
     def lvs (self):
@@ -1565,6 +1746,7 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.lvs (self._o)
 
     def pvs_full (self):
@@ -1575,6 +1757,7 @@ class GuestFS:
         This function returns a list of lvm_pvs. Each lvm_pv is
         represented as a dictionary.
         """
+        self._check_not_closed ()
         return libguestfsmod.pvs_full (self._o)
 
     def vgs_full (self):
@@ -1585,6 +1768,7 @@ class GuestFS:
         This function returns a list of lvm_vgs. Each lvm_vg is
         represented as a dictionary.
         """
+        self._check_not_closed ()
         return libguestfsmod.vgs_full (self._o)
 
     def lvs_full (self):
@@ -1595,6 +1779,7 @@ class GuestFS:
         This function returns a list of lvm_lvs. Each lvm_lv is
         represented as a dictionary.
         """
+        self._check_not_closed ()
         return libguestfsmod.lvs_full (self._o)
 
     def read_lines (self, path):
@@ -1612,6 +1797,7 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.read_lines (self._o, path)
 
     def aug_init (self, root, flags):
@@ -1653,6 +1839,7 @@ class GuestFS:
         
         To find out more about Augeas, see <http://augeas.net/>.
         """
+        self._check_not_closed ()
         return libguestfsmod.aug_init (self._o, root, flags)
 
     def aug_close (self):
@@ -1661,6 +1848,7 @@ class GuestFS:
         call "g.aug_init" again before you can use any other
         Augeas functions.
         """
+        self._check_not_closed ()
         return libguestfsmod.aug_close (self._o)
 
     def aug_defvar (self, name, expr):
@@ -1672,6 +1860,7 @@ class GuestFS:
         or 0 if "expr" evaluates to something which is not a
         nodeset.
         """
+        self._check_not_closed ()
         return libguestfsmod.aug_defvar (self._o, name, expr)
 
     def aug_defnode (self, name, expr, val):
@@ -1690,12 +1879,14 @@ class GuestFS:
         This function returns a dictionary, with keys matching
         the various fields in the guestfs_int_bool structure.
         """
+        self._check_not_closed ()
         return libguestfsmod.aug_defnode (self._o, name, expr, val)
 
     def aug_get (self, augpath):
         u"""Look up the value associated with "path". If "path"
         matches exactly one node, the "value" is returned.
         """
+        self._check_not_closed ()
         return libguestfsmod.aug_get (self._o, augpath)
 
     def aug_set (self, augpath, val):
@@ -1706,6 +1897,7 @@ class GuestFS:
         libguestfs API you cannot do that with this call.
         Instead you must use the "g.aug_clear" call.
         """
+        self._check_not_closed ()
         return libguestfsmod.aug_set (self._o, augpath, val)
 
     def aug_insert (self, augpath, label, before):
@@ -1717,6 +1909,7 @@ class GuestFS:
         and "label" must be a label, ie. not contain "/", "*" or
         end with a bracketed index "[N]".
         """
+        self._check_not_closed ()
         return libguestfsmod.aug_insert (self._o, augpath, label, before)
 
     def aug_rm (self, augpath):
@@ -1725,12 +1918,14 @@ class GuestFS:
         On success this returns the number of entries which were
         removed.
         """
+        self._check_not_closed ()
         return libguestfsmod.aug_rm (self._o, augpath)
 
     def aug_mv (self, src, dest):
         u"""Move the node "src" to "dest". "src" must match exactly
         one node. "dest" is overwritten if it exists.
         """
+        self._check_not_closed ()
         return libguestfsmod.aug_mv (self._o, src, dest)
 
     def aug_match (self, augpath):
@@ -1740,6 +1935,7 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.aug_match (self._o, augpath)
 
     def aug_save (self):
@@ -1748,6 +1944,7 @@ class GuestFS:
         The flags which were passed to "g.aug_init" affect
         exactly how files are saved.
         """
+        self._check_not_closed ()
         return libguestfsmod.aug_save (self._o)
 
     def aug_load (self):
@@ -1756,6 +1953,7 @@ class GuestFS:
         See "aug_load" in the Augeas documentation for the full
         gory details.
         """
+        self._check_not_closed ()
         return libguestfsmod.aug_load (self._o)
 
     def aug_ls (self, augpath):
@@ -1765,16 +1963,19 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.aug_ls (self._o, augpath)
 
     def rm (self, path):
         u"""Remove the single file "path".
         """
+        self._check_not_closed ()
         return libguestfsmod.rm (self._o, path)
 
     def rmdir (self, path):
         u"""Remove the single directory "path".
         """
+        self._check_not_closed ()
         return libguestfsmod.rmdir (self._o, path)
 
     def rm_rf (self, path):
@@ -1782,11 +1983,13 @@ class GuestFS:
         removing the contents if its a directory. This is like
         the "rm -rf" shell command.
         """
+        self._check_not_closed ()
         return libguestfsmod.rm_rf (self._o, path)
 
     def mkdir (self, path):
         u"""Create a directory named "path".
         """
+        self._check_not_closed ()
         return libguestfsmod.mkdir (self._o, path)
 
     def mkdir_p (self, path):
@@ -1794,6 +1997,7 @@ class GuestFS:
         directories as necessary. This is like the "mkdir -p"
         shell command.
         """
+        self._check_not_closed ()
         return libguestfsmod.mkdir_p (self._o, path)
 
     def chmod (self, mode, path):
@@ -1806,6 +2010,7 @@ class GuestFS:
         
         The mode actually set is affected by the umask.
         """
+        self._check_not_closed ()
         return libguestfsmod.chmod (self._o, mode, path)
 
     def chown (self, owner, group, path):
@@ -1816,6 +2021,7 @@ class GuestFS:
         password file yourself (Augeas support makes this
         relatively easy).
         """
+        self._check_not_closed ()
         return libguestfsmod.chown (self._o, owner, group, path)
 
     def exists (self, path):
@@ -1824,6 +2030,7 @@ class GuestFS:
         
         See also "g.is_file", "g.is_dir", "g.stat".
         """
+        self._check_not_closed ()
         return libguestfsmod.exists (self._o, path)
 
     def is_file (self, path):
@@ -1833,6 +2040,7 @@ class GuestFS:
         
         See also "g.stat".
         """
+        self._check_not_closed ()
         return libguestfsmod.is_file (self._o, path)
 
     def is_dir (self, path):
@@ -1842,6 +2050,7 @@ class GuestFS:
         
         See also "g.stat".
         """
+        self._check_not_closed ()
         return libguestfsmod.is_dir (self._o, path)
 
     def pvcreate (self, device):
@@ -1849,6 +2058,7 @@ class GuestFS:
         "device", where "device" should usually be a partition
         name such as "/dev/sda1".
         """
+        self._check_not_closed ()
         return libguestfsmod.pvcreate (self._o, device)
 
     def vgcreate (self, volgroup, physvols):
@@ -1856,12 +2066,14 @@ class GuestFS:
         the non-empty list of physical volumes "physvols".
         """
         physvols = list (physvols)
+        self._check_not_closed ()
         return libguestfsmod.vgcreate (self._o, volgroup, physvols)
 
     def lvcreate (self, logvol, volgroup, mbytes):
         u"""This creates an LVM logical volume called "logvol" on
         the volume group "volgroup", with "size" megabytes.
         """
+        self._check_not_closed ()
         return libguestfsmod.lvcreate (self._o, logvol, volgroup, mbytes)
 
     def mkfs (self, fstype, device):
@@ -1869,6 +2081,7 @@ class GuestFS:
         partition or LVM logical volume). The filesystem type is
         "fstype", for example "ext3".
         """
+        self._check_not_closed ()
         return libguestfsmod.mkfs (self._o, fstype, device)
 
     def sfdisk (self, device, cyls, heads, sectors, lines):
@@ -1908,6 +2121,7 @@ class GuestFS:
         there are problems with correct use of these functions.
         """
         lines = list (lines)
+        self._check_not_closed ()
         return libguestfsmod.sfdisk (self._o, device, cyls, heads, sectors, lines)
 
     def write_file (self, path, content, size):
@@ -1934,6 +2148,7 @@ class GuestFS:
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
         """
+        self._check_not_closed ()
         return libguestfsmod.write_file (self._o, path, content, size)
 
     def umount (self, pathordevice):
@@ -1941,6 +2156,7 @@ class GuestFS:
         be specified either by its mountpoint (path) or the
         device which contains the filesystem.
         """
+        self._check_not_closed ()
         return libguestfsmod.umount (self._o, pathordevice)
 
     def mounts (self):
@@ -1954,6 +2170,7 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.mounts (self._o)
 
     def umount_all (self):
@@ -1961,6 +2178,7 @@ class GuestFS:
         
         Some internal mounts are not unmounted by this call.
         """
+        self._check_not_closed ()
         return libguestfsmod.umount_all (self._o)
 
     def lvm_remove_all (self):
@@ -1970,6 +2188,7 @@ class GuestFS:
         This command is dangerous. Without careful use you can
         easily destroy all your data.
         """
+        self._check_not_closed ()
         return libguestfsmod.lvm_remove_all (self._o)
 
     def file (self, path):
@@ -1989,8 +2208,9 @@ class GuestFS:
         guaranteed by the ABI.
         
         See also: file(1), "g.vfs_type", "g.lstat", "g.is_file",
-        "g.is_blockdev" (etc).
+        "g.is_blockdev" (etc), "g.is_zero".
         """
+        self._check_not_closed ()
         return libguestfsmod.file (self._o, path)
 
     def command (self, arguments):
@@ -2029,6 +2249,7 @@ class GuestFS:
         LIMITS" in guestfs(3).
         """
         arguments = list (arguments)
+        self._check_not_closed ()
         return libguestfsmod.command (self._o, arguments)
 
     def command_lines (self, arguments):
@@ -2044,6 +2265,7 @@ class GuestFS:
         LIMITS" in guestfs(3).
         """
         arguments = list (arguments)
+        self._check_not_closed ()
         return libguestfsmod.command_lines (self._o, arguments)
 
     def stat (self, path):
@@ -2054,6 +2276,7 @@ class GuestFS:
         This function returns a dictionary, with keys matching
         the various fields in the guestfs_stat structure.
         """
+        self._check_not_closed ()
         return libguestfsmod.stat (self._o, path)
 
     def lstat (self, path):
@@ -2068,6 +2291,7 @@ class GuestFS:
         This function returns a dictionary, with keys matching
         the various fields in the guestfs_stat structure.
         """
+        self._check_not_closed ()
         return libguestfsmod.lstat (self._o, path)
 
     def statvfs (self, path):
@@ -2081,6 +2305,7 @@ class GuestFS:
         This function returns a dictionary, with keys matching
         the various fields in the guestfs_statvfs structure.
         """
+        self._check_not_closed ()
         return libguestfsmod.statvfs (self._o, path)
 
     def tune2fs_l (self, device):
@@ -2095,6 +2320,7 @@ class GuestFS:
         
         This function returns a dictionary.
         """
+        self._check_not_closed ()
         return libguestfsmod.tune2fs_l (self._o, device)
 
     def blockdev_setro (self, device):
@@ -2102,6 +2328,7 @@ class GuestFS:
         
         This uses the blockdev(8) command.
         """
+        self._check_not_closed ()
         return libguestfsmod.blockdev_setro (self._o, device)
 
     def blockdev_setrw (self, device):
@@ -2109,6 +2336,7 @@ class GuestFS:
         
         This uses the blockdev(8) command.
         """
+        self._check_not_closed ()
         return libguestfsmod.blockdev_setrw (self._o, device)
 
     def blockdev_getro (self, device):
@@ -2117,6 +2345,7 @@ class GuestFS:
         
         This uses the blockdev(8) command.
         """
+        self._check_not_closed ()
         return libguestfsmod.blockdev_getro (self._o, device)
 
     def blockdev_getss (self, device):
@@ -2128,6 +2357,7 @@ class GuestFS:
         
         This uses the blockdev(8) command.
         """
+        self._check_not_closed ()
         return libguestfsmod.blockdev_getss (self._o, device)
 
     def blockdev_getbsz (self, device):
@@ -2138,6 +2368,7 @@ class GuestFS:
         
         This uses the blockdev(8) command.
         """
+        self._check_not_closed ()
         return libguestfsmod.blockdev_getbsz (self._o, device)
 
     def blockdev_setbsz (self, device, blocksize):
@@ -2148,6 +2379,7 @@ class GuestFS:
         
         This uses the blockdev(8) command.
         """
+        self._check_not_closed ()
         return libguestfsmod.blockdev_setbsz (self._o, device, blocksize)
 
     def blockdev_getsz (self, device):
@@ -2161,6 +2393,7 @@ class GuestFS:
         
         This uses the blockdev(8) command.
         """
+        self._check_not_closed ()
         return libguestfsmod.blockdev_getsz (self._o, device)
 
     def blockdev_getsize64 (self, device):
@@ -2170,6 +2403,7 @@ class GuestFS:
         
         This uses the blockdev(8) command.
         """
+        self._check_not_closed ()
         return libguestfsmod.blockdev_getsize64 (self._o, device)
 
     def blockdev_flushbufs (self, device):
@@ -2178,6 +2412,7 @@ class GuestFS:
         
         This uses the blockdev(8) command.
         """
+        self._check_not_closed ()
         return libguestfsmod.blockdev_flushbufs (self._o, device)
 
     def blockdev_rereadpt (self, device):
@@ -2185,6 +2420,7 @@ class GuestFS:
         
         This uses the blockdev(8) command.
         """
+        self._check_not_closed ()
         return libguestfsmod.blockdev_rereadpt (self._o, device)
 
     def upload (self, filename, remotefilename):
@@ -2195,6 +2431,7 @@ class GuestFS:
         
         See also "g.download".
         """
+        self._check_not_closed ()
         return libguestfsmod.upload (self._o, filename, remotefilename)
 
     def download (self, remotefilename, filename):
@@ -2205,6 +2442,7 @@ class GuestFS:
         
         See also "g.upload", "g.cat".
         """
+        self._check_not_closed ()
         return libguestfsmod.download (self._o, remotefilename, filename)
 
     def checksum (self, csumtype, path):
@@ -2249,6 +2487,7 @@ class GuestFS:
         To get the checksums for many files, use
         "g.checksums_out".
         """
+        self._check_not_closed ()
         return libguestfsmod.checksum (self._o, csumtype, path)
 
     def tar_in (self, tarfile, directory):
@@ -2258,6 +2497,7 @@ class GuestFS:
         To upload a compressed tarball, use "g.tgz_in" or
         "g.txz_in".
         """
+        self._check_not_closed ()
         return libguestfsmod.tar_in (self._o, tarfile, directory)
 
     def tar_out (self, directory, tarfile):
@@ -2267,6 +2507,7 @@ class GuestFS:
         To download a compressed tarball, use "g.tgz_out" or
         "g.txz_out".
         """
+        self._check_not_closed ()
         return libguestfsmod.tar_out (self._o, directory, tarfile)
 
     def tgz_in (self, tarball, directory):
@@ -2275,6 +2516,7 @@ class GuestFS:
         
         To upload an uncompressed tarball, use "g.tar_in".
         """
+        self._check_not_closed ()
         return libguestfsmod.tgz_in (self._o, tarball, directory)
 
     def tgz_out (self, directory, tarball):
@@ -2283,12 +2525,14 @@ class GuestFS:
         
         To download an uncompressed tarball, use "g.tar_out".
         """
+        self._check_not_closed ()
         return libguestfsmod.tgz_out (self._o, directory, tarball)
 
     def mount_ro (self, device, mountpoint):
         u"""This is the same as the "g.mount" command, but it mounts
         the filesystem with the read-only (*-o ro*) flag.
         """
+        self._check_not_closed ()
         return libguestfsmod.mount_ro (self._o, device, mountpoint)
 
     def mount_options (self, options, device, mountpoint):
@@ -2300,6 +2544,7 @@ class GuestFS:
         options are passed (all options default to whatever the
         filesystem uses).
         """
+        self._check_not_closed ()
         return libguestfsmod.mount_options (self._o, options, device, mountpoint)
 
     def mount_vfs (self, options, vfstype, device, mountpoint):
@@ -2307,10 +2552,12 @@ class GuestFS:
         you to set both the mount options and the vfstype as for
         the mount(8) *-o* and *-t* flags.
         """
+        self._check_not_closed ()
         return libguestfsmod.mount_vfs (self._o, options, vfstype, device, mountpoint)
 
     def debug (self, subcmd, extraargs):
         extraargs = list (extraargs)
+        self._check_not_closed ()
         return libguestfsmod.debug (self._o, subcmd, extraargs)
 
     def lvremove (self, device):
@@ -2320,6 +2567,7 @@ class GuestFS:
         You can also remove all LVs in a volume group by
         specifying the VG name, "/dev/VG".
         """
+        self._check_not_closed ()
         return libguestfsmod.lvremove (self._o, device)
 
     def vgremove (self, vgname):
@@ -2328,6 +2576,7 @@ class GuestFS:
         This also forcibly removes all logical volumes in the
         volume group (if any).
         """
+        self._check_not_closed ()
         return libguestfsmod.vgremove (self._o, vgname)
 
     def pvremove (self, device):
@@ -2338,6 +2587,7 @@ class GuestFS:
         refuses to wipe physical volumes that contain any volume
         groups, so you have to remove those first.
         """
+        self._check_not_closed ()
         return libguestfsmod.pvremove (self._o, device)
 
     def set_e2label (self, device, label):
@@ -2348,6 +2598,7 @@ class GuestFS:
         You can use either "g.tune2fs_l" or "g.get_e2label" to
         return the existing label on a filesystem.
         """
+        self._check_not_closed ()
         return libguestfsmod.set_e2label (self._o, device, label)
 
     def get_e2label (self, device):
@@ -2361,6 +2612,7 @@ class GuestFS:
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
         """
+        self._check_not_closed ()
         return libguestfsmod.get_e2label (self._o, device)
 
     def set_e2uuid (self, device, uuid):
@@ -2372,6 +2624,7 @@ class GuestFS:
         You can use either "g.tune2fs_l" or "g.get_e2uuid" to
         return the existing UUID of a filesystem.
         """
+        self._check_not_closed ()
         return libguestfsmod.set_e2uuid (self._o, device, uuid)
 
     def get_e2uuid (self, device):
@@ -2385,6 +2638,7 @@ class GuestFS:
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
         """
+        self._check_not_closed ()
         return libguestfsmod.get_e2uuid (self._o, device)
 
     def fsck (self, fstype, device):
@@ -2408,6 +2662,7 @@ class GuestFS:
         This command is entirely equivalent to running "fsck -a
         -t fstype device".
         """
+        self._check_not_closed ()
         return libguestfsmod.fsck (self._o, fstype, device)
 
     def zero (self, device):
@@ -2419,8 +2674,10 @@ class GuestFS:
         sufficient to remove any partition tables, filesystem
         superblocks and so on.
         
-        See also: "g.zero_device", "g.scrub_device".
+        See also: "g.zero_device", "g.scrub_device",
+        "g.is_zero_device"
         """
+        self._check_not_closed ()
         return libguestfsmod.zero (self._o, device)
 
     def grub_install (self, root, device):
@@ -2440,24 +2697,28 @@ class GuestFS:
         replacing "/dev/vda" with the name of the installation
         device.
         """
+        self._check_not_closed ()
         return libguestfsmod.grub_install (self._o, root, device)
 
     def cp (self, src, dest):
         u"""This copies a file from "src" to "dest" where "dest" is
         either a destination filename or destination directory.
         """
+        self._check_not_closed ()
         return libguestfsmod.cp (self._o, src, dest)
 
     def cp_a (self, src, dest):
         u"""This copies a file or directory from "src" to "dest"
         recursively using the "cp -a" command.
         """
+        self._check_not_closed ()
         return libguestfsmod.cp_a (self._o, src, dest)
 
     def mv (self, src, dest):
         u"""This moves a file from "src" to "dest" where "dest" is
         either a destination filename or destination directory.
         """
+        self._check_not_closed ()
         return libguestfsmod.mv (self._o, src, dest)
 
     def drop_caches (self, whattodrop):
@@ -2471,6 +2732,7 @@ class GuestFS:
         This automatically calls sync(2) before the operation,
         so that the maximum guest memory is freed.
         """
+        self._check_not_closed ()
         return libguestfsmod.drop_caches (self._o, whattodrop)
 
     def dmesg (self):
@@ -2483,6 +2745,7 @@ class GuestFS:
         environment variable "LIBGUESTFS_DEBUG=1" before running
         the program.
         """
+        self._check_not_closed ()
         return libguestfsmod.dmesg (self._o)
 
     def ping_daemon (self):
@@ -2492,6 +2755,7 @@ class GuestFS:
         affecting the daemon or attached block device(s) in any
         other way.
         """
+        self._check_not_closed ()
         return libguestfsmod.ping_daemon (self._o)
 
     def equal (self, file1, file2):
@@ -2501,6 +2765,7 @@ class GuestFS:
         
         The external cmp(1) program is used for the comparison.
         """
+        self._check_not_closed ()
         return libguestfsmod.equal (self._o, file1, file2)
 
     def strings (self, path):
@@ -2513,6 +2778,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.strings (self._o, path)
 
     def strings_e (self, encoding, path):
@@ -2548,6 +2814,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.strings_e (self._o, encoding, path)
 
     def hexdump (self, path):
@@ -2558,6 +2825,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.hexdump (self._o, path)
 
     def zerofree (self, device):
@@ -2572,6 +2840,7 @@ class GuestFS:
         It is possible that using this program can damage the
         filesystem or data on the filesystem.
         """
+        self._check_not_closed ()
         return libguestfsmod.zerofree (self._o, device)
 
     def pvresize (self, device):
@@ -2579,6 +2848,7 @@ class GuestFS:
         physical volume to match the new size of the underlying
         device.
         """
+        self._check_not_closed ()
         return libguestfsmod.pvresize (self._o, device)
 
     def sfdisk_N (self, device, partnum, cyls, heads, sectors, line):
@@ -2600,6 +2870,7 @@ class GuestFS:
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
         """
+        self._check_not_closed ()
         return libguestfsmod.sfdisk_N (self._o, device, partnum, cyls, heads, sectors, line)
 
     def sfdisk_l (self, device):
@@ -2616,6 +2887,7 @@ class GuestFS:
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
         """
+        self._check_not_closed ()
         return libguestfsmod.sfdisk_l (self._o, device)
 
     def sfdisk_kernel_geometry (self, device):
@@ -2625,6 +2897,7 @@ class GuestFS:
         The result is in human-readable format, and not designed
         to be parsed.
         """
+        self._check_not_closed ()
         return libguestfsmod.sfdisk_kernel_geometry (self._o, device)
 
     def sfdisk_disk_geometry (self, device):
@@ -2637,25 +2910,22 @@ class GuestFS:
         The result is in human-readable format, and not designed
         to be parsed.
         """
+        self._check_not_closed ()
         return libguestfsmod.sfdisk_disk_geometry (self._o, device)
 
     def vg_activate_all (self, activate):
         u"""This command activates or (if "activate" is false)
-        deactivates all logical volumes in all volume groups. If
-        activated, then they are made known to the kernel, ie.
-        they appear as "/dev/mapper" devices. If deactivated,
-        then those devices disappear.
+        deactivates all logical volumes in all volume groups.
         
         This command is the same as running "vgchange -a y|n"
         """
+        self._check_not_closed ()
         return libguestfsmod.vg_activate_all (self._o, activate)
 
     def vg_activate (self, activate, volgroups):
         u"""This command activates or (if "activate" is false)
         deactivates all logical volumes in the listed volume
-        groups "volgroups". If activated, then they are made
-        known to the kernel, ie. they appear as "/dev/mapper"
-        devices. If deactivated, then those devices disappear.
+        groups "volgroups".
         
         This command is the same as running "vgchange -a y|n
         volgroups..."
@@ -2664,6 +2934,7 @@ class GuestFS:
         volume groups are activated or deactivated.
         """
         volgroups = list (volgroups)
+        self._check_not_closed ()
         return libguestfsmod.vg_activate (self._o, activate, volgroups)
 
     def lvresize (self, device, mbytes):
@@ -2671,6 +2942,7 @@ class GuestFS:
         logical volume to "mbytes". When reducing, data in the
         reduced part is lost.
         """
+        self._check_not_closed ()
         return libguestfsmod.lvresize (self._o, device, mbytes)
 
     def resize2fs (self, device):
@@ -2684,6 +2956,7 @@ class GuestFS:
         is always safe to call "g.e2fsck_f" before calling this
         function.
         """
+        self._check_not_closed ()
         return libguestfsmod.resize2fs (self._o, device)
 
     def find (self, directory):
@@ -2721,6 +2994,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.find (self._o, directory)
 
     def e2fsck_f (self, device):
@@ -2731,11 +3005,13 @@ class GuestFS:
         This command is only needed because of "g.resize2fs"
         (q.v.). Normally you should use "g.fsck".
         """
+        self._check_not_closed ()
         return libguestfsmod.e2fsck_f (self._o, device)
 
     def sleep (self, secs):
         u"""Sleep for "secs" seconds.
         """
+        self._check_not_closed ()
         return libguestfsmod.sleep (self._o, secs)
 
     def ntfs_3g_probe (self, rw, device):
@@ -2753,6 +3029,7 @@ class GuestFS:
         would succeed, or some non-zero value documented in the
         ntfs-3g.probe(8) manual page.
         """
+        self._check_not_closed ()
         return libguestfsmod.ntfs_3g_probe (self._o, rw, device)
 
     def sh (self, command):
@@ -2769,6 +3046,7 @@ class GuestFS:
         
         All the provisos about "g.command" apply to this call.
         """
+        self._check_not_closed ()
         return libguestfsmod.sh (self._o, command)
 
     def sh_lines (self, command):
@@ -2779,6 +3057,7 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.sh_lines (self._o, command)
 
     def glob_expand (self, pattern):
@@ -2795,6 +3074,7 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.glob_expand (self._o, pattern)
 
     def scrub_device (self, device):
@@ -2807,6 +3087,7 @@ class GuestFS:
         This command is dangerous. Without careful use you can
         easily destroy all your data.
         """
+        self._check_not_closed ()
         return libguestfsmod.scrub_device (self._o, device)
 
     def scrub_file (self, file):
@@ -2818,6 +3099,7 @@ class GuestFS:
         It is an interface to the scrub(1) program. See that
         manual page for more details.
         """
+        self._check_not_closed ()
         return libguestfsmod.scrub_file (self._o, file)
 
     def scrub_freespace (self, dir):
@@ -2830,6 +3112,7 @@ class GuestFS:
         It is an interface to the scrub(1) program. See that
         manual page for more details.
         """
+        self._check_not_closed ()
         return libguestfsmod.scrub_freespace (self._o, dir)
 
     def mkdtemp (self, template):
@@ -2853,24 +3136,28 @@ class GuestFS:
         
         See also: mkdtemp(3)
         """
+        self._check_not_closed ()
         return libguestfsmod.mkdtemp (self._o, template)
 
     def wc_l (self, path):
         u"""This command counts the lines in a file, using the "wc
         -l" external command.
         """
+        self._check_not_closed ()
         return libguestfsmod.wc_l (self._o, path)
 
     def wc_w (self, path):
         u"""This command counts the words in a file, using the "wc
         -w" external command.
         """
+        self._check_not_closed ()
         return libguestfsmod.wc_w (self._o, path)
 
     def wc_c (self, path):
         u"""This command counts the characters in a file, using the
         "wc -c" external command.
         """
+        self._check_not_closed ()
         return libguestfsmod.wc_c (self._o, path)
 
     def head (self, path):
@@ -2883,6 +3170,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.head (self._o, path)
 
     def head_n (self, nrlines, path):
@@ -2902,6 +3190,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.head_n (self._o, nrlines, path)
 
     def tail (self, path):
@@ -2914,6 +3203,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.tail (self._o, path)
 
     def tail_n (self, nrlines, path):
@@ -2933,6 +3223,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.tail_n (self._o, nrlines, path)
 
     def df (self):
@@ -2943,6 +3234,7 @@ class GuestFS:
         It is *not* intended that you try to parse the output
         string. Use "g.statvfs" from programs.
         """
+        self._check_not_closed ()
         return libguestfsmod.df (self._o)
 
     def df_h (self):
@@ -2953,6 +3245,7 @@ class GuestFS:
         It is *not* intended that you try to parse the output
         string. Use "g.statvfs" from programs.
         """
+        self._check_not_closed ()
         return libguestfsmod.df_h (self._o)
 
     def du (self, path):
@@ -2966,6 +3259,7 @@ class GuestFS:
         The result is the estimated size in *kilobytes* (ie.
         units of 1024 bytes).
         """
+        self._check_not_closed ()
         return libguestfsmod.du (self._o, path)
 
     def initrd_list (self, path):
@@ -2982,6 +3276,7 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.initrd_list (self._o, path)
 
     def mount_loop (self, file, mountpoint):
@@ -2989,11 +3284,13 @@ class GuestFS:
         in a file) on a mount point. It is entirely equivalent
         to the command "mount -o loop file mountpoint".
         """
+        self._check_not_closed ()
         return libguestfsmod.mount_loop (self._o, file, mountpoint)
 
     def mkswap (self, device):
         u"""Create a swap partition on "device".
         """
+        self._check_not_closed ()
         return libguestfsmod.mkswap (self._o, device)
 
     def mkswap_L (self, label, device):
@@ -3003,11 +3300,13 @@ class GuestFS:
         device (eg. "/dev/sda"), just to a partition. This
         appears to be a limitation of the kernel or swap tools.
         """
+        self._check_not_closed ()
         return libguestfsmod.mkswap_L (self._o, label, device)
 
     def mkswap_U (self, uuid, device):
         u"""Create a swap partition on "device" with UUID "uuid".
         """
+        self._check_not_closed ()
         return libguestfsmod.mkswap_U (self._o, uuid, device)
 
     def mknod (self, mode, devmajor, devminor, path):
@@ -3029,6 +3328,7 @@ class GuestFS:
         
         The mode actually set is affected by the umask.
         """
+        self._check_not_closed ()
         return libguestfsmod.mknod (self._o, mode, devmajor, devminor, path)
 
     def mkfifo (self, mode, path):
@@ -3038,6 +3338,7 @@ class GuestFS:
         
         The mode actually set is affected by the umask.
         """
+        self._check_not_closed ()
         return libguestfsmod.mkfifo (self._o, mode, path)
 
     def mknod_b (self, mode, devmajor, devminor, path):
@@ -3048,6 +3349,7 @@ class GuestFS:
         
         The mode actually set is affected by the umask.
         """
+        self._check_not_closed ()
         return libguestfsmod.mknod_b (self._o, mode, devmajor, devminor, path)
 
     def mknod_c (self, mode, devmajor, devminor, path):
@@ -3058,6 +3360,7 @@ class GuestFS:
         
         The mode actually set is affected by the umask.
         """
+        self._check_not_closed ()
         return libguestfsmod.mknod_c (self._o, mode, devmajor, devminor, path)
 
     def umask (self, mask):
@@ -3077,6 +3380,7 @@ class GuestFS:
         
         This call returns the previous umask.
         """
+        self._check_not_closed ()
         return libguestfsmod.umask (self._o, mask)
 
     def readdir (self, dir):
@@ -3117,6 +3421,7 @@ class GuestFS:
         This function returns a list of dirents. Each dirent is
         represented as a dictionary.
         """
+        self._check_not_closed ()
         return libguestfsmod.readdir (self._o, dir)
 
     def sfdiskM (self, device, lines):
@@ -3140,6 +3445,7 @@ class GuestFS:
         there are problems with correct use of these functions.
         """
         lines = list (lines)
+        self._check_not_closed ()
         return libguestfsmod.sfdiskM (self._o, device, lines)
 
     def zfile (self, meth, path):
@@ -3158,6 +3464,7 @@ class GuestFS:
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
         """
+        self._check_not_closed ()
         return libguestfsmod.zfile (self._o, meth, path)
 
     def getxattrs (self, path):
@@ -3172,6 +3479,7 @@ class GuestFS:
         This function returns a list of xattrs. Each xattr is
         represented as a dictionary.
         """
+        self._check_not_closed ()
         return libguestfsmod.getxattrs (self._o, path)
 
     def lgetxattrs (self, path):
@@ -3182,6 +3490,7 @@ class GuestFS:
         This function returns a list of xattrs. Each xattr is
         represented as a dictionary.
         """
+        self._check_not_closed ()
         return libguestfsmod.lgetxattrs (self._o, path)
 
     def setxattr (self, xattr, val, vallen, path):
@@ -3191,6 +3500,7 @@ class GuestFS:
         
         See also: "g.lsetxattr", attr(5).
         """
+        self._check_not_closed ()
         return libguestfsmod.setxattr (self._o, xattr, val, vallen, path)
 
     def lsetxattr (self, xattr, val, vallen, path):
@@ -3198,6 +3508,7 @@ class GuestFS:
         symbolic link, then it sets an extended attribute of the
         link itself.
         """
+        self._check_not_closed ()
         return libguestfsmod.lsetxattr (self._o, xattr, val, vallen, path)
 
     def removexattr (self, xattr, path):
@@ -3206,6 +3517,7 @@ class GuestFS:
         
         See also: "g.lremovexattr", attr(5).
         """
+        self._check_not_closed ()
         return libguestfsmod.removexattr (self._o, xattr, path)
 
     def lremovexattr (self, xattr, path):
@@ -3213,6 +3525,7 @@ class GuestFS:
         symbolic link, then it removes an extended attribute of
         the link itself.
         """
+        self._check_not_closed ()
         return libguestfsmod.lremovexattr (self._o, xattr, path)
 
     def mountpoints (self):
@@ -3222,6 +3535,7 @@ class GuestFS:
         
         This function returns a dictionary.
         """
+        self._check_not_closed ()
         return libguestfsmod.mountpoints (self._o)
 
     def mkmountpoint (self, exemptpath):
@@ -3269,6 +3583,7 @@ class GuestFS:
         the handle is closed which can also trigger these
         issues.
         """
+        self._check_not_closed ()
         return libguestfsmod.mkmountpoint (self._o, exemptpath)
 
     def rmmountpoint (self, exemptpath):
@@ -3276,6 +3591,7 @@ class GuestFS:
         created with "g.mkmountpoint". See "g.mkmountpoint" for
         full details.
         """
+        self._check_not_closed ()
         return libguestfsmod.rmmountpoint (self._o, exemptpath)
 
     def read_file (self, path):
@@ -3291,6 +3607,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.read_file (self._o, path)
 
     def grep (self, regex, path):
@@ -3303,6 +3620,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.grep (self._o, regex, path)
 
     def egrep (self, regex, path):
@@ -3315,6 +3633,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.egrep (self._o, regex, path)
 
     def fgrep (self, pattern, path):
@@ -3327,6 +3646,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.fgrep (self._o, pattern, path)
 
     def grepi (self, regex, path):
@@ -3339,6 +3659,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.grepi (self._o, regex, path)
 
     def egrepi (self, regex, path):
@@ -3351,6 +3672,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.egrepi (self._o, regex, path)
 
     def fgrepi (self, pattern, path):
@@ -3363,6 +3685,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.fgrepi (self._o, pattern, path)
 
     def zgrep (self, regex, path):
@@ -3375,6 +3698,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.zgrep (self._o, regex, path)
 
     def zegrep (self, regex, path):
@@ -3387,6 +3711,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.zegrep (self._o, regex, path)
 
     def zfgrep (self, pattern, path):
@@ -3399,6 +3724,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.zfgrep (self._o, pattern, path)
 
     def zgrepi (self, regex, path):
@@ -3411,6 +3737,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.zgrepi (self._o, regex, path)
 
     def zegrepi (self, regex, path):
@@ -3423,6 +3750,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.zegrepi (self._o, regex, path)
 
     def zfgrepi (self, pattern, path):
@@ -3435,6 +3763,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.zfgrepi (self._o, pattern, path)
 
     def realpath (self, path):
@@ -3442,11 +3771,13 @@ class GuestFS:
         The returned path has no ".", ".." or symbolic link path
         elements.
         """
+        self._check_not_closed ()
         return libguestfsmod.realpath (self._o, path)
 
     def ln (self, target, linkname):
         u"""This command creates a hard link using the "ln" command.
         """
+        self._check_not_closed ()
         return libguestfsmod.ln (self._o, target, linkname)
 
     def ln_f (self, target, linkname):
@@ -3454,12 +3785,14 @@ class GuestFS:
         command. The *-f* option removes the link ("linkname")
         if it exists already.
         """
+        self._check_not_closed ()
         return libguestfsmod.ln_f (self._o, target, linkname)
 
     def ln_s (self, target, linkname):
         u"""This command creates a symbolic link using the "ln -s"
         command.
         """
+        self._check_not_closed ()
         return libguestfsmod.ln_s (self._o, target, linkname)
 
     def ln_sf (self, target, linkname):
@@ -3467,11 +3800,13 @@ class GuestFS:
         command, The *-f* option removes the link ("linkname")
         if it exists already.
         """
+        self._check_not_closed ()
         return libguestfsmod.ln_sf (self._o, target, linkname)
 
     def readlink (self, path):
         u"""This command reads the target of a symbolic link.
         """
+        self._check_not_closed ()
         return libguestfsmod.readlink (self._o, path)
 
     def fallocate (self, path, len):
@@ -3490,6 +3825,7 @@ class GuestFS:
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
         """
+        self._check_not_closed ()
         return libguestfsmod.fallocate (self._o, path, len)
 
     def swapon_device (self, device):
@@ -3506,6 +3842,7 @@ class GuestFS:
         way. Instead, attach a new host device to the guest and
         swap on that.
         """
+        self._check_not_closed ()
         return libguestfsmod.swapon_device (self._o, device)
 
     def swapoff_device (self, device):
@@ -3513,42 +3850,49 @@ class GuestFS:
         device or partition named "device". See
         "g.swapon_device".
         """
+        self._check_not_closed ()
         return libguestfsmod.swapoff_device (self._o, device)
 
     def swapon_file (self, file):
         u"""This command enables swap to a file. See
         "g.swapon_device" for other notes.
         """
+        self._check_not_closed ()
         return libguestfsmod.swapon_file (self._o, file)
 
     def swapoff_file (self, file):
         u"""This command disables the libguestfs appliance swap on
         file.
         """
+        self._check_not_closed ()
         return libguestfsmod.swapoff_file (self._o, file)
 
     def swapon_label (self, label):
         u"""This command enables swap to a labeled swap partition.
         See "g.swapon_device" for other notes.
         """
+        self._check_not_closed ()
         return libguestfsmod.swapon_label (self._o, label)
 
     def swapoff_label (self, label):
         u"""This command disables the libguestfs appliance swap on
         labeled swap partition.
         """
+        self._check_not_closed ()
         return libguestfsmod.swapoff_label (self._o, label)
 
     def swapon_uuid (self, uuid):
         u"""This command enables swap to a swap partition with the
         given UUID. See "g.swapon_device" for other notes.
         """
+        self._check_not_closed ()
         return libguestfsmod.swapon_uuid (self._o, uuid)
 
     def swapoff_uuid (self, uuid):
         u"""This command disables the libguestfs appliance swap
         partition with the given UUID.
         """
+        self._check_not_closed ()
         return libguestfsmod.swapoff_uuid (self._o, uuid)
 
     def mkswap_file (self, path):
@@ -3558,6 +3902,7 @@ class GuestFS:
         existing file. To create the file itself, use something
         like "g.fallocate".
         """
+        self._check_not_closed ()
         return libguestfsmod.mkswap_file (self._o, path)
 
     def inotify_init (self, maxevents):
@@ -3594,6 +3939,7 @@ class GuestFS:
         roughly what we expose via libguestfs. Note that there
         is one global inotify handle per libguestfs instance.
         """
+        self._check_not_closed ()
         return libguestfsmod.inotify_init (self._o, maxevents)
 
     def inotify_add_watch (self, path, mask):
@@ -3607,12 +3953,14 @@ class GuestFS:
         are defined by the Linux kernel ABI and are listed in
         "/usr/include/sys/inotify.h".
         """
+        self._check_not_closed ()
         return libguestfsmod.inotify_add_watch (self._o, path, mask)
 
     def inotify_rm_watch (self, wd):
         u"""Remove a previously defined inotify watch. See
         "g.inotify_add_watch".
         """
+        self._check_not_closed ()
         return libguestfsmod.inotify_rm_watch (self._o, wd)
 
     def inotify_read (self):
@@ -3630,6 +3978,7 @@ class GuestFS:
         This function returns a list of inotify_events. Each
         inotify_event is represented as a dictionary.
         """
+        self._check_not_closed ()
         return libguestfsmod.inotify_read (self._o)
 
     def inotify_files (self):
@@ -3640,6 +3989,7 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.inotify_files (self._o)
 
     def inotify_close (self):
@@ -3647,6 +3997,7 @@ class GuestFS:
         opened by inotify_init. It removes all watches, throws
         away any pending events, and deallocates all resources.
         """
+        self._check_not_closed ()
         return libguestfsmod.inotify_close (self._o)
 
     def setcon (self, context):
@@ -3655,6 +4006,7 @@ class GuestFS:
         
         See the documentation about SELINUX in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.setcon (self._o, context)
 
     def getcon (self):
@@ -3663,6 +4015,7 @@ class GuestFS:
         See the documentation about SELINUX in guestfs(3), and
         "g.setcon"
         """
+        self._check_not_closed ()
         return libguestfsmod.getcon (self._o)
 
     def mkfs_b (self, fstype, blocksize, device):
@@ -3681,6 +4034,7 @@ class GuestFS:
         but the fact that they are deprecated indicates that
         there are problems with correct use of these functions.
         """
+        self._check_not_closed ()
         return libguestfsmod.mkfs_b (self._o, fstype, blocksize, device)
 
     def mke2journal (self, blocksize, device):
@@ -3689,18 +4043,21 @@ class GuestFS:
         
         mke2fs -O journal_dev -b blocksize device
         """
+        self._check_not_closed ()
         return libguestfsmod.mke2journal (self._o, blocksize, device)
 
     def mke2journal_L (self, blocksize, label, device):
         u"""This creates an ext2 external journal on "device" with
         label "label".
         """
+        self._check_not_closed ()
         return libguestfsmod.mke2journal_L (self._o, blocksize, label, device)
 
     def mke2journal_U (self, blocksize, uuid, device):
         u"""This creates an ext2 external journal on "device" with
         UUID "uuid".
         """
+        self._check_not_closed ()
         return libguestfsmod.mke2journal_U (self._o, blocksize, uuid, device)
 
     def mke2fs_J (self, fstype, blocksize, device, journal):
@@ -3712,6 +4069,7 @@ class GuestFS:
         
         See also "g.mke2journal".
         """
+        self._check_not_closed ()
         return libguestfsmod.mke2fs_J (self._o, fstype, blocksize, device, journal)
 
     def mke2fs_JL (self, fstype, blocksize, device, label):
@@ -3720,6 +4078,7 @@ class GuestFS:
         
         See also "g.mke2journal_L".
         """
+        self._check_not_closed ()
         return libguestfsmod.mke2fs_JL (self._o, fstype, blocksize, device, label)
 
     def mke2fs_JU (self, fstype, blocksize, device, uuid):
@@ -3728,6 +4087,7 @@ class GuestFS:
         
         See also "g.mke2journal_U".
         """
+        self._check_not_closed ()
         return libguestfsmod.mke2fs_JU (self._o, fstype, blocksize, device, uuid)
 
     def modprobe (self, modulename):
@@ -3737,6 +4097,7 @@ class GuestFS:
         libguestfs was built (see "appliance/kmod.whitelist.in"
         in the source).
         """
+        self._check_not_closed ()
         return libguestfsmod.modprobe (self._o, modulename)
 
     def echo_daemon (self, words):
@@ -3750,6 +4111,7 @@ class GuestFS:
         See also "g.ping_daemon".
         """
         words = list (words)
+        self._check_not_closed ()
         return libguestfsmod.echo_daemon (self._o, words)
 
     def find0 (self, directory, files):
@@ -3770,6 +4132,7 @@ class GuestFS:
         
         *   The result list is not sorted.
         """
+        self._check_not_closed ()
         return libguestfsmod.find0 (self._o, directory, files)
 
     def case_sensitive_path (self, path):
@@ -3808,6 +4171,7 @@ class GuestFS:
         
         See also "g.realpath".
         """
+        self._check_not_closed ()
         return libguestfsmod.case_sensitive_path (self._o, path)
 
     def vfs_type (self, device):
@@ -3820,12 +4184,14 @@ class GuestFS:
         filesystem type. For example a string such as "ext3" or
         "ntfs".
         """
+        self._check_not_closed ()
         return libguestfsmod.vfs_type (self._o, device)
 
     def truncate (self, path):
         u"""This command truncates "path" to a zero-length file. The
         file must exist already.
         """
+        self._check_not_closed ()
         return libguestfsmod.truncate (self._o, path)
 
     def truncate_size (self, path, size):
@@ -3839,6 +4205,7 @@ class GuestFS:
         a non-sparse file of zeroes, use "g.fallocate64"
         instead.
         """
+        self._check_not_closed ()
         return libguestfsmod.truncate_size (self._o, path, size)
 
     def utimens (self, path, atsecs, atnsecs, mtsecs, mtnsecs):
@@ -3859,6 +4226,7 @@ class GuestFS:
         the corresponding timestamp is left unchanged. (The
         *secs field is ignored in this case).
         """
+        self._check_not_closed ()
         return libguestfsmod.utimens (self._o, path, atsecs, atnsecs, mtsecs, mtnsecs)
 
     def mkdir_mode (self, path, mode):
@@ -3871,6 +4239,7 @@ class GuestFS:
         
         See also "g.mkdir", "g.umask"
         """
+        self._check_not_closed ()
         return libguestfsmod.mkdir_mode (self._o, path, mode)
 
     def lchown (self, owner, group, path):
@@ -3883,6 +4252,7 @@ class GuestFS:
         password file yourself (Augeas support makes this
         relatively easy).
         """
+        self._check_not_closed ()
         return libguestfsmod.lchown (self._o, owner, group, path)
 
     def lstatlist (self, path, names):
@@ -3909,6 +4279,7 @@ class GuestFS:
         represented as a dictionary.
         """
         names = list (names)
+        self._check_not_closed ()
         return libguestfsmod.lstatlist (self._o, path, names)
 
     def lxattrlist (self, path, names):
@@ -3941,6 +4312,7 @@ class GuestFS:
         represented as a dictionary.
         """
         names = list (names)
+        self._check_not_closed ()
         return libguestfsmod.lxattrlist (self._o, path, names)
 
     def readlinklist (self, path, names):
@@ -3970,6 +4342,7 @@ class GuestFS:
         This function returns a list of strings.
         """
         names = list (names)
+        self._check_not_closed ()
         return libguestfsmod.readlinklist (self._o, path, names)
 
     def pread (self, path, count, offset):
@@ -3986,6 +4359,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.pread (self._o, path, count, offset)
 
     def part_init (self, device, parttype):
@@ -3998,15 +4372,16 @@ class GuestFS:
         
         Possible values for "parttype" are:
         
-        efi | gpt
-        Intel EFI / GPT partition table.
+        efi
+        gpt Intel EFI / GPT partition table.
         
         This is recommended for >= 2 TB partitions that will
         be accessed from Linux and Intel-based Mac OS X. It
         also has limited backwards compatibility with the
         "mbr" format.
         
-        mbr | msdos
+        mbr
+        msdos
         The standard PC "Master Boot Record" (MBR) format
         used by MS-DOS and Windows. This partition type will
         only work for device sizes up to 2 TB. For large
@@ -4017,8 +4392,8 @@ class GuestFS:
         
         aix AIX disk labels.
         
-        amiga | rdb
-        Amiga "Rigid Disk Block" format.
+        amiga
+        rdb Amiga "Rigid Disk Block" format.
         
         bsd BSD disk labels.
         
@@ -4034,6 +4409,7 @@ class GuestFS:
         
         sun Sun disk labels.
         """
+        self._check_not_closed ()
         return libguestfsmod.part_init (self._o, device, parttype)
 
     def part_add (self, device, prlogex, startsect, endsect):
@@ -4054,6 +4430,7 @@ class GuestFS:
         Creating a partition which covers the whole disk is not
         so easy. Use "g.part_disk" to do that.
         """
+        self._check_not_closed ()
         return libguestfsmod.part_add (self._o, device, prlogex, startsect, endsect)
 
     def part_disk (self, device, parttype):
@@ -4068,6 +4445,7 @@ class GuestFS:
         This command is dangerous. Without careful use you can
         easily destroy all your data.
         """
+        self._check_not_closed ()
         return libguestfsmod.part_disk (self._o, device, parttype)
 
     def part_set_bootable (self, device, partnum, bootable):
@@ -4079,6 +4457,7 @@ class GuestFS:
         (notably Windows) to determine which partition to boot
         from. It is by no means universally recognized.
         """
+        self._check_not_closed ()
         return libguestfsmod.part_set_bootable (self._o, device, partnum, bootable)
 
     def part_set_name (self, device, partnum, name):
@@ -4090,6 +4469,7 @@ class GuestFS:
         partition table. This works on "gpt" but not on "mbr"
         partitions.
         """
+        self._check_not_closed ()
         return libguestfsmod.part_set_name (self._o, device, partnum, name)
 
     def part_list (self, device):
@@ -4115,6 +4495,7 @@ class GuestFS:
         This function returns a list of partitions. Each
         partition is represented as a dictionary.
         """
+        self._check_not_closed ()
         return libguestfsmod.part_list (self._o, device)
 
     def part_get_parttype (self, device):
@@ -4127,6 +4508,7 @@ class GuestFS:
         partition table). Other values are possible, although
         unusual. See "g.part_init" for a full list.
         """
+        self._check_not_closed ()
         return libguestfsmod.part_get_parttype (self._o, device)
 
     def fill (self, c, len, path):
@@ -4139,6 +4521,7 @@ class GuestFS:
         file with a pattern of repeating bytes use
         "g.fill_pattern".
         """
+        self._check_not_closed ()
         return libguestfsmod.fill (self._o, c, len, path)
 
     def available (self, groups):
@@ -4192,6 +4575,7 @@ class GuestFS:
         daemon implemented it. See also "g.version".
         """
         groups = list (groups)
+        self._check_not_closed ()
         return libguestfsmod.available (self._o, groups)
 
     def dd (self, src, dest):
@@ -4205,6 +4589,7 @@ class GuestFS:
         copy will fail. This command cannot do partial copies
         (see "g.copy_size").
         """
+        self._check_not_closed ()
         return libguestfsmod.dd (self._o, src, dest)
 
     def filesize (self, file):
@@ -4214,18 +4599,21 @@ class GuestFS:
         "g.lstat", "g.is_dir", "g.is_file" etc. To get the size
         of block devices, use "g.blockdev_getsize64".
         """
+        self._check_not_closed ()
         return libguestfsmod.filesize (self._o, file)
 
     def lvrename (self, logvol, newlogvol):
         u"""Rename a logical volume "logvol" with the new name
         "newlogvol".
         """
+        self._check_not_closed ()
         return libguestfsmod.lvrename (self._o, logvol, newlogvol)
 
     def vgrename (self, volgroup, newvolgroup):
         u"""Rename a volume group "volgroup" with the new name
         "newvolgroup".
         """
+        self._check_not_closed ()
         return libguestfsmod.vgrename (self._o, volgroup, newvolgroup)
 
     def initrd_cat (self, initrdpath, filename):
@@ -4245,22 +4633,26 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.initrd_cat (self._o, initrdpath, filename)
 
     def pvuuid (self, device):
         u"""This command returns the UUID of the LVM PV "device".
         """
+        self._check_not_closed ()
         return libguestfsmod.pvuuid (self._o, device)
 
     def vguuid (self, vgname):
         u"""This command returns the UUID of the LVM VG named
         "vgname".
         """
+        self._check_not_closed ()
         return libguestfsmod.vguuid (self._o, vgname)
 
     def lvuuid (self, device):
         u"""This command returns the UUID of the LVM LV "device".
         """
+        self._check_not_closed ()
         return libguestfsmod.lvuuid (self._o, device)
 
     def vgpvuuids (self, vgname):
@@ -4275,6 +4667,7 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.vgpvuuids (self._o, vgname)
 
     def vglvuuids (self, vgname):
@@ -4288,6 +4681,7 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.vglvuuids (self._o, vgname)
 
     def copy_size (self, src, dest, size):
@@ -4298,6 +4692,7 @@ class GuestFS:
         Note this will fail if the source is too short or if the
         destination is not large enough.
         """
+        self._check_not_closed ()
         return libguestfsmod.copy_size (self._o, src, dest, size)
 
     def zero_device (self, device):
@@ -4308,12 +4703,14 @@ class GuestFS:
         This command is dangerous. Without careful use you can
         easily destroy all your data.
         """
+        self._check_not_closed ()
         return libguestfsmod.zero_device (self._o, device)
 
     def txz_in (self, tarball, directory):
         u"""This command uploads and unpacks local file "tarball"
         (an *xz compressed* tar file) into "directory".
         """
+        self._check_not_closed ()
         return libguestfsmod.txz_in (self._o, tarball, directory)
 
     def txz_out (self, directory, tarball):
@@ -4321,6 +4718,7 @@ class GuestFS:
         downloads it to local file "tarball" (as an xz
         compressed tar archive).
         """
+        self._check_not_closed ()
         return libguestfsmod.txz_out (self._o, directory, tarball)
 
     def ntfsresize (self, device):
@@ -4337,13 +4735,22 @@ class GuestFS:
         into Windows between each resize.
         
         See also ntfsresize(8).
+        
+        This function is deprecated. In new code, use the
+        "ntfsresize_opts" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
+        self._check_not_closed ()
         return libguestfsmod.ntfsresize (self._o, device)
 
     def vgscan (self):
         u"""This rescans all block devices and rebuilds the list of
         LVM physical volumes, volume groups and logical volumes.
         """
+        self._check_not_closed ()
         return libguestfsmod.vgscan (self._o)
 
     def part_del (self, device, partnum):
@@ -4354,6 +4761,7 @@ class GuestFS:
         extended partition also deletes any logical partitions
         it contains.
         """
+        self._check_not_closed ()
         return libguestfsmod.part_del (self._o, device, partnum)
 
     def part_get_bootable (self, device, partnum):
@@ -4362,6 +4770,7 @@ class GuestFS:
         
         See also "g.part_set_bootable".
         """
+        self._check_not_closed ()
         return libguestfsmod.part_get_bootable (self._o, device, partnum)
 
     def part_get_mbr_id (self, device, partnum):
@@ -4372,6 +4781,7 @@ class GuestFS:
         bytes. You will get undefined results for other
         partition table types (see "g.part_get_parttype").
         """
+        self._check_not_closed ()
         return libguestfsmod.part_get_mbr_id (self._o, device, partnum)
 
     def part_set_mbr_id (self, device, partnum, idbyte):
@@ -4385,6 +4795,7 @@ class GuestFS:
         bytes. You will get undefined results for other
         partition table types (see "g.part_get_parttype").
         """
+        self._check_not_closed ()
         return libguestfsmod.part_set_mbr_id (self._o, device, partnum, idbyte)
 
     def checksum_device (self, csumtype, device):
@@ -4392,6 +4803,7 @@ class GuestFS:
         contents of the device named "device". For the types of
         checksums supported see the "g.checksum" command.
         """
+        self._check_not_closed ()
         return libguestfsmod.checksum_device (self._o, csumtype, device)
 
     def lvresize_free (self, lv, percent):
@@ -4401,27 +4813,32 @@ class GuestFS:
         expands the logical volume as much as possible, using
         all remaining free space in the volume group.
         """
+        self._check_not_closed ()
         return libguestfsmod.lvresize_free (self._o, lv, percent)
 
     def aug_clear (self, augpath):
         u"""Set the value associated with "path" to "NULL". This is
         the same as the augtool(1) "clear" command.
         """
+        self._check_not_closed ()
         return libguestfsmod.aug_clear (self._o, augpath)
 
     def get_umask (self):
         u"""Return the current umask. By default the umask is 022
         unless it has been set by calling "g.umask".
         """
+        self._check_not_closed ()
         return libguestfsmod.get_umask (self._o)
 
     def debug_upload (self, filename, tmpname, mode):
+        self._check_not_closed ()
         return libguestfsmod.debug_upload (self._o, filename, tmpname, mode)
 
     def base64_in (self, base64file, filename):
         u"""This command uploads base64-encoded data from
         "base64file" to "filename".
         """
+        self._check_not_closed ()
         return libguestfsmod.base64_in (self._o, base64file, filename)
 
     def base64_out (self, filename, base64file):
@@ -4429,6 +4846,7 @@ class GuestFS:
         writing it out to local file "base64file" encoded as
         base64.
         """
+        self._check_not_closed ()
         return libguestfsmod.base64_out (self._o, filename, base64file)
 
     def checksums_out (self, csumtype, directory, sumsfile):
@@ -4444,6 +4862,7 @@ class GuestFS:
         uses a special backslash syntax. For more information,
         see the GNU coreutils info file.
         """
+        self._check_not_closed ()
         return libguestfsmod.checksums_out (self._o, csumtype, directory, sumsfile)
 
     def fill_pattern (self, pattern, len, path):
@@ -4453,6 +4872,7 @@ class GuestFS:
         if necessary to ensure the length of the file is exactly
         "len" bytes.
         """
+        self._check_not_closed ()
         return libguestfsmod.fill_pattern (self._o, pattern, len, path)
 
     def write (self, path, content):
@@ -4460,10 +4880,13 @@ class GuestFS:
         the file is the string "content" (which can contain any
         8 bit data).
         
+        See also "g.write_append".
+        
         Because of the message protocol, there is a transfer
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.write (self._o, path, content)
 
     def pwrite (self, path, content, offset):
@@ -4484,6 +4907,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.pwrite (self._o, path, content, offset)
 
     def resize2fs_size (self, device, size):
@@ -4491,6 +4915,7 @@ class GuestFS:
         allows you to specify the new size (in bytes)
         explicitly.
         """
+        self._check_not_closed ()
         return libguestfsmod.resize2fs_size (self._o, device, size)
 
     def pvresize_size (self, device, size):
@@ -4498,13 +4923,22 @@ class GuestFS:
         allows you to specify the new size (in bytes)
         explicitly.
         """
+        self._check_not_closed ()
         return libguestfsmod.pvresize_size (self._o, device, size)
 
     def ntfsresize_size (self, device, size):
         u"""This command is the same as "g.ntfsresize" except that
         it allows you to specify the new size (in bytes)
         explicitly.
+        
+        This function is deprecated. In new code, use the
+        "ntfsresize_opts" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
+        self._check_not_closed ()
         return libguestfsmod.ntfsresize_size (self._o, device, size)
 
     def available_all_groups (self):
@@ -4518,6 +4952,7 @@ class GuestFS:
         
         This function returns a list of strings.
         """
+        self._check_not_closed ()
         return libguestfsmod.available_all_groups (self._o)
 
     def fallocate64 (self, path, len):
@@ -4537,6 +4972,7 @@ class GuestFS:
         and "sparse" commands which create a file in the host
         and attach it as a device.
         """
+        self._check_not_closed ()
         return libguestfsmod.fallocate64 (self._o, path, len)
 
     def vfs_label (self, device):
@@ -4549,6 +4985,7 @@ class GuestFS:
         To find a filesystem from the label, use
         "g.findfs_label".
         """
+        self._check_not_closed ()
         return libguestfsmod.vfs_label (self._o, device)
 
     def vfs_uuid (self, device):
@@ -4560,6 +4997,7 @@ class GuestFS:
         
         To find a filesystem from the UUID, use "g.findfs_uuid".
         """
+        self._check_not_closed ()
         return libguestfsmod.vfs_uuid (self._o, device)
 
     def lvm_set_filter (self, devices):
@@ -4588,6 +5026,7 @@ class GuestFS:
         filtering out that VG.
         """
         devices = list (devices)
+        self._check_not_closed ()
         return libguestfsmod.lvm_set_filter (self._o, devices)
 
     def lvm_clear_filter (self):
@@ -4597,6 +5036,7 @@ class GuestFS:
         This command also clears the LVM cache and performs a
         volume group scan.
         """
+        self._check_not_closed ()
         return libguestfsmod.lvm_clear_filter (self._o)
 
     def luks_open (self, device, key, mapname):
@@ -4617,13 +5057,18 @@ class GuestFS:
         If this block device contains LVM volume groups, then
         calling "g.vgscan" followed by "g.vg_activate_all" will
         make them visible.
+        
+        Use "g.list_dm_devices" to list all device mapper
+        devices.
         """
+        self._check_not_closed ()
         return libguestfsmod.luks_open (self._o, device, key, mapname)
 
     def luks_open_ro (self, device, key, mapname):
         u"""This is the same as "g.luks_open" except that a
         read-only mapping is created.
         """
+        self._check_not_closed ()
         return libguestfsmod.luks_open_ro (self._o, device, key, mapname)
 
     def luks_close (self, device):
@@ -4633,6 +5078,7 @@ class GuestFS:
         (ie. "/dev/mapper/mapname") and *not* the name of the
         underlying block device.
         """
+        self._check_not_closed ()
         return libguestfsmod.luks_close (self._o, device)
 
     def luks_format (self, device, key, keyslot):
@@ -4644,6 +5090,7 @@ class GuestFS:
         This command is dangerous. Without careful use you can
         easily destroy all your data.
         """
+        self._check_not_closed ()
         return libguestfsmod.luks_format (self._o, device, key, keyslot)
 
     def luks_format_cipher (self, device, key, keyslot, cipher):
@@ -4653,6 +5100,7 @@ class GuestFS:
         This command is dangerous. Without careful use you can
         easily destroy all your data.
         """
+        self._check_not_closed ()
         return libguestfsmod.luks_format_cipher (self._o, device, key, keyslot, cipher)
 
     def luks_add_key (self, device, key, newkey, keyslot):
@@ -4665,6 +5113,7 @@ class GuestFS:
         command will fail. You have to use "g.luks_kill_slot"
         first to remove that key.
         """
+        self._check_not_closed ()
         return libguestfsmod.luks_add_key (self._o, device, key, newkey, keyslot)
 
     def luks_kill_slot (self, device, key, keyslot):
@@ -4672,12 +5121,14 @@ class GuestFS:
         the encrypted LUKS device "device". "key" must be one of
         the *other* keys.
         """
+        self._check_not_closed ()
         return libguestfsmod.luks_kill_slot (self._o, device, key, keyslot)
 
     def is_lv (self, device):
         u"""This command tests whether "device" is a logical volume,
         and returns true iff this is the case.
         """
+        self._check_not_closed ()
         return libguestfsmod.is_lv (self._o, device)
 
     def findfs_uuid (self, uuid):
@@ -4687,6 +5138,7 @@ class GuestFS:
         
         To find the UUID of a filesystem, use "g.vfs_uuid".
         """
+        self._check_not_closed ()
         return libguestfsmod.findfs_uuid (self._o, uuid)
 
     def findfs_label (self, label):
@@ -4696,6 +5148,7 @@ class GuestFS:
         
         To find the label of a filesystem, use "g.vfs_label".
         """
+        self._check_not_closed ()
         return libguestfsmod.findfs_label (self._o, label)
 
     def is_chardev (self, path):
@@ -4704,6 +5157,7 @@ class GuestFS:
         
         See also "g.stat".
         """
+        self._check_not_closed ()
         return libguestfsmod.is_chardev (self._o, path)
 
     def is_blockdev (self, path):
@@ -4712,6 +5166,7 @@ class GuestFS:
         
         See also "g.stat".
         """
+        self._check_not_closed ()
         return libguestfsmod.is_blockdev (self._o, path)
 
     def is_fifo (self, path):
@@ -4720,6 +5175,7 @@ class GuestFS:
         
         See also "g.stat".
         """
+        self._check_not_closed ()
         return libguestfsmod.is_fifo (self._o, path)
 
     def is_symlink (self, path):
@@ -4728,6 +5184,7 @@ class GuestFS:
         
         See also "g.stat".
         """
+        self._check_not_closed ()
         return libguestfsmod.is_symlink (self._o, path)
 
     def is_socket (self, path):
@@ -4736,6 +5193,7 @@ class GuestFS:
         
         See also "g.stat".
         """
+        self._check_not_closed ()
         return libguestfsmod.is_socket (self._o, path)
 
     def part_to_dev (self, partition):
@@ -4746,6 +5204,7 @@ class GuestFS:
         The named partition must exist, for example as a string
         returned from "g.list_partitions".
         """
+        self._check_not_closed ()
         return libguestfsmod.part_to_dev (self._o, partition)
 
     def upload_offset (self, filename, remotefilename, offset):
@@ -4766,6 +5225,7 @@ class GuestFS:
         
         See also "g.upload", "g.pwrite".
         """
+        self._check_not_closed ()
         return libguestfsmod.upload_offset (self._o, filename, remotefilename, offset)
 
     def download_offset (self, remotefilename, filename, offset, size):
@@ -4783,6 +5243,7 @@ class GuestFS:
         
         See also "g.download", "g.pread".
         """
+        self._check_not_closed ()
         return libguestfsmod.download_offset (self._o, remotefilename, filename, offset, size)
 
     def pwrite_device (self, device, content, offset):
@@ -4802,6 +5263,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.pwrite_device (self._o, device, content, offset)
 
     def pread_device (self, device, count, offset):
@@ -4817,6 +5279,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         """
+        self._check_not_closed ()
         return libguestfsmod.pread_device (self._o, device, count, offset)
 
     def lvm_canonical_lv_name (self, lvname):
@@ -4829,9 +5292,10 @@ class GuestFS:
         
         See also "g.is_lv".
         """
+        self._check_not_closed ()
         return libguestfsmod.lvm_canonical_lv_name (self._o, lvname)
 
-    def mkfs_opts (self, fstype, device, blocksize=-1, features=None):
+    def mkfs_opts (self, fstype, device, blocksize=-1, features=None, inode=-1, sectorsize=-1):
         u"""This function creates a filesystem on "device". The
         filesystem type is "fstype", for example "ext3".
         
@@ -4857,8 +5321,19 @@ class GuestFS:
         
         You cannot use this optional parameter with the
         "gfs" or "gfs2" filesystem type.
+        
+        "inode"
+        This passes the *-I* parameter to the external
+        mke2fs(8) program which sets the inode size (only
+        for ext2/3/4 filesystems at present).
+        
+        "sectorsize"
+        This passes the *-S* parameter to external
+        mkfs.ufs(8) program, which sets sector size for ufs
+        filesystem.
         """
-        return libguestfsmod.mkfs_opts (self._o, fstype, device, blocksize, features)
+        self._check_not_closed ()
+        return libguestfsmod.mkfs_opts (self._o, fstype, device, blocksize, features, inode, sectorsize)
 
     def getxattr (self, path, name):
         u"""Get a single extended attribute from file "path" named
@@ -4880,6 +5355,7 @@ class GuestFS:
         
         See also: "g.getxattrs", "g.lgetxattr", attr(5).
         """
+        self._check_not_closed ()
         return libguestfsmod.getxattr (self._o, path, name)
 
     def lgetxattr (self, path, name):
@@ -4901,6 +5377,7 @@ class GuestFS:
         
         See also: "g.lgetxattrs", "g.getxattr", attr(5).
         """
+        self._check_not_closed ()
         return libguestfsmod.lgetxattr (self._o, path, name)
 
     def resize2fs_M (self, device):
@@ -4914,8 +5391,124 @@ class GuestFS:
         give the resulting size of the minimal filesystem in
         bytes.
         """
+        self._check_not_closed ()
         return libguestfsmod.resize2fs_M (self._o, device)
 
     def internal_autosync (self):
+        self._check_not_closed ()
         return libguestfsmod.internal_autosync (self._o)
+
+    def is_zero (self, path):
+        u"""This returns true iff the file exists and the file is
+        empty or it contains all zero bytes.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.is_zero (self._o, path)
+
+    def is_zero_device (self, device):
+        u"""This returns true iff the device exists and contains all
+        zero bytes.
+        
+        Note that for large devices this can take a long time to
+        run.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.is_zero_device (self._o, device)
+
+    def list_9p (self):
+        u"""List all 9p filesystems attached to the guest. A list of
+        mount tags is returned.
+        
+        This function returns a list of strings.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.list_9p (self._o)
+
+    def mount_9p (self, mounttag, mountpoint, options=None):
+        u"""Mount the virtio-9p filesystem with the tag "mounttag"
+        on the directory "mountpoint".
+        
+        If required, "trans=virtio" will be automatically added
+        to the options. Any other options required can be passed
+        in the optional "options" parameter.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.mount_9p (self._o, mounttag, mountpoint, options)
+
+    def list_dm_devices (self):
+        u"""List all device mapper devices.
+        
+        The returned list contains "/dev/mapper/*" devices, eg.
+        ones created by a previous call to "g.luks_open".
+        
+        Device mapper devices which correspond to logical
+        volumes are *not* returned in this list. Call "g.lvs" if
+        you want to list logical volumes.
+        
+        This function returns a list of strings.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.list_dm_devices (self._o)
+
+    def ntfsresize_opts (self, device, size=-1, force=-1):
+        u"""This command resizes an NTFS filesystem, expanding or
+        shrinking it to the size of the underlying device.
+        
+        The optional parameters are:
+        
+        "size"
+        The new size (in bytes) of the filesystem. If
+        omitted, the filesystem is resized to fit the
+        container (eg. partition).
+        
+        "force"
+        If this option is true, then force the resize of the
+        filesystem even if the filesystem is marked as
+        requiring a consistency check.
+        
+        After the resize operation, the filesystem is always
+        marked as requiring a consistency check (for
+        safety). You have to boot into Windows to perform
+        this check and clear this condition. If you *don't*
+        set the "force" option then it is not possible to
+        call "g.ntfsresize_opts" multiple times on a single
+        filesystem without booting into Windows between each
+        resize.
+        
+        See also ntfsresize(8).
+        """
+        self._check_not_closed ()
+        return libguestfsmod.ntfsresize_opts (self._o, device, size, force)
+
+    def btrfs_filesystem_resize (self, mountpoint, size=-1):
+        u"""This command resizes a btrfs filesystem.
+        
+        Note that unlike other resize calls, the filesystem has
+        to be mounted and the parameter is the mountpoint not
+        the device (this is a requirement of btrfs itself).
+        
+        The optional parameters are:
+        
+        "size"
+        The new size (in bytes) of the filesystem. If
+        omitted, the filesystem is resized to the maximum
+        size.
+        
+        See also btrfs(8).
+        """
+        self._check_not_closed ()
+        return libguestfsmod.btrfs_filesystem_resize (self._o, mountpoint, size)
+
+    def write_append (self, path, content):
+        u"""This call appends "content" to the end of file "path".
+        If "path" does not exist, then a new file is created.
+        
+        See also "g.write".
+        
+        Because of the message protocol, there is a transfer
+        limit of somewhere between 2MB and 4MB. See "PROTOCOL
+        LIMITS" in guestfs(3).
+        """
+        self._check_not_closed ()
+        return libguestfsmod.write_append (self._o, path, content)
 

@@ -1,5 +1,5 @@
-# gnulib-common.m4 serial 20
-dnl Copyright (C) 2007-2010 Free Software Foundation, Inc.
+# gnulib-common.m4 serial 25
+dnl Copyright (C) 2007-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -34,6 +34,20 @@ AC_DEFUN([gl_COMMON_BODY], [
 /* The name _UNUSED_PARAMETER_ is an earlier spelling, although the name
    is a misnomer outside of parameter lists.  */
 #define _UNUSED_PARAMETER_ _GL_UNUSED
+
+/* The __pure__ attribute was added in gcc 2.96.  */
+#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 96)
+# define _GL_ATTRIBUTE_PURE __attribute__ ((__pure__))
+#else
+# define _GL_ATTRIBUTE_PURE /* empty */
+#endif
+
+/* The __const__ attribute was added in gcc 2.95.  */
+#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 95)
+# define _GL_ATTRIBUTE_CONST __attribute__ ((__const__))
+#else
+# define _GL_ATTRIBUTE_CONST /* empty */
+#endif
 ])
   dnl Preparation for running test programs:
   dnl Tell glibc to write diagnostics from -D_FORTIFY_SOURCE=2 to stderr, not
@@ -100,6 +114,40 @@ AC_DEFUN([gl_MODULE_INDICATOR_FOR_TESTS],
       [abcdefghijklmnopqrstuvwxyz./-],
       [ABCDEFGHIJKLMNOPQRSTUVWXYZ___]), [1],
     [Define to 1 when the gnulib module $1 should be tested.])
+])
+
+# gl_ASSERT_NO_GNULIB_POSIXCHECK
+# asserts that there will never be a need to #define GNULIB_POSIXCHECK.
+# and thereby enables an optimization of configure and config.h.
+# Used by Emacs.
+AC_DEFUN([gl_ASSERT_NO_GNULIB_POSIXCHECK],
+[
+  dnl Override gl_WARN_ON_USE_PREPARE.
+  dnl But hide this definition from 'aclocal'.
+  AC_DEFUN([gl_W][ARN_ON_USE_PREPARE], [])
+])
+
+# gl_ASSERT_NO_GNULIB_TESTS
+# asserts that there will be no gnulib tests in the scope of the configure.ac
+# and thereby enables an optimization of config.h.
+# Used by Emacs.
+AC_DEFUN([gl_ASSERT_NO_GNULIB_TESTS],
+[
+  dnl Override gl_MODULE_INDICATOR_FOR_TESTS.
+  AC_DEFUN([gl_MODULE_INDICATOR_FOR_TESTS], [])
+])
+
+# Test whether <features.h> exists.
+# Set HAVE_FEATURES_H.
+AC_DEFUN([gl_FEATURES_H],
+[
+  AC_CHECK_HEADERS_ONCE([features.h])
+  if test $ac_cv_header_features_h = yes; then
+    HAVE_FEATURES_H=1
+  else
+    HAVE_FEATURES_H=0
+  fi
+  AC_SUBST([HAVE_FEATURES_H])
 ])
 
 # m4_foreach_w

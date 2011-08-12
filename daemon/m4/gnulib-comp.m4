@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2010 Free Software Foundation, Inc.
+# Copyright (C) 2002-2011 Free Software Foundation, Inc.
 #
 # This file is free software, distributed under the terms of the GNU
 # General Public License.  As a special exception to the GNU General
@@ -12,7 +12,8 @@
 # This file represents the compiled summary of the specification in
 # gnulib-cache.m4. It lists the computed macro invocations that need
 # to be invoked from configure.ac.
-# In projects using CVS, this file can be treated like other built files.
+# In projects that use version control, this file can be treated like
+# other built files.
 
 
 # This macro should be invoked from ./configure.ac, in the section
@@ -25,6 +26,7 @@ AC_DEFUN([gl_EARLY],
   m4_pattern_allow([^gl_LIBOBJS$])dnl a variable
   m4_pattern_allow([^gl_LTLIBOBJS$])dnl a variable
   AC_REQUIRE([AC_PROG_RANLIB])
+  AC_REQUIRE([AM_PROG_CC_C_O])
   # Code from module accept:
   # Code from module alignof:
   # Code from module alignof-tests:
@@ -39,6 +41,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module bind:
   # Code from module bitrotate:
   # Code from module bitrotate-tests:
+  # Code from module btowc:
+  # Code from module btowc-tests:
   # Code from module byteswap:
   # Code from module byteswap-tests:
   # Code from module c++defs:
@@ -51,18 +55,19 @@ AC_DEFUN([gl_EARLY],
   # Code from module cloexec:
   # Code from module cloexec-tests:
   # Code from module close:
-  # Code from module close-hook:
   # Code from module configmake:
   # Code from module connect:
-  # Code from module d-ino:
   # Code from module d-type:
   # Code from module dirent:
   # Code from module dirent-tests:
   # Code from module dirfd:
   # Code from module dirname-lgpl:
+  # Code from module dosname:
   # Code from module double-slash-root:
   # Code from module dup2:
   # Code from module dup2-tests:
+  # Code from module environ:
+  # Code from module environ-tests:
   # Code from module errno:
   # Code from module errno-tests:
   # Code from module error:
@@ -72,25 +77,42 @@ AC_DEFUN([gl_EARLY],
   # Code from module fchdir:
   # Code from module fchdir-tests:
   # Code from module fclose:
+  # Code from module fclose-tests:
   # Code from module fcntl:
   # Code from module fcntl-h:
   # Code from module fcntl-h-tests:
   # Code from module fcntl-tests:
+  # Code from module fd-hook:
   # Code from module fd-safer-flag:
   # Code from module fdopendir:
   # Code from module fdopendir-tests:
+  # Code from module fflush:
+  AC_REQUIRE([AC_FUNC_FSEEKO])
+  # Code from module fflush-tests:
+  # Code from module filenamecat-lgpl:
   # Code from module float:
   # Code from module fnmatch:
   # Code from module fnmatch-tests:
+  # Code from module fpurge:
+  # Code from module fpurge-tests:
+  # Code from module freading:
+  # Code from module freading-tests:
+  # Code from module fseeko:
+  AC_REQUIRE([AC_FUNC_FSEEKO])
+  # Code from module fseeko-tests:
   # Code from module fsusage:
+  # Code from module ftell:
+  # Code from module ftell-tests:
+  # Code from module ftello:
+  AC_REQUIRE([AC_FUNC_FSEEKO])
+  # Code from module ftello-tests:
   # Code from module full-read:
-  # Code from module full-write:
   # Code from module futimens:
   # Code from module futimens-tests:
   # Code from module getaddrinfo:
   # Code from module getaddrinfo-tests:
-  # Code from module getcwd:
-  # Code from module getcwd-tests:
+  # Code from module getcwd-lgpl:
+  # Code from module getcwd-lgpl-tests:
   # Code from module getdelim:
   # Code from module getdelim-tests:
   # Code from module getdtablesize:
@@ -112,26 +134,40 @@ AC_DEFUN([gl_EARLY],
   # Code from module hash:
   # Code from module hash-pjw:
   # Code from module hash-tests:
+  # Code from module havelib:
   # Code from module hostent:
   # Code from module ignore-value:
+  # Code from module ignore-value-tests:
   # Code from module include_next:
   # Code from module inet_ntop:
   # Code from module inet_ntop-tests:
   # Code from module inet_pton:
   # Code from module inet_pton-tests:
-  # Code from module inline:
   # Code from module intprops:
+  # Code from module intprops-tests:
   # Code from module inttostr:
+  # Code from module inttostr-tests:
+  # Code from module inttypes:
+  # Code from module inttypes-incomplete:
+  # Code from module inttypes-tests:
   # Code from module ioctl:
   # Code from module lchown:
   # Code from module lchown-tests:
   # Code from module listen:
   # Code from module localcharset:
+  # Code from module locale:
+  # Code from module locale-tests:
+  # Code from module localename:
+  # Code from module localename-tests:
+  # Code from module lock:
+  # Code from module lock-tests:
   # Code from module lseek:
   # Code from module lseek-tests:
   # Code from module lstat:
   # Code from module lstat-tests:
   # Code from module malloc-posix:
+  # Code from module malloca:
+  # Code from module malloca-tests:
   # Code from module manywarnings:
   # Code from module mbrtowc:
   # Code from module mbrtowc-tests:
@@ -139,6 +175,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module mbsinit-tests:
   # Code from module mbsrtowcs:
   # Code from module mbsrtowcs-tests:
+  # Code from module mbtowc:
   # Code from module memchr:
   # Code from module memchr-tests:
   # Code from module mempcpy:
@@ -161,28 +198,36 @@ AC_DEFUN([gl_EARLY],
   # Code from module pathmax:
   # Code from module perror:
   # Code from module perror-tests:
+  # Code from module pipe-posix:
+  # Code from module pipe-posix-tests:
   # Code from module pread:
   # Code from module pread-tests:
   # Code from module priv-set:
   # Code from module priv-set-tests:
   # Code from module progname:
+  # Code from module putenv:
   # Code from module rawmemchr:
   # Code from module rawmemchr-tests:
+  # Code from module read:
   # Code from module read-file:
   # Code from module read-file-tests:
   # Code from module readlink:
   # Code from module readlink-tests:
-  # Code from module realloc:
+  # Code from module realloc-gnu:
+  # Code from module realloc-gnu-tests:
   # Code from module realloc-posix:
   # Code from module rmdir:
   # Code from module rmdir-tests:
   # Code from module safe-read:
-  # Code from module safe-write:
   # Code from module same-inode:
   # Code from module save-cwd:
   # Code from module select:
   # Code from module select-tests:
   # Code from module servent:
+  # Code from module setenv:
+  # Code from module setenv-tests:
+  # Code from module setlocale:
+  # Code from module setlocale-tests:
   # Code from module setsockopt:
   # Code from module size_max:
   # Code from module sleep:
@@ -190,6 +235,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module snprintf:
   # Code from module snprintf-tests:
   # Code from module socket:
+  # Code from module socketlib:
   # Code from module sockets:
   # Code from module sockets-tests:
   # Code from module socklen:
@@ -213,11 +259,15 @@ AC_DEFUN([gl_EARLY],
   # Code from module strdup-posix:
   # Code from module streq:
   # Code from module strerror:
+  # Code from module strerror-override:
   # Code from module strerror-tests:
+  # Code from module strerror_r-posix:
+  # Code from module strerror_r-posix-tests:
   # Code from module string:
   # Code from module string-tests:
   # Code from module strndup:
   # Code from module strnlen:
+  # Code from module strnlen-tests:
   # Code from module strnlen1:
   # Code from module symlink:
   # Code from module symlink-tests:
@@ -233,9 +283,14 @@ AC_DEFUN([gl_EARLY],
   # Code from module sys_stat-tests:
   # Code from module sys_time:
   # Code from module sys_time-tests:
+  # Code from module sys_uio:
+  # Code from module sys_uio-tests:
   # Code from module sys_wait:
   # Code from module sys_wait-tests:
   # Code from module tempname:
+  # Code from module thread:
+  # Code from module threadlib:
+  gl_THREADLIB_EARLY
   # Code from module time:
   # Code from module time-tests:
   # Code from module timespec:
@@ -246,6 +301,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module unlink:
   # Code from module unlink-tests:
   # Code from module unlinkdir:
+  # Code from module unsetenv:
+  # Code from module unsetenv-tests:
   # Code from module usleep:
   # Code from module usleep-tests:
   # Code from module utimecmp:
@@ -261,15 +318,15 @@ AC_DEFUN([gl_EARLY],
   # Code from module warnings:
   # Code from module wchar:
   # Code from module wchar-tests:
+  # Code from module wcrtomb:
+  # Code from module wcrtomb-tests:
   # Code from module wctob:
-  # Code from module wctype:
-  # Code from module wctype-tests:
-  # Code from module write:
-  # Code from module xalloc:
-  # Code from module xalloc-die:
-  # Code from module xalloc-die-tests:
-  # Code from module xgetcwd:
+  # Code from module wctomb:
+  # Code from module wctype-h:
+  # Code from module wctype-h-tests:
+  # Code from module xalloc-oversized:
   # Code from module xsize:
+  # Code from module yield:
 ])
 
 # This macro should be invoked from ./configure.ac, in the section
@@ -288,345 +345,234 @@ AC_DEFUN([gl_INIT],
   m4_pushdef([gl_LIBSOURCES_DIR], [])
   gl_COMMON
   gl_source_base='lib'
-  # Code from module alignof:
-  # Code from module alloca:
-  # Code from module alloca-opt:
-  gl_FUNC_ALLOCA
-  # Code from module arg-nonnull:
-  # Code from module arpa_inet:
-  gl_HEADER_ARPA_INET
-  AC_PROG_MKDIR_P
-  # Code from module bitrotate:
-  AC_REQUIRE([AC_C_INLINE])
-  # Code from module byteswap:
-  gl_BYTESWAP
-  # Code from module c++defs:
-  # Code from module c-ctype:
-  # Code from module chdir-long:
-  gl_FUNC_CHDIR_LONG
-  # Code from module chown:
-  gl_FUNC_CHOWN
-  gl_UNISTD_MODULE_INDICATOR([chown])
-  # Code from module clock-time:
-  gl_CLOCK_TIME
-  # Code from module cloexec:
-  gl_CLOEXEC
-  gl_MODULE_INDICATOR_FOR_TESTS([cloexec])
-  # Code from module close:
-  gl_FUNC_CLOSE
-  gl_UNISTD_MODULE_INDICATOR([close])
-  # Code from module close-hook:
-  # Code from module configmake:
-  # Code from module connect:
-  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
-  if test "$ac_cv_header_winsock2_h" = yes; then
-    AC_LIBOBJ([connect])
-  fi
-  gl_SYS_SOCKET_MODULE_INDICATOR([connect])
-  # Code from module d-ino:
-  gl_CHECK_TYPE_STRUCT_DIRENT_D_INO
-  # Code from module d-type:
-  gl_CHECK_TYPE_STRUCT_DIRENT_D_TYPE
-  # Code from module dirent:
-  gl_DIRENT_H
-  # Code from module dirfd:
-  gl_FUNC_DIRFD
-  gl_DIRENT_MODULE_INDICATOR([dirfd])
-  # Code from module dirname-lgpl:
-  gl_DIRNAME_LGPL
-  # Code from module double-slash-root:
-  gl_DOUBLE_SLASH_ROOT
-  # Code from module dup2:
-  gl_FUNC_DUP2
-  gl_UNISTD_MODULE_INDICATOR([dup2])
-  # Code from module errno:
-  gl_HEADER_ERRNO_H
-  # Code from module error:
-  gl_ERROR
-  m4_ifdef([AM_XGETTEXT_OPTION],
-    [AM_][XGETTEXT_OPTION([--flag=error:3:c-format])
-     AM_][XGETTEXT_OPTION([--flag=error_at_line:5:c-format])])
-  # Code from module exitfail:
-  # Code from module extensions:
-  # Code from module fchdir:
-  gl_FUNC_FCHDIR
-  gl_UNISTD_MODULE_INDICATOR([fchdir])
-  # Code from module fclose:
-  gl_FUNC_FCLOSE
-  gl_STDIO_MODULE_INDICATOR([fclose])
-  # Code from module fcntl:
-  gl_FUNC_FCNTL
-  gl_FCNTL_MODULE_INDICATOR([fcntl])
-  # Code from module fcntl-h:
-  gl_FCNTL_H
-  # Code from module fdopendir:
-  gl_FUNC_FDOPENDIR
-  gl_DIRENT_MODULE_INDICATOR([fdopendir])
-  gl_MODULE_INDICATOR([fdopendir])
-  # Code from module float:
-  gl_FLOAT_H
-  # Code from module fnmatch:
-  gl_FUNC_FNMATCH_POSIX
-  # Code from module fsusage:
-  gl_FSUSAGE
-  # Code from module full-read:
-  # Code from module full-write:
-  # Code from module futimens:
-  gl_FUNC_FUTIMENS
-  gl_SYS_STAT_MODULE_INDICATOR([futimens])
-  # Code from module getaddrinfo:
-  gl_GETADDRINFO
-  gl_NETDB_MODULE_INDICATOR([getaddrinfo])
-  # Code from module getcwd:
-  gl_FUNC_GETCWD
-  gl_UNISTD_MODULE_INDICATOR([getcwd])
-  # Code from module getdelim:
-  gl_FUNC_GETDELIM
-  gl_STDIO_MODULE_INDICATOR([getdelim])
-  # Code from module getdtablesize:
-  gl_FUNC_GETDTABLESIZE
-  gl_UNISTD_MODULE_INDICATOR([getdtablesize])
-  # Code from module getline:
-  gl_FUNC_GETLINE
-  gl_STDIO_MODULE_INDICATOR([getline])
-  # Code from module getlogin_r:
-  gl_FUNC_GETLOGIN_R
-  gl_UNISTD_MODULE_INDICATOR([getlogin_r])
-  # Code from module gettext-h:
-  AC_SUBST([LIBINTL])
-  AC_SUBST([LTLIBINTL])
-  # Code from module gettime:
-  gl_GETTIME
-  # Code from module gettimeofday:
-  gl_FUNC_GETTIMEOFDAY
-  gl_SYS_TIME_MODULE_INDICATOR([gettimeofday])
-  # Code from module glob:
-  gl_GLOB
-  # Code from module hash:
-  gl_HASH
-  # Code from module hostent:
-  gl_HOSTENT
-  # Code from module ignore-value:
-  AC_REQUIRE([AC_C_INLINE])
-  # Code from module include_next:
-  # Code from module inet_ntop:
-  gl_FUNC_INET_NTOP
-  gl_ARPA_INET_MODULE_INDICATOR([inet_ntop])
-  # Code from module inline:
-  gl_INLINE
-  # Code from module intprops:
-  # Code from module lchown:
-  gl_FUNC_LCHOWN
-  gl_UNISTD_MODULE_INDICATOR([lchown])
-  # Code from module localcharset:
-  gl_LOCALCHARSET
-  LOCALCHARSET_TESTS_ENVIRONMENT="CHARSETALIASDIR=\"\$(top_builddir)/$gl_source_base\""
-  AC_SUBST([LOCALCHARSET_TESTS_ENVIRONMENT])
-  # Code from module lseek:
-  gl_FUNC_LSEEK
-  gl_UNISTD_MODULE_INDICATOR([lseek])
-  # Code from module lstat:
-  gl_FUNC_LSTAT
-  gl_SYS_STAT_MODULE_INDICATOR([lstat])
-  # Code from module malloc-posix:
-  gl_FUNC_MALLOC_POSIX
-  gl_STDLIB_MODULE_INDICATOR([malloc-posix])
-  # Code from module manywarnings:
-  # Code from module mbrtowc:
-  gl_FUNC_MBRTOWC
-  gl_WCHAR_MODULE_INDICATOR([mbrtowc])
-  # Code from module mbsinit:
-  gl_FUNC_MBSINIT
-  gl_WCHAR_MODULE_INDICATOR([mbsinit])
-  # Code from module mbsrtowcs:
-  gl_FUNC_MBSRTOWCS
-  gl_WCHAR_MODULE_INDICATOR([mbsrtowcs])
-  # Code from module memchr:
-  gl_FUNC_MEMCHR
-  gl_STRING_MODULE_INDICATOR([memchr])
-  # Code from module mempcpy:
-  gl_FUNC_MEMPCPY
-  gl_STRING_MODULE_INDICATOR([mempcpy])
-  # Code from module memrchr:
-  gl_FUNC_MEMRCHR
-  gl_STRING_MODULE_INDICATOR([memrchr])
-  # Code from module mkdir:
-  gl_FUNC_MKDIR
-  # Code from module mkdtemp:
-  gt_FUNC_MKDTEMP
-  gl_STDLIB_MODULE_INDICATOR([mkdtemp])
-  # Code from module multiarch:
-  gl_MULTIARCH
-  # Code from module netdb:
-  gl_HEADER_NETDB
-  # Code from module netinet_in:
-  gl_HEADER_NETINET_IN
-  AC_PROG_MKDIR_P
-  # Code from module open:
-  gl_FUNC_OPEN
-  gl_FCNTL_MODULE_INDICATOR([open])
-  # Code from module openat:
-  gl_FUNC_OPENAT
-  # Code from module openat-die:
-  # Code from module perror:
-  gl_FUNC_PERROR
-  gl_STRING_MODULE_INDICATOR([perror])
-  # Code from module pread:
-  gl_FUNC_PREAD
-  gl_UNISTD_MODULE_INDICATOR([pread])
-  # Code from module rawmemchr:
-  gl_FUNC_RAWMEMCHR
-  gl_STRING_MODULE_INDICATOR([rawmemchr])
-  # Code from module read-file:
-  gl_FUNC_READ_FILE
-  # Code from module readlink:
-  gl_FUNC_READLINK
-  gl_UNISTD_MODULE_INDICATOR([readlink])
-  # Code from module realloc-posix:
-  gl_FUNC_REALLOC_POSIX
-  gl_STDLIB_MODULE_INDICATOR([realloc-posix])
-  # Code from module rmdir:
-  gl_FUNC_RMDIR
-  gl_UNISTD_MODULE_INDICATOR([rmdir])
-  # Code from module safe-read:
-  gl_SAFE_READ
-  # Code from module safe-write:
-  gl_SAFE_WRITE
-  # Code from module same-inode:
-  # Code from module save-cwd:
-  gl_SAVE_CWD
-  # Code from module select:
-  gl_FUNC_SELECT
-  gl_SYS_SELECT_MODULE_INDICATOR([select])
-  # Code from module servent:
-  gl_SERVENT
-  # Code from module size_max:
-  gl_SIZE_MAX
-  # Code from module sleep:
-  gl_FUNC_SLEEP
-  gl_UNISTD_MODULE_INDICATOR([sleep])
-  # Code from module snprintf:
-  gl_FUNC_SNPRINTF
-  gl_STDIO_MODULE_INDICATOR([snprintf])
-  # Code from module socket:
-  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
-  if test "$ac_cv_header_winsock2_h" = yes; then
-    AC_LIBOBJ([socket])
-  fi
-  # When this module is used, sockets may actually occur as file descriptors,
-  # hence it is worth warning if the modules 'close' and 'ioctl' are not used.
-  m4_ifdef([gl_UNISTD_H_DEFAULTS], [AC_REQUIRE([gl_UNISTD_H_DEFAULTS])])
-  m4_ifdef([gl_SYS_IOCTL_H_DEFAULTS], [AC_REQUIRE([gl_SYS_IOCTL_H_DEFAULTS])])
-  AC_REQUIRE([gl_PREREQ_SYS_H_WINSOCK2])
-  if test "$ac_cv_header_winsock2_h" = yes; then
-    UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS=1
-    SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS=1
-  fi
-  gl_SYS_SOCKET_MODULE_INDICATOR([socket])
-  # Code from module sockets:
-  gl_SOCKETS
-  # Code from module socklen:
-  gl_TYPE_SOCKLEN_T
-  # Code from module ssize_t:
-  gt_TYPE_SSIZE_T
-  # Code from module stat:
-  gl_FUNC_STAT
-  gl_SYS_STAT_MODULE_INDICATOR([stat])
-  # Code from module stat-time:
-  gl_STAT_TIME
-  gl_STAT_BIRTHTIME
-  # Code from module stdbool:
-  AM_STDBOOL_H
-  # Code from module stddef:
-  gl_STDDEF_H
-  # Code from module stdint:
-  gl_STDINT_H
-  # Code from module stdio:
-  gl_STDIO_H
-  # Code from module stdlib:
-  gl_STDLIB_H
-  # Code from module strchrnul:
-  gl_FUNC_STRCHRNUL
-  gl_STRING_MODULE_INDICATOR([strchrnul])
-  # Code from module strdup-posix:
-  gl_FUNC_STRDUP_POSIX
-  gl_STRING_MODULE_INDICATOR([strdup])
-  # Code from module streq:
-  # Code from module strerror:
-  gl_FUNC_STRERROR
-  gl_STRING_MODULE_INDICATOR([strerror])
-  # Code from module string:
-  gl_HEADER_STRING_H
-  # Code from module strndup:
-  gl_FUNC_STRNDUP
-  gl_STRING_MODULE_INDICATOR([strndup])
-  # Code from module strnlen:
-  gl_FUNC_STRNLEN
-  gl_STRING_MODULE_INDICATOR([strnlen])
-  # Code from module strnlen1:
-  # Code from module symlink:
-  gl_FUNC_SYMLINK
-  gl_UNISTD_MODULE_INDICATOR([symlink])
-  # Code from module symlinkat:
-  gl_FUNC_SYMLINKAT
-  gl_UNISTD_MODULE_INDICATOR([symlinkat])
-  gl_UNISTD_MODULE_INDICATOR([readlinkat])
-  # Code from module sys_select:
-  gl_HEADER_SYS_SELECT
-  AC_PROG_MKDIR_P
-  # Code from module sys_socket:
-  gl_HEADER_SYS_SOCKET
-  AC_PROG_MKDIR_P
-  # Code from module sys_stat:
-  gl_HEADER_SYS_STAT_H
-  AC_PROG_MKDIR_P
-  # Code from module sys_time:
-  gl_HEADER_SYS_TIME_H
-  AC_PROG_MKDIR_P
-  # Code from module sys_wait:
-  gl_SYS_WAIT_H
-  AC_PROG_MKDIR_P
-  # Code from module tempname:
-  gl_FUNC_GEN_TEMPNAME
-  # Code from module time:
-  gl_HEADER_TIME_H
-  # Code from module timespec:
-  gl_TIMESPEC
-  # Code from module unistd:
-  gl_UNISTD_H
-  # Code from module unistd-safer:
-  gl_UNISTD_SAFER
-  # Code from module unlink:
-  gl_FUNC_UNLINK
-  gl_UNISTD_MODULE_INDICATOR([unlink])
-  # Code from module utimens:
-  gl_UTIMENS
-  # Code from module vasnprintf:
-  gl_FUNC_VASNPRINTF
-  # Code from module vasprintf:
-  gl_FUNC_VASPRINTF
-  gl_STDIO_MODULE_INDICATOR([vasprintf])
-  m4_ifdef([AM_XGETTEXT_OPTION],
-    [AM_][XGETTEXT_OPTION([--flag=asprintf:2:c-format])
-     AM_][XGETTEXT_OPTION([--flag=vasprintf:2:c-format])])
-  # Code from module verify:
-  # Code from module warn-on-use:
-  # Code from module warnings:
-  AC_SUBST([WARN_CFLAGS])
-  # Code from module wchar:
-  gl_WCHAR_H
-  # Code from module wctype:
-  gl_WCTYPE_H
-  # Code from module write:
-  gl_FUNC_WRITE
-  gl_UNISTD_MODULE_INDICATOR([write])
-  # Code from module xalloc:
-  gl_XALLOC
-  # Code from module xalloc-die:
-  # Code from module xgetcwd:
-  gl_XGETCWD
-  # Code from module xsize:
-  gl_XSIZE
+gl_FUNC_ALLOCA
+gl_HEADER_ARPA_INET
+AC_PROG_MKDIR_P
+AC_REQUIRE([AC_C_INLINE])
+gl_BYTESWAP
+gl_FUNC_CHDIR_LONG
+gl_FUNC_CHOWN
+gl_UNISTD_MODULE_INDICATOR([chown])
+gl_CLOCK_TIME
+gl_CLOEXEC
+gl_MODULE_INDICATOR_FOR_TESTS([cloexec])
+gl_FUNC_CLOSE
+gl_UNISTD_MODULE_INDICATOR([close])
+gl_CONFIGMAKE_PREP
+AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+if test "$ac_cv_header_winsock2_h" = yes; then
+  AC_LIBOBJ([connect])
+fi
+gl_SYS_SOCKET_MODULE_INDICATOR([connect])
+gl_CHECK_TYPE_STRUCT_DIRENT_D_TYPE
+gl_DIRENT_H
+gl_FUNC_DIRFD
+gl_DIRENT_MODULE_INDICATOR([dirfd])
+gl_DIRNAME_LGPL
+gl_DOUBLE_SLASH_ROOT
+gl_FUNC_DUP2
+gl_UNISTD_MODULE_INDICATOR([dup2])
+gl_HEADER_ERRNO_H
+gl_ERROR
+m4_ifdef([AM_XGETTEXT_OPTION],
+  [AM_][XGETTEXT_OPTION([--flag=error:3:c-format])
+   AM_][XGETTEXT_OPTION([--flag=error_at_line:5:c-format])])
+gl_FUNC_FCHDIR
+gl_UNISTD_MODULE_INDICATOR([fchdir])
+gl_FUNC_FCLOSE
+gl_STDIO_MODULE_INDICATOR([fclose])
+gl_FUNC_FCNTL
+gl_FCNTL_MODULE_INDICATOR([fcntl])
+gl_FCNTL_H
+gl_FUNC_FDOPENDIR
+gl_DIRENT_MODULE_INDICATOR([fdopendir])
+gl_MODULE_INDICATOR([fdopendir])
+gl_FUNC_FFLUSH
+gl_MODULE_INDICATOR([fflush])
+gl_STDIO_MODULE_INDICATOR([fflush])
+gl_FILE_NAME_CONCAT_LGPL
+gl_FLOAT_H
+gl_FUNC_FNMATCH_POSIX
+gl_FUNC_FPURGE
+gl_STDIO_MODULE_INDICATOR([fpurge])
+gl_FUNC_FREADING
+gl_FUNC_FSEEKO
+gl_STDIO_MODULE_INDICATOR([fseeko])
+gl_FSUSAGE
+gl_FUNC_FTELLO
+gl_STDIO_MODULE_INDICATOR([ftello])
+gl_FUNC_FUTIMENS
+gl_SYS_STAT_MODULE_INDICATOR([futimens])
+gl_GETADDRINFO
+gl_NETDB_MODULE_INDICATOR([getaddrinfo])
+gl_FUNC_GETCWD_LGPL
+gl_UNISTD_MODULE_INDICATOR([getcwd])
+gl_FUNC_GETDELIM
+gl_STDIO_MODULE_INDICATOR([getdelim])
+gl_FUNC_GETDTABLESIZE
+gl_UNISTD_MODULE_INDICATOR([getdtablesize])
+gl_FUNC_GETLINE
+gl_STDIO_MODULE_INDICATOR([getline])
+gl_FUNC_GETLOGIN_R
+gl_UNISTD_MODULE_INDICATOR([getlogin_r])
+AC_SUBST([LIBINTL])
+AC_SUBST([LTLIBINTL])
+gl_GETTIME
+gl_FUNC_GETTIMEOFDAY
+gl_SYS_TIME_MODULE_INDICATOR([gettimeofday])
+gl_GLOB
+gl_HASH
+gl_HOSTENT
+AC_REQUIRE([AC_C_INLINE])
+gl_FUNC_INET_NTOP
+gl_ARPA_INET_MODULE_INDICATOR([inet_ntop])
+gl_FUNC_LCHOWN
+gl_UNISTD_MODULE_INDICATOR([lchown])
+gl_LOCALCHARSET
+LOCALCHARSET_TESTS_ENVIRONMENT="CHARSETALIASDIR=\"\$(top_builddir)/$gl_source_base\""
+AC_SUBST([LOCALCHARSET_TESTS_ENVIRONMENT])
+gl_LOCK
+gl_FUNC_LSEEK
+gl_UNISTD_MODULE_INDICATOR([lseek])
+gl_FUNC_LSTAT
+gl_SYS_STAT_MODULE_INDICATOR([lstat])
+gl_FUNC_MALLOC_POSIX
+gl_STDLIB_MODULE_INDICATOR([malloc-posix])
+gl_FUNC_MBRTOWC
+gl_WCHAR_MODULE_INDICATOR([mbrtowc])
+gl_FUNC_MBSINIT
+gl_WCHAR_MODULE_INDICATOR([mbsinit])
+gl_FUNC_MBSRTOWCS
+gl_WCHAR_MODULE_INDICATOR([mbsrtowcs])
+gl_FUNC_MEMCHR
+gl_STRING_MODULE_INDICATOR([memchr])
+gl_FUNC_MEMPCPY
+gl_STRING_MODULE_INDICATOR([mempcpy])
+gl_FUNC_MEMRCHR
+gl_STRING_MODULE_INDICATOR([memrchr])
+gl_FUNC_MKDIR
+gl_FUNC_MKDTEMP
+gl_STDLIB_MODULE_INDICATOR([mkdtemp])
+gl_MULTIARCH
+gl_HEADER_NETDB
+gl_HEADER_NETINET_IN
+AC_PROG_MKDIR_P
+gl_FUNC_OPEN
+gl_FCNTL_MODULE_INDICATOR([open])
+gl_FUNC_OPENAT
+gl_FUNC_PERROR
+gl_STRING_MODULE_INDICATOR([perror])
+if test $REPLACE_PERROR = 1; then
+  AC_LIBOBJ([perror])
+fi
+gl_FUNC_PREAD
+gl_UNISTD_MODULE_INDICATOR([pread])
+gl_FUNC_RAWMEMCHR
+gl_STRING_MODULE_INDICATOR([rawmemchr])
+gl_FUNC_READ
+gl_UNISTD_MODULE_INDICATOR([read])
+gl_FUNC_READ_FILE
+gl_FUNC_READLINK
+gl_UNISTD_MODULE_INDICATOR([readlink])
+gl_FUNC_REALLOC_POSIX
+gl_STDLIB_MODULE_INDICATOR([realloc-posix])
+gl_FUNC_RMDIR
+gl_UNISTD_MODULE_INDICATOR([rmdir])
+gl_SAFE_READ
+gl_SAVE_CWD
+gl_FUNC_SELECT
+gl_SYS_SELECT_MODULE_INDICATOR([select])
+gl_SERVENT
+gl_SIZE_MAX
+gl_FUNC_SLEEP
+gl_UNISTD_MODULE_INDICATOR([sleep])
+gl_FUNC_SNPRINTF
+gl_STDIO_MODULE_INDICATOR([snprintf])
+gl_MODULE_INDICATOR([snprintf])
+AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+if test "$ac_cv_header_winsock2_h" = yes; then
+  AC_LIBOBJ([socket])
+fi
+# When this module is used, sockets may actually occur as file descriptors,
+# hence it is worth warning if the modules 'close' and 'ioctl' are not used.
+m4_ifdef([gl_UNISTD_H_DEFAULTS], [AC_REQUIRE([gl_UNISTD_H_DEFAULTS])])
+m4_ifdef([gl_SYS_IOCTL_H_DEFAULTS], [AC_REQUIRE([gl_SYS_IOCTL_H_DEFAULTS])])
+AC_REQUIRE([gl_PREREQ_SYS_H_WINSOCK2])
+if test "$ac_cv_header_winsock2_h" = yes; then
+  UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS=1
+  SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS=1
+fi
+gl_SYS_SOCKET_MODULE_INDICATOR([socket])
+gl_SOCKETLIB
+gl_SOCKETS
+gl_TYPE_SOCKLEN_T
+gt_TYPE_SSIZE_T
+gl_FUNC_STAT
+gl_SYS_STAT_MODULE_INDICATOR([stat])
+gl_STAT_TIME
+gl_STAT_BIRTHTIME
+AM_STDBOOL_H
+gl_STDDEF_H
+gl_STDINT_H
+gl_STDIO_H
+gl_STDLIB_H
+gl_FUNC_STRCHRNUL
+gl_STRING_MODULE_INDICATOR([strchrnul])
+gl_FUNC_STRDUP_POSIX
+gl_STRING_MODULE_INDICATOR([strdup])
+gl_FUNC_STRERROR
+gl_MODULE_INDICATOR([strerror])
+gl_STRING_MODULE_INDICATOR([strerror])
+AC_REQUIRE([gl_HEADER_ERRNO_H])
+if test -n "$ERRNO_H"; then
+  AC_LIBOBJ([strerror-override])
+fi
+gl_FUNC_STRERROR_R
+if test $HAVE_DECL_STRERROR_R = 0 || test $REPLACE_STRERROR_R = 1; then
+  AC_LIBOBJ([strerror_r])
+  gl_PREREQ_STRERROR_R
+fi
+gl_STRING_MODULE_INDICATOR([strerror_r])
+gl_HEADER_STRING_H
+gl_FUNC_STRNDUP
+gl_STRING_MODULE_INDICATOR([strndup])
+gl_FUNC_STRNLEN
+gl_STRING_MODULE_INDICATOR([strnlen])
+gl_FUNC_SYMLINK
+gl_UNISTD_MODULE_INDICATOR([symlink])
+gl_FUNC_SYMLINKAT
+gl_UNISTD_MODULE_INDICATOR([symlinkat])
+gl_HEADER_SYS_SELECT
+AC_PROG_MKDIR_P
+gl_HEADER_SYS_SOCKET
+AC_PROG_MKDIR_P
+gl_HEADER_SYS_STAT_H
+AC_PROG_MKDIR_P
+gl_HEADER_SYS_TIME_H
+AC_PROG_MKDIR_P
+gl_HEADER_SYS_UIO
+AC_PROG_MKDIR_P
+gl_SYS_WAIT_H
+AC_PROG_MKDIR_P
+gl_FUNC_GEN_TEMPNAME
+gl_THREADLIB
+gl_HEADER_TIME_H
+gl_TIMESPEC
+gl_UNISTD_H
+gl_UNISTD_SAFER
+gl_FUNC_UNLINK
+gl_UNISTD_MODULE_INDICATOR([unlink])
+gl_UTIMENS
+gl_FUNC_VASNPRINTF
+gl_FUNC_VASPRINTF
+gl_STDIO_MODULE_INDICATOR([vasprintf])
+m4_ifdef([AM_XGETTEXT_OPTION],
+  [AM_][XGETTEXT_OPTION([--flag=asprintf:2:c-format])
+   AM_][XGETTEXT_OPTION([--flag=vasprintf:2:c-format])])
+AC_SUBST([WARN_CFLAGS])
+gl_WCHAR_H
+gl_WCTYPE_H
+gl_XSIZE
   # End of code from modules
   m4_ifval(gl_LIBSOURCES_LIST, [
     m4_syscmd([test ! -d ]m4_defn([gl_LIBSOURCES_DIR])[ ||
@@ -673,74 +619,130 @@ changequote([, ])dnl
   AC_SUBST([gltests_WITNESS])
   gl_module_indicator_condition=$gltests_WITNESS
   m4_pushdef([gl_MODULE_INDICATOR_CONDITION], [$gl_module_indicator_condition])
-  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
-  if test "$ac_cv_header_winsock2_h" = yes; then
-    AC_LIBOBJ([accept])
-  fi
-  gl_SYS_SOCKET_MODULE_INDICATOR([accept])
-  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
-  if test "$ac_cv_header_winsock2_h" = yes; then
-    AC_LIBOBJ([bind])
-  fi
-  gl_SYS_SOCKET_MODULE_INDICATOR([bind])
-  AC_CHECK_FUNCS_ONCE([getegid])
-  gl_MODULE_INDICATOR([fd-safer-flag])
-  gl_FUNC_GETGROUPS
-  gl_UNISTD_MODULE_INDICATOR([getgroups])
-  gl_FUNC_GETPAGESIZE
-  gl_UNISTD_MODULE_INDICATOR([getpagesize])
-  gl_GETUGROUPS
-  AC_C_BIGENDIAN
-  gl_FUNC_INET_PTON
-  gl_ARPA_INET_MODULE_INDICATOR([inet_pton])
-  AC_C_BIGENDIAN
-  gl_INTTOSTR
-  gl_FUNC_IOCTL
-  gl_SYS_IOCTL_MODULE_INDICATOR([ioctl])
-  AC_CHECK_FUNCS_ONCE([getegid])
-  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
-  if test "$ac_cv_header_winsock2_h" = yes; then
-    AC_LIBOBJ([listen])
-  fi
-  gl_SYS_SOCKET_MODULE_INDICATOR([listen])
-  gt_LOCALE_FR
-  gt_LOCALE_FR_UTF8
-  gt_LOCALE_JA
-  gt_LOCALE_ZH_CN
-  gt_LOCALE_FR_UTF8
-  gt_LOCALE_FR
-  gt_LOCALE_FR_UTF8
-  gt_LOCALE_JA
-  gt_LOCALE_ZH_CN
-  gl_FUNC_MMAP_ANON
-  AC_CHECK_HEADERS_ONCE([sys/mman.h])
-  AC_CHECK_FUNCS_ONCE([mprotect])
-  gl_MGETGROUPS
-  AC_CHECK_FUNCS_ONCE([getegid])
-  gl_PATHMAX
-  gl_PRIV_SET
-  AC_CHECK_DECLS([program_invocation_name], [], [], [#include <errno.h>])
-  AC_CHECK_DECLS([program_invocation_short_name], [], [], [#include <errno.h>])
-  AC_FUNC_REALLOC
-  AC_DEFINE([GNULIB_REALLOC_GNU], 1, [Define to indicate the 'realloc' module.])
-  AC_CHECK_HEADERS_ONCE([unistd.h sys/wait.h])
-  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
-  if test "$ac_cv_header_winsock2_h" = yes; then
-    AC_LIBOBJ([setsockopt])
-  fi
-  gl_SYS_SOCKET_MODULE_INDICATOR([setsockopt])
-  AC_CHECK_DECLS_ONCE([alarm])
-  gt_TYPE_WCHAR_T
-  gt_TYPE_WINT_T
-  gl_SYS_IOCTL_H
-  AC_PROG_MKDIR_P
-  AC_CHECK_FUNCS_ONCE([shutdown])
-  gl_UNLINKDIR
-  gl_FUNC_USLEEP
-  gl_UNISTD_MODULE_INDICATOR([usleep])
-  gl_UTIMECMP
-  gl_FUNC_WCTOB
-  gl_WCHAR_MODULE_INDICATOR([wctob])
+AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+if test "$ac_cv_header_winsock2_h" = yes; then
+  AC_LIBOBJ([accept])
+fi
+gl_SYS_SOCKET_MODULE_INDICATOR([accept])
+AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+if test "$ac_cv_header_winsock2_h" = yes; then
+  AC_LIBOBJ([bind])
+fi
+gl_SYS_SOCKET_MODULE_INDICATOR([bind])
+gl_FUNC_BTOWC
+gl_WCHAR_MODULE_INDICATOR([btowc])
+gt_LOCALE_FR
+gt_LOCALE_FR_UTF8
+AC_CHECK_FUNCS_ONCE([getegid])
+gl_ENVIRON
+gl_UNISTD_MODULE_INDICATOR([environ])
+gl_MODULE_INDICATOR([fd-safer-flag])
+gl_FUNC_UNGETC_WORKS
+gl_FUNC_FTELL
+gl_STDIO_MODULE_INDICATOR([ftell])
+gl_FUNC_UNGETC_WORKS
+gl_FUNC_UNGETC_WORKS
+gl_FUNC_GETGROUPS
+gl_UNISTD_MODULE_INDICATOR([getgroups])
+gl_FUNC_GETPAGESIZE
+gl_UNISTD_MODULE_INDICATOR([getpagesize])
+gl_GETUGROUPS
+AC_C_BIGENDIAN
+gl_FUNC_INET_PTON
+gl_ARPA_INET_MODULE_INDICATOR([inet_pton])
+AC_C_BIGENDIAN
+gl_INTTOSTR
+gl_INTTYPES_H
+gl_INTTYPES_INCOMPLETE
+gl_FUNC_IOCTL
+gl_SYS_IOCTL_MODULE_INDICATOR([ioctl])
+AC_CHECK_FUNCS_ONCE([getegid])
+AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+if test "$ac_cv_header_winsock2_h" = yes; then
+  AC_LIBOBJ([listen])
+fi
+gl_SYS_SOCKET_MODULE_INDICATOR([listen])
+gl_LOCALE_H
+AC_CHECK_FUNCS_ONCE([newlocale])
+gl_LOCALENAME
+AC_CHECK_FUNCS_ONCE([newlocale])
+gl_MALLOCA
+gt_LOCALE_FR
+gt_LOCALE_FR_UTF8
+gt_LOCALE_JA
+gt_LOCALE_ZH_CN
+gt_LOCALE_FR_UTF8
+gt_LOCALE_FR
+gt_LOCALE_FR_UTF8
+gt_LOCALE_JA
+gt_LOCALE_ZH_CN
+gl_FUNC_MBTOWC
+gl_STDLIB_MODULE_INDICATOR([mbtowc])
+dnl Check for prerequisites for memory fence checks.
+gl_FUNC_MMAP_ANON
+AC_CHECK_HEADERS_ONCE([sys/mman.h])
+AC_CHECK_FUNCS_ONCE([mprotect])
+gl_FUNC_MMAP_ANON
+AC_CHECK_HEADERS_ONCE([sys/mman.h])
+AC_CHECK_FUNCS_ONCE([mprotect])
+gl_MGETGROUPS
+AC_CHECK_FUNCS_ONCE([getegid])
+gl_PATHMAX
+gl_FUNC_PIPE
+gl_UNISTD_MODULE_INDICATOR([pipe])
+gl_PRIV_SET
+AC_CHECK_DECLS([program_invocation_name], [], [], [#include <errno.h>])
+AC_CHECK_DECLS([program_invocation_short_name], [], [], [#include <errno.h>])
+gl_FUNC_PUTENV
+gl_STDLIB_MODULE_INDICATOR([putenv])
+dnl Check for prerequisites for memory fence checks.
+gl_FUNC_MMAP_ANON
+AC_CHECK_HEADERS_ONCE([sys/mman.h])
+AC_CHECK_FUNCS_ONCE([mprotect])
+gl_FUNC_REALLOC_GNU
+gl_MODULE_INDICATOR([realloc-gnu])
+AC_CHECK_HEADERS_ONCE([sys/wait.h])
+gl_FUNC_SETENV
+gl_STDLIB_MODULE_INDICATOR([setenv])
+gl_FUNC_SETLOCALE
+gl_LOCALE_MODULE_INDICATOR([setlocale])
+gt_LOCALE_FR
+gt_LOCALE_FR_UTF8
+gt_LOCALE_JA
+gt_LOCALE_ZH_CN
+AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+if test "$ac_cv_header_winsock2_h" = yes; then
+  AC_LIBOBJ([setsockopt])
+fi
+gl_SYS_SOCKET_MODULE_INDICATOR([setsockopt])
+AC_CHECK_DECLS_ONCE([alarm])
+gt_TYPE_WCHAR_T
+gt_TYPE_WINT_T
+dnl Check for prerequisites for memory fence checks.
+gl_FUNC_MMAP_ANON
+AC_CHECK_HEADERS_ONCE([sys/mman.h])
+AC_CHECK_FUNCS_ONCE([mprotect])
+gl_SYS_IOCTL_H
+AC_PROG_MKDIR_P
+AC_CHECK_FUNCS_ONCE([shutdown])
+gl_THREAD
+gl_UNLINKDIR
+gl_FUNC_UNSETENV
+gl_STDLIB_MODULE_INDICATOR([unsetenv])
+gl_FUNC_USLEEP
+gl_UNISTD_MODULE_INDICATOR([usleep])
+gl_UTIMECMP
+gl_FUNC_WCRTOMB
+gl_WCHAR_MODULE_INDICATOR([wcrtomb])
+gt_LOCALE_FR
+gt_LOCALE_FR_UTF8
+gt_LOCALE_JA
+gt_LOCALE_ZH_CN
+gl_FUNC_WCTOB
+gl_WCHAR_MODULE_INDICATOR([wctob])
+gl_FUNC_WCTOMB
+gl_STDLIB_MODULE_INDICATOR([wctomb])
+gl_YIELD
   m4_popdef([gl_MODULE_INDICATOR_CONDITION])
   m4_ifval(gltests_LIBSOURCES_LIST, [
     m4_syscmd([test ! -d ]m4_defn([gltests_LIBSOURCES_DIR])[ ||
@@ -839,6 +841,7 @@ AC_DEFUN([gltests_LIBSOURCES], [
 AC_DEFUN([gl_FILE_LIST], [
   build-aux/arg-nonnull.h
   build-aux/c++defs.h
+  build-aux/config.rpath
   build-aux/warn-on-use.h
   lib/alignof.h
   lib/alloca.c
@@ -857,8 +860,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/chown.c
   lib/cloexec.c
   lib/cloexec.h
-  lib/close-hook.c
-  lib/close-hook.h
   lib/close.c
   lib/config.charset
   lib/connect.c
@@ -866,6 +867,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/dirfd.c
   lib/dirname-lgpl.c
   lib/dirname.h
+  lib/dosname.h
   lib/dup-safer.c
   lib/dup2.c
   lib/errno.in.h
@@ -880,24 +882,33 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/fclose.c
   lib/fcntl.c
   lib/fcntl.in.h
+  lib/fd-hook.c
+  lib/fd-hook.h
   lib/fd-safer.c
   lib/fdopendir.c
+  lib/fflush.c
+  lib/filenamecat-lgpl.c
+  lib/filenamecat.h
   lib/float+.h
   lib/float.in.h
   lib/fnmatch.c
   lib/fnmatch.in.h
   lib/fnmatch_loop.c
+  lib/fpurge.c
+  lib/freading.c
+  lib/freading.h
+  lib/fseeko.c
   lib/fstatat.c
   lib/fsusage.c
   lib/fsusage.h
+  lib/ftello.c
   lib/full-read.c
   lib/full-read.h
   lib/full-write.c
-  lib/full-write.h
   lib/futimens.c
   lib/gai_strerror.c
   lib/getaddrinfo.c
-  lib/getcwd.c
+  lib/getcwd-lgpl.c
   lib/getdelim.c
   lib/getdtablesize.c
   lib/getline.c
@@ -908,6 +919,9 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/glob-libc.h
   lib/glob.c
   lib/glob.in.h
+  lib/glthread/lock.c
+  lib/glthread/lock.h
+  lib/glthread/threadlib.c
   lib/hash.c
   lib/hash.h
   lib/ignore-value.h
@@ -921,6 +935,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/malloc.c
   lib/mbrtowc.c
   lib/mbsinit.c
+  lib/mbsrtowcs-impl.h
   lib/mbsrtowcs-state.c
   lib/mbsrtowcs.c
   lib/memchr.c
@@ -949,6 +964,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/rawmemchr.valgrind
   lib/read-file.c
   lib/read-file.h
+  lib/read.c
   lib/readlink.c
   lib/realloc.c
   lib/ref-add.sin
@@ -956,9 +972,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/rmdir.c
   lib/safe-read.c
   lib/safe-read.h
-  lib/safe-write.c
-  lib/safe-write.h
-  lib/same-inode.h
   lib/save-cwd.c
   lib/save-cwd.h
   lib/select.c
@@ -973,14 +986,17 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/stdbool.in.h
   lib/stddef.in.h
   lib/stdint.in.h
-  lib/stdio-write.c
+  lib/stdio-impl.h
   lib/stdio.in.h
   lib/stdlib.in.h
   lib/strchrnul.c
   lib/strchrnul.valgrind
   lib/strdup.c
   lib/streq.h
+  lib/strerror-override.c
+  lib/strerror-override.h
   lib/strerror.c
+  lib/strerror_r.c
   lib/string.in.h
   lib/stripslash.c
   lib/strndup.c
@@ -993,6 +1009,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/sys_socket.in.h
   lib/sys_stat.in.h
   lib/sys_time.in.h
+  lib/sys_uio.in.h
   lib/sys_wait.in.h
   lib/tempname.c
   lib/tempname.h
@@ -1012,17 +1029,12 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/w32sock.h
   lib/wchar.in.h
   lib/wctype.in.h
-  lib/write.c
-  lib/xalloc-die.c
-  lib/xalloc.h
-  lib/xgetcwd.c
-  lib/xgetcwd.h
-  lib/xmalloc.c
+  lib/xalloc-oversized.h
   lib/xsize.h
   m4/00gnulib.m4
   m4/alloca.m4
   m4/arpa_inet_h.m4
-  m4/asm-underscore.m4
+  m4/btowc.m4
   m4/byteswap.m4
   m4/chdir-long.m4
   m4/chown.m4
@@ -1030,14 +1042,15 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/cloexec.m4
   m4/close.m4
   m4/codeset.m4
-  m4/d-ino.m4
+  m4/configmake.m4
   m4/d-type.m4
   m4/dirent_h.m4
   m4/dirfd.m4
   m4/dirname.m4
-  m4/dos.m4
   m4/double-slash-root.m4
   m4/dup2.m4
+  m4/eealloc.m4
+  m4/environ.m4
   m4/errno_h.m4
   m4/error.m4
   m4/extensions.m4
@@ -1047,13 +1060,18 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/fcntl.m4
   m4/fcntl_h.m4
   m4/fdopendir.m4
+  m4/fflush.m4
+  m4/filenamecat.m4
   m4/float_h.m4
   m4/fnmatch.m4
+  m4/fpurge.m4
+  m4/freading.m4
+  m4/fseeko.m4
   m4/fsusage.m4
+  m4/ftell.m4
+  m4/ftello.m4
   m4/futimens.m4
   m4/getaddrinfo.m4
-  m4/getcwd-abort-bug.m4
-  m4/getcwd-path-max.m4
   m4/getcwd.m4
   m4/getdelim.m4
   m4/getdtablesize.m4
@@ -1072,25 +1090,36 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/include_next.m4
   m4/inet_ntop.m4
   m4/inet_pton.m4
-  m4/inline.m4
+  m4/intlmacosx.m4
   m4/intmax_t.m4
   m4/inttostr.m4
+  m4/inttypes-pri.m4
+  m4/inttypes.m4
   m4/inttypes_h.m4
   m4/ioctl.m4
   m4/lchown.m4
+  m4/lcmessage.m4
+  m4/lib-ld.m4
+  m4/lib-link.m4
+  m4/lib-prefix.m4
   m4/localcharset.m4
   m4/locale-fr.m4
   m4/locale-ja.m4
   m4/locale-zh.m4
+  m4/locale_h.m4
+  m4/localename.m4
+  m4/lock.m4
   m4/longlong.m4
   m4/lseek.m4
   m4/lstat.m4
   m4/malloc.m4
+  m4/malloca.m4
   m4/manywarnings.m4
   m4/mbrtowc.m4
   m4/mbsinit.m4
   m4/mbsrtowcs.m4
   m4/mbstate_t.m4
+  m4/mbtowc.m4
   m4/memchr.m4
   m4/mempcpy.m4
   m4/memrchr.m4
@@ -1107,22 +1136,27 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/openat.m4
   m4/pathmax.m4
   m4/perror.m4
+  m4/pipe.m4
   m4/pread.m4
   m4/printf.m4
   m4/priv-set.m4
+  m4/putenv.m4
   m4/rawmemchr.m4
   m4/read-file.m4
+  m4/read.m4
   m4/readlink.m4
   m4/realloc.m4
   m4/rmdir.m4
   m4/safe-read.m4
-  m4/safe-write.m4
   m4/save-cwd.m4
   m4/select.m4
   m4/servent.m4
+  m4/setenv.m4
+  m4/setlocale.m4
   m4/size_max.m4
   m4/sleep.m4
   m4/snprintf.m4
+  m4/socketlib.m4
   m4/sockets.m4
   m4/socklen.m4
   m4/sockpfaf.m4
@@ -1138,6 +1172,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/strchrnul.m4
   m4/strdup.m4
   m4/strerror.m4
+  m4/strerror_r.m4
   m4/string_h.m4
   m4/strndup.m4
   m4/strnlen.m4
@@ -1148,10 +1183,14 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/sys_socket_h.m4
   m4/sys_stat_h.m4
   m4/sys_time_h.m4
+  m4/sys_uio_h.m4
   m4/sys_wait_h.m4
   m4/tempname.m4
+  m4/thread.m4
+  m4/threadlib.m4
   m4/time_h.m4
   m4/timespec.m4
+  m4/ungetc.m4
   m4/unistd-safer.m4
   m4/unistd_h.m4
   m4/unlink.m4
@@ -1167,13 +1206,13 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/warnings.m4
   m4/wchar_h.m4
   m4/wchar_t.m4
+  m4/wcrtomb.m4
   m4/wctob.m4
+  m4/wctomb.m4
   m4/wctype_h.m4
   m4/wint_t.m4
-  m4/write.m4
-  m4/xalloc.m4
-  m4/xgetcwd.m4
   m4/xsize.m4
+  m4/yield.m4
   tests/init.sh
   tests/macros.h
   tests/nap.h
@@ -1184,6 +1223,9 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-binary-io.c
   tests/test-binary-io.sh
   tests/test-bitrotate.c
+  tests/test-btowc.c
+  tests/test-btowc1.sh
+  tests/test-btowc2.sh
   tests/test-byteswap.c
   tests/test-c-ctype.c
   tests/test-chown.c
@@ -1192,18 +1234,36 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-dirent.c
   tests/test-dup-safer.c
   tests/test-dup2.c
+  tests/test-environ.c
   tests/test-errno.c
   tests/test-fchdir.c
   tests/test-fchownat.c
+  tests/test-fclose.c
   tests/test-fcntl-h.c
   tests/test-fcntl.c
   tests/test-fdopendir.c
+  tests/test-fflush.c
+  tests/test-fflush2.c
+  tests/test-fflush2.sh
   tests/test-fnmatch.c
+  tests/test-fpurge.c
+  tests/test-freading.c
+  tests/test-fseeko.c
+  tests/test-fseeko.sh
+  tests/test-fseeko2.sh
   tests/test-fstatat.c
+  tests/test-ftell.c
+  tests/test-ftell.sh
+  tests/test-ftell2.sh
+  tests/test-ftell3.c
+  tests/test-ftello.c
+  tests/test-ftello.sh
+  tests/test-ftello2.sh
+  tests/test-ftello3.c
   tests/test-futimens.c
   tests/test-futimens.h
   tests/test-getaddrinfo.c
-  tests/test-getcwd.c
+  tests/test-getcwd-lgpl.c
   tests/test-getdelim.c
   tests/test-getdtablesize.c
   tests/test-getgroups.c
@@ -1212,15 +1272,29 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-gettimeofday.c
   tests/test-glob.c
   tests/test-hash.c
+  tests/test-ignore-value.c
   tests/test-inet_ntop.c
   tests/test-inet_pton.c
+  tests/test-intprops.c
+  tests/test-inttostr.c
+  tests/test-inttypes.c
   tests/test-lchown.c
   tests/test-lchown.h
+  tests/test-locale.c
+  tests/test-localename.c
+  tests/test-lock.c
   tests/test-lseek.c
   tests/test-lseek.sh
   tests/test-lstat.c
   tests/test-lstat.h
   tests/test-lutimens.h
+  tests/test-malloca.c
+  tests/test-mbrtowc-w32-1.sh
+  tests/test-mbrtowc-w32-2.sh
+  tests/test-mbrtowc-w32-3.sh
+  tests/test-mbrtowc-w32-4.sh
+  tests/test-mbrtowc-w32-5.sh
+  tests/test-mbrtowc-w32.c
   tests/test-mbrtowc.c
   tests/test-mbrtowc1.sh
   tests/test-mbrtowc2.sh
@@ -1245,6 +1319,8 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-openat.c
   tests/test-perror.c
   tests/test-perror.sh
+  tests/test-perror2.c
+  tests/test-pipe.c
   tests/test-pread.c
   tests/test-pread.sh
   tests/test-priv-set.c
@@ -1252,6 +1328,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-read-file.c
   tests/test-readlink.c
   tests/test-readlink.h
+  tests/test-realloc-gnu.c
   tests/test-rmdir.c
   tests/test-rmdir.h
   tests/test-select-fd.c
@@ -1259,6 +1336,11 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-select-out.sh
   tests/test-select-stdin.c
   tests/test-select.c
+  tests/test-setenv.c
+  tests/test-setlocale1.c
+  tests/test-setlocale1.sh
+  tests/test-setlocale2.c
+  tests/test-setlocale2.sh
   tests/test-sleep.c
   tests/test-snprintf.c
   tests/test-sockets.c
@@ -1272,7 +1354,9 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-stdlib.c
   tests/test-strchrnul.c
   tests/test-strerror.c
+  tests/test-strerror_r.c
   tests/test-string.c
+  tests/test-strnlen.c
   tests/test-symlink.c
   tests/test-symlink.h
   tests/test-symlinkat.c
@@ -1281,12 +1365,15 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-sys_socket.c
   tests/test-sys_stat.c
   tests/test-sys_time.c
+  tests/test-sys_uio.c
   tests/test-sys_wait.c
+  tests/test-sys_wait.h
   tests/test-time.c
   tests/test-unistd.c
   tests/test-unlink.c
   tests/test-unlink.h
   tests/test-unlinkat.c
+  tests/test-unsetenv.c
   tests/test-usleep.c
   tests/test-utimens-common.h
   tests/test-utimens.c
@@ -1296,45 +1383,75 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-verify.c
   tests/test-verify.sh
   tests/test-wchar.c
-  tests/test-wctype.c
-  tests/test-xalloc-die.c
-  tests/test-xalloc-die.sh
+  tests/test-wcrtomb-w32-1.sh
+  tests/test-wcrtomb-w32-2.sh
+  tests/test-wcrtomb-w32-3.sh
+  tests/test-wcrtomb-w32-4.sh
+  tests/test-wcrtomb-w32-5.sh
+  tests/test-wcrtomb-w32.c
+  tests/test-wcrtomb.c
+  tests/test-wcrtomb.sh
+  tests/test-wctype-h.c
   tests/zerosize-ptr.h
   tests=lib/accept.c
+  tests=lib/anytostr.c
   tests=lib/binary-io.h
   tests=lib/bind.c
+  tests=lib/btowc.c
   tests=lib/dup-safer-flag.c
   tests=lib/fd-safer-flag.c
+  tests=lib/ftell.c
   tests=lib/getgroups.c
   tests=lib/getpagesize.c
   tests=lib/getugroups.c
   tests=lib/getugroups.h
+  tests=lib/glthread/thread.c
+  tests=lib/glthread/thread.h
+  tests=lib/glthread/yield.h
   tests=lib/hash-pjw.c
   tests=lib/hash-pjw.h
   tests=lib/imaxtostr.c
   tests=lib/inet_pton.c
   tests=lib/inttostr.c
   tests=lib/inttostr.h
+  tests=lib/inttypes.in.h
   tests=lib/ioctl.c
   tests=lib/listen.c
+  tests=lib/locale.in.h
+  tests=lib/localename.c
+  tests=lib/localename.h
+  tests=lib/malloca.c
+  tests=lib/malloca.h
+  tests=lib/malloca.valgrind
+  tests=lib/mbtowc-impl.h
+  tests=lib/mbtowc.c
   tests=lib/mgetgroups.c
   tests=lib/mgetgroups.h
   tests=lib/offtostr.c
   tests=lib/pathmax.h
+  tests=lib/pipe.c
   tests=lib/priv-set.c
   tests=lib/priv-set.h
   tests=lib/progname.c
   tests=lib/progname.h
+  tests=lib/putenv.c
   tests=lib/realloc.c
+  tests=lib/same-inode.h
+  tests=lib/setenv.c
+  tests=lib/setlocale.c
   tests=lib/setsockopt.c
   tests=lib/sys_ioctl.in.h
   tests=lib/uinttostr.c
   tests=lib/umaxtostr.c
   tests=lib/unlinkdir.c
   tests=lib/unlinkdir.h
+  tests=lib/unsetenv.c
   tests=lib/usleep.c
   tests=lib/utimecmp.c
   tests=lib/utimecmp.h
   tests=lib/w32sock.h
+  tests=lib/wcrtomb.c
   tests=lib/wctob.c
+  tests=lib/wctomb-impl.h
+  tests=lib/wctomb.c
 ])

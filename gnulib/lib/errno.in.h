@@ -1,6 +1,6 @@
 /* A POSIX-like <errno.h>.
 
-   Copyright (C) 2008-2010 Free Software Foundation, Inc.
+   Copyright (C) 2008-2011 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -16,17 +16,18 @@
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-#ifndef _GL_ERRNO_H
+#ifndef _@GUARD_PREFIX@_ERRNO_H
 
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 #endif
+@PRAGMA_COLUMNS@
 
 /* The include_next requires a split double-inclusion guard.  */
 #@INCLUDE_NEXT@ @NEXT_ERRNO_H@
 
-#ifndef _GL_ERRNO_H
-#define _GL_ERRNO_H
+#ifndef _@GUARD_PREFIX@_ERRNO_H
+#define _@GUARD_PREFIX@_ERRNO_H
 
 
 /* On native Windows platforms, many macros are not defined.  */
@@ -98,6 +99,7 @@
 
 /* On OpenBSD 4.0 and on native Windows, the macros ENOMSG, EIDRM, ENOLINK,
    EPROTO, EMULTIHOP, EBADMSG, EOVERFLOW, ENOTSUP, ECANCELED are not defined.
+   Likewise, on NonStop Kernel, EDQUOT is not defined.
    Define them here.  Values >= 2000 seem safe to use: Solaris ESTALE = 151,
    HP-UX EWOULDBLOCK = 246, IRIX EDQUOT = 1133.
 
@@ -150,11 +152,16 @@
 #  define GNULIB_defined_ESTALE 1
 # endif
 
+# ifndef EDQUOT
+#  define EDQUOT 2010
+#  define GNULIB_defined_EDQUOT 1
+# endif
+
 # ifndef ECANCELED
 #  define ECANCELED 2008
 #  define GNULIB_defined_ECANCELED 1
 # endif
 
 
-#endif /* _GL_ERRNO_H */
-#endif /* _GL_ERRNO_H */
+#endif /* _@GUARD_PREFIX@_ERRNO_H */
+#endif /* _@GUARD_PREFIX@_ERRNO_H */

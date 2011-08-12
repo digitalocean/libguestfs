@@ -1,5 +1,5 @@
 /* Substitute for and wrapper around <sys/ioctl.h>.
-   Copyright (C) 2008-2010 Free Software Foundation, Inc.
+   Copyright (C) 2008-2011 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,19 +15,20 @@
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-#ifndef _GL_SYS_IOCTL_H
+#ifndef _@GUARD_PREFIX@_SYS_IOCTL_H
 
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 #endif
+@PRAGMA_COLUMNS@
 
 /* The include_next requires a split double-inclusion guard.  */
 #if @HAVE_SYS_IOCTL_H@
 # @INCLUDE_NEXT@ @NEXT_SYS_IOCTL_H@
 #endif
 
-#ifndef _GL_SYS_IOCTL_H
-#define _GL_SYS_IOCTL_H
+#ifndef _@GUARD_PREFIX@_SYS_IOCTL_H
+#define _@GUARD_PREFIX@_SYS_IOCTL_H
 
 /* AIX 5.1 and Solaris 10 declare ioctl() in <unistd.h> and in <stropts.h>,
    but not in <sys/ioctl.h>.
@@ -74,5 +75,5 @@ _GL_WARN_ON_USE (ioctl, "ioctl does not portably work on sockets - "
 #endif
 
 
-#endif /* _GL_SYS_IOCTL_H */
-#endif /* _GL_SYS_IOCTL_H */
+#endif /* _@GUARD_PREFIX@_SYS_IOCTL_H */
+#endif /* _@GUARD_PREFIX@_SYS_IOCTL_H */

@@ -371,6 +371,15 @@ extern \"C\" {
     (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #endif
 
+/* Define GUESTFS_WARN_DEPRECATED=1 to warn about deprecated API functions. */
+#define GUESTFS_DEPRECATED_BY(s)
+#if GUESTFS_WARN_DEPRECATED
+#  if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40500 /* gcc >= 4.5 */
+#    undef GUESTFS_DEPRECATED_BY
+#    define GUESTFS_DEPRECATED_BY(s) __attribute__((__deprecated__(\"change the program to use guestfs_\" s \" instead of this deprecated function\")))
+#  endif
+#endif /* GUESTFS_WARN_DEPRECATED */
+
 /* The handle. */
 #ifndef GUESTFS_TYPEDEF_H
 #define GUESTFS_TYPEDEF_H 1
@@ -435,7 +444,7 @@ extern int guestfs_set_event_callback (guestfs_h *g,
 #define LIBGUESTFS_HAVE_DELETE_EVENT_CALLBACK 1
 extern void guestfs_delete_event_callback (guestfs_h *g, int event_handle);
 
-/* Old-style event handling.  In new code use guestfs_set_event_callback. */
+/* Old-style event handling. */
 #ifndef GUESTFS_TYPEDEF_LOG_MESSAGE_CB
 #define GUESTFS_TYPEDEF_LOG_MESSAGE_CB 1
 typedef void (*guestfs_log_message_cb) (guestfs_h *g, void *opaque, char *buf, int len);
@@ -461,13 +470,22 @@ typedef void (*guestfs_close_cb) (guestfs_h *g, void *opaque);
 typedef void (*guestfs_progress_cb) (guestfs_h *g, void *opaque, int proc_nr, int serial, uint64_t position, uint64_t total);
 #endif
 
-extern void guestfs_set_log_message_callback (guestfs_h *g, guestfs_log_message_cb cb, void *opaque);
-extern void guestfs_set_subprocess_quit_callback (guestfs_h *g, guestfs_subprocess_quit_cb cb, void *opaque);
-extern void guestfs_set_launch_done_callback (guestfs_h *g, guestfs_launch_done_cb cb, void *opaque);
+extern void guestfs_set_log_message_callback (guestfs_h *g, guestfs_log_message_cb cb, void *opaque)
+  GUESTFS_DEPRECATED_BY(\"set_event_callback\");
+extern void guestfs_set_subprocess_quit_callback (guestfs_h *g, guestfs_subprocess_quit_cb cb, void *opaque)
+  GUESTFS_DEPRECATED_BY(\"set_event_callback\");
+extern void guestfs_set_launch_done_callback (guestfs_h *g, guestfs_launch_done_cb cb, void *opaque)
+  GUESTFS_DEPRECATED_BY(\"set_event_callback\");
 #define LIBGUESTFS_HAVE_SET_CLOSE_CALLBACK 1
-extern void guestfs_set_close_callback (guestfs_h *g, guestfs_close_cb cb, void *opaque);
+extern void guestfs_set_close_callback (guestfs_h *g, guestfs_close_cb cb, void *opaque)
+  GUESTFS_DEPRECATED_BY(\"set_event_callback\");
 #define LIBGUESTFS_HAVE_SET_PROGRESS_CALLBACK 1
-extern void guestfs_set_progress_callback (guestfs_h *g, guestfs_progress_cb cb, void *opaque);
+extern void guestfs_set_progress_callback (guestfs_h *g, guestfs_progress_cb cb, void *opaque)
+  GUESTFS_DEPRECATED_BY(\"set_event_callback\");
+
+/* User cancellation. */
+#define LIBGUESTFS_HAVE_USER_CANCEL 1
+extern void guestfs_user_cancel (guestfs_h *g);
 
 /* Private data area. */
 #define LIBGUESTFS_HAVE_SET_PRIVATE 1
@@ -532,22 +550,40 @@ extern void *guestfs_next_private (guestfs_h *g, const char **key_rtn);
   List.iter (
     fun (shortname, (ret, args, optargs as style), _, flags, _, _, _) ->
       let deprecated =
-        List.exists (function DeprecatedBy _ -> true | _ -> false) flags in
+        try
+          Some (find_map (function DeprecatedBy fn -> Some fn | _ -> None)
+                  flags)
+        with Not_found -> None in
       let test0 =
         String.length shortname >= 5 && String.sub shortname 0 5 = "test0" in
       let debug =
         String.length shortname >= 5 && String.sub shortname 0 5 = "debug" in
-      if not deprecated && not test0 && not debug then
+      if deprecated = None && not test0 && not debug then
         pr "#define LIBGUESTFS_HAVE_%s 1\n" (String.uppercase shortname);
 
-      generate_prototype ~single_line:true ~newline:true ~handle:"g"
-        ~prefix:"guestfs_" shortname style;
+      if optargs <> [] then (
+        iteri (
+          fun i argt ->
+            let uc_shortname = String.uppercase shortname in
+            let n = name_of_argt argt in
+            let uc_n = String.uppercase n in
+            pr "#define GUESTFS_%s_%s %d\n" uc_shortname uc_n i;
+        ) optargs;
+      );
+
+      generate_prototype ~single_line:true ~semicolon:false
+        ~handle:"g" ~prefix:"guestfs_" shortname style;
+      (match deprecated with
+       | Some fn -> pr "\n  GUESTFS_DEPRECATED_BY (%S);\n" fn
+       | None -> pr ";\n"
+      );
 
       if optargs <> [] then (
         generate_prototype ~single_line:true ~newline:true ~handle:"g"
           ~prefix:"guestfs_" ~suffix:"_va" ~optarg_proto:VA
           shortname style;
 
+        pr "\n";
         pr "struct guestfs_%s_argv {\n" shortname;
         pr "  uint64_t bitmask;\n";
         iteri (
@@ -562,15 +598,16 @@ extern void *guestfs_next_private (guestfs_h *g, const char **key_rtn);
             let uc_shortname = String.uppercase shortname in
             let n = name_of_argt argt in
             let uc_n = String.uppercase n in
-            pr "#define GUESTFS_%s_%s %d\n" uc_shortname uc_n i;
-            pr "#define GUESTFS_%s_%s_BITMASK (UINT64_C(1)<<%d)\n" uc_shortname uc_n i;
-            pr "/* The field below is only valid in this struct if the\n";
-            pr " * GUESTFS_%s_%s_BITMASK bit is set\n" uc_shortname uc_n;
-            pr " * in the bitmask above, otherwise the contents are ignored.\n";
-            pr " */\n";
+            pr "\n";
+            pr "# define GUESTFS_%s_%s_BITMASK (UINT64_C(1)<<%d)\n" uc_shortname uc_n i;
+            pr "  /* The field below is only valid in this struct if the\n";
+            pr "   * GUESTFS_%s_%s_BITMASK bit is set\n" uc_shortname uc_n;
+            pr "   * in the bitmask above.  If not, the field is ignored.\n";
+            pr "   */\n";
             pr "  %s%s;\n" c_type n
         ) optargs;
         pr "};\n";
+        pr "\n";
 
         generate_prototype ~single_line:true ~newline:true ~handle:"g"
           ~prefix:"guestfs_" ~suffix:"_argv" ~optarg_proto:Argv
@@ -1455,6 +1492,7 @@ and generate_linker_script () =
     "guestfs_set_private";
     "guestfs_set_progress_callback";
     "guestfs_set_subprocess_quit_callback";
+    "guestfs_user_cancel";
 
     (* Unofficial parts of the API: the bindings code use these
      * functions, so it is useful to export them.

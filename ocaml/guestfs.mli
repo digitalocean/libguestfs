@@ -20,9 +20,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
-(** For API documentation you should refer to the C API
-    in the guestfs(3) manual page.  The OCaml API uses almost
-    exactly the same calls. *)
+(** libguestfs bindings for OCaml.
+
+    For API documentation, the canonical reference is the
+    {{:http://libguestfs.org/guestfs.3.html}guestfs(3)} man page.
+    The OCaml API uses almost exactly the same calls.
+
+    For examples written in OCaml see the
+    {{:http://libguestfs.org/guestfs-ocaml.3.html}guestfs-ocaml(3)} man page.
+    *)
+
+(** {2 Module style API}
+
+    This is the module-style API.  There is also an object-oriented API
+    (see the end of this file and {!guestfs})
+    which is functionally completely equivalent, but is more compact. *)
 
 type t
 (** A [guestfs_h] handle. *)
@@ -31,15 +43,15 @@ exception Error of string
 (** This exception is raised when there is an error. *)
 
 exception Handle_closed of string
-(** This exception is raised if you use a {!Guestfs.t} handle
+(** This exception is raised if you use a {!t} handle
     after calling {!close} on it.  The string is the name of
     the function. *)
 
 val create : unit -> t
-(** Create a {!Guestfs.t} handle. *)
+(** Create a {!t} handle. *)
 
 val close : t -> unit
-(** Close the {!Guestfs.t} handle and free up all resources used
+(** Close the {!t} handle and free up all resources used
     by it immediately.
 
     Handles are closed by the garbage collector when they become
@@ -78,6 +90,19 @@ val set_event_callback : t -> event_callback -> event list -> event_handle
 val delete_event_callback : t -> event_handle -> unit
 (** [delete_event_callback g eh] removes a previously registered
     event callback.  See {!set_event_callback}. *)
+
+val last_errno : t -> int
+(** [last_errno g] returns the last errno that happened on the handle [g]
+    (or [0] if there was no errno).  Note that the returned integer is the
+    raw errno number, and it is {i not} related to the {!Unix.error} type.
+
+    [last_errno] can be overwritten by subsequent operations on a handle,
+    so if you want to capture the errno correctly, you must call this
+    in the {!Error} exception handler, before any other operation on [g]. *)
+
+val user_cancel : t -> unit
+(** Cancel current transfer.  This is safe to call from OCaml signal
+    handlers and threads. *)
 
 type int_bool = {
   i : int32;
@@ -220,9 +245,12 @@ type application = {
 }
 
 val add_cdrom : t -> string -> unit
-(** add a CD-ROM disk image to examine *)
+(** add a CD-ROM disk image to examine
 
-val add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> string -> int
+    @deprecated Use {!add_drive_opts} instead
+ *)
+
+val add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> string -> int
 (** add the disk(s) from a named libvirt domain *)
 
 val add_drive : t -> string -> unit
@@ -235,10 +263,16 @@ val add_drive_ro : t -> string -> unit
 (** add a drive in snapshot mode (read-only) *)
 
 val add_drive_ro_with_if : t -> string -> string -> unit
-(** add a drive read-only specifying the QEMU block emulation to use *)
+(** add a drive read-only specifying the QEMU block emulation to use
+
+    @deprecated Use {!add_drive_opts} instead
+ *)
 
 val add_drive_with_if : t -> string -> string -> unit
-(** add a drive specifying the QEMU block emulation to use *)
+(** add a drive specifying the QEMU block emulation to use
+
+    @deprecated Use {!add_drive_opts} instead
+ *)
 
 val aug_clear : t -> string -> unit
 (** clear Augeas path *)
@@ -324,6 +358,9 @@ val blockdev_setro : t -> string -> unit
 val blockdev_setrw : t -> string -> unit
 (** set block device to read-write *)
 
+val btrfs_filesystem_resize : t -> ?size:int64 -> string -> unit
+(** resize a btrfs filesystem *)
+
 val case_sensitive_path : t -> string -> string
 (** return true path on case-insensitive filesystem *)
 
@@ -367,13 +404,10 @@ val dd : t -> string -> string -> unit
 (** copy from source to destination using dd *)
 
 val debug : t -> string -> string array -> string
-(** debugging and internals *)
 
 val debug_cmdline : t -> string array
-(** debug the QEMU command line (internal use only) *)
 
 val debug_upload : t -> string -> string -> int -> unit
-(** upload a file to the appliance (internal use only) *)
 
 val df : t -> string
 (** report file system disk space usage *)
@@ -415,7 +449,10 @@ val exists : t -> string -> bool
 (** test if file or directory exists *)
 
 val fallocate : t -> string -> int -> unit
-(** preallocate a file in the guest filesystem *)
+(** preallocate a file in the guest filesystem
+
+    @deprecated Use {!fallocate64} instead
+ *)
 
 val fallocate64 : t -> string -> int64 -> unit
 (** preallocate a file in the guest filesystem *)
@@ -469,10 +506,16 @@ val get_direct : t -> bool
 (** get direct appliance mode flag *)
 
 val get_e2label : t -> string -> string
-(** get the ext2/3/4 filesystem label *)
+(** get the ext2/3/4 filesystem label
+
+    @deprecated Use {!vfs_label} instead
+ *)
 
 val get_e2uuid : t -> string -> string
-(** get the ext2/3/4 filesystem UUID *)
+(** get the ext2/3/4 filesystem UUID
+
+    @deprecated Use {!vfs_uuid} instead
+ *)
 
 val get_memsize : t -> int
 (** get memory allocated to the qemu subprocess *)
@@ -482,6 +525,9 @@ val get_network : t -> bool
 
 val get_path : t -> string
 (** get the search path *)
+
+val get_pgroup : t -> bool
+(** get process group flag *)
 
 val get_pid : t -> int
 (** get PID of qemu subprocess *)
@@ -579,6 +625,9 @@ val inspect_get_format : t -> string -> string
 val inspect_get_hostname : t -> string -> string
 (** get hostname of the operating system *)
 
+val inspect_get_icon : t -> ?favicon:bool -> ?highquality:bool -> string -> string
+(** get the icon corresponding to this operating system *)
+
 val inspect_get_major_version : t -> string -> int
 (** get major version of inspected operating system *)
 
@@ -628,7 +677,6 @@ val inspect_os : t -> string array
 (** inspect disk and return list of operating systems found *)
 
 val internal_autosync : t -> unit
-(** internal autosync operation *)
 
 val is_blockdev : t -> string -> bool
 (** test if block device *)
@@ -666,6 +714,12 @@ val is_socket : t -> string -> bool
 val is_symlink : t -> string -> bool
 (** test if symbolic link *)
 
+val is_zero : t -> string -> bool
+(** test if a file contains all zero bytes *)
+
+val is_zero_device : t -> string -> bool
+(** test if a device contains all zero bytes *)
+
 val kill_subprocess : t -> unit
 (** kill the qemu subprocess *)
 
@@ -681,8 +735,14 @@ val lgetxattr : t -> string -> string -> string
 val lgetxattrs : t -> string -> xattr array
 (** list extended attributes of a file or directory *)
 
+val list_9p : t -> string array
+(** list 9p filesystems *)
+
 val list_devices : t -> string array
 (** list the block devices *)
+
+val list_dm_devices : t -> string array
+(** list device mapper devices *)
 
 val list_filesystems : t -> (string * string) list
 (** list filesystems *)
@@ -817,9 +877,12 @@ val mkfs : t -> string -> string -> unit
 (** make a filesystem *)
 
 val mkfs_b : t -> string -> int -> string -> unit
-(** make a filesystem with block size *)
+(** make a filesystem with block size
 
-val mkfs_opts : t -> ?blocksize:int -> ?features:string -> string -> string -> unit
+    @deprecated Use {!mkfs_opts} instead
+ *)
+
+val mkfs_opts : t -> ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> string -> string -> unit
 (** make a filesystem *)
 
 val mkmountpoint : t -> string -> unit
@@ -850,7 +913,13 @@ val modprobe : t -> string -> unit
 (** load a kernel module *)
 
 val mount : t -> string -> string -> unit
-(** mount a guest disk at a position in the filesystem *)
+(** mount a guest disk at a position in the filesystem
+
+    @deprecated Use {!mount_options} instead
+ *)
+
+val mount_9p : t -> ?options:string -> string -> string -> unit
+(** mount 9p filesystem *)
 
 val mount_loop : t -> string -> string -> unit
 (** mount a file using the loop device *)
@@ -877,10 +946,19 @@ val ntfs_3g_probe : t -> bool -> string -> int
 (** probe NTFS volume *)
 
 val ntfsresize : t -> string -> unit
+(** resize an NTFS filesystem
+
+    @deprecated Use {!ntfsresize_opts} instead
+ *)
+
+val ntfsresize_opts : t -> ?size:int64 -> ?force:bool -> string -> unit
 (** resize an NTFS filesystem *)
 
 val ntfsresize_size : t -> string -> int64 -> unit
-(** resize an NTFS filesystem (with size) *)
+(** resize an NTFS filesystem (with size)
+
+    @deprecated Use {!ntfsresize_opts} instead
+ *)
 
 val part_add : t -> string -> string -> int64 -> int64 -> unit
 (** add a partition to the device *)
@@ -1032,6 +1110,9 @@ val set_network : t -> bool -> unit
 val set_path : t -> string option -> unit
 (** set the search path *)
 
+val set_pgroup : t -> bool -> unit
+(** set process group flag *)
+
 val set_qemu : t -> string option -> unit
 (** set the qemu binary *)
 
@@ -1054,13 +1135,22 @@ val setxattr : t -> string -> string -> int -> string -> unit
 (** set extended attribute of a file or directory *)
 
 val sfdisk : t -> string -> int -> int -> int -> string array -> unit
-(** create partitions on a block device *)
+(** create partitions on a block device
+
+    @deprecated Use {!part_add} instead
+ *)
 
 val sfdiskM : t -> string -> string array -> unit
-(** create partitions on a block device *)
+(** create partitions on a block device
+
+    @deprecated Use {!part_add} instead
+ *)
 
 val sfdisk_N : t -> string -> int -> int -> int -> int -> string -> unit
-(** modify a single partition on a block device *)
+(** modify a single partition on a block device
+
+    @deprecated Use {!part_add} instead
+ *)
 
 val sfdisk_disk_geometry : t -> string -> string
 (** display the disk geometry from the partition table *)
@@ -1069,7 +1159,10 @@ val sfdisk_kernel_geometry : t -> string -> string
 (** display the kernel geometry *)
 
 val sfdisk_l : t -> string -> string
-(** display the partition table *)
+(** display the partition table
+
+    @deprecated Use {!part_list} instead
+ *)
 
 val sh : t -> string -> string
 (** run a command via the shell *)
@@ -1132,67 +1225,46 @@ val tar_out : t -> string -> string -> unit
 (** pack directory into tarfile *)
 
 val test0 : t -> string -> string option -> string array -> bool -> int -> int64 -> string -> string -> string -> unit
-(** internal test function - do not use *)
 
 val test0rbool : t -> string -> bool
-(** internal test function - do not use *)
 
 val test0rboolerr : t -> bool
-(** internal test function - do not use *)
 
 val test0rconstoptstring : t -> string -> string option
-(** internal test function - do not use *)
 
 val test0rconstoptstringerr : t -> string option
-(** internal test function - do not use *)
 
 val test0rconststring : t -> string -> string
-(** internal test function - do not use *)
 
 val test0rconststringerr : t -> string
-(** internal test function - do not use *)
 
 val test0rhashtable : t -> string -> (string * string) list
-(** internal test function - do not use *)
 
 val test0rhashtableerr : t -> (string * string) list
-(** internal test function - do not use *)
 
 val test0rint : t -> string -> int
-(** internal test function - do not use *)
 
 val test0rint64 : t -> string -> int64
-(** internal test function - do not use *)
 
 val test0rint64err : t -> int64
-(** internal test function - do not use *)
 
 val test0rinterr : t -> int
-(** internal test function - do not use *)
 
 val test0rstring : t -> string -> string
-(** internal test function - do not use *)
 
 val test0rstringerr : t -> string
-(** internal test function - do not use *)
 
 val test0rstringlist : t -> string -> string array
-(** internal test function - do not use *)
 
 val test0rstringlisterr : t -> string array
-(** internal test function - do not use *)
 
 val test0rstruct : t -> string -> lvm_pv
-(** internal test function - do not use *)
 
 val test0rstructerr : t -> lvm_pv
-(** internal test function - do not use *)
 
 val test0rstructlist : t -> string -> lvm_pv array
-(** internal test function - do not use *)
 
 val test0rstructlisterr : t -> lvm_pv array
-(** internal test function - do not use *)
 
 val tgz_in : t -> string -> string -> unit
 (** unpack compressed tarball to directory *)
@@ -1282,7 +1354,10 @@ val vguuid : t -> string -> string
 (** get the UUID of a volume group *)
 
 val wait_ready : t -> unit
-(** wait until the qemu subprocess launches (no op) *)
+(** wait until the qemu subprocess launches (no op)
+
+    @deprecated Use {!launch} instead
+ *)
 
 val wc_c : t -> string -> int
 (** count characters in a file *)
@@ -1296,8 +1371,14 @@ val wc_w : t -> string -> int
 val write : t -> string -> string -> unit
 (** create a new file *)
 
+val write_append : t -> string -> string -> unit
+(** append content to end of file *)
+
 val write_file : t -> string -> string -> int -> unit
-(** create a file *)
+(** create a file
+
+    @deprecated Use {!write} instead
+ *)
 
 val zegrep : t -> string -> string -> string array
 (** return lines matching a pattern *)
@@ -1321,7 +1402,10 @@ val zfgrepi : t -> string -> string -> string array
 (** return lines matching a pattern *)
 
 val zfile : t -> string -> string -> string
-(** determine file type inside a compressed file *)
+(** determine file type inside a compressed file
+
+    @deprecated Use {!file} instead
+ *)
 
 val zgrep : t -> string -> string -> string array
 (** return lines matching a pattern *)
@@ -1332,29 +1416,34 @@ val zgrepi : t -> string -> string -> string array
 (** {2 Object-oriented API}
 
     This is an alternate way of calling the API using an object-oriented
-    style, so you can use [g#add_drive_opts filename] instead of
-    [Guestfs.add_drive_opts g filename].  Apart from the different style,
-    it offers exactly the same functionality.
+    style, so you can use
+    [g#]{{!guestfs.add_drive_opts}add_drive_opts} [filename]
+    instead of [Guestfs.add_drive_opts g filename].
+    Apart from the different style, it offers exactly the same functionality.
 
     Calling [new guestfs ()] creates both the object and the handle.
     The object and handle are closed either implicitly when the
-    object is garbage collected, or explicitly by calling the [g#close ()]
-    method.
+    object is garbage collected, or explicitly by calling the
+    [g#]{{!guestfs.close}close} [()] method.
 
-    You can get the {!Guestfs.t} handle by calling [g#ocaml_handle].
+    You can get the {!t} handle by calling
+    [g#]{{!guestfs.ocaml_handle}ocaml_handle}.
 
     Note that methods that take no parameters (except the implicit handle)
     get an extra unit [()] parameter.  This is so you can create a
-    closure from the method easily.  For example [g#get_verbose ()]
+    closure from the method easily.  For example
+    [g#]{{!guestfs.get_verbose}get_verbose} [()]
     calls the method, whereas [g#get_verbose] is a function. *)
 
 class guestfs : unit -> object
   method close : unit -> unit
   method set_event_callback : event_callback -> event list -> event_handle
   method delete_event_callback : event_handle -> unit
+  method last_errno : unit -> int
+  method user_cancel : unit -> unit
   method ocaml_handle : t
   method add_cdrom : string -> unit
-  method add_domain : ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> string -> int
+  method add_domain : ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> string -> int
   method add_drive : string -> unit
   method add_drive_opts : ?readonly:bool -> ?format:string -> ?iface:string -> string -> unit
   method add_drive_ro : string -> unit
@@ -1388,6 +1477,7 @@ class guestfs : unit -> object
   method blockdev_setbsz : string -> int -> unit
   method blockdev_setro : string -> unit
   method blockdev_setrw : string -> unit
+  method btrfs_filesystem_resize : ?size:int64 -> string -> unit
   method case_sensitive_path : string -> string
   method cat : string -> string
   method checksum : string -> string -> string
@@ -1441,6 +1531,7 @@ class guestfs : unit -> object
   method get_memsize : unit -> int
   method get_network : unit -> bool
   method get_path : unit -> string
+  method get_pgroup : unit -> bool
   method get_pid : unit -> int
   method get_qemu : unit -> string
   method get_recovery_proc : unit -> bool
@@ -1473,6 +1564,7 @@ class guestfs : unit -> object
   method inspect_get_filesystems : string -> string array
   method inspect_get_format : string -> string
   method inspect_get_hostname : string -> string
+  method inspect_get_icon : ?favicon:bool -> ?highquality:bool -> string -> string
   method inspect_get_major_version : string -> int
   method inspect_get_minor_version : string -> int
   method inspect_get_mountpoints : string -> (string * string) list
@@ -1502,12 +1594,16 @@ class guestfs : unit -> object
   method is_ready : unit -> bool
   method is_socket : string -> bool
   method is_symlink : string -> bool
+  method is_zero : string -> bool
+  method is_zero_device : string -> bool
   method kill_subprocess : unit -> unit
   method launch : unit -> unit
   method lchown : int -> int -> string -> unit
   method lgetxattr : string -> string -> string
   method lgetxattrs : string -> xattr array
+  method list_9p : unit -> string array
   method list_devices : unit -> string array
+  method list_dm_devices : unit -> string array
   method list_filesystems : unit -> (string * string) list
   method list_partitions : unit -> string array
   method ll : string -> string
@@ -1553,7 +1649,7 @@ class guestfs : unit -> object
   method mkfifo : int -> string -> unit
   method mkfs : string -> string -> unit
   method mkfs_b : string -> int -> string -> unit
-  method mkfs_opts : ?blocksize:int -> ?features:string -> string -> string -> unit
+  method mkfs_opts : ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> string -> string -> unit
   method mkmountpoint : string -> unit
   method mknod : int -> int -> int -> string -> unit
   method mknod_b : int -> int -> int -> string -> unit
@@ -1564,6 +1660,7 @@ class guestfs : unit -> object
   method mkswap_file : string -> unit
   method modprobe : string -> unit
   method mount : string -> string -> unit
+  method mount_9p : ?options:string -> string -> string -> unit
   method mount_loop : string -> string -> unit
   method mount_options : string -> string -> string -> unit
   method mount_ro : string -> string -> unit
@@ -1573,6 +1670,7 @@ class guestfs : unit -> object
   method mv : string -> string -> unit
   method ntfs_3g_probe : bool -> string -> int
   method ntfsresize : string -> unit
+  method ntfsresize_opts : ?size:int64 -> ?force:bool -> string -> unit
   method ntfsresize_size : string -> int64 -> unit
   method part_add : string -> string -> int64 -> int64 -> unit
   method part_del : string -> int -> unit
@@ -1624,6 +1722,7 @@ class guestfs : unit -> object
   method set_memsize : int -> unit
   method set_network : bool -> unit
   method set_path : string option -> unit
+  method set_pgroup : bool -> unit
   method set_qemu : string option -> unit
   method set_recovery_proc : bool -> unit
   method set_selinux : bool -> unit
@@ -1712,6 +1811,7 @@ class guestfs : unit -> object
   method wc_l : string -> int
   method wc_w : string -> int
   method write : string -> string -> unit
+  method write_append : string -> string -> unit
   method write_file : string -> string -> int -> unit
   method zegrep : string -> string -> string array
   method zegrepi : string -> string -> string array

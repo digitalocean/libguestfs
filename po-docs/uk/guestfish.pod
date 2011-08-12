@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head1 НАЗВА
 
@@ -19,7 +20,7 @@ guestfish - the libguestfs Filesystem Interactive SHell
 
  guestfish -d libvirt-domain -i
 
-=head1 WARNING
+=head1 ПОПЕРЕДЖЕННЯ
 
 Using guestfish in read/write mode on live virtual machines can be
 dangerous, potentially causing disk corruption.  Use the I<--ro> (read-only)
@@ -37,7 +38,7 @@ scripts or the command line or interactively.  If you want to rescue a
 broken virtual machine image, you should look at the L<virt-rescue(1)>
 command.
 
-=head1 EXAMPLES
+=head1 ПРИКЛАДИ
 
 =head2 As an interactive shell
 
@@ -137,14 +138,14 @@ To list what is available do:
 
  guestfish -N help | less
 
-=head2 Remote control
+=head2 Дистанційне керування
 
  eval "`guestfish --listen`"
  guestfish --remote add-ro disk.img
  guestfish --remote run
  guestfish --remote lvs
 
-=head1 OPTIONS
+=head1 ПАРАМЕТРИ
 
 =over 4
 
@@ -158,15 +159,15 @@ Displays general help on options.
 
 Lists all available guestfish commands.
 
-=item B<-h cmd>
+=item B<-h команда>
 
-=item B<--cmd-help cmd>
+=item B<--cmd-help команда>
 
 Displays detailed help on a single command C<cmd>.
 
-=item B<-a image>
+=item B<-a образ>
 
-=item B<--add image>
+=item B<--add образ>
 
 Add a block device or virtual machine image to the shell.
 
@@ -177,9 +178,9 @@ Using this flag is mostly equivalent to using the C<add> command, with
 C<readonly:true> if the I<--ro> flag was given, and with C<format:...> if
 the I<--format=...> flag was given.
 
-=item B<-c URI>
+=item B<-c адреса>
 
-=item B<--connect URI>
+=item B<--connect адреса>
 
 When used in conjunction with the I<-d> option, this specifies the libvirt
 URI to use.  The default is to use the default libvirt connection.
@@ -189,13 +190,15 @@ URI to use.  The default is to use the default libvirt connection.
 If using the I<--listen> option and a csh-like shell, use this option.  See
 section L</REMOTE CONTROL AND CSH> below.
 
-=item B<-d libvirt-domain>
+=item B<-d домен-libvirt>
 
-=item B<--domain libvirt-domain>
+=item B<--domain домен-libvirt>
 
 Add disks from the named libvirt domain.  If the I<--ro> option is also
 used, then any libvirt domain can be used.  However in write mode, only
 libvirt domains which are shut down can be named here.
+
+Domain UUIDs can be used instead of names.
 
 Using this flag is mostly equivalent to using the C<add-domain> command,
 with C<readonly:true> if the I<--ro> flag was given, and with C<format:...>
@@ -217,9 +220,9 @@ off so you cannot see what you are typing.  If you are not worried about
 Tempest attacks and there is no one else in the room you can specify this
 flag to see what you are typing.
 
-=item B<-f file>
+=item B<-f файл>
 
-=item B<--file file>
+=item B<--file файл>
 
 Read commands from C<file>.  To write pure guestfish scripts, use:
 
@@ -330,9 +333,9 @@ Using this flag is equivalent to using the C<mount-options> command.
 Disable autosync.  This is enabled by default.  See the discussion of
 autosync in the L<guestfs(3)> manpage.
 
-=item B<-N type>
+=item B<-N тип>
 
-=item B<--new type>
+=item B<--new тип>
 
 =item B<-N help>
 
@@ -469,7 +472,7 @@ image read-only you have to do I<-a image --ro>.
 This matters: If you accidentally open a live VM disk image writable then
 you will cause irreversible disk corruption.
 
-By libguestfs 1.12 we intend to change the default the other way.  Disk
+In a future libguestfs we intend to change the default the other way.  Disk
 images will be opened read-only.  You will have to either specify
 I<guestfish --rw>, I<guestmount --rw>, I<virt-rescue --rw>, or change the
 configuration file C</etc/libguestfs-tools.conf> in order to get write
@@ -504,6 +507,62 @@ literal single quote must be escaped with a backslash.
  command "/bin/echo 'foo      bar'"
  command "/bin/echo \'foo\'"
 
+=head2 ESCAPE SEQUENCES IN DOUBLE QUOTED ARGUMENTS
+
+In double-quoted arguments (only) use backslash to insert special
+characters:
+
+=over 4
+
+=item C<\a>
+
+Alert (bell) character.
+
+=item C<\b>
+
+Backspace character.
+
+=item C<\f>
+
+Form feed character.
+
+=item C<\n>
+
+Newline character.
+
+=item C<\r>
+
+Carriage return character.
+
+=item C<\t>
+
+Horizontal tab character.
+
+=item C<\v>
+
+Vertical tab character.
+
+=item C<\">
+
+A literal double quote character.
+
+=item C<\ooo>
+
+A character with octal value I<ooo>.  There must be precisely 3 octal digits
+(unlike C).
+
+=item C<\xhh>
+
+A character with hex value I<hh>.  There must be precisely 2 hex digits.
+
+In the current implementation C<\000> and C<\x00> cannot be used in strings.
+
+=item C<\\>
+
+A literal backslash character.
+
+=back
+
 =head1 OPTIONAL ARGUMENTS
 
 Some commands take optional arguments.  These arguments appear in this
@@ -518,7 +577,7 @@ documentation as C<[argname:..]>.  You can use them as in these examples:
 Each optional argument can appear at most once.  All optional arguments must
 appear after the required ones.
 
-=head1 NUMBERS
+=head1 ЧИСЛА
 
 This section applies to all commands which can take integers as parameters.
 
@@ -529,7 +588,7 @@ following suffixes to specify kilobytes, megabytes and larger sizes:
 
 =over 4
 
-=item B<k> or B<K> or B<KiB>
+=item B<k>, B<K> або B<KiB>
 
 The size in kilobytes (multiplied by 1024).
 
@@ -537,7 +596,7 @@ The size in kilobytes (multiplied by 1024).
 
 The size in SI 1000 byte units.
 
-=item B<M> or B<MiB>
+=item B<M> або B<MiB>
 
 The size in megabytes (multiplied by 1048576).
 
@@ -545,23 +604,23 @@ The size in megabytes (multiplied by 1048576).
 
 The size in SI 1000000 byte units.
 
-=item B<G> or B<GiB>
+=item B<G> або B<GiB>
 
-The size in gigabytes (multiplied by 2**30).
+Розмір у гігабайтах (з множником 2**30).
 
 =item B<GB>
 
-The size in SI 10**9 byte units.
+Розмір у одиницях СІ: 10**9 байтів.
 
-=item B<T> or B<TiB>
+=item B<T> або B<TiB>
 
-The size in terabytes (multiplied by 2**40).
+Розмір у терабайтах (з множником 2**40).
 
 =item B<TB>
 
 The size in SI 10**12 byte units.
 
-=item B<P> or B<PiB>
+=item B<P> або B<PiB>
 
 The size in petabytes (multiplied by 2**50).
 
@@ -569,7 +628,7 @@ The size in petabytes (multiplied by 2**50).
 
 The size in SI 10**15 byte units.
 
-=item B<E> or B<EiB>
+=item B<E> або B<EiB>
 
 The size in exabytes (multiplied by 2**60).
 
@@ -577,7 +636,7 @@ The size in exabytes (multiplied by 2**60).
 
 The size in SI 10**18 byte units.
 
-=item B<Z> or B<ZiB>
+=item B<Z> або B<ZiB>
 
 The size in zettabytes (multiplied by 2**70).
 
@@ -585,7 +644,7 @@ The size in zettabytes (multiplied by 2**70).
 
 The size in SI 10**21 byte units.
 
-=item B<Y> or B<YiB>
+=item B<Y> або B<YiB>
 
 The size in yottabytes (multiplied by 2**80).
 
@@ -652,7 +711,7 @@ C<glob> only works on simple guest paths and not on device names.
 If you have several parameters, each containing a wildcard, then glob will
 perform a Cartesian product.
 
-=head1 COMMENTS
+=head1 КОМЕНТАРІ
 
 Any line which starts with a I<#> character is treated as a comment and
 ignored.  The I<#> can optionally be preceeded by whitespace, but B<not> by
@@ -704,7 +763,7 @@ ordinary I<!> local command), see what guestfish commands it would run, and
 when you are happy with those prepend the C<E<lt>> character to run the
 guestfish commands for real.
 
-=head1 PIPES
+=head1 КАНАЛИ
 
 Use C<command E<lt>spaceE<gt> | command> to pipe the output of the first
 command (a guestfish command) to the second command (any host command).  For
@@ -744,7 +803,7 @@ eg:
 
  echo "~"
 
-=head1 ENCRYPTED DISKS
+=head1 ЗАШИФРОВАНІ ДИСКИ
 
 Libguestfs has some support for Linux guests encrypted according to the
 Linux Unified Key Setup (LUKS) standard, which includes nearly all whole
@@ -922,7 +981,7 @@ use the C<mount /dev/sda1 /> command or add the I<-m /dev/sda1> option.
 If any I<-N> or I<--new> options are given, the guest is automatically
 launched.
 
-=head2 EXAMPLES
+=head2 ПРИКЛАДИ
 
 Create a 100MB disk with an ext4-formatted partition:
 
@@ -966,9 +1025,9 @@ words, they are not part of the L<guestfs(3)> API.
 =head2 help
 
  help
- help cmd
+ help команда
 
-Without any parameter, this provides general help.
+Без параметра показує загальну довідкову інформацію.
 
 With a C<cmd> parameter, this displays detailed help for that command.
 
@@ -978,11 +1037,11 @@ This exits guestfish.  You can also use C<^D> key.
 
 @FISH_COMMANDS@
 
-=head1 COMMANDS
+=head1 КОМАНДИ
 
 @ACTIONS@
 
-=head1 EXIT CODE
+=head1 КОД ВИХОДУ
 
 guestfish returns 0 if the commands completed without error, or 1 if there
 was an error.
@@ -991,10 +1050,25 @@ was an error.
 
 =over 4
 
-=item EDITOR
+=item РЕДАКТОР
 
 The C<edit> command uses C<$EDITOR> as the editor.  If not set, it uses
 C<vi>.
+
+=item FEBOOTSTRAP_KERNEL
+
+=item FEBOOTSTRAP_MODULES
+
+These two environment variables allow the kernel that libguestfs uses in the
+appliance to be selected.  If C<$FEBOOTSTRAP_KERNEL> is not set, then the
+most recent host kernel is chosen.  For more information about kernel
+selection, see L<febootstrap-supermin-helper(8)>.  This feature is only
+available in febootstrap E<ge> 3.8.
+
+=item GUESTFISH_DISPLAY_IMAGE
+
+The C<display> command uses C<$GUESTFISH_DISPLAY_IMAGE> to display images.
+If not set, it uses L<display(1)>.
 
 =item GUESTFISH_PID
 
@@ -1006,7 +1080,7 @@ control.  See section L</REMOTE CONTROL GUESTFISH OVER A SOCKET>.
 The L</hexedit> command uses C<$HEXEDITOR> as the external hex editor.  If
 not specified, the external L<hexedit(1)> program is used.
 
-=item HOME
+=item ДОМІВКА
 
 If compiled with GNU readline support, various files in the home directory
 can be used.  See L</FILES>.
@@ -1040,7 +1114,7 @@ which was found at compile time by the configure script is used.
 
 Set C<LIBGUESTFS_TRACE=1> to enable command traces.
 
-=item PAGER
+=item РОЗБИТТЯ НА СТОРІНКИ
 
 The C<more> command uses C<$PAGER> as the pager.  If not set, it uses
 C<more>.
@@ -1057,7 +1131,7 @@ use in case C</var/tmp> is not large enough.
 
 =back
 
-=head1 FILES
+=head1 ФАЙЛИ
 
 =over 4
 
@@ -1123,7 +1197,8 @@ L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-df(1)>, L<virt-edit(1)>,
 L<virt-filesystems(1)>, L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
 L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
 L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>,
-L<virt-tar-out(1)>, L<virt-win-reg(1)>, L<hexedit(1)>.
+L<virt-tar-out(1)>, L<virt-win-reg(1)>, L<display(1)>, L<hexedit(1)>,
+L<febootstrap-supermin-helper(8)>.
 
 =head1 АВТОРИ
 
@@ -1138,10 +1213,10 @@ under the terms of the GNU General Public License as published by the Free
 Software Foundation; either version 2 of the License, or (at your option)
 any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-more details.
+Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
+БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
+ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
+про це можна дізнатися з GNU General Public License.
 
 You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc., 675 Mass

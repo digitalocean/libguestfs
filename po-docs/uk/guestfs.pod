@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head1 НАЗВА
 
@@ -81,7 +82,7 @@ The general structure of all libguestfs-using programs looks like this:
   */
  guestfs_launch (g);
  
- /* Now you can examine what partitions, LVs etc are available.
+ /* Тепер можна перевірити, які розділи, логічні томи тощо доступні.
   */
  char **partitions = guestfs_list_partitions (g);
  char **logvols = guestfs_lvs (g);
@@ -101,7 +102,7 @@ The general structure of all libguestfs-using programs looks like this:
   */
  guestfs_sync (g);
  
- /* Close the handle 'g'. */
+ /* Закрити дескриптор 'g'. */
  guestfs_close (g);
 
 The code above doesn't include any error checking.  In real code you should
@@ -112,7 +113,7 @@ how to handle errors, and consult the documentation for each function call
 below to see precisely how they return error indications.  See
 L<guestfs-examples(3)> for fully worked examples.
 
-=head2 DISK IMAGES
+=head2 ОБРАЗИ ДИСКІВ
 
 The image filename (C<"guest.img"> in the example above) could be a disk
 image from a virtual machine, a L<dd(1)> copy of a physical hard disk, an
@@ -128,7 +129,7 @@ specifying that the format is raw, do:
                          GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
                          -1);
 
-You can add a disk read-only using:
+Ви можете додати диск у режимі лише читання:
 
  guestfs_add_drive_opts (g, filename,
                          GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
@@ -180,7 +181,7 @@ programs built on top of libguestfs, in particular L<virt-inspector(1)>.
 To mount a filesystem read-only, use L</guestfs_mount_ro>.  There are
 several other variations of the C<guestfs_mount_*> call.
 
-=head2 FILESYSTEM ACCESS AND MODIFICATION
+=head2 ДОСТУП ТА ВНЕСЕННЯ ЗМІН ДО ФАЙЛОВИХ СИСТЕМ
 
 The majority of the libguestfs API consists of fairly low-level calls for
 accessing and modifying the files, directories, symlinks etc on mounted
@@ -188,11 +189,12 @@ filesystems.  There are over a hundred such calls which you can find listed
 in detail below in this man page, and we don't even pretend to cover them
 all in this overview.
 
-Specify filenames as full paths, starting with C<"/"> and including the
-mount point.
+Вказуйте адреси і назви файлів повністю, починаючи з C<"/">, разом з точкою
+монтування.
 
-For example, if you mounted a filesystem at C<"/"> and you want to read the
-file called C<"etc/passwd"> then you could do:
+Наприклад, якщо вами змонтовано файлову систему до C<"/">, і ви бажаєте
+виконати читання файла з назвою C<"etc/passwd">, ви можете скористатися
+таким кодом:
 
  char *data = guestfs_cat (g, "/etc/passwd");
 
@@ -205,7 +207,7 @@ called C<"var"> you would do:
 
  guestfs_mkdir (g, "/var");
 
-To create a symlink you could do:
+Щоб створити символічне посилання, ви можете скористатися таким кодом:
 
  guestfs_ln_s (g, "/etc/init.d/portmap",
                "/etc/rc3.d/S30portmap");
@@ -248,7 +250,7 @@ volume groups and logical volumes.
 This author strongly recommends reading the LVM HOWTO, online at
 L<http://tldp.org/HOWTO/LVM-HOWTO/>.
 
-=head2 DOWNLOADING
+=head2 ОТРИМАННЯ ДАНИХ
 
 Use L</guestfs_cat> to download small, text only files.  This call is
 limited to files which are less than 2 MB and which cannot contain any ASCII
@@ -297,12 +299,12 @@ below.
 
 =over 4
 
-=item B<file> to B<file>
+=item B<файл> у B<файл>
 
 Use L</guestfs_cp> to copy a single file, or L</guestfs_cp_a> to copy
 directories recursively.
 
-=item B<file or device> to B<file or device>
+=item B<файл або пристрій> у B<файл або пристрій>
 
 Use L</guestfs_dd> which efficiently uses L<dd(1)> to copy between files and
 devices in the guest.
@@ -344,7 +346,7 @@ and you can write tar output to a file descriptor C<fd> by doing:
  snprintf (devfd, sizeof devfd, "/dev/fd/%d", fd);
  guestfs_tar_out (g, "/", devfd);
 
-=head2 LISTING FILES
+=head2 СПИСКИ ФАЙЛІВ
 
 L</guestfs_ll> is just designed for humans to read (mainly when using the
 L<guestfish(1)>-equivalent command C<ll>).
@@ -359,7 +361,7 @@ equivalent to using the L<readdir(3)> call on a local filesystem.
 L</guestfs_find> and L</guestfs_find0> can be used to recursively list
 files.
 
-=head2 RUNNING COMMANDS
+=head2 ВИКОНАННЯ КОМАНД
 
 Although libguestfs is primarily an API for manipulating files inside guest
 images, we also provide some limited facilities for running commands inside
@@ -494,7 +496,7 @@ L</guestfs_chmod> after creating each file or directory.
 
 For more information about umask, see L<umask(2)>.
 
-=head2 ENCRYPTED DISKS
+=head2 ЗАШИФРОВАНІ ДИСКИ
 
 Libguestfs allows you to access Linux guests which have been encrypted using
 whole disk encryption that conforms to the Linux Unified Key Setup (LUKS)
@@ -605,7 +607,7 @@ L</guestfs_inspect_is_multipart> calls.
 Libguestfs can mount NTFS partitions.  It does this using the
 L<http://www.ntfs-3g.org/> driver.
 
-=head3 DRIVE LETTERS AND PATHS
+=head3 ЛІТЕРИ ДИСКІВ ТА ШЛЯХИ
 
 DOS and Windows still use drive letters, and the filesystems are always
 treated as case insensitive by Windows itself, and therefore you might find
@@ -623,7 +625,7 @@ work.
 To resolve the case insensitivity of paths, call
 L</guestfs_case_sensitive_path>.
 
-=head3 ACCESSING THE WINDOWS REGISTRY
+=head3 ДОСТУП ДО РЕГІСТРУ WINDOWS
 
 Libguestfs also provides some help for decoding Windows Registry "hive"
 files, through the library C<hivex> which is part of the libguestfs project
@@ -632,7 +634,7 @@ hive file(s) yourself, and then pass them to C<hivex> functions.  See also
 the programs L<hivexml(1)>, L<hivexsh(1)>, L<hivexregedit(1)> and
 L<virt-win-reg(1)> for more help on this issue.
 
-=head3 SYMLINKS ON NTFS-3G FILESYSTEMS
+=head3 СИМВОЛІЧНІ ПОСИЛАННЯ У ФАЙЛОВИХ СИСТЕМАХ NTFS-3G
 
 Ntfs-3g tries to rewrite "Junction Points" and NTFS "symbolic links" to
 provide something which looks like a Linux symlink.  The way it tries to do
@@ -658,7 +660,7 @@ filesystems (using L</guestfs_getxattr>).  See:
 
 L<http://www.tuxera.com/community/ntfs-3g-advanced/extended-attributes/>
 
-=head2 USING LIBGUESTFS WITH OTHER PROGRAMMING LANGUAGES
+=head2 ВИКОРИСТАННЯ LIBGUESTFS ЗА ДОПОМОГОЮ ІНШИХ МОВ ПРОГРАМУВАННЯ
 
 Although we don't want to discourage you from using the C API, we will
 mention here that the same API is also available in other languages.
@@ -697,7 +699,7 @@ looking for help to complete this binding.
 =item B<Java>
 
 Full documentation is contained in the Javadoc which is distributed with
-libguestfs.
+libguestfs.  For examples, see L<guestfs-java(3)>.
 
 =item B<OCaml>
 
@@ -842,7 +844,7 @@ representation.  Also consider how it might work in guestfish.
 
 =back
 
-=head2 KEYS AND PASSPHRASES
+=head2 КЛЮЧІ І ПАРОЛІ
 
 Certain libguestfs calls take a parameter that contains sensitive key
 material, passed in as a C string.
@@ -910,7 +912,7 @@ example:
 Note that libguestfs also calls qemu with the -help and -version options in
 order to determine features.
 
-=head2 ATTACHING TO RUNNING DAEMONS
+=head2 ДОЛУЧЕННЯ ДО ЗАПУЩЕНИХ ФОНОВИХ СЛУЖБ
 
 I<Note (1):> This is B<highly experimental> and has a tendency to eat
 babies.  Use with caution.
@@ -919,7 +921,7 @@ I<Note (2):> This section explains how to attach to a running daemon from a
 low level perspective.  For most users, simply using virt tools such as
 L<guestfish(1)> with the I<--live> option will "just work".
 
-=head3 Using guestfs_set_attach_method
+=head3 За допомогою guestfs_set_attach_method
 
 By calling L</guestfs_set_attach_method> you can change how the library
 connects to the C<guestfsd> daemon in L</guestfs_launch> (read
@@ -936,7 +938,7 @@ The normal use for this is to connect to a running virtual machine that
 contains a C<guestfsd> daemon, and send commands so you can read and write
 files inside the live virtual machine.
 
-=head3 Using guestfs_add_domain with live flag
+=head3 За допомогою guestfs_add_domain з прапорцем live
 
 L</guestfs_add_domain> provides some help for getting the correct attach
 method.  If you pass the C<live> option to this function, then (if the
@@ -965,7 +967,7 @@ to attach to and modify live virtual machines.
 The virtual machine needs to have been set up beforehand so that it has the
 virtio-serial channel and so that guestfsd is running inside it.
 
-=head2 ABI GUARANTEE
+=head2 ГАРАНТІЯ ЩОДО ABI
 
 We guarantee the libguestfs ABI (binary interface), for public, high-level
 actions as outlined in this section.  Although we will deprecate some
@@ -973,7 +975,7 @@ actions, for example if they get replaced by newer calls, we will keep the
 old actions forever.  This allows you the developer to program in confidence
 against the libguestfs API.
 
-=head2 BLOCK DEVICE NAMING
+=head2 ІМЕНУВАННЯ БЛОКОВИХ ПРИСТРОЇВ
 
 In the kernel there is now quite a profusion of schemata for naming block
 devices (in this context, by I<block device> I mean a physical or virtual
@@ -1023,7 +1025,7 @@ Is the string a parameter which is a device or partition name?
 
 =item *
 
-Does the string begin with C</dev/sd>?
+Чи починається рядок з C</dev/sd>?
 
 =item *
 
@@ -1076,7 +1078,7 @@ filesystem labels.
 This section discusses security implications of using libguestfs,
 particularly with untrusted or malicious guests or disk images.
 
-=head2 GENERAL SECURITY CONSIDERATIONS
+=head2 ЗАГАЛЬНІ ЗАУВАЖЕННЯ ЩОДО ЗАХИСТУ
 
 Be careful with any files or data that you download from a guest (by
 "download" we mean not just the L</guestfs_download> command but any command
@@ -1112,7 +1114,7 @@ containing homoglyphs.
 
 =back
 
-=head2 SECURITY OF MOUNTING FILESYSTEMS
+=head2 ЗАХИСТ ФАЙЛОВИХ СИСТЕМ МОНТУВАННЯ
 
 When you mount a filesystem under Linux, mistakes in the kernel filesystem
 (VFS) module can sometimes be escalated into exploits by deliberately
@@ -1139,7 +1141,7 @@ hard to do, although we never say 'never' about security issues.
 In any case callers can reduce the attack surface by forcing the filesystem
 type when mounting (use L</guestfs_mount_vfs>).
 
-=head2 PROTOCOL SECURITY
+=head2 ЗАХИСТ ПРОТОКОЛУ
 
 The protocol is designed to be secure, being based on RFC 4506 (XDR)  with a
 defined upper message size.  However a program that uses libguestfs must
@@ -1167,7 +1169,7 @@ designed to be robust in the face of malicious data, although denial of
 service attacks are still possible, for example with oversized configuration
 files.
 
-=head2 RUNNING UNTRUSTED GUEST COMMANDS
+=head2 ЗАПУСК НЕЗАХИЩЕНИХ КОМАНД ГОСТЬОВОЇ СИСТЕМИ
 
 Be very cautious about running commands from the guest.  By running a
 command in the guest, you are giving CPU time to a binary that you do not
@@ -1226,7 +1228,7 @@ format is fetched from libvirt and passed through.
 For libguestfs tools, use the I<--format> command line parameter as
 appropriate.
 
-=head1 CONNECTION MANAGEMENT
+=head1 КЕРУВАННЯ З’ЄДНАННЯМ
 
 =head2 guestfs_h *
 
@@ -1241,7 +1243,7 @@ L</MULTIPLE HANDLES AND MULTIPLE THREADS> above.
 
  guestfs_h *guestfs_create (void);
 
-Create a connection handle.
+Створити дескриптор з’єднання.
 
 On success this returns a non-NULL pointer to a handle.  On error it returns
 NULL.
@@ -1300,7 +1302,7 @@ alternate error handler or do error handling in-line like this:
  guestfs_set_error_handler (g, NULL, NULL);
  
  if (guestfs_launch (g) == -1) {
-   /* Examine the error message and print it etc. */
+   /* Вивчити повідомлення про помилку і вивести його тощо. */
    char *msg = guestfs_last_error (g);
    int errnum = guestfs_last_errno (g);
    fprintf (stderr, "%s\n", msg);
@@ -1413,7 +1415,7 @@ You cannot set C<cb> to C<NULL>.  You can't ignore out of memory situations.
 
 This returns the current out of memory handler.
 
-=head1 API CALLS
+=head1 ВИКЛИКИ API
 
 @ACTIONS@
 
@@ -1421,9 +1423,9 @@ This returns the current out of memory handler.
 
 @STRUCTS@
 
-=head1 AVAILABILITY
+=head1 ДОСТУПНІСТЬ
 
-=head2 GROUPS OF FUNCTIONALITY IN THE APPLIANCE
+=head2 ГРУПИ ФУНКЦІОНАЛЬНИХ МОЖЛИВОСТЕЙ У ОБРАЗІ ОСНОВНОЇ СИСТЕМИ
 
 Using L</guestfs_available> you can test availability of the following
 groups of functions.  This test queries the appliance to see if the
@@ -1609,7 +1611,7 @@ functions C<guestfs_set_log_message_callback>,
 C<guestfs_set_subprocess_quit_callback>,
 C<guestfs_set_launch_done_callback>, C<guestfs_set_close_callback> and
 C<guestfs_set_progress_callback> are no longer documented in this manual
-page.
+page.  Because of the ABI guarantee, the old functions continue to work.
 
 Handles generate events when certain things happen, such as log messages
 being generated, progress messages during long-running operations, or the
@@ -1869,6 +1871,42 @@ example, messages are directed to syslog:
    if (buf_len > 0)
      syslog (priority, "event 0x%lx: %s", event, buf);
  }
+
+=head1 CANCELLING LONG TRANSFERS
+
+Some operations can be cancelled by the caller while they are in progress.
+Currently only operations that involve uploading or downloading data can be
+cancelled (technically: operations that have C<FileIn> or C<FileOut>
+parameters in the generator).
+
+=head2 guestfs_user_cancel
+
+ void guestfs_user_cancel (guestfs_h *g);
+
+C<guestfs_user_cancel> cancels the current upload or download operation.
+
+Unlike most other libguestfs calls, this function is signal safe and thread
+safe.  You can call it from a signal handler or from another thread, without
+needing to do any locking.
+
+The transfer that was in progress (if there is one) will stop shortly
+afterwards, and will return an error.  The errno (see
+L</guestfs_last_errno>) is set to C<EINTR>, so you can test for this to find
+out if the operation was cancelled or failed because of another error.
+
+No cleanup is performed: for example, if a file was being uploaded then
+after cancellation there may be a partially uploaded file.  It is the
+caller's responsibility to clean up if necessary.
+
+There are two common places that you might call C<guestfs_user_cancel>.
+
+In an interactive text-based program, you might call it from a C<SIGINT>
+signal handler so that pressing C<^C> cancels the current operation.  (You
+also need to call L</guestfs_set_pgroup> so that child processes don't
+receive the C<^C> signal).
+
+In a graphical program, when the main thread is displaying a progress bar
+with a cancel button, wire up the cancel button to call this function.
 
 =head1 PRIVATE DATA AREA
 
@@ -2389,16 +2427,16 @@ The test environment has 4 block devices:
 
 =over 4
 
-=item C</dev/sda> 500MB
+=item C</dev/sda> 500 МБ
 
 General block device for testing.
 
-=item C</dev/sdb> 50MB
+=item C</dev/sdb> 50 МБ
 
 C</dev/sdb1> is an ext2 filesystem used for testing filesystem write
 operations.
 
-=item C</dev/sdc> 10MB
+=item C</dev/sdc> 10 МБ
 
 Used in a few tests where two block devices are needed.
 
@@ -2579,6 +2617,10 @@ actions.
 
 L<virt-df(1)> command and documentation.
 
+=item C<edit>
+
+L<virt-edit(1)> command and documentation.
+
 =item C<examples>
 
 Код прикладів використання програмного інтерфейсу мовою C.
@@ -2667,9 +2709,63 @@ with libguestfs.
 
 =back
 
+=head2 MAKING A STABLE RELEASE
+
+When we make a stable release, there are several steps documented here.  See
+L</LIBGUESTFS VERSION NUMBERS> for general information about the stable
+branch policy.
+
+=over 4
+
+=item *
+
+Check C<make && make check> works on at least Fedora, Debian and Ubuntu.
+
+=item *
+
+Finalize RELEASE-NOTES.
+
+=item *
+
+Update ROADMAP.
+
+=item *
+
+Run C<src/api-support/update-from-tarballs.sh>.
+
+=item *
+
+Push and pull from Transifex.
+
+Run:
+
+ tx push -s
+
+to push the latest POT files to Transifex.  Then run:
+
+ ./tx-pull.sh
+
+which is a wrapper to pull the latest translated C<*.po> files.
+
+=item *
+
+Create new stable and development directories under
+L<http://libguestfs.org/download>.
+
+=item *
+
+Create the branch in git:
+
+ git tag -a 1.XX.0 -m "Version 1.XX.0 (stable)"
+ git tag -a 1.YY.0 -m "Version 1.YY.0 (development)"
+ git branch stable-1.XX
+ git push origin tag 1.XX.0 1.YY.0 stable-1.XX
+
+=back
+
 =head1 LIMITS
 
-=head2 PROTOCOL LIMITS
+=head2 ОБМЕЖЕННЯ ПРОТОКОЛУ
 
 Internally libguestfs uses a message-based protocol to pass API calls and
 their responses to and from a small "appliance" (see L</INTERNALS> for
@@ -2767,6 +2863,16 @@ See the source code for more information.
 
 =over 4
 
+=item FEBOOTSTRAP_KERNEL
+
+=item FEBOOTSTRAP_MODULES
+
+These two environment variables allow the kernel that libguestfs uses in the
+appliance to be selected.  If C<$FEBOOTSTRAP_KERNEL> is not set, then the
+most recent host kernel is chosen.  For more information about kernel
+selection, see L<febootstrap-supermin-helper(8)>.  This feature is only
+available in febootstrap E<ge> 3.8.
+
 =item LIBGUESTFS_APPEND
 
 Pass additional options to the guest kernel.
@@ -2813,14 +2919,15 @@ use in case C</var/tmp> is not large enough.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
-L<guestfs-examples(3)>, L<guestfs-ocaml(3)>, L<guestfs-perl(3)>,
-L<guestfs-python(3)>, L<guestfs-ruby(3)>, L<guestfish(1)>, L<guestmount(1)>,
-L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-df(1)>,
-L<virt-edit(1)>, L<virt-filesystems(1)>, L<virt-inspector(1)>,
-L<virt-list-filesystems(1)>, L<virt-list-partitions(1)>, L<virt-ls(1)>,
-L<virt-make-fs(1)>, L<virt-rescue(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>,
-L<virt-tar-out(1)>, L<virt-win-reg(1)>, L<qemu(1)>, L<febootstrap(1)>,
-L<hivex(3)>, L<http://libguestfs.org/>.
+L<guestfs-examples(3)>, L<guestfs-java(3)>, L<guestfs-ocaml(3)>,
+L<guestfs-perl(3)>, L<guestfs-python(3)>, L<guestfs-ruby(3)>,
+L<guestfish(1)>, L<guestmount(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>,
+L<virt-copy-out(1)>, L<virt-df(1)>, L<virt-edit(1)>, L<virt-filesystems(1)>,
+L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
+L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
+L<virt-rescue(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
+L<virt-win-reg(1)>, L<qemu(1)>, L<febootstrap(1)>,
+L<febootstrap-supermin-helper(8)>, L<hivex(3)>, L<http://libguestfs.org/>.
 
 Tools with a similar purpose: L<fdisk(8)>, L<parted(8)>, L<kpartx(8)>,
 L<lvm(8)>, L<disktype(1)>.

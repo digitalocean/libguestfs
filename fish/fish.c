@@ -53,6 +53,7 @@ struct parsed_command {
   char *argv[64];
 };
 
+static void user_cancel (int);
 static void set_up_terminal (void);
 static void prepare_drives (struct drv *drv);
 static int launch (void);
@@ -61,6 +62,7 @@ static void shell_script (void);
 static void script (int prompt);
 static void cmdline (char *argv[], int optind, int argc);
 static struct parsed_command parse_command_line (char *buf, int *exit_on_error_rtn);
+static int parse_quoted_string (char *p);
 static int execute_and_inline (const char *cmd, int exit_on_error);
 static void initialize_readline (void);
 static void cleanup_readline (void);
@@ -71,7 +73,7 @@ static void add_history_line (const char *);
 static int override_progress_bars = -1;
 
 /* Currently open libguestfs handle. */
-guestfs_h *g;
+guestfs_h *g = NULL;
 
 int read_only = 0;
 int live = 0;
@@ -391,6 +393,18 @@ main (int argc, char *argv[])
    */
   is_interactive = !file && isatty (0);
 
+  /* Register a ^C handler.  We have to do this before launch could
+   * possibly be called below.
+   */
+  if (is_interactive) {
+    memset (&sa, 0, sizeof sa);
+    sa.sa_handler = user_cancel;
+    sa.sa_flags = SA_RESTART;
+    sigaction (SIGINT, &sa, NULL);
+
+    guestfs_set_pgroup (g, 1);
+  }
+
   /* Old-style -i syntax?  Since -a/-d/-N and -i was disallowed
    * previously, if we have -i without any drives but with something
    * on the command line, it must be old-style syntax.
@@ -512,6 +526,13 @@ main (int argc, char *argv[])
   cleanup_readline ();
 
   exit (EXIT_SUCCESS);
+}
+
+static void
+user_cancel (int sig)
+{
+  if (g)
+    guestfs_user_cancel (g);
 }
 
 /* The <term.h> header file which defines this has "issues". */
@@ -765,9 +786,8 @@ parse_command_line (char *buf, int *exit_on_error_rtn)
      */
     if (*p == '"') {
       p++;
-      len = strcspn (p, "\"");
-      if (p[len] == '\0') {
-        fprintf (stderr, _("%s: unterminated double quote\n"), program_name);
+      len = parse_quoted_string (p);
+      if (len == -1) {
         pcmd.status = -1;
         return pcmd;
       }
@@ -778,7 +798,6 @@ parse_command_line (char *buf, int *exit_on_error_rtn)
         pcmd.status = -1;
         return pcmd;
       }
-      p[len] = '\0';
       pend = p[len+1] ? &p[len+2] : &p[len+1];
     } else if (*p == '\'') {
       p++;
@@ -840,6 +859,87 @@ parse_command_line (char *buf, int *exit_on_error_rtn)
 
   pcmd.status = 1;
   return pcmd;
+}
+
+static int
+hexdigit (char d)
+{
+  switch (d) {
+  case '0'...'9': return d - '0';
+  case 'a'...'f': return d - 'a' + 10;
+  case 'A'...'F': return d - 'A' + 10;
+  default: return -1;
+  }
+}
+
+/* Parse double-quoted strings, replacing backslash escape sequences
+ * with the true character.  Since the string is returned in place,
+ * the escapes must make the string shorter.
+ */
+static int
+parse_quoted_string (char *p)
+{
+  char *start = p;
+
+  for (; *p && *p != '"'; p++) {
+    if (*p == '\\') {
+      int m = 1, c;
+
+      switch (p[1]) {
+      case '\\': break;
+      case 'a': *p = '\a'; break;
+      case 'b': *p = '\b'; break;
+      case 'f': *p = '\f'; break;
+      case 'n': *p = '\n'; break;
+      case 'r': *p = '\r'; break;
+      case 't': *p = '\t'; break;
+      case 'v': *p = '\v'; break;
+      case '"': *p = '"'; break;
+      case '\'': *p = '\''; break;
+      case '?': *p = '?'; break;
+
+      case '0'...'7':           /* octal escape - always 3 digits */
+        m = 3;
+        if (p[2] >= '0' && p[2] <= '7' &&
+            p[3] >= '0' && p[3] <= '7') {
+          c = (p[1] - '0') * 0100 + (p[2] - '0') * 010 + (p[3] - '0');
+          if (c < 1 || c > 255)
+            goto error;
+          *p = c;
+        }
+        else
+          goto error;
+        break;
+
+      case 'x':                 /* hex escape - always 2 digits */
+        m = 3;
+        if (c_isxdigit (p[2]) && c_isxdigit (p[3])) {
+          c = hexdigit (p[2]) * 0x10 + hexdigit (p[3]);
+          if (c < 1 || c > 255)
+            goto error;
+          *p = c;
+        }
+        else
+          goto error;
+        break;
+
+      default:
+      error:
+        fprintf (stderr, _("%s: invalid escape sequence in string (starting at offset %d)\n"),
+                 program_name, (int) (p - start));
+        return -1;
+      }
+      memmove (p+1, p+1+m, strlen (p+1+m) + 1);
+    }
+  }
+
+  if (!*p) {
+    fprintf (stderr, _("%s: unterminated double quote\n"), program_name);
+    return -1;
+  }
+
+  *p = '\0';
+  return p - start;
 }
 
 /* Used to handle "<!" (execute command and inline result). */

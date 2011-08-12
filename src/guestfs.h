@@ -48,6 +48,15 @@ extern "C" {
     (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #endif
 
+/* Define GUESTFS_WARN_DEPRECATED=1 to warn about deprecated API functions. */
+#define GUESTFS_DEPRECATED_BY(s)
+#if GUESTFS_WARN_DEPRECATED
+#  if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40500 /* gcc >= 4.5 */
+#    undef GUESTFS_DEPRECATED_BY
+#    define GUESTFS_DEPRECATED_BY(s) __attribute__((__deprecated__("change the program to use guestfs_" s " instead of this deprecated function")))
+#  endif
+#endif /* GUESTFS_WARN_DEPRECATED */
+
 /* The handle. */
 #ifndef GUESTFS_TYPEDEF_H
 #define GUESTFS_TYPEDEF_H 1
@@ -110,7 +119,7 @@ extern int guestfs_set_event_callback (guestfs_h *g,
 #define LIBGUESTFS_HAVE_DELETE_EVENT_CALLBACK 1
 extern void guestfs_delete_event_callback (guestfs_h *g, int event_handle);
 
-/* Old-style event handling.  In new code use guestfs_set_event_callback. */
+/* Old-style event handling. */
 #ifndef GUESTFS_TYPEDEF_LOG_MESSAGE_CB
 #define GUESTFS_TYPEDEF_LOG_MESSAGE_CB 1
 typedef void (*guestfs_log_message_cb) (guestfs_h *g, void *opaque, char *buf, int len);
@@ -136,13 +145,22 @@ typedef void (*guestfs_close_cb) (guestfs_h *g, void *opaque);
 typedef void (*guestfs_progress_cb) (guestfs_h *g, void *opaque, int proc_nr, int serial, uint64_t position, uint64_t total);
 #endif
 
-extern void guestfs_set_log_message_callback (guestfs_h *g, guestfs_log_message_cb cb, void *opaque);
-extern void guestfs_set_subprocess_quit_callback (guestfs_h *g, guestfs_subprocess_quit_cb cb, void *opaque);
-extern void guestfs_set_launch_done_callback (guestfs_h *g, guestfs_launch_done_cb cb, void *opaque);
+extern void guestfs_set_log_message_callback (guestfs_h *g, guestfs_log_message_cb cb, void *opaque)
+  GUESTFS_DEPRECATED_BY("set_event_callback");
+extern void guestfs_set_subprocess_quit_callback (guestfs_h *g, guestfs_subprocess_quit_cb cb, void *opaque)
+  GUESTFS_DEPRECATED_BY("set_event_callback");
+extern void guestfs_set_launch_done_callback (guestfs_h *g, guestfs_launch_done_cb cb, void *opaque)
+  GUESTFS_DEPRECATED_BY("set_event_callback");
 #define LIBGUESTFS_HAVE_SET_CLOSE_CALLBACK 1
-extern void guestfs_set_close_callback (guestfs_h *g, guestfs_close_cb cb, void *opaque);
+extern void guestfs_set_close_callback (guestfs_h *g, guestfs_close_cb cb, void *opaque)
+  GUESTFS_DEPRECATED_BY("set_event_callback");
 #define LIBGUESTFS_HAVE_SET_PROGRESS_CALLBACK 1
-extern void guestfs_set_progress_callback (guestfs_h *g, guestfs_progress_cb cb, void *opaque);
+extern void guestfs_set_progress_callback (guestfs_h *g, guestfs_progress_cb cb, void *opaque)
+  GUESTFS_DEPRECATED_BY("set_event_callback");
+
+/* User cancellation. */
+#define LIBGUESTFS_HAVE_USER_CANCEL 1
+extern void guestfs_user_cancel (guestfs_h *g);
 
 /* Private data area. */
 #define LIBGUESTFS_HAVE_SET_PRIVATE 1
@@ -393,82 +411,104 @@ extern void guestfs_free_application (struct guestfs_application *);
 extern void guestfs_free_application_list (struct guestfs_application_list *);
 
 /* Actions. */
-extern int guestfs_add_cdrom (guestfs_h *g, const char *filename);
+extern int guestfs_add_cdrom (guestfs_h *g, const char *filename)
+  GUESTFS_DEPRECATED_BY ("add_drive_opts");
 
 #define LIBGUESTFS_HAVE_ADD_DOMAIN 1
+#define GUESTFS_ADD_DOMAIN_LIBVIRTURI 0
+#define GUESTFS_ADD_DOMAIN_READONLY 1
+#define GUESTFS_ADD_DOMAIN_IFACE 2
+#define GUESTFS_ADD_DOMAIN_LIVE 3
+#define GUESTFS_ADD_DOMAIN_ALLOWUUID 4
 extern int guestfs_add_domain (guestfs_h *g, const char *dom, ...);
 extern int guestfs_add_domain_va (guestfs_h *g, const char *dom, va_list args);
+
 struct guestfs_add_domain_argv {
   uint64_t bitmask;
-#define GUESTFS_ADD_DOMAIN_LIBVIRTURI 0
-#define GUESTFS_ADD_DOMAIN_LIBVIRTURI_BITMASK (UINT64_C(1)<<0)
-/* The field below is only valid in this struct if the
- * GUESTFS_ADD_DOMAIN_LIBVIRTURI_BITMASK bit is set
- * in the bitmask above, otherwise the contents are ignored.
- */
+
+# define GUESTFS_ADD_DOMAIN_LIBVIRTURI_BITMASK (UINT64_C(1)<<0)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_ADD_DOMAIN_LIBVIRTURI_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
   const char *libvirturi;
-#define GUESTFS_ADD_DOMAIN_READONLY 1
-#define GUESTFS_ADD_DOMAIN_READONLY_BITMASK (UINT64_C(1)<<1)
-/* The field below is only valid in this struct if the
- * GUESTFS_ADD_DOMAIN_READONLY_BITMASK bit is set
- * in the bitmask above, otherwise the contents are ignored.
- */
+
+# define GUESTFS_ADD_DOMAIN_READONLY_BITMASK (UINT64_C(1)<<1)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_ADD_DOMAIN_READONLY_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
   int readonly;
-#define GUESTFS_ADD_DOMAIN_IFACE 2
-#define GUESTFS_ADD_DOMAIN_IFACE_BITMASK (UINT64_C(1)<<2)
-/* The field below is only valid in this struct if the
- * GUESTFS_ADD_DOMAIN_IFACE_BITMASK bit is set
- * in the bitmask above, otherwise the contents are ignored.
- */
+
+# define GUESTFS_ADD_DOMAIN_IFACE_BITMASK (UINT64_C(1)<<2)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_ADD_DOMAIN_IFACE_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
   const char *iface;
-#define GUESTFS_ADD_DOMAIN_LIVE 3
-#define GUESTFS_ADD_DOMAIN_LIVE_BITMASK (UINT64_C(1)<<3)
-/* The field below is only valid in this struct if the
- * GUESTFS_ADD_DOMAIN_LIVE_BITMASK bit is set
- * in the bitmask above, otherwise the contents are ignored.
- */
+
+# define GUESTFS_ADD_DOMAIN_LIVE_BITMASK (UINT64_C(1)<<3)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_ADD_DOMAIN_LIVE_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
   int live;
+
+# define GUESTFS_ADD_DOMAIN_ALLOWUUID_BITMASK (UINT64_C(1)<<4)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_ADD_DOMAIN_ALLOWUUID_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int allowuuid;
 };
+
 extern int guestfs_add_domain_argv (guestfs_h *g, const char *dom, const struct guestfs_add_domain_argv *optargs);
 
 #define LIBGUESTFS_HAVE_ADD_DRIVE 1
 extern int guestfs_add_drive (guestfs_h *g, const char *filename);
 
 #define LIBGUESTFS_HAVE_ADD_DRIVE_OPTS 1
+#define GUESTFS_ADD_DRIVE_OPTS_READONLY 0
+#define GUESTFS_ADD_DRIVE_OPTS_FORMAT 1
+#define GUESTFS_ADD_DRIVE_OPTS_IFACE 2
 extern int guestfs_add_drive_opts (guestfs_h *g, const char *filename, ...);
 extern int guestfs_add_drive_opts_va (guestfs_h *g, const char *filename, va_list args);
+
 struct guestfs_add_drive_opts_argv {
   uint64_t bitmask;
-#define GUESTFS_ADD_DRIVE_OPTS_READONLY 0
-#define GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK (UINT64_C(1)<<0)
-/* The field below is only valid in this struct if the
- * GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK bit is set
- * in the bitmask above, otherwise the contents are ignored.
- */
+
+# define GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK (UINT64_C(1)<<0)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
   int readonly;
-#define GUESTFS_ADD_DRIVE_OPTS_FORMAT 1
-#define GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK (UINT64_C(1)<<1)
-/* The field below is only valid in this struct if the
- * GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK bit is set
- * in the bitmask above, otherwise the contents are ignored.
- */
+
+# define GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK (UINT64_C(1)<<1)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
   const char *format;
-#define GUESTFS_ADD_DRIVE_OPTS_IFACE 2
-#define GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK (UINT64_C(1)<<2)
-/* The field below is only valid in this struct if the
- * GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK bit is set
- * in the bitmask above, otherwise the contents are ignored.
- */
+
+# define GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK (UINT64_C(1)<<2)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
   const char *iface;
 };
+
 extern int guestfs_add_drive_opts_argv (guestfs_h *g, const char *filename, const struct guestfs_add_drive_opts_argv *optargs);
 
 #define LIBGUESTFS_HAVE_ADD_DRIVE_RO 1
 extern int guestfs_add_drive_ro (guestfs_h *g, const char *filename);
 
-extern int guestfs_add_drive_ro_with_if (guestfs_h *g, const char *filename, const char *iface);
+extern int guestfs_add_drive_ro_with_if (guestfs_h *g, const char *filename, const char *iface)
+  GUESTFS_DEPRECATED_BY ("add_drive_opts");
 
-extern int guestfs_add_drive_with_if (guestfs_h *g, const char *filename, const char *iface);
+extern int guestfs_add_drive_with_if (guestfs_h *g, const char *filename, const char *iface)
+  GUESTFS_DEPRECATED_BY ("add_drive_opts");
 
 #define LIBGUESTFS_HAVE_AUG_CLEAR 1
 extern int guestfs_aug_clear (guestfs_h *g, const char *augpath);
@@ -553,6 +593,24 @@ extern int guestfs_blockdev_setro (guestfs_h *g, const char *device);
 
 #define LIBGUESTFS_HAVE_BLOCKDEV_SETRW 1
 extern int guestfs_blockdev_setrw (guestfs_h *g, const char *device);
+
+#define LIBGUESTFS_HAVE_BTRFS_FILESYSTEM_RESIZE 1
+#define GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE 0
+extern int guestfs_btrfs_filesystem_resize (guestfs_h *g, const char *mountpoint, ...);
+extern int guestfs_btrfs_filesystem_resize_va (guestfs_h *g, const char *mountpoint, va_list args);
+
+struct guestfs_btrfs_filesystem_resize_argv {
+  uint64_t bitmask;
+
+# define GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK (UINT64_C(1)<<0)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int64_t size;
+};
+
+extern int guestfs_btrfs_filesystem_resize_argv (guestfs_h *g, const char *mountpoint, const struct guestfs_btrfs_filesystem_resize_argv *optargs);
 
 #define LIBGUESTFS_HAVE_CASE_SENSITIVE_PATH 1
 extern char *guestfs_case_sensitive_path (guestfs_h *g, const char *path);
@@ -641,7 +699,8 @@ extern int guestfs_equal (guestfs_h *g, const char *file1, const char *file2);
 #define LIBGUESTFS_HAVE_EXISTS 1
 extern int guestfs_exists (guestfs_h *g, const char *path);
 
-extern int guestfs_fallocate (guestfs_h *g, const char *path, int len);
+extern int guestfs_fallocate (guestfs_h *g, const char *path, int len)
+  GUESTFS_DEPRECATED_BY ("fallocate64");
 
 #define LIBGUESTFS_HAVE_FALLOCATE64 1
 extern int guestfs_fallocate64 (guestfs_h *g, const char *path, int64_t len);
@@ -694,9 +753,11 @@ extern int guestfs_get_autosync (guestfs_h *g);
 #define LIBGUESTFS_HAVE_GET_DIRECT 1
 extern int guestfs_get_direct (guestfs_h *g);
 
-extern char *guestfs_get_e2label (guestfs_h *g, const char *device);
+extern char *guestfs_get_e2label (guestfs_h *g, const char *device)
+  GUESTFS_DEPRECATED_BY ("vfs_label");
 
-extern char *guestfs_get_e2uuid (guestfs_h *g, const char *device);
+extern char *guestfs_get_e2uuid (guestfs_h *g, const char *device)
+  GUESTFS_DEPRECATED_BY ("vfs_uuid");
 
 #define LIBGUESTFS_HAVE_GET_MEMSIZE 1
 extern int guestfs_get_memsize (guestfs_h *g);
@@ -706,6 +767,9 @@ extern int guestfs_get_network (guestfs_h *g);
 
 #define LIBGUESTFS_HAVE_GET_PATH 1
 extern const char *guestfs_get_path (guestfs_h *g);
+
+#define LIBGUESTFS_HAVE_GET_PGROUP 1
+extern int guestfs_get_pgroup (guestfs_h *g);
 
 #define LIBGUESTFS_HAVE_GET_PID 1
 extern int guestfs_get_pid (guestfs_h *g);
@@ -803,6 +867,32 @@ extern char *guestfs_inspect_get_format (guestfs_h *g, const char *root);
 #define LIBGUESTFS_HAVE_INSPECT_GET_HOSTNAME 1
 extern char *guestfs_inspect_get_hostname (guestfs_h *g, const char *root);
 
+#define LIBGUESTFS_HAVE_INSPECT_GET_ICON 1
+#define GUESTFS_INSPECT_GET_ICON_FAVICON 0
+#define GUESTFS_INSPECT_GET_ICON_HIGHQUALITY 1
+extern char *guestfs_inspect_get_icon (guestfs_h *g, const char *root, size_t *size_r, ...);
+extern char *guestfs_inspect_get_icon_va (guestfs_h *g, const char *root, size_t *size_r, va_list args);
+
+struct guestfs_inspect_get_icon_argv {
+  uint64_t bitmask;
+
+# define GUESTFS_INSPECT_GET_ICON_FAVICON_BITMASK (UINT64_C(1)<<0)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_INSPECT_GET_ICON_FAVICON_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int favicon;
+
+# define GUESTFS_INSPECT_GET_ICON_HIGHQUALITY_BITMASK (UINT64_C(1)<<1)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_INSPECT_GET_ICON_HIGHQUALITY_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int highquality;
+};
+
+extern char *guestfs_inspect_get_icon_argv (guestfs_h *g, const char *root, size_t *size_r, const struct guestfs_inspect_get_icon_argv *optargs);
+
 #define LIBGUESTFS_HAVE_INSPECT_GET_MAJOR_VERSION 1
 extern int guestfs_inspect_get_major_version (guestfs_h *g, const char *root);
 
@@ -890,6 +980,12 @@ extern int guestfs_is_socket (guestfs_h *g, const char *path);
 #define LIBGUESTFS_HAVE_IS_SYMLINK 1
 extern int guestfs_is_symlink (guestfs_h *g, const char *path);
 
+#define LIBGUESTFS_HAVE_IS_ZERO 1
+extern int guestfs_is_zero (guestfs_h *g, const char *path);
+
+#define LIBGUESTFS_HAVE_IS_ZERO_DEVICE 1
+extern int guestfs_is_zero_device (guestfs_h *g, const char *device);
+
 #define LIBGUESTFS_HAVE_KILL_SUBPROCESS 1
 extern int guestfs_kill_subprocess (guestfs_h *g);
 
@@ -905,8 +1001,14 @@ extern char *guestfs_lgetxattr (guestfs_h *g, const char *path, const char *name
 #define LIBGUESTFS_HAVE_LGETXATTRS 1
 extern struct guestfs_xattr_list *guestfs_lgetxattrs (guestfs_h *g, const char *path);
 
+#define LIBGUESTFS_HAVE_LIST_9P 1
+extern char **guestfs_list_9p (guestfs_h *g);
+
 #define LIBGUESTFS_HAVE_LIST_DEVICES 1
 extern char **guestfs_list_devices (guestfs_h *g);
+
+#define LIBGUESTFS_HAVE_LIST_DM_DEVICES 1
+extern char **guestfs_list_dm_devices (guestfs_h *g);
 
 #define LIBGUESTFS_HAVE_LIST_FILESYSTEMS 1
 extern char **guestfs_list_filesystems (guestfs_h *g);
@@ -1040,28 +1142,49 @@ extern int guestfs_mkfifo (guestfs_h *g, int mode, const char *path);
 #define LIBGUESTFS_HAVE_MKFS 1
 extern int guestfs_mkfs (guestfs_h *g, const char *fstype, const char *device);
 
-extern int guestfs_mkfs_b (guestfs_h *g, const char *fstype, int blocksize, const char *device);
+extern int guestfs_mkfs_b (guestfs_h *g, const char *fstype, int blocksize, const char *device)
+  GUESTFS_DEPRECATED_BY ("mkfs_opts");
 
 #define LIBGUESTFS_HAVE_MKFS_OPTS 1
+#define GUESTFS_MKFS_OPTS_BLOCKSIZE 0
+#define GUESTFS_MKFS_OPTS_FEATURES 1
+#define GUESTFS_MKFS_OPTS_INODE 2
+#define GUESTFS_MKFS_OPTS_SECTORSIZE 3
 extern int guestfs_mkfs_opts (guestfs_h *g, const char *fstype, const char *device, ...);
 extern int guestfs_mkfs_opts_va (guestfs_h *g, const char *fstype, const char *device, va_list args);
+
 struct guestfs_mkfs_opts_argv {
   uint64_t bitmask;
-#define GUESTFS_MKFS_OPTS_BLOCKSIZE 0
-#define GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK (UINT64_C(1)<<0)
-/* The field below is only valid in this struct if the
- * GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK bit is set
- * in the bitmask above, otherwise the contents are ignored.
- */
+
+# define GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK (UINT64_C(1)<<0)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
   int blocksize;
-#define GUESTFS_MKFS_OPTS_FEATURES 1
-#define GUESTFS_MKFS_OPTS_FEATURES_BITMASK (UINT64_C(1)<<1)
-/* The field below is only valid in this struct if the
- * GUESTFS_MKFS_OPTS_FEATURES_BITMASK bit is set
- * in the bitmask above, otherwise the contents are ignored.
- */
+
+# define GUESTFS_MKFS_OPTS_FEATURES_BITMASK (UINT64_C(1)<<1)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_MKFS_OPTS_FEATURES_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
   const char *features;
+
+# define GUESTFS_MKFS_OPTS_INODE_BITMASK (UINT64_C(1)<<2)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_MKFS_OPTS_INODE_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int inode;
+
+# define GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK (UINT64_C(1)<<3)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int sectorsize;
 };
+
 extern int guestfs_mkfs_opts_argv (guestfs_h *g, const char *fstype, const char *device, const struct guestfs_mkfs_opts_argv *optargs);
 
 #define LIBGUESTFS_HAVE_MKMOUNTPOINT 1
@@ -1091,7 +1214,26 @@ extern int guestfs_mkswap_file (guestfs_h *g, const char *path);
 #define LIBGUESTFS_HAVE_MODPROBE 1
 extern int guestfs_modprobe (guestfs_h *g, const char *modulename);
 
-extern int guestfs_mount (guestfs_h *g, const char *device, const char *mountpoint);
+extern int guestfs_mount (guestfs_h *g, const char *device, const char *mountpoint)
+  GUESTFS_DEPRECATED_BY ("mount_options");
+
+#define LIBGUESTFS_HAVE_MOUNT_9P 1
+#define GUESTFS_MOUNT_9P_OPTIONS 0
+extern int guestfs_mount_9p (guestfs_h *g, const char *mounttag, const char *mountpoint, ...);
+extern int guestfs_mount_9p_va (guestfs_h *g, const char *mounttag, const char *mountpoint, va_list args);
+
+struct guestfs_mount_9p_argv {
+  uint64_t bitmask;
+
+# define GUESTFS_MOUNT_9P_OPTIONS_BITMASK (UINT64_C(1)<<0)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_MOUNT_9P_OPTIONS_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  const char *options;
+};
+
+extern int guestfs_mount_9p_argv (guestfs_h *g, const char *mounttag, const char *mountpoint, const struct guestfs_mount_9p_argv *optargs);
 
 #define LIBGUESTFS_HAVE_MOUNT_LOOP 1
 extern int guestfs_mount_loop (guestfs_h *g, const char *file, const char *mountpoint);
@@ -1117,11 +1259,37 @@ extern int guestfs_mv (guestfs_h *g, const char *src, const char *dest);
 #define LIBGUESTFS_HAVE_NTFS_3G_PROBE 1
 extern int guestfs_ntfs_3g_probe (guestfs_h *g, int rw, const char *device);
 
-#define LIBGUESTFS_HAVE_NTFSRESIZE 1
-extern int guestfs_ntfsresize (guestfs_h *g, const char *device);
+extern int guestfs_ntfsresize (guestfs_h *g, const char *device)
+  GUESTFS_DEPRECATED_BY ("ntfsresize_opts");
 
-#define LIBGUESTFS_HAVE_NTFSRESIZE_SIZE 1
-extern int guestfs_ntfsresize_size (guestfs_h *g, const char *device, int64_t size);
+#define LIBGUESTFS_HAVE_NTFSRESIZE_OPTS 1
+#define GUESTFS_NTFSRESIZE_OPTS_SIZE 0
+#define GUESTFS_NTFSRESIZE_OPTS_FORCE 1
+extern int guestfs_ntfsresize_opts (guestfs_h *g, const char *device, ...);
+extern int guestfs_ntfsresize_opts_va (guestfs_h *g, const char *device, va_list args);
+
+struct guestfs_ntfsresize_opts_argv {
+  uint64_t bitmask;
+
+# define GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK (UINT64_C(1)<<0)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int64_t size;
+
+# define GUESTFS_NTFSRESIZE_OPTS_FORCE_BITMASK (UINT64_C(1)<<1)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_NTFSRESIZE_OPTS_FORCE_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int force;
+};
+
+extern int guestfs_ntfsresize_opts_argv (guestfs_h *g, const char *device, const struct guestfs_ntfsresize_opts_argv *optargs);
+
+extern int guestfs_ntfsresize_size (guestfs_h *g, const char *device, int64_t size)
+  GUESTFS_DEPRECATED_BY ("ntfsresize_opts");
 
 #define LIBGUESTFS_HAVE_PART_ADD 1
 extern int guestfs_part_add (guestfs_h *g, const char *device, const char *prlogex, int64_t startsect, int64_t endsect);
@@ -1273,6 +1441,9 @@ extern int guestfs_set_network (guestfs_h *g, int network);
 #define LIBGUESTFS_HAVE_SET_PATH 1
 extern int guestfs_set_path (guestfs_h *g, const char *searchpath);
 
+#define LIBGUESTFS_HAVE_SET_PGROUP 1
+extern int guestfs_set_pgroup (guestfs_h *g, int pgroup);
+
 #define LIBGUESTFS_HAVE_SET_QEMU 1
 extern int guestfs_set_qemu (guestfs_h *g, const char *qemu);
 
@@ -1294,11 +1465,14 @@ extern int guestfs_setcon (guestfs_h *g, const char *context);
 #define LIBGUESTFS_HAVE_SETXATTR 1
 extern int guestfs_setxattr (guestfs_h *g, const char *xattr, const char *val, int vallen, const char *path);
 
-extern int guestfs_sfdisk (guestfs_h *g, const char *device, int cyls, int heads, int sectors, char *const *lines);
+extern int guestfs_sfdisk (guestfs_h *g, const char *device, int cyls, int heads, int sectors, char *const *lines)
+  GUESTFS_DEPRECATED_BY ("part_add");
 
-extern int guestfs_sfdiskM (guestfs_h *g, const char *device, char *const *lines);
+extern int guestfs_sfdiskM (guestfs_h *g, const char *device, char *const *lines)
+  GUESTFS_DEPRECATED_BY ("part_add");
 
-extern int guestfs_sfdisk_N (guestfs_h *g, const char *device, int partnum, int cyls, int heads, int sectors, const char *line);
+extern int guestfs_sfdisk_N (guestfs_h *g, const char *device, int partnum, int cyls, int heads, int sectors, const char *line)
+  GUESTFS_DEPRECATED_BY ("part_add");
 
 #define LIBGUESTFS_HAVE_SFDISK_DISK_GEOMETRY 1
 extern char *guestfs_sfdisk_disk_geometry (guestfs_h *g, const char *device);
@@ -1306,7 +1480,8 @@ extern char *guestfs_sfdisk_disk_geometry (guestfs_h *g, const char *device);
 #define LIBGUESTFS_HAVE_SFDISK_KERNEL_GEOMETRY 1
 extern char *guestfs_sfdisk_kernel_geometry (guestfs_h *g, const char *device);
 
-extern char *guestfs_sfdisk_l (guestfs_h *g, const char *device);
+extern char *guestfs_sfdisk_l (guestfs_h *g, const char *device)
+  GUESTFS_DEPRECATED_BY ("part_list");
 
 #define LIBGUESTFS_HAVE_SH 1
 extern char *guestfs_sh (guestfs_h *g, const char *command);
@@ -1497,7 +1672,8 @@ extern int guestfs_vgscan (guestfs_h *g);
 #define LIBGUESTFS_HAVE_VGUUID 1
 extern char *guestfs_vguuid (guestfs_h *g, const char *vgname);
 
-extern int guestfs_wait_ready (guestfs_h *g);
+extern int guestfs_wait_ready (guestfs_h *g)
+  GUESTFS_DEPRECATED_BY ("launch");
 
 #define LIBGUESTFS_HAVE_WC_C 1
 extern int guestfs_wc_c (guestfs_h *g, const char *path);
@@ -1511,7 +1687,11 @@ extern int guestfs_wc_w (guestfs_h *g, const char *path);
 #define LIBGUESTFS_HAVE_WRITE 1
 extern int guestfs_write (guestfs_h *g, const char *path, const char *content, size_t content_size);
 
-extern int guestfs_write_file (guestfs_h *g, const char *path, const char *content, int size);
+#define LIBGUESTFS_HAVE_WRITE_APPEND 1
+extern int guestfs_write_append (guestfs_h *g, const char *path, const char *content, size_t content_size);
+
+extern int guestfs_write_file (guestfs_h *g, const char *path, const char *content, int size)
+  GUESTFS_DEPRECATED_BY ("write");
 
 #define LIBGUESTFS_HAVE_ZEGREP 1
 extern char **guestfs_zegrep (guestfs_h *g, const char *regex, const char *path);
@@ -1534,7 +1714,8 @@ extern char **guestfs_zfgrep (guestfs_h *g, const char *pattern, const char *pat
 #define LIBGUESTFS_HAVE_ZFGREPI 1
 extern char **guestfs_zfgrepi (guestfs_h *g, const char *pattern, const char *path);
 
-extern char *guestfs_zfile (guestfs_h *g, const char *meth, const char *path);
+extern char *guestfs_zfile (guestfs_h *g, const char *meth, const char *path)
+  GUESTFS_DEPRECATED_BY ("file");
 
 #define LIBGUESTFS_HAVE_ZGREP 1
 extern char **guestfs_zgrep (guestfs_h *g, const char *regex, const char *path);

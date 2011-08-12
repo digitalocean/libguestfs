@@ -1,5 +1,5 @@
 /* Open a descriptor to a file.
-   Copyright (C) 2007-2010 Free Software Foundation, Inc.
+   Copyright (C) 2007-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -63,6 +63,15 @@ open (const char *filename, int flags, ...)
       va_end (arg);
     }
 
+#if GNULIB_defined_O_NONBLOCK
+  /* The only known platform that lacks O_NONBLOCK is mingw, but it
+     also lacks named pipes and Unix sockets, which are the only two
+     file types that require non-blocking handling in open().
+     Therefore, it is safe to ignore O_NONBLOCK here.  It is handy
+     that mingw also lacks openat(), so that is also covered here.  */
+  flags &= ~O_NONBLOCK;
+#endif
+
 #if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
   if (strcmp (filename, "/dev/null") == 0)
     filename = "NUL";
@@ -111,7 +120,8 @@ open (const char *filename, int flags, ...)
      override fstat() in fchdir.c to hide the fact that we have a
      dummy.  */
   if (REPLACE_OPEN_DIRECTORY && fd < 0 && errno == EACCES
-      && (flags & O_ACCMODE) == O_RDONLY)
+      && ((flags & O_ACCMODE) == O_RDONLY
+          || (O_SEARCH != O_RDONLY && (flags & O_ACCMODE) == O_SEARCH)))
     {
       struct stat statbuf;
       if (stat (filename, &statbuf) == 0 && S_ISDIR (statbuf.st_mode))
