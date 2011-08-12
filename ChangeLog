@@ -1,3 +1,21 @@
+2011-07-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.12.2.
+
+	perl: Fix another place where qw() was used as parentheses.
+	This is a fix for Perl 5.14.
+
+	See previous commit 5c3c7e8825341e18c9449976f8a321a04cc78d79.
+	(cherry picked from commit c70532ab4b3d977ed7484e473107808b22d90a2a)
+
+	ocaml: Fix locking in event callbacks.
+	We weren't acquiring the GC lock around some allocations, resulting in
+	segfaults when an event callback ran at the same time as a main thread
+	allocation or garbage collection.
+
+	In particular this fixes a noticable crash in guestfs-browser.
+	(cherry picked from commit 2b8b3f9794ceb43eabd3083e225c669896d8b186)
+
 2011-07-26  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.12.1.
