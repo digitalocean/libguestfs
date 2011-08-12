@@ -1,3 +1,14 @@
+libguestfs (1.12.3-1) unstable; urgency=low
+
+  * New upstream version
+  * [b61cb3c] Added umask-setting code to update-guestfs-appliance.
+    Closes: #637437
+  * [6a43d8f] Dropped dependency on Linux kernel package. Closes: #637438
+  * [52d2752] Added guestfsd package
+  * [4690370] Updated patches
+
+ -- Hilko Bengen <bengen@debian.org>  Fri, 12 Aug 2011 23:28:15 +0200
+
 libguestfs (1.10.7-3) unstable; urgency=low
 
   * [c65e1bb] Fixed FTBFS by making fuse test depend on appliance. Thanks
