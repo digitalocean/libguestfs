@@ -288,6 +288,26 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   return r;
 }
 
+/*
+ * call-seq:
+ *   g.user_cancel() -> nil
+ *
+ * Call
+ * +guestfs_user_cancel+[http://libguestfs.org/guestfs.3.html#guestfs_user_cancel]
+ * to cancel the current transfer.  This is safe to call from Ruby
+ * signal handlers and threads.
+ */
+static VALUE
+ruby_user_cancel (VALUE gv)
+{
+  guestfs_h *g;
+
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (g)
+    guestfs_user_cancel (g);
+  return Qnil;
+}
+
 static VALUE
 ruby_guestfs_test0 (VALUE gv, VALUE strv, VALUE optstrv, VALUE strlistv, VALUE bv, VALUE integerv, VALUE integer64v, VALUE fileinv, VALUE fileoutv, VALUE bufferinv)
 {
@@ -2351,9 +2371,6 @@ ruby_guestfs_inspect_os (VALUE gv)
  *
  * get type of inspected operating system
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * This returns the type of the inspected operating system.
  * Currently defined types are:
  * 
@@ -2406,9 +2423,6 @@ ruby_guestfs_inspect_get_type (VALUE gv, VALUE rootv)
  *
  * get architecture of inspected operating system
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * This returns the architecture of the inspected operating
  * system. The possible return values are listed under
  * "g.file_architecture".
@@ -2449,9 +2463,6 @@ ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
  *
  * get distro of inspected operating system
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * This returns the distro (distribution) of the inspected
  * operating system.
  * 
@@ -2543,9 +2554,6 @@ ruby_guestfs_inspect_get_distro (VALUE gv, VALUE rootv)
  *
  * get major version of inspected operating system
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * This returns the major version number of the inspected
  * operating system.
  * 
@@ -2590,9 +2598,6 @@ ruby_guestfs_inspect_get_major_version (VALUE gv, VALUE rootv)
  *
  * get minor version of inspected operating system
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * This returns the minor version number of the inspected
  * operating system.
  * 
@@ -2631,9 +2636,6 @@ ruby_guestfs_inspect_get_minor_version (VALUE gv, VALUE rootv)
  *
  * get product name of inspected operating system
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * This returns the product name of the inspected operating
  * system. The product name is generally some freeform
  * string which can be displayed to the user, but should
@@ -2675,9 +2677,6 @@ ruby_guestfs_inspect_get_product_name (VALUE gv, VALUE rootv)
  *
  * get mountpoints of inspected operating system
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * This returns a hash of where we think the filesystems
  * associated with this operating system should be mounted.
  * Callers should note that this is at best an educated
@@ -2741,9 +2740,6 @@ ruby_guestfs_inspect_get_mountpoints (VALUE gv, VALUE rootv)
  *
  * get filesystems associated with inspected operating system
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * This returns a list of all the filesystems that we think
  * are associated with this operating system. This includes
  * the root filesystem, other ordinary filesystems, and
@@ -3019,9 +3015,6 @@ ruby_guestfs_add_drive_opts (VALUE gv, VALUE filenamev, VALUE optargsv)
  *
  * get Windows systemroot of inspected operating system
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * This returns the Windows systemroot of the inspected
  * guest. The systemroot is a directory path such as
  * "/WINDOWS".
@@ -3169,6 +3162,12 @@ ruby_guestfs_debug_cmdline (VALUE gv)
  * omitted) is never to try. See "ATTACHING TO RUNNING
  * DAEMONS" in guestfs(3) for more information.
  * 
+ * If the "allowuuid" flag is true (default is false) then
+ * a UUID *may* be passed instead of the domain name. The
+ * "dom" string is treated as a UUID first and looked up,
+ * and if that lookup fails then we treat "dom" as a name
+ * as usual.
+ * 
  * The other optional parameters are passed directly
  * through to "g.add_drive_opts".
  * 
@@ -3214,6 +3213,11 @@ ruby_guestfs_add_domain (VALUE gv, VALUE domv, VALUE optargsv)
     optargs_s.live = RTEST (v);
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_LIVE_BITMASK;
   }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("allowuuid")));
+  if (v != Qnil) {
+    optargs_s.allowuuid = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_ALLOWUUID_BITMASK;
+  }
 
   int r;
 
@@ -3230,9 +3234,6 @@ ruby_guestfs_add_domain (VALUE gv, VALUE domv, VALUE optargsv)
  *
  * get package format used by the operating system
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * This function and "g.inspect_get_package_management"
  * return the package format and package management tool
  * used by the inspected operating system. For example for
@@ -3281,9 +3282,6 @@ ruby_guestfs_inspect_get_package_format (VALUE gv, VALUE rootv)
  *
  * get package management tool used by the operating system
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * "g.inspect_get_package_format" and this function return
  * the package format and package management tool used by
  * the inspected operating system. For example for Fedora
@@ -3333,9 +3331,6 @@ ruby_guestfs_inspect_get_package_management (VALUE gv, VALUE rootv)
  *
  * get list of applications installed in the operating system
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * Return the list of applications installed in the
  * operating system.
  * 
@@ -3471,9 +3466,6 @@ ruby_guestfs_inspect_list_applications (VALUE gv, VALUE rootv)
  *
  * get hostname of the operating system
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * This function returns the hostname of the operating
  * system as found by inspection of the guest's
  * configuration files.
@@ -3514,9 +3506,6 @@ ruby_guestfs_inspect_get_hostname (VALUE gv, VALUE rootv)
  *
  * get format of inspected operating system
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * This returns the format of the inspected operating
  * system. You can use it to detect install images, live
  * CDs and similar.
@@ -3571,9 +3560,6 @@ ruby_guestfs_inspect_get_format (VALUE gv, VALUE rootv)
  *
  * get live flag for install disk
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * If "g.inspect_get_format" returns "installer" (this is
  * an install disk), then this returns true if a live image
  * was detected on the disk.
@@ -3609,9 +3595,6 @@ ruby_guestfs_inspect_is_live (VALUE gv, VALUE rootv)
  *
  * get netinst (network installer) flag for install disk
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * If "g.inspect_get_format" returns "installer" (this is
  * an install disk), then this returns true if the disk is
  * a network installer, ie. not a self-contained install CD
@@ -3649,9 +3632,6 @@ ruby_guestfs_inspect_is_netinst (VALUE gv, VALUE rootv)
  *
  * get multipart flag for install disk
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * If "g.inspect_get_format" returns "installer" (this is
  * an install disk), then this returns true if the disk is
  * part of a set.
@@ -3764,9 +3744,6 @@ ruby_guestfs_get_attach_method (VALUE gv)
  *
  * get product variant of inspected operating system
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * This returns the product variant of the inspected
  * operating system.
  * 
@@ -3822,9 +3799,6 @@ ruby_guestfs_inspect_get_product_variant (VALUE gv, VALUE rootv)
  *
  * get Windows CurrentControlSet of inspected operating system
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * This returns the Windows CurrentControlSet of the
  * inspected guest. The CurrentControlSet is a registry key
  * name such as "ControlSet001".
@@ -3866,9 +3840,6 @@ ruby_guestfs_inspect_get_windows_current_control_set (VALUE gv, VALUE rootv)
  *
  * get drive letter mappings
  *
- * This function should only be called with a root device
- * string as returned by "g.inspect_os".
- * 
  * This call is useful for Windows which uses a primitive
  * system of assigning drive letters (like "C:") to
  * partitions. This inspection API examines the Windows
@@ -3931,6 +3902,178 @@ ruby_guestfs_inspect_get_drive_mappings (VALUE gv, VALUE rootv)
   }
   free (r);
   return rv;
+}
+
+/*
+ * call-seq:
+ *   g.inspect_get_icon(root, {optargs...}) -> string
+ *
+ * get the icon corresponding to this operating system
+ *
+ * This function returns an icon corresponding to the
+ * inspected operating system. The icon is returned as a
+ * buffer containing a PNG image (re-encoded to PNG if
+ * necessary).
+ * 
+ * If it was not possible to get an icon this function
+ * returns a zero-length (non-NULL) buffer. *Callers must
+ * check for this case*.
+ * 
+ * Libguestfs will start by looking for a file called
+ * "/etc/favicon.png" or "C:\etc\favicon.png" and if it has
+ * the correct format, the contents of this file will be
+ * returned. You can disable favicons by passing the
+ * optional "favicon" boolean as false (default is true).
+ * 
+ * If finding the favicon fails, then we look in other
+ * places in the guest for a suitable icon.
+ * 
+ * If the optional "highquality" boolean is true then only
+ * high quality icons are returned, which means only icons
+ * of high resolution with an alpha channel. The default
+ * (false) is to return any icon we can, even if it is of
+ * substandard quality.
+ * 
+ * Notes:
+ * 
+ * *   Unlike most other inspection API calls, the guest's
+ * disks must be mounted up before you call this, since
+ * it needs to read information from the guest
+ * filesystem during the call.
+ * 
+ * *   Security: The icon data comes from the untrusted
+ * guest, and should be treated with caution. PNG files
+ * have been known to contain exploits. Ensure that
+ * libpng (or other relevant libraries) are fully up to
+ * date before trying to process or display the icon.
+ * 
+ * *   The PNG image returned can be any size. It might not
+ * be square. Libguestfs tries to return the largest,
+ * highest quality icon available. The application must
+ * scale the icon to the required size.
+ * 
+ * *   Extracting icons from Windows guests requires the
+ * external "wrestool" program from the "icoutils"
+ * package, and several programs ("bmptopnm",
+ * "pnmtopng", "pamcut") from the "netpbm" package.
+ * These must be installed separately.
+ * 
+ * *   Operating system icons are usually trademarks. Seek
+ * legal advice before using trademarks in
+ * applications.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_inspect_get_icon+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_icon]).
+ */
+static VALUE
+ruby_guestfs_inspect_get_icon (VALUE gv, VALUE rootv, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "inspect_get_icon");
+
+  const char *root = StringValueCStr (rootv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_inspect_get_icon_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_inspect_get_icon_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("favicon")));
+  if (v != Qnil) {
+    optargs_s.favicon = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_INSPECT_GET_ICON_FAVICON_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("highquality")));
+  if (v != Qnil) {
+    optargs_s.highquality = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_INSPECT_GET_ICON_HIGHQUALITY_BITMASK;
+  }
+
+  char *r;
+  size_t size;
+
+  r = guestfs_inspect_get_icon_argv (g, root, &size, optargs);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  VALUE rv = rb_str_new (r, size);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.set_pgroup(pgroup) -> nil
+ *
+ * set process group flag
+ *
+ * If "pgroup" is true, child processes are placed into
+ * their own process group.
+ * 
+ * The practical upshot of this is that signals like
+ * "SIGINT" (from users pressing "^C") won't be received by
+ * the child process.
+ * 
+ * The default for this flag is false, because usually you
+ * want "^C" to kill the subprocess.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_pgroup+[http://libguestfs.org/guestfs.3.html#guestfs_set_pgroup]).
+ */
+static VALUE
+ruby_guestfs_set_pgroup (VALUE gv, VALUE pgroupv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_pgroup");
+
+  int pgroup = RTEST (pgroupv);
+
+  int r;
+
+  r = guestfs_set_pgroup (g, pgroup);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.get_pgroup() -> [True|False]
+ *
+ * get process group flag
+ *
+ * This returns the process group flag.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_pgroup+[http://libguestfs.org/guestfs.3.html#guestfs_get_pgroup]).
+ */
+static VALUE
+ruby_guestfs_get_pgroup (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_pgroup");
+
+
+  int r;
+
+  r = guestfs_get_pgroup (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
 }
 
 /*
@@ -5923,7 +6066,7 @@ ruby_guestfs_lvm_remove_all (VALUE gv)
  * guaranteed by the ABI.
  * 
  * See also: file(1), "g.vfs_type", "g.lstat", "g.is_file",
- * "g.is_blockdev" (etc).
+ * "g.is_blockdev" (etc), "g.is_zero".
  *
  *
  * (For the C API documentation for this function, see
@@ -7388,7 +7531,8 @@ ruby_guestfs_fsck (VALUE gv, VALUE fstypev, VALUE devicev)
  * sufficient to remove any partition tables, filesystem
  * superblocks and so on.
  * 
- * See also: "g.zero_device", "g.scrub_device".
+ * See also: "g.zero_device", "g.scrub_device",
+ * "g.is_zero_device"
  *
  *
  * (For the C API documentation for this function, see
@@ -8109,10 +8253,7 @@ ruby_guestfs_sfdisk_disk_geometry (VALUE gv, VALUE devicev)
  * activate or deactivate all volume groups
  *
  * This command activates or (if "activate" is false)
- * deactivates all logical volumes in all volume groups. If
- * activated, then they are made known to the kernel, ie.
- * they appear as "/dev/mapper" devices. If deactivated,
- * then those devices disappear.
+ * deactivates all logical volumes in all volume groups.
  * 
  * This command is the same as running "vgchange -a y|n"
  *
@@ -8147,9 +8288,7 @@ ruby_guestfs_vg_activate_all (VALUE gv, VALUE activatev)
  *
  * This command activates or (if "activate" is false)
  * deactivates all logical volumes in the listed volume
- * groups "volgroups". If activated, then they are made
- * known to the kernel, ie. they appear as "/dev/mapper"
- * devices. If deactivated, then those devices disappear.
+ * groups "volgroups".
  * 
  * This command is the same as running "vgchange -a y|n
  * volgroups..."
@@ -12547,15 +12686,16 @@ ruby_guestfs_pread (VALUE gv, VALUE pathv, VALUE countv, VALUE offsetv)
  * 
  * Possible values for "parttype" are:
  * 
- * efi | gpt
- * Intel EFI / GPT partition table.
+ * efi
+ * gpt Intel EFI / GPT partition table.
  * 
  * This is recommended for >= 2 TB partitions that will
  * be accessed from Linux and Intel-based Mac OS X. It
  * also has limited backwards compatibility with the
  * "mbr" format.
  * 
- * mbr | msdos
+ * mbr
+ * msdos
  * The standard PC "Master Boot Record" (MBR) format
  * used by MS-DOS and Windows. This partition type will
  * only work for device sizes up to 2 TB. For large
@@ -12566,8 +12706,8 @@ ruby_guestfs_pread (VALUE gv, VALUE pathv, VALUE countv, VALUE offsetv)
  * 
  * aix AIX disk labels.
  * 
- * amiga | rdb
- * Amiga "Rigid Disk Block" format.
+ * amiga
+ * rdb Amiga "Rigid Disk Block" format.
  * 
  * bsd BSD disk labels.
  * 
@@ -13545,6 +13685,13 @@ ruby_guestfs_txz_out (VALUE gv, VALUE directoryv, VALUE tarballv)
  * into Windows between each resize.
  * 
  * See also ntfsresize(8).
+ * 
+ * This function is deprecated. In new code, use the
+ * "ntfsresize_opts" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -14063,6 +14210,8 @@ ruby_guestfs_fill_pattern (VALUE gv, VALUE patternv, VALUE lenv, VALUE pathv)
  * the file is the string "content" (which can contain any
  * 8 bit data).
  * 
+ * See also "g.write_append".
+ * 
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
@@ -14226,6 +14375,13 @@ ruby_guestfs_pvresize_size (VALUE gv, VALUE devicev, VALUE sizev)
  * This command is the same as "g.ntfsresize" except that
  * it allows you to specify the new size (in bytes)
  * explicitly.
+ * 
+ * This function is deprecated. In new code, use the
+ * "ntfsresize_opts" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -14542,6 +14698,9 @@ ruby_guestfs_lvm_clear_filter (VALUE gv)
  * If this block device contains LVM volume groups, then
  * calling "g.vgscan" followed by "g.vg_activate_all" will
  * make them visible.
+ * 
+ * Use "g.list_dm_devices" to list all device mapper
+ * devices.
  *
  *
  * (For the C API documentation for this function, see
@@ -15368,6 +15527,16 @@ ruby_guestfs_lvm_canonical_lv_name (VALUE gv, VALUE lvnamev)
  * You cannot use this optional parameter with the
  * "gfs" or "gfs2" filesystem type.
  * 
+ * "inode"
+ * This passes the *-I* parameter to the external
+ * mke2fs(8) program which sets the inode size (only
+ * for ext2/3/4 filesystems at present).
+ * 
+ * "sectorsize"
+ * This passes the *-S* parameter to external
+ * mkfs.ufs(8) program, which sets sector size for ufs
+ * filesystem.
+ * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
  * value. Pass an empty {} for no optional arguments.
@@ -15400,6 +15569,16 @@ ruby_guestfs_mkfs_opts (VALUE gv, VALUE fstypev, VALUE devicev, VALUE optargsv)
   if (v != Qnil) {
     optargs_s.features = StringValueCStr (v);
     optargs_s.bitmask |= GUESTFS_MKFS_OPTS_FEATURES_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("inode")));
+  if (v != Qnil) {
+    optargs_s.inode = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_MKFS_OPTS_INODE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("sectorsize")));
+  if (v != Qnil) {
+    optargs_s.sectorsize = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK;
   }
 
   int r;
@@ -15571,6 +15750,384 @@ ruby_guestfs_internal_autosync (VALUE gv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.is_zero(path) -> [True|False]
+ *
+ * test if a file contains all zero bytes
+ *
+ * This returns true iff the file exists and the file is
+ * empty or it contains all zero bytes.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_is_zero+[http://libguestfs.org/guestfs.3.html#guestfs_is_zero]).
+ */
+static VALUE
+ruby_guestfs_is_zero (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "is_zero");
+
+  const char *path = StringValueCStr (pathv);
+
+  int r;
+
+  r = guestfs_is_zero (g, path);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.is_zero_device(device) -> [True|False]
+ *
+ * test if a device contains all zero bytes
+ *
+ * This returns true iff the device exists and contains all
+ * zero bytes.
+ * 
+ * Note that for large devices this can take a long time to
+ * run.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_is_zero_device+[http://libguestfs.org/guestfs.3.html#guestfs_is_zero_device]).
+ */
+static VALUE
+ruby_guestfs_is_zero_device (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "is_zero_device");
+
+  const char *device = StringValueCStr (devicev);
+
+  int r;
+
+  r = guestfs_is_zero_device (g, device);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.list_9p() -> list
+ *
+ * list 9p filesystems
+ *
+ * List all 9p filesystems attached to the guest. A list of
+ * mount tags is returned.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_list_9p+[http://libguestfs.org/guestfs.3.html#guestfs_list_9p]).
+ */
+static VALUE
+ruby_guestfs_list_9p (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "list_9p");
+
+
+  char **r;
+
+  r = guestfs_list_9p (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.mount_9p(mounttag, mountpoint, {optargs...}) -> nil
+ *
+ * mount 9p filesystem
+ *
+ * Mount the virtio-9p filesystem with the tag "mounttag"
+ * on the directory "mountpoint".
+ * 
+ * If required, "trans=virtio" will be automatically added
+ * to the options. Any other options required can be passed
+ * in the optional "options" parameter.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_mount_9p+[http://libguestfs.org/guestfs.3.html#guestfs_mount_9p]).
+ */
+static VALUE
+ruby_guestfs_mount_9p (VALUE gv, VALUE mounttagv, VALUE mountpointv, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "mount_9p");
+
+  const char *mounttag = StringValueCStr (mounttagv);
+  const char *mountpoint = StringValueCStr (mountpointv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_mount_9p_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mount_9p_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("options")));
+  if (v != Qnil) {
+    optargs_s.options = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MOUNT_9P_OPTIONS_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_mount_9p_argv (g, mounttag, mountpoint, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.list_dm_devices() -> list
+ *
+ * list device mapper devices
+ *
+ * List all device mapper devices.
+ * 
+ * The returned list contains "/dev/mapper/*" devices, eg.
+ * ones created by a previous call to "g.luks_open".
+ * 
+ * Device mapper devices which correspond to logical
+ * volumes are *not* returned in this list. Call "g.lvs" if
+ * you want to list logical volumes.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_list_dm_devices+[http://libguestfs.org/guestfs.3.html#guestfs_list_dm_devices]).
+ */
+static VALUE
+ruby_guestfs_list_dm_devices (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "list_dm_devices");
+
+
+  char **r;
+
+  r = guestfs_list_dm_devices (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.ntfsresize_opts(device, {optargs...}) -> nil
+ *
+ * resize an NTFS filesystem
+ *
+ * This command resizes an NTFS filesystem, expanding or
+ * shrinking it to the size of the underlying device.
+ * 
+ * The optional parameters are:
+ * 
+ * "size"
+ * The new size (in bytes) of the filesystem. If
+ * omitted, the filesystem is resized to fit the
+ * container (eg. partition).
+ * 
+ * "force"
+ * If this option is true, then force the resize of the
+ * filesystem even if the filesystem is marked as
+ * requiring a consistency check.
+ * 
+ * After the resize operation, the filesystem is always
+ * marked as requiring a consistency check (for
+ * safety). You have to boot into Windows to perform
+ * this check and clear this condition. If you *don't*
+ * set the "force" option then it is not possible to
+ * call "g.ntfsresize_opts" multiple times on a single
+ * filesystem without booting into Windows between each
+ * resize.
+ * 
+ * See also ntfsresize(8).
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_ntfsresize_opts+[http://libguestfs.org/guestfs.3.html#guestfs_ntfsresize_opts]).
+ */
+static VALUE
+ruby_guestfs_ntfsresize_opts (VALUE gv, VALUE devicev, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ntfsresize_opts");
+
+  const char *device = StringValueCStr (devicev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_ntfsresize_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_ntfsresize_opts_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("size")));
+  if (v != Qnil) {
+    optargs_s.size = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("force")));
+  if (v != Qnil) {
+    optargs_s.force = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_NTFSRESIZE_OPTS_FORCE_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_ntfsresize_opts_argv (g, device, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_filesystem_resize(mountpoint, {optargs...}) -> nil
+ *
+ * resize a btrfs filesystem
+ *
+ * This command resizes a btrfs filesystem.
+ * 
+ * Note that unlike other resize calls, the filesystem has
+ * to be mounted and the parameter is the mountpoint not
+ * the device (this is a requirement of btrfs itself).
+ * 
+ * The optional parameters are:
+ * 
+ * "size"
+ * The new size (in bytes) of the filesystem. If
+ * omitted, the filesystem is resized to the maximum
+ * size.
+ * 
+ * See also btrfs(8).
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_filesystem_resize+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_resize]).
+ */
+static VALUE
+ruby_guestfs_btrfs_filesystem_resize (VALUE gv, VALUE mountpointv, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_filesystem_resize");
+
+  const char *mountpoint = StringValueCStr (mountpointv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_btrfs_filesystem_resize_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_filesystem_resize_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("size")));
+  if (v != Qnil) {
+    optargs_s.size = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_btrfs_filesystem_resize_argv (g, mountpoint, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.write_append(path, content) -> nil
+ *
+ * append content to end of file
+ *
+ * This call appends "content" to the end of file "path".
+ * If "path" does not exist, then a new file is created.
+ * 
+ * See also "g.write".
+ * 
+ * Because of the message protocol, there is a transfer
+ * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+ * LIMITS" in guestfs(3).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_write_append+[http://libguestfs.org/guestfs.3.html#guestfs_write_append]).
+ */
+static VALUE
+ruby_guestfs_write_append (VALUE gv, VALUE pathv, VALUE contentv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "write_append");
+
+  const char *path = StringValueCStr (pathv);
+  Check_Type (contentv, T_STRING);
+  const char *content = RSTRING (contentv)->ptr;
+  if (!content)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "content", "write_append");
+  size_t content_size = RSTRING (contentv)->len;
+
+  int r;
+
+  r = guestfs_write_append (g, path, content, content_size);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
 /* Initialize the module. */
 void Init__guestfs ()
 {
@@ -15588,6 +16145,8 @@ void Init__guestfs ()
                     ruby_set_event_callback, 2);
   rb_define_method (c_guestfs, "delete_event_callback",
                     ruby_delete_event_callback, 1);
+  rb_define_method (c_guestfs, "user_cancel",
+                    ruby_user_cancel, 0);
 
   rb_define_const (m_guestfs, "EVENT_CLOSE",
                    ULL2NUM (UINT64_C (0x1)));
@@ -15780,6 +16339,12 @@ void Init__guestfs ()
         ruby_guestfs_inspect_get_windows_current_control_set, 1);
   rb_define_method (c_guestfs, "inspect_get_drive_mappings",
         ruby_guestfs_inspect_get_drive_mappings, 1);
+  rb_define_method (c_guestfs, "inspect_get_icon",
+        ruby_guestfs_inspect_get_icon, 2);
+  rb_define_method (c_guestfs, "set_pgroup",
+        ruby_guestfs_set_pgroup, 1);
+  rb_define_method (c_guestfs, "get_pgroup",
+        ruby_guestfs_get_pgroup, 0);
   rb_define_method (c_guestfs, "mount",
         ruby_guestfs_mount, 2);
   rb_define_method (c_guestfs, "sync",
@@ -16344,4 +16909,20 @@ void Init__guestfs ()
         ruby_guestfs_resize2fs_M, 1);
   rb_define_method (c_guestfs, "internal_autosync",
         ruby_guestfs_internal_autosync, 0);
+  rb_define_method (c_guestfs, "is_zero",
+        ruby_guestfs_is_zero, 1);
+  rb_define_method (c_guestfs, "is_zero_device",
+        ruby_guestfs_is_zero_device, 1);
+  rb_define_method (c_guestfs, "list_9p",
+        ruby_guestfs_list_9p, 0);
+  rb_define_method (c_guestfs, "mount_9p",
+        ruby_guestfs_mount_9p, 3);
+  rb_define_method (c_guestfs, "list_dm_devices",
+        ruby_guestfs_list_dm_devices, 0);
+  rb_define_method (c_guestfs, "ntfsresize_opts",
+        ruby_guestfs_ntfsresize_opts, 2);
+  rb_define_method (c_guestfs, "btrfs_filesystem_resize",
+        ruby_guestfs_btrfs_filesystem_resize, 2);
+  rb_define_method (c_guestfs, "write_append",
+        ruby_guestfs_write_append, 2);
 }

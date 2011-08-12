@@ -30,7 +30,7 @@ let prog = Filename.basename Sys.executable_name
 
 let infile, outfile, copy_boot_loader, debug, deletes, dryrun,
   expand, expand_content, extra_partition, format, ignores,
-  lv_expands, output_format,
+  lv_expands, ntfsresize_force, output_format,
   quiet, resizes, resizes_force, shrink =
   let display_version () =
     let g = new G.guestfs () in
@@ -57,6 +57,7 @@ let infile, outfile, copy_boot_loader, debug, deletes, dryrun,
   let format = ref "" in
   let ignores = ref [] in
   let lv_expands = ref [] in
+  let ntfsresize_force = ref false in
   let output_format = ref "" in
   let quiet = ref false in
   let resizes = ref [] in
@@ -85,6 +86,7 @@ let infile, outfile, copy_boot_loader, debug, deletes, dryrun,
     "-n",        Arg.Set dryrun,            " Don't perform changes";
     "--dryrun",  Arg.Set dryrun,            " -\"-";
     "--dry-run", Arg.Set dryrun,            " -\"-";
+    "--ntfsresize-force", Arg.Set ntfsresize_force, " Force ntfsresize";
     "--output-format", Arg.Set_string format, "format Format of output disk";
     "-q",        Arg.Set quiet,             " Don't print the summary";
     "--quiet",   Arg.Set quiet,             " -\"-";
@@ -123,6 +125,7 @@ read the man page virt-resize(1).
   let format = match !format with "" -> None | str -> Some str in
   let ignores = List.rev !ignores in
   let lv_expands = List.rev !lv_expands in
+  let ntfsresize_force = !ntfsresize_force in
   let output_format = match !output_format with "" -> None | str -> Some str in
   let quiet = !quiet in
   let resizes = List.rev !resizes in
@@ -138,11 +141,12 @@ read the man page virt-resize(1).
 
   infile, outfile, copy_boot_loader, debug, deletes, dryrun,
   expand, expand_content, extra_partition, format, ignores,
-  lv_expands, output_format,
+  lv_expands, ntfsresize_force, output_format,
   quiet, resizes, resizes_force, shrink
 
-(* Default to true, since NTFS support is usually available. *)
+(* Default to true, since NTFS and btrfs support are usually available. *)
 let ntfs_available = ref true
+let btrfs_available = ref true
 
 (* Add in and out disks to the handle and launch. *)
 let connect_both_disks () =
@@ -160,6 +164,7 @@ let connect_both_disks () =
 
   (* Update features available in the daemon. *)
   ntfs_available := feature_available g [|"ntfsprogs"; "ntfs3g"|];
+  btrfs_available := feature_available g [|"btrfs"|];
 
   g
 
@@ -370,12 +375,14 @@ let lvs =
 (* These functions tell us if we know how to expand the content of
  * a particular partition or LV, and what method to use.
  *)
-type expand_content_method = PVResize | Resize2fs | NTFSResize
+type expand_content_method =
+  | PVResize | Resize2fs | NTFSResize | BtrfsFilesystemResize
 
 let string_of_expand_content_method = function
   | PVResize -> "pvresize"
   | Resize2fs -> "resize2fs"
   | NTFSResize -> "ntfsresize"
+  | BtrfsFilesystemResize -> "btrfs-filesystem-resize"
 
 let can_expand_content =
   if expand_content then
@@ -384,6 +391,7 @@ let can_expand_content =
     | ContentPV _ -> true
     | ContentFS (("ext2"|"ext3"|"ext4"), _) -> true
     | ContentFS (("ntfs"), _) when !ntfs_available -> true
+    | ContentFS (("btrfs"), _) when !btrfs_available -> true
     | ContentFS (_, _) -> false
   else
     fun _ -> false
@@ -395,6 +403,7 @@ let expand_content_method =
     | ContentPV _ -> PVResize
     | ContentFS (("ext2"|"ext3"|"ext4"), _) -> Resize2fs
     | ContentFS (("ntfs"), _) when !ntfs_available -> NTFSResize
+    | ContentFS (("btrfs"), _) when !btrfs_available -> BtrfsFilesystemResize
     | ContentFS (_, _) -> assert false
   else
     fun _ -> assert false
@@ -916,7 +925,15 @@ let () =
       | Resize2fs ->
           g#e2fsck_f target;
           g#resize2fs target
-      | NTFSResize -> g#ntfsresize target
+      | NTFSResize -> g#ntfsresize_opts ~force:ntfsresize_force target
+      | BtrfsFilesystemResize ->
+          (* Complicated ...  Btrfs forces us to mount the filesystem
+           * in order to resize it.
+           *)
+          assert (Array.length (g#mounts ()) = 0);
+          g#mount_options "" target "/";
+          g#btrfs_filesystem_resize "/";
+          g#umount "/"
     in
 
     (* Expand partition content as required. *)

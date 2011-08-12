@@ -1,8 +1,8 @@
-# serial 17   -*- Autoconf -*-
+# serial 20   -*- Autoconf -*-
 
 dnl Find out how to get the file descriptor associated with an open DIR*.
 
-# Copyright (C) 2001-2006, 2008-2010 Free Software Foundation, Inc.
+# Copyright (C) 2001-2006, 2008-2011 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -12,14 +12,9 @@ dnl From Jim Meyering
 AC_DEFUN([gl_FUNC_DIRFD],
 [
   AC_REQUIRE([gl_DIRENT_H_DEFAULTS])
-  gl_REPLACE_DIRENT_H
 
   dnl Persuade glibc <dirent.h> to declare dirfd().
   AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])
-
-  dnl Work around a bug of AC_EGREP_CPP in autoconf-2.57.
-  AC_REQUIRE([AC_PROG_CPP])
-  AC_REQUIRE([AC_PROG_EGREP])
 
   AC_CHECK_FUNCS([dirfd])
   AC_CHECK_DECLS([dirfd], , ,
@@ -40,11 +35,13 @@ AC_DEFUN([gl_FUNC_DIRFD],
        gl_cv_func_dirfd_macro=yes,
        gl_cv_func_dirfd_macro=no)])
 
-  # Use the replacement only if we have no function, macro,
-  # or declaration with that name.
-  if test $ac_cv_func_dirfd,$ac_cv_have_decl_dirfd,$gl_cv_func_dirfd_macro \
-      = no,no,no; then
-    AC_REPLACE_FUNCS([dirfd])
+  # Use the replacement only if we have no function or macro with that name.
+  if test $ac_cv_func_dirfd,$gl_cv_func_dirfd_macro = no,no; then
+    if test $ac_cv_have_decl_dirfd = yes; then
+      # If the system declares dirfd already, let's declare rpl_dirfd instead.
+      REPLACE_DIRFD=1
+    fi
+    AC_LIBOBJ([dirfd])
     AC_CACHE_CHECK(
               [how to get the file descriptor associated with an open DIR*],
                    gl_cv_sys_dir_fd_member_name,

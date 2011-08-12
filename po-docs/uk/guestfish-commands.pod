@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head2 alloc
 
@@ -47,9 +48,23 @@ the help of L</glob> like this:
 
  glob copy-out /home/* .
 
+=head2 display
+
+ display filename
+
+Use C<display> (a graphical display program) to display an image file.  It
+downloads the file, and runs C<display> on it.
+
+To use an alternative program, set the C<GUESTFISH_DISPLAY_IMAGE>
+environment variable.  For example to use the GNOME display program:
+
+ export GUESTFISH_DISPLAY_IMAGE=eog
+
+See also L<display(1)>.
+
 =head2 echo
 
- echo [params ...]
+ echo [параметри...]
 
 This echos the parameters to the terminal.
 
@@ -59,7 +74,7 @@ This echos the parameters to the terminal.
 
 =head2 emacs
 
- edit filename
+ edit назва_файла
 
 This is used to edit a file.  It downloads the file, edits it locally using
 your editor, then uploads the result.
@@ -69,12 +84,12 @@ or C<emacs> you will get those corresponding editors.
 
 =head2 glob
 
- glob command args...
+ glob команда параметри...
 
 Expand wildcards in any paths in the args list, and run C<command>
 repeatedly on each matching path.
 
-See L</WILDCARDS AND GLOBBING>.
+Див. L</WILDCARDS AND GLOBBING>.
 
 =head2 hexedit
 
@@ -107,7 +122,7 @@ To edit the superblock of an ext2 filesystem on C</dev/sda1>, do:
 This command requires the external L<hexedit(1)> program.  You can specify
 another program to use by setting the C<HEXEDITOR> environment variable.
 
-See also L</hexdump>.
+Див. також L</hexdump>.
 
 =head2 lcd
 

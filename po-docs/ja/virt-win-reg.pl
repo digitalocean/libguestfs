@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head1 名前
 
@@ -76,7 +77,9 @@ Display version number and exit.
 
 Enable debugging messages.
 
-=item B<--connect URI> | B<-c URI>
+=item B<-c URI>
+
+=item B<--connect URI>
 
 If using libvirt, connect to the given I<URI>.  If omitted, then we connect
 to the default libvirt hypervisor.
@@ -115,6 +118,42 @@ L<Win::Hivex::Regedit(3)/ENCODING STRINGS>.
 The default is to use UTF-16LE, which should work with recent versions of
 Windows.
 
+=item B<--unsafe-printable-strings>
+
+When exporting (only), assume strings are UTF-16LE and print them as strings
+instead of hex sequences.  Remove the final zero codepoint from strings if
+present.
+
+This is unsafe and does not preserve the fidelity of strings in the original
+Registry for various reasons:
+
+=over 4
+
+=item *
+
+Assumes the original encoding is UTF-16LE.  ASCII strings and strings in
+other encodings will be corrupted by this transformation.
+
+=item *
+
+Assumes that everything which has type 1 or 2 is really a string and that
+everything else is not a string, but the type field in real Registries is
+not reliable.
+
+=item *
+
+Loses information about whether a zero codepoint followed the string in the
+Registry or not.
+
+=back
+
+This all happens because the Registry itself contains no information about
+how strings are encoded (see L<Win::Hivex::Regedit(3)/ENCODING STRINGS>).
+
+You should only use this option for quick hacking and debugging of the
+Registry contents, and I<never> use it if the output is going to be passed
+into another program or stored in another Registry.
+
 =back
 
 =head1 SUPPORTED SYSTEMS
@@ -122,15 +161,35 @@ Windows.
 The program currently supports Windows NT-derived guests starting with
 Windows XP through to at least Windows 7.
 
-Registry support is done for C<HKEY_LOCAL_MACHINE\SAM>,
-C<HKEY_LOCAL_MACHINE\SECURITY>, C<HKEY_LOCAL_MACHINE\SOFTWARE>,
-C<HKEY_LOCAL_MACHINE\SYSTEM> and C<HKEY_USERS\.DEFAULT>.
+The following Registry keys are supported:
+
+=over 4
+
+=item C<HKEY_LOCAL_MACHINE\SAM>
+
+=item C<HKEY_LOCAL_MACHINE\SECURITY>
+
+=item C<HKEY_LOCAL_MACHINE\SOFTWARE>
+
+=item C<HKEY_LOCAL_MACHINE\SYSTEM>
+
+=item C<HKEY_USERS\.DEFAULT>
+
+=item C<HKEY_USERS\I<SID>>
+
+where I<SID> is a Windows User SID (eg. C<S-1-5-18>).
+
+=item C<HKEY_USERS\I<username>>
+
+where I<username> is a local user name (this is a libguestfs extension).
+
+=back
 
 You can use C<HKLM> as a shorthand for C<HKEY_LOCAL_MACHINE>, and C<HKU> for
 C<HKEY_USERS>.
 
-C<HKEY_USERS\$SID> and C<HKEY_CURRENT_USER> are B<not> supported at this
-time.
+The literal keys C<HKEY_USERS\$SID> and C<HKEY_CURRENT_USER> are not
+supported (there is no "current user").
 
 =head1 ENCODING
 

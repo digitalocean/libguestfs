@@ -85,17 +85,12 @@ connect to the default libvirt hypervisor.
 If you specify guest block devices directly (I<-a>), then libvirt is
 not used at all.
 
-=item B<--csv>
-
-Write out the results in CSV format (comma-separated values).  This
-format can be imported easily into databases and spreadsheets, but
-read L</NOTE ABOUT CSV FORMAT> below.
-
 =item B<-d> guest
 
 =item B<--domain> guest
 
-Add all the disks from the named libvirt guest.
+Add all the disks from the named libvirt guest.  Domain UUIDs can be
+used instead of names.
 
 =item B<--format=raw|qcow2|..>
 
@@ -129,7 +124,9 @@ Print sizes in human-readable format.
 
 You are not allowed to use I<-h> and I<--csv> at the same time.
 
-=item B<--inodes> | B<-i>
+=item B<-i>
+
+=item B<--inodes>
 
 Print inodes instead of blocks.
 

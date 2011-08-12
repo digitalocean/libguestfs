@@ -85,7 +85,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.282';
+$VERSION = '0.290';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -239,6 +239,11 @@ errnos:
    # mkdir failed because the directory exists already.
  }
 
+=item $h->user_cancel ();
+
+Cancel current transfer.  This is safe to call from Perl signal
+handlers and threads.
+
 =cut
 
 =item $h->add_cdrom ($filename);
@@ -267,13 +272,13 @@ should probably use C<$h-E<gt>add_drive_ro> instead.
 =back
 
 This function is deprecated.
-In new code, use the L</add_drive_opts> call instead.
+In new code, use the C<add_drive_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
 
-=item $nrdisks = $h->add_domain ($dom [, libvirturi => $libvirturi] [, readonly => $readonly] [, iface => $iface] [, live => $live]);
+=item $nrdisks = $h->add_domain ($dom [, libvirturi => $libvirturi] [, readonly => $readonly] [, iface => $iface] [, live => $live] [, allowuuid => $allowuuid]);
 
 This function adds the disk(s) attached to the named libvirt
 domain C<dom>.  It works by connecting to libvirt, requesting
@@ -304,6 +309,11 @@ it sees a suitable E<lt>channelE<gt> element in the libvirt
 XML definition.  The default (if the flag is omitted) is never
 to try.  See L<guestfs(3)/ATTACHING TO RUNNING DAEMONS> for more
 information.
+
+If the C<allowuuid> flag is true (default is false) then a UUID
+I<may> be passed instead of the domain name.  The C<dom> string is
+treated as a UUID first and looked up, and if that lookup fails
+then we treat C<dom> as a name as usual.
 
 The other optional parameters are passed directly through to
 C<$h-E<gt>add_drive_opts>.
@@ -377,7 +387,7 @@ This is the same as C<$h-E<gt>add_drive_ro> but it allows you
 to specify the QEMU interface emulation to use at run time.
 
 This function is deprecated.
-In new code, use the L</add_drive_opts> call instead.
+In new code, use the C<add_drive_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -389,7 +399,7 @@ This is the same as C<$h-E<gt>add_drive> but it allows you
 to specify the QEMU interface emulation to use at run time.
 
 This function is deprecated.
-In new code, use the L</add_drive_opts> call instead.
+In new code, use the C<add_drive_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -695,6 +705,27 @@ This uses the L<blockdev(8)> command.
 Sets the block device named C<device> to read-write.
 
 This uses the L<blockdev(8)> command.
+
+=item $h->btrfs_filesystem_resize ($mountpoint [, size => $size]);
+
+This command resizes a btrfs filesystem.
+
+Note that unlike other resize calls, the filesystem has to be
+mounted and the parameter is the mountpoint not the device
+(this is a requirement of btrfs itself).
+
+The optional parameters are:
+
+=over 4
+
+=item C<size>
+
+The new size (in bytes) of the filesystem.  If omitted, the filesystem
+is resized to the maximum size.
+
+=back
+
+See also L<btrfs(8)>.
 
 =item $rpath = $h->case_sensitive_path ($path);
 
@@ -1048,7 +1079,7 @@ C<alloc> command which allocates a file in the host and
 attaches it as a device.
 
 This function is deprecated.
-In new code, use the L</fallocate64> call instead.
+In new code, use the C<fallocate64> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -1105,7 +1136,7 @@ command and it can change in future in ways beyond our control.
 In other words, the output is not guaranteed by the ABI.
 
 See also: L<file(1)>, C<$h-E<gt>vfs_type>, C<$h-E<gt>lstat>,
-C<$h-E<gt>is_file>, C<$h-E<gt>is_blockdev> (etc).
+C<$h-E<gt>is_file>, C<$h-E<gt>is_blockdev> (etc), C<$h-E<gt>is_zero>.
 
 =item $arch = $h->file_architecture ($filename);
 
@@ -1370,7 +1401,7 @@ This returns the ext2/3/4 filesystem label of the filesystem on
 C<device>.
 
 This function is deprecated.
-In new code, use the L</vfs_label> call instead.
+In new code, use the C<vfs_label> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -1382,7 +1413,7 @@ This returns the ext2/3/4 filesystem UUID of the filesystem on
 C<device>.
 
 This function is deprecated.
-In new code, use the L</vfs_uuid> call instead.
+In new code, use the C<vfs_uuid> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -1410,6 +1441,10 @@ Return the current search path.
 
 This is always non-NULL.  If it wasn't set already, then this will
 return the default path.
+
+=item $pgroup = $h->get_pgroup ();
+
+This returns the process group flag.
 
 =item $pid = $h->get_pid ();
 
@@ -1677,9 +1712,6 @@ See C<$h-E<gt>inotify_add_watch>.
 
 =item $arch = $h->inspect_get_arch ($root);
 
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
-
 This returns the architecture of the inspected operating system.
 The possible return values are listed under
 C<$h-E<gt>file_architecture>.
@@ -1690,9 +1722,6 @@ string C<unknown> is returned.
 Please read L<guestfs(3)/INSPECTION> for more details.
 
 =item $distro = $h->inspect_get_distro ($root);
-
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
 
 This returns the distro (distribution) of the inspected operating
 system.
@@ -1775,9 +1804,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =item %drives = $h->inspect_get_drive_mappings ($root);
 
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
-
 This call is useful for Windows which uses a primitive system
 of assigning drive letters (like "C:") to partitions.
 This inspection API examines the Windows Registry to find out
@@ -1809,9 +1835,6 @@ C<$h-E<gt>inspect_get_filesystems>.
 
 =item @filesystems = $h->inspect_get_filesystems ($root);
 
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
-
 This returns a list of all the filesystems that we think
 are associated with this operating system.  This includes
 the root filesystem, other ordinary filesystems, and
@@ -1824,9 +1847,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 See also C<$h-E<gt>inspect_get_mountpoints>.
 
 =item $format = $h->inspect_get_format ($root);
-
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
 
 This returns the format of the inspected operating system.  You
 can use it to detect install images, live CDs and similar.
@@ -1857,9 +1877,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =item $hostname = $h->inspect_get_hostname ($root);
 
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
-
 This function returns the hostname of the operating system
 as found by inspection of the guest's configuration files.
 
@@ -1868,10 +1885,69 @@ string C<unknown> is returned.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
 
-=item $major = $h->inspect_get_major_version ($root);
+=item $icon = $h->inspect_get_icon ($root [, favicon => $favicon] [, highquality => $highquality]);
 
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
+This function returns an icon corresponding to the inspected
+operating system.  The icon is returned as a buffer containing a
+PNG image (re-encoded to PNG if necessary).
+
+If it was not possible to get an icon this function returns a
+zero-length (non-NULL) buffer.  I<Callers must check for this case>.
+
+Libguestfs will start by looking for a file called
+C</etc/favicon.png> or C<C:\etc\favicon.png>
+and if it has the correct format, the contents of this file will
+be returned.  You can disable favicons by passing the
+optional C<favicon> boolean as false (default is true).
+
+If finding the favicon fails, then we look in other places in the
+guest for a suitable icon.
+
+If the optional C<highquality> boolean is true then
+only high quality icons are returned, which means only icons of
+high resolution with an alpha channel.  The default (false) is
+to return any icon we can, even if it is of substandard quality.
+
+Notes:
+
+=over 4
+
+=item *
+
+Unlike most other inspection API calls, the guest's disks must be
+mounted up before you call this, since it needs to read information
+from the guest filesystem during the call.
+
+=item *
+
+B<Security:> The icon data comes from the untrusted guest,
+and should be treated with caution.  PNG files have been
+known to contain exploits.  Ensure that libpng (or other relevant
+libraries) are fully up to date before trying to process or
+display the icon.
+
+=item *
+
+The PNG image returned can be any size.  It might not be square.
+Libguestfs tries to return the largest, highest quality
+icon available.  The application must scale the icon to the
+required size.
+
+=item *
+
+Extracting icons from Windows guests requires the external
+C<wrestool> program from the C<icoutils> package, and
+several programs (C<bmptopnm>, C<pnmtopng>, C<pamcut>)
+from the C<netpbm> package.  These must be installed separately.
+
+=item *
+
+Operating system icons are usually trademarks.  Seek legal
+advice before using trademarks in applications.
+
+=back
+
+=item $major = $h->inspect_get_major_version ($root);
 
 This returns the major version number of the inspected operating
 system.
@@ -1889,9 +1965,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =item $minor = $h->inspect_get_minor_version ($root);
 
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
-
 This returns the minor version number of the inspected operating
 system.
 
@@ -1901,9 +1974,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 See also C<$h-E<gt>inspect_get_major_version>.
 
 =item %mountpoints = $h->inspect_get_mountpoints ($root);
-
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
 
 This returns a hash of where we think the filesystems
 associated with this operating system should be mounted.
@@ -1933,9 +2003,6 @@ See also C<$h-E<gt>inspect_get_filesystems>.
 
 =item $packageformat = $h->inspect_get_package_format ($root);
 
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
-
 This function and C<$h-E<gt>inspect_get_package_management> return
 the package format and package management tool used by the
 inspected operating system.  For example for Fedora these
@@ -1952,9 +2019,6 @@ Future versions of libguestfs may return other strings.
 Please read L<guestfs(3)/INSPECTION> for more details.
 
 =item $packagemanagement = $h->inspect_get_package_management ($root);
-
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
 
 C<$h-E<gt>inspect_get_package_format> and this function return
 the package format and package management tool used by the
@@ -1975,9 +2039,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =item $product = $h->inspect_get_product_name ($root);
 
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
-
 This returns the product name of the inspected operating
 system.  The product name is generally some freeform string
 which can be displayed to the user, but should not be
@@ -1989,9 +2050,6 @@ string C<unknown> is returned.
 Please read L<guestfs(3)/INSPECTION> for more details.
 
 =item $variant = $h->inspect_get_product_variant ($root);
-
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
 
 This returns the product variant of the inspected operating
 system.
@@ -2029,9 +2087,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =item $name = $h->inspect_get_type ($root);
 
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
-
 This returns the type of the inspected operating system.
 Currently defined types are:
 
@@ -2062,9 +2117,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =item $controlset = $h->inspect_get_windows_current_control_set ($root);
 
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
-
 This returns the Windows CurrentControlSet of the inspected guest.
 The CurrentControlSet is a registry key name such as C<ControlSet001>.
 
@@ -2075,9 +2127,6 @@ the case then an error is returned.
 Please read L<guestfs(3)/INSPECTION> for more details.
 
 =item $systemroot = $h->inspect_get_windows_systemroot ($root);
-
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
 
 This returns the Windows systemroot of the inspected guest.
 The systemroot is a directory path such as C</WINDOWS>.
@@ -2090,9 +2139,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =item $live = $h->inspect_is_live ($root);
 
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
-
 If C<$h-E<gt>inspect_get_format> returns C<installer> (this
 is an install disk), then this returns true if a live image
 was detected on the disk.
@@ -2101,9 +2147,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =item $multipart = $h->inspect_is_multipart ($root);
 
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
-
 If C<$h-E<gt>inspect_get_format> returns C<installer> (this
 is an install disk), then this returns true if the disk is
 part of a set.
@@ -2111,9 +2154,6 @@ part of a set.
 Please read L<guestfs(3)/INSPECTION> for more details.
 
 =item $netinst = $h->inspect_is_netinst ($root);
-
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
 
 If C<$h-E<gt>inspect_get_format> returns C<installer> (this
 is an install disk), then this returns true if the disk is
@@ -2124,9 +2164,6 @@ the install.
 Please read L<guestfs(3)/INSPECTION> for more details.
 
 =item @applications = $h->inspect_list_applications ($root);
-
-This function should only be called with a root device string
-as returned by C<$h-E<gt>inspect_os>.
 
 Return the list of applications installed in the operating system.
 
@@ -2338,6 +2375,17 @@ with the given C<path> name.
 
 See also C<$h-E<gt>stat>.
 
+=item $zeroflag = $h->is_zero ($path);
+
+This returns true iff the file exists and the file is empty or
+it contains all zero bytes.
+
+=item $zeroflag = $h->is_zero_device ($device);
+
+This returns true iff the device exists and contains all zero bytes.
+
+Note that for large devices this can take a long time to run.
+
 =item $h->kill_subprocess ();
 
 This kills the qemu subprocess.  You should never need to call this.
@@ -2384,6 +2432,11 @@ This is the same as C<$h-E<gt>getxattrs>, but if C<path>
 is a symbolic link, then it returns the extended attributes
 of the link itself.
 
+=item @mounttags = $h->list_9p ();
+
+List all 9p filesystems attached to the guest.  A list of
+mount tags is returned.
+
 =item @devices = $h->list_devices ();
 
 List all the block devices.
@@ -2391,6 +2444,17 @@ List all the block devices.
 The full block device names are returned, eg. C</dev/sda>.
 
 See also C<$h-E<gt>list_filesystems>.
+
+=item @devices = $h->list_dm_devices ();
+
+List all device mapper devices.
+
+The returned list contains C</dev/mapper/*> devices, eg. ones created
+by a previous call to C<$h-E<gt>luks_open>.
+
+Device mapper devices which correspond to logical volumes are I<not>
+returned in this list.  Call C<$h-E<gt>lvs> if you want to list logical
+volumes.
 
 =item %fses = $h->list_filesystems ();
 
@@ -2570,6 +2634,9 @@ encrypted to the underlying C<device> respectively.
 If this block device contains LVM volume groups, then
 calling C<$h-E<gt>vgscan> followed by C<$h-E<gt>vg_activate_all>
 will make them visible.
+
+Use C<$h-E<gt>list_dm_devices> to list all device mapper
+devices.
 
 =item $h->luks_open_ro ($device, $key, $mapname);
 
@@ -2807,13 +2874,13 @@ For VFAT and NTFS the C<blocksize> parameter is treated as
 the requested cluster size.
 
 This function is deprecated.
-In new code, use the L</mkfs_opts> call instead.
+In new code, use the C<mkfs_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
 
-=item $h->mkfs_opts ($fstype, $device [, blocksize => $blocksize] [, features => $features]);
+=item $h->mkfs_opts ($fstype, $device [, blocksize => $blocksize] [, features => $features] [, inode => $inode] [, sectorsize => $sectorsize]);
 
 This function creates a filesystem on C<device>.  The filesystem
 type is C<fstype>, for example C<ext3>.
@@ -2843,6 +2910,16 @@ for more details.
 
 You cannot use this optional parameter with the C<gfs> or
 C<gfs2> filesystem type.
+
+=item C<inode>
+
+This passes the I<-I> parameter to the external L<mke2fs(8)> program
+which sets the inode size (only for ext2/3/4 filesystems at present).
+
+=item C<sectorsize>
+
+This passes the I<-S> parameter to external L<mkfs.ufs(8)> program,
+which sets sector size for ufs filesystem.
 
 =back
 
@@ -2980,11 +3057,20 @@ use C<$h-E<gt>mount_options> (use an empty string for the first
 parameter if you don't want any options).
 
 This function is deprecated.
-In new code, use the L</mount_options> call instead.
+In new code, use the C<mount_options> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
+
+=item $h->mount_9p ($mounttag, $mountpoint [, options => $options]);
+
+Mount the virtio-9p filesystem with the tag C<mounttag> on the
+directory C<mountpoint>.
+
+If required, C<trans=virtio> will be automatically added to the options.
+Any other options required can be passed in the optional C<options>
+parameter.
 
 =item $h->mount_loop ($file, $mountpoint);
 
@@ -3062,10 +3148,54 @@ filesystem without booting into Windows between each resize.
 
 See also L<ntfsresize(8)>.
 
+This function is deprecated.
+In new code, use the C<ntfsresize_opts> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
+=item $h->ntfsresize_opts ($device [, size => $size] [, force => $force]);
+
+This command resizes an NTFS filesystem, expanding or
+shrinking it to the size of the underlying device.
+
+The optional parameters are:
+
+=over 4
+
+=item C<size>
+
+The new size (in bytes) of the filesystem.  If omitted, the filesystem
+is resized to fit the container (eg. partition).
+
+=item C<force>
+
+If this option is true, then force the resize of the filesystem
+even if the filesystem is marked as requiring a consistency check.
+
+After the resize operation, the filesystem is always marked
+as requiring a consistency check (for safety).  You have to boot
+into Windows to perform this check and clear this condition.
+If you I<don't> set the C<force> option then it is not
+possible to call C<$h-E<gt>ntfsresize_opts> multiple times on a
+single filesystem without booting into Windows between each resize.
+
+=back
+
+See also L<ntfsresize(8)>.
+
 =item $h->ntfsresize_size ($device, $size);
 
 This command is the same as C<$h-E<gt>ntfsresize> except that it
 allows you to specify the new size (in bytes) explicitly.
+
+This function is deprecated.
+In new code, use the C<ntfsresize_opts> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $h->part_add ($device, $prlogex, $startsect, $endsect);
 
@@ -3143,7 +3273,9 @@ Possible values for C<parttype> are:
 
 =over 4
 
-=item B<efi> | B<gpt>
+=item B<efi>
+
+=item B<gpt>
 
 Intel EFI / GPT partition table.
 
@@ -3151,7 +3283,9 @@ This is recommended for >= 2 TB partitions that will be accessed
 from Linux and Intel-based Mac OS X.  It also has limited backwards
 compatibility with the C<mbr> format.
 
-=item B<mbr> | B<msdos>
+=item B<mbr>
+
+=item B<msdos>
 
 The standard PC "Master Boot Record" (MBR) format used
 by MS-DOS and Windows.  This partition type will B<only> work
@@ -3169,7 +3303,9 @@ supported include:
 
 AIX disk labels.
 
-=item B<amiga> | B<rdb>
+=item B<amiga>
+
+=item B<rdb>
 
 Amiga "Rigid Disk Block" format.
 
@@ -3683,6 +3819,17 @@ C<LIBGUESTFS_PATH> environment variable.
 
 Setting C<path> to C<NULL> restores the default path.
 
+=item $h->set_pgroup ($pgroup);
+
+If C<pgroup> is true, child processes are placed into
+their own process group.
+
+The practical upshot of this is that signals like C<SIGINT> (from
+users pressing C<^C>) won't be received by the child process.
+
+The default for this flag is false, because usually you want
+C<^C> to kill the subprocess.
+
 =item $h->set_qemu ($qemu);
 
 Set the qemu binary that we will use.
@@ -3801,7 +3948,7 @@ B<This command is dangerous.  Without careful use you
 can easily destroy all your data>.
 
 This function is deprecated.
-In new code, use the L</part_add> call instead.
+In new code, use the C<part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -3822,7 +3969,7 @@ B<This command is dangerous.  Without careful use you
 can easily destroy all your data>.
 
 This function is deprecated.
-In new code, use the L</part_add> call instead.
+In new code, use the C<part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -3842,7 +3989,7 @@ B<This command is dangerous.  Without careful use you
 can easily destroy all your data>.
 
 This function is deprecated.
-In new code, use the L</part_add> call instead.
+In new code, use the C<part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -3874,7 +4021,7 @@ not intended to be parsed.
 See also: C<$h-E<gt>part_list>
 
 This function is deprecated.
-In new code, use the L</part_list> call instead.
+In new code, use the C<part_list> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -4268,9 +4415,6 @@ To find a filesystem from the UUID, use C<$h-E<gt>findfs_uuid>.
 
 This command activates or (if C<activate> is false) deactivates
 all logical volumes in the listed volume groups C<volgroups>.
-If activated, then they are made known to the
-kernel, ie. they appear as C</dev/mapper> devices.  If deactivated,
-then those devices disappear.
 
 This command is the same as running C<vgchange -a y|n volgroups...>
 
@@ -4281,9 +4425,6 @@ are activated or deactivated.
 
 This command activates or (if C<activate> is false) deactivates
 all logical volumes in all volume groups.
-If activated, then they are made known to the
-kernel, ie. they appear as C</dev/mapper> devices.  If deactivated,
-then those devices disappear.
 
 This command is the same as running C<vgchange -a y|n>
 
@@ -4361,7 +4502,7 @@ remove them, unless you want to retain compatibility with older
 versions of the API.
 
 This function is deprecated.
-In new code, use the L</launch> call instead.
+In new code, use the C<launch> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -4387,6 +4528,18 @@ C<wc -w> external command.
 This call creates a file called C<path>.  The content of the
 file is the string C<content> (which can contain any 8 bit data).
 
+See also C<$h-E<gt>write_append>.
+
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+=item $h->write_append ($path, $content);
+
+This call appends C<content> to the end of file C<path>.  If
+C<path> does not exist, then a new file is created.
+
+See also C<$h-E<gt>write>.
+
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
@@ -4407,7 +4560,7 @@ Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 This function is deprecated.
-In new code, use the L</write> call instead.
+In new code, use the C<write> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -4437,7 +4590,8 @@ How many blocks are zeroed isn't specified (but it's I<not> enough
 to securely wipe the device).  It should be sufficient to remove
 any partition tables, filesystem superblocks and so on.
 
-See also: C<$h-E<gt>zero_device>, C<$h-E<gt>scrub_device>.
+See also: C<$h-E<gt>zero_device>, C<$h-E<gt>scrub_device>,
+C<$h-E<gt>is_zero_device>
 
 =item $h->zero_device ($device);
 
@@ -4488,7 +4642,7 @@ Since 1.0.63, use C<$h-E<gt>file> instead which can now
 process compressed files.
 
 This function is deprecated.
-In new code, use the L</file> call instead.
+In new code, use the C<file> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems

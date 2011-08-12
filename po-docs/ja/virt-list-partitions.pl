@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head1 名前
 
@@ -34,7 +35,9 @@ Display brief help.
 
 Display version number and exit.
 
-=item B<--connect URI> | B<-c URI>
+=item B<-c URI>
+
+=item B<--connect URI>
 
 If using libvirt, connect to the given I<URI>.  If omitted, then we connect
 to the default libvirt hypervisor.
@@ -54,16 +57,22 @@ ignored.
 If working with untrusted raw-format guest disk images, you should ensure
 the format is always specified.
 
-=item B<-h> | B<--human-readable>
+=item B<-h>
+
+=item B<--human-readable>
 
 Show sizes in human-readable form (eg. "1G").
 
-=item B<-l> | B<--long>
+=item B<-l>
+
+=item B<--long>
 
 With this option, C<virt-list-partitions> displays the type and size of each
 partition too (where "type" means C<ext3>, C<pv> etc.)
 
-=item B<-t> | B<--total>
+=item B<-t>
+
+=item B<--total>
 
 Display the total size of each block device (as a separate row or rows).
 

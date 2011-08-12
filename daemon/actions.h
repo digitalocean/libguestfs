@@ -24,6 +24,12 @@
 
 #define GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_MKFS_OPTS_FEATURES_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_MKFS_OPTS_INODE_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK (UINT64_C(1)<<3)
+#define GUESTFS_MOUNT_9P_OPTIONS_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_NTFSRESIZE_OPTS_FORCE_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK (UINT64_C(1)<<0)
 extern int do_mount (const char *device, const char *mountpoint);
 extern int do_sync (void);
 extern int do_touch (const char *path);
@@ -301,8 +307,16 @@ extern int do_download_offset (const char *remotefilename, int64_t offset, int64
 extern int do_pwrite_device (const char *device, const char *content, size_t content_size, int64_t offset);
 extern char *do_pread_device (const char *device, int count, int64_t offset, size_t *size_r);
 extern char *do_lvm_canonical_lv_name (const char *lvname);
-extern int do_mkfs_opts (const char *fstype, const char *device, int blocksize, const char *features);
+extern int do_mkfs_opts (const char *fstype, const char *device, int blocksize, const char *features, int inode, int sectorsize);
 extern char *do_getxattr (const char *path, const char *name, size_t *size_r);
 extern char *do_lgetxattr (const char *path, const char *name, size_t *size_r);
 extern int do_resize2fs_M (const char *device);
 extern int do_internal_autosync (void);
+extern int do_is_zero (const char *path);
+extern int do_is_zero_device (const char *device);
+extern char **do_list_9p (void);
+extern int do_mount_9p (const char *mounttag, const char *mountpoint, const char *options);
+extern char **do_list_dm_devices (void);
+extern int do_ntfsresize_opts (const char *device, int64_t size, int force);
+extern int do_btrfs_filesystem_resize (const char *mountpoint, int64_t size);
+extern int do_write_append (const char *path, const char *content, size_t content_size);

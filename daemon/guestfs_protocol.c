@@ -4823,6 +4823,10 @@ xdr_guestfs_mkfs_opts_args (XDR *xdrs, guestfs_mkfs_opts_args *objp)
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->features, ~0))
 		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->inode))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->sectorsize))
+		 return FALSE;
 	return TRUE;
 }
 
@@ -4876,6 +4880,120 @@ xdr_guestfs_resize2fs_M_args (XDR *xdrs, guestfs_resize2fs_M_args *objp)
 	register int32_t *buf;
 
 	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_is_zero_args (XDR *xdrs, guestfs_is_zero_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_is_zero_ret (XDR *xdrs, guestfs_is_zero_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_bool (xdrs, &objp->zeroflag))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_is_zero_device_args (XDR *xdrs, guestfs_is_zero_device_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_is_zero_device_ret (XDR *xdrs, guestfs_is_zero_device_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_bool (xdrs, &objp->zeroflag))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_list_9p_ret (XDR *xdrs, guestfs_list_9p_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->mounttags.mounttags_val, (u_int *) &objp->mounttags.mounttags_len, ~0,
+		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_mount_9p_args (XDR *xdrs, guestfs_mount_9p_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->mounttag, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->mountpoint, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->options, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_list_dm_devices_ret (XDR *xdrs, guestfs_list_dm_devices_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->devices.devices_val, (u_int *) &objp->devices.devices_len, ~0,
+		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_ntfsresize_opts_args (XDR *xdrs, guestfs_ntfsresize_opts_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	 if (!xdr_quad_t (xdrs, &objp->size))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->force))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_btrfs_filesystem_resize_args (XDR *xdrs, guestfs_btrfs_filesystem_resize_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->mountpoint, ~0))
+		 return FALSE;
+	 if (!xdr_quad_t (xdrs, &objp->size))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_write_append_args (XDR *xdrs, guestfs_write_append_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	 if (!xdr_bytes (xdrs, (char **)&objp->content.content_val, (u_int *) &objp->content.content_len, ~0))
 		 return FALSE;
 	return TRUE;
 }

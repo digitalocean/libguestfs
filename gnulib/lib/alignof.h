@@ -1,5 +1,5 @@
 /* Determine alignment of types.
-   Copyright (C) 2003-2004, 2006, 2009-2010 Free Software Foundation, Inc.
+   Copyright (C) 2003-2004, 2006, 2009-2011 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 # define alignof_slot(type) offsetof (struct { char __slot1; type __slot2; }, __slot2)
 #endif
 
-/* Determine the good alignment of a object of the given type at compile time.
+/* Determine the good alignment of an object of the given type at compile time.
    Note that this is not necessarily the same as alignof_slot(type).
    For example, with GNU C on x86 platforms: alignof_type(double) = 8, but
    - when -malign-double is not specified:  alignof_slot(double) = 4,

@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head2 add-cdrom
 
@@ -26,7 +27,7 @@ L</add-drive-ro> instead.
 
 =back
 
-This function is deprecated.  In new code, use the L</add_drive_opts> call
+This function is deprecated.  In new code, use the C<add_drive_opts> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -37,7 +38,7 @@ these functions.
 
 =head2 domain
 
- add-domain dom [libvirturi:..] [readonly:..] [iface:..] [live:..]
+ add-domain dom [libvirturi:..] [readonly:..] [iface:..] [live:..] [allowuuid:..]
 
 This function adds the disk(s) attached to the named libvirt domain C<dom>.
 It works by connecting to libvirt, requesting the domain and domain XML from
@@ -64,6 +65,11 @@ a running virtual machine C<guestfsd> process if it sees a suitable
 E<lt>channelE<gt> element in the libvirt XML definition.  The default (if
 the flag is omitted) is never to try.  See L<guestfs(3)/ATTACHING TO RUNNING
 DAEMONS> for more information.
+
+If the C<allowuuid> flag is true (default is false) then a UUID I<may> be
+passed instead of the domain name.  The C<dom> string is treated as a UUID
+first and looked up, and if that lookup fails then we treat C<dom> as a name
+as usual.
 
 The other optional parameters are passed directly through to
 L</add-drive-opts>.
@@ -149,7 +155,7 @@ is added read-only, with the format being detected automatically.
 This is the same as L</add-drive-ro> but it allows you to specify the QEMU
 interface emulation to use at run time.
 
-This function is deprecated.  In new code, use the L</add_drive_opts> call
+This function is deprecated.  In new code, use the C<add_drive_opts> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -163,7 +169,7 @@ these functions.
 This is the same as L</add-drive> but it allows you to specify the QEMU
 interface emulation to use at run time.
 
-This function is deprecated.  In new code, use the L</add_drive_opts> call
+This function is deprecated.  In new code, use the C<add_drive_opts> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -508,6 +514,32 @@ This uses the L<blockdev(8)> command.
 Sets the block device named C<device> to read-write.
 
 This uses the L<blockdev(8)> command.
+
+=head2 btrfs-filesystem-resize
+
+ btrfs-filesystem-resize mountpoint [size:..]
+
+This command resizes a btrfs filesystem.
+
+Note that unlike other resize calls, the filesystem has to be mounted and
+the parameter is the mountpoint not the device (this is a requirement of
+btrfs itself).
+
+The optional parameters are:
+
+=over 4
+
+=item C<size>
+
+The new size (in bytes) of the filesystem.  If omitted, the filesystem is
+resized to the maximum size.
+
+=back
+
+See also L<btrfs(8)>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 case-sensitive-path
 
@@ -896,7 +928,7 @@ size C<len> bytes.  If the file exists already, it is overwritten.
 Do not confuse this with the guestfish-specific C<alloc> command which
 allocates a file in the host and attaches it as a device.
 
-This function is deprecated.  In new code, use the L</fallocate64> call
+This function is deprecated.  In new code, use the C<fallocate64> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -956,7 +988,7 @@ can change in future in ways beyond our control.  In other words, the output
 is not guaranteed by the ABI.
 
 See also: L<file(1)>, L</vfs-type>, L</lstat>, L</is-file>, L</is-blockdev>
-(etc).
+(etc), L</is-zero>.
 
 =head2 file-architecture
 
@@ -1241,7 +1273,7 @@ Return the direct appliance mode flag.
 
 This returns the ext2/3/4 filesystem label of the filesystem on C<device>.
 
-This function is deprecated.  In new code, use the L</vfs_label> call
+This function is deprecated.  In new code, use the C<vfs_label> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -1254,8 +1286,7 @@ these functions.
 
 This returns the ext2/3/4 filesystem UUID of the filesystem on C<device>.
 
-This function is deprecated.  In new code, use the L</vfs_uuid> call
-instead.
+This function is deprecated.  In new code, use the C<vfs_uuid> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -1287,6 +1318,12 @@ Return the current search path.
 
 This is always non-NULL.  If it wasn't set already, then this will return
 the default path.
+
+=head2 get-pgroup
+
+ get-pgroup
+
+This returns the process group flag.
 
 =head2 get-pid
 
@@ -1586,9 +1623,6 @@ Remove a previously defined inotify watch.  See L</inotify-add-watch>.
 
  inspect-get-arch root
 
-This function should only be called with a root device string as returned by
-L</inspect-os>.
-
 This returns the architecture of the inspected operating system.  The
 possible return values are listed under L</file-architecture>.
 
@@ -1600,9 +1634,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 =head2 inspect-get-distro
 
  inspect-get-distro root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
 
 This returns the distro (distribution) of the inspected operating system.
 
@@ -1686,9 +1717,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
  inspect-get-drive-mappings root
 
-This function should only be called with a root device string as returned by
-L</inspect-os>.
-
 This call is useful for Windows which uses a primitive system of assigning
 drive letters (like "C:") to partitions.  This inspection API examines the
 Windows Registry to find out how disks/partitions are mapped to drive
@@ -1720,9 +1748,6 @@ L</inspect-get-mountpoints>, L</inspect-get-filesystems>.
 
  inspect-get-filesystems root
 
-This function should only be called with a root device string as returned by
-L</inspect-os>.
-
 This returns a list of all the filesystems that we think are associated with
 this operating system.  This includes the root filesystem, other ordinary
 filesystems, and non-mounted devices like swap partitions.
@@ -1736,9 +1761,6 @@ L</inspect-get-mountpoints>.
 =head2 inspect-get-format
 
  inspect-get-format root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
 
 This returns the format of the inspected operating system.  You can use it
 to detect install images, live CDs and similar.
@@ -1771,9 +1793,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
  inspect-get-hostname root
 
-This function should only be called with a root device string as returned by
-L</inspect-os>.
-
 This function returns the hostname of the operating system as found by
 inspection of the guest's configuration files.
 
@@ -1782,12 +1801,73 @@ returned.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
 
+=head2 inspect-get-icon
+
+ inspect-get-icon root [favicon:..] [highquality:..]
+
+This function returns an icon corresponding to the inspected operating
+system.  The icon is returned as a buffer containing a PNG image (re-encoded
+to PNG if necessary).
+
+If it was not possible to get an icon this function returns a zero-length
+(non-NULL) buffer.  I<Callers must check for this case>.
+
+Libguestfs will start by looking for a file called C</etc/favicon.png> or
+C<C:\etc\favicon.png> and if it has the correct format, the contents of this
+file will be returned.  You can disable favicons by passing the optional
+C<favicon> boolean as false (default is true).
+
+If finding the favicon fails, then we look in other places in the guest for
+a suitable icon.
+
+If the optional C<highquality> boolean is true then only high quality icons
+are returned, which means only icons of high resolution with an alpha
+channel.  The default (false) is to return any icon we can, even if it is of
+substandard quality.
+
+Notes:
+
+=over 4
+
+=item *
+
+Unlike most other inspection API calls, the guest's disks must be mounted up
+before you call this, since it needs to read information from the guest
+filesystem during the call.
+
+=item *
+
+B<Security:> The icon data comes from the untrusted guest, and should be
+treated with caution.  PNG files have been known to contain exploits.
+Ensure that libpng (or other relevant libraries) are fully up to date before
+trying to process or display the icon.
+
+=item *
+
+The PNG image returned can be any size.  It might not be square.  Libguestfs
+tries to return the largest, highest quality icon available.  The
+application must scale the icon to the required size.
+
+=item *
+
+Extracting icons from Windows guests requires the external C<wrestool>
+program from the C<icoutils> package, and several programs (C<bmptopnm>,
+C<pnmtopng>, C<pamcut>)  from the C<netpbm> package.  These must be
+installed separately.
+
+=item *
+
+Operating system icons are usually trademarks.  Seek legal advice before
+using trademarks in applications.
+
+=back
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
 =head2 inspect-get-major-version
 
  inspect-get-major-version root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
 
 This returns the major version number of the inspected operating system.
 
@@ -1805,9 +1885,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
  inspect-get-minor-version root
 
-This function should only be called with a root device string as returned by
-L</inspect-os>.
-
 This returns the minor version number of the inspected operating system.
 
 If the version could not be determined, then C<0> is returned.
@@ -1818,9 +1895,6 @@ L</inspect-get-major-version>.
 =head2 inspect-get-mountpoints
 
  inspect-get-mountpoints root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
 
 This returns a hash of where we think the filesystems associated with this
 operating system should be mounted.  Callers should note that this is at
@@ -1847,9 +1921,6 @@ L</inspect-get-filesystems>.
 
  inspect-get-package-format root
 
-This function should only be called with a root device string as returned by
-L</inspect-os>.
-
 This function and L</inspect-get-package-management> return the package
 format and package management tool used by the inspected operating system.
 For example for Fedora these functions would return C<rpm> (package format)
@@ -1867,9 +1938,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 =head2 inspect-get-package-management
 
  inspect-get-package-management root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
 
 L</inspect-get-package-format> and this function return the package format
 and package management tool used by the inspected operating system.  For
@@ -1890,9 +1958,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
  inspect-get-product-name root
 
-This function should only be called with a root device string as returned by
-L</inspect-os>.
-
 This returns the product name of the inspected operating system.  The
 product name is generally some freeform string which can be displayed to the
 user, but should not be parsed by programs.
@@ -1905,9 +1970,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 =head2 inspect-get-product-variant
 
  inspect-get-product-variant root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
 
 This returns the product variant of the inspected operating system.
 
@@ -1946,9 +2008,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
  inspect-get-type root
 
-This function should only be called with a root device string as returned by
-L</inspect-os>.
-
 This returns the type of the inspected operating system.  Currently defined
 types are:
 
@@ -1981,9 +2040,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
  inspect-get-windows-current-control-set root
 
-This function should only be called with a root device string as returned by
-L</inspect-os>.
-
 This returns the Windows CurrentControlSet of the inspected guest.  The
 CurrentControlSet is a registry key name such as C<ControlSet001>.
 
@@ -1995,9 +2051,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 =head2 inspect-get-windows-systemroot
 
  inspect-get-windows-systemroot root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
 
 This returns the Windows systemroot of the inspected guest.  The systemroot
 is a directory path such as C</WINDOWS>.
@@ -2012,9 +2065,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
  inspect-is-live root
 
-This function should only be called with a root device string as returned by
-L</inspect-os>.
-
 If L</inspect-get-format> returns C<installer> (this is an install disk),
 then this returns true if a live image was detected on the disk.
 
@@ -2024,9 +2074,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
  inspect-is-multipart root
 
-This function should only be called with a root device string as returned by
-L</inspect-os>.
-
 If L</inspect-get-format> returns C<installer> (this is an install disk),
 then this returns true if the disk is part of a set.
 
@@ -2035,9 +2082,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 =head2 inspect-is-netinst
 
  inspect-is-netinst root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
 
 If L</inspect-get-format> returns C<installer> (this is an install disk),
 then this returns true if the disk is a network installer, ie. not a
@@ -2049,9 +2093,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 =head2 inspect-list-applications
 
  inspect-list-applications root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
 
 Return the list of applications installed in the operating system.
 
@@ -2279,6 +2320,21 @@ C<path> name.
 
 See also L</stat>.
 
+=head2 is-zero
+
+ is-zero path
+
+This returns true iff the file exists and the file is empty or it contains
+all zero bytes.
+
+=head2 is-zero-device
+
+ is-zero-device device
+
+This returns true iff the device exists and contains all zero bytes.
+
+Note that for large devices this can take a long time to run.
+
 =head2 kill-subprocess
 
  kill-subprocess
@@ -2334,6 +2390,13 @@ See also: L</lgetxattrs>, L</getxattr>, L<attr(5)>.
 This is the same as L</getxattrs>, but if C<path> is a symbolic link, then
 it returns the extended attributes of the link itself.
 
+=head2 list-9p
+
+ list-9p
+
+List all 9p filesystems attached to the guest.  A list of mount tags is
+returned.
+
 =head2 list-devices
 
  list-devices
@@ -2343,6 +2406,18 @@ List all the block devices.
 The full block device names are returned, eg. C</dev/sda>.
 
 See also L</list-filesystems>.
+
+=head2 list-dm-devices
+
+ list-dm-devices
+
+List all device mapper devices.
+
+The returned list contains C</dev/mapper/*> devices, eg. ones created by a
+previous call to L</luks-open>.
+
+Device mapper devices which correspond to logical volumes are I<not>
+returned in this list.  Call L</lvs> if you want to list logical volumes.
 
 =head2 list-filesystems
 
@@ -2555,6 +2630,8 @@ underlying C<device> respectively.
 
 If this block device contains LVM volume groups, then calling L</vgscan>
 followed by L</vg-activate-all> will make them visible.
+
+Use L</list-dm-devices> to list all device mapper devices.
 
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
@@ -2834,7 +2911,7 @@ filesystem type, but typically they are C<1024>, C<2048> or C<4096> only.
 For VFAT and NTFS the C<blocksize> parameter is treated as the requested
 cluster size.
 
-This function is deprecated.  In new code, use the L</mkfs_opts> call
+This function is deprecated.  In new code, use the C<mkfs_opts> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -2843,7 +2920,7 @@ these functions.
 
 =head2 mkfs-opts
 
- mkfs-opts fstype device [blocksize:..] [features:..]
+ mkfs-opts fstype device [blocksize:..] [features:..] [inode:..] [sectorsize:..]
 
 This function creates a filesystem on C<device>.  The filesystem type is
 C<fstype>, for example C<ext3>.
@@ -2872,6 +2949,16 @@ selected.  See L<mke2fs(8)> and L<mkfs.ufs(8)> for more details.
 
 You cannot use this optional parameter with the C<gfs> or C<gfs2> filesystem
 type.
+
+=item C<inode>
+
+This passes the I<-I> parameter to the external L<mke2fs(8)> program which
+sets the inode size (only for ext2/3/4 filesystems at present).
+
+=item C<sectorsize>
+
+This passes the I<-S> parameter to external L<mkfs.ufs(8)> program, which
+sets sector size for ufs filesystem.
 
 =back
 
@@ -3022,12 +3109,26 @@ reliability.  Therefore we recommend that you avoid using L</mount> in any
 code that needs performance, and instead use L</mount-options> (use an empty
 string for the first parameter if you don't want any options).
 
-This function is deprecated.  In new code, use the L</mount_options> call
+This function is deprecated.  In new code, use the C<mount_options> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+
+=head2 mount-9p
+
+ mount-9p mounttag mountpoint [options:..]
+
+Mount the virtio-9p filesystem with the tag C<mounttag> on the directory
+C<mountpoint>.
+
+If required, C<trans=virtio> will be automatically added to the options.
+Any other options required can be passed in the optional C<options>
+parameter.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 mount-loop
 
@@ -3118,12 +3219,60 @@ without booting into Windows between each resize.
 
 See also L<ntfsresize(8)>.
 
+This function is deprecated.  In new code, use the C<ntfsresize_opts> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
+=head2 ntfsresize-opts
+
+ ntfsresize-opts device [size:..] [force:..]
+
+This command resizes an NTFS filesystem, expanding or shrinking it to the
+size of the underlying device.
+
+The optional parameters are:
+
+=over 4
+
+=item C<size>
+
+The new size (in bytes) of the filesystem.  If omitted, the filesystem is
+resized to fit the container (eg. partition).
+
+=item C<force>
+
+If this option is true, then force the resize of the filesystem even if the
+filesystem is marked as requiring a consistency check.
+
+After the resize operation, the filesystem is always marked as requiring a
+consistency check (for safety).  You have to boot into Windows to perform
+this check and clear this condition.  If you I<don't> set the C<force>
+option then it is not possible to call L</ntfsresize-opts> multiple times on
+a single filesystem without booting into Windows between each resize.
+
+=back
+
+See also L<ntfsresize(8)>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
 =head2 ntfsresize-size
 
  ntfsresize-size device size
 
 This command is the same as L</ntfsresize> except that it allows you to
 specify the new size (in bytes) explicitly.
+
+This function is deprecated.  In new code, use the C<ntfsresize_opts> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 part-add
 
@@ -3211,7 +3360,9 @@ Possible values for C<parttype> are:
 
 =over 4
 
-=item B<efi> | B<gpt>
+=item B<efi>
+
+=item B<gpt>
 
 Intel EFI / GPT partition table.
 
@@ -3219,7 +3370,9 @@ This is recommended for >= 2 TB partitions that will be accessed from Linux
 and Intel-based Mac OS X.  It also has limited backwards compatibility with
 the C<mbr> format.
 
-=item B<mbr> | B<msdos>
+=item B<mbr>
+
+=item B<msdos>
 
 The standard PC "Master Boot Record" (MBR) format used by MS-DOS and
 Windows.  This partition type will B<only> work for device sizes up to 2
@@ -3235,7 +3388,9 @@ Other partition table types that may work but are not supported include:
 
 AIX disk labels.
 
-=item B<amiga> | B<rdb>
+=item B<amiga>
+
+=item B<rdb>
 
 Amiga "Rigid Disk Block" format.
 
@@ -3823,6 +3978,21 @@ C<LIBGUESTFS_PATH> environment variable.
 
 Setting C<path> to C<NULL> restores the default path.
 
+=head2 set-pgroup
+
+=head2 pgroup
+
+ set-pgroup true|false
+
+If C<pgroup> is true, child processes are placed into their own process
+group.
+
+The practical upshot of this is that signals like C<SIGINT> (from users
+pressing C<^C>) won't be received by the child process.
+
+The default for this flag is false, because usually you want C<^C> to kill
+the subprocess.
+
 =head2 set-qemu
 
 =head2 qemu
@@ -3955,8 +4125,7 @@ See also: L</sfdisk-l>, L</sfdisk-N>, L</part-init>
 B<This command is dangerous.  Without careful use you can easily destroy all
 your data>.
 
-This function is deprecated.  In new code, use the L</part_add> call
-instead.
+This function is deprecated.  In new code, use the C<part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -3976,8 +4145,7 @@ See also: L</sfdisk>, the L<sfdisk(8)> manpage and L</part-disk>
 B<This command is dangerous.  Without careful use you can easily destroy all
 your data>.
 
-This function is deprecated.  In new code, use the L</part_add> call
-instead.
+This function is deprecated.  In new code, use the C<part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -3998,8 +4166,7 @@ See also: L</part-add>
 B<This command is dangerous.  Without careful use you can easily destroy all
 your data>.
 
-This function is deprecated.  In new code, use the L</part_add> call
-instead.
+This function is deprecated.  In new code, use the C<part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4033,7 +4200,7 @@ of the L<sfdisk(8)> command.  It is not intended to be parsed.
 
 See also: L</part-list>
 
-This function is deprecated.  In new code, use the L</part_list> call
+This function is deprecated.  In new code, use the C<part_list> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -4497,9 +4664,7 @@ To find a filesystem from the UUID, use L</findfs-uuid>.
  vg-activate true|false 'volgroups ...'
 
 This command activates or (if C<activate> is false) deactivates all logical
-volumes in the listed volume groups C<volgroups>.  If activated, then they
-are made known to the kernel, ie. they appear as C</dev/mapper> devices.  If
-deactivated, then those devices disappear.
+volumes in the listed volume groups C<volgroups>.
 
 This command is the same as running C<vgchange -a y|n volgroups...>
 
@@ -4511,9 +4676,7 @@ activated or deactivated.
  vg-activate-all true|false
 
 This command activates or (if C<activate> is false) deactivates all logical
-volumes in all volume groups.  If activated, then they are made known to the
-kernel, ie. they appear as C</dev/mapper> devices.  If deactivated, then
-those devices disappear.
+volumes in all volume groups.
 
 This command is the same as running C<vgchange -a y|n>
 
@@ -4622,6 +4785,20 @@ command.
 This call creates a file called C<path>.  The content of the file is the
 string C<content> (which can contain any 8 bit data).
 
+See also L</write-append>.
+
+Because of the message protocol, there is a transfer limit of somewhere
+between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+=head2 write-append
+
+ write-append path content
+
+This call appends C<content> to the end of file C<path>.  If C<path> does
+not exist, then a new file is created.
+
+See also L</write>.
+
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
@@ -4641,7 +4818,7 @@ I<not> work, even if the length is specified.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-This function is deprecated.  In new code, use the L</write> call instead.
+This function is deprecated.  In new code, use the C<write> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4675,7 +4852,7 @@ How many blocks are zeroed isn't specified (but it's I<not> enough to
 securely wipe the device).  It should be sufficient to remove any partition
 tables, filesystem superblocks and so on.
 
-See also: L</zero-device>, L</scrub-device>.
+See also: L</zero-device>, L</scrub-device>, L</is-zero-device>
 
 =head2 zero-device
 
@@ -4728,7 +4905,7 @@ C<method> must be one of C<gzip>, C<compress> or C<bzip2>.
 
 Since 1.0.63, use L</file> instead which can now process compressed files.
 
-This function is deprecated.  In new code, use the L</file> call instead.
+This function is deprecated.  In new code, use the C<file> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of

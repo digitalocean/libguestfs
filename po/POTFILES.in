@@ -1,11 +1,13 @@
 cat/virt-cat.c
 cat/virt-filesystems.c
 cat/virt-ls.c
+daemon/9p.c
 daemon/augeas.c
 daemon/available.c
 daemon/base64.c
 daemon/blkid.c
 daemon/blockdev.c
+daemon/btrfs.c
 daemon/checksum.c
 daemon/cmp.c
 daemon/command.c
@@ -78,6 +80,7 @@ df/df.c
 df/domains.c
 df/main.c
 df/output.c
+edit/virt-edit.c
 fish/alloc.c
 fish/cmds.c
 fish/cmds_gperf.c
@@ -85,6 +88,7 @@ fish/completion.c
 fish/config.c
 fish/copy.c
 fish/destpaths.c
+fish/display.c
 fish/echo.c
 fish/edit.c
 fish/fish.c
@@ -145,13 +149,13 @@ src/inspect_fs.c
 src/inspect_fs_cd.c
 src/inspect_fs_unix.c
 src/inspect_fs_windows.c
+src/inspect_icon.c
 src/launch.c
 src/listfs.c
 src/match.c
 src/proto.c
 src/virt.c
 test-tool/test-tool.c
-tools/virt-edit.pl
 tools/virt-list-filesystems.pl
 tools/virt-list-partitions.pl
 tools/virt-make-fs.pl

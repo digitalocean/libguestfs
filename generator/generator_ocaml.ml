@@ -35,9 +35,21 @@ let rec generate_ocaml_mli () =
   generate_header OCamlStyle LGPLv2plus;
 
   pr "\
-(** For API documentation you should refer to the C API
-    in the guestfs(3) manual page.  The OCaml API uses almost
-    exactly the same calls. *)
+(** libguestfs bindings for OCaml.
+
+    For API documentation, the canonical reference is the
+    {{:http://libguestfs.org/guestfs.3.html}guestfs(3)} man page.
+    The OCaml API uses almost exactly the same calls.
+
+    For examples written in OCaml see the
+    {{:http://libguestfs.org/guestfs-ocaml.3.html}guestfs-ocaml(3)} man page.
+    *)
+
+(** {2 Module style API}
+
+    This is the module-style API.  There is also an object-oriented API
+    (see the end of this file and {!guestfs})
+    which is functionally completely equivalent, but is more compact. *)
 
 type t
 (** A [guestfs_h] handle. *)
@@ -46,15 +58,15 @@ exception Error of string
 (** This exception is raised when there is an error. *)
 
 exception Handle_closed of string
-(** This exception is raised if you use a {!Guestfs.t} handle
+(** This exception is raised if you use a {!t} handle
     after calling {!close} on it.  The string is the name of
     the function. *)
 
 val create : unit -> t
-(** Create a {!Guestfs.t} handle. *)
+(** Create a {!t} handle. *)
 
 val close : t -> unit
-(** Close the {!Guestfs.t} handle and free up all resources used
+(** Close the {!t} handle and free up all resources used
     by it immediately.
 
     Handles are closed by the garbage collector when they become
@@ -94,14 +106,42 @@ val delete_event_callback : t -> event_handle -> unit
 (** [delete_event_callback g eh] removes a previously registered
     event callback.  See {!set_event_callback}. *)
 
+val last_errno : t -> int
+(** [last_errno g] returns the last errno that happened on the handle [g]
+    (or [0] if there was no errno).  Note that the returned integer is the
+    raw errno number, and it is {i not} related to the {!Unix.error} type.
+
+    [last_errno] can be overwritten by subsequent operations on a handle,
+    so if you want to capture the errno correctly, you must call this
+    in the {!Error} exception handler, before any other operation on [g]. *)
+
+val user_cancel : t -> unit
+(** Cancel current transfer.  This is safe to call from OCaml signal
+    handlers and threads. *)
+
 ";
   generate_ocaml_structure_decls ();
 
   (* The actions. *)
   List.iter (
-    fun (name, style, _, _, _, shortdesc, _) ->
+    fun (name, style, _, flags, _, shortdesc, _) ->
+      let deprecated =
+        try Some (find_map (function DeprecatedBy fn -> Some fn | _ -> None)
+                    flags)
+        with Not_found -> None in
+      let in_docs = not (List.mem NotInDocs flags) in
+
       generate_ocaml_prototype name style;
-      pr "(** %s *)\n" shortdesc;
+
+      if in_docs then (
+        pr "(** %s" shortdesc;
+        (match deprecated with
+         | None -> ()
+         | Some replacement ->
+             pr "\n\n    @deprecated Use {!%s} instead\n" replacement
+        );
+        pr " *)\n";
+      );
       pr "\n"
   ) all_functions_sorted;
 
@@ -109,26 +149,31 @@ val delete_event_callback : t -> event_handle -> unit
 (** {2 Object-oriented API}
 
     This is an alternate way of calling the API using an object-oriented
-    style, so you can use [g#add_drive_opts filename] instead of
-    [Guestfs.add_drive_opts g filename].  Apart from the different style,
-    it offers exactly the same functionality.
+    style, so you can use
+    [g#]{{!guestfs.add_drive_opts}add_drive_opts} [filename]
+    instead of [Guestfs.add_drive_opts g filename].
+    Apart from the different style, it offers exactly the same functionality.
 
     Calling [new guestfs ()] creates both the object and the handle.
     The object and handle are closed either implicitly when the
-    object is garbage collected, or explicitly by calling the [g#close ()]
-    method.
+    object is garbage collected, or explicitly by calling the
+    [g#]{{!guestfs.close}close} [()] method.
 
-    You can get the {!Guestfs.t} handle by calling [g#ocaml_handle].
+    You can get the {!t} handle by calling
+    [g#]{{!guestfs.ocaml_handle}ocaml_handle}.
 
     Note that methods that take no parameters (except the implicit handle)
     get an extra unit [()] parameter.  This is so you can create a
-    closure from the method easily.  For example [g#get_verbose ()]
+    closure from the method easily.  For example
+    [g#]{{!guestfs.get_verbose}get_verbose} [()]
     calls the method, whereas [g#get_verbose] is a function. *)
 
 class guestfs : unit -> object
   method close : unit -> unit
   method set_event_callback : event_callback -> event list -> event_handle
   method delete_event_callback : event_handle -> unit
+  method last_errno : unit -> int
+  method user_cancel : unit -> unit
   method ocaml_handle : t
 ";
 
@@ -188,6 +233,10 @@ external set_event_callback : t -> event_callback -> event list -> event_handle
 external delete_event_callback : t -> event_handle -> unit
   = \"ocaml_guestfs_delete_event_callback\"
 
+external last_errno : t -> int = \"ocaml_guestfs_last_errno\"
+
+external user_cancel : t -> unit = \"ocaml_guestfs_user_cancel\" \"noalloc\"
+
 (* Give the exceptions names, so they can be raised from the C code. *)
 let () =
   Callback.register_exception \"ocaml_guestfs_error\" (Error \"\");
@@ -211,6 +260,8 @@ class guestfs () =
     method close () = close g
     method set_event_callback = set_event_callback g
     method delete_event_callback = delete_event_callback g
+    method last_errno () = last_errno g
+    method user_cancel () = user_cancel g
     method ocaml_handle = g
 ";
 

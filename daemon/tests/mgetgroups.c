@@ -1,6 +1,6 @@
 /* mgetgroups.c -- return a list of the groups a user or current process is in
 
-   Copyright (C) 2007-2010 Free Software Foundation, Inc.
+   Copyright (C) 2007-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #endif
 
 #include "getugroups.h"
-#include "xalloc.h"
+#include "xalloc-oversized.h"
 
 static gid_t *
 realloc_groupbuf (gid_t *g, size_t num)
@@ -192,15 +192,4 @@ mgetgroups (char const *username, gid_t gid, gid_t **groups)
     }
 
   return ng;
-}
-
-/* Like mgetgroups, but call xalloc_die on allocation failure.  */
-
-int
-xgetgroups (char const *username, gid_t gid, gid_t **groups)
-{
-  int result = mgetgroups (username, gid, groups);
-  if (result == -1 && errno == ENOMEM)
-    xalloc_die ();
-  return result;
 }

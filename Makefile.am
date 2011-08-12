@@ -36,7 +36,7 @@ SUBDIRS += gnulib/tests capitests caution regressions test-tool
 SUBDIRS += fish
 
 # virt-tools in C.
-SUBDIRS += cat df inspector rescue
+SUBDIRS += cat df edit inspector rescue
 
 # Language bindings.
 if HAVE_PERL
@@ -52,7 +52,7 @@ if HAVE_RUBY
 SUBDIRS += ruby ruby/examples
 endif
 if HAVE_JAVA
-SUBDIRS += java
+SUBDIRS += java java/examples
 endif
 if HAVE_HASKELL
 SUBDIRS += haskell
@@ -101,6 +101,8 @@ EXTRA_DIST = \
 	debian/docs \
 	debian/guestfish.dirs \
 	debian/guestfish.install \
+	debian/guestfsd.dirs \
+	debian/guestfsd.install \
 	debian/guestmount.dirs \
 	debian/guestmount.install \
 	debian/libguestfs-dev.dirs \
@@ -119,33 +121,21 @@ EXTRA_DIST = \
 	debian/shlibs.local \
 	debian/watch \
 	html/pod.css \
-	html/recipes.css \
 	libguestfs.pc libguestfs.pc.in \
 	libtool-kill-dependency_libs.sh \
 	logo/fish.svg logo/fish.png \
-	make-recipes.sh \
 	m4/.gitignore \
-	recipes/LICENSE \
-	recipes/README \
-	recipes/*.html \
-	recipes/*.sh \
-	recipes/*.example \
 	run \
 	update-bugs.sh
-
-# Recipes web page.
-html/recipes.html: $(wildcard recipes/*.sh) $(wildcard recipes/*.html) $(wildcard recipes/*.example) Makefile make-recipes.sh
-	mkdir -p html
-	rm -f $@ $@-t
-	sh make-recipes.sh recipes/*.sh > $@-t
-	mv $@-t $@
 
 HTMLFILES = \
 	html/guestfs.3.html \
 	html/guestfs-examples.3.html \
+	html/guestfs-java.3.html \
 	html/guestfs-ocaml.3.html \
 	html/guestfs-perl.3.html \
 	html/guestfs-python.3.html \
+	html/guestfs-recipes.1.html \
 	html/guestfs-ruby.3.html \
 	html/guestfish.1.html \
 	html/guestmount.1.html \
@@ -165,9 +155,7 @@ HTMLFILES = \
 	html/virt-tar.1.html \
 	html/virt-tar-in.1.html \
 	html/virt-tar-out.1.html \
-	html/virt-win-reg.1.html \
-	html/recipes.html \
-	html/pod.css html/recipes.css
+	html/virt-win-reg.1.html
 
 TEXTFILES = BUGS README RELEASE-NOTES ROADMAP TODO
 
@@ -231,7 +219,7 @@ CLEANFILES = \
 # is NOT a substitute for proper testing!
 
 quickcheck:
-	./run test-tool/libguestfs-test-tool $(QUICKCHECK_TEST_TOOL_ARGS)
+	./run test-tool/libguestfs-test-tool
 
 # Make binary distribution.
 

@@ -71,6 +71,7 @@ extern struct command_entry blockdev_rereadpt_cmd_entry;
 extern struct command_entry blockdev_setbsz_cmd_entry;
 extern struct command_entry blockdev_setro_cmd_entry;
 extern struct command_entry blockdev_setrw_cmd_entry;
+extern struct command_entry btrfs_filesystem_resize_cmd_entry;
 extern struct command_entry case_sensitive_path_cmd_entry;
 extern struct command_entry cat_cmd_entry;
 extern struct command_entry checksum_cmd_entry;
@@ -92,6 +93,7 @@ extern struct command_entry debug_cmdline_cmd_entry;
 extern struct command_entry debug_upload_cmd_entry;
 extern struct command_entry df_cmd_entry;
 extern struct command_entry df_h_cmd_entry;
+extern struct command_entry display_cmd_entry;
 extern struct command_entry dmesg_cmd_entry;
 extern struct command_entry download_cmd_entry;
 extern struct command_entry download_offset_cmd_entry;
@@ -128,6 +130,7 @@ extern struct command_entry get_e2uuid_cmd_entry;
 extern struct command_entry get_memsize_cmd_entry;
 extern struct command_entry get_network_cmd_entry;
 extern struct command_entry get_path_cmd_entry;
+extern struct command_entry get_pgroup_cmd_entry;
 extern struct command_entry get_pid_cmd_entry;
 extern struct command_entry get_qemu_cmd_entry;
 extern struct command_entry get_recovery_proc_cmd_entry;
@@ -162,6 +165,7 @@ extern struct command_entry inspect_get_drive_mappings_cmd_entry;
 extern struct command_entry inspect_get_filesystems_cmd_entry;
 extern struct command_entry inspect_get_format_cmd_entry;
 extern struct command_entry inspect_get_hostname_cmd_entry;
+extern struct command_entry inspect_get_icon_cmd_entry;
 extern struct command_entry inspect_get_major_version_cmd_entry;
 extern struct command_entry inspect_get_minor_version_cmd_entry;
 extern struct command_entry inspect_get_mountpoints_cmd_entry;
@@ -190,13 +194,17 @@ extern struct command_entry is_lv_cmd_entry;
 extern struct command_entry is_ready_cmd_entry;
 extern struct command_entry is_socket_cmd_entry;
 extern struct command_entry is_symlink_cmd_entry;
+extern struct command_entry is_zero_cmd_entry;
+extern struct command_entry is_zero_device_cmd_entry;
 extern struct command_entry kill_subprocess_cmd_entry;
 extern struct command_entry launch_cmd_entry;
 extern struct command_entry lcd_cmd_entry;
 extern struct command_entry lchown_cmd_entry;
 extern struct command_entry lgetxattr_cmd_entry;
 extern struct command_entry lgetxattrs_cmd_entry;
+extern struct command_entry list_9p_cmd_entry;
 extern struct command_entry list_devices_cmd_entry;
+extern struct command_entry list_dm_devices_cmd_entry;
 extern struct command_entry list_filesystems_cmd_entry;
 extern struct command_entry list_partitions_cmd_entry;
 extern struct command_entry ll_cmd_entry;
@@ -255,6 +263,7 @@ extern struct command_entry mkswap_file_cmd_entry;
 extern struct command_entry modprobe_cmd_entry;
 extern struct command_entry more_cmd_entry;
 extern struct command_entry mount_cmd_entry;
+extern struct command_entry mount_9p_cmd_entry;
 extern struct command_entry mount_loop_cmd_entry;
 extern struct command_entry mount_options_cmd_entry;
 extern struct command_entry mount_ro_cmd_entry;
@@ -264,6 +273,7 @@ extern struct command_entry mounts_cmd_entry;
 extern struct command_entry mv_cmd_entry;
 extern struct command_entry ntfs_3g_probe_cmd_entry;
 extern struct command_entry ntfsresize_cmd_entry;
+extern struct command_entry ntfsresize_opts_cmd_entry;
 extern struct command_entry ntfsresize_size_cmd_entry;
 extern struct command_entry part_add_cmd_entry;
 extern struct command_entry part_del_cmd_entry;
@@ -316,6 +326,7 @@ extern struct command_entry set_e2uuid_cmd_entry;
 extern struct command_entry set_memsize_cmd_entry;
 extern struct command_entry set_network_cmd_entry;
 extern struct command_entry set_path_cmd_entry;
+extern struct command_entry set_pgroup_cmd_entry;
 extern struct command_entry set_qemu_cmd_entry;
 extern struct command_entry set_recovery_proc_cmd_entry;
 extern struct command_entry set_selinux_cmd_entry;
@@ -385,6 +396,7 @@ extern struct command_entry wc_c_cmd_entry;
 extern struct command_entry wc_l_cmd_entry;
 extern struct command_entry wc_w_cmd_entry;
 extern struct command_entry write_cmd_entry;
+extern struct command_entry write_append_cmd_entry;
 extern struct command_entry write_file_cmd_entry;
 extern struct command_entry zegrep_cmd_entry;
 extern struct command_entry zegrepi_cmd_entry;
@@ -475,6 +487,8 @@ blockdev_setro, &blockdev_setro_cmd_entry
 blockdev-setro, &blockdev_setro_cmd_entry
 blockdev_setrw, &blockdev_setrw_cmd_entry
 blockdev-setrw, &blockdev_setrw_cmd_entry
+btrfs_filesystem_resize, &btrfs_filesystem_resize_cmd_entry
+btrfs-filesystem-resize, &btrfs_filesystem_resize_cmd_entry
 case_sensitive_path, &case_sensitive_path_cmd_entry
 case-sensitive-path, &case_sensitive_path_cmd_entry
 cat, &cat_cmd_entry
@@ -507,6 +521,7 @@ debug-upload, &debug_upload_cmd_entry
 df, &df_cmd_entry
 df_h, &df_h_cmd_entry
 df-h, &df_h_cmd_entry
+display, &display_cmd_entry
 dmesg, &dmesg_cmd_entry
 download, &download_cmd_entry
 download_offset, &download_offset_cmd_entry
@@ -562,6 +577,8 @@ get_network, &get_network_cmd_entry
 get-network, &get_network_cmd_entry
 get_path, &get_path_cmd_entry
 get-path, &get_path_cmd_entry
+get_pgroup, &get_pgroup_cmd_entry
+get-pgroup, &get_pgroup_cmd_entry
 get_pid, &get_pid_cmd_entry
 get-pid, &get_pid_cmd_entry
 pid, &get_pid_cmd_entry
@@ -622,6 +639,8 @@ inspect_get_format, &inspect_get_format_cmd_entry
 inspect-get-format, &inspect_get_format_cmd_entry
 inspect_get_hostname, &inspect_get_hostname_cmd_entry
 inspect-get-hostname, &inspect_get_hostname_cmd_entry
+inspect_get_icon, &inspect_get_icon_cmd_entry
+inspect-get-icon, &inspect_get_icon_cmd_entry
 inspect_get_major_version, &inspect_get_major_version_cmd_entry
 inspect-get-major-version, &inspect_get_major_version_cmd_entry
 inspect_get_minor_version, &inspect_get_minor_version_cmd_entry
@@ -678,6 +697,10 @@ is_socket, &is_socket_cmd_entry
 is-socket, &is_socket_cmd_entry
 is_symlink, &is_symlink_cmd_entry
 is-symlink, &is_symlink_cmd_entry
+is_zero, &is_zero_cmd_entry
+is-zero, &is_zero_cmd_entry
+is_zero_device, &is_zero_device_cmd_entry
+is-zero-device, &is_zero_device_cmd_entry
 kill_subprocess, &kill_subprocess_cmd_entry
 kill-subprocess, &kill_subprocess_cmd_entry
 launch, &launch_cmd_entry
@@ -686,8 +709,12 @@ lcd, &lcd_cmd_entry
 lchown, &lchown_cmd_entry
 lgetxattr, &lgetxattr_cmd_entry
 lgetxattrs, &lgetxattrs_cmd_entry
+list_9p, &list_9p_cmd_entry
+list-9p, &list_9p_cmd_entry
 list_devices, &list_devices_cmd_entry
 list-devices, &list_devices_cmd_entry
+list_dm_devices, &list_dm_devices_cmd_entry
+list-dm-devices, &list_dm_devices_cmd_entry
 list_filesystems, &list_filesystems_cmd_entry
 list-filesystems, &list_filesystems_cmd_entry
 list_partitions, &list_partitions_cmd_entry
@@ -780,6 +807,8 @@ modprobe, &modprobe_cmd_entry
 more, &more_cmd_entry
 less, &more_cmd_entry
 mount, &mount_cmd_entry
+mount_9p, &mount_9p_cmd_entry
+mount-9p, &mount_9p_cmd_entry
 mount_loop, &mount_loop_cmd_entry
 mount-loop, &mount_loop_cmd_entry
 mount_options, &mount_options_cmd_entry
@@ -794,6 +823,8 @@ mv, &mv_cmd_entry
 ntfs_3g_probe, &ntfs_3g_probe_cmd_entry
 ntfs-3g-probe, &ntfs_3g_probe_cmd_entry
 ntfsresize, &ntfsresize_cmd_entry
+ntfsresize_opts, &ntfsresize_opts_cmd_entry
+ntfsresize-opts, &ntfsresize_opts_cmd_entry
 ntfsresize_size, &ntfsresize_size_cmd_entry
 ntfsresize-size, &ntfsresize_size_cmd_entry
 part_add, &part_add_cmd_entry
@@ -888,6 +919,9 @@ network, &set_network_cmd_entry
 set_path, &set_path_cmd_entry
 set-path, &set_path_cmd_entry
 path, &set_path_cmd_entry
+set_pgroup, &set_pgroup_cmd_entry
+set-pgroup, &set_pgroup_cmd_entry
+pgroup, &set_pgroup_cmd_entry
 set_qemu, &set_qemu_cmd_entry
 set-qemu, &set_qemu_cmd_entry
 qemu, &set_qemu_cmd_entry
@@ -1003,6 +1037,8 @@ wc-l, &wc_l_cmd_entry
 wc_w, &wc_w_cmd_entry
 wc-w, &wc_w_cmd_entry
 write, &write_cmd_entry
+write_append, &write_append_cmd_entry
+write-append, &write_append_cmd_entry
 write_file, &write_file_cmd_entry
 write-file, &write_file_cmd_entry
 zegrep, &zegrep_cmd_entry

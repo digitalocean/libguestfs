@@ -106,7 +106,7 @@ public class GuestFS {
         let doc = replace_str longdesc "C<guestfs_" "C<g." in
         let doc =
           if optargs <> [] then
-            doc ^ "\n\nOptional arguments are supplied in the final Map<String,Object> parameter, which is a hash of the argument name to its value (cast to Object).  Pass an empty Map for no optional arguments."
+            doc ^ "\n\nOptional arguments are supplied in the final Map<String,Object> parameter, which is a hash of the argument name to its value (cast to Object).  Pass an empty Map or null for no optional arguments."
           else doc in
         let doc =
           if List.mem ProtocolLimitWarning flags then
@@ -142,6 +142,32 @@ public class GuestFS {
       pr "    if (g == 0)\n";
       pr "      throw new LibGuestFSException (\"%s: handle is closed\");\n"
         name;
+      if optargs <> [] then (
+        pr "\n";
+        pr "    /* Unpack optional args. */\n";
+        pr "    Object _optobj;\n";
+        pr "    long _optargs_bitmask = 0;\n";
+        iteri (
+          fun i argt ->
+            let t, boxed_t, convert, n, default =
+              match argt with
+              | Bool n -> "boolean", "Boolean", ".booleanValue()", n, "false"
+              | Int n -> "int", "Integer", ".intValue()", n, "0"
+              | Int64 n -> "long", "Long", ".longValue()", n, "0"
+              | String n -> "String", "String", "", n, "\"\""
+              | _ -> assert false in
+            pr "    %s %s = %s;\n" t n default;
+            pr "    _optobj = null;\n";
+            pr "    if (optargs != null)\n";
+            pr "      _optobj = optargs.get (\"%s\");\n" n;
+            pr "    if (_optobj != null) {\n";
+            pr "      %s = ((%s) _optobj)%s;\n" n boxed_t convert;
+            pr "      _optargs_bitmask |= %Ld;\n"
+              (Int64.shift_left Int64.one i);
+            pr "    }\n";
+        ) optargs
+      );
+      pr "\n";
       (match ret with
        | RErr ->
            pr "    _%s " name;
@@ -162,6 +188,7 @@ public class GuestFS {
            pr ";\n"
       );
       pr "  }\n";
+      pr "\n";
       pr "  ";
       generate_java_prototype ~privat:true ~native:true name style;
       pr "\n";
@@ -174,7 +201,10 @@ public class GuestFS {
 and generate_java_call_args ~handle (_, args, optargs) =
   pr "(%s" handle;
   List.iter (fun arg -> pr ", %s" (name_of_argt arg)) args;
-  if optargs <> [] then pr ", optargs";
+  if optargs <> [] then (
+    pr ", _optargs_bitmask";
+    List.iter (fun arg -> pr ", %s" (name_of_argt arg)) optargs
+  );
   pr ")"
 
 and generate_java_prototype ?(public=false) ?(privat=false) ?(native=false)
@@ -243,7 +273,21 @@ and generate_java_prototype ?(public=false) ?(privat=false) ?(native=false)
   if optargs <> [] then (
     if !needs_comma then pr ", ";
     needs_comma := true;
-    pr "HashMap optargs"
+
+    if not native then
+      pr "Map<String, Object> optargs"
+    else (
+      pr "long _optargs_bitmask";
+      List.iter (
+        fun argt ->
+          match argt with
+          | Bool n -> pr ", boolean %s" n
+          | Int n -> pr ", int %s" n
+          | Int64 n -> pr ", long %s" n
+          | String n -> pr ", String %s" n
+          | _ -> assert false
+      ) optargs
+    )
   );
 
   pr ")\n";
@@ -346,7 +390,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
       pr "JNICALL\n";
       pr "Java_com_redhat_et_libguestfs_GuestFS_";
       pr "%s" (replace_str ("_" ^ name) "_" "_1");
-      pr "\n";
       pr "  (JNIEnv *env, jobject obj, jlong jg";
       List.iter (
         function
@@ -369,8 +412,17 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
         | Int64 n | Pointer (_, n) ->
             pr ", jlong j%s" n
       ) args;
-      if optargs <> [] then
-        pr ", jobject joptargs";
+      if optargs <> [] then (
+        pr ", jlong joptargs_bitmask";
+        List.iter (
+          function
+          | Bool n -> pr ", jboolean j%s" n
+          | Int n -> pr ", jint j%s" n
+          | Int64 n -> pr ", jlong j%s" n
+          | String n -> pr ", jstring j%s" n
+          | _ -> assert false
+        ) optargs
+      );
       pr ")\n";
       pr "{\n";
       pr "  guestfs_h *g = (guestfs_h *) (long) jg;\n";
@@ -387,7 +439,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
        | RStringList _
        | RHashtable _ ->
            pr "  jobjectArray jr;\n";
-           pr "  int r_len;\n";
+           pr "  size_t r_len;\n";
            pr "  jclass cl;\n";
            pr "  jstring jstr;\n";
            pr "  char **r;\n"
@@ -419,11 +471,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
         | Key n ->
             pr "  const char *%s;\n" n
         | BufferIn n ->
-            pr "  jbyte *%s;\n" n;
+            pr "  char *%s;\n" n;
             pr "  size_t %s_size;\n" n
         | StringList n | DeviceList n ->
-            pr "  int %s_len;\n" n;
-            pr "  const char **%s;\n" n
+            pr "  size_t %s_len;\n" n;
+            pr "  char **%s;\n" n
         | Bool n
         | Int n ->
             pr "  int %s;\n" n
@@ -432,6 +484,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
         | Pointer (t, n) ->
             pr "  %s %s;\n" t n
       ) args;
+
+      if optargs <> [] then (
+        pr "  struct guestfs_%s_argv optargs_s;\n" name;
+        pr "  const struct guestfs_%s_argv *optargs = &optargs_s;\n" name
+      );
 
       let needs_i =
         (match ret with
@@ -464,7 +521,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
              *)
             pr "  %s = j%s ? (*env)->GetStringUTFChars (env, j%s, NULL) : NULL;\n" n n n
         | BufferIn n ->
-            pr "  %s = (*env)->GetByteArrayElements (env, j%s, NULL);\n" n n;
+            pr "  %s = (char *) (*env)->GetByteArrayElements (env, j%s, NULL);\n" n n;
             pr "  %s_size = (*env)->GetArrayLength (env, j%s);\n" n n
         | StringList n | DeviceList n ->
             pr "  %s_len = (*env)->GetArrayLength (env, j%s);\n" n n;
@@ -472,7 +529,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
             pr "  for (i = 0; i < %s_len; ++i) {\n" n;
             pr "    jobject o = (*env)->GetObjectArrayElement (env, j%s, i);\n"
               n;
-            pr "    %s[i] = (*env)->GetStringUTFChars (env, o, NULL);\n" n;
+            pr "    %s[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);\n" n;
             pr "  }\n";
             pr "  %s[%s_len] = NULL;\n" n n;
         | Bool n
@@ -484,11 +541,21 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
       ) args;
 
       if optargs <> [] then (
-        (* XXX *)
-        pr "  throw_exception (env, \"%s: internal error: please let us know how to read a Java HashMap parameter from JNI bindings!\");\n" name;
-        pr "  return NULL;\n";
-        pr "  /*\n";
+        pr "  optargs_s.bitmask = joptargs_bitmask;\n";
+        List.iter (
+          function
+          | Bool n
+          | Int n
+          | Int64 n ->
+              pr "  optargs_s.%s = j%s;\n" n n
+          | String n ->
+              pr "  optargs_s.%s = (*env)->GetStringUTFChars (env, j%s, NULL);\n"
+                n n
+          | _ -> assert false
+        ) optargs;
       );
+
+      pr "\n";
 
       (* Make the call. *)
       if optargs = [] then
@@ -497,6 +564,8 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
         pr "  r = guestfs_%s_argv " name;
       generate_c_call_args ~handle:"g" style;
       pr ";\n";
+
+      pr "\n";
 
       (* Release the parameters. *)
       List.iter (
@@ -512,7 +581,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
             pr "  if (j%s)\n" n;
             pr "    (*env)->ReleaseStringUTFChars (env, j%s, %s);\n" n n
         | BufferIn n ->
-            pr "  (*env)->ReleaseByteArrayElements (env, j%s, %s, 0);\n" n n
+            pr "  (*env)->ReleaseByteArrayElements (env, j%s, (jbyte *) %s, 0);\n" n n
         | StringList n | DeviceList n ->
             pr "  for (i = 0; i < %s_len; ++i) {\n" n;
             pr "    jobject o = (*env)->GetObjectArrayElement (env, j%s, i);\n"
@@ -526,18 +595,42 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
         | Pointer _ -> ()
       ) args;
 
+      List.iter (
+        function
+        | Bool n
+        | Int n
+        | Int64 n -> ()
+        | String n ->
+            pr "  (*env)->ReleaseStringUTFChars (env, j%s, optargs_s.%s);\n" n n
+        | _ -> assert false
+      ) optargs;
+
+      pr "\n";
+
       (* Check for errors. *)
       (match errcode_of_ret ret with
        | `CannotReturnError -> ()
-       | `ErrorIsMinusOne ->
-           pr "  if (r == -1) {\n";
+       | (`ErrorIsMinusOne|`ErrorIsNULL) as errcode ->
+           (match errcode with
+            | `ErrorIsMinusOne ->
+                pr "  if (r == -1) {\n";
+            | `ErrorIsNULL ->
+                pr "  if (r == NULL) {\n";
+           );
            pr "    throw_exception (env, guestfs_last_error (g));\n";
-           pr "    return -1;\n";
-           pr "  }\n"
-       | `ErrorIsNULL ->
-           pr "  if (r == NULL) {\n";
-           pr "    throw_exception (env, guestfs_last_error (g));\n";
-           pr "    return NULL;\n";
+           (match ret with
+            | RErr ->
+                pr "    return;\n"
+            | RInt _
+            | RInt64 _
+            | RBool _ ->
+                pr "    return -1;\n"
+            | RConstString _ | RConstOptString _ | RString _
+            | RBufferOut _
+            | RStruct _ | RHashtable _
+            | RStringList _ | RStructList _ ->
+                pr "    return NULL;\n"
+           );
            pr "  }\n"
       );
 
@@ -580,9 +673,6 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
            pr "  free (r);\n";
            pr "  return jr;\n"
       );
-
-      if optargs <> [] then
-        pr "  */\n";
 
       pr "}\n";
       pr "\n"

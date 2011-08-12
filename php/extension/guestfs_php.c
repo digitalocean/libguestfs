@@ -96,6 +96,7 @@ static function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_blockdev_setbsz, NULL)
   PHP_FE (guestfs_blockdev_setro, NULL)
   PHP_FE (guestfs_blockdev_setrw, NULL)
+  PHP_FE (guestfs_btrfs_filesystem_resize, NULL)
   PHP_FE (guestfs_case_sensitive_path, NULL)
   PHP_FE (guestfs_cat, NULL)
   PHP_FE (guestfs_checksum, NULL)
@@ -149,6 +150,7 @@ static function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_get_memsize, NULL)
   PHP_FE (guestfs_get_network, NULL)
   PHP_FE (guestfs_get_path, NULL)
+  PHP_FE (guestfs_get_pgroup, NULL)
   PHP_FE (guestfs_get_pid, NULL)
   PHP_FE (guestfs_get_qemu, NULL)
   PHP_FE (guestfs_get_recovery_proc, NULL)
@@ -181,6 +183,7 @@ static function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_inspect_get_filesystems, NULL)
   PHP_FE (guestfs_inspect_get_format, NULL)
   PHP_FE (guestfs_inspect_get_hostname, NULL)
+  PHP_FE (guestfs_inspect_get_icon, NULL)
   PHP_FE (guestfs_inspect_get_major_version, NULL)
   PHP_FE (guestfs_inspect_get_minor_version, NULL)
   PHP_FE (guestfs_inspect_get_mountpoints, NULL)
@@ -210,12 +213,16 @@ static function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_is_ready, NULL)
   PHP_FE (guestfs_is_socket, NULL)
   PHP_FE (guestfs_is_symlink, NULL)
+  PHP_FE (guestfs_is_zero, NULL)
+  PHP_FE (guestfs_is_zero_device, NULL)
   PHP_FE (guestfs_kill_subprocess, NULL)
   PHP_FE (guestfs_launch, NULL)
   PHP_FE (guestfs_lchown, NULL)
   PHP_FE (guestfs_lgetxattr, NULL)
   PHP_FE (guestfs_lgetxattrs, NULL)
+  PHP_FE (guestfs_list_9p, NULL)
   PHP_FE (guestfs_list_devices, NULL)
+  PHP_FE (guestfs_list_dm_devices, NULL)
   PHP_FE (guestfs_list_filesystems, NULL)
   PHP_FE (guestfs_list_partitions, NULL)
   PHP_FE (guestfs_ll, NULL)
@@ -272,6 +279,7 @@ static function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_mkswap_file, NULL)
   PHP_FE (guestfs_modprobe, NULL)
   PHP_FE (guestfs_mount, NULL)
+  PHP_FE (guestfs_mount_9p, NULL)
   PHP_FE (guestfs_mount_loop, NULL)
   PHP_FE (guestfs_mount_options, NULL)
   PHP_FE (guestfs_mount_ro, NULL)
@@ -281,6 +289,7 @@ static function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_mv, NULL)
   PHP_FE (guestfs_ntfs_3g_probe, NULL)
   PHP_FE (guestfs_ntfsresize, NULL)
+  PHP_FE (guestfs_ntfsresize_opts, NULL)
   PHP_FE (guestfs_ntfsresize_size, NULL)
   PHP_FE (guestfs_part_add, NULL)
   PHP_FE (guestfs_part_del, NULL)
@@ -332,6 +341,7 @@ static function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_set_memsize, NULL)
   PHP_FE (guestfs_set_network, NULL)
   PHP_FE (guestfs_set_path, NULL)
+  PHP_FE (guestfs_set_pgroup, NULL)
   PHP_FE (guestfs_set_qemu, NULL)
   PHP_FE (guestfs_set_recovery_proc, NULL)
   PHP_FE (guestfs_set_selinux, NULL)
@@ -420,6 +430,7 @@ static function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_wc_l, NULL)
   PHP_FE (guestfs_wc_w, NULL)
   PHP_FE (guestfs_write, NULL)
+  PHP_FE (guestfs_write_append, NULL)
   PHP_FE (guestfs_write_file, NULL)
   PHP_FE (guestfs_zegrep, NULL)
   PHP_FE (guestfs_zegrepi, NULL)
@@ -538,9 +549,10 @@ PHP_FUNCTION (guestfs_add_domain)
   char *optargs_t_iface = NULL;
   int optargs_t_iface_size = -1;
   zend_bool optargs_t_live = -1;
+  zend_bool optargs_t_allowuuid = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|sbsb",
-        &z_g, &dom, &dom_size, &optargs_t_libvirturi, &optargs_t_libvirturi_size, &optargs_t_readonly, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_live) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|sbsbb",
+        &z_g, &dom, &dom_size, &optargs_t_libvirturi, &optargs_t_libvirturi_size, &optargs_t_readonly, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_live, &optargs_t_allowuuid) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -570,6 +582,10 @@ PHP_FUNCTION (guestfs_add_domain)
   if (optargs_t_live != ((zend_bool)-1)) {
     optargs_s.live = optargs_t_live;
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_LIVE_BITMASK;
+  }
+  if (optargs_t_allowuuid != ((zend_bool)-1)) {
+    optargs_s.allowuuid = optargs_t_allowuuid;
+    optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_ALLOWUUID_BITMASK;
   }
 
   int r;
@@ -1776,6 +1792,47 @@ PHP_FUNCTION (guestfs_blockdev_setrw)
 
   int r;
   r = guestfs_blockdev_setrw (g, device);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_btrfs_filesystem_resize)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *mountpoint;
+  int mountpoint_size;
+  struct guestfs_btrfs_filesystem_resize_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_filesystem_resize_argv *optargs = &optargs_s;
+  long optargs_t_size = -1;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|l",
+        &z_g, &mountpoint, &mountpoint_size, &optargs_t_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (mountpoint) != mountpoint_size) {
+    fprintf (stderr, "libguestfs: btrfs_filesystem_resize: parameter 'mountpoint' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (optargs_t_size != -1) {
+    optargs_s.size = optargs_t_size;
+    optargs_s.bitmask |= GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK;
+  }
+
+  int r;
+  r = guestfs_btrfs_filesystem_resize_argv (g, mountpoint, optargs);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -3783,6 +3840,32 @@ PHP_FUNCTION (guestfs_get_path)
   RETURN_STRING (r, 1);
 }
 
+PHP_FUNCTION (guestfs_get_pgroup)
+{
+  zval *z_g;
+  guestfs_h *g;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "r",
+        &z_g) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_get_pgroup (g);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_BOOL (r);
+}
+
 PHP_FUNCTION (guestfs_get_pid)
 {
   zval *z_g;
@@ -4875,6 +4958,55 @@ PHP_FUNCTION (guestfs_inspect_get_hostname)
   RETURN_STRING (r_copy, 0);
 }
 
+PHP_FUNCTION (guestfs_inspect_get_icon)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *root;
+  int root_size;
+  struct guestfs_inspect_get_icon_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_inspect_get_icon_argv *optargs = &optargs_s;
+  zend_bool optargs_t_favicon = -1;
+  zend_bool optargs_t_highquality = -1;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|bb",
+        &z_g, &root, &root_size, &optargs_t_favicon, &optargs_t_highquality) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (root) != root_size) {
+    fprintf (stderr, "libguestfs: inspect_get_icon: parameter 'root' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (optargs_t_favicon != ((zend_bool)-1)) {
+    optargs_s.favicon = optargs_t_favicon;
+    optargs_s.bitmask |= GUESTFS_INSPECT_GET_ICON_FAVICON_BITMASK;
+  }
+  if (optargs_t_highquality != ((zend_bool)-1)) {
+    optargs_s.highquality = optargs_t_highquality;
+    optargs_s.bitmask |= GUESTFS_INSPECT_GET_ICON_HIGHQUALITY_BITMASK;
+  }
+
+  char *r;
+  size_t size;
+  r = guestfs_inspect_get_icon_argv (g, root, &size, optargs);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  char *r_copy = estrndup (r, size);
+  free (r);
+  RETURN_STRING (r_copy, 0);
+}
+
 PHP_FUNCTION (guestfs_inspect_get_major_version)
 {
   zval *z_g;
@@ -5836,6 +5968,72 @@ PHP_FUNCTION (guestfs_is_symlink)
   RETURN_BOOL (r);
 }
 
+PHP_FUNCTION (guestfs_is_zero)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *path;
+  int path_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &path, &path_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (path) != path_size) {
+    fprintf (stderr, "libguestfs: is_zero: parameter 'path' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_is_zero (g, path);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_BOOL (r);
+}
+
+PHP_FUNCTION (guestfs_is_zero_device)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  int device_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &device, &device_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: is_zero_device: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_is_zero_device (g, device);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_BOOL (r);
+}
+
 PHP_FUNCTION (guestfs_kill_subprocess)
 {
   zval *z_g;
@@ -6009,6 +6207,38 @@ PHP_FUNCTION (guestfs_lgetxattrs)
   guestfs_free_xattr_list (r);
 }
 
+PHP_FUNCTION (guestfs_list_9p)
+{
+  zval *z_g;
+  guestfs_h *g;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "r",
+        &z_g) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  char **r;
+  r = guestfs_list_9p (g);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  size_t c = 0;
+  array_init (return_value);
+  for (c = 0; r[c] != NULL; ++c) {
+    add_next_index_string (return_value, r[c], 1);
+    free (r[c]);
+  }
+  free (r);
+}
+
 PHP_FUNCTION (guestfs_list_devices)
 {
   zval *z_g;
@@ -6027,6 +6257,38 @@ PHP_FUNCTION (guestfs_list_devices)
 
   char **r;
   r = guestfs_list_devices (g);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  size_t c = 0;
+  array_init (return_value);
+  for (c = 0; r[c] != NULL; ++c) {
+    add_next_index_string (return_value, r[c], 1);
+    free (r[c]);
+  }
+  free (r);
+}
+
+PHP_FUNCTION (guestfs_list_dm_devices)
+{
+  zval *z_g;
+  guestfs_h *g;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "r",
+        &z_g) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  char **r;
+  r = guestfs_list_dm_devices (g);
 
   if (r == NULL) {
     RETURN_FALSE;
@@ -7908,9 +8170,11 @@ PHP_FUNCTION (guestfs_mkfs_opts)
   long optargs_t_blocksize = -1;
   char *optargs_t_features = NULL;
   int optargs_t_features_size = -1;
+  long optargs_t_inode = -1;
+  long optargs_t_sectorsize = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss|ls",
-        &z_g, &fstype, &fstype_size, &device, &device_size, &optargs_t_blocksize, &optargs_t_features, &optargs_t_features_size) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss|lsll",
+        &z_g, &fstype, &fstype_size, &device, &device_size, &optargs_t_blocksize, &optargs_t_features, &optargs_t_features_size, &optargs_t_inode, &optargs_t_sectorsize) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -7937,6 +8201,14 @@ PHP_FUNCTION (guestfs_mkfs_opts)
   if (optargs_t_features != NULL) {
     optargs_s.features = optargs_t_features;
     optargs_s.bitmask |= GUESTFS_MKFS_OPTS_FEATURES_BITMASK;
+  }
+  if (optargs_t_inode != -1) {
+    optargs_s.inode = optargs_t_inode;
+    optargs_s.bitmask |= GUESTFS_MKFS_OPTS_INODE_BITMASK;
+  }
+  if (optargs_t_sectorsize != -1) {
+    optargs_s.sectorsize = optargs_t_sectorsize;
+    optargs_s.bitmask |= GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK;
   }
 
   int r;
@@ -8309,6 +8581,55 @@ PHP_FUNCTION (guestfs_mount)
   RETURN_TRUE;
 }
 
+PHP_FUNCTION (guestfs_mount_9p)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *mounttag;
+  int mounttag_size;
+  char *mountpoint;
+  int mountpoint_size;
+  struct guestfs_mount_9p_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mount_9p_argv *optargs = &optargs_s;
+  char *optargs_t_options = NULL;
+  int optargs_t_options_size = -1;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss|s",
+        &z_g, &mounttag, &mounttag_size, &mountpoint, &mountpoint_size, &optargs_t_options, &optargs_t_options_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (mounttag) != mounttag_size) {
+    fprintf (stderr, "libguestfs: mount_9p: parameter 'mounttag' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (strlen (mountpoint) != mountpoint_size) {
+    fprintf (stderr, "libguestfs: mount_9p: parameter 'mountpoint' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (optargs_t_options != NULL) {
+    optargs_s.options = optargs_t_options;
+    optargs_s.bitmask |= GUESTFS_MOUNT_9P_OPTIONS_BITMASK;
+  }
+
+  int r;
+  r = guestfs_mount_9p_argv (g, mounttag, mountpoint, optargs);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
 PHP_FUNCTION (guestfs_mount_loop)
 {
   zval *z_g;
@@ -8654,6 +8975,52 @@ PHP_FUNCTION (guestfs_ntfsresize)
 
   int r;
   r = guestfs_ntfsresize (g, device);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_ntfsresize_opts)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  int device_size;
+  struct guestfs_ntfsresize_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_ntfsresize_opts_argv *optargs = &optargs_s;
+  long optargs_t_size = -1;
+  zend_bool optargs_t_force = -1;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|lb",
+        &z_g, &device, &device_size, &optargs_t_size, &optargs_t_force) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: ntfsresize_opts: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (optargs_t_size != -1) {
+    optargs_s.size = optargs_t_size;
+    optargs_s.bitmask |= GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK;
+  }
+  if (optargs_t_force != ((zend_bool)-1)) {
+    optargs_s.force = optargs_t_force;
+    optargs_s.bitmask |= GUESTFS_NTFSRESIZE_OPTS_FORCE_BITMASK;
+  }
+
+  int r;
+  r = guestfs_ntfsresize_opts_argv (g, device, optargs);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -10478,6 +10845,33 @@ PHP_FUNCTION (guestfs_set_path)
 
   int r;
   r = guestfs_set_path (g, searchpath);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_set_pgroup)
+{
+  zval *z_g;
+  guestfs_h *g;
+  zend_bool pgroup;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rb",
+        &z_g, &pgroup) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_set_pgroup (g, pgroup);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -13738,6 +14132,41 @@ PHP_FUNCTION (guestfs_write)
 
   int r;
   r = guestfs_write (g, path, content, content_size);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_write_append)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *path;
+  int path_size;
+  char *content;
+  int content_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss",
+        &z_g, &path, &path_size, &content, &content_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (path) != path_size) {
+    fprintf (stderr, "libguestfs: write_append: parameter 'path' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_write_append (g, path, content, content_size);
 
   if (r == -1) {
     RETURN_FALSE;

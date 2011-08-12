@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head1 名前
 
@@ -696,7 +697,7 @@ looking for help to complete this binding.
 =item B<Java>
 
 Full documentation is contained in the Javadoc which is distributed with
-libguestfs.
+libguestfs.  For examples, see L<guestfs-java(3)>.
 
 =item B<OCaml>
 
@@ -1396,8 +1397,8 @@ Returns the current error handler callback.
 =head2 guestfs_set_out_of_memory_handler
 
  typedef void (*guestfs_abort_cb) (void);
- void guestfs_set_out_of_memory_handler (guestfs_h *g,
-                                         guestfs_abort_cb);
+ int guestfs_set_out_of_memory_handler (guestfs_h *g,
+                                        guestfs_abort_cb);
 
 The callback C<cb> will be called if there is an out of memory situation.
 I<Note this callback must not return>.
@@ -1608,7 +1609,7 @@ functions C<guestfs_set_log_message_callback>,
 C<guestfs_set_subprocess_quit_callback>,
 C<guestfs_set_launch_done_callback>, C<guestfs_set_close_callback> and
 C<guestfs_set_progress_callback> are no longer documented in this manual
-page.
+page.  Because of the ABI guarantee, the old functions continue to work.
 
 Handles generate events when certain things happen, such as log messages
 being generated, progress messages during long-running operations, or the
@@ -1868,6 +1869,42 @@ example, messages are directed to syslog:
    if (buf_len > 0)
      syslog (priority, "event 0x%lx: %s", event, buf);
  }
+
+=head1 CANCELLING LONG TRANSFERS
+
+Some operations can be cancelled by the caller while they are in progress.
+Currently only operations that involve uploading or downloading data can be
+cancelled (technically: operations that have C<FileIn> or C<FileOut>
+parameters in the generator).
+
+=head2 guestfs_user_cancel
+
+ void guestfs_user_cancel (guestfs_h *g);
+
+C<guestfs_user_cancel> cancels the current upload or download operation.
+
+Unlike most other libguestfs calls, this function is signal safe and thread
+safe.  You can call it from a signal handler or from another thread, without
+needing to do any locking.
+
+The transfer that was in progress (if there is one) will stop shortly
+afterwards, and will return an error.  The errno (see
+L</guestfs_last_errno>) is set to C<EINTR>, so you can test for this to find
+out if the operation was cancelled or failed because of another error.
+
+No cleanup is performed: for example, if a file was being uploaded then
+after cancellation there may be a partially uploaded file.  It is the
+caller's responsibility to clean up if necessary.
+
+There are two common places that you might call C<guestfs_user_cancel>.
+
+In an interactive text-based program, you might call it from a C<SIGINT>
+signal handler so that pressing C<^C> cancels the current operation.  (You
+also need to call L</guestfs_set_pgroup> so that child processes don't
+receive the C<^C> signal).
+
+In a graphical program, when the main thread is displaying a progress bar
+with a cancel button, wire up the cancel button to call this function.
 
 =head1 PRIVATE DATA AREA
 
@@ -2578,6 +2615,10 @@ actions.
 
 L<virt-df(1)> command and documentation.
 
+=item C<edit>
+
+L<virt-edit(1)> command and documentation.
+
 =item C<examples>
 
 C API example code.
@@ -2663,6 +2704,60 @@ with libguestfs.
 =item C<ruby>
 
 Language bindings.
+
+=back
+
+=head2 MAKING A STABLE RELEASE
+
+When we make a stable release, there are several steps documented here.  See
+L</LIBGUESTFS VERSION NUMBERS> for general information about the stable
+branch policy.
+
+=over 4
+
+=item *
+
+Check C<make && make check> works on at least Fedora, Debian and Ubuntu.
+
+=item *
+
+Finalize RELEASE-NOTES.
+
+=item *
+
+Update ROADMAP.
+
+=item *
+
+Run C<src/api-support/update-from-tarballs.sh>.
+
+=item *
+
+Push and pull from Transifex.
+
+Run:
+
+ tx push -s
+
+to push the latest POT files to Transifex.  Then run:
+
+ ./tx-pull.sh
+
+which is a wrapper to pull the latest translated C<*.po> files.
+
+=item *
+
+Create new stable and development directories under
+L<http://libguestfs.org/download>.
+
+=item *
+
+Create the branch in git:
+
+ git tag -a 1.XX.0 -m "Version 1.XX.0 (stable)"
+ git tag -a 1.YY.0 -m "Version 1.YY.0 (development)"
+ git branch stable-1.XX
+ git push origin tag 1.XX.0 1.YY.0 stable-1.XX
 
 =back
 
@@ -2812,14 +2907,15 @@ use in case C</var/tmp> is not large enough.
 
 =head1 SEE ALSO
 
-L<guestfs-examples(3)>, L<guestfs-ocaml(3)>, L<guestfs-perl(3)>,
-L<guestfs-python(3)>, L<guestfs-ruby(3)>, L<guestfish(1)>, L<guestmount(1)>,
-L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-df(1)>,
-L<virt-edit(1)>, L<virt-filesystems(1)>, L<virt-inspector(1)>,
-L<virt-list-filesystems(1)>, L<virt-list-partitions(1)>, L<virt-ls(1)>,
-L<virt-make-fs(1)>, L<virt-rescue(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>,
-L<virt-tar-out(1)>, L<virt-win-reg(1)>, L<qemu(1)>, L<febootstrap(1)>,
-L<hivex(3)>, L<http://libguestfs.org/>.
+L<guestfs-examples(3)>, L<guestfs-java(3)>, L<guestfs-ocaml(3)>,
+L<guestfs-perl(3)>, L<guestfs-python(3)>, L<guestfs-ruby(3)>,
+L<guestfish(1)>, L<guestmount(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>,
+L<virt-copy-out(1)>, L<virt-df(1)>, L<virt-edit(1)>, L<virt-filesystems(1)>,
+L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
+L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
+L<virt-rescue(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
+L<virt-win-reg(1)>, L<qemu(1)>, L<febootstrap(1)>, L<hivex(3)>,
+L<http://libguestfs.org/>.
 
 Tools with a similar purpose: L<fdisk(8)>, L<parted(8)>, L<kpartx(8)>,
 L<lvm(8)>, L<disktype(1)>.

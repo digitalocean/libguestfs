@@ -8927,8 +8927,10 @@ static void mkfs_opts_stub (XDR *xdr_in)
   int r;
   struct guestfs_mkfs_opts_args args;
   int blocksize;
+  int inode;
+  int sectorsize;
 
-  if (optargs_bitmask & UINT64_C(0xfffffffffffffffc)) {
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffff0)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done;
   }
@@ -8944,8 +8946,10 @@ static void mkfs_opts_stub (XDR *xdr_in)
   RESOLVE_DEVICE (device, , goto done);
   blocksize = args.blocksize;
   char *features = args.features;
+  inode = args.inode;
+  sectorsize = args.sectorsize;
 
-  r = do_mkfs_opts (fstype, device, blocksize, features);
+  r = do_mkfs_opts (fstype, device, blocksize, features, inode, sectorsize);
   if (r == -1)
     /* do_mkfs_opts has already called reply_with_error */
     goto done;
@@ -9082,6 +9086,250 @@ static void internal_autosync_stub (XDR *xdr_in)
 
   reply (NULL, NULL);
 done:
+  return;
+}
+
+static void is_zero_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_is_zero_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_is_zero_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_is_zero (path);
+  if (r == -1)
+    /* do_is_zero has already called reply_with_error */
+    goto done;
+
+  struct guestfs_is_zero_ret ret;
+  ret.zeroflag = r;
+  reply ((xdrproc_t) &xdr_guestfs_is_zero_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_is_zero_args, (char *) &args);
+  return;
+}
+
+static void is_zero_device_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_is_zero_device_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_is_zero_device_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+
+  r = do_is_zero_device (device);
+  if (r == -1)
+    /* do_is_zero_device has already called reply_with_error */
+    goto done;
+
+  struct guestfs_is_zero_device_ret ret;
+  ret.zeroflag = r;
+  reply ((xdrproc_t) &xdr_guestfs_is_zero_device_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_is_zero_device_args, (char *) &args);
+  return;
+}
+
+static void list_9p_stub (XDR *xdr_in)
+{
+  char **r;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
+  r = do_list_9p ();
+  if (r == NULL)
+    /* do_list_9p has already called reply_with_error */
+    goto done;
+
+  struct guestfs_list_9p_ret ret;
+  ret.mounttags.mounttags_len = count_strings (r);
+  ret.mounttags.mounttags_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_list_9p_ret, (char *) &ret);
+  free_strings (r);
+done:
+  return;
+}
+
+static void mount_9p_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_mount_9p_args args;
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_mount_9p_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *mounttag = args.mounttag;
+  char *mountpoint = args.mountpoint;
+  char *options = args.options;
+
+  r = do_mount_9p (mounttag, mountpoint, options);
+  if (r == -1)
+    /* do_mount_9p has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_mount_9p_args, (char *) &args);
+  return;
+}
+
+static void list_dm_devices_stub (XDR *xdr_in)
+{
+  char **r;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
+  r = do_list_dm_devices ();
+  if (r == NULL)
+    /* do_list_dm_devices has already called reply_with_error */
+    goto done;
+
+  struct guestfs_list_dm_devices_ret ret;
+  ret.devices.devices_len = count_strings (r);
+  ret.devices.devices_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_list_dm_devices_ret, (char *) &ret);
+  free_strings (r);
+done:
+  return;
+}
+
+static void ntfsresize_opts_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_ntfsresize_opts_args args;
+  int64_t size;
+  int force;
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffc)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_ntfsresize_opts_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  size = args.size;
+  force = args.force;
+
+  r = do_ntfsresize_opts (device, size, force);
+  if (r == -1)
+    /* do_ntfsresize_opts has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_ntfsresize_opts_args, (char *) &args);
+  return;
+}
+
+static void btrfs_filesystem_resize_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_btrfs_filesystem_resize_args args;
+  int64_t size;
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_btrfs_filesystem_resize_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *mountpoint = args.mountpoint;
+  ABS_PATH (mountpoint, , goto done);
+  size = args.size;
+
+  NEED_ROOT (, goto done);
+  r = do_btrfs_filesystem_resize (mountpoint, size);
+  if (r == -1)
+    /* do_btrfs_filesystem_resize has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_btrfs_filesystem_resize_args, (char *) &args);
+  return;
+}
+
+static void write_append_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_write_append_args args;
+  const char *content;
+  size_t content_size;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_write_append_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *path = args.path;
+  ABS_PATH (path, , goto done);
+  content = args.content.content_val;
+  content_size = args.content.content_len;
+
+  NEED_ROOT (, goto done);
+  r = do_write_append (path, content, content_size);
+  if (r == -1)
+    /* do_write_append has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_write_append_args, (char *) &args);
   return;
 }
 
@@ -9933,6 +10181,30 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_INTERNAL_AUTOSYNC:
       internal_autosync_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_IS_ZERO:
+      is_zero_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_IS_ZERO_DEVICE:
+      is_zero_device_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LIST_9P:
+      list_9p_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_MOUNT_9P:
+      mount_9p_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LIST_DM_DEVICES:
+      list_dm_devices_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_NTFSRESIZE_OPTS:
+      ntfsresize_opts_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BTRFS_FILESYSTEM_RESIZE:
+      btrfs_filesystem_resize_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_WRITE_APPEND:
+      write_append_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

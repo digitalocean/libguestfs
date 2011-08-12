@@ -18,6 +18,11 @@ L</guestfs_aug_rm>
 L</guestfs_aug_save>
 L</guestfs_aug_set>
 
+=item B<btrfs>
+
+The following functions:
+L</guestfs_btrfs_filesystem_resize>
+
 =item B<inotify>
 
 The following functions:
@@ -108,6 +113,7 @@ L</guestfs_ntfs_3g_probe>
 
 The following functions:
 L</guestfs_ntfsresize>
+L</guestfs_ntfsresize_opts>
 L</guestfs_ntfsresize_size>
 
 =item B<realpath>

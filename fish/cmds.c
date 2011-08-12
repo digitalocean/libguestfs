@@ -22,6 +22,9 @@
 
 #include <config.h>
 
+/* It is safe to call deprecated functions from this file. */
+#undef GUESTFS_WARN_DEPRECATED
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -104,6 +107,9 @@ static int run_get_attach_method (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_product_variant (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_windows_current_control_set (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_drive_mappings (const char *cmd, size_t argc, char *argv[]);
+static int run_inspect_get_icon (const char *cmd, size_t argc, char *argv[]);
+static int run_set_pgroup (const char *cmd, size_t argc, char *argv[]);
+static int run_get_pgroup (const char *cmd, size_t argc, char *argv[]);
 static int run_mount (const char *cmd, size_t argc, char *argv[]);
 static int run_sync (const char *cmd, size_t argc, char *argv[]);
 static int run_touch (const char *cmd, size_t argc, char *argv[]);
@@ -385,6 +391,14 @@ static int run_mkfs_opts (const char *cmd, size_t argc, char *argv[]);
 static int run_getxattr (const char *cmd, size_t argc, char *argv[]);
 static int run_lgetxattr (const char *cmd, size_t argc, char *argv[]);
 static int run_resize2fs_M (const char *cmd, size_t argc, char *argv[]);
+static int run_is_zero (const char *cmd, size_t argc, char *argv[]);
+static int run_is_zero_device (const char *cmd, size_t argc, char *argv[]);
+static int run_list_9p (const char *cmd, size_t argc, char *argv[]);
+static int run_mount_9p (const char *cmd, size_t argc, char *argv[]);
+static int run_list_dm_devices (const char *cmd, size_t argc, char *argv[]);
+static int run_ntfsresize_opts (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_filesystem_resize (const char *cmd, size_t argc, char *argv[]);
+static int run_write_append (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -402,6 +416,12 @@ struct command_entry copy_out_cmd_entry = {
   .name = "copy-out",
   .help = "NAME\n    copy-out - copy remote files or directories out of an image\n\nDESCRIPTION\n     copy-out remote [remote ...] localdir\n\n    \"copy-out\" copies remote files or directories recursively out of the\n    disk image, placing them on the host disk in a local directory called\n    \"localdir\" (which must exist). This guestfish meta-command turns into a\n    sequence of \"download\", \"tar-out\" and other commands as necessary.\n\n    Multiple remote files and directories can be specified, but the last\n    parameter must always be a local directory. To download to the current\n    directory, use \".\" as in:\n\n     copy-out /home .\n\n    Wildcards cannot be used in the ordinary command, but you can use them\n    with the help of \"glob\" like this:\n\n     glob copy-out /home/* .\n\n",
   .run = run_copy_out
+};
+
+struct command_entry display_cmd_entry = {
+  .name = "display",
+  .help = "NAME\n    display - display an image\n\nDESCRIPTION\n     display filename\n\n    Use \"display\" (a graphical display program) to display an image file. It\n    downloads the file, and runs \"display\" on it.\n\n    To use an alternative program, set the \"GUESTFISH_DISPLAY_IMAGE\"\n    environment variable. For example to use the GNOME display program:\n\n     export GUESTFISH_DISPLAY_IMAGE=eog\n\n    See also display(1).\n\n",
+  .run = run_display
 };
 
 struct command_entry echo_cmd_entry = {
@@ -694,49 +714,49 @@ struct command_entry inspect_os_cmd_entry = {
 
 struct command_entry inspect_get_type_cmd_entry = {
   .name = "inspect-get-type",
-  .help = "NAME\n    inspect-get-type - get type of inspected operating system\n\nSYNOPSIS\n     inspect-get-type root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    This returns the type of the inspected operating system. Currently\n    defined types are:\n\n    \"linux\"\n        Any Linux-based operating system.\n\n    \"windows\"\n        Any Microsoft Windows operating system.\n\n    \"freebsd\"\n        FreeBSD.\n\n    \"unknown\"\n        The operating system type could not be determined.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-type - get type of inspected operating system\n\nSYNOPSIS\n     inspect-get-type root\n\nDESCRIPTION\n    This returns the type of the inspected operating system. Currently\n    defined types are:\n\n    \"linux\"\n        Any Linux-based operating system.\n\n    \"windows\"\n        Any Microsoft Windows operating system.\n\n    \"freebsd\"\n        FreeBSD.\n\n    \"unknown\"\n        The operating system type could not be determined.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_type
 };
 
 struct command_entry inspect_get_arch_cmd_entry = {
   .name = "inspect-get-arch",
-  .help = "NAME\n    inspect-get-arch - get architecture of inspected operating system\n\nSYNOPSIS\n     inspect-get-arch root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    This returns the architecture of the inspected operating system. The\n    possible return values are listed under \"file_architecture\".\n\n    If the architecture could not be determined, then the string \"unknown\"\n    is returned.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-arch - get architecture of inspected operating system\n\nSYNOPSIS\n     inspect-get-arch root\n\nDESCRIPTION\n    This returns the architecture of the inspected operating system. The\n    possible return values are listed under \"file_architecture\".\n\n    If the architecture could not be determined, then the string \"unknown\"\n    is returned.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_arch
 };
 
 struct command_entry inspect_get_distro_cmd_entry = {
   .name = "inspect-get-distro",
-  .help = "NAME\n    inspect-get-distro - get distro of inspected operating system\n\nSYNOPSIS\n     inspect-get-distro root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    This returns the distro (distribution) of the inspected operating\n    system.\n\n    Currently defined distros are:\n\n    \"archlinux\"\n        Arch Linux.\n\n    \"centos\"\n        CentOS.\n\n    \"debian\"\n        Debian.\n\n    \"fedora\"\n        Fedora.\n\n    \"gentoo\"\n        Gentoo.\n\n    \"linuxmint\"\n        Linux Mint.\n\n    \"mandriva\"\n        Mandriva.\n\n    \"meego\"\n        MeeGo.\n\n    \"pardus\"\n        Pardus.\n\n    \"redhat-based\"\n        Some Red Hat-derived distro.\n\n    \"rhel\"\n        Red Hat Enterprise Linux.\n\n    \"scientificlinux\"\n        Scientific Linux.\n\n    \"slackware\"\n        Slackware.\n\n    \"ubuntu\"\n        Ubuntu.\n\n    \"unknown\"\n        The distro could not be determined.\n\n    \"windows\"\n        Windows does not have distributions. This string is returned if the\n        OS type is Windows.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-distro - get distro of inspected operating system\n\nSYNOPSIS\n     inspect-get-distro root\n\nDESCRIPTION\n    This returns the distro (distribution) of the inspected operating\n    system.\n\n    Currently defined distros are:\n\n    \"archlinux\"\n        Arch Linux.\n\n    \"centos\"\n        CentOS.\n\n    \"debian\"\n        Debian.\n\n    \"fedora\"\n        Fedora.\n\n    \"gentoo\"\n        Gentoo.\n\n    \"linuxmint\"\n        Linux Mint.\n\n    \"mandriva\"\n        Mandriva.\n\n    \"meego\"\n        MeeGo.\n\n    \"pardus\"\n        Pardus.\n\n    \"redhat-based\"\n        Some Red Hat-derived distro.\n\n    \"rhel\"\n        Red Hat Enterprise Linux.\n\n    \"scientificlinux\"\n        Scientific Linux.\n\n    \"slackware\"\n        Slackware.\n\n    \"ubuntu\"\n        Ubuntu.\n\n    \"unknown\"\n        The distro could not be determined.\n\n    \"windows\"\n        Windows does not have distributions. This string is returned if the\n        OS type is Windows.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_distro
 };
 
 struct command_entry inspect_get_major_version_cmd_entry = {
   .name = "inspect-get-major-version",
-  .help = "NAME\n    inspect-get-major-version - get major version of inspected operating\n    system\n\nSYNOPSIS\n     inspect-get-major-version root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    This returns the major version number of the inspected operating system.\n\n    Windows uses a consistent versioning scheme which is *not* reflected in\n    the popular public names used by the operating system. Notably the\n    operating system known as \"Windows 7\" is really version 6.1 (ie. major =\n    6, minor = 1). You can find out the real versions corresponding to\n    releases of Windows by consulting Wikipedia or MSDN.\n\n    If the version could not be determined, then 0 is returned.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-major-version - get major version of inspected operating\n    system\n\nSYNOPSIS\n     inspect-get-major-version root\n\nDESCRIPTION\n    This returns the major version number of the inspected operating system.\n\n    Windows uses a consistent versioning scheme which is *not* reflected in\n    the popular public names used by the operating system. Notably the\n    operating system known as \"Windows 7\" is really version 6.1 (ie. major =\n    6, minor = 1). You can find out the real versions corresponding to\n    releases of Windows by consulting Wikipedia or MSDN.\n\n    If the version could not be determined, then 0 is returned.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_major_version
 };
 
 struct command_entry inspect_get_minor_version_cmd_entry = {
   .name = "inspect-get-minor-version",
-  .help = "NAME\n    inspect-get-minor-version - get minor version of inspected operating\n    system\n\nSYNOPSIS\n     inspect-get-minor-version root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    This returns the minor version number of the inspected operating system.\n\n    If the version could not be determined, then 0 is returned.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details. See also\n    \"inspect_get_major_version\".\n\n",
+  .help = "NAME\n    inspect-get-minor-version - get minor version of inspected operating\n    system\n\nSYNOPSIS\n     inspect-get-minor-version root\n\nDESCRIPTION\n    This returns the minor version number of the inspected operating system.\n\n    If the version could not be determined, then 0 is returned.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details. See also\n    \"inspect_get_major_version\".\n\n",
   .run = run_inspect_get_minor_version
 };
 
 struct command_entry inspect_get_product_name_cmd_entry = {
   .name = "inspect-get-product-name",
-  .help = "NAME\n    inspect-get-product-name - get product name of inspected operating\n    system\n\nSYNOPSIS\n     inspect-get-product-name root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    This returns the product name of the inspected operating system. The\n    product name is generally some freeform string which can be displayed to\n    the user, but should not be parsed by programs.\n\n    If the product name could not be determined, then the string \"unknown\"\n    is returned.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-product-name - get product name of inspected operating\n    system\n\nSYNOPSIS\n     inspect-get-product-name root\n\nDESCRIPTION\n    This returns the product name of the inspected operating system. The\n    product name is generally some freeform string which can be displayed to\n    the user, but should not be parsed by programs.\n\n    If the product name could not be determined, then the string \"unknown\"\n    is returned.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_product_name
 };
 
 struct command_entry inspect_get_mountpoints_cmd_entry = {
   .name = "inspect-get-mountpoints",
-  .help = "NAME\n    inspect-get-mountpoints - get mountpoints of inspected operating system\n\nSYNOPSIS\n     inspect-get-mountpoints root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    This returns a hash of where we think the filesystems associated with\n    this operating system should be mounted. Callers should note that this\n    is at best an educated guess made by reading configuration files such as\n    \"/etc/fstab\". *In particular note* that this may return filesystems\n    which are non-existent or not mountable and callers should be prepared\n    to handle or ignore failures if they try to mount them.\n\n    Each element in the returned hashtable has a key which is the path of\n    the mountpoint (eg. \"/boot\") and a value which is the filesystem that\n    would be mounted there (eg. \"/dev/sda1\").\n\n    Non-mounted devices such as swap devices are *not* returned in this\n    list.\n\n    For operating systems like Windows which still use drive letters, this\n    call will only return an entry for the first drive \"mounted on\" \"/\". For\n    information about the mapping of drive letters to partitions, see\n    \"inspect_get_drive_mappings\".\n\n    Please read \"INSPECTION\" in guestfs(3) for more details. See also\n    \"inspect_get_filesystems\".\n\n",
+  .help = "NAME\n    inspect-get-mountpoints - get mountpoints of inspected operating system\n\nSYNOPSIS\n     inspect-get-mountpoints root\n\nDESCRIPTION\n    This returns a hash of where we think the filesystems associated with\n    this operating system should be mounted. Callers should note that this\n    is at best an educated guess made by reading configuration files such as\n    \"/etc/fstab\". *In particular note* that this may return filesystems\n    which are non-existent or not mountable and callers should be prepared\n    to handle or ignore failures if they try to mount them.\n\n    Each element in the returned hashtable has a key which is the path of\n    the mountpoint (eg. \"/boot\") and a value which is the filesystem that\n    would be mounted there (eg. \"/dev/sda1\").\n\n    Non-mounted devices such as swap devices are *not* returned in this\n    list.\n\n    For operating systems like Windows which still use drive letters, this\n    call will only return an entry for the first drive \"mounted on\" \"/\". For\n    information about the mapping of drive letters to partitions, see\n    \"inspect_get_drive_mappings\".\n\n    Please read \"INSPECTION\" in guestfs(3) for more details. See also\n    \"inspect_get_filesystems\".\n\n",
   .run = run_inspect_get_mountpoints
 };
 
 struct command_entry inspect_get_filesystems_cmd_entry = {
   .name = "inspect-get-filesystems",
-  .help = "NAME\n    inspect-get-filesystems - get filesystems associated with inspected\n    operating system\n\nSYNOPSIS\n     inspect-get-filesystems root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    This returns a list of all the filesystems that we think are associated\n    with this operating system. This includes the root filesystem, other\n    ordinary filesystems, and non-mounted devices like swap partitions.\n\n    In the case of a multi-boot virtual machine, it is possible for a\n    filesystem to be shared between operating systems.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details. See also\n    \"inspect_get_mountpoints\".\n\n",
+  .help = "NAME\n    inspect-get-filesystems - get filesystems associated with inspected\n    operating system\n\nSYNOPSIS\n     inspect-get-filesystems root\n\nDESCRIPTION\n    This returns a list of all the filesystems that we think are associated\n    with this operating system. This includes the root filesystem, other\n    ordinary filesystems, and non-mounted devices like swap partitions.\n\n    In the case of a multi-boot virtual machine, it is possible for a\n    filesystem to be shared between operating systems.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details. See also\n    \"inspect_get_mountpoints\".\n\n",
   .run = run_inspect_get_filesystems
 };
 
@@ -766,7 +786,7 @@ struct command_entry add_drive_opts_cmd_entry = {
 
 struct command_entry inspect_get_windows_systemroot_cmd_entry = {
   .name = "inspect-get-windows-systemroot",
-  .help = "NAME\n    inspect-get-windows-systemroot - get Windows systemroot of inspected\n    operating system\n\nSYNOPSIS\n     inspect-get-windows-systemroot root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    This returns the Windows systemroot of the inspected guest. The\n    systemroot is a directory path such as \"/WINDOWS\".\n\n    This call assumes that the guest is Windows and that the systemroot\n    could be determined by inspection. If this is not the case then an error\n    is returned.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-windows-systemroot - get Windows systemroot of inspected\n    operating system\n\nSYNOPSIS\n     inspect-get-windows-systemroot root\n\nDESCRIPTION\n    This returns the Windows systemroot of the inspected guest. The\n    systemroot is a directory path such as \"/WINDOWS\".\n\n    This call assumes that the guest is Windows and that the systemroot\n    could be determined by inspection. If this is not the case then an error\n    is returned.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_windows_systemroot
 };
 
@@ -784,55 +804,55 @@ struct command_entry debug_cmdline_cmd_entry = {
 
 struct command_entry add_domain_cmd_entry = {
   .name = "add-domain",
-  .help = "NAME\n    add-domain - add the disk(s) from a named libvirt domain\n\nSYNOPSIS\n     add-domain dom [libvirturi:..] [readonly:..] [iface:..] [live:..]\n\nDESCRIPTION\n    This function adds the disk(s) attached to the named libvirt domain\n    \"dom\". It works by connecting to libvirt, requesting the domain and\n    domain XML from libvirt, parsing it for disks, and calling\n    \"add_drive_opts\" on each one.\n\n    The number of disks added is returned. This operation is atomic: if an\n    error is returned, then no disks are added.\n\n    This function does some minimal checks to make sure the libvirt domain\n    is not running (unless \"readonly\" is true). In a future version we will\n    try to acquire the libvirt lock on each disk.\n\n    Disks must be accessible locally. This often means that adding disks\n    from a remote libvirt connection (see <http://libvirt.org/remote.html>)\n    will fail unless those disks are accessible via the same device path\n    locally too.\n\n    The optional \"libvirturi\" parameter sets the libvirt URI (see\n    <http://libvirt.org/uri.html>). If this is not set then we connect to\n    the default libvirt URI (or one set through an environment variable, see\n    the libvirt documentation for full details).\n\n    The optional \"live\" flag controls whether this call will try to connect\n    to a running virtual machine \"guestfsd\" process if it sees a suitable\n    <channel> element in the libvirt XML definition. The default (if the\n    flag is omitted) is never to try. See \"ATTACHING TO RUNNING DAEMONS\" in\n    guestfs(3) for more information.\n\n    The other optional parameters are passed directly through to\n    \"add_drive_opts\".\n\n    You can use 'domain' as an alias for this command.\n\n",
+  .help = "NAME\n    add-domain - add the disk(s) from a named libvirt domain\n\nSYNOPSIS\n     add-domain dom [libvirturi:..] [readonly:..] [iface:..] [live:..] [allowuuid:..]\n\nDESCRIPTION\n    This function adds the disk(s) attached to the named libvirt domain\n    \"dom\". It works by connecting to libvirt, requesting the domain and\n    domain XML from libvirt, parsing it for disks, and calling\n    \"add_drive_opts\" on each one.\n\n    The number of disks added is returned. This operation is atomic: if an\n    error is returned, then no disks are added.\n\n    This function does some minimal checks to make sure the libvirt domain\n    is not running (unless \"readonly\" is true). In a future version we will\n    try to acquire the libvirt lock on each disk.\n\n    Disks must be accessible locally. This often means that adding disks\n    from a remote libvirt connection (see <http://libvirt.org/remote.html>)\n    will fail unless those disks are accessible via the same device path\n    locally too.\n\n    The optional \"libvirturi\" parameter sets the libvirt URI (see\n    <http://libvirt.org/uri.html>). If this is not set then we connect to\n    the default libvirt URI (or one set through an environment variable, see\n    the libvirt documentation for full details).\n\n    The optional \"live\" flag controls whether this call will try to connect\n    to a running virtual machine \"guestfsd\" process if it sees a suitable\n    <channel> element in the libvirt XML definition. The default (if the\n    flag is omitted) is never to try. See \"ATTACHING TO RUNNING DAEMONS\" in\n    guestfs(3) for more information.\n\n    If the \"allowuuid\" flag is true (default is false) then a UUID *may* be\n    passed instead of the domain name. The \"dom\" string is treated as a UUID\n    first and looked up, and if that lookup fails then we treat \"dom\" as a\n    name as usual.\n\n    The other optional parameters are passed directly through to\n    \"add_drive_opts\".\n\n    You can use 'domain' as an alias for this command.\n\n",
   .run = run_add_domain
 };
 
 struct command_entry inspect_get_package_format_cmd_entry = {
   .name = "inspect-get-package-format",
-  .help = "NAME\n    inspect-get-package-format - get package format used by the operating\n    system\n\nSYNOPSIS\n     inspect-get-package-format root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    This function and \"inspect_get_package_management\" return the package\n    format and package management tool used by the inspected operating\n    system. For example for Fedora these functions would return \"rpm\"\n    (package format) and \"yum\" (package management).\n\n    This returns the string \"unknown\" if we could not determine the package\n    format *or* if the operating system does not have a real packaging\n    system (eg. Windows).\n\n    Possible strings include: \"rpm\", \"deb\", \"ebuild\", \"pisi\", \"pacman\".\n    Future versions of libguestfs may return other strings.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-package-format - get package format used by the operating\n    system\n\nSYNOPSIS\n     inspect-get-package-format root\n\nDESCRIPTION\n    This function and \"inspect_get_package_management\" return the package\n    format and package management tool used by the inspected operating\n    system. For example for Fedora these functions would return \"rpm\"\n    (package format) and \"yum\" (package management).\n\n    This returns the string \"unknown\" if we could not determine the package\n    format *or* if the operating system does not have a real packaging\n    system (eg. Windows).\n\n    Possible strings include: \"rpm\", \"deb\", \"ebuild\", \"pisi\", \"pacman\".\n    Future versions of libguestfs may return other strings.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_package_format
 };
 
 struct command_entry inspect_get_package_management_cmd_entry = {
   .name = "inspect-get-package-management",
-  .help = "NAME\n    inspect-get-package-management - get package management tool used by the\n    operating system\n\nSYNOPSIS\n     inspect-get-package-management root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    \"inspect_get_package_format\" and this function return the package format\n    and package management tool used by the inspected operating system. For\n    example for Fedora these functions would return \"rpm\" (package format)\n    and \"yum\" (package management).\n\n    This returns the string \"unknown\" if we could not determine the package\n    management tool *or* if the operating system does not have a real\n    packaging system (eg. Windows).\n\n    Possible strings include: \"yum\", \"up2date\", \"apt\" (for all Debian\n    derivatives), \"portage\", \"pisi\", \"pacman\", \"urpmi\". Future versions of\n    libguestfs may return other strings.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-package-management - get package management tool used by the\n    operating system\n\nSYNOPSIS\n     inspect-get-package-management root\n\nDESCRIPTION\n    \"inspect_get_package_format\" and this function return the package format\n    and package management tool used by the inspected operating system. For\n    example for Fedora these functions would return \"rpm\" (package format)\n    and \"yum\" (package management).\n\n    This returns the string \"unknown\" if we could not determine the package\n    management tool *or* if the operating system does not have a real\n    packaging system (eg. Windows).\n\n    Possible strings include: \"yum\", \"up2date\", \"apt\" (for all Debian\n    derivatives), \"portage\", \"pisi\", \"pacman\", \"urpmi\". Future versions of\n    libguestfs may return other strings.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_package_management
 };
 
 struct command_entry inspect_list_applications_cmd_entry = {
   .name = "inspect-list-applications",
-  .help = "NAME\n    inspect-list-applications - get list of applications installed in the\n    operating system\n\nSYNOPSIS\n     inspect-list-applications root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    Return the list of applications installed in the operating system.\n\n    *Note:* This call works differently from other parts of the inspection\n    API. You have to call \"inspect_os\", then \"inspect_get_mountpoints\", then\n    mount up the disks, before calling this. Listing applications is a\n    significantly more difficult operation which requires access to the full\n    filesystem. Also note that unlike the other \"inspect_get_*\" calls which\n    are just returning data cached in the libguestfs handle, this call\n    actually reads parts of the mounted filesystems during the call.\n\n    This returns an empty list if the inspection code was not able to\n    determine the list of applications.\n\n    The application structure contains the following fields:\n\n    \"app_name\"\n        The name of the application. For Red Hat-derived and Debian-derived\n        Linux guests, this is the package name.\n\n    \"app_display_name\"\n        The display name of the application, sometimes localized to the\n        install language of the guest operating system.\n\n        If unavailable this is returned as an empty string \"\". Callers\n        needing to display something can use \"app_name\" instead.\n\n    \"app_epoch\"\n        For package managers which use epochs, this contains the epoch of\n        the package (an integer). If unavailable, this is returned as 0.\n\n    \"app_version\"\n        The version string of the application or package. If unavailable\n        this is returned as an empty string \"\".\n\n    \"app_release\"\n        The release string of the application or package, for package\n        managers that use this. If unavailable this is returned as an empty\n        string \"\".\n\n    \"app_install_path\"\n        The installation path of the application (on operating systems such\n        as Windows which use installation paths). This path is in the format\n        used by the guest operating system, it is not a libguestfs path.\n\n        If unavailable this is returned as an empty string \"\".\n\n    \"app_trans_path\"\n        The install path translated into a libguestfs path. If unavailable\n        this is returned as an empty string \"\".\n\n    \"app_publisher\"\n        The name of the publisher of the application, for package managers\n        that use this. If unavailable this is returned as an empty string\n        \"\".\n\n    \"app_url\"\n        The URL (eg. upstream URL) of the application. If unavailable this\n        is returned as an empty string \"\".\n\n    \"app_source_package\"\n        For packaging systems which support this, the name of the source\n        package. If unavailable this is returned as an empty string \"\".\n\n    \"app_summary\"\n        A short (usually one line) description of the application or\n        package. If unavailable this is returned as an empty string \"\".\n\n    \"app_description\"\n        A longer description of the application or package. If unavailable\n        this is returned as an empty string \"\".\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-list-applications - get list of applications installed in the\n    operating system\n\nSYNOPSIS\n     inspect-list-applications root\n\nDESCRIPTION\n    Return the list of applications installed in the operating system.\n\n    *Note:* This call works differently from other parts of the inspection\n    API. You have to call \"inspect_os\", then \"inspect_get_mountpoints\", then\n    mount up the disks, before calling this. Listing applications is a\n    significantly more difficult operation which requires access to the full\n    filesystem. Also note that unlike the other \"inspect_get_*\" calls which\n    are just returning data cached in the libguestfs handle, this call\n    actually reads parts of the mounted filesystems during the call.\n\n    This returns an empty list if the inspection code was not able to\n    determine the list of applications.\n\n    The application structure contains the following fields:\n\n    \"app_name\"\n        The name of the application. For Red Hat-derived and Debian-derived\n        Linux guests, this is the package name.\n\n    \"app_display_name\"\n        The display name of the application, sometimes localized to the\n        install language of the guest operating system.\n\n        If unavailable this is returned as an empty string \"\". Callers\n        needing to display something can use \"app_name\" instead.\n\n    \"app_epoch\"\n        For package managers which use epochs, this contains the epoch of\n        the package (an integer). If unavailable, this is returned as 0.\n\n    \"app_version\"\n        The version string of the application or package. If unavailable\n        this is returned as an empty string \"\".\n\n    \"app_release\"\n        The release string of the application or package, for package\n        managers that use this. If unavailable this is returned as an empty\n        string \"\".\n\n    \"app_install_path\"\n        The installation path of the application (on operating systems such\n        as Windows which use installation paths). This path is in the format\n        used by the guest operating system, it is not a libguestfs path.\n\n        If unavailable this is returned as an empty string \"\".\n\n    \"app_trans_path\"\n        The install path translated into a libguestfs path. If unavailable\n        this is returned as an empty string \"\".\n\n    \"app_publisher\"\n        The name of the publisher of the application, for package managers\n        that use this. If unavailable this is returned as an empty string\n        \"\".\n\n    \"app_url\"\n        The URL (eg. upstream URL) of the application. If unavailable this\n        is returned as an empty string \"\".\n\n    \"app_source_package\"\n        For packaging systems which support this, the name of the source\n        package. If unavailable this is returned as an empty string \"\".\n\n    \"app_summary\"\n        A short (usually one line) description of the application or\n        package. If unavailable this is returned as an empty string \"\".\n\n    \"app_description\"\n        A longer description of the application or package. If unavailable\n        this is returned as an empty string \"\".\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_list_applications
 };
 
 struct command_entry inspect_get_hostname_cmd_entry = {
   .name = "inspect-get-hostname",
-  .help = "NAME\n    inspect-get-hostname - get hostname of the operating system\n\nSYNOPSIS\n     inspect-get-hostname root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    This function returns the hostname of the operating system as found by\n    inspection of the guest's configuration files.\n\n    If the hostname could not be determined, then the string \"unknown\" is\n    returned.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-hostname - get hostname of the operating system\n\nSYNOPSIS\n     inspect-get-hostname root\n\nDESCRIPTION\n    This function returns the hostname of the operating system as found by\n    inspection of the guest's configuration files.\n\n    If the hostname could not be determined, then the string \"unknown\" is\n    returned.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_hostname
 };
 
 struct command_entry inspect_get_format_cmd_entry = {
   .name = "inspect-get-format",
-  .help = "NAME\n    inspect-get-format - get format of inspected operating system\n\nSYNOPSIS\n     inspect-get-format root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    This returns the format of the inspected operating system. You can use\n    it to detect install images, live CDs and similar.\n\n    Currently defined formats are:\n\n    \"installed\"\n        This is an installed operating system.\n\n    \"installer\"\n        The disk image being inspected is not an installed operating system,\n        but a *bootable* install disk, live CD, or similar.\n\n    \"unknown\"\n        The format of this disk image is not known.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-format - get format of inspected operating system\n\nSYNOPSIS\n     inspect-get-format root\n\nDESCRIPTION\n    This returns the format of the inspected operating system. You can use\n    it to detect install images, live CDs and similar.\n\n    Currently defined formats are:\n\n    \"installed\"\n        This is an installed operating system.\n\n    \"installer\"\n        The disk image being inspected is not an installed operating system,\n        but a *bootable* install disk, live CD, or similar.\n\n    \"unknown\"\n        The format of this disk image is not known.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_format
 };
 
 struct command_entry inspect_is_live_cmd_entry = {
   .name = "inspect-is-live",
-  .help = "NAME\n    inspect-is-live - get live flag for install disk\n\nSYNOPSIS\n     inspect-is-live root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    If \"inspect_get_format\" returns \"installer\" (this is an install disk),\n    then this returns true if a live image was detected on the disk.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-is-live - get live flag for install disk\n\nSYNOPSIS\n     inspect-is-live root\n\nDESCRIPTION\n    If \"inspect_get_format\" returns \"installer\" (this is an install disk),\n    then this returns true if a live image was detected on the disk.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_is_live
 };
 
 struct command_entry inspect_is_netinst_cmd_entry = {
   .name = "inspect-is-netinst",
-  .help = "NAME\n    inspect-is-netinst - get netinst (network installer) flag for install\n    disk\n\nSYNOPSIS\n     inspect-is-netinst root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    If \"inspect_get_format\" returns \"installer\" (this is an install disk),\n    then this returns true if the disk is a network installer, ie. not a\n    self-contained install CD but one which is likely to require network\n    access to complete the install.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-is-netinst - get netinst (network installer) flag for install\n    disk\n\nSYNOPSIS\n     inspect-is-netinst root\n\nDESCRIPTION\n    If \"inspect_get_format\" returns \"installer\" (this is an install disk),\n    then this returns true if the disk is a network installer, ie. not a\n    self-contained install CD but one which is likely to require network\n    access to complete the install.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_is_netinst
 };
 
 struct command_entry inspect_is_multipart_cmd_entry = {
   .name = "inspect-is-multipart",
-  .help = "NAME\n    inspect-is-multipart - get multipart flag for install disk\n\nSYNOPSIS\n     inspect-is-multipart root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    If \"inspect_get_format\" returns \"installer\" (this is an install disk),\n    then this returns true if the disk is part of a set.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-is-multipart - get multipart flag for install disk\n\nSYNOPSIS\n     inspect-is-multipart root\n\nDESCRIPTION\n    If \"inspect_get_format\" returns \"installer\" (this is an install disk),\n    then this returns true if the disk is part of a set.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_is_multipart
 };
 
@@ -850,20 +870,38 @@ struct command_entry get_attach_method_cmd_entry = {
 
 struct command_entry inspect_get_product_variant_cmd_entry = {
   .name = "inspect-get-product-variant",
-  .help = "NAME\n    inspect-get-product-variant - get product variant of inspected operating\n    system\n\nSYNOPSIS\n     inspect-get-product-variant root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    This returns the product variant of the inspected operating system.\n\n    For Windows guests, this returns the contents of the Registry key\n    \"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\" \"InstallationType\"\n    which is usually a string such as \"Client\" or \"Server\" (other values are\n    possible). This can be used to distinguish consumer and enterprise\n    versions of Windows that have the same version number (for example,\n    Windows 7 and Windows 2008 Server are both version 6.1, but the former\n    is \"Client\" and the latter is \"Server\").\n\n    For enterprise Linux guests, in future we intend this to return the\n    product variant such as \"Desktop\", \"Server\" and so on. But this is not\n    implemented at present.\n\n    If the product variant could not be determined, then the string\n    \"unknown\" is returned.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details. See also\n    \"inspect_get_product_name\", \"inspect_get_major_version\".\n\n",
+  .help = "NAME\n    inspect-get-product-variant - get product variant of inspected operating\n    system\n\nSYNOPSIS\n     inspect-get-product-variant root\n\nDESCRIPTION\n    This returns the product variant of the inspected operating system.\n\n    For Windows guests, this returns the contents of the Registry key\n    \"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\" \"InstallationType\"\n    which is usually a string such as \"Client\" or \"Server\" (other values are\n    possible). This can be used to distinguish consumer and enterprise\n    versions of Windows that have the same version number (for example,\n    Windows 7 and Windows 2008 Server are both version 6.1, but the former\n    is \"Client\" and the latter is \"Server\").\n\n    For enterprise Linux guests, in future we intend this to return the\n    product variant such as \"Desktop\", \"Server\" and so on. But this is not\n    implemented at present.\n\n    If the product variant could not be determined, then the string\n    \"unknown\" is returned.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details. See also\n    \"inspect_get_product_name\", \"inspect_get_major_version\".\n\n",
   .run = run_inspect_get_product_variant
 };
 
 struct command_entry inspect_get_windows_current_control_set_cmd_entry = {
   .name = "inspect-get-windows-current-control-set",
-  .help = "NAME\n    inspect-get-windows-current-control-set - get Windows CurrentControlSet\n    of inspected operating system\n\nSYNOPSIS\n     inspect-get-windows-current-control-set root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    This returns the Windows CurrentControlSet of the inspected guest. The\n    CurrentControlSet is a registry key name such as \"ControlSet001\".\n\n    This call assumes that the guest is Windows and that the Registry could\n    be examined by inspection. If this is not the case then an error is\n    returned.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-windows-current-control-set - get Windows CurrentControlSet\n    of inspected operating system\n\nSYNOPSIS\n     inspect-get-windows-current-control-set root\n\nDESCRIPTION\n    This returns the Windows CurrentControlSet of the inspected guest. The\n    CurrentControlSet is a registry key name such as \"ControlSet001\".\n\n    This call assumes that the guest is Windows and that the Registry could\n    be examined by inspection. If this is not the case then an error is\n    returned.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_windows_current_control_set
 };
 
 struct command_entry inspect_get_drive_mappings_cmd_entry = {
   .name = "inspect-get-drive-mappings",
-  .help = "NAME\n    inspect-get-drive-mappings - get drive letter mappings\n\nSYNOPSIS\n     inspect-get-drive-mappings root\n\nDESCRIPTION\n    This function should only be called with a root device string as\n    returned by \"inspect_os\".\n\n    This call is useful for Windows which uses a primitive system of\n    assigning drive letters (like \"C:\") to partitions. This inspection API\n    examines the Windows Registry to find out how disks/partitions are\n    mapped to drive letters, and returns a hash table as in the example\n    below:\n\n     C      =>     /dev/vda2\n     E      =>     /dev/vdb1\n     F      =>     /dev/vdc1\n\n    Note that keys are drive letters. For Windows, the key is case\n    insensitive and just contains the drive letter, without the customary\n    colon separator character.\n\n    In future we may support other operating systems that also used drive\n    letters, but the keys for those might not be case insensitive and might\n    be longer than 1 character. For example in OS-9, hard drives were named\n    \"h0\", \"h1\" etc.\n\n    For Windows guests, currently only hard drive mappings are returned.\n    Removable disks (eg. DVD-ROMs) are ignored.\n\n    For guests that do not use drive mappings, or if the drive mappings\n    could not be determined, this returns an empty hash table.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details. See also\n    \"inspect_get_mountpoints\", \"inspect_get_filesystems\".\n\n",
+  .help = "NAME\n    inspect-get-drive-mappings - get drive letter mappings\n\nSYNOPSIS\n     inspect-get-drive-mappings root\n\nDESCRIPTION\n    This call is useful for Windows which uses a primitive system of\n    assigning drive letters (like \"C:\") to partitions. This inspection API\n    examines the Windows Registry to find out how disks/partitions are\n    mapped to drive letters, and returns a hash table as in the example\n    below:\n\n     C      =>     /dev/vda2\n     E      =>     /dev/vdb1\n     F      =>     /dev/vdc1\n\n    Note that keys are drive letters. For Windows, the key is case\n    insensitive and just contains the drive letter, without the customary\n    colon separator character.\n\n    In future we may support other operating systems that also used drive\n    letters, but the keys for those might not be case insensitive and might\n    be longer than 1 character. For example in OS-9, hard drives were named\n    \"h0\", \"h1\" etc.\n\n    For Windows guests, currently only hard drive mappings are returned.\n    Removable disks (eg. DVD-ROMs) are ignored.\n\n    For guests that do not use drive mappings, or if the drive mappings\n    could not be determined, this returns an empty hash table.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details. See also\n    \"inspect_get_mountpoints\", \"inspect_get_filesystems\".\n\n",
   .run = run_inspect_get_drive_mappings
+};
+
+struct command_entry inspect_get_icon_cmd_entry = {
+  .name = "inspect-get-icon",
+  .help = "NAME\n    inspect-get-icon - get the icon corresponding to this operating system\n\nSYNOPSIS\n     inspect-get-icon root [favicon:..] [highquality:..]\n\nDESCRIPTION\n    This function returns an icon corresponding to the inspected operating\n    system. The icon is returned as a buffer containing a PNG image\n    (re-encoded to PNG if necessary).\n\n    If it was not possible to get an icon this function returns a\n    zero-length (non-NULL) buffer. *Callers must check for this case*.\n\n    Libguestfs will start by looking for a file called \"/etc/favicon.png\" or\n    \"C:\\etc\\favicon.png\" and if it has the correct format, the contents of\n    this file will be returned. You can disable favicons by passing the\n    optional \"favicon\" boolean as false (default is true).\n\n    If finding the favicon fails, then we look in other places in the guest\n    for a suitable icon.\n\n    If the optional \"highquality\" boolean is true then only high quality\n    icons are returned, which means only icons of high resolution with an\n    alpha channel. The default (false) is to return any icon we can, even if\n    it is of substandard quality.\n\n    Notes:\n\n    *   Unlike most other inspection API calls, the guest's disks must be\n        mounted up before you call this, since it needs to read information\n        from the guest filesystem during the call.\n\n    *   Security: The icon data comes from the untrusted guest, and should\n        be treated with caution. PNG files have been known to contain\n        exploits. Ensure that libpng (or other relevant libraries) are fully\n        up to date before trying to process or display the icon.\n\n    *   The PNG image returned can be any size. It might not be square.\n        Libguestfs tries to return the largest, highest quality icon\n        available. The application must scale the icon to the required size.\n\n    *   Extracting icons from Windows guests requires the external\n        \"wrestool\" program from the \"icoutils\" package, and several programs\n        (\"bmptopnm\", \"pnmtopng\", \"pamcut\") from the \"netpbm\" package. These\n        must be installed separately.\n\n    *   Operating system icons are usually trademarks. Seek legal advice\n        before using trademarks in applications.\n\n",
+  .run = run_inspect_get_icon
+};
+
+struct command_entry set_pgroup_cmd_entry = {
+  .name = "set-pgroup",
+  .help = "NAME\n    set-pgroup - set process group flag\n\nSYNOPSIS\n     set-pgroup pgroup\n\nDESCRIPTION\n    If \"pgroup\" is true, child processes are placed into their own process\n    group.\n\n    The practical upshot of this is that signals like \"SIGINT\" (from users\n    pressing \"^C\") won't be received by the child process.\n\n    The default for this flag is false, because usually you want \"^C\" to\n    kill the subprocess.\n\n    You can use 'pgroup' as an alias for this command.\n\n",
+  .run = run_set_pgroup
+};
+
+struct command_entry get_pgroup_cmd_entry = {
+  .name = "get-pgroup",
+  .help = "NAME\n    get-pgroup - get process group flag\n\nSYNOPSIS\n     get-pgroup\n\nDESCRIPTION\n    This returns the process group flag.\n\n",
+  .run = run_get_pgroup
 };
 
 struct command_entry mount_cmd_entry = {
@@ -1156,7 +1194,7 @@ struct command_entry lvm_remove_all_cmd_entry = {
 
 struct command_entry file_cmd_entry = {
   .name = "file",
-  .help = "NAME\n    file - determine file type\n\nSYNOPSIS\n     file path\n\nDESCRIPTION\n    This call uses the standard file(1) command to determine the type or\n    contents of the file.\n\n    This call will also transparently look inside various types of\n    compressed file.\n\n    The exact command which runs is \"file -zb path\". Note in particular that\n    the filename is not prepended to the output (the *-b* option).\n\n    The output depends on the output of the underlying file(1) command and\n    it can change in future in ways beyond our control. In other words, the\n    output is not guaranteed by the ABI.\n\n    See also: file(1), \"vfs_type\", \"lstat\", \"is_file\", \"is_blockdev\" (etc).\n\n",
+  .help = "NAME\n    file - determine file type\n\nSYNOPSIS\n     file path\n\nDESCRIPTION\n    This call uses the standard file(1) command to determine the type or\n    contents of the file.\n\n    This call will also transparently look inside various types of\n    compressed file.\n\n    The exact command which runs is \"file -zb path\". Note in particular that\n    the filename is not prepended to the output (the *-b* option).\n\n    The output depends on the output of the underlying file(1) command and\n    it can change in future in ways beyond our control. In other words, the\n    output is not guaranteed by the ABI.\n\n    See also: file(1), \"vfs_type\", \"lstat\", \"is_file\", \"is_blockdev\" (etc),\n    \"is_zero\".\n\n",
   .run = run_file
 };
 
@@ -1372,7 +1410,7 @@ struct command_entry fsck_cmd_entry = {
 
 struct command_entry zero_cmd_entry = {
   .name = "zero",
-  .help = "NAME\n    zero - write zeroes to the device\n\nSYNOPSIS\n     zero device\n\nDESCRIPTION\n    This command writes zeroes over the first few blocks of \"device\".\n\n    How many blocks are zeroed isn't specified (but it's *not* enough to\n    securely wipe the device). It should be sufficient to remove any\n    partition tables, filesystem superblocks and so on.\n\n    See also: \"zero_device\", \"scrub_device\".\n\n",
+  .help = "NAME\n    zero - write zeroes to the device\n\nSYNOPSIS\n     zero device\n\nDESCRIPTION\n    This command writes zeroes over the first few blocks of \"device\".\n\n    How many blocks are zeroed isn't specified (but it's *not* enough to\n    securely wipe the device). It should be sufficient to remove any\n    partition tables, filesystem superblocks and so on.\n\n    See also: \"zero_device\", \"scrub_device\", \"is_zero_device\"\n\n",
   .run = run_zero
 };
 
@@ -1480,13 +1518,13 @@ struct command_entry sfdisk_disk_geometry_cmd_entry = {
 
 struct command_entry vg_activate_all_cmd_entry = {
   .name = "vg-activate-all",
-  .help = "NAME\n    vg-activate-all - activate or deactivate all volume groups\n\nSYNOPSIS\n     vg-activate-all activate\n\nDESCRIPTION\n    This command activates or (if \"activate\" is false) deactivates all\n    logical volumes in all volume groups. If activated, then they are made\n    known to the kernel, ie. they appear as \"/dev/mapper\" devices. If\n    deactivated, then those devices disappear.\n\n    This command is the same as running \"vgchange -a y|n\"\n\n",
+  .help = "NAME\n    vg-activate-all - activate or deactivate all volume groups\n\nSYNOPSIS\n     vg-activate-all activate\n\nDESCRIPTION\n    This command activates or (if \"activate\" is false) deactivates all\n    logical volumes in all volume groups.\n\n    This command is the same as running \"vgchange -a y|n\"\n\n",
   .run = run_vg_activate_all
 };
 
 struct command_entry vg_activate_cmd_entry = {
   .name = "vg-activate",
-  .help = "NAME\n    vg-activate - activate or deactivate some volume groups\n\nSYNOPSIS\n     vg-activate activate volgroups\n\nDESCRIPTION\n    This command activates or (if \"activate\" is false) deactivates all\n    logical volumes in the listed volume groups \"volgroups\". If activated,\n    then they are made known to the kernel, ie. they appear as \"/dev/mapper\"\n    devices. If deactivated, then those devices disappear.\n\n    This command is the same as running \"vgchange -a y|n volgroups...\"\n\n    Note that if \"volgroups\" is an empty list then all volume groups are\n    activated or deactivated.\n\n",
+  .help = "NAME\n    vg-activate - activate or deactivate some volume groups\n\nSYNOPSIS\n     vg-activate activate volgroups\n\nDESCRIPTION\n    This command activates or (if \"activate\" is false) deactivates all\n    logical volumes in the listed volume groups \"volgroups\".\n\n    This command is the same as running \"vgchange -a y|n volgroups...\"\n\n    Note that if \"volgroups\" is an empty list then all volume groups are\n    activated or deactivated.\n\n",
   .run = run_vg_activate
 };
 
@@ -2110,7 +2148,7 @@ struct command_entry pread_cmd_entry = {
 
 struct command_entry part_init_cmd_entry = {
   .name = "part-init",
-  .help = "NAME\n    part-init - create an empty partition table\n\nSYNOPSIS\n     part-init device parttype\n\nDESCRIPTION\n    This creates an empty partition table on \"device\" of one of the\n    partition types listed below. Usually \"parttype\" should be either\n    \"msdos\" or \"gpt\" (for large disks).\n\n    Initially there are no partitions. Following this, you should call\n    \"part_add\" for each partition required.\n\n    Possible values for \"parttype\" are:\n\n    efi | gpt\n        Intel EFI / GPT partition table.\n\n        This is recommended for >= 2 TB partitions that will be accessed\n        from Linux and Intel-based Mac OS X. It also has limited backwards\n        compatibility with the \"mbr\" format.\n\n    mbr | msdos\n        The standard PC \"Master Boot Record\" (MBR) format used by MS-DOS and\n        Windows. This partition type will only work for device sizes up to 2\n        TB. For large disks we recommend using \"gpt\".\n\n    Other partition table types that may work but are not supported include:\n\n    aix AIX disk labels.\n\n    amiga | rdb\n        Amiga \"Rigid Disk Block\" format.\n\n    bsd BSD disk labels.\n\n    dasd\n        DASD, used on IBM mainframes.\n\n    dvh MIPS/SGI volumes.\n\n    mac Old Mac partition format. Modern Macs use \"gpt\".\n\n    pc98\n        NEC PC-98 format, common in Japan apparently.\n\n    sun Sun disk labels.\n\n",
+  .help = "NAME\n    part-init - create an empty partition table\n\nSYNOPSIS\n     part-init device parttype\n\nDESCRIPTION\n    This creates an empty partition table on \"device\" of one of the\n    partition types listed below. Usually \"parttype\" should be either\n    \"msdos\" or \"gpt\" (for large disks).\n\n    Initially there are no partitions. Following this, you should call\n    \"part_add\" for each partition required.\n\n    Possible values for \"parttype\" are:\n\n    efi\n    gpt Intel EFI / GPT partition table.\n\n        This is recommended for >= 2 TB partitions that will be accessed\n        from Linux and Intel-based Mac OS X. It also has limited backwards\n        compatibility with the \"mbr\" format.\n\n    mbr\n    msdos\n        The standard PC \"Master Boot Record\" (MBR) format used by MS-DOS and\n        Windows. This partition type will only work for device sizes up to 2\n        TB. For large disks we recommend using \"gpt\".\n\n    Other partition table types that may work but are not supported include:\n\n    aix AIX disk labels.\n\n    amiga\n    rdb Amiga \"Rigid Disk Block\" format.\n\n    bsd BSD disk labels.\n\n    dasd\n        DASD, used on IBM mainframes.\n\n    dvh MIPS/SGI volumes.\n\n    mac Old Mac partition format. Modern Macs use \"gpt\".\n\n    pc98\n        NEC PC-98 format, common in Japan apparently.\n\n    sun Sun disk labels.\n\n",
   .run = run_part_init
 };
 
@@ -2248,7 +2286,7 @@ struct command_entry txz_out_cmd_entry = {
 
 struct command_entry ntfsresize_cmd_entry = {
   .name = "ntfsresize",
-  .help = "NAME\n    ntfsresize - resize an NTFS filesystem\n\nSYNOPSIS\n     ntfsresize device\n\nDESCRIPTION\n    This command resizes an NTFS filesystem, expanding or shrinking it to\n    the size of the underlying device.\n\n    *Note:* After the resize operation, the filesystem is marked as\n    requiring a consistency check (for safety). You have to boot into\n    Windows to perform this check and clear this condition. Furthermore,\n    ntfsresize refuses to resize filesystems which have been marked in this\n    way. So in effect it is not possible to call ntfsresize multiple times\n    on a single filesystem without booting into Windows between each resize.\n\n    See also ntfsresize(8).\n\n",
+  .help = "NAME\n    ntfsresize - resize an NTFS filesystem\n\nSYNOPSIS\n     ntfsresize device\n\nDESCRIPTION\n    This command resizes an NTFS filesystem, expanding or shrinking it to\n    the size of the underlying device.\n\n    *Note:* After the resize operation, the filesystem is marked as\n    requiring a consistency check (for safety). You have to boot into\n    Windows to perform this check and clear this condition. Furthermore,\n    ntfsresize refuses to resize filesystems which have been marked in this\n    way. So in effect it is not possible to call ntfsresize multiple times\n    on a single filesystem without booting into Windows between each resize.\n\n    See also ntfsresize(8).\n\n    This function is deprecated. In new code, use the \"ntfsresize_opts\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_ntfsresize
 };
 
@@ -2338,7 +2376,7 @@ struct command_entry fill_pattern_cmd_entry = {
 
 struct command_entry write_cmd_entry = {
   .name = "write",
-  .help = "NAME\n    write - create a new file\n\nSYNOPSIS\n     write path content\n\nDESCRIPTION\n    This call creates a file called \"path\". The content of the file is the\n    string \"content\" (which can contain any 8 bit data).\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
+  .help = "NAME\n    write - create a new file\n\nSYNOPSIS\n     write path content\n\nDESCRIPTION\n    This call creates a file called \"path\". The content of the file is the\n    string \"content\" (which can contain any 8 bit data).\n\n    See also \"write_append\".\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
   .run = run_write
 };
 
@@ -2362,7 +2400,7 @@ struct command_entry pvresize_size_cmd_entry = {
 
 struct command_entry ntfsresize_size_cmd_entry = {
   .name = "ntfsresize-size",
-  .help = "NAME\n    ntfsresize-size - resize an NTFS filesystem (with size)\n\nSYNOPSIS\n     ntfsresize-size device size\n\nDESCRIPTION\n    This command is the same as \"ntfsresize\" except that it allows you to\n    specify the new size (in bytes) explicitly.\n\n",
+  .help = "NAME\n    ntfsresize-size - resize an NTFS filesystem (with size)\n\nSYNOPSIS\n     ntfsresize-size device size\n\nDESCRIPTION\n    This command is the same as \"ntfsresize\" except that it allows you to\n    specify the new size (in bytes) explicitly.\n\n    This function is deprecated. In new code, use the \"ntfsresize_opts\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_ntfsresize_size
 };
 
@@ -2404,7 +2442,7 @@ struct command_entry lvm_clear_filter_cmd_entry = {
 
 struct command_entry luks_open_cmd_entry = {
   .name = "luks-open",
-  .help = "NAME\n    luks-open - open a LUKS-encrypted block device\n\nSYNOPSIS\n     luks-open device mapname\n\nDESCRIPTION\n    This command opens a block device which has been encrypted according to\n    the Linux Unified Key Setup (LUKS) standard.\n\n    \"device\" is the encrypted block device or partition.\n\n    The caller must supply one of the keys associated with the LUKS block\n    device, in the \"key\" parameter.\n\n    This creates a new block device called \"/dev/mapper/mapname\". Reads and\n    writes to this block device are decrypted from and encrypted to the\n    underlying \"device\" respectively.\n\n    If this block device contains LVM volume groups, then calling \"vgscan\"\n    followed by \"vg_activate_all\" will make them visible.\n\n    This command has one or more key or passphrase parameters. Guestfish\n    will prompt for these separately.\n\n",
+  .help = "NAME\n    luks-open - open a LUKS-encrypted block device\n\nSYNOPSIS\n     luks-open device mapname\n\nDESCRIPTION\n    This command opens a block device which has been encrypted according to\n    the Linux Unified Key Setup (LUKS) standard.\n\n    \"device\" is the encrypted block device or partition.\n\n    The caller must supply one of the keys associated with the LUKS block\n    device, in the \"key\" parameter.\n\n    This creates a new block device called \"/dev/mapper/mapname\". Reads and\n    writes to this block device are decrypted from and encrypted to the\n    underlying \"device\" respectively.\n\n    If this block device contains LVM volume groups, then calling \"vgscan\"\n    followed by \"vg_activate_all\" will make them visible.\n\n    Use \"list_dm_devices\" to list all device mapper devices.\n\n    This command has one or more key or passphrase parameters. Guestfish\n    will prompt for these separately.\n\n",
   .run = run_luks_open
 };
 
@@ -2530,7 +2568,7 @@ struct command_entry lvm_canonical_lv_name_cmd_entry = {
 
 struct command_entry mkfs_opts_cmd_entry = {
   .name = "mkfs-opts",
-  .help = "NAME\n    mkfs-opts - make a filesystem\n\nSYNOPSIS\n     mkfs-opts fstype device [blocksize:..] [features:..]\n\nDESCRIPTION\n    This function creates a filesystem on \"device\". The filesystem type is\n    \"fstype\", for example \"ext3\".\n\n    The optional arguments are:\n\n    \"blocksize\"\n        The filesystem block size. Supported block sizes depend on the\n        filesystem type, but typically they are 1024, 2048 or 4096 for Linux\n        ext2/3 filesystems.\n\n        For VFAT and NTFS the \"blocksize\" parameter is treated as the\n        requested cluster size.\n\n        For UFS block sizes, please see mkfs.ufs(8).\n\n    \"features\"\n        This passes the *-O* parameter to the external mkfs program.\n\n        For certain filesystem types, this allows extra filesystem features\n        to be selected. See mke2fs(8) and mkfs.ufs(8) for more details.\n\n        You cannot use this optional parameter with the \"gfs\" or \"gfs2\"\n        filesystem type.\n\n",
+  .help = "NAME\n    mkfs-opts - make a filesystem\n\nSYNOPSIS\n     mkfs-opts fstype device [blocksize:..] [features:..] [inode:..] [sectorsize:..]\n\nDESCRIPTION\n    This function creates a filesystem on \"device\". The filesystem type is\n    \"fstype\", for example \"ext3\".\n\n    The optional arguments are:\n\n    \"blocksize\"\n        The filesystem block size. Supported block sizes depend on the\n        filesystem type, but typically they are 1024, 2048 or 4096 for Linux\n        ext2/3 filesystems.\n\n        For VFAT and NTFS the \"blocksize\" parameter is treated as the\n        requested cluster size.\n\n        For UFS block sizes, please see mkfs.ufs(8).\n\n    \"features\"\n        This passes the *-O* parameter to the external mkfs program.\n\n        For certain filesystem types, this allows extra filesystem features\n        to be selected. See mke2fs(8) and mkfs.ufs(8) for more details.\n\n        You cannot use this optional parameter with the \"gfs\" or \"gfs2\"\n        filesystem type.\n\n    \"inode\"\n        This passes the *-I* parameter to the external mke2fs(8) program\n        which sets the inode size (only for ext2/3/4 filesystems at\n        present).\n\n    \"sectorsize\"\n        This passes the *-S* parameter to external mkfs.ufs(8) program,\n        which sets sector size for ufs filesystem.\n\n",
   .run = run_mkfs_opts
 };
 
@@ -2550,6 +2588,54 @@ struct command_entry resize2fs_M_cmd_entry = {
   .name = "resize2fs-M",
   .help = "NAME\n    resize2fs-M - resize an ext2, ext3 or ext4 filesystem to the minimum\n    size\n\nSYNOPSIS\n     resize2fs-M device\n\nDESCRIPTION\n    This command is the same as \"resize2fs\", but the filesystem is resized\n    to its minimum size. This works like the *-M* option to the \"resize2fs\"\n    command.\n\n    To get the resulting size of the filesystem you should call \"tune2fs_l\"\n    and read the \"Block size\" and \"Block count\" values. These two numbers,\n    multiplied together, give the resulting size of the minimal filesystem\n    in bytes.\n\n",
   .run = run_resize2fs_M
+};
+
+struct command_entry is_zero_cmd_entry = {
+  .name = "is-zero",
+  .help = "NAME\n    is-zero - test if a file contains all zero bytes\n\nSYNOPSIS\n     is-zero path\n\nDESCRIPTION\n    This returns true iff the file exists and the file is empty or it\n    contains all zero bytes.\n\n",
+  .run = run_is_zero
+};
+
+struct command_entry is_zero_device_cmd_entry = {
+  .name = "is-zero-device",
+  .help = "NAME\n    is-zero-device - test if a device contains all zero bytes\n\nSYNOPSIS\n     is-zero-device device\n\nDESCRIPTION\n    This returns true iff the device exists and contains all zero bytes.\n\n    Note that for large devices this can take a long time to run.\n\n",
+  .run = run_is_zero_device
+};
+
+struct command_entry list_9p_cmd_entry = {
+  .name = "list-9p",
+  .help = "NAME\n    list-9p - list 9p filesystems\n\nSYNOPSIS\n     list-9p\n\nDESCRIPTION\n    List all 9p filesystems attached to the guest. A list of mount tags is\n    returned.\n\n",
+  .run = run_list_9p
+};
+
+struct command_entry mount_9p_cmd_entry = {
+  .name = "mount-9p",
+  .help = "NAME\n    mount-9p - mount 9p filesystem\n\nSYNOPSIS\n     mount-9p mounttag mountpoint [options:..]\n\nDESCRIPTION\n    Mount the virtio-9p filesystem with the tag \"mounttag\" on the directory\n    \"mountpoint\".\n\n    If required, \"trans=virtio\" will be automatically added to the options.\n    Any other options required can be passed in the optional \"options\"\n    parameter.\n\n",
+  .run = run_mount_9p
+};
+
+struct command_entry list_dm_devices_cmd_entry = {
+  .name = "list-dm-devices",
+  .help = "NAME\n    list-dm-devices - list device mapper devices\n\nSYNOPSIS\n     list-dm-devices\n\nDESCRIPTION\n    List all device mapper devices.\n\n    The returned list contains \"/dev/mapper/*\" devices, eg. ones created by\n    a previous call to \"luks_open\".\n\n    Device mapper devices which correspond to logical volumes are *not*\n    returned in this list. Call \"lvs\" if you want to list logical volumes.\n\n",
+  .run = run_list_dm_devices
+};
+
+struct command_entry ntfsresize_opts_cmd_entry = {
+  .name = "ntfsresize-opts",
+  .help = "NAME\n    ntfsresize-opts - resize an NTFS filesystem\n\nSYNOPSIS\n     ntfsresize-opts device [size:..] [force:..]\n\nDESCRIPTION\n    This command resizes an NTFS filesystem, expanding or shrinking it to\n    the size of the underlying device.\n\n    The optional parameters are:\n\n    \"size\"\n        The new size (in bytes) of the filesystem. If omitted, the\n        filesystem is resized to fit the container (eg. partition).\n\n    \"force\"\n        If this option is true, then force the resize of the filesystem even\n        if the filesystem is marked as requiring a consistency check.\n\n        After the resize operation, the filesystem is always marked as\n        requiring a consistency check (for safety). You have to boot into\n        Windows to perform this check and clear this condition. If you\n        *don't* set the \"force\" option then it is not possible to call\n        \"ntfsresize_opts\" multiple times on a single filesystem without\n        booting into Windows between each resize.\n\n    See also ntfsresize(8).\n\n",
+  .run = run_ntfsresize_opts
+};
+
+struct command_entry btrfs_filesystem_resize_cmd_entry = {
+  .name = "btrfs-filesystem-resize",
+  .help = "NAME\n    btrfs-filesystem-resize - resize a btrfs filesystem\n\nSYNOPSIS\n     btrfs-filesystem-resize mountpoint [size:..]\n\nDESCRIPTION\n    This command resizes a btrfs filesystem.\n\n    Note that unlike other resize calls, the filesystem has to be mounted\n    and the parameter is the mountpoint not the device (this is a\n    requirement of btrfs itself).\n\n    The optional parameters are:\n\n    \"size\"\n        The new size (in bytes) of the filesystem. If omitted, the\n        filesystem is resized to the maximum size.\n\n    See also btrfs(8).\n\n",
+  .run = run_btrfs_filesystem_resize
+};
+
+struct command_entry write_append_cmd_entry = {
+  .name = "write-append",
+  .help = "NAME\n    write-append - append content to end of file\n\nSYNOPSIS\n     write-append path content\n\nDESCRIPTION\n    This call appends \"content\" to the end of file \"path\". If \"path\" does\n    not exist, then a new file is created.\n\n    See also \"write\".\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
+  .run = run_write_append
 };
 
 void list_commands (void)
@@ -2592,6 +2678,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "blockdev-setbsz", _("set blocksize of block device"));
   printf ("%-20s %s\n", "blockdev-setro", _("set block device to read-only"));
   printf ("%-20s %s\n", "blockdev-setrw", _("set block device to read-write"));
+  printf ("%-20s %s\n", "btrfs-filesystem-resize", _("resize a btrfs filesystem"));
   printf ("%-20s %s\n", "case-sensitive-path", _("return true path on case-insensitive filesystem"));
   printf ("%-20s %s\n", "cat", _("list the contents of a file"));
   printf ("%-20s %s\n", "checksum", _("compute MD5, SHAx or CRC checksum of file"));
@@ -2613,6 +2700,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "debug-upload", _("upload a file to the appliance (internal use only)"));
   printf ("%-20s %s\n", "df", _("report file system disk space usage"));
   printf ("%-20s %s\n", "df-h", _("report file system disk space usage (human readable)"));
+  printf ("%-20s %s\n", "display", _("display an image"));
   printf ("%-20s %s\n", "dmesg", _("return kernel messages"));
   printf ("%-20s %s\n", "download", _("download a file to the local machine"));
   printf ("%-20s %s\n", "download-offset", _("download a file to the local machine with offset and size"));
@@ -2649,6 +2737,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "get-memsize", _("get memory allocated to the qemu subprocess"));
   printf ("%-20s %s\n", "get-network", _("get enable network flag"));
   printf ("%-20s %s\n", "get-path", _("get the search path"));
+  printf ("%-20s %s\n", "get-pgroup", _("get process group flag"));
   printf ("%-20s %s\n", "get-pid", _("get PID of qemu subprocess"));
   printf ("%-20s %s\n", "get-qemu", _("get the qemu binary"));
   printf ("%-20s %s\n", "get-recovery-proc", _("get recovery process enabled flag"));
@@ -2683,6 +2772,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "inspect-get-filesystems", _("get filesystems associated with inspected operating system"));
   printf ("%-20s %s\n", "inspect-get-format", _("get format of inspected operating system"));
   printf ("%-20s %s\n", "inspect-get-hostname", _("get hostname of the operating system"));
+  printf ("%-20s %s\n", "inspect-get-icon", _("get the icon corresponding to this operating system"));
   printf ("%-20s %s\n", "inspect-get-major-version", _("get major version of inspected operating system"));
   printf ("%-20s %s\n", "inspect-get-minor-version", _("get minor version of inspected operating system"));
   printf ("%-20s %s\n", "inspect-get-mountpoints", _("get mountpoints of inspected operating system"));
@@ -2711,13 +2801,17 @@ void list_commands (void)
   printf ("%-20s %s\n", "is-ready", _("is ready to accept commands"));
   printf ("%-20s %s\n", "is-socket", _("test if socket"));
   printf ("%-20s %s\n", "is-symlink", _("test if symbolic link"));
+  printf ("%-20s %s\n", "is-zero", _("test if a file contains all zero bytes"));
+  printf ("%-20s %s\n", "is-zero-device", _("test if a device contains all zero bytes"));
   printf ("%-20s %s\n", "kill-subprocess", _("kill the qemu subprocess"));
   printf ("%-20s %s\n", "launch", _("launch the qemu subprocess"));
   printf ("%-20s %s\n", "lcd", _("change working directory"));
   printf ("%-20s %s\n", "lchown", _("change file owner and group"));
   printf ("%-20s %s\n", "lgetxattr", _("get a single extended attribute"));
   printf ("%-20s %s\n", "lgetxattrs", _("list extended attributes of a file or directory"));
+  printf ("%-20s %s\n", "list-9p", _("list 9p filesystems"));
   printf ("%-20s %s\n", "list-devices", _("list the block devices"));
+  printf ("%-20s %s\n", "list-dm-devices", _("list device mapper devices"));
   printf ("%-20s %s\n", "list-filesystems", _("list filesystems"));
   printf ("%-20s %s\n", "list-partitions", _("list the partitions"));
   printf ("%-20s %s\n", "ll", _("list the files in a directory (long format)"));
@@ -2776,6 +2870,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "modprobe", _("load a kernel module"));
   printf ("%-20s %s\n", "more", _("view a file"));
   printf ("%-20s %s\n", "mount", _("mount a guest disk at a position in the filesystem"));
+  printf ("%-20s %s\n", "mount-9p", _("mount 9p filesystem"));
   printf ("%-20s %s\n", "mount-loop", _("mount a file using the loop device"));
   printf ("%-20s %s\n", "mount-options", _("mount a guest disk with mount options"));
   printf ("%-20s %s\n", "mount-ro", _("mount a guest disk, read-only"));
@@ -2785,6 +2880,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "mv", _("move a file"));
   printf ("%-20s %s\n", "ntfs-3g-probe", _("probe NTFS volume"));
   printf ("%-20s %s\n", "ntfsresize", _("resize an NTFS filesystem"));
+  printf ("%-20s %s\n", "ntfsresize-opts", _("resize an NTFS filesystem"));
   printf ("%-20s %s\n", "ntfsresize-size", _("resize an NTFS filesystem (with size)"));
   printf ("%-20s %s\n", "part-add", _("add a partition to the device"));
   printf ("%-20s %s\n", "part-del", _("delete a partition"));
@@ -2837,6 +2933,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "set-memsize", _("set memory allocated to the qemu subprocess"));
   printf ("%-20s %s\n", "set-network", _("set enable network flag"));
   printf ("%-20s %s\n", "set-path", _("set the search path"));
+  printf ("%-20s %s\n", "set-pgroup", _("set process group flag"));
   printf ("%-20s %s\n", "set-qemu", _("set the qemu binary"));
   printf ("%-20s %s\n", "set-recovery-proc", _("enable or disable the recovery process"));
   printf ("%-20s %s\n", "set-selinux", _("set SELinux enabled or disabled at appliance boot"));
@@ -2906,6 +3003,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "wc-l", _("count lines in a file"));
   printf ("%-20s %s\n", "wc-w", _("count words in a file"));
   printf ("%-20s %s\n", "write", _("create a new file"));
+  printf ("%-20s %s\n", "write-append", _("append content to end of file"));
   printf ("%-20s %s\n", "write-file", _("create a file"));
   printf ("%-20s %s\n", "zegrep", _("return lines matching a pattern"));
   printf ("%-20s %s\n", "zegrepi", _("return lines matching a pattern"));
@@ -4192,8 +4290,8 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
   struct guestfs_add_domain_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 1 || argc > 5) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 5);
+  if (argc < 1 || argc > 6) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 6);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     return -1;
   }
@@ -4222,6 +4320,11 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
       optargs_s.live = is_true (&argv[i][5]) ? 1 : 0;
       this_mask = GUESTFS_ADD_DOMAIN_LIVE_BITMASK;
       this_arg = "live";
+    }
+    else if (STRPREFIX (argv[i], "allowuuid:")) {
+      optargs_s.allowuuid = is_true (&argv[i][10]) ? 1 : 0;
+      this_mask = GUESTFS_ADD_DOMAIN_ALLOWUUID_BITMASK;
+      this_arg = "allowuuid";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
@@ -4491,6 +4594,95 @@ run_inspect_get_drive_mappings (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) return -1;
   print_table (r);
   free_strings (r);
+  return 0;
+}
+
+static int
+run_inspect_get_icon (const char *cmd, size_t argc, char *argv[])
+{
+  char *r;
+  size_t size;
+  const char *root;
+  struct guestfs_inspect_get_icon_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_inspect_get_icon_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 3) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 3);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  root = argv[i++];
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "favicon:")) {
+      optargs_s.favicon = is_true (&argv[i][8]) ? 1 : 0;
+      this_mask = GUESTFS_INSPECT_GET_ICON_FAVICON_BITMASK;
+      this_arg = "favicon";
+    }
+    else if (STRPREFIX (argv[i], "highquality:")) {
+      optargs_s.highquality = is_true (&argv[i][12]) ? 1 : 0;
+      this_mask = GUESTFS_INSPECT_GET_ICON_HIGHQUALITY_BITMASK;
+      this_arg = "highquality";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      return -1;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      return -1;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_inspect_get_icon_argv (g, root, &size, optargs);
+  if (r == NULL) return -1;
+  if (full_write (1, r, size) != size) {
+    perror ("write");
+    free (r);
+    return -1;
+  }
+  free (r);
+  return 0;
+}
+
+static int
+run_set_pgroup (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  int pgroup;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  pgroup = is_true (argv[i++]) ? 1 : 0;
+  r = guestfs_set_pgroup (g, pgroup);
+  return r;
+}
+
+static int
+run_get_pgroup (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  r = guestfs_get_pgroup (g);
+  if (r == -1) return -1;
+  if (r) printf ("true\n"); else printf ("false\n");
   return 0;
 }
 
@@ -11585,8 +11777,8 @@ run_mkfs_opts (const char *cmd, size_t argc, char *argv[])
   struct guestfs_mkfs_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 4) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 4);
+  if (argc < 2 || argc > 6) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 6);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     return -1;
   }
@@ -11624,6 +11816,52 @@ run_mkfs_opts (const char *cmd, size_t argc, char *argv[])
       optargs_s.features = &argv[i][9];
       this_mask = GUESTFS_MKFS_OPTS_FEATURES_BITMASK;
       this_arg = "features";
+    }
+    else if (STRPREFIX (argv[i], "inode:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.inode", "xstrtoll", xerr);
+      return -1;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.inode");
+      return -1;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    optargs_s.inode = r;
+  }
+      this_mask = GUESTFS_MKFS_OPTS_INODE_BITMASK;
+      this_arg = "inode";
+    }
+    else if (STRPREFIX (argv[i], "sectorsize:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.sectorsize", "xstrtoll", xerr);
+      return -1;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.sectorsize");
+      return -1;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    optargs_s.sectorsize = r;
+  }
+      this_mask = GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK;
+      this_arg = "sectorsize";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
@@ -11715,6 +11953,266 @@ run_resize2fs_M (const char *cmd, size_t argc, char *argv[])
   }
   device = argv[i++];
   r = guestfs_resize2fs_M (g, device);
+  return r;
+}
+
+static int
+run_is_zero (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) return -1;
+  r = guestfs_is_zero (g, path);
+  free (path);
+  if (r == -1) return -1;
+  if (r) printf ("true\n"); else printf ("false\n");
+  return 0;
+}
+
+static int
+run_is_zero_device (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  device = argv[i++];
+  r = guestfs_is_zero_device (g, device);
+  if (r == -1) return -1;
+  if (r) printf ("true\n"); else printf ("false\n");
+  return 0;
+}
+
+static int
+run_list_9p (const char *cmd, size_t argc, char *argv[])
+{
+  char **r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  r = guestfs_list_9p (g);
+  if (r == NULL) return -1;
+  print_strings (r);
+  free_strings (r);
+  return 0;
+}
+
+static int
+run_mount_9p (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  const char *mounttag;
+  const char *mountpoint;
+  struct guestfs_mount_9p_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mount_9p_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 2 || argc > 3) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 3);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  mounttag = argv[i++];
+  mountpoint = argv[i++];
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "options:")) {
+      optargs_s.options = &argv[i][8];
+      this_mask = GUESTFS_MOUNT_9P_OPTIONS_BITMASK;
+      this_arg = "options";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      return -1;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      return -1;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_mount_9p_argv (g, mounttag, mountpoint, optargs);
+  return r;
+}
+
+static int
+run_list_dm_devices (const char *cmd, size_t argc, char *argv[])
+{
+  char **r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  r = guestfs_list_dm_devices (g);
+  if (r == NULL) return -1;
+  print_strings (r);
+  free_strings (r);
+  return 0;
+}
+
+static int
+run_ntfsresize_opts (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  const char *device;
+  struct guestfs_ntfsresize_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_ntfsresize_opts_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 3) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 3);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  device = argv[i++];
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "size:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.size", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.size = r;
+  }
+      this_mask = GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK;
+      this_arg = "size";
+    }
+    else if (STRPREFIX (argv[i], "force:")) {
+      optargs_s.force = is_true (&argv[i][6]) ? 1 : 0;
+      this_mask = GUESTFS_NTFSRESIZE_OPTS_FORCE_BITMASK;
+      this_arg = "force";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      return -1;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      return -1;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_ntfsresize_opts_argv (g, device, optargs);
+  return r;
+}
+
+static int
+run_btrfs_filesystem_resize (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  char *mountpoint;
+  struct guestfs_btrfs_filesystem_resize_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_filesystem_resize_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 2) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  mountpoint = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (mountpoint == NULL) return -1;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "size:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.size", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.size = r;
+  }
+      this_mask = GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK;
+      this_arg = "size";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      return -1;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      return -1;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_btrfs_filesystem_resize_argv (g, mountpoint, optargs);
+  free (mountpoint);
+  return r;
+}
+
+static int
+run_write_append (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  char *path;
+  const char *content;
+  size_t content_size;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) return -1;
+  content = argv[i];
+  content_size = strlen (argv[i]);
+  i++;
+  r = guestfs_write_append (g, path, content, content_size);
+  free (path);
   return r;
 }
 

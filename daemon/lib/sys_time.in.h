@@ -1,6 +1,6 @@
 /* Provide a more complete sys/time.h.
 
-   Copyright (C) 2007-2010 Free Software Foundation, Inc.
+   Copyright (C) 2007-2011 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,8 +21,9 @@
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 #endif
+@PRAGMA_COLUMNS@
 
-#if defined _GL_SYS_TIME_H
+#if defined _@GUARD_PREFIX@_SYS_TIME_H
 
 /* Simply delegate to the system's header, without adding anything.  */
 # if @HAVE_SYS_TIME_H@
@@ -31,7 +32,7 @@
 
 #else
 
-# define _GL_SYS_TIME_H
+# define _@GUARD_PREFIX@_SYS_TIME_H
 
 # if @HAVE_SYS_TIME_H@
 #  @INCLUDE_NEXT@ @NEXT_SYS_TIME_H@
@@ -50,11 +51,16 @@ extern "C" {
 # endif
 
 # if ! @HAVE_STRUCT_TIMEVAL@
+
+#  if !GNULIB_defined_struct_timeval
 struct timeval
 {
   time_t tv_sec;
   long int tv_usec;
 };
+#   define GNULIB_defined_struct_timeval 1
+#  endif
+
 # endif
 
 # ifdef __cplusplus
@@ -88,8 +94,8 @@ _GL_CXXALIASWARN (gettimeofday);
 #  undef gettimeofday
 #  if HAVE_RAW_DECL_GETTIMEOFDAY
 _GL_WARN_ON_USE (gettimeofday, "gettimeofday is unportable - "
-		 "use gnulib module gettimeofday for portability");
+                 "use gnulib module gettimeofday for portability");
 #  endif
 # endif
 
-#endif /* _GL_SYS_TIME_H */
+#endif /* _@GUARD_PREFIX@_SYS_TIME_H */

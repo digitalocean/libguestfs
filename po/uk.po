@@ -1,16 +1,16 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Red Hat Inc.
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+# Yuri Chornoivan <yurchor@ukr.net>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: libguestfs\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2011-08-07 23:13+0100\n"
-"PO-Revision-Date: 2011-03-22 15:28+0000\n"
-"Last-Translator: yurchor <yurchor@ukr.net>\n"
+"POT-Creation-Date: 2011-07-20 17:27+0100\n"
+"PO-Revision-Date: 2011-07-17 20:49+0000\n"
+"Last-Translator: rjones <rjones@redhat.com>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
@@ -19,9 +19,9 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 
-#: cat/virt-cat.c:57 cat/virt-filesystems.c:99 cat/virt-ls.c:62 df/main.c:70
-#: fish/fish.c:97 fuse/guestmount.c:908 inspector/virt-inspector.c:72
-#: rescue/virt-rescue.c:59
+#: cat/virt-cat.c:57 cat/virt-filesystems.c:99 cat/virt-ls.c:99 df/main.c:70
+#: edit/virt-edit.c:73 fish/fish.c:99 fuse/guestmount.c:908
+#: inspector/virt-inspector.c:72 rescue/virt-rescue.c:59
 #, c-format
 msgid "Try `%s --help' for more information.\n"
 msgstr "Щоб дізнатися більше, віддайте команду «%s --help».\n"
@@ -65,15 +65,16 @@ msgstr ""
 "  -x                   Трасувати виклики програмного інтерфейсу libguestfs\n"
 "Щоб дізнатися більше, скористайтеся сторінкою довідника (man) %s(1).\n"
 
-#: cat/virt-cat.c:117 cat/virt-filesystems.c:202 cat/virt-ls.c:130
-#: df/domains.c:428 df/main.c:136 fish/fish.c:220 fuse/guestmount.c:1024
-#: inspector/virt-inspector.c:132 rescue/virt-rescue.c:133
+#: cat/virt-cat.c:117 cat/virt-filesystems.c:202 cat/virt-ls.c:192
+#: df/domains.c:428 df/main.c:136 edit/virt-edit.c:141 fish/fish.c:222
+#: fuse/guestmount.c:1024 inspector/virt-inspector.c:132
+#: rescue/virt-rescue.c:133
 #, c-format
 msgid "guestfs_create: failed to create handle\n"
 msgstr "guestfs_create: не вдалося створити елемент керування\n"
 
-#: cat/virt-cat.c:139 cat/virt-filesystems.c:256 cat/virt-ls.c:152
-#: df/main.c:160 fish/fish.c:277 fuse/guestmount.c:1061
+#: cat/virt-cat.c:139 cat/virt-filesystems.c:256 cat/virt-ls.c:242
+#: df/main.c:160 edit/virt-edit.c:163 fish/fish.c:279 fuse/guestmount.c:1061
 #: inspector/virt-inspector.c:154 rescue/virt-rescue.c:157
 #, c-format
 msgid "%s: unknown long option: %s (%d)\n"
@@ -156,13 +157,13 @@ msgstr ""
 "  -x                   Показати виклики програмного інтерфейсу libguestfs\n"
 "Щоб дізнатися більше, ознайомтеся зі сторінкою довідника (man) %s(1).\n"
 
-#: cat/virt-filesystems.c:318 df/main.c:255
+#: cat/virt-filesystems.c:318 cat/virt-ls.c:347 df/main.c:255
 #, c-format
 msgid "%s: you cannot use -h and --csv options together.\n"
 msgstr "%s: не можна одночасно використовувати параметри -h та --csv.\n"
 
-#: cat/virt-ls.c:66
-#, fuzzy, c-format
+#: cat/virt-ls.c:103
+#, c-format
 msgid ""
 "%s: list files in a virtual machine\n"
 "Copyright (C) 2010-2011 Red Hat Inc.\n"
@@ -171,43 +172,45 @@ msgid ""
 "  %s [--options] -a disk.img [-a disk.img ...] dir [dir ...]\n"
 "Options:\n"
 "  -a|--add image       Add image\n"
+"  --checksum[=...]     Display file checksums\n"
 "  -c|--connect uri     Specify libvirt URI for -d option\n"
+"  --csv                Comma-Separated Values output\n"
 "  -d|--domain guest    Add disks from libvirt guest\n"
 "  --echo-keys          Don't turn off echo for passphrases\n"
+"  --extra-stats        Display extra stats\n"
 "  --format[=raw|..]    Force disk format for -a option\n"
 "  --help               Display brief help\n"
+"  -h|--human-readable  Human-readable sizes in output\n"
 "  --keys-from-stdin    Read passphrases from stdin\n"
 "  -l|--long            Long listing\n"
 "  -R|--recursive       Recursive listing\n"
+"  --times              Display file times\n"
+"  --time-days          Display file times as days before now\n"
+"  --time-relative      Display file times as seconds before now\n"
+"  --time-t             Display file times as time_t's\n"
+"  --uids               Display UID, GID\n"
 "  -v|--verbose         Verbose messages\n"
 "  -V|--version         Display version and exit\n"
 "  -x                   Trace libguestfs API calls\n"
 "For more information, see the manpage %s(1).\n"
 msgstr ""
-"%s: показ списку файлів у віртуальній машині\n"
-"© Red Hat Inc., 2010\n"
-"Використання:\n"
-"  %s [--параметри] -d назва_домену файл [каталог ]\n"
-"  %s [--параметри] -a диск.img [-a диск.img ] каталог [каталог ...]\n"
-"Options:\n"
-"  -a|--add image       Додати образ\n"
-"  -c|--connect uri     Вказати адресу libvirt для параметра -d\n"
-"  -d|--domain guest    Додати диски з гостьової системи libvirt\n"
-"  --echo-keys          Не вимикати показ введених символів паролів\n"
-"  --format[=raw|..]    Вказати формат диска для параметра -a\n"
-"  --help               Показати короткі довідкові дані\n"
-"  --keys-from-stdin    Прочитати паролі зі stdin\n"
-"  -l|--long            Довгі списки\n"
-"  -R|--recursive       Рекурсивні списки\n"
-"  -v|--verbose         Докладні повідомлення\n"
-"  -V|--version         Показати дані щодо версії і завершити роботу\n"
-"  -x                   Трасувати виклики програмного інтерфейсу libguestfs\n"
-"Щоб дізнатися більше, скористайтеся сторінкою довідника (man) %s(1).\n"
 
-#: cat/virt-ls.c:236
-#, fuzzy, c-format
-msgid "%s: cannot combine -l and -R options\n"
-msgstr "%s: не можна одночасно використовувати параметри -h та --csv.\n"
+#: cat/virt-ls.c:338
+#, c-format
+msgid ""
+"%s: used a flag which can only be combined with -lR mode\n"
+"For more information, read the virt-ls(1) man page.\n"
+msgstr ""
+
+#: cat/virt-ls.c:577
+#, c-format
+msgid "%s: error getting extended attrs for %s %s\n"
+msgstr ""
+
+#: cat/virt-ls.c:583
+#, c-format
+msgid "%s: error: cannot parse xattr count for %s %s\n"
+msgstr ""
 
 #: df/domains.c:115
 #, c-format
@@ -338,6 +341,50 @@ msgstr "IВільно"
 msgid "IUse%"
 msgstr "% IВикористання"
 
+#: edit/virt-edit.c:77
+#, c-format
+msgid ""
+"%s: Edit a file in a virtual machine\n"
+"Copyright (C) 2009-2011 Red Hat Inc.\n"
+"Usage:\n"
+"  %s [--options] -d domname file [file ...]\n"
+"  %s [--options] -a disk.img [-a disk.img ...] file [file ...]\n"
+"Options:\n"
+"  -a|--add image       Add image\n"
+"  -b|--backup .ext     Backup original as original.ext\n"
+"  -c|--connect uri     Specify libvirt URI for -d option\n"
+"  -d|--domain guest    Add disks from libvirt guest\n"
+"  --echo-keys          Don't turn off echo for passphrases\n"
+"  -e|--expr expr       Non-interactive editing using Perl expr\n"
+"  --format[=raw|..]    Force disk format for -a option\n"
+"  --help               Display brief help\n"
+"  --keys-from-stdin    Read passphrases from stdin\n"
+"  -v|--verbose         Verbose messages\n"
+"  -V|--version         Display version and exit\n"
+"  -x                   Trace libguestfs API calls\n"
+"For more information, see the manpage %s(1).\n"
+msgstr ""
+
+#: edit/virt-edit.c:175
+#, c-format
+msgid "%s: -b option given multiple times\n"
+msgstr ""
+
+#: edit/virt-edit.c:192
+#, c-format
+msgid "%s: -e option given multiple times\n"
+msgstr ""
+
+#: edit/virt-edit.c:585 fish/fish.c:1551
+#, c-format
+msgid "%s: to use Windows drive letters, this must be a Windows guest\n"
+msgstr ""
+
+#: edit/virt-edit.c:599
+#, c-format
+msgid "%s: drive '%c:' not found.\n"
+msgstr ""
+
 #: fish/alloc.c:37
 #, c-format
 msgid "use 'alloc file size' to create an image\n"
@@ -360,1636 +407,1685 @@ msgstr "не вдалося виокремити або додати диски 
 msgid "%s: invalid integer parameter (%s returned %d)\n"
 msgstr "%s: некоректний цілий параметр (%s повернуто %d)\n"
 
-#: fish/cmds.c:2557
+#: fish/cmds.c:2643
 msgid "Command"
 msgstr "Команда"
 
-#: fish/cmds.c:2557
+#: fish/cmds.c:2643
 msgid "Description"
 msgstr "Опис"
 
-#: fish/cmds.c:2559
+#: fish/cmds.c:2645
 msgid "add a CD-ROM disk image to examine"
 msgstr "додати образ диска CD-ROM для вивчення"
 
-#: fish/cmds.c:2560
+#: fish/cmds.c:2646
 msgid "add the disk(s) from a named libvirt domain"
 msgstr "додати диски з іменованого домену libvirt"
 
-#: fish/cmds.c:2561 fish/cmds.c:2562
+#: fish/cmds.c:2647 fish/cmds.c:2648
 msgid "add an image to examine or modify"
 msgstr "додати образ для вивчення або внесення змін"
 
-#: fish/cmds.c:2563
+#: fish/cmds.c:2649
 msgid "add a drive in snapshot mode (read-only)"
 msgstr "додати пристрій у режимі знімка даних (лише для читання)"
 
-#: fish/cmds.c:2564
+#: fish/cmds.c:2650
 msgid "add a drive read-only specifying the QEMU block emulation to use"
 msgstr ""
 "додати пристрій у режимі лише читання з визначенням режиму емуляції блоків "
 "QEMU"
 
-#: fish/cmds.c:2565
+#: fish/cmds.c:2651
 msgid "add a drive specifying the QEMU block emulation to use"
 msgstr "додати пристрій з визначенням режиму емуляції блоків QEMU"
 
-#: fish/cmds.c:2566
+#: fish/cmds.c:2652
 msgid "allocate and add a disk file"
 msgstr "виокремити місце і додати файл диска"
 
-#: fish/cmds.c:2567
+#: fish/cmds.c:2653
 msgid "clear Augeas path"
 msgstr "спорожнити адресу каталогу Augeas"
 
-#: fish/cmds.c:2568
+#: fish/cmds.c:2654
 msgid "close the current Augeas handle"
 msgstr "закрити поточний елемент керування Augeas"
 
-#: fish/cmds.c:2569
+#: fish/cmds.c:2655
 msgid "define an Augeas node"
 msgstr "визначити вузол Augeas"
 
-#: fish/cmds.c:2570
+#: fish/cmds.c:2656
 msgid "define an Augeas variable"
 msgstr "визначити змінну Augeas"
 
-#: fish/cmds.c:2571
+#: fish/cmds.c:2657
 msgid "look up the value of an Augeas path"
 msgstr "шукати значення запису каталогу Augeas"
 
-#: fish/cmds.c:2572
+#: fish/cmds.c:2658
 msgid "create a new Augeas handle"
 msgstr "створити елемент керування Augeas"
 
-#: fish/cmds.c:2573
+#: fish/cmds.c:2659
 msgid "insert a sibling Augeas node"
 msgstr "вставити вузол Augeas того самого рівня"
 
-#: fish/cmds.c:2574
+#: fish/cmds.c:2660
 msgid "load files into the tree"
 msgstr "завантажити файли до ієрархії"
 
-#: fish/cmds.c:2575
+#: fish/cmds.c:2661
 msgid "list Augeas nodes under augpath"
 msgstr "повернути список вузлів Augeas у каталозі augpath"
 
-#: fish/cmds.c:2576
+#: fish/cmds.c:2662
 msgid "return Augeas nodes which match augpath"
 msgstr "повернути вузли Augeas, які відповідають вказаному значенню augpath"
 
-#: fish/cmds.c:2577
+#: fish/cmds.c:2663
 msgid "move Augeas node"
 msgstr "пересунути вузол Augeas"
 
-#: fish/cmds.c:2578
+#: fish/cmds.c:2664
 msgid "remove an Augeas path"
 msgstr "вилучити запис каталогу Augeas"
 
-#: fish/cmds.c:2579
+#: fish/cmds.c:2665
 msgid "write all pending Augeas changes to disk"
 msgstr "записати всі зміни з черги змін Augeas на диск"
 
-#: fish/cmds.c:2580
+#: fish/cmds.c:2666
 msgid "set Augeas path to value"
 msgstr "встановити для шляху Augeas вказане значення"
 
-#: fish/cmds.c:2581
+#: fish/cmds.c:2667
 msgid "test availability of some parts of the API"
 msgstr "перевірити доступність певних частин програмного інтерфейсу"
 
-#: fish/cmds.c:2582
+#: fish/cmds.c:2668
 msgid "return a list of all optional groups"
 msgstr "повернути список всіх додаткових груп"
 
-#: fish/cmds.c:2583
+#: fish/cmds.c:2669
 msgid "upload base64-encoded data to file"
 msgstr "вивантажити дані, закодовані у форматі base64, до файла"
 
-#: fish/cmds.c:2584
+#: fish/cmds.c:2670
 msgid "download file and encode as base64"
 msgstr "отримати файл і закодувати його у форматі base64"
 
-#: fish/cmds.c:2585
+#: fish/cmds.c:2671
 msgid "flush device buffers"
 msgstr "спорожнити буфери пристрою"
 
-#: fish/cmds.c:2586
+#: fish/cmds.c:2672
 msgid "get blocksize of block device"
 msgstr "отримати розмір у блоках блокового пристрою"
 
-#: fish/cmds.c:2587
+#: fish/cmds.c:2673
 msgid "is block device set to read-only"
 msgstr "визначити, чи працює блоковий пристрій у режимі лише читання"
 
-#: fish/cmds.c:2588
+#: fish/cmds.c:2674
 msgid "get total size of device in bytes"
 msgstr "отримати дані щодо загального об’єму зберігання пристрою у байтах"
 
-#: fish/cmds.c:2589
+#: fish/cmds.c:2675
 msgid "get sectorsize of block device"
 msgstr "отримати розмір сектора блокового пристрою"
 
-#: fish/cmds.c:2590
+#: fish/cmds.c:2676
 msgid "get total size of device in 512-byte sectors"
 msgstr ""
 "отримати загальний об’єм зберігання на пристрої у 512-байтових секторах"
 
-#: fish/cmds.c:2591
+#: fish/cmds.c:2677
 msgid "reread partition table"
 msgstr "повторно прочитати таблицю розділів"
 
-#: fish/cmds.c:2592
+#: fish/cmds.c:2678
 msgid "set blocksize of block device"
 msgstr "встановити розмір у блоках блокового пристрою"
 
-#: fish/cmds.c:2593
+#: fish/cmds.c:2679
 msgid "set block device to read-only"
 msgstr "перевести блоковий пристрій у режим лише читання"
 
-#: fish/cmds.c:2594
+#: fish/cmds.c:2680
 msgid "set block device to read-write"
 msgstr "перевести блоковий пристрій у режим читання-запису"
 
-#: fish/cmds.c:2595
+#: fish/cmds.c:2681
+msgid "resize a btrfs filesystem"
+msgstr ""
+
+#: fish/cmds.c:2682
 msgid "return true path on case-insensitive filesystem"
 msgstr ""
 "повернути справжню адресу у файловій системі без врахування регістру символів"
 
-#: fish/cmds.c:2596
+#: fish/cmds.c:2683
 msgid "list the contents of a file"
 msgstr "показати вміст файла"
 
-#: fish/cmds.c:2597
+#: fish/cmds.c:2684
 msgid "compute MD5, SHAx or CRC checksum of file"
 msgstr "обчислити контрольну суму MD5, SHAx або CRC файла"
 
-#: fish/cmds.c:2598
+#: fish/cmds.c:2685
 msgid "compute MD5, SHAx or CRC checksum of the contents of a device"
 msgstr "обчислити контрольну суму MD5, SHAx або CRC вмісту пристрою"
 
-#: fish/cmds.c:2599
+#: fish/cmds.c:2686
 msgid "compute MD5, SHAx or CRC checksum of files in a directory"
 msgstr "обчислити контрольну суму MD5, SHAx або CRC файлів у каталозі"
 
-#: fish/cmds.c:2600
+#: fish/cmds.c:2687
 msgid "change file mode"
 msgstr "змінити режим доступу до файла"
 
-#: fish/cmds.c:2601 fish/cmds.c:2717
+#: fish/cmds.c:2688 fish/cmds.c:2809
 msgid "change file owner and group"
 msgstr "змінити власника і групу належності файла"
 
-#: fish/cmds.c:2602
+#: fish/cmds.c:2689
 msgid "run a command from the guest filesystem"
 msgstr "виконати команду з гостьової файлової системи"
 
-#: fish/cmds.c:2603
+#: fish/cmds.c:2690
 msgid "run a command, returning lines"
 msgstr "виконати команду, повернути виведені рядки"
 
-#: fish/cmds.c:2604
+#: fish/cmds.c:2691
 msgid "add qemu parameters"
 msgstr "додати параметри qemu"
 
-#: fish/cmds.c:2605
+#: fish/cmds.c:2692
 msgid "copy local files or directories into an image"
 msgstr "копіювати локальні файли або каталоги на образ"
 
-#: fish/cmds.c:2606
+#: fish/cmds.c:2693
 msgid "copy remote files or directories out of an image"
 msgstr "копіювати файли або каталоги з віддалених джерел поза межі образу"
 
-#: fish/cmds.c:2607
+#: fish/cmds.c:2694
 msgid "copy size bytes from source to destination using dd"
 msgstr ""
 "копіювати вказану кількість байтів з джерела до призначення за допомогою dd"
 
-#: fish/cmds.c:2608
+#: fish/cmds.c:2695
 msgid "copy a file"
 msgstr "копіювати файл"
 
-#: fish/cmds.c:2609
+#: fish/cmds.c:2696
 msgid "copy a file or directory recursively"
 msgstr "копіювати файл або каталог рекурсивно"
 
-#: fish/cmds.c:2610
+#: fish/cmds.c:2697
 msgid "copy from source to destination using dd"
 msgstr "копіювати з джерела до призначення за допомогою dd"
 
-#: fish/cmds.c:2611
+#: fish/cmds.c:2698
 msgid "debugging and internals"
 msgstr "діагностика і внутрішні функції"
 
-#: fish/cmds.c:2612
+#: fish/cmds.c:2699
 msgid "debug the QEMU command line (internal use only)"
 msgstr ""
 "виконати діагностичну перевірку командного рядка QEMU (лише для внутрішнього "
 "використання)"
 
-#: fish/cmds.c:2613
+#: fish/cmds.c:2700
 msgid "upload a file to the appliance (internal use only)"
 msgstr "вивантажити файл на пристрій (лише для внутрішнього використання)"
 
-#: fish/cmds.c:2614
+#: fish/cmds.c:2701
 msgid "report file system disk space usage"
 msgstr "повідомити про використання файлової системи"
 
-#: fish/cmds.c:2615
+#: fish/cmds.c:2702
 msgid "report file system disk space usage (human readable)"
 msgstr ""
 "повідомити про використання файлової системи (у зручному для читання форматі)"
 
-#: fish/cmds.c:2616
+#: fish/cmds.c:2703
+msgid "display an image"
+msgstr ""
+
+#: fish/cmds.c:2704
 msgid "return kernel messages"
 msgstr "повернути повідомлення ядра"
 
-#: fish/cmds.c:2617
+#: fish/cmds.c:2705
 msgid "download a file to the local machine"
 msgstr "зберегти файл у локальній системі"
 
-#: fish/cmds.c:2618
+#: fish/cmds.c:2706
 msgid "download a file to the local machine with offset and size"
 msgstr "зберегти файл у локальній системі з вказаним зсувом та розміром"
 
-#: fish/cmds.c:2619
+#: fish/cmds.c:2707
 msgid "drop kernel page cache, dentries and inodes"
 msgstr "скинути кеш сторінок ядра, записи dentry та inode."
 
-#: fish/cmds.c:2620
+#: fish/cmds.c:2708
 msgid "estimate file space usage"
 msgstr "оцінити об’єм даних файлів"
 
-#: fish/cmds.c:2621
+#: fish/cmds.c:2709
 msgid "check an ext2/ext3 filesystem"
 msgstr "перевірити файлову систему ext2/ext3"
 
-#: fish/cmds.c:2622
+#: fish/cmds.c:2710
 msgid "display a line of text"
 msgstr "показати рядок тексту"
 
-#: fish/cmds.c:2623
+#: fish/cmds.c:2711
 msgid "echo arguments back to the client"
 msgstr "повернути копію параметрів клієнту"
 
-#: fish/cmds.c:2624
+#: fish/cmds.c:2712
 msgid "edit a file"
 msgstr "редагувати файл"
 
-#: fish/cmds.c:2625 fish/cmds.c:2626 fish/cmds.c:2631 fish/cmds.c:2632
-#: fish/cmds.c:2665 fish/cmds.c:2666 fish/cmds.c:2910 fish/cmds.c:2911
-#: fish/cmds.c:2915 fish/cmds.c:2916 fish/cmds.c:2918 fish/cmds.c:2919
+#: fish/cmds.c:2713 fish/cmds.c:2714 fish/cmds.c:2719 fish/cmds.c:2720
+#: fish/cmds.c:2754 fish/cmds.c:2755 fish/cmds.c:3008 fish/cmds.c:3009
+#: fish/cmds.c:3013 fish/cmds.c:3014 fish/cmds.c:3016 fish/cmds.c:3017
 msgid "return lines matching a pattern"
 msgstr "повернути рядки, що відповідають зразку"
 
-#: fish/cmds.c:2627
+#: fish/cmds.c:2715
 msgid "test if two files have equal contents"
 msgstr "перевірити, чи є вміст двох файлів тотожнім"
 
-#: fish/cmds.c:2628
+#: fish/cmds.c:2716
 msgid "test if file or directory exists"
 msgstr "перевірити, чи існує файл або каталог"
 
-#: fish/cmds.c:2629 fish/cmds.c:2630
+#: fish/cmds.c:2717 fish/cmds.c:2718
 msgid "preallocate a file in the guest filesystem"
 msgstr "попередньо виокремити місце для файла на гостьовій файловій системі"
 
-#: fish/cmds.c:2633
+#: fish/cmds.c:2721
 msgid "determine file type"
 msgstr "визначити тип файла"
 
-#: fish/cmds.c:2634
+#: fish/cmds.c:2722
 msgid "detect the architecture of a binary file"
 msgstr "визначити архітектуру бінарного файла"
 
-#: fish/cmds.c:2635
+#: fish/cmds.c:2723
 msgid "return the size of the file in bytes"
 msgstr "повернути розмір файла у байтах"
 
-#: fish/cmds.c:2636
+#: fish/cmds.c:2724
 msgid "fill a file with octets"
 msgstr "заповнити файл вісімковими значеннями"
 
-#: fish/cmds.c:2637
+#: fish/cmds.c:2725
 msgid "fill a file with a repeating pattern of bytes"
 msgstr "заповнити файл повторюваним зразком рядка байтів"
 
-#: fish/cmds.c:2638
+#: fish/cmds.c:2726
 msgid "find all files and directories"
 msgstr "знайти всі файли і каталоги"
 
-#: fish/cmds.c:2639
+#: fish/cmds.c:2727
 msgid "find all files and directories, returning NUL-separated list"
 msgstr ""
 "знайти всі файли і каталоги, повернути відокремлений символами NUL список"
 
-#: fish/cmds.c:2640
+#: fish/cmds.c:2728
 msgid "find a filesystem by label"
 msgstr "знайти файлову систему за міткою"
 
-#: fish/cmds.c:2641
+#: fish/cmds.c:2729
 msgid "find a filesystem by UUID"
 msgstr "знайти файлову систему за UUID"
 
-#: fish/cmds.c:2642
+#: fish/cmds.c:2730
 msgid "run the filesystem checker"
 msgstr "виконати перевірку файлової системи"
 
-#: fish/cmds.c:2643
+#: fish/cmds.c:2731
 msgid "get the additional kernel options"
 msgstr "отримати додаткові параметри ядра"
 
-#: fish/cmds.c:2644
+#: fish/cmds.c:2732
 msgid "get the attach method"
 msgstr "отримати значення методу долучення"
 
-#: fish/cmds.c:2645
+#: fish/cmds.c:2733
 msgid "get autosync mode"
 msgstr "отримати значення режиму автосинхронізації"
 
-#: fish/cmds.c:2646
+#: fish/cmds.c:2734
 msgid "get direct appliance mode flag"
 msgstr "отримати значення режиму безпосередньої роботи з пристроєм"
 
-#: fish/cmds.c:2647
+#: fish/cmds.c:2735
 msgid "get the ext2/3/4 filesystem label"
 msgstr "отримати мітку файлової системи ext2/3/4"
 
-#: fish/cmds.c:2648
+#: fish/cmds.c:2736
 msgid "get the ext2/3/4 filesystem UUID"
 msgstr "отримати UUID файлової системи ext2/3/4"
 
-#: fish/cmds.c:2649
+#: fish/cmds.c:2737
 msgid "get memory allocated to the qemu subprocess"
 msgstr "отримати дані щодо пам’яті, отриманої підпроцесом qemu"
 
-#: fish/cmds.c:2650
+#: fish/cmds.c:2738
 msgid "get enable network flag"
 msgstr "отримати значення прапорця вмикання мережі"
 
-#: fish/cmds.c:2651
+#: fish/cmds.c:2739
 msgid "get the search path"
 msgstr "отримати адресу каталогу пошуку"
 
-#: fish/cmds.c:2652
+#: fish/cmds.c:2740
+msgid "get process group flag"
+msgstr ""
+
+#: fish/cmds.c:2741
 msgid "get PID of qemu subprocess"
 msgstr "отримати ідентифікатор підпроцесу qemu"
 
-#: fish/cmds.c:2653
+#: fish/cmds.c:2742
 msgid "get the qemu binary"
 msgstr "отримати назву виконуваного файла qemu"
 
-#: fish/cmds.c:2654
+#: fish/cmds.c:2743
 msgid "get recovery process enabled flag"
 msgstr "отримати значення прапорця відновлення процесу"
 
-#: fish/cmds.c:2655
+#: fish/cmds.c:2744
 msgid "get SELinux enabled flag"
 msgstr "отримати значення прапорця вмикання SELinux"
 
-#: fish/cmds.c:2656
+#: fish/cmds.c:2745
 msgid "get the current state"
 msgstr "отримати значення поточного стану"
 
-#: fish/cmds.c:2657
+#: fish/cmds.c:2746
 msgid "get command trace enabled flag"
 msgstr "отримати значення вмикання трасування команди"
 
-#: fish/cmds.c:2658
+#: fish/cmds.c:2747
 msgid "get the current umask"
 msgstr "отримати поточне значення umask"
 
-#: fish/cmds.c:2659
+#: fish/cmds.c:2748
 msgid "get verbose mode"
 msgstr "отримати значення режиму докладних повідомлень"
 
-#: fish/cmds.c:2660
+#: fish/cmds.c:2749
 msgid "get SELinux security context"
 msgstr "отримати значення контексту захисту SELinux"
 
-#: fish/cmds.c:2661 fish/cmds.c:2718
+#: fish/cmds.c:2750 fish/cmds.c:2810
 msgid "get a single extended attribute"
 msgstr "отримати окремий додатковий атрибут"
 
-#: fish/cmds.c:2662 fish/cmds.c:2719
+#: fish/cmds.c:2751 fish/cmds.c:2811
 msgid "list extended attributes of a file or directory"
 msgstr "показати список додаткових атрибутів файла або каталогу"
 
-#: fish/cmds.c:2663
+#: fish/cmds.c:2752
 msgid "expand wildcards in command"
 msgstr "розгорнути шаблони заміни у команду"
 
-#: fish/cmds.c:2664
+#: fish/cmds.c:2753
 msgid "expand a wildcard path"
 msgstr "розгорнути адресу каталогу з шаблонами заміни"
 
-#: fish/cmds.c:2667
+#: fish/cmds.c:2756
 msgid "install GRUB"
 msgstr "встановити GRUB"
 
-#: fish/cmds.c:2668
+#: fish/cmds.c:2757
 msgid "return first 10 lines of a file"
 msgstr "повернути перші 10 рядків файла"
 
-#: fish/cmds.c:2669
+#: fish/cmds.c:2758
 msgid "return first N lines of a file"
 msgstr "повернути перші N рядків файла"
 
-#: fish/cmds.c:2670
+#: fish/cmds.c:2759
 msgid "dump a file in hexadecimal"
 msgstr "створити шістнадцятковий дамп файла"
 
-#: fish/cmds.c:2671
+#: fish/cmds.c:2760
 msgid "edit with a hex editor"
 msgstr "редагувати за допомогою шістнадцяткового редактора"
 
-#: fish/cmds.c:2672
+#: fish/cmds.c:2761
 msgid "list the contents of a single file in an initrd"
 msgstr "показати вміст окремого файла у initrd"
 
-#: fish/cmds.c:2673
+#: fish/cmds.c:2762
 msgid "list files in an initrd"
 msgstr "показати список файлів у initrd"
 
-#: fish/cmds.c:2674
+#: fish/cmds.c:2763
 msgid "add an inotify watch"
 msgstr "додати спостереження за inotify"
 
-#: fish/cmds.c:2675
+#: fish/cmds.c:2764
 msgid "close the inotify handle"
 msgstr "закрити елемент керування inotify"
 
-#: fish/cmds.c:2676
+#: fish/cmds.c:2765
 msgid "return list of watched files that had events"
 msgstr ""
 "повернути список файлів, за якими ведеться спостереження, для яких сталися "
 "події"
 
-#: fish/cmds.c:2677
+#: fish/cmds.c:2766
 msgid "create an inotify handle"
 msgstr "створити елемент керування inotify"
 
-#: fish/cmds.c:2678
+#: fish/cmds.c:2767
 msgid "return list of inotify events"
 msgstr "повернути список подій inotify"
 
-#: fish/cmds.c:2679
+#: fish/cmds.c:2768
 msgid "remove an inotify watch"
 msgstr "вилучити спостереження за inotify"
 
-#: fish/cmds.c:2680
+#: fish/cmds.c:2769
 msgid "get architecture of inspected operating system"
 msgstr "отримати значення архітектури операційної системи, яка вивчається"
 
-#: fish/cmds.c:2681
+#: fish/cmds.c:2770
 msgid "get distro of inspected operating system"
 msgstr ""
 "отримати значення запису дистрибутива операційної системи, яка вивчається"
 
-#: fish/cmds.c:2682
+#: fish/cmds.c:2771
 msgid "get drive letter mappings"
 msgstr ""
 
-#: fish/cmds.c:2683
+#: fish/cmds.c:2772
 msgid "get filesystems associated with inspected operating system"
 msgstr ""
 "отримати значення записів файлових систем, пов’язаних з операційною "
 "системою, яка вивчається"
 
-#: fish/cmds.c:2684
+#: fish/cmds.c:2773
 msgid "get format of inspected operating system"
 msgstr "отримати значення запису формату операційної системи, яка вивчається"
 
-#: fish/cmds.c:2685
+#: fish/cmds.c:2774
 msgid "get hostname of the operating system"
 msgstr "отримати значення назви вузла операційної системи"
 
-#: fish/cmds.c:2686
+#: fish/cmds.c:2775
+msgid "get the icon corresponding to this operating system"
+msgstr ""
+
+#: fish/cmds.c:2776
 msgid "get major version of inspected operating system"
 msgstr "отримати значення основної версії операційної системи, яка вивчається"
 
-#: fish/cmds.c:2687
+#: fish/cmds.c:2777
 msgid "get minor version of inspected operating system"
 msgstr ""
 "отримати значення версії виправлення операційної системи, яка вивчається"
 
-#: fish/cmds.c:2688
+#: fish/cmds.c:2778
 msgid "get mountpoints of inspected operating system"
 msgstr "отримати значення точок монтування операційної системи, яка вивчається"
 
-#: fish/cmds.c:2689
+#: fish/cmds.c:2779
 msgid "get package format used by the operating system"
 msgstr ""
 "отримати значення формату пакунків, що використовується операційною системою"
 
-#: fish/cmds.c:2690
+#: fish/cmds.c:2780
 msgid "get package management tool used by the operating system"
 msgstr ""
 "отримати значення назви програми для керування пакунками, що "
 "використовується операційною системою"
 
-#: fish/cmds.c:2691
+#: fish/cmds.c:2781
 msgid "get product name of inspected operating system"
 msgstr "отримати значення назви продукту операційної системи, яка вивчається"
 
-#: fish/cmds.c:2692
-#, fuzzy
+#: fish/cmds.c:2782
 msgid "get product variant of inspected operating system"
-msgstr "отримати значення назви продукту операційної системи, яка вивчається"
+msgstr ""
 
-#: fish/cmds.c:2693
+#: fish/cmds.c:2783
 msgid "return list of operating systems found by last inspection"
 msgstr ""
 "повернути список операційних систем, знайдених під час останньої перевірки"
 
-#: fish/cmds.c:2694
+#: fish/cmds.c:2784
 msgid "get type of inspected operating system"
 msgstr "отримати значення типу операційної системи, яка вивчається"
 
-#: fish/cmds.c:2695
-#, fuzzy
+#: fish/cmds.c:2785
 msgid "get Windows CurrentControlSet of inspected operating system"
 msgstr ""
-"отримати значення кореневого каталогу Windows операційної системи, яка "
-"вивчається"
 
-#: fish/cmds.c:2696
+#: fish/cmds.c:2786
 msgid "get Windows systemroot of inspected operating system"
 msgstr ""
 "отримати значення кореневого каталогу Windows операційної системи, яка "
 "вивчається"
 
-#: fish/cmds.c:2697
+#: fish/cmds.c:2787
 msgid "get live flag for install disk"
 msgstr ""
 "отримати значення прапорця портативного носія для диска для встановлення"
 
-#: fish/cmds.c:2698
+#: fish/cmds.c:2788
 msgid "get multipart flag for install disk"
 msgstr ""
 "отримати значення прапорця носія з декількох частин для диска для "
 "встановлення"
 
-#: fish/cmds.c:2699
+#: fish/cmds.c:2789
 msgid "get netinst (network installer) flag for install disk"
 msgstr ""
 "отримати значення прапорця netinst (встановлення з мережі) для диска для "
 "встановлення"
 
-#: fish/cmds.c:2700
+#: fish/cmds.c:2790
 msgid "get list of applications installed in the operating system"
 msgstr "отримати список програм, встановлених у операційній системі"
 
-#: fish/cmds.c:2701
+#: fish/cmds.c:2791
 msgid "inspect disk and return list of operating systems found"
 msgstr "вивчити диск і повернути список знайдених операційних систем"
 
-#: fish/cmds.c:2702
+#: fish/cmds.c:2792
 msgid "test if block device"
 msgstr "перевірити, чи є пристрій блоковим"
 
-#: fish/cmds.c:2703
+#: fish/cmds.c:2793
 msgid "is busy processing a command"
 msgstr "зайнятий виконанням команди"
 
-#: fish/cmds.c:2704
+#: fish/cmds.c:2794
 msgid "test if character device"
 msgstr "перевірити, чи є пристрій символьним"
 
-#: fish/cmds.c:2705
+#: fish/cmds.c:2795
 msgid "is in configuration state"
 msgstr "у стані налаштування"
 
-#: fish/cmds.c:2706
+#: fish/cmds.c:2796
 msgid "test if a directory"
 msgstr "перевірити, чи є каталогом"
 
-#: fish/cmds.c:2707
+#: fish/cmds.c:2797
 msgid "test if FIFO (named pipe)"
 msgstr "перевірити, чи є FIFO (іменованим каналом)"
 
-#: fish/cmds.c:2708
+#: fish/cmds.c:2798
 msgid "test if a regular file"
 msgstr "перевірити, чи є звичайним файлом"
 
-#: fish/cmds.c:2709
+#: fish/cmds.c:2799
 msgid "is launching subprocess"
 msgstr "запускає підпроцес"
 
-#: fish/cmds.c:2710
+#: fish/cmds.c:2800
 msgid "test if device is a logical volume"
 msgstr "перевірити, чи є пристрій логічним томом"
 
-#: fish/cmds.c:2711
+#: fish/cmds.c:2801
 msgid "is ready to accept commands"
 msgstr "готовий до прийняття команд"
 
-#: fish/cmds.c:2712
+#: fish/cmds.c:2802
 msgid "test if socket"
 msgstr "перевірити, чи є сокетом"
 
-#: fish/cmds.c:2713
+#: fish/cmds.c:2803
 msgid "test if symbolic link"
 msgstr "перевірити, чи є символічним посиланням"
 
-#: fish/cmds.c:2714
+#: fish/cmds.c:2804
+msgid "test if a file contains all zero bytes"
+msgstr ""
+
+#: fish/cmds.c:2805
+msgid "test if a device contains all zero bytes"
+msgstr ""
+
+#: fish/cmds.c:2806
 msgid "kill the qemu subprocess"
 msgstr "завершити роботу підпроцесу qemu"
 
-#: fish/cmds.c:2715
+#: fish/cmds.c:2807
 msgid "launch the qemu subprocess"
 msgstr "запустити підпроцес qemu"
 
-#: fish/cmds.c:2716
+#: fish/cmds.c:2808
 msgid "change working directory"
 msgstr "змінити робочий каталог"
 
-#: fish/cmds.c:2720
+#: fish/cmds.c:2812
+msgid "list 9p filesystems"
+msgstr ""
+
+#: fish/cmds.c:2813
 msgid "list the block devices"
 msgstr "показати список блокових пристроїв"
 
-#: fish/cmds.c:2721
+#: fish/cmds.c:2814
+msgid "list device mapper devices"
+msgstr ""
+
+#: fish/cmds.c:2815
 msgid "list filesystems"
 msgstr "показати список файлових систем"
 
-#: fish/cmds.c:2722
+#: fish/cmds.c:2816
 msgid "list the partitions"
 msgstr "показати список розділів"
 
-#: fish/cmds.c:2723
+#: fish/cmds.c:2817
 msgid "list the files in a directory (long format)"
 msgstr "показати список файлів у каталозі (у розширеному форматі)"
 
-#: fish/cmds.c:2724 fish/cmds.c:2725
+#: fish/cmds.c:2818 fish/cmds.c:2819
 msgid "create a hard link"
 msgstr "створити жорстке посилання"
 
-#: fish/cmds.c:2726 fish/cmds.c:2727
+#: fish/cmds.c:2820 fish/cmds.c:2821
 msgid "create a symbolic link"
 msgstr "створити символічне посилання"
 
-#: fish/cmds.c:2728 fish/cmds.c:2819
+#: fish/cmds.c:2822 fish/cmds.c:2915
 msgid "remove extended attribute of a file or directory"
 msgstr "вилучити додатковий атрибут файла або каталогу"
 
-#: fish/cmds.c:2729
+#: fish/cmds.c:2823
 msgid "list the files in a directory"
 msgstr "показати список файлів у каталозі"
 
-#: fish/cmds.c:2730 fish/cmds.c:2846
+#: fish/cmds.c:2824 fish/cmds.c:2943
 msgid "set extended attribute of a file or directory"
 msgstr "встановити додатковий атрибут файла або каталогу"
 
-#: fish/cmds.c:2731
+#: fish/cmds.c:2825
 msgid "get file information for a symbolic link"
 msgstr "отримати дані щодо файла за символічним посиланням"
 
-#: fish/cmds.c:2732
+#: fish/cmds.c:2826
 msgid "lstat on multiple files"
 msgstr "lstat для декількох файлів"
 
-#: fish/cmds.c:2733
+#: fish/cmds.c:2827
 msgid "add a key on a LUKS encrypted device"
 msgstr "додати ключ на зашифрованому LUKS пристрої"
 
-#: fish/cmds.c:2734
+#: fish/cmds.c:2828
 msgid "close a LUKS device"
 msgstr "закрити пристрій LUKS"
 
-#: fish/cmds.c:2735 fish/cmds.c:2736
+#: fish/cmds.c:2829 fish/cmds.c:2830
 msgid "format a block device as a LUKS encrypted device"
 msgstr "форматувати блоковий пристрій як зашифрований LUKS пристрій"
 
-#: fish/cmds.c:2737
+#: fish/cmds.c:2831
 msgid "remove a key from a LUKS encrypted device"
 msgstr "вилучити ключ з зашифрованого LUKS пристрою"
 
-#: fish/cmds.c:2738
+#: fish/cmds.c:2832
 msgid "open a LUKS-encrypted block device"
 msgstr "відкрити зашифрований LUKS блоковий пристрій"
 
-#: fish/cmds.c:2739
+#: fish/cmds.c:2833
 msgid "open a LUKS-encrypted block device read-only"
 msgstr "відкрити зашифрований LUKS блоковий пристрій у режимі лише для читання"
 
-#: fish/cmds.c:2740
+#: fish/cmds.c:2834
 msgid "create an LVM logical volume"
 msgstr "створити логічний том LVM"
 
-#: fish/cmds.c:2741
+#: fish/cmds.c:2835
 msgid "get canonical name of an LV"
 msgstr "отримати канонічну назву логічного тому"
 
-#: fish/cmds.c:2742
+#: fish/cmds.c:2836
 msgid "clear LVM device filter"
 msgstr "спорожнити фільтр пристроїв LVM"
 
-#: fish/cmds.c:2743
+#: fish/cmds.c:2837
 msgid "remove all LVM LVs, VGs and PVs"
 msgstr "вилучити всі логічні томи, групи томів та фізичні томи LVM"
 
-#: fish/cmds.c:2744
+#: fish/cmds.c:2838
 msgid "set LVM device filter"
 msgstr "встановити фільтр пристроїв LVM"
 
-#: fish/cmds.c:2745
+#: fish/cmds.c:2839
 msgid "remove an LVM logical volume"
 msgstr "вилучити логічний том LVM"
 
-#: fish/cmds.c:2746
+#: fish/cmds.c:2840
 msgid "rename an LVM logical volume"
 msgstr "перейменувати логічний том LVM"
 
-#: fish/cmds.c:2747
+#: fish/cmds.c:2841
 msgid "resize an LVM logical volume"
 msgstr "змінити розміри логічного тому LVM"
 
-#: fish/cmds.c:2748
+#: fish/cmds.c:2842
 msgid "expand an LV to fill free space"
 msgstr "розширити логічний том для заповнення вільного місця"
 
-#: fish/cmds.c:2749 fish/cmds.c:2750
+#: fish/cmds.c:2843 fish/cmds.c:2844
 msgid "list the LVM logical volumes (LVs)"
 msgstr "показати список логічних томів LVM"
 
-#: fish/cmds.c:2751
+#: fish/cmds.c:2845
 msgid "get the UUID of a logical volume"
 msgstr "отримати UUID логічного тому"
 
-#: fish/cmds.c:2752
+#: fish/cmds.c:2846
 msgid "lgetxattr on multiple files"
 msgstr "lgetxattr для декількох файлів"
 
-#: fish/cmds.c:2753
+#: fish/cmds.c:2847
 msgid "open the manual"
 msgstr "відкрити сторінку довідки"
 
-#: fish/cmds.c:2754
+#: fish/cmds.c:2848
 msgid "create a directory"
 msgstr "створити каталог"
 
-#: fish/cmds.c:2755
+#: fish/cmds.c:2849
 msgid "create a directory with a particular mode"
 msgstr "створити каталог у вказаному режимі"
 
-#: fish/cmds.c:2756
+#: fish/cmds.c:2850
 msgid "create a directory and parents"
 msgstr "створити каталог і його батьківські каталоги"
 
-#: fish/cmds.c:2757
+#: fish/cmds.c:2851
 msgid "create a temporary directory"
 msgstr "створити тимчасовий каталог"
 
-#: fish/cmds.c:2758 fish/cmds.c:2759 fish/cmds.c:2760
+#: fish/cmds.c:2852 fish/cmds.c:2853 fish/cmds.c:2854
 msgid "make ext2/3/4 filesystem with external journal"
 msgstr "створити файлову систему ext2/3/4 з зовнішнім журналом"
 
-#: fish/cmds.c:2761
+#: fish/cmds.c:2855
 msgid "make ext2/3/4 external journal"
 msgstr "створити зовнішній журнал ext2/3/4"
 
-#: fish/cmds.c:2762
+#: fish/cmds.c:2856
 msgid "make ext2/3/4 external journal with label"
 msgstr "створити зовнішній журнал ext2/3/4 з міткою"
 
-#: fish/cmds.c:2763
+#: fish/cmds.c:2857
 msgid "make ext2/3/4 external journal with UUID"
 msgstr "створити зовнішній журнал ext2/3/4 з UUID"
 
-#: fish/cmds.c:2764
+#: fish/cmds.c:2858
 msgid "make FIFO (named pipe)"
 msgstr "створити FIFO (іменований канал)"
 
-#: fish/cmds.c:2765 fish/cmds.c:2767
+#: fish/cmds.c:2859 fish/cmds.c:2861
 msgid "make a filesystem"
 msgstr "створити файлову систему"
 
-#: fish/cmds.c:2766
+#: fish/cmds.c:2860
 msgid "make a filesystem with block size"
 msgstr "створити файлову систему з розміром блоку"
 
-#: fish/cmds.c:2768
+#: fish/cmds.c:2862
 msgid "create a mountpoint"
 msgstr "створити точку монтування"
 
-#: fish/cmds.c:2769
+#: fish/cmds.c:2863
 msgid "make block, character or FIFO devices"
 msgstr "створити блокові, символьні пристрої або пристрої FIFO"
 
-#: fish/cmds.c:2770
+#: fish/cmds.c:2864
 msgid "make block device node"
 msgstr "створити вузол блокового пристрою"
 
-#: fish/cmds.c:2771
+#: fish/cmds.c:2865
 msgid "make char device node"
 msgstr "створити вузол символьного пристрою"
 
-#: fish/cmds.c:2772
+#: fish/cmds.c:2866
 msgid "create a swap partition"
 msgstr "створити розділ резервних даних (свопінгу)"
 
-#: fish/cmds.c:2773
+#: fish/cmds.c:2867
 msgid "create a swap partition with a label"
 msgstr "створити розділ резервних даних (свопінгу) з міткою"
 
-#: fish/cmds.c:2774
+#: fish/cmds.c:2868
 msgid "create a swap partition with an explicit UUID"
 msgstr "створити розділ резервних даних (свопінгу) з явним визначенням UUID"
 
-#: fish/cmds.c:2775
+#: fish/cmds.c:2869
 msgid "create a swap file"
 msgstr "створити файл резервної пам’яті"
 
-#: fish/cmds.c:2776
+#: fish/cmds.c:2870
 msgid "load a kernel module"
 msgstr "завантажити модуль ядра"
 
-#: fish/cmds.c:2777
+#: fish/cmds.c:2871
 msgid "view a file"
 msgstr "переглянути файл"
 
-#: fish/cmds.c:2778
+#: fish/cmds.c:2872
 msgid "mount a guest disk at a position in the filesystem"
 msgstr "змонтувати гостьовий диск до вказаного каталогу файлової системи"
 
-#: fish/cmds.c:2779
+#: fish/cmds.c:2873
+msgid "mount 9p filesystem"
+msgstr ""
+
+#: fish/cmds.c:2874
 msgid "mount a file using the loop device"
 msgstr "змонтувати файли за допомогою петльового пристрою"
 
-#: fish/cmds.c:2780
+#: fish/cmds.c:2875
 msgid "mount a guest disk with mount options"
 msgstr "змонтувати гостьовий диск з вказаними параметрами монтування"
 
-#: fish/cmds.c:2781
+#: fish/cmds.c:2876
 msgid "mount a guest disk, read-only"
 msgstr "змонтувати гостьовий диск у режимі лише читання"
 
-#: fish/cmds.c:2782
+#: fish/cmds.c:2877
 msgid "mount a guest disk with mount options and vfstype"
 msgstr ""
 "змонтувати гостьовий диск з вказаними параметрами монтування та типом ВФС"
 
-#: fish/cmds.c:2783
+#: fish/cmds.c:2878
 msgid "show mountpoints"
 msgstr "показати точки монтування"
 
-#: fish/cmds.c:2784
+#: fish/cmds.c:2879
 msgid "show mounted filesystems"
 msgstr "показати список змонтованих файлових систем"
 
-#: fish/cmds.c:2785
+#: fish/cmds.c:2880
 msgid "move a file"
 msgstr "пересунути файл"
 
-#: fish/cmds.c:2786
+#: fish/cmds.c:2881
 msgid "probe NTFS volume"
 msgstr "зондувати том NTFS"
 
-#: fish/cmds.c:2787
+#: fish/cmds.c:2882 fish/cmds.c:2883
 msgid "resize an NTFS filesystem"
 msgstr "змінити розміри файлової системи NTFS"
 
-#: fish/cmds.c:2788
+#: fish/cmds.c:2884
 msgid "resize an NTFS filesystem (with size)"
 msgstr "змінити розміри файлової системи NTFS (з визначенням розміру)"
 
-#: fish/cmds.c:2789
+#: fish/cmds.c:2885
 msgid "add a partition to the device"
 msgstr "додати розділ на пристрій"
 
-#: fish/cmds.c:2790
+#: fish/cmds.c:2886
 msgid "delete a partition"
 msgstr "вилучити розділ"
 
-#: fish/cmds.c:2791
+#: fish/cmds.c:2887
 msgid "partition whole disk with a single primary partition"
 msgstr "поділити на розділи весь диск з єдиним основним розділом"
 
-#: fish/cmds.c:2792
+#: fish/cmds.c:2888
 msgid "return true if a partition is bootable"
 msgstr "повернути «true», якщо розділ придатний до завантаження"
 
-#: fish/cmds.c:2793
+#: fish/cmds.c:2889
 msgid "get the MBR type byte (ID byte) from a partition"
 msgstr "отримати байт типу MBR (байт-ідентифікатор) з розділу"
 
-#: fish/cmds.c:2794
+#: fish/cmds.c:2890
 msgid "get the partition table type"
 msgstr "отримати тип таблиці розділів"
 
-#: fish/cmds.c:2795
+#: fish/cmds.c:2891
 msgid "create an empty partition table"
 msgstr "створити порожню таблицю розділів"
 
-#: fish/cmds.c:2796
+#: fish/cmds.c:2892
 msgid "list partitions on a device"
 msgstr "показати список розділів на пристрої"
 
-#: fish/cmds.c:2797
+#: fish/cmds.c:2893
 msgid "make a partition bootable"
 msgstr "зробити розділ придатним до завантаження"
 
-#: fish/cmds.c:2798
+#: fish/cmds.c:2894
 msgid "set the MBR type byte (ID byte) of a partition"
 msgstr "встановити байт типу MBR (байт-ідентифікатор) розділу"
 
-#: fish/cmds.c:2799
+#: fish/cmds.c:2895
 msgid "set partition name"
 msgstr "встановити назву розділу"
 
-#: fish/cmds.c:2800
+#: fish/cmds.c:2896
 msgid "convert partition name to device name"
 msgstr "перетворити назву розділу на назву пристрою"
 
-#: fish/cmds.c:2801
+#: fish/cmds.c:2897
 msgid "ping the guest daemon"
 msgstr "перевірити луна-імпульсом фонову службу гостьових систем"
 
-#: fish/cmds.c:2802
+#: fish/cmds.c:2898
 msgid "read part of a file"
 msgstr "прочитати частину файла"
 
-#: fish/cmds.c:2803
+#: fish/cmds.c:2899
 msgid "read part of a device"
 msgstr "прочитати частину пристрою"
 
-#: fish/cmds.c:2804
+#: fish/cmds.c:2900
 msgid "create an LVM physical volume"
 msgstr "створити фізичний том LVM"
 
-#: fish/cmds.c:2805
+#: fish/cmds.c:2901
 msgid "remove an LVM physical volume"
 msgstr "вилучити фізичний том LVM"
 
-#: fish/cmds.c:2806
+#: fish/cmds.c:2902
 msgid "resize an LVM physical volume"
 msgstr "змінити розміри фізичного тому LVM"
 
-#: fish/cmds.c:2807
+#: fish/cmds.c:2903
 msgid "resize an LVM physical volume (with size)"
 msgstr "змінити розміри фізичного тому LVM (з визначенням розміру)"
 
-#: fish/cmds.c:2808 fish/cmds.c:2809
+#: fish/cmds.c:2904 fish/cmds.c:2905
 msgid "list the LVM physical volumes (PVs)"
 msgstr "показати список фізичних томів LVM"
 
-#: fish/cmds.c:2810
+#: fish/cmds.c:2906
 msgid "get the UUID of a physical volume"
 msgstr "отримати значення UUID фізичного тому"
 
-#: fish/cmds.c:2811
+#: fish/cmds.c:2907
 msgid "write to part of a file"
 msgstr "записати частину файла"
 
-#: fish/cmds.c:2812
+#: fish/cmds.c:2908
 msgid "write to part of a device"
 msgstr "записати частину пристрою"
 
-#: fish/cmds.c:2813
+#: fish/cmds.c:2909
 msgid "read a file"
 msgstr "прочитати файл"
 
-#: fish/cmds.c:2814
+#: fish/cmds.c:2910
 msgid "read file as lines"
 msgstr "прочитати файл як набір рядків"
 
-#: fish/cmds.c:2815
+#: fish/cmds.c:2911
 msgid "read directories entries"
 msgstr "прочитати записи каталогів"
 
-#: fish/cmds.c:2816
+#: fish/cmds.c:2912
 msgid "read the target of a symbolic link"
 msgstr "прочитати файл, на який вказує символічне посилання"
 
-#: fish/cmds.c:2817
+#: fish/cmds.c:2913
 msgid "readlink on multiple files"
 msgstr "readlink для декількох файлів"
 
-#: fish/cmds.c:2818
+#: fish/cmds.c:2914
 msgid "canonicalized absolute pathname"
 msgstr "канонічний запис абсолютного шляху"
 
-#: fish/cmds.c:2820
+#: fish/cmds.c:2916
 msgid "close and reopen libguestfs handle"
 msgstr "закрити, а потім повторно відкрити елемент керування libguestfs"
 
-#: fish/cmds.c:2821
+#: fish/cmds.c:2917
 msgid "resize an ext2, ext3 or ext4 filesystem"
 msgstr "змінити розміри файлової системи ext2, ext3 або ext4"
 
-#: fish/cmds.c:2822
+#: fish/cmds.c:2918
 msgid "resize an ext2, ext3 or ext4 filesystem to the minimum size"
 msgstr "змінити розміри файлової системи ext2, ext3 або ext4 до мінімальних"
 
-#: fish/cmds.c:2823
+#: fish/cmds.c:2919
 msgid "resize an ext2, ext3 or ext4 filesystem (with size)"
 msgstr ""
 "змінити розміри файлової системи ext2, ext3 або ext4 (з визначенням розміру)"
 
-#: fish/cmds.c:2824
+#: fish/cmds.c:2920
 msgid "remove a file"
 msgstr "вилучити файл"
 
-#: fish/cmds.c:2825
+#: fish/cmds.c:2921
 msgid "remove a file or directory recursively"
 msgstr "вилучити файл або каталог рекурсивно"
 
-#: fish/cmds.c:2826
+#: fish/cmds.c:2922
 msgid "remove a directory"
 msgstr "вилучити каталог"
 
-#: fish/cmds.c:2827
+#: fish/cmds.c:2923
 msgid "remove a mountpoint"
 msgstr "вилучити точку монтування"
 
-#: fish/cmds.c:2828
+#: fish/cmds.c:2924
 msgid "scrub (securely wipe) a device"
 msgstr "витерти (безпечно спорожнити) пристрій"
 
-#: fish/cmds.c:2829
+#: fish/cmds.c:2925
 msgid "scrub (securely wipe) a file"
 msgstr "витерти (безпечно спорожнити) файл"
 
-#: fish/cmds.c:2830
+#: fish/cmds.c:2926
 msgid "scrub (securely wipe) free space"
 msgstr "витерти (безпечно спорожнити) вільний об’єм"
 
-#: fish/cmds.c:2831
+#: fish/cmds.c:2927
 msgid "add options to kernel command line"
 msgstr "додати параметри до командного рядка ядра"
 
-#: fish/cmds.c:2832
+#: fish/cmds.c:2928
 msgid "set the attach method"
 msgstr "встановити метод долучення"
 
-#: fish/cmds.c:2833
+#: fish/cmds.c:2929
 msgid "set autosync mode"
 msgstr "встановити режим автоматичної синхронізації"
 
-#: fish/cmds.c:2834
+#: fish/cmds.c:2930
 msgid "enable or disable direct appliance mode"
 msgstr "увімкнути або вимкнути режим безпосередньої роботи з пристроєм"
 
-#: fish/cmds.c:2835
+#: fish/cmds.c:2931
 msgid "set the ext2/3/4 filesystem label"
 msgstr "встановити мітку файлової системи ext2/3/4 filesystem"
 
-#: fish/cmds.c:2836
+#: fish/cmds.c:2932
 msgid "set the ext2/3/4 filesystem UUID"
 msgstr "встановити UUID файлової системи ext2/3/4"
 
-#: fish/cmds.c:2837
+#: fish/cmds.c:2933
 msgid "set memory allocated to the qemu subprocess"
 msgstr "встановити дані пам’яті, отриманої підпроцесом qemu"
 
-#: fish/cmds.c:2838
+#: fish/cmds.c:2934
 msgid "set enable network flag"
 msgstr "встановити значення прапорця вмикання мережі"
 
-#: fish/cmds.c:2839
+#: fish/cmds.c:2935
 msgid "set the search path"
 msgstr "встановити адресу каталогу пошуку"
 
-#: fish/cmds.c:2840
+#: fish/cmds.c:2936
+msgid "set process group flag"
+msgstr ""
+
+#: fish/cmds.c:2937
 msgid "set the qemu binary"
 msgstr "встановити назву виконуваного файла qemu"
 
-#: fish/cmds.c:2841
+#: fish/cmds.c:2938
 msgid "enable or disable the recovery process"
 msgstr "увімкнути або вимкнути процес відновлення"
 
-#: fish/cmds.c:2842
+#: fish/cmds.c:2939
 msgid "set SELinux enabled or disabled at appliance boot"
 msgstr ""
 "встановити параметр вмикання або вимикання SELinux під час завантаження з "
 "пристрою"
 
-#: fish/cmds.c:2843
+#: fish/cmds.c:2940
 msgid "enable or disable command traces"
 msgstr "увімкнути або вимкнути трасування команд"
 
-#: fish/cmds.c:2844
+#: fish/cmds.c:2941
 msgid "set verbose mode"
 msgstr "увімкнути докладний режим"
 
-#: fish/cmds.c:2845
+#: fish/cmds.c:2942
 msgid "set SELinux security context"
 msgstr "встановити значення контексту захисту SELinux"
 
-#: fish/cmds.c:2847 fish/cmds.c:2848
+#: fish/cmds.c:2944 fish/cmds.c:2945
 msgid "create partitions on a block device"
 msgstr "створити розділи на блоковому пристрої"
 
-#: fish/cmds.c:2849
+#: fish/cmds.c:2946
 msgid "modify a single partition on a block device"
 msgstr "змінити окремий розділ на блоковому пристрої"
 
-#: fish/cmds.c:2850
+#: fish/cmds.c:2947
 msgid "display the disk geometry from the partition table"
 msgstr "показати дані щодо конфігурації диска з таблиці розділів"
 
-#: fish/cmds.c:2851
+#: fish/cmds.c:2948
 msgid "display the kernel geometry"
 msgstr "показати дані щодо конфігурації ядра"
 
-#: fish/cmds.c:2852
+#: fish/cmds.c:2949
 msgid "display the partition table"
 msgstr "показати таблицю розділів"
 
-#: fish/cmds.c:2853
+#: fish/cmds.c:2950
 msgid "run a command via the shell"
 msgstr "запустити команду у оболонці"
 
-#: fish/cmds.c:2854
+#: fish/cmds.c:2951
 msgid "run a command via the shell returning lines"
 msgstr "виконати команду за допомогою оболонки, повернути виведені рядки"
 
-#: fish/cmds.c:2855
+#: fish/cmds.c:2952
 msgid "sleep for some seconds"
 msgstr "призупинити обробку на декілька секунд"
 
-#: fish/cmds.c:2856
+#: fish/cmds.c:2953
 msgid "create a sparse disk image and add"
 msgstr "створити розріджений образ диска та додати"
 
-#: fish/cmds.c:2857
+#: fish/cmds.c:2954
 msgid "get file information"
 msgstr "отримати дані щодо файла"
 
-#: fish/cmds.c:2858
+#: fish/cmds.c:2955
 msgid "get file system statistics"
 msgstr "отримати статистичні дані щодо файлової системи"
 
-#: fish/cmds.c:2859 fish/cmds.c:2860
+#: fish/cmds.c:2956 fish/cmds.c:2957
 msgid "print the printable strings in a file"
 msgstr "вивести придатні до друку рядки до файла"
 
-#: fish/cmds.c:2861
+#: fish/cmds.c:2958
 msgid "list supported groups of commands"
 msgstr "показати список підтримуваних груп команд"
 
-#: fish/cmds.c:2862
+#: fish/cmds.c:2959
 msgid "disable swap on device"
 msgstr "вимкнути резервування місця на диску"
 
-#: fish/cmds.c:2863
+#: fish/cmds.c:2960
 msgid "disable swap on file"
 msgstr "вимкнути резервування місця у файлі"
 
-#: fish/cmds.c:2864
+#: fish/cmds.c:2961
 msgid "disable swap on labeled swap partition"
 msgstr "вимкнути резервування місця на позначеному розділі резервної пам’яті"
 
-#: fish/cmds.c:2865
+#: fish/cmds.c:2962
 msgid "disable swap on swap partition by UUID"
 msgstr ""
 "вимкнути резервування місця на розділі резервної пам’яті, вказаному за "
 "допомогою UUID"
 
-#: fish/cmds.c:2866
+#: fish/cmds.c:2963
 msgid "enable swap on device"
 msgstr "увімкнути резервну пам’ять на диску"
 
-#: fish/cmds.c:2867
+#: fish/cmds.c:2964
 msgid "enable swap on file"
 msgstr "увімкнути резервну пам’ять у файлі"
 
-#: fish/cmds.c:2868
+#: fish/cmds.c:2965
 msgid "enable swap on labeled swap partition"
 msgstr "увімкнути резервування місця на позначеному розділі резервної пам’яті"
 
-#: fish/cmds.c:2869
+#: fish/cmds.c:2966
 msgid "enable swap on swap partition by UUID"
 msgstr ""
 "увімкнути резервування місця на розділі резервної пам’яті, вказаному за "
 "допомогою UUID"
 
-#: fish/cmds.c:2870
+#: fish/cmds.c:2967
 msgid "sync disks, writes are flushed through to the disk image"
 msgstr "синхронізувати диски, буфери запису буде випорожнено до образу диска"
 
-#: fish/cmds.c:2871
+#: fish/cmds.c:2968
 msgid "return last 10 lines of a file"
 msgstr "повернути останні 10 рядків файла"
 
-#: fish/cmds.c:2872
+#: fish/cmds.c:2969
 msgid "return last N lines of a file"
 msgstr "повернути останні N рядків файла"
 
-#: fish/cmds.c:2873
+#: fish/cmds.c:2970
 msgid "unpack tarfile to directory"
 msgstr "розпакувати архів tar до каталогу"
 
-#: fish/cmds.c:2874
+#: fish/cmds.c:2971
 msgid "pack directory into tarfile"
 msgstr "запакувати каталог до архіву tar"
 
-#: fish/cmds.c:2875 fish/cmds.c:2882
+#: fish/cmds.c:2972 fish/cmds.c:2979
 msgid "unpack compressed tarball to directory"
 msgstr "розпакувати стиснений архів tar до каталогу"
 
-#: fish/cmds.c:2876 fish/cmds.c:2883
+#: fish/cmds.c:2973 fish/cmds.c:2980
 msgid "pack directory into compressed tarball"
 msgstr "запакувати каталог до стиснутого архіву tar"
 
-#: fish/cmds.c:2877
+#: fish/cmds.c:2974
 msgid "print elapsed time taken to run a command"
 msgstr "показувати час, витрачений на виконання команди"
 
-#: fish/cmds.c:2878
+#: fish/cmds.c:2975
 msgid "update file timestamps or create a new file"
 msgstr "оновити позначки часу файла або створити новий файл"
 
-#: fish/cmds.c:2879
+#: fish/cmds.c:2976
 msgid "truncate a file to zero size"
 msgstr "обрізати файл до нульового розміру"
 
-#: fish/cmds.c:2880
+#: fish/cmds.c:2977
 msgid "truncate a file to a particular size"
 msgstr "обрізати файл до вказаного розміру"
 
-#: fish/cmds.c:2881
+#: fish/cmds.c:2978
 msgid "get ext2/ext3/ext4 superblock details"
 msgstr "отримати дані щодо суперблоку ext2/ext3/ext4"
 
-#: fish/cmds.c:2884
+#: fish/cmds.c:2981
 msgid "set file mode creation mask (umask)"
 msgstr "встановити маску режиму створення файла (umask)"
 
-#: fish/cmds.c:2885
+#: fish/cmds.c:2982
 msgid "unmount a filesystem"
 msgstr "демонтувати файлову систему"
 
-#: fish/cmds.c:2886
+#: fish/cmds.c:2983
 msgid "unmount all filesystems"
 msgstr "демонтувати всі файлові системи"
 
-#: fish/cmds.c:2887
+#: fish/cmds.c:2984
 msgid "upload a file from the local machine"
 msgstr "вивантажити файл з локальної системи"
 
-#: fish/cmds.c:2888
+#: fish/cmds.c:2985
 msgid "upload a file from the local machine with offset"
 msgstr "вивантажити файл з локальної системи зі зсувом"
 
-#: fish/cmds.c:2889
+#: fish/cmds.c:2986
 msgid "set timestamp of a file with nanosecond precision"
 msgstr "встановити часову позначку файла з точністю до наносекунди"
 
-#: fish/cmds.c:2890
+#: fish/cmds.c:2987
 msgid "get the library version number"
 msgstr "отримати номер версії бібліотеки"
 
-#: fish/cmds.c:2891
+#: fish/cmds.c:2988
 msgid "get the filesystem label"
 msgstr "отримати значення мітки файлової системи"
 
-#: fish/cmds.c:2892
+#: fish/cmds.c:2989
 msgid "get the Linux VFS type corresponding to a mounted device"
 msgstr ""
 "отримати тип віртуальної файлової системи Linux, відповідний до змонтованого "
 "пристрою"
 
-#: fish/cmds.c:2893
+#: fish/cmds.c:2990
 msgid "get the filesystem UUID"
 msgstr "отримати UUID файлової системи"
 
-#: fish/cmds.c:2894
+#: fish/cmds.c:2991
 msgid "activate or deactivate some volume groups"
 msgstr "задіяти або вимкнути певні групи томів"
 
-#: fish/cmds.c:2895
+#: fish/cmds.c:2992
 msgid "activate or deactivate all volume groups"
 msgstr "задіяти або вимкнути всі групи томів"
 
-#: fish/cmds.c:2896
+#: fish/cmds.c:2993
 msgid "create an LVM volume group"
 msgstr "створити групу томів LVM"
 
-#: fish/cmds.c:2897
+#: fish/cmds.c:2994
 msgid "get the LV UUIDs of all LVs in the volume group"
 msgstr "отримати UUID всіх логічних томів у групі томів"
 
-#: fish/cmds.c:2898
+#: fish/cmds.c:2995
 msgid "get the PV UUIDs containing the volume group"
 msgstr "отримати UUID фізичних томів, що містяться у групі томів"
 
-#: fish/cmds.c:2899
+#: fish/cmds.c:2996
 msgid "remove an LVM volume group"
 msgstr "вилучити групу томів LVM"
 
-#: fish/cmds.c:2900
+#: fish/cmds.c:2997
 msgid "rename an LVM volume group"
 msgstr "перейменувати групу томів LVM"
 
-#: fish/cmds.c:2901 fish/cmds.c:2902
+#: fish/cmds.c:2998 fish/cmds.c:2999
 msgid "list the LVM volume groups (VGs)"
 msgstr "показати список груп томів LVM"
 
-#: fish/cmds.c:2903
+#: fish/cmds.c:3000
 msgid "rescan for LVM physical volumes, volume groups and logical volumes"
 msgstr ""
 "виконати повторне сканування фізичних томів, груп томів та логічних томів LVM"
 
-#: fish/cmds.c:2904
+#: fish/cmds.c:3001
 msgid "get the UUID of a volume group"
 msgstr "отримати UUID групи томів"
 
-#: fish/cmds.c:2905
+#: fish/cmds.c:3002
 msgid "count characters in a file"
 msgstr "порахувати символи у файлі"
 
-#: fish/cmds.c:2906
+#: fish/cmds.c:3003
 msgid "count lines in a file"
 msgstr "порахувати рядки у файлі"
 
-#: fish/cmds.c:2907
+#: fish/cmds.c:3004
 msgid "count words in a file"
 msgstr "порахувати слова у файлі"
 
-#: fish/cmds.c:2908
+#: fish/cmds.c:3005
 msgid "create a new file"
 msgstr "створити новий файл"
 
-#: fish/cmds.c:2909
+#: fish/cmds.c:3006
+msgid "append content to end of file"
+msgstr ""
+
+#: fish/cmds.c:3007
 msgid "create a file"
 msgstr "створити файл"
 
-#: fish/cmds.c:2912
+#: fish/cmds.c:3010
 msgid "write zeroes to the device"
 msgstr "записати нулі на пристрій"
 
-#: fish/cmds.c:2913
+#: fish/cmds.c:3011
 msgid "write zeroes to an entire device"
 msgstr "занулити весь пристрій"
 
-#: fish/cmds.c:2914
+#: fish/cmds.c:3012
 msgid "zero unused inodes and disk blocks on ext2/3 filesystem"
 msgstr ""
 "занулити невикористані inode і дискові блоки на файловій системі ext2/3"
 
-#: fish/cmds.c:2917
+#: fish/cmds.c:3015
 msgid "determine file type inside a compressed file"
 msgstr "визначити тип файлів у стиснутому файлі"
 
-#: fish/cmds.c:2920
+#: fish/cmds.c:3018
 msgid "Use -h <cmd> / help <cmd> to show detailed help for a command."
 msgstr ""
 "Скористайтеся -h <команда> або help <команда>, щоб переглянути докладну "
 "довідку щодо команди."
 
-#: fish/cmds.c:3238 fish/cmds.c:3252 fish/cmds.c:3268 fish/cmds.c:3285
-#: fish/cmds.c:3302 fish/cmds.c:3320 fish/cmds.c:3339 fish/cmds.c:3355
-#: fish/cmds.c:3373 fish/cmds.c:3389 fish/cmds.c:3407 fish/cmds.c:3423
-#: fish/cmds.c:3440 fish/cmds.c:3455 fish/cmds.c:3473 fish/cmds.c:3488
-#: fish/cmds.c:3504 fish/cmds.c:3520 fish/cmds.c:3536 fish/cmds.c:3552
-#: fish/cmds.c:3568 fish/cmds.c:3586 fish/cmds.c:3619 fish/cmds.c:3635
-#: fish/cmds.c:3651 fish/cmds.c:3670 fish/cmds.c:3685 fish/cmds.c:3703
-#: fish/cmds.c:3718 fish/cmds.c:3736 fish/cmds.c:3751 fish/cmds.c:3769
-#: fish/cmds.c:3784 fish/cmds.c:3803 fish/cmds.c:3822 fish/cmds.c:3840
-#: fish/cmds.c:3860 fish/cmds.c:3879 fish/cmds.c:3899 fish/cmds.c:3919
-#: fish/cmds.c:3939 fish/cmds.c:3958 fish/cmds.c:3977 fish/cmds.c:3997
-#: fish/cmds.c:4017 fish/cmds.c:4037 fish/cmds.c:4052 fish/cmds.c:4068
-#: fish/cmds.c:4140 fish/cmds.c:4158 fish/cmds.c:4175 fish/cmds.c:4254
-#: fish/cmds.c:4274 fish/cmds.c:4294 fish/cmds.c:4314 fish/cmds.c:4334
-#: fish/cmds.c:4354 fish/cmds.c:4373 fish/cmds.c:4392 fish/cmds.c:4411
-#: fish/cmds.c:4426 fish/cmds.c:4445 fish/cmds.c:4465 fish/cmds.c:4485
-#: fish/cmds.c:4506 fish/cmds.c:4522 fish/cmds.c:4538 fish/cmds.c:4557
-#: fish/cmds.c:4579 fish/cmds.c:4601 fish/cmds.c:4621 fish/cmds.c:4638
-#: fish/cmds.c:4655 fish/cmds.c:4672 fish/cmds.c:4689 fish/cmds.c:4706
-#: fish/cmds.c:4723 fish/cmds.c:4740 fish/cmds.c:4759 fish/cmds.c:4782
-#: fish/cmds.c:4818 fish/cmds.c:4835 fish/cmds.c:4858 fish/cmds.c:4880
-#: fish/cmds.c:4901 fish/cmds.c:4921 fish/cmds.c:4940 fish/cmds.c:4960
-#: fish/cmds.c:4978 fish/cmds.c:4996 fish/cmds.c:5010 fish/cmds.c:5026
-#: fish/cmds.c:5046 fish/cmds.c:5065 fish/cmds.c:5084 fish/cmds.c:5103
-#: fish/cmds.c:5122 fish/cmds.c:5142 fish/cmds.c:5182 fish/cmds.c:5239
-#: fish/cmds.c:5260 fish/cmds.c:5281 fish/cmds.c:5302 fish/cmds.c:5320
-#: fish/cmds.c:5342 fish/cmds.c:5380 fish/cmds.c:5402 fish/cmds.c:5481
-#: fish/cmds.c:5520 fish/cmds.c:5535 fish/cmds.c:5552 fish/cmds.c:5566
-#: fish/cmds.c:5582 fish/cmds.c:5604 fish/cmds.c:5626 fish/cmds.c:5648
-#: fish/cmds.c:5670 fish/cmds.c:5692 fish/cmds.c:5714 fish/cmds.c:5734
-#: fish/cmds.c:5751 fish/cmds.c:5768 fish/cmds.c:5787 fish/cmds.c:5806
-#: fish/cmds.c:5826 fish/cmds.c:5862 fish/cmds.c:5881 fish/cmds.c:5900
-#: fish/cmds.c:5917 fish/cmds.c:5935 fish/cmds.c:5958 fish/cmds.c:5981
-#: fish/cmds.c:6005 fish/cmds.c:6028 fish/cmds.c:6049 fish/cmds.c:6072
-#: fish/cmds.c:6095 fish/cmds.c:6115 fish/cmds.c:6137 fish/cmds.c:6158
-#: fish/cmds.c:6181 fish/cmds.c:6198 fish/cmds.c:6215 fish/cmds.c:6233
-#: fish/cmds.c:6251 fish/cmds.c:6272 fish/cmds.c:6290 fish/cmds.c:6311
-#: fish/cmds.c:6331 fish/cmds.c:6349 fish/cmds.c:6370 fish/cmds.c:6393
-#: fish/cmds.c:6416 fish/cmds.c:6438 fish/cmds.c:6471 fish/cmds.c:6488
-#: fish/cmds.c:6505 fish/cmds.c:6529 fish/cmds.c:6552 fish/cmds.c:6575
-#: fish/cmds.c:6597 fish/cmds.c:6614 fish/cmds.c:6636 fish/cmds.c:6730
-#: fish/cmds.c:6750 fish/cmds.c:6770 fish/cmds.c:6790 fish/cmds.c:6808
-#: fish/cmds.c:6829 fish/cmds.c:6865 fish/cmds.c:6882 fish/cmds.c:6904
-#: fish/cmds.c:6921 fish/cmds.c:6957 fish/cmds.c:6977 fish/cmds.c:6997
-#: fish/cmds.c:7017 fish/cmds.c:7039 fish/cmds.c:7056 fish/cmds.c:7075
-#: fish/cmds.c:7094 fish/cmds.c:7116 fish/cmds.c:7137 fish/cmds.c:7158
-#: fish/cmds.c:7179 fish/cmds.c:7202 fish/cmds.c:7243 fish/cmds.c:7266
-#: fish/cmds.c:7305 fish/cmds.c:7322 fish/cmds.c:7341 fish/cmds.c:7362
-#: fish/cmds.c:7385 fish/cmds.c:7407 fish/cmds.c:7425 fish/cmds.c:7444
-#: fish/cmds.c:7465 fish/cmds.c:7542 fish/cmds.c:7583 fish/cmds.c:7662
-#: fish/cmds.c:7738 fish/cmds.c:7775 fish/cmds.c:7798 fish/cmds.c:7819
-#: fish/cmds.c:7842 fish/cmds.c:7864 fish/cmds.c:7889 fish/cmds.c:7932
-#: fish/cmds.c:7973 fish/cmds.c:7994 fish/cmds.c:8012 fish/cmds.c:8031
-#: fish/cmds.c:8048 fish/cmds.c:8066 fish/cmds.c:8093 fish/cmds.c:8117
-#: fish/cmds.c:8141 fish/cmds.c:8165 fish/cmds.c:8189 fish/cmds.c:8213
-#: fish/cmds.c:8237 fish/cmds.c:8261 fish/cmds.c:8285 fish/cmds.c:8309
-#: fish/cmds.c:8333 fish/cmds.c:8357 fish/cmds.c:8380 fish/cmds.c:8403
-#: fish/cmds.c:8424 fish/cmds.c:8445 fish/cmds.c:8466 fish/cmds.c:8486
-#: fish/cmds.c:8509 fish/cmds.c:8547 fish/cmds.c:8564 fish/cmds.c:8581
-#: fish/cmds.c:8600 fish/cmds.c:8619 fish/cmds.c:8636 fish/cmds.c:8653
-#: fish/cmds.c:8670 fish/cmds.c:8687 fish/cmds.c:8706 fish/cmds.c:8742
-#: fish/cmds.c:8782 fish/cmds.c:8815 fish/cmds.c:8832 fish/cmds.c:8849
-#: fish/cmds.c:8865 fish/cmds.c:8880 fish/cmds.c:8901 fish/cmds.c:8939
-#: fish/cmds.c:8977 fish/cmds.c:9016 fish/cmds.c:9056 fish/cmds.c:9097
-#: fish/cmds.c:9138 fish/cmds.c:9176 fish/cmds.c:9193 fish/cmds.c:9216
-#: fish/cmds.c:9238 fish/cmds.c:9260 fish/cmds.c:9280 fish/cmds.c:9300
-#: fish/cmds.c:9336 fish/cmds.c:9408 fish/cmds.c:9448 fish/cmds.c:9506
-#: fish/cmds.c:9532 fish/cmds.c:9558 fish/cmds.c:9586 fish/cmds.c:9645
-#: fish/cmds.c:9666 fish/cmds.c:9711 fish/cmds.c:9731 fish/cmds.c:9770
-#: fish/cmds.c:9807 fish/cmds.c:9827 fish/cmds.c:9849 fish/cmds.c:9906
-#: fish/cmds.c:9926 fish/cmds.c:9948 fish/cmds.c:9970 fish/cmds.c:9989
-#: fish/cmds.c:10009 fish/cmds.c:10036 fish/cmds.c:10056 fish/cmds.c:10076
-#: fish/cmds.c:10096 fish/cmds.c:10116 fish/cmds.c:10138 fish/cmds.c:10173
-#: fish/cmds.c:10191 fish/cmds.c:10214 fish/cmds.c:10236 fish/cmds.c:10251
-#: fish/cmds.c:10268 fish/cmds.c:10305 fish/cmds.c:10344 fish/cmds.c:10384
-#: fish/cmds.c:10440 fish/cmds.c:10462 fish/cmds.c:10498 fish/cmds.c:10513
-#: fish/cmds.c:10533 fish/cmds.c:10573 fish/cmds.c:10596 fish/cmds.c:10620
-#: fish/cmds.c:10645 fish/cmds.c:10686 fish/cmds.c:10711 fish/cmds.c:10749
-#: fish/cmds.c:10780 fish/cmds.c:10811 fish/cmds.c:10839 fish/cmds.c:10859
-#: fish/cmds.c:10891 fish/cmds.c:10911 fish/cmds.c:10931 fish/cmds.c:10948
-#: fish/cmds.c:10966 fish/cmds.c:10989 fish/cmds.c:11010 fish/cmds.c:11029
-#: fish/cmds.c:11071 fish/cmds.c:11114 fish/cmds.c:11158 fish/cmds.c:11197
-#: fish/cmds.c:11216 fish/cmds.c:11236 fish/cmds.c:11256 fish/cmds.c:11277
-#: fish/cmds.c:11298 fish/cmds.c:11319 fish/cmds.c:11340 fish/cmds.c:11361
-#: fish/cmds.c:11383 fish/cmds.c:11421 fish/cmds.c:11472 fish/cmds.c:11510
-#: fish/cmds.c:11566 fish/cmds.c:11656 fish/cmds.c:11685 fish/cmds.c:11712
+#: fish/cmds.c:3336 fish/cmds.c:3350 fish/cmds.c:3366 fish/cmds.c:3383
+#: fish/cmds.c:3400 fish/cmds.c:3418 fish/cmds.c:3437 fish/cmds.c:3453
+#: fish/cmds.c:3471 fish/cmds.c:3487 fish/cmds.c:3505 fish/cmds.c:3521
+#: fish/cmds.c:3538 fish/cmds.c:3553 fish/cmds.c:3571 fish/cmds.c:3586
+#: fish/cmds.c:3602 fish/cmds.c:3618 fish/cmds.c:3634 fish/cmds.c:3650
+#: fish/cmds.c:3666 fish/cmds.c:3684 fish/cmds.c:3717 fish/cmds.c:3733
+#: fish/cmds.c:3749 fish/cmds.c:3768 fish/cmds.c:3783 fish/cmds.c:3801
+#: fish/cmds.c:3816 fish/cmds.c:3834 fish/cmds.c:3849 fish/cmds.c:3867
+#: fish/cmds.c:3882 fish/cmds.c:3901 fish/cmds.c:3920 fish/cmds.c:3938
+#: fish/cmds.c:3958 fish/cmds.c:3977 fish/cmds.c:3997 fish/cmds.c:4017
+#: fish/cmds.c:4037 fish/cmds.c:4056 fish/cmds.c:4075 fish/cmds.c:4095
+#: fish/cmds.c:4115 fish/cmds.c:4135 fish/cmds.c:4150 fish/cmds.c:4166
+#: fish/cmds.c:4238 fish/cmds.c:4256 fish/cmds.c:4273 fish/cmds.c:4357
+#: fish/cmds.c:4377 fish/cmds.c:4397 fish/cmds.c:4417 fish/cmds.c:4437
+#: fish/cmds.c:4457 fish/cmds.c:4476 fish/cmds.c:4495 fish/cmds.c:4514
+#: fish/cmds.c:4529 fish/cmds.c:4548 fish/cmds.c:4568 fish/cmds.c:4588
+#: fish/cmds.c:4664 fish/cmds.c:4679 fish/cmds.c:4698 fish/cmds.c:4714
+#: fish/cmds.c:4730 fish/cmds.c:4749 fish/cmds.c:4771 fish/cmds.c:4793
+#: fish/cmds.c:4813 fish/cmds.c:4830 fish/cmds.c:4847 fish/cmds.c:4864
+#: fish/cmds.c:4881 fish/cmds.c:4898 fish/cmds.c:4915 fish/cmds.c:4932
+#: fish/cmds.c:4951 fish/cmds.c:4974 fish/cmds.c:5010 fish/cmds.c:5027
+#: fish/cmds.c:5050 fish/cmds.c:5072 fish/cmds.c:5093 fish/cmds.c:5113
+#: fish/cmds.c:5132 fish/cmds.c:5152 fish/cmds.c:5170 fish/cmds.c:5188
+#: fish/cmds.c:5202 fish/cmds.c:5218 fish/cmds.c:5238 fish/cmds.c:5257
+#: fish/cmds.c:5276 fish/cmds.c:5295 fish/cmds.c:5314 fish/cmds.c:5334
+#: fish/cmds.c:5374 fish/cmds.c:5431 fish/cmds.c:5452 fish/cmds.c:5473
+#: fish/cmds.c:5494 fish/cmds.c:5512 fish/cmds.c:5534 fish/cmds.c:5572
+#: fish/cmds.c:5594 fish/cmds.c:5673 fish/cmds.c:5712 fish/cmds.c:5727
+#: fish/cmds.c:5744 fish/cmds.c:5758 fish/cmds.c:5774 fish/cmds.c:5796
+#: fish/cmds.c:5818 fish/cmds.c:5840 fish/cmds.c:5862 fish/cmds.c:5884
+#: fish/cmds.c:5906 fish/cmds.c:5926 fish/cmds.c:5943 fish/cmds.c:5960
+#: fish/cmds.c:5979 fish/cmds.c:5998 fish/cmds.c:6018 fish/cmds.c:6054
+#: fish/cmds.c:6073 fish/cmds.c:6092 fish/cmds.c:6109 fish/cmds.c:6127
+#: fish/cmds.c:6150 fish/cmds.c:6173 fish/cmds.c:6197 fish/cmds.c:6220
+#: fish/cmds.c:6241 fish/cmds.c:6264 fish/cmds.c:6287 fish/cmds.c:6307
+#: fish/cmds.c:6329 fish/cmds.c:6350 fish/cmds.c:6373 fish/cmds.c:6390
+#: fish/cmds.c:6407 fish/cmds.c:6425 fish/cmds.c:6443 fish/cmds.c:6464
+#: fish/cmds.c:6482 fish/cmds.c:6503 fish/cmds.c:6523 fish/cmds.c:6541
+#: fish/cmds.c:6562 fish/cmds.c:6585 fish/cmds.c:6608 fish/cmds.c:6630
+#: fish/cmds.c:6663 fish/cmds.c:6680 fish/cmds.c:6697 fish/cmds.c:6721
+#: fish/cmds.c:6744 fish/cmds.c:6767 fish/cmds.c:6789 fish/cmds.c:6806
+#: fish/cmds.c:6828 fish/cmds.c:6922 fish/cmds.c:6942 fish/cmds.c:6962
+#: fish/cmds.c:6982 fish/cmds.c:7000 fish/cmds.c:7021 fish/cmds.c:7057
+#: fish/cmds.c:7074 fish/cmds.c:7096 fish/cmds.c:7113 fish/cmds.c:7149
+#: fish/cmds.c:7169 fish/cmds.c:7189 fish/cmds.c:7209 fish/cmds.c:7231
+#: fish/cmds.c:7248 fish/cmds.c:7267 fish/cmds.c:7286 fish/cmds.c:7308
+#: fish/cmds.c:7329 fish/cmds.c:7350 fish/cmds.c:7371 fish/cmds.c:7394
+#: fish/cmds.c:7435 fish/cmds.c:7458 fish/cmds.c:7497 fish/cmds.c:7514
+#: fish/cmds.c:7533 fish/cmds.c:7554 fish/cmds.c:7577 fish/cmds.c:7599
+#: fish/cmds.c:7617 fish/cmds.c:7636 fish/cmds.c:7657 fish/cmds.c:7734
+#: fish/cmds.c:7775 fish/cmds.c:7854 fish/cmds.c:7930 fish/cmds.c:7967
+#: fish/cmds.c:7990 fish/cmds.c:8011 fish/cmds.c:8034 fish/cmds.c:8056
+#: fish/cmds.c:8081 fish/cmds.c:8124 fish/cmds.c:8165 fish/cmds.c:8186
+#: fish/cmds.c:8204 fish/cmds.c:8223 fish/cmds.c:8240 fish/cmds.c:8258
+#: fish/cmds.c:8285 fish/cmds.c:8309 fish/cmds.c:8333 fish/cmds.c:8357
+#: fish/cmds.c:8381 fish/cmds.c:8405 fish/cmds.c:8429 fish/cmds.c:8453
+#: fish/cmds.c:8477 fish/cmds.c:8501 fish/cmds.c:8525 fish/cmds.c:8549
+#: fish/cmds.c:8572 fish/cmds.c:8595 fish/cmds.c:8616 fish/cmds.c:8637
+#: fish/cmds.c:8658 fish/cmds.c:8678 fish/cmds.c:8701 fish/cmds.c:8739
+#: fish/cmds.c:8756 fish/cmds.c:8773 fish/cmds.c:8792 fish/cmds.c:8811
+#: fish/cmds.c:8828 fish/cmds.c:8845 fish/cmds.c:8862 fish/cmds.c:8879
+#: fish/cmds.c:8898 fish/cmds.c:8934 fish/cmds.c:8974 fish/cmds.c:9007
+#: fish/cmds.c:9024 fish/cmds.c:9041 fish/cmds.c:9057 fish/cmds.c:9072
+#: fish/cmds.c:9093 fish/cmds.c:9131 fish/cmds.c:9169 fish/cmds.c:9208
+#: fish/cmds.c:9248 fish/cmds.c:9289 fish/cmds.c:9330 fish/cmds.c:9368
+#: fish/cmds.c:9385 fish/cmds.c:9408 fish/cmds.c:9430 fish/cmds.c:9452
+#: fish/cmds.c:9472 fish/cmds.c:9492 fish/cmds.c:9528 fish/cmds.c:9600
+#: fish/cmds.c:9640 fish/cmds.c:9698 fish/cmds.c:9724 fish/cmds.c:9750
+#: fish/cmds.c:9778 fish/cmds.c:9837 fish/cmds.c:9858 fish/cmds.c:9903
+#: fish/cmds.c:9923 fish/cmds.c:9962 fish/cmds.c:9999 fish/cmds.c:10019
+#: fish/cmds.c:10041 fish/cmds.c:10098 fish/cmds.c:10118 fish/cmds.c:10140
+#: fish/cmds.c:10162 fish/cmds.c:10181 fish/cmds.c:10201 fish/cmds.c:10228
+#: fish/cmds.c:10248 fish/cmds.c:10268 fish/cmds.c:10288 fish/cmds.c:10308
+#: fish/cmds.c:10330 fish/cmds.c:10365 fish/cmds.c:10383 fish/cmds.c:10406
+#: fish/cmds.c:10428 fish/cmds.c:10443 fish/cmds.c:10460 fish/cmds.c:10497
+#: fish/cmds.c:10536 fish/cmds.c:10576 fish/cmds.c:10632 fish/cmds.c:10654
+#: fish/cmds.c:10690 fish/cmds.c:10705 fish/cmds.c:10725 fish/cmds.c:10765
+#: fish/cmds.c:10788 fish/cmds.c:10812 fish/cmds.c:10837 fish/cmds.c:10878
+#: fish/cmds.c:10903 fish/cmds.c:10941 fish/cmds.c:10972 fish/cmds.c:11003
+#: fish/cmds.c:11031 fish/cmds.c:11051 fish/cmds.c:11083 fish/cmds.c:11103
+#: fish/cmds.c:11123 fish/cmds.c:11140 fish/cmds.c:11158 fish/cmds.c:11181
+#: fish/cmds.c:11202 fish/cmds.c:11221 fish/cmds.c:11263 fish/cmds.c:11306
+#: fish/cmds.c:11350 fish/cmds.c:11389 fish/cmds.c:11408 fish/cmds.c:11428
+#: fish/cmds.c:11448 fish/cmds.c:11469 fish/cmds.c:11490 fish/cmds.c:11511
+#: fish/cmds.c:11532 fish/cmds.c:11553 fish/cmds.c:11575 fish/cmds.c:11613
+#: fish/cmds.c:11664 fish/cmds.c:11702 fish/cmds.c:11758 fish/cmds.c:11894
+#: fish/cmds.c:11923 fish/cmds.c:11950 fish/cmds.c:11967 fish/cmds.c:11988
+#: fish/cmds.c:12005 fish/cmds.c:12067 fish/cmds.c:12205
 #, c-format
 msgid "%s should have %d parameter(s)\n"
 msgstr "%s повинен мати %d параметрів\n"
 
-#: fish/cmds.c:3239 fish/cmds.c:3253 fish/cmds.c:3269 fish/cmds.c:3286
-#: fish/cmds.c:3303 fish/cmds.c:3321 fish/cmds.c:3340 fish/cmds.c:3356
-#: fish/cmds.c:3374 fish/cmds.c:3390 fish/cmds.c:3408 fish/cmds.c:3424
-#: fish/cmds.c:3441 fish/cmds.c:3456 fish/cmds.c:3474 fish/cmds.c:3489
-#: fish/cmds.c:3505 fish/cmds.c:3521 fish/cmds.c:3537 fish/cmds.c:3553
-#: fish/cmds.c:3569 fish/cmds.c:3587 fish/cmds.c:3620 fish/cmds.c:3636
-#: fish/cmds.c:3652 fish/cmds.c:3671 fish/cmds.c:3686 fish/cmds.c:3704
-#: fish/cmds.c:3719 fish/cmds.c:3737 fish/cmds.c:3752 fish/cmds.c:3770
-#: fish/cmds.c:3785 fish/cmds.c:3804 fish/cmds.c:3823 fish/cmds.c:3841
-#: fish/cmds.c:3861 fish/cmds.c:3880 fish/cmds.c:3900 fish/cmds.c:3920
-#: fish/cmds.c:3940 fish/cmds.c:3959 fish/cmds.c:3978 fish/cmds.c:3998
-#: fish/cmds.c:4018 fish/cmds.c:4038 fish/cmds.c:4053 fish/cmds.c:4069
-#: fish/cmds.c:4090 fish/cmds.c:4141 fish/cmds.c:4159 fish/cmds.c:4176
-#: fish/cmds.c:4197 fish/cmds.c:4255 fish/cmds.c:4275 fish/cmds.c:4295
-#: fish/cmds.c:4315 fish/cmds.c:4335 fish/cmds.c:4355 fish/cmds.c:4374
-#: fish/cmds.c:4393 fish/cmds.c:4412 fish/cmds.c:4427 fish/cmds.c:4446
-#: fish/cmds.c:4466 fish/cmds.c:4486 fish/cmds.c:4507 fish/cmds.c:4523
-#: fish/cmds.c:4539 fish/cmds.c:4558 fish/cmds.c:4580 fish/cmds.c:4602
-#: fish/cmds.c:4622 fish/cmds.c:4639 fish/cmds.c:4656 fish/cmds.c:4673
-#: fish/cmds.c:4690 fish/cmds.c:4707 fish/cmds.c:4724 fish/cmds.c:4741
-#: fish/cmds.c:4760 fish/cmds.c:4783 fish/cmds.c:4819 fish/cmds.c:4836
-#: fish/cmds.c:4859 fish/cmds.c:4881 fish/cmds.c:4902 fish/cmds.c:4922
-#: fish/cmds.c:4941 fish/cmds.c:4961 fish/cmds.c:4979 fish/cmds.c:4997
-#: fish/cmds.c:5011 fish/cmds.c:5027 fish/cmds.c:5047 fish/cmds.c:5066
-#: fish/cmds.c:5085 fish/cmds.c:5104 fish/cmds.c:5123 fish/cmds.c:5143
-#: fish/cmds.c:5183 fish/cmds.c:5240 fish/cmds.c:5261 fish/cmds.c:5282
-#: fish/cmds.c:5303 fish/cmds.c:5321 fish/cmds.c:5343 fish/cmds.c:5381
-#: fish/cmds.c:5403 fish/cmds.c:5482 fish/cmds.c:5521 fish/cmds.c:5536
-#: fish/cmds.c:5553 fish/cmds.c:5567 fish/cmds.c:5583 fish/cmds.c:5605
-#: fish/cmds.c:5627 fish/cmds.c:5649 fish/cmds.c:5671 fish/cmds.c:5693
-#: fish/cmds.c:5715 fish/cmds.c:5735 fish/cmds.c:5752 fish/cmds.c:5769
-#: fish/cmds.c:5788 fish/cmds.c:5807 fish/cmds.c:5827 fish/cmds.c:5863
-#: fish/cmds.c:5882 fish/cmds.c:5901 fish/cmds.c:5918 fish/cmds.c:5936
-#: fish/cmds.c:5959 fish/cmds.c:5982 fish/cmds.c:6006 fish/cmds.c:6029
-#: fish/cmds.c:6050 fish/cmds.c:6073 fish/cmds.c:6096 fish/cmds.c:6116
-#: fish/cmds.c:6138 fish/cmds.c:6159 fish/cmds.c:6182 fish/cmds.c:6199
-#: fish/cmds.c:6216 fish/cmds.c:6234 fish/cmds.c:6252 fish/cmds.c:6273
-#: fish/cmds.c:6291 fish/cmds.c:6312 fish/cmds.c:6332 fish/cmds.c:6350
-#: fish/cmds.c:6371 fish/cmds.c:6394 fish/cmds.c:6417 fish/cmds.c:6439
-#: fish/cmds.c:6472 fish/cmds.c:6489 fish/cmds.c:6506 fish/cmds.c:6530
-#: fish/cmds.c:6553 fish/cmds.c:6576 fish/cmds.c:6598 fish/cmds.c:6615
-#: fish/cmds.c:6637 fish/cmds.c:6731 fish/cmds.c:6751 fish/cmds.c:6771
-#: fish/cmds.c:6791 fish/cmds.c:6809 fish/cmds.c:6830 fish/cmds.c:6866
-#: fish/cmds.c:6883 fish/cmds.c:6905 fish/cmds.c:6922 fish/cmds.c:6958
-#: fish/cmds.c:6978 fish/cmds.c:6998 fish/cmds.c:7018 fish/cmds.c:7040
-#: fish/cmds.c:7057 fish/cmds.c:7076 fish/cmds.c:7095 fish/cmds.c:7117
-#: fish/cmds.c:7138 fish/cmds.c:7159 fish/cmds.c:7180 fish/cmds.c:7203
-#: fish/cmds.c:7244 fish/cmds.c:7267 fish/cmds.c:7306 fish/cmds.c:7323
-#: fish/cmds.c:7342 fish/cmds.c:7363 fish/cmds.c:7386 fish/cmds.c:7408
-#: fish/cmds.c:7426 fish/cmds.c:7445 fish/cmds.c:7466 fish/cmds.c:7543
-#: fish/cmds.c:7584 fish/cmds.c:7663 fish/cmds.c:7739 fish/cmds.c:7776
-#: fish/cmds.c:7799 fish/cmds.c:7820 fish/cmds.c:7843 fish/cmds.c:7865
-#: fish/cmds.c:7890 fish/cmds.c:7933 fish/cmds.c:7974 fish/cmds.c:7995
-#: fish/cmds.c:8013 fish/cmds.c:8032 fish/cmds.c:8049 fish/cmds.c:8067
-#: fish/cmds.c:8094 fish/cmds.c:8118 fish/cmds.c:8142 fish/cmds.c:8166
-#: fish/cmds.c:8190 fish/cmds.c:8214 fish/cmds.c:8238 fish/cmds.c:8262
-#: fish/cmds.c:8286 fish/cmds.c:8310 fish/cmds.c:8334 fish/cmds.c:8358
-#: fish/cmds.c:8381 fish/cmds.c:8404 fish/cmds.c:8425 fish/cmds.c:8446
-#: fish/cmds.c:8467 fish/cmds.c:8487 fish/cmds.c:8510 fish/cmds.c:8548
-#: fish/cmds.c:8565 fish/cmds.c:8582 fish/cmds.c:8601 fish/cmds.c:8620
-#: fish/cmds.c:8637 fish/cmds.c:8654 fish/cmds.c:8671 fish/cmds.c:8688
-#: fish/cmds.c:8707 fish/cmds.c:8743 fish/cmds.c:8783 fish/cmds.c:8816
-#: fish/cmds.c:8833 fish/cmds.c:8850 fish/cmds.c:8866 fish/cmds.c:8881
-#: fish/cmds.c:8902 fish/cmds.c:8940 fish/cmds.c:8978 fish/cmds.c:9017
-#: fish/cmds.c:9057 fish/cmds.c:9098 fish/cmds.c:9139 fish/cmds.c:9177
-#: fish/cmds.c:9194 fish/cmds.c:9217 fish/cmds.c:9239 fish/cmds.c:9261
-#: fish/cmds.c:9281 fish/cmds.c:9301 fish/cmds.c:9337 fish/cmds.c:9409
-#: fish/cmds.c:9449 fish/cmds.c:9507 fish/cmds.c:9533 fish/cmds.c:9559
-#: fish/cmds.c:9587 fish/cmds.c:9646 fish/cmds.c:9667 fish/cmds.c:9712
-#: fish/cmds.c:9732 fish/cmds.c:9771 fish/cmds.c:9808 fish/cmds.c:9828
-#: fish/cmds.c:9850 fish/cmds.c:9907 fish/cmds.c:9927 fish/cmds.c:9949
-#: fish/cmds.c:9971 fish/cmds.c:9990 fish/cmds.c:10010 fish/cmds.c:10037
-#: fish/cmds.c:10057 fish/cmds.c:10077 fish/cmds.c:10097 fish/cmds.c:10117
-#: fish/cmds.c:10139 fish/cmds.c:10174 fish/cmds.c:10192 fish/cmds.c:10215
-#: fish/cmds.c:10237 fish/cmds.c:10252 fish/cmds.c:10269 fish/cmds.c:10306
-#: fish/cmds.c:10345 fish/cmds.c:10385 fish/cmds.c:10441 fish/cmds.c:10463
-#: fish/cmds.c:10499 fish/cmds.c:10514 fish/cmds.c:10534 fish/cmds.c:10574
-#: fish/cmds.c:10597 fish/cmds.c:10621 fish/cmds.c:10646 fish/cmds.c:10687
-#: fish/cmds.c:10712 fish/cmds.c:10750 fish/cmds.c:10781 fish/cmds.c:10812
-#: fish/cmds.c:10840 fish/cmds.c:10860 fish/cmds.c:10892 fish/cmds.c:10912
-#: fish/cmds.c:10932 fish/cmds.c:10949 fish/cmds.c:10967 fish/cmds.c:10990
-#: fish/cmds.c:11011 fish/cmds.c:11030 fish/cmds.c:11072 fish/cmds.c:11115
-#: fish/cmds.c:11159 fish/cmds.c:11198 fish/cmds.c:11217 fish/cmds.c:11237
-#: fish/cmds.c:11257 fish/cmds.c:11278 fish/cmds.c:11299 fish/cmds.c:11320
-#: fish/cmds.c:11341 fish/cmds.c:11362 fish/cmds.c:11384 fish/cmds.c:11422
-#: fish/cmds.c:11473 fish/cmds.c:11511 fish/cmds.c:11567 fish/cmds.c:11590
-#: fish/cmds.c:11657 fish/cmds.c:11686 fish/cmds.c:11713
+#: fish/cmds.c:3337 fish/cmds.c:3351 fish/cmds.c:3367 fish/cmds.c:3384
+#: fish/cmds.c:3401 fish/cmds.c:3419 fish/cmds.c:3438 fish/cmds.c:3454
+#: fish/cmds.c:3472 fish/cmds.c:3488 fish/cmds.c:3506 fish/cmds.c:3522
+#: fish/cmds.c:3539 fish/cmds.c:3554 fish/cmds.c:3572 fish/cmds.c:3587
+#: fish/cmds.c:3603 fish/cmds.c:3619 fish/cmds.c:3635 fish/cmds.c:3651
+#: fish/cmds.c:3667 fish/cmds.c:3685 fish/cmds.c:3718 fish/cmds.c:3734
+#: fish/cmds.c:3750 fish/cmds.c:3769 fish/cmds.c:3784 fish/cmds.c:3802
+#: fish/cmds.c:3817 fish/cmds.c:3835 fish/cmds.c:3850 fish/cmds.c:3868
+#: fish/cmds.c:3883 fish/cmds.c:3902 fish/cmds.c:3921 fish/cmds.c:3939
+#: fish/cmds.c:3959 fish/cmds.c:3978 fish/cmds.c:3998 fish/cmds.c:4018
+#: fish/cmds.c:4038 fish/cmds.c:4057 fish/cmds.c:4076 fish/cmds.c:4096
+#: fish/cmds.c:4116 fish/cmds.c:4136 fish/cmds.c:4151 fish/cmds.c:4167
+#: fish/cmds.c:4188 fish/cmds.c:4239 fish/cmds.c:4257 fish/cmds.c:4274
+#: fish/cmds.c:4295 fish/cmds.c:4358 fish/cmds.c:4378 fish/cmds.c:4398
+#: fish/cmds.c:4418 fish/cmds.c:4438 fish/cmds.c:4458 fish/cmds.c:4477
+#: fish/cmds.c:4496 fish/cmds.c:4515 fish/cmds.c:4530 fish/cmds.c:4549
+#: fish/cmds.c:4569 fish/cmds.c:4589 fish/cmds.c:4612 fish/cmds.c:4665
+#: fish/cmds.c:4680 fish/cmds.c:4699 fish/cmds.c:4715 fish/cmds.c:4731
+#: fish/cmds.c:4750 fish/cmds.c:4772 fish/cmds.c:4794 fish/cmds.c:4814
+#: fish/cmds.c:4831 fish/cmds.c:4848 fish/cmds.c:4865 fish/cmds.c:4882
+#: fish/cmds.c:4899 fish/cmds.c:4916 fish/cmds.c:4933 fish/cmds.c:4952
+#: fish/cmds.c:4975 fish/cmds.c:5011 fish/cmds.c:5028 fish/cmds.c:5051
+#: fish/cmds.c:5073 fish/cmds.c:5094 fish/cmds.c:5114 fish/cmds.c:5133
+#: fish/cmds.c:5153 fish/cmds.c:5171 fish/cmds.c:5189 fish/cmds.c:5203
+#: fish/cmds.c:5219 fish/cmds.c:5239 fish/cmds.c:5258 fish/cmds.c:5277
+#: fish/cmds.c:5296 fish/cmds.c:5315 fish/cmds.c:5335 fish/cmds.c:5375
+#: fish/cmds.c:5432 fish/cmds.c:5453 fish/cmds.c:5474 fish/cmds.c:5495
+#: fish/cmds.c:5513 fish/cmds.c:5535 fish/cmds.c:5573 fish/cmds.c:5595
+#: fish/cmds.c:5674 fish/cmds.c:5713 fish/cmds.c:5728 fish/cmds.c:5745
+#: fish/cmds.c:5759 fish/cmds.c:5775 fish/cmds.c:5797 fish/cmds.c:5819
+#: fish/cmds.c:5841 fish/cmds.c:5863 fish/cmds.c:5885 fish/cmds.c:5907
+#: fish/cmds.c:5927 fish/cmds.c:5944 fish/cmds.c:5961 fish/cmds.c:5980
+#: fish/cmds.c:5999 fish/cmds.c:6019 fish/cmds.c:6055 fish/cmds.c:6074
+#: fish/cmds.c:6093 fish/cmds.c:6110 fish/cmds.c:6128 fish/cmds.c:6151
+#: fish/cmds.c:6174 fish/cmds.c:6198 fish/cmds.c:6221 fish/cmds.c:6242
+#: fish/cmds.c:6265 fish/cmds.c:6288 fish/cmds.c:6308 fish/cmds.c:6330
+#: fish/cmds.c:6351 fish/cmds.c:6374 fish/cmds.c:6391 fish/cmds.c:6408
+#: fish/cmds.c:6426 fish/cmds.c:6444 fish/cmds.c:6465 fish/cmds.c:6483
+#: fish/cmds.c:6504 fish/cmds.c:6524 fish/cmds.c:6542 fish/cmds.c:6563
+#: fish/cmds.c:6586 fish/cmds.c:6609 fish/cmds.c:6631 fish/cmds.c:6664
+#: fish/cmds.c:6681 fish/cmds.c:6698 fish/cmds.c:6722 fish/cmds.c:6745
+#: fish/cmds.c:6768 fish/cmds.c:6790 fish/cmds.c:6807 fish/cmds.c:6829
+#: fish/cmds.c:6923 fish/cmds.c:6943 fish/cmds.c:6963 fish/cmds.c:6983
+#: fish/cmds.c:7001 fish/cmds.c:7022 fish/cmds.c:7058 fish/cmds.c:7075
+#: fish/cmds.c:7097 fish/cmds.c:7114 fish/cmds.c:7150 fish/cmds.c:7170
+#: fish/cmds.c:7190 fish/cmds.c:7210 fish/cmds.c:7232 fish/cmds.c:7249
+#: fish/cmds.c:7268 fish/cmds.c:7287 fish/cmds.c:7309 fish/cmds.c:7330
+#: fish/cmds.c:7351 fish/cmds.c:7372 fish/cmds.c:7395 fish/cmds.c:7436
+#: fish/cmds.c:7459 fish/cmds.c:7498 fish/cmds.c:7515 fish/cmds.c:7534
+#: fish/cmds.c:7555 fish/cmds.c:7578 fish/cmds.c:7600 fish/cmds.c:7618
+#: fish/cmds.c:7637 fish/cmds.c:7658 fish/cmds.c:7735 fish/cmds.c:7776
+#: fish/cmds.c:7855 fish/cmds.c:7931 fish/cmds.c:7968 fish/cmds.c:7991
+#: fish/cmds.c:8012 fish/cmds.c:8035 fish/cmds.c:8057 fish/cmds.c:8082
+#: fish/cmds.c:8125 fish/cmds.c:8166 fish/cmds.c:8187 fish/cmds.c:8205
+#: fish/cmds.c:8224 fish/cmds.c:8241 fish/cmds.c:8259 fish/cmds.c:8286
+#: fish/cmds.c:8310 fish/cmds.c:8334 fish/cmds.c:8358 fish/cmds.c:8382
+#: fish/cmds.c:8406 fish/cmds.c:8430 fish/cmds.c:8454 fish/cmds.c:8478
+#: fish/cmds.c:8502 fish/cmds.c:8526 fish/cmds.c:8550 fish/cmds.c:8573
+#: fish/cmds.c:8596 fish/cmds.c:8617 fish/cmds.c:8638 fish/cmds.c:8659
+#: fish/cmds.c:8679 fish/cmds.c:8702 fish/cmds.c:8740 fish/cmds.c:8757
+#: fish/cmds.c:8774 fish/cmds.c:8793 fish/cmds.c:8812 fish/cmds.c:8829
+#: fish/cmds.c:8846 fish/cmds.c:8863 fish/cmds.c:8880 fish/cmds.c:8899
+#: fish/cmds.c:8935 fish/cmds.c:8975 fish/cmds.c:9008 fish/cmds.c:9025
+#: fish/cmds.c:9042 fish/cmds.c:9058 fish/cmds.c:9073 fish/cmds.c:9094
+#: fish/cmds.c:9132 fish/cmds.c:9170 fish/cmds.c:9209 fish/cmds.c:9249
+#: fish/cmds.c:9290 fish/cmds.c:9331 fish/cmds.c:9369 fish/cmds.c:9386
+#: fish/cmds.c:9409 fish/cmds.c:9431 fish/cmds.c:9453 fish/cmds.c:9473
+#: fish/cmds.c:9493 fish/cmds.c:9529 fish/cmds.c:9601 fish/cmds.c:9641
+#: fish/cmds.c:9699 fish/cmds.c:9725 fish/cmds.c:9751 fish/cmds.c:9779
+#: fish/cmds.c:9838 fish/cmds.c:9859 fish/cmds.c:9904 fish/cmds.c:9924
+#: fish/cmds.c:9963 fish/cmds.c:10000 fish/cmds.c:10020 fish/cmds.c:10042
+#: fish/cmds.c:10099 fish/cmds.c:10119 fish/cmds.c:10141 fish/cmds.c:10163
+#: fish/cmds.c:10182 fish/cmds.c:10202 fish/cmds.c:10229 fish/cmds.c:10249
+#: fish/cmds.c:10269 fish/cmds.c:10289 fish/cmds.c:10309 fish/cmds.c:10331
+#: fish/cmds.c:10366 fish/cmds.c:10384 fish/cmds.c:10407 fish/cmds.c:10429
+#: fish/cmds.c:10444 fish/cmds.c:10461 fish/cmds.c:10498 fish/cmds.c:10537
+#: fish/cmds.c:10577 fish/cmds.c:10633 fish/cmds.c:10655 fish/cmds.c:10691
+#: fish/cmds.c:10706 fish/cmds.c:10726 fish/cmds.c:10766 fish/cmds.c:10789
+#: fish/cmds.c:10813 fish/cmds.c:10838 fish/cmds.c:10879 fish/cmds.c:10904
+#: fish/cmds.c:10942 fish/cmds.c:10973 fish/cmds.c:11004 fish/cmds.c:11032
+#: fish/cmds.c:11052 fish/cmds.c:11084 fish/cmds.c:11104 fish/cmds.c:11124
+#: fish/cmds.c:11141 fish/cmds.c:11159 fish/cmds.c:11182 fish/cmds.c:11203
+#: fish/cmds.c:11222 fish/cmds.c:11264 fish/cmds.c:11307 fish/cmds.c:11351
+#: fish/cmds.c:11390 fish/cmds.c:11409 fish/cmds.c:11429 fish/cmds.c:11449
+#: fish/cmds.c:11470 fish/cmds.c:11491 fish/cmds.c:11512 fish/cmds.c:11533
+#: fish/cmds.c:11554 fish/cmds.c:11576 fish/cmds.c:11614 fish/cmds.c:11665
+#: fish/cmds.c:11703 fish/cmds.c:11759 fish/cmds.c:11782 fish/cmds.c:11895
+#: fish/cmds.c:11924 fish/cmds.c:11951 fish/cmds.c:11968 fish/cmds.c:11989
+#: fish/cmds.c:12006 fish/cmds.c:12028 fish/cmds.c:12068 fish/cmds.c:12089
+#: fish/cmds.c:12149 fish/cmds.c:12206
 #, c-format
 msgid "type 'help %s' for help on %s\n"
 msgstr "введіть «help %s», щоб отримати довідку щодо %s\n"
 
-#: fish/cmds.c:3597 fish/cmds.c:4795 fish/cmds.c:5153 fish/cmds.c:5193
-#: fish/cmds.c:5212 fish/cmds.c:5355 fish/cmds.c:5414 fish/cmds.c:5433
-#: fish/cmds.c:5452 fish/cmds.c:5495 fish/cmds.c:5838 fish/cmds.c:6449
-#: fish/cmds.c:6648 fish/cmds.c:6667 fish/cmds.c:6686 fish/cmds.c:6705
-#: fish/cmds.c:6841 fish/cmds.c:6932 fish/cmds.c:7213 fish/cmds.c:7277
-#: fish/cmds.c:7476 fish/cmds.c:7495 fish/cmds.c:7514 fish/cmds.c:7553
-#: fish/cmds.c:7594 fish/cmds.c:7613 fish/cmds.c:7632 fish/cmds.c:7673
-#: fish/cmds.c:7692 fish/cmds.c:7711 fish/cmds.c:7749 fish/cmds.c:7902
-#: fish/cmds.c:7945 fish/cmds.c:8522 fish/cmds.c:8717 fish/cmds.c:8755
-#: fish/cmds.c:8793 fish/cmds.c:8913 fish/cmds.c:8950 fish/cmds.c:8988
-#: fish/cmds.c:9027 fish/cmds.c:9068 fish/cmds.c:9109 fish/cmds.c:9150
-#: fish/cmds.c:9313 fish/cmds.c:9349 fish/cmds.c:9362 fish/cmds.c:9375
-#: fish/cmds.c:9388 fish/cmds.c:9421 fish/cmds.c:9459 fish/cmds.c:9478
-#: fish/cmds.c:9599 fish/cmds.c:9618 fish/cmds.c:9679 fish/cmds.c:9692
-#: fish/cmds.c:9743 fish/cmds.c:9782 fish/cmds.c:9860 fish/cmds.c:9879
-#: fish/cmds.c:10153 fish/cmds.c:10280 fish/cmds.c:10317 fish/cmds.c:10356
-#: fish/cmds.c:10396 fish/cmds.c:10415 fish/cmds.c:10474 fish/cmds.c:10547
-#: fish/cmds.c:10657 fish/cmds.c:10727 fish/cmds.c:10761 fish/cmds.c:10792
-#: fish/cmds.c:10823 fish/cmds.c:10872 fish/cmds.c:11043 fish/cmds.c:11085
-#: fish/cmds.c:11130 fish/cmds.c:11172 fish/cmds.c:11398 fish/cmds.c:11436
-#: fish/cmds.c:11449 fish/cmds.c:11487 fish/cmds.c:11522 fish/cmds.c:11541
-#: fish/cmds.c:11608
+#: fish/cmds.c:3695 fish/cmds.c:4987 fish/cmds.c:5345 fish/cmds.c:5385
+#: fish/cmds.c:5404 fish/cmds.c:5547 fish/cmds.c:5606 fish/cmds.c:5625
+#: fish/cmds.c:5644 fish/cmds.c:5687 fish/cmds.c:6030 fish/cmds.c:6641
+#: fish/cmds.c:6840 fish/cmds.c:6859 fish/cmds.c:6878 fish/cmds.c:6897
+#: fish/cmds.c:7033 fish/cmds.c:7124 fish/cmds.c:7405 fish/cmds.c:7469
+#: fish/cmds.c:7668 fish/cmds.c:7687 fish/cmds.c:7706 fish/cmds.c:7745
+#: fish/cmds.c:7786 fish/cmds.c:7805 fish/cmds.c:7824 fish/cmds.c:7865
+#: fish/cmds.c:7884 fish/cmds.c:7903 fish/cmds.c:7941 fish/cmds.c:8094
+#: fish/cmds.c:8137 fish/cmds.c:8714 fish/cmds.c:8909 fish/cmds.c:8947
+#: fish/cmds.c:8985 fish/cmds.c:9105 fish/cmds.c:9142 fish/cmds.c:9180
+#: fish/cmds.c:9219 fish/cmds.c:9260 fish/cmds.c:9301 fish/cmds.c:9342
+#: fish/cmds.c:9505 fish/cmds.c:9541 fish/cmds.c:9554 fish/cmds.c:9567
+#: fish/cmds.c:9580 fish/cmds.c:9613 fish/cmds.c:9651 fish/cmds.c:9670
+#: fish/cmds.c:9791 fish/cmds.c:9810 fish/cmds.c:9871 fish/cmds.c:9884
+#: fish/cmds.c:9935 fish/cmds.c:9974 fish/cmds.c:10052 fish/cmds.c:10071
+#: fish/cmds.c:10345 fish/cmds.c:10472 fish/cmds.c:10509 fish/cmds.c:10548
+#: fish/cmds.c:10588 fish/cmds.c:10607 fish/cmds.c:10666 fish/cmds.c:10739
+#: fish/cmds.c:10849 fish/cmds.c:10919 fish/cmds.c:10953 fish/cmds.c:10984
+#: fish/cmds.c:11015 fish/cmds.c:11064 fish/cmds.c:11235 fish/cmds.c:11277
+#: fish/cmds.c:11322 fish/cmds.c:11364 fish/cmds.c:11590 fish/cmds.c:11628
+#: fish/cmds.c:11641 fish/cmds.c:11679 fish/cmds.c:11714 fish/cmds.c:11733
+#: fish/cmds.c:11800 fish/cmds.c:11828 fish/cmds.c:11851 fish/cmds.c:12106
+#: fish/cmds.c:12167
 #, c-format
 msgid "%s: %s: invalid integer parameter (%s returned %d)\n"
 msgstr "%s: %s: некоректний цілий параметр (%s повернуто %d)\n"
 
-#: fish/cmds.c:3603 fish/cmds.c:4801 fish/cmds.c:5159 fish/cmds.c:5199
-#: fish/cmds.c:5218 fish/cmds.c:5361 fish/cmds.c:5420 fish/cmds.c:5439
-#: fish/cmds.c:5458 fish/cmds.c:5501 fish/cmds.c:5844 fish/cmds.c:6455
-#: fish/cmds.c:6654 fish/cmds.c:6673 fish/cmds.c:6692 fish/cmds.c:6711
-#: fish/cmds.c:6847 fish/cmds.c:6938 fish/cmds.c:7219 fish/cmds.c:7283
-#: fish/cmds.c:7482 fish/cmds.c:7501 fish/cmds.c:7520 fish/cmds.c:7559
-#: fish/cmds.c:7600 fish/cmds.c:7619 fish/cmds.c:7638 fish/cmds.c:7679
-#: fish/cmds.c:7698 fish/cmds.c:7717 fish/cmds.c:7755 fish/cmds.c:7908
-#: fish/cmds.c:7951 fish/cmds.c:8528 fish/cmds.c:8723 fish/cmds.c:8761
-#: fish/cmds.c:8799 fish/cmds.c:8919 fish/cmds.c:8956 fish/cmds.c:8994
-#: fish/cmds.c:9033 fish/cmds.c:9074 fish/cmds.c:9115 fish/cmds.c:9156
-#: fish/cmds.c:9427 fish/cmds.c:9465 fish/cmds.c:9484 fish/cmds.c:9605
-#: fish/cmds.c:9749 fish/cmds.c:9788 fish/cmds.c:9866 fish/cmds.c:9885
-#: fish/cmds.c:10286 fish/cmds.c:10323 fish/cmds.c:10362 fish/cmds.c:10402
-#: fish/cmds.c:10421 fish/cmds.c:10480 fish/cmds.c:10553 fish/cmds.c:10663
-#: fish/cmds.c:11049 fish/cmds.c:11091 fish/cmds.c:11136 fish/cmds.c:11178
-#: fish/cmds.c:11528 fish/cmds.c:11614
+#: fish/cmds.c:3701 fish/cmds.c:4993 fish/cmds.c:5351 fish/cmds.c:5391
+#: fish/cmds.c:5410 fish/cmds.c:5553 fish/cmds.c:5612 fish/cmds.c:5631
+#: fish/cmds.c:5650 fish/cmds.c:5693 fish/cmds.c:6036 fish/cmds.c:6647
+#: fish/cmds.c:6846 fish/cmds.c:6865 fish/cmds.c:6884 fish/cmds.c:6903
+#: fish/cmds.c:7039 fish/cmds.c:7130 fish/cmds.c:7411 fish/cmds.c:7475
+#: fish/cmds.c:7674 fish/cmds.c:7693 fish/cmds.c:7712 fish/cmds.c:7751
+#: fish/cmds.c:7792 fish/cmds.c:7811 fish/cmds.c:7830 fish/cmds.c:7871
+#: fish/cmds.c:7890 fish/cmds.c:7909 fish/cmds.c:7947 fish/cmds.c:8100
+#: fish/cmds.c:8143 fish/cmds.c:8720 fish/cmds.c:8915 fish/cmds.c:8953
+#: fish/cmds.c:8991 fish/cmds.c:9111 fish/cmds.c:9148 fish/cmds.c:9186
+#: fish/cmds.c:9225 fish/cmds.c:9266 fish/cmds.c:9307 fish/cmds.c:9348
+#: fish/cmds.c:9619 fish/cmds.c:9657 fish/cmds.c:9676 fish/cmds.c:9797
+#: fish/cmds.c:9941 fish/cmds.c:9980 fish/cmds.c:10058 fish/cmds.c:10077
+#: fish/cmds.c:10478 fish/cmds.c:10515 fish/cmds.c:10554 fish/cmds.c:10594
+#: fish/cmds.c:10613 fish/cmds.c:10672 fish/cmds.c:10745 fish/cmds.c:10855
+#: fish/cmds.c:11241 fish/cmds.c:11283 fish/cmds.c:11328 fish/cmds.c:11370
+#: fish/cmds.c:11720 fish/cmds.c:11806 fish/cmds.c:11834 fish/cmds.c:11857
 #, c-format
 msgid "%s: %s: integer out of range\n"
 msgstr "%s: %s: ціле значення поза межами діапазону\n"
 
-#: fish/cmds.c:4089 fish/cmds.c:4196 fish/cmds.c:11589
+#: fish/cmds.c:4187 fish/cmds.c:4294 fish/cmds.c:4611 fish/cmds.c:11781
+#: fish/cmds.c:12027 fish/cmds.c:12088 fish/cmds.c:12148
 #, c-format
 msgid "%s should have %d-%d parameter(s)\n"
 msgstr "%s повинен мати %d-%d параметрів\n"
 
-#: fish/cmds.c:4115 fish/cmds.c:4227 fish/cmds.c:11629
+#: fish/cmds.c:4213 fish/cmds.c:4330 fish/cmds.c:4632 fish/cmds.c:11867
+#: fish/cmds.c:12044 fish/cmds.c:12121 fish/cmds.c:12177
 #, c-format
 msgid "%s: unknown optional argument \"%s\"\n"
 msgstr "%s: невідомий додатковий аргумент «%s»\n"
 
-#: fish/cmds.c:4121 fish/cmds.c:4233 fish/cmds.c:11635
+#: fish/cmds.c:4219 fish/cmds.c:4336 fish/cmds.c:4638 fish/cmds.c:11873
+#: fish/cmds.c:12050 fish/cmds.c:12127 fish/cmds.c:12183
 #, c-format
 msgid "%s: optional argument \"%s\" given twice\n"
 msgstr "%s: додатковий аргумент «%s» вказано двічі\n"
 
-#: fish/cmds.c:11730
+#: fish/cmds.c:12228
 #, c-format
 msgid "%s: unknown command\n"
 msgstr "%s: невідома команда\n"
 
 #: fish/config.c:74 fish/config.c:113
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: line %d: error parsing configuration file: %s\n"
-msgstr "%s: внутрішня помилка під час обробки рядка, «%s»\n"
+msgstr ""
 
 #: fish/copy.c:41
 #, c-format
@@ -2029,13 +2125,18 @@ msgstr "copy-out: призначення «%s» не є каталогом\n"
 msgid "copy-out: '%s' is not a file or directory\n"
 msgstr "copy-out: «%s» не є файлом або каталогом\n"
 
+#: fish/display.c:42
+#, c-format
+msgid "display filename\n"
+msgstr ""
+
 #: fish/edit.c:45
 #, c-format
 msgid "use '%s filename' to edit a file\n"
 msgstr "скористайтеся командою «%s назва_файла» для редагування файла\n"
 
-#: fish/fish.c:101
-#, fuzzy, c-format
+#: fish/fish.c:103
+#, c-format
 msgid ""
 "%s: guest filesystem shell\n"
 "%s lets you edit virtual machine filesystems\n"
@@ -2080,95 +2181,51 @@ msgid ""
 "\n"
 "For more information, see the manpage %s(1).\n"
 msgstr ""
-"%s: командна оболонка гостьової файлової системи\n"
-"%s надає вам змогу редагувати файлові системи віртуальної машини\n"
-"© Red Hat Inc., 2009, 2010\n"
-"Використання:\n"
-"  %s [--параметри] команда [: команда : команда ...]\n"
-"  %s [--ro] -i -a образ-диска\n"
-"  %s [--ro] -i -d домен-libvirt\n"
-"для інтерактивного використання:\n"
-"  %s\n"
-"або зі скрипту оболонки:\n"
-"  %s <<EOF\n"
-"  команда\n"
-"  ...\n"
-"  EOF\n"
-"Параметри:\n"
-"  -h|--cmd-help         Показати список можливих команд\n"
-"  -h|--cmd-help команда Показати докладну довідку щодо «команди»\n"
-"  -a|--add образ        Додати образ\n"
-"  -c|--connect адреса   Вказати адресу libvirt для параметра -d\n"
-"  --csh                 Увімкнути режим сумісності --listen з csh\n"
-"  -d|--domain гість     Додати диски з гостьової системі libvirt\n"
-"  -D|--no-dest-paths    Не доповнювати адреси у гостьовій системі у "
-"відповідь на Tab\n"
-"  --echo-keys           Показувати символи під час введення паролів\n"
-"  -f|--file файл        Прочитати команди з файла\n"
-"  --format[=raw|..]     Вказати формат диска для параметра -a\n"
-"  -i|--inspector        Автоматично монтувати файлові системи\n"
-"  --keys-from-stdin     Прочитати паролі з stdin\n"
-"  --listen              Очікувати на віддалені команди\n"
-"  --live                Встановити з’єднання з запущеною віртуальною "
-"машиною\n"
-"  -m|--mount dev[:mnt]  Змонтувати dev до mnt (якщо не вказано, до /)\n"
-"  -n|--no-sync          Не виконувати автосинхронізації\n"
-"  -N|--new тип          Створити приготований диск (test1.img, ...)\n"
-"  --progress-bars       Увімкнути смужки поступу, навіть якщо режим не є "
-"інтерактивним\n"
-"  --no-progress-bars    Вимкнути смужки поступу\n"
-"  --remote[=pid]        Надіслати команди до віддаленого %s\n"
-"  -r|--ro               Змонтувати у режимі лише для читання\n"
-"  --selinux             Увімкнути підтримку SELinux\n"
-"  -v|--verbose          Докладні повідомлення\n"
-"  -V|--version          Показати дані щодо версії і завершити роботу\n"
-"  -x                    Показувати кожну команду до її виконання\n"
-"Щоб дізнатися більше, ознайомтеся зі сторінкою довідника (man) %s(1).\n"
 
-#: fish/fish.c:244
+#: fish/fish.c:246
 #, c-format
 msgid "%s: --listen=PID: PID was not a number: %s\n"
 msgstr "%s: --listen=PID: PID не був числом: %s\n"
 
-#: fish/fish.c:251
+#: fish/fish.c:253
 #, c-format
 msgid ""
 "%s: remote: $GUESTFISH_PID must be set to the PID of the remote process\n"
 msgstr ""
 "%s: remote: для ідентифікатора віддаленого процесу має $GUESTFISH_PID\n"
 
-#: fish/fish.c:301
+#: fish/fish.c:303
 #, c-format
 msgid "%s: only one -f parameter can be given\n"
 msgstr "%s: можна вказувати лише один параметр -f\n"
 
-#: fish/fish.c:462
+#: fish/fish.c:476
 #, c-format
 msgid "%s: cannot use --listen and --remote options at the same time\n"
 msgstr "%s: не можна одночасно використовувати параметри --listen і --remote\n"
 
-#: fish/fish.c:470
+#: fish/fish.c:484
 #, c-format
 msgid "%s: extra parameters on the command line with --listen flag\n"
 msgstr "%s: зайві параметри у командному рядку з прапорцем --listen\n"
 
-#: fish/fish.c:476
+#: fish/fish.c:490
 #, c-format
 msgid "%s: cannot use --listen and --file options at the same time\n"
 msgstr "%s: не можна одночасно використовувати параметри --listen і --file\n"
 
-#: fish/fish.c:534
+#: fish/fish.c:555
 #, c-format
 msgid "guestfish: could not access termcap or terminfo database.\n"
 msgstr ""
 "guestfish: не вдалося отримати доступ до бази даних termcap або terminfo.\n"
 
-#: fish/fish.c:538
+#: fish/fish.c:559
 #, c-format
 msgid "guestfish: terminal type \"%s\" not defined.\n"
 msgstr "guestfish: тип термінала «%s» не визначено.\n"
 
-#: fish/fish.c:626
+#: fish/fish.c:647
 #, c-format
 msgid ""
 "\n"
@@ -2190,45 +2247,50 @@ msgstr ""
 "      «quit», щоб вийти з оболонки\n"
 "\n"
 
-#: fish/fish.c:770
-#, c-format
-msgid "%s: unterminated double quote\n"
-msgstr "%s: не виявлено завершальних подвійних лапок\n"
-
-#: fish/fish.c:776 fish/fish.c:793
+#: fish/fish.c:796 fish/fish.c:812
 #, c-format
 msgid "%s: command arguments not separated by whitespace\n"
 msgstr "%s: аргументи команди не відокремлено пробілами\n"
 
-#: fish/fish.c:787
+#: fish/fish.c:806
 #, c-format
 msgid "%s: unterminated single quote\n"
 msgstr "%s: не виявлено завершальних одинарних лапок\n"
 
-#: fish/fish.c:817
+#: fish/fish.c:836
 #, c-format
 msgid "%s: internal error parsing string at '%s'\n"
 msgstr "%s: внутрішня помилка під час обробки рядка, «%s»\n"
 
-#: fish/fish.c:834
+#: fish/fish.c:853
 #, c-format
 msgid "%s: too many arguments\n"
 msgstr "%s: занадто багато аргументів\n"
 
-#: fish/fish.c:902
+#: fish/fish.c:928
+#, c-format
+msgid "%s: invalid escape sequence in string (starting at offset %d)\n"
+msgstr ""
+
+#: fish/fish.c:937
+#, c-format
+msgid "%s: unterminated double quote\n"
+msgstr "%s: не виявлено завершальних подвійних лапок\n"
+
+#: fish/fish.c:1002
 #, c-format
 msgid "%s: empty command on command line\n"
 msgstr "%s: порожня команда або командний рядок\n"
 
-#: fish/fish.c:1048
+#: fish/fish.c:1148
 msgid "display a list of commands or help on a command"
 msgstr "показати список команд або довідку щодо команди"
 
-#: fish/fish.c:1050
+#: fish/fish.c:1150
 msgid "quit guestfish"
 msgstr "вийти з guestfish"
 
-#: fish/fish.c:1061
+#: fish/fish.c:1161
 #, c-format
 msgid ""
 "help - display a list of commands or help on a command\n"
@@ -2239,7 +2301,7 @@ msgstr ""
 "     help команда\n"
 "     help\n"
 
-#: fish/fish.c:1069
+#: fish/fish.c:1169
 #, c-format
 msgid ""
 "quit - quit guestfish\n"
@@ -2248,13 +2310,13 @@ msgstr ""
 "quit — завершити роботу guestfish\n"
 "     quit\n"
 
-#: fish/fish.c:1074
+#: fish/fish.c:1174
 #, c-format
 msgid "%s: command not known, use -h to list all commands\n"
 msgstr ""
 "%s: невідома команда, скористайтеся -h, щоб отримати список всіх команд\n"
 
-#: fish/fish.c:1090
+#: fish/fish.c:1190
 #, c-format
 msgid ""
 "Did you mean to open a disk image?  guestfish -a disk.img\n"
@@ -2265,31 +2327,26 @@ msgstr ""
 "Отримати список команд:             guestfish -h\n"
 "Ознайомитися з документацією:       man guestfish\n"
 
-#: fish/fish.c:1247
+#: fish/fish.c:1347
 #, c-format
 msgid "Runaway quote in string \"%s\"\n"
 msgstr "У рядку «%s» не вистачає лапок\n"
 
-#: fish/fish.c:1445
+#: fish/fish.c:1545
 #, c-format
 msgid ""
 "%s: to use Windows drive letters, you must inspect the guest (\"-i\" option "
 "or run \"inspect-os\" command)\n"
 msgstr ""
 
-#: fish/fish.c:1451
-#, c-format
-msgid "%s: to use Windows drive letters, this must be a Windows guest\n"
-msgstr ""
-
-#: fish/fish.c:1465
+#: fish/fish.c:1565
 #, c-format
 msgid ""
 "%s: drive '%c:' not found.  To list available drives do:\n"
 "  inspect-get-drive-mappings %s\n"
 msgstr ""
 
-#: fish/fish.c:1484
+#: fish/fish.c:1584
 #, c-format
 msgid ""
 "%s: to access '%c:', mount %s first.  One way to do this is:\n"
@@ -2630,7 +2687,7 @@ msgid "use 'time command [args...]'\n"
 msgstr "скористайтеся командою «time команда [аргументи...]»\n"
 
 #: fuse/guestmount.c:912
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s: FUSE module for libguestfs\n"
 "%s lets you mount a virtual machine filesystem\n"
@@ -2659,32 +2716,6 @@ msgid ""
 "  -w|--rw              Mount read-write\n"
 "  -x|--trace           Trace guestfs API calls\n"
 msgstr ""
-"%s: модуль FUSE для libguestfs\n"
-"%s надає вам змогу монтувати файлову систему віртуальної машини\n"
-"© Red Hat Inc., 2009–2010\n"
-"Використання:\n"
-"  %s [--параметри] [-- [--параметри-FUSE]] точка монтування\n"
-"Параметри:\n"
-"  -a|--add образ       Додати образ\n"
-"  -c|--connect адреса  Вказати адресу libvirt для параметра -d\n"
-"  --dir-cache-timeout  Встановити час очікування на кешування readdir "
-"(типово 5 с)\n"
-"  -d|--domain гість    Додати диск з гостьової системи libvirt\n"
-"  --echo-keys          Не вимикати показ введених символів паролів\n"
-"  --format[=raw|..]    Вказати формат диска для параметра -a\n"
-"  --fuse-help          Показати додаткові параметри FUSE\n"
-"  -i|--inspector       Автоматично монтувати файлові системи\n"
-"  --help               Показати довідкове повідомлення і завершити роботу\n"
-"  --keys-from-stdin    Прочитати паролі зі stdin\n"
-"  --live               Встановити з’єднання з запущеною віртуальною машиною\n"
-"  -m|--mount dev[:mnt] Змонтувати dev до mnt (якщо не вказано, до /)\n"
-"  -n|--no-sync         Не виконувати автоматичної синхронізації\n"
-"  -o|--option параметр Передати додатковий параметр FUSE\n"
-"  -r|--ro              Змонтувати у режимі лише для читання\n"
-"  --selinux            Увімкнути підтримку SELinux\n"
-"  -v|--verbose         Докладні повідомлення\n"
-"  -V|--version         Показати дані щодо версії і завершити роботу\n"
-"  -x|--trace           Трасувати виклики програмного інтерфейсу guestfs\n"
 
 #: fuse/guestmount.c:1130
 #, c-format
@@ -2915,7 +2946,7 @@ msgid "{filename}: could not read initrd format"
 msgstr "{filename}: не вдалося прочитати формат initrd"
 
 #: rescue/virt-rescue.c:63
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s: Run a rescue shell on a virtual machine\n"
 "Copyright (C) 2009-2010 Red Hat Inc.\n"
@@ -2939,26 +2970,6 @@ msgid ""
 "  -x                   Trace libguestfs API calls\n"
 "For more information, see the manpage %s(1).\n"
 msgstr ""
-"%s: запуск оболонки відновлення на віртуальній машині\n"
-"© Red Hat Inc., 2009–2010\n"
-"Використання:\n"
-"  %s [--параметри] -d назва-домену\n"
-"  %s [--параметри] -a диск.img [-a диск.img ...]\n"
-"Параметри:\n"
-"  -a|--add образ       Додати образ\n"
-"  --append пар_ядра    Додати параметри запуску ядра\n"
-"  -c|--connect адреса  Вказати адресу libvirt для параметра -d\n"
-"  -d|--domain гість    Додати диски з гостьової системи libvirt\n"
-"  --format[=raw|..]    Вказати формат диска для параметра -a\n"
-"  --help               Показати коротку довідку\n"
-"  -m|--memsize МБ      Вказати розмір пам’яті у мегабайтах\n"
-"  --network            Увімкнути мережу\n"
-"  -r|--ro              Доступ у режимі лише читання\n"
-"  --selinux            Увімкнути SELinux\n"
-"  -v|--verbose         Докладні повідомлення\n"
-"  -V|--version         Показати дані щодо версії і завершити роботу\n"
-"  -x                   Трасувати виклики програмного інтерфейсу libguestfs\n"
-"Щоб дізнатися більше, ознайомтеся зі сторінкою довідника (man) %s(1).\n"
 
 #: rescue/virt-rescue.c:180
 #, c-format
@@ -3004,24 +3015,20 @@ msgstr ""
 "попередніми повідомленнями"
 
 #: src/dbdump.c:87
-#, fuzzy
 msgid "unexpected end of output from db_dump command before end of header"
-msgstr "неочікуване завершення даних, виведених командою db_dump"
+msgstr ""
 
 #: src/dbdump.c:100 src/dbdump.c:112
-#, fuzzy
 msgid "unexpected line from db_dump command, no space prefix"
-msgstr "неочікуване завершення даних, виведених командою db_dump"
+msgstr ""
 
 #: src/dbdump.c:129
-#, fuzzy
 msgid "unexpected end of output from db_dump command before end of data"
-msgstr "неочікуване завершення даних, виведених командою db_dump"
+msgstr ""
 
 #: src/dbdump.c:210
-#, fuzzy
 msgid "unexpected non-hex digits in output of db_dump command"
-msgstr "неочікуване завершення даних, виведених командою db_dump"
+msgstr ""
 
 #: src/filearch.c:153
 #, c-format
@@ -3041,17 +3048,17 @@ msgstr ""
 msgid "guestfs_close: called twice on the same handle\n"
 msgstr "guestfs_close: викликано двічі для того самого елемента керування\n"
 
-#: src/guestfs.c:333
+#: src/guestfs.c:340
 #, c-format
 msgid "warning: %s"
 msgstr ""
 
-#: src/guestfs.c:392
+#: src/guestfs.c:399
 #, c-format
 msgid "libguestfs: error: %s\n"
 msgstr "libguestfs: помилка: %s\n"
 
-#: src/guestfs.c:939
+#: src/guestfs.c:965
 #, c-format
 msgid "<truncated, original size %zu bytes>"
 msgstr "<скорочено, початковий розмір — %zu байтів>"
@@ -3061,13 +3068,12 @@ msgid "not a Windows guest, or systemroot could not be determined"
 msgstr "не є гостьовою системою Windows або не вдалося визначити systemroot"
 
 #: src/inspect.c:281
-#, fuzzy
 msgid "not a Windows guest, or CurrentControlSet could not be determined"
-msgstr "не є гостьовою системою Windows або не вдалося визначити systemroot"
+msgstr ""
 
 #: src/inspect.c:541 src/inspect_fs.c:474 src/inspect_fs.c:518
-#: src/inspect_fs_unix.c:194 src/inspect_fs_unix.c:586
-#: src/inspect_fs_unix.c:828
+#: src/inspect_fs_unix.c:194 src/inspect_fs_unix.c:579
+#: src/inspect_fs_unix.c:821
 #, c-format
 msgid "size of %s is unreasonably large (%<PRIi64> bytes)"
 msgstr "розмір %s неймовірно великий (%<PRIi64> байтів)"
@@ -3086,7 +3092,7 @@ msgstr ""
 "кореневого пристрою, дані якого раніше було повернуто функцією "
 "guestfs_inspect_os"
 
-#: src/inspect.c:599 src/inspect_apps.c:470
+#: src/inspect.c:599 src/inspect_apps.c:609
 msgid ""
 "inspection API not available since this version of libguestfs was compiled "
 "without PCRE or hivex libraries"
@@ -3104,7 +3110,7 @@ msgstr "не вдалося обробити ціле число у номері
 msgid "%s: file is empty"
 msgstr "%s: файл порожній"
 
-#: src/inspect_fs_unix.c:620
+#: src/inspect_fs_unix.c:613
 msgid "could not parse /etc/fstab or empty file"
 msgstr "не вдалося обробити /etc/fstab або порожній файл"
 
@@ -3112,6 +3118,11 @@ msgstr "не вдалося обробити /etc/fstab або порожній 
 #, c-format
 msgid "cannot resolve Windows %%SYSTEMROOT%%"
 msgstr "не вдалося визначити %%SYSTEMROOT%% Windows"
+
+#: src/inspect_icon.c:452
+#, c-format
+msgid "read: %s: unexpected end of file"
+msgstr ""
 
 #: src/launch.c:98
 msgid "command line cannot be altered after qemu subprocess launched"
@@ -3148,27 +3159,27 @@ msgstr "%s: не вдалося створити тимчасовий катал
 msgid "you must call guestfs_add_drive before guestfs_launch"
 msgstr "вам слід викликати guestfs_add_drive перед викликом guestfs_launch"
 
-#: src/launch.c:769
+#: src/launch.c:774
 msgid "guestfs_launch failed, see earlier error messages"
 msgstr ""
 "спроба виклику guestfs_launch була невдалою, ознайомтеся з попередніми "
 "повідомленнями"
 
-#: src/launch.c:782
+#: src/launch.c:787
 msgid "qemu launched and contacted daemon, but state != READY"
 msgstr ""
 "qemu запущено, встановлено зв’язок з фоновою службою, але стан процесу не "
 "дорівнює READY"
 
-#: src/launch.c:870
+#: src/launch.c:875
 msgid "guestfs_launch failed, unexpected initial message from guestfsd"
 msgstr "помилка guestfs_launch, мало бути початкове повідомлення від guestfsd"
 
-#: src/launch.c:878
+#: src/launch.c:883
 msgid "contacted guestfsd, but state != READY"
 msgstr "встановлено зв’язок з guestfs, але стан процесу не дорівнює READY"
 
-#: src/launch.c:1057
+#: src/launch.c:1062
 #, c-format
 msgid ""
 "%s: command failed: If qemu is located on a non-standard path, try setting "
@@ -3177,11 +3188,11 @@ msgstr ""
 "%s: помилка команди: якщо qemu зберігається у нестандартному каталозі, "
 "спробуйте встановити відповідне значення змінної середовища LIBGUESTFS_QEMU."
 
-#: src/launch.c:1148
+#: src/launch.c:1153
 msgid "qemu has not been launched yet"
 msgstr "qemu ще не запущено"
 
-#: src/launch.c:1159
+#: src/launch.c:1164
 msgid "no subprocess to kill"
 msgstr "немає підпроцесів для завершення"
 
@@ -3211,9 +3222,8 @@ msgid ""
 msgstr ""
 
 #: src/proto.c:549
-#, fuzzy
 msgid "See earlier debug messages.\n"
-msgstr "tar: помилка, ознайомтеся з попередніми повідомленнями\n"
+msgstr ""
 
 #: src/proto.c:639
 #, c-format
@@ -3238,84 +3248,88 @@ msgstr "помилка xdr_guestfs_message_header"
 msgid "dispatch failed to marshal args"
 msgstr "помилка розподілу на основні аргументи"
 
-#: src/proto.c:970
+#: src/proto.c:922 src/proto.c:1217
+msgid "operation cancelled by user"
+msgstr ""
+
+#: src/proto.c:973
 #, c-format
 msgid "send_file_chunk: state %d != READY"
 msgstr "send_file_chunk: стан %d != READY"
 
-#: src/proto.c:986
+#: src/proto.c:989
 #, c-format
 msgid "xdr_guestfs_chunk failed (buf = %p, buflen = %zu)"
 msgstr "помилка xdr_guestfs_chunk (буфер = %p, довжина буфера = %zu)"
 
-#: src/proto.c:1136
+#: src/proto.c:1144
 #, c-format
 msgid "%s: error in chunked encoding"
 msgstr "%s: помилка у кодуванні фрагмента"
 
-#: src/proto.c:1163
+#: src/proto.c:1171
 msgid "write to daemon socket"
 msgstr "записати до сокета фонової служби"
 
-#: src/proto.c:1186
+#: src/proto.c:1194
 msgid "receive_file_data: parse error in reply callback"
 msgstr "receive_file_data: помилка обробки у зворотному виклику відповіді"
 
-#: src/proto.c:1191
+#: src/proto.c:1199
 msgid "receive_file_data: unexpected flag received when reading file chunks"
 msgstr ""
 "receive_file_data: під час читання фрагментів файла отримано неочікуване "
 "значення прапорця"
 
-#: src/proto.c:1199
+#: src/proto.c:1207
 msgid "failed to parse file chunk"
 msgstr "не вдалося обробити фрагмент файла"
 
-#: src/proto.c:1208
+#: src/proto.c:1221
 msgid "file receive cancelled by daemon"
 msgstr "отримання файла було скасовано фоновою службою"
 
-#: src/virt.c:92 src/virt.c:325
+#: src/virt.c:101 src/virt.c:347
 msgid "you cannot set both live and readonly flags"
 msgstr "не можна одночасно встановлювати атрибути live і readonly"
 
-#: src/virt.c:100
+#: src/virt.c:109
 #, c-format
 msgid "could not connect to libvirt (code %d, domain %d): %s"
 msgstr "не вдалося встановити з’єднання з libvirt (код %d, домен %d): %s"
 
-#: src/virt.c:108
+#: src/virt.c:130
 #, c-format
 msgid "no libvirt domain called '%s': %s"
 msgstr "не виявлено домену libvirt з назвою «%s»: %s"
 
-#: src/virt.c:163 src/virt.c:413
+#: src/virt.c:185 src/virt.c:435
 #, c-format
 msgid "error reading libvirt XML information: %s"
 msgstr "помилка під час читання XML-даних libvirt: %s"
 
-#: src/virt.c:173 src/virt.c:421
+#: src/virt.c:195 src/virt.c:443
 msgid "unable to parse XML information returned by libvirt"
 msgstr "не вдалося обробити дані XML, повернуті libvirt"
 
-#: src/virt.c:179 src/virt.c:427
+#: src/virt.c:201 src/virt.c:449
 msgid "unable to create new XPath context"
 msgstr "не вдалося створити контекст XPath"
 
-#: src/virt.c:186 src/virt.c:442
+#: src/virt.c:208 src/virt.c:464
 msgid "unable to evaluate XPath expression"
 msgstr "не вдалося сформувати вираз XPath"
 
-#: src/virt.c:283
+#: src/virt.c:305
 msgid "libvirt domain has no disks"
 msgstr "у домені libvirt немає дисків"
 
-#: src/virt.c:336
+#: src/virt.c:358
 #, c-format
 msgid "error getting domain info: %s"
 msgstr "помилка під час отримання даних щодо домену: %s"
 
-#: src/virt.c:350
+#: src/virt.c:372
 msgid ""
 "error: domain is a live virtual machine.\n"
 "Writing to the disks of a running virtual machine can cause disk "
@@ -3334,7 +3348,7 @@ msgstr ""
 "інструментів libguestfs є --ro і --live. Докладніші дані можна знайти у "
 "документації."
 
-#: src/virt.c:470
+#: src/virt.c:492
 msgid ""
 "this guest has no libvirt <channel> definition for guestfsd\n"
 "See ATTACHING TO RUNNING DAEMONS in guestfs(3) for further information."
@@ -3344,7 +3358,7 @@ msgstr ""
 "Докладнішу довідкову інформацію можна знайти у розділі ATTACHING TO RUNNING "
 "DAEMONS сторінки довідника (man) guestfs(3)."
 
-#: src/virt.c:495
+#: src/virt.c:517
 msgid ""
 "add-domain API not available since this version of libguestfs was compiled "
 "without libvirt or libxml2"
@@ -3353,7 +3367,7 @@ msgstr ""
 "було зібрано без підтримки бібліотеки libvirt або libxml2"
 
 #: test-tool/test-tool.c:79
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "libguestfs-test-tool: interactive test tool\n"
 "Copyright (C) 2009-2011 Red Hat Inc.\n"
@@ -3366,18 +3380,6 @@ msgid ""
 "  --timeout n\n"
 "  -t n           Set launch timeout (default: %d seconds)\n"
 msgstr ""
-"libguestfs-test-tool: інтерактивний інструмент для тестування\n"
-"© Red Hat Inc., 2009\n"
-"Використання:\n"
-"  libguestfs-test-tool [--параметри]\n"
-"Параметри:\n"
-"  --help         Довідка з використання\n"
-"  --helper libguestfs-test-tool-helper\n"
-"                 Визначити допоміжну програму (типова: %s)\n"
-"  --qemudir dir  Вказати каталог коду QEMU\n"
-"  --qemu qemu    Вказати адресу виконуваного файла QEMU\n"
-"  --timeout n\n"
-"  -t n           Встановити час очікування запуску (типово %d секунд)\n"
 
 #: test-tool/test-tool.c:127
 #, c-format
@@ -3394,48 +3396,48 @@ msgstr "libguestfs-test-tool: некоректне значення часу о�
 msgid "libguestfs-test-tool: unexpected command line option 0x%x\n"
 msgstr "libguestfs-test-tool: неочікуваний параметр командного рядка 0x%x\n"
 
-#: test-tool/test-tool.c:173
+#: test-tool/test-tool.c:170
 #, c-format
 msgid "libguestfs-test-tool: failed to create libguestfs handle\n"
 msgstr ""
 "libguestfs-test-tool: не вдалося створити елемент керування libguestfs\n"
 
-#: test-tool/test-tool.c:180
+#: test-tool/test-tool.c:177
 #, c-format
 msgid "libguestfs-test-tool: failed to add drive '%s'\n"
 msgstr "libguestfs-test-tool: не вдалося додати пристрій «%s»\n"
 
-#: test-tool/test-tool.c:188
+#: test-tool/test-tool.c:185
 #, c-format
 msgid "libguestfs-test-tool: guestfs_version failed\n"
 msgstr "libguestfs-test-tool: помилка guestfs_version\n"
 
-#: test-tool/test-tool.c:220
+#: test-tool/test-tool.c:217
 #, c-format
 msgid "libguestfs-test-tool: failed to launch appliance\n"
 msgstr "libguestfs-test-tool: не вдалося запустити пристрій\n"
 
-#: test-tool/test-tool.c:232
-#, fuzzy, c-format
+#: test-tool/test-tool.c:229
+#, c-format
 msgid "libguestfs-test-tool: failed to run part-disk\n"
-msgstr "libguestfs-test-tool: не вдалося виконати sfdisk\n"
+msgstr ""
 
-#: test-tool/test-tool.c:238
+#: test-tool/test-tool.c:235
 #, c-format
 msgid "libguestfs-test-tool: failed to mkfs.ext2\n"
 msgstr "libguestfs-test-tool: не вдалося виконати mkfs.ext2\n"
 
-#: test-tool/test-tool.c:244
+#: test-tool/test-tool.c:241
 #, c-format
 msgid "libguestfs-test-tool: failed to mount /dev/sda1 on /\n"
 msgstr "libguestfs-test-tool: не вдалося змонтувати /dev/sda1 до /\n"
 
-#: test-tool/test-tool.c:251
-#, fuzzy, c-format
+#: test-tool/test-tool.c:248
+#, c-format
 msgid "libguestfs-test-tool: failed to touch file\n"
-msgstr "libguestfs-test-tool: не вдалося виконати sfdisk\n"
+msgstr ""
 
-#: test-tool/test-tool.c:282
+#: test-tool/test-tool.c:279
 #, c-format
 msgid ""
 "LIBGUESTFS_QEMU environment variable is already set, so\n"
@@ -3444,74 +3446,21 @@ msgstr ""
 "Значення змінної середовища LIBGUESTFS_QEMU вже встановлено, отже\n"
 "не можна використовувати параметри --qemu/--qemudir.\n"
 
-#: test-tool/test-tool.c:290
+#: test-tool/test-tool.c:287
 #, c-format
 msgid "Binary '%s' does not exist or is not executable\n"
 msgstr "Виконуваного файла «%s» не існує або вказаний файл не є виконуваним\n"
 
-#: test-tool/test-tool.c:304
+#: test-tool/test-tool.c:301
 #, c-format
 msgid "%s: does not look like a qemu source directory\n"
 msgstr "%s: не є каталогом початкових кодів qemu\n"
 
-#: tools/virt-edit.pl:178
-msgid "virt-edit: no image, VM names or filenames to edit given"
-msgstr ""
-"virt-edit: не вказано образу, назв віртуальних машин або назв файлів для "
-"редагування"
-
-#: tools/virt-edit.pl:194 tools/virt-tar.pl:243 tools/virt-win-reg.pl:217
-#, perl-brace-format
-msgid ""
-"{prog}: No operating system could be detected inside this disk image.\n"
-"\n"
-"This may be because the file is not a disk image, or is not a virtual "
-"machine\n"
-"image, or because the OS type is not understood by libguestfs.\n"
-"\n"
-"If you feel this is an error, please file a bug report including as much\n"
-"information about the disk image as possible.\n"
-msgstr ""
-"{prog}: у цьому образі диска не вдалося виявити операційної системи\n"
-"\n"
-"Причиною може бути те, що файл не є файлом образу диска, не є образом "
-"віртуальної\n"
-"машини або його тип ОС не підтримується libguestfs.\n"
-"\n"
-"Якщо вам здається, що сталася якась помилка, будь ласка, створіть "
-"повідомлення про ваду,\n"
-"додавши до нього максимум можливої інформації щодо образу диска.\n"
-
-#: tools/virt-edit.pl:198 tools/virt-tar.pl:247 tools/virt-win-reg.pl:221
-#, perl-brace-format
-msgid "{prog}: multiboot operating systems are not supported.\n"
-msgstr ""
-"{prog}: підтримки операційних систем з варіантами завантаження не "
-"передбачено.\n"
-
-#: tools/virt-edit.pl:235
-msgid "File not changed.\n"
-msgstr "Файл не змінено.\n"
-
-#: tools/virt-edit.pl:406
-#, fuzzy, perl-brace-format
-msgid "virt-edit: drive '{x}:' not found\n"
-msgstr "virt-tar: {tarball}: файла не знайдено\n"
-
-#: tools/virt-edit.pl:422
-#, perl-brace-format
-msgid ""
-"virt-edit: '{f}' does not start with a / or \\ character.\n"
-"If you are using Windows style paths with backslashes like C:\\foo.txt\n"
-"then don't forget that you must quote them with single quotes to\n"
-"prevent the shell from munging the backslashes.\n"
-msgstr ""
-
-#: tools/virt-list-filesystems.pl:142
+#: tools/virt-list-filesystems.pl:148
 msgid "virt-list-filesystems: no image or VM name given"
 msgstr "virt-list-filesystems: не вказано образу або назви віртуальної машини"
 
-#: tools/virt-list-partitions.pl:152
+#: tools/virt-list-partitions.pl:160
 msgid "virt-list-partitions: no image or VM name given"
 msgstr "virt-list-partitions: не вказано образу або назви віртуальної машини"
 
@@ -3567,36 +3516,65 @@ msgstr ""
 "розмір файлової системи. Будь ласка, ознайомтеся з розділом BUGS сторінки "
 "man.\n"
 
-#: tools/virt-tar.pl:183 tools/virt-tar.pl:190
+#: tools/virt-tar.pl:193 tools/virt-tar.pl:200
 msgid "virt-tar: extract/upload mode specified twice on the command line\n"
 msgstr ""
 "virt-tar: у командному рядку двічі вказано режим видобування або "
 "вивантаження\n"
 
-#: tools/virt-tar.pl:212
+#: tools/virt-tar.pl:222
 msgid "virt-tar: no image, VM names, directory or filename given"
 msgstr ""
 "virt-tar: не вказано образу, назв віртуальних машин, каталогу або назви файла"
 
-#: tools/virt-tar.pl:215
+#: tools/virt-tar.pl:225
 msgid "virt-tar: either -x or -u must be specified on the command line\n"
 msgstr "virt-tar: у командному рядку має бути вказано -x або -u\n"
 
-#: tools/virt-tar.pl:226
+#: tools/virt-tar.pl:236
 #, perl-brace-format
 msgid "virt-tar: {tarball}: file not found\n"
 msgstr "virt-tar: {tarball}: файла не знайдено\n"
 
-#: tools/virt-tar.pl:229
+#: tools/virt-tar.pl:239
 #, perl-brace-format
 msgid "virt-tar: {dir}: directory name must start with '/' character\n"
 msgstr "virt-tar: {dir}: запис каталогу має починатися з символу «/»\n"
 
-#: tools/virt-win-reg.pl:201
+#: tools/virt-tar.pl:253 tools/virt-win-reg.pl:261
+#, perl-brace-format
+msgid ""
+"{prog}: No operating system could be detected inside this disk image.\n"
+"\n"
+"This may be because the file is not a disk image, or is not a virtual "
+"machine\n"
+"image, or because the OS type is not understood by libguestfs.\n"
+"\n"
+"If you feel this is an error, please file a bug report including as much\n"
+"information about the disk image as possible.\n"
+msgstr ""
+"{prog}: у цьому образі диска не вдалося виявити операційної системи\n"
+"\n"
+"Причиною може бути те, що файл не є файлом образу диска, не є образом "
+"віртуальної\n"
+"машини або його тип ОС не підтримується libguestfs.\n"
+"\n"
+"Якщо вам здається, що сталася якась помилка, будь ласка, створіть "
+"повідомлення про ваду,\n"
+"додавши до нього максимум можливої інформації щодо образу диска.\n"
+
+#: tools/virt-tar.pl:257 tools/virt-win-reg.pl:265
+#, perl-brace-format
+msgid "{prog}: multiboot operating systems are not supported.\n"
+msgstr ""
+"{prog}: підтримки операційних систем з варіантами завантаження не "
+"передбачено.\n"
+
+#: tools/virt-win-reg.pl:245
 msgid "no libvirt domain name or disk image given\n"
 msgstr "не вказано назви домену або образу диска libvirt\n"
 
-#: tools/virt-win-reg.pl:240
+#: tools/virt-win-reg.pl:287
 msgid ""
 "expecting 1 or 2 more parameters, subkey path and optionally the value to "
 "export\n"
@@ -3604,229 +3582,27 @@ msgstr ""
 "мало бути вказано 1 або 2 додаткових параметри, шлях до підключа і "
 "необов’язкове значення для експортування\n"
 
-#: tools/virt-win-reg.pl:351
+#: tools/virt-win-reg.pl:446
+#, perl-brace-format
+msgid "virt-win-reg: {p}: cannot find user directory\n"
+msgstr ""
+
+#: tools/virt-win-reg.pl:451
 #, perl-brace-format
 msgid "virt-win-reg: {p}: not a supported Windows Registry path\n"
 msgstr "virt-win-reg: {p}: непідтримуваний запис шляху у регістрі Windows\n"
 
-#: tools/virt-win-reg.pl:368 tools/virt-win-reg.pl:390
+#: tools/virt-win-reg.pl:522 tools/virt-win-reg.pl:544
 #, perl-brace-format
 msgid "virt-win-reg: {p}: file not found in guest: {err}\n"
 msgstr "virt-win-reg: {p}: файл не знайдено на гостьовій системі: {err}\n"
 
-#: tools/virt-win-reg.pl:375
+#: tools/virt-win-reg.pl:529
 #, perl-brace-format
 msgid "virt-win-reg: {p}: could not download registry file: {err}\n"
 msgstr "virt-win-reg: {p}: не вдалося отримати файл регістра: {err}\n"
 
-#: tools/virt-win-reg.pl:397
+#: tools/virt-win-reg.pl:551
 #, perl-brace-format
 msgid "virt-win-reg: {p}: could not upload registry file: {err}\n"
 msgstr "virt-win-reg: {p}: не вдалося вивантажити файл регістра: {err}\n"
-
-#, fuzzy
-#~ msgid "%s: temporary directory not found"
-#~ msgstr "%s: не вдалося створити тимчасовий каталог"
-
-#~ msgid "unexpected end of file when reading from daemon"
-#~ msgstr ""
-#~ "неочікуваний символ кінця файла під час читання даних фонової служби"
-
-#~ msgid "libguestfs-test-tool: failed to mkdir /iso\n"
-#~ msgstr "libguestfs-test-tool: не вдалося створити каталог /iso\n"
-
-#~ msgid "libguestfs-test-tool: failed to mount /dev/sdb on /iso\n"
-#~ msgstr "libguestfs-test-tool: не вдалося змонтувати /dev/sdb до /iso\n"
-
-#~ msgid ""
-#~ "libguestfs-test-tool: could not run helper program, or helper failed\n"
-#~ msgstr ""
-#~ "libguestfs-test-tool: не вдалося запустити допоміжну програму або "
-#~ "допоміжній програмі не вдалося виконати завдання\n"
-
-#~ msgid ""
-#~ "Test tool helper program 'libguestfs-test-tool-helper' is not\n"
-#~ "available.  Expected to find it in '%s'\n"
-#~ "\n"
-#~ "Use the --helper option to specify the location of this program.\n"
-#~ msgstr ""
-#~ "Допоміжна програма тестового інструмента «libguestfs-test-tool-helper»\n"
-#~ "недоступна. Програма мала зберігатися у «%s»\n"
-#~ "\n"
-#~ "Скористайтеся параметром --helper для визначення розташування програми.\n"
-
-#~ msgid "command failed: %s"
-#~ msgstr "помилка команди: %s"
-
-#~ msgid ""
-#~ "Test tool helper program %s\n"
-#~ "is not statically linked.  This is a build error when this test tool\n"
-#~ "was built.\n"
-#~ msgstr ""
-#~ "Допоміжну програма інструмента тестування %s\n"
-#~ "не скомпоновано статично. Це помилка збирання тестового\n"
-#~ "інструмента.\n"
-
-#~ msgid "mkisofs command failed: %s\n"
-#~ msgstr "помилка команди mkisofs: %s\n"
-
-#~ msgid "virt-resize: sorry this program does not work on a 32 bit host\n"
-#~ msgstr ""
-#~ "virt-resize: вибачте, ця програма не працює у 32-бітових основних "
-#~ "системах\n"
-
-#~ msgid "virt-resize: {file}: does not exist or is not readable\n"
-#~ msgstr "virt-resize: {file}: не існує або непридатний до читання\n"
-
-#~ msgid ""
-#~ "virt-resize: {file}: does not exist or is not writable\n"
-#~ "You have to create the destination disk before running this program.\n"
-#~ "Please read the virt-resize(1) manpage for more information.\n"
-#~ msgstr ""
-#~ "virt-resize: {file}: не існує або непридатний до запису\n"
-#~ "Перш ніж запускати цю програму, вам слід створити диск призначення.\n"
-#~ "Докладніші дані можна знайти на сторінці довідника (man) virt-resize(1).\n"
-
-#~ msgid ""
-#~ "virt-resize: {file}: file is too small to be a disk image ({sz} bytes)\n"
-#~ msgstr ""
-#~ "virt-resize: {file}: занадто малий для образу диска файл ({sz} байтів)\n"
-
-#~ msgid "virt-resize: short read"
-#~ msgstr "virt-resize: мало даних"
-
-#~ msgid "virt-resize: no logical volume called {n}\n"
-#~ msgstr "virt-resize: не викликано логічного тому {n}\n"
-
-#~ msgid ""
-#~ "{p}: partition not found in the source disk image, when using the '{opt}' "
-#~ "command line option\n"
-#~ msgstr ""
-#~ "{p}: під час спроби використання параметра командного рядка «{opt}» у "
-#~ "даних образу диска не виявлено розділів\n"
-
-#~ msgid ""
-#~ "{p}: partition ignored, you cannot use it in another command line "
-#~ "argument\n"
-#~ msgstr ""
-#~ "{p}: розділ проігноровано, ви не можете використовувати його у інших "
-#~ "параметрах командного рядка\n"
-
-#~ msgid ""
-#~ "{p}: partition deleted, you cannot use it in another command line "
-#~ "argument\n"
-#~ msgstr ""
-#~ "{p}: розділ вилучено, ви не можете використовувати його у інших "
-#~ "параметрах командного рядка\n"
-
-#~ msgid "{p}: this partition has already been marked for resizing\n"
-#~ msgstr "{p}: цей розділ вже було позначено для зміни розміру\n"
-
-#~ msgid "{p}: missing size field in {o} option\n"
-#~ msgstr "{p}: у параметрі {o} не вказано значення розміру\n"
-
-#~ msgid "{p}: {f}: cannot parse size field\n"
-#~ msgstr "{p}: {f}: не вдалося обробити значення поля розміру\n"
-
-#~ msgid "{p}: new size is zero or negative\n"
-#~ msgstr "{p}: новий розмір є нульовим або від’ємним\n"
-
-#~ msgid ""
-#~ "{p}: cannot make this partition smaller because it contains a\n"
-#~ "filesystem, physical volume or other content that is larger than the new "
-#~ "size.\n"
-#~ "You have to resize the content first, see virt-resize(1).\n"
-#~ msgstr ""
-#~ "{p}: не можна зменшувати розміри розділу, оскільки на ньому міститься "
-#~ "файлова\n"
-#~ "система, фізичний том або інші дані, об’єм яких перевищує вказаний новий "
-#~ "розмір.\n"
-#~ "Вам спочатку слід змінити об’єм даних, див. virt-resize(1).\n"
-
-#~ msgid "virt-resize: you cannot use options --expand and --shrink together\n"
-#~ msgstr ""
-#~ "virt-resize: не можна одночасно використовувати параметри --expand і --"
-#~ "shrink\n"
-
-#~ msgid ""
-#~ "virt-resize: error: cannot use --expand when there is no surplus space "
-#~ "to\n"
-#~ "expand into.  You need to make the target disk larger by at least {h}.\n"
-#~ msgstr ""
-#~ "virt-resize: помилка: не можна використовувати --expand, якщо немає "
-#~ "залишку місця для\n"
-#~ "розширення. Вам слід зробити диск призначення більшим, принаймні на {h}.\n"
-
-#~ msgid ""
-#~ "virt-resize: error: cannot use --shrink because there is no deficit\n"
-#~ "(see 'deficit' in the virt-resize(1) man page)\n"
-#~ msgstr ""
-#~ "virt-resize: помилка: не можна використовувати --shrink, оскільки немає "
-#~ "дефіциту\n"
-#~ "(див. «deficit» на сторінці довідника (man) virt-resize(1))\n"
-
-#~ msgid "Summary of changes:\n"
-#~ msgstr "Резюме змін:\n"
-
-#~ msgid "{p}: partition will be ignored\n"
-#~ msgstr "{p}: розділ буде проігноровано\n"
-
-#~ msgid "{p}: partition will be deleted\n"
-#~ msgstr "{p}: розділ буде вилучено\n"
-
-#~ msgid "{p}: partition will be resized from {oldsize} to {newsize}\n"
-#~ msgstr "{p}: розмір розділу буде змінено з {oldsize} на {newsize}\n"
-
-#~ msgid "{p}: content will be expanded using the '{meth}' method\n"
-#~ msgstr "{p}: вміст буде розширено за допомогою методу «{meth}»\n"
-
-#~ msgid "{p}: partition will be left alone\n"
-#~ msgstr "{p}: розділ не буде змінено\n"
-
-#~ msgid "{n}: LV will be expanded to maximum size\n"
-#~ msgstr "{n}: логічний том буде розширено до максимального розміру\n"
-
-#~ msgid "{n}: content will be expanded using the '{meth}' method\n"
-#~ msgstr "{n}: вміст буде розширено за допомогою методу «{meth}»\n"
-
-#~ msgid "There is a surplus of {spl} bytes ({h}).\n"
-#~ msgstr "Вільними залишилися {spl} байтів ({h}).\n"
-
-#~ msgid "An extra partition will be created for the surplus.\n"
-#~ msgstr "На решті простору сховища буде створено додатковий розділ.\n"
-
-#~ msgid ""
-#~ "The surplus space is not large enough for an extra partition to be "
-#~ "created\n"
-#~ "and so it will just be ignored.\n"
-#~ msgstr ""
-#~ "Залишок місця недостатньо великий для створення нового розділу, отже\n"
-#~ "його буде просто проігноровано.\n"
-
-#~ msgid ""
-#~ "The surplus space will be ignored.  Run a partitioning program in the "
-#~ "guest\n"
-#~ "to partition this extra space if you want.\n"
-#~ msgstr ""
-#~ "Залишок місця буде проігноровано. Запустіть програму керування розділами "
-#~ "гостьової\n"
-#~ "системи, якщо бажаєте розподілити це залишок місця.\n"
-
-#~ msgid ""
-#~ "virt-resize: error: there is a deficit of {def} bytes ({h}).\n"
-#~ "You need to make the target disk larger by at least this amount,\n"
-#~ "or adjust your resizing requests.\n"
-#~ msgstr ""
-#~ "virt-resize: помилка: не вистачає {def} байтів ({h}).\n"
-#~ "Вам слід збільшити розмір диска призначення принаймні на вказане "
-#~ "значення\n"
-#~ "або скоригувати запит щодо зміни розмірів.\n"
-
-#~ msgid "virt-resize: source disk does not have a first partition\n"
-#~ msgstr "virt-resize: на початковому диску немає першого розділу\n"
-
-#~ msgid "Copying {p} ...\n"
-#~ msgstr "Копіювання {p}…\n"
-
-#~ msgid "Expanding {p} using the '{meth}' method\n"
-#~ msgstr "Розширення {p} за допомогою методу «{meth}»\n"

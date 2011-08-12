@@ -1,0 +1,307 @@
+=encoding utf8
+
+=head1 名前
+
+virt-rescue - Run a rescue shell on a virtual machine
+
+=head1 SYNOPSIS
+
+ virt-rescue [--options] -d domname
+
+ virt-rescue [--options] -a disk.img [-a disk.img ...]
+
+Old style:
+
+ virt-rescue [--options] domname
+
+ virt-rescue [--options] disk.img [disk.img ...]
+
+=head1 WARNING
+
+You must I<not> use C<virt-rescue> on live virtual machines.  Doing so will
+probably result in disk corruption in the VM.  C<virt-rescue> tries to stop
+you from doing this, but doesn't catch all cases.
+
+However if you use the I<--ro> (read only) option, then you can attach a
+shell to a live virtual machine.  The results might be strange or
+inconsistent at times but you won't get disk corruption.
+
+=head1 DESCRIPTION
+
+virt-rescue is like a Rescue CD, but for virtual machines, and without the
+need for a CD.  virt-rescue gives you a rescue shell and some simple
+recovery tools which you can use to examine or rescue a virtual machine or
+disk image.
+
+You can run virt-rescue on any virtual machine known to libvirt, or directly
+on disk image(s):
+
+ virt-rescue -d GuestName
+
+ virt-rescue --ro -a /path/to/disk.img
+
+ virt-rescue -a /dev/sdc
+
+For live VMs you I<must> use the --ro option.
+
+When you run virt-rescue on a virtual machine or disk image, you are placed
+in an interactive bash shell where you can use many ordinary Linux
+commands.  What you see in C</> (C</bin>, C</lib> etc) is the rescue
+appliance.  You must mount the virtual machine's filesystems by hand.  There
+is an empty directory called C</sysroot> where you can mount filesystems.
+
+In the example below, we list logical volumes, then choose one to mount
+under C</sysroot>:
+
+ ><rescue> lvs
+ LV      VG        Attr   LSize   Origin Snap%  Move Log Copy%  Convert
+ lv_root vg_f11x64 -wi-a-   8.83G
+ lv_swap vg_f11x64 -wi-a- 992.00M
+ ><rescue> mount /dev/vg_f11x64/lv_root /sysroot
+ ><rescue> ls /sysroot
+
+If you don't know what filesystems are available on the virtual machine then
+you can use commands such as L<parted(8)> and L<lvs(8)> to find out.
+
+=head2 NOTES
+
+Virt-rescue can be used on I<any> disk image file or device, not just a
+virtual machine.  For example you can use it on a blank file if you want to
+partition that file (although we would recommend using L<guestfish(1)>
+instead as it is more suitable for this purpose).  You can even use
+virt-rescue on things like SD cards.
+
+Virt-rescue does not require root.  You only need to run it as root if you
+need root to open the disk image.
+
+This tool is just designed for quick interactive hacking on a virtual
+machine.  For more structured access to a virtual machine disk image, you
+should use L<guestfs(3)>.  To get a structured shell that you can use to
+make scripted changes to guests, use L<guestfish(1)>.
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<--help>
+
+Display brief help.
+
+=item B<-a> file
+
+=item B<--add> file
+
+Add I<file> which should be a disk image from a virtual machine.  If the
+virtual machine has multiple block devices, you must supply all of them with
+separate I<-a> options.
+
+The format of the disk image is auto-detected.  To override this and force a
+particular format use the I<--format=..> option.
+
+=item B<--append kernelopts>
+
+Pass additional options to the rescue kernel.
+
+=item B<-c> URI
+
+=item B<--connect> URI
+
+If using libvirt, connect to the given I<URI>.  If omitted, then we connect
+to the default libvirt hypervisor.
+
+If you specify guest block devices directly (I<-a>), then libvirt is not
+used at all.
+
+=item B<-d> guest
+
+=item B<--domain> guest
+
+Add all the disks from the named libvirt guest.  Domain UUIDs can be used
+instead of names.
+
+=item B<--format=raw|qcow2|..>
+
+=item B<--format>
+
+The default for the I<-a> option is to auto-detect the format of the disk
+image.  Using this forces the disk format for I<-a> options which follow on
+the command line.  Using I<--format> with no argument switches back to
+auto-detection for subsequent I<-a> options.
+
+For example:
+
+ virt-rescue --format=raw -a disk.img
+
+forces raw format (no auto-detection) for C<disk.img>.
+
+ virt-rescue --format=raw -a disk.img --format -a another.img
+
+forces raw format (no auto-detection) for C<disk.img> and reverts to
+auto-detection for C<another.img>.
+
+If you have untrusted raw-format guest disk images, you should use this
+option to specify the disk format.  This avoids a possible security problem
+with malicious guests (CVE-2010-3851).
+
+=item B<-m MB>
+
+=item B<--memsize MB>
+
+Change the amount of memory allocated to the rescue system.  The default is
+set by libguestfs and is small but adequate for running system tools.  The
+occasional program might need more memory.  The parameter is specified in
+megabytes.
+
+=item B<--network>
+
+Enable QEMU user networking in the guest.  See L</NETWORK>.
+
+=item B<-r>
+
+=item B<--ro>
+
+Open the image read-only.
+
+The option must always be used if the disk image or virtual machine might be
+running, and is generally recommended in cases where you don't need write
+access to the disk.
+
+See also L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+
+=item B<--selinux>
+
+Enable SELinux in the rescue appliance.  You should read
+L<guestfs(3)/SELINUX> before using this option.
+
+=item B<-v>
+
+=item B<--verbose>
+
+Enable verbose messages for debugging.
+
+=item B<-V>
+
+=item B<--version>
+
+Display version number and exit.
+
+=item B<-w>
+
+=item B<--rw>
+
+This changes the I<-a> and I<-d> options so that disks are added and mounts
+are done read-write.
+
+See L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+
+=item B<-x>
+
+Enable tracing of libguestfs API calls.
+
+=back
+
+=head1 OLD-STYLE COMMAND LINE ARGUMENTS
+
+Previous versions of virt-rescue allowed you to write either:
+
+ virt-rescue disk.img [disk.img ...]
+
+or
+
+ virt-rescue guestname
+
+whereas in this version you should use I<-a> or I<-d> respectively to avoid
+the confusing case where a disk image might have the same name as a guest.
+
+For compatibility the old style is still supported.
+
+=head1 NETWORK
+
+Adding the I<--network> option enables QEMU user networking in the rescue
+appliance.  There are some differences between user networking and ordinary
+networking:
+
+=over 4
+
+=item ping does not work
+
+Because the ICMP ECHO_REQUEST protocol generally requires root in order to
+send the ping packets, and because virt-rescue must be able to run as
+non-root, QEMU user networking is not able to emulate the L<ping(8)>
+command.  The ping command will appear to resolve addresses but will not be
+able to send or receive any packets.  This does not mean that the network is
+not working.
+
+=item cannot receive connections
+
+QEMU user networking cannot receive incoming connections.
+
+=item making TCP connections
+
+The virt-rescue appliance needs to be small and so does not include many
+network tools.  In particular there is no L<telnet(1)> command.  You can
+make TCP connections from the shell using the magical
+C</dev/tcp/E<lt>hostnameE<gt>/E<lt>portE<gt>> syntax:
+
+ exec 3<>/dev/tcp/redhat.com/80
+ echo "GET /" >&3
+ cat <&3
+
+See L<bash(1)> for more details.
+
+=back
+
+=head1 ENVIRONMENT VARIABLES
+
+Several environment variables affect virt-rescue.  See
+L<guestfs(3)/ENVIRONMENT VARIABLES> for the complete list.
+
+=head1 SHELL QUOTING
+
+Libvirt guest names can contain arbitrary characters, some of which have
+meaning to the shell such as C<#> and space.  You may need to quote or
+escape these characters on the command line.  See the shell manual page
+L<sh(1)> for details.
+
+=head1 FILES
+
+=over 4
+
+=item $HOME/.libguestfs-tools.rc
+
+=item /etc/libguestfs-tools.conf
+
+This configuration file controls the default read-only or read-write mode
+(I<--ro> or I<--rw>).
+
+See L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+
+=back
+
+=head1 SEE ALSO
+
+L<guestfs(3)>, L<guestfish(1)>, L<virt-cat(1)>, L<virt-edit(1)>,
+L<http://libguestfs.org/>.
+
+=head1 AUTHOR
+
+Richard W.M. Jones L<http://people.redhat.com/~rjones/>
+
+=head1 COPYRIGHT
+
+Copyright (C) 2009-2011 Red Hat Inc.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 675 Mass
+Ave, Cambridge, MA 02139, USA.
+

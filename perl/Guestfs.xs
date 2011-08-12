@@ -263,6 +263,12 @@ PREINIT:
       RETVAL
 
 void
+user_cancel (g)
+      guestfs_h *g;
+ PPCODE:
+      guestfs_user_cancel (g);
+
+void
 test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin)
       guestfs_h *g;
       char *str;
@@ -1432,6 +1438,10 @@ PREINIT:
           optargs_s.live = SvIV (ST (items_i+1));
           this_mask = GUESTFS_ADD_DOMAIN_LIVE_BITMASK;
         }
+        else if (strcmp (this_arg, "allowuuid") == 0) {
+          optargs_s.allowuuid = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DOMAIN_ALLOWUUID_BITMASK;
+        }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
           croak ("optional argument '%s' given twice",
@@ -1652,6 +1662,71 @@ PREINIT:
         free (r[i]);
       }
       free (r);
+
+SV *
+inspect_get_icon (g, root, ...)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      char *r;
+      size_t size;
+      struct guestfs_inspect_get_icon_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_inspect_get_icon_argv *optargs = &optargs_s;
+      size_t items_i;
+   CODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (strcmp (this_arg, "favicon") == 0) {
+          optargs_s.favicon = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INSPECT_GET_ICON_FAVICON_BITMASK;
+        }
+        else if (strcmp (this_arg, "highquality") == 0) {
+          optargs_s.highquality = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INSPECT_GET_ICON_HIGHQUALITY_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_inspect_get_icon_argv (g, root, &size, optargs);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpvn (r, size);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+set_pgroup (g, pgroup)
+      guestfs_h *g;
+      int pgroup;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_pgroup (g, pgroup);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+get_pgroup (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_get_pgroup (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
 
 void
 mount (g, device, mountpoint)
@@ -5727,6 +5802,14 @@ PREINIT:
           optargs_s.features = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_MKFS_OPTS_FEATURES_BITMASK;
         }
+        else if (strcmp (this_arg, "inode") == 0) {
+          optargs_s.inode = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKFS_OPTS_INODE_BITMASK;
+        }
+        else if (strcmp (this_arg, "sectorsize") == 0) {
+          optargs_s.sectorsize = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK;
+        }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
           croak ("optional argument '%s' given twice",
@@ -5790,6 +5873,184 @@ PREINIT:
       int r;
  PPCODE:
       r = guestfs_internal_autosync (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+is_zero (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_is_zero (g, path);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+is_zero_device (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_is_zero_device (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+void
+list_9p (g)
+      guestfs_h *g;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_list_9p (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+void
+mount_9p (g, mounttag, mountpoint, ...)
+      guestfs_h *g;
+      char *mounttag;
+      char *mountpoint;
+PREINIT:
+      int r;
+      struct guestfs_mount_9p_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_mount_9p_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (strcmp (this_arg, "options") == 0) {
+          optargs_s.options = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_MOUNT_9P_OPTIONS_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_mount_9p_argv (g, mounttag, mountpoint, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+list_dm_devices (g)
+      guestfs_h *g;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_list_dm_devices (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+void
+ntfsresize_opts (g, device, ...)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+      struct guestfs_ntfsresize_opts_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_ntfsresize_opts_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (strcmp (this_arg, "size") == 0) {
+          optargs_s.size = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK;
+        }
+        else if (strcmp (this_arg, "force") == 0) {
+          optargs_s.force = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_NTFSRESIZE_OPTS_FORCE_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_ntfsresize_opts_argv (g, device, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+btrfs_filesystem_resize (g, mountpoint, ...)
+      guestfs_h *g;
+      char *mountpoint;
+PREINIT:
+      int r;
+      struct guestfs_btrfs_filesystem_resize_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_btrfs_filesystem_resize_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (strcmp (this_arg, "size") == 0) {
+          optargs_s.size = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_btrfs_filesystem_resize_argv (g, mountpoint, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+write_append (g, path, content)
+      guestfs_h *g;
+      char *path;
+      char *content;
+      size_t content_size = SvCUR (ST(2));
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_write_append (g, path, content, content_size);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 

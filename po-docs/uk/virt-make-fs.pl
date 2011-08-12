@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head1 НАЗВА
 
@@ -51,11 +52,11 @@ Don't forget that you can also use local commands including L<resize2fs(8)>
 and L<virt-resize(1)> to resize existing filesystems, or rerun virt-make-fs
 to build another image from scratch.
 
-=head3 EXAMPLE
+=head3 ПРИКЛАД
 
  virt-make-fs --format=qcow2 --size=+200M input output.img
 
-=head2 FILESYSTEM TYPE
+=head2 ТИП ФАЙЛОВОЇ СИСТЕМИ
 
 The default filesystem type is C<ext2>.  Just about any filesystem type that
 libguestfs supports can be used (but I<not> read-only formats like
@@ -69,7 +70,7 @@ Note that ext3 filesystems contain a journal, typically 1-32 MB in size.  If
 you are not going to use the filesystem in a way that requires the journal,
 then this is just wasted overhead.
 
-=item I<ntfs> or I<vfat>
+=item I<ntfs> або I<vfat>
 
 Useful if exporting data to a Windows guest.
 
@@ -85,7 +86,7 @@ total filesystem size.
 
 =back
 
-=head3 EXAMPLE
+=head3 ПРИКЛАД
 
  virt-make-fs --type=minix input minixfs.img
 
@@ -103,7 +104,7 @@ longer a straight filesystem.  For example you cannot run L<fsck(8)>
 directly on a partitioned disk image.  (However libguestfs tools such as
 L<guestfish(1)> and L<virt-resize(1)> can still be used).
 
-=head3 EXAMPLE
+=head3 ПРИКЛАД
 
 Add an MBR partition:
 
@@ -114,7 +115,7 @@ use an EFI/GPT-compatible partition table:
 
  virt-make-fs --partition=gpt --size=+4T --format=qcow2 input disk.img
 
-=head1 OPTIONS
+=head1 ПАРАМЕТРИ
 
 =over 4
 
@@ -124,11 +125,11 @@ Display brief help.
 
 =item B<--version>
 
-Display version number and exit.
+Показати дані щодо версії і завершити роботу.
 
 =item B<--debug>
 
-Enable debugging information.
+Увімкнути виведення діагностичних даних.
 
 =item B<--size=E<lt>NE<gt>>
 
@@ -175,7 +176,7 @@ that would really make sense here is C<qcow2>.
 
 Choose the output filesystem type.
 
-The default is C<ext2>.
+Типовим значенням є C<ext2>.
 
 Any filesystem which is supported read-write by libguestfs can be used here.
 
@@ -226,7 +227,7 @@ output:
 Attach /tmp/virt-make-fs.log to a new bug report at
 L<https://bugzilla.redhat.com/>
 
-=head1 AUTHOR
+=head1 АВТОР
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
@@ -239,10 +240,10 @@ under the terms of the GNU General Public License as published by the Free
 Software Foundation; either version 2 of the License, or (at your option)
 any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-more details.
+Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
+БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
+ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
+про це можна дізнатися з GNU General Public License.
 
 You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc., 675 Mass

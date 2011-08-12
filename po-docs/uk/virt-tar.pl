@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head1 НАЗВА
 
@@ -13,12 +14,12 @@ virt-tar - Extract or upload files to a virtual machine
 
  virt-tar [--options] disk.img [disk.img ...] -u tarball directory
 
-=head1 NOTE
+=head1 ПРИМІТКА
 
 This tool is obsolete.  Use L<virt-copy-in(1)>, L<virt-copy-out(1)>,
 L<virt-tar-in(1)>, L<virt-tar-out(1)> as replacements.
 
-=head1 EXAMPLES
+=head1 ПРИКЛАДИ
 
 Download C</home> from the VM into a local tarball:
 
@@ -32,7 +33,7 @@ Upload a local tarball and unpack it inside C</tmp> in the VM:
 
  virt-tar -zu domname uploadstuff.tar.gz /tmp
 
-=head1 WARNING
+=head1 ПОПЕРЕДЖЕННЯ
 
 You must I<not> use C<virt-tar> with the I<-u> option (upload) on live
 virtual machines.  If you do this, you risk disk corruption in the VM.
@@ -69,7 +70,7 @@ example it cannot do PKZip files or bzip2 compression.  If you want that
 then you'll have to rebuild the tarballs yourself.  (This is a limitation of
 the L<libguestfs(3)> API).
 
-=head1 OPTIONS
+=head1 ПАРАМЕТРИ
 
 =over 4
 
@@ -79,9 +80,11 @@ Display brief help.
 
 =item B<--version>
 
-Display version number and exit.
+Показати дані щодо версії і завершити роботу.
 
-=item B<--connect URI> | B<-c URI>
+=item B<-c адреса>
+
+=item B<--connect адреса>
 
 If using libvirt, connect to the given I<URI>.  If omitted, then we connect
 to the default libvirt hypervisor.
@@ -101,9 +104,15 @@ ignored.
 If working with untrusted raw-format guest disk images, you should ensure
 the format is always specified.
 
-=item B<-x> | B<--extract> | B<--download>
+=item B<-x>
 
-=item B<-u> | B<--upload>
+=item B<--extract>
+
+=item B<--download>
+
+=item B<-u>
+
+=item B<--upload>
 
 Use I<-x> to extract (download) a directory from a virtual machine to a
 local tarball.
@@ -113,7 +122,9 @@ Please read the L</WARNING> section above before using this option.
 
 You must specify exactly one of these options.
 
-=item B<-z> | B<--gzip>
+=item B<-z>
+
+=item B<--gzip>
 
 Specify that the input or output tarball is gzip-compressed.
 
@@ -133,23 +144,23 @@ L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-tar-in(1)>,
 L<virt-tar-out(1)>, L<Sys::Guestfs(3)>, L<Sys::Guestfs::Lib(3)>,
 L<Sys::Virt(3)>, L<http://libguestfs.org/>.
 
-=head1 AUTHOR
+=head1 АВТОР
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009 Red Hat Inc.
+© Red Hat Inc., 2009
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
 Software Foundation; either version 2 of the License, or (at your option)
 any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-more details.
+Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
+БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
+ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
+про це можна дізнатися з GNU General Public License.
 
 You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc., 675 Mass

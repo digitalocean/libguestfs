@@ -82,8 +82,15 @@
  */
 #define MAX_REGISTRY_SIZE    (100 * 1000 * 1000)
 
-/* Maximum RPM or dpkg database we will download to /tmp. */
-#define MAX_PKG_DB_SIZE       (10 * 1000 * 1000)
+/* Maximum RPM or dpkg database we will download to /tmp.  RPM
+ * 'Packages' database can get very large: 70 MB is roughly the
+ * standard size for a new Fedora install, and after lots of package
+ * installation/removal I have seen well over 100 MB databases.
+ */
+#define MAX_PKG_DB_SIZE       (300 * 1000 * 1000)
+
+/* Maximum size of Windows explorer.exe.  2.6MB on Windows 7. */
+#define MAX_WINDOWS_EXPLORER_SIZE (4 * 1000 * 1000)
 
 /* Network configuration of the appliance.  Note these addresses are
  * only meaningful within the context of the running appliance.  QEMU
@@ -163,6 +170,8 @@ struct guestfs_h
 
   int selinux;                  /* selinux enabled? */
 
+  int pgroup;                   /* Create process group for children? */
+
   char *last_error;
   int last_errnum;              /* errno, or 0 if there was no errno */
 
@@ -191,6 +200,11 @@ struct guestfs_h
   FILE *trace_fp;
   char *trace_buf;
   size_t trace_len;
+
+  /* User cancelled transfer.  Not signal-atomic, but it doesn't
+   * matter for this case because we only care if it is != 0.
+   */
+  int user_cancel;
 };
 
 /* Per-filesystem data stored for inspect_os. */

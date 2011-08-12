@@ -56,6 +56,7 @@ module Guestfs (
   inspect_get_minor_version,
   set_network,
   set_attach_method,
+  set_pgroup,
   mount,
   sync,
   touch,
@@ -228,7 +229,8 @@ module Guestfs (
   download_offset,
   pwrite_device,
   resize2fs_M,
-  internal_autosync
+  internal_autosync,
+  write_append
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -651,6 +653,18 @@ foreign import ccall unsafe "guestfs_set_attach_method" c_set_attach_method
 set_attach_method :: GuestfsH -> String -> IO ()
 set_attach_method h attachmethod = do
   r <- withCString attachmethod $ \attachmethod -> withForeignPtr h (\p -> c_set_attach_method p attachmethod)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_set_pgroup" c_set_pgroup
+  :: GuestfsP -> CInt -> IO (CInt)
+
+set_pgroup :: GuestfsH -> Bool -> IO ()
+set_pgroup h pgroup = do
+  r <- withForeignPtr h (\p -> c_set_pgroup p (fromBool pgroup))
   if (r == -1)
     then do
       err <- last_error h
@@ -2727,6 +2741,18 @@ foreign import ccall unsafe "guestfs_internal_autosync" c_internal_autosync
 internal_autosync :: GuestfsH -> IO ()
 internal_autosync h = do
   r <- withForeignPtr h (\p -> c_internal_autosync p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_write_append" c_write_append
+  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+
+write_append :: GuestfsH -> String -> String -> IO ()
+write_append h path content = do
+  r <- withCString path $ \path -> withCStringLen content $ \(content, content_size) -> withForeignPtr h (\p -> c_write_append p path content (fromIntegral content_size))
   if (r == -1)
     then do
       err <- last_error h

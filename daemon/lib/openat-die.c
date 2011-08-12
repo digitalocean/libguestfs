@@ -1,6 +1,6 @@
 /* Report a save- or restore-cwd failure in our openat replacement and then exit.
 
-   Copyright (C) 2005-2006, 2008-2010 Free Software Foundation, Inc.
+   Copyright (C) 2005-2006, 2008-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,7 +21,10 @@
 
 #include <stdlib.h>
 
-#include "error.h"
+#ifndef GNULIB_LIBPOSIX
+# include "error.h"
+#endif
+
 #include "exitfail.h"
 
 #include "gettext.h"
@@ -30,9 +33,10 @@
 void
 openat_save_fail (int errnum)
 {
+#ifndef GNULIB_LIBPOSIX
   error (exit_failure, errnum,
          _("unable to record current working directory"));
-
+#endif
   /* The `noreturn' attribute cannot be applied to error, since it returns
      when its first argument is 0.  To help compilers understand that this
      function does not return, call abort.  Also, the abort is a
@@ -48,8 +52,10 @@ openat_save_fail (int errnum)
 void
 openat_restore_fail (int errnum)
 {
+#ifndef GNULIB_LIBPOSIX
   error (exit_failure, errnum,
          _("failed to return to initial working directory"));
+#endif
 
   /* As above.  */
   abort ();

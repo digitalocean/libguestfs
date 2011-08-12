@@ -1,0 +1,72 @@
+=encoding utf8
+
+=head1 НАЗВА
+
+guestfs-python - How to use libguestfs from Python
+
+=head1 КОРОТКИЙ ОПИС
+
+ import guestfs
+ g = guestfs.GuestFS ()
+ g.add_drive_opts ("disk.img", format="raw", readonly=1)
+ g.launch
+
+=head1 ОПИС
+
+This manual page documents how to call libguestfs from the Python
+programming language.  This page just documents the differences from the C
+API and gives some examples.  If you are not familiar with using libguestfs,
+you also need to read L<guestfs(3)>.
+
+=head2 EXCEPTIONS
+
+Errors from libguestfs functions are mapped into C<RuntimeException> with a
+single string argument which is the error message.
+
+=head2 MORE DOCUMENTATION
+
+Type:
+
+ $ python
+ >>> import guestfs
+ >>> help (guestfs)
+
+=head1 EXAMPLE 1: CREATE A DISK IMAGE
+
+@EXAMPLE1@
+
+=head1 EXAMPLE 2: INSPECT A VIRTUAL MACHINE DISK IMAGE
+
+@EXAMPLE2@
+
+=head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
+
+L<guestfs(3)>, L<guestfs-examples(3)>, L<guestfs-java(3)>,
+L<guestfs-ocaml(3)>, L<guestfs-perl(3)>, L<guestfs-recipes(1)>,
+L<guestfs-ruby(3)>, L<http://libguestfs.org/>.
+
+=head1 АВТОРИ
+
+Richard W.M. Jones (C<rjones at redhat dot com>)
+
+=head1 АВТОРСЬКІ ПРАВА
+
+Copyright (C) 2010 Red Hat Inc. L<http://libguestfs.org/>
+
+The examples in this manual page may be freely copied, modified and
+distributed without any restrictions.
+
+This library is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published by the
+Free Software Foundation; either version 2 of the License, or (at your
+option) any later version.
+
+This library is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this library; if not, write to the Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+

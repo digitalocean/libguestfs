@@ -52,6 +52,8 @@ CAMLprim value ocaml_guestfs_create (void);
 CAMLprim value ocaml_guestfs_close (value gv);
 CAMLprim value ocaml_guestfs_set_event_callback (value gv, value closure, value events);
 CAMLprim value ocaml_guestfs_delete_event_callback (value gv, value eh);
+value ocaml_guestfs_last_errno (value gv);
+value ocaml_guestfs_user_cancel (value gv);
 
 /* Allocate handles and deal with finalization. */
 static void
@@ -325,13 +327,13 @@ event_bitmask_to_event (uint64_t event)
 }
 
 static void
-event_callback_wrapper_locked (guestfs_h *g,
-                               void *data,
-                               uint64_t event,
-                               int event_handle,
-                               int flags,
-                               const char *buf, size_t buf_len,
-                               const uint64_t *array, size_t array_len)
+event_callback_wrapper (guestfs_h *g,
+                        void *data,
+                        uint64_t event,
+                        int event_handle,
+                        int flags,
+                        const char *buf, size_t buf_len,
+                        const uint64_t *array, size_t array_len)
 {
   CAMLparam0 ();
   CAMLlocal5 (gv, evv, ehv, bufv, arrayv);
@@ -358,7 +360,9 @@ event_callback_wrapper_locked (guestfs_h *g,
 
   value args[5] = { gv, evv, ehv, bufv, arrayv };
 
+  caml_leave_blocking_section ();
   rv = caml_callbackN_exn (*(value*)data, 5, args);
+  caml_enter_blocking_section ();
 
   /* Callbacks shouldn't throw exceptions.  There's not much we can do
    * except to print it.
@@ -371,22 +375,30 @@ event_callback_wrapper_locked (guestfs_h *g,
   CAMLreturn0;
 }
 
-static void
-event_callback_wrapper (guestfs_h *g,
-                        void *data,
-                        uint64_t event,
-                        int event_handle,
-                        int flags,
-                        const char *buf, size_t buf_len,
-                        const uint64_t *array, size_t array_len)
+value
+ocaml_guestfs_last_errno (value gv)
 {
-  /* Ensure we are holding the GC lock before any GC operations are
-   * possible. (RHBZ#725824)
-   */
-  caml_leave_blocking_section ();
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+  int r;
+  guestfs_h *g;
 
-  event_callback_wrapper_locked (g, data, event, event_handle, flags,
-                                 buf, buf_len, array, array_len);
+  g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("last_errno");
 
-  caml_enter_blocking_section ();
+  r = guestfs_last_errno (g);
+
+  rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* NB: This is and must remain a "noalloc" function. */
+value
+ocaml_guestfs_user_cancel (value gv)
+{
+  guestfs_h *g = Guestfs_val (gv);
+  if (g)
+    guestfs_user_cancel (g);
+  return Val_unit;
 }

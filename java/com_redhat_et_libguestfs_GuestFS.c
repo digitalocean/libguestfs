@@ -63,21 +63,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0
-  (JNIEnv *env, jobject obj, jlong jg, jstring jstr, jstring joptstr, jobjectArray jstrlist, jboolean jb, jint jinteger, jlong jinteger64, jstring jfilein, jstring jfileout, jbyteArray jbufferin)
+Java_com_redhat_et_libguestfs_GuestFS__1test0  (JNIEnv *env, jobject obj, jlong jg, jstring jstr, jstring joptstr, jobjectArray jstrlist, jboolean jb, jint jinteger, jlong jinteger64, jstring jfilein, jstring jfileout, jbyteArray jbufferin)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *str;
   const char *optstr;
-  int strlist_len;
-  const char **strlist;
+  size_t strlist_len;
+  char **strlist;
   int b;
   int integer;
   int64_t integer64;
   const char *filein;
   const char *fileout;
-  jbyte *bufferin;
+  char *bufferin;
   size_t bufferin_size;
   size_t i;
 
@@ -87,7 +86,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0
   strlist = guestfs_safe_malloc (g, sizeof (char *) * (strlist_len+1));
   for (i = 0; i < strlist_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jstrlist, i);
-    strlist[i] = (*env)->GetStringUTFChars (env, o, NULL);
+    strlist[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
   }
   strlist[strlist_len] = NULL;
   b = jb;
@@ -95,9 +94,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0
   integer64 = jinteger64;
   filein = (*env)->GetStringUTFChars (env, jfilein, NULL);
   fileout = (*env)->GetStringUTFChars (env, jfileout, NULL);
-  bufferin = (*env)->GetByteArrayElements (env, jbufferin, NULL);
+  bufferin = (char *) (*env)->GetByteArrayElements (env, jbufferin, NULL);
   bufferin_size = (*env)->GetArrayLength (env, jbufferin);
+
   r = guestfs_test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size);
+
   (*env)->ReleaseStringUTFChars (env, jstr, str);
   if (joptstr)
     (*env)->ReleaseStringUTFChars (env, joptstr, optstr);
@@ -108,24 +109,27 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0
   free (strlist);
   (*env)->ReleaseStringUTFChars (env, jfilein, filein);
   (*env)->ReleaseStringUTFChars (env, jfileout, fileout);
-  (*env)->ReleaseByteArrayElements (env, jbufferin, bufferin, 0);
+  (*env)->ReleaseByteArrayElements (env, jbufferin, (jbyte *) bufferin, 0);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rint
-  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rint  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *val;
 
   val = (*env)->GetStringUTFChars (env, jval, NULL);
+
   r = guestfs_test0rint (g, val);
+
   (*env)->ReleaseStringUTFChars (env, jval, val);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -134,13 +138,15 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rint
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rinterr
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rinterr  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
+
 
   r = guestfs_test0rinterr (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -149,16 +155,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rinterr
 }
 
 JNIEXPORT jlong JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rint64
-  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rint64  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int64_t r;
   const char *val;
 
   val = (*env)->GetStringUTFChars (env, jval, NULL);
+
   r = guestfs_test0rint64 (g, val);
+
   (*env)->ReleaseStringUTFChars (env, jval, val);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -167,13 +175,15 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rint64
 }
 
 JNIEXPORT jlong JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rint64err
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rint64err  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int64_t r;
 
+
   r = guestfs_test0rint64err (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -182,16 +192,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rint64err
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rbool
-  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rbool  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *val;
 
   val = (*env)->GetStringUTFChars (env, jval, NULL);
+
   r = guestfs_test0rbool (g, val);
+
   (*env)->ReleaseStringUTFChars (env, jval, val);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -200,13 +212,15 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rbool
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rboolerr
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rboolerr  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_test0rboolerr (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -215,16 +229,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rboolerr
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rconststring
-  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rconststring  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   const char *r;
   const char *val;
 
   val = (*env)->GetStringUTFChars (env, jval, NULL);
+
   r = guestfs_test0rconststring (g, val);
+
   (*env)->ReleaseStringUTFChars (env, jval, val);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -233,13 +249,15 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rconststring
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rconststringerr
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rconststringerr  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   const char *r;
+
 
   r = guestfs_test0rconststringerr (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -248,33 +266,36 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rconststringerr
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rconstoptstring
-  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rconstoptstring  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   const char *r;
   const char *val;
 
   val = (*env)->GetStringUTFChars (env, jval, NULL);
+
   r = guestfs_test0rconstoptstring (g, val);
+
   (*env)->ReleaseStringUTFChars (env, jval, val);
+
   return (*env)->NewStringUTF (env, r); /* XXX r NULL? */
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rconstoptstringerr
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rconstoptstringerr  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   const char *r;
+
 
   r = guestfs_test0rconstoptstringerr (g);
+
+
   return (*env)->NewStringUTF (env, r); /* XXX r NULL? */
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rstring
-  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rstring  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -282,8 +303,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rstring
   const char *val;
 
   val = (*env)->GetStringUTFChars (env, jval, NULL);
+
   r = guestfs_test0rstring (g, val);
+
   (*env)->ReleaseStringUTFChars (env, jval, val);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -294,14 +318,16 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rstring
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rstringerr
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rstringerr  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
   char *r;
 
+
   r = guestfs_test0rstringerr (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -312,12 +338,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rstringerr
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rstringlist
-  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rstringlist  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -325,8 +350,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rstringlist
   size_t i;
 
   val = (*env)->GetStringUTFChars (env, jval, NULL);
+
   r = guestfs_test0rstringlist (g, val);
+
   (*env)->ReleaseStringUTFChars (env, jval, val);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -345,18 +373,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rstringlist
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rstringlisterr
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rstringlisterr  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
   size_t i;
+
 
   r = guestfs_test0rstringlisterr (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -375,8 +405,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rstringlisterr
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rstruct
-  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rstruct  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobject jr;
@@ -386,8 +415,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rstruct
   const char *val;
 
   val = (*env)->GetStringUTFChars (env, jval, NULL);
+
   r = guestfs_test0rstruct (g, val);
+
   (*env)->ReleaseStringUTFChars (env, jval, val);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -432,16 +464,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rstruct
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rstructerr
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rstructerr  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobject jr;
   jclass cl;
   jfieldID fl;
   struct guestfs_lvm_pv *r;
+
 
   r = guestfs_test0rstructerr (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -486,8 +520,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rstructerr
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rstructlist
-  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rstructlist  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
@@ -499,8 +532,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rstructlist
   size_t i;
 
   val = (*env)->GetStringUTFChars (env, jval, NULL);
+
   r = guestfs_test0rstructlist (g, val);
+
   (*env)->ReleaseStringUTFChars (env, jval, val);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -549,8 +585,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rstructlist
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rstructlisterr
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rstructlisterr  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
@@ -560,7 +595,10 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rstructlisterr
   struct guestfs_lvm_pv_list *r;
   size_t i;
 
+
   r = guestfs_test0rstructlisterr (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -609,12 +647,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rstructlisterr
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rhashtable
-  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rhashtable  (JNIEnv *env, jobject obj, jlong jg, jstring jval)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -622,8 +659,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rhashtable
   size_t i;
 
   val = (*env)->GetStringUTFChars (env, jval, NULL);
+
   r = guestfs_test0rhashtable (g, val);
+
   (*env)->ReleaseStringUTFChars (env, jval, val);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -642,18 +682,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rhashtable
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1test0rhashtableerr
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1test0rhashtableerr  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
   size_t i;
 
+
   r = guestfs_test0rhashtableerr (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -672,101 +714,112 @@ Java_com_redhat_et_libguestfs_GuestFS__1test0rhashtableerr
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1launch
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1launch  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
+
 
   r = guestfs_launch (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1wait_1ready
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1wait_1ready  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
+
 
   r = guestfs_wait_ready (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1kill_1subprocess
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1kill_1subprocess  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
+
 
   r = guestfs_kill_subprocess (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1add_1drive
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename)
+Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *filename;
 
   filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
+
   r = guestfs_add_drive (g, filename);
+
   (*env)->ReleaseStringUTFChars (env, jfilename, filename);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1add_1cdrom
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename)
+Java_com_redhat_et_libguestfs_GuestFS__1add_1cdrom  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *filename;
 
   filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
+
   r = guestfs_add_cdrom (g, filename);
+
   (*env)->ReleaseStringUTFChars (env, jfilename, filename);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1ro
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename)
+Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1ro  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *filename;
 
   filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
+
   r = guestfs_add_drive_ro (g, filename);
+
   (*env)->ReleaseStringUTFChars (env, jfilename, filename);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1config
-  (JNIEnv *env, jobject obj, jlong jg, jstring jqemuparam, jstring jqemuvalue)
+Java_com_redhat_et_libguestfs_GuestFS__1config  (JNIEnv *env, jobject obj, jlong jg, jstring jqemuparam, jstring jqemuvalue)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -775,42 +828,49 @@ Java_com_redhat_et_libguestfs_GuestFS__1config
 
   qemuparam = (*env)->GetStringUTFChars (env, jqemuparam, NULL);
   qemuvalue = jqemuvalue ? (*env)->GetStringUTFChars (env, jqemuvalue, NULL) : NULL;
+
   r = guestfs_config (g, qemuparam, qemuvalue);
+
   (*env)->ReleaseStringUTFChars (env, jqemuparam, qemuparam);
   if (jqemuvalue)
     (*env)->ReleaseStringUTFChars (env, jqemuvalue, qemuvalue);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1set_1qemu
-  (JNIEnv *env, jobject obj, jlong jg, jstring jqemu)
+Java_com_redhat_et_libguestfs_GuestFS__1set_1qemu  (JNIEnv *env, jobject obj, jlong jg, jstring jqemu)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *qemu;
 
   qemu = jqemu ? (*env)->GetStringUTFChars (env, jqemu, NULL) : NULL;
+
   r = guestfs_set_qemu (g, qemu);
+
   if (jqemu)
     (*env)->ReleaseStringUTFChars (env, jqemu, qemu);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1get_1qemu
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1get_1qemu  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   const char *r;
 
+
   r = guestfs_get_qemu (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -819,31 +879,35 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1qemu
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1set_1path
-  (JNIEnv *env, jobject obj, jlong jg, jstring jsearchpath)
+Java_com_redhat_et_libguestfs_GuestFS__1set_1path  (JNIEnv *env, jobject obj, jlong jg, jstring jsearchpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *searchpath;
 
   searchpath = jsearchpath ? (*env)->GetStringUTFChars (env, jsearchpath, NULL) : NULL;
+
   r = guestfs_set_path (g, searchpath);
+
   if (jsearchpath)
     (*env)->ReleaseStringUTFChars (env, jsearchpath, searchpath);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1get_1path
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1get_1path  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   const char *r;
 
+
   r = guestfs_get_path (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -852,58 +916,66 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1path
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1set_1append
-  (JNIEnv *env, jobject obj, jlong jg, jstring jappend)
+Java_com_redhat_et_libguestfs_GuestFS__1set_1append  (JNIEnv *env, jobject obj, jlong jg, jstring jappend)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *append;
 
   append = jappend ? (*env)->GetStringUTFChars (env, jappend, NULL) : NULL;
+
   r = guestfs_set_append (g, append);
+
   if (jappend)
     (*env)->ReleaseStringUTFChars (env, jappend, append);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1get_1append
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1get_1append  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   const char *r;
 
+
   r = guestfs_get_append (g);
+
+
   return (*env)->NewStringUTF (env, r); /* XXX r NULL? */
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1set_1autosync
-  (JNIEnv *env, jobject obj, jlong jg, jboolean jautosync)
+Java_com_redhat_et_libguestfs_GuestFS__1set_1autosync  (JNIEnv *env, jobject obj, jlong jg, jboolean jautosync)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   int autosync;
 
   autosync = jautosync;
+
   r = guestfs_set_autosync (g, autosync);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1get_1autosync
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1get_1autosync  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_get_autosync (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -912,29 +984,33 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1autosync
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1set_1verbose
-  (JNIEnv *env, jobject obj, jlong jg, jboolean jverbose)
+Java_com_redhat_et_libguestfs_GuestFS__1set_1verbose  (JNIEnv *env, jobject obj, jlong jg, jboolean jverbose)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   int verbose;
 
   verbose = jverbose;
+
   r = guestfs_set_verbose (g, verbose);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1get_1verbose
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1get_1verbose  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
+
 
   r = guestfs_get_verbose (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -943,13 +1019,15 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1verbose
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1ready
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1ready  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
+
 
   r = guestfs_is_ready (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -958,13 +1036,15 @@ Java_com_redhat_et_libguestfs_GuestFS__1is_1ready
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1config
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1config  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
+
 
   r = guestfs_is_config (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -973,13 +1053,15 @@ Java_com_redhat_et_libguestfs_GuestFS__1is_1config
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1launching
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1launching  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
+
 
   r = guestfs_is_launching (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -988,13 +1070,15 @@ Java_com_redhat_et_libguestfs_GuestFS__1is_1launching
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1busy
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1busy  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_is_busy (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -1003,13 +1087,15 @@ Java_com_redhat_et_libguestfs_GuestFS__1is_1busy
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1get_1state
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1get_1state  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_get_state (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -1018,29 +1104,33 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1state
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1set_1memsize
-  (JNIEnv *env, jobject obj, jlong jg, jint jmemsize)
+Java_com_redhat_et_libguestfs_GuestFS__1set_1memsize  (JNIEnv *env, jobject obj, jlong jg, jint jmemsize)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   int memsize;
 
   memsize = jmemsize;
+
   r = guestfs_set_memsize (g, memsize);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1get_1memsize
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1get_1memsize  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_get_memsize (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -1049,13 +1139,15 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1memsize
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1get_1pid
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1get_1pid  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_get_pid (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -1064,8 +1156,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1pid
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1version
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1version  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobject jr;
@@ -1073,7 +1164,10 @@ Java_com_redhat_et_libguestfs_GuestFS__1version
   jfieldID fl;
   struct guestfs_version *r;
 
+
   r = guestfs_version (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1093,29 +1187,33 @@ Java_com_redhat_et_libguestfs_GuestFS__1version
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1set_1selinux
-  (JNIEnv *env, jobject obj, jlong jg, jboolean jselinux)
+Java_com_redhat_et_libguestfs_GuestFS__1set_1selinux  (JNIEnv *env, jobject obj, jlong jg, jboolean jselinux)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   int selinux;
 
   selinux = jselinux;
+
   r = guestfs_set_selinux (g, selinux);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1get_1selinux
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1get_1selinux  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_get_selinux (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -1124,29 +1222,33 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1selinux
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1set_1trace
-  (JNIEnv *env, jobject obj, jlong jg, jboolean jtrace)
+Java_com_redhat_et_libguestfs_GuestFS__1set_1trace  (JNIEnv *env, jobject obj, jlong jg, jboolean jtrace)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   int trace;
 
   trace = jtrace;
+
   r = guestfs_set_trace (g, trace);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1get_1trace
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1get_1trace  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_get_trace (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -1155,29 +1257,33 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1trace
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1set_1direct
-  (JNIEnv *env, jobject obj, jlong jg, jboolean jdirect)
+Java_com_redhat_et_libguestfs_GuestFS__1set_1direct  (JNIEnv *env, jobject obj, jlong jg, jboolean jdirect)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   int direct;
 
   direct = jdirect;
+
   r = guestfs_set_direct (g, direct);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1get_1direct
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1get_1direct  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_get_direct (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -1186,29 +1292,33 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1direct
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1set_1recovery_1proc
-  (JNIEnv *env, jobject obj, jlong jg, jboolean jrecoveryproc)
+Java_com_redhat_et_libguestfs_GuestFS__1set_1recovery_1proc  (JNIEnv *env, jobject obj, jlong jg, jboolean jrecoveryproc)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   int recoveryproc;
 
   recoveryproc = jrecoveryproc;
+
   r = guestfs_set_recovery_proc (g, recoveryproc);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1get_1recovery_1proc
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1get_1recovery_1proc  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_get_recovery_proc (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -1217,8 +1327,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1recovery_1proc
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1with_1if
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jstring jiface)
+Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1with_1if  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jstring jiface)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -1227,18 +1336,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1with_1if
 
   filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
   iface = (*env)->GetStringUTFChars (env, jiface, NULL);
+
   r = guestfs_add_drive_with_if (g, filename, iface);
+
   (*env)->ReleaseStringUTFChars (env, jfilename, filename);
   (*env)->ReleaseStringUTFChars (env, jiface, iface);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1ro_1with_1if
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jstring jiface)
+Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1ro_1with_1if  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jstring jiface)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -1247,18 +1358,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1ro_1with_1if
 
   filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
   iface = (*env)->GetStringUTFChars (env, jiface, NULL);
+
   r = guestfs_add_drive_ro_with_if (g, filename, iface);
+
   (*env)->ReleaseStringUTFChars (env, jfilename, filename);
   (*env)->ReleaseStringUTFChars (env, jiface, iface);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1file_1architecture
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename)
+Java_com_redhat_et_libguestfs_GuestFS__1file_1architecture  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -1266,8 +1379,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1file_1architecture
   const char *filename;
 
   filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
+
   r = guestfs_file_architecture (g, filename);
+
   (*env)->ReleaseStringUTFChars (env, jfilename, filename);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1278,18 +1394,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1file_1architecture
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1os
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1os  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
   size_t i;
 
+
   r = guestfs_inspect_os (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1308,8 +1426,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1os
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1type
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1type  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -1317,8 +1434,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1type
   const char *root;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_get_type (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1329,8 +1449,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1type
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1arch
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1arch  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -1338,8 +1457,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1arch
   const char *root;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_get_arch (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1350,8 +1472,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1arch
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1distro
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1distro  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -1359,8 +1480,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1distro
   const char *root;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_get_distro (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1371,16 +1495,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1distro
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1major_1version
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1major_1version  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *root;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_get_major_version (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -1389,16 +1515,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1major_1version
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1minor_1version
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1minor_1version  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *root;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_get_minor_version (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -1407,8 +1535,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1minor_1version
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1product_1name
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1product_1name  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -1416,8 +1543,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1product_1name
   const char *root;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_get_product_name (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1428,12 +1558,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1product_1name
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1mountpoints
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1mountpoints  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -1441,8 +1570,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1mountpoints
   size_t i;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_get_mountpoints (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1461,12 +1593,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1mountpoints
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1filesystems
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1filesystems  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -1474,8 +1605,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1filesystems
   size_t i;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_get_filesystems (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1494,29 +1628,33 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1filesystems
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1set_1network
-  (JNIEnv *env, jobject obj, jlong jg, jboolean jnetwork)
+Java_com_redhat_et_libguestfs_GuestFS__1set_1network  (JNIEnv *env, jobject obj, jlong jg, jboolean jnetwork)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   int network;
 
   network = jnetwork;
+
   r = guestfs_set_network (g, network);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1get_1network
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1get_1network  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_get_network (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -1525,18 +1663,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1network
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1list_1filesystems
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1list_1filesystems  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
   size_t i;
 
+
   r = guestfs_list_filesystems (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1555,29 +1695,34 @@ Java_com_redhat_et_libguestfs_GuestFS__1list_1filesystems
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1opts
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jobject joptargs)
+Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1opts  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jlong joptargs_bitmask, jboolean jreadonly, jstring jformat, jstring jiface)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *filename;
+  struct guestfs_add_drive_opts_argv optargs_s;
+  const struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
 
   filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
-  throw_exception (env, "add_drive_opts: internal error: please let us know how to read a Java HashMap parameter from JNI bindings!");
-  return NULL;
-  /*
+  optargs_s.bitmask = joptargs_bitmask;
+  optargs_s.readonly = jreadonly;
+  optargs_s.format = (*env)->GetStringUTFChars (env, jformat, NULL);
+  optargs_s.iface = (*env)->GetStringUTFChars (env, jiface, NULL);
+
   r = guestfs_add_drive_opts_argv (g, filename, optargs);
+
   (*env)->ReleaseStringUTFChars (env, jfilename, filename);
+  (*env)->ReleaseStringUTFChars (env, jformat, optargs_s.format);
+  (*env)->ReleaseStringUTFChars (env, jiface, optargs_s.iface);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
-  */
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1windows_1systemroot
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1windows_1systemroot  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -1585,8 +1730,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1windows_1systemroot
   const char *root;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_get_windows_systemroot (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1597,18 +1745,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1windows_1systemroot
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1roots
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1roots  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
   size_t i;
 
+
   r = guestfs_inspect_get_roots (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1627,18 +1777,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1roots
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1debug_1cmdline
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1debug_1cmdline  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
   size_t i;
 
+
   r = guestfs_debug_cmdline (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1657,30 +1809,37 @@ Java_com_redhat_et_libguestfs_GuestFS__1debug_1cmdline
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1add_1domain
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdom, jobject joptargs)
+Java_com_redhat_et_libguestfs_GuestFS__1add_1domain  (JNIEnv *env, jobject obj, jlong jg, jstring jdom, jlong joptargs_bitmask, jstring jlibvirturi, jboolean jreadonly, jstring jiface, jboolean jlive, jboolean jallowuuid)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *dom;
+  struct guestfs_add_domain_argv optargs_s;
+  const struct guestfs_add_domain_argv *optargs = &optargs_s;
 
   dom = (*env)->GetStringUTFChars (env, jdom, NULL);
-  throw_exception (env, "add_domain: internal error: please let us know how to read a Java HashMap parameter from JNI bindings!");
-  return NULL;
-  /*
+  optargs_s.bitmask = joptargs_bitmask;
+  optargs_s.libvirturi = (*env)->GetStringUTFChars (env, jlibvirturi, NULL);
+  optargs_s.readonly = jreadonly;
+  optargs_s.iface = (*env)->GetStringUTFChars (env, jiface, NULL);
+  optargs_s.live = jlive;
+  optargs_s.allowuuid = jallowuuid;
+
   r = guestfs_add_domain_argv (g, dom, optargs);
+
   (*env)->ReleaseStringUTFChars (env, jdom, dom);
+  (*env)->ReleaseStringUTFChars (env, jlibvirturi, optargs_s.libvirturi);
+  (*env)->ReleaseStringUTFChars (env, jiface, optargs_s.iface);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
   }
   return (jint) r;
-  */
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1package_1format
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1package_1format  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -1688,8 +1847,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1package_1format
   const char *root;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_get_package_format (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1700,8 +1862,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1package_1format
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1package_1management
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1package_1management  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -1709,8 +1870,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1package_1management
   const char *root;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_get_package_management (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1721,8 +1885,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1package_1management
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1list_1applications
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1list_1applications  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
@@ -1734,8 +1897,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1list_1applications
   size_t i;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_list_applications (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1775,8 +1941,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1list_1applications
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1hostname
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1hostname  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -1784,8 +1949,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1hostname
   const char *root;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_get_hostname (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1796,8 +1964,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1hostname
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1format
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1format  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -1805,8 +1972,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1format
   const char *root;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_get_format (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1817,16 +1987,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1format
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1is_1live
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1is_1live  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *root;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_is_live (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -1835,16 +2007,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1is_1live
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1is_1netinst
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1is_1netinst  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *root;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_is_netinst (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -1853,16 +2027,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1is_1netinst
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1is_1multipart
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1is_1multipart  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *root;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_is_multipart (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -1871,31 +2047,35 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1is_1multipart
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1set_1attach_1method
-  (JNIEnv *env, jobject obj, jlong jg, jstring jattachmethod)
+Java_com_redhat_et_libguestfs_GuestFS__1set_1attach_1method  (JNIEnv *env, jobject obj, jlong jg, jstring jattachmethod)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *attachmethod;
 
   attachmethod = (*env)->GetStringUTFChars (env, jattachmethod, NULL);
+
   r = guestfs_set_attach_method (g, attachmethod);
+
   (*env)->ReleaseStringUTFChars (env, jattachmethod, attachmethod);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1get_1attach_1method
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1get_1attach_1method  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
   char *r;
+
 
   r = guestfs_get_attach_method (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1906,8 +2086,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1attach_1method
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1product_1variant
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1product_1variant  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -1915,8 +2094,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1product_1variant
   const char *root;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_get_product_variant (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1927,8 +2109,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1product_1variant
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1windows_1current_1control_1set
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1windows_1current_1control_1set  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -1936,8 +2117,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1windows_1current_1control_
   const char *root;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_get_windows_current_control_set (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1948,12 +2132,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1windows_1current_1control_
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1drive_1mappings
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1drive_1mappings  (JNIEnv *env, jobject obj, jlong jg, jstring jroot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -1961,8 +2144,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1drive_1mappings
   size_t i;
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
+
   r = guestfs_inspect_get_drive_mappings (g, root);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -1980,9 +2166,72 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1drive_1mappings
   return jr;
 }
 
+JNIEXPORT jstring JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1icon  (JNIEnv *env, jobject obj, jlong jg, jstring jroot, jlong joptargs_bitmask, jboolean jfavicon, jboolean jhighquality)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jstring jr;
+  char *r;
+  size_t size;
+  const char *root;
+  struct guestfs_inspect_get_icon_argv optargs_s;
+  const struct guestfs_inspect_get_icon_argv *optargs = &optargs_s;
+
+  root = (*env)->GetStringUTFChars (env, jroot, NULL);
+  optargs_s.bitmask = joptargs_bitmask;
+  optargs_s.favicon = jfavicon;
+  optargs_s.highquality = jhighquality;
+
+  r = guestfs_inspect_get_icon_argv (g, root, &size, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jroot, root);
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    return NULL;
+  }
+  jr = (*env)->NewStringUTF (env, r); // XXX size
+  free (r);
+  return jr;
+}
+
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mount
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jmountpoint)
+Java_com_redhat_et_libguestfs_GuestFS__1set_1pgroup  (JNIEnv *env, jobject obj, jlong jg, jboolean jpgroup)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  int pgroup;
+
+  pgroup = jpgroup;
+
+  r = guestfs_set_pgroup (g, pgroup);
+
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1get_1pgroup  (JNIEnv *env, jobject obj, jlong jg)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+
+
+  r = guestfs_get_pgroup (g);
+
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return -1;
+  }
+  return (jboolean) r;
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1mount  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jmountpoint)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -1991,49 +2240,55 @@ Java_com_redhat_et_libguestfs_GuestFS__1mount
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   mountpoint = (*env)->GetStringUTFChars (env, jmountpoint, NULL);
+
   r = guestfs_mount (g, device, mountpoint);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jmountpoint, mountpoint);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1sync
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1sync  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
+
 
   r = guestfs_sync (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1touch
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1touch  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_touch (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1cat
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1cat  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -2041,8 +2296,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1cat
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_cat (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -2053,8 +2311,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1cat
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1ll
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdirectory)
+Java_com_redhat_et_libguestfs_GuestFS__1ll  (JNIEnv *env, jobject obj, jlong jg, jstring jdirectory)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -2062,8 +2319,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1ll
   const char *directory;
 
   directory = (*env)->GetStringUTFChars (env, jdirectory, NULL);
+
   r = guestfs_ll (g, directory);
+
   (*env)->ReleaseStringUTFChars (env, jdirectory, directory);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -2074,12 +2334,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1ll
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1ls
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdirectory)
+Java_com_redhat_et_libguestfs_GuestFS__1ls  (JNIEnv *env, jobject obj, jlong jg, jstring jdirectory)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -2087,8 +2346,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1ls
   size_t i;
 
   directory = (*env)->GetStringUTFChars (env, jdirectory, NULL);
+
   r = guestfs_ls (g, directory);
+
   (*env)->ReleaseStringUTFChars (env, jdirectory, directory);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -2107,18 +2369,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1ls
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1list_1devices
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1list_1devices  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
   size_t i;
+
 
   r = guestfs_list_devices (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -2137,18 +2401,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1list_1devices
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1list_1partitions
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1list_1partitions  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
   size_t i;
+
 
   r = guestfs_list_partitions (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -2167,18 +2433,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1list_1partitions
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1pvs
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1pvs  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
   size_t i;
+
 
   r = guestfs_pvs (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -2197,18 +2465,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1pvs
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1vgs
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1vgs  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
   size_t i;
+
 
   r = guestfs_vgs (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -2227,18 +2497,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1vgs
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lvs
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1lvs  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
   size_t i;
 
+
   r = guestfs_lvs (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -2257,8 +2529,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1lvs
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1pvs_1full
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1pvs_1full  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
@@ -2268,7 +2539,10 @@ Java_com_redhat_et_libguestfs_GuestFS__1pvs_1full
   struct guestfs_lvm_pv_list *r;
   size_t i;
 
+
   r = guestfs_pvs_full (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -2317,8 +2591,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1pvs_1full
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1vgs_1full
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1vgs_1full  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
@@ -2328,7 +2601,10 @@ Java_com_redhat_et_libguestfs_GuestFS__1vgs_1full
   struct guestfs_lvm_vg_list *r;
   size_t i;
 
+
   r = guestfs_vgs_full (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -2387,8 +2663,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1vgs_1full
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lvs_1full
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1lvs_1full  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
@@ -2398,7 +2673,10 @@ Java_com_redhat_et_libguestfs_GuestFS__1lvs_1full
   struct guestfs_lvm_lv_list *r;
   size_t i;
 
+
   r = guestfs_lvs_full (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -2451,12 +2729,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1lvs_1full
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1read_1lines
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1read_1lines  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -2464,8 +2741,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1read_1lines
   size_t i;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_read_lines (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -2484,8 +2764,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1read_1lines
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1aug_1init
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot, jint jflags)
+Java_com_redhat_et_libguestfs_GuestFS__1aug_1init  (JNIEnv *env, jobject obj, jlong jg, jstring jroot, jint jflags)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -2494,31 +2773,35 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1init
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
   flags = jflags;
+
   r = guestfs_aug_init (g, root, flags);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1aug_1close
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1aug_1close  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_aug_close (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1aug_1defvar
-  (JNIEnv *env, jobject obj, jlong jg, jstring jname, jstring jexpr)
+Java_com_redhat_et_libguestfs_GuestFS__1aug_1defvar  (JNIEnv *env, jobject obj, jlong jg, jstring jname, jstring jexpr)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -2527,10 +2810,13 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1defvar
 
   name = (*env)->GetStringUTFChars (env, jname, NULL);
   expr = jexpr ? (*env)->GetStringUTFChars (env, jexpr, NULL) : NULL;
+
   r = guestfs_aug_defvar (g, name, expr);
+
   (*env)->ReleaseStringUTFChars (env, jname, name);
   if (jexpr)
     (*env)->ReleaseStringUTFChars (env, jexpr, expr);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -2539,8 +2825,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1defvar
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1aug_1defnode
-  (JNIEnv *env, jobject obj, jlong jg, jstring jname, jstring jexpr, jstring jval)
+Java_com_redhat_et_libguestfs_GuestFS__1aug_1defnode  (JNIEnv *env, jobject obj, jlong jg, jstring jname, jstring jexpr, jstring jval)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobject jr;
@@ -2554,10 +2839,13 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1defnode
   name = (*env)->GetStringUTFChars (env, jname, NULL);
   expr = (*env)->GetStringUTFChars (env, jexpr, NULL);
   val = (*env)->GetStringUTFChars (env, jval, NULL);
+
   r = guestfs_aug_defnode (g, name, expr, val);
+
   (*env)->ReleaseStringUTFChars (env, jname, name);
   (*env)->ReleaseStringUTFChars (env, jexpr, expr);
   (*env)->ReleaseStringUTFChars (env, jval, val);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -2573,8 +2861,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1defnode
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1aug_1get
-  (JNIEnv *env, jobject obj, jlong jg, jstring jaugpath)
+Java_com_redhat_et_libguestfs_GuestFS__1aug_1get  (JNIEnv *env, jobject obj, jlong jg, jstring jaugpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -2582,8 +2869,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1get
   const char *augpath;
 
   augpath = (*env)->GetStringUTFChars (env, jaugpath, NULL);
+
   r = guestfs_aug_get (g, augpath);
+
   (*env)->ReleaseStringUTFChars (env, jaugpath, augpath);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -2594,8 +2884,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1get
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1aug_1set
-  (JNIEnv *env, jobject obj, jlong jg, jstring jaugpath, jstring jval)
+Java_com_redhat_et_libguestfs_GuestFS__1aug_1set  (JNIEnv *env, jobject obj, jlong jg, jstring jaugpath, jstring jval)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -2604,18 +2893,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1set
 
   augpath = (*env)->GetStringUTFChars (env, jaugpath, NULL);
   val = (*env)->GetStringUTFChars (env, jval, NULL);
+
   r = guestfs_aug_set (g, augpath, val);
+
   (*env)->ReleaseStringUTFChars (env, jaugpath, augpath);
   (*env)->ReleaseStringUTFChars (env, jval, val);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1aug_1insert
-  (JNIEnv *env, jobject obj, jlong jg, jstring jaugpath, jstring jlabel, jboolean jbefore)
+Java_com_redhat_et_libguestfs_GuestFS__1aug_1insert  (JNIEnv *env, jobject obj, jlong jg, jstring jaugpath, jstring jlabel, jboolean jbefore)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -2626,26 +2917,31 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1insert
   augpath = (*env)->GetStringUTFChars (env, jaugpath, NULL);
   label = (*env)->GetStringUTFChars (env, jlabel, NULL);
   before = jbefore;
+
   r = guestfs_aug_insert (g, augpath, label, before);
+
   (*env)->ReleaseStringUTFChars (env, jaugpath, augpath);
   (*env)->ReleaseStringUTFChars (env, jlabel, label);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1aug_1rm
-  (JNIEnv *env, jobject obj, jlong jg, jstring jaugpath)
+Java_com_redhat_et_libguestfs_GuestFS__1aug_1rm  (JNIEnv *env, jobject obj, jlong jg, jstring jaugpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *augpath;
 
   augpath = (*env)->GetStringUTFChars (env, jaugpath, NULL);
+
   r = guestfs_aug_rm (g, augpath);
+
   (*env)->ReleaseStringUTFChars (env, jaugpath, augpath);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -2654,8 +2950,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1rm
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1aug_1mv
-  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest)
+Java_com_redhat_et_libguestfs_GuestFS__1aug_1mv  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -2664,22 +2959,24 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1mv
 
   src = (*env)->GetStringUTFChars (env, jsrc, NULL);
   dest = (*env)->GetStringUTFChars (env, jdest, NULL);
+
   r = guestfs_aug_mv (g, src, dest);
+
   (*env)->ReleaseStringUTFChars (env, jsrc, src);
   (*env)->ReleaseStringUTFChars (env, jdest, dest);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1aug_1match
-  (JNIEnv *env, jobject obj, jlong jg, jstring jaugpath)
+Java_com_redhat_et_libguestfs_GuestFS__1aug_1match  (JNIEnv *env, jobject obj, jlong jg, jstring jaugpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -2687,8 +2984,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1match
   size_t i;
 
   augpath = (*env)->GetStringUTFChars (env, jaugpath, NULL);
+
   r = guestfs_aug_match (g, augpath);
+
   (*env)->ReleaseStringUTFChars (env, jaugpath, augpath);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -2707,40 +3007,43 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1match
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1aug_1save
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1aug_1save  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
+
 
   r = guestfs_aug_save (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1aug_1load
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1aug_1load  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_aug_load (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1aug_1ls
-  (JNIEnv *env, jobject obj, jlong jg, jstring jaugpath)
+Java_com_redhat_et_libguestfs_GuestFS__1aug_1ls  (JNIEnv *env, jobject obj, jlong jg, jstring jaugpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -2748,8 +3051,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1ls
   size_t i;
 
   augpath = (*env)->GetStringUTFChars (env, jaugpath, NULL);
+
   r = guestfs_aug_ls (g, augpath);
+
   (*env)->ReleaseStringUTFChars (env, jaugpath, augpath);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -2768,93 +3074,102 @@ Java_com_redhat_et_libguestfs_GuestFS__1aug_1ls
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1rm
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1rm  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_rm (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1rmdir
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1rmdir  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_rmdir (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1rm_1rf
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1rm_1rf  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_rm_rf (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mkdir
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1mkdir  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_mkdir (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mkdir_1p
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1mkdir_1p  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_mkdir_p (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1chmod
-  (JNIEnv *env, jobject obj, jlong jg, jint jmode, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1chmod  (JNIEnv *env, jobject obj, jlong jg, jint jmode, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -2863,17 +3178,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1chmod
 
   mode = jmode;
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_chmod (g, mode, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1chown
-  (JNIEnv *env, jobject obj, jlong jg, jint jowner, jint jgroup, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1chown  (JNIEnv *env, jobject obj, jlong jg, jint jowner, jint jgroup, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -2884,25 +3201,30 @@ Java_com_redhat_et_libguestfs_GuestFS__1chown
   owner = jowner;
   group = jgroup;
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_chown (g, owner, group, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1exists
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1exists  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_exists (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -2911,16 +3233,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1exists
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1file
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1file  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_is_file (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -2929,16 +3253,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1is_1file
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1dir
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1dir  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_is_dir (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -2947,31 +3273,32 @@ Java_com_redhat_et_libguestfs_GuestFS__1is_1dir
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1pvcreate
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1pvcreate  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_pvcreate (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1vgcreate
-  (JNIEnv *env, jobject obj, jlong jg, jstring jvolgroup, jobjectArray jphysvols)
+Java_com_redhat_et_libguestfs_GuestFS__1vgcreate  (JNIEnv *env, jobject obj, jlong jg, jstring jvolgroup, jobjectArray jphysvols)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *volgroup;
-  int physvols_len;
-  const char **physvols;
+  size_t physvols_len;
+  char **physvols;
   size_t i;
 
   volgroup = (*env)->GetStringUTFChars (env, jvolgroup, NULL);
@@ -2979,25 +3306,27 @@ Java_com_redhat_et_libguestfs_GuestFS__1vgcreate
   physvols = guestfs_safe_malloc (g, sizeof (char *) * (physvols_len+1));
   for (i = 0; i < physvols_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jphysvols, i);
-    physvols[i] = (*env)->GetStringUTFChars (env, o, NULL);
+    physvols[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
   }
   physvols[physvols_len] = NULL;
+
   r = guestfs_vgcreate (g, volgroup, physvols);
+
   (*env)->ReleaseStringUTFChars (env, jvolgroup, volgroup);
   for (i = 0; i < physvols_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jphysvols, i);
     (*env)->ReleaseStringUTFChars (env, o, physvols[i]);
   }
   free (physvols);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lvcreate
-  (JNIEnv *env, jobject obj, jlong jg, jstring jlogvol, jstring jvolgroup, jint jmbytes)
+Java_com_redhat_et_libguestfs_GuestFS__1lvcreate  (JNIEnv *env, jobject obj, jlong jg, jstring jlogvol, jstring jvolgroup, jint jmbytes)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -3008,18 +3337,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1lvcreate
   logvol = (*env)->GetStringUTFChars (env, jlogvol, NULL);
   volgroup = (*env)->GetStringUTFChars (env, jvolgroup, NULL);
   mbytes = jmbytes;
+
   r = guestfs_lvcreate (g, logvol, volgroup, mbytes);
+
   (*env)->ReleaseStringUTFChars (env, jlogvol, logvol);
   (*env)->ReleaseStringUTFChars (env, jvolgroup, volgroup);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mkfs
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfstype, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1mkfs  (JNIEnv *env, jobject obj, jlong jg, jstring jfstype, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -3028,18 +3359,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1mkfs
 
   fstype = (*env)->GetStringUTFChars (env, jfstype, NULL);
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_mkfs (g, fstype, device);
+
   (*env)->ReleaseStringUTFChars (env, jfstype, fstype);
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1sfdisk
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jcyls, jint jheads, jint jsectors, jobjectArray jlines)
+Java_com_redhat_et_libguestfs_GuestFS__1sfdisk  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jcyls, jint jheads, jint jsectors, jobjectArray jlines)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -3047,8 +3380,8 @@ Java_com_redhat_et_libguestfs_GuestFS__1sfdisk
   int cyls;
   int heads;
   int sectors;
-  int lines_len;
-  const char **lines;
+  size_t lines_len;
+  char **lines;
   size_t i;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
@@ -3059,25 +3392,27 @@ Java_com_redhat_et_libguestfs_GuestFS__1sfdisk
   lines = guestfs_safe_malloc (g, sizeof (char *) * (lines_len+1));
   for (i = 0; i < lines_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jlines, i);
-    lines[i] = (*env)->GetStringUTFChars (env, o, NULL);
+    lines[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
   }
   lines[lines_len] = NULL;
+
   r = guestfs_sfdisk (g, device, cyls, heads, sectors, lines);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   for (i = 0; i < lines_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jlines, i);
     (*env)->ReleaseStringUTFChars (env, o, lines[i]);
   }
   free (lines);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1write_1file
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jstring jcontent, jint jsize)
+Java_com_redhat_et_libguestfs_GuestFS__1write_1file  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jstring jcontent, jint jsize)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -3088,45 +3423,52 @@ Java_com_redhat_et_libguestfs_GuestFS__1write_1file
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
   content = (*env)->GetStringUTFChars (env, jcontent, NULL);
   size = jsize;
+
   r = guestfs_write_file (g, path, content, size);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
   (*env)->ReleaseStringUTFChars (env, jcontent, content);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1umount
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpathordevice)
+Java_com_redhat_et_libguestfs_GuestFS__1umount  (JNIEnv *env, jobject obj, jlong jg, jstring jpathordevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *pathordevice;
 
   pathordevice = (*env)->GetStringUTFChars (env, jpathordevice, NULL);
+
   r = guestfs_umount (g, pathordevice);
+
   (*env)->ReleaseStringUTFChars (env, jpathordevice, pathordevice);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mounts
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1mounts  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
   size_t i;
+
 
   r = guestfs_mounts (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -3145,36 +3487,39 @@ Java_com_redhat_et_libguestfs_GuestFS__1mounts
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1umount_1all
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1umount_1all  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_umount_all (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lvm_1remove_1all
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1lvm_1remove_1all  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_lvm_remove_all (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1file
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1file  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -3182,8 +3527,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1file
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_file (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -3194,29 +3542,31 @@ Java_com_redhat_et_libguestfs_GuestFS__1file
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1command
-  (JNIEnv *env, jobject obj, jlong jg, jobjectArray jarguments)
+Java_com_redhat_et_libguestfs_GuestFS__1command  (JNIEnv *env, jobject obj, jlong jg, jobjectArray jarguments)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
   char *r;
-  int arguments_len;
-  const char **arguments;
+  size_t arguments_len;
+  char **arguments;
   size_t i;
 
   arguments_len = (*env)->GetArrayLength (env, jarguments);
   arguments = guestfs_safe_malloc (g, sizeof (char *) * (arguments_len+1));
   for (i = 0; i < arguments_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jarguments, i);
-    arguments[i] = (*env)->GetStringUTFChars (env, o, NULL);
+    arguments[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
   }
   arguments[arguments_len] = NULL;
+
   r = guestfs_command (g, arguments);
+
   for (i = 0; i < arguments_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jarguments, i);
     (*env)->ReleaseStringUTFChars (env, o, arguments[i]);
   }
   free (arguments);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -3227,32 +3577,34 @@ Java_com_redhat_et_libguestfs_GuestFS__1command
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1command_1lines
-  (JNIEnv *env, jobject obj, jlong jg, jobjectArray jarguments)
+Java_com_redhat_et_libguestfs_GuestFS__1command_1lines  (JNIEnv *env, jobject obj, jlong jg, jobjectArray jarguments)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
-  int arguments_len;
-  const char **arguments;
+  size_t arguments_len;
+  char **arguments;
   size_t i;
 
   arguments_len = (*env)->GetArrayLength (env, jarguments);
   arguments = guestfs_safe_malloc (g, sizeof (char *) * (arguments_len+1));
   for (i = 0; i < arguments_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jarguments, i);
-    arguments[i] = (*env)->GetStringUTFChars (env, o, NULL);
+    arguments[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
   }
   arguments[arguments_len] = NULL;
+
   r = guestfs_command_lines (g, arguments);
+
   for (i = 0; i < arguments_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jarguments, i);
     (*env)->ReleaseStringUTFChars (env, o, arguments[i]);
   }
   free (arguments);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -3271,8 +3623,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1command_1lines
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1stat
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1stat  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobject jr;
@@ -3282,8 +3633,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1stat
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_stat (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -3321,8 +3675,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1stat
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lstat
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1lstat  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobject jr;
@@ -3332,8 +3685,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1lstat
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_lstat (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -3371,8 +3727,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1lstat
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1statvfs
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1statvfs  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobject jr;
@@ -3382,8 +3737,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1statvfs
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_statvfs (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -3417,12 +3775,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1statvfs
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1tune2fs_1l
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1tune2fs_1l  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -3430,8 +3787,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1tune2fs_1l
   size_t i;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_tune2fs_l (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -3450,50 +3810,56 @@ Java_com_redhat_et_libguestfs_GuestFS__1tune2fs_1l
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1setro
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1setro  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_blockdev_setro (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1setrw
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1setrw  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_blockdev_setrw (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1getro
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1getro  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_blockdev_getro (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -3502,16 +3868,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1getro
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1getss
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1getss  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_blockdev_getss (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -3520,16 +3888,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1getss
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1getbsz
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1getbsz  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_blockdev_getbsz (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -3538,8 +3908,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1getbsz
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1setbsz
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jblocksize)
+Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1setbsz  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jblocksize)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -3548,25 +3917,30 @@ Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1setbsz
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   blocksize = jblocksize;
+
   r = guestfs_blockdev_setbsz (g, device, blocksize);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jlong JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1getsz
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1getsz  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int64_t r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_blockdev_getsz (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -3575,16 +3949,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1getsz
 }
 
 JNIEXPORT jlong JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1getsize64
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1getsize64  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int64_t r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_blockdev_getsize64 (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -3593,42 +3969,45 @@ Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1getsize64
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1flushbufs
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1flushbufs  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_blockdev_flushbufs (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1rereadpt
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1blockdev_1rereadpt  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_blockdev_rereadpt (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1upload
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jstring jremotefilename)
+Java_com_redhat_et_libguestfs_GuestFS__1upload  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jstring jremotefilename)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -3637,18 +4016,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1upload
 
   filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
   remotefilename = (*env)->GetStringUTFChars (env, jremotefilename, NULL);
+
   r = guestfs_upload (g, filename, remotefilename);
+
   (*env)->ReleaseStringUTFChars (env, jfilename, filename);
   (*env)->ReleaseStringUTFChars (env, jremotefilename, remotefilename);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1download
-  (JNIEnv *env, jobject obj, jlong jg, jstring jremotefilename, jstring jfilename)
+Java_com_redhat_et_libguestfs_GuestFS__1download  (JNIEnv *env, jobject obj, jlong jg, jstring jremotefilename, jstring jfilename)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -3657,18 +4038,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1download
 
   remotefilename = (*env)->GetStringUTFChars (env, jremotefilename, NULL);
   filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
+
   r = guestfs_download (g, remotefilename, filename);
+
   (*env)->ReleaseStringUTFChars (env, jremotefilename, remotefilename);
   (*env)->ReleaseStringUTFChars (env, jfilename, filename);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1checksum
-  (JNIEnv *env, jobject obj, jlong jg, jstring jcsumtype, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1checksum  (JNIEnv *env, jobject obj, jlong jg, jstring jcsumtype, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -3678,9 +4061,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1checksum
 
   csumtype = (*env)->GetStringUTFChars (env, jcsumtype, NULL);
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_checksum (g, csumtype, path);
+
   (*env)->ReleaseStringUTFChars (env, jcsumtype, csumtype);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -3691,8 +4077,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1checksum
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1tar_1in
-  (JNIEnv *env, jobject obj, jlong jg, jstring jtarfile, jstring jdirectory)
+Java_com_redhat_et_libguestfs_GuestFS__1tar_1in  (JNIEnv *env, jobject obj, jlong jg, jstring jtarfile, jstring jdirectory)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -3701,18 +4086,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1tar_1in
 
   tarfile = (*env)->GetStringUTFChars (env, jtarfile, NULL);
   directory = (*env)->GetStringUTFChars (env, jdirectory, NULL);
+
   r = guestfs_tar_in (g, tarfile, directory);
+
   (*env)->ReleaseStringUTFChars (env, jtarfile, tarfile);
   (*env)->ReleaseStringUTFChars (env, jdirectory, directory);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1tar_1out
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdirectory, jstring jtarfile)
+Java_com_redhat_et_libguestfs_GuestFS__1tar_1out  (JNIEnv *env, jobject obj, jlong jg, jstring jdirectory, jstring jtarfile)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -3721,18 +4108,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1tar_1out
 
   directory = (*env)->GetStringUTFChars (env, jdirectory, NULL);
   tarfile = (*env)->GetStringUTFChars (env, jtarfile, NULL);
+
   r = guestfs_tar_out (g, directory, tarfile);
+
   (*env)->ReleaseStringUTFChars (env, jdirectory, directory);
   (*env)->ReleaseStringUTFChars (env, jtarfile, tarfile);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1tgz_1in
-  (JNIEnv *env, jobject obj, jlong jg, jstring jtarball, jstring jdirectory)
+Java_com_redhat_et_libguestfs_GuestFS__1tgz_1in  (JNIEnv *env, jobject obj, jlong jg, jstring jtarball, jstring jdirectory)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -3741,18 +4130,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1tgz_1in
 
   tarball = (*env)->GetStringUTFChars (env, jtarball, NULL);
   directory = (*env)->GetStringUTFChars (env, jdirectory, NULL);
+
   r = guestfs_tgz_in (g, tarball, directory);
+
   (*env)->ReleaseStringUTFChars (env, jtarball, tarball);
   (*env)->ReleaseStringUTFChars (env, jdirectory, directory);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1tgz_1out
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdirectory, jstring jtarball)
+Java_com_redhat_et_libguestfs_GuestFS__1tgz_1out  (JNIEnv *env, jobject obj, jlong jg, jstring jdirectory, jstring jtarball)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -3761,18 +4152,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1tgz_1out
 
   directory = (*env)->GetStringUTFChars (env, jdirectory, NULL);
   tarball = (*env)->GetStringUTFChars (env, jtarball, NULL);
+
   r = guestfs_tgz_out (g, directory, tarball);
+
   (*env)->ReleaseStringUTFChars (env, jdirectory, directory);
   (*env)->ReleaseStringUTFChars (env, jtarball, tarball);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mount_1ro
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jmountpoint)
+Java_com_redhat_et_libguestfs_GuestFS__1mount_1ro  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jmountpoint)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -3781,18 +4174,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1mount_1ro
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   mountpoint = (*env)->GetStringUTFChars (env, jmountpoint, NULL);
+
   r = guestfs_mount_ro (g, device, mountpoint);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jmountpoint, mountpoint);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mount_1options
-  (JNIEnv *env, jobject obj, jlong jg, jstring joptions, jstring jdevice, jstring jmountpoint)
+Java_com_redhat_et_libguestfs_GuestFS__1mount_1options  (JNIEnv *env, jobject obj, jlong jg, jstring joptions, jstring jdevice, jstring jmountpoint)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -3803,19 +4198,21 @@ Java_com_redhat_et_libguestfs_GuestFS__1mount_1options
   options = (*env)->GetStringUTFChars (env, joptions, NULL);
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   mountpoint = (*env)->GetStringUTFChars (env, jmountpoint, NULL);
+
   r = guestfs_mount_options (g, options, device, mountpoint);
+
   (*env)->ReleaseStringUTFChars (env, joptions, options);
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jmountpoint, mountpoint);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mount_1vfs
-  (JNIEnv *env, jobject obj, jlong jg, jstring joptions, jstring jvfstype, jstring jdevice, jstring jmountpoint)
+Java_com_redhat_et_libguestfs_GuestFS__1mount_1vfs  (JNIEnv *env, jobject obj, jlong jg, jstring joptions, jstring jvfstype, jstring jdevice, jstring jmountpoint)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -3828,27 +4225,29 @@ Java_com_redhat_et_libguestfs_GuestFS__1mount_1vfs
   vfstype = (*env)->GetStringUTFChars (env, jvfstype, NULL);
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   mountpoint = (*env)->GetStringUTFChars (env, jmountpoint, NULL);
+
   r = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
+
   (*env)->ReleaseStringUTFChars (env, joptions, options);
   (*env)->ReleaseStringUTFChars (env, jvfstype, vfstype);
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jmountpoint, mountpoint);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1debug
-  (JNIEnv *env, jobject obj, jlong jg, jstring jsubcmd, jobjectArray jextraargs)
+Java_com_redhat_et_libguestfs_GuestFS__1debug  (JNIEnv *env, jobject obj, jlong jg, jstring jsubcmd, jobjectArray jextraargs)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
   char *r;
   const char *subcmd;
-  int extraargs_len;
-  const char **extraargs;
+  size_t extraargs_len;
+  char **extraargs;
   size_t i;
 
   subcmd = (*env)->GetStringUTFChars (env, jsubcmd, NULL);
@@ -3856,16 +4255,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1debug
   extraargs = guestfs_safe_malloc (g, sizeof (char *) * (extraargs_len+1));
   for (i = 0; i < extraargs_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jextraargs, i);
-    extraargs[i] = (*env)->GetStringUTFChars (env, o, NULL);
+    extraargs[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
   }
   extraargs[extraargs_len] = NULL;
+
   r = guestfs_debug (g, subcmd, extraargs);
+
   (*env)->ReleaseStringUTFChars (env, jsubcmd, subcmd);
   for (i = 0; i < extraargs_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jextraargs, i);
     (*env)->ReleaseStringUTFChars (env, o, extraargs[i]);
   }
   free (extraargs);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -3876,59 +4278,64 @@ Java_com_redhat_et_libguestfs_GuestFS__1debug
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lvremove
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1lvremove  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_lvremove (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1vgremove
-  (JNIEnv *env, jobject obj, jlong jg, jstring jvgname)
+Java_com_redhat_et_libguestfs_GuestFS__1vgremove  (JNIEnv *env, jobject obj, jlong jg, jstring jvgname)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *vgname;
 
   vgname = (*env)->GetStringUTFChars (env, jvgname, NULL);
+
   r = guestfs_vgremove (g, vgname);
+
   (*env)->ReleaseStringUTFChars (env, jvgname, vgname);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1pvremove
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1pvremove  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_pvremove (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1set_1e2label
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jlabel)
+Java_com_redhat_et_libguestfs_GuestFS__1set_1e2label  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jlabel)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -3937,18 +4344,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1set_1e2label
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   label = (*env)->GetStringUTFChars (env, jlabel, NULL);
+
   r = guestfs_set_e2label (g, device, label);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jlabel, label);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1get_1e2label
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1get_1e2label  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -3956,8 +4365,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1e2label
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_get_e2label (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -3968,8 +4380,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1e2label
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1set_1e2uuid
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring juuid)
+Java_com_redhat_et_libguestfs_GuestFS__1set_1e2uuid  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring juuid)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -3978,18 +4389,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1set_1e2uuid
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   uuid = (*env)->GetStringUTFChars (env, juuid, NULL);
+
   r = guestfs_set_e2uuid (g, device, uuid);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, juuid, uuid);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1get_1e2uuid
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1get_1e2uuid  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -3997,8 +4410,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1e2uuid
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_get_e2uuid (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4009,8 +4425,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1e2uuid
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1fsck
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfstype, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1fsck  (JNIEnv *env, jobject obj, jlong jg, jstring jfstype, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -4019,9 +4434,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1fsck
 
   fstype = (*env)->GetStringUTFChars (env, jfstype, NULL);
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_fsck (g, fstype, device);
+
   (*env)->ReleaseStringUTFChars (env, jfstype, fstype);
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -4030,25 +4448,26 @@ Java_com_redhat_et_libguestfs_GuestFS__1fsck
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1zero
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1zero  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_zero (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1grub_1install
-  (JNIEnv *env, jobject obj, jlong jg, jstring jroot, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1grub_1install  (JNIEnv *env, jobject obj, jlong jg, jstring jroot, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -4057,18 +4476,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1grub_1install
 
   root = (*env)->GetStringUTFChars (env, jroot, NULL);
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_grub_install (g, root, device);
+
   (*env)->ReleaseStringUTFChars (env, jroot, root);
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1cp
-  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest)
+Java_com_redhat_et_libguestfs_GuestFS__1cp  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -4077,18 +4498,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1cp
 
   src = (*env)->GetStringUTFChars (env, jsrc, NULL);
   dest = (*env)->GetStringUTFChars (env, jdest, NULL);
+
   r = guestfs_cp (g, src, dest);
+
   (*env)->ReleaseStringUTFChars (env, jsrc, src);
   (*env)->ReleaseStringUTFChars (env, jdest, dest);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1cp_1a
-  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest)
+Java_com_redhat_et_libguestfs_GuestFS__1cp_1a  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -4097,18 +4520,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1cp_1a
 
   src = (*env)->GetStringUTFChars (env, jsrc, NULL);
   dest = (*env)->GetStringUTFChars (env, jdest, NULL);
+
   r = guestfs_cp_a (g, src, dest);
+
   (*env)->ReleaseStringUTFChars (env, jsrc, src);
   (*env)->ReleaseStringUTFChars (env, jdest, dest);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mv
-  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest)
+Java_com_redhat_et_libguestfs_GuestFS__1mv  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -4117,40 +4542,47 @@ Java_com_redhat_et_libguestfs_GuestFS__1mv
 
   src = (*env)->GetStringUTFChars (env, jsrc, NULL);
   dest = (*env)->GetStringUTFChars (env, jdest, NULL);
+
   r = guestfs_mv (g, src, dest);
+
   (*env)->ReleaseStringUTFChars (env, jsrc, src);
   (*env)->ReleaseStringUTFChars (env, jdest, dest);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1drop_1caches
-  (JNIEnv *env, jobject obj, jlong jg, jint jwhattodrop)
+Java_com_redhat_et_libguestfs_GuestFS__1drop_1caches  (JNIEnv *env, jobject obj, jlong jg, jint jwhattodrop)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   int whattodrop;
 
   whattodrop = jwhattodrop;
+
   r = guestfs_drop_caches (g, whattodrop);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1dmesg
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1dmesg  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
   char *r;
 
+
   r = guestfs_dmesg (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4161,22 +4593,23 @@ Java_com_redhat_et_libguestfs_GuestFS__1dmesg
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1ping_1daemon
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1ping_1daemon  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_ping_daemon (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1equal
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfile1, jstring jfile2)
+Java_com_redhat_et_libguestfs_GuestFS__1equal  (JNIEnv *env, jobject obj, jlong jg, jstring jfile1, jstring jfile2)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -4185,9 +4618,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1equal
 
   file1 = (*env)->GetStringUTFChars (env, jfile1, NULL);
   file2 = (*env)->GetStringUTFChars (env, jfile2, NULL);
+
   r = guestfs_equal (g, file1, file2);
+
   (*env)->ReleaseStringUTFChars (env, jfile1, file1);
   (*env)->ReleaseStringUTFChars (env, jfile2, file2);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -4196,12 +4632,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1equal
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1strings
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1strings  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -4209,8 +4644,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1strings
   size_t i;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_strings (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4229,12 +4667,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1strings
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1strings_1e
-  (JNIEnv *env, jobject obj, jlong jg, jstring jencoding, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1strings_1e  (JNIEnv *env, jobject obj, jlong jg, jstring jencoding, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -4244,9 +4681,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1strings_1e
 
   encoding = (*env)->GetStringUTFChars (env, jencoding, NULL);
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_strings_e (g, encoding, path);
+
   (*env)->ReleaseStringUTFChars (env, jencoding, encoding);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4265,8 +4705,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1strings_1e
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1hexdump
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1hexdump  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -4274,8 +4713,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1hexdump
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_hexdump (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4286,42 +4728,45 @@ Java_com_redhat_et_libguestfs_GuestFS__1hexdump
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1zerofree
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1zerofree  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_zerofree (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1pvresize
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1pvresize  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_pvresize (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1sfdisk_1N
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum, jint jcyls, jint jheads, jint jsectors, jstring jline)
+Java_com_redhat_et_libguestfs_GuestFS__1sfdisk_1N  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum, jint jcyls, jint jheads, jint jsectors, jstring jline)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -4338,18 +4783,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1sfdisk_1N
   heads = jheads;
   sectors = jsectors;
   line = (*env)->GetStringUTFChars (env, jline, NULL);
+
   r = guestfs_sfdisk_N (g, device, partnum, cyls, heads, sectors, line);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jline, line);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1sfdisk_1l
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1sfdisk_1l  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -4357,8 +4804,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1sfdisk_1l
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_sfdisk_l (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4369,8 +4819,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1sfdisk_1l
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1sfdisk_1kernel_1geometry
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1sfdisk_1kernel_1geometry  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -4378,8 +4827,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1sfdisk_1kernel_1geometry
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_sfdisk_kernel_geometry (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4390,8 +4842,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1sfdisk_1kernel_1geometry
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1sfdisk_1disk_1geometry
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1sfdisk_1disk_1geometry  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -4399,8 +4850,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1sfdisk_1disk_1geometry
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_sfdisk_disk_geometry (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4411,30 +4865,31 @@ Java_com_redhat_et_libguestfs_GuestFS__1sfdisk_1disk_1geometry
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1vg_1activate_1all
-  (JNIEnv *env, jobject obj, jlong jg, jboolean jactivate)
+Java_com_redhat_et_libguestfs_GuestFS__1vg_1activate_1all  (JNIEnv *env, jobject obj, jlong jg, jboolean jactivate)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   int activate;
 
   activate = jactivate;
+
   r = guestfs_vg_activate_all (g, activate);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1vg_1activate
-  (JNIEnv *env, jobject obj, jlong jg, jboolean jactivate, jobjectArray jvolgroups)
+Java_com_redhat_et_libguestfs_GuestFS__1vg_1activate  (JNIEnv *env, jobject obj, jlong jg, jboolean jactivate, jobjectArray jvolgroups)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   int activate;
-  int volgroups_len;
-  const char **volgroups;
+  size_t volgroups_len;
+  char **volgroups;
   size_t i;
 
   activate = jactivate;
@@ -4442,24 +4897,26 @@ Java_com_redhat_et_libguestfs_GuestFS__1vg_1activate
   volgroups = guestfs_safe_malloc (g, sizeof (char *) * (volgroups_len+1));
   for (i = 0; i < volgroups_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jvolgroups, i);
-    volgroups[i] = (*env)->GetStringUTFChars (env, o, NULL);
+    volgroups[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
   }
   volgroups[volgroups_len] = NULL;
+
   r = guestfs_vg_activate (g, activate, volgroups);
+
   for (i = 0; i < volgroups_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jvolgroups, i);
     (*env)->ReleaseStringUTFChars (env, o, volgroups[i]);
   }
   free (volgroups);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lvresize
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jmbytes)
+Java_com_redhat_et_libguestfs_GuestFS__1lvresize  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jmbytes)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -4468,38 +4925,42 @@ Java_com_redhat_et_libguestfs_GuestFS__1lvresize
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   mbytes = jmbytes;
+
   r = guestfs_lvresize (g, device, mbytes);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1resize2fs
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1resize2fs  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_resize2fs (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1find
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdirectory)
+Java_com_redhat_et_libguestfs_GuestFS__1find  (JNIEnv *env, jobject obj, jlong jg, jstring jdirectory)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -4507,8 +4968,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1find
   size_t i;
 
   directory = (*env)->GetStringUTFChars (env, jdirectory, NULL);
+
   r = guestfs_find (g, directory);
+
   (*env)->ReleaseStringUTFChars (env, jdirectory, directory);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4527,41 +4991,44 @@ Java_com_redhat_et_libguestfs_GuestFS__1find
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1e2fsck_1f
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1e2fsck_1f  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_e2fsck_f (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1sleep
-  (JNIEnv *env, jobject obj, jlong jg, jint jsecs)
+Java_com_redhat_et_libguestfs_GuestFS__1sleep  (JNIEnv *env, jobject obj, jlong jg, jint jsecs)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   int secs;
 
   secs = jsecs;
+
   r = guestfs_sleep (g, secs);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1ntfs_13g_1probe
-  (JNIEnv *env, jobject obj, jlong jg, jboolean jrw, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1ntfs_13g_1probe  (JNIEnv *env, jobject obj, jlong jg, jboolean jrw, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -4570,8 +5037,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1ntfs_13g_1probe
 
   rw = jrw;
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_ntfs_3g_probe (g, rw, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -4580,8 +5050,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1ntfs_13g_1probe
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1sh
-  (JNIEnv *env, jobject obj, jlong jg, jstring jcommand)
+Java_com_redhat_et_libguestfs_GuestFS__1sh  (JNIEnv *env, jobject obj, jlong jg, jstring jcommand)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -4589,8 +5058,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1sh
   const char *command;
 
   command = (*env)->GetStringUTFChars (env, jcommand, NULL);
+
   r = guestfs_sh (g, command);
+
   (*env)->ReleaseStringUTFChars (env, jcommand, command);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4601,12 +5073,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1sh
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1sh_1lines
-  (JNIEnv *env, jobject obj, jlong jg, jstring jcommand)
+Java_com_redhat_et_libguestfs_GuestFS__1sh_1lines  (JNIEnv *env, jobject obj, jlong jg, jstring jcommand)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -4614,8 +5085,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1sh_1lines
   size_t i;
 
   command = (*env)->GetStringUTFChars (env, jcommand, NULL);
+
   r = guestfs_sh_lines (g, command);
+
   (*env)->ReleaseStringUTFChars (env, jcommand, command);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4634,12 +5108,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1sh_1lines
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1glob_1expand
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpattern)
+Java_com_redhat_et_libguestfs_GuestFS__1glob_1expand  (JNIEnv *env, jobject obj, jlong jg, jstring jpattern)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -4647,8 +5120,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1glob_1expand
   size_t i;
 
   pattern = (*env)->GetStringUTFChars (env, jpattern, NULL);
+
   r = guestfs_glob_expand (g, pattern);
+
   (*env)->ReleaseStringUTFChars (env, jpattern, pattern);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4667,59 +5143,64 @@ Java_com_redhat_et_libguestfs_GuestFS__1glob_1expand
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1scrub_1device
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1scrub_1device  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_scrub_device (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1scrub_1file
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfile)
+Java_com_redhat_et_libguestfs_GuestFS__1scrub_1file  (JNIEnv *env, jobject obj, jlong jg, jstring jfile)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *file;
 
   file = (*env)->GetStringUTFChars (env, jfile, NULL);
+
   r = guestfs_scrub_file (g, file);
+
   (*env)->ReleaseStringUTFChars (env, jfile, file);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1scrub_1freespace
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdir)
+Java_com_redhat_et_libguestfs_GuestFS__1scrub_1freespace  (JNIEnv *env, jobject obj, jlong jg, jstring jdir)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *dir;
 
   dir = (*env)->GetStringUTFChars (env, jdir, NULL);
+
   r = guestfs_scrub_freespace (g, dir);
+
   (*env)->ReleaseStringUTFChars (env, jdir, dir);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mkdtemp
-  (JNIEnv *env, jobject obj, jlong jg, jstring jtemplate)
+Java_com_redhat_et_libguestfs_GuestFS__1mkdtemp  (JNIEnv *env, jobject obj, jlong jg, jstring jtemplate)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -4727,8 +5208,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1mkdtemp
   const char *template;
 
   template = (*env)->GetStringUTFChars (env, jtemplate, NULL);
+
   r = guestfs_mkdtemp (g, template);
+
   (*env)->ReleaseStringUTFChars (env, jtemplate, template);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4739,16 +5223,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1mkdtemp
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1wc_1l
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1wc_1l  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_wc_l (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -4757,16 +5243,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1wc_1l
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1wc_1w
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1wc_1w  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_wc_w (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -4775,16 +5263,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1wc_1w
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1wc_1c
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1wc_1c  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_wc_c (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -4793,12 +5283,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1wc_1c
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1head
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1head  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -4806,8 +5295,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1head
   size_t i;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_head (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4826,12 +5318,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1head
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1head_1n
-  (JNIEnv *env, jobject obj, jlong jg, jint jnrlines, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1head_1n  (JNIEnv *env, jobject obj, jlong jg, jint jnrlines, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -4841,8 +5332,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1head_1n
 
   nrlines = jnrlines;
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_head_n (g, nrlines, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4861,12 +5355,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1head_1n
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1tail
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1tail  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -4874,8 +5367,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1tail
   size_t i;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_tail (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4894,12 +5390,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1tail
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1tail_1n
-  (JNIEnv *env, jobject obj, jlong jg, jint jnrlines, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1tail_1n  (JNIEnv *env, jobject obj, jlong jg, jint jnrlines, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -4909,8 +5404,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1tail_1n
 
   nrlines = jnrlines;
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_tail_n (g, nrlines, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4929,14 +5427,16 @@ Java_com_redhat_et_libguestfs_GuestFS__1tail_1n
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1df
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1df  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
   char *r;
+
 
   r = guestfs_df (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4947,14 +5447,16 @@ Java_com_redhat_et_libguestfs_GuestFS__1df
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1df_1h
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1df_1h  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
   char *r;
 
+
   r = guestfs_df_h (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -4965,16 +5467,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1df_1h
 }
 
 JNIEXPORT jlong JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1du
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1du  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int64_t r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_du (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -4983,12 +5487,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1du
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1initrd_1list
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1initrd_1list  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -4996,8 +5499,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1initrd_1list
   size_t i;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_initrd_list (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5016,8 +5522,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1initrd_1list
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mount_1loop
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfile, jstring jmountpoint)
+Java_com_redhat_et_libguestfs_GuestFS__1mount_1loop  (JNIEnv *env, jobject obj, jlong jg, jstring jfile, jstring jmountpoint)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -5026,35 +5531,39 @@ Java_com_redhat_et_libguestfs_GuestFS__1mount_1loop
 
   file = (*env)->GetStringUTFChars (env, jfile, NULL);
   mountpoint = (*env)->GetStringUTFChars (env, jmountpoint, NULL);
+
   r = guestfs_mount_loop (g, file, mountpoint);
+
   (*env)->ReleaseStringUTFChars (env, jfile, file);
   (*env)->ReleaseStringUTFChars (env, jmountpoint, mountpoint);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mkswap
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1mkswap  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_mkswap (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mkswap_1L
-  (JNIEnv *env, jobject obj, jlong jg, jstring jlabel, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1mkswap_1L  (JNIEnv *env, jobject obj, jlong jg, jstring jlabel, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -5063,18 +5572,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1mkswap_1L
 
   label = (*env)->GetStringUTFChars (env, jlabel, NULL);
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_mkswap_L (g, label, device);
+
   (*env)->ReleaseStringUTFChars (env, jlabel, label);
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mkswap_1U
-  (JNIEnv *env, jobject obj, jlong jg, jstring juuid, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1mkswap_1U  (JNIEnv *env, jobject obj, jlong jg, jstring juuid, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -5083,18 +5594,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1mkswap_1U
 
   uuid = (*env)->GetStringUTFChars (env, juuid, NULL);
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_mkswap_U (g, uuid, device);
+
   (*env)->ReleaseStringUTFChars (env, juuid, uuid);
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mknod
-  (JNIEnv *env, jobject obj, jlong jg, jint jmode, jint jdevmajor, jint jdevminor, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1mknod  (JNIEnv *env, jobject obj, jlong jg, jint jmode, jint jdevmajor, jint jdevminor, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -5107,17 +5620,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1mknod
   devmajor = jdevmajor;
   devminor = jdevminor;
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_mknod (g, mode, devmajor, devminor, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mkfifo
-  (JNIEnv *env, jobject obj, jlong jg, jint jmode, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1mkfifo  (JNIEnv *env, jobject obj, jlong jg, jint jmode, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -5126,17 +5641,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1mkfifo
 
   mode = jmode;
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_mkfifo (g, mode, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mknod_1b
-  (JNIEnv *env, jobject obj, jlong jg, jint jmode, jint jdevmajor, jint jdevminor, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1mknod_1b  (JNIEnv *env, jobject obj, jlong jg, jint jmode, jint jdevmajor, jint jdevminor, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -5149,17 +5666,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1mknod_1b
   devmajor = jdevmajor;
   devminor = jdevminor;
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_mknod_b (g, mode, devmajor, devminor, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mknod_1c
-  (JNIEnv *env, jobject obj, jlong jg, jint jmode, jint jdevmajor, jint jdevminor, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1mknod_1c  (JNIEnv *env, jobject obj, jlong jg, jint jmode, jint jdevmajor, jint jdevminor, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -5172,24 +5691,29 @@ Java_com_redhat_et_libguestfs_GuestFS__1mknod_1c
   devmajor = jdevmajor;
   devminor = jdevminor;
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_mknod_c (g, mode, devmajor, devminor, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1umask
-  (JNIEnv *env, jobject obj, jlong jg, jint jmask)
+Java_com_redhat_et_libguestfs_GuestFS__1umask  (JNIEnv *env, jobject obj, jlong jg, jint jmask)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   int mask;
 
   mask = jmask;
+
   r = guestfs_umask (g, mask);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -5198,8 +5722,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1umask
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1readdir
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdir)
+Java_com_redhat_et_libguestfs_GuestFS__1readdir  (JNIEnv *env, jobject obj, jlong jg, jstring jdir)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
@@ -5211,8 +5734,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1readdir
   size_t i;
 
   dir = (*env)->GetStringUTFChars (env, jdir, NULL);
+
   r = guestfs_readdir (g, dir);
+
   (*env)->ReleaseStringUTFChars (env, jdir, dir);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5234,14 +5760,13 @@ Java_com_redhat_et_libguestfs_GuestFS__1readdir
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1sfdiskM
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jobjectArray jlines)
+Java_com_redhat_et_libguestfs_GuestFS__1sfdiskM  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jobjectArray jlines)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
-  int lines_len;
-  const char **lines;
+  size_t lines_len;
+  char **lines;
   size_t i;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
@@ -5249,25 +5774,27 @@ Java_com_redhat_et_libguestfs_GuestFS__1sfdiskM
   lines = guestfs_safe_malloc (g, sizeof (char *) * (lines_len+1));
   for (i = 0; i < lines_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jlines, i);
-    lines[i] = (*env)->GetStringUTFChars (env, o, NULL);
+    lines[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
   }
   lines[lines_len] = NULL;
+
   r = guestfs_sfdiskM (g, device, lines);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   for (i = 0; i < lines_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jlines, i);
     (*env)->ReleaseStringUTFChars (env, o, lines[i]);
   }
   free (lines);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1zfile
-  (JNIEnv *env, jobject obj, jlong jg, jstring jmeth, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1zfile  (JNIEnv *env, jobject obj, jlong jg, jstring jmeth, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -5277,9 +5804,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1zfile
 
   meth = (*env)->GetStringUTFChars (env, jmeth, NULL);
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_zfile (g, meth, path);
+
   (*env)->ReleaseStringUTFChars (env, jmeth, meth);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5290,8 +5820,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1zfile
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1getxattrs
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1getxattrs  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
@@ -5303,8 +5832,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1getxattrs
   size_t i;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_getxattrs (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5330,8 +5862,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1getxattrs
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lgetxattrs
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1lgetxattrs  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
@@ -5343,8 +5874,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1lgetxattrs
   size_t i;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_lgetxattrs (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5370,8 +5904,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1lgetxattrs
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1setxattr
-  (JNIEnv *env, jobject obj, jlong jg, jstring jxattr, jstring jval, jint jvallen, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1setxattr  (JNIEnv *env, jobject obj, jlong jg, jstring jxattr, jstring jval, jint jvallen, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -5384,19 +5917,21 @@ Java_com_redhat_et_libguestfs_GuestFS__1setxattr
   val = (*env)->GetStringUTFChars (env, jval, NULL);
   vallen = jvallen;
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_setxattr (g, xattr, val, vallen, path);
+
   (*env)->ReleaseStringUTFChars (env, jxattr, xattr);
   (*env)->ReleaseStringUTFChars (env, jval, val);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lsetxattr
-  (JNIEnv *env, jobject obj, jlong jg, jstring jxattr, jstring jval, jint jvallen, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1lsetxattr  (JNIEnv *env, jobject obj, jlong jg, jstring jxattr, jstring jval, jint jvallen, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -5409,19 +5944,21 @@ Java_com_redhat_et_libguestfs_GuestFS__1lsetxattr
   val = (*env)->GetStringUTFChars (env, jval, NULL);
   vallen = jvallen;
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_lsetxattr (g, xattr, val, vallen, path);
+
   (*env)->ReleaseStringUTFChars (env, jxattr, xattr);
   (*env)->ReleaseStringUTFChars (env, jval, val);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1removexattr
-  (JNIEnv *env, jobject obj, jlong jg, jstring jxattr, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1removexattr  (JNIEnv *env, jobject obj, jlong jg, jstring jxattr, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -5430,18 +5967,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1removexattr
 
   xattr = (*env)->GetStringUTFChars (env, jxattr, NULL);
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_removexattr (g, xattr, path);
+
   (*env)->ReleaseStringUTFChars (env, jxattr, xattr);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lremovexattr
-  (JNIEnv *env, jobject obj, jlong jg, jstring jxattr, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1lremovexattr  (JNIEnv *env, jobject obj, jlong jg, jstring jxattr, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -5450,28 +5989,33 @@ Java_com_redhat_et_libguestfs_GuestFS__1lremovexattr
 
   xattr = (*env)->GetStringUTFChars (env, jxattr, NULL);
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_lremovexattr (g, xattr, path);
+
   (*env)->ReleaseStringUTFChars (env, jxattr, xattr);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mountpoints
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1mountpoints  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
   size_t i;
 
+
   r = guestfs_mountpoints (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5490,42 +6034,45 @@ Java_com_redhat_et_libguestfs_GuestFS__1mountpoints
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mkmountpoint
-  (JNIEnv *env, jobject obj, jlong jg, jstring jexemptpath)
+Java_com_redhat_et_libguestfs_GuestFS__1mkmountpoint  (JNIEnv *env, jobject obj, jlong jg, jstring jexemptpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *exemptpath;
 
   exemptpath = (*env)->GetStringUTFChars (env, jexemptpath, NULL);
+
   r = guestfs_mkmountpoint (g, exemptpath);
+
   (*env)->ReleaseStringUTFChars (env, jexemptpath, exemptpath);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1rmmountpoint
-  (JNIEnv *env, jobject obj, jlong jg, jstring jexemptpath)
+Java_com_redhat_et_libguestfs_GuestFS__1rmmountpoint  (JNIEnv *env, jobject obj, jlong jg, jstring jexemptpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *exemptpath;
 
   exemptpath = (*env)->GetStringUTFChars (env, jexemptpath, NULL);
+
   r = guestfs_rmmountpoint (g, exemptpath);
+
   (*env)->ReleaseStringUTFChars (env, jexemptpath, exemptpath);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1read_1file
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1read_1file  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -5534,8 +6081,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1read_1file
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_read_file (g, path, &size);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5546,12 +6096,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1read_1file
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1grep
-  (JNIEnv *env, jobject obj, jlong jg, jstring jregex, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1grep  (JNIEnv *env, jobject obj, jlong jg, jstring jregex, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -5561,9 +6110,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1grep
 
   regex = (*env)->GetStringUTFChars (env, jregex, NULL);
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_grep (g, regex, path);
+
   (*env)->ReleaseStringUTFChars (env, jregex, regex);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5582,12 +6134,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1grep
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1egrep
-  (JNIEnv *env, jobject obj, jlong jg, jstring jregex, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1egrep  (JNIEnv *env, jobject obj, jlong jg, jstring jregex, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -5597,9 +6148,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1egrep
 
   regex = (*env)->GetStringUTFChars (env, jregex, NULL);
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_egrep (g, regex, path);
+
   (*env)->ReleaseStringUTFChars (env, jregex, regex);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5618,12 +6172,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1egrep
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1fgrep
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpattern, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1fgrep  (JNIEnv *env, jobject obj, jlong jg, jstring jpattern, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -5633,9 +6186,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1fgrep
 
   pattern = (*env)->GetStringUTFChars (env, jpattern, NULL);
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_fgrep (g, pattern, path);
+
   (*env)->ReleaseStringUTFChars (env, jpattern, pattern);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5654,12 +6210,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1fgrep
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1grepi
-  (JNIEnv *env, jobject obj, jlong jg, jstring jregex, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1grepi  (JNIEnv *env, jobject obj, jlong jg, jstring jregex, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -5669,9 +6224,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1grepi
 
   regex = (*env)->GetStringUTFChars (env, jregex, NULL);
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_grepi (g, regex, path);
+
   (*env)->ReleaseStringUTFChars (env, jregex, regex);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5690,12 +6248,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1grepi
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1egrepi
-  (JNIEnv *env, jobject obj, jlong jg, jstring jregex, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1egrepi  (JNIEnv *env, jobject obj, jlong jg, jstring jregex, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -5705,9 +6262,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1egrepi
 
   regex = (*env)->GetStringUTFChars (env, jregex, NULL);
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_egrepi (g, regex, path);
+
   (*env)->ReleaseStringUTFChars (env, jregex, regex);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5726,12 +6286,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1egrepi
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1fgrepi
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpattern, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1fgrepi  (JNIEnv *env, jobject obj, jlong jg, jstring jpattern, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -5741,9 +6300,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1fgrepi
 
   pattern = (*env)->GetStringUTFChars (env, jpattern, NULL);
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_fgrepi (g, pattern, path);
+
   (*env)->ReleaseStringUTFChars (env, jpattern, pattern);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5762,12 +6324,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1fgrepi
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1zgrep
-  (JNIEnv *env, jobject obj, jlong jg, jstring jregex, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1zgrep  (JNIEnv *env, jobject obj, jlong jg, jstring jregex, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -5777,9 +6338,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1zgrep
 
   regex = (*env)->GetStringUTFChars (env, jregex, NULL);
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_zgrep (g, regex, path);
+
   (*env)->ReleaseStringUTFChars (env, jregex, regex);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5798,12 +6362,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1zgrep
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1zegrep
-  (JNIEnv *env, jobject obj, jlong jg, jstring jregex, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1zegrep  (JNIEnv *env, jobject obj, jlong jg, jstring jregex, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -5813,9 +6376,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1zegrep
 
   regex = (*env)->GetStringUTFChars (env, jregex, NULL);
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_zegrep (g, regex, path);
+
   (*env)->ReleaseStringUTFChars (env, jregex, regex);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5834,12 +6400,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1zegrep
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1zfgrep
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpattern, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1zfgrep  (JNIEnv *env, jobject obj, jlong jg, jstring jpattern, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -5849,9 +6414,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1zfgrep
 
   pattern = (*env)->GetStringUTFChars (env, jpattern, NULL);
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_zfgrep (g, pattern, path);
+
   (*env)->ReleaseStringUTFChars (env, jpattern, pattern);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5870,12 +6438,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1zfgrep
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1zgrepi
-  (JNIEnv *env, jobject obj, jlong jg, jstring jregex, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1zgrepi  (JNIEnv *env, jobject obj, jlong jg, jstring jregex, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -5885,9 +6452,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1zgrepi
 
   regex = (*env)->GetStringUTFChars (env, jregex, NULL);
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_zgrepi (g, regex, path);
+
   (*env)->ReleaseStringUTFChars (env, jregex, regex);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5906,12 +6476,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1zgrepi
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1zegrepi
-  (JNIEnv *env, jobject obj, jlong jg, jstring jregex, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1zegrepi  (JNIEnv *env, jobject obj, jlong jg, jstring jregex, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -5921,9 +6490,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1zegrepi
 
   regex = (*env)->GetStringUTFChars (env, jregex, NULL);
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_zegrepi (g, regex, path);
+
   (*env)->ReleaseStringUTFChars (env, jregex, regex);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5942,12 +6514,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1zegrepi
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1zfgrepi
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpattern, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1zfgrepi  (JNIEnv *env, jobject obj, jlong jg, jstring jpattern, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -5957,9 +6528,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1zfgrepi
 
   pattern = (*env)->GetStringUTFChars (env, jpattern, NULL);
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_zfgrepi (g, pattern, path);
+
   (*env)->ReleaseStringUTFChars (env, jpattern, pattern);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5978,8 +6552,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1zfgrepi
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1realpath
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1realpath  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -5987,8 +6560,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1realpath
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_realpath (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -5999,8 +6575,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1realpath
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1ln
-  (JNIEnv *env, jobject obj, jlong jg, jstring jtarget, jstring jlinkname)
+Java_com_redhat_et_libguestfs_GuestFS__1ln  (JNIEnv *env, jobject obj, jlong jg, jstring jtarget, jstring jlinkname)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -6009,18 +6584,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1ln
 
   target = (*env)->GetStringUTFChars (env, jtarget, NULL);
   linkname = (*env)->GetStringUTFChars (env, jlinkname, NULL);
+
   r = guestfs_ln (g, target, linkname);
+
   (*env)->ReleaseStringUTFChars (env, jtarget, target);
   (*env)->ReleaseStringUTFChars (env, jlinkname, linkname);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1ln_1f
-  (JNIEnv *env, jobject obj, jlong jg, jstring jtarget, jstring jlinkname)
+Java_com_redhat_et_libguestfs_GuestFS__1ln_1f  (JNIEnv *env, jobject obj, jlong jg, jstring jtarget, jstring jlinkname)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -6029,18 +6606,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1ln_1f
 
   target = (*env)->GetStringUTFChars (env, jtarget, NULL);
   linkname = (*env)->GetStringUTFChars (env, jlinkname, NULL);
+
   r = guestfs_ln_f (g, target, linkname);
+
   (*env)->ReleaseStringUTFChars (env, jtarget, target);
   (*env)->ReleaseStringUTFChars (env, jlinkname, linkname);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1ln_1s
-  (JNIEnv *env, jobject obj, jlong jg, jstring jtarget, jstring jlinkname)
+Java_com_redhat_et_libguestfs_GuestFS__1ln_1s  (JNIEnv *env, jobject obj, jlong jg, jstring jtarget, jstring jlinkname)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -6049,18 +6628,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1ln_1s
 
   target = (*env)->GetStringUTFChars (env, jtarget, NULL);
   linkname = (*env)->GetStringUTFChars (env, jlinkname, NULL);
+
   r = guestfs_ln_s (g, target, linkname);
+
   (*env)->ReleaseStringUTFChars (env, jtarget, target);
   (*env)->ReleaseStringUTFChars (env, jlinkname, linkname);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1ln_1sf
-  (JNIEnv *env, jobject obj, jlong jg, jstring jtarget, jstring jlinkname)
+Java_com_redhat_et_libguestfs_GuestFS__1ln_1sf  (JNIEnv *env, jobject obj, jlong jg, jstring jtarget, jstring jlinkname)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -6069,18 +6650,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1ln_1sf
 
   target = (*env)->GetStringUTFChars (env, jtarget, NULL);
   linkname = (*env)->GetStringUTFChars (env, jlinkname, NULL);
+
   r = guestfs_ln_sf (g, target, linkname);
+
   (*env)->ReleaseStringUTFChars (env, jtarget, target);
   (*env)->ReleaseStringUTFChars (env, jlinkname, linkname);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1readlink
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1readlink  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -6088,8 +6671,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1readlink
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_readlink (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -6100,8 +6686,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1readlink
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1fallocate
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jint jlen)
+Java_com_redhat_et_libguestfs_GuestFS__1fallocate  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jint jlen)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -6110,186 +6695,208 @@ Java_com_redhat_et_libguestfs_GuestFS__1fallocate
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
   len = jlen;
+
   r = guestfs_fallocate (g, path, len);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1swapon_1device
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1swapon_1device  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_swapon_device (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1swapoff_1device
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1swapoff_1device  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_swapoff_device (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1swapon_1file
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfile)
+Java_com_redhat_et_libguestfs_GuestFS__1swapon_1file  (JNIEnv *env, jobject obj, jlong jg, jstring jfile)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *file;
 
   file = (*env)->GetStringUTFChars (env, jfile, NULL);
+
   r = guestfs_swapon_file (g, file);
+
   (*env)->ReleaseStringUTFChars (env, jfile, file);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1swapoff_1file
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfile)
+Java_com_redhat_et_libguestfs_GuestFS__1swapoff_1file  (JNIEnv *env, jobject obj, jlong jg, jstring jfile)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *file;
 
   file = (*env)->GetStringUTFChars (env, jfile, NULL);
+
   r = guestfs_swapoff_file (g, file);
+
   (*env)->ReleaseStringUTFChars (env, jfile, file);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1swapon_1label
-  (JNIEnv *env, jobject obj, jlong jg, jstring jlabel)
+Java_com_redhat_et_libguestfs_GuestFS__1swapon_1label  (JNIEnv *env, jobject obj, jlong jg, jstring jlabel)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *label;
 
   label = (*env)->GetStringUTFChars (env, jlabel, NULL);
+
   r = guestfs_swapon_label (g, label);
+
   (*env)->ReleaseStringUTFChars (env, jlabel, label);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1swapoff_1label
-  (JNIEnv *env, jobject obj, jlong jg, jstring jlabel)
+Java_com_redhat_et_libguestfs_GuestFS__1swapoff_1label  (JNIEnv *env, jobject obj, jlong jg, jstring jlabel)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *label;
 
   label = (*env)->GetStringUTFChars (env, jlabel, NULL);
+
   r = guestfs_swapoff_label (g, label);
+
   (*env)->ReleaseStringUTFChars (env, jlabel, label);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1swapon_1uuid
-  (JNIEnv *env, jobject obj, jlong jg, jstring juuid)
+Java_com_redhat_et_libguestfs_GuestFS__1swapon_1uuid  (JNIEnv *env, jobject obj, jlong jg, jstring juuid)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *uuid;
 
   uuid = (*env)->GetStringUTFChars (env, juuid, NULL);
+
   r = guestfs_swapon_uuid (g, uuid);
+
   (*env)->ReleaseStringUTFChars (env, juuid, uuid);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1swapoff_1uuid
-  (JNIEnv *env, jobject obj, jlong jg, jstring juuid)
+Java_com_redhat_et_libguestfs_GuestFS__1swapoff_1uuid  (JNIEnv *env, jobject obj, jlong jg, jstring juuid)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *uuid;
 
   uuid = (*env)->GetStringUTFChars (env, juuid, NULL);
+
   r = guestfs_swapoff_uuid (g, uuid);
+
   (*env)->ReleaseStringUTFChars (env, juuid, uuid);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mkswap_1file
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1mkswap_1file  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_mkswap_file (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inotify_1init
-  (JNIEnv *env, jobject obj, jlong jg, jint jmaxevents)
+Java_com_redhat_et_libguestfs_GuestFS__1inotify_1init  (JNIEnv *env, jobject obj, jlong jg, jint jmaxevents)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   int maxevents;
 
   maxevents = jmaxevents;
+
   r = guestfs_inotify_init (g, maxevents);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jlong JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inotify_1add_1watch
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jint jmask)
+Java_com_redhat_et_libguestfs_GuestFS__1inotify_1add_1watch  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jint jmask)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int64_t r;
@@ -6298,8 +6905,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1inotify_1add_1watch
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
   mask = jmask;
+
   r = guestfs_inotify_add_watch (g, path, mask);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -6308,24 +6918,25 @@ Java_com_redhat_et_libguestfs_GuestFS__1inotify_1add_1watch
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inotify_1rm_1watch
-  (JNIEnv *env, jobject obj, jlong jg, jint jwd)
+Java_com_redhat_et_libguestfs_GuestFS__1inotify_1rm_1watch  (JNIEnv *env, jobject obj, jlong jg, jint jwd)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   int wd;
 
   wd = jwd;
+
   r = guestfs_inotify_rm_watch (g, wd);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inotify_1read
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1inotify_1read  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
@@ -6335,7 +6946,10 @@ Java_com_redhat_et_libguestfs_GuestFS__1inotify_1read
   struct guestfs_inotify_event_list *r;
   size_t i;
 
+
   r = guestfs_inotify_read (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -6359,18 +6973,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1inotify_1read
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inotify_1files
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1inotify_1files  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
   size_t i;
 
+
   r = guestfs_inotify_files (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -6389,45 +7005,51 @@ Java_com_redhat_et_libguestfs_GuestFS__1inotify_1files
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1inotify_1close
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1inotify_1close  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_inotify_close (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1setcon
-  (JNIEnv *env, jobject obj, jlong jg, jstring jcontext)
+Java_com_redhat_et_libguestfs_GuestFS__1setcon  (JNIEnv *env, jobject obj, jlong jg, jstring jcontext)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *context;
 
   context = (*env)->GetStringUTFChars (env, jcontext, NULL);
+
   r = guestfs_setcon (g, context);
+
   (*env)->ReleaseStringUTFChars (env, jcontext, context);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1getcon
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1getcon  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
   char *r;
 
+
   r = guestfs_getcon (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -6438,8 +7060,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1getcon
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mkfs_1b
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfstype, jint jblocksize, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1mkfs_1b  (JNIEnv *env, jobject obj, jlong jg, jstring jfstype, jint jblocksize, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -6450,18 +7071,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1mkfs_1b
   fstype = (*env)->GetStringUTFChars (env, jfstype, NULL);
   blocksize = jblocksize;
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_mkfs_b (g, fstype, blocksize, device);
+
   (*env)->ReleaseStringUTFChars (env, jfstype, fstype);
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mke2journal
-  (JNIEnv *env, jobject obj, jlong jg, jint jblocksize, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1mke2journal  (JNIEnv *env, jobject obj, jlong jg, jint jblocksize, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -6470,17 +7093,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1mke2journal
 
   blocksize = jblocksize;
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_mke2journal (g, blocksize, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mke2journal_1L
-  (JNIEnv *env, jobject obj, jlong jg, jint jblocksize, jstring jlabel, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1mke2journal_1L  (JNIEnv *env, jobject obj, jlong jg, jint jblocksize, jstring jlabel, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -6491,18 +7116,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1mke2journal_1L
   blocksize = jblocksize;
   label = (*env)->GetStringUTFChars (env, jlabel, NULL);
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_mke2journal_L (g, blocksize, label, device);
+
   (*env)->ReleaseStringUTFChars (env, jlabel, label);
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mke2journal_1U
-  (JNIEnv *env, jobject obj, jlong jg, jint jblocksize, jstring juuid, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1mke2journal_1U  (JNIEnv *env, jobject obj, jlong jg, jint jblocksize, jstring juuid, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -6513,18 +7140,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1mke2journal_1U
   blocksize = jblocksize;
   uuid = (*env)->GetStringUTFChars (env, juuid, NULL);
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_mke2journal_U (g, blocksize, uuid, device);
+
   (*env)->ReleaseStringUTFChars (env, juuid, uuid);
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mke2fs_1J
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfstype, jint jblocksize, jstring jdevice, jstring jjournal)
+Java_com_redhat_et_libguestfs_GuestFS__1mke2fs_1J  (JNIEnv *env, jobject obj, jlong jg, jstring jfstype, jint jblocksize, jstring jdevice, jstring jjournal)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -6537,19 +7166,21 @@ Java_com_redhat_et_libguestfs_GuestFS__1mke2fs_1J
   blocksize = jblocksize;
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   journal = (*env)->GetStringUTFChars (env, jjournal, NULL);
+
   r = guestfs_mke2fs_J (g, fstype, blocksize, device, journal);
+
   (*env)->ReleaseStringUTFChars (env, jfstype, fstype);
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jjournal, journal);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mke2fs_1JL
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfstype, jint jblocksize, jstring jdevice, jstring jlabel)
+Java_com_redhat_et_libguestfs_GuestFS__1mke2fs_1JL  (JNIEnv *env, jobject obj, jlong jg, jstring jfstype, jint jblocksize, jstring jdevice, jstring jlabel)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -6562,19 +7193,21 @@ Java_com_redhat_et_libguestfs_GuestFS__1mke2fs_1JL
   blocksize = jblocksize;
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   label = (*env)->GetStringUTFChars (env, jlabel, NULL);
+
   r = guestfs_mke2fs_JL (g, fstype, blocksize, device, label);
+
   (*env)->ReleaseStringUTFChars (env, jfstype, fstype);
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jlabel, label);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mke2fs_1JU
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfstype, jint jblocksize, jstring jdevice, jstring juuid)
+Java_com_redhat_et_libguestfs_GuestFS__1mke2fs_1JU  (JNIEnv *env, jobject obj, jlong jg, jstring jfstype, jint jblocksize, jstring jdevice, jstring juuid)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -6587,57 +7220,64 @@ Java_com_redhat_et_libguestfs_GuestFS__1mke2fs_1JU
   blocksize = jblocksize;
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   uuid = (*env)->GetStringUTFChars (env, juuid, NULL);
+
   r = guestfs_mke2fs_JU (g, fstype, blocksize, device, uuid);
+
   (*env)->ReleaseStringUTFChars (env, jfstype, fstype);
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, juuid, uuid);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1modprobe
-  (JNIEnv *env, jobject obj, jlong jg, jstring jmodulename)
+Java_com_redhat_et_libguestfs_GuestFS__1modprobe  (JNIEnv *env, jobject obj, jlong jg, jstring jmodulename)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *modulename;
 
   modulename = (*env)->GetStringUTFChars (env, jmodulename, NULL);
+
   r = guestfs_modprobe (g, modulename);
+
   (*env)->ReleaseStringUTFChars (env, jmodulename, modulename);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1echo_1daemon
-  (JNIEnv *env, jobject obj, jlong jg, jobjectArray jwords)
+Java_com_redhat_et_libguestfs_GuestFS__1echo_1daemon  (JNIEnv *env, jobject obj, jlong jg, jobjectArray jwords)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
   char *r;
-  int words_len;
-  const char **words;
+  size_t words_len;
+  char **words;
   size_t i;
 
   words_len = (*env)->GetArrayLength (env, jwords);
   words = guestfs_safe_malloc (g, sizeof (char *) * (words_len+1));
   for (i = 0; i < words_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jwords, i);
-    words[i] = (*env)->GetStringUTFChars (env, o, NULL);
+    words[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
   }
   words[words_len] = NULL;
+
   r = guestfs_echo_daemon (g, words);
+
   for (i = 0; i < words_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jwords, i);
     (*env)->ReleaseStringUTFChars (env, o, words[i]);
   }
   free (words);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -6648,8 +7288,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1echo_1daemon
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1find0
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdirectory, jstring jfiles)
+Java_com_redhat_et_libguestfs_GuestFS__1find0  (JNIEnv *env, jobject obj, jlong jg, jstring jdirectory, jstring jfiles)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -6658,18 +7297,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1find0
 
   directory = (*env)->GetStringUTFChars (env, jdirectory, NULL);
   files = (*env)->GetStringUTFChars (env, jfiles, NULL);
+
   r = guestfs_find0 (g, directory, files);
+
   (*env)->ReleaseStringUTFChars (env, jdirectory, directory);
   (*env)->ReleaseStringUTFChars (env, jfiles, files);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1case_1sensitive_1path
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1case_1sensitive_1path  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -6677,8 +7318,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1case_1sensitive_1path
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_case_sensitive_path (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -6689,8 +7333,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1case_1sensitive_1path
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1vfs_1type
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1vfs_1type  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -6698,8 +7341,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1vfs_1type
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_vfs_type (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -6710,25 +7356,26 @@ Java_com_redhat_et_libguestfs_GuestFS__1vfs_1type
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1truncate
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1truncate  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_truncate (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1truncate_1size
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jlong jsize)
+Java_com_redhat_et_libguestfs_GuestFS__1truncate_1size  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jlong jsize)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -6737,17 +7384,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1truncate_1size
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
   size = jsize;
+
   r = guestfs_truncate_size (g, path, size);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1utimens
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jlong jatsecs, jlong jatnsecs, jlong jmtsecs, jlong jmtnsecs)
+Java_com_redhat_et_libguestfs_GuestFS__1utimens  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jlong jatsecs, jlong jatnsecs, jlong jmtsecs, jlong jmtnsecs)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -6762,17 +7411,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1utimens
   atnsecs = jatnsecs;
   mtsecs = jmtsecs;
   mtnsecs = jmtnsecs;
+
   r = guestfs_utimens (g, path, atsecs, atnsecs, mtsecs, mtnsecs);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mkdir_1mode
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jint jmode)
+Java_com_redhat_et_libguestfs_GuestFS__1mkdir_1mode  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jint jmode)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -6781,17 +7432,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1mkdir_1mode
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
   mode = jmode;
+
   r = guestfs_mkdir_mode (g, path, mode);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lchown
-  (JNIEnv *env, jobject obj, jlong jg, jint jowner, jint jgroup, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1lchown  (JNIEnv *env, jobject obj, jlong jg, jint jowner, jint jgroup, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -6802,17 +7455,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1lchown
   owner = jowner;
   group = jgroup;
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_lchown (g, owner, group, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lstatlist
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jobjectArray jnames)
+Java_com_redhat_et_libguestfs_GuestFS__1lstatlist  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jobjectArray jnames)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
@@ -6821,8 +7476,8 @@ Java_com_redhat_et_libguestfs_GuestFS__1lstatlist
   jobject jfl;
   struct guestfs_stat_list *r;
   const char *path;
-  int names_len;
-  const char **names;
+  size_t names_len;
+  char **names;
   size_t i;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
@@ -6830,16 +7485,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1lstatlist
   names = guestfs_safe_malloc (g, sizeof (char *) * (names_len+1));
   for (i = 0; i < names_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jnames, i);
-    names[i] = (*env)->GetStringUTFChars (env, o, NULL);
+    names[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
   }
   names[names_len] = NULL;
+
   r = guestfs_lstatlist (g, path, names);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
   for (i = 0; i < names_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jnames, i);
     (*env)->ReleaseStringUTFChars (env, o, names[i]);
   }
   free (names);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -6881,8 +7539,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1lstatlist
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lxattrlist
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jobjectArray jnames)
+Java_com_redhat_et_libguestfs_GuestFS__1lxattrlist  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jobjectArray jnames)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
@@ -6891,8 +7548,8 @@ Java_com_redhat_et_libguestfs_GuestFS__1lxattrlist
   jobject jfl;
   struct guestfs_xattr_list *r;
   const char *path;
-  int names_len;
-  const char **names;
+  size_t names_len;
+  char **names;
   size_t i;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
@@ -6900,16 +7557,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1lxattrlist
   names = guestfs_safe_malloc (g, sizeof (char *) * (names_len+1));
   for (i = 0; i < names_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jnames, i);
-    names[i] = (*env)->GetStringUTFChars (env, o, NULL);
+    names[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
   }
   names[names_len] = NULL;
+
   r = guestfs_lxattrlist (g, path, names);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
   for (i = 0; i < names_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jnames, i);
     (*env)->ReleaseStringUTFChars (env, o, names[i]);
   }
   free (names);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -6935,18 +7595,17 @@ Java_com_redhat_et_libguestfs_GuestFS__1lxattrlist
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1readlinklist
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jobjectArray jnames)
+Java_com_redhat_et_libguestfs_GuestFS__1readlinklist  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jobjectArray jnames)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
   const char *path;
-  int names_len;
-  const char **names;
+  size_t names_len;
+  char **names;
   size_t i;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
@@ -6954,16 +7613,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1readlinklist
   names = guestfs_safe_malloc (g, sizeof (char *) * (names_len+1));
   for (i = 0; i < names_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jnames, i);
-    names[i] = (*env)->GetStringUTFChars (env, o, NULL);
+    names[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
   }
   names[names_len] = NULL;
+
   r = guestfs_readlinklist (g, path, names);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
   for (i = 0; i < names_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jnames, i);
     (*env)->ReleaseStringUTFChars (env, o, names[i]);
   }
   free (names);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -6982,8 +7644,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1readlinklist
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1pread
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jint jcount, jlong joffset)
+Java_com_redhat_et_libguestfs_GuestFS__1pread  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jint jcount, jlong joffset)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -6996,8 +7657,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1pread
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
   count = jcount;
   offset = joffset;
+
   r = guestfs_pread (g, path, count, offset, &size);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -7008,8 +7672,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1pread
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1part_1init
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jparttype)
+Java_com_redhat_et_libguestfs_GuestFS__1part_1init  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jparttype)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7018,18 +7681,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1init
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   parttype = (*env)->GetStringUTFChars (env, jparttype, NULL);
+
   r = guestfs_part_init (g, device, parttype);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jparttype, parttype);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1part_1add
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jprlogex, jlong jstartsect, jlong jendsect)
+Java_com_redhat_et_libguestfs_GuestFS__1part_1add  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jprlogex, jlong jstartsect, jlong jendsect)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7042,18 +7707,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1add
   prlogex = (*env)->GetStringUTFChars (env, jprlogex, NULL);
   startsect = jstartsect;
   endsect = jendsect;
+
   r = guestfs_part_add (g, device, prlogex, startsect, endsect);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jprlogex, prlogex);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1part_1disk
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jparttype)
+Java_com_redhat_et_libguestfs_GuestFS__1part_1disk  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jparttype)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7062,18 +7729,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1disk
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   parttype = (*env)->GetStringUTFChars (env, jparttype, NULL);
+
   r = guestfs_part_disk (g, device, parttype);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jparttype, parttype);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1bootable
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum, jboolean jbootable)
+Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1bootable  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum, jboolean jbootable)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7084,17 +7753,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1bootable
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   partnum = jpartnum;
   bootable = jbootable;
+
   r = guestfs_part_set_bootable (g, device, partnum, bootable);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1name
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum, jstring jname)
+Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1name  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum, jstring jname)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7105,18 +7776,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1name
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   partnum = jpartnum;
   name = (*env)->GetStringUTFChars (env, jname, NULL);
+
   r = guestfs_part_set_name (g, device, partnum, name);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jname, name);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1part_1list
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1part_1list  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
@@ -7128,8 +7801,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1list
   size_t i;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_part_list (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -7153,8 +7829,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1list
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1parttype
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1parttype  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -7162,8 +7837,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1parttype
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_part_get_parttype (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -7174,8 +7852,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1parttype
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1fill
-  (JNIEnv *env, jobject obj, jlong jg, jint jc, jint jlen, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1fill  (JNIEnv *env, jobject obj, jlong jg, jint jc, jint jlen, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7186,46 +7863,50 @@ Java_com_redhat_et_libguestfs_GuestFS__1fill
   c = jc;
   len = jlen;
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_fill (g, c, len, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1available
-  (JNIEnv *env, jobject obj, jlong jg, jobjectArray jgroups)
+Java_com_redhat_et_libguestfs_GuestFS__1available  (JNIEnv *env, jobject obj, jlong jg, jobjectArray jgroups)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
-  int groups_len;
-  const char **groups;
+  size_t groups_len;
+  char **groups;
   size_t i;
 
   groups_len = (*env)->GetArrayLength (env, jgroups);
   groups = guestfs_safe_malloc (g, sizeof (char *) * (groups_len+1));
   for (i = 0; i < groups_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jgroups, i);
-    groups[i] = (*env)->GetStringUTFChars (env, o, NULL);
+    groups[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
   }
   groups[groups_len] = NULL;
+
   r = guestfs_available (g, groups);
+
   for (i = 0; i < groups_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jgroups, i);
     (*env)->ReleaseStringUTFChars (env, o, groups[i]);
   }
   free (groups);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1dd
-  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest)
+Java_com_redhat_et_libguestfs_GuestFS__1dd  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7234,26 +7915,31 @@ Java_com_redhat_et_libguestfs_GuestFS__1dd
 
   src = (*env)->GetStringUTFChars (env, jsrc, NULL);
   dest = (*env)->GetStringUTFChars (env, jdest, NULL);
+
   r = guestfs_dd (g, src, dest);
+
   (*env)->ReleaseStringUTFChars (env, jsrc, src);
   (*env)->ReleaseStringUTFChars (env, jdest, dest);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jlong JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1filesize
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfile)
+Java_com_redhat_et_libguestfs_GuestFS__1filesize  (JNIEnv *env, jobject obj, jlong jg, jstring jfile)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int64_t r;
   const char *file;
 
   file = (*env)->GetStringUTFChars (env, jfile, NULL);
+
   r = guestfs_filesize (g, file);
+
   (*env)->ReleaseStringUTFChars (env, jfile, file);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -7262,8 +7948,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1filesize
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lvrename
-  (JNIEnv *env, jobject obj, jlong jg, jstring jlogvol, jstring jnewlogvol)
+Java_com_redhat_et_libguestfs_GuestFS__1lvrename  (JNIEnv *env, jobject obj, jlong jg, jstring jlogvol, jstring jnewlogvol)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7272,18 +7957,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1lvrename
 
   logvol = (*env)->GetStringUTFChars (env, jlogvol, NULL);
   newlogvol = (*env)->GetStringUTFChars (env, jnewlogvol, NULL);
+
   r = guestfs_lvrename (g, logvol, newlogvol);
+
   (*env)->ReleaseStringUTFChars (env, jlogvol, logvol);
   (*env)->ReleaseStringUTFChars (env, jnewlogvol, newlogvol);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1vgrename
-  (JNIEnv *env, jobject obj, jlong jg, jstring jvolgroup, jstring jnewvolgroup)
+Java_com_redhat_et_libguestfs_GuestFS__1vgrename  (JNIEnv *env, jobject obj, jlong jg, jstring jvolgroup, jstring jnewvolgroup)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7292,18 +7979,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1vgrename
 
   volgroup = (*env)->GetStringUTFChars (env, jvolgroup, NULL);
   newvolgroup = (*env)->GetStringUTFChars (env, jnewvolgroup, NULL);
+
   r = guestfs_vgrename (g, volgroup, newvolgroup);
+
   (*env)->ReleaseStringUTFChars (env, jvolgroup, volgroup);
   (*env)->ReleaseStringUTFChars (env, jnewvolgroup, newvolgroup);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1initrd_1cat
-  (JNIEnv *env, jobject obj, jlong jg, jstring jinitrdpath, jstring jfilename)
+Java_com_redhat_et_libguestfs_GuestFS__1initrd_1cat  (JNIEnv *env, jobject obj, jlong jg, jstring jinitrdpath, jstring jfilename)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -7314,9 +8003,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1initrd_1cat
 
   initrdpath = (*env)->GetStringUTFChars (env, jinitrdpath, NULL);
   filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
+
   r = guestfs_initrd_cat (g, initrdpath, filename, &size);
+
   (*env)->ReleaseStringUTFChars (env, jinitrdpath, initrdpath);
   (*env)->ReleaseStringUTFChars (env, jfilename, filename);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -7327,8 +8019,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1initrd_1cat
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1pvuuid
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1pvuuid  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -7336,8 +8027,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1pvuuid
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_pvuuid (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -7348,8 +8042,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1pvuuid
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1vguuid
-  (JNIEnv *env, jobject obj, jlong jg, jstring jvgname)
+Java_com_redhat_et_libguestfs_GuestFS__1vguuid  (JNIEnv *env, jobject obj, jlong jg, jstring jvgname)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -7357,8 +8050,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1vguuid
   const char *vgname;
 
   vgname = (*env)->GetStringUTFChars (env, jvgname, NULL);
+
   r = guestfs_vguuid (g, vgname);
+
   (*env)->ReleaseStringUTFChars (env, jvgname, vgname);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -7369,8 +8065,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1vguuid
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lvuuid
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1lvuuid  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -7378,8 +8073,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1lvuuid
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_lvuuid (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -7390,12 +8088,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1lvuuid
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1vgpvuuids
-  (JNIEnv *env, jobject obj, jlong jg, jstring jvgname)
+Java_com_redhat_et_libguestfs_GuestFS__1vgpvuuids  (JNIEnv *env, jobject obj, jlong jg, jstring jvgname)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -7403,8 +8100,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1vgpvuuids
   size_t i;
 
   vgname = (*env)->GetStringUTFChars (env, jvgname, NULL);
+
   r = guestfs_vgpvuuids (g, vgname);
+
   (*env)->ReleaseStringUTFChars (env, jvgname, vgname);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -7423,12 +8123,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1vgpvuuids
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1vglvuuids
-  (JNIEnv *env, jobject obj, jlong jg, jstring jvgname)
+Java_com_redhat_et_libguestfs_GuestFS__1vglvuuids  (JNIEnv *env, jobject obj, jlong jg, jstring jvgname)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
@@ -7436,8 +8135,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1vglvuuids
   size_t i;
 
   vgname = (*env)->GetStringUTFChars (env, jvgname, NULL);
+
   r = guestfs_vglvuuids (g, vgname);
+
   (*env)->ReleaseStringUTFChars (env, jvgname, vgname);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -7456,8 +8158,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1vglvuuids
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1copy_1size
-  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest, jlong jsize)
+Java_com_redhat_et_libguestfs_GuestFS__1copy_1size  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest, jlong jsize)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7468,35 +8169,39 @@ Java_com_redhat_et_libguestfs_GuestFS__1copy_1size
   src = (*env)->GetStringUTFChars (env, jsrc, NULL);
   dest = (*env)->GetStringUTFChars (env, jdest, NULL);
   size = jsize;
+
   r = guestfs_copy_size (g, src, dest, size);
+
   (*env)->ReleaseStringUTFChars (env, jsrc, src);
   (*env)->ReleaseStringUTFChars (env, jdest, dest);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1zero_1device
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1zero_1device  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_zero_device (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1txz_1in
-  (JNIEnv *env, jobject obj, jlong jg, jstring jtarball, jstring jdirectory)
+Java_com_redhat_et_libguestfs_GuestFS__1txz_1in  (JNIEnv *env, jobject obj, jlong jg, jstring jtarball, jstring jdirectory)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7505,18 +8210,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1txz_1in
 
   tarball = (*env)->GetStringUTFChars (env, jtarball, NULL);
   directory = (*env)->GetStringUTFChars (env, jdirectory, NULL);
+
   r = guestfs_txz_in (g, tarball, directory);
+
   (*env)->ReleaseStringUTFChars (env, jtarball, tarball);
   (*env)->ReleaseStringUTFChars (env, jdirectory, directory);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1txz_1out
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdirectory, jstring jtarball)
+Java_com_redhat_et_libguestfs_GuestFS__1txz_1out  (JNIEnv *env, jobject obj, jlong jg, jstring jdirectory, jstring jtarball)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7525,49 +8232,55 @@ Java_com_redhat_et_libguestfs_GuestFS__1txz_1out
 
   directory = (*env)->GetStringUTFChars (env, jdirectory, NULL);
   tarball = (*env)->GetStringUTFChars (env, jtarball, NULL);
+
   r = guestfs_txz_out (g, directory, tarball);
+
   (*env)->ReleaseStringUTFChars (env, jdirectory, directory);
   (*env)->ReleaseStringUTFChars (env, jtarball, tarball);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1ntfsresize
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1ntfsresize  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_ntfsresize (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1vgscan
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1vgscan  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
+
 
   r = guestfs_vgscan (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1part_1del
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum)
+Java_com_redhat_et_libguestfs_GuestFS__1part_1del  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7576,17 +8289,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1del
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   partnum = jpartnum;
+
   r = guestfs_part_del (g, device, partnum);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1bootable
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum)
+Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1bootable  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7595,8 +8310,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1bootable
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   partnum = jpartnum;
+
   r = guestfs_part_get_bootable (g, device, partnum);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -7605,8 +8323,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1bootable
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1mbr_1id
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum)
+Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1mbr_1id  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7615,8 +8332,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1mbr_1id
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   partnum = jpartnum;
+
   r = guestfs_part_get_mbr_id (g, device, partnum);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -7625,8 +8345,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1mbr_1id
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1mbr_1id
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum, jint jidbyte)
+Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1mbr_1id  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jpartnum, jint jidbyte)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7637,17 +8356,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1mbr_1id
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   partnum = jpartnum;
   idbyte = jidbyte;
+
   r = guestfs_part_set_mbr_id (g, device, partnum, idbyte);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1checksum_1device
-  (JNIEnv *env, jobject obj, jlong jg, jstring jcsumtype, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1checksum_1device  (JNIEnv *env, jobject obj, jlong jg, jstring jcsumtype, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -7657,9 +8378,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1checksum_1device
 
   csumtype = (*env)->GetStringUTFChars (env, jcsumtype, NULL);
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_checksum_device (g, csumtype, device);
+
   (*env)->ReleaseStringUTFChars (env, jcsumtype, csumtype);
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -7670,8 +8394,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1checksum_1device
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lvresize_1free
-  (JNIEnv *env, jobject obj, jlong jg, jstring jlv, jint jpercent)
+Java_com_redhat_et_libguestfs_GuestFS__1lvresize_1free  (JNIEnv *env, jobject obj, jlong jg, jstring jlv, jint jpercent)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7680,39 +8403,46 @@ Java_com_redhat_et_libguestfs_GuestFS__1lvresize_1free
 
   lv = (*env)->GetStringUTFChars (env, jlv, NULL);
   percent = jpercent;
+
   r = guestfs_lvresize_free (g, lv, percent);
+
   (*env)->ReleaseStringUTFChars (env, jlv, lv);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1aug_1clear
-  (JNIEnv *env, jobject obj, jlong jg, jstring jaugpath)
+Java_com_redhat_et_libguestfs_GuestFS__1aug_1clear  (JNIEnv *env, jobject obj, jlong jg, jstring jaugpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *augpath;
 
   augpath = (*env)->GetStringUTFChars (env, jaugpath, NULL);
+
   r = guestfs_aug_clear (g, augpath);
+
   (*env)->ReleaseStringUTFChars (env, jaugpath, augpath);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1get_1umask
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1get_1umask  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_get_umask (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -7721,8 +8451,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1umask
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1debug_1upload
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jstring jtmpname, jint jmode)
+Java_com_redhat_et_libguestfs_GuestFS__1debug_1upload  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jstring jtmpname, jint jmode)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7733,18 +8462,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1debug_1upload
   filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
   tmpname = (*env)->GetStringUTFChars (env, jtmpname, NULL);
   mode = jmode;
+
   r = guestfs_debug_upload (g, filename, tmpname, mode);
+
   (*env)->ReleaseStringUTFChars (env, jfilename, filename);
   (*env)->ReleaseStringUTFChars (env, jtmpname, tmpname);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1base64_1in
-  (JNIEnv *env, jobject obj, jlong jg, jstring jbase64file, jstring jfilename)
+Java_com_redhat_et_libguestfs_GuestFS__1base64_1in  (JNIEnv *env, jobject obj, jlong jg, jstring jbase64file, jstring jfilename)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7753,18 +8484,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1base64_1in
 
   base64file = (*env)->GetStringUTFChars (env, jbase64file, NULL);
   filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
+
   r = guestfs_base64_in (g, base64file, filename);
+
   (*env)->ReleaseStringUTFChars (env, jbase64file, base64file);
   (*env)->ReleaseStringUTFChars (env, jfilename, filename);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1base64_1out
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jstring jbase64file)
+Java_com_redhat_et_libguestfs_GuestFS__1base64_1out  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jstring jbase64file)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7773,18 +8506,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1base64_1out
 
   filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
   base64file = (*env)->GetStringUTFChars (env, jbase64file, NULL);
+
   r = guestfs_base64_out (g, filename, base64file);
+
   (*env)->ReleaseStringUTFChars (env, jfilename, filename);
   (*env)->ReleaseStringUTFChars (env, jbase64file, base64file);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1checksums_1out
-  (JNIEnv *env, jobject obj, jlong jg, jstring jcsumtype, jstring jdirectory, jstring jsumsfile)
+Java_com_redhat_et_libguestfs_GuestFS__1checksums_1out  (JNIEnv *env, jobject obj, jlong jg, jstring jcsumtype, jstring jdirectory, jstring jsumsfile)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7795,19 +8530,21 @@ Java_com_redhat_et_libguestfs_GuestFS__1checksums_1out
   csumtype = (*env)->GetStringUTFChars (env, jcsumtype, NULL);
   directory = (*env)->GetStringUTFChars (env, jdirectory, NULL);
   sumsfile = (*env)->GetStringUTFChars (env, jsumsfile, NULL);
+
   r = guestfs_checksums_out (g, csumtype, directory, sumsfile);
+
   (*env)->ReleaseStringUTFChars (env, jcsumtype, csumtype);
   (*env)->ReleaseStringUTFChars (env, jdirectory, directory);
   (*env)->ReleaseStringUTFChars (env, jsumsfile, sumsfile);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1fill_1pattern
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpattern, jint jlen, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1fill_1pattern  (JNIEnv *env, jobject obj, jlong jg, jstring jpattern, jint jlen, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7818,55 +8555,62 @@ Java_com_redhat_et_libguestfs_GuestFS__1fill_1pattern
   pattern = (*env)->GetStringUTFChars (env, jpattern, NULL);
   len = jlen;
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_fill_pattern (g, pattern, len, path);
+
   (*env)->ReleaseStringUTFChars (env, jpattern, pattern);
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1write
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jbyteArray jcontent)
+Java_com_redhat_et_libguestfs_GuestFS__1write  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jbyteArray jcontent)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
-  jbyte *content;
+  char *content;
   size_t content_size;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
-  content = (*env)->GetByteArrayElements (env, jcontent, NULL);
+  content = (char *) (*env)->GetByteArrayElements (env, jcontent, NULL);
   content_size = (*env)->GetArrayLength (env, jcontent);
+
   r = guestfs_write (g, path, content, content_size);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
-  (*env)->ReleaseByteArrayElements (env, jcontent, content, 0);
+  (*env)->ReleaseByteArrayElements (env, jcontent, (jbyte *) content, 0);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1pwrite
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jbyteArray jcontent, jlong joffset)
+Java_com_redhat_et_libguestfs_GuestFS__1pwrite  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jbyteArray jcontent, jlong joffset)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
-  jbyte *content;
+  char *content;
   size_t content_size;
   int64_t offset;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
-  content = (*env)->GetByteArrayElements (env, jcontent, NULL);
+  content = (char *) (*env)->GetByteArrayElements (env, jcontent, NULL);
   content_size = (*env)->GetArrayLength (env, jcontent);
   offset = joffset;
+
   r = guestfs_pwrite (g, path, content, content_size, offset);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
-  (*env)->ReleaseByteArrayElements (env, jcontent, content, 0);
+  (*env)->ReleaseByteArrayElements (env, jcontent, (jbyte *) content, 0);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -7875,8 +8619,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1pwrite
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1resize2fs_1size
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jlong jsize)
+Java_com_redhat_et_libguestfs_GuestFS__1resize2fs_1size  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jlong jsize)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7885,17 +8628,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1resize2fs_1size
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   size = jsize;
+
   r = guestfs_resize2fs_size (g, device, size);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1pvresize_1size
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jlong jsize)
+Java_com_redhat_et_libguestfs_GuestFS__1pvresize_1size  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jlong jsize)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7904,17 +8649,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1pvresize_1size
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   size = jsize;
+
   r = guestfs_pvresize_size (g, device, size);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1ntfsresize_1size
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jlong jsize)
+Java_com_redhat_et_libguestfs_GuestFS__1ntfsresize_1size  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jlong jsize)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7923,27 +8670,32 @@ Java_com_redhat_et_libguestfs_GuestFS__1ntfsresize_1size
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   size = jsize;
+
   r = guestfs_ntfsresize_size (g, device, size);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1available_1all_1groups
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1available_1all_1groups  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jobjectArray jr;
-  int r_len;
+  size_t r_len;
   jclass cl;
   jstring jstr;
   char **r;
   size_t i;
 
+
   r = guestfs_available_all_groups (g);
+
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -7962,8 +8714,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1available_1all_1groups
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1fallocate64
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jlong jlen)
+Java_com_redhat_et_libguestfs_GuestFS__1fallocate64  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jlong jlen)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -7972,17 +8723,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1fallocate64
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
   len = jlen;
+
   r = guestfs_fallocate64 (g, path, len);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1vfs_1label
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1vfs_1label  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -7990,8 +8743,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1vfs_1label
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_vfs_label (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -8002,8 +8758,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1vfs_1label
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1vfs_1uuid
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1vfs_1uuid  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -8011,8 +8766,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1vfs_1uuid
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_vfs_uuid (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -8023,51 +8781,54 @@ Java_com_redhat_et_libguestfs_GuestFS__1vfs_1uuid
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lvm_1set_1filter
-  (JNIEnv *env, jobject obj, jlong jg, jobjectArray jdevices)
+Java_com_redhat_et_libguestfs_GuestFS__1lvm_1set_1filter  (JNIEnv *env, jobject obj, jlong jg, jobjectArray jdevices)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
-  int devices_len;
-  const char **devices;
+  size_t devices_len;
+  char **devices;
   size_t i;
 
   devices_len = (*env)->GetArrayLength (env, jdevices);
   devices = guestfs_safe_malloc (g, sizeof (char *) * (devices_len+1));
   for (i = 0; i < devices_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jdevices, i);
-    devices[i] = (*env)->GetStringUTFChars (env, o, NULL);
+    devices[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
   }
   devices[devices_len] = NULL;
+
   r = guestfs_lvm_set_filter (g, devices);
+
   for (i = 0; i < devices_len; ++i) {
     jobject o = (*env)->GetObjectArrayElement (env, jdevices, i);
     (*env)->ReleaseStringUTFChars (env, o, devices[i]);
   }
   free (devices);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lvm_1clear_1filter
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1lvm_1clear_1filter  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
+
 
   r = guestfs_lvm_clear_filter (g);
+
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1luks_1open
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jkey, jstring jmapname)
+Java_com_redhat_et_libguestfs_GuestFS__1luks_1open  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jkey, jstring jmapname)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -8078,19 +8839,21 @@ Java_com_redhat_et_libguestfs_GuestFS__1luks_1open
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   key = (*env)->GetStringUTFChars (env, jkey, NULL);
   mapname = (*env)->GetStringUTFChars (env, jmapname, NULL);
+
   r = guestfs_luks_open (g, device, key, mapname);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jkey, key);
   (*env)->ReleaseStringUTFChars (env, jmapname, mapname);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1luks_1open_1ro
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jkey, jstring jmapname)
+Java_com_redhat_et_libguestfs_GuestFS__1luks_1open_1ro  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jkey, jstring jmapname)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -8101,36 +8864,40 @@ Java_com_redhat_et_libguestfs_GuestFS__1luks_1open_1ro
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   key = (*env)->GetStringUTFChars (env, jkey, NULL);
   mapname = (*env)->GetStringUTFChars (env, jmapname, NULL);
+
   r = guestfs_luks_open_ro (g, device, key, mapname);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jkey, key);
   (*env)->ReleaseStringUTFChars (env, jmapname, mapname);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1luks_1close
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1luks_1close  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_luks_close (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1luks_1format
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jkey, jint jkeyslot)
+Java_com_redhat_et_libguestfs_GuestFS__1luks_1format  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jkey, jint jkeyslot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -8141,18 +8908,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1luks_1format
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   key = (*env)->GetStringUTFChars (env, jkey, NULL);
   keyslot = jkeyslot;
+
   r = guestfs_luks_format (g, device, key, keyslot);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jkey, key);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1luks_1format_1cipher
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jkey, jint jkeyslot, jstring jcipher)
+Java_com_redhat_et_libguestfs_GuestFS__1luks_1format_1cipher  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jkey, jint jkeyslot, jstring jcipher)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -8165,19 +8934,21 @@ Java_com_redhat_et_libguestfs_GuestFS__1luks_1format_1cipher
   key = (*env)->GetStringUTFChars (env, jkey, NULL);
   keyslot = jkeyslot;
   cipher = (*env)->GetStringUTFChars (env, jcipher, NULL);
+
   r = guestfs_luks_format_cipher (g, device, key, keyslot, cipher);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jkey, key);
   (*env)->ReleaseStringUTFChars (env, jcipher, cipher);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1luks_1add_1key
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jkey, jstring jnewkey, jint jkeyslot)
+Java_com_redhat_et_libguestfs_GuestFS__1luks_1add_1key  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jkey, jstring jnewkey, jint jkeyslot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -8190,19 +8961,21 @@ Java_com_redhat_et_libguestfs_GuestFS__1luks_1add_1key
   key = (*env)->GetStringUTFChars (env, jkey, NULL);
   newkey = (*env)->GetStringUTFChars (env, jnewkey, NULL);
   keyslot = jkeyslot;
+
   r = guestfs_luks_add_key (g, device, key, newkey, keyslot);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jkey, key);
   (*env)->ReleaseStringUTFChars (env, jnewkey, newkey);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1luks_1kill_1slot
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jkey, jint jkeyslot)
+Java_com_redhat_et_libguestfs_GuestFS__1luks_1kill_1slot  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jkey, jint jkeyslot)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -8213,26 +8986,31 @@ Java_com_redhat_et_libguestfs_GuestFS__1luks_1kill_1slot
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   key = (*env)->GetStringUTFChars (env, jkey, NULL);
   keyslot = jkeyslot;
+
   r = guestfs_luks_kill_slot (g, device, key, keyslot);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
   (*env)->ReleaseStringUTFChars (env, jkey, key);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1lv
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1lv  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_is_lv (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -8241,8 +9019,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1is_1lv
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1findfs_1uuid
-  (JNIEnv *env, jobject obj, jlong jg, jstring juuid)
+Java_com_redhat_et_libguestfs_GuestFS__1findfs_1uuid  (JNIEnv *env, jobject obj, jlong jg, jstring juuid)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -8250,8 +9027,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1findfs_1uuid
   const char *uuid;
 
   uuid = (*env)->GetStringUTFChars (env, juuid, NULL);
+
   r = guestfs_findfs_uuid (g, uuid);
+
   (*env)->ReleaseStringUTFChars (env, juuid, uuid);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -8262,8 +9042,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1findfs_1uuid
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1findfs_1label
-  (JNIEnv *env, jobject obj, jlong jg, jstring jlabel)
+Java_com_redhat_et_libguestfs_GuestFS__1findfs_1label  (JNIEnv *env, jobject obj, jlong jg, jstring jlabel)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -8271,8 +9050,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1findfs_1label
   const char *label;
 
   label = (*env)->GetStringUTFChars (env, jlabel, NULL);
+
   r = guestfs_findfs_label (g, label);
+
   (*env)->ReleaseStringUTFChars (env, jlabel, label);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -8283,16 +9065,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1findfs_1label
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1chardev
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1chardev  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_is_chardev (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -8301,16 +9085,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1is_1chardev
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1blockdev
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1blockdev  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_is_blockdev (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -8319,16 +9105,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1is_1blockdev
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1fifo
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1fifo  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_is_fifo (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -8337,16 +9125,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1is_1fifo
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1symlink
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1symlink  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_is_symlink (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -8355,16 +9145,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1is_1symlink
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1socket
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1socket  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
   r = guestfs_is_socket (g, path);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -8373,8 +9165,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1is_1socket
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1part_1to_1dev
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpartition)
+Java_com_redhat_et_libguestfs_GuestFS__1part_1to_1dev  (JNIEnv *env, jobject obj, jlong jg, jstring jpartition)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -8382,8 +9173,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1to_1dev
   const char *partition;
 
   partition = (*env)->GetStringUTFChars (env, jpartition, NULL);
+
   r = guestfs_part_to_dev (g, partition);
+
   (*env)->ReleaseStringUTFChars (env, jpartition, partition);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -8394,8 +9188,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1to_1dev
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1upload_1offset
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jstring jremotefilename, jlong joffset)
+Java_com_redhat_et_libguestfs_GuestFS__1upload_1offset  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jstring jremotefilename, jlong joffset)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -8406,18 +9199,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1upload_1offset
   filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
   remotefilename = (*env)->GetStringUTFChars (env, jremotefilename, NULL);
   offset = joffset;
+
   r = guestfs_upload_offset (g, filename, remotefilename, offset);
+
   (*env)->ReleaseStringUTFChars (env, jfilename, filename);
   (*env)->ReleaseStringUTFChars (env, jremotefilename, remotefilename);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1download_1offset
-  (JNIEnv *env, jobject obj, jlong jg, jstring jremotefilename, jstring jfilename, jlong joffset, jlong jsize)
+Java_com_redhat_et_libguestfs_GuestFS__1download_1offset  (JNIEnv *env, jobject obj, jlong jg, jstring jremotefilename, jstring jfilename, jlong joffset, jlong jsize)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -8430,33 +9225,38 @@ Java_com_redhat_et_libguestfs_GuestFS__1download_1offset
   filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
   offset = joffset;
   size = jsize;
+
   r = guestfs_download_offset (g, remotefilename, filename, offset, size);
+
   (*env)->ReleaseStringUTFChars (env, jremotefilename, remotefilename);
   (*env)->ReleaseStringUTFChars (env, jfilename, filename);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1pwrite_1device
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jbyteArray jcontent, jlong joffset)
+Java_com_redhat_et_libguestfs_GuestFS__1pwrite_1device  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jbyteArray jcontent, jlong joffset)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
-  jbyte *content;
+  char *content;
   size_t content_size;
   int64_t offset;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
-  content = (*env)->GetByteArrayElements (env, jcontent, NULL);
+  content = (char *) (*env)->GetByteArrayElements (env, jcontent, NULL);
   content_size = (*env)->GetArrayLength (env, jcontent);
   offset = joffset;
+
   r = guestfs_pwrite_device (g, device, content, content_size, offset);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
-  (*env)->ReleaseByteArrayElements (env, jcontent, content, 0);
+  (*env)->ReleaseByteArrayElements (env, jcontent, (jbyte *) content, 0);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
@@ -8465,8 +9265,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1pwrite_1device
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1pread_1device
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jcount, jlong joffset)
+Java_com_redhat_et_libguestfs_GuestFS__1pread_1device  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jint jcount, jlong joffset)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -8479,8 +9278,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1pread_1device
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
   count = jcount;
   offset = joffset;
+
   r = guestfs_pread_device (g, device, count, offset, &size);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -8491,8 +9293,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1pread_1device
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lvm_1canonical_1lv_1name
-  (JNIEnv *env, jobject obj, jlong jg, jstring jlvname)
+Java_com_redhat_et_libguestfs_GuestFS__1lvm_1canonical_1lv_1name  (JNIEnv *env, jobject obj, jlong jg, jstring jlvname)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -8500,8 +9301,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1lvm_1canonical_1lv_1name
   const char *lvname;
 
   lvname = (*env)->GetStringUTFChars (env, jlvname, NULL);
+
   r = guestfs_lvm_canonical_lv_name (g, lvname);
+
   (*env)->ReleaseStringUTFChars (env, jlvname, lvname);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -8512,32 +9316,37 @@ Java_com_redhat_et_libguestfs_GuestFS__1lvm_1canonical_1lv_1name
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mkfs_1opts
-  (JNIEnv *env, jobject obj, jlong jg, jstring jfstype, jstring jdevice, jobject joptargs)
+Java_com_redhat_et_libguestfs_GuestFS__1mkfs_1opts  (JNIEnv *env, jobject obj, jlong jg, jstring jfstype, jstring jdevice, jlong joptargs_bitmask, jint jblocksize, jstring jfeatures, jint jinode, jint jsectorsize)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *fstype;
   const char *device;
+  struct guestfs_mkfs_opts_argv optargs_s;
+  const struct guestfs_mkfs_opts_argv *optargs = &optargs_s;
 
   fstype = (*env)->GetStringUTFChars (env, jfstype, NULL);
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
-  throw_exception (env, "mkfs_opts: internal error: please let us know how to read a Java HashMap parameter from JNI bindings!");
-  return NULL;
-  /*
+  optargs_s.bitmask = joptargs_bitmask;
+  optargs_s.blocksize = jblocksize;
+  optargs_s.features = (*env)->GetStringUTFChars (env, jfeatures, NULL);
+  optargs_s.inode = jinode;
+  optargs_s.sectorsize = jsectorsize;
+
   r = guestfs_mkfs_opts_argv (g, fstype, device, optargs);
+
   (*env)->ReleaseStringUTFChars (env, jfstype, fstype);
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+  (*env)->ReleaseStringUTFChars (env, jfeatures, optargs_s.features);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
-  */
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1getxattr
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jstring jname)
+Java_com_redhat_et_libguestfs_GuestFS__1getxattr  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jstring jname)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -8548,9 +9357,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1getxattr
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
   name = (*env)->GetStringUTFChars (env, jname, NULL);
+
   r = guestfs_getxattr (g, path, name, &size);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
   (*env)->ReleaseStringUTFChars (env, jname, name);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -8561,8 +9373,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1getxattr
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1lgetxattr
-  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jstring jname)
+Java_com_redhat_et_libguestfs_GuestFS__1lgetxattr  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jstring jname)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
@@ -8573,9 +9384,12 @@ Java_com_redhat_et_libguestfs_GuestFS__1lgetxattr
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
   name = (*env)->GetStringUTFChars (env, jname, NULL);
+
   r = guestfs_lgetxattr (g, path, name, &size);
+
   (*env)->ReleaseStringUTFChars (env, jpath, path);
   (*env)->ReleaseStringUTFChars (env, jname, name);
+
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
     return NULL;
@@ -8586,33 +9400,239 @@ Java_com_redhat_et_libguestfs_GuestFS__1lgetxattr
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1resize2fs_1M
-  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1resize2fs_1M  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *device;
 
   device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
   r = guestfs_resize2fs_M (g, device);
+
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
-    return -1;
+    return;
   }
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1internal_1autosync
-  (JNIEnv *env, jobject obj, jlong jg)
+Java_com_redhat_et_libguestfs_GuestFS__1internal_1autosync  (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
 
+
   r = guestfs_internal_autosync (g);
+
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1is_1zero  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *path;
+
+  path = (*env)->GetStringUTFChars (env, jpath, NULL);
+
+  r = guestfs_is_zero (g, path);
+
+  (*env)->ReleaseStringUTFChars (env, jpath, path);
+
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
     return -1;
+  }
+  return (jboolean) r;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1is_1zero_1device  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *device;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+
+  r = guestfs_is_zero_device (g, device);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return -1;
+  }
+  return (jboolean) r;
+}
+
+JNIEXPORT jobjectArray JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1list_19p  (JNIEnv *env, jobject obj, jlong jg)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jobjectArray jr;
+  size_t r_len;
+  jclass cl;
+  jstring jstr;
+  char **r;
+  size_t i;
+
+
+  r = guestfs_list_9p (g);
+
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    return NULL;
+  }
+  for (r_len = 0; r[r_len] != NULL; ++r_len) ;
+  cl = (*env)->FindClass (env, "java/lang/String");
+  jstr = (*env)->NewStringUTF (env, "");
+  jr = (*env)->NewObjectArray (env, r_len, cl, jstr);
+  for (i = 0; i < r_len; ++i) {
+    jstr = (*env)->NewStringUTF (env, r[i]);
+    (*env)->SetObjectArrayElement (env, jr, i, jstr);
+    free (r[i]);
+  }
+  free (r);
+  return jr;
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1mount_19p  (JNIEnv *env, jobject obj, jlong jg, jstring jmounttag, jstring jmountpoint, jlong joptargs_bitmask, jstring joptions)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *mounttag;
+  const char *mountpoint;
+  struct guestfs_mount_9p_argv optargs_s;
+  const struct guestfs_mount_9p_argv *optargs = &optargs_s;
+
+  mounttag = (*env)->GetStringUTFChars (env, jmounttag, NULL);
+  mountpoint = (*env)->GetStringUTFChars (env, jmountpoint, NULL);
+  optargs_s.bitmask = joptargs_bitmask;
+  optargs_s.options = (*env)->GetStringUTFChars (env, joptions, NULL);
+
+  r = guestfs_mount_9p_argv (g, mounttag, mountpoint, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jmounttag, mounttag);
+  (*env)->ReleaseStringUTFChars (env, jmountpoint, mountpoint);
+  (*env)->ReleaseStringUTFChars (env, joptions, optargs_s.options);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT jobjectArray JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1list_1dm_1devices  (JNIEnv *env, jobject obj, jlong jg)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jobjectArray jr;
+  size_t r_len;
+  jclass cl;
+  jstring jstr;
+  char **r;
+  size_t i;
+
+
+  r = guestfs_list_dm_devices (g);
+
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    return NULL;
+  }
+  for (r_len = 0; r[r_len] != NULL; ++r_len) ;
+  cl = (*env)->FindClass (env, "java/lang/String");
+  jstr = (*env)->NewStringUTF (env, "");
+  jr = (*env)->NewObjectArray (env, r_len, cl, jstr);
+  for (i = 0; i < r_len; ++i) {
+    jstr = (*env)->NewStringUTF (env, r[i]);
+    (*env)->SetObjectArrayElement (env, jr, i, jstr);
+    free (r[i]);
+  }
+  free (r);
+  return jr;
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1ntfsresize_1opts  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jlong joptargs_bitmask, jlong jsize, jboolean jforce)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *device;
+  struct guestfs_ntfsresize_opts_argv optargs_s;
+  const struct guestfs_ntfsresize_opts_argv *optargs = &optargs_s;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  optargs_s.bitmask = joptargs_bitmask;
+  optargs_s.size = jsize;
+  optargs_s.force = jforce;
+
+  r = guestfs_ntfsresize_opts_argv (g, device, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1filesystem_1resize  (JNIEnv *env, jobject obj, jlong jg, jstring jmountpoint, jlong joptargs_bitmask, jlong jsize)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *mountpoint;
+  struct guestfs_btrfs_filesystem_resize_argv optargs_s;
+  const struct guestfs_btrfs_filesystem_resize_argv *optargs = &optargs_s;
+
+  mountpoint = (*env)->GetStringUTFChars (env, jmountpoint, NULL);
+  optargs_s.bitmask = joptargs_bitmask;
+  optargs_s.size = jsize;
+
+  r = guestfs_btrfs_filesystem_resize_argv (g, mountpoint, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jmountpoint, mountpoint);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1write_1append  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jbyteArray jcontent)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *path;
+  char *content;
+  size_t content_size;
+
+  path = (*env)->GetStringUTFChars (env, jpath, NULL);
+  content = (char *) (*env)->GetByteArrayElements (env, jcontent, NULL);
+  content_size = (*env)->GetArrayLength (env, jcontent);
+
+  r = guestfs_write_append (g, path, content, content_size);
+
+  (*env)->ReleaseStringUTFChars (env, jpath, path);
+  (*env)->ReleaseByteArrayElements (env, jcontent, (jbyte *) content, 0);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
   }
 }
 

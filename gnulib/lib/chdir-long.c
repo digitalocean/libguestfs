@@ -1,5 +1,5 @@
 /* provide a chdir function that tries not to fail due to ENAMETOOLONG
-   Copyright (C) 2004-2010 Free Software Foundation, Inc.
+   Copyright (C) 2004-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ static int
 cdb_advance_fd (struct cd_buf *cdb, char const *dir)
 {
   int new_fd = openat (cdb->fd, dir,
-                       O_RDONLY | O_DIRECTORY | O_NOCTTY | O_NONBLOCK);
+                       O_SEARCH | O_DIRECTORY | O_NOCTTY | O_NONBLOCK);
   if (new_fd < 0)
     return -1;
 

@@ -1,3 +1,4 @@
+=encoding utf8
 
 =over 4
 
@@ -8,6 +9,10 @@ L</guestfs_aug_defnode> L</guestfs_aug_defvar> L</guestfs_aug_get>
 L</guestfs_aug_init> L</guestfs_aug_insert> L</guestfs_aug_load>
 L</guestfs_aug_ls> L</guestfs_aug_match> L</guestfs_aug_mv>
 L</guestfs_aug_rm> L</guestfs_aug_save> L</guestfs_aug_set>
+
+=item B<btrfs>
+
+The following functions: L</guestfs_btrfs_filesystem_resize>
 
 =item B<inotify>
 
@@ -59,7 +64,8 @@ The following functions: L</guestfs_ntfs_3g_probe>
 
 =item B<ntfsprogs>
 
-The following functions: L</guestfs_ntfsresize> L</guestfs_ntfsresize_size>
+The following functions: L</guestfs_ntfsresize> L</guestfs_ntfsresize_opts>
+L</guestfs_ntfsresize_size>
 
 =item B<realpath>
 

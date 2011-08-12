@@ -89,8 +89,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0: handle is closed");
+
     _test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin);
   }
+
   private native void _test0 (long g, String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout, byte[] bufferin)
     throws LibGuestFSException;
 
@@ -99,8 +101,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rint: handle is closed");
+
     return _test0rint (g, val);
   }
+
   private native int _test0rint (long g, String val)
     throws LibGuestFSException;
 
@@ -109,8 +113,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rinterr: handle is closed");
+
     return _test0rinterr (g);
   }
+
   private native int _test0rinterr (long g)
     throws LibGuestFSException;
 
@@ -119,8 +125,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rint64: handle is closed");
+
     return _test0rint64 (g, val);
   }
+
   private native long _test0rint64 (long g, String val)
     throws LibGuestFSException;
 
@@ -129,8 +137,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rint64err: handle is closed");
+
     return _test0rint64err (g);
   }
+
   private native long _test0rint64err (long g)
     throws LibGuestFSException;
 
@@ -139,8 +149,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rbool: handle is closed");
+
     return _test0rbool (g, val);
   }
+
   private native boolean _test0rbool (long g, String val)
     throws LibGuestFSException;
 
@@ -149,8 +161,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rboolerr: handle is closed");
+
     return _test0rboolerr (g);
   }
+
   private native boolean _test0rboolerr (long g)
     throws LibGuestFSException;
 
@@ -159,8 +173,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rconststring: handle is closed");
+
     return _test0rconststring (g, val);
   }
+
   private native String _test0rconststring (long g, String val)
     throws LibGuestFSException;
 
@@ -169,8 +185,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rconststringerr: handle is closed");
+
     return _test0rconststringerr (g);
   }
+
   private native String _test0rconststringerr (long g)
     throws LibGuestFSException;
 
@@ -179,8 +197,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rconstoptstring: handle is closed");
+
     return _test0rconstoptstring (g, val);
   }
+
   private native String _test0rconstoptstring (long g, String val)
     throws LibGuestFSException;
 
@@ -189,8 +209,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rconstoptstringerr: handle is closed");
+
     return _test0rconstoptstringerr (g);
   }
+
   private native String _test0rconstoptstringerr (long g)
     throws LibGuestFSException;
 
@@ -199,8 +221,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rstring: handle is closed");
+
     return _test0rstring (g, val);
   }
+
   private native String _test0rstring (long g, String val)
     throws LibGuestFSException;
 
@@ -209,8 +233,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rstringerr: handle is closed");
+
     return _test0rstringerr (g);
   }
+
   private native String _test0rstringerr (long g)
     throws LibGuestFSException;
 
@@ -219,8 +245,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rstringlist: handle is closed");
+
     return _test0rstringlist (g, val);
   }
+
   private native String[] _test0rstringlist (long g, String val)
     throws LibGuestFSException;
 
@@ -229,8 +257,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rstringlisterr: handle is closed");
+
     return _test0rstringlisterr (g);
   }
+
   private native String[] _test0rstringlisterr (long g)
     throws LibGuestFSException;
 
@@ -239,8 +269,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rstruct: handle is closed");
+
     return _test0rstruct (g, val);
   }
+
   private native PV _test0rstruct (long g, String val)
     throws LibGuestFSException;
 
@@ -249,8 +281,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rstructerr: handle is closed");
+
     return _test0rstructerr (g);
   }
+
   private native PV _test0rstructerr (long g)
     throws LibGuestFSException;
 
@@ -259,8 +293,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rstructlist: handle is closed");
+
     return _test0rstructlist (g, val);
   }
+
   private native PV[] _test0rstructlist (long g, String val)
     throws LibGuestFSException;
 
@@ -269,8 +305,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rstructlisterr: handle is closed");
+
     return _test0rstructlisterr (g);
   }
+
   private native PV[] _test0rstructlisterr (long g)
     throws LibGuestFSException;
 
@@ -279,6 +317,7 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rhashtable: handle is closed");
+
     String[] r = _test0rhashtable (g, val);
 
     HashMap rhash = new HashMap ();
@@ -286,6 +325,7 @@ public class GuestFS {
       rhash.put (r[i], r[i+1]);
     return rhash;
   }
+
   private native String[] _test0rhashtable (long g, String val)
     throws LibGuestFSException;
 
@@ -294,6 +334,7 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("test0rhashtableerr: handle is closed");
+
     String[] r = _test0rhashtableerr (g);
 
     HashMap rhash = new HashMap ();
@@ -301,6 +342,7 @@ public class GuestFS {
       rhash.put (r[i], r[i+1]);
     return rhash;
   }
+
   private native String[] _test0rhashtableerr (long g)
     throws LibGuestFSException;
 
@@ -320,8 +362,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("launch: handle is closed");
+
     _launch (g);
   }
+
   private native void _launch (long g)
     throws LibGuestFSException;
 
@@ -353,8 +397,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("wait_ready: handle is closed");
+
     _wait_ready (g);
   }
+
   private native void _wait_ready (long g)
     throws LibGuestFSException;
 
@@ -371,8 +417,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("kill_subprocess: handle is closed");
+
     _kill_subprocess (g);
   }
+
   private native void _kill_subprocess (long g)
     throws LibGuestFSException;
 
@@ -399,8 +447,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("add_drive: handle is closed");
+
     _add_drive (g, filename);
   }
+
   private native void _add_drive (long g, String filename)
     throws LibGuestFSException;
 
@@ -440,8 +490,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("add_cdrom: handle is closed");
+
     _add_cdrom (g, filename);
   }
+
   private native void _add_cdrom (long g, String filename)
     throws LibGuestFSException;
 
@@ -461,8 +513,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("add_drive_ro: handle is closed");
+
     _add_drive_ro (g, filename);
   }
+
   private native void _add_drive_ro (long g, String filename)
     throws LibGuestFSException;
 
@@ -487,8 +541,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("config: handle is closed");
+
     _config (g, qemuparam, qemuvalue);
   }
+
   private native void _config (long g, String qemuparam, String qemuvalue)
     throws LibGuestFSException;
 
@@ -522,8 +578,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("set_qemu: handle is closed");
+
     _set_qemu (g, qemu);
   }
+
   private native void _set_qemu (long g, String qemu)
     throws LibGuestFSException;
 
@@ -542,8 +600,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("get_qemu: handle is closed");
+
     return _get_qemu (g);
   }
+
   private native String _get_qemu (long g)
     throws LibGuestFSException;
 
@@ -565,8 +625,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("set_path: handle is closed");
+
     _set_path (g, searchpath);
   }
+
   private native void _set_path (long g, String searchpath)
     throws LibGuestFSException;
 
@@ -585,8 +647,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("get_path: handle is closed");
+
     return _get_path (g);
   }
+
   private native String _get_path (long g)
     throws LibGuestFSException;
 
@@ -609,8 +673,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("set_append: handle is closed");
+
     _set_append (g, append);
   }
+
   private native void _set_append (long g, String append)
     throws LibGuestFSException;
 
@@ -629,8 +695,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("get_append: handle is closed");
+
     return _get_append (g);
   }
+
   private native String _get_append (long g)
     throws LibGuestFSException;
 
@@ -652,8 +720,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("set_autosync: handle is closed");
+
     _set_autosync (g, autosync);
   }
+
   private native void _set_autosync (long g, boolean autosync)
     throws LibGuestFSException;
 
@@ -669,8 +739,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("get_autosync: handle is closed");
+
     return _get_autosync (g);
   }
+
   private native boolean _get_autosync (long g)
     throws LibGuestFSException;
 
@@ -693,8 +765,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("set_verbose: handle is closed");
+
     _set_verbose (g, verbose);
   }
+
   private native void _set_verbose (long g, boolean verbose)
     throws LibGuestFSException;
 
@@ -710,8 +784,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("get_verbose: handle is closed");
+
     return _get_verbose (g);
   }
+
   private native boolean _get_verbose (long g)
     throws LibGuestFSException;
 
@@ -730,8 +806,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("is_ready: handle is closed");
+
     return _is_ready (g);
   }
+
   private native boolean _is_ready (long g)
     throws LibGuestFSException;
 
@@ -750,8 +828,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("is_config: handle is closed");
+
     return _is_config (g);
   }
+
   private native boolean _is_config (long g)
     throws LibGuestFSException;
 
@@ -770,8 +850,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("is_launching: handle is closed");
+
     return _is_launching (g);
   }
+
   private native boolean _is_launching (long g)
     throws LibGuestFSException;
 
@@ -790,8 +872,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("is_busy: handle is closed");
+
     return _is_busy (g);
   }
+
   private native boolean _is_busy (long g)
     throws LibGuestFSException;
 
@@ -811,8 +895,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("get_state: handle is closed");
+
     return _get_state (g);
   }
+
   private native int _get_state (long g)
     throws LibGuestFSException;
 
@@ -837,8 +923,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("set_memsize: handle is closed");
+
     _set_memsize (g, memsize);
   }
+
   private native void _set_memsize (long g, int memsize)
     throws LibGuestFSException;
 
@@ -862,8 +950,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("get_memsize: handle is closed");
+
     return _get_memsize (g);
   }
+
   private native int _get_memsize (long g)
     throws LibGuestFSException;
 
@@ -882,8 +972,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("get_pid: handle is closed");
+
     return _get_pid (g);
   }
+
   private native int _get_pid (long g)
     throws LibGuestFSException;
 
@@ -929,8 +1021,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("version: handle is closed");
+
     return _version (g);
   }
+
   private native Version _version (long g)
     throws LibGuestFSException;
 
@@ -954,8 +1048,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("set_selinux: handle is closed");
+
     _set_selinux (g, selinux);
   }
+
   private native void _set_selinux (long g, boolean selinux)
     throws LibGuestFSException;
 
@@ -976,8 +1072,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("get_selinux: handle is closed");
+
     return _get_selinux (g);
   }
+
   private native boolean _get_selinux (long g)
     throws LibGuestFSException;
 
@@ -1005,8 +1103,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("set_trace: handle is closed");
+
     _set_trace (g, trace);
   }
+
   private native void _set_trace (long g, boolean trace)
     throws LibGuestFSException;
 
@@ -1022,8 +1122,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("get_trace: handle is closed");
+
     return _get_trace (g);
   }
+
   private native boolean _get_trace (long g)
     throws LibGuestFSException;
 
@@ -1050,8 +1152,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("set_direct: handle is closed");
+
     _set_direct (g, direct);
   }
+
   private native void _set_direct (long g, boolean direct)
     throws LibGuestFSException;
 
@@ -1067,8 +1171,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("get_direct: handle is closed");
+
     return _get_direct (g);
   }
+
   private native boolean _get_direct (long g)
     throws LibGuestFSException;
 
@@ -1098,8 +1204,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("set_recovery_proc: handle is closed");
+
     _set_recovery_proc (g, recoveryproc);
   }
+
   private native void _set_recovery_proc (long g, boolean recoveryproc)
     throws LibGuestFSException;
 
@@ -1115,8 +1223,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("get_recovery_proc: handle is closed");
+
     return _get_recovery_proc (g);
   }
+
   private native boolean _get_recovery_proc (long g)
     throws LibGuestFSException;
 
@@ -1140,8 +1250,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("add_drive_with_if: handle is closed");
+
     _add_drive_with_if (g, filename, iface);
   }
+
   private native void _add_drive_with_if (long g, String filename, String iface)
     throws LibGuestFSException;
 
@@ -1166,8 +1278,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("add_drive_ro_with_if: handle is closed");
+
     _add_drive_ro_with_if (g, filename, iface);
   }
+
   private native void _add_drive_ro_with_if (long g, String filename, String iface)
     throws LibGuestFSException;
 
@@ -1248,8 +1362,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("file_architecture: handle is closed");
+
     return _file_architecture (g, filename);
   }
+
   private native String _file_architecture (long g, String filename)
     throws LibGuestFSException;
 
@@ -1299,16 +1415,15 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_os: handle is closed");
+
     return _inspect_os (g);
   }
+
   private native String[] _inspect_os (long g)
     throws LibGuestFSException;
 
   /**
    * get type of inspected operating system
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * This returns the type of the inspected operating system.
    * Currently defined types are:
@@ -1338,16 +1453,15 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_get_type: handle is closed");
+
     return _inspect_get_type (g, root);
   }
+
   private native String _inspect_get_type (long g, String root)
     throws LibGuestFSException;
 
   /**
    * get architecture of inspected operating system
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * This returns the architecture of the inspected operating
    * system. The possible return values are listed under
@@ -1365,16 +1479,15 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_get_arch: handle is closed");
+
     return _inspect_get_arch (g, root);
   }
+
   private native String _inspect_get_arch (long g, String root)
     throws LibGuestFSException;
 
   /**
    * get distro of inspected operating system
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * This returns the distro (distribution) of the inspected
    * operating system.
@@ -1443,16 +1556,15 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_get_distro: handle is closed");
+
     return _inspect_get_distro (g, root);
   }
+
   private native String _inspect_get_distro (long g, String root)
     throws LibGuestFSException;
 
   /**
    * get major version of inspected operating system
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * This returns the major version number of the inspected
    * operating system.
@@ -1476,16 +1588,15 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_get_major_version: handle is closed");
+
     return _inspect_get_major_version (g, root);
   }
+
   private native int _inspect_get_major_version (long g, String root)
     throws LibGuestFSException;
 
   /**
    * get minor version of inspected operating system
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * This returns the minor version number of the inspected
    * operating system.
@@ -1503,16 +1614,15 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_get_minor_version: handle is closed");
+
     return _inspect_get_minor_version (g, root);
   }
+
   private native int _inspect_get_minor_version (long g, String root)
     throws LibGuestFSException;
 
   /**
    * get product name of inspected operating system
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * This returns the product name of the inspected operating
    * system. The product name is generally some freeform
@@ -1531,16 +1641,15 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_get_product_name: handle is closed");
+
     return _inspect_get_product_name (g, root);
   }
+
   private native String _inspect_get_product_name (long g, String root)
     throws LibGuestFSException;
 
   /**
    * get mountpoints of inspected operating system
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * This returns a hash of where we think the filesystems
    * associated with this operating system should be mounted.
@@ -1575,6 +1684,7 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_get_mountpoints: handle is closed");
+
     String[] r = _inspect_get_mountpoints (g, root);
 
     HashMap rhash = new HashMap ();
@@ -1582,14 +1692,12 @@ public class GuestFS {
       rhash.put (r[i], r[i+1]);
     return rhash;
   }
+
   private native String[] _inspect_get_mountpoints (long g, String root)
     throws LibGuestFSException;
 
   /**
    * get filesystems associated with inspected operating system
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * This returns a list of all the filesystems that we think
    * are associated with this operating system. This includes
@@ -1610,8 +1718,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_get_filesystems: handle is closed");
+
     return _inspect_get_filesystems (g, root);
   }
+
   private native String[] _inspect_get_filesystems (long g, String root)
     throws LibGuestFSException;
 
@@ -1634,8 +1744,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("set_network: handle is closed");
+
     _set_network (g, network);
   }
+
   private native void _set_network (long g, boolean network)
     throws LibGuestFSException;
 
@@ -1651,8 +1763,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("get_network: handle is closed");
+
     return _get_network (g);
   }
+
   private native boolean _get_network (long g)
     throws LibGuestFSException;
 
@@ -1696,6 +1810,7 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("list_filesystems: handle is closed");
+
     String[] r = _list_filesystems (g);
 
     HashMap rhash = new HashMap ();
@@ -1703,6 +1818,7 @@ public class GuestFS {
       rhash.put (r[i], r[i+1]);
     return rhash;
   }
+
   private native String[] _list_filesystems (long g)
     throws LibGuestFSException;
 
@@ -1751,25 +1867,52 @@ public class GuestFS {
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
-   * empty Map for no optional arguments.
+   * empty Map or null for no optional arguments.
    * <p>
    * @throws LibGuestFSException
    */
-  public void add_drive_opts (String filename, HashMap optargs)
+  public void add_drive_opts (String filename, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("add_drive_opts: handle is closed");
-    _add_drive_opts (g, filename, optargs);
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean readonly = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("readonly");
+    if (_optobj != null) {
+      readonly = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1;
+    }
+    String format = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("format");
+    if (_optobj != null) {
+      format = ((String) _optobj);
+      _optargs_bitmask |= 2;
+    }
+    String iface = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("iface");
+    if (_optobj != null) {
+      iface = ((String) _optobj);
+      _optargs_bitmask |= 4;
+    }
+
+    _add_drive_opts (g, filename, _optargs_bitmask, readonly, format, iface);
   }
-  private native void _add_drive_opts (long g, String filename, HashMap optargs)
+
+  private native void _add_drive_opts (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface)
     throws LibGuestFSException;
 
   /**
    * get Windows systemroot of inspected operating system
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * This returns the Windows systemroot of the inspected
    * guest. The systemroot is a directory path such as
@@ -1788,8 +1931,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_get_windows_systemroot: handle is closed");
+
     return _inspect_get_windows_systemroot (g, root);
   }
+
   private native String _inspect_get_windows_systemroot (long g, String root)
     throws LibGuestFSException;
 
@@ -1813,8 +1958,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_get_roots: handle is closed");
+
     return _inspect_get_roots (g);
   }
+
   private native String[] _inspect_get_roots (long g)
     throws LibGuestFSException;
 
@@ -1823,8 +1970,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("debug_cmdline: handle is closed");
+
     return _debug_cmdline (g);
   }
+
   private native String[] _debug_cmdline (long g)
     throws LibGuestFSException;
 
@@ -1865,31 +2014,80 @@ public class GuestFS {
    * omitted) is never to try. See "ATTACHING TO RUNNING
    * DAEMONS" in guestfs(3) for more information.
    * <p>
+   * If the "allowuuid" flag is true (default is false) then
+   * a UUID *may* be passed instead of the domain name. The
+   * "dom" string is treated as a UUID first and looked up,
+   * and if that lookup fails then we treat "dom" as a name
+   * as usual.
+   * <p>
    * The other optional parameters are passed directly
    * through to "g.add_drive_opts".
    * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
-   * empty Map for no optional arguments.
+   * empty Map or null for no optional arguments.
    * <p>
    * @throws LibGuestFSException
    */
-  public int add_domain (String dom, HashMap optargs)
+  public int add_domain (String dom, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("add_domain: handle is closed");
-    return _add_domain (g, dom, optargs);
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    String libvirturi = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("libvirturi");
+    if (_optobj != null) {
+      libvirturi = ((String) _optobj);
+      _optargs_bitmask |= 1;
+    }
+    boolean readonly = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("readonly");
+    if (_optobj != null) {
+      readonly = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2;
+    }
+    String iface = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("iface");
+    if (_optobj != null) {
+      iface = ((String) _optobj);
+      _optargs_bitmask |= 4;
+    }
+    boolean live = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("live");
+    if (_optobj != null) {
+      live = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8;
+    }
+    boolean allowuuid = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("allowuuid");
+    if (_optobj != null) {
+      allowuuid = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 16;
+    }
+
+    return _add_domain (g, dom, _optargs_bitmask, libvirturi, readonly, iface, live, allowuuid);
   }
-  private native int _add_domain (long g, String dom, HashMap optargs)
+
+  private native int _add_domain (long g, String dom, long _optargs_bitmask, String libvirturi, boolean readonly, String iface, boolean live, boolean allowuuid)
     throws LibGuestFSException;
 
   /**
    * get package format used by the operating system
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * This function and "g.inspect_get_package_management"
    * return the package format and package management tool
@@ -1915,16 +2113,15 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_get_package_format: handle is closed");
+
     return _inspect_get_package_format (g, root);
   }
+
   private native String _inspect_get_package_format (long g, String root)
     throws LibGuestFSException;
 
   /**
    * get package management tool used by the operating system
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * "g.inspect_get_package_format" and this function return
    * the package format and package management tool used by
@@ -1951,16 +2148,15 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_get_package_management: handle is closed");
+
     return _inspect_get_package_management (g, root);
   }
+
   private native String _inspect_get_package_management (long g, String root)
     throws LibGuestFSException;
 
   /**
    * get list of applications installed in the operating system
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * Return the list of applications installed in the
    * operating system.
@@ -2056,16 +2252,15 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_list_applications: handle is closed");
+
     return _inspect_list_applications (g, root);
   }
+
   private native Application[] _inspect_list_applications (long g, String root)
     throws LibGuestFSException;
 
   /**
    * get hostname of the operating system
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * This function returns the hostname of the operating
    * system as found by inspection of the guest's
@@ -2083,16 +2278,15 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_get_hostname: handle is closed");
+
     return _inspect_get_hostname (g, root);
   }
+
   private native String _inspect_get_hostname (long g, String root)
     throws LibGuestFSException;
 
   /**
    * get format of inspected operating system
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * This returns the format of the inspected operating
    * system. You can use it to detect install images, live
@@ -2124,16 +2318,15 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_get_format: handle is closed");
+
     return _inspect_get_format (g, root);
   }
+
   private native String _inspect_get_format (long g, String root)
     throws LibGuestFSException;
 
   /**
    * get live flag for install disk
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * If "g.inspect_get_format" returns "installer" (this is
    * an install disk), then this returns true if a live image
@@ -2148,16 +2341,15 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_is_live: handle is closed");
+
     return _inspect_is_live (g, root);
   }
+
   private native boolean _inspect_is_live (long g, String root)
     throws LibGuestFSException;
 
   /**
    * get netinst (network installer) flag for install disk
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * If "g.inspect_get_format" returns "installer" (this is
    * an install disk), then this returns true if the disk is
@@ -2174,16 +2366,15 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_is_netinst: handle is closed");
+
     return _inspect_is_netinst (g, root);
   }
+
   private native boolean _inspect_is_netinst (long g, String root)
     throws LibGuestFSException;
 
   /**
    * get multipart flag for install disk
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * If "g.inspect_get_format" returns "installer" (this is
    * an install disk), then this returns true if the disk is
@@ -2198,8 +2389,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_is_multipart: handle is closed");
+
     return _inspect_is_multipart (g, root);
   }
+
   private native boolean _inspect_is_multipart (long g, String root)
     throws LibGuestFSException;
 
@@ -2228,8 +2421,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("set_attach_method: handle is closed");
+
     _set_attach_method (g, attachmethod);
   }
+
   private native void _set_attach_method (long g, String attachmethod)
     throws LibGuestFSException;
 
@@ -2246,16 +2441,15 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("get_attach_method: handle is closed");
+
     return _get_attach_method (g);
   }
+
   private native String _get_attach_method (long g)
     throws LibGuestFSException;
 
   /**
    * get product variant of inspected operating system
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * This returns the product variant of the inspected
    * operating system.
@@ -2288,16 +2482,15 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_get_product_variant: handle is closed");
+
     return _inspect_get_product_variant (g, root);
   }
+
   private native String _inspect_get_product_variant (long g, String root)
     throws LibGuestFSException;
 
   /**
    * get Windows CurrentControlSet of inspected operating system
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * This returns the Windows CurrentControlSet of the
    * inspected guest. The CurrentControlSet is a registry key
@@ -2316,16 +2509,15 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_get_windows_current_control_set: handle is closed");
+
     return _inspect_get_windows_current_control_set (g, root);
   }
+
   private native String _inspect_get_windows_current_control_set (long g, String root)
     throws LibGuestFSException;
 
   /**
    * get drive letter mappings
-   * <p>
-   * This function should only be called with a root device
-   * string as returned by "g.inspect_os".
    * <p>
    * This call is useful for Windows which uses a primitive
    * system of assigning drive letters (like "C:") to
@@ -2367,6 +2559,7 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inspect_get_drive_mappings: handle is closed");
+
     String[] r = _inspect_get_drive_mappings (g, root);
 
     HashMap rhash = new HashMap ();
@@ -2374,7 +2567,148 @@ public class GuestFS {
       rhash.put (r[i], r[i+1]);
     return rhash;
   }
+
   private native String[] _inspect_get_drive_mappings (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get the icon corresponding to this operating system
+   * <p>
+   * This function returns an icon corresponding to the
+   * inspected operating system. The icon is returned as a
+   * buffer containing a PNG image (re-encoded to PNG if
+   * necessary).
+   * <p>
+   * If it was not possible to get an icon this function
+   * returns a zero-length (non-NULL) buffer. *Callers must
+   * check for this case*.
+   * <p>
+   * Libguestfs will start by looking for a file called
+   * "/etc/favicon.png" or "C:\etc\favicon.png" and if it has
+   * the correct format, the contents of this file will be
+   * returned. You can disable favicons by passing the
+   * optional "favicon" boolean as false (default is true).
+   * <p>
+   * If finding the favicon fails, then we look in other
+   * places in the guest for a suitable icon.
+   * <p>
+   * If the optional "highquality" boolean is true then only
+   * high quality icons are returned, which means only icons
+   * of high resolution with an alpha channel. The default
+   * (false) is to return any icon we can, even if it is of
+   * substandard quality.
+   * <p>
+   * Notes:
+   * <p>
+   * *   Unlike most other inspection API calls, the guest's
+   * disks must be mounted up before you call this, since
+   * it needs to read information from the guest
+   * filesystem during the call.
+   * <p>
+   * *   Security: The icon data comes from the untrusted
+   * guest, and should be treated with caution. PNG files
+   * have been known to contain exploits. Ensure that
+   * libpng (or other relevant libraries) are fully up to
+   * date before trying to process or display the icon.
+   * <p>
+   * *   The PNG image returned can be any size. It might not
+   * be square. Libguestfs tries to return the largest,
+   * highest quality icon available. The application must
+   * scale the icon to the required size.
+   * <p>
+   * *   Extracting icons from Windows guests requires the
+   * external "wrestool" program from the "icoutils"
+   * package, and several programs ("bmptopnm",
+   * "pnmtopng", "pamcut") from the "netpbm" package.
+   * These must be installed separately.
+   * <p>
+   * *   Operating system icons are usually trademarks. Seek
+   * legal advice before using trademarks in
+   * applications.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String inspect_get_icon (String root, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_get_icon: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean favicon = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("favicon");
+    if (_optobj != null) {
+      favicon = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1;
+    }
+    boolean highquality = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("highquality");
+    if (_optobj != null) {
+      highquality = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2;
+    }
+
+    return _inspect_get_icon (g, root, _optargs_bitmask, favicon, highquality);
+  }
+
+  private native String _inspect_get_icon (long g, String root, long _optargs_bitmask, boolean favicon, boolean highquality)
+    throws LibGuestFSException;
+
+  /**
+   * set process group flag
+   * <p>
+   * If "pgroup" is true, child processes are placed into
+   * their own process group.
+   * <p>
+   * The practical upshot of this is that signals like
+   * "SIGINT" (from users pressing "^C") won't be received by
+   * the child process.
+   * <p>
+   * The default for this flag is false, because usually you
+   * want "^C" to kill the subprocess.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_pgroup (boolean pgroup)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_pgroup: handle is closed");
+
+    _set_pgroup (g, pgroup);
+  }
+
+  private native void _set_pgroup (long g, boolean pgroup)
+    throws LibGuestFSException;
+
+  /**
+   * get process group flag
+   * <p>
+   * This returns the process group flag.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean get_pgroup ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_pgroup: handle is closed");
+
+    return _get_pgroup (g);
+  }
+
+  private native boolean _get_pgroup (long g)
     throws LibGuestFSException;
 
   /**
@@ -2419,8 +2753,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mount: handle is closed");
+
     _mount (g, device, mountpoint);
   }
+
   private native void _mount (long g, String device, String mountpoint)
     throws LibGuestFSException;
 
@@ -2440,8 +2776,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("sync: handle is closed");
+
     _sync (g);
   }
+
   private native void _sync (long g)
     throws LibGuestFSException;
 
@@ -2463,8 +2801,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("touch: handle is closed");
+
     _touch (g, path);
   }
+
   private native void _touch (long g, String path)
     throws LibGuestFSException;
 
@@ -2490,8 +2830,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("cat: handle is closed");
+
     return _cat (g, path);
   }
+
   private native String _cat (long g, String path)
     throws LibGuestFSException;
 
@@ -2512,8 +2854,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("ll: handle is closed");
+
     return _ll (g, directory);
   }
+
   private native String _ll (long g, String directory)
     throws LibGuestFSException;
 
@@ -2534,8 +2878,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("ls: handle is closed");
+
     return _ls (g, directory);
   }
+
   private native String[] _ls (long g, String directory)
     throws LibGuestFSException;
 
@@ -2556,8 +2902,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("list_devices: handle is closed");
+
     return _list_devices (g);
   }
+
   private native String[] _list_devices (long g)
     throws LibGuestFSException;
 
@@ -2581,8 +2929,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("list_partitions: handle is closed");
+
     return _list_partitions (g);
   }
+
   private native String[] _list_partitions (long g)
     throws LibGuestFSException;
 
@@ -2604,8 +2954,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("pvs: handle is closed");
+
     return _pvs (g);
   }
+
   private native String[] _pvs (long g)
     throws LibGuestFSException;
 
@@ -2627,8 +2979,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("vgs: handle is closed");
+
     return _vgs (g);
   }
+
   private native String[] _vgs (long g)
     throws LibGuestFSException;
 
@@ -2650,8 +3004,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lvs: handle is closed");
+
     return _lvs (g);
   }
+
   private native String[] _lvs (long g)
     throws LibGuestFSException;
 
@@ -2669,8 +3025,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("pvs_full: handle is closed");
+
     return _pvs_full (g);
   }
+
   private native PV[] _pvs_full (long g)
     throws LibGuestFSException;
 
@@ -2688,8 +3046,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("vgs_full: handle is closed");
+
     return _vgs_full (g);
   }
+
   private native VG[] _vgs_full (long g)
     throws LibGuestFSException;
 
@@ -2707,8 +3067,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lvs_full: handle is closed");
+
     return _lvs_full (g);
   }
+
   private native LV[] _lvs_full (long g)
     throws LibGuestFSException;
 
@@ -2734,8 +3096,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("read_lines: handle is closed");
+
     return _read_lines (g, path);
   }
+
   private native String[] _read_lines (long g, String path)
     throws LibGuestFSException;
 
@@ -2787,8 +3151,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_init: handle is closed");
+
     _aug_init (g, root, flags);
   }
+
   private native void _aug_init (long g, String root, int flags)
     throws LibGuestFSException;
 
@@ -2807,8 +3173,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_close: handle is closed");
+
     _aug_close (g);
   }
+
   private native void _aug_close (long g)
     throws LibGuestFSException;
 
@@ -2830,8 +3198,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_defvar: handle is closed");
+
     return _aug_defvar (g, name, expr);
   }
+
   private native int _aug_defvar (long g, String name, String expr)
     throws LibGuestFSException;
 
@@ -2857,8 +3227,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_defnode: handle is closed");
+
     return _aug_defnode (g, name, expr, val);
   }
+
   private native IntBool _aug_defnode (long g, String name, String expr, String val)
     throws LibGuestFSException;
 
@@ -2875,8 +3247,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_get: handle is closed");
+
     return _aug_get (g, augpath);
   }
+
   private native String _aug_get (long g, String augpath)
     throws LibGuestFSException;
 
@@ -2897,8 +3271,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_set: handle is closed");
+
     _aug_set (g, augpath, val);
   }
+
   private native void _aug_set (long g, String augpath, String val)
     throws LibGuestFSException;
 
@@ -2920,8 +3296,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_insert: handle is closed");
+
     _aug_insert (g, augpath, label, before);
   }
+
   private native void _aug_insert (long g, String augpath, String label, boolean before)
     throws LibGuestFSException;
 
@@ -2940,8 +3318,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_rm: handle is closed");
+
     return _aug_rm (g, augpath);
   }
+
   private native int _aug_rm (long g, String augpath)
     throws LibGuestFSException;
 
@@ -2958,8 +3338,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_mv: handle is closed");
+
     _aug_mv (g, src, dest);
   }
+
   private native void _aug_mv (long g, String src, String dest)
     throws LibGuestFSException;
 
@@ -2977,8 +3359,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_match: handle is closed");
+
     return _aug_match (g, augpath);
   }
+
   private native String[] _aug_match (long g, String augpath)
     throws LibGuestFSException;
 
@@ -2997,8 +3381,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_save: handle is closed");
+
     _aug_save (g);
   }
+
   private native void _aug_save (long g)
     throws LibGuestFSException;
 
@@ -3017,8 +3403,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_load: handle is closed");
+
     _aug_load (g);
   }
+
   private native void _aug_load (long g)
     throws LibGuestFSException;
 
@@ -3036,8 +3424,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_ls: handle is closed");
+
     return _aug_ls (g, augpath);
   }
+
   private native String[] _aug_ls (long g, String augpath)
     throws LibGuestFSException;
 
@@ -3053,8 +3443,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("rm: handle is closed");
+
     _rm (g, path);
   }
+
   private native void _rm (long g, String path)
     throws LibGuestFSException;
 
@@ -3070,8 +3462,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("rmdir: handle is closed");
+
     _rmdir (g, path);
   }
+
   private native void _rmdir (long g, String path)
     throws LibGuestFSException;
 
@@ -3089,8 +3483,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("rm_rf: handle is closed");
+
     _rm_rf (g, path);
   }
+
   private native void _rm_rf (long g, String path)
     throws LibGuestFSException;
 
@@ -3106,8 +3502,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mkdir: handle is closed");
+
     _mkdir (g, path);
   }
+
   private native void _mkdir (long g, String path)
     throws LibGuestFSException;
 
@@ -3125,8 +3523,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mkdir_p: handle is closed");
+
     _mkdir_p (g, path);
   }
+
   private native void _mkdir_p (long g, String path)
     throws LibGuestFSException;
 
@@ -3149,8 +3549,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("chmod: handle is closed");
+
     _chmod (g, mode, path);
   }
+
   private native void _chmod (long g, int mode, String path)
     throws LibGuestFSException;
 
@@ -3171,8 +3573,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("chown: handle is closed");
+
     _chown (g, owner, group, path);
   }
+
   private native void _chown (long g, int owner, int group, String path)
     throws LibGuestFSException;
 
@@ -3191,8 +3595,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("exists: handle is closed");
+
     return _exists (g, path);
   }
+
   private native boolean _exists (long g, String path)
     throws LibGuestFSException;
 
@@ -3212,8 +3618,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("is_file: handle is closed");
+
     return _is_file (g, path);
   }
+
   private native boolean _is_file (long g, String path)
     throws LibGuestFSException;
 
@@ -3233,8 +3641,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("is_dir: handle is closed");
+
     return _is_dir (g, path);
   }
+
   private native boolean _is_dir (long g, String path)
     throws LibGuestFSException;
 
@@ -3252,8 +3662,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("pvcreate: handle is closed");
+
     _pvcreate (g, device);
   }
+
   private native void _pvcreate (long g, String device)
     throws LibGuestFSException;
 
@@ -3270,8 +3682,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("vgcreate: handle is closed");
+
     _vgcreate (g, volgroup, physvols);
   }
+
   private native void _vgcreate (long g, String volgroup, String[] physvols)
     throws LibGuestFSException;
 
@@ -3288,8 +3702,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lvcreate: handle is closed");
+
     _lvcreate (g, logvol, volgroup, mbytes);
   }
+
   private native void _lvcreate (long g, String logvol, String volgroup, int mbytes)
     throws LibGuestFSException;
 
@@ -3307,8 +3723,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mkfs: handle is closed");
+
     _mkfs (g, fstype, device);
   }
+
   private native void _mkfs (long g, String fstype, String device)
     throws LibGuestFSException;
 
@@ -3357,8 +3775,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("sfdisk: handle is closed");
+
     _sfdisk (g, device, cyls, heads, sectors, lines);
   }
+
   private native void _sfdisk (long g, String device, int cyls, int heads, int sectors, String[] lines)
     throws LibGuestFSException;
 
@@ -3395,8 +3815,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("write_file: handle is closed");
+
     _write_file (g, path, content, size);
   }
+
   private native void _write_file (long g, String path, String content, int size)
     throws LibGuestFSException;
 
@@ -3414,8 +3836,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("umount: handle is closed");
+
     _umount (g, pathordevice);
   }
+
   private native void _umount (long g, String pathordevice)
     throws LibGuestFSException;
 
@@ -3437,8 +3861,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mounts: handle is closed");
+
     return _mounts (g);
   }
+
   private native String[] _mounts (long g)
     throws LibGuestFSException;
 
@@ -3456,8 +3882,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("umount_all: handle is closed");
+
     _umount_all (g);
   }
+
   private native void _umount_all (long g)
     throws LibGuestFSException;
 
@@ -3477,8 +3905,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lvm_remove_all: handle is closed");
+
     _lvm_remove_all (g);
   }
+
   private native void _lvm_remove_all (long g)
     throws LibGuestFSException;
 
@@ -3501,7 +3931,7 @@ public class GuestFS {
    * guaranteed by the ABI.
    * <p>
    * See also: file(1), "g.vfs_type", "g.lstat", "g.is_file",
-   * "g.is_blockdev" (etc).
+   * "g.is_blockdev" (etc), "g.is_zero".
    * <p>
    * @throws LibGuestFSException
    */
@@ -3510,8 +3940,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("file: handle is closed");
+
     return _file (g, path);
   }
+
   private native String _file (long g, String path)
     throws LibGuestFSException;
 
@@ -3559,8 +3991,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("command: handle is closed");
+
     return _command (g, arguments);
   }
+
   private native String _command (long g, String[] arguments)
     throws LibGuestFSException;
 
@@ -3583,8 +4017,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("command_lines: handle is closed");
+
     return _command_lines (g, arguments);
   }
+
   private native String[] _command_lines (long g, String[] arguments)
     throws LibGuestFSException;
 
@@ -3602,8 +4038,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("stat: handle is closed");
+
     return _stat (g, path);
   }
+
   private native Stat _stat (long g, String path)
     throws LibGuestFSException;
 
@@ -3625,8 +4063,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lstat: handle is closed");
+
     return _lstat (g, path);
   }
+
   private native Stat _lstat (long g, String path)
     throws LibGuestFSException;
 
@@ -3647,8 +4087,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("statvfs: handle is closed");
+
     return _statvfs (g, path);
   }
+
   private native StatVFS _statvfs (long g, String path)
     throws LibGuestFSException;
 
@@ -3671,6 +4113,7 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("tune2fs_l: handle is closed");
+
     String[] r = _tune2fs_l (g, device);
 
     HashMap rhash = new HashMap ();
@@ -3678,6 +4121,7 @@ public class GuestFS {
       rhash.put (r[i], r[i+1]);
     return rhash;
   }
+
   private native String[] _tune2fs_l (long g, String device)
     throws LibGuestFSException;
 
@@ -3695,8 +4139,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("blockdev_setro: handle is closed");
+
     _blockdev_setro (g, device);
   }
+
   private native void _blockdev_setro (long g, String device)
     throws LibGuestFSException;
 
@@ -3714,8 +4160,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("blockdev_setrw: handle is closed");
+
     _blockdev_setrw (g, device);
   }
+
   private native void _blockdev_setrw (long g, String device)
     throws LibGuestFSException;
 
@@ -3734,8 +4182,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("blockdev_getro: handle is closed");
+
     return _blockdev_getro (g, device);
   }
+
   private native boolean _blockdev_getro (long g, String device)
     throws LibGuestFSException;
 
@@ -3757,8 +4207,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("blockdev_getss: handle is closed");
+
     return _blockdev_getss (g, device);
   }
+
   private native int _blockdev_getss (long g, String device)
     throws LibGuestFSException;
 
@@ -3779,8 +4231,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("blockdev_getbsz: handle is closed");
+
     return _blockdev_getbsz (g, device);
   }
+
   private native int _blockdev_getbsz (long g, String device)
     throws LibGuestFSException;
 
@@ -3801,8 +4255,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("blockdev_setbsz: handle is closed");
+
     _blockdev_setbsz (g, device, blocksize);
   }
+
   private native void _blockdev_setbsz (long g, String device, int blocksize)
     throws LibGuestFSException;
 
@@ -3826,8 +4282,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("blockdev_getsz: handle is closed");
+
     return _blockdev_getsz (g, device);
   }
+
   private native long _blockdev_getsz (long g, String device)
     throws LibGuestFSException;
 
@@ -3847,8 +4305,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("blockdev_getsize64: handle is closed");
+
     return _blockdev_getsize64 (g, device);
   }
+
   private native long _blockdev_getsize64 (long g, String device)
     throws LibGuestFSException;
 
@@ -3867,8 +4327,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("blockdev_flushbufs: handle is closed");
+
     _blockdev_flushbufs (g, device);
   }
+
   private native void _blockdev_flushbufs (long g, String device)
     throws LibGuestFSException;
 
@@ -3886,8 +4348,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("blockdev_rereadpt: handle is closed");
+
     _blockdev_rereadpt (g, device);
   }
+
   private native void _blockdev_rereadpt (long g, String device)
     throws LibGuestFSException;
 
@@ -3908,8 +4372,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("upload: handle is closed");
+
     _upload (g, filename, remotefilename);
   }
+
   private native void _upload (long g, String filename, String remotefilename)
     throws LibGuestFSException;
 
@@ -3930,8 +4396,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("download: handle is closed");
+
     _download (g, remotefilename, filename);
   }
+
   private native void _download (long g, String remotefilename, String filename)
     throws LibGuestFSException;
 
@@ -3986,8 +4454,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("checksum: handle is closed");
+
     return _checksum (g, csumtype, path);
   }
+
   private native String _checksum (long g, String csumtype, String path)
     throws LibGuestFSException;
 
@@ -4007,8 +4477,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("tar_in: handle is closed");
+
     _tar_in (g, tarfile, directory);
   }
+
   private native void _tar_in (long g, String tarfile, String directory)
     throws LibGuestFSException;
 
@@ -4028,8 +4500,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("tar_out: handle is closed");
+
     _tar_out (g, directory, tarfile);
   }
+
   private native void _tar_out (long g, String directory, String tarfile)
     throws LibGuestFSException;
 
@@ -4048,8 +4522,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("tgz_in: handle is closed");
+
     _tgz_in (g, tarball, directory);
   }
+
   private native void _tgz_in (long g, String tarball, String directory)
     throws LibGuestFSException;
 
@@ -4068,8 +4544,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("tgz_out: handle is closed");
+
     _tgz_out (g, directory, tarball);
   }
+
   private native void _tgz_out (long g, String directory, String tarball)
     throws LibGuestFSException;
 
@@ -4086,8 +4564,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mount_ro: handle is closed");
+
     _mount_ro (g, device, mountpoint);
   }
+
   private native void _mount_ro (long g, String device, String mountpoint)
     throws LibGuestFSException;
 
@@ -4109,8 +4589,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mount_options: handle is closed");
+
     _mount_options (g, options, device, mountpoint);
   }
+
   private native void _mount_options (long g, String options, String device, String mountpoint)
     throws LibGuestFSException;
 
@@ -4128,8 +4610,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mount_vfs: handle is closed");
+
     _mount_vfs (g, options, vfstype, device, mountpoint);
   }
+
   private native void _mount_vfs (long g, String options, String vfstype, String device, String mountpoint)
     throws LibGuestFSException;
 
@@ -4138,8 +4622,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("debug: handle is closed");
+
     return _debug (g, subcmd, extraargs);
   }
+
   private native String _debug (long g, String subcmd, String[] extraargs)
     throws LibGuestFSException;
 
@@ -4159,8 +4645,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lvremove: handle is closed");
+
     _lvremove (g, device);
   }
+
   private native void _lvremove (long g, String device)
     throws LibGuestFSException;
 
@@ -4179,8 +4667,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("vgremove: handle is closed");
+
     _vgremove (g, vgname);
   }
+
   private native void _vgremove (long g, String vgname)
     throws LibGuestFSException;
 
@@ -4201,8 +4691,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("pvremove: handle is closed");
+
     _pvremove (g, device);
   }
+
   private native void _pvremove (long g, String device)
     throws LibGuestFSException;
 
@@ -4223,8 +4715,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("set_e2label: handle is closed");
+
     _set_e2label (g, device, label);
   }
+
   private native void _set_e2label (long g, String device, String label)
     throws LibGuestFSException;
 
@@ -4248,8 +4742,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("get_e2label: handle is closed");
+
     return _get_e2label (g, device);
   }
+
   private native String _get_e2label (long g, String device)
     throws LibGuestFSException;
 
@@ -4271,8 +4767,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("set_e2uuid: handle is closed");
+
     _set_e2uuid (g, device, uuid);
   }
+
   private native void _set_e2uuid (long g, String device, String uuid)
     throws LibGuestFSException;
 
@@ -4296,8 +4794,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("get_e2uuid: handle is closed");
+
     return _get_e2uuid (g, device);
   }
+
   private native String _get_e2uuid (long g, String device)
     throws LibGuestFSException;
 
@@ -4331,8 +4831,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("fsck: handle is closed");
+
     return _fsck (g, fstype, device);
   }
+
   private native int _fsck (long g, String fstype, String device)
     throws LibGuestFSException;
 
@@ -4347,7 +4849,8 @@ public class GuestFS {
    * sufficient to remove any partition tables, filesystem
    * superblocks and so on.
    * <p>
-   * See also: "g.zero_device", "g.scrub_device".
+   * See also: "g.zero_device", "g.scrub_device",
+   * "g.is_zero_device"
    * <p>
    * @throws LibGuestFSException
    */
@@ -4356,8 +4859,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("zero: handle is closed");
+
     _zero (g, device);
   }
+
   private native void _zero (long g, String device)
     throws LibGuestFSException;
 
@@ -4387,8 +4892,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("grub_install: handle is closed");
+
     _grub_install (g, root, device);
   }
+
   private native void _grub_install (long g, String root, String device)
     throws LibGuestFSException;
 
@@ -4405,8 +4912,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("cp: handle is closed");
+
     _cp (g, src, dest);
   }
+
   private native void _cp (long g, String src, String dest)
     throws LibGuestFSException;
 
@@ -4423,8 +4932,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("cp_a: handle is closed");
+
     _cp_a (g, src, dest);
   }
+
   private native void _cp_a (long g, String src, String dest)
     throws LibGuestFSException;
 
@@ -4441,8 +4952,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mv: handle is closed");
+
     _mv (g, src, dest);
   }
+
   private native void _mv (long g, String src, String dest)
     throws LibGuestFSException;
 
@@ -4466,8 +4979,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("drop_caches: handle is closed");
+
     _drop_caches (g, whattodrop);
   }
+
   private native void _drop_caches (long g, int whattodrop)
     throws LibGuestFSException;
 
@@ -4490,8 +5005,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("dmesg: handle is closed");
+
     return _dmesg (g);
   }
+
   private native String _dmesg (long g)
     throws LibGuestFSException;
 
@@ -4511,8 +5028,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("ping_daemon: handle is closed");
+
     _ping_daemon (g);
   }
+
   private native void _ping_daemon (long g)
     throws LibGuestFSException;
 
@@ -4532,8 +5051,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("equal: handle is closed");
+
     return _equal (g, file1, file2);
   }
+
   private native boolean _equal (long g, String file1, String file2)
     throws LibGuestFSException;
 
@@ -4554,8 +5075,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("strings: handle is closed");
+
     return _strings (g, path);
   }
+
   private native String[] _strings (long g, String path)
     throws LibGuestFSException;
 
@@ -4599,8 +5122,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("strings_e: handle is closed");
+
     return _strings_e (g, encoding, path);
   }
+
   private native String[] _strings_e (long g, String encoding, String path)
     throws LibGuestFSException;
 
@@ -4621,8 +5146,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("hexdump: handle is closed");
+
     return _hexdump (g, path);
   }
+
   private native String _hexdump (long g, String path)
     throws LibGuestFSException;
 
@@ -4647,8 +5174,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("zerofree: handle is closed");
+
     _zerofree (g, device);
   }
+
   private native void _zerofree (long g, String device)
     throws LibGuestFSException;
 
@@ -4666,8 +5195,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("pvresize: handle is closed");
+
     _pvresize (g, device);
   }
+
   private native void _pvresize (long g, String device)
     throws LibGuestFSException;
 
@@ -4699,8 +5230,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("sfdisk_N: handle is closed");
+
     _sfdisk_N (g, device, partnum, cyls, heads, sectors, line);
   }
+
   private native void _sfdisk_N (long g, String device, int partnum, int cyls, int heads, int sectors, String line)
     throws LibGuestFSException;
 
@@ -4727,8 +5260,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("sfdisk_l: handle is closed");
+
     return _sfdisk_l (g, device);
   }
+
   private native String _sfdisk_l (long g, String device)
     throws LibGuestFSException;
 
@@ -4748,8 +5283,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("sfdisk_kernel_geometry: handle is closed");
+
     return _sfdisk_kernel_geometry (g, device);
   }
+
   private native String _sfdisk_kernel_geometry (long g, String device)
     throws LibGuestFSException;
 
@@ -4772,8 +5309,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("sfdisk_disk_geometry: handle is closed");
+
     return _sfdisk_disk_geometry (g, device);
   }
+
   private native String _sfdisk_disk_geometry (long g, String device)
     throws LibGuestFSException;
 
@@ -4781,10 +5320,7 @@ public class GuestFS {
    * activate or deactivate all volume groups
    * <p>
    * This command activates or (if "activate" is false)
-   * deactivates all logical volumes in all volume groups. If
-   * activated, then they are made known to the kernel, ie.
-   * they appear as "/dev/mapper" devices. If deactivated,
-   * then those devices disappear.
+   * deactivates all logical volumes in all volume groups.
    * <p>
    * This command is the same as running "vgchange -a y|n"
    * <p>
@@ -4795,8 +5331,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("vg_activate_all: handle is closed");
+
     _vg_activate_all (g, activate);
   }
+
   private native void _vg_activate_all (long g, boolean activate)
     throws LibGuestFSException;
 
@@ -4805,9 +5343,7 @@ public class GuestFS {
    * <p>
    * This command activates or (if "activate" is false)
    * deactivates all logical volumes in the listed volume
-   * groups "volgroups". If activated, then they are made
-   * known to the kernel, ie. they appear as "/dev/mapper"
-   * devices. If deactivated, then those devices disappear.
+   * groups "volgroups".
    * <p>
    * This command is the same as running "vgchange -a y|n
    * volgroups..."
@@ -4822,8 +5358,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("vg_activate: handle is closed");
+
     _vg_activate (g, activate, volgroups);
   }
+
   private native void _vg_activate (long g, boolean activate, String[] volgroups)
     throws LibGuestFSException;
 
@@ -4841,8 +5379,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lvresize: handle is closed");
+
     _lvresize (g, device, mbytes);
   }
+
   private native void _lvresize (long g, String device, int mbytes)
     throws LibGuestFSException;
 
@@ -4866,8 +5406,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("resize2fs: handle is closed");
+
     _resize2fs (g, device);
   }
+
   private native void _resize2fs (long g, String device)
     throws LibGuestFSException;
 
@@ -4913,8 +5455,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("find: handle is closed");
+
     return _find (g, directory);
   }
+
   private native String[] _find (long g, String directory)
     throws LibGuestFSException;
 
@@ -4935,8 +5479,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("e2fsck_f: handle is closed");
+
     _e2fsck_f (g, device);
   }
+
   private native void _e2fsck_f (long g, String device)
     throws LibGuestFSException;
 
@@ -4952,8 +5498,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("sleep: handle is closed");
+
     _sleep (g, secs);
   }
+
   private native void _sleep (long g, int secs)
     throws LibGuestFSException;
 
@@ -4981,8 +5529,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("ntfs_3g_probe: handle is closed");
+
     return _ntfs_3g_probe (g, rw, device);
   }
+
   private native int _ntfs_3g_probe (long g, boolean rw, String device)
     throws LibGuestFSException;
 
@@ -5009,8 +5559,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("sh: handle is closed");
+
     return _sh (g, command);
   }
+
   private native String _sh (long g, String command)
     throws LibGuestFSException;
 
@@ -5029,8 +5581,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("sh_lines: handle is closed");
+
     return _sh_lines (g, command);
   }
+
   private native String[] _sh_lines (long g, String command)
     throws LibGuestFSException;
 
@@ -5055,8 +5609,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("glob_expand: handle is closed");
+
     return _glob_expand (g, pattern);
   }
+
   private native String[] _glob_expand (long g, String pattern)
     throws LibGuestFSException;
 
@@ -5079,8 +5635,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("scrub_device: handle is closed");
+
     _scrub_device (g, device);
   }
+
   private native void _scrub_device (long g, String device)
     throws LibGuestFSException;
 
@@ -5102,8 +5660,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("scrub_file: handle is closed");
+
     _scrub_file (g, file);
   }
+
   private native void _scrub_file (long g, String file)
     throws LibGuestFSException;
 
@@ -5126,8 +5686,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("scrub_freespace: handle is closed");
+
     _scrub_freespace (g, dir);
   }
+
   private native void _scrub_freespace (long g, String dir)
     throws LibGuestFSException;
 
@@ -5161,8 +5723,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mkdtemp: handle is closed");
+
     return _mkdtemp (g, template);
   }
+
   private native String _mkdtemp (long g, String template)
     throws LibGuestFSException;
 
@@ -5179,8 +5743,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("wc_l: handle is closed");
+
     return _wc_l (g, path);
   }
+
   private native int _wc_l (long g, String path)
     throws LibGuestFSException;
 
@@ -5197,8 +5763,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("wc_w: handle is closed");
+
     return _wc_w (g, path);
   }
+
   private native int _wc_w (long g, String path)
     throws LibGuestFSException;
 
@@ -5215,8 +5783,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("wc_c: handle is closed");
+
     return _wc_c (g, path);
   }
+
   private native int _wc_c (long g, String path)
     throws LibGuestFSException;
 
@@ -5237,8 +5807,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("head: handle is closed");
+
     return _head (g, path);
   }
+
   private native String[] _head (long g, String path)
     throws LibGuestFSException;
 
@@ -5266,8 +5838,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("head_n: handle is closed");
+
     return _head_n (g, nrlines, path);
   }
+
   private native String[] _head_n (long g, int nrlines, String path)
     throws LibGuestFSException;
 
@@ -5288,8 +5862,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("tail: handle is closed");
+
     return _tail (g, path);
   }
+
   private native String[] _tail (long g, String path)
     throws LibGuestFSException;
 
@@ -5317,8 +5893,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("tail_n: handle is closed");
+
     return _tail_n (g, nrlines, path);
   }
+
   private native String[] _tail_n (long g, int nrlines, String path)
     throws LibGuestFSException;
 
@@ -5339,8 +5917,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("df: handle is closed");
+
     return _df (g);
   }
+
   private native String _df (long g)
     throws LibGuestFSException;
 
@@ -5361,8 +5941,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("df_h: handle is closed");
+
     return _df_h (g);
   }
+
   private native String _df_h (long g)
     throws LibGuestFSException;
 
@@ -5386,8 +5968,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("du: handle is closed");
+
     return _du (g, path);
   }
+
   private native long _du (long g, String path)
     throws LibGuestFSException;
 
@@ -5412,8 +5996,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("initrd_list: handle is closed");
+
     return _initrd_list (g, path);
   }
+
   private native String[] _initrd_list (long g, String path)
     throws LibGuestFSException;
 
@@ -5431,8 +6017,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mount_loop: handle is closed");
+
     _mount_loop (g, file, mountpoint);
   }
+
   private native void _mount_loop (long g, String file, String mountpoint)
     throws LibGuestFSException;
 
@@ -5448,8 +6036,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mkswap: handle is closed");
+
     _mkswap (g, device);
   }
+
   private native void _mkswap (long g, String device)
     throws LibGuestFSException;
 
@@ -5469,8 +6059,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mkswap_L: handle is closed");
+
     _mkswap_L (g, label, device);
   }
+
   private native void _mkswap_L (long g, String label, String device)
     throws LibGuestFSException;
 
@@ -5486,8 +6078,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mkswap_U: handle is closed");
+
     _mkswap_U (g, uuid, device);
   }
+
   private native void _mkswap_U (long g, String uuid, String device)
     throws LibGuestFSException;
 
@@ -5519,8 +6113,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mknod: handle is closed");
+
     _mknod (g, mode, devmajor, devminor, path);
   }
+
   private native void _mknod (long g, int mode, int devmajor, int devminor, String path)
     throws LibGuestFSException;
 
@@ -5540,8 +6136,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mkfifo: handle is closed");
+
     _mkfifo (g, mode, path);
   }
+
   private native void _mkfifo (long g, int mode, String path)
     throws LibGuestFSException;
 
@@ -5562,8 +6160,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mknod_b: handle is closed");
+
     _mknod_b (g, mode, devmajor, devminor, path);
   }
+
   private native void _mknod_b (long g, int mode, int devmajor, int devminor, String path)
     throws LibGuestFSException;
 
@@ -5584,8 +6184,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mknod_c: handle is closed");
+
     _mknod_c (g, mode, devmajor, devminor, path);
   }
+
   private native void _mknod_c (long g, int mode, int devmajor, int devminor, String path)
     throws LibGuestFSException;
 
@@ -5615,8 +6217,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("umask: handle is closed");
+
     return _umask (g, mask);
   }
+
   private native int _umask (long g, int mask)
     throws LibGuestFSException;
 
@@ -5664,8 +6268,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("readdir: handle is closed");
+
     return _readdir (g, dir);
   }
+
   private native Dirent[] _readdir (long g, String dir)
     throws LibGuestFSException;
 
@@ -5698,8 +6304,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("sfdiskM: handle is closed");
+
     _sfdiskM (g, device, lines);
   }
+
   private native void _sfdiskM (long g, String device, String[] lines)
     throws LibGuestFSException;
 
@@ -5728,8 +6336,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("zfile: handle is closed");
+
     return _zfile (g, meth, path);
   }
+
   private native String _zfile (long g, String meth, String path)
     throws LibGuestFSException;
 
@@ -5751,8 +6361,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("getxattrs: handle is closed");
+
     return _getxattrs (g, path);
   }
+
   private native XAttr[] _getxattrs (long g, String path)
     throws LibGuestFSException;
 
@@ -5770,8 +6382,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lgetxattrs: handle is closed");
+
     return _lgetxattrs (g, path);
   }
+
   private native XAttr[] _lgetxattrs (long g, String path)
     throws LibGuestFSException;
 
@@ -5791,8 +6405,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("setxattr: handle is closed");
+
     _setxattr (g, xattr, val, vallen, path);
   }
+
   private native void _setxattr (long g, String xattr, String val, int vallen, String path)
     throws LibGuestFSException;
 
@@ -5810,8 +6426,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lsetxattr: handle is closed");
+
     _lsetxattr (g, xattr, val, vallen, path);
   }
+
   private native void _lsetxattr (long g, String xattr, String val, int vallen, String path)
     throws LibGuestFSException;
 
@@ -5830,8 +6448,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("removexattr: handle is closed");
+
     _removexattr (g, xattr, path);
   }
+
   private native void _removexattr (long g, String xattr, String path)
     throws LibGuestFSException;
 
@@ -5849,8 +6469,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lremovexattr: handle is closed");
+
     _lremovexattr (g, xattr, path);
   }
+
   private native void _lremovexattr (long g, String xattr, String path)
     throws LibGuestFSException;
 
@@ -5868,6 +6490,7 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mountpoints: handle is closed");
+
     String[] r = _mountpoints (g);
 
     HashMap rhash = new HashMap ();
@@ -5875,6 +6498,7 @@ public class GuestFS {
       rhash.put (r[i], r[i+1]);
     return rhash;
   }
+
   private native String[] _mountpoints (long g)
     throws LibGuestFSException;
 
@@ -5932,8 +6556,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mkmountpoint: handle is closed");
+
     _mkmountpoint (g, exemptpath);
   }
+
   private native void _mkmountpoint (long g, String exemptpath)
     throws LibGuestFSException;
 
@@ -5951,8 +6577,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("rmmountpoint: handle is closed");
+
     _rmmountpoint (g, exemptpath);
   }
+
   private native void _rmmountpoint (long g, String exemptpath)
     throws LibGuestFSException;
 
@@ -5978,8 +6606,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("read_file: handle is closed");
+
     return _read_file (g, path);
   }
+
   private native String _read_file (long g, String path)
     throws LibGuestFSException;
 
@@ -6000,8 +6630,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("grep: handle is closed");
+
     return _grep (g, regex, path);
   }
+
   private native String[] _grep (long g, String regex, String path)
     throws LibGuestFSException;
 
@@ -6022,8 +6654,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("egrep: handle is closed");
+
     return _egrep (g, regex, path);
   }
+
   private native String[] _egrep (long g, String regex, String path)
     throws LibGuestFSException;
 
@@ -6044,8 +6678,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("fgrep: handle is closed");
+
     return _fgrep (g, pattern, path);
   }
+
   private native String[] _fgrep (long g, String pattern, String path)
     throws LibGuestFSException;
 
@@ -6066,8 +6702,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("grepi: handle is closed");
+
     return _grepi (g, regex, path);
   }
+
   private native String[] _grepi (long g, String regex, String path)
     throws LibGuestFSException;
 
@@ -6088,8 +6726,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("egrepi: handle is closed");
+
     return _egrepi (g, regex, path);
   }
+
   private native String[] _egrepi (long g, String regex, String path)
     throws LibGuestFSException;
 
@@ -6110,8 +6750,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("fgrepi: handle is closed");
+
     return _fgrepi (g, pattern, path);
   }
+
   private native String[] _fgrepi (long g, String pattern, String path)
     throws LibGuestFSException;
 
@@ -6132,8 +6774,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("zgrep: handle is closed");
+
     return _zgrep (g, regex, path);
   }
+
   private native String[] _zgrep (long g, String regex, String path)
     throws LibGuestFSException;
 
@@ -6154,8 +6798,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("zegrep: handle is closed");
+
     return _zegrep (g, regex, path);
   }
+
   private native String[] _zegrep (long g, String regex, String path)
     throws LibGuestFSException;
 
@@ -6176,8 +6822,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("zfgrep: handle is closed");
+
     return _zfgrep (g, pattern, path);
   }
+
   private native String[] _zfgrep (long g, String pattern, String path)
     throws LibGuestFSException;
 
@@ -6198,8 +6846,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("zgrepi: handle is closed");
+
     return _zgrepi (g, regex, path);
   }
+
   private native String[] _zgrepi (long g, String regex, String path)
     throws LibGuestFSException;
 
@@ -6220,8 +6870,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("zegrepi: handle is closed");
+
     return _zegrepi (g, regex, path);
   }
+
   private native String[] _zegrepi (long g, String regex, String path)
     throws LibGuestFSException;
 
@@ -6242,8 +6894,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("zfgrepi: handle is closed");
+
     return _zfgrepi (g, pattern, path);
   }
+
   private native String[] _zfgrepi (long g, String pattern, String path)
     throws LibGuestFSException;
 
@@ -6261,8 +6915,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("realpath: handle is closed");
+
     return _realpath (g, path);
   }
+
   private native String _realpath (long g, String path)
     throws LibGuestFSException;
 
@@ -6278,8 +6934,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("ln: handle is closed");
+
     _ln (g, target, linkname);
   }
+
   private native void _ln (long g, String target, String linkname)
     throws LibGuestFSException;
 
@@ -6297,8 +6955,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("ln_f: handle is closed");
+
     _ln_f (g, target, linkname);
   }
+
   private native void _ln_f (long g, String target, String linkname)
     throws LibGuestFSException;
 
@@ -6315,8 +6975,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("ln_s: handle is closed");
+
     _ln_s (g, target, linkname);
   }
+
   private native void _ln_s (long g, String target, String linkname)
     throws LibGuestFSException;
 
@@ -6334,8 +6996,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("ln_sf: handle is closed");
+
     _ln_sf (g, target, linkname);
   }
+
   private native void _ln_sf (long g, String target, String linkname)
     throws LibGuestFSException;
 
@@ -6351,8 +7015,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("readlink: handle is closed");
+
     return _readlink (g, path);
   }
+
   private native String _readlink (long g, String path)
     throws LibGuestFSException;
 
@@ -6381,8 +7047,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("fallocate: handle is closed");
+
     _fallocate (g, path, len);
   }
+
   private native void _fallocate (long g, String path, int len)
     throws LibGuestFSException;
 
@@ -6409,8 +7077,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("swapon_device: handle is closed");
+
     _swapon_device (g, device);
   }
+
   private native void _swapon_device (long g, String device)
     throws LibGuestFSException;
 
@@ -6428,8 +7098,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("swapoff_device: handle is closed");
+
     _swapoff_device (g, device);
   }
+
   private native void _swapoff_device (long g, String device)
     throws LibGuestFSException;
 
@@ -6446,8 +7118,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("swapon_file: handle is closed");
+
     _swapon_file (g, file);
   }
+
   private native void _swapon_file (long g, String file)
     throws LibGuestFSException;
 
@@ -6464,8 +7138,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("swapoff_file: handle is closed");
+
     _swapoff_file (g, file);
   }
+
   private native void _swapoff_file (long g, String file)
     throws LibGuestFSException;
 
@@ -6482,8 +7158,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("swapon_label: handle is closed");
+
     _swapon_label (g, label);
   }
+
   private native void _swapon_label (long g, String label)
     throws LibGuestFSException;
 
@@ -6500,8 +7178,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("swapoff_label: handle is closed");
+
     _swapoff_label (g, label);
   }
+
   private native void _swapoff_label (long g, String label)
     throws LibGuestFSException;
 
@@ -6518,8 +7198,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("swapon_uuid: handle is closed");
+
     _swapon_uuid (g, uuid);
   }
+
   private native void _swapon_uuid (long g, String uuid)
     throws LibGuestFSException;
 
@@ -6536,8 +7218,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("swapoff_uuid: handle is closed");
+
     _swapoff_uuid (g, uuid);
   }
+
   private native void _swapoff_uuid (long g, String uuid)
     throws LibGuestFSException;
 
@@ -6557,8 +7241,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mkswap_file: handle is closed");
+
     _mkswap_file (g, path);
   }
+
   private native void _mkswap_file (long g, String path)
     throws LibGuestFSException;
 
@@ -6605,8 +7291,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inotify_init: handle is closed");
+
     _inotify_init (g, maxevents);
   }
+
   private native void _inotify_init (long g, int maxevents)
     throws LibGuestFSException;
 
@@ -6630,8 +7318,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inotify_add_watch: handle is closed");
+
     return _inotify_add_watch (g, path, mask);
   }
+
   private native long _inotify_add_watch (long g, String path, int mask)
     throws LibGuestFSException;
 
@@ -6648,8 +7338,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inotify_rm_watch: handle is closed");
+
     _inotify_rm_watch (g, wd);
   }
+
   private native void _inotify_rm_watch (long g, int wd)
     throws LibGuestFSException;
 
@@ -6674,8 +7366,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inotify_read: handle is closed");
+
     return _inotify_read (g);
   }
+
   private native INotifyEvent[] _inotify_read (long g)
     throws LibGuestFSException;
 
@@ -6694,8 +7388,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inotify_files: handle is closed");
+
     return _inotify_files (g);
   }
+
   private native String[] _inotify_files (long g)
     throws LibGuestFSException;
 
@@ -6713,8 +7409,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("inotify_close: handle is closed");
+
     _inotify_close (g);
   }
+
   private native void _inotify_close (long g)
     throws LibGuestFSException;
 
@@ -6733,8 +7431,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("setcon: handle is closed");
+
     _setcon (g, context);
   }
+
   private native void _setcon (long g, String context)
     throws LibGuestFSException;
 
@@ -6753,8 +7453,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("getcon: handle is closed");
+
     return _getcon (g);
   }
+
   private native String _getcon (long g)
     throws LibGuestFSException;
 
@@ -6783,8 +7485,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mkfs_b: handle is closed");
+
     _mkfs_b (g, fstype, blocksize, device);
   }
+
   private native void _mkfs_b (long g, String fstype, int blocksize, String device)
     throws LibGuestFSException;
 
@@ -6803,8 +7507,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mke2journal: handle is closed");
+
     _mke2journal (g, blocksize, device);
   }
+
   private native void _mke2journal (long g, int blocksize, String device)
     throws LibGuestFSException;
 
@@ -6821,8 +7527,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mke2journal_L: handle is closed");
+
     _mke2journal_L (g, blocksize, label, device);
   }
+
   private native void _mke2journal_L (long g, int blocksize, String label, String device)
     throws LibGuestFSException;
 
@@ -6839,8 +7547,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mke2journal_U: handle is closed");
+
     _mke2journal_U (g, blocksize, uuid, device);
   }
+
   private native void _mke2journal_U (long g, int blocksize, String uuid, String device)
     throws LibGuestFSException;
 
@@ -6862,8 +7572,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mke2fs_J: handle is closed");
+
     _mke2fs_J (g, fstype, blocksize, device, journal);
   }
+
   private native void _mke2fs_J (long g, String fstype, int blocksize, String device, String journal)
     throws LibGuestFSException;
 
@@ -6882,8 +7594,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mke2fs_JL: handle is closed");
+
     _mke2fs_JL (g, fstype, blocksize, device, label);
   }
+
   private native void _mke2fs_JL (long g, String fstype, int blocksize, String device, String label)
     throws LibGuestFSException;
 
@@ -6902,8 +7616,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mke2fs_JU: handle is closed");
+
     _mke2fs_JU (g, fstype, blocksize, device, uuid);
   }
+
   private native void _mke2fs_JU (long g, String fstype, int blocksize, String device, String uuid)
     throws LibGuestFSException;
 
@@ -6923,8 +7639,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("modprobe: handle is closed");
+
     _modprobe (g, modulename);
   }
+
   private native void _modprobe (long g, String modulename)
     throws LibGuestFSException;
 
@@ -6947,8 +7665,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("echo_daemon: handle is closed");
+
     return _echo_daemon (g, words);
   }
+
   private native String _echo_daemon (long g, String[] words)
     throws LibGuestFSException;
 
@@ -6979,8 +7699,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("find0: handle is closed");
+
     _find0 (g, directory, files);
   }
+
   private native void _find0 (long g, String directory, String files)
     throws LibGuestFSException;
 
@@ -7029,8 +7751,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("case_sensitive_path: handle is closed");
+
     return _case_sensitive_path (g, path);
   }
+
   private native String _case_sensitive_path (long g, String path)
     throws LibGuestFSException;
 
@@ -7053,8 +7777,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("vfs_type: handle is closed");
+
     return _vfs_type (g, device);
   }
+
   private native String _vfs_type (long g, String device)
     throws LibGuestFSException;
 
@@ -7071,8 +7797,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("truncate: handle is closed");
+
     _truncate (g, path);
   }
+
   private native void _truncate (long g, String path)
     throws LibGuestFSException;
 
@@ -7096,8 +7824,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("truncate_size: handle is closed");
+
     _truncate_size (g, path, size);
   }
+
   private native void _truncate_size (long g, String path, long size)
     throws LibGuestFSException;
 
@@ -7128,8 +7858,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("utimens: handle is closed");
+
     _utimens (g, path, atsecs, atnsecs, mtsecs, mtnsecs);
   }
+
   private native void _utimens (long g, String path, long atsecs, long atnsecs, long mtsecs, long mtnsecs)
     throws LibGuestFSException;
 
@@ -7152,8 +7884,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("mkdir_mode: handle is closed");
+
     _mkdir_mode (g, path, mode);
   }
+
   private native void _mkdir_mode (long g, String path, int mode)
     throws LibGuestFSException;
 
@@ -7176,8 +7910,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lchown: handle is closed");
+
     _lchown (g, owner, group, path);
   }
+
   private native void _lchown (long g, int owner, int group, String path)
     throws LibGuestFSException;
 
@@ -7210,8 +7946,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lstatlist: handle is closed");
+
     return _lstatlist (g, path, names);
   }
+
   private native Stat[] _lstatlist (long g, String path, String[] names)
     throws LibGuestFSException;
 
@@ -7250,8 +7988,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lxattrlist: handle is closed");
+
     return _lxattrlist (g, path, names);
   }
+
   private native XAttr[] _lxattrlist (long g, String path, String[] names)
     throws LibGuestFSException;
 
@@ -7288,8 +8028,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("readlinklist: handle is closed");
+
     return _readlinklist (g, path, names);
   }
+
   private native String[] _readlinklist (long g, String path, String[] names)
     throws LibGuestFSException;
 
@@ -7316,8 +8058,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("pread: handle is closed");
+
     return _pread (g, path, count, offset);
   }
+
   private native String _pread (long g, String path, int count, long offset)
     throws LibGuestFSException;
 
@@ -7333,15 +8077,16 @@ public class GuestFS {
    * <p>
    * Possible values for "parttype" are:
    * <p>
-   * efi | gpt
-   * Intel EFI / GPT partition table.
+   * efi
+   * gpt Intel EFI / GPT partition table.
    * <p>
    * This is recommended for >= 2 TB partitions that will
    * be accessed from Linux and Intel-based Mac OS X. It
    * also has limited backwards compatibility with the
    * "mbr" format.
    * <p>
-   * mbr | msdos
+   * mbr
+   * msdos
    * The standard PC "Master Boot Record" (MBR) format
    * used by MS-DOS and Windows. This partition type will
    * only work for device sizes up to 2 TB. For large
@@ -7352,8 +8097,8 @@ public class GuestFS {
    * <p>
    * aix AIX disk labels.
    * <p>
-   * amiga | rdb
-   * Amiga "Rigid Disk Block" format.
+   * amiga
+   * rdb Amiga "Rigid Disk Block" format.
    * <p>
    * bsd BSD disk labels.
    * <p>
@@ -7376,8 +8121,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("part_init: handle is closed");
+
     _part_init (g, device, parttype);
   }
+
   private native void _part_init (long g, String device, String parttype)
     throws LibGuestFSException;
 
@@ -7408,8 +8155,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("part_add: handle is closed");
+
     _part_add (g, device, prlogex, startsect, endsect);
   }
+
   private native void _part_add (long g, String device, String prlogex, long startsect, long endsect)
     throws LibGuestFSException;
 
@@ -7434,8 +8183,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("part_disk: handle is closed");
+
     _part_disk (g, device, parttype);
   }
+
   private native void _part_disk (long g, String device, String parttype)
     throws LibGuestFSException;
 
@@ -7457,8 +8208,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("part_set_bootable: handle is closed");
+
     _part_set_bootable (g, device, partnum, bootable);
   }
+
   private native void _part_set_bootable (long g, String device, int partnum, boolean bootable)
     throws LibGuestFSException;
 
@@ -7480,8 +8233,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("part_set_name: handle is closed");
+
     _part_set_name (g, device, partnum, name);
   }
+
   private native void _part_set_name (long g, String device, int partnum, String name)
     throws LibGuestFSException;
 
@@ -7514,8 +8269,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("part_list: handle is closed");
+
     return _part_list (g, device);
   }
+
   private native Partition[] _part_list (long g, String device)
     throws LibGuestFSException;
 
@@ -7538,8 +8295,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("part_get_parttype: handle is closed");
+
     return _part_get_parttype (g, device);
   }
+
   private native String _part_get_parttype (long g, String device)
     throws LibGuestFSException;
 
@@ -7562,8 +8321,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("fill: handle is closed");
+
     _fill (g, c, len, path);
   }
+
   private native void _fill (long g, int c, int len, String path)
     throws LibGuestFSException;
 
@@ -7626,8 +8387,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("available: handle is closed");
+
     _available (g, groups);
   }
+
   private native void _available (long g, String[] groups)
     throws LibGuestFSException;
 
@@ -7651,8 +8414,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("dd: handle is closed");
+
     _dd (g, src, dest);
   }
+
   private native void _dd (long g, String src, String dest)
     throws LibGuestFSException;
 
@@ -7672,8 +8437,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("filesize: handle is closed");
+
     return _filesize (g, file);
   }
+
   private native long _filesize (long g, String file)
     throws LibGuestFSException;
 
@@ -7690,8 +8457,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lvrename: handle is closed");
+
     _lvrename (g, logvol, newlogvol);
   }
+
   private native void _lvrename (long g, String logvol, String newlogvol)
     throws LibGuestFSException;
 
@@ -7708,8 +8477,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("vgrename: handle is closed");
+
     _vgrename (g, volgroup, newvolgroup);
   }
+
   private native void _vgrename (long g, String volgroup, String newvolgroup)
     throws LibGuestFSException;
 
@@ -7739,8 +8510,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("initrd_cat: handle is closed");
+
     return _initrd_cat (g, initrdpath, filename);
   }
+
   private native String _initrd_cat (long g, String initrdpath, String filename)
     throws LibGuestFSException;
 
@@ -7756,8 +8529,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("pvuuid: handle is closed");
+
     return _pvuuid (g, device);
   }
+
   private native String _pvuuid (long g, String device)
     throws LibGuestFSException;
 
@@ -7774,8 +8549,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("vguuid: handle is closed");
+
     return _vguuid (g, vgname);
   }
+
   private native String _vguuid (long g, String vgname)
     throws LibGuestFSException;
 
@@ -7791,8 +8568,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lvuuid: handle is closed");
+
     return _lvuuid (g, device);
   }
+
   private native String _lvuuid (long g, String device)
     throws LibGuestFSException;
 
@@ -7815,8 +8594,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("vgpvuuids: handle is closed");
+
     return _vgpvuuids (g, vgname);
   }
+
   private native String[] _vgpvuuids (long g, String vgname)
     throws LibGuestFSException;
 
@@ -7838,8 +8619,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("vglvuuids: handle is closed");
+
     return _vglvuuids (g, vgname);
   }
+
   private native String[] _vglvuuids (long g, String vgname)
     throws LibGuestFSException;
 
@@ -7860,8 +8643,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("copy_size: handle is closed");
+
     _copy_size (g, src, dest, size);
   }
+
   private native void _copy_size (long g, String src, String dest, long size)
     throws LibGuestFSException;
 
@@ -7882,8 +8667,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("zero_device: handle is closed");
+
     _zero_device (g, device);
   }
+
   private native void _zero_device (long g, String device)
     throws LibGuestFSException;
 
@@ -7900,8 +8687,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("txz_in: handle is closed");
+
     _txz_in (g, tarball, directory);
   }
+
   private native void _txz_in (long g, String tarball, String directory)
     throws LibGuestFSException;
 
@@ -7919,8 +8708,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("txz_out: handle is closed");
+
     _txz_out (g, directory, tarball);
   }
+
   private native void _txz_out (long g, String directory, String tarball)
     throws LibGuestFSException;
 
@@ -7941,6 +8732,13 @@ public class GuestFS {
    * <p>
    * See also ntfsresize(8).
    * <p>
+   * This function is deprecated. In new code, use the
+   * "ntfsresize_opts" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public void ntfsresize (String device)
@@ -7948,8 +8746,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("ntfsresize: handle is closed");
+
     _ntfsresize (g, device);
   }
+
   private native void _ntfsresize (long g, String device)
     throws LibGuestFSException;
 
@@ -7966,8 +8766,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("vgscan: handle is closed");
+
     _vgscan (g);
   }
+
   private native void _vgscan (long g)
     throws LibGuestFSException;
 
@@ -7988,8 +8790,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("part_del: handle is closed");
+
     _part_del (g, device, partnum);
   }
+
   private native void _part_del (long g, String device, int partnum)
     throws LibGuestFSException;
 
@@ -8008,8 +8812,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("part_get_bootable: handle is closed");
+
     return _part_get_bootable (g, device, partnum);
   }
+
   private native boolean _part_get_bootable (long g, String device, int partnum)
     throws LibGuestFSException;
 
@@ -8030,8 +8836,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("part_get_mbr_id: handle is closed");
+
     return _part_get_mbr_id (g, device, partnum);
   }
+
   private native int _part_get_mbr_id (long g, String device, int partnum)
     throws LibGuestFSException;
 
@@ -8055,8 +8863,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("part_set_mbr_id: handle is closed");
+
     _part_set_mbr_id (g, device, partnum, idbyte);
   }
+
   private native void _part_set_mbr_id (long g, String device, int partnum, int idbyte)
     throws LibGuestFSException;
 
@@ -8074,8 +8884,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("checksum_device: handle is closed");
+
     return _checksum_device (g, csumtype, device);
   }
+
   private native String _checksum_device (long g, String csumtype, String device)
     throws LibGuestFSException;
 
@@ -8095,8 +8907,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lvresize_free: handle is closed");
+
     _lvresize_free (g, lv, percent);
   }
+
   private native void _lvresize_free (long g, String lv, int percent)
     throws LibGuestFSException;
 
@@ -8113,8 +8927,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("aug_clear: handle is closed");
+
     _aug_clear (g, augpath);
   }
+
   private native void _aug_clear (long g, String augpath)
     throws LibGuestFSException;
 
@@ -8131,8 +8947,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("get_umask: handle is closed");
+
     return _get_umask (g);
   }
+
   private native int _get_umask (long g)
     throws LibGuestFSException;
 
@@ -8141,8 +8959,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("debug_upload: handle is closed");
+
     _debug_upload (g, filename, tmpname, mode);
   }
+
   private native void _debug_upload (long g, String filename, String tmpname, int mode)
     throws LibGuestFSException;
 
@@ -8159,8 +8979,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("base64_in: handle is closed");
+
     _base64_in (g, base64file, filename);
   }
+
   private native void _base64_in (long g, String base64file, String filename)
     throws LibGuestFSException;
 
@@ -8178,8 +9000,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("base64_out: handle is closed");
+
     _base64_out (g, filename, base64file);
   }
+
   private native void _base64_out (long g, String filename, String base64file)
     throws LibGuestFSException;
 
@@ -8205,8 +9029,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("checksums_out: handle is closed");
+
     _checksums_out (g, csumtype, directory, sumsfile);
   }
+
   private native void _checksums_out (long g, String csumtype, String directory, String sumsfile)
     throws LibGuestFSException;
 
@@ -8226,8 +9052,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("fill_pattern: handle is closed");
+
     _fill_pattern (g, pattern, len, path);
   }
+
   private native void _fill_pattern (long g, String pattern, int len, String path)
     throws LibGuestFSException;
 
@@ -8237,6 +9065,8 @@ public class GuestFS {
    * This call creates a file called "path". The content of
    * the file is the string "content" (which can contain any
    * 8 bit data).
+   * <p>
+   * See also "g.write_append".
    * <p>
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
@@ -8249,8 +9079,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("write: handle is closed");
+
     _write (g, path, content);
   }
+
   private native void _write (long g, String path, byte[] content)
     throws LibGuestFSException;
 
@@ -8281,8 +9113,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("pwrite: handle is closed");
+
     return _pwrite (g, path, content, offset);
   }
+
   private native int _pwrite (long g, String path, byte[] content, long offset)
     throws LibGuestFSException;
 
@@ -8300,8 +9134,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("resize2fs_size: handle is closed");
+
     _resize2fs_size (g, device, size);
   }
+
   private native void _resize2fs_size (long g, String device, long size)
     throws LibGuestFSException;
 
@@ -8319,8 +9155,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("pvresize_size: handle is closed");
+
     _pvresize_size (g, device, size);
   }
+
   private native void _pvresize_size (long g, String device, long size)
     throws LibGuestFSException;
 
@@ -8331,6 +9169,13 @@ public class GuestFS {
    * it allows you to specify the new size (in bytes)
    * explicitly.
    * <p>
+   * This function is deprecated. In new code, use the
+   * "ntfsresize_opts" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public void ntfsresize_size (String device, long size)
@@ -8338,8 +9183,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("ntfsresize_size: handle is closed");
+
     _ntfsresize_size (g, device, size);
   }
+
   private native void _ntfsresize_size (long g, String device, long size)
     throws LibGuestFSException;
 
@@ -8361,8 +9208,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("available_all_groups: handle is closed");
+
     return _available_all_groups (g);
   }
+
   private native String[] _available_all_groups (long g)
     throws LibGuestFSException;
 
@@ -8392,8 +9241,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("fallocate64: handle is closed");
+
     _fallocate64 (g, path, len);
   }
+
   private native void _fallocate64 (long g, String path, long len)
     throws LibGuestFSException;
 
@@ -8416,8 +9267,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("vfs_label: handle is closed");
+
     return _vfs_label (g, device);
   }
+
   private native String _vfs_label (long g, String device)
     throws LibGuestFSException;
 
@@ -8439,8 +9292,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("vfs_uuid: handle is closed");
+
     return _vfs_uuid (g, device);
   }
+
   private native String _vfs_uuid (long g, String device)
     throws LibGuestFSException;
 
@@ -8478,8 +9333,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lvm_set_filter: handle is closed");
+
     _lvm_set_filter (g, devices);
   }
+
   private native void _lvm_set_filter (long g, String[] devices)
     throws LibGuestFSException;
 
@@ -8499,8 +9356,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lvm_clear_filter: handle is closed");
+
     _lvm_clear_filter (g);
   }
+
   private native void _lvm_clear_filter (long g)
     throws LibGuestFSException;
 
@@ -8525,6 +9384,9 @@ public class GuestFS {
    * calling "g.vgscan" followed by "g.vg_activate_all" will
    * make them visible.
    * <p>
+   * Use "g.list_dm_devices" to list all device mapper
+   * devices.
+   * <p>
    * @throws LibGuestFSException
    */
   public void luks_open (String device, String key, String mapname)
@@ -8532,8 +9394,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("luks_open: handle is closed");
+
     _luks_open (g, device, key, mapname);
   }
+
   private native void _luks_open (long g, String device, String key, String mapname)
     throws LibGuestFSException;
 
@@ -8550,8 +9414,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("luks_open_ro: handle is closed");
+
     _luks_open_ro (g, device, key, mapname);
   }
+
   private native void _luks_open_ro (long g, String device, String key, String mapname)
     throws LibGuestFSException;
 
@@ -8571,8 +9437,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("luks_close: handle is closed");
+
     _luks_close (g, device);
   }
+
   private native void _luks_close (long g, String device)
     throws LibGuestFSException;
 
@@ -8594,8 +9462,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("luks_format: handle is closed");
+
     _luks_format (g, device, key, keyslot);
   }
+
   private native void _luks_format (long g, String device, String key, int keyslot)
     throws LibGuestFSException;
 
@@ -8615,8 +9485,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("luks_format_cipher: handle is closed");
+
     _luks_format_cipher (g, device, key, keyslot, cipher);
   }
+
   private native void _luks_format_cipher (long g, String device, String key, int keyslot, String cipher)
     throws LibGuestFSException;
 
@@ -8639,8 +9511,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("luks_add_key: handle is closed");
+
     _luks_add_key (g, device, key, newkey, keyslot);
   }
+
   private native void _luks_add_key (long g, String device, String key, String newkey, int keyslot)
     throws LibGuestFSException;
 
@@ -8658,8 +9532,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("luks_kill_slot: handle is closed");
+
     _luks_kill_slot (g, device, key, keyslot);
   }
+
   private native void _luks_kill_slot (long g, String device, String key, int keyslot)
     throws LibGuestFSException;
 
@@ -8676,8 +9552,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("is_lv: handle is closed");
+
     return _is_lv (g, device);
   }
+
   private native boolean _is_lv (long g, String device)
     throws LibGuestFSException;
 
@@ -8697,8 +9575,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("findfs_uuid: handle is closed");
+
     return _findfs_uuid (g, uuid);
   }
+
   private native String _findfs_uuid (long g, String uuid)
     throws LibGuestFSException;
 
@@ -8718,8 +9598,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("findfs_label: handle is closed");
+
     return _findfs_label (g, label);
   }
+
   private native String _findfs_label (long g, String label)
     throws LibGuestFSException;
 
@@ -8738,8 +9620,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("is_chardev: handle is closed");
+
     return _is_chardev (g, path);
   }
+
   private native boolean _is_chardev (long g, String path)
     throws LibGuestFSException;
 
@@ -8758,8 +9642,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("is_blockdev: handle is closed");
+
     return _is_blockdev (g, path);
   }
+
   private native boolean _is_blockdev (long g, String path)
     throws LibGuestFSException;
 
@@ -8778,8 +9664,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("is_fifo: handle is closed");
+
     return _is_fifo (g, path);
   }
+
   private native boolean _is_fifo (long g, String path)
     throws LibGuestFSException;
 
@@ -8798,8 +9686,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("is_symlink: handle is closed");
+
     return _is_symlink (g, path);
   }
+
   private native boolean _is_symlink (long g, String path)
     throws LibGuestFSException;
 
@@ -8818,8 +9708,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("is_socket: handle is closed");
+
     return _is_socket (g, path);
   }
+
   private native boolean _is_socket (long g, String path)
     throws LibGuestFSException;
 
@@ -8840,8 +9732,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("part_to_dev: handle is closed");
+
     return _part_to_dev (g, partition);
   }
+
   private native String _part_to_dev (long g, String partition)
     throws LibGuestFSException;
 
@@ -8872,8 +9766,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("upload_offset: handle is closed");
+
     _upload_offset (g, filename, remotefilename, offset);
   }
+
   private native void _upload_offset (long g, String filename, String remotefilename, long offset)
     throws LibGuestFSException;
 
@@ -8901,8 +9797,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("download_offset: handle is closed");
+
     _download_offset (g, remotefilename, filename, offset, size);
   }
+
   private native void _download_offset (long g, String remotefilename, String filename, long offset, long size)
     throws LibGuestFSException;
 
@@ -8932,8 +9830,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("pwrite_device: handle is closed");
+
     return _pwrite_device (g, device, content, offset);
   }
+
   private native int _pwrite_device (long g, String device, byte[] content, long offset)
     throws LibGuestFSException;
 
@@ -8959,8 +9859,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("pread_device: handle is closed");
+
     return _pread_device (g, device, count, offset);
   }
+
   private native String _pread_device (long g, String device, int count, long offset)
     throws LibGuestFSException;
 
@@ -8983,8 +9885,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lvm_canonical_lv_name: handle is closed");
+
     return _lvm_canonical_lv_name (g, lvname);
   }
+
   private native String _lvm_canonical_lv_name (long g, String lvname)
     throws LibGuestFSException;
 
@@ -9017,21 +9921,69 @@ public class GuestFS {
    * You cannot use this optional parameter with the
    * "gfs" or "gfs2" filesystem type.
    * <p>
+   * "inode"
+   * This passes the *-I* parameter to the external
+   * mke2fs(8) program which sets the inode size (only
+   * for ext2/3/4 filesystems at present).
+   * <p>
+   * "sectorsize"
+   * This passes the *-S* parameter to external
+   * mkfs.ufs(8) program, which sets sector size for ufs
+   * filesystem.
+   * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
-   * empty Map for no optional arguments.
+   * empty Map or null for no optional arguments.
    * <p>
    * @throws LibGuestFSException
    */
-  public void mkfs_opts (String fstype, String device, HashMap optargs)
+  public void mkfs_opts (String fstype, String device, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("mkfs_opts: handle is closed");
-    _mkfs_opts (g, fstype, device, optargs);
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    int blocksize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("blocksize");
+    if (_optobj != null) {
+      blocksize = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 1;
+    }
+    String features = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("features");
+    if (_optobj != null) {
+      features = ((String) _optobj);
+      _optargs_bitmask |= 2;
+    }
+    int inode = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("inode");
+    if (_optobj != null) {
+      inode = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 4;
+    }
+    int sectorsize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("sectorsize");
+    if (_optobj != null) {
+      sectorsize = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 8;
+    }
+
+    _mkfs_opts (g, fstype, device, _optargs_bitmask, blocksize, features, inode, sectorsize);
   }
-  private native void _mkfs_opts (long g, String fstype, String device, HashMap optargs)
+
+  private native void _mkfs_opts (long g, String fstype, String device, long _optargs_bitmask, int blocksize, String features, int inode, int sectorsize)
     throws LibGuestFSException;
 
   /**
@@ -9063,8 +10015,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("getxattr: handle is closed");
+
     return _getxattr (g, path, name);
   }
+
   private native String _getxattr (long g, String path, String name)
     throws LibGuestFSException;
 
@@ -9096,8 +10050,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("lgetxattr: handle is closed");
+
     return _lgetxattr (g, path, name);
   }
+
   private native String _lgetxattr (long g, String path, String name)
     throws LibGuestFSException;
 
@@ -9121,8 +10077,10 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("resize2fs_M: handle is closed");
+
     _resize2fs_M (g, device);
   }
+
   private native void _resize2fs_M (long g, String device)
     throws LibGuestFSException;
 
@@ -9131,9 +10089,284 @@ public class GuestFS {
   {
     if (g == 0)
       throw new LibGuestFSException ("internal_autosync: handle is closed");
+
     _internal_autosync (g);
   }
+
   private native void _internal_autosync (long g)
+    throws LibGuestFSException;
+
+  /**
+   * test if a file contains all zero bytes
+   * <p>
+   * This returns true iff the file exists and the file is
+   * empty or it contains all zero bytes.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean is_zero (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("is_zero: handle is closed");
+
+    return _is_zero (g, path);
+  }
+
+  private native boolean _is_zero (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * test if a device contains all zero bytes
+   * <p>
+   * This returns true iff the device exists and contains all
+   * zero bytes.
+   * <p>
+   * Note that for large devices this can take a long time to
+   * run.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean is_zero_device (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("is_zero_device: handle is closed");
+
+    return _is_zero_device (g, device);
+  }
+
+  private native boolean _is_zero_device (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * list 9p filesystems
+   * <p>
+   * List all 9p filesystems attached to the guest. A list of
+   * mount tags is returned.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] list_9p ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("list_9p: handle is closed");
+
+    return _list_9p (g);
+  }
+
+  private native String[] _list_9p (long g)
+    throws LibGuestFSException;
+
+  /**
+   * mount 9p filesystem
+   * <p>
+   * Mount the virtio-9p filesystem with the tag "mounttag"
+   * on the directory "mountpoint".
+   * <p>
+   * If required, "trans=virtio" will be automatically added
+   * to the options. Any other options required can be passed
+   * in the optional "options" parameter.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void mount_9p (String mounttag, String mountpoint, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mount_9p: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    String options = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("options");
+    if (_optobj != null) {
+      options = ((String) _optobj);
+      _optargs_bitmask |= 1;
+    }
+
+    _mount_9p (g, mounttag, mountpoint, _optargs_bitmask, options);
+  }
+
+  private native void _mount_9p (long g, String mounttag, String mountpoint, long _optargs_bitmask, String options)
+    throws LibGuestFSException;
+
+  /**
+   * list device mapper devices
+   * <p>
+   * List all device mapper devices.
+   * <p>
+   * The returned list contains "/dev/mapper/*" devices, eg.
+   * ones created by a previous call to "g.luks_open".
+   * <p>
+   * Device mapper devices which correspond to logical
+   * volumes are *not* returned in this list. Call "g.lvs" if
+   * you want to list logical volumes.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] list_dm_devices ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("list_dm_devices: handle is closed");
+
+    return _list_dm_devices (g);
+  }
+
+  private native String[] _list_dm_devices (long g)
+    throws LibGuestFSException;
+
+  /**
+   * resize an NTFS filesystem
+   * <p>
+   * This command resizes an NTFS filesystem, expanding or
+   * shrinking it to the size of the underlying device.
+   * <p>
+   * The optional parameters are:
+   * <p>
+   * "size"
+   * The new size (in bytes) of the filesystem. If
+   * omitted, the filesystem is resized to fit the
+   * container (eg. partition).
+   * <p>
+   * "force"
+   * If this option is true, then force the resize of the
+   * filesystem even if the filesystem is marked as
+   * requiring a consistency check.
+   * <p>
+   * After the resize operation, the filesystem is always
+   * marked as requiring a consistency check (for
+   * safety). You have to boot into Windows to perform
+   * this check and clear this condition. If you *don't*
+   * set the "force" option then it is not possible to
+   * call "g.ntfsresize_opts" multiple times on a single
+   * filesystem without booting into Windows between each
+   * resize.
+   * <p>
+   * See also ntfsresize(8).
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void ntfsresize_opts (String device, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ntfsresize_opts: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    long size = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("size");
+    if (_optobj != null) {
+      size = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 1;
+    }
+    boolean force = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("force");
+    if (_optobj != null) {
+      force = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2;
+    }
+
+    _ntfsresize_opts (g, device, _optargs_bitmask, size, force);
+  }
+
+  private native void _ntfsresize_opts (long g, String device, long _optargs_bitmask, long size, boolean force)
+    throws LibGuestFSException;
+
+  /**
+   * resize a btrfs filesystem
+   * <p>
+   * This command resizes a btrfs filesystem.
+   * <p>
+   * Note that unlike other resize calls, the filesystem has
+   * to be mounted and the parameter is the mountpoint not
+   * the device (this is a requirement of btrfs itself).
+   * <p>
+   * The optional parameters are:
+   * <p>
+   * "size"
+   * The new size (in bytes) of the filesystem. If
+   * omitted, the filesystem is resized to the maximum
+   * size.
+   * <p>
+   * See also btrfs(8).
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_filesystem_resize (String mountpoint, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_filesystem_resize: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    long size = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("size");
+    if (_optobj != null) {
+      size = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 1;
+    }
+
+    _btrfs_filesystem_resize (g, mountpoint, _optargs_bitmask, size);
+  }
+
+  private native void _btrfs_filesystem_resize (long g, String mountpoint, long _optargs_bitmask, long size)
+    throws LibGuestFSException;
+
+  /**
+   * append content to end of file
+   * <p>
+   * This call appends "content" to the end of file "path".
+   * If "path" does not exist, then a new file is created.
+   * <p>
+   * See also "g.write".
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void write_append (String path, byte[] content)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("write_append: handle is closed");
+
+    _write_append (g, path, content);
+  }
+
+  private native void _write_append (long g, String path, byte[] content)
     throws LibGuestFSException;
 
 }

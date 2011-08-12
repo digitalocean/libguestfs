@@ -1,5 +1,5 @@
-# open.m4 serial 8
-dnl Copyright (C) 2007-2010 Free Software Foundation, Inc.
+# open.m4 serial 12
+dnl Copyright (C) 2007-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -22,25 +22,32 @@ AC_DEFUN([gl_FUNC_OPEN],
             touch conftest.tmp
             ln -s conftest.tmp conftest.lnk
           fi
-          AC_TRY_RUN([
+          AC_RUN_IFELSE(
+            [AC_LANG_SOURCE([[
 #include <fcntl.h>
 #if HAVE_UNISTD_H
 # include <unistd.h>
 #endif
 int main ()
 {
+  int result = 0;
 #if HAVE_LSTAT
-  if (open ("conftest.lnk/", O_RDONLY) != -1) return 2;
+  if (open ("conftest.lnk/", O_RDONLY) != -1)
+    result |= 1;
 #endif
-  return open ("conftest.sl/", O_CREAT, 0600) >= 0;
-}], [gl_cv_func_open_slash=yes], [gl_cv_func_open_slash=no],
+  if (open ("conftest.sl/", O_CREAT, 0600) >= 0)
+    result |= 2;
+  return result;
+}]])],
+            [gl_cv_func_open_slash=yes],
+            [gl_cv_func_open_slash=no],
             [
 changequote(,)dnl
              case "$host_os" in
-               freebsd*)        gl_cv_func_open_slash="guessing no" ;;
-               solaris2.[0-9]*) gl_cv_func_open_slash="guessing no" ;;
-               hpux*)           gl_cv_func_open_slash="guessing no" ;;
-               *)               gl_cv_func_open_slash="guessing yes" ;;
+               freebsd* | aix* | hpux* | solaris2.[0-9] | solaris2.[0-9].*)
+                 gl_cv_func_open_slash="guessing no" ;;
+               *)
+                 gl_cv_func_open_slash="guessing yes" ;;
              esac
 changequote([,])dnl
             ])
@@ -55,6 +62,15 @@ changequote([,])dnl
       esac
       ;;
   esac
+  dnl Replace open() for supporting the gnulib-defined O_NONBLOCK flag.
+  m4_ifdef([gl_NONBLOCKING_IO], [
+    if test $REPLACE_OPEN = 0; then
+      gl_NONBLOCKING_IO
+      if test $gl_cv_have_open_O_NONBLOCK != yes; then
+        gl_REPLACE_OPEN
+      fi
+    fi
+  ])
 ])
 
 AC_DEFUN([gl_REPLACE_OPEN],

@@ -53,6 +53,12 @@ init_libxml2 (void)
   LIBXML_TEST_VERSION;
 }
 
+static void
+ignore_errors (void *ignore, virErrorPtr ignore2)
+{
+  /* empty */
+}
+
 struct guestfs___add_libvirt_dom_argv {
   uint64_t bitmask;
 #define GUESTFS___ADD_LIBVIRT_DOM_READONLY_BITMASK (UINT64_C(1)<<0)
@@ -76,6 +82,7 @@ guestfs__add_domain (guestfs_h *g, const char *domain_name,
   const char *libvirturi;
   int readonly;
   int live;
+  int allowuuid;
   const char *iface;
   struct guestfs___add_libvirt_dom_argv optargs2 = { .bitmask = 0 };
 
@@ -87,6 +94,8 @@ guestfs__add_domain (guestfs_h *g, const char *domain_name,
           ? optargs->iface : NULL;
   live = optargs->bitmask & GUESTFS_ADD_DOMAIN_LIVE_BITMASK
          ? optargs->live : 0;
+  allowuuid = optargs->bitmask & GUESTFS_ADD_DOMAIN_ALLOWUUID_BITMASK
+            ? optargs->allowuuid : 0;
 
   if (live && readonly) {
     error (g, _("you cannot set both live and readonly flags"));
@@ -102,7 +111,20 @@ guestfs__add_domain (guestfs_h *g, const char *domain_name,
     goto cleanup;
   }
 
-  dom = virDomainLookupByName (conn, domain_name);
+  /* Suppress default behaviour of printing errors to stderr.  Note
+   * you can't set this to NULL to ignore errors; setting it to NULL
+   * restores the default error handler ...
+   */
+  virConnSetErrorFunc (conn, NULL, ignore_errors);
+
+  /* Try UUID first. */
+  if (allowuuid)
+    dom = virDomainLookupByUUIDString (conn, domain_name);
+
+  /* Try ordinary domain name. */
+  if (!dom)
+    dom = virDomainLookupByName (conn, domain_name);
+
   if (!dom) {
     err = virGetLastError ();
     error (g, _("no libvirt domain called '%s': %s"),

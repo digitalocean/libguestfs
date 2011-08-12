@@ -1,5 +1,5 @@
 /* Test of strerror() function.
-   Copyright (C) 2007-2010 Free Software Foundation, Inc.
+   Copyright (C) 2007-2011 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,25 +33,43 @@ main (void)
 {
   char *str;
 
+  errno = 0;
   str = strerror (EACCES);
   ASSERT (str);
   ASSERT (*str);
+  ASSERT (errno == 0);
 
+  errno = 0;
   str = strerror (ETIMEDOUT);
   ASSERT (str);
   ASSERT (*str);
+  ASSERT (errno == 0);
 
+  errno = 0;
   str = strerror (EOVERFLOW);
   ASSERT (str);
   ASSERT (*str);
+  ASSERT (errno == 0);
 
+  /* POSIX requires strerror (0) to succeed.  Reject use of "Unknown
+     error", but allow "Success", "No error", or even Solaris' "Error
+     0" which are distinct patterns from true out-of-range strings.
+     http://austingroupbugs.net/view.php?id=382  */
+  errno = 0;
   str = strerror (0);
   ASSERT (str);
   ASSERT (*str);
+  ASSERT (errno == 0);
+  ASSERT (strstr (str, "nknown") == NULL);
 
+  /* POSIX requires strerror to produce a non-NULL result for all
+     inputs; as an extension, we also guarantee a non-empty reseult.
+     Reporting EINVAL is optional.  */
+  errno = 0;
   str = strerror (-3);
   ASSERT (str);
   ASSERT (*str);
+  ASSERT (errno == 0 || errno == EINVAL);
 
   return 0;
 }

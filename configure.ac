@@ -17,8 +17,8 @@
 
 # major/minor/release must be numbers
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [10])
-m4_define([libguestfs_release], [7])
+m4_define([libguestfs_minor],   [12])
+m4_define([libguestfs_release], [0])
 # extra can be any string
 m4_define([libguestfs_extra],   [])
 
@@ -107,6 +107,8 @@ if test "$gl_gcc_warnings" = yes; then
                                     # by Python, Ruby and xstrtoll.
   nw="$nw -Wstack-protector"        # Don't warn about stack-protector
                                     # failures (seen on Ubuntu).
+  nw="$nw -Wmissing-noreturn"       # Don't warn about missed noreturn funcs
+                                    # (seen on Ubuntu).
 
   gl_MANYWARN_ALL_GCC([ws])
   gl_MANYWARN_COMPLEMENT([ws], [$ws], [$nw])
@@ -187,7 +189,7 @@ if test "x$enable_appliance" = "xyes"; then
     test "x$FEBOOTSTRAP" = "xno" &&
         AC_MSG_ERROR([febootstrap must be installed])
     dnl febootstrap 2.x did not support the --version parameter
-    $FEBOOTSTRAP --version >&AS_MESSAGE_LOG_FD 2>&1 ||
+    $FEBOOTSTRAP --version >/dev/null 2>&1 ||
         AC_MSG_ERROR([febootstrap >= 3.0 must be installed, your version is too old])
 
     dnl Pass a febootstrap --yum-config option.
@@ -210,7 +212,7 @@ if test "x$enable_appliance" = "xyes"; then
     DISTRO=REDHAT
     if test -f /etc/debian_version; then
         DISTRO=DEBIAN
-	if grep -q 'DISTRIB_ID=Ubuntu' /etc/lsb-release 2>&AS_MESSAGE_LOG_FD; then
+	if grep -q 'DISTRIB_ID=Ubuntu' /etc/lsb-release 2>/dev/null; then
             DISTRO=UBUNTU
 	fi
     fi
@@ -251,7 +253,7 @@ test "x$POD2HTML" = "xno" &&
 
 dnl Check if pod2man, pod2text take --stderr and -u options (not in RHEL 5).
 AC_MSG_CHECKING([if pod2man takes --stderr option])
-if "$POD2MAN" --stderr >&AS_MESSAGE_LOG_FD 2>&1; then
+if "$POD2MAN" --stderr >/dev/null 2>&1; then
     AC_MSG_RESULT([yes])
     POD2_STDERR_OPTION="--stderr"
 else
@@ -261,7 +263,7 @@ fi
 AC_SUBST([POD2_STDERR_OPTION])
 
 AC_MSG_CHECKING([if pod2man takes -u option])
-if "$POD2MAN" -u >&AS_MESSAGE_LOG_FD 2>&1; then
+if "$POD2MAN" -u >/dev/null 2>&1; then
     AC_MSG_RESULT([yes])
     POD2_UTF8_OPTION="-u"
 else
@@ -311,7 +313,7 @@ AC_DEFINE_UNQUOTED([QEMU],["$QEMU"],[Location of qemu binary.])
 dnl Check that the chosen qemu has virtio-serial support.
 if test "x$vmchannel_test" != "xno"; then
     AC_MSG_CHECKING([that $QEMU -help works])
-    if $QEMU -help >&AS_MESSAGE_LOG_FD 2>&1; then
+    if $QEMU -help > /dev/null 2>&1; then
         AC_MSG_RESULT([yes])
     else
         AC_MSG_RESULT([no])
@@ -497,6 +499,8 @@ AM_CONDITIONAL([HAVE_OCAML],
                [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno"])
 AM_CONDITIONAL([HAVE_OCAML_PCRE],
                [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && test "x$OCAML_PKG_pcre" != "xno"])
+AM_CONDITIONAL([HAVE_OCAMLDOC],
+               [test "x$OCAMLDOC" != "xno"])
 
 dnl Check for Perl (optional, for Perl bindings).
 PERL=no
@@ -514,7 +518,7 @@ AS_IF([test "x$enable_perl" != "xno"],
         missing_perl_modules=no
         for pm in Test::More ExtUtils::MakeMaker; do
             AC_MSG_CHECKING([for $pm])
-            if ! perl -M$pm -e1 >&AS_MESSAGE_LOG_FD 2>&1; then
+            if ! perl -M$pm -e1 >/dev/null 2>&1; then
                 AC_MSG_RESULT([no])
                 missing_perl_modules=yes
             else
@@ -551,22 +555,13 @@ AS_IF([test "x$enable_python" != "xno"],
             PYTHON_VERSION=`$PYTHON -c "import sys; print sys.version[[0:3]]"`
 	    AC_MSG_RESULT([$PYTHON_VERSION])
 
-            for d in \
-                $PYTHON_PREFIX/include/python$PYTHON_VERSION \
-                /usr/include/python$PYTHON_VERSION \
-                /usr/local/include/python$PYTHON_VERSION
-            do
-                AC_MSG_CHECKING([Python.h in $d])
-                if test -r "$d/Python.h"; then
-                    AC_MSG_RESULT([found])
-                    PYTHON_INCLUDEDIR=$d
-                    break
-                fi
-                AC_MSG_RESULT([not found])
-            done
-            if test "x$PYTHON_INCLUDEDIR" = "x"; then
-                AC_MSG_WARN([Python include directory not found])
+            AC_MSG_CHECKING([for Python include path])
+            if test -z "$PYTHON_INCLUDEDIR"; then
+                python_path=`$PYTHON -c "import distutils.sysconfig; \
+                                         print (distutils.sysconfig.get_python_inc ());"`
+                PYTHON_INCLUDEDIR=$python_path
             fi
+            AC_MSG_RESULT([$PYTHON_INCLUDEDIR])
 
             AC_ARG_WITH([python-installdir],
                         [AS_HELP_STRING([--with-python-installdir],
@@ -577,24 +572,12 @@ AS_IF([test "x$enable_python" != "xno"],
 
 	    if test "x$PYTHON_INSTALLDIR" = "xcheck"; then
 	        PYTHON_INSTALLDIR=
-                for d in \
-                    $PYTHON_PREFIX/lib64/python$PYTHON_VERSION/site-packages \
-                    $PYTHON_PREFIX/lib/python$PYTHON_VERSION/site-packages \
-                    /usr/lib64/python$PYTHON_VERSION/site-packages \
-                    /usr/lib/python$PYTHON_VERSION/site-packages \
-                    /usr/local/lib/python$PYTHON_VERSION/site-packages
-                do
-                    AC_MSG_CHECKING([for $d])
-                    if test -d "$d"; then
-                        AC_MSG_RESULT([found])
-                        PYTHON_INSTALLDIR=$d
-                        break
-                    fi
-                    AC_MSG_RESULT([not found])
-                done
-                if test "x$PYTHON_INSTALLDIR" = "x"; then
-                    AC_MSG_WARN([Python site-packages directory not found])
+                AC_MSG_CHECKING([for Python site-packages path])
+                if test -z "$PYTHON_INSTALLDIR"; then
+                    PYTHON_INSTALLDIR=`$PYTHON -c "import distutils.sysconfig; \
+                                                   print (distutils.sysconfig.get_python_lib(1,0));"`
                 fi
+                AC_MSG_RESULT([$PYTHON_INSTALLDIR])
             fi
 
             old_LIBS="$LIBS"
@@ -798,7 +781,7 @@ AS_IF([test "x$PERL" != "xno"],
         missing_perl_modules=no
         for pm in Pod::Usage Getopt::Long Sys::Virt Data::Dumper Locale::TextDomain Win::Hivex Win::Hivex::Regedit String::ShellQuote; do
             AC_MSG_CHECKING([for $pm])
-            if ! $PERL -M$pm -e1 >&AS_MESSAGE_LOG_FD 2>&1; then
+            if ! $PERL -M$pm -e1 >/dev/null 2>&1; then
                 AC_MSG_RESULT([no])
                 missing_perl_modules=yes
             else
@@ -819,7 +802,7 @@ AC_SUBST(MAX_PROC_NR)
 
 dnl Replace libtool with a wrapper that clobbers dependency_libs in *.la files
 dnl http://lists.fedoraproject.org/pipermail/devel/2010-November/146343.html
-LIBTOOL='bash $(top_srcdir)/libtool-kill-dependency_libs.sh $(top_builddir)/libtool'
+LIBTOOL='$(SHELL) $(top_srcdir)/libtool-kill-dependency_libs.sh $(top_builddir)/libtool'
 AC_SUBST([LIBTOOL])
 
 dnl Run in subdirs.
@@ -840,6 +823,7 @@ AC_CONFIG_FILES([Makefile
                  csharp/Makefile
                  debian/changelog
                  df/Makefile
+                 edit/Makefile
                  examples/Makefile
                  fish/Makefile
                  fuse/Makefile
@@ -850,6 +834,7 @@ AC_CONFIG_FILES([Makefile
                  images/Makefile
                  inspector/Makefile
                  java/Makefile
+                 java/examples/Makefile
                  libguestfs.pc
                  ocaml/META
                  ocaml/Makefile
@@ -904,7 +889,7 @@ echo    "guestfish and C virt tools .......... yes"
 echo -n "Perl virt tools ..................... "
 if test "x$HAVE_TOOLS_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 echo -n "virt-resize ......................... "
-if test "x$HAVE_OCAML_TRUE" = "x" && test "x$HAVE_OCAML_PCRE_TRUE" = "x"; then echo "yes"; else echo "no"; fi
+if test "x$HAVE_OCAML" = "x" && test "x$HAVE_OCAML_PCRE" = "x"; then echo "yes"; else echo "no"; fi
 echo "FUSE filesystem ..................... $enable_fuse"
 echo
 echo "If any optional component is configured 'no' when you expected 'yes'"

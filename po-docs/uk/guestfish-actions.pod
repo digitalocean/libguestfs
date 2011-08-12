@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head2 add-cdrom
 
@@ -26,7 +27,7 @@ L</add-drive-ro> instead.
 
 =back
 
-This function is deprecated.  In new code, use the L</add_drive_opts> call
+This function is deprecated.  In new code, use the C<add_drive_opts> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -37,7 +38,7 @@ these functions.
 
 =head2 domain
 
- add-domain dom [libvirturi:..] [readonly:..] [iface:..] [live:..]
+ add-domain dom [libvirturi:..] [readonly:..] [iface:..] [live:..] [allowuuid:..]
 
 This function adds the disk(s) attached to the named libvirt domain C<dom>.
 It works by connecting to libvirt, requesting the domain and domain XML from
@@ -65,6 +66,11 @@ E<lt>channelE<gt> element in the libvirt XML definition.  The default (if
 the flag is omitted) is never to try.  See L<guestfs(3)/ATTACHING TO RUNNING
 DAEMONS> for more information.
 
+If the C<allowuuid> flag is true (default is false) then a UUID I<may> be
+passed instead of the domain name.  The C<dom> string is treated as a UUID
+first and looked up, and if that lookup fails then we treat C<dom> as a name
+as usual.
+
 The other optional parameters are passed directly through to
 L</add-drive-opts>.
 
@@ -73,7 +79,7 @@ ARGUMENTS>.
 
 =head2 add-drive
 
- add-drive filename
+ add-drive назва_файла
 
 This function is the equivalent of calling L</add-drive-opts> with no
 optional parameters, so the disk is added writable, with the format being
@@ -149,7 +155,7 @@ is added read-only, with the format being detected automatically.
 This is the same as L</add-drive-ro> but it allows you to specify the QEMU
 interface emulation to use at run time.
 
-This function is deprecated.  In new code, use the L</add_drive_opts> call
+This function is deprecated.  In new code, use the C<add_drive_opts> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -163,7 +169,7 @@ these functions.
 This is the same as L</add-drive> but it allows you to specify the QEMU
 interface emulation to use at run time.
 
-This function is deprecated.  In new code, use the L</add_drive_opts> call
+This function is deprecated.  In new code, use the C<add_drive_opts> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -509,6 +515,32 @@ Sets the block device named C<device> to read-write.
 
 This uses the L<blockdev(8)> command.
 
+=head2 btrfs-filesystem-resize
+
+ btrfs-filesystem-resize mountpoint [size:..]
+
+This command resizes a btrfs filesystem.
+
+Note that unlike other resize calls, the filesystem has to be mounted and
+the parameter is the mountpoint not the device (this is a requirement of
+btrfs itself).
+
+The optional parameters are:
+
+=over 4
+
+=item C<size>
+
+The new size (in bytes) of the filesystem.  If omitted, the filesystem is
+resized to the maximum size.
+
+=back
+
+See also L<btrfs(8)>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
 =head2 case-sensitive-path
 
  case-sensitive-path path
@@ -543,7 +575,7 @@ See also L</realpath>.
 
 =head2 cat
 
- cat path
+ cat шлях
 
 Return the contents of the file named C<path>.
 
@@ -817,7 +849,7 @@ maximum guest memory is freed.
 
 =head2 du
 
- du path
+ du шлях
 
 This command runs the C<du -s> command to estimate file space usage for
 C<path>.
@@ -870,7 +902,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 equal
 
- equal file1 file2
+ equal файл1 файл2
 
 This compares the two files C<file1> and C<file2> and returns true if their
 content is exactly equal, or false otherwise.
@@ -879,16 +911,16 @@ The external L<cmp(1)> program is used for the comparison.
 
 =head2 exists
 
- exists path
+ exists шлях
 
 This returns C<true> if and only if there is a file, directory (or anything)
 with the given C<path> name.
 
-See also L</is-file>, L</is-dir>, L</stat>.
+Див. також L</is-file>, L</is-dir>, L</stat>.
 
 =head2 fallocate
 
- fallocate path len
+ fallocate шлях довжина
 
 This command preallocates a file (containing zero bytes) named C<path> of
 size C<len> bytes.  If the file exists already, it is overwritten.
@@ -896,7 +928,7 @@ size C<len> bytes.  If the file exists already, it is overwritten.
 Do not confuse this with the guestfish-specific C<alloc> command which
 allocates a file in the host and attaches it as a device.
 
-This function is deprecated.  In new code, use the L</fallocate64> call
+This function is deprecated.  In new code, use the C<fallocate64> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -905,7 +937,7 @@ these functions.
 
 =head2 fallocate64
 
- fallocate64 path len
+ fallocate64 шлях довжина
 
 This command preallocates a file (containing zero bytes) named C<path> of
 size C<len> bytes.  If the file exists already, it is overwritten.
@@ -922,7 +954,7 @@ commands which create a file in the host and attach it as a device.
 
 =head2 fgrep
 
- fgrep pattern path
+ fgrep шаблон шлях
 
 This calls the external C<fgrep> program and returns the matching lines.
 
@@ -931,7 +963,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 fgrepi
 
- fgrepi pattern path
+ fgrepi шаблон шлях
 
 This calls the external C<fgrep -i> program and returns the matching lines.
 
@@ -940,7 +972,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 file
 
- file path
+ file шлях
 
 This call uses the standard L<file(1)> command to determine the type or
 contents of the file.
@@ -956,11 +988,11 @@ can change in future in ways beyond our control.  In other words, the output
 is not guaranteed by the ABI.
 
 See also: L<file(1)>, L</vfs-type>, L</lstat>, L</is-file>, L</is-blockdev>
-(etc).
+(etc), L</is-zero>.
 
 =head2 file-architecture
 
- file-architecture filename
+ file-architecture назва_файла
 
 This detects the architecture of the binary C<filename>, and returns it if
 known.
@@ -1065,7 +1097,7 @@ kernel module(s) instead.
 
 =head2 filesize
 
- filesize file
+ filesize файл
 
 This command returns the size of C<file> in bytes.
 
@@ -1096,7 +1128,7 @@ bytes.
 
 =head2 find
 
- find directory
+ find каталог
 
 This command lists out all files and directories, recursively, starting at
 C<directory>.  It is essentially equivalent to running the shell command
@@ -1121,14 +1153,14 @@ If C<directory> is not a directory, then this command returns an error.
 
 The returned list is sorted.
 
-See also L</find0>.
+Див. також L</find0>.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 find0
 
- find0 directory (files|-)
+ find0 каталог (файли|-)
 
 This command lists out all files and directories, recursively, starting at
 C<directory>, placing the resulting list in the external file called
@@ -1161,12 +1193,12 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 
 =head2 findfs-label
 
- findfs-label label
+ findfs-label мітка
 
 This command searches the filesystems and returns the one which has the
 given label.  An error is returned if no such filesystem can be found.
 
-To find the label of a filesystem, use L</vfs-label>.
+Для визначення мітки файлової системи скористайтеся L</vfs-label>.
 
 =head2 findfs-uuid
 
@@ -1175,11 +1207,11 @@ To find the label of a filesystem, use L</vfs-label>.
 This command searches the filesystems and returns the one which has the
 given UUID.  An error is returned if no such filesystem can be found.
 
-To find the UUID of a filesystem, use L</vfs-uuid>.
+Для визначення UUID файлової системи скористайтеся L</vfs-uuid>.
 
 =head2 fsck
 
- fsck fstype device
+ fsck тип_файлової_системи пристрій
 
 This runs the filesystem checker (fsck) on C<device> which should have
 filesystem type C<fstype>.
@@ -1237,11 +1269,11 @@ Return the direct appliance mode flag.
 
 =head2 get-e2label
 
- get-e2label device
+ get-e2label пристрій
 
 This returns the ext2/3/4 filesystem label of the filesystem on C<device>.
 
-This function is deprecated.  In new code, use the L</vfs_label> call
+This function is deprecated.  In new code, use the C<vfs_label> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -1250,12 +1282,11 @@ these functions.
 
 =head2 get-e2uuid
 
- get-e2uuid device
+ get-e2uuid пристрій
 
 This returns the ext2/3/4 filesystem UUID of the filesystem on C<device>.
 
-This function is deprecated.  In new code, use the L</vfs_uuid> call
-instead.
+This function is deprecated.  In new code, use the C<vfs_uuid> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -1287,6 +1318,12 @@ Return the current search path.
 
 This is always non-NULL.  If it wasn't set already, then this will return
 the default path.
+
+=head2 get-pgroup
+
+ get-pgroup
+
+This returns the process group flag.
 
 =head2 get-pid
 
@@ -1361,7 +1398,7 @@ See the documentation about SELINUX in L<guestfs(3)>, and L</setcon>
 
 =head2 getxattr
 
- getxattr path name
+ getxattr шлях назва
 
 Get a single extended attribute from file C<path> named C<name>.  This call
 follows symlinks.  If you want to lookup an extended attribute for the
@@ -1376,22 +1413,22 @@ attributes you want in advance and call this function.
 Extended attribute values are blobs of binary data.  If there is no extended
 attribute named C<name>, this returns an error.
 
-See also: L</getxattrs>, L</lgetxattr>, L<attr(5)>.
+Див. також L</getxattrs>, L</lgetxattr>, L<attr(5)>.
 
 =head2 getxattrs
 
- getxattrs path
+ getxattrs шлях
 
 This call lists the extended attributes of the file or directory C<path>.
 
 At the system call level, this is a combination of the L<listxattr(2)> and
 L<getxattr(2)> calls.
 
-See also: L</lgetxattrs>, L<attr(5)>.
+Див. також L</lgetxattrs>, L<attr(5)>.
 
 =head2 glob-expand
 
- glob-expand pattern
+ glob-expand шаблон
 
 This command searches for all the pathnames matching C<pattern> according to
 the wildcard expansion rules used by the shell.
@@ -1403,7 +1440,7 @@ C<GLOB_MARK|GLOB_BRACE>.  See that manual page for more details.
 
 =head2 grep
 
- grep regex path
+ grepi формальний_вираз шлях
 
 This calls the external C<grep> program and returns the matching lines.
 
@@ -1412,7 +1449,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 grepi
 
- grepi regex path
+ grepi формальний_вираз шлях
 
 This calls the external C<grep -i> program and returns the matching lines.
 
@@ -1421,7 +1458,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 grub-install
 
- grub-install root device
+ grub-install кореневий пристрій
 
 This command installs GRUB (the Grand Unified Bootloader) on C<device>, with
 the root directory being C<root>.
@@ -1438,7 +1475,7 @@ replacing C</dev/vda> with the name of the installation device.
 
 =head2 head
 
- head path
+ head шлях
 
 This command returns up to the first 10 lines of a file as a list of
 strings.
@@ -1463,7 +1500,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 hexdump
 
- hexdump path
+ hexdump шлях
 
 This runs C<hexdump -C> on the given C<path>.  The result is the
 human-readable, canonical hex dump of the file.
@@ -1473,7 +1510,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 initrd-cat
 
- initrd-cat initrdpath filename
+ initrd-cat шлях_initrd назва_файла
 
 This command unpacks the file C<filename> from the initrd file called
 C<initrdpath>.  The filename must be given I<without> the initial C</>
@@ -1485,14 +1522,14 @@ initramfs image:
 
  initrd-cat /boot/initrd-<version>.img init
 
-See also L</initrd-list>.
+Див. також L</initrd-list>.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 initrd-list
 
- initrd-list path
+ initrd-list шлях
 
 This command lists out files contained in an initrd.
 
@@ -1506,7 +1543,7 @@ files).
 
 =head2 inotify-add-watch
 
- inotify-add-watch path mask
+ inotify-add-watch шлях маска
 
 Watch C<path> for the events listed in C<mask>.
 
@@ -1584,10 +1621,7 @@ Remove a previously defined inotify watch.  See L</inotify-add-watch>.
 
 =head2 inspect-get-arch
 
- inspect-get-arch root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
+ inspect-get-arch корінь
 
 This returns the architecture of the inspected operating system.  The
 possible return values are listed under L</file-architecture>.
@@ -1599,10 +1633,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =head2 inspect-get-distro
 
- inspect-get-distro root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
+ inspect-get-distro корінь
 
 This returns the distro (distribution) of the inspected operating system.
 
@@ -1686,9 +1717,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
  inspect-get-drive-mappings root
 
-This function should only be called with a root device string as returned by
-L</inspect-os>.
-
 This call is useful for Windows which uses a primitive system of assigning
 drive letters (like "C:") to partitions.  This inspection API examines the
 Windows Registry to find out how disks/partitions are mapped to drive
@@ -1718,10 +1746,7 @@ L</inspect-get-mountpoints>, L</inspect-get-filesystems>.
 
 =head2 inspect-get-filesystems
 
- inspect-get-filesystems root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
+ inspect-get-filesystems корінь
 
 This returns a list of all the filesystems that we think are associated with
 this operating system.  This includes the root filesystem, other ordinary
@@ -1735,10 +1760,7 @@ L</inspect-get-mountpoints>.
 
 =head2 inspect-get-format
 
- inspect-get-format root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
+ inspect-get-format корінь
 
 This returns the format of the inspected operating system.  You can use it
 to detect install images, live CDs and similar.
@@ -1769,10 +1791,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =head2 inspect-get-hostname
 
- inspect-get-hostname root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
+ inspect-get-hostname корінь
 
 This function returns the hostname of the operating system as found by
 inspection of the guest's configuration files.
@@ -1782,12 +1801,73 @@ returned.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
 
+=head2 inspect-get-icon
+
+ inspect-get-icon root [favicon:..] [highquality:..]
+
+This function returns an icon corresponding to the inspected operating
+system.  The icon is returned as a buffer containing a PNG image (re-encoded
+to PNG if necessary).
+
+If it was not possible to get an icon this function returns a zero-length
+(non-NULL) buffer.  I<Callers must check for this case>.
+
+Libguestfs will start by looking for a file called C</etc/favicon.png> or
+C<C:\etc\favicon.png> and if it has the correct format, the contents of this
+file will be returned.  You can disable favicons by passing the optional
+C<favicon> boolean as false (default is true).
+
+If finding the favicon fails, then we look in other places in the guest for
+a suitable icon.
+
+If the optional C<highquality> boolean is true then only high quality icons
+are returned, which means only icons of high resolution with an alpha
+channel.  The default (false) is to return any icon we can, even if it is of
+substandard quality.
+
+Нотатки:
+
+=over 4
+
+=item *
+
+Unlike most other inspection API calls, the guest's disks must be mounted up
+before you call this, since it needs to read information from the guest
+filesystem during the call.
+
+=item *
+
+B<Security:> The icon data comes from the untrusted guest, and should be
+treated with caution.  PNG files have been known to contain exploits.
+Ensure that libpng (or other relevant libraries) are fully up to date before
+trying to process or display the icon.
+
+=item *
+
+The PNG image returned can be any size.  It might not be square.  Libguestfs
+tries to return the largest, highest quality icon available.  The
+application must scale the icon to the required size.
+
+=item *
+
+Extracting icons from Windows guests requires the external C<wrestool>
+program from the C<icoutils> package, and several programs (C<bmptopnm>,
+C<pnmtopng>, C<pamcut>)  from the C<netpbm> package.  These must be
+installed separately.
+
+=item *
+
+Operating system icons are usually trademarks.  Seek legal advice before
+using trademarks in applications.
+
+=back
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
 =head2 inspect-get-major-version
 
- inspect-get-major-version root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
+ inspect-get-major-version корінь
 
 This returns the major version number of the inspected operating system.
 
@@ -1803,10 +1883,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =head2 inspect-get-minor-version
 
- inspect-get-minor-version root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
+ inspect-get-minor-version корінь
 
 This returns the minor version number of the inspected operating system.
 
@@ -1817,10 +1894,7 @@ L</inspect-get-major-version>.
 
 =head2 inspect-get-mountpoints
 
- inspect-get-mountpoints root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
+ inspect-get-mountpoints корінь
 
 This returns a hash of where we think the filesystems associated with this
 operating system should be mounted.  Callers should note that this is at
@@ -1845,10 +1919,7 @@ L</inspect-get-filesystems>.
 
 =head2 inspect-get-package-format
 
- inspect-get-package-format root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
+ inspect-get-package-format корінь
 
 This function and L</inspect-get-package-management> return the package
 format and package management tool used by the inspected operating system.
@@ -1866,10 +1937,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =head2 inspect-get-package-management
 
- inspect-get-package-management root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
+ inspect-get-package-management корінь
 
 L</inspect-get-package-format> and this function return the package format
 and package management tool used by the inspected operating system.  For
@@ -1888,10 +1956,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =head2 inspect-get-product-name
 
- inspect-get-product-name root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
+ inspect-get-product-name корінь
 
 This returns the product name of the inspected operating system.  The
 product name is generally some freeform string which can be displayed to the
@@ -1905,9 +1970,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 =head2 inspect-get-product-variant
 
  inspect-get-product-variant root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
 
 This returns the product variant of the inspected operating system.
 
@@ -1944,10 +2006,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =head2 inspect-get-type
 
- inspect-get-type root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
+ inspect-get-type корінь
 
 This returns the type of the inspected operating system.  Currently defined
 types are:
@@ -1981,9 +2040,6 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
  inspect-get-windows-current-control-set root
 
-This function should only be called with a root device string as returned by
-L</inspect-os>.
-
 This returns the Windows CurrentControlSet of the inspected guest.  The
 CurrentControlSet is a registry key name such as C<ControlSet001>.
 
@@ -1994,10 +2050,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =head2 inspect-get-windows-systemroot
 
- inspect-get-windows-systemroot root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
+ inspect-get-windows-systemroot корінь
 
 This returns the Windows systemroot of the inspected guest.  The systemroot
 is a directory path such as C</WINDOWS>.
@@ -2010,10 +2063,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =head2 inspect-is-live
 
- inspect-is-live root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
+ inspect-is-live корінь
 
 If L</inspect-get-format> returns C<installer> (this is an install disk),
 then this returns true if a live image was detected on the disk.
@@ -2022,10 +2072,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =head2 inspect-is-multipart
 
- inspect-is-multipart root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
+ inspect-is-multipart корінь
 
 If L</inspect-get-format> returns C<installer> (this is an install disk),
 then this returns true if the disk is part of a set.
@@ -2034,10 +2081,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =head2 inspect-is-netinst
 
- inspect-is-netinst root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
+ inspect-is-netinst корінь
 
 If L</inspect-get-format> returns C<installer> (this is an install disk),
 then this returns true if the disk is a network installer, ie. not a
@@ -2048,10 +2092,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =head2 inspect-list-applications
 
- inspect-list-applications root
-
-This function should only be called with a root device string as returned by
-L</inspect-os>.
+ inspect-list-applications кореневий_каталог
 
 Return the list of applications installed in the operating system.
 
@@ -2170,16 +2211,16 @@ This function cannot decrypt encrypted disks.  The caller must do that first
 
 Please read L<guestfs(3)/INSPECTION> for more details.
 
-See also L</list-filesystems>.
+Див. також L</list-filesystems>.
 
 =head2 is-blockdev
 
- is-blockdev path
+ is-blockdev шлях
 
 This returns C<true> if and only if there is a block device with the given
 C<path> name.
 
-See also L</stat>.
+Див. також L</stat>.
 
 =head2 is-busy
 
@@ -2192,12 +2233,12 @@ For more information on states, see L<guestfs(3)>.
 
 =head2 is-chardev
 
- is-chardev path
+ is-chardev шлях
 
 This returns C<true> if and only if there is a character device with the
 given C<path> name.
 
-See also L</stat>.
+Див. також L</stat>.
 
 =head2 is-config
 
@@ -2210,31 +2251,31 @@ For more information on states, see L<guestfs(3)>.
 
 =head2 is-dir
 
- is-dir path
+ is-dir шлях
 
 This returns C<true> if and only if there is a directory with the given
 C<path> name.  Note that it returns false for other objects like files.
 
-See also L</stat>.
+Див. також L</stat>.
 
 =head2 is-fifo
 
- is-fifo path
+ is-fifo шлях
 
 This returns C<true> if and only if there is a FIFO (named pipe)  with the
 given C<path> name.
 
-See also L</stat>.
+Див. також L</stat>.
 
 =head2 is-file
 
- is-file path
+ is-file шлях
 
 This returns C<true> if and only if there is a regular file with the given
 C<path> name.  Note that it returns false for other objects like
 directories.
 
-See also L</stat>.
+Див. також L</stat>.
 
 =head2 is-launching
 
@@ -2247,7 +2288,7 @@ For more information on states, see L<guestfs(3)>.
 
 =head2 is-lv
 
- is-lv device
+ is-lv пристрій
 
 This command tests whether C<device> is a logical volume, and returns true
 iff this is the case.
@@ -2263,21 +2304,36 @@ For more information on states, see L<guestfs(3)>.
 
 =head2 is-socket
 
- is-socket path
+ is-socket шлях
 
 This returns C<true> if and only if there is a Unix domain socket with the
 given C<path> name.
 
-See also L</stat>.
+Див. також L</stat>.
 
 =head2 is-symlink
 
- is-symlink path
+ is-symlink шлях
 
 This returns C<true> if and only if there is a symbolic link with the given
 C<path> name.
 
-See also L</stat>.
+Див. також L</stat>.
+
+=head2 is-zero
+
+ is-zero path
+
+This returns true iff the file exists and the file is empty or it contains
+all zero bytes.
+
+=head2 is-zero-device
+
+ is-zero-device device
+
+This returns true iff the device exists and contains all zero bytes.
+
+Note that for large devices this can take a long time to run.
 
 =head2 kill-subprocess
 
@@ -2299,7 +2355,7 @@ before performing any actions.
 
 =head2 lchown
 
- lchown owner group path
+ lchown власник група шлях
 
 Change the file owner to C<owner> and group to C<group>.  This is like
 L</chown> but if C<path> is a symlink then the link itself is changed, not
@@ -2311,7 +2367,7 @@ this relatively easy).
 
 =head2 lgetxattr
 
- lgetxattr path name
+ lgetxattr шлях назва
 
 Get a single extended attribute from file C<path> named C<name>.  If C<path>
 is a symlink, then this call returns an extended attribute from the symlink.
@@ -2325,14 +2381,21 @@ attributes you want in advance and call this function.
 Extended attribute values are blobs of binary data.  If there is no extended
 attribute named C<name>, this returns an error.
 
-See also: L</lgetxattrs>, L</getxattr>, L<attr(5)>.
+Див. також L</lgetxattrs>, L</getxattr>, L<attr(5)>.
 
 =head2 lgetxattrs
 
- lgetxattrs path
+ lgetxattrs шлях
 
 This is the same as L</getxattrs>, but if C<path> is a symbolic link, then
 it returns the extended attributes of the link itself.
+
+=head2 list-9p
+
+ list-9p
+
+List all 9p filesystems attached to the guest.  A list of mount tags is
+returned.
 
 =head2 list-devices
 
@@ -2342,7 +2405,19 @@ List all the block devices.
 
 The full block device names are returned, eg. C</dev/sda>.
 
-See also L</list-filesystems>.
+Див. також L</list-filesystems>.
+
+=head2 list-dm-devices
+
+ list-dm-devices
+
+List all device mapper devices.
+
+The returned list contains C</dev/mapper/*> devices, eg. ones created by a
+previous call to L</luks-open>.
+
+Device mapper devices which correspond to logical volumes are I<not>
+returned in this list.  Call L</lvs> if you want to list logical volumes.
 
 =head2 list-filesystems
 
@@ -2384,11 +2459,11 @@ The full partition device names are returned, eg. C</dev/sda1>
 This does not return logical volumes.  For that you will need to call
 L</lvs>.
 
-See also L</list-filesystems>.
+Див. також L</list-filesystems>.
 
 =head2 ll
 
- ll directory
+ ll каталог
 
 List the files in C<directory> (relative to the root directory, there is no
 cwd) in the format of 'ls -la'.
@@ -2398,26 +2473,26 @@ intended that you try to parse the output string.
 
 =head2 ln
 
- ln target linkname
+ ln призначення назва_посилання
 
 This command creates a hard link using the C<ln> command.
 
 =head2 ln-f
 
- ln-f target linkname
+ ln-f призначення назва_посилання
 
 This command creates a hard link using the C<ln -f> command.  The I<-f>
 option removes the link (C<linkname>) if it exists already.
 
 =head2 ln-s
 
- ln-s target linkname
+ ln-s призначення назва_посилання
 
 This command creates a symbolic link using the C<ln -s> command.
 
 =head2 ln-sf
 
- ln-sf target linkname
+ ln-sf призначення назва_посилання
 
 This command creates a symbolic link using the C<ln -sf> command, The I<-f>
 option removes the link (C<linkname>) if it exists already.
@@ -2431,7 +2506,7 @@ it removes an extended attribute of the link itself.
 
 =head2 ls
 
- ls directory
+ ls каталог
 
 List the files in C<directory> (relative to the root directory, there is no
 cwd).  The '.' and '..' entries are not returned, but hidden files are
@@ -2449,7 +2524,7 @@ sets an extended attribute of the link itself.
 
 =head2 lstat
 
- lstat path
+ lstat шлях
 
 Returns file information for the given C<path>.
 
@@ -2493,7 +2568,7 @@ prompt for these separately.
 
 =head2 luks-close
 
- luks-close device
+ luks-close пристрій
 
 This closes a LUKS device that was created earlier by L</luks-open> or
 L</luks-open-ro>.  The C<device> parameter must be the name of the LUKS
@@ -2556,6 +2631,8 @@ underlying C<device> respectively.
 If this block device contains LVM volume groups, then calling L</vgscan>
 followed by L</vg-activate-all> will make them visible.
 
+Use L</list-dm-devices> to list all device mapper devices.
+
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
 
@@ -2587,7 +2664,7 @@ C</dev/VG/LV>.
 This command returns an error if the C<lvname> parameter does not refer to a
 logical volume.
 
-See also L</is-lv>.
+Див. також L</is-lv>.
 
 =head2 lvm-clear-filter
 
@@ -2610,7 +2687,7 @@ your data>.
 
 =head2 lvm-set-filter
 
- lvm-set-filter 'devices ...'
+ lvm-set-filter 'пристрої...'
 
 This sets the LVM device filter so that LVM will only be able to "see" the
 block devices in the list C<devices>, and will ignore all other attached
@@ -2633,7 +2710,7 @@ filesystem), even if you are not filtering out that VG.
 
 =head2 lvremove
 
- lvremove device
+ lvremove пристрій
 
 Remove an LVM logical volume C<device>, where C<device> is the path to the
 LV, such as C</dev/VG/LV>.
@@ -2673,7 +2750,7 @@ L<lvs(8)> command.
 This returns a list of the logical volume device names
 (eg. C</dev/VolGroup00/LogVol00>).
 
-See also L</lvs-full>, L</list-filesystems>.
+Див. також L</lvs-full>, L</list-filesystems>.
 
 =head2 lvs-full
 
@@ -2684,7 +2761,7 @@ L<lvs(8)> command.  The "full" version includes all fields.
 
 =head2 lvuuid
 
- lvuuid device
+ lvuuid пристрій
 
 This command returns the UUID of the LVM LV C<device>.
 
@@ -2713,13 +2790,13 @@ names.
 
 =head2 mkdir
 
- mkdir path
+ mkdir шлях
 
 Create a directory named C<path>.
 
 =head2 mkdir-mode
 
- mkdir-mode path mode
+ mkdir-mode шлях режим
 
 This command creates a directory, setting the initial permissions of the
 directory to C<mode>.
@@ -2728,18 +2805,18 @@ For common Linux filesystems, the actual mode which is set will be C<mode &
 ~umask & 01777>.  Non-native-Linux filesystems may interpret the mode in
 other ways.
 
-See also L</mkdir>, L</umask>
+Див. також L</mkdir>, L</umask>
 
 =head2 mkdir-p
 
- mkdir-p path
+ mkdir-p шлях
 
 Create a directory named C<path>, creating any parent directories as
 necessary.  This is like the C<mkdir -p> shell command.
 
 =head2 mkdtemp
 
- mkdtemp template
+ mkdtemp шаблон
 
 This command creates a temporary directory.  The C<template> parameter
 should be a full pathname for the temporary directory name with the final
@@ -2764,9 +2841,9 @@ See also: L<mkdtemp(3)>
 This creates an ext2/3/4 filesystem on C<device> with an external journal on
 C<journal>.  It is equivalent to the command:
 
- mke2fs -t fstype -b blocksize -J device=<journal> <device>
+ mke2fs -t fstype -b blocksize -J device=<журнал> <пристрій>
 
-See also L</mke2journal>.
+Див. також L</mke2journal>.
 
 =head2 mke2fs-JL
 
@@ -2775,7 +2852,7 @@ See also L</mke2journal>.
 This creates an ext2/3/4 filesystem on C<device> with an external journal on
 the journal labeled C<label>.
 
-See also L</mke2journal-L>.
+Див. також L</mke2journal-L>.
 
 =head2 mke2fs-JU
 
@@ -2784,7 +2861,7 @@ See also L</mke2journal-L>.
 This creates an ext2/3/4 filesystem on C<device> with an external journal on
 the journal with UUID C<uuid>.
 
-See also L</mke2journal-U>.
+Див. також L</mke2journal-U>.
 
 =head2 mke2journal
 
@@ -2809,7 +2886,7 @@ This creates an ext2 external journal on C<device> with UUID C<uuid>.
 
 =head2 mkfifo
 
- mkfifo mode path
+ mkfifo режим шлях
 
 This call creates a FIFO (named pipe) called C<path> with mode C<mode>.  It
 is just a convenient wrapper around L</mknod>.
@@ -2818,7 +2895,7 @@ The mode actually set is affected by the umask.
 
 =head2 mkfs
 
- mkfs fstype device
+ mkfs тип_файлової_системи пристрій
 
 This creates a filesystem on C<device> (usually a partition or LVM logical
 volume).  The filesystem type is C<fstype>, for example C<ext3>.
@@ -2834,7 +2911,7 @@ filesystem type, but typically they are C<1024>, C<2048> or C<4096> only.
 For VFAT and NTFS the C<blocksize> parameter is treated as the requested
 cluster size.
 
-This function is deprecated.  In new code, use the L</mkfs_opts> call
+This function is deprecated.  In new code, use the C<mkfs_opts> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -2843,7 +2920,7 @@ these functions.
 
 =head2 mkfs-opts
 
- mkfs-opts fstype device [blocksize:..] [features:..]
+ mkfs-opts fstype device [blocksize:..] [features:..] [inode:..] [sectorsize:..]
 
 This function creates a filesystem on C<device>.  The filesystem type is
 C<fstype>, for example C<ext3>.
@@ -2872,6 +2949,16 @@ selected.  See L<mke2fs(8)> and L<mkfs.ufs(8)> for more details.
 
 You cannot use this optional parameter with the C<gfs> or C<gfs2> filesystem
 type.
+
+=item C<inode>
+
+This passes the I<-I> parameter to the external L<mke2fs(8)> program which
+sets the inode size (only for ext2/3/4 filesystems at present).
+
+=item C<sectorsize>
+
+This passes the I<-S> parameter to external L<mkfs.ufs(8)> program, which
+sets sector size for ufs filesystem.
 
 =back
 
@@ -2960,13 +3047,13 @@ The mode actually set is affected by the umask.
 
 =head2 mkswap
 
- mkswap device
+ mkswap пристрій
 
 Create a swap partition on C<device>.
 
 =head2 mkswap-L
 
- mkswap-L label device
+ mkswap-L мітка пристрій
 
 Create a swap partition on C<device> with label C<label>.
 
@@ -2976,22 +3063,22 @@ the kernel or swap tools.
 
 =head2 mkswap-U
 
- mkswap-U uuid device
+ mkswap-U uuid пристрій
 
 Create a swap partition on C<device> with UUID C<uuid>.
 
 =head2 mkswap-file
 
- mkswap-file path
+ mkswap-file шлях
 
-Create a swap file.
+Створити файл резервної пам’яті.
 
 This command just writes a swap file signature to an existing file.  To
 create the file itself, use something like L</fallocate>.
 
 =head2 modprobe
 
- modprobe modulename
+ modprobe назва_модуля
 
 This loads a kernel module in the appliance.
 
@@ -3000,7 +3087,7 @@ C<appliance/kmod.whitelist.in> in the source).
 
 =head2 mount
 
- mount device mountpoint
+ mount пристрій точка_монтування
 
 Mount a guest disk at a position in the filesystem.  Block devices are named
 C</dev/sda>, C</dev/sdb> and so on, as they were added to the guest.  If
@@ -3022,12 +3109,26 @@ reliability.  Therefore we recommend that you avoid using L</mount> in any
 code that needs performance, and instead use L</mount-options> (use an empty
 string for the first parameter if you don't want any options).
 
-This function is deprecated.  In new code, use the L</mount_options> call
+This function is deprecated.  In new code, use the C<mount_options> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+
+=head2 mount-9p
+
+ mount-9p mounttag mountpoint [options:..]
+
+Mount the virtio-9p filesystem with the tag C<mounttag> on the directory
+C<mountpoint>.
+
+If required, C<trans=virtio> will be automatically added to the options.
+Any other options required can be passed in the optional C<options>
+parameter.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 mount-loop
 
@@ -3049,7 +3150,7 @@ If the C<options> parameter is an empty string, then no options are passed
 
 =head2 mount-ro
 
- mount-ro device mountpoint
+ mount-ro пристрій точка_монтування
 
 This is the same as the L</mount> command, but it mounts the filesystem with
 the read-only (I<-o ro>) flag.
@@ -3078,11 +3179,11 @@ of devices (eg. C</dev/sda1>, C</dev/VG/LV>).
 
 Some internal mounts are not shown.
 
-See also: L</mountpoints>
+Див. також L</mountpoints>
 
 =head2 mv
 
- mv src dest
+ mv джерело призначення
 
 This moves a file from C<src> to C<dest> where C<dest> is either a
 destination filename or destination directory.
@@ -3104,7 +3205,7 @@ some non-zero value documented in the L<ntfs-3g.probe(8)> manual page.
 
 =head2 ntfsresize
 
- ntfsresize device
+ ntfsresize пристрій
 
 This command resizes an NTFS filesystem, expanding or shrinking it to the
 size of the underlying device.
@@ -3118,12 +3219,60 @@ without booting into Windows between each resize.
 
 See also L<ntfsresize(8)>.
 
+This function is deprecated.  In new code, use the C<ntfsresize_opts> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
+=head2 ntfsresize-opts
+
+ ntfsresize-opts device [size:..] [force:..]
+
+This command resizes an NTFS filesystem, expanding or shrinking it to the
+size of the underlying device.
+
+The optional parameters are:
+
+=over 4
+
+=item C<size>
+
+The new size (in bytes) of the filesystem.  If omitted, the filesystem is
+resized to fit the container (eg. partition).
+
+=item C<force>
+
+If this option is true, then force the resize of the filesystem even if the
+filesystem is marked as requiring a consistency check.
+
+After the resize operation, the filesystem is always marked as requiring a
+consistency check (for safety).  You have to boot into Windows to perform
+this check and clear this condition.  If you I<don't> set the C<force>
+option then it is not possible to call L</ntfsresize-opts> multiple times on
+a single filesystem without booting into Windows between each resize.
+
+=back
+
+See also L<ntfsresize(8)>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
 =head2 ntfsresize-size
 
  ntfsresize-size device size
 
 This command is the same as L</ntfsresize> except that it allows you to
 specify the new size (in bytes) explicitly.
+
+This function is deprecated.  In new code, use the C<ntfsresize_opts> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 part-add
 
@@ -3154,7 +3303,7 @@ also deletes any logical partitions it contains.
 
 =head2 part-disk
 
- part-disk device parttype
+ part-disk пристрій тип_розділу
 
 This command is simply a combination of L</part-init> followed by
 L</part-add> to create a single primary partition covering the whole disk.
@@ -3172,7 +3321,7 @@ your data>.
 This command returns true if the partition C<partnum> on C<device> has the
 bootable flag set.
 
-See also L</part-set-bootable>.
+Див. також L</part-set-bootable>.
 
 =head2 part-get-mbr-id
 
@@ -3187,7 +3336,7 @@ L</part-get-parttype>).
 
 =head2 part-get-parttype
 
- part-get-parttype device
+ part-get-parttype пристрій
 
 This command examines the partition table on C<device> and returns the
 partition table type (format) being used.
@@ -3211,7 +3360,9 @@ Possible values for C<parttype> are:
 
 =over 4
 
-=item B<efi> | B<gpt>
+=item B<efi>
+
+=item B<gpt>
 
 Intel EFI / GPT partition table.
 
@@ -3219,7 +3370,9 @@ This is recommended for >= 2 TB partitions that will be accessed from Linux
 and Intel-based Mac OS X.  It also has limited backwards compatibility with
 the C<mbr> format.
 
-=item B<mbr> | B<msdos>
+=item B<mbr>
+
+=item B<msdos>
 
 The standard PC "Master Boot Record" (MBR) format used by MS-DOS and
 Windows.  This partition type will B<only> work for device sizes up to 2
@@ -3233,35 +3386,37 @@ Other partition table types that may work but are not supported include:
 
 =item B<aix>
 
-AIX disk labels.
+Мітки дисків AIX.
 
-=item B<amiga> | B<rdb>
+=item B<amiga>
 
-Amiga "Rigid Disk Block" format.
+=item B<rdb>
+
+Формат "Rigid Disk Block" Amiga.
 
 =item B<bsd>
 
-BSD disk labels.
+Мітки дисків BSD.
 
 =item B<dasd>
 
-DASD, used on IBM mainframes.
+DASD, використовувалися у мейнфреймах IBM.
 
 =item B<dvh>
 
-MIPS/SGI volumes.
+Томи MIPS/SGI.
 
 =item B<mac>
 
-Old Mac partition format.  Modern Macs use C<gpt>.
+Старий формат розділів Mac. Сучасні системи Mac використовують C<gpt>.
 
 =item B<pc98>
 
-NEC PC-98 format, common in Japan apparently.
+Формат NEC PC-98, поширений у Японії.
 
 =item B<sun>
 
-Sun disk labels.
+Мітки дисків Sun.
 
 =back
 
@@ -3331,7 +3486,7 @@ This works on C<gpt> but not on C<mbr> partitions.
 
 =head2 part-to-dev
 
- part-to-dev partition
+ part-to-dev розділ
 
 This function takes a partition name (eg. "/dev/sdb1") and removes the
 partition number, returning the device name (eg. "/dev/sdb").
@@ -3358,7 +3513,7 @@ file, starting at C<offset>, from file C<path>.
 This may read fewer bytes than requested.  For further details see the
 L<pread(2)> system call.
 
-See also L</pwrite>, L</pread-device>.
+Див. також L</pwrite>, L</pread-device>.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
@@ -3373,21 +3528,21 @@ C<device>, starting at C<offset>.
 This may read fewer bytes than requested.  For further details see the
 L<pread(2)> system call.
 
-See also L</pread>.
+Див. також L</pread>.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 pvcreate
 
- pvcreate device
+ pvcreate пристрій
 
 This creates an LVM physical volume on the named C<device>, where C<device>
 should usually be a partition name such as C</dev/sda1>.
 
 =head2 pvremove
 
- pvremove device
+ pvremove пристрій
 
 This wipes a physical volume C<device> so that LVM will no longer recognise
 it.
@@ -3398,7 +3553,7 @@ first.
 
 =head2 pvresize
 
- pvresize device
+ pvresize пристрій
 
 This resizes (expands or shrinks) an existing LVM physical volume to match
 the new size of the underlying device.
@@ -3420,7 +3575,7 @@ L<pvs(8)> command.
 This returns a list of just the device names that contain PVs
 (eg. C</dev/sda2>).
 
-See also L</pvs-full>.
+Див. також L</pvs-full>.
 
 =head2 pvs-full
 
@@ -3431,7 +3586,7 @@ L<pvs(8)> command.  The "full" version includes all fields.
 
 =head2 pvuuid
 
- pvuuid device
+ pvuuid пристрій
 
 This command returns the UUID of the LVM PV C<device>.
 
@@ -3448,7 +3603,7 @@ number of bytes that were actually written to the file.  This could even be
 0, although short writes are unlikely for regular files in ordinary
 circumstances.
 
-See also L</pread>, L</pwrite-device>.
+Див. також L</pread>, L</pwrite-device>.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
@@ -3464,14 +3619,14 @@ This command implements the L<pwrite(2)> system call, and like that system
 call it may not write the full data requested (although short writes to disk
 devices and partitions are probably impossible with standard Linux kernels).
 
-See also L</pwrite>.
+Див. також L</pwrite>.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 read-file
 
- read-file path
+ read-file шлях
 
 This calls returns the contents of the file C<path> as a buffer.
 
@@ -3484,7 +3639,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 read-lines
 
- read-lines path
+ read-lines шлях
 
 Return the contents of the file named C<path>.
 
@@ -3498,7 +3653,7 @@ interface.
 
 =head2 readdir
 
- readdir dir
+ readdir каталог
 
 This returns the list of directory entries in directory C<dir>.
 
@@ -3513,35 +3668,35 @@ C<ftyp> field will contain one of the following characters:
 
 =item 'b'
 
-Block special
+Блоковий особливий
 
 =item 'c'
 
-Char special
+Символьний особливий
 
 =item 'd'
 
-Directory
+Каталог
 
 =item 'f'
 
-FIFO (named pipe)
+FIFO (іменований канал)
 
 =item 'l'
 
-Symbolic link
+Символічне посилання
 
 =item 'r'
 
-Regular file
+Звичайний файл
 
 =item 's'
 
-Socket
+Сокет
 
 =item 'u'
 
-Unknown file type
+Невідомий тип файла
 
 =item '?'
 
@@ -3555,7 +3710,7 @@ consumption, use L</ll>.
 
 =head2 readlink
 
- readlink path
+ readlink шлях
 
 This command reads the target of a symbolic link.
 
@@ -3583,7 +3738,7 @@ fail.  The caller must split up such requests into smaller groups of names.
 
 =head2 realpath
 
- realpath path
+ realpath шлях
 
 Return the canonicalized absolute pathname of C<path>.  The returned path
 has no C<.>, C<..> or symbolic link path elements.
@@ -3594,11 +3749,11 @@ has no C<.>, C<..> or symbolic link path elements.
 
 This call removes the extended attribute named C<xattr> of the file C<path>.
 
-See also: L</lremovexattr>, L<attr(5)>.
+Див. також L</lremovexattr>, L<attr(5)>.
 
 =head2 resize2fs
 
- resize2fs device
+ resize2fs пристрій
 
 This resizes an ext2, ext3 or ext4 filesystem to match the size of the
 underlying device.
@@ -3610,7 +3765,7 @@ to call L</e2fsck-f> before calling this function.
 
 =head2 resize2fs-M
 
- resize2fs-M device
+ resize2fs-M пристрій
 
 This command is the same as L</resize2fs>, but the filesystem is resized to
 its minimum size.  This works like the I<-M> option to the C<resize2fs>
@@ -3630,20 +3785,20 @@ specify the new size (in bytes) explicitly.
 
 =head2 rm
 
- rm path
+ rm шлях
 
 Remove the single file C<path>.
 
 =head2 rm-rf
 
- rm-rf path
+ rm-rf шлях
 
 Remove the file or directory C<path>, recursively removing the contents if
 its a directory.  This is like the C<rm -rf> shell command.
 
 =head2 rmdir
 
- rmdir path
+ rmdir шлях
 
 Remove the single directory C<path>.
 
@@ -3656,7 +3811,7 @@ L</mkmountpoint>.  See L</mkmountpoint> for full details.
 
 =head2 scrub-device
 
- scrub-device device
+ scrub-device пристрій
 
 This command writes patterns over C<device> to make data retrieval more
 difficult.
@@ -3669,7 +3824,7 @@ your data>.
 
 =head2 scrub-file
 
- scrub-file file
+ scrub-file файл
 
 This command writes patterns over a file to make data retrieval more
 difficult.
@@ -3681,7 +3836,7 @@ more details.
 
 =head2 scrub-freespace
 
- scrub-freespace dir
+ scrub-freespace каталог
 
 This command creates the directory C<dir> and then fills it with files until
 the filesystem is full, and scrubs the files as for L</scrub-file>, and
@@ -3722,9 +3877,9 @@ daemon.  Possible methods are:
 Launch an appliance and connect to it.  This is the ordinary method and the
 default.
 
-=item C<unix:I<path>>
+=item C<unix:I<шлях>>
 
-Connect to the Unix domain socket I<path>.
+Встановити з’єднання з сокетом домену Unix I<шлях>.
 
 This method lets you connect to an existing daemon or (using virtio-serial)
 to a live guest.  For more information, see L<guestfs(3)/ATTACHING TO
@@ -3823,6 +3978,21 @@ C<LIBGUESTFS_PATH> environment variable.
 
 Setting C<path> to C<NULL> restores the default path.
 
+=head2 set-pgroup
+
+=head2 pgroup
+
+ set-pgroup true|false
+
+If C<pgroup> is true, child processes are placed into their own process
+group.
+
+The practical upshot of this is that signals like C<SIGINT> (from users
+pressing C<^C>) won't be received by the child process.
+
+The default for this flag is false, because usually you want C<^C> to kill
+the subprocess.
+
 =head2 set-qemu
 
 =head2 qemu
@@ -3911,7 +4081,7 @@ callback to send them somewhere else (see L</set-event-callback>).
 
 =head2 setcon
 
- setcon context
+ setcon контекст
 
 This sets the SELinux security context of the daemon to the string
 C<context>.
@@ -3925,7 +4095,7 @@ See the documentation about SELINUX in L<guestfs(3)>.
 This call sets the extended attribute named C<xattr> of the file C<path> to
 the value C<val> (of length C<vallen>).  The value is arbitrary 8 bit data.
 
-See also: L</lsetxattr>, L<attr(5)>.
+Див. також L</lsetxattr>, L<attr(5)>.
 
 =head2 sfdisk
 
@@ -3950,13 +4120,12 @@ To create a single partition occupying the whole disk, you would pass
 C<lines> as a single element list, when the single element being the string
 C<,> (comma).
 
-See also: L</sfdisk-l>, L</sfdisk-N>, L</part-init>
+Див. також L</sfdisk-l>, L</sfdisk-N>, L</part-init>
 
 B<This command is dangerous.  Without careful use you can easily destroy all
 your data>.
 
-This function is deprecated.  In new code, use the L</part_add> call
-instead.
+This function is deprecated.  In new code, use the C<part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -3971,13 +4140,12 @@ sizes are specified in megabytes only (rounded to the nearest cylinder) and
 you don't need to specify the cyls, heads and sectors parameters which were
 rarely if ever used anyway.
 
-See also: L</sfdisk>, the L<sfdisk(8)> manpage and L</part-disk>
+Див також L</sfdisk>, сторінку довідки (man) L<sfdisk(8)> та L</part-disk>
 
 B<This command is dangerous.  Without careful use you can easily destroy all
 your data>.
 
-This function is deprecated.  In new code, use the L</part_add> call
-instead.
+This function is deprecated.  In new code, use the C<part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -3993,13 +4161,12 @@ This runs L<sfdisk(8)> option to modify just the single partition C<n>
 For other parameters, see L</sfdisk>.  You should usually pass C<0> for the
 cyls/heads/sectors parameters.
 
-See also: L</part-add>
+Див. також L</part-add>
 
 B<This command is dangerous.  Without careful use you can easily destroy all
 your data>.
 
-This function is deprecated.  In new code, use the L</part_add> call
-instead.
+This function is deprecated.  In new code, use the C<part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4007,7 +4174,7 @@ these functions.
 
 =head2 sfdisk-disk-geometry
 
- sfdisk-disk-geometry device
+ sfdisk-disk-geometry пристрій
 
 This displays the disk geometry of C<device> read from the partition table.
 Especially in the case where the underlying block device has been resized,
@@ -4018,7 +4185,7 @@ The result is in human-readable format, and not designed to be parsed.
 
 =head2 sfdisk-kernel-geometry
 
- sfdisk-kernel-geometry device
+ sfdisk-kernel-geometry пристрій
 
 This displays the kernel's idea of the geometry of C<device>.
 
@@ -4026,14 +4193,14 @@ The result is in human-readable format, and not designed to be parsed.
 
 =head2 sfdisk-l
 
- sfdisk-l device
+ sfdisk-l пристрій
 
 This displays the partition table on C<device>, in the human-readable output
 of the L<sfdisk(8)> command.  It is not intended to be parsed.
 
-See also: L</part-list>
+Див. також L</part-list>
 
-This function is deprecated.  In new code, use the L</part_list> call
+This function is deprecated.  In new code, use the C<part_list> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -4042,7 +4209,7 @@ these functions.
 
 =head2 sh
 
- sh command
+ sh команда
 
 This call runs a command from the guest filesystem via the guest's
 C</bin/sh>.
@@ -4058,21 +4225,21 @@ All the provisos about L</command> apply to this call.
 
 =head2 sh-lines
 
- sh-lines command
+ sh-lines команда
 
 This is the same as L</sh>, but splits the result into a list of lines.
 
-See also: L</command-lines>
+Див. також L</command-lines>
 
 =head2 sleep
 
- sleep secs
+ sleep час_у_секундах
 
 Sleep for C<secs> seconds.
 
 =head2 stat
 
- stat path
+ stat шлях
 
 Returns file information for the given C<path>.
 
@@ -4080,7 +4247,7 @@ This is the same as the C<stat(2)> system call.
 
 =head2 statvfs
 
- statvfs path
+ statvfs шлях
 
 Returns file system statistics for any mounted file system.  C<path> should
 be a file or directory in the mounted file system (typically it is the mount
@@ -4090,7 +4257,7 @@ This is the same as the C<statvfs(2)> system call.
 
 =head2 strings
 
- strings path
+ strings шлях
 
 This runs the L<strings(1)> command on a file and returns the list of
 printable strings found.
@@ -4100,12 +4267,12 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 strings-e
 
- strings-e encoding path
+ strings-e кодування шлях
 
 This is like the L</strings> command, but allows you to specify the encoding
 of strings that are looked for in the source file C<path>.
 
-Allowed encodings are:
+Можливими кодуваннями є:
 
 =over 4
 
@@ -4116,7 +4283,7 @@ ISO-8859-X (this is what L</strings> uses).
 
 =item S
 
-Single 8-bit-byte characters.
+Окремі 8-бітові-байтові символи.
 
 =item b
 
@@ -4144,20 +4311,20 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 swapoff-device
 
- swapoff-device device
+ swapoff-device пристрій
 
 This command disables the libguestfs appliance swap device or partition
 named C<device>.  See L</swapon-device>.
 
 =head2 swapoff-file
 
- swapoff-file file
+ swapoff-file файл
 
 This command disables the libguestfs appliance swap on file.
 
 =head2 swapoff-label
 
- swapoff-label label
+ swapoff-label мітка
 
 This command disables the libguestfs appliance swap on labeled swap
 partition.
@@ -4171,7 +4338,7 @@ UUID.
 
 =head2 swapon-device
 
- swapon-device device
+ swapon-device пристрій
 
 This command enables the libguestfs appliance to use the swap device or
 partition named C<device>.  The increased memory is made available for all
@@ -4185,13 +4352,13 @@ host device to the guest and swap on that.
 
 =head2 swapon-file
 
- swapon-file file
+ swapon-file файл
 
 This command enables swap to a file.  See L</swapon-device> for other notes.
 
 =head2 swapon-label
 
- swapon-label label
+ swapon-label мітка
 
 This command enables swap to a labeled swap partition.  See
 L</swapon-device> for other notes.
@@ -4215,7 +4382,7 @@ closing the handle.
 
 =head2 tail
 
- tail path
+ tail шлях
 
 This command returns up to the last 10 lines of a file as a list of strings.
 
@@ -4239,7 +4406,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 tar-in
 
- tar-in (tarfile|-) directory
+ tar-in (файл_tar|-) каталог
 
 This command uploads and unpacks local file C<tarfile> (an I<uncompressed>
 tar file) into C<directory>.
@@ -4250,7 +4417,7 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 
 =head2 tar-out
 
- tar-out directory (tarfile|-)
+ tar-out каталог (файл tar|-)
 
 This command packs the contents of C<directory> and downloads it to local
 file C<tarfile>.
@@ -4261,7 +4428,7 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 
 =head2 tgz-in
 
- tgz-in (tarball|-) directory
+ tgz-in (архів tar|-) каталог
 
 This command uploads and unpacks local file C<tarball> (a I<gzip compressed>
 tar file) into C<directory>.
@@ -4272,7 +4439,7 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 
 =head2 tgz-out
 
- tgz-out directory (tarball|-)
+ tgz-out каталог (архів tar|-)
 
 This command packs the contents of C<directory> and downloads it to local
 file C<tarball>.
@@ -4283,7 +4450,7 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 
 =head2 touch
 
- touch path
+ touch шлях
 
 Touch acts like the L<touch(1)> command.  It can be used to update the
 timestamps on a file, or, if the file does not exist, to create a new
@@ -4294,14 +4461,14 @@ such as directories, symbolic links, block special etc.
 
 =head2 truncate
 
- truncate path
+ truncate шлях
 
 This command truncates C<path> to a zero-length file.  The file must exist
 already.
 
 =head2 truncate-size
 
- truncate-size path size
+ truncate-size шлях розмір
 
 This command truncates C<path> to size C<size> bytes.  The file must exist
 already.
@@ -4313,7 +4480,7 @@ non-sparse file of zeroes, use L</fallocate64> instead.
 
 =head2 tune2fs-l
 
- tune2fs-l device
+ tune2fs-l пристрій
 
 This returns the contents of the ext2, ext3 or ext4 filesystem superblock on
 C<device>.
@@ -4325,7 +4492,7 @@ and the filesystem itself.
 
 =head2 txz-in
 
- txz-in (tarball|-) directory
+ txz-in (архів tar|-) каталог
 
 This command uploads and unpacks local file C<tarball> (an I<xz compressed>
 tar file) into C<directory>.
@@ -4334,7 +4501,7 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 
 =head2 txz-out
 
- txz-out directory (tarball|-)
+ txz-out каталог (архів tar|-)
 
 This command packs the contents of C<directory> and downloads it to local
 file C<tarball> (as an xz compressed tar archive).
@@ -4343,7 +4510,7 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 
 =head2 umask
 
- umask mask
+ umask маска
 
 This function sets the mask used for creating new files and device nodes to
 C<mask & 0777>.
@@ -4356,7 +4523,7 @@ The default umask is C<022>.  This is important because it means that
 directories and device nodes will be created with C<0644> or C<0755> mode
 even if you specify C<0777>.
 
-See also L</get-umask>, L<umask(2)>, L</mknod>, L</mkdir>.
+Див. також L</get-umask>, L<umask(2)>, L</mknod>, L</mkdir>.
 
 This call returns the previous umask.
 
@@ -4364,7 +4531,7 @@ This call returns the previous umask.
 
 =head2 unmount
 
- umount pathordevice
+ umount шлях_або_пристрій
 
 This unmounts the given filesystem.  The filesystem may be specified either
 by its mountpoint (path) or the device which contains the filesystem.
@@ -4381,19 +4548,19 @@ Some internal mounts are not unmounted by this call.
 
 =head2 upload
 
- upload (filename|-) remotefilename
+ upload (назва_файла|-) назва_віддаленого_файла
 
 Upload local file C<filename> to C<remotefilename> on the filesystem.
 
 C<filename> can also be a named pipe.
 
-See also L</download>.
+Див. також L</download>.
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
 
 =head2 upload-offset
 
- upload-offset (filename|-) remotefilename offset
+ upload-offset (назва_файла|-) назва_віддаленого_файла відступ
 
 Upload local file C<filename> to C<remotefilename> on the filesystem.
 
@@ -4407,7 +4574,7 @@ Note that there is no limit on the amount of data that can be uploaded with
 this call, unlike with L</pwrite>, and this call always writes the full
 amount unless an error occurs.
 
-See also L</upload>, L</pwrite>.
+Див. також L</upload>, L</pwrite>.
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
 
@@ -4463,7 +4630,7 @@ L</available> instead.
 
 =head2 vfs-label
 
- vfs-label device
+ vfs-label пристрій
 
 This returns the filesystem label of the filesystem on C<device>.
 
@@ -4473,7 +4640,7 @@ To find a filesystem from the label, use L</findfs-label>.
 
 =head2 vfs-type
 
- vfs-type device
+ vfs-type пристрій
 
 This command gets the filesystem type corresponding to the filesystem on
 C<device>.
@@ -4484,7 +4651,7 @@ the filesystem type.  For example a string such as C<ext3> or C<ntfs>.
 
 =head2 vfs-uuid
 
- vfs-uuid device
+ vfs-uuid пристрій
 
 This returns the filesystem UUID of the filesystem on C<device>.
 
@@ -4497,9 +4664,7 @@ To find a filesystem from the UUID, use L</findfs-uuid>.
  vg-activate true|false 'volgroups ...'
 
 This command activates or (if C<activate> is false) deactivates all logical
-volumes in the listed volume groups C<volgroups>.  If activated, then they
-are made known to the kernel, ie. they appear as C</dev/mapper> devices.  If
-deactivated, then those devices disappear.
+volumes in the listed volume groups C<volgroups>.
 
 This command is the same as running C<vgchange -a y|n volgroups...>
 
@@ -4511,9 +4676,7 @@ activated or deactivated.
  vg-activate-all true|false
 
 This command activates or (if C<activate> is false) deactivates all logical
-volumes in all volume groups.  If activated, then they are made known to the
-kernel, ie. they appear as C</dev/mapper> devices.  If deactivated, then
-those devices disappear.
+volumes in all volume groups.
 
 This command is the same as running C<vgchange -a y|n>
 
@@ -4534,7 +4697,7 @@ volumes created in this volume group.
 You can use this along with L</lvs> and L</lvuuid> calls to associate
 logical volumes and volume groups.
 
-See also L</vgpvuuids>.
+Див. також L</vgpvuuids>.
 
 =head2 vgpvuuids
 
@@ -4546,7 +4709,7 @@ volumes that this volume group resides on.
 You can use this along with L</pvs> and L</pvuuid> calls to associate
 physical volumes and volume groups.
 
-See also L</vglvuuids>.
+Див. також L</vglvuuids>.
 
 =head2 vgremove
 
@@ -4572,7 +4735,7 @@ L<vgs(8)> command.
 This returns a list of just the volume group names that were detected
 (eg. C<VolGroup00>).
 
-See also L</vgs-full>.
+Див. також L</vgs-full>.
 
 =head2 vgs-full
 
@@ -4596,31 +4759,45 @@ This command returns the UUID of the LVM VG named C<vgname>.
 
 =head2 wc-c
 
- wc-c path
+ wc-c шлях
 
 This command counts the characters in a file, using the C<wc -c> external
 command.
 
 =head2 wc-l
 
- wc-l path
+ wc-l шлях
 
 This command counts the lines in a file, using the C<wc -l> external
 command.
 
 =head2 wc-w
 
- wc-w path
+ wc-w шлях
 
 This command counts the words in a file, using the C<wc -w> external
 command.
 
 =head2 write
 
- write path content
+ write шлях дані
 
 This call creates a file called C<path>.  The content of the file is the
 string C<content> (which can contain any 8 bit data).
+
+See also L</write-append>.
+
+Because of the message protocol, there is a transfer limit of somewhere
+between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+=head2 write-append
+
+ write-append path content
+
+This call appends C<content> to the end of file C<path>.  If C<path> does
+not exist, then a new file is created.
+
+See also L</write>.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
@@ -4641,7 +4818,7 @@ I<not> work, even if the length is specified.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-This function is deprecated.  In new code, use the L</write> call instead.
+This function is deprecated.  In new code, use the C<write> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4649,7 +4826,7 @@ these functions.
 
 =head2 zegrep
 
- zegrep regex path
+ zegrep формальний_вираз шлях
 
 This calls the external C<zegrep> program and returns the matching lines.
 
@@ -4667,7 +4844,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 zero
 
- zero device
+ zero пристрій
 
 This command writes zeroes over the first few blocks of C<device>.
 
@@ -4675,11 +4852,11 @@ How many blocks are zeroed isn't specified (but it's I<not> enough to
 securely wipe the device).  It should be sufficient to remove any partition
 tables, filesystem superblocks and so on.
 
-See also: L</zero-device>, L</scrub-device>.
+See also: L</zero-device>, L</scrub-device>, L</is-zero-device>
 
 =head2 zero-device
 
- zero-device device
+ zero-device пристрій
 
 This command writes zeroes over the entire C<device>.  Compare with L</zero>
 which just zeroes the first few blocks of a device.
@@ -4689,7 +4866,7 @@ your data>.
 
 =head2 zerofree
 
- zerofree device
+ zerofree пристрій
 
 This runs the I<zerofree> program on C<device>.  This program claims to zero
 unused inodes and disk blocks on an ext2/3 filesystem, thus making it
@@ -4702,7 +4879,7 @@ the filesystem.
 
 =head2 zfgrep
 
- zfgrep pattern path
+ zfgrep шаблон шлях
 
 This calls the external C<zfgrep> program and returns the matching lines.
 
@@ -4711,7 +4888,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 zfgrepi
 
- zfgrepi pattern path
+ zfgrepi шаблон шлях
 
 This calls the external C<zfgrep -i> program and returns the matching lines.
 
@@ -4720,7 +4897,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 zfile
 
- zfile meth path
+ zfile метод шлях
 
 This command runs C<file> after first decompressing C<path> using C<method>.
 
@@ -4728,7 +4905,7 @@ C<method> must be one of C<gzip>, C<compress> or C<bzip2>.
 
 Since 1.0.63, use L</file> instead which can now process compressed files.
 
-This function is deprecated.  In new code, use the L</file> call instead.
+This function is deprecated.  In new code, use the C<file> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4736,7 +4913,7 @@ these functions.
 
 =head2 zgrep
 
- zgrep regex path
+ zgrep формальний_вираз шлях
 
 This calls the external C<zgrep> program and returns the matching lines.
 
@@ -4745,7 +4922,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 zgrepi
 
- zgrepi regex path
+ zgrepi формальний_вираз шлях
 
 This calls the external C<zgrep -i> program and returns the matching lines.
 
