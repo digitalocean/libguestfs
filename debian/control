@@ -31,6 +31,34 @@ Description: libguestfs filesystem interactive shell
  virtual machine filesystems.  It uses libguestfs and exposes all of the
  functionality of the guestfs API, see guestfs(3).
 
+Package: guestfsd
+Architecture: i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ bsdmainutils, diff, grub-pc, iproute,
+ libaugeas0, udev, binutils, cpio, dosfstools,
+ file, lsof, module-init-tools, net-tools, parted,
+ procps, scrub, strace, zerofree
+Description: Daemon to access to guest virtual machine through virtio serial
+ libguestfs is a library for accessing and modifying guest disk images. Amongst
+ the things this is good for: making batch configuration changes to guests,
+ viewing and editing files inside guests, getting disk used/free statistics,
+ migrating between virtualization systems, performing partial backups,
+ performing partial guest clones, cloning guests and changing
+ registry/UUID/hostname info, and much else besides.
+ .
+ It uses Linux kernel and qemu code, and can access any type of guest
+ filesystem that Linux and qemu can, including but not limited to: ext2/3/4,
+ btrfs, FAT and NTFS, LVM, many different disk partition schemes, qcow, qcow2,
+ vmdk.
+ .
+ libguestfs provides ways to enumerate guest storage (eg. partitions, LVs, what
+ filesystem is in each LV, etc.). It can also run commands in the context of 
+ the guest. Also you can upload and download files and directories.
+ .
+ This package contains a standalone version the back-end daemon that
+ carries out filesystem access on behalf of libguestfs applications.
+ It is not needed for regular operation.
+
 Package: libguestfs-dev
 Section: libdevel
 Architecture: i386 amd64
