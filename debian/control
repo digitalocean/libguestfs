@@ -34,7 +34,7 @@ Description: libguestfs filesystem interactive shell
 Package: guestfsd
 Architecture: i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends},
- bsdmainutils, diff, grub-pc, iproute,
+ bsdmainutils, diffutils, grub-pc, iproute,
  libaugeas0, udev, binutils, cpio, dosfstools,
  file, lsof, module-init-tools, net-tools, parted,
  procps, scrub, strace, zerofree
