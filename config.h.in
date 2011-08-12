@@ -652,9 +652,6 @@
 /* Define to 1 if you have the `pathconf' function. */
 #undef HAVE_PATHCONF
 
-/* PCRE found at compile time. */
-#undef HAVE_PCRE
-
 /* Define to 1 if you have the `pipe' function. */
 #undef HAVE_PIPE
 

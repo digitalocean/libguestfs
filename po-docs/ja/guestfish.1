@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfish 1"
-.TH guestfish 1 "2011-07-20" "libguestfs-1.12.0" "Virtualization Support"
+.TH guestfish 1 "2011-07-26" "libguestfs-1.12.1" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -6505,6 +6505,17 @@ was an error.
 .IX Item "EDITOR"
 The \f(CW\*(C`edit\*(C'\fR command uses \f(CW$EDITOR\fR as the editor.  If not set, it uses
 \&\f(CW\*(C`vi\*(C'\fR.
+.IP "\s-1FEBOOTSTRAP_KERNEL\s0" 4
+.IX Item "FEBOOTSTRAP_KERNEL"
+.PD 0
+.IP "\s-1FEBOOTSTRAP_MODULES\s0" 4
+.IX Item "FEBOOTSTRAP_MODULES"
+.PD
+These two environment variables allow the kernel that libguestfs uses in the
+appliance to be selected.  If \f(CW$FEBOOTSTRAP_KERNEL\fR is not set, then the
+most recent host kernel is chosen.  For more information about kernel
+selection, see \fIfebootstrap\-supermin\-helper\fR\|(8).  This feature is only
+available in febootstrap ≥ 3.8.
 .IP "\s-1GUESTFISH_DISPLAY_IMAGE\s0" 4
 .IX Item "GUESTFISH_DISPLAY_IMAGE"
 The \f(CW\*(C`display\*(C'\fR command uses \f(CW$GUESTFISH_DISPLAY_IMAGE\fR to display images.
@@ -6629,7 +6640,8 @@ the same name will be overwritten.
 \&\fIvirt\-filesystems\fR\|(1), \fIvirt\-inspector\fR\|(1), \fIvirt\-list\-filesystems\fR\|(1),
 \&\fIvirt\-list\-partitions\fR\|(1), \fIvirt\-ls\fR\|(1), \fIvirt\-make\-fs\fR\|(1),
 \&\fIvirt\-rescue\fR\|(1), \fIvirt\-resize\fR\|(1), \fIvirt\-tar\fR\|(1), \fIvirt\-tar\-in\fR\|(1),
-\&\fIvirt\-tar\-out\fR\|(1), \fIvirt\-win\-reg\fR\|(1), \fIdisplay\fR\|(1), \fIhexedit\fR\|(1).
+\&\fIvirt\-tar\-out\fR\|(1), \fIvirt\-win\-reg\fR\|(1), \fIdisplay\fR\|(1), \fIhexedit\fR\|(1),
+\&\fIfebootstrap\-supermin\-helper\fR\|(8).
 .SH "AUTHORS"
 .IX Header "AUTHORS"
 Richard W.M. Jones (\f(CW\*(C`rjones at redhat dot com\*(C'\fR)

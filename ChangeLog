@@ -1,3 +1,60 @@
+2011-07-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.12.1.
+
+	virt-df: Re-add documentation for --csv option.
+	The documentation for the --csv option disappeared between 1.6 and 1.8
+	when we rewrote virt-df in C.  Re-add it from 1.6 sources.
+	(cherry picked from commit 01f6bce19dbfaf42fa4908683f3cc8785585d023)
+
+	test-tool: Print FEBOOTSTRAP_* environment variables (RHBZ#671082). (cherry picked from commit 15289d4b726d7c38702794df23c61ae40879a46c)
+
+	test-tool: Display state of pgroup flag from the handle.
+	This updates commit f173543fd207bdc254a5eb75180d82ef25eacae9.
+	(cherry picked from commit deb95471fbd229605d9916ff90b2ff7cf92633eb)
+
+	launch: Add qemu_supports_re function.
+	This function is like qemu_supports, but allows us to grep
+	the help text using regular expressions.
+
+	Note the function is not used yet.
+	(cherry picked from commit 5d7dc0dfb65f367dab3560ee23e404fe21373f45)
+
+	Require PCRE library.
+	This library is widely available in distros.
+	(cherry picked from commit 41cd0e302d6554facd6b9f7daaa78304361efaef)
+
+	docs: Document FEBOOTSTRAP_KERNEL, FEBOOTSTRAP_MODULES (RHBZ#671082). (cherry picked from commit 316817b5ad98e294a9d2498a4403e82911a75b4a)
+
+	perl: Fix CCFLAGS for Perl 5.14.
+	A change to ExtUtils::CBuilder in Perl 5.14 causes CCFLAGS to
+	completely replace, rather than appending, the C flags.
+
+	The unfortunate consequence of this is that vital flags such as
+	-D_FILE_OFFSET_BITS=64 are missing.  For 32 bit code, this means you
+	get binary-incompatible code that completely fails to load.
+
+	For further analysis see:
+
+	http://www.nntp.perl.org/group/perl.perl5.porters/2011/04/msg171535.html
+
+	This commit changes CCFLAGS so that it appends to the existing
+	$Config{ccflags} instead of replacing it.  On earlier versions of Perl
+	this means we get two copies of the flags, which is unfortunate but
+	should be safe.
+	(cherry picked from commit 8386a57458aceb768f0e59aa090a15a544f7466e)
+
+	build: Redirect ./configure errors in general to config.log. (cherry picked from commit 71eb0bf45649eefa1f0cd4b1372cfc2653c8e7a5)
+
+	build: Send failed Perl test configure output to config.log. (cherry picked from commit 610642491a4846f45c7b233060ffde46f6ca09f0)
+
+	build: Allow 'make quickcheck' test-tool args to be overridden.
+	A typical use for this is for packagers who want to increase
+	the default timeout:
+
+	  make quickcheck QUICKCHECK_TEST_TOOL_ARGS="-t 300"
+	(cherry picked from commit 806b6e01506dea4eae68ac3e468d9398d63cafcb)
+
 2011-07-20  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.12.0.
