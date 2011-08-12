@@ -205,8 +205,8 @@ am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
 am__v_lt_0 = --silent
 libguestfsmod_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
-	$(libguestfsmod_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
-	-o $@
+	$(libguestfsmod_la_CFLAGS) $(CFLAGS) \
+	$(libguestfsmod_la_LDFLAGS) $(LDFLAGS) -o $@
 @HAVE_PYTHON_TRUE@am_libguestfsmod_la_rpath = -rpath $(pythondir)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
@@ -1146,6 +1146,7 @@ EXTRA_DIST = \
 @HAVE_PYTHON_TRUE@			  -I$(top_srcdir)/src -I$(top_builddir)/src
 
 @HAVE_PYTHON_TRUE@libguestfsmod_la_LIBADD = $(top_builddir)/src/libguestfs.la
+@HAVE_PYTHON_TRUE@libguestfsmod_la_LDFLAGS = -avoid-version
 @HAVE_PYTHON_TRUE@TESTS_ENVIRONMENT = \
 @HAVE_PYTHON_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
 @HAVE_PYTHON_TRUE@	PYTHONPATH=$(builddir):$(builddir)/.libs

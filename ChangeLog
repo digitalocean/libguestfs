@@ -1,3 +1,32 @@
+2011-08-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Fix function names in deprecation notices. (cherry picked from commit 60adf092a8900323c048c94f3f0934be416a3eb6)
+
+	docs: guestfs_set_out_of_memory_handler returns void, not int.
+	It always has done.  The documentation was wrong.
+	(cherry picked from commit 70f44cc0ea0bcdd025ed657461e07f6778be44ba)
+
+	debian: bash is required to run libtool replacement script.
+	This was failing on Debian where $(SHELL) is the minimal dash shell.
+	(cherry picked from commit 6a98ed953b1e3b0d3251385f0ca2dd1dee80b63d)
+
+	configure: Fix info about virt-resize when OCaml bindings are disabled. (cherry picked from commit e1c6d1738a2b9123dd08fb4ecff8176daf558f35)
+
+	python: Don't name extension with .so.0.0 and symlinks (thanks Dan Berrange). (cherry picked from commit 36f662c58fcda43829bcef166e600855960fd223)
+
+	debian: Add gawk to packagelist.
+	It's already included, but implicitly.
+	(cherry picked from commit 5f9c168d9135fa81ee2f3a15461467fe04c26888)
+
+	virt-tar test: Stable ordering of test output.
+	The files could be listed in any order, resulting in the test failing
+	for no reason.  Sort the output of tar.
+	(cherry picked from commit 995b3fecb9af7a8bd52b238bad2a631a1193c83a)
+
+	Change link, since PostgreSQL switched to using git. (cherry picked from commit 3cf31c2fe0b356ea5c04117c5235b0a3cfe34971)
+
+	Don't fail if HOSTNAME field is missing on Red Hat guests (RHBZ#726739). (cherry picked from commit bad3f4b54a959685f3c0697238fc5753096834fb)
+
 2011-07-27  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.12.2.

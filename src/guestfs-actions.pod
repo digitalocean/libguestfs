@@ -30,7 +30,7 @@ should probably use C<guestfs_add_drive_ro> instead.
 This function returns 0 on success or -1 on error.
 
 This function is deprecated.
-In new code, use the C<add_drive_opts> call instead.
+In new code, use the L</guestfs_add_drive_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -252,7 +252,7 @@ to specify the QEMU interface emulation to use at run time.
 This function returns 0 on success or -1 on error.
 
 This function is deprecated.
-In new code, use the C<add_drive_opts> call instead.
+In new code, use the L</guestfs_add_drive_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -273,7 +273,7 @@ to specify the QEMU interface emulation to use at run time.
 This function returns 0 on success or -1 on error.
 
 This function is deprecated.
-In new code, use the C<add_drive_opts> call instead.
+In new code, use the L</guestfs_add_drive_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -1508,7 +1508,7 @@ attaches it as a device.
 This function returns 0 on success or -1 on error.
 
 This function is deprecated.
-In new code, use the C<fallocate64> call instead.
+In new code, use the L</guestfs_fallocate64> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -2003,7 +2003,7 @@ This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
 This function is deprecated.
-In new code, use the C<vfs_label> call instead.
+In new code, use the L</guestfs_vfs_label> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -2024,7 +2024,7 @@ This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
 This function is deprecated.
-In new code, use the C<vfs_uuid> call instead.
+In new code, use the L</guestfs_vfs_uuid> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -4623,7 +4623,7 @@ the requested cluster size.
 This function returns 0 on success or -1 on error.
 
 This function is deprecated.
-In new code, use the C<mkfs_opts> call instead.
+In new code, use the L</guestfs_mkfs_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -4942,7 +4942,7 @@ parameter if you don't want any options).
 This function returns 0 on success or -1 on error.
 
 This function is deprecated.
-In new code, use the C<mount_options> call instead.
+In new code, use the L</guestfs_mount_options> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -5160,7 +5160,7 @@ See also L<ntfsresize(8)>.
 This function returns 0 on success or -1 on error.
 
 This function is deprecated.
-In new code, use the C<ntfsresize_opts> call instead.
+In new code, use the L</guestfs_ntfsresize_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -5250,7 +5250,7 @@ allows you to specify the new size (in bytes) explicitly.
 This function returns 0 on success or -1 on error.
 
 This function is deprecated.
-In new code, use the C<ntfsresize_opts> call instead.
+In new code, use the L</guestfs_ntfsresize_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -6539,7 +6539,7 @@ B<This command is dangerous.  Without careful use you
 can easily destroy all your data>.
 
 This function is deprecated.
-In new code, use the C<part_add> call instead.
+In new code, use the L</guestfs_part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -6569,7 +6569,7 @@ B<This command is dangerous.  Without careful use you
 can easily destroy all your data>.
 
 This function is deprecated.
-In new code, use the C<part_add> call instead.
+In new code, use the L</guestfs_part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -6602,7 +6602,7 @@ B<This command is dangerous.  Without careful use you
 can easily destroy all your data>.
 
 This function is deprecated.
-In new code, use the C<part_add> call instead.
+In new code, use the L</guestfs_part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -6661,7 +6661,7 @@ This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
 This function is deprecated.
-In new code, use the C<part_list> call instead.
+In new code, use the L</guestfs_part_list> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -7597,7 +7597,7 @@ versions of the API.
 This function returns 0 on success or -1 on error.
 
 This function is deprecated.
-In new code, use the C<launch> call instead.
+In new code, use the L</guestfs_launch> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -7709,7 +7709,7 @@ Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 This function is deprecated.
-In new code, use the C<write> call instead.
+In new code, use the L</guestfs_write> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -7879,7 +7879,7 @@ This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
 This function is deprecated.
-In new code, use the C<file> call instead.
+In new code, use the L</guestfs_file> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems

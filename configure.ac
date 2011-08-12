@@ -18,7 +18,7 @@
 # major/minor/release must be numbers
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [12])
-m4_define([libguestfs_release], [2])
+m4_define([libguestfs_release], [3])
 # extra can be any string
 m4_define([libguestfs_extra],   [])
 
@@ -797,7 +797,7 @@ AC_SUBST(MAX_PROC_NR)
 
 dnl Replace libtool with a wrapper that clobbers dependency_libs in *.la files
 dnl http://lists.fedoraproject.org/pipermail/devel/2010-November/146343.html
-LIBTOOL='$(SHELL) $(top_srcdir)/libtool-kill-dependency_libs.sh $(top_builddir)/libtool'
+LIBTOOL='bash $(top_srcdir)/libtool-kill-dependency_libs.sh $(top_builddir)/libtool'
 AC_SUBST([LIBTOOL])
 
 dnl Run in subdirs.
@@ -884,7 +884,7 @@ echo    "guestfish and C virt tools .......... yes"
 echo -n "Perl virt tools ..................... "
 if test "x$HAVE_TOOLS_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 echo -n "virt-resize ......................... "
-if test "x$HAVE_OCAML" = "x" && test "x$HAVE_OCAML_PCRE" = "x"; then echo "yes"; else echo "no"; fi
+if test "x$HAVE_OCAML_TRUE" = "x" && test "x$HAVE_OCAML_PCRE_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 echo "FUSE filesystem ..................... $enable_fuse"
 echo
 echo "If any optional component is configured 'no' when you expected 'yes'"

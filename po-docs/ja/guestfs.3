@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfs 3"
-.TH guestfs 3 "2011-07-27" "libguestfs-1.12.2" "Virtualization Support"
+.TH guestfs 3 "2011-08-07" "libguestfs-1.12.3" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -1373,8 +1373,8 @@ Returns the current error handler callback.
 .IX Subsection "guestfs_set_out_of_memory_handler"
 .Vb 3
 \& typedef void (*guestfs_abort_cb) (void);
-\& int guestfs_set_out_of_memory_handler (guestfs_h *g,
-\&                                        guestfs_abort_cb);
+\& void guestfs_set_out_of_memory_handler (guestfs_h *g,
+\&                                         guestfs_abort_cb);
 .Ve
 .PP
 The callback \f(CW\*(C`cb\*(C'\fR will be called if there is an out of memory situation.
@@ -1417,8 +1417,8 @@ to transfer large files into the guest), then you should probably use
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`add_drive_opts\*(C'\fR call
-instead.
+This function is deprecated.  In new code, use the
+\&\*(L"guestfs_add_drive_opts\*(R" call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -1638,8 +1638,8 @@ This is the same as \f(CW\*(C`guestfs_add_drive_ro\*(C'\fR but it allows you to 
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`add_drive_opts\*(C'\fR call
-instead.
+This function is deprecated.  In new code, use the
+\&\*(L"guestfs_add_drive_opts\*(R" call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -1660,8 +1660,8 @@ This is the same as \f(CW\*(C`guestfs_add_drive\*(C'\fR but it allows you to spe
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`add_drive_opts\*(C'\fR call
-instead.
+This function is deprecated.  In new code, use the
+\&\*(L"guestfs_add_drive_opts\*(R" call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -2885,8 +2885,8 @@ allocates a file in the host and attaches it as a device.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`fallocate64\*(C'\fR call
-instead.
+This function is deprecated.  In new code, use the \*(L"guestfs_fallocate64\*(R"
+call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -3334,8 +3334,8 @@ This returns the ext2/3/4 filesystem label of the filesystem on \f(CW\*(C`device
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`vfs_label\*(C'\fR call
-instead.
+This function is deprecated.  In new code, use the \*(L"guestfs_vfs_label\*(R"
+call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -3355,7 +3355,8 @@ This returns the ext2/3/4 filesystem \s-1UUID\s0 of the filesystem on \f(CW\*(C`
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`vfs_uuid\*(C'\fR call instead.
+This function is deprecated.  In new code, use the \*(L"guestfs_vfs_uuid\*(R" call
+instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -5956,8 +5957,8 @@ cluster size.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`mkfs_opts\*(C'\fR call
-instead.
+This function is deprecated.  In new code, use the \*(L"guestfs_mkfs_opts\*(R"
+call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -6279,8 +6280,8 @@ in any code that needs performance, and instead use \f(CW\*(C`guestfs_mount_opti
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`mount_options\*(C'\fR call
-instead.
+This function is deprecated.  In new code, use the \*(L"guestfs_mount_options\*(R"
+call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -6505,8 +6506,8 @@ See also \fIntfsresize\fR\|(8).
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`ntfsresize_opts\*(C'\fR call
-instead.
+This function is deprecated.  In new code, use the
+\&\*(L"guestfs_ntfsresize_opts\*(R" call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -6596,8 +6597,8 @@ to specify the new size (in bytes) explicitly.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`ntfsresize_opts\*(C'\fR call
-instead.
+This function is deprecated.  In new code, use the
+\&\*(L"guestfs_ntfsresize_opts\*(R" call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -7867,7 +7868,8 @@ This function returns 0 on success or \-1 on error.
 \&\fBThis command is dangerous.  Without careful use you can easily destroy all
 your data\fR.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`part_add\*(C'\fR call instead.
+This function is deprecated.  In new code, use the \*(L"guestfs_part_add\*(R" call
+instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -7896,7 +7898,8 @@ This function returns 0 on success or \-1 on error.
 \&\fBThis command is dangerous.  Without careful use you can easily destroy all
 your data\fR.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`part_add\*(C'\fR call instead.
+This function is deprecated.  In new code, use the \*(L"guestfs_part_add\*(R" call
+instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -7929,7 +7932,8 @@ This function returns 0 on success or \-1 on error.
 \&\fBThis command is dangerous.  Without careful use you can easily destroy all
 your data\fR.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`part_add\*(C'\fR call instead.
+This function is deprecated.  In new code, use the \*(L"guestfs_part_add\*(R" call
+instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -7987,8 +7991,8 @@ See also: \f(CW\*(C`guestfs_part_list\*(C'\fR
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`part_list\*(C'\fR call
-instead.
+This function is deprecated.  In new code, use the \*(L"guestfs_part_list\*(R"
+call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -8934,7 +8938,8 @@ unless you want to retain compatibility with older versions of the \s-1API\s0.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`launch\*(C'\fR call instead.
+This function is deprecated.  In new code, use the \*(L"guestfs_launch\*(R" call
+instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -9049,7 +9054,8 @@ This function returns 0 on success or \-1 on error.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`write\*(C'\fR call instead.
+This function is deprecated.  In new code, use the \*(L"guestfs_write\*(R" call
+instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -9218,7 +9224,8 @@ files.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-This function is deprecated.  In new code, use the \f(CW\*(C`file\*(C'\fR call instead.
+This function is deprecated.  In new code, use the \*(L"guestfs_file\*(R" call
+instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
