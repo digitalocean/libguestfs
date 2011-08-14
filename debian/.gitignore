@@ -6,6 +6,7 @@
 
 /tmp
 /guestfish
+/guestfsd
 /guestmount
 /libguestfs-dev
 /libguestfs-doc
@@ -16,4 +17,3 @@
 /libguestfs-ocaml-dev
 /libguestfs-ocaml
 /python-guestfs
-
