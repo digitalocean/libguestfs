@@ -1,0 +1,21 @@
+From: Hilko Bengen <bengen@hilluzination.de>
+Date: Sat, 13 Aug 2011 22:11:10 +0200
+Subject: out-of-tree build: fix building Perl bindings
+
+---
+ perl/Makefile.am |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/perl/Makefile.am b/perl/Makefile.am
+index 6212915..24e54c2 100644
+--- a/perl/Makefile.am
++++ b/perl/Makefile.am
+@@ -69,6 +69,7 @@ all: Makefile-pl src_deps
+ 	$(MAKE) -f Makefile-pl
+ 
+ Makefile-pl: Makefile.PL
++	-[ $(srcdir) != $(builddir) ] && cp -rsu $(abs_srcdir)/. $(builddir)/.
+ 	perl Makefile.PL INSTALLDIRS=$(INSTALLDIRS) PREFIX=$(prefix)
+ 
+ # No!  Otherwise it is deleted before the clean-local rule runs.
+-- 

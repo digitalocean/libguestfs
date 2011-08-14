@@ -1,0 +1,42 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Fri, 5 Aug 2011 10:18:02 +0100
+Subject: python: don't build static library; python3 wants print(x) instead
+ of print x
+
+---
+ configure.ac       |    4 ++--
+ python/Makefile.am |    2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 9ccf27c..571fe41 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -544,11 +544,11 @@ AS_IF([test "x$enable_python" != "xno"],
+ 
+         if test "x$PYTHON" != "xno"; then
+ 	    AC_MSG_CHECKING([Python prefix])
+-            PYTHON_PREFIX=`$PYTHON -c "import sys; print sys.prefix"`
++            PYTHON_PREFIX=`$PYTHON -c "import sys; print (sys.prefix)"`
+ 	    AC_MSG_RESULT([$PYTHON_PREFIX])
+ 
+ 	    AC_MSG_CHECKING([Python version])
+-            PYTHON_VERSION=`$PYTHON -c "import sys; print sys.version[[0:3]]"`
++            PYTHON_VERSION=`$PYTHON -c "import sys; print (sys.version[[0:3]])"`
+ 	    AC_MSG_RESULT([$PYTHON_VERSION])
+ 
+             AC_MSG_CHECKING([for Python include path])
+diff --git a/python/Makefile.am b/python/Makefile.am
+index 19f6e00..97fae83 100644
+--- a/python/Makefile.am
++++ b/python/Makefile.am
+@@ -43,7 +43,7 @@ libguestfsmod_la_SOURCES = guestfs-py.c guestfs-py.h guestfs-py-byhand.c
+ libguestfsmod_la_CFLAGS = -Wall -I$(PYTHON_INCLUDEDIR) \
+ 			  -I$(top_srcdir)/src -I$(top_builddir)/src
+ libguestfsmod_la_LIBADD = $(top_builddir)/src/libguestfs.la
+-libguestfsmod_la_LDFLAGS = -avoid-version
++libguestfsmod_la_LDFLAGS = -avoid-version -shared
+ 
+ TESTS_ENVIRONMENT = \
+ 	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+-- 

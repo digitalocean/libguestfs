@@ -1,5 +1,5 @@
 From: Hilko Bengen <bengen@debian.org>
-Date: Thu, 21 Jul 2011 09:01:19 +0200
+Date: Sat, 20 Aug 2011 10:34:46 +0200
 Subject: Do not run appliance-related checks if not building appliance
 
 ---
@@ -33,34 +33,34 @@ index ca31727..1c5e873 100644
  # Guestfish.
  SUBDIRS += fish
 diff --git a/cat/Makefile.am b/cat/Makefile.am
-index bf1d57c..7796675 100644
+index 6022cd6..49320c6 100644
 --- a/cat/Makefile.am
 +++ b/cat/Makefile.am
-@@ -135,4 +135,6 @@ TESTS_ENVIRONMENT = \
- 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
- 	LIBGUESTFS_PATH=$(top_builddir)/appliance
+@@ -136,4 +136,6 @@ TESTS_ENVIRONMENT = \
+ 	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+ 	TMPDIR=$(top_builddir)
  
 +if ENABLE_APPLIANCE
  TESTS = test-virt-cat.sh test-virt-filesystems.sh test-virt-ls.sh
 +endif ENABLE_APPLIANCE
 diff --git a/df/Makefile.am b/df/Makefile.am
-index 1711798..59350ff 100644
+index 88e32af..209d7ae 100644
 --- a/df/Makefile.am
 +++ b/df/Makefile.am
-@@ -81,4 +81,6 @@ TESTS_ENVIRONMENT = \
- 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
- 	LIBGUESTFS_PATH=$(top_builddir)/appliance
+@@ -82,4 +82,6 @@ TESTS_ENVIRONMENT = \
+ 	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+ 	TMPDIR=$(top_builddir)
  
 +if ENABLE_APPLIANCE
  TESTS = test-virt-df.sh
 +endif ENABLE_APPLIANCE
 diff --git a/edit/Makefile.am b/edit/Makefile.am
-index 62b5376..c1f1272 100644
+index e33b33c..4fec4e1 100644
 --- a/edit/Makefile.am
 +++ b/edit/Makefile.am
-@@ -73,4 +73,6 @@ TESTS_ENVIRONMENT = \
- 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
- 	LIBGUESTFS_PATH=$(top_builddir)/appliance
+@@ -74,4 +74,6 @@ TESTS_ENVIRONMENT = \
+ 	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+ 	TMPDIR=$(top_builddir)
  
 +if ENABLE_APPLIANCE
  TESTS = test-virt-edit.sh
@@ -82,7 +82,7 @@ index b7558ee..5439011 100644
 -endif
 +endif HAVE_FUSE
 diff --git a/images/Makefile.am b/images/Makefile.am
-index 622d288..45df114 100644
+index 68eb550..956e242 100644
 --- a/images/Makefile.am
 +++ b/images/Makefile.am
 @@ -56,7 +56,9 @@ noinst_DATA = test.iso
@@ -96,10 +96,10 @@ index 622d288..45df114 100644
  CLEANFILES = \
  	test.iso test.sqsh \
 diff --git a/ocaml/Makefile.am b/ocaml/Makefile.am
-index 252a337..d594b77 100644
+index 5813f84..ec419ef 100644
 --- a/ocaml/Makefile.am
 +++ b/ocaml/Makefile.am
-@@ -74,11 +74,15 @@ TESTS_ENVIRONMENT = \
+@@ -75,11 +75,15 @@ TESTS_ENVIRONMENT = \
  
  TESTS = run-bindtests \
  	t/guestfs_005_load \
@@ -119,7 +119,7 @@ index 252a337..d594b77 100644
  	t/guestfs_005_load \
  	t/guestfs_010_basic \
 diff --git a/perl/Makefile.am b/perl/Makefile.am
-index c192290..3e1c99a 100644
+index d8167d1..6212915 100644
 --- a/perl/Makefile.am
 +++ b/perl/Makefile.am
 @@ -48,9 +48,15 @@ src_deps: $(top_builddir)/src/libguestfs.la $(generator_built)
@@ -141,12 +141,12 @@ index c192290..3e1c99a 100644
  TESTS_ENVIRONMENT = \
  	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
 diff --git a/python/Makefile.am b/python/Makefile.am
-index e995927..94c400f 100644
+index 5884762..19f6e00 100644
 --- a/python/Makefile.am
 +++ b/python/Makefile.am
-@@ -49,6 +49,10 @@ TESTS_ENVIRONMENT = \
- 	LIBGUESTFS_PATH=$(top_builddir)/appliance \
- 	PYTHONPATH=$(builddir):$(builddir)/.libs
+@@ -50,6 +50,10 @@ TESTS_ENVIRONMENT = \
+ 	PYTHONPATH=$(builddir):$(builddir)/.libs \
+ 	TMPDIR=$(top_builddir)
  
 -TESTS = run-bindtests run-python-tests
 +TESTS = run-bindtests
@@ -158,12 +158,12 @@ index e995927..94c400f 100644
 +
 +endif HAVE_PYTHON
 diff --git a/resize/Makefile.am b/resize/Makefile.am
-index 8418cb4..41749ba 100644
+index fd7f71a..1ed0d96 100644
 --- a/resize/Makefile.am
 +++ b/resize/Makefile.am
-@@ -85,7 +85,9 @@ TESTS_ENVIRONMENT = \
- 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
- 	LIBGUESTFS_PATH=$(top_builddir)/appliance
+@@ -86,7 +86,9 @@ TESTS_ENVIRONMENT = \
+ 	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+ 	TMPDIR=$(top_builddir)
  
 +if ENABLE_APPLIANCE
  TESTS = test-virt-resize.sh
@@ -172,11 +172,11 @@ index 8418cb4..41749ba 100644
  # Dependencies.
  depend: .depend
 diff --git a/tools/Makefile.am b/tools/Makefile.am
-index 7904f1c..04a4bba 100644
+index 6059d35..357459b 100644
 --- a/tools/Makefile.am
 +++ b/tools/Makefile.am
-@@ -63,9 +63,11 @@ TESTS_ENVIRONMENT = \
- 	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+@@ -64,9 +64,11 @@ TESTS_ENVIRONMENT = \
+ 	TMPDIR=$(top_builddir) \
  	PERL5LIB=$(top_builddir)/perl/blib/lib:$(top_builddir)/perl/blib/arch
  
 +if ENABLE_APPLIANCE

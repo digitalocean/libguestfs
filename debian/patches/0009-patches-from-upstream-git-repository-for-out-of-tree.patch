@@ -1,0 +1,888 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Sat, 20 Aug 2011 11:25:46 +0200
+Subject: patches from upstream git repository for out-of-tree build
+
+This includes the following commits:
+
+ff101adf7ead7bcdb46bccdb227ef18d844b965f out-of-tree build: fix documentation generation
+36e0f35a5828458ebeaf72999b3461ab66a230d8 out-of-tree build: fix appliance
+900c9626b9d4f567b21aae433493b4b3b1d09f6d out-of-tree build: Fix up OCaml bindings and generator
+0241c753937e577d51a070f7db471260bf931f9c out-of-tree build: fix building library
+4baec012b1b09a888e570fc89dbaa9fbf9944f34 out-of-tree build: remove unneeded explicit paths
+8876b2d3764b42ebae3c5fdf61b1899095508169 out-of-tree build: fix documentation generation II
+0938e43a60f9d729d9795cf45498e60217fece0e out-of-tree build: fix make and make install
+70c033998e0e721dc4f9eb2a20348098b259752c out-of-tree build: generate ./run from template, fix image checks
+---
+ .gitignore                           |    1 +
+ appliance/Makefile.am                |    1 +
+ cat/Makefile.am                      |    6 ++--
+ configure.ac                         |    2 +
+ df/Makefile.am                       |    2 +-
+ edit/Makefile.am                     |    2 +-
+ examples/Makefile.am                 |   10 +++---
+ fish/Makefile.am                     |   14 ++++----
+ fuse/Makefile.am                     |    2 +-
+ generator/Makefile.am                |    8 ++--
+ images/Makefile.am                   |   14 ++++-----
+ images/guest-aux/make-debian-img.sh  |    6 ++--
+ images/guest-aux/make-fedora-img.sh  |    4 +-
+ images/guest-aux/make-ubuntu-img.sh  |    6 ++--
+ images/guest-aux/make-windows-img.sh |    8 ++--
+ inspector/Makefile.am                |    2 +-
+ java/examples/Makefile.am            |    6 ++--
+ ocaml/Makefile.am                    |   20 ++++++------
+ ocaml/examples/Makefile.am           |    6 ++--
+ perl/examples/Makefile.am            |    6 ++--
+ po-docs/ja/Makefile.am               |   18 ++++++------
+ po-docs/uk/Makefile.am               |   18 ++++++------
+ podwrapper.sh.in                     |    1 +
+ python/examples/Makefile.am          |    6 ++--
+ rescue/Makefile.am                   |    2 +-
+ resize/Makefile.am                   |    2 +-
+ ruby/examples/Makefile.am            |    6 ++--
+ run                                  |   52 ----------------------------------
+ run.in                               |   51 +++++++++++++++++++++++++++++++++
+ src/Makefile.am                      |   14 ++++----
+ test-tool/Makefile.am                |    2 +-
+ tools/Makefile.am                    |    4 +-
+ 32 files changed, 152 insertions(+), 150 deletions(-)
+ delete mode 100755 run
+ create mode 100755 run.in
+
+diff --git a/.gitignore b/.gitignore
+index 38b42b2..2371687 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -305,6 +305,7 @@ ruby/ext/guestfs/_guestfs.c
+ ruby/ext/guestfs/_guestfs.so
+ ruby/ext/guestfs/mkmf.log
+ ruby/Rakefile
++run
+ src/actions.c
+ src/bindtests.c
+ src/errnostring_gperf.c
+diff --git a/appliance/Makefile.am b/appliance/Makefile.am
+index 503160e..bec2b48 100644
+--- a/appliance/Makefile.am
++++ b/appliance/Makefile.am
+@@ -69,6 +69,7 @@ supermin.d/daemon.img: ../daemon/guestfsd
+ 	mv $@-t $@
+ 
+ supermin.d/init.img: init
++	cmp -s $(srcdir)/init $(builddir)/init || cp $(srcdir)/init $(builddir)/init
+ 	mkdir -p supermin.d
+ 	rm -f $@ $@-t
+ 	echo "init" | cpio --quiet -o -H newc > $@-t
+diff --git a/cat/Makefile.am b/cat/Makefile.am
+index 49320c6..b1a672e 100644
+--- a/cat/Makefile.am
++++ b/cat/Makefile.am
+@@ -102,7 +102,7 @@ noinst_DATA = \
+ virt-cat.1 $(top_builddir)/html/virt-cat.1.html: stamp-virt-cat.pod
+ 
+ stamp-virt-cat.pod: virt-cat.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man virt-cat.1 \
+ 	  --html $(top_builddir)/html/virt-cat.1.html \
+ 	  $<
+@@ -111,7 +111,7 @@ stamp-virt-cat.pod: virt-cat.pod
+ virt-ls.1 $(top_builddir)/html/virt-ls.1.html: stamp-virt-ls.pod
+ 
+ stamp-virt-ls.pod: virt-ls.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man virt-ls.1 \
+ 	  --html $(top_builddir)/html/virt-ls.1.html \
+ 	  $<
+@@ -120,7 +120,7 @@ stamp-virt-ls.pod: virt-ls.pod
+ virt-filesystems.1 $(top_builddir)/html/virt-filesystems.1.html: stamp-virt-filesystems.pod
+ 
+ stamp-virt-filesystems.pod: virt-filesystems.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man virt-filesystems.1 \
+ 	  --html $(top_builddir)/html/virt-filesystems.1.html \
+ 	  $<
+diff --git a/configure.ac b/configure.ac
+index 571fe41..eadfc45 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -811,6 +811,8 @@ AC_CONFIG_HEADERS([config.h])
+ dnl http://www.mail-archive.com/automake@gnu.org/msg10204.html
+ AC_CONFIG_FILES([podwrapper.sh],
+                 [chmod +x podwrapper.sh])
++AC_CONFIG_FILES([run],
++                [chmod +x run])
+ AC_CONFIG_FILES([Makefile
+                  appliance/Makefile
+                  capitests/Makefile
+diff --git a/df/Makefile.am b/df/Makefile.am
+index 209d7ae..63ba403 100644
+--- a/df/Makefile.am
++++ b/df/Makefile.am
+@@ -66,7 +66,7 @@ noinst_DATA = $(top_builddir)/html/virt-df.1.html
+ virt-df.1 $(top_builddir)/html/virt-df.1.html: stamp-virt-df.pod
+ 
+ stamp-virt-df.pod: virt-df.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man virt-df.1 \
+ 	  --html $(top_builddir)/html/virt-df.1.html \
+ 	  $<
+diff --git a/edit/Makefile.am b/edit/Makefile.am
+index 4fec4e1..426c372 100644
+--- a/edit/Makefile.am
++++ b/edit/Makefile.am
+@@ -58,7 +58,7 @@ noinst_DATA = $(top_builddir)/html/virt-edit.1.html
+ virt-edit.1 $(top_builddir)/html/virt-edit.1.html: stamp-virt-edit.pod
+ 
+ stamp-virt-edit.pod: virt-edit.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man virt-edit.1 \
+ 	  --html $(top_builddir)/html/virt-edit.1.html \
+ 	  $<
+diff --git a/examples/Makefile.am b/examples/Makefile.am
+index b8a2ffe..03870cb 100644
+--- a/examples/Makefile.am
++++ b/examples/Makefile.am
+@@ -65,19 +65,19 @@ noinst_DATA = \
+ guestfs-examples.3 $(top_builddir)/html/guestfs-examples.3.html: stamp-guestfs-examples.pod
+ 
+ stamp-guestfs-examples.pod: guestfs-examples.pod create_disk.c inspect_vm.c
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --section 3 \
+ 	  --man guestfs-examples.3 \
+ 	  --html $(top_builddir)/html/guestfs-examples.3.html \
+-	  --verbatim create_disk.c:@EXAMPLE1@ \
+-	  --verbatim inspect_vm.c:@EXAMPLE2@ \
++	  --verbatim $(srcdir)/create_disk.c:@EXAMPLE1@ \
++	  --verbatim $(srcdir)/inspect_vm.c:@EXAMPLE2@ \
+ 	  $<
+ 	touch $@
+ 
+ guestfs-recipes.1 $(top_builddir)/html/guestfs-recipes.1.html: stamp-guestfs-recipes.pod
+ 
+-stamp-guestfs-recipes.pod: guestfs-recipes.pod create_disk.c inspect_vm.c
+-	$(top_srcdir)/podwrapper.sh \
++stamp-guestfs-recipes.pod: guestfs-recipes.pod
++	$(top_builddir)/podwrapper.sh \
+ 	  --section 1 \
+ 	  --man guestfs-recipes.1 \
+ 	  --html $(top_builddir)/html/guestfs-recipes.1.html \
+diff --git a/fish/Makefile.am b/fish/Makefile.am
+index 3089181..33a0fd7 100644
+--- a/fish/Makefile.am
++++ b/fish/Makefile.am
+@@ -170,18 +170,18 @@ noinst_DATA = \
+ guestfish.1 $(top_builddir)/html/guestfish.1.html: stamp-guestfish.pod
+ 
+ stamp-guestfish.pod: guestfish.pod guestfish-actions.pod guestfish-commands.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man guestfish.1 \
+ 	  --html $(top_builddir)/html/guestfish.1.html \
+-	  --insert guestfish-actions.pod:@ACTIONS@ \
+-	  --insert guestfish-commands.pod:@FISH_COMMANDS@ \
++	  --insert $(srcdir)/guestfish-actions.pod:@ACTIONS@ \
++	  --insert $(srcdir)/guestfish-commands.pod:@FISH_COMMANDS@ \
+ 	  $<
+ 	touch $@
+ 
+ virt-copy-in.1 $(top_builddir)/html/virt-copy-in.1.html: stamp-virt-copy-in.pod
+ 
+ stamp-virt-copy-in.pod: virt-copy-in.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man virt-copy-in.1 \
+ 	  --html $(top_builddir)/html/virt-copy-in.1.html \
+ 	  $<
+@@ -190,7 +190,7 @@ stamp-virt-copy-in.pod: virt-copy-in.pod
+ virt-copy-out.1 $(top_builddir)/html/virt-copy-out.1.html: stamp-virt-copy-out.pod
+ 
+ stamp-virt-copy-out.pod: virt-copy-out.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man virt-copy-out.1 \
+ 	  --html $(top_builddir)/html/virt-copy-out.1.html \
+ 	  $<
+@@ -199,7 +199,7 @@ stamp-virt-copy-out.pod: virt-copy-out.pod
+ virt-tar-in.1 $(top_builddir)/html/virt-tar-in.1.html: stamp-virt-tar-in.pod
+ 
+ stamp-virt-tar-in.pod: virt-tar-in.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man virt-tar-in.1 \
+ 	  --html $(top_builddir)/html/virt-tar-in.1.html \
+ 	  $<
+@@ -208,7 +208,7 @@ stamp-virt-tar-in.pod: virt-tar-in.pod
+ virt-tar-out.1 $(top_builddir)/html/virt-tar-out.1.html: stamp-virt-tar-out.pod
+ 
+ stamp-virt-tar-out.pod: virt-tar-out.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man virt-tar-out.1 \
+ 	  --html $(top_builddir)/html/virt-tar-out.1.html \
+ 	  $<
+diff --git a/fuse/Makefile.am b/fuse/Makefile.am
+index 5439011..c83becd 100644
+--- a/fuse/Makefile.am
++++ b/fuse/Makefile.am
+@@ -66,7 +66,7 @@ noinst_DATA = $(top_builddir)/html/guestmount.1.html
+ guestmount.1 $(top_builddir)/html/guestmount.1.html: stamp-guestmount.pod
+ 
+ stamp-guestmount.pod: guestmount.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man guestmount.1 \
+ 	  --html $(top_builddir)/html/guestmount.1.html \
+ 	  $<
+diff --git a/generator/Makefile.am b/generator/Makefile.am
+index 112fc69..a127a87 100644
+--- a/generator/Makefile.am
++++ b/generator/Makefile.am
+@@ -62,14 +62,14 @@ noinst_PROGRAM = generator
+ 
+ if HAVE_OCAML
+ 
+-generator: $(OBJECTS)
+-	$(OCAMLC) -o generator $(OCAMLCFLAGS) $(OCAMLCLIBS) $(OBJECTS)
++$(srcdir)/generator: $(OBJECTS)
++	$(OCAMLC) -I $(srcdir) -o $@ $(OCAMLCFLAGS) $(OCAMLCLIBS) $(OBJECTS)
+ 
+ .ml.cmo:
+-	$(OCAMLC) $(OCAMLCFLAGS) -c $< -o $@
++	$(OCAMLC) -I $(srcdir) $(OCAMLCFLAGS) -c $< -o $@
+ 
+ .mli.cmi:
+-	$(OCAMLC) $(OCAMLCFLAGS) -c $< -o $@
++	$(OCAMLC) -I $(srcdir) $(OCAMLCFLAGS) -c $< -o $@
+ 
+ depend: .depend
+ 
+diff --git a/images/Makefile.am b/images/Makefile.am
+index 956e242..1b554f4 100644
+--- a/images/Makefile.am
++++ b/images/Makefile.am
+@@ -175,41 +175,39 @@ $(builddir)/test-grep.txt.gz: test-grep.txt
+ fedora.img: guest-aux/make-fedora-img.sh \
+ 		guest-aux/fedora-name.db \
+ 		guest-aux/fedora-packages.db
+-	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+-	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
+ 	TMPDIR=$(top_builddir) \
++	SRCDIR=$(srcdir) \
+ 	bash $<
+ 
+ guest-aux/fedora-name.db: guest-aux/fedora-name.db.txt
+ 	rm -f $@ $@-t
++	mkdir -p guest-aux
+ 	$(DB_LOAD) $@-t < $<
+ 	mv $@-t $@
+ 
+ guest-aux/fedora-packages.db: guest-aux/fedora-packages.db.txt
+ 	rm -f $@ $@-t
++	mkdir -p guest-aux
+ 	$(DB_LOAD) $@-t < $<
+ 	mv $@-t $@
+ 
+ # Make a (dummy) Debian image.
+ debian.img: guest-aux/make-debian-img.sh
+-	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+-	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
+ 	TMPDIR=$(top_builddir) \
++	SRCDIR=$(srcdir) \
+ 	bash $<
+ 
+ # Make a (dummy) Ubuntu image.
+ ubuntu.img: guest-aux/make-ubuntu-img.sh
+-	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+-	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
+ 	TMPDIR=$(top_builddir) \
++	SRCDIR=$(srcdir) \
+ 	bash $<
+ 
+ # Make a (dummy) Windows image.
+ windows.img: guest-aux/make-windows-img.sh \
+ 	     guest-aux/windows-software guest-aux/windows-system
+-	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+-	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
+ 	TMPDIR=$(top_builddir) \
++	SRCDIR=$(srcdir) \
+ 	bash $<
+ 
+ # Since users might not have the tools needed to create this, we
+diff --git a/images/guest-aux/make-debian-img.sh b/images/guest-aux/make-debian-img.sh
+index 9a01e93..4b0490d 100755
+--- a/images/guest-aux/make-debian-img.sh
++++ b/images/guest-aux/make-debian-img.sh
+@@ -31,7 +31,7 @@ LABEL=BOOT /boot ext2 default 0 0
+ EOF
+ 
+ # Create a disk image.
+-../run ../fish/guestfish <<'EOF'
++../run ../fish/guestfish <<EOF
+ sparse debian.img.tmp 512M
+ run
+ 
+@@ -80,9 +80,9 @@ upload fstab.tmp /etc/fstab
+ write /etc/debian_version "5.0.1"
+ write /etc/hostname "debian.invalid"
+ 
+-upload guest-aux/debian-packages /var/lib/dpkg/status
++upload ${SRCDIR}/guest-aux/debian-packages /var/lib/dpkg/status
+ 
+-upload bin-x86_64-dynamic /bin/ls
++upload ${SRCDIR}/bin-x86_64-dynamic /bin/ls
+ 
+ mkdir /boot/grub
+ touch /boot/grub/grub.conf
+diff --git a/images/guest-aux/make-fedora-img.sh b/images/guest-aux/make-fedora-img.sh
+index a038432..3d6c471 100755
+--- a/images/guest-aux/make-fedora-img.sh
++++ b/images/guest-aux/make-fedora-img.sh
+@@ -31,7 +31,7 @@ LABEL=ROOT / ext2 default 0 0
+ EOF
+ 
+ # Create a disk image.
+-../run ../fish/guestfish <<'EOF'
++../run ../fish/guestfish <<EOF
+ sparse fedora.img.tmp 512M
+ run
+ 
+@@ -75,7 +75,7 @@ write /etc/sysconfig/network "HOSTNAME=fedora.invalid"
+ upload guest-aux/fedora-name.db /var/lib/rpm/Name
+ upload guest-aux/fedora-packages.db /var/lib/rpm/Packages
+ 
+-upload bin-x86_64-dynamic /bin/ls
++upload ${SRCDIR}/bin-x86_64-dynamic /bin/ls
+ 
+ mkdir /boot/grub
+ touch /boot/grub/grub.conf
+diff --git a/images/guest-aux/make-ubuntu-img.sh b/images/guest-aux/make-ubuntu-img.sh
+index 4ddb40a..c48fd5d 100755
+--- a/images/guest-aux/make-ubuntu-img.sh
++++ b/images/guest-aux/make-ubuntu-img.sh
+@@ -36,7 +36,7 @@ DISTRIB_DESCRIPTION="Ubuntu 10.10 (Phony Pharaoh)"
+ EOF
+ 
+ # Create a disk image.
+-../run ../fish/guestfish <<'EOF'
++../run ../fish/guestfish <<EOF
+ sparse ubuntu.img.tmp 512M
+ run
+ 
+@@ -69,9 +69,9 @@ write /etc/debian_version "5.0.1"
+ upload release.tmp /etc/lsb-release
+ write /etc/hostname "ubuntu.invalid"
+ 
+-upload guest-aux/debian-packages /var/lib/dpkg/status
++upload ${SRCDIR}/guest-aux/debian-packages /var/lib/dpkg/status
+ 
+-upload bin-i586-dynamic /bin/ls
++upload ${SRCDIR}/bin-x86_64-dynamic /bin/ls
+ 
+ mkdir /boot/grub
+ touch /boot/grub/grub.conf
+diff --git a/images/guest-aux/make-windows-img.sh b/images/guest-aux/make-windows-img.sh
+index 3acb2b7..9e2152d 100755
+--- a/images/guest-aux/make-windows-img.sh
++++ b/images/guest-aux/make-windows-img.sh
+@@ -36,7 +36,7 @@ if ! ../run ../fish/guestfish -a /dev/null run : available "ntfs3g ntfsprogs"; t
+ fi
+ 
+ # Create a disk image.
+-../run ../fish/guestfish <<'EOF'
++../run ../fish/guestfish <<EOF
+ sparse windows.img.tmp 512M
+ run
+ 
+@@ -58,10 +58,10 @@ mkfs ntfs /dev/sda2
+ mount-options "" /dev/sda2 /
+ mkdir-p /Windows/System32/Config
+ 
+-upload guest-aux/windows-software /Windows/System32/Config/SOFTWARE
+-upload guest-aux/windows-system /Windows/System32/Config/SYSTEM
++upload ${SRCDIR}/guest-aux/windows-software /Windows/System32/Config/SOFTWARE
++upload ${SRCDIR}/guest-aux/windows-system /Windows/System32/Config/SYSTEM
+ 
+-upload bin-win32.exe /Windows/System32/cmd.exe
++upload ${SRCDIR}/bin-win32.exe /Windows/System32/cmd.exe
+ 
+ mkdir "/Program Files"
+ touch /autoexec.bat
+diff --git a/inspector/Makefile.am b/inspector/Makefile.am
+index 5c48724..03e13d8 100644
+--- a/inspector/Makefile.am
++++ b/inspector/Makefile.am
+@@ -81,7 +81,7 @@ noinst_DATA = $(top_builddir)/html/virt-inspector.1.html
+ virt-inspector.1 $(top_builddir)/html/virt-inspector.1.html: stamp-virt-inspector.pod
+ 
+ stamp-virt-inspector.pod: virt-inspector.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man virt-inspector.1 \
+ 	  --html $(top_builddir)/html/virt-inspector.1.html \
+ 	  $<
+diff --git a/java/examples/Makefile.am b/java/examples/Makefile.am
+index 503b55d..60fd958 100644
+--- a/java/examples/Makefile.am
++++ b/java/examples/Makefile.am
+@@ -31,12 +31,12 @@ noinst_DATA = $(top_builddir)/html/guestfs-java.3.html
+ guestfs-java.3 $(top_builddir)/html/guestfs-java.3.html: stamp-guestfs-java.pod
+ 
+ stamp-guestfs-java.pod: guestfs-java.pod CreateDisk.java InspectVM.java
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --section 3 \
+ 	  --man guestfs-java.3 \
+ 	  --html $(top_builddir)/html/guestfs-java.3.html \
+-	  --verbatim CreateDisk.java:@EXAMPLE1@ \
+-	  --verbatim InspectVM.java:@EXAMPLE2@ \
++	  --verbatim $(srcdir)/CreateDisk.java:@EXAMPLE1@ \
++	  --verbatim $(srcdir)/InspectVM.java:@EXAMPLE2@ \
+ 	  $<
+ 	touch $@
+ 
+diff --git a/ocaml/Makefile.am b/ocaml/Makefile.am
+index ec419ef..ba9aee7 100644
+--- a/ocaml/Makefile.am
++++ b/ocaml/Makefile.am
+@@ -56,13 +56,13 @@ guestfs_c.o: guestfs_c.c
+ 	$(CC) $(AM_CPPFLAGS) $(CFLAGS) -fPIC -Wall -c $<
+ 
+ guestfs_c_actions.o: guestfs_c_actions.c
+-	$(CC) $(AM_CPPFLAGS) $(CFLAGS) -fPIC -Wall -c $<
++	$(CC) $(AM_CPPFLAGS) $(CFLAGS) -fPIC -Wall -c $(srcdir)/$<
+ 
+ if HAVE_OCAMLDOC
+ 
+ noinst_DATA += html/index.html
+ 
+-html/index.html: guestfs*.mli guestfs*.ml
++html/index.html: $(srcdir)/guestfs*.mli $(srcdir)/guestfs*.ml
+ 	mkdir -p html
+ 	-$(OCAMLDOC) -d html -html $^
+ endif
+@@ -126,14 +126,14 @@ t/guestfs_070_threads.cmx: t/guestfs_070_threads.ml mlguestfs.cmxa
+ 	$(OCAMLFIND) ocamlopt -package unix,threads -thread -linkpkg -c $< -o $@
+ 
+ t/%.cmx: t/%.ml mlguestfs.cmxa
+-	$(OCAMLFIND) ocamlopt -package unix -linkpkg -c $< -o $@
++	$(OCAMLFIND) ocamlopt -package unix -linkpkg -c $< -o $(builddir)/$@
+ 
+-.mli.cmi:
+-	$(OCAMLFIND) ocamlc -package unix -c $< -o $@
+-.ml.cmo:
+-	$(OCAMLFIND) ocamlc -package unix -c $< -o $@
+-.ml.cmx:
+-	$(OCAMLFIND) ocamlopt -package unix -c $< -o $@
++%.cmi: %.mli
++	$(OCAMLFIND) ocamlc -package unix -c $< -o $(builddir)/$@
++%.cmo: %.ml
++	$(OCAMLFIND) ocamlc -package unix -c $< -o $(builddir)/$@
++%.cmx: %.ml
++	$(OCAMLFIND) ocamlopt -package unix -c $< -o $(builddir)/$@
+ 
+ depend: .depend
+ 
+@@ -153,7 +153,7 @@ install-data-hook:
+ 	$(OCAMLFIND) install \
+ 	  -ldconf ignore -destdir $(DESTDIR)$(OCAMLLIB) \
+ 	  guestfs \
+-	  META *.so *.a *.cma *.cmx *.cmxa *.cmi *.mli
++	  META *.so *.a *.cma *.cmx *.cmxa *.cmi $(srcdir)/*.mli
+ 
+ CLEANFILES += $(noinst_DATA)
+ 
+diff --git a/ocaml/examples/Makefile.am b/ocaml/examples/Makefile.am
+index 61a94af..43e579c 100644
+--- a/ocaml/examples/Makefile.am
++++ b/ocaml/examples/Makefile.am
+@@ -31,12 +31,12 @@ noinst_DATA = $(top_builddir)/html/guestfs-ocaml.3.html
+ guestfs-ocaml.3 $(top_builddir)/html/guestfs-ocaml.3.html: stamp-guestfs-ocaml.pod
+ 
+ stamp-guestfs-ocaml.pod: guestfs-ocaml.pod create_disk.ml inspect_vm.ml
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --section 3 \
+ 	  --man guestfs-ocaml.3 \
+ 	  --html $(top_builddir)/html/guestfs-ocaml.3.html \
+-	  --verbatim create_disk.ml:@EXAMPLE1@ \
+-	  --verbatim inspect_vm.ml:@EXAMPLE2@ \
++	  --verbatim $(srcdir)/create_disk.ml:@EXAMPLE1@ \
++	  --verbatim $(srcdir)/inspect_vm.ml:@EXAMPLE2@ \
+ 	  $<
+ 	touch $@
+ 
+diff --git a/perl/examples/Makefile.am b/perl/examples/Makefile.am
+index 354531a..387cdf1 100644
+--- a/perl/examples/Makefile.am
++++ b/perl/examples/Makefile.am
+@@ -29,11 +29,11 @@ noinst_DATA = $(top_builddir)/html/guestfs-perl.3.html
+ guestfs-perl.3 $(top_builddir)/html/guestfs-perl.3.html: stamp-guestfs-perl.pod
+ 
+ stamp-guestfs-perl.pod: guestfs-perl.pod create_disk.pl inspect_vm.pl
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --section 3 \
+ 	  --man guestfs-perl.3 \
+ 	  --html $(top_builddir)/html/guestfs-perl.3.html \
+-	  --verbatim create_disk.pl:@EXAMPLE1@ \
+-	  --verbatim inspect_vm.pl:@EXAMPLE2@ \
++	  --verbatim $(srcdir)/create_disk.pl:@EXAMPLE1@ \
++	  --verbatim $(srcdir)/inspect_vm.pl:@EXAMPLE2@ \
+ 	  $<
+ 	touch $@
+diff --git a/po-docs/ja/Makefile.am b/po-docs/ja/Makefile.am
+index 4b149fe..07778b5 100644
+--- a/po-docs/ja/Makefile.am
++++ b/po-docs/ja/Makefile.am
+@@ -52,26 +52,26 @@ EXTRA_DIST = \
+ all-local: $(MANPAGES)
+ 
+ guestfs.3: guestfs.pod guestfs-actions.pod guestfs-availability.pod guestfs-structs.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --section 3 \
+ 	  --man $@ \
+-	  --insert guestfs-actions.pod:@ACTIONS@ \
+-	  --insert guestfs-availability.pod:@AVAILABILITY@ \
+-	  --insert guestfs-structs.pod:@STRUCTS@ \
++	  --insert $(srcdir)/guestfs-actions.pod:@ACTIONS@ \
++	  --insert $(srcdir)/guestfs-availability.pod:@AVAILABILITY@ \
++	  --insert $(srcdir)/guestfs-structs.pod:@STRUCTS@ \
+ 	  $<
+ 
+ guestfish.1: guestfish.pod guestfish-actions.pod guestfish-commands.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man $@ \
+-	  --insert guestfish-actions.pod:@ACTIONS@ \
+-	  --insert guestfish-commands.pod:@FISH_COMMANDS@ \
++	  --insert $(srcdir)/guestfish-actions.pod:@ACTIONS@ \
++	  --insert $(srcdir)/guestfish-commands.pod:@FISH_COMMANDS@ \
+ 	  $<
+ 
+ %.1: %.pod
+-	$(top_srcdir)/podwrapper.sh --man $@ $<
++	$(top_builddir)/podwrapper.sh --man $@ $<
+ 
+ %.1: %.pl
+-	$(top_srcdir)/podwrapper.sh --man $@ $<
++	$(top_builddir)/podwrapper.sh --man $@ $<
+ 
+ # XXX Can automake do this properly?
+ install-data-hook:
+diff --git a/po-docs/uk/Makefile.am b/po-docs/uk/Makefile.am
+index 4b149fe..07778b5 100644
+--- a/po-docs/uk/Makefile.am
++++ b/po-docs/uk/Makefile.am
+@@ -52,26 +52,26 @@ EXTRA_DIST = \
+ all-local: $(MANPAGES)
+ 
+ guestfs.3: guestfs.pod guestfs-actions.pod guestfs-availability.pod guestfs-structs.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --section 3 \
+ 	  --man $@ \
+-	  --insert guestfs-actions.pod:@ACTIONS@ \
+-	  --insert guestfs-availability.pod:@AVAILABILITY@ \
+-	  --insert guestfs-structs.pod:@STRUCTS@ \
++	  --insert $(srcdir)/guestfs-actions.pod:@ACTIONS@ \
++	  --insert $(srcdir)/guestfs-availability.pod:@AVAILABILITY@ \
++	  --insert $(srcdir)/guestfs-structs.pod:@STRUCTS@ \
+ 	  $<
+ 
+ guestfish.1: guestfish.pod guestfish-actions.pod guestfish-commands.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man $@ \
+-	  --insert guestfish-actions.pod:@ACTIONS@ \
+-	  --insert guestfish-commands.pod:@FISH_COMMANDS@ \
++	  --insert $(srcdir)/guestfish-actions.pod:@ACTIONS@ \
++	  --insert $(srcdir)/guestfish-commands.pod:@FISH_COMMANDS@ \
+ 	  $<
+ 
+ %.1: %.pod
+-	$(top_srcdir)/podwrapper.sh --man $@ $<
++	$(top_builddir)/podwrapper.sh --man $@ $<
+ 
+ %.1: %.pl
+-	$(top_srcdir)/podwrapper.sh --man $@ $<
++	$(top_builddir)/podwrapper.sh --man $@ $<
+ 
+ # XXX Can automake do this properly?
+ install-data-hook:
+diff --git a/podwrapper.sh.in b/podwrapper.sh.in
+index c883c6a..9accaf9 100755
+--- a/podwrapper.sh.in
++++ b/podwrapper.sh.in
+@@ -180,6 +180,7 @@ if [ -n "$text_output" ]; then
+ fi
+ 
+ if [ -n "$html_output" ]; then
++    mkdir -p "$abs_top_builddir/html"
+     "$POD2HTML" \
+         --css "pod.css" --htmldir "$abs_top_builddir/html" \
+         < $tmpdir/full.pod > "$html_output".tmp
+diff --git a/python/examples/Makefile.am b/python/examples/Makefile.am
+index 208fecd..434c8f7 100644
+--- a/python/examples/Makefile.am
++++ b/python/examples/Makefile.am
+@@ -29,11 +29,11 @@ noinst_DATA = $(top_builddir)/html/guestfs-python.3.html
+ guestfs-python.3 $(top_builddir)/html/guestfs-python.3.html: stamp-guestfs-python.pod
+ 
+ stamp-guestfs-python.pod: guestfs-python.pod create_disk.py inspect_vm.py
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --section 3 \
+ 	  --man guestfs-python.3 \
+ 	  --html $(top_builddir)/html/guestfs-python.3.html \
+-	  --verbatim create_disk.py:@EXAMPLE1@ \
+-	  --verbatim inspect_vm.py:@EXAMPLE2@ \
++	  --verbatim $(srcdir)/create_disk.py:@EXAMPLE1@ \
++	  --verbatim $(srcdir)/inspect_vm.py:@EXAMPLE2@ \
+ 	  $<
+ 	touch $@
+diff --git a/rescue/Makefile.am b/rescue/Makefile.am
+index d3783ae..85a70f9 100644
+--- a/rescue/Makefile.am
++++ b/rescue/Makefile.am
+@@ -57,7 +57,7 @@ noinst_DATA = $(top_builddir)/html/virt-rescue.1.html
+ virt-rescue.1 $(top_builddir)/html/virt-rescue.1.html: stamp-virt-rescue.pod
+ 
+ stamp-virt-rescue.pod: virt-rescue.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man virt-rescue.1 \
+ 	  --html $(top_builddir)/html/virt-rescue.1.html \
+ 	  $<
+diff --git a/resize/Makefile.am b/resize/Makefile.am
+index 1ed0d96..395f32d 100644
+--- a/resize/Makefile.am
++++ b/resize/Makefile.am
+@@ -68,7 +68,7 @@ noinst_DATA = $(top_builddir)/html/virt-resize.1.html
+ virt-resize.1 $(top_builddir)/html/virt-resize.1.html: stamp-virt-resize.pod
+ 
+ stamp-virt-resize.pod: virt-resize.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man virt-resize.1 \
+ 	  --html $(top_builddir)/html/virt-resize.1.html \
+ 	  $<
+diff --git a/ruby/examples/Makefile.am b/ruby/examples/Makefile.am
+index 6e94acf..7183e80 100644
+--- a/ruby/examples/Makefile.am
++++ b/ruby/examples/Makefile.am
+@@ -29,11 +29,11 @@ noinst_DATA = $(top_builddir)/html/guestfs-ruby.3.html
+ guestfs-ruby.3 $(top_builddir)/html/guestfs-ruby.3.html: stamp-guestfs-ruby.pod
+ 
+ stamp-guestfs-ruby.pod: guestfs-ruby.pod create_disk.rb inspect_vm.rb
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --section 3 \
+ 	  --man guestfs-ruby.3 \
+ 	  --html $(top_builddir)/html/guestfs-ruby.3.html \
+-	  --verbatim create_disk.rb:@EXAMPLE1@ \
+-	  --verbatim inspect_vm.rb:@EXAMPLE2@ \
++	  --verbatim $(srcdir)/create_disk.rb:@EXAMPLE1@ \
++	  --verbatim $(srcdir)/inspect_vm.rb:@EXAMPLE2@ \
+ 	  $<
+ 	touch $@
+diff --git a/run b/run
+deleted file mode 100755
+index 2945315..0000000
+--- a/run
++++ /dev/null
+@@ -1,52 +0,0 @@
+-#!/bin/bash -
+-# libguestfs 'run' programs locally script
+-# Copyright (C) 2011 Red Hat Inc.
+-#
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License as published by
+-# the Free Software Foundation; either version 2 of the License, or
+-# (at your option) any later version.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+-
+-#----------------------------------------------------------------------
+-
+-# With this script you can run all the virt tools without needing to
+-# install them first.  You just have to do for example:
+-#
+-#   ./run ./inspector/virt-inspector [args ...]
+-#
+-# This works for any C, OCaml or Perl virt tools in the libguestfs
+-# distribution.  Also you can make a symbolic link to this 'run'
+-# script from anywhere (eg. $HOME/bin/run) if you wish.
+-
+-#----------------------------------------------------------------------
+-
+-# Find this script.
+-run=$(readlink -f "$0")
+-b=$(dirname "$run")
+-
+-# Set TMPDIR so the appliance doesn't conflict with globally
+-# installed libguestfs.
+-export TMPDIR=$b
+-
+-# Set local environment relative to this script.
+-export LD_LIBRARY_PATH="$b/src/.libs"
+-export LIBGUESTFS_PATH="$b/appliance"
+-export PERL5LIB="$b/perl/blib/lib:$b/perl/blib/arch"
+-
+-# Do we have libtool?  If we have it then we can use it to make
+-# running valgrind simpler.  However don't depend on it.
+-if libtool --help >/dev/null 2>&1; then
+-    libtool="libtool --mode=execute"
+-fi
+-
+-# Run the program.
+-exec $libtool "$@"
+diff --git a/run.in b/run.in
+new file mode 100755
+index 0000000..d7b91d4
+--- /dev/null
++++ b/run.in
+@@ -0,0 +1,51 @@
++#!/bin/bash -
++# libguestfs 'run' programs locally script
++# Copyright (C) 2011 Red Hat Inc.
++#
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; either version 2 of the License, or
++# (at your option) any later version.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++
++#----------------------------------------------------------------------
++
++# With this script you can run all the virt tools without needing to
++# install them first.  You just have to do for example:
++#
++#   ./run ./inspector/virt-inspector [args ...]
++#
++# This works for any C, OCaml or Perl virt tools in the libguestfs
++# distribution.  Also you can make a symbolic link to this 'run'
++# script from anywhere (eg. $HOME/bin/run) if you wish.
++
++#----------------------------------------------------------------------
++
++# Find this script.
++b=@abs_builddir@
++
++# Set TMPDIR so the appliance doesn't conflict with globally
++# installed libguestfs.
++export TMPDIR="$b"
++
++# Set local environment relative to this script.
++export LD_LIBRARY_PATH="$b/src/.libs"
++export LIBGUESTFS_PATH="$b/appliance"
++export PERL5LIB="$b/perl/blib/lib:$b/perl/blib/arch"
++
++# Do we have libtool?  If we have it then we can use it to make
++# running valgrind simpler.  However don't depend on it.
++if libtool --help >/dev/null 2>&1; then
++    libtool="libtool --mode=execute"
++fi
++
++# Run the program.
++exec $libtool "$@"
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 6c0cc33..095e0c1 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -113,7 +113,7 @@ errnostring_gperf.c: errnostring_gperf.gperf
+ # 'libguestfs.so.0.$(MAX_PROC_NR).0'.
+ libguestfs_la_LDFLAGS = -version-info $(MAX_PROC_NR):0:$(MAX_PROC_NR)
+ 
+-libguestfs_la_LDFLAGS += $(VERSION_SCRIPT_FLAGS)libguestfs.syms
++libguestfs_la_LDFLAGS += $(VERSION_SCRIPT_FLAGS)$(srcdir)/libguestfs.syms
+ 
+ libguestfs_la_SOURCES = \
+ 	guestfs.c \
+@@ -162,14 +162,14 @@ libguestfs_la_CPPFLAGS = -I$(top_srcdir)/gnulib/lib
+ if HAVE_RPCGEN
+ guestfs_protocol.c: guestfs_protocol.x
+ 	rm -f $@-t $@-t2
+-	$(RPCGEN) -c -o $@-t $<
++	$(RPCGEN) -c -o $@-t $(srcdir)/$<
+ 	sed 's,\.\./\.\./src/,,' < $@-t > $@-t2
+ 	rm $@-t
+ 	mv $@-t2 $@
+ 
+ guestfs_protocol.h: guestfs_protocol.x
+ 	rm -f $@-t
+-	$(RPCGEN) -h -o $@-t $<
++	$(RPCGEN) -h -o $@-t $(srcdir)/$<
+ 	mv $@-t $@
+ endif
+ 
+@@ -184,12 +184,12 @@ stamp-guestfs.pod: guestfs.pod \
+ 		guestfs-actions.pod \
+ 		guestfs-availability.pod \
+ 		guestfs-structs.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --section 3 \
+ 	  --man guestfs.3 \
+ 	  --html $(top_builddir)/html/guestfs.3.html \
+-	  --insert guestfs-actions.pod:@ACTIONS@ \
+-	  --insert guestfs-availability.pod:@AVAILABILITY@ \
+-	  --insert guestfs-structs.pod:@STRUCTS@ \
++	  --insert $(srcdir)/guestfs-actions.pod:@ACTIONS@ \
++	  --insert $(srcdir)/guestfs-availability.pod:@AVAILABILITY@ \
++	  --insert $(srcdir)/guestfs-structs.pod:@STRUCTS@ \
+ 	  $<
+ 	touch $@
+diff --git a/test-tool/Makefile.am b/test-tool/Makefile.am
+index 9fa4033..16daa7f 100644
+--- a/test-tool/Makefile.am
++++ b/test-tool/Makefile.am
+@@ -34,6 +34,6 @@ libguestfs_test_tool_LDADD = \
+ 	$(top_builddir)/src/libguestfs.la
+ 
+ libguestfs-test-tool.1: libguestfs-test-tool.pod
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man $@ \
+ 	  $<
+diff --git a/tools/Makefile.am b/tools/Makefile.am
+index 357459b..60c4046 100644
+--- a/tools/Makefile.am
++++ b/tools/Makefile.am
+@@ -44,12 +44,12 @@ man_MANS = virt-tar.1 $(patsubst %,virt-%.1,$(filter-out tar,$(tools)))
+ noinst_DATA = $(tools:%=$(top_builddir)/html/virt-%.1.html)
+ 
+ virt-%.1: virt-%
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --man $@ \
+ 	  $<
+ 
+ $(top_builddir)/html/virt-%.1.html: virt-%
+-	$(top_srcdir)/podwrapper.sh \
++	$(top_builddir)/podwrapper.sh \
+ 	  --html $@ \
+ 	  $<
+ 
+-- 

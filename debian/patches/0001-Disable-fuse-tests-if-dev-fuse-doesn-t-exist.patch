@@ -8,10 +8,10 @@ e.g. when running in a chroot.
  1 files changed, 5 insertions(+), 0 deletions(-)
 
 diff --git a/fuse/test-fuse.sh b/fuse/test-fuse.sh
-index 0a429f7..b292677 100755
+index cfa277a..1b97966 100755
 --- a/fuse/test-fuse.sh
 +++ b/fuse/test-fuse.sh
-@@ -45,6 +45,11 @@ if [ ! -x "$guestfish" -o ! -x "$guestmount" ]; then
+@@ -49,6 +49,11 @@ if [ ! -x "$guestfish" -o ! -x "$guestmount" ]; then
      exit 1
  fi
  
