@@ -1,44 +1,96 @@
 #!/usr/bin/make -f
 
+# export DH_VERBOSE=1
+
+PYTHONS        := $(shell pyversions --installed; py3versions --installed)
+PYTHON_DEFAULT := $(shell pyversions --default)
+
+CONFIG_FLAGS = \
+	--enable-install-daemon \
+	--disable-appliance  \
+	--with-readline	     \
+	--with-java-home=no  \
+	--disable-ruby       \
+	--disable-haskell    \
+	--disable-php
+
 override_dh_auto_clean:
-	test -f Makefile && $(MAKE) distclean || true
+	set -e; for p in $(PYTHONS); do \
+	    dh_auto_clean --builddir=$(CURDIR)/debian/build-$$p ; \
+	done
 
 override_dh_auto_configure:
-	dh_auto_configure -- \
-		--enable-install-daemon \
-		--disable-appliance  \
-		--with-readline	     \
-		--with-java-home=no  \
-		--disable-ruby       \
-		--disable-haskell    \
-		--disable-php
+	set -e; for p in $(PYTHONS); do \
+	    if [ $$p = $(PYTHON_DEFAULT) ]; then \
+		dh_auto_configure --builddir=$(CURDIR)/debian/build-$$p \
+		    -- \
+		    $(CONFIG_FLAGS); \
+	    else \
+	        dh_auto_configure --builddir=$(CURDIR)/debian/build-$$p \
+	            -- \
+	            --disable-daemon --disable-appliance --disable-fuse \
+	            --with-java-home=no --disable-ocaml --disable-perl \
+	            --disable-haskell --disable-ruby --disable-php \
+	            PYTHON=$$p ; \
+	    fi ; \
+	done
 
 override_dh_strip:
 	dh_strip --dbg-package=libguestfs0-dbg
 
 override_dh_auto_build:
-	$(MAKE) INSTALLDIRS=vendor LD_RUN_PATH=""
-# build part of appliance
-	$(MAKE) -C appliance \
-		make.sh \
-		packagelist excludelist \
-		supermin.d/daemon.img supermin.d/init.img
+# also build part of appliance
+	set -e; for p in $(PYTHONS); do \
+	    if [ $$p = $(PYTHON_DEFAULT) ]; then \
+		dh_auto_build --builddir=$(CURDIR)/debian/build-$$p \
+		    -- \
+		    INSTALLDIRS=vendor LD_RUN_PATH="" ; \
+	        $(MAKE) -C $(CURDIR)/debian/build-$$p/appliance \
+		    make.sh \
+		    packagelist excludelist \
+		    supermin.d/daemon.img supermin.d/init.img ; \
+	    else \
+		dh_auto_build --builddir=$(CURDIR)/debian/build-$$p ; \
+	    fi ; \
+	done
+
+override_dh_auto_test:
+	set -e $(MAKE) -C $(CURDIR)/debian/build-$(PYTHON_DEFAULT) check
+
+override_dh_auto_install:
+	set -e; for p in $(PYTHONS); do \
+	    if [ $$p = $(PYTHON_DEFAULT) ]; then \
+		dh_auto_install --builddir=$(CURDIR)/debian/build-$$p ; \
+	    else \
+	        $(MAKE) -C $(CURDIR)/debian/build-$$p/python install \
+	        DESTDIR=$(CURDIR)/debian/tmp ; \
+	    fi ; \
+	done
 
 override_dh_install:
-	rm debian/tmp/usr/lib/python2.6/dist-packages/libguestfsmod.la
+	rm -f debian/tmp/usr/lib/python*/dist-packages/libguestfsmod.la
 
 # Workaround for:
 # W: libguestfs-perl: script-not-executable usr/lib/perl5/Sys/bindtests.pl
-	rm debian/tmp/usr/lib/perl5/Sys/bindtests.pl
+	rm -f debian/tmp/usr/lib/perl5/Sys/bindtests.pl
 
 # Workaround for:
 # E: libguestfs-dev: non-empty-dependency_libs-in-la-file usr/lib/libguestfs.la
 	find debian/tmp -name *.la | xargs sed -i '/^dependency_libs/ s/^/# /'
 
+# We do not install supermin.d/base.img, but ship make.sh which can be
+# used to build it.
+	mkdir -p debian/tmp/usr/lib/guestfs/supermin.d
+	install -m755 debian/build-${PYTHON_DEFAULT}/appliance/make.sh \
+		debian/tmp/usr/lib/guestfs
+	install -m644 debian/build-${PYTHON_DEFAULT}/appliance/*list \
+		debian/tmp/usr/lib/guestfs
+	install -m644 \
+		debian/build-${PYTHON_DEFAULT}/appliance/supermin.d/init.img \
+		debian/build-${PYTHON_DEFAULT}/appliance/supermin.d/daemon.img \
+		debian/tmp/usr/lib/guestfs/supermin.d/
+
 	dh_install
 
-override_dh_python2:
-	dh_python2 --no-guessing-versions
-
 %:
-	dh --without=python-support --with=autotools-dev,ocaml,python2 $@
+	dh --without=python-support --with=autotools-dev,ocaml,python2,python3 $@

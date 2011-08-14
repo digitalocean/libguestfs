@@ -4,11 +4,4 @@ usr/share/man/man1/libguestfs-test-tool*
 usr/share/man/man3/guestfs.3*
 usr/share/man/man3/libguestfs.3*
 
-# We do not install supermin.d/base.img, but ship make.sh which can be
-# used to build it.
-appliance/make.sh     usr/lib/guestfs
-appliance/packagelist usr/lib/guestfs
-appliance/excludelist usr/lib/guestfs
-appliance/supermin.d/init.img   usr/lib/guestfs/supermin.d
-appliance/supermin.d/daemon.img usr/lib/guestfs/supermin.d
 debian/update-guestfs-appliance usr/sbin
