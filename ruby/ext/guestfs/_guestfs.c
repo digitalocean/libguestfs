@@ -4798,7 +4798,13 @@ ruby_guestfs_read_lines (VALUE gv, VALUE pathv)
  * "AUG_SAVE_BACKUP".
  * 
  * "AUG_TYPE_CHECK" = 4
- * Typecheck lenses (can be expensive).
+ * Typecheck lenses.
+ * 
+ * This option is only useful when debugging Augeas
+ * lenses. Use of this option may require additional
+ * memory for the libguestfs appliance. You may need to
+ * set the "LIBGUESTFS_MEMSIZE" environment variable or
+ * call "g.set_memsize".
  * 
  * "AUG_NO_STDINC" = 8
  * Do not use standard load path for modules.

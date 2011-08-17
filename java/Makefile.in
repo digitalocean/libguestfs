@@ -1223,7 +1223,8 @@ CLEANFILES = doc-stamp $(builddir)/com/redhat/et/libguestfs/*.class com_redhat_e
 @HAVE_JAVA_TRUE@TESTS_ENVIRONMENT = \
 @HAVE_JAVA_TRUE@	JAVA=$(JAVA) \
 @HAVE_JAVA_TRUE@	CLASSPATH=.:t:libguestfs-$(VERSION).jar \
-@HAVE_JAVA_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance
+@HAVE_JAVA_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+@HAVE_JAVA_TRUE@	TMPDIR=$(top_builddir)
 
 @HAVE_JAVA_TRUE@noinst_DATA = Bindtests.class $(java_tests:.java=.class)
 all: $(BUILT_SOURCES)

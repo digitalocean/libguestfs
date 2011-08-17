@@ -1149,7 +1149,8 @@ EXTRA_DIST = \
 @HAVE_PYTHON_TRUE@libguestfsmod_la_LDFLAGS = -avoid-version
 @HAVE_PYTHON_TRUE@TESTS_ENVIRONMENT = \
 @HAVE_PYTHON_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
-@HAVE_PYTHON_TRUE@	PYTHONPATH=$(builddir):$(builddir)/.libs
+@HAVE_PYTHON_TRUE@	PYTHONPATH=$(builddir):$(builddir)/.libs \
+@HAVE_PYTHON_TRUE@	TMPDIR=$(top_builddir)
 
 @HAVE_PYTHON_TRUE@TESTS = run-bindtests run-python-tests
 all: all-am

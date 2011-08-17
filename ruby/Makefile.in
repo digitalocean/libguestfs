@@ -1091,7 +1091,8 @@ CLEANFILES = \
 @HAVE_RUBY_TRUE@TESTS = run-bindtests run-ruby-tests
 @HAVE_RUBY_TRUE@TESTS_ENVIRONMENT = \
 @HAVE_RUBY_TRUE@	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
-@HAVE_RUBY_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance
+@HAVE_RUBY_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+@HAVE_RUBY_TRUE@	TMPDIR=$(top_builddir)
 
 @HAVE_RUBY_TRUE@RUBY_SITELIB := $(shell ruby -rrbconfig -e "puts Config::CONFIG['sitelibdir']")
 @HAVE_RUBY_TRUE@RUBY_SITEARCH := $(shell ruby -rrbconfig -e "puts Config::CONFIG['sitearchdir']")

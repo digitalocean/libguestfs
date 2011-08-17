@@ -1120,6 +1120,7 @@ CLEANFILES = test.img
 @HAVE_TOOLS_TRUE@	MALLOC_PERTURB_=$(random_val) \
 @HAVE_TOOLS_TRUE@	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
 @HAVE_TOOLS_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+@HAVE_TOOLS_TRUE@	TMPDIR=$(top_builddir) \
 @HAVE_TOOLS_TRUE@	PERL5LIB=$(top_builddir)/perl/blib/lib:$(top_builddir)/perl/blib/arch
 
 @HAVE_TOOLS_TRUE@TESTS = test-virt-list-filesystems.sh \

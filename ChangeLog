@@ -1,4 +1,58 @@
+2011-08-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.12.4.
+
+	ruby: Fix typo in Ruby bindings file. (cherry picked from commit 44c3a300265ef7bfa5d49d2b9a2a8faccd9db2de)
+
+	Note that additional memory may be required to typecheck Augeas lenses (RHBZ#729887). (cherry picked from commit 7739d7f471f9575828bd32489695d92dde005a9c)
+
+	fish: Document that remote run in cmd substitution context hangs.
+	This documents bug 592910.
+	(cherry picked from commit 6cabc1cd02e181063596b48df55c3f6db51a6bb9)
+
+	Fix 'unknown filesystem' warnings in old inspection code (RHBZ#678231 RHBZ#666578).
+	This is a comprehensive fix for the warnings from the old (and
+	obsolete) Perl inspection code.  For a full description and
+	reproducer, see:
+
+	https://bugzilla.redhat.com/show_bug.cgi?id=678231#c5
+	(cherry picked from commit b9838001015a06a69a08b69d9f013d82f0ea3139)
+
+	inspection: Better checking for Windows root disks (RHBZ#729075).
+	Previously any disk that had /autoexec.bat or /boot.ini or /ntldr
+	would be picked up as a candidate for a Windows root disk.  If further
+	checking could not find any systemroot (eg. /windows) then this would
+	result in complete failure of inspection.
+
+	In particular, this got confused by Hp_recovery partitions which have
+	/autoexec.bat, but don't have a systemroot in one of the usual places
+	(they have /MiniNT instead).
+
+	What we do now is to properly investigate all possible systemroot
+	places before deciding this is a Windows systemroot, so the subsequent
+	failure cannot occur.
+
+	(Thanks to lorimar for reporting this bug).
+	(cherry picked from commit 2c57305f72cd6181d1849ae6e1b892aa01c7f844)
+
+	build: Set TMPDIR for local testing.
+	This avoids conflicts with the globally installed libguestfs
+	appliance, or lets us build in multiple local directories at the same
+	time without conflicts.
+	(cherry picked from commit f7d18c84dde596699ffc5100fec2cf7b0d582450)
+
+	fish: Add fish-cmds.h to generator_built.
+	This updates commit 3064277680ad11f887691646d0fa17bb35f38c19.
+	(cherry picked from commit 85efbc6aa70d522af066a38fd1aae05b790c46d3)
+
+	fish: Declare run_* functions in a generated header file.
+	Calls to these functions are generated, so there is no need to declare
+	the functions by hand.
+	(cherry picked from commit 3064277680ad11f887691646d0fa17bb35f38c19)
+
 2011-08-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.12.3.
 
 	docs: Fix function names in deprecation notices. (cherry picked from commit 60adf092a8900323c048c94f3f0934be416a3eb6)
 
