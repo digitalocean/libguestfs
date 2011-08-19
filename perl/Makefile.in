@@ -1083,7 +1083,8 @@ EXTRA_DIST = \
 @HAVE_PERL_TRUE@TESTS = run-bindtests run-perl-tests
 @HAVE_PERL_TRUE@TESTS_ENVIRONMENT = \
 @HAVE_PERL_TRUE@	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
-@HAVE_PERL_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance
+@HAVE_PERL_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+@HAVE_PERL_TRUE@	TMPDIR=$(top_builddir)
 
 @HAVE_PERL_TRUE@INSTALLDIRS = site
 all: all-am

@@ -1099,6 +1099,7 @@ AM_CPPFLAGS = -I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = \
 @HAVE_OCAML_TRUE@	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
 @HAVE_OCAML_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+@HAVE_OCAML_TRUE@	TMPDIR=$(top_builddir) \
 @HAVE_OCAML_TRUE@	$(VG)
 
 @HAVE_OCAML_TRUE@TESTS = run-bindtests \

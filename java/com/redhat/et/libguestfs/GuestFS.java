@@ -3128,7 +3128,13 @@ public class GuestFS {
    * "AUG_SAVE_BACKUP".
    * <p>
    * "AUG_TYPE_CHECK" = 4
-   * Typecheck lenses (can be expensive).
+   * Typecheck lenses.
+   * <p>
+   * This option is only useful when debugging Augeas
+   * lenses. Use of this option may require additional
+   * memory for the libguestfs appliance. You may need to
+   * set the "LIBGUESTFS_MEMSIZE" environment variable or
+   * call "g.set_memsize".
    * <p>
    * "AUG_NO_STDINC" = 8
    * Do not use standard load path for modules.

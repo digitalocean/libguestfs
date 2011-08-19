@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfish 1"
-.TH guestfish 1 "2011-08-07" "libguestfs-1.12.3" "Virtualization Support"
+.TH guestfish 1 "2011-08-17" "libguestfs-1.12.4" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -1055,6 +1055,18 @@ Remote control happens over a Unix domain socket called
 of the process, and \f(CW$PID\fR is the process \s-1ID\s0 of the server.
 .PP
 Guestfish client and server versions must match exactly.
+.SS "\s-1REMOTE\s0 \s-1CONTROL\s0 \s-1RUN\s0 \s-1COMMAND\s0 \s-1HANGING\s0"
+.IX Subsection "REMOTE CONTROL RUN COMMAND HANGING"
+Using the \f(CW\*(C`run\*(C'\fR (or \f(CW\*(C`launch\*(C'\fR) command remotely in a command substitution
+context hangs, ie. don't do (note the backquotes):
+.PP
+.Vb 1
+\& a=\`guestfish \-\-remote run\`
+.Ve
+.PP
+Since the \f(CW\*(C`run\*(C'\fR command produces no output on stdout, this is not useful
+anyway.  For further information see
+<https://bugzilla.redhat.com/show_bug.cgi?id=592910>.
 .SH "PREPARED DISK IMAGES"
 .IX Header "PREPARED DISK IMAGES"
 Use the \fI\-N type\fR or \fI\-\-new type\fR parameter to select one of a set of
@@ -1616,7 +1628,11 @@ original.  Overrides \f(CW\*(C`AUG_SAVE_BACKUP\*(C'\fR.
 .ie n .IP """AUG_TYPE_CHECK"" = 4" 4
 .el .IP "\f(CWAUG_TYPE_CHECK\fR = 4" 4
 .IX Item "AUG_TYPE_CHECK = 4"
-Typecheck lenses (can be expensive).
+Typecheck lenses.
+.Sp
+This option is only useful when debugging Augeas lenses.  Use of this option
+may require additional memory for the libguestfs appliance.  You may need to
+set the \f(CW\*(C`LIBGUESTFS_MEMSIZE\*(C'\fR environment variable or call \*(L"set-memsize\*(R".
 .ie n .IP """AUG_NO_STDINC"" = 8" 4
 .el .IP "\f(CWAUG_NO_STDINC\fR = 8" 4
 .IX Item "AUG_NO_STDINC = 8"

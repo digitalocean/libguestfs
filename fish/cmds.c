@@ -30,11 +30,13 @@
 #include <string.h>
 #include <inttypes.h>
 
-#include <guestfs.h>
 #include "c-ctype.h"
 #include "full-write.h"
 #include "xstrtol.h"
+
+#include <guestfs.h>
 #include "fish.h"
+#include "fish-cmds.h"
 #include "options.h"
 #include "cmds_gperf.h"
 
@@ -996,7 +998,7 @@ struct command_entry read_lines_cmd_entry = {
 
 struct command_entry aug_init_cmd_entry = {
   .name = "aug-init",
-  .help = "NAME\n    aug-init - create a new Augeas handle\n\nSYNOPSIS\n     aug-init root flags\n\nDESCRIPTION\n    Create a new Augeas handle for editing configuration files. If there was\n    any previous Augeas handle associated with this guestfs session, then it\n    is closed.\n\n    You must call this before using any other \"aug_*\" commands.\n\n    \"root\" is the filesystem root. \"root\" must not be NULL, use \"/\" instead.\n\n    The flags are the same as the flags defined in <augeas.h>, the logical\n    *or* of the following integers:\n\n    \"AUG_SAVE_BACKUP\" = 1\n        Keep the original file with a \".augsave\" extension.\n\n    \"AUG_SAVE_NEWFILE\" = 2\n        Save changes into a file with extension \".augnew\", and do not\n        overwrite original. Overrides \"AUG_SAVE_BACKUP\".\n\n    \"AUG_TYPE_CHECK\" = 4\n        Typecheck lenses (can be expensive).\n\n    \"AUG_NO_STDINC\" = 8\n        Do not use standard load path for modules.\n\n    \"AUG_SAVE_NOOP\" = 16\n        Make save a no-op, just record what would have been changed.\n\n    \"AUG_NO_LOAD\" = 32\n        Do not load the tree in \"aug_init\".\n\n    To close the handle, you can call \"aug_close\".\n\n    To find out more about Augeas, see <http://augeas.net/>.\n\n",
+  .help = "NAME\n    aug-init - create a new Augeas handle\n\nSYNOPSIS\n     aug-init root flags\n\nDESCRIPTION\n    Create a new Augeas handle for editing configuration files. If there was\n    any previous Augeas handle associated with this guestfs session, then it\n    is closed.\n\n    You must call this before using any other \"aug_*\" commands.\n\n    \"root\" is the filesystem root. \"root\" must not be NULL, use \"/\" instead.\n\n    The flags are the same as the flags defined in <augeas.h>, the logical\n    *or* of the following integers:\n\n    \"AUG_SAVE_BACKUP\" = 1\n        Keep the original file with a \".augsave\" extension.\n\n    \"AUG_SAVE_NEWFILE\" = 2\n        Save changes into a file with extension \".augnew\", and do not\n        overwrite original. Overrides \"AUG_SAVE_BACKUP\".\n\n    \"AUG_TYPE_CHECK\" = 4\n        Typecheck lenses.\n\n        This option is only useful when debugging Augeas lenses. Use of this\n        option may require additional memory for the libguestfs appliance.\n        You may need to set the \"LIBGUESTFS_MEMSIZE\" environment variable or\n        call \"set_memsize\".\n\n    \"AUG_NO_STDINC\" = 8\n        Do not use standard load path for modules.\n\n    \"AUG_SAVE_NOOP\" = 16\n        Make save a no-op, just record what would have been changed.\n\n    \"AUG_NO_LOAD\" = 32\n        Do not load the tree in \"aug_init\".\n\n    To close the handle, you can call \"aug_close\".\n\n    To find out more about Augeas, see <http://augeas.net/>.\n\n",
   .run = run_aug_init
 };
 

@@ -1132,7 +1132,8 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize test.img \
 @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = \
 @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	MALLOC_PERTURB_=$(random_val) \
 @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance
+@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	TMPDIR=$(top_builddir)
 
 @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@TESTS = test-virt-resize.sh
 all: all-am

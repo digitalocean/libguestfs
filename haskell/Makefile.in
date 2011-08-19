@@ -1074,6 +1074,7 @@ EXTRA_DIST = $(generator_built) *.hs run-bindtests
 @HAVE_HASKELL_TRUE@TESTS_ENVIRONMENT = \
 @HAVE_HASKELL_TRUE@	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
 @HAVE_HASKELL_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+@HAVE_HASKELL_TRUE@	TMPDIR=$(top_builddir) \
 @HAVE_HASKELL_TRUE@	$(VG)
 
 @HAVE_HASKELL_TRUE@TESTS = run-bindtests Guestfs005Load Guestfs010Basic

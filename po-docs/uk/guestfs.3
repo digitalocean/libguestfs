@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfs 3"
-.TH guestfs 3 "2011-08-07" "libguestfs-1.12.3" "Virtualization Support"
+.TH guestfs 3 "2011-08-17" "libguestfs-1.12.4" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -1785,7 +1785,12 @@ original.  Overrides \f(CW\*(C`AUG_SAVE_BACKUP\*(C'\fR.
 .ie n .IP """AUG_TYPE_CHECK"" = 4" 4
 .el .IP "\f(CWAUG_TYPE_CHECK\fR = 4" 4
 .IX Item "AUG_TYPE_CHECK = 4"
-Typecheck lenses (can be expensive).
+Typecheck lenses.
+.Sp
+This option is only useful when debugging Augeas lenses.  Use of this option
+may require additional memory for the libguestfs appliance.  You may need to
+set the \f(CW\*(C`LIBGUESTFS_MEMSIZE\*(C'\fR environment variable or call
+\&\f(CW\*(C`guestfs_set_memsize\*(C'\fR.
 .ie n .IP """AUG_NO_STDINC"" = 8" 4
 .el .IP "\f(CWAUG_NO_STDINC\fR = 8" 4
 .IX Item "AUG_NO_STDINC = 8"
