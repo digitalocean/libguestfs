@@ -21,6 +21,8 @@ Build-Depends: debhelper (>= 7.0.50~), autotools-dev, aptitude,
   libfuse-dev, fuse-utils 
 Homepage: http://libguestfs.org
 Standards-Version: 3.9.2
+Vcs-Git: git://git.debian.org/git/pkg-libvirt/libguestfs.git
+Vcs-Browser: http://git.debian.org/?p=pkg-libvirt/libguestfs.git
 
 Package: guestfish
 Section: admin
