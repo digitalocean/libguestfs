@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-edit 1"
-.TH virt-edit 1 "2011-08-17" "libguestfs-1.12.4" "Virtualization Support"
+.TH virt-edit 1 "2011-08-28" "libguestfs-1.12.5" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -411,6 +411,9 @@ Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
+.SH "EXIT STATUS"
+.IX Header "EXIT STATUS"
+This program returns 0 if successful, or non-zero if there was an error.
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
 \&\fIguestfs\fR\|(3), \fIguestfish\fR\|(1), \fIvirt\-cat\fR\|(1), \fIvirt\-copy\-in\fR\|(1),

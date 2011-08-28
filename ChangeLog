@@ -1,3 +1,245 @@
+2011-08-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspector: Use xmlstarlet instead of xpath in examples. (cherry picked from commit baefb8225c8cbde56a1637c17af5c0965a81060e)
+
+	man pages: Add a standard EXIT STATUS section to most pages. (cherry picked from commit f0f3e1621180724e0a907a30ff5dea9695ddead0)
+
+	progress: Make default UTF-8 progress bar less black. (cherry picked from commit ceb3a57f67f33b33c1f6cafdd0ef81808273f0c0)
+
+	resize: Add --machine-readable option for machine friendly output.
+	Use virt-resize --machine-readable to print a list of facts about what
+	this version of virt-resize supports.
+
+	This includes parts of commit 09a7545649e6cac0de2c4421cb64b659164174ee
+	from the development branch, but doesn't include the machine-readable
+	progress bar.
+
+	fish: Make progress bars into a mini library.
+	This library could now be called from other virt tools.
+	(cherry picked from commit 6146412f06c2f6f33c3ea7d571f16d4fe71dddb2)
+
+	fish: clarify comment: shared source files are used by virt tools too. (cherry picked from commit 0bd055316f8581f4da33b039e33d5f61cc00294c)
+
+	ruby: Check Ruby callback exists before we call it (RHBZ#733297). (cherry picked from commit 1a4f1df77eecee053eaae35d5544f151d37342e2)
+
+	ruby: Use a regular C array to pass the arguments through rb_rescue. (cherry picked from commit 675f336319058fdbaf11ee004968b4543a5a9815)
+
+	ruby: Append newline character after printing exception in callback. (cherry picked from commit 0cd5b9ac15c62eb570ec74d19b4aebde4990fd82)
+
+2011-08-28  Hilko Bengen  <bengen@hilluzination.de>
+
+	python: Newer versions want parentheses around arguments of "print" (cherry picked from commit 54911bdd325393d1f7f2861f298463c364b45469)
+
+2011-08-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	php: Fix bug in PHP tests.
+	We partitioned the disk, and then tried to create a PV on the whole
+	disk.  LVM gave the error:
+
+	  Device /dev/vda not found (or ignored by filtering).
+
+	It is unclear how this bug persisted for so long.  It might be due to
+	a change in LVM.
+	(cherry picked from commit 4fb3b23fb69e4274f434f9258e38f185426298f7)
+
+	Coverity: fix memory leak along error path. (cherry picked from commit ce18be33cd5279a8d4120eedd037400c275585c0)
+
+	Coverity: Initialize msg buffer.
+	msg_flags was not being initialized and would have been passed to
+	sendmsg with a random value.
+	(cherry picked from commit a31ac8fc32297cc9185fd20a5578d2bc81cc1bce)
+
+	Coverity: fix memory leak in guestfish. (cherry picked from commit c38cb92ec478c4dca83e4d38963720f463d52314)
+
+	Coverity: in daemon, free struct in RStruct, RStructList functions. (cherry picked from commit b2edcbe1b9c9d161e96cb56d0efd944e84d84526)
+
+	pclose: Fix other places where we only tested pclose == -1.
+	pclose can return > 0 when the status of the command was non-zero.
+	(cherry picked from commit 631faad97171d7c1238b2e413c663cf61476f440)
+
+	test_qemu: Improve the error message.
+	Note that errno is probably not set to a useful value here, so there
+	is not much point recording it.
+	(cherry picked from commit f15961911316460f7d45342d63c2d784a483f0d1)
+
+	test_qemu: pclose may return any != 0 on error.
+	In particular pclose returns a status > 0 if the command fails.
+	(cherry picked from commit a24652c7b27e8494268ccb6c9a5a2e5541ba5efd)
+
+	qemu detection: Free up previous qemu help/version strings if they exist. (cherry picked from commit 2ace9be4cd69e84cd88e5b0fd74de861a4973c91)
+
+	Coverity: test_qemu: Ensure FILE * is not leaked along error paths.
+	This refactors the code in test_qemu slightly to ensure that
+	FILE *fp is not leaked on error paths.
+	(cherry picked from commit 08e77ad8cb4e8ac70d4217ebd5d236eba81645b5)
+
+	Coverity: Check guestfs_inspect_get_product_name() != NULL before using. (cherry picked from commit fa44536b0ff12102c72ae0337e51d272f0fc2353)
+
+	rescue: Ignore errno after guestfs_launch.
+	errno is pretty much random on the error path back from guestfs_launch
+	so there is nothing useful to be gained by checking it.
+
+	We could do with a better way to detect if appliance launch failed.
+	(cherry picked from commit 00fef9eed6a53e10a975814beef775483ff0b3dd)
+
+	Coverity: Ignore return value from guestfs_launch in virt-rescue.
+	We expect guestfs_launch to fail in this program.
+	(cherry picked from commit 9bab154d48e367702b65852c3c822341b474ffd2)
+
+	Coverity: Check return value from sscanf in bindtests calls. (cherry picked from commit 4c76aaa391d591c5917a06b0277fb9eb7d6d790f)
+
+	autobuild: Only add last 100 lines of the log file. (cherry picked from commit ca727deac186981f4d9784696324c8f3af79f9e5)
+
+	New autobuild script.
+	Remove the old top-level autobuild.sh that confused a lot
+	of people.
+
+	Add an autobuild.sh script that builds from the latest tarball.
+	(cherry picked from commit 6375aede61d57422ad82f4941693493c07b78aa2)
+
+	configure: Add --with-extra flag to allow setting the extra version string.
+	Intended use in Fedora and RHEL is to encode the release
+	string, eg.
+
+	  ./configure [...] --with-extra="-%{release}"
+
+	protocol: Fix case where download can fail for small files.
+	There is another case where downloads of small files could fail if the
+	library side (writer) fails.  In this case the library would send back
+	a cancellation, but it would be received after the daemon had finished
+	sending the whole file (because the file is small enough).  The daemon
+	would reenter the main loop and immediately get an unexpected cancel
+	message, causing the daemon to die.
+
+	This commit also makes test-cancellation-download-librarycancels.sh
+	more robust.  We use Monte-Carlo testing with a range of file sizes.
+	Small file sizes should trigger the error case.
+	(cherry picked from commit e4cba8f2b1a68e7361ce342ff659cccb0490446e)
+
+	Escape special/non-printing characters in debug output (RHBZ#731744).
+	The default event handler in libguestfs was simply writing all debug
+	output directly to stderr.  However if the output contains
+	non-printable characters such as terminal control codes then these
+	would also be sent directly.
+
+	With newer SeaBIOS there is a lame attempt to implement a splash
+	screen using terminal control codes, thus when libguestfs tries to
+	display debugging output it would cause the screen to clear and debug
+	output to be lost.
+
+	This commit causes all non-printing characters to be escaped.
+	(\n and \r characters from the appliance are treated somewhat
+	specially).
+
+	Furthermore, instead of using write(2), use buffered stderr calls.
+	(cherry picked from commit 06019bc82e107f7715ebc59e491610e06dad1e39)
+
+	Remove guestfs___print_timestamped_argv.
+	This function was used to print the qemu and
+	febootstrap-supermin-helper command lines.
+
+	Unfortunately in the qemu case it was used incorrectly: it called the
+	internal debug function (ie. event API callback) from the forked qemu
+	subprocess, which meant that higher level event callbacks might have
+	been invoked from the child process.
+
+	To fix this, convert the qemu case into a new function called
+	print_qemu_command line which just prints the command line directly to
+	stderr.  This is called after stderr has been redirected into the pipe
+	to the main process.  Thus the qemu command line will be marshalled
+	into the event API along with other qemu and appliance output.
+
+	After fixing this, only one use of guestfs___print_timestamped_argv
+	remained, for printing the febootstrap-supermin-helper command line.
+	This is converted to a local function print_febootstrap_command_line.
+
+	Also print_febootstrap_command_line is now called before we fork
+	febootstrap-supermin-helper, so that messages no longer overlap.
+	(cherry picked from commit 635af5be04265f845186b40e9a9fe7b102ad6909)
+
+2011-08-28  Hilko Bengen  <bengen@hilluzination.de>
+
+	out-of-tree build: generate ./run from template, fix image checks
+	./run can now be run in a separate build directory. Since some files
+	needed in the image checks are found in the source tree (but not the
+	build tree), the source tree location is passed to make-*-img.sh via
+	an environment variable.
+	(cherry picked from commit 70c033998e0e721dc4f9eb2a20348098b259752c)
+
+2011-08-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Add fish-cmds.h to generator_built.
+	This updates commit 3064277680ad11f887691646d0fa17bb35f38c19.
+	(cherry picked from commit 85efbc6aa70d522af066a38fd1aae05b790c46d3)
+
+2011-08-28  Hilko Bengen  <bengen@hilluzination.de>
+
+	out-of-tree build: fix make and make install
+	$(srcdir) is not needed for guestfs_c.c.
+	*.mli only exists in $(srcdir) and isn't found on "make install" otherwise
+	(cherry picked from commit 0938e43a60f9d729d9795cf45498e60217fece0e)
+
+	out-of-tree build: fix documentation generation II (cherry picked from commit 8876b2d3764b42ebae3c5fdf61b1899095508169)
+
+	out-of-tree build: remove unneeded explicit paths (cherry picked from commit 4baec012b1b09a888e570fc89dbaa9fbf9944f34)
+
+2011-08-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	Improve zeroing and detection of zeroes.
+	This code modifies zero, zero-device, is-zero, is-zero-device.
+
+	zero and zero-device are modified so that if the blocks of the device
+	already contain zeroes, then we don't write zeroes.  The reason for
+	this is to avoid unnecessarily making the underlying storage
+	non-sparse or (in the qcow2 case) growing it.
+
+	is-zero and is-zero-device are modified so that zero detection is
+	faster.  This is a nice side effect of making the first change.
+
+	Since avoiding unnecessary zeroing involves reading the blocks before
+	writing them, whereas before we just blindly wrote, this can be
+	slower.  As you can see from the tests below, in the case where the
+	disk is sparse, it actually turns out to be faster, because we avoid
+	allocating the underlying blocks.
+
+	However in the case where the disk is non-sparse and full of existing
+	data, it is much slower.  There might be a case for an API flag to
+	adjust whether or not we perform the zero check.  I did not add this
+	flag because it is unlikely that the caller would have enough
+	information to be able to set the flag correctly.
+
+	                                (Elapsed time in seconds)
+	Format  Test case                 Before     After
+
+	Raw     Sparse                    16.4       5.3
+
+	        Preallocated zero         17.0       18.8
+
+	        Preallocated random       16.0       41.3
+
+	Qcow2   preallocation=off         18.7       5.6
+
+	        preallocation=metadata    17.4       5.8
+
+	The current code uses a fixed block size of 4K for reading and
+	writing.  I also tried the same tests with a block size of 64K but it
+	didn't make any significant difference.
+
+	(Thanks to Federico Simoncelli for suggesting this change)
+	(cherry picked from commit 5a50c04906828f6e99db6a9be420c84114476d39)
+
+	recipes: Remove two C file dependencies which are not actually used in the POD. (cherry picked from commit 1fdd0193fd63af71359748915a0326d623a3d6ad)
+
+2011-08-28  Hilko Bengen  <bengen@hilluzination.de>
+
+	out-of-tree build: fix building library (cherry picked from commit 0241c753937e577d51a070f7db471260bf931f9c)
+
+	out-of-tree build: Fix up OCaml bindings and generator (cherry picked from commit 900c9626b9d4f567b21aae433493b4b3b1d09f6d)
+
+	out-of-tree build: fix appliance (cherry picked from commit 36e0f35a5828458ebeaf72999b3461ab66a230d8)
+
+	out-of-tree build: fix documentation generation (cherry picked from commit ff101adf7ead7bcdb46bccdb227ef18d844b965f)
+
 2011-08-17  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.12.4.

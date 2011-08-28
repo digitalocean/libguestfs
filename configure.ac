@@ -15,12 +15,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-# major/minor/release must be numbers
+# The major, minor, and release fields MUST be numbers.  Packagers can
+# add extra information using --with-extra="..." which may be any
+# freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [12])
-m4_define([libguestfs_release], [4])
-# extra can be any string
-m4_define([libguestfs_extra],   [])
+m4_define([libguestfs_release], [5])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -30,12 +30,6 @@ m4_ifndef([AM_SILENT_RULES], [m4_define([AM_SILENT_RULES],[])])
 AM_SILENT_RULES([yes]) # make --enable-silent-rules the default.
 
 AC_CONFIG_MACRO_DIR([m4])
-
-dnl Split up the version string.
-AC_DEFINE([PACKAGE_VERSION_MAJOR],[libguestfs_major],[Major version number])
-AC_DEFINE([PACKAGE_VERSION_MINOR],[libguestfs_minor],[Minor version number])
-AC_DEFINE([PACKAGE_VERSION_RELEASE],[libguestfs_release],[Release number])
-AC_DEFINE([PACKAGE_VERSION_EXTRA],["libguestfs_extra"],[Extra version string])
 
 dnl Stable or unstable version?
 AC_MSG_CHECKING([if this is a stable or unstable branch of libguestfs])
@@ -52,6 +46,22 @@ more information about stable and development branches of libguestfs
 please see the section "LIBGUESTFS VERSION NUMBERS" in guestfs(3).
 ***])
        ])
+
+dnl Extra string, a freeform string defined by packagers.
+AC_ARG_WITH([extra],
+  [AS_HELP_STRING([--with-extra],
+                  [extra version string (for use by packagers)])],
+  [libguestfs_extra="$withval"],
+  [libguestfs_extra=]
+)
+
+AC_MSG_NOTICE([libguestfs version libguestfs_major.libguestfs_minor.libguestfs_release$libguestfs_extra])
+
+dnl Split up the version string.
+AC_DEFINE([PACKAGE_VERSION_MAJOR],[libguestfs_major],[Major version number])
+AC_DEFINE([PACKAGE_VERSION_MINOR],[libguestfs_minor],[Minor version number])
+AC_DEFINE([PACKAGE_VERSION_RELEASE],[libguestfs_release],[Release number])
+AC_DEFINE_UNQUOTED([PACKAGE_VERSION_EXTRA],["$libguestfs_extra"],[Extra version string])
 
 dnl Early gnulib initialization.
 gl_EARLY
@@ -543,11 +553,11 @@ AS_IF([test "x$enable_python" != "xno"],
 
         if test "x$PYTHON" != "xno"; then
 	    AC_MSG_CHECKING([Python prefix])
-            PYTHON_PREFIX=`$PYTHON -c "import sys; print sys.prefix"`
+            PYTHON_PREFIX=`$PYTHON -c "import sys; print (sys.prefix)"`
 	    AC_MSG_RESULT([$PYTHON_PREFIX])
 
 	    AC_MSG_CHECKING([Python version])
-            PYTHON_VERSION=`$PYTHON -c "import sys; print sys.version[[0:3]]"`
+            PYTHON_VERSION=`$PYTHON -c "import sys; print (sys.version[[0:3]])"`
 	    AC_MSG_RESULT([$PYTHON_VERSION])
 
             AC_MSG_CHECKING([for Python include path])
@@ -810,6 +820,8 @@ AC_CONFIG_HEADERS([config.h])
 dnl http://www.mail-archive.com/automake@gnu.org/msg10204.html
 AC_CONFIG_FILES([podwrapper.sh],
                 [chmod +x podwrapper.sh])
+AC_CONFIG_FILES([run],
+                [chmod +x run])
 AC_CONFIG_FILES([Makefile
                  appliance/Makefile
                  capitests/Makefile

@@ -57,16 +57,18 @@ EXTRA_DIST = \
 	virt-tar-in.pod \
 	virt-tar-out.pod
 
-# These source files (all related to option parsing) are shared
-# between guestfish and guestmount.  Keep a convenient list here just
-# so we know which ones are shared.  These files must not include
-# other guestfish files.
+# These source files (mostly related to option parsing) are shared
+# between guestfish, guestmount and some other virt tools.  Keep a
+# convenient list here just so we know which ones are shared.  These
+# files must not include other guestfish files.
 SHARED_SOURCE_FILES = \
 	config.c \
 	inspect.c \
 	keys.c \
 	options.h \
 	options.c \
+	progress.h \
+	progress.c \
 	virt.c
 
 guestfish_SOURCES = \
@@ -93,10 +95,8 @@ guestfish_SOURCES = \
 	prep_fs.c \
 	prep_lv.c \
 	prep_boot.c \
-	progress.c \
 	rc.c \
 	reopen.c \
-	rmsd.h \
 	supported.c \
 	tilde.c \
 	time.c
@@ -170,18 +170,18 @@ noinst_DATA = \
 guestfish.1 $(top_builddir)/html/guestfish.1.html: stamp-guestfish.pod
 
 stamp-guestfish.pod: guestfish.pod guestfish-actions.pod guestfish-commands.pod
-	$(top_srcdir)/podwrapper.sh \
+	$(top_builddir)/podwrapper.sh \
 	  --man guestfish.1 \
 	  --html $(top_builddir)/html/guestfish.1.html \
-	  --insert guestfish-actions.pod:@ACTIONS@ \
-	  --insert guestfish-commands.pod:@FISH_COMMANDS@ \
+	  --insert $(srcdir)/guestfish-actions.pod:@ACTIONS@ \
+	  --insert $(srcdir)/guestfish-commands.pod:@FISH_COMMANDS@ \
 	  $<
 	touch $@
 
 virt-copy-in.1 $(top_builddir)/html/virt-copy-in.1.html: stamp-virt-copy-in.pod
 
 stamp-virt-copy-in.pod: virt-copy-in.pod
-	$(top_srcdir)/podwrapper.sh \
+	$(top_builddir)/podwrapper.sh \
 	  --man virt-copy-in.1 \
 	  --html $(top_builddir)/html/virt-copy-in.1.html \
 	  $<
@@ -190,7 +190,7 @@ stamp-virt-copy-in.pod: virt-copy-in.pod
 virt-copy-out.1 $(top_builddir)/html/virt-copy-out.1.html: stamp-virt-copy-out.pod
 
 stamp-virt-copy-out.pod: virt-copy-out.pod
-	$(top_srcdir)/podwrapper.sh \
+	$(top_builddir)/podwrapper.sh \
 	  --man virt-copy-out.1 \
 	  --html $(top_builddir)/html/virt-copy-out.1.html \
 	  $<
@@ -199,7 +199,7 @@ stamp-virt-copy-out.pod: virt-copy-out.pod
 virt-tar-in.1 $(top_builddir)/html/virt-tar-in.1.html: stamp-virt-tar-in.pod
 
 stamp-virt-tar-in.pod: virt-tar-in.pod
-	$(top_srcdir)/podwrapper.sh \
+	$(top_builddir)/podwrapper.sh \
 	  --man virt-tar-in.1 \
 	  --html $(top_builddir)/html/virt-tar-in.1.html \
 	  $<
@@ -208,7 +208,7 @@ stamp-virt-tar-in.pod: virt-tar-in.pod
 virt-tar-out.1 $(top_builddir)/html/virt-tar-out.1.html: stamp-virt-tar-out.pod
 
 stamp-virt-tar-out.pod: virt-tar-out.pod
-	$(top_srcdir)/podwrapper.sh \
+	$(top_builddir)/podwrapper.sh \
 	  --man virt-tar-out.1 \
 	  --html $(top_builddir)/html/virt-tar-out.1.html \
 	  $<

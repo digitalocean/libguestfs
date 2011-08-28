@@ -1412,7 +1412,7 @@ struct command_entry fsck_cmd_entry = {
 
 struct command_entry zero_cmd_entry = {
   .name = "zero",
-  .help = "NAME\n    zero - write zeroes to the device\n\nSYNOPSIS\n     zero device\n\nDESCRIPTION\n    This command writes zeroes over the first few blocks of \"device\".\n\n    How many blocks are zeroed isn't specified (but it's *not* enough to\n    securely wipe the device). It should be sufficient to remove any\n    partition tables, filesystem superblocks and so on.\n\n    See also: \"zero_device\", \"scrub_device\", \"is_zero_device\"\n\n",
+  .help = "NAME\n    zero - write zeroes to the device\n\nSYNOPSIS\n     zero device\n\nDESCRIPTION\n    This command writes zeroes over the first few blocks of \"device\".\n\n    How many blocks are zeroed isn't specified (but it's *not* enough to\n    securely wipe the device). It should be sufficient to remove any\n    partition tables, filesystem superblocks and so on.\n\n    If blocks are already zero, then this command avoids writing zeroes.\n    This prevents the underlying device from becoming non-sparse or growing\n    unnecessarily.\n\n    See also: \"zero_device\", \"scrub_device\", \"is_zero_device\"\n\n",
   .run = run_zero
 };
 
@@ -2270,7 +2270,7 @@ struct command_entry copy_size_cmd_entry = {
 
 struct command_entry zero_device_cmd_entry = {
   .name = "zero-device",
-  .help = "NAME\n    zero-device - write zeroes to an entire device\n\nSYNOPSIS\n     zero-device device\n\nDESCRIPTION\n    This command writes zeroes over the entire \"device\". Compare with \"zero\"\n    which just zeroes the first few blocks of a device.\n\n    This command is dangerous. Without careful use you can easily destroy\n    all your data.\n\n",
+  .help = "NAME\n    zero-device - write zeroes to an entire device\n\nSYNOPSIS\n     zero-device device\n\nDESCRIPTION\n    This command writes zeroes over the entire \"device\". Compare with \"zero\"\n    which just zeroes the first few blocks of a device.\n\n    If blocks are already zero, then this command avoids writing zeroes.\n    This prevents the underlying device from becoming non-sparse or growing\n    unnecessarily.\n\n    This command is dangerous. Without careful use you can easily destroy\n    all your data.\n\n",
   .run = run_zero_device
 };
 

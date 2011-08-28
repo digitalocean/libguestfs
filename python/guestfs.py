@@ -2680,6 +2680,10 @@ class GuestFS:
         sufficient to remove any partition tables, filesystem
         superblocks and so on.
         
+        If blocks are already zero, then this command avoids
+        writing zeroes. This prevents the underlying device from
+        becoming non-sparse or growing unnecessarily.
+        
         See also: "g.zero_device", "g.scrub_device",
         "g.is_zero_device"
         """
@@ -4705,6 +4709,10 @@ class GuestFS:
         u"""This command writes zeroes over the entire "device".
         Compare with "g.zero" which just zeroes the first few
         blocks of a device.
+        
+        If blocks are already zero, then this command avoids
+        writing zeroes. This prevents the underlying device from
+        becoming non-sparse or growing unnecessarily.
         
         This command is dangerous. Without careful use you can
         easily destroy all your data.

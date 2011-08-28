@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfish 1"
-.TH guestfish 1 "2011-08-17" "libguestfs-1.12.4" "Virtualization Support"
+.TH guestfish 1 "2011-08-28" "libguestfs-1.12.5" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -6432,6 +6432,10 @@ How many blocks are zeroed isn't specified (but it's \fInot\fR enough to
 securely wipe the device).  It should be sufficient to remove any partition
 tables, filesystem superblocks and so on.
 .PP
+If blocks are already zero, then this command avoids writing zeroes.  This
+prevents the underlying device from becoming non-sparse or growing
+unnecessarily.
+.PP
 See also: \*(L"zero-device\*(R", \*(L"scrub-device\*(R", \*(L"is-zero-device\*(R"
 .SS "zero-device"
 .IX Subsection "zero-device"
@@ -6441,6 +6445,10 @@ See also: \*(L"zero-device\*(R", \*(L"scrub-device\*(R", \*(L"is-zero-device\*(R
 .PP
 This command writes zeroes over the entire \f(CW\*(C`device\*(C'\fR.  Compare with \*(L"zero\*(R"
 which just zeroes the first few blocks of a device.
+.PP
+If blocks are already zero, then this command avoids writing zeroes.  This
+prevents the underlying device from becoming non-sparse or growing
+unnecessarily.
 .PP
 \&\fBThis command is dangerous.  Without careful use you can easily destroy all
 your data\fR.
@@ -6515,8 +6523,8 @@ This calls the external \f(CW\*(C`zgrep \-i\*(C'\fR program and returns the matc
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
-.SH "КОД ВИХОДУ"
-.IX Header "КОД ВИХОДУ"
+.SH "EXIT STATUS"
+.IX Header "EXIT STATUS"
 guestfish returns 0 if the commands completed without error, or 1 if there
 was an error.
 .SH "ЗМІННІ СЕРЕДОВИЩА"

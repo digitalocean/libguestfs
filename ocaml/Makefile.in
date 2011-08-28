@@ -1428,9 +1428,9 @@ appliance: force
 @HAVE_OCAML_TRUE@	$(CC) $(AM_CPPFLAGS) $(CFLAGS) -fPIC -Wall -c $<
 
 @HAVE_OCAML_TRUE@guestfs_c_actions.o: guestfs_c_actions.c
-@HAVE_OCAML_TRUE@	$(CC) $(AM_CPPFLAGS) $(CFLAGS) -fPIC -Wall -c $<
+@HAVE_OCAML_TRUE@	$(CC) $(AM_CPPFLAGS) $(CFLAGS) -fPIC -Wall -c $(srcdir)/$<
 
-@HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@html/index.html: guestfs*.mli guestfs*.ml
+@HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@html/index.html: $(srcdir)/guestfs*.mli $(srcdir)/guestfs*.ml
 @HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@	mkdir -p html
 @HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@	-$(OCAMLDOC) -d html -html $^
 
@@ -1468,14 +1468,14 @@ appliance: force
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt -package unix,threads -thread -linkpkg -c $< -o $@
 
 @HAVE_OCAML_TRUE@t/%.cmx: t/%.ml mlguestfs.cmxa
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt -package unix -linkpkg -c $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt -package unix -linkpkg -c $< -o $(builddir)/$@
 
-@HAVE_OCAML_TRUE@.mli.cmi:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc -package unix -c $< -o $@
-@HAVE_OCAML_TRUE@.ml.cmo:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc -package unix -c $< -o $@
-@HAVE_OCAML_TRUE@.ml.cmx:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt -package unix -c $< -o $@
+@HAVE_OCAML_TRUE@%.cmi: %.mli
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc -package unix -c $< -o $(builddir)/$@
+@HAVE_OCAML_TRUE@%.cmo: %.ml
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc -package unix -c $< -o $(builddir)/$@
+@HAVE_OCAML_TRUE@%.cmx: %.ml
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt -package unix -c $< -o $(builddir)/$@
 
 @HAVE_OCAML_TRUE@depend: .depend
 
@@ -1496,7 +1496,7 @@ appliance: force
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) install \
 @HAVE_OCAML_TRUE@	  -ldconf ignore -destdir $(DESTDIR)$(OCAMLLIB) \
 @HAVE_OCAML_TRUE@	  guestfs \
-@HAVE_OCAML_TRUE@	  META *.so *.a *.cma *.cmx *.cmxa *.cmi *.mli
+@HAVE_OCAML_TRUE@	  META *.so *.a *.cma *.cmx *.cmxa *.cmi $(srcdir)/*.mli
 
 # Tell version 3.79 and up of GNU make to not build goals in this
 # directory in parallel.  (Possible solution for RHBZ#502309).

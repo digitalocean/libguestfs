@@ -1276,14 +1276,14 @@ uninstall-am:
 	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am
 
 
-@HAVE_OCAML_TRUE@generator: $(OBJECTS)
-@HAVE_OCAML_TRUE@	$(OCAMLC) -o generator $(OCAMLCFLAGS) $(OCAMLCLIBS) $(OBJECTS)
+@HAVE_OCAML_TRUE@$(srcdir)/generator: $(OBJECTS)
+@HAVE_OCAML_TRUE@	$(OCAMLC) -I $(srcdir) -o $@ $(OCAMLCFLAGS) $(OCAMLCLIBS) $(OBJECTS)
 
 @HAVE_OCAML_TRUE@.ml.cmo:
-@HAVE_OCAML_TRUE@	$(OCAMLC) $(OCAMLCFLAGS) -c $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLC) -I $(srcdir) $(OCAMLCFLAGS) -c $< -o $@
 
 @HAVE_OCAML_TRUE@.mli.cmi:
-@HAVE_OCAML_TRUE@	$(OCAMLC) $(OCAMLCFLAGS) -c $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLC) -I $(srcdir) $(OCAMLCFLAGS) -c $< -o $@
 
 @HAVE_OCAML_TRUE@depend: .depend
 
