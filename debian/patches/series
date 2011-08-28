@@ -4,9 +4,8 @@
 0004-configure.ac-do-not-generate-debian-changelog.patch
 0005-Do-not-run-appliance-related-checks-if-not-building-.patch
 0006-check-for-febootstrap-etc.-even-if-not-building-appl.patch
-0007-python-don-t-build-static-library-python3-wants-prin.patch
+0007-python-don-t-build-static-library.patch
 0008-Fix-for-systemd-based-Debian-systems.patch
-0009-patches-from-upstream-git-repository-for-out-of-tree.patch
-0010-out-of-tree-build-fix-building-Perl-bindings.patch
-0011-out-of-tree-build-daemon.patch
-0012-autoreconf.patch
+0009-out-of-tree-build-fix-building-Perl-bindings.patch
+0010-out-of-tree-build-daemon.patch
+0011-autoreconf.patch

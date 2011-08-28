@@ -33,7 +33,7 @@ index ca31727..1c5e873 100644
  # Guestfish.
  SUBDIRS += fish
 diff --git a/cat/Makefile.am b/cat/Makefile.am
-index 6022cd6..49320c6 100644
+index 91abfac..b1a672e 100644
 --- a/cat/Makefile.am
 +++ b/cat/Makefile.am
 @@ -136,4 +136,6 @@ TESTS_ENVIRONMENT = \
@@ -44,7 +44,7 @@ index 6022cd6..49320c6 100644
  TESTS = test-virt-cat.sh test-virt-filesystems.sh test-virt-ls.sh
 +endif ENABLE_APPLIANCE
 diff --git a/df/Makefile.am b/df/Makefile.am
-index 88e32af..209d7ae 100644
+index 6281c96..63ba403 100644
 --- a/df/Makefile.am
 +++ b/df/Makefile.am
 @@ -82,4 +82,6 @@ TESTS_ENVIRONMENT = \
@@ -55,7 +55,7 @@ index 88e32af..209d7ae 100644
  TESTS = test-virt-df.sh
 +endif ENABLE_APPLIANCE
 diff --git a/edit/Makefile.am b/edit/Makefile.am
-index e33b33c..4fec4e1 100644
+index eac2877..426c372 100644
 --- a/edit/Makefile.am
 +++ b/edit/Makefile.am
 @@ -74,4 +74,6 @@ TESTS_ENVIRONMENT = \
@@ -66,7 +66,7 @@ index e33b33c..4fec4e1 100644
  TESTS = test-virt-edit.sh
 +endif ENABLE_APPLIANCE
 diff --git a/fuse/Makefile.am b/fuse/Makefile.am
-index b7558ee..5439011 100644
+index 10bbc9d..c83becd 100644
 --- a/fuse/Makefile.am
 +++ b/fuse/Makefile.am
 @@ -74,8 +74,10 @@ stamp-guestmount.pod: guestmount.pod
@@ -82,7 +82,7 @@ index b7558ee..5439011 100644
 -endif
 +endif HAVE_FUSE
 diff --git a/images/Makefile.am b/images/Makefile.am
-index 68eb550..956e242 100644
+index 90c4ce3..1b554f4 100644
 --- a/images/Makefile.am
 +++ b/images/Makefile.am
 @@ -56,7 +56,9 @@ noinst_DATA = test.iso
@@ -96,7 +96,7 @@ index 68eb550..956e242 100644
  CLEANFILES = \
  	test.iso test.sqsh \
 diff --git a/ocaml/Makefile.am b/ocaml/Makefile.am
-index 5813f84..ec419ef 100644
+index 8daa671..ba9aee7 100644
 --- a/ocaml/Makefile.am
 +++ b/ocaml/Makefile.am
 @@ -75,11 +75,15 @@ TESTS_ENVIRONMENT = \
@@ -158,7 +158,7 @@ index 5884762..19f6e00 100644
 +
 +endif HAVE_PYTHON
 diff --git a/resize/Makefile.am b/resize/Makefile.am
-index fd7f71a..1ed0d96 100644
+index 93a2600..395f32d 100644
 --- a/resize/Makefile.am
 +++ b/resize/Makefile.am
 @@ -86,7 +86,9 @@ TESTS_ENVIRONMENT = \
@@ -172,7 +172,7 @@ index fd7f71a..1ed0d96 100644
  # Dependencies.
  depend: .depend
 diff --git a/tools/Makefile.am b/tools/Makefile.am
-index 6059d35..357459b 100644
+index 5586bf8..60c4046 100644
 --- a/tools/Makefile.am
 +++ b/tools/Makefile.am
 @@ -64,9 +64,11 @@ TESTS_ENVIRONMENT = \

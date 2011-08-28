@@ -1,0 +1,676 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Sat, 20 Aug 2011 20:43:22 +0200
+Subject: autoreconf
+
+---
+ Makefile.in        |   41 ++++++++++++--------------
+ aclocal.m4         |   14 +++++----
+ cat/Makefile.in    |    2 +-
+ configure          |   83 +++++++++++++++++++++++++++++----------------------
+ daemon/Makefile.in |    4 +-
+ df/Makefile.in     |    2 +-
+ edit/Makefile.in   |    2 +-
+ fuse/Makefile.in   |    2 +-
+ images/Makefile.in |    2 +-
+ ocaml/Makefile.in  |   19 +++++------
+ perl/Makefile.in   |    8 ++++-
+ python/Makefile.in |    5 ++-
+ resize/Makefile.in |    2 +-
+ tools/Makefile.in  |    6 ++--
+ 14 files changed, 103 insertions(+), 89 deletions(-)
+
+diff --git a/Makefile.in b/Makefile.in
+index 1847238..7066536 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -71,7 +71,6 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
+ 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
+ 	$(srcdir)/libguestfs.pc.in $(srcdir)/podwrapper.sh.in \
+ 	$(srcdir)/run.in $(top_srcdir)/configure \
+-	$(top_srcdir)/debian/changelog.in \
+ 	$(top_srcdir)/subdir-rules.mk ABOUT-NLS AUTHORS COPYING \
+ 	COPYING.LIB ChangeLog TODO build-aux/compile \
+ 	build-aux/config.guess build-aux/config.rpath \
+@@ -79,25 +78,26 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
+ 	build-aux/ltmain.sh build-aux/missing
+ @ENABLE_DAEMON_TRUE@am__append_1 = daemon
+ @ENABLE_APPLIANCE_TRUE@am__append_2 = appliance
++@ENABLE_APPLIANCE_TRUE@am__append_3 = capitests caution regressions
+ 
+ # Language bindings.
+-@HAVE_PERL_TRUE@am__append_3 = perl perl/examples
+-@HAVE_OCAML_TRUE@am__append_4 = ocaml ocaml/examples
+-@HAVE_PYTHON_TRUE@am__append_5 = python python/examples
+-@HAVE_RUBY_TRUE@am__append_6 = ruby ruby/examples
+-@HAVE_JAVA_TRUE@am__append_7 = java java/examples
+-@HAVE_HASKELL_TRUE@am__append_8 = haskell
+-@HAVE_PHP_TRUE@am__append_9 = php
++@HAVE_PERL_TRUE@am__append_4 = perl perl/examples
++@HAVE_OCAML_TRUE@am__append_5 = ocaml ocaml/examples
++@HAVE_PYTHON_TRUE@am__append_6 = python python/examples
++@HAVE_RUBY_TRUE@am__append_7 = ruby ruby/examples
++@HAVE_JAVA_TRUE@am__append_8 = java java/examples
++@HAVE_HASKELL_TRUE@am__append_9 = haskell
++@HAVE_PHP_TRUE@am__append_10 = php
+ 
+ # virt-resize 2.0 is written in OCaml.
+-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@am__append_10 = resize
++@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@am__append_11 = resize
+ 
+ # Perl tools and guestmount.
+-@HAVE_TOOLS_TRUE@am__append_11 = tools
+-@HAVE_FUSE_TRUE@am__append_12 = fuse
++@HAVE_TOOLS_TRUE@am__append_12 = tools
++@HAVE_FUSE_TRUE@am__append_13 = fuse
+ 
+ # po-docs must come after tools, inspector.
+-@HAVE_PO4A_TRUE@am__append_13 = po-docs
++@HAVE_PO4A_TRUE@am__append_14 = po-docs
+ subdir = .
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
+@@ -197,7 +197,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
+  configure.lineno config.status.lineno
+ mkinstalldirs = $(install_sh) -d
+ CONFIG_HEADER = config.h
+-CONFIG_CLEAN_FILES = podwrapper.sh run debian/changelog libguestfs.pc
++CONFIG_CLEAN_FILES = podwrapper.sh run libguestfs.pc
+ CONFIG_CLEAN_VPATH_FILES =
+ AM_V_GEN = $(am__v_GEN_$(V))
+ am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
+@@ -245,7 +245,7 @@ AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
+ ETAGS = etags
+ CTAGS = ctags
+ DIST_SUBDIRS = gnulib/lib images generator src examples po daemon \
+-	appliance gnulib/tests capitests caution regressions test-tool \
++	appliance gnulib/tests test-tool capitests caution regressions \
+ 	fish cat df edit inspector rescue perl perl/examples ocaml \
+ 	ocaml/examples python python/examples ruby ruby/examples java \
+ 	java/examples haskell php csharp resize tools fuse po-docs
+@@ -1182,12 +1182,11 @@ ACLOCAL_AMFLAGS = -I m4
+ 
+ # Unconditional because nothing is built yet.
+ SUBDIRS = gnulib/lib images generator src examples po $(am__append_1) \
+-	$(am__append_2) gnulib/tests capitests caution regressions \
+-	test-tool fish cat df edit inspector rescue $(am__append_3) \
+-	$(am__append_4) $(am__append_5) $(am__append_6) \
+-	$(am__append_7) $(am__append_8) $(am__append_9) csharp \
+-	$(am__append_10) $(am__append_11) $(am__append_12) \
+-	$(am__append_13)
++	$(am__append_2) gnulib/tests test-tool $(am__append_3) fish \
++	cat df edit inspector rescue $(am__append_4) $(am__append_5) \
++	$(am__append_6) $(am__append_7) $(am__append_8) \
++	$(am__append_9) $(am__append_10) csharp $(am__append_11) \
++	$(am__append_12) $(am__append_13) $(am__append_14)
+ EXTRA_DIST = \
+ 	$(generator_built) \
+ 	BUGS HACKING RELEASE-NOTES ROADMAP TODO \
+@@ -1334,8 +1333,6 @@ podwrapper.sh: $(top_builddir)/config.status $(srcdir)/podwrapper.sh.in
+ 	cd $(top_builddir) && $(SHELL) ./config.status $@
+ run: $(top_builddir)/config.status $(srcdir)/run.in
+ 	cd $(top_builddir) && $(SHELL) ./config.status $@
+-debian/changelog: $(top_builddir)/config.status $(top_srcdir)/debian/changelog.in
+-	cd $(top_builddir) && $(SHELL) ./config.status $@
+ libguestfs.pc: $(top_builddir)/config.status $(srcdir)/libguestfs.pc.in
+ 	cd $(top_builddir) && $(SHELL) ./config.status $@
+ 
+diff --git a/aclocal.m4 b/aclocal.m4
+index 7ee8e1e..faf58b0 100644
+--- a/aclocal.m4
++++ b/aclocal.m4
+@@ -47,7 +47,8 @@ To do so, use the procedure documented by the package, typically `autoreconf'.])
+ # ----------------------------------
+ AC_DEFUN([PKG_PROG_PKG_CONFIG],
+ [m4_pattern_forbid([^_?PKG_[A-Z_]+$])
+-m4_pattern_allow([^PKG_CONFIG(_PATH)?$])
++m4_pattern_allow([^PKG_CONFIG(_(PATH|LIBDIR|SYSROOT_DIR|ALLOW_SYSTEM_(CFLAGS|LIBS)))?$])
++m4_pattern_allow([^PKG_CONFIG_(DISABLE_UNINSTALLED|TOP_BUILD_DIR|DEBUG_SPEW)$])
+ AC_ARG_VAR([PKG_CONFIG], [path to pkg-config utility])
+ AC_ARG_VAR([PKG_CONFIG_PATH], [directories to add to pkg-config's search path])
+ AC_ARG_VAR([PKG_CONFIG_LIBDIR], [path overriding pkg-config's built-in search path])
+@@ -93,7 +94,8 @@ m4_define([_PKG_CONFIG],
+     pkg_cv_[]$1="$$1"
+  elif test -n "$PKG_CONFIG"; then
+     PKG_CHECK_EXISTS([$3],
+-                     [pkg_cv_[]$1=`$PKG_CONFIG --[]$2 "$3" 2>/dev/null`],
++                     [pkg_cv_[]$1=`$PKG_CONFIG --[]$2 "$3" 2>/dev/null`
++		      test "x$?" != "x0" && pkg_failed=yes ],
+ 		     [pkg_failed=yes])
+  else
+     pkg_failed=untried
+@@ -141,9 +143,9 @@ if test $pkg_failed = yes; then
+    	AC_MSG_RESULT([no])
+         _PKG_SHORT_ERRORS_SUPPORTED
+         if test $_pkg_short_errors_supported = yes; then
+-	        $1[]_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "$2" 2>&1`
++	        $1[]_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "$2" 2>&1`
+         else 
+-	        $1[]_PKG_ERRORS=`$PKG_CONFIG --print-errors "$2" 2>&1`
++	        $1[]_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "$2" 2>&1`
+         fi
+ 	# Put the nasty error message in config.log where it belongs
+ 	echo "$$1[]_PKG_ERRORS" >&AS_MESSAGE_LOG_FD
+@@ -156,7 +158,7 @@ $$1_PKG_ERRORS
+ Consider adjusting the PKG_CONFIG_PATH environment variable if you
+ installed software in a non-standard prefix.
+ 
+-_PKG_TEXT])
++_PKG_TEXT])[]dnl
+         ])
+ elif test $pkg_failed = untried; then
+      	AC_MSG_RESULT([no])
+@@ -167,7 +169,7 @@ path to pkg-config.
+ 
+ _PKG_TEXT
+ 
+-To get pkg-config, see <http://pkg-config.freedesktop.org/>.])
++To get pkg-config, see <http://pkg-config.freedesktop.org/>.])[]dnl
+         ])
+ else
+ 	$1[]_CFLAGS=$pkg_cv_[]$1[]_CFLAGS
+diff --git a/cat/Makefile.in b/cat/Makefile.in
+index 4043f37..e53b774 100644
+--- a/cat/Makefile.in
++++ b/cat/Makefile.in
+@@ -1244,7 +1244,7 @@ TESTS_ENVIRONMENT = \
+ 	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+ 	TMPDIR=$(top_builddir)
+ 
+-TESTS = test-virt-cat.sh test-virt-filesystems.sh test-virt-ls.sh
++@ENABLE_APPLIANCE_TRUE@TESTS = test-virt-cat.sh test-virt-filesystems.sh test-virt-ls.sh
+ all: all-am
+ 
+ .SUFFIXES:
+diff --git a/configure b/configure
+index b55c297..a0f27bf 100755
+--- a/configure
++++ b/configure
+@@ -36085,8 +36085,7 @@ fi
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_appliance" >&5
+ $as_echo "$enable_appliance" >&6; }
+ 
+-if test "x$enable_appliance" = "xyes"; then
+-        # Extract the first word of "febootstrap", so it can be a program name with args.
++# Extract the first word of "febootstrap", so it can be a program name with args.
+ set dummy febootstrap; ac_word=$2
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+ $as_echo_n "checking for $ac_word... " >&6; }
+@@ -36124,12 +36123,8 @@ $as_echo "no" >&6; }
+ fi
+ 
+ 
+-    test "x$FEBOOTSTRAP" = "xno" &&
+-        as_fn_error $? "febootstrap must be installed" "$LINENO" 5
+-        $FEBOOTSTRAP --version >&5 2>&1 ||
+-        as_fn_error $? "febootstrap >= 3.0 must be installed, your version is too old" "$LINENO" 5
+ 
+-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking if user requested febootstrap --yum-config option" >&5
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if user requested febootstrap --yum-config option" >&5
+ $as_echo_n "checking if user requested febootstrap --yum-config option... " >&6; }
+ 
+ # Check whether --with-febootstrap-yum-config was given.
+@@ -36139,26 +36134,32 @@ else
+   FEBOOTSTRAP_YUM_CONFIG=no
+ fi
+ 
+-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $FEBOOTSTRAP_YUM_CONFIG" >&5
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $FEBOOTSTRAP_YUM_CONFIG" >&5
+ $as_echo "$FEBOOTSTRAP_YUM_CONFIG" >&6; }
+ 
+ 
+-                            { $as_echo "$as_me:${as_lineno-$LINENO}: checking which Linux distro for package names" >&5
++if test "x$enable_appliance" = "xyes"; then
++    test "x$FEBOOTSTRAP" = "xno" &&
++        as_fn_error $? "febootstrap must be installed" "$LINENO" 5
++        $FEBOOTSTRAP --version >&5 2>&1 ||
++        as_fn_error $? "febootstrap >= 3.0 must be installed, your version is too old" "$LINENO" 5
++fi
++
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking which Linux distro for package names" >&5
+ $as_echo_n "checking which Linux distro for package names... " >&6; }
+-    DISTRO=REDHAT
+-    if test -f /etc/debian_version; then
+-        DISTRO=DEBIAN
+-	if grep -q 'DISTRIB_ID=Ubuntu' /etc/lsb-release 2>&5; then
+-            DISTRO=UBUNTU
+-	fi
++DISTRO=REDHAT
++if test -f /etc/debian_version; then
++    DISTRO=DEBIAN
++    if grep -q 'DISTRIB_ID=Ubuntu' /etc/lsb-release 2>&5; then
++        DISTRO=UBUNTU
+     fi
+-    if test -f /etc/arch-release; then
+-        DISTRO=ARCHLINUX
+-    fi
+-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $DISTRO" >&5
++fi
++if test -f /etc/arch-release; then
++    DISTRO=ARCHLINUX
++fi
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $DISTRO" >&5
+ $as_echo "$DISTRO" >&6; }
+ 
+-fi
+ 
+ # Extract the first word of "rpcgen", so it can be a program name with args.
+ set dummy rpcgen; ac_word=$2
+@@ -38808,6 +38809,7 @@ $as_echo "#define HAVE_DCGETTEXT 1" >>confdefs.h
+ 
+ 
+ 
++
+ if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
+ 	if test -n "$ac_tool_prefix"; then
+   # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
+@@ -38936,6 +38938,7 @@ if test -n "$PCRE_CFLAGS"; then
+   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+   test $ac_status = 0; }; then
+   pkg_cv_PCRE_CFLAGS=`$PKG_CONFIG --cflags "libpcre" 2>/dev/null`
++		      test "x$?" != "x0" && pkg_failed=yes
+ else
+   pkg_failed=yes
+ fi
+@@ -38952,6 +38955,7 @@ if test -n "$PCRE_LIBS"; then
+   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+   test $ac_status = 0; }; then
+   pkg_cv_PCRE_LIBS=`$PKG_CONFIG --libs "libpcre" 2>/dev/null`
++		      test "x$?" != "x0" && pkg_failed=yes
+ else
+   pkg_failed=yes
+ fi
+@@ -38971,9 +38975,9 @@ else
+         _pkg_short_errors_supported=no
+ fi
+         if test $_pkg_short_errors_supported = yes; then
+-	        PCRE_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "libpcre" 2>&1`
++	        PCRE_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libpcre" 2>&1`
+         else
+-	        PCRE_PKG_ERRORS=`$PKG_CONFIG --print-errors "libpcre" 2>&1`
++	        PCRE_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libpcre" 2>&1`
+         fi
+ 	# Put the nasty error message in config.log where it belongs
+ 	echo "$PCRE_PKG_ERRORS" >&5
+@@ -38988,7 +38992,6 @@ installed software in a non-standard prefix.
+ Alternatively, you may set the environment variables PCRE_CFLAGS
+ and PCRE_LIBS to avoid the need to call pkg-config.
+ See the pkg-config man page for more details." "$LINENO" 5
+-
+ elif test $pkg_failed = untried; then
+      	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ $as_echo "no" >&6; }
+@@ -39004,7 +39007,6 @@ See the pkg-config man page for more details.
+ 
+ To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+ See \`config.log' for more details" "$LINENO" 5; }
+-
+ else
+ 	PCRE_CFLAGS=$pkg_cv_PCRE_CFLAGS
+ 	PCRE_LIBS=$pkg_cv_PCRE_LIBS
+@@ -39083,6 +39085,7 @@ if test -n "$LIBVIRT_CFLAGS"; then
+   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+   test $ac_status = 0; }; then
+   pkg_cv_LIBVIRT_CFLAGS=`$PKG_CONFIG --cflags "libvirt" 2>/dev/null`
++		      test "x$?" != "x0" && pkg_failed=yes
+ else
+   pkg_failed=yes
+ fi
+@@ -39099,6 +39102,7 @@ if test -n "$LIBVIRT_LIBS"; then
+   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+   test $ac_status = 0; }; then
+   pkg_cv_LIBVIRT_LIBS=`$PKG_CONFIG --libs "libvirt" 2>/dev/null`
++		      test "x$?" != "x0" && pkg_failed=yes
+ else
+   pkg_failed=yes
+ fi
+@@ -39118,9 +39122,9 @@ else
+         _pkg_short_errors_supported=no
+ fi
+         if test $_pkg_short_errors_supported = yes; then
+-	        LIBVIRT_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "libvirt" 2>&1`
++	        LIBVIRT_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libvirt" 2>&1`
+         else
+-	        LIBVIRT_PKG_ERRORS=`$PKG_CONFIG --print-errors "libvirt" 2>&1`
++	        LIBVIRT_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libvirt" 2>&1`
+         fi
+ 	# Put the nasty error message in config.log where it belongs
+ 	echo "$LIBVIRT_PKG_ERRORS" >&5
+@@ -39168,6 +39172,7 @@ if test -n "$LIBXML2_CFLAGS"; then
+   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+   test $ac_status = 0; }; then
+   pkg_cv_LIBXML2_CFLAGS=`$PKG_CONFIG --cflags "libxml-2.0" 2>/dev/null`
++		      test "x$?" != "x0" && pkg_failed=yes
+ else
+   pkg_failed=yes
+ fi
+@@ -39184,6 +39189,7 @@ if test -n "$LIBXML2_LIBS"; then
+   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+   test $ac_status = 0; }; then
+   pkg_cv_LIBXML2_LIBS=`$PKG_CONFIG --libs "libxml-2.0" 2>/dev/null`
++		      test "x$?" != "x0" && pkg_failed=yes
+ else
+   pkg_failed=yes
+ fi
+@@ -39203,9 +39209,9 @@ else
+         _pkg_short_errors_supported=no
+ fi
+         if test $_pkg_short_errors_supported = yes; then
+-	        LIBXML2_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "libxml-2.0" 2>&1`
++	        LIBXML2_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libxml-2.0" 2>&1`
+         else
+-	        LIBXML2_PKG_ERRORS=`$PKG_CONFIG --print-errors "libxml-2.0" 2>&1`
++	        LIBXML2_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libxml-2.0" 2>&1`
+         fi
+ 	# Put the nasty error message in config.log where it belongs
+ 	echo "$LIBXML2_PKG_ERRORS" >&5
+@@ -39253,6 +39259,7 @@ if test -n "$LIBCONFIG_CFLAGS"; then
+   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+   test $ac_status = 0; }; then
+   pkg_cv_LIBCONFIG_CFLAGS=`$PKG_CONFIG --cflags "libconfig" 2>/dev/null`
++		      test "x$?" != "x0" && pkg_failed=yes
+ else
+   pkg_failed=yes
+ fi
+@@ -39269,6 +39276,7 @@ if test -n "$LIBCONFIG_LIBS"; then
+   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+   test $ac_status = 0; }; then
+   pkg_cv_LIBCONFIG_LIBS=`$PKG_CONFIG --libs "libconfig" 2>/dev/null`
++		      test "x$?" != "x0" && pkg_failed=yes
+ else
+   pkg_failed=yes
+ fi
+@@ -39288,9 +39296,9 @@ else
+         _pkg_short_errors_supported=no
+ fi
+         if test $_pkg_short_errors_supported = yes; then
+-	        LIBCONFIG_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "libconfig" 2>&1`
++	        LIBCONFIG_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libconfig" 2>&1`
+         else
+-	        LIBCONFIG_PKG_ERRORS=`$PKG_CONFIG --print-errors "libconfig" 2>&1`
++	        LIBCONFIG_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libconfig" 2>&1`
+         fi
+ 	# Put the nasty error message in config.log where it belongs
+ 	echo "$LIBCONFIG_PKG_ERRORS" >&5
+@@ -39338,6 +39346,7 @@ if test -n "$HIVEX_CFLAGS"; then
+   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+   test $ac_status = 0; }; then
+   pkg_cv_HIVEX_CFLAGS=`$PKG_CONFIG --cflags "hivex" 2>/dev/null`
++		      test "x$?" != "x0" && pkg_failed=yes
+ else
+   pkg_failed=yes
+ fi
+@@ -39354,6 +39363,7 @@ if test -n "$HIVEX_LIBS"; then
+   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+   test $ac_status = 0; }; then
+   pkg_cv_HIVEX_LIBS=`$PKG_CONFIG --libs "hivex" 2>/dev/null`
++		      test "x$?" != "x0" && pkg_failed=yes
+ else
+   pkg_failed=yes
+ fi
+@@ -39373,9 +39383,9 @@ else
+         _pkg_short_errors_supported=no
+ fi
+         if test $_pkg_short_errors_supported = yes; then
+-	        HIVEX_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "hivex" 2>&1`
++	        HIVEX_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "hivex" 2>&1`
+         else
+-	        HIVEX_PKG_ERRORS=`$PKG_CONFIG --print-errors "hivex" 2>&1`
++	        HIVEX_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "hivex" 2>&1`
+         fi
+ 	# Put the nasty error message in config.log where it belongs
+ 	echo "$HIVEX_PKG_ERRORS" >&5
+@@ -39431,6 +39441,7 @@ if test -n "$FUSE_CFLAGS"; then
+   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+   test $ac_status = 0; }; then
+   pkg_cv_FUSE_CFLAGS=`$PKG_CONFIG --cflags "fuse" 2>/dev/null`
++		      test "x$?" != "x0" && pkg_failed=yes
+ else
+   pkg_failed=yes
+ fi
+@@ -39447,6 +39458,7 @@ if test -n "$FUSE_LIBS"; then
+   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+   test $ac_status = 0; }; then
+   pkg_cv_FUSE_LIBS=`$PKG_CONFIG --libs "fuse" 2>/dev/null`
++		      test "x$?" != "x0" && pkg_failed=yes
+ else
+   pkg_failed=yes
+ fi
+@@ -39466,9 +39478,9 @@ else
+         _pkg_short_errors_supported=no
+ fi
+         if test $_pkg_short_errors_supported = yes; then
+-	        FUSE_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "fuse" 2>&1`
++	        FUSE_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "fuse" 2>&1`
+         else
+-	        FUSE_PKG_ERRORS=`$PKG_CONFIG --print-errors "fuse" 2>&1`
++	        FUSE_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "fuse" 2>&1`
+         fi
+ 	# Put the nasty error message in config.log where it belongs
+ 	echo "$FUSE_PKG_ERRORS" >&5
+@@ -41240,7 +41252,7 @@ ac_config_files="$ac_config_files podwrapper.sh"
+ 
+ ac_config_files="$ac_config_files run"
+ 
+-ac_config_files="$ac_config_files Makefile appliance/Makefile capitests/Makefile cat/Makefile caution/Makefile csharp/Makefile debian/changelog df/Makefile edit/Makefile examples/Makefile fish/Makefile fuse/Makefile generator/Makefile gnulib/lib/Makefile gnulib/tests/Makefile haskell/Makefile images/Makefile inspector/Makefile java/Makefile java/examples/Makefile libguestfs.pc ocaml/META ocaml/Makefile ocaml/examples/Makefile perl/Makefile perl/Makefile.PL perl/examples/Makefile php/Makefile po-docs/Makefile po-docs/ja/Makefile po-docs/uk/Makefile po/Makefile.in python/Makefile python/examples/Makefile regressions/Makefile rescue/Makefile resize/Makefile ruby/Makefile ruby/Rakefile ruby/examples/Makefile src/Makefile test-tool/Makefile tools/Makefile"
++ac_config_files="$ac_config_files Makefile appliance/Makefile capitests/Makefile cat/Makefile caution/Makefile csharp/Makefile df/Makefile edit/Makefile examples/Makefile fish/Makefile fuse/Makefile generator/Makefile gnulib/lib/Makefile gnulib/tests/Makefile haskell/Makefile images/Makefile inspector/Makefile java/Makefile java/examples/Makefile libguestfs.pc ocaml/META ocaml/Makefile ocaml/examples/Makefile perl/Makefile perl/Makefile.PL perl/examples/Makefile php/Makefile po-docs/Makefile po-docs/ja/Makefile po-docs/uk/Makefile po/Makefile.in python/Makefile python/examples/Makefile regressions/Makefile rescue/Makefile resize/Makefile ruby/Makefile ruby/Rakefile ruby/examples/Makefile src/Makefile test-tool/Makefile tools/Makefile"
+ 
+ cat >confcache <<\_ACEOF
+ # This file is a shell script that caches the results of configure
+@@ -42427,7 +42439,6 @@ do
+     "cat/Makefile") CONFIG_FILES="$CONFIG_FILES cat/Makefile" ;;
+     "caution/Makefile") CONFIG_FILES="$CONFIG_FILES caution/Makefile" ;;
+     "csharp/Makefile") CONFIG_FILES="$CONFIG_FILES csharp/Makefile" ;;
+-    "debian/changelog") CONFIG_FILES="$CONFIG_FILES debian/changelog" ;;
+     "df/Makefile") CONFIG_FILES="$CONFIG_FILES df/Makefile" ;;
+     "edit/Makefile") CONFIG_FILES="$CONFIG_FILES edit/Makefile" ;;
+     "examples/Makefile") CONFIG_FILES="$CONFIG_FILES examples/Makefile" ;;
+diff --git a/daemon/Makefile.in b/daemon/Makefile.in
+index ab188ca..fa13869 100644
+--- a/daemon/Makefile.in
++++ b/daemon/Makefile.in
+@@ -3126,10 +3126,10 @@ $(generator_built): $(generatorsrcdir)/stamp-generator
+ $(generatorsrcdir)/stamp-generator: force
+ 	$(MAKE) -C $(generatorsrcdir) stamp-generator
+ 
+-guestfs_protocol.c: $(libsrcdir)/guestfs_protocol.c
++guestfs_protocol.c: $(srcdir)/guestfs_protocol.c
+ 	rm -f $@
+ 	ln $< $@
+-guestfs_protocol.h: $(libsrcdir)/guestfs_protocol.h
++guestfs_protocol.h: $(srcdir)/guestfs_protocol.h
+ 	rm -f $@
+ 	ln $< $@
+ $(libsrcdir)/guestfs_protocol.c: force
+diff --git a/df/Makefile.in b/df/Makefile.in
+index 747089a..e484854 100644
+--- a/df/Makefile.in
++++ b/df/Makefile.in
+@@ -1184,7 +1184,7 @@ TESTS_ENVIRONMENT = \
+ 	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+ 	TMPDIR=$(top_builddir)
+ 
+-TESTS = test-virt-df.sh
++@ENABLE_APPLIANCE_TRUE@TESTS = test-virt-df.sh
+ all: all-am
+ 
+ .SUFFIXES:
+diff --git a/edit/Makefile.in b/edit/Makefile.in
+index a367f48..667f0bf 100644
+--- a/edit/Makefile.in
++++ b/edit/Makefile.in
+@@ -1173,7 +1173,7 @@ TESTS_ENVIRONMENT = \
+ 	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+ 	TMPDIR=$(top_builddir)
+ 
+-TESTS = test-virt-edit.sh
++@ENABLE_APPLIANCE_TRUE@TESTS = test-virt-edit.sh
+ all: all-am
+ 
+ .SUFFIXES:
+diff --git a/fuse/Makefile.in b/fuse/Makefile.in
+index 09c31d9..bd53845 100644
+--- a/fuse/Makefile.in
++++ b/fuse/Makefile.in
+@@ -1180,7 +1180,7 @@ CLEANFILES = stamp-guestmount.pod
+ @HAVE_FUSE_TRUE@noinst_DATA = $(top_builddir)/html/guestmount.1.html
+ 
+ # Tests.
+-@HAVE_FUSE_TRUE@TESTS = test-fuse.sh
++@ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@TESTS = test-fuse.sh
+ @HAVE_FUSE_TRUE@TESTS_ENVIRONMENT = \
+ @HAVE_FUSE_TRUE@	top_builddir=..
+ 
+diff --git a/images/Makefile.in b/images/Makefile.in
+index 32654c4..35ed8ca 100644
+--- a/images/Makefile.in
++++ b/images/Makefile.in
+@@ -1099,7 +1099,7 @@ noinst_DATA = test.iso
+ 
+ # This is 'check_DATA' because we don't need it until 'make check'
+ # time and we need the tools we have built in order to make it.
+-check_DATA = debian.img fedora.img ubuntu.img windows.img
++@ENABLE_APPLIANCE_TRUE@check_DATA = debian.img fedora.img ubuntu.img windows.img
+ CLEANFILES = \
+ 	test.iso test.sqsh \
+ 	100kallzeroes 100kallnewlines 100kallspaces 100krandom 10klines \
+diff --git a/ocaml/Makefile.in b/ocaml/Makefile.in
+index 25320f4..a374682 100644
+--- a/ocaml/Makefile.in
++++ b/ocaml/Makefile.in
+@@ -71,7 +71,11 @@ DIST_COMMON = $(srcdir)/.depend $(srcdir)/META.in \
+ 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+ 	$(top_srcdir)/subdir-rules.mk
+ @HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@am__append_1 = html/index.html
+-@HAVE_OCAML_TRUE@am__append_2 = $(noinst_DATA)
++@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_2 = t/guestfs_010_basic \
++@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	t/guestfs_070_threads \
++@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	t/guestfs_400_progress
++
++@HAVE_OCAML_TRUE@am__append_3 = $(noinst_DATA)
+ subdir = ocaml
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
+@@ -1084,7 +1088,7 @@ EXTRA_DIST = \
+ 	t/*.ml
+ 
+ CLEANFILES = *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so t/*.cmi \
+-	t/*.cmo t/*.cmx t/*.o t/*.a t/*.so $(am__append_2)
++	t/*.cmo t/*.cmx t/*.o t/*.a t/*.so $(am__append_3)
+ AM_CPPFLAGS = -I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
+   -I$(top_srcdir)/src -I$(top_builddir)/src \
+   $(WARN_CFLAGS) $(WERROR_CFLAGS)
+@@ -1102,14 +1106,9 @@ AM_CPPFLAGS = -I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
+ @HAVE_OCAML_TRUE@	TMPDIR=$(top_builddir) \
+ @HAVE_OCAML_TRUE@	$(VG)
+ 
+-@HAVE_OCAML_TRUE@TESTS = run-bindtests \
+-@HAVE_OCAML_TRUE@	t/guestfs_005_load \
+-@HAVE_OCAML_TRUE@	t/guestfs_010_basic \
+-@HAVE_OCAML_TRUE@	t/guestfs_070_threads \
+-@HAVE_OCAML_TRUE@	t/guestfs_080_optargs \
+-@HAVE_OCAML_TRUE@	t/guestfs_400_events \
+-@HAVE_OCAML_TRUE@	t/guestfs_400_progress
+-
++@HAVE_OCAML_TRUE@TESTS = run-bindtests t/guestfs_005_load \
++@HAVE_OCAML_TRUE@	t/guestfs_080_optargs t/guestfs_400_events \
++@HAVE_OCAML_TRUE@	$(am__append_2)
+ @HAVE_OCAML_TRUE@SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly
+ all: all-am
+ 
+diff --git a/perl/Makefile.in b/perl/Makefile.in
+index a1186ff..79dd8c4 100644
+--- a/perl/Makefile.in
++++ b/perl/Makefile.in
+@@ -68,6 +68,8 @@ build_triplet = @build@
+ host_triplet = @host@
+ DIST_COMMON = README $(srcdir)/Makefile.PL.in $(srcdir)/Makefile.am \
+ 	$(srcdir)/Makefile.in $(top_srcdir)/subdir-rules.mk
++@ENABLE_APPLIANCE_TRUE@@HAVE_PERL_TRUE@am__append_1 = appliance
++@ENABLE_APPLIANCE_TRUE@@HAVE_PERL_TRUE@am__append_2 = run-perl-tests
+ subdir = perl
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
+@@ -1080,7 +1082,8 @@ EXTRA_DIST = \
+ 	t/*.t \
+ 	typemap
+ 
+-@HAVE_PERL_TRUE@TESTS = run-bindtests run-perl-tests
++@HAVE_PERL_TRUE@TESTS = run-bindtests $(am__append_2)
++@HAVE_PERL_TRUE@test_prereq = src_deps all test_images $(am__append_1)
+ @HAVE_PERL_TRUE@TESTS_ENVIRONMENT = \
+ @HAVE_PERL_TRUE@	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
+ @HAVE_PERL_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+@@ -1405,12 +1408,13 @@ appliance: force
+ @HAVE_PERL_TRUE@test_images:
+ @HAVE_PERL_TRUE@	$(MAKE) -C $(top_builddir)/images
+ 
+-@HAVE_PERL_TRUE@$(TESTS): src_deps all appliance test_images
++@HAVE_PERL_TRUE@$(TESTS): $(test_prereq)
+ 
+ @HAVE_PERL_TRUE@all: Makefile-pl src_deps
+ @HAVE_PERL_TRUE@	$(MAKE) -f Makefile-pl
+ 
+ @HAVE_PERL_TRUE@Makefile-pl: Makefile.PL
++@HAVE_PERL_TRUE@	-[ $(srcdir) != $(builddir) ] && cp -rsu $(abs_srcdir)/. $(builddir)/.
+ @HAVE_PERL_TRUE@	perl Makefile.PL INSTALLDIRS=$(INSTALLDIRS) PREFIX=$(prefix)
+ 
+ # No!  Otherwise it is deleted before the clean-local rule runs.
+diff --git a/python/Makefile.in b/python/Makefile.in
+index 1e73bf1..97948c8 100644
+--- a/python/Makefile.in
++++ b/python/Makefile.in
+@@ -70,6 +70,7 @@ build_triplet = @build@
+ host_triplet = @host@
+ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+ 	$(top_srcdir)/subdir-rules.mk
++@ENABLE_APPLIANCE_TRUE@@HAVE_PYTHON_TRUE@am__append_1 = run-python-tests
+ subdir = python
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
+@@ -1146,13 +1147,13 @@ EXTRA_DIST = \
+ @HAVE_PYTHON_TRUE@			  -I$(top_srcdir)/src -I$(top_builddir)/src
+ 
+ @HAVE_PYTHON_TRUE@libguestfsmod_la_LIBADD = $(top_builddir)/src/libguestfs.la
+-@HAVE_PYTHON_TRUE@libguestfsmod_la_LDFLAGS = -avoid-version
++@HAVE_PYTHON_TRUE@libguestfsmod_la_LDFLAGS = -avoid-version -shared
+ @HAVE_PYTHON_TRUE@TESTS_ENVIRONMENT = \
+ @HAVE_PYTHON_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+ @HAVE_PYTHON_TRUE@	PYTHONPATH=$(builddir):$(builddir)/.libs \
+ @HAVE_PYTHON_TRUE@	TMPDIR=$(top_builddir)
+ 
+-@HAVE_PYTHON_TRUE@TESTS = run-bindtests run-python-tests
++@HAVE_PYTHON_TRUE@TESTS = run-bindtests $(am__append_1)
+ all: all-am
+ 
+ .SUFFIXES:
+diff --git a/resize/Makefile.in b/resize/Makefile.in
+index 446ec05..436dc43 100644
+--- a/resize/Makefile.in
++++ b/resize/Makefile.in
+@@ -1135,7 +1135,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize test.img \
+ @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+ @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	TMPDIR=$(top_builddir)
+ 
+-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@TESTS = test-virt-resize.sh
++@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@TESTS = test-virt-resize.sh
+ all: all-am
+ 
+ .SUFFIXES:
+diff --git a/tools/Makefile.in b/tools/Makefile.in
+index 7bb6d49..0e2bd8f 100644
+--- a/tools/Makefile.in
++++ b/tools/Makefile.in
+@@ -1123,9 +1123,9 @@ CLEANFILES = test.img
+ @HAVE_TOOLS_TRUE@	TMPDIR=$(top_builddir) \
+ @HAVE_TOOLS_TRUE@	PERL5LIB=$(top_builddir)/perl/blib/lib:$(top_builddir)/perl/blib/arch
+ 
+-@HAVE_TOOLS_TRUE@TESTS = test-virt-list-filesystems.sh \
+-@HAVE_TOOLS_TRUE@	test-virt-make-fs.sh \
+-@HAVE_TOOLS_TRUE@	test-virt-tar.sh
++@ENABLE_APPLIANCE_TRUE@@HAVE_TOOLS_TRUE@TESTS = test-virt-list-filesystems.sh \
++@ENABLE_APPLIANCE_TRUE@@HAVE_TOOLS_TRUE@	test-virt-make-fs.sh \
++@ENABLE_APPLIANCE_TRUE@@HAVE_TOOLS_TRUE@	test-virt-tar.sh
+ 
+ all: all-am
+ 
+-- 
