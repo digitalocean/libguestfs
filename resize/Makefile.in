@@ -1543,7 +1543,7 @@ appliance: force
 @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@virt-resize.1 $(top_builddir)/html/virt-resize.1.html: stamp-virt-resize.pod
 
 @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@stamp-virt-resize.pod: virt-resize.pod
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	$(top_srcdir)/podwrapper.sh \
+@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	$(top_builddir)/podwrapper.sh \
 @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	  --man virt-resize.1 \
 @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	  --html $(top_builddir)/html/virt-resize.1.html \
 @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	  $<

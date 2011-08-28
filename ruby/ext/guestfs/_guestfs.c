@@ -199,7 +199,8 @@ ruby_event_callback_wrapper (guestfs_h *g,
                              const uint64_t *array, size_t array_len)
 {
   size_t i;
-  VALUE eventv, event_handlev, bufv, arrayv, argv;
+  VALUE eventv, event_handlev, bufv, arrayv;
+  VALUE argv[5];
 
   eventv = ULL2NUM (event);
   event_handlev = INT2NUM (event_handle);
@@ -210,35 +211,41 @@ ruby_event_callback_wrapper (guestfs_h *g,
   for (i = 0; i < array_len; ++i)
     rb_ary_push (arrayv, ULL2NUM (array[i]));
 
-  /* Wrap up the arguments in an array which will be unpacked
-   * and passed as multiple arguments.  This is a crap limitation
-   * of rb_rescue.
+  /* This is a crap limitation of rb_rescue.
    * http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/~poffice/mail/ruby-talk/65698
    */
-  argv = rb_ary_new2 (5);
-  rb_ary_store (argv, 0, * (VALUE *) data /* function */);
-  rb_ary_store (argv, 1, eventv);
-  rb_ary_store (argv, 2, event_handlev);
-  rb_ary_store (argv, 3, bufv);
-  rb_ary_store (argv, 4, arrayv);
+  argv[0] = * (VALUE *) data; /* function */
+  argv[1] = eventv;
+  argv[2] = event_handlev;
+  argv[3] = bufv;
+  argv[4] = arrayv;
 
-  rb_rescue (ruby_event_callback_wrapper_wrapper, argv,
+  rb_rescue (ruby_event_callback_wrapper_wrapper, (VALUE) argv,
              ruby_event_callback_handle_exception, Qnil);
 }
 
 static VALUE
-ruby_event_callback_wrapper_wrapper (VALUE argv)
+ruby_event_callback_wrapper_wrapper (VALUE argvv)
 {
+  VALUE *argv = (VALUE *) argvv;
   VALUE fn, eventv, event_handlev, bufv, arrayv;
 
-  fn = rb_ary_entry (argv, 0);
-  eventv = rb_ary_entry (argv, 1);
-  event_handlev = rb_ary_entry (argv, 2);
-  bufv = rb_ary_entry (argv, 3);
-  arrayv = rb_ary_entry (argv, 4);
+  fn = argv[0];
 
-  rb_funcall (fn, rb_intern ("call"), 4,
-              eventv, event_handlev, bufv, arrayv);
+  /* Check the Ruby callback still exists.  For reasons which are not
+   * fully understood, even though we registered this as a global root,
+   * it is still possible for the callback to go away (fn value remains
+   * but its type changes from T_DATA to T_NONE).  (RHBZ#733297)
+   */
+  if (rb_type (fn) != T_NONE) {
+    eventv = argv[1];
+    event_handlev = argv[2];
+    bufv = argv[3];
+    arrayv = argv[4];
+
+    rb_funcall (fn, rb_intern ("call"), 4,
+                eventv, event_handlev, bufv, arrayv);
+  }
 
   return Qnil;
 }
@@ -249,7 +256,7 @@ ruby_event_callback_handle_exception (VALUE not_used, VALUE exn)
   /* Callbacks aren't supposed to throw exceptions.  The best we
    * can do is to print the error.
    */
-  fprintf (stderr, "libguestfs: exception in callback: %s",
+  fprintf (stderr, "libguestfs: exception in callback: %s\n",
            StringValueCStr (exn));
 
   return Qnil;
@@ -7537,6 +7544,10 @@ ruby_guestfs_fsck (VALUE gv, VALUE fstypev, VALUE devicev)
  * sufficient to remove any partition tables, filesystem
  * superblocks and so on.
  * 
+ * If blocks are already zero, then this command avoids
+ * writing zeroes. This prevents the underlying device from
+ * becoming non-sparse or growing unnecessarily.
+ * 
  * See also: "g.zero_device", "g.scrub_device",
  * "g.is_zero_device"
  *
@@ -13578,6 +13589,10 @@ ruby_guestfs_copy_size (VALUE gv, VALUE srcv, VALUE destv, VALUE sizev)
  * This command writes zeroes over the entire "device".
  * Compare with "g.zero" which just zeroes the first few
  * blocks of a device.
+ * 
+ * If blocks are already zero, then this command avoids
+ * writing zeroes. This prevents the underlying device from
+ * becoming non-sparse or growing unnecessarily.
  * 
  * This command is dangerous. Without careful use you can
  * easily destroy all your data.

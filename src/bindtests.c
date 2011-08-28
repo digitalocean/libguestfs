@@ -82,7 +82,10 @@ guestfs__test0rint (guestfs_h *g,
                     const char *val)
 {
   int r;
-  sscanf (val, "%d", &r);
+  if (sscanf (val, "%d", &r) != 1) {
+    error (g, "%s: expecting int argument", "test0rint");
+    return -1;
+  }
   return r;
 }
 
@@ -100,7 +103,10 @@ guestfs__test0rint64 (guestfs_h *g,
                       const char *val)
 {
   int64_t r;
-  sscanf (val, "%" SCNi64, &r);
+  if (sscanf (val, "%" SCNi64, &r) != 1) {
+    error (g, "%s: expecting int64 argument", "test0rint64");
+    return -1;
+  }
   return r;
 }
 
@@ -183,7 +189,10 @@ guestfs__test0rstringlist (guestfs_h *g,
 {
   char **strs;
   int n, i;
-  sscanf (val, "%d", &n);
+  if (sscanf (val, "%d", &n) != 1) {
+    error (g, "%s: expecting int argument", "test0rstringlist");
+    return NULL;
+  }
   strs = safe_malloc (g, (n+1) * sizeof (char *));
   for (i = 0; i < n; ++i) {
     strs[i] = safe_malloc (g, 16);
@@ -225,8 +234,13 @@ guestfs__test0rstructlist (guestfs_h *g,
                            const char *val)
 {
   struct guestfs_lvm_pv_list *r;
+  uint32_t len;
+  if (sscanf (val, "%" SCNu32, &len) != 1) {
+    error (g, "%s: expecting uint32 argument", "test0rstructlist");
+    return NULL;
+  }
   r = safe_calloc (g, sizeof *r, 1);
-  sscanf (val, "%d", &r->len);
+  r->len = len;
   r->val = safe_calloc (g, r->len, sizeof *r->val);
   return r;
 }
@@ -246,7 +260,10 @@ guestfs__test0rhashtable (guestfs_h *g,
 {
   char **strs;
   int n, i;
-  sscanf (val, "%d", &n);
+  if (sscanf (val, "%d", &n) != -1) {
+    error (g, "%s: expecting int argument", "test0rhashtable");
+    return NULL;
+  }
   strs = safe_malloc (g, (n*2+1) * sizeof (*strs));
   for (i = 0; i < n; ++i) {
     strs[i*2] = safe_malloc (g, 16);

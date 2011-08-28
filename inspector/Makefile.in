@@ -1813,7 +1813,7 @@ appliance: force
 @HAVE_LIBXML2_TRUE@virt-inspector.1 $(top_builddir)/html/virt-inspector.1.html: stamp-virt-inspector.pod
 
 @HAVE_LIBXML2_TRUE@stamp-virt-inspector.pod: virt-inspector.pod
-@HAVE_LIBXML2_TRUE@	$(top_srcdir)/podwrapper.sh \
+@HAVE_LIBXML2_TRUE@	$(top_builddir)/podwrapper.sh \
 @HAVE_LIBXML2_TRUE@	  --man virt-inspector.1 \
 @HAVE_LIBXML2_TRUE@	  --html $(top_builddir)/html/virt-inspector.1.html \
 @HAVE_LIBXML2_TRUE@	  $<

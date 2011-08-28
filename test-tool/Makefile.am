@@ -34,6 +34,6 @@ libguestfs_test_tool_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
 libguestfs-test-tool.1: libguestfs-test-tool.pod
-	$(top_srcdir)/podwrapper.sh \
+	$(top_builddir)/podwrapper.sh \
 	  --man $@ \
 	  $<

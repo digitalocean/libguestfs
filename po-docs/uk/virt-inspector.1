@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-inspector 1"
-.TH virt-inspector 1 "2011-08-17" "libguestfs-1.12.4" "Virtualization Support"
+.TH virt-inspector 1 "2011-08-28" "libguestfs-1.12.5" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -397,23 +397,26 @@ of a multipart \s-1CD\s0.  For example:
 .Ve
 .SH "USING XPATH"
 .IX Header "USING XPATH"
-You can use the XPath query language, and/or the xpath tool, in order to
-select parts of the \s-1XML\s0.
+You can use the XPath query language to select parts of the \s-1XML\s0.  We
+recommend using \f(CW\*(C`xmlstarlet\*(C'\fR to perform XPath queries from the command
+line.
 .PP
 Приклад:
 .PP
-.Vb 7
-\& $ virt\-inspector \-d Guest | xpath //filesystems
-\& Found 1 nodes:
-\& \-\- NODE \-\-
+.Vb 5
+\& $ virt\-inspector \-d Guest | xmlstarlet sel \-t \-c \*(Aq//filesystems\*(Aq
 \& <filesystems>
 \&      <filesystem dev="/dev/vg_f13x64/lv_root">
 \&        <type>ext4</type>
-\& [etc]
+\& [...]
 \&
 \& $ virt\-inspector \-d Guest | \e
-\&     xpath "string(//filesystem[@dev=\*(Aq/dev/sda1\*(Aq]/type)"
-\& Query didn\*(Aqt return a nodeset. Value: ext4
+\&     xmlstarlet sel \-t \-c "string(//filesystem[@dev=\*(Aq/dev/sda1\*(Aq]/type)"
+\& ext4
+\&
+\& $ virt\-inspector \-d Guest | \e
+\&    xmlstarlet sel \-t \-v \*(Aq//icon\*(Aq | base64 \-i \-d | display \-
+\& [displays the guest icon, if there is one]
 .Ve
 .SH "SHELL QUOTING"
 .IX Header "SHELL QUOTING"
@@ -437,10 +440,13 @@ versions of virt-inspector with different names:
 \& virt\-inspector     Old Perl version.
 \& virt\-inspector2    New C version.
 .Ve
+.SH "EXIT STATUS"
+.IX Header "EXIT STATUS"
+This program returns 0 if successful, or non-zero if there was an error.
 .SH "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 .IX Header "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 \&\fIguestfs\fR\|(3), \fIguestfish\fR\|(1), <http://www.w3.org/TR/xpath/>,
-\&\fIbase64\fR\|(1), <http://libguestfs.org/>.
+\&\fIbase64\fR\|(1), \fIxmlstarlet\fR\|(1), <http://libguestfs.org/>.
 .SH "АВТОРИ"
 .IX Header "АВТОРИ"
 .IP "\(bu" 4

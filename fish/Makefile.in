@@ -197,7 +197,7 @@ am__objects_1 = guestfish-cmds.$(OBJEXT) \
 	guestfish-completion.$(OBJEXT) guestfish-prepopts.$(OBJEXT)
 am__objects_2 = guestfish-config.$(OBJEXT) guestfish-inspect.$(OBJEXT) \
 	guestfish-keys.$(OBJEXT) guestfish-options.$(OBJEXT) \
-	guestfish-virt.$(OBJEXT)
+	guestfish-progress.$(OBJEXT) guestfish-virt.$(OBJEXT)
 am_guestfish_OBJECTS = $(am__objects_1) $(am__objects_2) \
 	guestfish-alloc.$(OBJEXT) guestfish-copy.$(OBJEXT) \
 	guestfish-destpaths.$(OBJEXT) guestfish-display.$(OBJEXT) \
@@ -208,10 +208,9 @@ am_guestfish_OBJECTS = $(am__objects_1) $(am__objects_2) \
 	guestfish-more.$(OBJEXT) guestfish-prep.$(OBJEXT) \
 	guestfish-prep_disk.$(OBJEXT) guestfish-prep_part.$(OBJEXT) \
 	guestfish-prep_fs.$(OBJEXT) guestfish-prep_lv.$(OBJEXT) \
-	guestfish-prep_boot.$(OBJEXT) guestfish-progress.$(OBJEXT) \
-	guestfish-rc.$(OBJEXT) guestfish-reopen.$(OBJEXT) \
-	guestfish-supported.$(OBJEXT) guestfish-tilde.$(OBJEXT) \
-	guestfish-time.$(OBJEXT)
+	guestfish-prep_boot.$(OBJEXT) guestfish-rc.$(OBJEXT) \
+	guestfish-reopen.$(OBJEXT) guestfish-supported.$(OBJEXT) \
+	guestfish-tilde.$(OBJEXT) guestfish-time.$(OBJEXT)
 guestfish_OBJECTS = $(am_guestfish_OBJECTS)
 am__DEPENDENCIES_1 =
 guestfish_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -1203,16 +1202,18 @@ EXTRA_DIST = \
 	virt-tar-out.pod
 
 
-# These source files (all related to option parsing) are shared
-# between guestfish and guestmount.  Keep a convenient list here just
-# so we know which ones are shared.  These files must not include
-# other guestfish files.
+# These source files (mostly related to option parsing) are shared
+# between guestfish, guestmount and some other virt tools.  Keep a
+# convenient list here just so we know which ones are shared.  These
+# files must not include other guestfish files.
 SHARED_SOURCE_FILES = \
 	config.c \
 	inspect.c \
 	keys.c \
 	options.h \
 	options.c \
+	progress.h \
+	progress.c \
 	virt.c
 
 guestfish_SOURCES = \
@@ -1239,10 +1240,8 @@ guestfish_SOURCES = \
 	prep_fs.c \
 	prep_lv.c \
 	prep_boot.c \
-	progress.c \
 	rc.c \
 	reopen.c \
-	rmsd.h \
 	supported.c \
 	tilde.c \
 	time.c
@@ -1622,6 +1621,22 @@ guestfish-options.obj: options.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-options.obj `if test -f 'options.c'; then $(CYGPATH_W) 'options.c'; else $(CYGPATH_W) '$(srcdir)/options.c'; fi`
 
+guestfish-progress.o: progress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-progress.o -MD -MP -MF $(DEPDIR)/guestfish-progress.Tpo -c -o guestfish-progress.o `test -f 'progress.c' || echo '$(srcdir)/'`progress.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-progress.Tpo $(DEPDIR)/guestfish-progress.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='progress.c' object='guestfish-progress.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-progress.o `test -f 'progress.c' || echo '$(srcdir)/'`progress.c
+
+guestfish-progress.obj: progress.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-progress.obj -MD -MP -MF $(DEPDIR)/guestfish-progress.Tpo -c -o guestfish-progress.obj `if test -f 'progress.c'; then $(CYGPATH_W) 'progress.c'; else $(CYGPATH_W) '$(srcdir)/progress.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-progress.Tpo $(DEPDIR)/guestfish-progress.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='progress.c' object='guestfish-progress.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-progress.obj `if test -f 'progress.c'; then $(CYGPATH_W) 'progress.c'; else $(CYGPATH_W) '$(srcdir)/progress.c'; fi`
+
 guestfish-virt.o: virt.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-virt.o -MD -MP -MF $(DEPDIR)/guestfish-virt.Tpo -c -o guestfish-virt.o `test -f 'virt.c' || echo '$(srcdir)/'`virt.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-virt.Tpo $(DEPDIR)/guestfish-virt.Po
@@ -1941,22 +1956,6 @@ guestfish-prep_boot.obj: prep_boot.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='prep_boot.c' object='guestfish-prep_boot.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep_boot.obj `if test -f 'prep_boot.c'; then $(CYGPATH_W) 'prep_boot.c'; else $(CYGPATH_W) '$(srcdir)/prep_boot.c'; fi`
-
-guestfish-progress.o: progress.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-progress.o -MD -MP -MF $(DEPDIR)/guestfish-progress.Tpo -c -o guestfish-progress.o `test -f 'progress.c' || echo '$(srcdir)/'`progress.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-progress.Tpo $(DEPDIR)/guestfish-progress.Po
-@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='progress.c' object='guestfish-progress.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-progress.o `test -f 'progress.c' || echo '$(srcdir)/'`progress.c
-
-guestfish-progress.obj: progress.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-progress.obj -MD -MP -MF $(DEPDIR)/guestfish-progress.Tpo -c -o guestfish-progress.obj `if test -f 'progress.c'; then $(CYGPATH_W) 'progress.c'; else $(CYGPATH_W) '$(srcdir)/progress.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-progress.Tpo $(DEPDIR)/guestfish-progress.Po
-@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='progress.c' object='guestfish-progress.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-progress.obj `if test -f 'progress.c'; then $(CYGPATH_W) 'progress.c'; else $(CYGPATH_W) '$(srcdir)/progress.c'; fi`
 
 guestfish-rc.o: rc.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-rc.o -MD -MP -MF $(DEPDIR)/guestfish-rc.Tpo -c -o guestfish-rc.o `test -f 'rc.c' || echo '$(srcdir)/'`rc.c
@@ -2391,18 +2390,18 @@ cmds_gperf.c: cmds_gperf.gperf
 guestfish.1 $(top_builddir)/html/guestfish.1.html: stamp-guestfish.pod
 
 stamp-guestfish.pod: guestfish.pod guestfish-actions.pod guestfish-commands.pod
-	$(top_srcdir)/podwrapper.sh \
+	$(top_builddir)/podwrapper.sh \
 	  --man guestfish.1 \
 	  --html $(top_builddir)/html/guestfish.1.html \
-	  --insert guestfish-actions.pod:@ACTIONS@ \
-	  --insert guestfish-commands.pod:@FISH_COMMANDS@ \
+	  --insert $(srcdir)/guestfish-actions.pod:@ACTIONS@ \
+	  --insert $(srcdir)/guestfish-commands.pod:@FISH_COMMANDS@ \
 	  $<
 	touch $@
 
 virt-copy-in.1 $(top_builddir)/html/virt-copy-in.1.html: stamp-virt-copy-in.pod
 
 stamp-virt-copy-in.pod: virt-copy-in.pod
-	$(top_srcdir)/podwrapper.sh \
+	$(top_builddir)/podwrapper.sh \
 	  --man virt-copy-in.1 \
 	  --html $(top_builddir)/html/virt-copy-in.1.html \
 	  $<
@@ -2411,7 +2410,7 @@ stamp-virt-copy-in.pod: virt-copy-in.pod
 virt-copy-out.1 $(top_builddir)/html/virt-copy-out.1.html: stamp-virt-copy-out.pod
 
 stamp-virt-copy-out.pod: virt-copy-out.pod
-	$(top_srcdir)/podwrapper.sh \
+	$(top_builddir)/podwrapper.sh \
 	  --man virt-copy-out.1 \
 	  --html $(top_builddir)/html/virt-copy-out.1.html \
 	  $<
@@ -2420,7 +2419,7 @@ stamp-virt-copy-out.pod: virt-copy-out.pod
 virt-tar-in.1 $(top_builddir)/html/virt-tar-in.1.html: stamp-virt-tar-in.pod
 
 stamp-virt-tar-in.pod: virt-tar-in.pod
-	$(top_srcdir)/podwrapper.sh \
+	$(top_builddir)/podwrapper.sh \
 	  --man virt-tar-in.1 \
 	  --html $(top_builddir)/html/virt-tar-in.1.html \
 	  $<
@@ -2429,7 +2428,7 @@ stamp-virt-tar-in.pod: virt-tar-in.pod
 virt-tar-out.1 $(top_builddir)/html/virt-tar-out.1.html: stamp-virt-tar-out.pod
 
 stamp-virt-tar-out.pod: virt-tar-out.pod
-	$(top_srcdir)/podwrapper.sh \
+	$(top_builddir)/podwrapper.sh \
 	  --man virt-tar-out.1 \
 	  --html $(top_builddir)/html/virt-tar-out.1.html \
 	  $<

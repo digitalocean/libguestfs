@@ -1521,12 +1521,12 @@ appliance: force
 	$(MAKE) -C $(top_builddir)/appliance
 
 @HAVE_TOOLS_TRUE@virt-%.1: virt-%
-@HAVE_TOOLS_TRUE@	$(top_srcdir)/podwrapper.sh \
+@HAVE_TOOLS_TRUE@	$(top_builddir)/podwrapper.sh \
 @HAVE_TOOLS_TRUE@	  --man $@ \
 @HAVE_TOOLS_TRUE@	  $<
 
 @HAVE_TOOLS_TRUE@$(top_builddir)/html/virt-%.1.html: virt-%
-@HAVE_TOOLS_TRUE@	$(top_srcdir)/podwrapper.sh \
+@HAVE_TOOLS_TRUE@	$(top_builddir)/podwrapper.sh \
 @HAVE_TOOLS_TRUE@	  --html $@ \
 @HAVE_TOOLS_TRUE@	  $<
 

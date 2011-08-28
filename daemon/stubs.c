@@ -349,6 +349,7 @@ static void pvs_full_stub (XDR *xdr_in)
 
   struct guestfs_pvs_full_ret ret;
   ret.physvols = *r;
+  free (r);
   reply ((xdrproc_t) xdr_guestfs_pvs_full_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_pvs_full_ret, (char *) &ret);
 done:
@@ -371,6 +372,7 @@ static void vgs_full_stub (XDR *xdr_in)
 
   struct guestfs_vgs_full_ret ret;
   ret.volgroups = *r;
+  free (r);
   reply ((xdrproc_t) xdr_guestfs_vgs_full_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_vgs_full_ret, (char *) &ret);
 done:
@@ -393,6 +395,7 @@ static void lvs_full_stub (XDR *xdr_in)
 
   struct guestfs_lvs_full_ret ret;
   ret.logvols = *r;
+  free (r);
   reply ((xdrproc_t) xdr_guestfs_lvs_full_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_lvs_full_ret, (char *) &ret);
 done:
@@ -546,6 +549,7 @@ static void aug_defnode_stub (XDR *xdr_in)
 
   struct guestfs_aug_defnode_ret ret;
   ret.nrnodescreated = *r;
+  free (r);
   reply ((xdrproc_t) xdr_guestfs_aug_defnode_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_aug_defnode_ret, (char *) &ret);
 done:
@@ -1583,6 +1587,7 @@ static void stat_stub (XDR *xdr_in)
 
   struct guestfs_stat_ret ret;
   ret.statbuf = *r;
+  free (r);
   reply ((xdrproc_t) xdr_guestfs_stat_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_stat_ret, (char *) &ret);
 done:
@@ -1617,6 +1622,7 @@ static void lstat_stub (XDR *xdr_in)
 
   struct guestfs_lstat_ret ret;
   ret.statbuf = *r;
+  free (r);
   reply ((xdrproc_t) xdr_guestfs_lstat_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_lstat_ret, (char *) &ret);
 done:
@@ -1651,6 +1657,7 @@ static void statvfs_stub (XDR *xdr_in)
 
   struct guestfs_statvfs_ret ret;
   ret.statbuf = *r;
+  free (r);
   reply ((xdrproc_t) xdr_guestfs_statvfs_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_statvfs_ret, (char *) &ret);
 done:
@@ -4354,6 +4361,7 @@ static void readdir_stub (XDR *xdr_in)
 
   struct guestfs_readdir_ret ret;
   ret.entries = *r;
+  free (r);
   reply ((xdrproc_t) xdr_guestfs_readdir_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_readdir_ret, (char *) &ret);
 done:
@@ -4462,6 +4470,7 @@ static void getxattrs_stub (XDR *xdr_in)
 
   struct guestfs_getxattrs_ret ret;
   ret.xattrs = *r;
+  free (r);
   reply ((xdrproc_t) xdr_guestfs_getxattrs_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_getxattrs_ret, (char *) &ret);
 done:
@@ -4496,6 +4505,7 @@ static void lgetxattrs_stub (XDR *xdr_in)
 
   struct guestfs_lgetxattrs_ret ret;
   ret.xattrs = *r;
+  free (r);
   reply ((xdrproc_t) xdr_guestfs_lgetxattrs_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_lgetxattrs_ret, (char *) &ret);
 done:
@@ -5798,6 +5808,7 @@ static void inotify_read_stub (XDR *xdr_in)
 
   struct guestfs_inotify_read_ret ret;
   ret.events = *r;
+  free (r);
   reply ((xdrproc_t) xdr_guestfs_inotify_read_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_inotify_read_ret, (char *) &ret);
 done:
@@ -6505,6 +6516,7 @@ static void lstatlist_stub (XDR *xdr_in)
 
   struct guestfs_lstatlist_ret ret;
   ret.statbufs = *r;
+  free (r);
   reply ((xdrproc_t) xdr_guestfs_lstatlist_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_lstatlist_ret, (char *) &ret);
 done:
@@ -6548,6 +6560,7 @@ static void lxattrlist_stub (XDR *xdr_in)
 
   struct guestfs_lxattrlist_ret ret;
   ret.xattrs = *r;
+  free (r);
   reply ((xdrproc_t) xdr_guestfs_lxattrlist_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_lxattrlist_ret, (char *) &ret);
 done:
@@ -6832,6 +6845,7 @@ static void part_list_stub (XDR *xdr_in)
 
   struct guestfs_part_list_ret ret;
   ret.partitions = *r;
+  free (r);
   reply ((xdrproc_t) xdr_guestfs_part_list_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_part_list_ret, (char *) &ret);
 done:

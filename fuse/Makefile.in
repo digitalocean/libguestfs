@@ -1795,7 +1795,7 @@ appliance: force
 @HAVE_FUSE_TRUE@guestmount.1 $(top_builddir)/html/guestmount.1.html: stamp-guestmount.pod
 
 @HAVE_FUSE_TRUE@stamp-guestmount.pod: guestmount.pod
-@HAVE_FUSE_TRUE@	$(top_srcdir)/podwrapper.sh \
+@HAVE_FUSE_TRUE@	$(top_builddir)/podwrapper.sh \
 @HAVE_FUSE_TRUE@	  --man guestmount.1 \
 @HAVE_FUSE_TRUE@	  --html $(top_builddir)/html/guestmount.1.html \
 @HAVE_FUSE_TRUE@	  $<

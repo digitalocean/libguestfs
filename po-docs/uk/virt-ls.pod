@@ -478,6 +478,10 @@ meaning to the shell such as C<#> and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 L<sh(1)> for details.
 
+=head1 EXIT STATUS
+
+This program returns 0 if successful, or non-zero if there was an error.
+
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-cat(1)>, L<virt-copy-out(1)>,

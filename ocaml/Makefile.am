@@ -56,13 +56,13 @@ guestfs_c.o: guestfs_c.c
 	$(CC) $(AM_CPPFLAGS) $(CFLAGS) -fPIC -Wall -c $<
 
 guestfs_c_actions.o: guestfs_c_actions.c
-	$(CC) $(AM_CPPFLAGS) $(CFLAGS) -fPIC -Wall -c $<
+	$(CC) $(AM_CPPFLAGS) $(CFLAGS) -fPIC -Wall -c $(srcdir)/$<
 
 if HAVE_OCAMLDOC
 
 noinst_DATA += html/index.html
 
-html/index.html: guestfs*.mli guestfs*.ml
+html/index.html: $(srcdir)/guestfs*.mli $(srcdir)/guestfs*.ml
 	mkdir -p html
 	-$(OCAMLDOC) -d html -html $^
 endif
@@ -122,14 +122,14 @@ t/guestfs_070_threads.cmx: t/guestfs_070_threads.ml mlguestfs.cmxa
 	$(OCAMLFIND) ocamlopt -package unix,threads -thread -linkpkg -c $< -o $@
 
 t/%.cmx: t/%.ml mlguestfs.cmxa
-	$(OCAMLFIND) ocamlopt -package unix -linkpkg -c $< -o $@
+	$(OCAMLFIND) ocamlopt -package unix -linkpkg -c $< -o $(builddir)/$@
 
-.mli.cmi:
-	$(OCAMLFIND) ocamlc -package unix -c $< -o $@
-.ml.cmo:
-	$(OCAMLFIND) ocamlc -package unix -c $< -o $@
-.ml.cmx:
-	$(OCAMLFIND) ocamlopt -package unix -c $< -o $@
+%.cmi: %.mli
+	$(OCAMLFIND) ocamlc -package unix -c $< -o $(builddir)/$@
+%.cmo: %.ml
+	$(OCAMLFIND) ocamlc -package unix -c $< -o $(builddir)/$@
+%.cmx: %.ml
+	$(OCAMLFIND) ocamlopt -package unix -c $< -o $(builddir)/$@
 
 depend: .depend
 
@@ -149,7 +149,7 @@ install-data-hook:
 	$(OCAMLFIND) install \
 	  -ldconf ignore -destdir $(DESTDIR)$(OCAMLLIB) \
 	  guestfs \
-	  META *.so *.a *.cma *.cmx *.cmxa *.cmi *.mli
+	  META *.so *.a *.cma *.cmx *.cmxa *.cmi $(srcdir)/*.mli
 
 CLEANFILES += $(noinst_DATA)
 

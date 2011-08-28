@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfs 3"
-.TH guestfs 3 "2011-08-17" "libguestfs-1.12.4" "Virtualization Support"
+.TH guestfs 3 "2011-08-28" "libguestfs-1.12.5" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -9121,6 +9121,10 @@ How many blocks are zeroed isn't specified (but it's \fInot\fR enough to
 securely wipe the device).  It should be sufficient to remove any partition
 tables, filesystem superblocks and so on.
 .PP
+If blocks are already zero, then this command avoids writing zeroes.  This
+prevents the underlying device from becoming non-sparse or growing
+unnecessarily.
+.PP
 See also: \f(CW\*(C`guestfs_zero_device\*(C'\fR, \f(CW\*(C`guestfs_scrub_device\*(C'\fR,
 \&\f(CW\*(C`guestfs_is_zero_device\*(C'\fR
 .PP
@@ -9142,6 +9146,10 @@ messages, the caller must register a progress event callback.  See
 .PP
 This command writes zeroes over the entire \f(CW\*(C`device\*(C'\fR.  Compare with
 \&\f(CW\*(C`guestfs_zero\*(C'\fR which just zeroes the first few blocks of a device.
+.PP
+If blocks are already zero, then this command avoids writing zeroes.  This
+prevents the underlying device from becoming non-sparse or growing
+unnecessarily.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP

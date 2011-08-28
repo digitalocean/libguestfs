@@ -113,7 +113,7 @@ errnostring_gperf.c: errnostring_gperf.gperf
 # 'libguestfs.so.0.$(MAX_PROC_NR).0'.
 libguestfs_la_LDFLAGS = -version-info $(MAX_PROC_NR):0:$(MAX_PROC_NR)
 
-libguestfs_la_LDFLAGS += $(VERSION_SCRIPT_FLAGS)libguestfs.syms
+libguestfs_la_LDFLAGS += $(VERSION_SCRIPT_FLAGS)$(srcdir)/libguestfs.syms
 
 libguestfs_la_SOURCES = \
 	guestfs.c \
@@ -162,14 +162,14 @@ libguestfs_la_CPPFLAGS = -I$(top_srcdir)/gnulib/lib
 if HAVE_RPCGEN
 guestfs_protocol.c: guestfs_protocol.x
 	rm -f $@-t $@-t2
-	$(RPCGEN) -c -o $@-t $<
+	$(RPCGEN) -c -o $@-t $(srcdir)/$<
 	sed 's,\.\./\.\./src/,,' < $@-t > $@-t2
 	rm $@-t
 	mv $@-t2 $@
 
 guestfs_protocol.h: guestfs_protocol.x
 	rm -f $@-t
-	$(RPCGEN) -h -o $@-t $<
+	$(RPCGEN) -h -o $@-t $(srcdir)/$<
 	mv $@-t $@
 endif
 
@@ -184,12 +184,12 @@ stamp-guestfs.pod: guestfs.pod \
 		guestfs-actions.pod \
 		guestfs-availability.pod \
 		guestfs-structs.pod
-	$(top_srcdir)/podwrapper.sh \
+	$(top_builddir)/podwrapper.sh \
 	  --section 3 \
 	  --man guestfs.3 \
 	  --html $(top_builddir)/html/guestfs.3.html \
-	  --insert guestfs-actions.pod:@ACTIONS@ \
-	  --insert guestfs-availability.pod:@AVAILABILITY@ \
-	  --insert guestfs-structs.pod:@STRUCTS@ \
+	  --insert $(srcdir)/guestfs-actions.pod:@ACTIONS@ \
+	  --insert $(srcdir)/guestfs-availability.pod:@AVAILABILITY@ \
+	  --insert $(srcdir)/guestfs-structs.pod:@STRUCTS@ \
 	  $<
 	touch $@

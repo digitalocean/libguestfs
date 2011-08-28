@@ -70,7 +70,8 @@ host_triplet = @host@
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/libguestfs.pc.in $(srcdir)/podwrapper.sh.in \
-	$(top_srcdir)/configure $(top_srcdir)/debian/changelog.in \
+	$(srcdir)/run.in $(top_srcdir)/configure \
+	$(top_srcdir)/debian/changelog.in \
 	$(top_srcdir)/subdir-rules.mk ABOUT-NLS AUTHORS COPYING \
 	COPYING.LIB ChangeLog TODO build-aux/compile \
 	build-aux/config.guess build-aux/config.rpath \
@@ -196,7 +197,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = podwrapper.sh debian/changelog libguestfs.pc
+CONFIG_CLEAN_FILES = podwrapper.sh run debian/changelog libguestfs.pc
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_GEN = $(am__v_GEN_$(V))
 am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
@@ -1330,6 +1331,8 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 distclean-hdr:
 	-rm -f config.h stamp-h1
 podwrapper.sh: $(top_builddir)/config.status $(srcdir)/podwrapper.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+run: $(top_builddir)/config.status $(srcdir)/run.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 debian/changelog: $(top_builddir)/config.status $(top_srcdir)/debian/changelog.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@

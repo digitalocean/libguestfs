@@ -73,6 +73,7 @@
 
 static int launch_appliance (guestfs_h *g);
 static int64_t timeval_diff (const struct timeval *x, const struct timeval *y);
+static void print_qemu_command_line (guestfs_h *g, char **argv);
 static int connect_unix_socket (guestfs_h *g, const char *sock);
 static int qemu_supports (guestfs_h *g, const char *option);
 
@@ -650,9 +651,6 @@ launch_appliance (guestfs_h *g)
     incr_cmdline_size (g);
     g->cmdline[g->cmdline_size-1] = NULL;
 
-    if (g->verbose)
-      guestfs___print_timestamped_argv (g, (const char **)g->cmdline);
-
     if (!g->direct) {
       /* Set up stdin, stdout, stderr. */
       close (0);
@@ -681,6 +679,10 @@ launch_appliance (guestfs_h *g)
       close (wfd[0]);
       close (rfd[1]);
     }
+
+    /* Dump the command line (after setting up stderr above). */
+    if (g->verbose)
+      print_qemu_command_line (g, g->cmdline);
 
     /* Put qemu in a new process group. */
     if (g->pgroup)
@@ -1002,47 +1004,9 @@ timeval_diff (const struct timeval *x, const struct timeval *y)
   return msec;
 }
 
-void
-guestfs___print_timestamped_argv (guestfs_h *g, const char * argv[])
-{
-  int i = 0;
-  int needs_quote;
-  char *buf = NULL;
-  size_t len;
-  FILE *fp;
-
-  fp = open_memstream (&buf, &len);
-  if (fp == NULL) {
-    warning (g, "open_memstream: %m");
-    return;
-  }
-
-  struct timeval tv;
-  gettimeofday (&tv, NULL);
-  fprintf (fp, "[%05" PRIi64 "ms] ", timeval_diff (&g->launch_t, &tv));
-
-  while (argv[i]) {
-    if (argv[i][0] == '-') /* -option starts a new line */
-      fprintf (fp, " \\\n   ");
-
-    if (i > 0) fputc (' ', fp);
-
-    /* Does it need shell quoting?  This only deals with simple cases. */
-    needs_quote = strcspn (argv[i], " ") != strlen (argv[i]);
-
-    if (needs_quote) fputc ('\'', fp);
-    fprintf (fp, "%s", argv[i]);
-    if (needs_quote) fputc ('\'', fp);
-    i++;
-  }
-
-  fclose (fp);
-
-  debug (g, "%s", buf);
-
-  free (buf);
-}
-
+/* Note that since this calls 'debug' it should only be called
+ * from the parent process.
+ */
 void
 guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...)
 {
@@ -1064,6 +1028,37 @@ guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...)
   free (msg);
 }
 
+/* This is called from the forked subprocess just before qemu runs, so
+ * it can just print the message straight to stderr, where it will be
+ * picked up and funnelled through the usual appliance event API.
+ */
+static void
+print_qemu_command_line (guestfs_h *g, char **argv)
+{
+  int i = 0;
+  int needs_quote;
+
+  struct timeval tv;
+  gettimeofday (&tv, NULL);
+  fprintf (stderr, "[%05" PRIi64 "ms] ", timeval_diff (&g->launch_t, &tv));
+
+  while (argv[i]) {
+    if (argv[i][0] == '-') /* -option starts a new line */
+      fprintf (stderr, " \\\n   ");
+
+    if (i > 0) fputc (' ', stderr);
+
+    /* Does it need shell quoting?  This only deals with simple cases. */
+    needs_quote = strcspn (argv[i], " ") != strlen (argv[i]);
+
+    if (needs_quote) fputc ('\'', stderr);
+    fprintf (stderr, "%s", argv[i]);
+    if (needs_quote) fputc ('\'', stderr);
+    i++;
+  }
+}
+
+static int test_qemu_cmd (guestfs_h *g, const char *cmd, char **ret);
 static int read_all (guestfs_h *g, FILE *fp, char **ret);
 
 /* Test qemu binary (or wrapper) runs, and do 'qemu -help' and
@@ -1076,37 +1071,48 @@ test_qemu (guestfs_h *g)
   char cmd[1024];
   FILE *fp;
 
+  free (g->qemu_help);
+  g->qemu_help = NULL;
+  free (g->qemu_version);
+  g->qemu_version = NULL;
+
   snprintf (cmd, sizeof cmd, "LC_ALL=C '%s' -nographic -help", g->qemu);
 
-  fp = popen (cmd, "r");
   /* qemu -help should always work (qemu -version OTOH wasn't
    * supported by qemu 0.9).  If this command doesn't work then it
    * probably indicates that the qemu binary is missing.
    */
-  if (!fp) {
-    /* XXX This error is never printed, even if the qemu binary
-     * doesn't exist.  Why?
-     */
-  error:
-    perrorf (g, _("%s: command failed: If qemu is located on a non-standard path, try setting the LIBGUESTFS_QEMU environment variable."), cmd);
+  if (test_qemu_cmd (g, cmd, &g->qemu_help) == -1) {
+    error (g, _("command failed: %s\n\nIf qemu is located on a non-standard path, try setting the LIBGUESTFS_QEMU\nenvironment variable.  There may also be errors printed above."),
+           cmd);
     return -1;
   }
-
-  if (read_all (g, fp, &g->qemu_help) == -1)
-    goto error;
-
-  if (pclose (fp) == -1)
-    goto error;
 
   snprintf (cmd, sizeof cmd, "LC_ALL=C '%s' -nographic -version 2>/dev/null",
             g->qemu);
 
+  /* Intentionally ignore errors from qemu -version. */
+  ignore_value (test_qemu_cmd (g, cmd, &g->qemu_version));
+
+  return 0;
+}
+
+static int
+test_qemu_cmd (guestfs_h *g, const char *cmd, char **ret)
+{
+  FILE *fp;
+
   fp = popen (cmd, "r");
-  if (fp) {
-    /* Intentionally ignore errors. */
-    read_all (g, fp, &g->qemu_version);
+  if (fp == NULL)
+    return -1;
+
+  if (read_all (g, fp, ret) == -1) {
     pclose (fp);
+    return -1;
   }
+
+  if (pclose (fp) != 0)
+    return -1;
 
   return 0;
 }
