@@ -1,3 +1,10 @@
+libguestfs (1.12.6-1) unstable; urgency=low
+
+  * New upstream version
+  * [dad2b57] Rebased patch queue
+
+ -- Hilko Bengen <bengen@debian.org>  Tue, 06 Sep 2011 20:03:23 +0200
+
 libguestfs (1.12.5-1) unstable; urgency=low
 
   * New upstream version
