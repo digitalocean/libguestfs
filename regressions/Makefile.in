@@ -75,9 +75,9 @@ host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/subdir-rules.mk
 TESTS = tell-user-to-ignore-errors.sh rhbz501893$(EXEEXT) \
-	rhbz503169c10.sh rhbz503169c13.sh rhbz557655.sh rhbz576879.sh \
-	rhbz578407.sh rhbz580246.sh rhbz602997.sh rhbz690819.sh \
-	test-add-domain.sh test-both-ends-cancel.sh \
+	rhbz503169c13.sh rhbz557655.sh rhbz576879.sh rhbz578407.sh \
+	rhbz580246.sh rhbz602997.sh rhbz690819.sh test-add-domain.sh \
+	test-both-ends-cancel.sh \
 	test-cancellation-download-librarycancels.sh \
 	test-cancellation-upload-daemoncancels.sh test-copy.sh \
 	test-find0.sh test-guestfish-a.sh test-guestfish-d.sh \

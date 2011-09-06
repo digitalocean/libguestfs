@@ -1,4 +1,28 @@
+2011-09-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	Remove old regression test that mainly tested a buggy API.
+	The guestfs_ll command currently lists files in the appliance if you
+	prefix filenames with "/..".  However this is a bug, not a feature,
+	and we should not be testing it.
+	(cherry picked from commit 8ab2b85b2a67270b8cc5a91bb62a70c84cd6a02c)
+
+	debian: Missing build dependency on db4.8-util. (cherry picked from commit 8928de32d391e3ad4dd98bb27472c27bb8bc38ac)
+
+	debian: Build libguestfs-ocaml and libguestfs-ocaml-dev subpackages. (cherry picked from commit 1d134301fc4d05338d09517abc978d0a90d82e09)
+
+	daemon: Factor out name of virtio serial channel.
+	This is just code motion.
+	(cherry picked from commit 73be6db9bf1c0ae96262a5f4fa9328bb4e648637)
+
+	Create /sys directory if it doesn't exist already.
+	Ubuntu 10.04 LTS packages don't create /sys.
+	(cherry picked from commit 5b012024c49672cc69635ff01f9b9e4f87de1c65)
+
+	cat: Small documentation correction. (cherry picked from commit 085a56690611980f438e8af2eb47ebb411465775)
+
 2011-08-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.12.5.
 
 	inspector: Use xmlstarlet instead of xpath in examples. (cherry picked from commit baefb8225c8cbde56a1637c17af5c0965a81060e)
 
