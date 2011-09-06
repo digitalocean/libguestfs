@@ -8,12 +8,12 @@ Subject: Mount /run as tmpfs inside appliance (workaround for febootstrap's
  1 files changed, 4 insertions(+), 0 deletions(-)
 
 diff --git a/appliance/init b/appliance/init
-index 8bc422d..b7b045d 100755
+index 50dd76d..e60fa06 100755
 --- a/appliance/init
 +++ b/appliance/init
-@@ -15,6 +15,10 @@ mkdir -p /sysroot
- rm -f /proc; mkdir /proc
+@@ -16,6 +16,10 @@ rm -f /proc; mkdir /proc
  mount -t proc /proc /proc
+ rm -f /sys; mkdir /sys
  mount -t sysfs /sys /sys
 +# taken from initramfs-tools/init --Hilko Bengen
 +mkdir -p /run
