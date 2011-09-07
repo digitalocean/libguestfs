@@ -1,10 +1,22 @@
+# These templates have been reviewed by the debian-l10n-english
+# team
+#
+# If modifications/additions/rewording are needed, please ask
+# debian-l10n-english@lists.debian.org for advice.
+#
+# Even minor modifications require translation updates and such
+# changes should be coordinated with translators and reviewers.
+
 Template: libguestfs/update-appliance
 Type: boolean
 Default: false
 _Description: Create or update supermin appliance now?
- libguestfs needs a supermin appliance to perform its work. To
- generate or update it, network access to a package repository is
- needed.
+ A "supermin appliance" is mandatory for libguestfs.
+ It contains lists of files and directories. These will be
+ copied into an ad-hoc file system whenever libguestfs starts
+ a virtual machine.
  .
- update-guestfs-appliance(8) can also be used at a later time to
- create or update the supermin appliance.
+ To generate or update a supermin appliance, network access to a
+ package repository is needed.
+ .
+ This can be done later by using the update-guestfs-appliance(8) utility.
