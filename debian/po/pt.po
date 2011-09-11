@@ -1,0 +1,54 @@
+# Portuguese translation for libguestfs (debconf)
+# This file is distributed under the same license as the libguestfs package.
+# Rui Branco <ruipb@debianpt.org>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libguestfs 1.10.7-4\n"
+"Report-Msgid-Bugs-To: libguestfs@packages.debian.org\n"
+"POT-Creation-Date: 2011-09-07 20:17+0200\n"
+"PO-Revision-Date: 2011-09-08 11:44+0100\n"
+"Last-Translator: Rui Branco <ruipb@debianpt.org>\n"
+"Language-Team: Portuguese <traduz@debianpt.org>\n"
+"Language: pt\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+#. Type: boolean
+#. Description
+#: ../libguestfs0.templates:2001
+msgid "Create or update supermin appliance now?"
+msgstr "Criar ou actualizar a aplicação supermin agora?"
+
+#. Type: boolean
+#. Description
+#: ../libguestfs0.templates:2001
+msgid ""
+"A \"supermin appliance\" is mandatory for libguestfs. It contains lists of "
+"files and directories. These will be copied into an ad-hoc file system "
+"whenever libguestfs starts a virtual machine."
+msgstr ""
+"A aplicação \"supermin appliance\" é obrigatória para a libguestfs. Contém "
+"listas de ficheiros e directórios. Estes serão copiados para o sistema de "
+"ficheiros ad-hoc sempre que a libguest iniciar uma máquina virtual."
+
+#. Type: boolean
+#. Description
+#: ../libguestfs0.templates:2001
+msgid ""
+"To generate or update a supermin appliance, network access to a package "
+"repository is needed."
+msgstr ""
+"Para criar ou actualizar a aplicação supermin é necessário acesso de rede a "
+"um repositório de pacotes."
+
+#. Type: boolean
+#. Description
+#: ../libguestfs0.templates:2001
+msgid ""
+"This can be done later by using the update-guestfs-appliance(8) utility."
+msgstr ""
+"Pode ser efectuado mais tarde, utilizando o utilitário update-guestfs-"
+"appliance(8)."
