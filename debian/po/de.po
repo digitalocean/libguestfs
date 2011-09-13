@@ -1,0 +1,49 @@
+#German translation of the libguestfs debconf template.
+# Copyright (C) 2009-2011 Red Hat Inc.
+# This file is distributed under the same license as the libguestfs package.
+# Copyright © of this file: Chris Leick <c.leick@vollbio.de>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libguestfs 1.10.7-4\n"
+"Report-Msgid-Bugs-To: libguestfs@packages.debian.org\n"
+"POT-Creation-Date: 2011-09-07 20:17+0200\n"
+"PO-Revision-Date: 2011-09-13 11:50+0200\n"
+"Last-Translator: Chris Leick <c.leick@vollbio.de>\n"
+"Language-Team: German <debian-l10n-german@lists.debian.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: boolean
+#. Description
+#: ../libguestfs0.templates:2001
+msgid "Create or update supermin appliance now?"
+msgstr "Supermin-Appliance nun erstellen oder aktualisieren?"
+
+#. Type: boolean
+#. Description
+#: ../libguestfs0.templates:2001
+msgid ""
+"A \"supermin appliance\" is mandatory for libguestfs. It contains lists of "
+"files and directories. These will be copied into an ad-hoc file system "
+"whenever libguestfs starts a virtual machine."
+msgstr "Eine »Supermin-Appliance« ist für Libguestfs zwingend notwendig. Sie enthält Listen von Dateien und Verzeichnissen. Sobald Libguestfs eine virtuelle Maschine startet, werden diese in ein Ad-Hoc-Dateisystem kopiert."
+
+#. Type: boolean
+#. Description
+#: ../libguestfs0.templates:2001
+msgid ""
+"To generate or update a supermin appliance, network access to a package "
+"repository is needed."
+msgstr "Um eine Supermin-Appliance zu erstellen oder zu aktualisieren, wird Netzwerkzugriff auf das Paketdepot benötigt."
+
+#. Type: boolean
+#. Description
+#: ../libguestfs0.templates:2001
+msgid ""
+"This can be done later by using the update-guestfs-appliance(8) utility."
+msgstr ""
+"Dies kann später durch Benutzung des Hilfswerkzeugs "
+"update-guestfs-appliance(8) erledigt werden."
