@@ -22,6 +22,7 @@
 
 extern int optgroup_augeas_available (void);
 extern int optgroup_btrfs_available (void);
+extern int optgroup_grub_available (void);
 extern int optgroup_inotify_available (void);
 extern int optgroup_linuxfsuuid_available (void);
 extern int optgroup_linuxmodules_available (void);

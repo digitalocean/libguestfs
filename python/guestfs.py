@@ -2691,21 +2691,35 @@ class GuestFS:
         return libguestfsmod.zero (self._o, device)
 
     def grub_install (self, root, device):
-        u"""This command installs GRUB (the Grand Unified
+        u"""This command installs GRUB 1 (the Grand Unified
         Bootloader) on "device", with the root directory being
         "root".
         
-        Note: If grub-install reports the error "No suitable
-        drive was found in the generated device map." it may be
-        that you need to create a "/boot/grub/device.map" file
-        first that contains the mapping between grub device
-        names and Linux device names. It is usually sufficient
-        to create a file containing:
+        Notes:
+        
+        *   There is currently no way in the API to install
+        grub2, which is used by most modern Linux guests. It
+        is possible to run the grub2 command from the guest,
+        although see the caveats in "RUNNING COMMANDS" in
+        guestfs(3).
+        
+        *   This uses "grub-install" from the host.
+        Unfortunately grub is not always compatible with
+        itself, so this only works in rather narrow
+        circumstances. Careful testing with each guest
+        version is advisable.
+        
+        *   If grub-install reports the error "No suitable drive
+        was found in the generated device map." it may be
+        that you need to create a "/boot/grub/device.map"
+        file first that contains the mapping between grub
+        device names and Linux device names. It is usually
+        sufficient to create a file containing:
         
         (hd0) /dev/vda
         
-        replacing "/dev/vda" with the name of the installation
-        device.
+        replacing "/dev/vda" with the name of the
+        installation device.
         """
         self._check_not_closed ()
         return libguestfsmod.grub_install (self._o, root, device)

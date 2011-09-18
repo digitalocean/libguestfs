@@ -1554,16 +1554,18 @@ appliance: force
 
 @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@.depend: $(wildcard *.mli) $(wildcard *.ml)
 @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep $(OCAMLPACKAGES) $^ | \
+@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep $^ | \
+@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	  $(SED) 's/ *$$//' | \
 @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
 @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	  sort > $@-t
 @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	mv $@-t $@
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@progress.cmo: utils.cmo ../ocaml/guestfs.cmi
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@progress.cmx: utils.cmx ../ocaml/guestfs.cmx
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@resize.cmo: utils.cmo progress.cmo ../ocaml/guestfs.cmi
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@resize.cmx: utils.cmx progress.cmx ../ocaml/guestfs.cmx
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@utils.cmo: ../ocaml/guestfs.cmi
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@utils.cmx: ../ocaml/guestfs.cmx
+@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@progress.cmi:
+@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@progress.cmo: utils.cmo progress.cmi
+@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@progress.cmx: utils.cmx progress.cmi
+@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@resize.cmo: utils.cmo progress.cmi
+@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@resize.cmx: utils.cmx progress.cmx
+@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@utils.cmo:
+@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@utils.cmx:
 
 @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@.PHONY: depend docs
 

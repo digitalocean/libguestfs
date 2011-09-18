@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfs 3"
-.TH guestfs 3 "2011-09-01" "libguestfs-1.12.6" "Virtualization Support"
+.TH guestfs 3 "2011-09-16" "libguestfs-1.12.7" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -3668,19 +3668,29 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 \&                       const char *device);
 .Ve
 .PP
-This command installs \s-1GRUB\s0 (the Grand Unified Bootloader) on \f(CW\*(C`device\*(C'\fR, with
-the root directory being \f(CW\*(C`root\*(C'\fR.
+This command installs \s-1GRUB\s0 1 (the Grand Unified Bootloader) on \f(CW\*(C`device\*(C'\fR,
+with the root directory being \f(CW\*(C`root\*(C'\fR.
 .PP
-Note: If grub-install reports the error \*(L"No suitable drive was found in the
+Notes:
+.IP "\(bu" 4
+There is currently no way in the \s-1API\s0 to install grub2, which is used by most
+modern Linux guests.  It is possible to run the grub2 command from the
+guest, although see the caveats in \*(L"\s-1RUNNING\s0 \s-1COMMANDS\s0\*(R" in \fIguestfs\fR\|(3).
+.IP "\(bu" 4
+This uses \f(CW\*(C`grub\-install\*(C'\fR from the host.  Unfortunately grub is not always
+compatible with itself, so this only works in rather narrow circumstances.
+Careful testing with each guest version is advisable.
+.IP "\(bu" 4
+If grub-install reports the error \*(L"No suitable drive was found in the
 generated device map.\*(R" it may be that you need to create a
 \&\f(CW\*(C`/boot/grub/device.map\*(C'\fR file first that contains the mapping between grub
 device names and Linux device names.  It is usually sufficient to create a
 file containing:
-.PP
+.Sp
 .Vb 1
 \& (hd0) /dev/vda
 .Ve
-.PP
+.Sp
 replacing \f(CW\*(C`/dev/vda\*(C'\fR with the name of the installation device.
 .PP
 This function returns 0 on success or \-1 on error.
@@ -9581,6 +9591,9 @@ The following functions: \*(L"guestfs_aug_clear\*(R" \*(L"guestfs_aug_close\*(R"
 .IP "\fBbtrfs\fR" 4
 .IX Item "btrfs"
 The following functions: \*(L"guestfs_btrfs_filesystem_resize\*(R"
+.IP "\fBgrub\fR" 4
+.IX Item "grub"
+The following functions: \*(L"guestfs_grub_install\*(R"
 .IP "\fBinotify\fR" 4
 .IX Item "inotify"
 The following functions: \*(L"guestfs_inotify_add_watch\*(R"
@@ -10346,6 +10359,92 @@ program, such as kernel log messages.  You can register a callback to
 receive these messages.
 .SH "INTERNALS"
 .IX Header "INTERNALS"
+.SS "\s-1APPLIANCE\s0 \s-1BOOT\s0 \s-1PROCESS\s0"
+.IX Subsection "APPLIANCE BOOT PROCESS"
+This process has evolved and continues to evolve.  The description here
+corresponds only to the current version of libguestfs and is provided for
+information only.
+.PP
+In order to follow the stages involved below, enable libguestfs debugging
+(set the environment variable \f(CW\*(C`LIBGUESTFS_DEBUG=1\*(C'\fR).
+.IP "Create the appliance" 4
+.IX Item "Create the appliance"
+\&\f(CW\*(C`febootstrap\-supermin\-helper\*(C'\fR is invoked to create the kernel, a small
+initrd and the appliance.
+.Sp
+The appliance is cached in \f(CW\*(C`/var/tmp/.guestfs\-<UID>\*(C'\fR (or in another
+directory if \f(CW\*(C`TMPDIR\*(C'\fR is set).
+.Sp
+For a complete description of how the appliance is created and cached, read
+the \fIfebootstrap\fR\|(8) and \fIfebootstrap\-supermin\-helper\fR\|(8) man pages.
+.IP "Start qemu and boot the kernel" 4
+.IX Item "Start qemu and boot the kernel"
+qemu is invoked to boot the kernel.
+.IP "Run the initrd" 4
+.IX Item "Run the initrd"
+\&\f(CW\*(C`febootstrap\-supermin\-helper\*(C'\fR builds a small initrd.  The initrd is not the
+appliance.  The purpose of the initrd is to load enough kernel modules in
+order that the appliance itself can be mounted and started.
+.Sp
+The initrd is a cpio archive called
+\&\f(CW\*(C`/var/tmp/.guestfs\-<UID>/initrd\*(C'\fR.
+.Sp
+When the initrd has started you will see messages showing that kernel
+modules are being loaded, similar to this:
+.Sp
+.Vb 4
+\& febootstrap: ext2 mini initrd starting up
+\& febootstrap: mounting /sys
+\& febootstrap: internal insmod libcrc32c.ko
+\& febootstrap: internal insmod crc32c\-intel.ko
+.Ve
+.IP "Find and mount the appliance device" 4
+.IX Item "Find and mount the appliance device"
+The appliance is a sparse file containing an ext2 filesystem which contains
+a familiar (although reduced in size) Linux operating system.  It would
+normally be called \f(CW\*(C`/var/tmp/.guestfs\-<UID>/root\*(C'\fR.
+.Sp
+The regular disks being inspected by libguestfs are the first devices
+exposed by qemu (eg. as \f(CW\*(C`/dev/vda\*(C'\fR).
+.Sp
+The last disk added to qemu is the appliance itself (eg. \f(CW\*(C`/dev/vdb\*(C'\fR if
+there was only one regular disk).
+.Sp
+Thus the final job of the initrd is to locate the appliance disk, mount it,
+and switch root into the appliance, and run \f(CW\*(C`/init\*(C'\fR from the appliance.
+.Sp
+If this works successfully you will see messages such as:
+.Sp
+.Vb 5
+\& febootstrap: picked /sys/block/vdb/dev as root device
+\& febootstrap: creating /dev/root as block special 252:16
+\& febootstrap: mounting new root on /root
+\& febootstrap: chroot
+\& Starting /init script ...
+.Ve
+.Sp
+Note that \f(CW\*(C`Starting /init script ...\*(C'\fR indicates that the appliance's init
+script is now running.
+.IP "Initialize the appliance" 4
+.IX Item "Initialize the appliance"
+The appliance itself now initializes itself.  This involves starting certain
+processes like \f(CW\*(C`udev\*(C'\fR, possibly printing some debug information, and
+finally running the daemon (\f(CW\*(C`guestfsd\*(C'\fR).
+.IP "The daemon" 4
+.IX Item "The daemon"
+Finally the daemon (\f(CW\*(C`guestfsd\*(C'\fR) runs inside the appliance.  If it runs you
+should see:
+.Sp
+.Vb 1
+\& verbose daemon enabled
+.Ve
+.Sp
+The daemon expects to see a named virtio-serial port exposed by qemu and
+connected on the other end to the library.
+.Sp
+The daemon connects to this port (and hence to the library) and sends a four
+byte message \f(CW\*(C`GUESTFS_LAUNCH_FLAG\*(C'\fR, which initiates the communication
+protocol (see below).
 .SS "\s-1COMMUNICATION\s0 \s-1PROTOCOL\s0"
 .IX Subsection "COMMUNICATION PROTOCOL"
 Don't rely on using this protocol directly.  This section documents how it

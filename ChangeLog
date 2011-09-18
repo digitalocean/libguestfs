@@ -1,4 +1,47 @@
+2011-09-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Handle /dev/root in /etc/fstab.
+	This means "the device that holds /etc/fstab", so map it correctly.
+
+	This fixes support for ttylinux and also some other guests that use
+	/dev/root instead of a real device name.
+	(cherry picked from commit 917f947590c92318fee2545ba88245d0de012e31)
+
+	Add an optional group ("grub") for the guestfs_grub_install API.
+	This also improves the documentation for this call, pointing out
+	several pitfalls in using it.
+
+	This unfortunately breaks existing callers that might use
+	guestfs_grub_install without checking for this new group.
+	(cherry picked from commit 99624d29226ece1abbbdd921183b360f5f80de91)
+
+2011-09-16  Richard Jones  <rjones@redhat.com>
+
+	test-tool: Display TMPDIR. (cherry picked from commit bddde7799b80b8292879634548c3c92a3cc1c044)
+
+	test-tool: Refresh libguestfs-test-tool man page. (cherry picked from commit cda7fa973cbdd5fc4ad3974dcc6b5ea02ec6bb44)
+
+	test-tool: Make the default timeout be 600 seconds (10 minutes).
+	We could sometimes hit the 120 second timeout, eg. if the appliance
+	needed to be rebuilt and the machine was very slow and/or under heavy
+	I/O load.  10 minutes should be enough for any reasonable situation.
+	(cherry picked from commit 912284b02e28bd63bdf3397ef841b9782adfd2cd)
+
+	test-tool: Document the -t command line option. (cherry picked from commit 95136b149212b92e87d0c9badb7d6849a084ed4d)
+
+	test-tool: Use B<...> for command line options in man page. (cherry picked from commit c7b88da039725ecd0d1d826b112bc69b518d4c78)
+
+	po-docs: Make podfiles sort stable. (cherry picked from commit 7c521c7211d61a1bac46c155de1f4d3e8b60b3d7)
+
+	Stable OCaml dependencies. (cherry picked from commit cbef2ffb0432756822cd2b02a305384f814e9b50)
+
+2011-09-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Add a section explaining the appliance boot process. (cherry picked from commit b3f1457fddd19b1e540866fa01c665aeb371cb44)
+
 2011-09-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.12.6.
 
 	Remove old regression test that mainly tested a buggy API.
 	The guestfs_ll command currently lists files in the appliance if you

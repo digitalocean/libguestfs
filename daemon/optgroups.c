@@ -28,6 +28,7 @@
 struct optgroup optgroups[] = {
   { "augeas", optgroup_augeas_available },
   { "btrfs", optgroup_btrfs_available },
+  { "grub", optgroup_grub_available },
   { "inotify", optgroup_inotify_available },
   { "linuxfsuuid", optgroup_linuxfsuuid_available },
   { "linuxmodules", optgroup_linuxmodules_available },

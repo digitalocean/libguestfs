@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfish 1"
-.TH guestfish 1 "2011-09-01" "libguestfs-1.12.6" "Virtualization Support"
+.TH guestfish 1 "2011-09-16" "libguestfs-1.12.7" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -2861,19 +2861,29 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 \& grub\-install root device
 .Ve
 .PP
-This command installs \s-1GRUB\s0 (the Grand Unified Bootloader) on \f(CW\*(C`device\*(C'\fR, with
-the root directory being \f(CW\*(C`root\*(C'\fR.
+This command installs \s-1GRUB\s0 1 (the Grand Unified Bootloader) on \f(CW\*(C`device\*(C'\fR,
+with the root directory being \f(CW\*(C`root\*(C'\fR.
 .PP
-Note: If grub-install reports the error \*(L"No suitable drive was found in the
+Notes:
+.IP "\(bu" 4
+There is currently no way in the \s-1API\s0 to install grub2, which is used by most
+modern Linux guests.  It is possible to run the grub2 command from the
+guest, although see the caveats in \*(L"\s-1RUNNING\s0 \s-1COMMANDS\s0\*(R" in \fIguestfs\fR\|(3).
+.IP "\(bu" 4
+This uses \f(CW\*(C`grub\-install\*(C'\fR from the host.  Unfortunately grub is not always
+compatible with itself, so this only works in rather narrow circumstances.
+Careful testing with each guest version is advisable.
+.IP "\(bu" 4
+If grub-install reports the error \*(L"No suitable drive was found in the
 generated device map.\*(R" it may be that you need to create a
 \&\f(CW\*(C`/boot/grub/device.map\*(C'\fR file first that contains the mapping between grub
 device names and Linux device names.  It is usually sufficient to create a
 file containing:
-.PP
+.Sp
 .Vb 1
 \& (hd0) /dev/vda
 .Ve
-.PP
+.Sp
 replacing \f(CW\*(C`/dev/vda\*(C'\fR with the name of the installation device.
 .SS "head"
 .IX Subsection "head"
