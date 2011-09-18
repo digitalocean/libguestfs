@@ -572,7 +572,7 @@ val grepi : t -> string -> string -> string array
 (** return lines matching a pattern *)
 
 val grub_install : t -> string -> string -> unit
-(** install GRUB *)
+(** install GRUB 1 *)
 
 val head : t -> string -> string array
 (** return first 10 lines of a file *)

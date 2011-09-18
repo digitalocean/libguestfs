@@ -62,14 +62,14 @@
 .\" ========================================================================
 .\"
 .IX Title "libguestfs-test-tool 1"
-.TH libguestfs-test-tool 1 "2011-09-01" "libguestfs-1.12.6" "Virtualization Support"
+.TH libguestfs-test-tool 1 "2011-09-16" "libguestfs-1.12.7" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "名前"
 .IX Header "名前"
-libguestfs-test-tool \- End user tests for libguestfs
+libguestfs-test-tool \- Diagnostics for libguestfs
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
 .Vb 1
@@ -77,11 +77,11 @@ libguestfs-test-tool \- End user tests for libguestfs
 .Ve
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
-libguestfs-test-tool is a test program shipped with libguestfs to end users
-and developers, to allow them to check basic libguestfs functionality is
-working.  This is needed because libguestfs occasionally breaks for reasons
-beyond our control: usually because of changes in the underlying qemu or
-kernel packages, or the host environment.
+libguestfs-test-tool is a test program shipped with libguestfs to allow you
+to check basic libguestfs functionality is working.  This is needed because
+libguestfs occasionally breaks for reasons beyond our control: usually
+because of changes in the underlying qemu or kernel packages, or the host
+environment.
 .PP
 If you suspect a problem in libguestfs, then just run:
 .PP
@@ -100,26 +100,30 @@ If it runs to completion successfully, you will see this near the end:
 and the test tool will exit with code 0.
 .PP
 If it fails (and/or exits with non-zero error code), please paste the
-\&\fBcomplete, unedited\fR output of the test tool into a bug report.  More
+\&\fIcomplete, unedited\fR output of the test tool into a bug report.  More
 information about reporting bugs can be found on the
 <http://libguestfs.org/> website.
 .SH "OPTIONS"
 .IX Header "OPTIONS"
-.IP "\fI\-\-help\fR" 4
+.IP "\fB\-\-help\fR" 4
 .IX Item "--help"
 Display short usage information and exit.
-.IP "\fI\-\-qemu qemu_binary\fR" 4
+.IP "\fB\-\-qemu qemu_binary\fR" 4
 .IX Item "--qemu qemu_binary"
 If you have downloaded another qemu binary, point this option at the full
 path of the binary to try it.
-.IP "\fI\-\-qemudir qemu_source_dir\fR" 4
+.IP "\fB\-\-qemudir qemu_source_dir\fR" 4
 .IX Item "--qemudir qemu_source_dir"
 If you have compiled qemu from source, point this option at the source
 directory to try it.
-.IP "\fI\-\-timeout N\fR" 4
+.IP "\fB\-t N\fR" 4
+.IX Item "-t N"
+.PD 0
+.IP "\fB\-\-timeout N\fR" 4
 .IX Item "--timeout N"
-Set the launch timeout to \f(CW\*(C`N\*(C'\fR seconds.  The default is 120 seconds which
-does not usually need to be adjusted unless your machine is very slow.
+.PD
+Set the launch timeout to \f(CW\*(C`N\*(C'\fR seconds.  The default is 600 seconds (10
+minutes) which does not usually need to be adjusted.
 .SH "TRYING OUT A DIFFERENT VERSION OF QEMU"
 .IX Header "TRYING OUT A DIFFERENT VERSION OF QEMU"
 If you have compiled another version of qemu from source and would like to
@@ -129,10 +133,21 @@ source directory.
 If you have downloaded a qemu binary from somewhere, use the \fI\-\-qemu\fR
 option to point to the binary.
 .PP
-When using an alternate qemu with libguestfs, usually you would need to
-write a qemu wrapper script (see section \fI\s-1QEMU\s0 \s-1WRAPPERS\s0\fR in
-\&\fIguestfs\fR\|(3)).  libguestfs-test-tool writes a temporary qemu wrapper script
-when you use either of the \fI\-\-qemudir\fR or \fI\-\-qemu\fR options.
+Note when using these options, you can ignore the business of qemu wrapper
+scripts (\*(L"\s-1QEMU\s0 \s-1WRAPPERS\s0\*(R" in \fIguestfs\fR\|(3)), since libguestfs-test-tool writes a
+wrapper script for you if one is needed.
+.SH "TRYING OUT A DIFFERENT KERNEL"
+.IX Header "TRYING OUT A DIFFERENT KERNEL"
+If you are using febootstrap ≥ 3.8 then you can select which kernel
+libguestfs tries.  You do this by setting the environment variables
+\&\f(CW\*(C`FEBOOTSTRAP_KERNEL\*(C'\fR and/or \f(CW\*(C`FEBOOTSTRAP_MODULES\*(C'\fR.
+.PP
+Refer to \*(L"\s-1ENVIRONMENT\s0 \s-1VARIABLES\s0\*(R" in \fIfebootstrap\-supermin\-helper\fR\|(8) for further
+information.
+.SH "SELF-DIAGNOSIS"
+.IX Header "SELF-DIAGNOSIS"
+Refer to \*(L"\s-1APPLIANCE\s0 \s-1BOOT\s0 \s-1PROCESS\s0\*(R" in \fIguestfs\fR\|(3) to understand the messages
+produced by libguestfs-test-tool and/or possible errors.
 .SH "EXIT STATUS"
 .IX Header "EXIT STATUS"
 libguestfs-test-tool returns \fI0\fR if the tests completed without error, or

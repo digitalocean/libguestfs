@@ -1766,7 +1766,7 @@ namespace Guestfs
     static extern int guestfs_grub_install (IntPtr h, [In] string root, [In] string device);
 
     /// <summary>
-    /// install GRUB
+    /// install GRUB 1
     /// </summary>
     public void grub_install (string root, string device)
     {

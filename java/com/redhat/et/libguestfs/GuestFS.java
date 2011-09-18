@@ -4877,23 +4877,37 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * install GRUB
+   * install GRUB 1
    * <p>
-   * This command installs GRUB (the Grand Unified
+   * This command installs GRUB 1 (the Grand Unified
    * Bootloader) on "device", with the root directory being
    * "root".
    * <p>
-   * Note: If grub-install reports the error "No suitable
-   * drive was found in the generated device map." it may be
-   * that you need to create a "/boot/grub/device.map" file
-   * first that contains the mapping between grub device
-   * names and Linux device names. It is usually sufficient
-   * to create a file containing:
+   * Notes:
+   * <p>
+   * *   There is currently no way in the API to install
+   * grub2, which is used by most modern Linux guests. It
+   * is possible to run the grub2 command from the guest,
+   * although see the caveats in "RUNNING COMMANDS" in
+   * guestfs(3).
+   * <p>
+   * *   This uses "grub-install" from the host.
+   * Unfortunately grub is not always compatible with
+   * itself, so this only works in rather narrow
+   * circumstances. Careful testing with each guest
+   * version is advisable.
+   * <p>
+   * *   If grub-install reports the error "No suitable drive
+   * was found in the generated device map." it may be
+   * that you need to create a "/boot/grub/device.map"
+   * file first that contains the mapping between grub
+   * device names and Linux device names. It is usually
+   * sufficient to create a file containing:
    * <p>
    * (hd0) /dev/vda
    * <p>
-   * replacing "/dev/vda" with the name of the installation
-   * device.
+   * replacing "/dev/vda" with the name of the
+   * installation device.
    * <p>
    * @throws LibGuestFSException
    */

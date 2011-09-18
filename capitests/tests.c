@@ -2524,10 +2524,10 @@ static int test_vfs_uuid_0 (void)
       return -1;
   }
   /* TestOutput for vfs_uuid (0) */
-  const char *expected = "8d111c8c-d10f-e2e5-905e-f67f816d8599";
+  const char *expected = "5d40064f-a475-839e-4b29-7654bddb9c11";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "8d111c8c-d10f-e2e5-905e-f67f816d8599";
+    const char *uuid = "5d40064f-a475-839e-4b29-7654bddb9c11";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
@@ -7243,7 +7243,7 @@ static int test_mke2journal_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "8d111c8c-d10f-e2e5-905e-f67f816d8599";
+    const char *uuid = "5d40064f-a475-839e-4b29-7654bddb9c11";
     const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
@@ -7254,7 +7254,7 @@ static int test_mke2journal_U_0 (void)
   {
     const char *fstype = "ext2";
     const char *device = "/dev/sda2";
-    const char *uuid = "8d111c8c-d10f-e2e5-905e-f67f816d8599";
+    const char *uuid = "5d40064f-a475-839e-4b29-7654bddb9c11";
     int r;
     suppress_error = 0;
     r = guestfs_mke2fs_JU (g, fstype, 4096, device, uuid);
@@ -8262,7 +8262,7 @@ static int test_swapon_uuid_0 (void)
   }
   /* TestRun for swapon_uuid (0) */
   {
-    const char *uuid = "8d111c8c-d10f-e2e5-905e-f67f816d8599";
+    const char *uuid = "5d40064f-a475-839e-4b29-7654bddb9c11";
     const char *device = "/dev/sdc";
     int r;
     suppress_error = 0;
@@ -8271,7 +8271,7 @@ static int test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "8d111c8c-d10f-e2e5-905e-f67f816d8599";
+    const char *uuid = "5d40064f-a475-839e-4b29-7654bddb9c11";
     int r;
     suppress_error = 0;
     r = guestfs_swapon_uuid (g, uuid);
@@ -8279,7 +8279,7 @@ static int test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "8d111c8c-d10f-e2e5-905e-f67f816d8599";
+    const char *uuid = "5d40064f-a475-839e-4b29-7654bddb9c11";
     int r;
     suppress_error = 0;
     r = guestfs_swapoff_uuid (g, uuid);
@@ -11393,7 +11393,7 @@ static int test_mkswap_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "8d111c8c-d10f-e2e5-905e-f67f816d8599";
+    const char *uuid = "5d40064f-a475-839e-4b29-7654bddb9c11";
     const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
@@ -16459,6 +16459,10 @@ static int test_grub_install_0 (void)
     return 0;
   }
 
+  if (!is_available ("grub")) {
+    printf ("        %s skipped (reason: group %s not available in daemon)\n", "test_grub_install_0", "grub");
+    return 0;
+  }
   /* InitBasicFS for test_grub_install_0: create ext2 on /dev/sda1 */
   {
     const char *device = "/dev/sda";
@@ -16892,7 +16896,7 @@ static int test_get_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for get_e2uuid (0) */
-  const char *expected = "8d111c8c-d10f-e2e5-905e-f67f816d8599";
+  const char *expected = "5d40064f-a475-839e-4b29-7654bddb9c11";
   {
     const char *device = "/dev/sdc";
     int r;
@@ -16903,7 +16907,7 @@ static int test_get_e2uuid_0 (void)
   }
   {
     const char *device = "/dev/sdc";
-    const char *uuid = "8d111c8c-d10f-e2e5-905e-f67f816d8599";
+    const char *uuid = "5d40064f-a475-839e-4b29-7654bddb9c11";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
@@ -16999,10 +17003,10 @@ static int test_set_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for set_e2uuid (0) */
-  const char *expected = "8d111c8c-d10f-e2e5-905e-f67f816d8599";
+  const char *expected = "5d40064f-a475-839e-4b29-7654bddb9c11";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "8d111c8c-d10f-e2e5-905e-f67f816d8599";
+    const char *uuid = "5d40064f-a475-839e-4b29-7654bddb9c11";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);

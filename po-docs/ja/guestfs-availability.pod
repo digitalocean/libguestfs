@@ -14,6 +14,10 @@ L</guestfs_aug_rm> L</guestfs_aug_save> L</guestfs_aug_set>
 
 The following functions: L</guestfs_btrfs_filesystem_resize>
 
+=item B<grub>
+
+The following functions: L</guestfs_grub_install>
+
 =item B<inotify>
 
 The following functions: L</guestfs_inotify_add_watch>

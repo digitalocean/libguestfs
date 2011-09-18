@@ -1418,7 +1418,7 @@ struct command_entry zero_cmd_entry = {
 
 struct command_entry grub_install_cmd_entry = {
   .name = "grub-install",
-  .help = "NAME\n    grub-install - install GRUB\n\nSYNOPSIS\n     grub-install root device\n\nDESCRIPTION\n    This command installs GRUB (the Grand Unified Bootloader) on \"device\",\n    with the root directory being \"root\".\n\n    Note: If grub-install reports the error \"No suitable drive was found in\n    the generated device map.\" it may be that you need to create a\n    \"/boot/grub/device.map\" file first that contains the mapping between\n    grub device names and Linux device names. It is usually sufficient to\n    create a file containing:\n\n     (hd0) /dev/vda\n\n    replacing \"/dev/vda\" with the name of the installation device.\n\n",
+  .help = "NAME\n    grub-install - install GRUB 1\n\nSYNOPSIS\n     grub-install root device\n\nDESCRIPTION\n    This command installs GRUB 1 (the Grand Unified Bootloader) on \"device\",\n    with the root directory being \"root\".\n\n    Notes:\n\n    *   There is currently no way in the API to install grub2, which is used\n        by most modern Linux guests. It is possible to run the grub2 command\n        from the guest, although see the caveats in \"RUNNING COMMANDS\" in\n        guestfs(3).\n\n    *   This uses \"grub-install\" from the host. Unfortunately grub is not\n        always compatible with itself, so this only works in rather narrow\n        circumstances. Careful testing with each guest version is advisable.\n\n    *   If grub-install reports the error \"No suitable drive was found in\n        the generated device map.\" it may be that you need to create a\n        \"/boot/grub/device.map\" file first that contains the mapping between\n        grub device names and Linux device names. It is usually sufficient\n        to create a file containing:\n\n         (hd0) /dev/vda\n\n        replacing \"/dev/vda\" with the name of the installation device.\n\n",
   .run = run_grub_install
 };
 
@@ -2755,7 +2755,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "glob-expand", _("expand a wildcard path"));
   printf ("%-20s %s\n", "grep", _("return lines matching a pattern"));
   printf ("%-20s %s\n", "grepi", _("return lines matching a pattern"));
-  printf ("%-20s %s\n", "grub-install", _("install GRUB"));
+  printf ("%-20s %s\n", "grub-install", _("install GRUB 1"));
   printf ("%-20s %s\n", "head", _("return first 10 lines of a file"));
   printf ("%-20s %s\n", "head-n", _("return first N lines of a file"));
   printf ("%-20s %s\n", "hexdump", _("dump a file in hexadecimal"));

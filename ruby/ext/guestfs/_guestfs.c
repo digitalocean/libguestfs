@@ -7578,23 +7578,37 @@ ruby_guestfs_zero (VALUE gv, VALUE devicev)
  * call-seq:
  *   g.grub_install(root, device) -> nil
  *
- * install GRUB
+ * install GRUB 1
  *
- * This command installs GRUB (the Grand Unified
+ * This command installs GRUB 1 (the Grand Unified
  * Bootloader) on "device", with the root directory being
  * "root".
  * 
- * Note: If grub-install reports the error "No suitable
- * drive was found in the generated device map." it may be
- * that you need to create a "/boot/grub/device.map" file
- * first that contains the mapping between grub device
- * names and Linux device names. It is usually sufficient
- * to create a file containing:
+ * Notes:
+ * 
+ * *   There is currently no way in the API to install
+ * grub2, which is used by most modern Linux guests. It
+ * is possible to run the grub2 command from the guest,
+ * although see the caveats in "RUNNING COMMANDS" in
+ * guestfs(3).
+ * 
+ * *   This uses "grub-install" from the host.
+ * Unfortunately grub is not always compatible with
+ * itself, so this only works in rather narrow
+ * circumstances. Careful testing with each guest
+ * version is advisable.
+ * 
+ * *   If grub-install reports the error "No suitable drive
+ * was found in the generated device map." it may be
+ * that you need to create a "/boot/grub/device.map"
+ * file first that contains the mapping between grub
+ * device names and Linux device names. It is usually
+ * sufficient to create a file containing:
  * 
  * (hd0) /dev/vda
  * 
- * replacing "/dev/vda" with the name of the installation
- * device.
+ * replacing "/dev/vda" with the name of the
+ * installation device.
  *
  *
  * (For the C API documentation for this function, see

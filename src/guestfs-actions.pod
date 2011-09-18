@@ -2329,10 +2329,30 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
                        const char *root,
                        const char *device);
 
-This command installs GRUB (the Grand Unified Bootloader) on
+This command installs GRUB 1 (the Grand Unified Bootloader) on
 C<device>, with the root directory being C<root>.
 
-Note: If grub-install reports the error
+Notes:
+
+=over 4
+
+=item *
+
+There is currently no way in the API to install grub2, which
+is used by most modern Linux guests.  It is possible to run
+the grub2 command from the guest, although see the
+caveats in L<guestfs(3)/RUNNING COMMANDS>.
+
+=item *
+
+This uses C<grub-install> from the host.  Unfortunately grub is
+not always compatible with itself, so this only works in rather
+narrow circumstances.  Careful testing with each guest version
+is advisable.
+
+=item *
+
+If grub-install reports the error
 "No suitable drive was found in the generated device map."
 it may be that you need to create a C</boot/grub/device.map>
 file first that contains the mapping between grub device names
@@ -2342,6 +2362,8 @@ a file containing:
  (hd0) /dev/vda
 
 replacing C</dev/vda> with the name of the installation device.
+
+=back
 
 This function returns 0 on success or -1 on error.
 
