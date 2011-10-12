@@ -55,10 +55,24 @@ Description: guest disk image management system - file system shell
 Package: guestfsd
 Architecture: i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends},
- bsdmainutils, diffutils, grub-pc, iproute,
- libaugeas0, udev, binutils, cpio, dosfstools,
- file, lsof, module-init-tools, net-tools, parted,
- procps, scrub, strace, zerofree
+  bsdmainutils,
+  diffutils,
+# grub-pc,
+  iproute,
+  libaugeas0,
+  udev,
+  binutils,
+  cpio,
+  dosfstools,
+  file,
+  lsof,
+  module-init-tools,
+  net-tools,
+  parted,
+  procps,
+  scrub,
+  strace,
+  zerofree
 Description: Daemon to access to guest virtual machine through virtio serial
  The libguestfs library allows accessing and modifying guest disk
  images. It offers the following features, among many others:
@@ -121,7 +135,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
   diffutils,
 # gfs-tools,
 # gfs2-tools,
-  grub-pc,
+# grub-pc,
 # hfsplus,
   iproute,
   libaugeas0,
