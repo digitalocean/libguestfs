@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfish 1"
-.TH guestfish 1 "2011-09-16" "libguestfs-1.12.7" "Virtualization Support"
+.TH guestfish 1 "2011-10-19" "libguestfs-1.12.8" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -1055,6 +1055,40 @@ Remote control happens over a Unix domain socket called
 of the process, and \f(CW$PID\fR is the process \s-1ID\s0 of the server.
 .PP
 Guestfish client and server versions must match exactly.
+.SS "\s-1USING\s0 \s-1REMOTE\s0 \s-1CONTROL\s0 \s-1ROBUSTLY\s0 \s-1FROM\s0 \s-1SHELL\s0 \s-1SCRIPTS\s0"
+.IX Subsection "USING REMOTE CONTROL ROBUSTLY FROM SHELL SCRIPTS"
+From Bash, you can use the following code which creates a guestfish
+instance, correctly quotes the command line, handles failure to start, and
+cleans up guestfish when the script exits:
+.PP
+.Vb 1
+\& #!/bin/bash \-
+\& 
+\& set \-e
+\& 
+\& guestfish[0]="guestfish"
+\& guestfish[1]="\-\-listen"
+\& guestfish[2]="\-\-ro"
+\& guestfish[3]="\-a"
+\& guestfish[4]="disk.img"
+\& 
+\& GUESTFISH_PID=
+\& eval $("${guestfish[@]}")
+\& if [ \-z "$GUESTFISH_PID" ]; then
+\&     echo "error: guestfish didn\*(Aqt start up, see error messages above"
+\&     exit 1
+\& fi
+\& 
+\& cleanup_guestfish ()
+\& {
+\&     guestfish \-\-remote \-\- exit >/dev/null 2>&1 ||:
+\& }
+\& trap cleanup_guestfish EXIT ERR
+\& 
+\& guestfish \-\-remote \-\- run
+\& 
+\& # ...
+.Ve
 .SS "\s-1REMOTE\s0 \s-1CONTROL\s0 \s-1RUN\s0 \s-1COMMAND\s0 \s-1HANGING\s0"
 .IX Subsection "REMOTE CONTROL RUN COMMAND HANGING"
 Using the \f(CW\*(C`run\*(C'\fR (or \f(CW\*(C`launch\*(C'\fR) command remotely in a command substitution

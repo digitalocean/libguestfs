@@ -1,4 +1,97 @@
+2011-10-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Return root devices sorted. (cherry picked from commit c46bedf925cd9c6c9a9cbaee115358fd1dffcbfe)
+
+2011-10-19  Matthew Booth  <mbooth@redhat.com>
+
+	inspect: Don't assume number of captures in match functions
+	It is possible for the pcre library to return a variable number of captures for
+	a single regular expression. e.g.:
+
+	  ^/dev/(cciss/c\d+d\d+)(?:p(\d+))?$
+
+	This will return either 1 or 2 captures depending on whether the device has a
+	partition suffix. The current match wrappers don't allow for this, and require
+	that a predictable number of matches are returned.
+
+	This change updates match, match1, match2, and match3 to ignore the specific
+	number of matches returned. Instead, any returned captures are assigned to the
+	given arguments, and any remaining arguments are set to NULL.
+	(cherry picked from commit f5c9f0e9ee1729b1260cef3e51ca91936e1868c4)
+
+	NFC: Remove unnecessary goto
+	Cherry picked from commit 1f615fddaffd33afc75a582021769583c8f4db4e and
+	backported to libguestfs-1.12 branch.
+
+2011-10-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: Ensure g->cmdline is allocated before assigning g->cmdline[0]. (cherry picked from commit 138e118d62046b197b715462072256082ecfc0f7)
+
+	valgrind: guestfish -i: free strings before exit.
+	This isn't really necessary, but it keeps valgrind happy.
+	(cherry picked from commit 2f6ec8b4da27c550e2c7187fd17df28f1bdd51a7)
+
+	Ubuntu 11.10: Create /run and /run/lock if not already.
+	In real machines these directories are a ramdisk.
+	(cherry picked from commit 6d7d645cdd4a9c94c4d95fc52de53c37b88847e4)
+
+	Skip guestmount tests if no /dev/fuse.
+	Cherry picked from commit cf4cc1143393d607a7fb4cdbee1434544237d5d4 and
+	modified for libguestfs-1.12 branch which only has guestmount.
+
+	appliance: Fedora cryptsetup-luks renamed to cryptsetup.
+	Therefore we need both names to be listed in the file.
+	(cherry picked from commit af0c123be8cc62acf9e1368b1d00acccdd6d91e9)
+
+	roadmap: Fix Bugzilla URL. (cherry picked from commit db499d98e7a290ccbfc4fb333f85021b23155e9d)
+
+	fish: docs: note how to clean up the remote process properly.
+	Killing it is always a bad idea, because the qemu subprocess will be
+	left hanging around.  The best thing is to send the exit command.
+
+	Cherry picked from commit 11be7d8eee16e6249ed2868b5bd552f29508ec02
+	and modified.
+
+	fish: Close guestfs handle explicitly before exiting.
+	NOTE this is just a cleanup.  It is NOT necessary for correctness,
+	since libguestfs itself is correctly closing the handle in the exit
+	handler.
+	(cherry picked from commit baa1618e0f917017c1934b7da41250029c1791ef)
+
+	guestmount: Add note to man page about 'fuse' group for Debian. (cherry picked from commit e57c3c37a8648966e19ef33832f353d0f9487a77)
+
+	fish: Add man page section on calling guestfish remote robustly from bash. (cherry picked from commit 3a546663655abfcd6399d4fdb7febc6b0d83b822)
+
+	Makefile.am: Fix comment. (cherry picked from commit c6be95453d66ea714a9813a21cfb224d8e346d9e)
+
+	docs: Add directory section for resize/
+	Based on commit f3341222b37f91d7f7fcdafe30b107ea9da9ad02, but modified
+	since only resize exists in this branch of libguestfs.
+
+	docs: Add virt-resize to list of links in guestfs(3). (cherry picked from commit 293772bf7511dee41a1f3e842424678c1a6bf9e4)
+
+	docs: virt-win-reg is written in Perl, not virt-resize. (cherry picked from commit b39b3c5c74f1dfb88a6074aac476df877f1bfc4d)
+
+	daemon: mkswap --help output changed, breaking linuxfsuuid group detection. (cherry picked from commit 4e9ed018475ff4bd5171ed50a47ffae7abbdda4b)
+
+	daemon: Move useful is_zero function to header file.
+	Code motion.
+	(cherry picked from commit ffc01285ee4289da90983a3320873f27b3d31c4d)
+
+	Add no_timer_check to disable faulty test during boot (RHBZ#502058).
+	See:
+
+	https://bugzilla.redhat.com/show_bug.cgi?id=502058#c15
+	https://bugzilla.redhat.com/show_bug.cgi?id=698842#c8
+
+	This updates commit 79e66f89e2f6c27486476d7857da58feb491bf5c.
+	(cherry picked from commit 322106521f546d7c70c5a38255db7d243a456a6b)
+
+	docs: Show how to use a qemu wrapper to edit the qemu command line. (cherry picked from commit 3c7b3634b2c86a4c41fec044ccb59a1fe3224e66)
+
 2011-09-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.12.7.
 
 	inspection: Handle /dev/root in /etc/fstab.
 	This means "the device that holds /etc/fstab", so map it correctly.
