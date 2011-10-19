@@ -3,24 +3,26 @@ Date: Sat, 20 Aug 2011 20:43:22 +0200
 Subject: autoreconf
 
 ---
- Makefile.in        |   41 ++++++++++++--------------
- aclocal.m4         |   14 +++++----
- cat/Makefile.in    |    2 +-
- configure          |   83 +++++++++++++++++++++++++++++----------------------
- daemon/Makefile.in |    4 +-
- df/Makefile.in     |    2 +-
- edit/Makefile.in   |    2 +-
- fuse/Makefile.in   |    2 +-
- images/Makefile.in |    2 +-
- ocaml/Makefile.in  |   19 +++++------
- perl/Makefile.in   |    8 ++++-
- python/Makefile.in |    5 ++-
- resize/Makefile.in |    2 +-
- tools/Makefile.in  |    6 ++--
- 14 files changed, 103 insertions(+), 89 deletions(-)
+ Makefile.in           |   41 +++++++++++-------------
+ aclocal.m4            |   14 +++++---
+ cat/Makefile.in       |    2 +-
+ configure             |   83 +++++++++++++++++++++++++++---------------------
+ daemon/Makefile.in    |    4 +-
+ df/Makefile.in        |    2 +-
+ edit/Makefile.in      |    2 +-
+ fuse/Makefile.in      |    2 +-
+ generator/Makefile.in |    2 +-
+ images/Makefile.in    |    2 +-
+ inspector/Makefile.in |    2 +-
+ ocaml/Makefile.in     |   19 +++++------
+ perl/Makefile.in      |    8 +++-
+ python/Makefile.in    |    5 ++-
+ resize/Makefile.in    |    2 +-
+ tools/Makefile.in     |    6 ++--
+ 16 files changed, 105 insertions(+), 91 deletions(-)
 
 diff --git a/Makefile.in b/Makefile.in
-index 1847238..7066536 100644
+index add3b26..84430ca 100644
 --- a/Makefile.in
 +++ b/Makefile.in
 @@ -71,7 +71,6 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
@@ -31,7 +33,7 @@ index 1847238..7066536 100644
  	$(top_srcdir)/subdir-rules.mk ABOUT-NLS AUTHORS COPYING \
  	COPYING.LIB ChangeLog TODO build-aux/compile \
  	build-aux/config.guess build-aux/config.rpath \
-@@ -79,25 +78,26 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
+@@ -79,27 +78,28 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
  	build-aux/ltmain.sh build-aux/missing
  @ENABLE_DAEMON_TRUE@am__append_1 = daemon
  @ENABLE_APPLIANCE_TRUE@am__append_2 = appliance
@@ -57,10 +59,12 @@ index 1847238..7066536 100644
 -@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@am__append_10 = resize
 +@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@am__append_11 = resize
  
- # Perl tools and guestmount.
+ # Perl tools.
 -@HAVE_TOOLS_TRUE@am__append_11 = tools
--@HAVE_FUSE_TRUE@am__append_12 = fuse
 +@HAVE_TOOLS_TRUE@am__append_12 = tools
+ 
+ # guestmount
+-@HAVE_FUSE_TRUE@am__append_12 = fuse
 +@HAVE_FUSE_TRUE@am__append_13 = fuse
  
  # po-docs must come after tools, inspector.
@@ -69,7 +73,7 @@ index 1847238..7066536 100644
  subdir = .
  ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
  am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
-@@ -197,7 +197,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
+@@ -199,7 +199,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
   configure.lineno config.status.lineno
  mkinstalldirs = $(install_sh) -d
  CONFIG_HEADER = config.h
@@ -78,7 +82,7 @@ index 1847238..7066536 100644
  CONFIG_CLEAN_VPATH_FILES =
  AM_V_GEN = $(am__v_GEN_$(V))
  am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
-@@ -245,7 +245,7 @@ AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
+@@ -247,7 +247,7 @@ AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
  ETAGS = etags
  CTAGS = ctags
  DIST_SUBDIRS = gnulib/lib images generator src examples po daemon \
@@ -87,7 +91,7 @@ index 1847238..7066536 100644
  	fish cat df edit inspector rescue perl perl/examples ocaml \
  	ocaml/examples python python/examples ruby ruby/examples java \
  	java/examples haskell php csharp resize tools fuse po-docs
-@@ -1182,12 +1182,11 @@ ACLOCAL_AMFLAGS = -I m4
+@@ -1184,12 +1184,11 @@ ACLOCAL_AMFLAGS = -I m4
  
  # Unconditional because nothing is built yet.
  SUBDIRS = gnulib/lib images generator src examples po $(am__append_1) \
@@ -105,7 +109,7 @@ index 1847238..7066536 100644
  EXTRA_DIST = \
  	$(generator_built) \
  	BUGS HACKING RELEASE-NOTES ROADMAP TODO \
-@@ -1334,8 +1333,6 @@ podwrapper.sh: $(top_builddir)/config.status $(srcdir)/podwrapper.sh.in
+@@ -1336,8 +1335,6 @@ podwrapper.sh: $(top_builddir)/config.status $(srcdir)/podwrapper.sh.in
  	cd $(top_builddir) && $(SHELL) ./config.status $@
  run: $(top_builddir)/config.status $(srcdir)/run.in
  	cd $(top_builddir) && $(SHELL) ./config.status $@
@@ -182,10 +186,10 @@ index 4043f37..e53b774 100644
  
  .SUFFIXES:
 diff --git a/configure b/configure
-index b55c297..a0f27bf 100755
+index a6dd65e..fe3ea94 100755
 --- a/configure
 +++ b/configure
-@@ -36085,8 +36085,7 @@ fi
+@@ -36155,8 +36155,7 @@ fi
  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_appliance" >&5
  $as_echo "$enable_appliance" >&6; }
  
@@ -195,7 +199,7 @@ index b55c297..a0f27bf 100755
  set dummy febootstrap; ac_word=$2
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
  $as_echo_n "checking for $ac_word... " >&6; }
-@@ -36124,12 +36123,8 @@ $as_echo "no" >&6; }
+@@ -36194,12 +36193,8 @@ $as_echo "no" >&6; }
  fi
  
  
@@ -209,7 +213,7 @@ index b55c297..a0f27bf 100755
  $as_echo_n "checking if user requested febootstrap --yum-config option... " >&6; }
  
  # Check whether --with-febootstrap-yum-config was given.
-@@ -36139,26 +36134,32 @@ else
+@@ -36209,26 +36204,32 @@ else
    FEBOOTSTRAP_YUM_CONFIG=no
  fi
  
@@ -255,7 +259,7 @@ index b55c297..a0f27bf 100755
  
  # Extract the first word of "rpcgen", so it can be a program name with args.
  set dummy rpcgen; ac_word=$2
-@@ -38808,6 +38809,7 @@ $as_echo "#define HAVE_DCGETTEXT 1" >>confdefs.h
+@@ -38878,6 +38879,7 @@ $as_echo "#define HAVE_DCGETTEXT 1" >>confdefs.h
  
  
  
@@ -263,7 +267,7 @@ index b55c297..a0f27bf 100755
  if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
  	if test -n "$ac_tool_prefix"; then
    # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
-@@ -38936,6 +38938,7 @@ if test -n "$PCRE_CFLAGS"; then
+@@ -39006,6 +39008,7 @@ if test -n "$PCRE_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_PCRE_CFLAGS=`$PKG_CONFIG --cflags "libpcre" 2>/dev/null`
@@ -271,7 +275,7 @@ index b55c297..a0f27bf 100755
  else
    pkg_failed=yes
  fi
-@@ -38952,6 +38955,7 @@ if test -n "$PCRE_LIBS"; then
+@@ -39022,6 +39025,7 @@ if test -n "$PCRE_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_PCRE_LIBS=`$PKG_CONFIG --libs "libpcre" 2>/dev/null`
@@ -279,7 +283,7 @@ index b55c297..a0f27bf 100755
  else
    pkg_failed=yes
  fi
-@@ -38971,9 +38975,9 @@ else
+@@ -39041,9 +39045,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -291,7 +295,7 @@ index b55c297..a0f27bf 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$PCRE_PKG_ERRORS" >&5
-@@ -38988,7 +38992,6 @@ installed software in a non-standard prefix.
+@@ -39058,7 +39062,6 @@ installed software in a non-standard prefix.
  Alternatively, you may set the environment variables PCRE_CFLAGS
  and PCRE_LIBS to avoid the need to call pkg-config.
  See the pkg-config man page for more details." "$LINENO" 5
@@ -299,7 +303,7 @@ index b55c297..a0f27bf 100755
  elif test $pkg_failed = untried; then
       	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
  $as_echo "no" >&6; }
-@@ -39004,7 +39007,6 @@ See the pkg-config man page for more details.
+@@ -39074,7 +39077,6 @@ See the pkg-config man page for more details.
  
  To get pkg-config, see <http://pkg-config.freedesktop.org/>.
  See \`config.log' for more details" "$LINENO" 5; }
@@ -307,7 +311,7 @@ index b55c297..a0f27bf 100755
  else
  	PCRE_CFLAGS=$pkg_cv_PCRE_CFLAGS
  	PCRE_LIBS=$pkg_cv_PCRE_LIBS
-@@ -39083,6 +39085,7 @@ if test -n "$LIBVIRT_CFLAGS"; then
+@@ -39153,6 +39155,7 @@ if test -n "$LIBVIRT_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBVIRT_CFLAGS=`$PKG_CONFIG --cflags "libvirt" 2>/dev/null`
@@ -315,7 +319,7 @@ index b55c297..a0f27bf 100755
  else
    pkg_failed=yes
  fi
-@@ -39099,6 +39102,7 @@ if test -n "$LIBVIRT_LIBS"; then
+@@ -39169,6 +39172,7 @@ if test -n "$LIBVIRT_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBVIRT_LIBS=`$PKG_CONFIG --libs "libvirt" 2>/dev/null`
@@ -323,7 +327,7 @@ index b55c297..a0f27bf 100755
  else
    pkg_failed=yes
  fi
-@@ -39118,9 +39122,9 @@ else
+@@ -39188,9 +39192,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -335,7 +339,7 @@ index b55c297..a0f27bf 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBVIRT_PKG_ERRORS" >&5
-@@ -39168,6 +39172,7 @@ if test -n "$LIBXML2_CFLAGS"; then
+@@ -39238,6 +39242,7 @@ if test -n "$LIBXML2_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBXML2_CFLAGS=`$PKG_CONFIG --cflags "libxml-2.0" 2>/dev/null`
@@ -343,7 +347,7 @@ index b55c297..a0f27bf 100755
  else
    pkg_failed=yes
  fi
-@@ -39184,6 +39189,7 @@ if test -n "$LIBXML2_LIBS"; then
+@@ -39254,6 +39259,7 @@ if test -n "$LIBXML2_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBXML2_LIBS=`$PKG_CONFIG --libs "libxml-2.0" 2>/dev/null`
@@ -351,7 +355,7 @@ index b55c297..a0f27bf 100755
  else
    pkg_failed=yes
  fi
-@@ -39203,9 +39209,9 @@ else
+@@ -39273,9 +39279,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -363,7 +367,7 @@ index b55c297..a0f27bf 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBXML2_PKG_ERRORS" >&5
-@@ -39253,6 +39259,7 @@ if test -n "$LIBCONFIG_CFLAGS"; then
+@@ -39323,6 +39329,7 @@ if test -n "$LIBCONFIG_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBCONFIG_CFLAGS=`$PKG_CONFIG --cflags "libconfig" 2>/dev/null`
@@ -371,7 +375,7 @@ index b55c297..a0f27bf 100755
  else
    pkg_failed=yes
  fi
-@@ -39269,6 +39276,7 @@ if test -n "$LIBCONFIG_LIBS"; then
+@@ -39339,6 +39346,7 @@ if test -n "$LIBCONFIG_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBCONFIG_LIBS=`$PKG_CONFIG --libs "libconfig" 2>/dev/null`
@@ -379,7 +383,7 @@ index b55c297..a0f27bf 100755
  else
    pkg_failed=yes
  fi
-@@ -39288,9 +39296,9 @@ else
+@@ -39358,9 +39366,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -391,7 +395,7 @@ index b55c297..a0f27bf 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBCONFIG_PKG_ERRORS" >&5
-@@ -39338,6 +39346,7 @@ if test -n "$HIVEX_CFLAGS"; then
+@@ -39408,6 +39416,7 @@ if test -n "$HIVEX_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_HIVEX_CFLAGS=`$PKG_CONFIG --cflags "hivex" 2>/dev/null`
@@ -399,7 +403,7 @@ index b55c297..a0f27bf 100755
  else
    pkg_failed=yes
  fi
-@@ -39354,6 +39363,7 @@ if test -n "$HIVEX_LIBS"; then
+@@ -39424,6 +39433,7 @@ if test -n "$HIVEX_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_HIVEX_LIBS=`$PKG_CONFIG --libs "hivex" 2>/dev/null`
@@ -407,7 +411,7 @@ index b55c297..a0f27bf 100755
  else
    pkg_failed=yes
  fi
-@@ -39373,9 +39383,9 @@ else
+@@ -39443,9 +39453,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -419,7 +423,7 @@ index b55c297..a0f27bf 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$HIVEX_PKG_ERRORS" >&5
-@@ -39431,6 +39441,7 @@ if test -n "$FUSE_CFLAGS"; then
+@@ -39501,6 +39511,7 @@ if test -n "$FUSE_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_FUSE_CFLAGS=`$PKG_CONFIG --cflags "fuse" 2>/dev/null`
@@ -427,7 +431,7 @@ index b55c297..a0f27bf 100755
  else
    pkg_failed=yes
  fi
-@@ -39447,6 +39458,7 @@ if test -n "$FUSE_LIBS"; then
+@@ -39517,6 +39528,7 @@ if test -n "$FUSE_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_FUSE_LIBS=`$PKG_CONFIG --libs "fuse" 2>/dev/null`
@@ -435,7 +439,7 @@ index b55c297..a0f27bf 100755
  else
    pkg_failed=yes
  fi
-@@ -39466,9 +39478,9 @@ else
+@@ -39536,9 +39548,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -447,7 +451,7 @@ index b55c297..a0f27bf 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$FUSE_PKG_ERRORS" >&5
-@@ -41240,7 +41252,7 @@ ac_config_files="$ac_config_files podwrapper.sh"
+@@ -41310,7 +41322,7 @@ ac_config_files="$ac_config_files podwrapper.sh"
  
  ac_config_files="$ac_config_files run"
  
@@ -456,7 +460,7 @@ index b55c297..a0f27bf 100755
  
  cat >confcache <<\_ACEOF
  # This file is a shell script that caches the results of configure
-@@ -42427,7 +42439,6 @@ do
+@@ -42497,7 +42509,6 @@ do
      "cat/Makefile") CONFIG_FILES="$CONFIG_FILES cat/Makefile" ;;
      "caution/Makefile") CONFIG_FILES="$CONFIG_FILES caution/Makefile" ;;
      "csharp/Makefile") CONFIG_FILES="$CONFIG_FILES csharp/Makefile" ;;
@@ -520,6 +524,19 @@ index 09c31d9..bd53845 100644
  @HAVE_FUSE_TRUE@TESTS_ENVIRONMENT = \
  @HAVE_FUSE_TRUE@	top_builddir=..
  
+diff --git a/generator/Makefile.in b/generator/Makefile.in
+index d7dbc16..1120751 100644
+--- a/generator/Makefile.in
++++ b/generator/Makefile.in
+@@ -1445,7 +1445,7 @@ uninstall-am:
+ # No OCaml compiler.  Just replace the generator with a script that
+ # touches stamp-generator and prints a warning.
+ 
+-@HAVE_OCAML_FALSE@generator: $(SOURCES)
++@HAVE_OCAML_FALSE@$(srcdir)/generator: $(SOURCES)
+ @HAVE_OCAML_FALSE@	rm -f $@ $@-t
+ @HAVE_OCAML_FALSE@	echo 'echo Warning: Install OCaml compiler in order to rebuild the generated files.' >> $@-t
+ @HAVE_OCAML_FALSE@	echo 'touch generator/stamp-generator' >> $@-t
 diff --git a/images/Makefile.in b/images/Makefile.in
 index 32654c4..35ed8ca 100644
 --- a/images/Makefile.in
@@ -533,8 +550,21 @@ index 32654c4..35ed8ca 100644
  CLEANFILES = \
  	test.iso test.sqsh \
  	100kallzeroes 100kallnewlines 100kallspaces 100krandom 10klines \
+diff --git a/inspector/Makefile.in b/inspector/Makefile.in
+index e5835bd..dcdb155 100644
+--- a/inspector/Makefile.in
++++ b/inspector/Makefile.in
+@@ -1196,7 +1196,7 @@ dist_doc_DATA = \
+ @HAVE_LIBXML2_TRUE@man_MANS = virt-inspector.1
+ @HAVE_LIBXML2_TRUE@noinst_DATA = $(top_builddir)/html/virt-inspector.1.html
+ @HAVE_LIBXML2_TRUE@@HAVE_XMLLINT_TRUE@TESTS = $(EXAMPLE_XML)
+-@HAVE_LIBXML2_TRUE@@HAVE_XMLLINT_TRUE@TESTS_ENVIRONMENT = $(XMLLINT) --noout --relaxng virt-inspector.rng
++@HAVE_LIBXML2_TRUE@@HAVE_XMLLINT_TRUE@TESTS_ENVIRONMENT = $(XMLLINT) --noout --relaxng $(srcdir)/virt-inspector.rng
+ all: all-am
+ 
+ .SUFFIXES:
 diff --git a/ocaml/Makefile.in b/ocaml/Makefile.in
-index 25320f4..a374682 100644
+index db915b5..ea6ca82 100644
 --- a/ocaml/Makefile.in
 +++ b/ocaml/Makefile.in
 @@ -71,7 +71,11 @@ DIST_COMMON = $(srcdir)/.depend $(srcdir)/META.in \
@@ -644,7 +674,7 @@ index 1e73bf1..97948c8 100644
  
  .SUFFIXES:
 diff --git a/resize/Makefile.in b/resize/Makefile.in
-index 446ec05..436dc43 100644
+index 8b17ff9..b848eb4 100644
 --- a/resize/Makefile.in
 +++ b/resize/Makefile.in
 @@ -1135,7 +1135,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize test.img \

@@ -8,4 +8,6 @@
 0008-Fix-for-systemd-based-Debian-systems.patch
 0009-out-of-tree-build-fix-building-Perl-bindings.patch
 0010-out-of-tree-build-daemon.patch
-0011-autoreconf.patch
+0011-out-of-tree-build-fix-HAVE_OCAML-false-case.patch
+0012-out-of-tree-build-fixed-bindtests-and-inspector.patch
+0013-autoreconf.patch
