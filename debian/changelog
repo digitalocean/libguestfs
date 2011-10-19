@@ -1,3 +1,21 @@
+libguestfs (1.12.8-1) unstable; urgency=low
+
+  * New upstream version 
+  * [e85ce09] Rebased patch queue; fixed bindtests and inspector tests
+  * [5294a7e] Got rid of a shortcut in building bindings for multiple
+    Python versions. This stopped working with Python 2.7 being the
+    default python.
+  * [689757d] Added Spanish debconf translations, thanks to SM Baby
+    Siabef. (Closes: #642068)
+  * [c09d3d5] Added Dutch debconf translations, thanks to Jeroen Schot.
+    (Closes: #642290)
+  * [48a726d] Added Czech debconf translation, thanks to Michal Simunek.
+    (Closes: #642437)
+  * [09c47b4] Removed grub-pc dependency, as suggested on IRC.
+    (Closes: #645119)
+
+ -- Hilko Bengen <bengen@debian.org>  Thu, 20 Oct 2011 13:13:00 +0200
+
 libguestfs (1.12.7-1) unstable; urgency=low
 
   * New upstream version
