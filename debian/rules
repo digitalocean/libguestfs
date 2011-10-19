@@ -55,16 +55,14 @@ override_dh_auto_build:
 	done
 
 override_dh_auto_test:
-	set -e $(MAKE) -C $(CURDIR)/debian/build-$(PYTHON_DEFAULT) check
+	dh_auto_test --builddir=$(CURDIR)/debian/build-$(PYTHON_DEFAULT)
 
 override_dh_auto_install:
+# All build trees contain the library plus guestfish and C virt tools.
+# We assume that the Python version used for building the Python
+# bindings doesn't affect the outcome of those builds.
 	set -e; for p in $(PYTHONS); do \
-	    if [ $$p = $(PYTHON_DEFAULT) ]; then \
 		dh_auto_install --builddir=$(CURDIR)/debian/build-$$p ; \
-	    else \
-	        $(MAKE) -C $(CURDIR)/debian/build-$$p/python install \
-	        DESTDIR=$(CURDIR)/debian/tmp ; \
-	    fi ; \
 	done
 
 override_dh_install:
