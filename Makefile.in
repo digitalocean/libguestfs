@@ -92,8 +92,10 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 # virt-resize 2.0 is written in OCaml.
 @HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@am__append_10 = resize
 
-# Perl tools and guestmount.
+# Perl tools.
 @HAVE_TOOLS_TRUE@am__append_11 = tools
+
+# guestmount
 @HAVE_FUSE_TRUE@am__append_12 = fuse
 
 # po-docs must come after tools, inspector.
