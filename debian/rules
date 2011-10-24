@@ -5,14 +5,14 @@
 PYTHONS        := $(shell pyversions --installed; py3versions --installed)
 PYTHON_DEFAULT := $(shell pyversions --default)
 
-CONFIG_FLAGS = \
-	--enable-install-daemon \
+COMMON_CONFIG_FLAGS = \
 	--disable-appliance  \
 	--with-readline	     \
 	--with-java-home=no  \
 	--disable-ruby       \
 	--disable-haskell    \
-	--disable-php
+	--disable-php        \
+	vmchannel_test=no
 
 override_dh_auto_clean:
 	set -e; for p in $(PYTHONS); do \
@@ -24,13 +24,14 @@ override_dh_auto_configure:
 	    if [ $$p = $(PYTHON_DEFAULT) ]; then \
 		dh_auto_configure --builddir=$(CURDIR)/debian/build-$$p \
 		    -- \
-		    $(CONFIG_FLAGS); \
+		    $(COMMON_CONFIG_FLAGS) \
+		    --enable-install-daemon ; \
 	    else \
 	        dh_auto_configure --builddir=$(CURDIR)/debian/build-$$p \
 	            -- \
-	            --disable-daemon --disable-appliance --disable-fuse \
-	            --with-java-home=no --disable-ocaml --disable-perl \
-	            --disable-haskell --disable-ruby --disable-php \
+		    $(COMMON_CONFIG_FLAGS) \
+	            --disable-daemon --disable-fuse \
+	            --disable-ocaml --disable-perl \
 	            PYTHON=$$p ; \
 	    fi ; \
 	done
