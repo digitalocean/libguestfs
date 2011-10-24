@@ -11,3 +11,4 @@
 0011-out-of-tree-build-fix-HAVE_OCAML-false-case.patch
 0012-out-of-tree-build-fixed-bindtests-and-inspector.patch
 0013-autoreconf.patch
+0014-Added-fix-for-qemu-0.15-machine-option.patch

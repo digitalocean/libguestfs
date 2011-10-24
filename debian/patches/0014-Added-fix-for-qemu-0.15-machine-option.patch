@@ -1,0 +1,85 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Mon, 24 Oct 2011 12:35:45 +0200
+Subject: Added fix for qemu 0.15 machine option.
+
+Source: <http://pkgs.fedoraproject.org/gitweb/?p=libguestfs.git;a=blob;f=0001-Fix-qemu-machine-option-for-latest-qemu-thanks-Marku.patch;h=71347b9daf8e9fabfd13e04e2b01064f14ef9d8a;hb=HEAD>
+---
+ src/launch.c |   25 +++++++++++++++----------
+ 1 files changed, 15 insertions(+), 10 deletions(-)
+
+diff --git a/src/launch.c b/src/launch.c
+index ae1e100..cf11ec4 100644
+--- a/src/launch.c
++++ b/src/launch.c
+@@ -76,10 +76,10 @@ static int64_t timeval_diff (const struct timeval *x, const struct timeval *y);
+ static void print_qemu_command_line (guestfs_h *g, char **argv);
+ static int connect_unix_socket (guestfs_h *g, const char *sock);
+ static int qemu_supports (guestfs_h *g, const char *option);
+-
+-#if 0
+ static int qemu_supports_re (guestfs_h *g, const pcre *option_regex);
+ 
++static pcre *re_machine_name;
++
+ static void compile_regexps (void) __attribute__((constructor));
+ static void free_regexps (void) __attribute__((destructor));
+ 
+@@ -97,13 +97,15 @@ compile_regexps (void)
+       abort ();                                                         \
+     }                                                                   \
+   } while (0)
++
++  COMPILE (re_machine_name, "-machine .*\\bname\\b", 0);
+ }
+ 
+ static void
+ free_regexps (void)
+ {
++  pcre_free (re_machine_name);
+ }
+-#endif
+ 
+ /* Functions to add a string to the current command line. */
+ static void
+@@ -524,14 +526,19 @@ launch_appliance (guestfs_h *g)
+     if (qemu_supports (g, "-nodefconfig"))
+       add_cmdline (g, "-nodefconfig");
+ 
+-    /* The qemu -machine option (added 2010-12) is a bit more sane
+-     * since it falls back through various different acceleration
+-     * modes, so try that first (thanks Markus Armbruster).
++    /* The qemu -machine option (added 2010-12) falls back through
++     * various different acceleration modes, so try that first (thanks
++     * Markus Armbruster).  However in qemu commit 9052ea6bf4962b13
++     * the syntax was changed, so we have to detect that.
+      */
+-    if (qemu_supports (g, "-machine")) {
++    if (qemu_supports_re (g, re_machine_name)) { /* after 2011-07-23 */
++      add_cmdline (g, "-machine");
++      add_cmdline (g, "pc,accel=kvm:tcg");
++    }
++    else if (qemu_supports (g, "-machine")) { /* after 2010-12 */
+       add_cmdline (g, "-machine");
+       add_cmdline (g, "accel=kvm:tcg");
+-    } else {
++    } else {    /* no -machine option */
+       /* qemu sometimes needs this option to enable hardware
+        * virtualization, but some versions of 'qemu-kvm' will use KVM
+        * regardless (even where this option appears in the help text).
+@@ -1173,7 +1180,6 @@ qemu_supports (guestfs_h *g, const char *option)
+   return strstr (g->qemu_help, option) != NULL;
+ }
+ 
+-#if 0
+ /* As above but using a regex instead of a fixed string. */
+ static int
+ qemu_supports_re (guestfs_h *g, const pcre *option_regex)
+@@ -1185,7 +1191,6 @@ qemu_supports_re (guestfs_h *g, const pcre *option_regex)
+ 
+   return match (g, g->qemu_help, option_regex);
+ }
+-#endif
+ 
+ /* Check if a file can be opened. */
+ static int
+-- 
