@@ -11,6 +11,7 @@ COMMON_CONFIG_FLAGS = \
 	--with-java-home=no  \
 	--disable-ruby       \
 	--disable-haskell    \
+	--disable-erlang     \
 	--disable-php        \
 	vmchannel_test=no
 
