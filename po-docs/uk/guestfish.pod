@@ -297,9 +297,9 @@ L</REMOTE CONTROL GUESTFISH OVER A SOCKET> below.
 Connect to a live virtual machine.  (Experimental, see
 L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>).
 
-=item B<-m dev[:mountpoint[:options]]>
+=item B<-m пристрій[:точка_монтування[:параметри]]>
 
-=item B<--mount dev[:mountpoint[:options]]>
+=item B<--mount пристрій[:точка_монтування[:параметри]]>
 
 Mount the named partition or logical volume on the given mountpoint.
 
@@ -516,7 +516,7 @@ characters:
 
 =item C<\a>
 
-Alert (bell) character.
+Символ гудка (дзвінка).
 
 =item C<\b>
 
@@ -532,15 +532,15 @@ Newline character.
 
 =item C<\r>
 
-Carriage return character.
+Символ повернення каретки.
 
 =item C<\t>
 
-Horizontal tab character.
+Символ горизонтальної табуляції
 
 =item C<\v>
 
-Vertical tab character.
+Символ вертикальної табуляції.
 
 =item C<\">
 
@@ -590,19 +590,19 @@ following suffixes to specify kilobytes, megabytes and larger sizes:
 
 =item B<k>, B<K> або B<KiB>
 
-The size in kilobytes (multiplied by 1024).
+Розмір у кілобайтах (у одному кілобайті 1024 байтів).
 
 =item B<KB>
 
-The size in SI 1000 byte units.
+Розмір у одиницях СІ: 1000 байтів.
 
 =item B<M> або B<MiB>
 
-The size in megabytes (multiplied by 1048576).
+Розмір у мегабайтах (у одному мегабайті 1048576 байтів).
 
 =item B<MB>
 
-The size in SI 1000000 byte units.
+Розмір у одиницях СІ: 1000000 байтів.
 
 =item B<G> або B<GiB>
 
@@ -618,39 +618,39 @@ The size in SI 1000000 byte units.
 
 =item B<TB>
 
-The size in SI 10**12 byte units.
+Розмір у одиницях СІ: 10**12 байтів.
 
 =item B<P> або B<PiB>
 
-The size in petabytes (multiplied by 2**50).
+Розмір у петабайтах (у одному петабайті 2**50 байтів).
 
 =item B<PB>
 
-The size in SI 10**15 byte units.
+Розмір у одиницях СІ: 10**15 байтів.
 
 =item B<E> або B<EiB>
 
-The size in exabytes (multiplied by 2**60).
+Розмір у ексабайтах (у одному ексабайті 2**60 байтів).
 
 =item B<EB>
 
-The size in SI 10**18 byte units.
+Розмір у одиницях СІ: 10**18 байтів.
 
 =item B<Z> або B<ZiB>
 
-The size in zettabytes (multiplied by 2**70).
+Розмір у зетабайтах (у одному зетабайті 2**70 байтів).
 
 =item B<ZB>
 
-The size in SI 10**21 byte units.
+Розмір у одиницях СІ: 10**21 байтів.
 
 =item B<Y> або B<YiB>
 
-The size in yottabytes (multiplied by 2**80).
+Розмір у йотабайтах (у одному йотабайті 2**80 байтів).
 
 =item B<YB>
 
-The size in SI 10**24 byte units.
+Розмір у одиницях СІ: 10**24 байтів.
 
 =back
 
@@ -836,7 +836,7 @@ one.  Then you can close the mapper device:
  vg-activate false /dev/VG
  luks-close /dev/mapper/luksdev
 
-=head1 WINDOWS PATHS
+=head1 ШЛЯХИ У WINDOWS
 
 If a path is prefixed with C<win:> then you can use Windows-style drive
 letters and paths (with some limitations).  The following commands are
@@ -1186,7 +1186,7 @@ use in case C</var/tmp> is not large enough.
 This configuration file controls the default read-only or read-write mode
 (I<--ro> or I<--rw>).
 
-See L</OPENING DISKS FOR READ AND WRITE>.
+Див. L</OPENING DISKS FOR READ AND WRITE>.
 
 =item $HOME/.guestfish
 
@@ -1236,11 +1236,12 @@ the same name will be overwritten.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
-L<guestfs(3)>, L<http://libguestfs.org/>, L<virt-cat(1)>,
-L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-df(1)>, L<virt-edit(1)>,
-L<virt-filesystems(1)>, L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
-L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
-L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>,
+L<guestfs(3)>, L<http://libguestfs.org/>, L<virt-alignment-scan(1)>,
+L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-df(1)>,
+L<virt-edit(1)>, L<virt-filesystems(1)>, L<virt-inspector(1)>,
+L<virt-list-filesystems(1)>, L<virt-list-partitions(1)>, L<virt-ls(1)>,
+L<virt-make-fs(1)>, L<virt-rescue(1)>, L<virt-resize(1)>,
+L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>,
 L<virt-tar-out(1)>, L<virt-win-reg(1)>, L<display(1)>, L<hexedit(1)>,
 L<febootstrap-supermin-helper(8)>.
 
@@ -1262,7 +1263,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, MA 02139, USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 

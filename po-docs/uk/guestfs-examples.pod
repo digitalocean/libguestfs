@@ -22,19 +22,19 @@ This manual page contains examples of calling libguestfs from the C
 programming language.  If you are not familiar with using libguestfs, you
 also need to read L<guestfs(3)>.
 
-=head1 EXAMPLE 1: CREATE A DISK IMAGE
+=head1 ПРИКЛАД 1. СТВОРЕННЯ ОБРАЗУ ДИСКА
 
 @EXAMPLE1@
 
-=head1 EXAMPLE 2: INSPECT A VIRTUAL MACHINE DISK IMAGE
+=head1 ПРИКЛАД 2. ПЕРЕВІРКА ОБРАЗУ ДИСКА ВІРТУАЛЬНОЇ МАШИНИ
 
 @EXAMPLE2@
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
-L<guestfs(3)>, L<guestfs-java(3)>, L<guestfs-ocaml(3)>, L<guestfs-perl(3)>,
-L<guestfs-python(3)>, L<guestfs-recipes(1)>, L<guestfs-ruby(3)>,
-L<http://libguestfs.org/>.
+L<guestfs(3)>, L<guestfs-erlang(3)>, L<guestfs-java(3)>,
+L<guestfs-ocaml(3)>, L<guestfs-perl(3)>, L<guestfs-python(3)>,
+L<guestfs-recipes(1)>, L<guestfs-ruby(3)>, L<http://libguestfs.org/>.
 
 =head1 АВТОРИ
 

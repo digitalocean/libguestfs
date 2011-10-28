@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-filesystems 1"
-.TH virt-filesystems 1 "2011-10-19" "libguestfs-1.12.8" "Virtualization Support"
+.TH virt-filesystems 1 "2011-10-27" "libguestfs-1.14.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -389,6 +389,13 @@ one could be detected, eg. \f(CW\*(C`ext4\*(C'\fR.
 .IX Item "Label"
 If the object has a label (used for identifying and mounting filesystems)
 then this column contains the label.
+.IP "\fB\s-1MBR\s0\fR" 4
+.IX Item "MBR"
+The partition type byte, displayed as a two digit hexadecimal number.  A
+comprehensive list of partition types can be found here:
+http://www.win.tue.nl/~aeb/partitions/partition_types\-1.html <http://www.win.tue.nl/~aeb/partitions/partition_types-1.html>
+.Sp
+This is only applicable for \s-1DOS\s0 (\s-1MBR\s0) partitions.
 .IP "\fBSize\fR" 4
 .IX Item "Size"
 The size of the object in bytes.  If the \fI\-\-human\fR option is used then the

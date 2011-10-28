@@ -2,58 +2,59 @@
 
 =head1 НАЗВА
 
-virt-cat - Display files in a virtual machine
+virt-cat — показ файлів у віртуальній машині
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-cat [--options] -d domname file [file ...]
+ virt-cat [--параметри] -d назва_домену файл [файл...]
 
- virt-cat [--options] -a disk.img [-a disk.img ...] file [file ...]
+ virt-cat [--параметри] -a диск.img [-a диск.img ...] файл [файл...]
 
-Old-style:
+Застарілий стиль:
 
- virt-cat domname file
+ virt-cat назва_домену файл
 
- virt-cat disk.img file
+ virt-cat диск.img файл
 
 =head1 ОПИС
 
-C<virt-cat> is a command line tool to display the contents of C<file> where
-C<file> exists in the named virtual machine (or disk image).
+C<virt-cat> — інструмент командного рядка для показу вмісту C<файла>, який
+зберігається у вказаній віртуальній машині (або образі диска).
 
-Multiple filenames can be given, in which case they are concatenated
-together.  Each filename must be a full path, starting at the root directory
-(starting with '/').
+Ви можете вказати декілька назв файлів. Вміст таких файлів буде
+об’єднано. Назви файлів слід вказувати повністю (разом зі шляхом), починаючи
+з кореневого каталогу (тобто назва має починатися з «/»).
 
-C<virt-cat> can be used to quickly view a file.  To edit a file, use
-C<virt-edit>.  For more complex cases you should look at the L<guestfish(1)>
-tool (see L</USING GUESTFISH> below).
+C<virt-cat> можна скористатися для пришвидшення перегляду файла. Для
+редагування даних слід користуватися C<virt-edit>. Для виконання складніших
+дій можна скористатися програмою L<guestfish(1)> (див. L</USING GUESTFISH>
+нижче).
 
 =head1 ПРИКЛАДИ
 
-Display C</etc/fstab> file from inside the libvirt VM called C<mydomain>:
+Показ файла C</etc/fstab> з віртуальної машини libvirt з назвою C<mydomain>:
 
  virt-cat -d mydomain /etc/fstab
 
-List syslog messages from a VM disk image file:
+Показ списку повідомлень syslog з файла образу диска віртуальної машини:
 
  virt-cat -a disk.img /var/log/messages | tail
 
-Find out what DHCP IP address a VM acquired:
+Визначення IP-адреси DHCP, використаної віртуальною машиною:
 
  virt-cat -d mydomain /var/log/messages | \
    grep 'dhclient: bound to' | tail
 
-Find out what packages were recently installed:
+Пошук нещодавно встановлених пакунків:
 
  virt-cat -d mydomain /var/log/yum.log | tail
 
-Find out who is logged on inside a virtual machine:
+Визначення користувачів, які працюють у віртуальній машині:
 
  virt-cat -d mydomain /var/run/utmp > /tmp/utmp
  who /tmp/utmp
 
-or who was logged on:
+або тих, які у ній працювали:
 
  virt-cat -d mydomain /var/log/wtmp > /tmp/wtmp
  last -f /tmp/wtmp
@@ -64,11 +65,11 @@ or who was logged on:
 
 =item B<--help>
 
-Display brief help.
+Показати коротку довідку.
 
-=item B<-a> file
+=item B<-a> файл
 
-=item B<--add> file
+=item B<--add> файл
 
 Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
@@ -77,9 +78,9 @@ separate I<-a> options.
 The format of the disk image is auto-detected.  To override this and force a
 particular format use the I<--format=..> option.
 
-=item B<-c> URI
+=item B<-c> адреса
 
-=item B<--connect> URI
+=item B<--connect> адреса
 
 If using libvirt, connect to the given I<URI>.  If omitted, then we connect
 to the default libvirt hypervisor.
@@ -87,9 +88,9 @@ to the default libvirt hypervisor.
 If you specify guest block devices directly (I<-a>), then libvirt is not
 used at all.
 
-=item B<-d> guest
+=item B<-d> гість
 
-=item B<--domain> guest
+=item B<--domain> гість
 
 Add all the disks from the named libvirt guest.  Domain UUIDs can be used
 instead of names.
@@ -154,7 +155,7 @@ Previous versions of virt-cat allowed you to write either:
 
  virt-cat disk.img [disk.img ...] file
 
-or
+або
 
  virt-cat guestname file
 
@@ -163,7 +164,47 @@ the confusing case where a disk image might have the same name as a guest.
 
 For compatibility the old style is still supported.
 
-=head1 USING GUESTFISH
+=head1 ШЛЯХИ У WINDOWS
+
+C<virt-cat> has a limited ability to understand Windows drive letters and
+paths (eg. C<E:\foo\bar.txt>).
+
+If and only if the guest is running Windows then:
+
+=over 4
+
+=item *
+
+Drive letter prefixes like C<C:> are resolved against the Windows Registry
+to the correct filesystem.
+
+=item *
+
+Any backslash (C<\>) characters in the path are replaced with forward
+slashes so that libguestfs can process it.
+
+=item *
+
+The path is resolved case insensitively to locate the file that should be
+displayed.
+
+=back
+
+There are some known shortcomings:
+
+=over 4
+
+=item *
+
+Some NTFS symbolic links may not be followed correctly.
+
+=item *
+
+NTFS junction points that cross filesystems are not followed.
+
+=back
+
+=head1 ВИКОРИСТАННЯ GUESTFISH
 
 L<guestfish(1)> is a more powerful, lower level tool which you can use when
 C<virt-cat> doesn't work.
@@ -207,7 +248,7 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2010-2011 Red Hat Inc.
+©Red Hat Inc., 2010–2011
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -219,7 +260,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, MA 02139, USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 

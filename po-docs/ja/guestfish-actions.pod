@@ -27,7 +27,7 @@ L</add-drive-ro> instead.
 
 =back
 
-This function is deprecated.  In new code, use the L</add_drive_opts> call
+I<This function is deprecated.> In new code, use the L</add_drive_opts> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -38,7 +38,7 @@ these functions.
 
 =head2 domain
 
- add-domain dom [libvirturi:..] [readonly:..] [iface:..] [live:..] [allowuuid:..]
+ add-domain dom [libvirturi:..] [readonly:..] [iface:..] [live:..] [allowuuid:..] [readonlydisk:..]
 
 This function adds the disk(s) attached to the named libvirt domain C<dom>.
 It works by connecting to libvirt, requesting the domain and domain XML from
@@ -71,6 +71,51 @@ passed instead of the domain name.  The C<dom> string is treated as a UUID
 first and looked up, and if that lookup fails then we treat C<dom> as a name
 as usual.
 
+The optional C<readonlydisk> parameter controls what we do for disks which
+are marked E<lt>readonly/E<gt> in the libvirt XML.  Possible values are:
+
+=over 4
+
+=item readonlydisk = "error"
+
+If C<readonly> is false:
+
+The whole call is aborted with an error if any disk with the
+E<lt>readonly/E<gt> flag is found.
+
+If C<readonly> is true:
+
+Disks with the E<lt>readonly/E<gt> flag are added read-only.
+
+=item readonlydisk = "read"
+
+If C<readonly> is false:
+
+Disks with the E<lt>readonly/E<gt> flag are added read-only.  Other disks
+are added read/write.
+
+If C<readonly> is true:
+
+Disks with the E<lt>readonly/E<gt> flag are added read-only.
+
+=item readonlydisk = "write" (default)
+
+If C<readonly> is false:
+
+Disks with the E<lt>readonly/E<gt> flag are added read/write.
+
+If C<readonly> is true:
+
+Disks with the E<lt>readonly/E<gt> flag are added read-only.
+
+=item readonlydisk = "ignore"
+
+If C<readonly> is true or false:
+
+Disks with the E<lt>readonly/E<gt> flag are skipped.
+
+=back
+
 The other optional parameters are passed directly through to
 L</add-drive-opts>.
 
@@ -95,7 +140,7 @@ L</add-drive-opts>, and specifying the format.
 
 =head2 add
 
- add-drive-opts filename [readonly:..] [format:..] [iface:..]
+ add-drive-opts filename [readonly:..] [format:..] [iface:..] [name:..]
 
 This function adds a virtual machine disk image C<filename> to libguestfs.
 The first time you call this function, the disk appears as C</dev/sda>, the
@@ -133,6 +178,11 @@ RHBZ#642934.  Specifying the format closes this security hole.
 This rarely-used option lets you emulate the behaviour of the deprecated
 L</add-drive-with-if> call (q.v.)
 
+=item C<name>
+
+The name the drive had in the original guest, e.g. /dev/sdb. This is used as
+a hint to the guest inspection process if it is available.
+
 =back
 
 This command has one or more optional arguments.  See L</OPTIONAL
@@ -155,7 +205,7 @@ is added read-only, with the format being detected automatically.
 This is the same as L</add-drive-ro> but it allows you to specify the QEMU
 interface emulation to use at run time.
 
-This function is deprecated.  In new code, use the L</add_drive_opts> call
+I<This function is deprecated.> In new code, use the L</add_drive_opts> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -169,7 +219,7 @@ these functions.
 This is the same as L</add-drive> but it allows you to specify the QEMU
 interface emulation to use at run time.
 
-This function is deprecated.  In new code, use the L</add_drive_opts> call
+I<This function is deprecated.> In new code, use the L</add_drive_opts> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -727,6 +777,42 @@ See also: L</sh-lines>
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+=head2 compress-device-out
+
+ compress-device-out ctype device (zdevice|-) [level:..]
+
+This command compresses C<device> and writes it out to the local file
+C<zdevice>.
+
+The C<ctype> and optional C<level> parameters have the same meaning as in
+L</compress-out>.
+
+Use C<-> instead of a filename to read/write from stdin/stdout.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 compress-out
+
+ compress-out ctype file (zfile|-) [level:..]
+
+This command compresses C<file> and writes it out to the local file
+C<zfile>.
+
+The compression program used is controlled by the C<ctype> parameter.
+Currently this includes: C<compress>, C<gzip>, C<bzip2>, C<xz> or C<lzop>.
+Some compression types may not be supported by particular builds of
+libguestfs, in which case you will get an error containing the substring
+"not supported".
+
+The optional C<level> parameter controls compression level.  The meaning and
+default for this parameter depends on the compression program being used.
+
+Use C<-> instead of a filename to read/write from stdin/stdout.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
 =head2 config
 
  config qemuparam qemuvalue
@@ -739,6 +825,59 @@ The first character of C<param> string must be a C<-> (dash).
 
 C<value> can be NULL.
 
+=head2 copy-device-to-device
+
+ copy-device-to-device src dest [srcoffset:..] [destoffset:..] [size:..]
+
+The four calls L</copy-device-to-device>, L</copy-device-to-file>,
+L</copy-file-to-device>, and L</copy-file-to-file> let you copy from a
+source (device|file) to a destination (device|file).
+
+Partial copies can be made since you can specify optionally the source
+offset, destination offset and size to copy.  These values are all specified
+in bytes.  If not given, the offsets both default to zero, and the size
+defaults to copying as much as possible until we hit the end of the source.
+
+The source and destination may be the same object.  However overlapping
+regions may not be copied correctly.
+
+If the destination is a file, it is created if required.  If the destination
+file is not large enough, it is extended.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 copy-device-to-file
+
+ copy-device-to-file src dest [srcoffset:..] [destoffset:..] [size:..]
+
+See L</copy-device-to-device> for a general overview of this call.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 copy-file-to-device
+
+ copy-file-to-device src dest [srcoffset:..] [destoffset:..] [size:..]
+
+See L</copy-device-to-device> for a general overview of this call.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 copy-file-to-file
+
+ copy-file-to-file src dest [srcoffset:..] [destoffset:..] [size:..]
+
+See L</copy-device-to-device> for a general overview of this call.
+
+This is B<not> the function you want for copying files.  This is for copying
+blocks within existing files.  See L</cp>, L</cp-a> and L</mv> for general
+file copying and moving functions.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
 =head2 copy-size
 
  copy-size src dest size
@@ -748,6 +887,13 @@ C<src> to another destination device or file C<dest>.
 
 Note this will fail if the source is too short or if the destination is not
 large enough.
+
+I<This function is deprecated.> In new code, use the
+L</copy_device_to_device> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 cp
 
@@ -773,7 +919,14 @@ or from a device or partition, for example to duplicate a filesystem.
 
 If the destination is a device, it must be as large or larger than the
 source file or device, otherwise the copy will fail.  This command cannot do
-partial copies (see L</copy-size>).
+partial copies (see L</copy-device-to-device>).
+
+I<This function is deprecated.> In new code, use the
+L</copy_device_to_device> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 df
 
@@ -932,7 +1085,7 @@ size C<len> bytes.  If the file exists already, it is overwritten.
 Do not confuse this with the guestfish-specific C<alloc> command which
 allocates a file in the host and attaches it as a device.
 
-This function is deprecated.  In new code, use the L</fallocate64> call
+I<This function is deprecated.> In new code, use the L</fallocate64> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -1277,7 +1430,7 @@ Return the direct appliance mode flag.
 
 This returns the ext2/3/4 filesystem label of the filesystem on C<device>.
 
-This function is deprecated.  In new code, use the L</vfs_label> call
+I<This function is deprecated.> In new code, use the L</vfs_label> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -1290,7 +1443,7 @@ these functions.
 
 This returns the ext2/3/4 filesystem UUID of the filesystem on C<device>.
 
-This function is deprecated.  In new code, use the L</vfs_uuid> call
+I<This function is deprecated.> In new code, use the L</vfs_uuid> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -1364,6 +1517,12 @@ This returns the current setting of the selinux flag which is passed to the
 appliance at boot time.  See L</set-selinux>.
 
 For more information on the architecture of libguestfs, see L<guestfs(3)>.
+
+=head2 get-smp
+
+ get-smp
+
+This returns the number of virtual CPUs assigned to the appliance.
 
 =head2 get-state
 
@@ -1690,6 +1849,10 @@ Gentoo.
 
 Linux Mint.
 
+=item "mageia"
+
+Mageia.
+
 =item "mandriva"
 
 Mandriva.
@@ -1697,6 +1860,10 @@ Mandriva.
 =item "meego"
 
 MeeGo.
+
+=item "opensuse"
+
+OpenSUSE.
 
 =item "pardus"
 
@@ -1717,6 +1884,10 @@ Scientific Linux.
 =item "slackware"
 
 Slackware.
+
+=item "ttylinux"
+
+ttylinux.
 
 =item "ubuntu"
 
@@ -1955,8 +2126,8 @@ This returns the string C<unknown> if we could not determine the package
 format I<or> if the operating system does not have a real packaging system
 (eg. Windows).
 
-Possible strings include: C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>.
-Future versions of libguestfs may return other strings.
+Possible strings include: C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>,
+C<pkgsrc>.  Future versions of libguestfs may return other strings.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
 
@@ -1974,8 +2145,8 @@ management tool I<or> if the operating system does not have a real packaging
 system (eg. Windows).
 
 Possible strings include: C<yum>, C<up2date>, C<apt> (for all Debian
-derivatives), C<portage>, C<pisi>, C<pacman>, C<urpmi>.  Future versions of
-libguestfs may return other strings.
+derivatives), C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>.  Future
+versions of libguestfs may return other strings.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
 
@@ -2049,6 +2220,10 @@ Any Microsoft Windows operating system.
 =item "freebsd"
 
 FreeBSD.
+
+=item "netbsd"
+
+NetBSD.
 
 =item "unknown"
 
@@ -2611,9 +2786,6 @@ slot C<slot>.  (LUKS supports 8 key slots, numbered 0-7).
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
 
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
-
 =head2 luks-format-cipher
 
  luks-format-cipher device keyslot cipher
@@ -2623,9 +2795,6 @@ the C<cipher> used.
 
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
-
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
 
 =head2 luks-kill-slot
 
@@ -2706,9 +2875,6 @@ This command also clears the LVM cache and performs a volume group scan.
 
 This command removes all LVM logical volumes, volume groups and physical
 volumes.
-
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
 
 =head2 lvm-set-filter
 
@@ -2936,7 +3102,7 @@ filesystem type, but typically they are C<1024>, C<2048> or C<4096> only.
 For VFAT and NTFS the C<blocksize> parameter is treated as the requested
 cluster size.
 
-This function is deprecated.  In new code, use the L</mkfs_opts> call
+I<This function is deprecated.> In new code, use the L</mkfs_opts> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -3126,20 +3292,11 @@ mounted on directories which already exist.
 The mounted filesystem is writable, if we have sufficient permissions on the
 underlying device.
 
-B<Important note:> When you use this call, the filesystem options C<sync>
-and C<noatime> are set implicitly.  This was originally done because we
-thought it would improve reliability, but it turns out that I<-o sync> has a
-very large negative performance impact and negligible effect on
-reliability.  Therefore we recommend that you avoid using L</mount> in any
-code that needs performance, and instead use L</mount-options> (use an empty
-string for the first parameter if you don't want any options).
-
-This function is deprecated.  In new code, use the L</mount_options> call
-instead.
-
-Deprecated functions will not be removed from the API, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
+Before libguestfs 1.13.16, this call implicitly added the options C<sync>
+and C<noatime>.  The C<sync> option greatly slowed writes and caused many
+problems for users.  If your program might need to work with older versions
+of libguestfs, use L</mount-options> instead (using an empty string for the
+first parameter if you don't want any options).
 
 =head2 mount-9p
 
@@ -3244,8 +3401,8 @@ without booting into Windows between each resize.
 
 See also L<ntfsresize(8)>.
 
-This function is deprecated.  In new code, use the L</ntfsresize_opts> call
-instead.
+I<This function is deprecated.> In new code, use the L</ntfsresize_opts>
+call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -3292,8 +3449,8 @@ ARGUMENTS>.
 This command is the same as L</ntfsresize> except that it allows you to
 specify the new size (in bytes) explicitly.
 
-This function is deprecated.  In new code, use the L</ntfsresize_opts> call
-instead.
+I<This function is deprecated.> In new code, use the L</ntfsresize_opts>
+call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -3335,9 +3492,6 @@ L</part-add> to create a single primary partition covering the whole disk.
 
 C<parttype> is the partition table type, usually C<mbr> or C<gpt>, but other
 possible values are described in L</part-init>.
-
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
 
 =head2 part-get-bootable
 
@@ -3518,6 +3672,20 @@ partition number, returning the device name (eg. "/dev/sdb").
 
 The named partition must exist, for example as a string returned from
 L</list-partitions>.
+
+See also L</part-to-partnum>.
+
+=head2 part-to-partnum
+
+ part-to-partnum partition
+
+This function takes a partition name (eg. "/dev/sdb1") and returns the
+partition number (eg. C<1>).
+
+The named partition must exist, for example as a string returned from
+L</list-partitions>.
+
+See also L</part-to-dev>.
 
 =head2 ping-daemon
 
@@ -3844,9 +4012,6 @@ difficult.
 It is an interface to the L<scrub(1)> program.  See that manual page for
 more details.
 
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
-
 =head2 scrub-file
 
  scrub-file file
@@ -4072,6 +4237,18 @@ Note that if SELinux is enabled, it is always in Permissive mode
 
 For more information on the architecture of libguestfs, see L<guestfs(3)>.
 
+=head2 set-smp
+
+=head2 smp
+
+ set-smp smp
+
+Change the number of virtual CPUs assigned to the appliance.  The default is
+C<1>.  Increasing this may improve performance, though often it has no
+effect.
+
+This function must be called before L</launch>.
+
 =head2 set-trace
 
 =head2 trace
@@ -4147,10 +4324,7 @@ C<,> (comma).
 
 See also: L</sfdisk-l>, L</sfdisk-N>, L</part-init>
 
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
-
-This function is deprecated.  In new code, use the L</part_add> call
+I<This function is deprecated.> In new code, use the L</part_add> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -4168,10 +4342,7 @@ rarely if ever used anyway.
 
 See also: L</sfdisk>, the L<sfdisk(8)> manpage and L</part-disk>
 
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
-
-This function is deprecated.  In new code, use the L</part_add> call
+I<This function is deprecated.> In new code, use the L</part_add> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -4190,10 +4361,7 @@ cyls/heads/sectors parameters.
 
 See also: L</part-add>
 
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
-
-This function is deprecated.  In new code, use the L</part_add> call
+I<This function is deprecated.> In new code, use the L</part_add> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -4228,7 +4396,7 @@ of the L<sfdisk(8)> command.  It is not intended to be parsed.
 
 See also: L</part-list>
 
-This function is deprecated.  In new code, use the L</part_list> call
+I<This function is deprecated.> In new code, use the L</part_list> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -4846,7 +5014,7 @@ I<not> work, even if the length is specified.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-This function is deprecated.  In new code, use the L</write> call instead.
+I<This function is deprecated.> In new code, use the L</write> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4897,9 +5065,6 @@ If blocks are already zero, then this command avoids writing zeroes.  This
 prevents the underlying device from becoming non-sparse or growing
 unnecessarily.
 
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
-
 =head2 zerofree
 
  zerofree device
@@ -4941,7 +5106,7 @@ C<method> must be one of C<gzip>, C<compress> or C<bzip2>.
 
 Since 1.0.63, use L</file> instead which can now process compressed files.
 
-This function is deprecated.  In new code, use the L</file> call instead.
+I<This function is deprecated.> In new code, use the L</file> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of

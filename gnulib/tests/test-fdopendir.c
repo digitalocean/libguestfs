@@ -27,13 +27,16 @@ SIGNATURE_CHECK (fdopendir, DIR *, (int));
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "progname.h"
 #include "macros.h"
 
 int
-main (void)
+main (int argc _GL_UNUSED, char *argv[])
 {
   DIR *d;
   int fd;
+
+  set_program_name (argv[0]);
 
   /* A non-directory cannot be turned into a directory stream.  */
   fd = open ("test-fdopendir.tmp", O_RDONLY | O_CREAT, 0600);
@@ -45,9 +48,16 @@ main (void)
   ASSERT (unlink ("test-fdopendir.tmp") == 0);
 
   /* A bad fd cannot be turned into a stream.  */
-  errno = 0;
-  ASSERT (fdopendir (-1) == NULL);
-  ASSERT (errno == EBADF);
+  {
+    errno = 0;
+    ASSERT (fdopendir (-1) == NULL);
+    ASSERT (errno == EBADF);
+  }
+  {
+    errno = 0;
+    ASSERT (fdopendir (99) == NULL);
+    ASSERT (errno == EBADF);
+  }
 
   /* This should work.  */
   fd = open (".", O_RDONLY);

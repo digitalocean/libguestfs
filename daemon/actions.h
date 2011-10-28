@@ -30,6 +30,20 @@
 #define GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_NTFSRESIZE_OPTS_FORCE_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_COMPRESS_OUT_LEVEL_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_COMPRESS_DEVICE_OUT_LEVEL_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK (UINT64_C(1)<<2)
 extern int do_mount (const char *device, const char *mountpoint);
 extern int do_sync (void);
 extern int do_touch (const char *path);
@@ -320,3 +334,10 @@ extern char **do_list_dm_devices (void);
 extern int do_ntfsresize_opts (const char *device, int64_t size, int force);
 extern int do_btrfs_filesystem_resize (const char *mountpoint, int64_t size);
 extern int do_write_append (const char *path, const char *content, size_t content_size);
+extern int do_compress_out (const char *ctype, const char *file, int level);
+extern int do_compress_device_out (const char *ctype, const char *device, int level);
+extern int do_part_to_partnum (const char *partition);
+extern int do_copy_device_to_device (const char *src, const char *dest, int64_t srcoffset, int64_t destoffset, int64_t size);
+extern int do_copy_device_to_file (const char *src, const char *dest, int64_t srcoffset, int64_t destoffset, int64_t size);
+extern int do_copy_file_to_device (const char *src, const char *dest, int64_t srcoffset, int64_t destoffset, int64_t size);
+extern int do_copy_file_to_file (const char *src, const char *dest, int64_t srcoffset, int64_t destoffset, int64_t size);

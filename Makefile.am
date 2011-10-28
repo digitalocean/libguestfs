@@ -36,7 +36,7 @@ SUBDIRS += gnulib/tests capitests caution regressions test-tool
 SUBDIRS += fish
 
 # virt-tools in C.
-SUBDIRS += cat df edit inspector rescue
+SUBDIRS += align cat df edit inspector rescue
 
 # Language bindings.
 if HAVE_PERL
@@ -60,15 +60,19 @@ endif
 if HAVE_PHP
 SUBDIRS += php
 endif
+if HAVE_ERLANG
+SUBDIRS += erlang erlang/examples
+endif
 
 # Unconditional because nothing is built yet.
 SUBDIRS += csharp
 
-# virt-resize 2.0 is written in OCaml.
+# virt-resize (new version) and virt-sparsify are written in OCaml.
 if HAVE_OCAML
 if HAVE_OCAML_PCRE
 SUBDIRS += resize
 endif
+SUBDIRS += sparsify
 endif
 
 # Perl tools.
@@ -79,6 +83,11 @@ endif
 # guestmount
 if HAVE_FUSE
 SUBDIRS += fuse
+endif
+
+# virt-tools in shell.  This uses guestmount and virt-inspector.
+if HAVE_FUSE
+SUBDIRS += clone
 endif
 
 # po-docs must come after tools, inspector.
@@ -132,6 +141,7 @@ EXTRA_DIST = \
 HTMLFILES = \
 	html/guestfs.3.html \
 	html/guestfs-examples.3.html \
+	html/guestfs-erlang.3.html \
 	html/guestfs-java.3.html \
 	html/guestfs-ocaml.3.html \
 	html/guestfs-perl.3.html \
@@ -140,6 +150,7 @@ HTMLFILES = \
 	html/guestfs-ruby.3.html \
 	html/guestfish.1.html \
 	html/guestmount.1.html \
+	html/virt-alignment-scan.1.html \
 	html/virt-cat.1.html \
 	html/virt-copy-in.1.html \
 	html/virt-copy-out.1.html \
@@ -153,6 +164,8 @@ HTMLFILES = \
 	html/virt-make-fs.1.html \
 	html/virt-rescue.1.html \
 	html/virt-resize.1.html \
+	html/virt-sparsify.1.html \
+	html/virt-sysprep.1.html \
 	html/virt-tar.1.html \
 	html/virt-tar-in.1.html \
 	html/virt-tar-out.1.html \

@@ -74,7 +74,25 @@
         guestfs_close;
         guestfs_command;
         guestfs_command_lines;
+        guestfs_compress_device_out;
+        guestfs_compress_device_out_argv;
+        guestfs_compress_device_out_va;
+        guestfs_compress_out;
+        guestfs_compress_out_argv;
+        guestfs_compress_out_va;
         guestfs_config;
+        guestfs_copy_device_to_device;
+        guestfs_copy_device_to_device_argv;
+        guestfs_copy_device_to_device_va;
+        guestfs_copy_device_to_file;
+        guestfs_copy_device_to_file_argv;
+        guestfs_copy_device_to_file_va;
+        guestfs_copy_file_to_device;
+        guestfs_copy_file_to_device_argv;
+        guestfs_copy_file_to_device_va;
+        guestfs_copy_file_to_file;
+        guestfs_copy_file_to_file_argv;
+        guestfs_copy_file_to_file_va;
         guestfs_copy_size;
         guestfs_cp;
         guestfs_cp_a;
@@ -82,6 +100,7 @@
         guestfs_dd;
         guestfs_debug;
         guestfs_debug_cmdline;
+        guestfs_debug_drives;
         guestfs_debug_upload;
         guestfs_delete_event_callback;
         guestfs_df;
@@ -153,6 +172,7 @@
         guestfs_get_qemu;
         guestfs_get_recovery_proc;
         guestfs_get_selinux;
+        guestfs_get_smp;
         guestfs_get_state;
         guestfs_get_trace;
         guestfs_get_umask;
@@ -312,6 +332,7 @@
         guestfs_part_set_mbr_id;
         guestfs_part_set_name;
         guestfs_part_to_dev;
+        guestfs_part_to_partnum;
         guestfs_ping_daemon;
         guestfs_pread;
         guestfs_pread_device;
@@ -366,6 +387,7 @@
         guestfs_set_qemu;
         guestfs_set_recovery_proc;
         guestfs_set_selinux;
+        guestfs_set_smp;
         guestfs_set_subprocess_quit_callback;
         guestfs_set_trace;
         guestfs_set_verbose;

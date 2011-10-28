@@ -136,16 +136,6 @@ Guestfish will prompt for these separately."
             ("\n\n" ^ protocol_limit_warning)
           else "" in
 
-      (* For DangerWillRobinson commands, we should probably have
-       * guestfish prompt before allowing you to use them (especially
-       * in interactive mode). XXX
-       *)
-      let warnings =
-        warnings ^
-          if List.mem DangerWillRobinson flags then
-            ("\n\n" ^ danger_will_robinson)
-          else "" in
-
       let warnings =
         warnings ^
           match deprecation_notice flags with
@@ -418,6 +408,8 @@ Guestfish will prompt for these separately."
             pr "  if (%s == NULL) return -1;\n" name
         | Key name ->
             pr "  %s = read_key (\"%s\");\n" name name;
+            pr "  if (keys_from_stdin)\n";
+            pr "    input_lineno++;\n";
             pr "  if (%s == NULL) return -1;\n" name
         | Bool name ->
             pr "  %s = is_true (argv[i++]) ? 1 : 0;\n" name
@@ -862,9 +854,6 @@ Guestfish will prompt for these separately.\n\n";
 
       if List.mem ProtocolLimitWarning flags then
         pr "%s\n\n" protocol_limit_warning;
-
-      if List.mem DangerWillRobinson flags then
-        pr "%s\n\n" danger_will_robinson;
 
       match deprecation_notice flags with
       | None -> ()

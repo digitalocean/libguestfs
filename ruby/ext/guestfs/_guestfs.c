@@ -892,7 +892,7 @@ ruby_guestfs_launch (VALUE gv)
  * can just remove them, unless you want to retain
  * compatibility with older versions of the API.
  * 
- * This function is deprecated. In new code, use the
+ * *This function is deprecated.* In new code, use the
  * "launch" call instead.
  * 
  * Deprecated functions will not be removed from the API,
@@ -1019,7 +1019,7 @@ ruby_guestfs_add_drive (VALUE gv, VALUE filenamev)
  * into the guest), then you should probably use
  * "g.add_drive_ro" instead.
  * 
- * This function is deprecated. In new code, use the
+ * *This function is deprecated.* In new code, use the
  * "add_drive_opts" call instead.
  * 
  * Deprecated functions will not be removed from the API,
@@ -2130,7 +2130,7 @@ ruby_guestfs_get_recovery_proc (VALUE gv)
  * This is the same as "g.add_drive" but it allows you to
  * specify the QEMU interface emulation to use at run time.
  * 
- * This function is deprecated. In new code, use the
+ * *This function is deprecated.* In new code, use the
  * "add_drive_opts" call instead.
  * 
  * Deprecated functions will not be removed from the API,
@@ -2171,7 +2171,7 @@ ruby_guestfs_add_drive_with_if (VALUE gv, VALUE filenamev, VALUE ifacev)
  * to specify the QEMU interface emulation to use at run
  * time.
  * 
- * This function is deprecated. In new code, use the
+ * *This function is deprecated.* In new code, use the
  * "add_drive_opts" call instead.
  * 
  * Deprecated functions will not be removed from the API,
@@ -2390,6 +2390,9 @@ ruby_guestfs_inspect_os (VALUE gv)
  * "freebsd"
  * FreeBSD.
  * 
+ * "netbsd"
+ * NetBSD.
+ * 
  * "unknown"
  * The operating system type could not be determined.
  * 
@@ -2493,11 +2496,17 @@ ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
  * "linuxmint"
  * Linux Mint.
  * 
+ * "mageia"
+ * Mageia.
+ * 
  * "mandriva"
  * Mandriva.
  * 
  * "meego"
  * MeeGo.
+ * 
+ * "opensuse"
+ * OpenSUSE.
  * 
  * "pardus"
  * Pardus.
@@ -2513,6 +2522,9 @@ ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
  * 
  * "slackware"
  * Slackware.
+ * 
+ * "ttylinux"
+ * ttylinux.
  * 
  * "ubuntu"
  * Ubuntu.
@@ -2969,6 +2981,11 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * behaviour of the deprecated "g.add_drive_with_if"
  * call (q.v.)
  * 
+ * "name"
+ * The name the drive had in the original guest, e.g.
+ * /dev/sdb. This is used as a hint to the guest
+ * inspection process if it is available.
+ * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
  * value. Pass an empty {} for no optional arguments.
@@ -3005,6 +3022,11 @@ ruby_guestfs_add_drive_opts (VALUE gv, VALUE filenamev, VALUE optargsv)
   if (v != Qnil) {
     optargs_s.iface = StringValueCStr (v);
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("name")));
+  if (v != Qnil) {
+    optargs_s.name = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK;
   }
 
   int r;
@@ -3129,6 +3151,32 @@ ruby_guestfs_debug_cmdline (VALUE gv)
   return rv;
 }
 
+static VALUE
+ruby_guestfs_debug_drives (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "debug_drives");
+
+
+  char **r;
+
+  r = guestfs_debug_drives (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
 /*
  * call-seq:
  *   g.add_domain(dom, {optargs...}) -> fixnum
@@ -3174,6 +3222,45 @@ ruby_guestfs_debug_cmdline (VALUE gv)
  * "dom" string is treated as a UUID first and looked up,
  * and if that lookup fails then we treat "dom" as a name
  * as usual.
+ * 
+ * The optional "readonlydisk" parameter controls what we
+ * do for disks which are marked <readonly/> in the libvirt
+ * XML. Possible values are:
+ * 
+ * readonlydisk = "error"
+ * If "readonly" is false:
+ * 
+ * The whole call is aborted with an error if any disk
+ * with the <readonly/> flag is found.
+ * 
+ * If "readonly" is true:
+ * 
+ * Disks with the <readonly/> flag are added read-only.
+ * 
+ * readonlydisk = "read"
+ * If "readonly" is false:
+ * 
+ * Disks with the <readonly/> flag are added read-only.
+ * Other disks are added read/write.
+ * 
+ * If "readonly" is true:
+ * 
+ * Disks with the <readonly/> flag are added read-only.
+ * 
+ * readonlydisk = "write" (default)
+ * If "readonly" is false:
+ * 
+ * Disks with the <readonly/> flag are added
+ * read/write.
+ * 
+ * If "readonly" is true:
+ * 
+ * Disks with the <readonly/> flag are added read-only.
+ * 
+ * readonlydisk = "ignore"
+ * If "readonly" is true or false:
+ * 
+ * Disks with the <readonly/> flag are skipped.
  * 
  * The other optional parameters are passed directly
  * through to "g.add_drive_opts".
@@ -3225,6 +3312,11 @@ ruby_guestfs_add_domain (VALUE gv, VALUE domv, VALUE optargsv)
     optargs_s.allowuuid = RTEST (v);
     optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_ALLOWUUID_BITMASK;
   }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("readonlydisk")));
+  if (v != Qnil) {
+    optargs_s.readonlydisk = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK;
+  }
 
   int r;
 
@@ -3253,8 +3345,8 @@ ruby_guestfs_add_domain (VALUE gv, VALUE domv, VALUE optargsv)
  * Windows).
  * 
  * Possible strings include: "rpm", "deb", "ebuild",
- * "pisi", "pacman". Future versions of libguestfs may
- * return other strings.
+ * "pisi", "pacman", "pkgsrc". Future versions of
+ * libguestfs may return other strings.
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
@@ -3302,8 +3394,8 @@ ruby_guestfs_inspect_get_package_format (VALUE gv, VALUE rootv)
  * 
  * Possible strings include: "yum", "up2date", "apt" (for
  * all Debian derivatives), "portage", "pisi", "pacman",
- * "urpmi". Future versions of libguestfs may return other
- * strings.
+ * "urpmi", "zypper". Future versions of libguestfs may
+ * return other strings.
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
  *
@@ -4085,6 +4177,72 @@ ruby_guestfs_get_pgroup (VALUE gv)
 
 /*
  * call-seq:
+ *   g.set_smp(smp) -> nil
+ *
+ * set number of virtual CPUs in appliance
+ *
+ * Change the number of virtual CPUs assigned to the
+ * appliance. The default is 1. Increasing this may improve
+ * performance, though often it has no effect.
+ * 
+ * This function must be called before "g.launch".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_smp+[http://libguestfs.org/guestfs.3.html#guestfs_set_smp]).
+ */
+static VALUE
+ruby_guestfs_set_smp (VALUE gv, VALUE smpv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_smp");
+
+  int smp = NUM2INT (smpv);
+
+  int r;
+
+  r = guestfs_set_smp (g, smp);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.get_smp() -> fixnum
+ *
+ * get number of virtual CPUs in appliance
+ *
+ * This returns the number of virtual CPUs assigned to the
+ * appliance.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_smp+[http://libguestfs.org/guestfs.3.html#guestfs_get_smp]).
+ */
+static VALUE
+ruby_guestfs_get_smp (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_smp");
+
+
+  int r;
+
+  r = guestfs_get_smp (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
+/*
+ * call-seq:
  *   g.mount(device, mountpoint) -> nil
  *
  * mount a guest disk at a position in the filesystem
@@ -4104,22 +4262,13 @@ ruby_guestfs_get_pgroup (VALUE gv)
  * The mounted filesystem is writable, if we have
  * sufficient permissions on the underlying device.
  * 
- * Important note: When you use this call, the filesystem
- * options "sync" and "noatime" are set implicitly. This
- * was originally done because we thought it would improve
- * reliability, but it turns out that *-o sync* has a very
- * large negative performance impact and negligible effect
- * on reliability. Therefore we recommend that you avoid
- * using "g.mount" in any code that needs performance, and
- * instead use "g.mount_options" (use an empty string for
- * the first parameter if you don't want any options).
- * 
- * This function is deprecated. In new code, use the
- * "mount_options" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
+ * Before libguestfs 1.13.16, this call implicitly added
+ * the options "sync" and "noatime". The "sync" option
+ * greatly slowed writes and caused many problems for
+ * users. If your program might need to work with older
+ * versions of libguestfs, use "g.mount_options" instead
+ * (using an empty string for the first parameter if you
+ * don't want any options).
  *
  *
  * (For the C API documentation for this function, see
@@ -5811,10 +5960,7 @@ ruby_guestfs_mkfs (VALUE gv, VALUE fstypev, VALUE devicev)
  * 
  * See also: "g.sfdisk_l", "g.sfdisk_N", "g.part_init"
  * 
- * This command is dangerous. Without careful use you can
- * easily destroy all your data.
- * 
- * This function is deprecated. In new code, use the
+ * *This function is deprecated.* In new code, use the
  * "part_add" call instead.
  * 
  * Deprecated functions will not be removed from the API,
@@ -5882,7 +6028,7 @@ ruby_guestfs_sfdisk (VALUE gv, VALUE devicev, VALUE cylsv, VALUE headsv, VALUE s
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
  * 
- * This function is deprecated. In new code, use the
+ * *This function is deprecated.* In new code, use the
  * "write" call instead.
  * 
  * Deprecated functions will not be removed from the API,
@@ -6031,9 +6177,6 @@ ruby_guestfs_umount_all (VALUE gv)
  *
  * This command removes all LVM logical volumes, volume
  * groups and physical volumes.
- * 
- * This command is dangerous. Without careful use you can
- * easily destroy all your data.
  *
  *
  * (For the C API documentation for this function, see
@@ -7369,7 +7512,7 @@ ruby_guestfs_set_e2label (VALUE gv, VALUE devicev, VALUE labelv)
  * This returns the ext2/3/4 filesystem label of the
  * filesystem on "device".
  * 
- * This function is deprecated. In new code, use the
+ * *This function is deprecated.* In new code, use the
  * "vfs_label" call instead.
  * 
  * Deprecated functions will not be removed from the API,
@@ -7448,7 +7591,7 @@ ruby_guestfs_set_e2uuid (VALUE gv, VALUE devicev, VALUE uuidv)
  * This returns the ext2/3/4 filesystem UUID of the
  * filesystem on "device".
  * 
- * This function is deprecated. In new code, use the
+ * *This function is deprecated.* In new code, use the
  * "vfs_uuid" call instead.
  * 
  * Deprecated functions will not be removed from the API,
@@ -8118,10 +8261,7 @@ ruby_guestfs_pvresize (VALUE gv, VALUE devicev)
  * 
  * See also: "g.part_add"
  * 
- * This command is dangerous. Without careful use you can
- * easily destroy all your data.
- * 
- * This function is deprecated. In new code, use the
+ * *This function is deprecated.* In new code, use the
  * "part_add" call instead.
  * 
  * Deprecated functions will not be removed from the API,
@@ -8168,7 +8308,7 @@ ruby_guestfs_sfdisk_N (VALUE gv, VALUE devicev, VALUE partnumv, VALUE cylsv, VAL
  * 
  * See also: "g.part_list"
  * 
- * This function is deprecated. In new code, use the
+ * *This function is deprecated.* In new code, use the
  * "part_list" call instead.
  * 
  * Deprecated functions will not be removed from the API,
@@ -8761,9 +8901,6 @@ ruby_guestfs_glob_expand (VALUE gv, VALUE patternv)
  * 
  * It is an interface to the scrub(1) program. See that
  * manual page for more details.
- * 
- * This command is dangerous. Without careful use you can
- * easily destroy all your data.
  *
  *
  * (For the C API documentation for this function, see
@@ -9793,10 +9930,7 @@ ruby_guestfs_readdir (VALUE gv, VALUE dirv)
  * See also: "g.sfdisk", the sfdisk(8) manpage and
  * "g.part_disk"
  * 
- * This command is dangerous. Without careful use you can
- * easily destroy all your data.
- * 
- * This function is deprecated. In new code, use the
+ * *This function is deprecated.* In new code, use the
  * "part_add" call instead.
  * 
  * Deprecated functions will not be removed from the API,
@@ -9853,8 +9987,8 @@ ruby_guestfs_sfdiskM (VALUE gv, VALUE devicev, VALUE linesv)
  * Since 1.0.63, use "g.file" instead which can now process
  * compressed files.
  * 
- * This function is deprecated. In new code, use the "file"
- * call instead.
+ * *This function is deprecated.* In new code, use the
+ * "file" call instead.
  * 
  * Deprecated functions will not be removed from the API,
  * but the fact that they are deprecated indicates that
@@ -11062,7 +11196,7 @@ ruby_guestfs_readlink (VALUE gv, VALUE pathv)
  * command which allocates a file in the host and attaches
  * it as a device.
  * 
- * This function is deprecated. In new code, use the
+ * *This function is deprecated.* In new code, use the
  * "fallocate64" call instead.
  * 
  * Deprecated functions will not be removed from the API,
@@ -11735,7 +11869,7 @@ ruby_guestfs_getcon (VALUE gv)
  * For VFAT and NTFS the "blocksize" parameter is treated
  * as the requested cluster size.
  * 
- * This function is deprecated. In new code, use the
+ * *This function is deprecated.* In new code, use the
  * "mkfs_opts" call instead.
  * 
  * Deprecated functions will not be removed from the API,
@@ -12840,9 +12974,6 @@ ruby_guestfs_part_add (VALUE gv, VALUE devicev, VALUE prlogexv, VALUE startsectv
  * "parttype" is the partition table type, usually "mbr" or
  * "gpt", but other possible values are described in
  * "g.part_init".
- * 
- * This command is dangerous. Without careful use you can
- * easily destroy all your data.
  *
  *
  * (For the C API documentation for this function, see
@@ -13189,7 +13320,14 @@ ruby_guestfs_available (VALUE gv, VALUE groupsv)
  * If the destination is a device, it must be as large or
  * larger than the source file or device, otherwise the
  * copy will fail. This command cannot do partial copies
- * (see "g.copy_size").
+ * (see "g.copy_device_to_device").
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "copy_device_to_device" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -13568,6 +13706,13 @@ ruby_guestfs_vglvuuids (VALUE gv, VALUE vgnamev)
  * 
  * Note this will fail if the source is too short or if the
  * destination is not large enough.
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "copy_device_to_device" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -13607,9 +13752,6 @@ ruby_guestfs_copy_size (VALUE gv, VALUE srcv, VALUE destv, VALUE sizev)
  * If blocks are already zero, then this command avoids
  * writing zeroes. This prevents the underlying device from
  * becoming non-sparse or growing unnecessarily.
- * 
- * This command is dangerous. Without careful use you can
- * easily destroy all your data.
  *
  *
  * (For the C API documentation for this function, see
@@ -13721,7 +13863,7 @@ ruby_guestfs_txz_out (VALUE gv, VALUE directoryv, VALUE tarballv)
  * 
  * See also ntfsresize(8).
  * 
- * This function is deprecated. In new code, use the
+ * *This function is deprecated.* In new code, use the
  * "ntfsresize_opts" call instead.
  * 
  * Deprecated functions will not be removed from the API,
@@ -14411,7 +14553,7 @@ ruby_guestfs_pvresize_size (VALUE gv, VALUE devicev, VALUE sizev)
  * it allows you to specify the new size (in bytes)
  * explicitly.
  * 
- * This function is deprecated. In new code, use the
+ * *This function is deprecated.* In new code, use the
  * "ntfsresize_opts" call instead.
  * 
  * Deprecated functions will not be removed from the API,
@@ -14841,9 +14983,6 @@ ruby_guestfs_luks_close (VALUE gv, VALUE devicev)
  * formats the device as a LUKS encrypted device. "key" is
  * the initial key, which is added to key slot "slot".
  * (LUKS supports 8 key slots, numbered 0-7).
- * 
- * This command is dangerous. Without careful use you can
- * easily destroy all your data.
  *
  *
  * (For the C API documentation for this function, see
@@ -14878,9 +15017,6 @@ ruby_guestfs_luks_format (VALUE gv, VALUE devicev, VALUE keyv, VALUE keyslotv)
  *
  * This command is the same as "g.luks_format" but it also
  * allows you to set the "cipher" used.
- * 
- * This command is dangerous. Without careful use you can
- * easily destroy all your data.
  *
  *
  * (For the C API documentation for this function, see
@@ -15272,6 +15408,8 @@ ruby_guestfs_is_socket (VALUE gv, VALUE pathv)
  * 
  * The named partition must exist, for example as a string
  * returned from "g.list_partitions".
+ * 
+ * See also "g.part_to_partnum".
  *
  *
  * (For the C API documentation for this function, see
@@ -16163,6 +16301,402 @@ ruby_guestfs_write_append (VALUE gv, VALUE pathv, VALUE contentv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.compress_out(ctype, file, zfile, {optargs...}) -> nil
+ *
+ * output compressed file
+ *
+ * This command compresses "file" and writes it out to the
+ * local file "zfile".
+ * 
+ * The compression program used is controlled by the
+ * "ctype" parameter. Currently this includes: "compress",
+ * "gzip", "bzip2", "xz" or "lzop". Some compression types
+ * may not be supported by particular builds of libguestfs,
+ * in which case you will get an error containing the
+ * substring "not supported".
+ * 
+ * The optional "level" parameter controls compression
+ * level. The meaning and default for this parameter
+ * depends on the compression program being used.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_compress_out+[http://libguestfs.org/guestfs.3.html#guestfs_compress_out]).
+ */
+static VALUE
+ruby_guestfs_compress_out (VALUE gv, VALUE ctypev, VALUE filev, VALUE zfilev, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "compress_out");
+
+  const char *ctype = StringValueCStr (ctypev);
+  const char *file = StringValueCStr (filev);
+  const char *zfile = StringValueCStr (zfilev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_compress_out_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_compress_out_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("level")));
+  if (v != Qnil) {
+    optargs_s.level = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_COMPRESS_OUT_LEVEL_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_compress_out_argv (g, ctype, file, zfile, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.compress_device_out(ctype, device, zdevice, {optargs...}) -> nil
+ *
+ * output compressed device
+ *
+ * This command compresses "device" and writes it out to
+ * the local file "zdevice".
+ * 
+ * The "ctype" and optional "level" parameters have the
+ * same meaning as in "g.compress_out".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_compress_device_out+[http://libguestfs.org/guestfs.3.html#guestfs_compress_device_out]).
+ */
+static VALUE
+ruby_guestfs_compress_device_out (VALUE gv, VALUE ctypev, VALUE devicev, VALUE zdevicev, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "compress_device_out");
+
+  const char *ctype = StringValueCStr (ctypev);
+  const char *device = StringValueCStr (devicev);
+  const char *zdevice = StringValueCStr (zdevicev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_compress_device_out_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_compress_device_out_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("level")));
+  if (v != Qnil) {
+    optargs_s.level = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_COMPRESS_DEVICE_OUT_LEVEL_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_compress_device_out_argv (g, ctype, device, zdevice, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.part_to_partnum(partition) -> fixnum
+ *
+ * convert partition name to partition number
+ *
+ * This function takes a partition name (eg. "/dev/sdb1")
+ * and returns the partition number (eg. 1).
+ * 
+ * The named partition must exist, for example as a string
+ * returned from "g.list_partitions".
+ * 
+ * See also "g.part_to_dev".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_part_to_partnum+[http://libguestfs.org/guestfs.3.html#guestfs_part_to_partnum]).
+ */
+static VALUE
+ruby_guestfs_part_to_partnum (VALUE gv, VALUE partitionv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "part_to_partnum");
+
+  const char *partition = StringValueCStr (partitionv);
+
+  int r;
+
+  r = guestfs_part_to_partnum (g, partition);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.copy_device_to_device(src, dest, {optargs...}) -> nil
+ *
+ * copy from source device to destination device
+ *
+ * The four calls "g.copy_device_to_device",
+ * "g.copy_device_to_file", "g.copy_file_to_device", and
+ * "g.copy_file_to_file" let you copy from a source
+ * (device|file) to a destination (device|file).
+ * 
+ * Partial copies can be made since you can specify
+ * optionally the source offset, destination offset and
+ * size to copy. These values are all specified in bytes.
+ * If not given, the offsets both default to zero, and the
+ * size defaults to copying as much as possible until we
+ * hit the end of the source.
+ * 
+ * The source and destination may be the same object.
+ * However overlapping regions may not be copied correctly.
+ * 
+ * If the destination is a file, it is created if required.
+ * If the destination file is not large enough, it is
+ * extended.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_copy_device_to_device+[http://libguestfs.org/guestfs.3.html#guestfs_copy_device_to_device]).
+ */
+static VALUE
+ruby_guestfs_copy_device_to_device (VALUE gv, VALUE srcv, VALUE destv, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "copy_device_to_device");
+
+  const char *src = StringValueCStr (srcv);
+  const char *dest = StringValueCStr (destv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_copy_device_to_device_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_copy_device_to_device_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("srcoffset")));
+  if (v != Qnil) {
+    optargs_s.srcoffset = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("destoffset")));
+  if (v != Qnil) {
+    optargs_s.destoffset = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("size")));
+  if (v != Qnil) {
+    optargs_s.size = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_copy_device_to_device_argv (g, src, dest, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.copy_device_to_file(src, dest, {optargs...}) -> nil
+ *
+ * copy from source device to destination file
+ *
+ * See "g.copy_device_to_device" for a general overview of
+ * this call.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_copy_device_to_file+[http://libguestfs.org/guestfs.3.html#guestfs_copy_device_to_file]).
+ */
+static VALUE
+ruby_guestfs_copy_device_to_file (VALUE gv, VALUE srcv, VALUE destv, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "copy_device_to_file");
+
+  const char *src = StringValueCStr (srcv);
+  const char *dest = StringValueCStr (destv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_copy_device_to_file_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_copy_device_to_file_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("srcoffset")));
+  if (v != Qnil) {
+    optargs_s.srcoffset = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("destoffset")));
+  if (v != Qnil) {
+    optargs_s.destoffset = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("size")));
+  if (v != Qnil) {
+    optargs_s.size = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_copy_device_to_file_argv (g, src, dest, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.copy_file_to_device(src, dest, {optargs...}) -> nil
+ *
+ * copy from source file to destination device
+ *
+ * See "g.copy_device_to_device" for a general overview of
+ * this call.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_copy_file_to_device+[http://libguestfs.org/guestfs.3.html#guestfs_copy_file_to_device]).
+ */
+static VALUE
+ruby_guestfs_copy_file_to_device (VALUE gv, VALUE srcv, VALUE destv, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "copy_file_to_device");
+
+  const char *src = StringValueCStr (srcv);
+  const char *dest = StringValueCStr (destv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_copy_file_to_device_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_copy_file_to_device_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("srcoffset")));
+  if (v != Qnil) {
+    optargs_s.srcoffset = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("destoffset")));
+  if (v != Qnil) {
+    optargs_s.destoffset = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("size")));
+  if (v != Qnil) {
+    optargs_s.size = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_copy_file_to_device_argv (g, src, dest, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.copy_file_to_file(src, dest, {optargs...}) -> nil
+ *
+ * copy from source file to destination file
+ *
+ * See "g.copy_device_to_device" for a general overview of
+ * this call.
+ * 
+ * This is not the function you want for copying files.
+ * This is for copying blocks within existing files. See
+ * "g.cp", "g.cp_a" and "g.mv" for general file copying and
+ * moving functions.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_copy_file_to_file+[http://libguestfs.org/guestfs.3.html#guestfs_copy_file_to_file]).
+ */
+static VALUE
+ruby_guestfs_copy_file_to_file (VALUE gv, VALUE srcv, VALUE destv, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "copy_file_to_file");
+
+  const char *src = StringValueCStr (srcv);
+  const char *dest = StringValueCStr (destv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_copy_file_to_file_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_copy_file_to_file_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("srcoffset")));
+  if (v != Qnil) {
+    optargs_s.srcoffset = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("destoffset")));
+  if (v != Qnil) {
+    optargs_s.destoffset = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("size")));
+  if (v != Qnil) {
+    optargs_s.size = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_copy_file_to_file_argv (g, src, dest, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
 /* Initialize the module. */
 void Init__guestfs ()
 {
@@ -16197,6 +16731,8 @@ void Init__guestfs ()
                    ULL2NUM (UINT64_C (0x20)));
   rb_define_const (m_guestfs, "EVENT_TRACE",
                    ULL2NUM (UINT64_C (0x40)));
+  rb_define_const (m_guestfs, "EVENT_ENTER",
+                   ULL2NUM (UINT64_C (0x80)));
 
   rb_define_method (c_guestfs, "test0",
         ruby_guestfs_test0, 9);
@@ -16346,6 +16882,8 @@ void Init__guestfs ()
         ruby_guestfs_inspect_get_roots, 0);
   rb_define_method (c_guestfs, "debug_cmdline",
         ruby_guestfs_debug_cmdline, 0);
+  rb_define_method (c_guestfs, "debug_drives",
+        ruby_guestfs_debug_drives, 0);
   rb_define_method (c_guestfs, "add_domain",
         ruby_guestfs_add_domain, 2);
   rb_define_method (c_guestfs, "inspect_get_package_format",
@@ -16380,6 +16918,10 @@ void Init__guestfs ()
         ruby_guestfs_set_pgroup, 1);
   rb_define_method (c_guestfs, "get_pgroup",
         ruby_guestfs_get_pgroup, 0);
+  rb_define_method (c_guestfs, "set_smp",
+        ruby_guestfs_set_smp, 1);
+  rb_define_method (c_guestfs, "get_smp",
+        ruby_guestfs_get_smp, 0);
   rb_define_method (c_guestfs, "mount",
         ruby_guestfs_mount, 2);
   rb_define_method (c_guestfs, "sync",
@@ -16960,4 +17502,18 @@ void Init__guestfs ()
         ruby_guestfs_btrfs_filesystem_resize, 2);
   rb_define_method (c_guestfs, "write_append",
         ruby_guestfs_write_append, 2);
+  rb_define_method (c_guestfs, "compress_out",
+        ruby_guestfs_compress_out, 4);
+  rb_define_method (c_guestfs, "compress_device_out",
+        ruby_guestfs_compress_device_out, 4);
+  rb_define_method (c_guestfs, "part_to_partnum",
+        ruby_guestfs_part_to_partnum, 1);
+  rb_define_method (c_guestfs, "copy_device_to_device",
+        ruby_guestfs_copy_device_to_device, 3);
+  rb_define_method (c_guestfs, "copy_device_to_file",
+        ruby_guestfs_copy_device_to_file, 3);
+  rb_define_method (c_guestfs, "copy_file_to_device",
+        ruby_guestfs_copy_file_to_device, 3);
+  rb_define_method (c_guestfs, "copy_file_to_file",
+        ruby_guestfs_copy_file_to_file, 3);
 }

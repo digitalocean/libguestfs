@@ -12,7 +12,7 @@ virt-edit - Edit a file in a virtual machine
 
  virt-edit [-d domname|-a disk.img] file -e 'expr'
 
-Old-style:
+Застарілий стиль:
 
  virt-edit domname file
 
@@ -64,11 +64,11 @@ L</NON-INTERACTIVE EDITING> below).  To change the init default level to 5:
 
 =item B<--help>
 
-Display brief help.
+Показати коротку довідку.
 
-=item B<-a> file
+=item B<-a> файл
 
-=item B<--add> file
+=item B<--add> файл
 
 Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
@@ -101,9 +101,9 @@ to the default libvirt hypervisor.
 If you specify guest block devices directly, then libvirt is not used at
 all.
 
-=item B<-d> guest
+=item B<-d> гість
 
-=item B<--domain> guest
+=item B<--domain> гість
 
 Add all the disks from the named libvirt guest.  Domain UUIDs can be used
 instead of names.
@@ -115,9 +115,9 @@ off so you cannot see what you are typing.  If you are not worried about
 Tempest attacks and there is no one else in the room you can specify this
 flag to see what you are typing.
 
-=item B<-e> EXPR
+=item B<-e> вираз
 
-=item B<--expr> EXPR
+=item B<--expr> вираз
 
 Instead of launching the external editor, non-interactively apply the Perl
 expression C<EXPR> to each line in the file.  See L</NON-INTERACTIVE
@@ -181,7 +181,7 @@ Previous versions of virt-edit allowed you to write either:
 
  virt-edit disk.img [disk.img ...] file
 
-or
+або
 
  virt-edit guestname file
 
@@ -190,7 +190,7 @@ the confusing case where a disk image might have the same name as a guest.
 
 For compatibility the old style is still supported.
 
-=head1 NON-INTERACTIVE EDITING
+=head1 НЕІНТЕРАКТИВНЕ РЕДАГУВАННЯ
 
 C<virt-edit> normally calls out to C<$EDITOR> (or vi) so the system
 administrator can interactively edit the file.
@@ -213,7 +213,7 @@ instances of C<foo> with C<bar> in a file:
 The full power of Perl regular expressions can be used (see L<perlre(1)>).
 For example to delete root's password you could do:
 
- virt-edit -d domname /etc/passwd -e 's/^root:.*?:/root::/'
+ virt-edit -d назва_домену /etc/passwd -e 's/^root:.*?:/root::/'
 
 What really happens is that the snippet is evaluated as a Perl expression
 for each line of the file.  The line, including the final C<\n>, is passed
@@ -242,14 +242,14 @@ C<\n>, or (for DOS files) C<\r\n>, or if the file does not end with a
 newline then neither of these.  Thus to match or substitute some text at the
 end of a line, use this regular expression:
 
- /some text(\r?\n)?$/
+ /якийсь текст(\r?\n)?$/
 
 Alternately, use the perl C<chomp> function, being careful not to chomp
 C<$_> itself (since that would remove all newlines from the file):
 
- my $m = $_; chomp $m; $m =~ /some text$/
+ my $m = $_; chomp $m; $m =~ /якийсь текст$/
 
-=head1 WINDOWS PATHS
+=head1 ШЛЯХИ У WINDOWS
 
 C<virt-edit> has a limited ability to understand Windows drive letters and
 paths (eg. C<E:\foo\bar.txt>).
@@ -289,7 +289,7 @@ NTFS junction points that cross filesystems are not followed.
 
 =back
 
-=head1 USING GUESTFISH
+=head1 ВИКОРИСТАННЯ GUESTFISH
 
 L<guestfish(1)> is a more powerful, lower level tool which you can use when
 C<virt-edit> doesn't work.
@@ -356,7 +356,7 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2011 Red Hat Inc.
+©Red Hat Inc., 2009–2011
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -368,7 +368,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, MA 02139, USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 

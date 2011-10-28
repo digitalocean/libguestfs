@@ -23,38 +23,13 @@ useful if you want to attach these filesystems to existing virtual machines
 
 Basic usage is:
 
- virt-make-fs input output
+ virt-make-fs input output.img
 
 where C<input> is either a directory containing files that you want to add,
 or a tar archive (either uncompressed tar or gzip-compressed tar); and
-C<output> is a disk image.  The input type is detected automatically.  The
-output disk image defaults to a raw ext2 image unless you specify extra
-flags (see L</OPTIONS> below).
-
-=head2 EXTRA SPACE
-
-Unlike formats such as tar and squashfs, a filesystem does not "just fit"
-the files that it contains, but might have extra space.  Depending on how
-you are going to use the output, you might think this extra space is wasted
-and want to minimize it, or you might want to leave space so that more files
-can be added later.  Virt-make-fs defaults to minimizing the extra space,
-but you can use the I<--size> flag to leave space in the filesystem if you
-want it.
-
-An alternative way to leave extra space but not make the output image any
-bigger is to use an alternative disk image format (instead of the default
-"raw" format).  Using I<--format=qcow2> will use the native QEmu/KVM qcow2
-image format (check your hypervisor supports this before using it).  This
-allows you to choose a large I<--size> but the extra space won't actually be
-allocated in the image until you try to store something in it.
-
-Don't forget that you can also use local commands including L<resize2fs(8)>
-and L<virt-resize(1)> to resize existing filesystems, or rerun virt-make-fs
-to build another image from scratch.
-
-=head3 ПРИКЛАД
-
- virt-make-fs --format=qcow2 --size=+200M input output.img
+C<output.img> is a disk image.  The input type is detected automatically.
+The output disk image defaults to a raw ext2 sparse image unless you specify
+extra flags (see L</OPTIONS> below).
 
 =head2 ТИП ФАЙЛОВОЇ СИСТЕМИ
 
@@ -115,13 +90,38 @@ use an EFI/GPT-compatible partition table:
 
  virt-make-fs --partition=gpt --size=+4T --format=qcow2 input disk.img
 
+=head2 EXTRA SPACE
+
+Unlike formats such as tar and squashfs, a filesystem does not "just fit"
+the files that it contains, but might have extra space.  Depending on how
+you are going to use the output, you might think this extra space is wasted
+and want to minimize it, or you might want to leave space so that more files
+can be added later.  Virt-make-fs defaults to minimizing the extra space,
+but you can use the I<--size> flag to leave space in the filesystem if you
+want it.
+
+An alternative way to leave extra space but not make the output image any
+bigger is to use an alternative disk image format (instead of the default
+"raw" format).  Using I<--format=qcow2> will use the native QEmu/KVM qcow2
+image format (check your hypervisor supports this before using it).  This
+allows you to choose a large I<--size> but the extra space won't actually be
+allocated in the image until you try to store something in it.
+
+Don't forget that you can also use local commands including L<resize2fs(8)>
+and L<virt-resize(1)> to resize existing filesystems, or rerun virt-make-fs
+to build another image from scratch.
+
+=head3 ПРИКЛАД
+
+ virt-make-fs --format=qcow2 --size=+200M input output.img
+
 =head1 ПАРАМЕТРИ
 
 =over 4
 
 =item B<--help>
 
-Display brief help.
+Показати коротку довідку.
 
 =item B<--version>
 
@@ -165,7 +165,7 @@ desired free space).
 
 Choose the output disk image format.
 
-The default is C<raw> (raw disk image).
+The default is C<raw> (raw sparse disk image).
 
 For other choices, see the L<qemu-img(1)> manpage.  The only other choice
 that would really make sense here is C<qcow2>.
@@ -193,13 +193,15 @@ disks.
 Note that if you just use a lonesome I<--partition>, the Perl option parser
 might consider the next parameter to be the partition type.  For example:
 
- virt-make-fs --partition input.tar ...
+ virt-make-fs --partition input.tar output.img
 
 would cause virt-make-fs to think you wanted to use a partition type of
 C<input.tar> which is completely wrong.  To avoid this, use I<--> (a double
-dash) between options and the input file argument:
+dash) between options and the input and output arguments:
 
- virt-make-fs --partition -- input.tar ...
+ virt-make-fs --partition -- input.tar output.img
+
+For MBR, virt-make-fs sets the partition type byte automatically.
 
 =back
 
@@ -233,7 +235,7 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2010 Red Hat Inc.
+©Red Hat Inc., 2010–2011
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -245,7 +247,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, MA 02139, USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 

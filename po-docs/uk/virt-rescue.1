@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-rescue 1"
-.TH virt-rescue 1 "2011-10-19" "libguestfs-1.12.8" "Virtualization Support"
+.TH virt-rescue 1 "2011-10-27" "libguestfs-1.14.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -78,7 +78,7 @@ virt-rescue \- Run a rescue shell on a virtual machine
 \& virt\-rescue [\-\-options] \-a disk.img [\-a disk.img ...]
 .Ve
 .PP
-Old style:
+Старий стиль:
 .PP
 .Vb 1
 \& virt\-rescue [\-\-options] domname
@@ -153,12 +153,12 @@ make scripted changes to guests, use \fIguestfish\fR\|(1).
 .IX Header "ПАРАМЕТРИ"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
-Display brief help.
-.IP "\fB\-a\fR file" 4
-.IX Item "-a file"
+Показати коротку довідку.
+.IP "\fB\-a\fR файл" 4
+.IX Item "-a файл"
 .PD 0
-.IP "\fB\-\-add\fR file" 4
-.IX Item "--add file"
+.IP "\fB\-\-add\fR файл" 4
+.IX Item "--add файл"
 .PD
 Add \fIfile\fR which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
@@ -166,25 +166,25 @@ separate \fI\-a\fR options.
 .Sp
 The format of the disk image is auto-detected.  To override this and force a
 particular format use the \fI\-\-format=..\fR option.
-.IP "\fB\-\-append kernelopts\fR" 4
-.IX Item "--append kernelopts"
+.IP "\fB\-\-append параметри_ядра\fR" 4
+.IX Item "--append параметри_ядра"
 Pass additional options to the rescue kernel.
-.IP "\fB\-c\fR \s-1URI\s0" 4
-.IX Item "-c URI"
+.IP "\fB\-c\fR адреса" 4
+.IX Item "-c адреса"
 .PD 0
-.IP "\fB\-\-connect\fR \s-1URI\s0" 4
-.IX Item "--connect URI"
+.IP "\fB\-\-connect\fR адреса" 4
+.IX Item "--connect адреса"
 .PD
 If using libvirt, connect to the given \fI\s-1URI\s0\fR.  If omitted, then we connect
 to the default libvirt hypervisor.
 .Sp
 If you specify guest block devices directly (\fI\-a\fR), then libvirt is not
 used at all.
-.IP "\fB\-d\fR guest" 4
-.IX Item "-d guest"
+.IP "\fB\-d\fR гість" 4
+.IX Item "-d гість"
 .PD 0
-.IP "\fB\-\-domain\fR guest" 4
-.IX Item "--domain guest"
+.IP "\fB\-\-domain\fR гість" 4
+.IX Item "--domain гість"
 .PD
 Add all the disks from the named libvirt guest.  Domain UUIDs can be used
 instead of names.
@@ -217,11 +217,11 @@ auto-detection for \f(CW\*(C`another.img\*(C'\fR.
 If you have untrusted raw-format guest disk images, you should use this
 option to specify the disk format.  This avoids a possible security problem
 with malicious guests (\s-1CVE\-2010\-3851\s0).
-.IP "\fB\-m \s-1MB\s0\fR" 4
-.IX Item "-m MB"
+.IP "\fB\-m МБ\fR" 4
+.IX Item "-m МБ"
 .PD 0
-.IP "\fB\-\-memsize \s-1MB\s0\fR" 4
-.IX Item "--memsize MB"
+.IP "\fB\-\-memsize МБ\fR" 4
+.IX Item "--memsize МБ"
 .PD
 Change the amount of memory allocated to the rescue system.  The default is
 set by libguestfs and is small but adequate for running system tools.  The
@@ -242,11 +242,14 @@ The option must always be used if the disk image or virtual machine might be
 running, and is generally recommended in cases where you don't need write
 access to the disk.
 .Sp
-See also \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" in \fIguestfish\fR\|(1).
+Див. також \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" in \fIguestfish\fR\|(1).
 .IP "\fB\-\-selinux\fR" 4
 .IX Item "--selinux"
 Enable SELinux in the rescue appliance.  You should read
 \&\*(L"\s-1SELINUX\s0\*(R" in \fIguestfs\fR\|(3) before using this option.
+.IP "\fB\-\-smp\fR N" 4
+.IX Item "--smp N"
+Enable N ≥ 2 virtual CPUs in the rescue appliance.
 .IP "\fB\-v\fR" 4
 .IX Item "-v"
 .PD 0
@@ -270,7 +273,7 @@ Enable verbose messages for debugging.
 This changes the \fI\-a\fR and \fI\-d\fR options so that disks are added and mounts
 are done read-write.
 .Sp
-See \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" in \fIguestfish\fR\|(1).
+Див. \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" in \fIguestfish\fR\|(1).
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
 Enable tracing of libguestfs \s-1API\s0 calls.
@@ -282,7 +285,7 @@ Previous versions of virt-rescue allowed you to write either:
 \& virt\-rescue disk.img [disk.img ...]
 .Ve
 .PP
-or
+або
 .PP
 .Vb 1
 \& virt\-rescue guestname
@@ -292,8 +295,8 @@ whereas in this version you should use \fI\-a\fR or \fI\-d\fR respectively to av
 the confusing case where a disk image might have the same name as a guest.
 .PP
 For compatibility the old style is still supported.
-.SH "NETWORK"
-.IX Header "NETWORK"
+.SH "МЕРЕЖА"
+.IX Header "МЕРЕЖА"
 Adding the \fI\-\-network\fR option enables \s-1QEMU\s0 user networking in the rescue
 appliance.  There are some differences between user networking and ordinary
 networking:
@@ -344,7 +347,7 @@ escape these characters on the command line.  See the shell manual page
 This configuration file controls the default read-only or read-write mode
 (\fI\-\-ro\fR or \fI\-\-rw\fR).
 .Sp
-See \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" in \fIguestfish\fR\|(1).
+Див. \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" in \fIguestfish\fR\|(1).
 .SH "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 .IX Header "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 \&\fIguestfs\fR\|(3), \fIguestfish\fR\|(1), \fIvirt\-cat\fR\|(1), \fIvirt\-edit\fR\|(1),
@@ -354,7 +357,7 @@ See \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "АВТОРСЬКІ ПРАВА"
 .IX Header "АВТОРСЬКІ ПРАВА"
-Copyright (C) 2009\-2011 Red Hat Inc.
+©Red Hat Inc., 2009–2011
 .PP
 This program is free software; you can redistribute it and/or modify it
 under the terms of the \s-1GNU\s0 General Public License as published by the Free
@@ -366,6 +369,6 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
-You should have received a copy of the \s-1GNU\s0 General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, \s-1MA\s0 02139, \s-1USA\s0.
+Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, \s-1MA\s0 02139, \s-1USA\s0.

@@ -30,7 +30,7 @@
 #----------------------------------------------------------------------
 
 # Find this script.
-b=/home/rjones/d/libguestfs-1.12
+b=/home/rjones/d/libguestfs-1.14
 
 # Set TMPDIR so the appliance doesn't conflict with globally
 # installed libguestfs.

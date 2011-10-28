@@ -77,9 +77,10 @@ that you called.
 
 =head1 SEE ALSO
 
-L<guestfs(3)>, L<guestfs-examples(3)>, L<guestfs-java(3)>,
-L<guestfs-perl(3)>, L<guestfs-python(3)>, L<guestfs-recipes(1)>,
-L<guestfs-ruby(3)>, L<http://libguestfs.org/>, L<http://caml.inria.fr/>.
+L<guestfs(3)>, L<guestfs-examples(3)>, L<guestfs-erlang(3)>,
+L<guestfs-java(3)>, L<guestfs-perl(3)>, L<guestfs-python(3)>,
+L<guestfs-recipes(1)>, L<guestfs-ruby(3)>, L<http://libguestfs.org/>,
+L<http://caml.inria.fr/>.
 
 =head1 AUTHORS
 

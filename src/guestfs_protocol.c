@@ -3,7 +3,7 @@
  * It was generated using rpcgen.
  */
 
-#include "guestfs_protocol.h"
+#include "./guestfs_protocol.h"
 
 bool_t
 xdr_guestfs_str (XDR *xdrs, guestfs_str *objp)
@@ -4994,6 +4994,126 @@ xdr_guestfs_write_append_args (XDR *xdrs, guestfs_write_append_args *objp)
 	 if (!xdr_string (xdrs, &objp->path, ~0))
 		 return FALSE;
 	 if (!xdr_bytes (xdrs, (char **)&objp->content.content_val, (u_int *) &objp->content.content_len, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_compress_out_args (XDR *xdrs, guestfs_compress_out_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->ctype, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->file, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->level))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_compress_device_out_args (XDR *xdrs, guestfs_compress_device_out_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->ctype, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->level))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_part_to_partnum_args (XDR *xdrs, guestfs_part_to_partnum_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->partition, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_part_to_partnum_ret (XDR *xdrs, guestfs_part_to_partnum_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->partnum))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_copy_device_to_device_args (XDR *xdrs, guestfs_copy_device_to_device_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->src, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->dest, ~0))
+		 return FALSE;
+	 if (!xdr_quad_t (xdrs, &objp->srcoffset))
+		 return FALSE;
+	 if (!xdr_quad_t (xdrs, &objp->destoffset))
+		 return FALSE;
+	 if (!xdr_quad_t (xdrs, &objp->size))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_copy_device_to_file_args (XDR *xdrs, guestfs_copy_device_to_file_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->src, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->dest, ~0))
+		 return FALSE;
+	 if (!xdr_quad_t (xdrs, &objp->srcoffset))
+		 return FALSE;
+	 if (!xdr_quad_t (xdrs, &objp->destoffset))
+		 return FALSE;
+	 if (!xdr_quad_t (xdrs, &objp->size))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_copy_file_to_device_args (XDR *xdrs, guestfs_copy_file_to_device_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->src, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->dest, ~0))
+		 return FALSE;
+	 if (!xdr_quad_t (xdrs, &objp->srcoffset))
+		 return FALSE;
+	 if (!xdr_quad_t (xdrs, &objp->destoffset))
+		 return FALSE;
+	 if (!xdr_quad_t (xdrs, &objp->size))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_copy_file_to_file_args (XDR *xdrs, guestfs_copy_file_to_file_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->src, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->dest, ~0))
+		 return FALSE;
+	 if (!xdr_quad_t (xdrs, &objp->srcoffset))
+		 return FALSE;
+	 if (!xdr_quad_t (xdrs, &objp->destoffset))
+		 return FALSE;
+	 if (!xdr_quad_t (xdrs, &objp->size))
 		 return FALSE;
 	return TRUE;
 }

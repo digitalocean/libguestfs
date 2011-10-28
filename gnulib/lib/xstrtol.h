@@ -51,12 +51,6 @@ _DECLARE_XSTRTOL (xstrtoll, long long int)
 _DECLARE_XSTRTOL (xstrtoull, unsigned long long int)
 #endif
 
-#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 8)
-# define _GL_ATTRIBUTE_NORETURN __attribute__ ((__noreturn__))
-#else
-# define _GL_ATTRIBUTE_NORETURN /* empty */
-#endif
-
 /* Report an error for an invalid integer in an option argument.
 
    ERR is the error code returned by one of the xstrto* functions.
@@ -72,8 +66,8 @@ _DECLARE_XSTRTOL (xstrtoull, unsigned long long int)
 
    After reporting an error, exit with a failure status.  */
 
-void xstrtol_fatal (enum strtol_error,
-                    int, char, struct option const *,
-                    char const *) _GL_ATTRIBUTE_NORETURN;
+void _Noreturn xstrtol_fatal (enum strtol_error,
+                              int, char, struct option const *,
+                              char const *);
 
 #endif /* not XSTRTOL_H_ */

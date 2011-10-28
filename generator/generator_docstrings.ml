@@ -36,16 +36,12 @@ let protocol_limit_warning =
   "Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>."
 
-let danger_will_robinson =
-  "B<This command is dangerous.  Without careful use you
-can easily destroy all your data>."
-
 let deprecation_notice ?(prefix = "") flags =
   try
     let alt =
       find_map (function DeprecatedBy str -> Some str | _ -> None) flags in
     let txt =
-      sprintf "This function is deprecated.
+      sprintf "I<This function is deprecated.>
 In new code, use the L</%s%s> call instead.
 
 Deprecated functions will not be removed from the API, but the
@@ -62,6 +58,7 @@ let copyright_years =
 (* Generate a header block in a number of standard styles. *)
 type comment_style =
     CStyle | CPlusPlusStyle | HashStyle | OCamlStyle | HaskellStyle
+  | ErlangStyle
 type license = GPLv2plus | LGPLv2plus
 
 let generate_header ?(extra_inputs = []) comment license =
@@ -71,7 +68,8 @@ let generate_header ?(extra_inputs = []) comment license =
     | CPlusPlusStyle -> pr "// "; "//"
     | HashStyle ->      pr "# ";  "#"
     | OCamlStyle ->     pr "(* "; " *"
-    | HaskellStyle ->   pr "{- "; "  " in
+    | HaskellStyle ->   pr "{- "; "  "
+    | ErlangStyle ->    pr "%% "; "% " in
   pr "libguestfs generated file\n";
   pr "%s WARNING: THIS FILE IS GENERATED FROM:\n" c;
   List.iter (pr "%s   %s\n" c) inputs;
@@ -113,6 +111,7 @@ let generate_header ?(extra_inputs = []) comment license =
   (match comment with
    | CStyle -> pr " */\n"
    | CPlusPlusStyle
+   | ErlangStyle
    | HashStyle -> ()
    | OCamlStyle -> pr " *)\n"
    | HaskellStyle -> pr "-}\n"

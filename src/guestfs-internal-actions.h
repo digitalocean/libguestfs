@@ -94,6 +94,7 @@ extern int guestfs__add_drive_opts (guestfs_h *g, const char *filename, const st
 extern char *guestfs__inspect_get_windows_systemroot (guestfs_h *g, const char *root);
 extern char **guestfs__inspect_get_roots (guestfs_h *g);
 extern char **guestfs__debug_cmdline (guestfs_h *g);
+extern char **guestfs__debug_drives (guestfs_h *g);
 extern int guestfs__add_domain (guestfs_h *g, const char *dom, const struct guestfs_add_domain_argv *optargs);
 extern char *guestfs__inspect_get_package_format (guestfs_h *g, const char *root);
 extern char *guestfs__inspect_get_package_management (guestfs_h *g, const char *root);
@@ -111,3 +112,5 @@ extern char **guestfs__inspect_get_drive_mappings (guestfs_h *g, const char *roo
 extern char *guestfs__inspect_get_icon (guestfs_h *g, const char *root, size_t *size_r, const struct guestfs_inspect_get_icon_argv *optargs);
 extern int guestfs__set_pgroup (guestfs_h *g, int pgroup);
 extern int guestfs__get_pgroup (guestfs_h *g);
+extern int guestfs__set_smp (guestfs_h *g, int smp);
+extern int guestfs__get_smp (guestfs_h *g);

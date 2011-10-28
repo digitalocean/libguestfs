@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfs 3"
-.TH guestfs 3 "2011-10-19" "libguestfs-1.12.8" "Virtualization Support"
+.TH guestfs 3 "2011-10-27" "libguestfs-1.14.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -72,17 +72,16 @@
 guestfs \- Library for accessing and modifying virtual machine images
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
-.Vb 1
-\& #include <guestfs.h>
-\& 
-\& guestfs_h *g = guestfs_create ();
-\& guestfs_add_drive (g, "guest.img");
-\& guestfs_launch (g);
-\& guestfs_mount (g, "/dev/sda1", "/");
-\& guestfs_touch (g, "/hello");
-\& guestfs_umount (g, "/");
-\& guestfs_close (g);
-\&
+#include <guestfs.h>
+ guestfs_h *g = guestfs_create ();
+ guestfs_add_drive (g, \*(L"guest.img\*(R");
+ guestfs_launch (g);
+ guestfs_mount (g, \*(L"/dev/sda1\*(R", \*(L"/\*(R");
+ guestfs_touch (g, \*(L"/hello\*(R");
+ guestfs_umount (g, \*(L"/\*(R");
+ guestfs_close (g);
+.PP
+.Vb 3
 \& cc prog.c \-o prog \-lguestfs
 \&or:
 \& cc prog.c \-o prog \`pkg\-config libguestfs \-\-cflags \-\-libs\`
@@ -107,8 +106,8 @@ context of the guest.  Also you can access filesystems over \s-1FUSE\s0.
 .PP
 Libguestfs is a library that can be linked with C and \*(C+ management
 programs (or management programs written in OCaml, Perl, Python, Ruby, Java,
-\&\s-1PHP\s0, Haskell or C#).  You can also use it from shell scripts or the command
-line.
+\&\s-1PHP\s0, Erlang, Haskell or C#).  You can also use it from shell scripts or the
+command line.
 .PP
 You don't need to be root to use libguestfs, although obviously you do need
 enough permissions to access the disk images.
@@ -371,20 +370,38 @@ below.
 .IX Item "file to file"
 Use \*(L"guestfs_cp\*(R" to copy a single file, or \*(L"guestfs_cp_a\*(R" to copy
 directories recursively.
-.IP "\fBfile or device\fR to \fBfile or device\fR" 4
-.IX Item "file or device to file or device"
-Use \*(L"guestfs_dd\*(R" which efficiently uses \fIdd\fR\|(1) to copy between files and
-devices in the guest.
+.Sp
+To copy part of a file (offset and size) use \*(L"guestfs_copy_file_to_file\*(R".
+.IP "\fBfile\fR to \fBdevice\fR" 4
+.IX Item "file to device"
+.PD 0
+.IP "\fBdevice\fR to \fBfile\fR" 4
+.IX Item "device to file"
+.IP "\fBdevice\fR to \fBdevice\fR" 4
+.IX Item "device to device"
+.PD
+Use \*(L"guestfs_copy_file_to_device\*(R", \*(L"guestfs_copy_device_to_file\*(R", or
+\&\*(L"guestfs_copy_device_to_device\*(R".
 .Sp
 Example: duplicate the contents of an \s-1LV:\s0
 .Sp
-.Vb 1
-\& guestfs_dd (g, "/dev/VG/Original", "/dev/VG/Copy");
+.Vb 4
+\& guestfs_copy_device_to_device (g,
+\&         "/dev/VG/Original", "/dev/VG/Copy",
+\&         /* \-1 marks the end of the list of optional parameters */
+\&         \-1);
 .Ve
 .Sp
 The destination (\f(CW\*(C`/dev/VG/Copy\*(C'\fR) must be at least as large as the source
-(\f(CW\*(C`/dev/VG/Original\*(C'\fR).  To copy less than the whole source device, use
-\&\*(L"guestfs_copy_size\*(R".
+(\f(CW\*(C`/dev/VG/Original\*(C'\fR).  To copy less than the whole source device, use the
+optional \f(CW\*(C`size\*(C'\fR parameter:
+.Sp
+.Vb 4
+\& guestfs_copy_device_to_device (g,
+\&         "/dev/VG/Original", "/dev/VG/Copy",
+\&         GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE, 10000,
+\&         \-1);
+.Ve
 .IP "\fBfile on the host\fR to \fBfile or device\fR" 4
 .IX Item "file on the host to file or device"
 Use \*(L"guestfs_upload\*(R".  See \*(L"\s-1UPLOADING\s0\*(R" above.
@@ -727,6 +744,9 @@ identical to the C \s-1API\s0.  \*(C+ classes and exceptions are not used.
 .IX Item "C#"
 The C# bindings are highly experimental.  Please read the warnings at the
 top of \f(CW\*(C`csharp/Libguestfs.cs\*(C'\fR.
+.IP "\fBErlang\fR" 4
+.IX Item "Erlang"
+See \fIguestfs\-erlang\fR\|(3).
 .IP "\fBHaskell\fR" 4
 .IX Item "Haskell"
 This is the only language binding that is working but incomplete.  Only
@@ -793,6 +813,9 @@ this very puzzling if you are trying to debug a problem.
 .ie n .IP "Mount option ""\-o sync"" should not be the default." 4
 .el .IP "Mount option \f(CW\-o sync\fR should not be the default." 4
 .IX Item "Mount option -o sync should not be the default."
+\&\fIUpdate:\fR \*(L"guestfs_mount\*(R" no longer adds any options starting from
+libguestfs 1.13.16.  This section only applies to older versions.
+.Sp
 If you use \*(L"guestfs_mount\*(R", then \f(CW\*(C`\-o sync,noatime\*(C'\fR are added implicitly.
 However \f(CW\*(C`\-o sync\*(C'\fR does not add any reliability benefit, but does have a
 very large performance impact.
@@ -1297,9 +1320,7 @@ printed to \f(CW\*(C`stderr\*(C'\fR before the program exits.
 For other programs the caller will almost certainly want to install an
 alternate error handler or do error handling in-line like this:
 .PP
-.Vb 1
-\& g = guestfs_create ();
-\& 
+.Vb 3
 \& /* This disables the default behaviour of printing errors
 \&    on stderr. */
 \& guestfs_set_error_handler (g, NULL, NULL);
@@ -1308,9 +1329,12 @@ alternate error handler or do error handling in-line like this:
 \&   /* Examine the error message and print it etc. */
 \&   char *msg = guestfs_last_error (g);
 \&   int errnum = guestfs_last_errno (g);
-\&   fprintf (stderr, "%s\en", msg);
+\&   fprintf (stderr, "%s", msg);
+\&   if (errnum != 0)
+\&     fprintf (stderr, ": %s", strerror (errnum));
+\&   fprintf (stderr, "\en");
 \&   /* ... */
-\&  }
+\& }
 .Ve
 .PP
 Out of memory errors are handled differently.  The default action is to call
@@ -1424,6 +1448,13 @@ This returns the current out of memory handler.
 \&                    const char *filename);
 .Ve
 .PP
+\&\fIThis function is deprecated.\fR In new code, use the
+\&\*(L"guestfs_add_drive_opts\*(R" call instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+.PP
 This function adds a virtual CD-ROM disk image to the guest.
 .PP
 This is equivalent to the qemu parameter \fI\-cdrom filename\fR.
@@ -1441,13 +1472,6 @@ to transfer large files into the guest), then you should probably use
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-This function is deprecated.  In new code, use the
-\&\*(L"guestfs_add_drive_opts\*(R" call instead.
-.PP
-Deprecated functions will not be removed from the \s-1API\s0, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
-.PP
 (Added in 0.3)
 .SS "guestfs_add_domain"
 .IX Subsection "guestfs_add_domain"
@@ -1462,12 +1486,13 @@ You may supply a list of optional arguments to this call.  Use zero or more
 of the following pairs of parameters, and terminate the list with \f(CW\*(C`\-1\*(C'\fR on
 its own.  See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
 .PP
-.Vb 5
+.Vb 6
 \& GUESTFS_ADD_DOMAIN_LIBVIRTURI, const char *libvirturi,
 \& GUESTFS_ADD_DOMAIN_READONLY, int readonly,
 \& GUESTFS_ADD_DOMAIN_IFACE, const char *iface,
 \& GUESTFS_ADD_DOMAIN_LIVE, int live,
 \& GUESTFS_ADD_DOMAIN_ALLOWUUID, int allowuuid,
+\& GUESTFS_ADD_DOMAIN_READONLYDISK, const char *readonlydisk,
 .Ve
 .PP
 This function adds the disk(s) attached to the named libvirt domain \f(CW\*(C`dom\*(C'\fR.
@@ -1501,6 +1526,47 @@ If the \f(CW\*(C`allowuuid\*(C'\fR flag is true (default is false) then a \s-1UU
 passed instead of the domain name.  The \f(CW\*(C`dom\*(C'\fR string is treated as a \s-1UUID\s0
 first and looked up, and if that lookup fails then we treat \f(CW\*(C`dom\*(C'\fR as a name
 as usual.
+.PP
+The optional \f(CW\*(C`readonlydisk\*(C'\fR parameter controls what we do for disks which
+are marked <readonly/> in the libvirt \s-1XML\s0.  Possible values are:
+.ie n .IP "readonlydisk = ""error""" 4
+.el .IP "readonlydisk = ``error''" 4
+.IX Item "readonlydisk = error"
+If \f(CW\*(C`readonly\*(C'\fR is false:
+.Sp
+The whole call is aborted with an error if any disk with the
+<readonly/> flag is found.
+.Sp
+If \f(CW\*(C`readonly\*(C'\fR is true:
+.Sp
+Disks with the <readonly/> flag are added read-only.
+.ie n .IP "readonlydisk = ""read""" 4
+.el .IP "readonlydisk = ``read''" 4
+.IX Item "readonlydisk = read"
+If \f(CW\*(C`readonly\*(C'\fR is false:
+.Sp
+Disks with the <readonly/> flag are added read-only.  Other disks
+are added read/write.
+.Sp
+If \f(CW\*(C`readonly\*(C'\fR is true:
+.Sp
+Disks with the <readonly/> flag are added read-only.
+.ie n .IP "readonlydisk = ""write"" (default)" 4
+.el .IP "readonlydisk = ``write'' (default)" 4
+.IX Item "readonlydisk = write (default)"
+If \f(CW\*(C`readonly\*(C'\fR is false:
+.Sp
+Disks with the <readonly/> flag are added read/write.
+.Sp
+If \f(CW\*(C`readonly\*(C'\fR is true:
+.Sp
+Disks with the <readonly/> flag are added read-only.
+.ie n .IP "readonlydisk = ""ignore""" 4
+.el .IP "readonlydisk = ``ignore''" 4
+.IX Item "readonlydisk = ignore"
+If \f(CW\*(C`readonly\*(C'\fR is true or false:
+.Sp
+Disks with the <readonly/> flag are skipped.
 .PP
 The other optional parameters are passed directly through to
 \&\f(CW\*(C`guestfs_add_drive_opts\*(C'\fR.
@@ -1566,10 +1632,11 @@ You may supply a list of optional arguments to this call.  Use zero or more
 of the following pairs of parameters, and terminate the list with \f(CW\*(C`\-1\*(C'\fR on
 its own.  See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
 .PP
-.Vb 3
+.Vb 4
 \& GUESTFS_ADD_DRIVE_OPTS_READONLY, int readonly,
 \& GUESTFS_ADD_DRIVE_OPTS_FORMAT, const char *format,
 \& GUESTFS_ADD_DRIVE_OPTS_IFACE, const char *iface,
+\& GUESTFS_ADD_DRIVE_OPTS_NAME, const char *name,
 .Ve
 .PP
 This function adds a virtual machine disk image \f(CW\*(C`filename\*(C'\fR to libguestfs.
@@ -1605,6 +1672,11 @@ RHBZ#642934.  Specifying the format closes this security hole.
 .IX Item "iface"
 This rarely-used option lets you emulate the behaviour of the deprecated
 \&\f(CW\*(C`guestfs_add_drive_with_if\*(C'\fR call (q.v.)
+.ie n .IP """name""" 4
+.el .IP "\f(CWname\fR" 4
+.IX Item "name"
+The name the drive had in the original guest, e.g. /dev/sdb. This is used as
+a hint to the guest inspection process if it is available.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
@@ -1657,17 +1729,17 @@ This function returns 0 on success or \-1 on error.
 \&                               const char *iface);
 .Ve
 .PP
-This is the same as \f(CW\*(C`guestfs_add_drive_ro\*(C'\fR but it allows you to specify the
-\&\s-1QEMU\s0 interface emulation to use at run time.
-.PP
-This function returns 0 on success or \-1 on error.
-.PP
-This function is deprecated.  In new code, use the
+\&\fIThis function is deprecated.\fR In new code, use the
 \&\*(L"guestfs_add_drive_opts\*(R" call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+.PP
+This is the same as \f(CW\*(C`guestfs_add_drive_ro\*(C'\fR but it allows you to specify the
+\&\s-1QEMU\s0 interface emulation to use at run time.
+.PP
+This function returns 0 on success or \-1 on error.
 .PP
 (Added in 1.0.84)
 .SS "guestfs_add_drive_with_if"
@@ -1679,17 +1751,17 @@ these functions.
 \&                            const char *iface);
 .Ve
 .PP
-This is the same as \f(CW\*(C`guestfs_add_drive\*(C'\fR but it allows you to specify the
-\&\s-1QEMU\s0 interface emulation to use at run time.
-.PP
-This function returns 0 on success or \-1 on error.
-.PP
-This function is deprecated.  In new code, use the
+\&\fIThis function is deprecated.\fR In new code, use the
 \&\*(L"guestfs_add_drive_opts\*(R" call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+.PP
+This is the same as \f(CW\*(C`guestfs_add_drive\*(C'\fR but it allows you to specify the
+\&\s-1QEMU\s0 interface emulation to use at run time.
+.PP
+This function returns 0 on success or \-1 on error.
 .PP
 (Added in 1.0.84)
 .SS "guestfs_aug_clear"
@@ -2542,6 +2614,124 @@ Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
 (Added in 0.9.1)
+.SS "guestfs_compress_device_out"
+.IX Subsection "guestfs_compress_device_out"
+.Vb 6
+\& int
+\& guestfs_compress_device_out (guestfs_h *g,
+\&                              const char *ctype,
+\&                              const char *device,
+\&                              const char *zdevice,
+\&                              ...);
+.Ve
+.PP
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with \f(CW\*(C`\-1\*(C'\fR on
+its own.  See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.PP
+.Vb 1
+\& GUESTFS_COMPRESS_DEVICE_OUT_LEVEL, int level,
+.Ve
+.PP
+This command compresses \f(CW\*(C`device\*(C'\fR and writes it out to the local file
+\&\f(CW\*(C`zdevice\*(C'\fR.
+.PP
+The \f(CW\*(C`ctype\*(C'\fR and optional \f(CW\*(C`level\*(C'\fR parameters have the same meaning as in
+\&\f(CW\*(C`guestfs_compress_out\*(C'\fR.
+.PP
+This function returns 0 on success or \-1 on error.
+.PP
+(Added in 1.13.15)
+.SS "guestfs_compress_device_out_va"
+.IX Subsection "guestfs_compress_device_out_va"
+.Vb 6
+\& int
+\& guestfs_compress_device_out_va (guestfs_h *g,
+\&                                 const char *ctype,
+\&                                 const char *device,
+\&                                 const char *zdevice,
+\&                                 va_list args);
+.Ve
+.PP
+This is the \*(L"va_list variant\*(R" of \*(L"guestfs_compress_device_out\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_compress_device_out_argv"
+.IX Subsection "guestfs_compress_device_out_argv"
+.Vb 6
+\& int
+\& guestfs_compress_device_out_argv (guestfs_h *g,
+\&                                   const char *ctype,
+\&                                   const char *device,
+\&                                   const char *zdevice,
+\&                                   const struct guestfs_compress_device_out_argv *optargs);
+.Ve
+.PP
+This is the \*(L"argv variant\*(R" of \*(L"guestfs_compress_device_out\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_compress_out"
+.IX Subsection "guestfs_compress_out"
+.Vb 6
+\& int
+\& guestfs_compress_out (guestfs_h *g,
+\&                       const char *ctype,
+\&                       const char *file,
+\&                       const char *zfile,
+\&                       ...);
+.Ve
+.PP
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with \f(CW\*(C`\-1\*(C'\fR on
+its own.  See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.PP
+.Vb 1
+\& GUESTFS_COMPRESS_OUT_LEVEL, int level,
+.Ve
+.PP
+This command compresses \f(CW\*(C`file\*(C'\fR and writes it out to the local file
+\&\f(CW\*(C`zfile\*(C'\fR.
+.PP
+The compression program used is controlled by the \f(CW\*(C`ctype\*(C'\fR parameter.
+Currently this includes: \f(CW\*(C`compress\*(C'\fR, \f(CW\*(C`gzip\*(C'\fR, \f(CW\*(C`bzip2\*(C'\fR, \f(CW\*(C`xz\*(C'\fR or \f(CW\*(C`lzop\*(C'\fR.
+Some compression types may not be supported by particular builds of
+libguestfs, in which case you will get an error containing the substring
+\&\*(L"not supported\*(R".
+.PP
+The optional \f(CW\*(C`level\*(C'\fR parameter controls compression level.  The meaning and
+default for this parameter depends on the compression program being used.
+.PP
+This function returns 0 on success or \-1 on error.
+.PP
+(Added in 1.13.15)
+.SS "guestfs_compress_out_va"
+.IX Subsection "guestfs_compress_out_va"
+.Vb 6
+\& int
+\& guestfs_compress_out_va (guestfs_h *g,
+\&                          const char *ctype,
+\&                          const char *file,
+\&                          const char *zfile,
+\&                          va_list args);
+.Ve
+.PP
+This is the \*(L"va_list variant\*(R" of \*(L"guestfs_compress_out\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_compress_out_argv"
+.IX Subsection "guestfs_compress_out_argv"
+.Vb 6
+\& int
+\& guestfs_compress_out_argv (guestfs_h *g,
+\&                            const char *ctype,
+\&                            const char *file,
+\&                            const char *zfile,
+\&                            const struct guestfs_compress_out_argv *optargs);
+.Ve
+.PP
+This is the \*(L"argv variant\*(R" of \*(L"guestfs_compress_out\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
 .SS "guestfs_config"
 .IX Subsection "guestfs_config"
 .Vb 4
@@ -2562,6 +2752,248 @@ The first character of \f(CW\*(C`param\*(C'\fR string must be a \f(CW\*(C`\-\*(C
 This function returns 0 on success or \-1 on error.
 .PP
 (Added in 0.3)
+.SS "guestfs_copy_device_to_device"
+.IX Subsection "guestfs_copy_device_to_device"
+.Vb 5
+\& int
+\& guestfs_copy_device_to_device (guestfs_h *g,
+\&                                const char *src,
+\&                                const char *dest,
+\&                                ...);
+.Ve
+.PP
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with \f(CW\*(C`\-1\*(C'\fR on
+its own.  See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.PP
+.Vb 3
+\& GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,
+\& GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET, int64_t destoffset,
+\& GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE, int64_t size,
+.Ve
+.PP
+The four calls \f(CW\*(C`guestfs_copy_device_to_device\*(C'\fR,
+\&\f(CW\*(C`guestfs_copy_device_to_file\*(C'\fR, \f(CW\*(C`guestfs_copy_file_to_device\*(C'\fR, and
+\&\f(CW\*(C`guestfs_copy_file_to_file\*(C'\fR let you copy from a source (device|file) to a
+destination (device|file).
+.PP
+Partial copies can be made since you can specify optionally the source
+offset, destination offset and size to copy.  These values are all specified
+in bytes.  If not given, the offsets both default to zero, and the size
+defaults to copying as much as possible until we hit the end of the source.
+.PP
+The source and destination may be the same object.  However overlapping
+regions may not be copied correctly.
+.PP
+If the destination is a file, it is created if required.  If the destination
+file is not large enough, it is extended.
+.PP
+This function returns 0 on success or \-1 on error.
+.PP
+This long-running command can generate progress notification messages so
+that the caller can display a progress bar or indicator.  To receive these
+messages, the caller must register a progress event callback.  See
+\&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
+.PP
+(Added in 1.13.25)
+.SS "guestfs_copy_device_to_device_va"
+.IX Subsection "guestfs_copy_device_to_device_va"
+.Vb 5
+\& int
+\& guestfs_copy_device_to_device_va (guestfs_h *g,
+\&                                   const char *src,
+\&                                   const char *dest,
+\&                                   va_list args);
+.Ve
+.PP
+This is the \*(L"va_list variant\*(R" of \*(L"guestfs_copy_device_to_device\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_copy_device_to_device_argv"
+.IX Subsection "guestfs_copy_device_to_device_argv"
+.Vb 5
+\& int
+\& guestfs_copy_device_to_device_argv (guestfs_h *g,
+\&                                     const char *src,
+\&                                     const char *dest,
+\&                                     const struct guestfs_copy_device_to_device_argv *optargs);
+.Ve
+.PP
+This is the \*(L"argv variant\*(R" of \*(L"guestfs_copy_device_to_device\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_copy_device_to_file"
+.IX Subsection "guestfs_copy_device_to_file"
+.Vb 5
+\& int
+\& guestfs_copy_device_to_file (guestfs_h *g,
+\&                              const char *src,
+\&                              const char *dest,
+\&                              ...);
+.Ve
+.PP
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with \f(CW\*(C`\-1\*(C'\fR on
+its own.  See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.PP
+.Vb 3
+\& GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET, int64_t srcoffset,
+\& GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET, int64_t destoffset,
+\& GUESTFS_COPY_DEVICE_TO_FILE_SIZE, int64_t size,
+.Ve
+.PP
+See \f(CW\*(C`guestfs_copy_device_to_device\*(C'\fR for a general overview of this call.
+.PP
+This function returns 0 on success or \-1 on error.
+.PP
+This long-running command can generate progress notification messages so
+that the caller can display a progress bar or indicator.  To receive these
+messages, the caller must register a progress event callback.  See
+\&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
+.PP
+(Added in 1.13.25)
+.SS "guestfs_copy_device_to_file_va"
+.IX Subsection "guestfs_copy_device_to_file_va"
+.Vb 5
+\& int
+\& guestfs_copy_device_to_file_va (guestfs_h *g,
+\&                                 const char *src,
+\&                                 const char *dest,
+\&                                 va_list args);
+.Ve
+.PP
+This is the \*(L"va_list variant\*(R" of \*(L"guestfs_copy_device_to_file\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_copy_device_to_file_argv"
+.IX Subsection "guestfs_copy_device_to_file_argv"
+.Vb 5
+\& int
+\& guestfs_copy_device_to_file_argv (guestfs_h *g,
+\&                                   const char *src,
+\&                                   const char *dest,
+\&                                   const struct guestfs_copy_device_to_file_argv *optargs);
+.Ve
+.PP
+This is the \*(L"argv variant\*(R" of \*(L"guestfs_copy_device_to_file\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_copy_file_to_device"
+.IX Subsection "guestfs_copy_file_to_device"
+.Vb 5
+\& int
+\& guestfs_copy_file_to_device (guestfs_h *g,
+\&                              const char *src,
+\&                              const char *dest,
+\&                              ...);
+.Ve
+.PP
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with \f(CW\*(C`\-1\*(C'\fR on
+its own.  See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.PP
+.Vb 3
+\& GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,
+\& GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET, int64_t destoffset,
+\& GUESTFS_COPY_FILE_TO_DEVICE_SIZE, int64_t size,
+.Ve
+.PP
+See \f(CW\*(C`guestfs_copy_device_to_device\*(C'\fR for a general overview of this call.
+.PP
+This function returns 0 on success or \-1 on error.
+.PP
+This long-running command can generate progress notification messages so
+that the caller can display a progress bar or indicator.  To receive these
+messages, the caller must register a progress event callback.  See
+\&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
+.PP
+(Added in 1.13.25)
+.SS "guestfs_copy_file_to_device_va"
+.IX Subsection "guestfs_copy_file_to_device_va"
+.Vb 5
+\& int
+\& guestfs_copy_file_to_device_va (guestfs_h *g,
+\&                                 const char *src,
+\&                                 const char *dest,
+\&                                 va_list args);
+.Ve
+.PP
+This is the \*(L"va_list variant\*(R" of \*(L"guestfs_copy_file_to_device\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_copy_file_to_device_argv"
+.IX Subsection "guestfs_copy_file_to_device_argv"
+.Vb 5
+\& int
+\& guestfs_copy_file_to_device_argv (guestfs_h *g,
+\&                                   const char *src,
+\&                                   const char *dest,
+\&                                   const struct guestfs_copy_file_to_device_argv *optargs);
+.Ve
+.PP
+This is the \*(L"argv variant\*(R" of \*(L"guestfs_copy_file_to_device\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_copy_file_to_file"
+.IX Subsection "guestfs_copy_file_to_file"
+.Vb 5
+\& int
+\& guestfs_copy_file_to_file (guestfs_h *g,
+\&                            const char *src,
+\&                            const char *dest,
+\&                            ...);
+.Ve
+.PP
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with \f(CW\*(C`\-1\*(C'\fR on
+its own.  See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.PP
+.Vb 3
+\& GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET, int64_t srcoffset,
+\& GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET, int64_t destoffset,
+\& GUESTFS_COPY_FILE_TO_FILE_SIZE, int64_t size,
+.Ve
+.PP
+See \f(CW\*(C`guestfs_copy_device_to_device\*(C'\fR for a general overview of this call.
+.PP
+This is \fBnot\fR the function you want for copying files.  This is for copying
+blocks within existing files.  See \f(CW\*(C`guestfs_cp\*(C'\fR, \f(CW\*(C`guestfs_cp_a\*(C'\fR and
+\&\f(CW\*(C`guestfs_mv\*(C'\fR for general file copying and moving functions.
+.PP
+This function returns 0 on success or \-1 on error.
+.PP
+This long-running command can generate progress notification messages so
+that the caller can display a progress bar or indicator.  To receive these
+messages, the caller must register a progress event callback.  See
+\&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
+.PP
+(Added in 1.13.25)
+.SS "guestfs_copy_file_to_file_va"
+.IX Subsection "guestfs_copy_file_to_file_va"
+.Vb 5
+\& int
+\& guestfs_copy_file_to_file_va (guestfs_h *g,
+\&                               const char *src,
+\&                               const char *dest,
+\&                               va_list args);
+.Ve
+.PP
+This is the \*(L"va_list variant\*(R" of \*(L"guestfs_copy_file_to_file\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_copy_file_to_file_argv"
+.IX Subsection "guestfs_copy_file_to_file_argv"
+.Vb 5
+\& int
+\& guestfs_copy_file_to_file_argv (guestfs_h *g,
+\&                                 const char *src,
+\&                                 const char *dest,
+\&                                 const struct guestfs_copy_file_to_file_argv *optargs);
+.Ve
+.PP
+This is the \*(L"argv variant\*(R" of \*(L"guestfs_copy_file_to_file\*(R".
+.PP
+See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
 .SS "guestfs_copy_size"
 .IX Subsection "guestfs_copy_size"
 .Vb 5
@@ -2571,6 +3003,13 @@ This function returns 0 on success or \-1 on error.
 \&                    const char *dest,
 \&                    int64_t size);
 .Ve
+.PP
+\&\fIThis function is deprecated.\fR In new code, use the
+\&\*(L"guestfs_copy_device_to_device\*(R" call instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 .PP
 This command copies exactly \f(CW\*(C`size\*(C'\fR bytes from one source device or file
 \&\f(CW\*(C`src\*(C'\fR to another destination device or file \f(CW\*(C`dest\*(C'\fR.
@@ -2625,13 +3064,20 @@ This function returns 0 on success or \-1 on error.
 \&             const char *dest);
 .Ve
 .PP
+\&\fIThis function is deprecated.\fR In new code, use the
+\&\*(L"guestfs_copy_device_to_device\*(R" call instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+.PP
 This command copies from one source device or file \f(CW\*(C`src\*(C'\fR to another
 destination device or file \f(CW\*(C`dest\*(C'\fR.  Normally you would use this to copy to
 or from a device or partition, for example to duplicate a filesystem.
 .PP
 If the destination is a device, it must be as large or larger than the
 source file or device, otherwise the copy will fail.  This command cannot do
-partial copies (see \f(CW\*(C`guestfs_copy_size\*(C'\fR).
+partial copies (see \f(CW\*(C`guestfs_copy_device_to_device\*(C'\fR).
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
@@ -2906,6 +3352,13 @@ This function returns a C truth value on success or \-1 on error.
 \&                    int len);
 .Ve
 .PP
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"guestfs_fallocate64\*(R"
+call instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+.PP
 This command preallocates a file (containing zero bytes) named \f(CW\*(C`path\*(C'\fR of
 size \f(CW\*(C`len\*(C'\fR bytes.  If the file exists already, it is overwritten.
 .PP
@@ -2913,13 +3366,6 @@ Do not confuse this with the guestfish-specific \f(CW\*(C`alloc\*(C'\fR command 
 allocates a file in the host and attaches it as a device.
 .PP
 This function returns 0 on success or \-1 on error.
-.PP
-This function is deprecated.  In new code, use the \*(L"guestfs_fallocate64\*(R"
-call instead.
-.PP
-Deprecated functions will not be removed from the \s-1API\s0, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 .PP
 (Added in 1.0.66)
 .SS "guestfs_fallocate64"
@@ -3358,17 +3804,17 @@ This function returns a C truth value on success or \-1 on error.
 \&                      const char *device);
 .Ve
 .PP
-This returns the ext2/3/4 filesystem label of the filesystem on \f(CW\*(C`device\*(C'\fR.
-.PP
-This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
-the returned string after use\fR.
-.PP
-This function is deprecated.  In new code, use the \*(L"guestfs_vfs_label\*(R"
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"guestfs_vfs_label\*(R"
 call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+.PP
+This returns the ext2/3/4 filesystem label of the filesystem on \f(CW\*(C`device\*(C'\fR.
+.PP
+This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
+the returned string after use\fR.
 .PP
 (Added in 1.0.15)
 .SS "guestfs_get_e2uuid"
@@ -3379,17 +3825,17 @@ these functions.
 \&                     const char *device);
 .Ve
 .PP
-This returns the ext2/3/4 filesystem \s-1UUID\s0 of the filesystem on \f(CW\*(C`device\*(C'\fR.
-.PP
-This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
-the returned string after use\fR.
-.PP
-This function is deprecated.  In new code, use the \*(L"guestfs_vfs_uuid\*(R" call
-instead.
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"guestfs_vfs_uuid\*(R"
+call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+.PP
+This returns the ext2/3/4 filesystem \s-1UUID\s0 of the filesystem on \f(CW\*(C`device\*(C'\fR.
+.PP
+This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
+the returned string after use\fR.
 .PP
 (Added in 1.0.15)
 .SS "guestfs_get_memsize"
@@ -3508,6 +3954,18 @@ For more information on the architecture of libguestfs, see \fIguestfs\fR\|(3).
 This function returns a C truth value on success or \-1 on error.
 .PP
 (Added in 1.0.67)
+.SS "guestfs_get_smp"
+.IX Subsection "guestfs_get_smp"
+.Vb 2
+\& int
+\& guestfs_get_smp (guestfs_h *g);
+.Ve
+.PP
+This returns the number of virtual CPUs assigned to the appliance.
+.PP
+On error this function returns \-1.
+.PP
+(Added in 1.13.15)
 .SS "guestfs_get_state"
 .IX Subsection "guestfs_get_state"
 .Vb 2
@@ -4016,6 +4474,10 @@ Gentoo.
 .el .IP "``linuxmint''" 4
 .IX Item "linuxmint"
 Linux Mint.
+.ie n .IP """mageia""" 4
+.el .IP "``mageia''" 4
+.IX Item "mageia"
+Mageia.
 .ie n .IP """mandriva""" 4
 .el .IP "``mandriva''" 4
 .IX Item "mandriva"
@@ -4024,6 +4486,10 @@ Mandriva.
 .el .IP "``meego''" 4
 .IX Item "meego"
 MeeGo.
+.ie n .IP """opensuse""" 4
+.el .IP "``opensuse''" 4
+.IX Item "opensuse"
+OpenSUSE.
 .ie n .IP """pardus""" 4
 .el .IP "``pardus''" 4
 .IX Item "pardus"
@@ -4044,6 +4510,10 @@ Scientific Linux.
 .el .IP "``slackware''" 4
 .IX Item "slackware"
 Slackware.
+.ie n .IP """ttylinux""" 4
+.el .IP "``ttylinux''" 4
+.IX Item "ttylinux"
+ttylinux.
 .ie n .IP """ubuntu""" 4
 .el .IP "``ubuntu''" 4
 .IX Item "ubuntu"
@@ -4374,8 +4844,8 @@ This returns the string \f(CW\*(C`unknown\*(C'\fR if we could not determine the 
 format \fIor\fR if the operating system does not have a real packaging system
 (eg. Windows).
 .PP
-Possible strings include: \f(CW\*(C`rpm\*(C'\fR, \f(CW\*(C`deb\*(C'\fR, \f(CW\*(C`ebuild\*(C'\fR, \f(CW\*(C`pisi\*(C'\fR, \f(CW\*(C`pacman\*(C'\fR.
-Future versions of libguestfs may return other strings.
+Possible strings include: \f(CW\*(C`rpm\*(C'\fR, \f(CW\*(C`deb\*(C'\fR, \f(CW\*(C`ebuild\*(C'\fR, \f(CW\*(C`pisi\*(C'\fR, \f(CW\*(C`pacman\*(C'\fR,
+\&\f(CW\*(C`pkgsrc\*(C'\fR.  Future versions of libguestfs may return other strings.
 .PP
 Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .PP
@@ -4401,8 +4871,8 @@ management tool \fIor\fR if the operating system does not have a real packaging
 system (eg. Windows).
 .PP
 Possible strings include: \f(CW\*(C`yum\*(C'\fR, \f(CW\*(C`up2date\*(C'\fR, \f(CW\*(C`apt\*(C'\fR (for all Debian
-derivatives), \f(CW\*(C`portage\*(C'\fR, \f(CW\*(C`pisi\*(C'\fR, \f(CW\*(C`pacman\*(C'\fR, \f(CW\*(C`urpmi\*(C'\fR.  Future versions of
-libguestfs may return other strings.
+derivatives), \f(CW\*(C`portage\*(C'\fR, \f(CW\*(C`pisi\*(C'\fR, \f(CW\*(C`pacman\*(C'\fR, \f(CW\*(C`urpmi\*(C'\fR, \f(CW\*(C`zypper\*(C'\fR.  Future
+versions of libguestfs may return other strings.
 .PP
 Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .PP
@@ -4506,6 +4976,10 @@ Any Microsoft Windows operating system.
 .el .IP "``freebsd''" 4
 .IX Item "freebsd"
 FreeBSD.
+.ie n .IP """netbsd""" 4
+.el .IP "``netbsd''" 4
+.IX Item "netbsd"
+NetBSD.
 .ie n .IP """unknown""" 4
 .el .IP "``unknown''" 4
 .IX Item "unknown"
@@ -5410,9 +5884,6 @@ slot \f(CW\*(C`slot\*(C'\fR.  (\s-1LUKS\s0 supports 8 key slots, numbered 0\-7).
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
-.PP
 This function takes a key or passphrase parameter which could contain
 sensitive material.  Read the section \*(L"\s-1KEYS\s0 \s-1AND\s0 \s-1PASSPHRASES\s0\*(R" for more
 information.
@@ -5433,9 +5904,6 @@ This command is the same as \f(CW\*(C`guestfs_luks_format\*(C'\fR but it also al
 set the \f(CW\*(C`cipher\*(C'\fR used.
 .PP
 This function returns 0 on success or \-1 on error.
-.PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
 .PP
 This function takes a key or passphrase parameter which could contain
 sensitive material.  Read the section \*(L"\s-1KEYS\s0 \s-1AND\s0 \s-1PASSPHRASES\s0\*(R" for more
@@ -5580,9 +6048,6 @@ This command removes all \s-1LVM\s0 logical volumes, volume groups and physical
 volumes.
 .PP
 This function returns 0 on success or \-1 on error.
-.PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
 .PP
 (Added in 0.8)
 .SS "guestfs_lvm_set_filter"
@@ -5987,6 +6452,13 @@ This function returns 0 on success or \-1 on error.
 \&                 const char *device);
 .Ve
 .PP
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"guestfs_mkfs_opts\*(R"
+call instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+.PP
 This call is similar to \f(CW\*(C`guestfs_mkfs\*(C'\fR, but it allows you to control the
 block size of the resulting filesystem.  Supported block sizes depend on the
 filesystem type, but typically they are \f(CW1024\fR, \f(CW2048\fR or \f(CW4096\fR only.
@@ -5995,13 +6467,6 @@ For \s-1VFAT\s0 and \s-1NTFS\s0 the \f(CW\*(C`blocksize\*(C'\fR parameter is tre
 cluster size.
 .PP
 This function returns 0 on success or \-1 on error.
-.PP
-This function is deprecated.  In new code, use the \*(L"guestfs_mkfs_opts\*(R"
-call instead.
-.PP
-Deprecated functions will not be removed from the \s-1API\s0, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 .PP
 (Added in 1.0.68)
 .SS "guestfs_mkfs_opts"
@@ -6309,22 +6774,13 @@ mounted on directories which already exist.
 The mounted filesystem is writable, if we have sufficient permissions on the
 underlying device.
 .PP
-\&\fBImportant note:\fR When you use this call, the filesystem options \f(CW\*(C`sync\*(C'\fR
-and \f(CW\*(C`noatime\*(C'\fR are set implicitly.  This was originally done because we
-thought it would improve reliability, but it turns out that \fI\-o sync\fR has a
-very large negative performance impact and negligible effect on
-reliability.  Therefore we recommend that you avoid using \f(CW\*(C`guestfs_mount\*(C'\fR
-in any code that needs performance, and instead use \f(CW\*(C`guestfs_mount_options\*(C'\fR
-(use an empty string for the first parameter if you don't want any options).
+Before libguestfs 1.13.16, this call implicitly added the options \f(CW\*(C`sync\*(C'\fR
+and \f(CW\*(C`noatime\*(C'\fR.  The \f(CW\*(C`sync\*(C'\fR option greatly slowed writes and caused many
+problems for users.  If your program might need to work with older versions
+of libguestfs, use \f(CW\*(C`guestfs_mount_options\*(C'\fR instead (using an empty string
+for the first parameter if you don't want any options).
 .PP
 This function returns 0 on success or \-1 on error.
-.PP
-This function is deprecated.  In new code, use the \*(L"guestfs_mount_options\*(R"
-call instead.
-.PP
-Deprecated functions will not be removed from the \s-1API\s0, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 .PP
 (Added in 0.3)
 .SS "guestfs_mount_9p"
@@ -6531,6 +6987,13 @@ On error this function returns \-1.
 \&                     const char *device);
 .Ve
 .PP
+\&\fIThis function is deprecated.\fR In new code, use the
+\&\*(L"guestfs_ntfsresize_opts\*(R" call instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+.PP
 This command resizes an \s-1NTFS\s0 filesystem, expanding or shrinking it to the
 size of the underlying device.
 .PP
@@ -6544,13 +7007,6 @@ without booting into Windows between each resize.
 See also \fIntfsresize\fR\|(8).
 .PP
 This function returns 0 on success or \-1 on error.
-.PP
-This function is deprecated.  In new code, use the
-\&\*(L"guestfs_ntfsresize_opts\*(R" call instead.
-.PP
-Deprecated functions will not be removed from the \s-1API\s0, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 .PP
 (Added in 1.3.2)
 .SS "guestfs_ntfsresize_opts"
@@ -6631,17 +7087,17 @@ See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
 \&                          int64_t size);
 .Ve
 .PP
-This command is the same as \f(CW\*(C`guestfs_ntfsresize\*(C'\fR except that it allows you
-to specify the new size (in bytes) explicitly.
-.PP
-This function returns 0 on success or \-1 on error.
-.PP
-This function is deprecated.  In new code, use the
+\&\fIThis function is deprecated.\fR In new code, use the
 \&\*(L"guestfs_ntfsresize_opts\*(R" call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+.PP
+This command is the same as \f(CW\*(C`guestfs_ntfsresize\*(C'\fR except that it allows you
+to specify the new size (in bytes) explicitly.
+.PP
+This function returns 0 on success or \-1 on error.
 .PP
 (Added in 1.3.14)
 .SS "guestfs_part_add"
@@ -6706,9 +7162,6 @@ disk.
 possible values are described in \f(CW\*(C`guestfs_part_init\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
-.PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
 .PP
 (Added in 1.0.78)
 .SS "guestfs_part_get_bootable"
@@ -6943,10 +7396,31 @@ partition number, returning the device name (eg. \*(L"/dev/sdb\*(R").
 The named partition must exist, for example as a string returned from
 \&\f(CW\*(C`guestfs_list_partitions\*(C'\fR.
 .PP
+See also \f(CW\*(C`guestfs_part_to_partnum\*(C'\fR.
+.PP
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
 (Added in 1.5.15)
+.SS "guestfs_part_to_partnum"
+.IX Subsection "guestfs_part_to_partnum"
+.Vb 3
+\& int
+\& guestfs_part_to_partnum (guestfs_h *g,
+\&                          const char *partition);
+.Ve
+.PP
+This function takes a partition name (eg. \*(L"/dev/sdb1\*(R") and returns the
+partition number (eg. \f(CW1\fR).
+.PP
+The named partition must exist, for example as a string returned from
+\&\f(CW\*(C`guestfs_list_partitions\*(C'\fR.
+.PP
+See also \f(CW\*(C`guestfs_part_to_dev\*(C'\fR.
+.PP
+On error this function returns \-1.
+.PP
+(Added in 1.13.25)
 .SS "guestfs_ping_daemon"
 .IX Subsection "guestfs_ping_daemon"
 .Vb 2
@@ -7479,9 +7953,6 @@ more details.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
-.PP
 (Added in 1.0.52)
 .SS "guestfs_scrub_file"
 .IX Subsection "guestfs_scrub_file"
@@ -7792,6 +8263,23 @@ For more information on the architecture of libguestfs, see \fIguestfs\fR\|(3).
 This function returns 0 on success or \-1 on error.
 .PP
 (Added in 1.0.67)
+.SS "guestfs_set_smp"
+.IX Subsection "guestfs_set_smp"
+.Vb 3
+\& int
+\& guestfs_set_smp (guestfs_h *g,
+\&                  int smp);
+.Ve
+.PP
+Change the number of virtual CPUs assigned to the appliance.  The default is
+\&\f(CW1\fR.  Increasing this may improve performance, though often it has no
+effect.
+.PP
+This function must be called before \f(CW\*(C`guestfs_launch\*(C'\fR.
+.PP
+This function returns 0 on success or \-1 on error.
+.PP
+(Added in 1.13.15)
 .SS "guestfs_set_trace"
 .IX Subsection "guestfs_set_trace"
 .Vb 3
@@ -7881,6 +8369,13 @@ This function returns 0 on success or \-1 on error.
 \&                 char *const *lines);
 .Ve
 .PP
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"guestfs_part_add\*(R"
+call instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+.PP
 This is a direct interface to the \fIsfdisk\fR\|(8) program for creating
 partitions on block devices.
 .PP
@@ -7904,16 +8399,6 @@ See also: \f(CW\*(C`guestfs_sfdisk_l\*(C'\fR, \f(CW\*(C`guestfs_sfdisk_N\*(C'\fR
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
-.PP
-This function is deprecated.  In new code, use the \*(L"guestfs_part_add\*(R" call
-instead.
-.PP
-Deprecated functions will not be removed from the \s-1API\s0, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
-.PP
 (Added in 0.8)
 .SS "guestfs_sfdiskM"
 .IX Subsection "guestfs_sfdiskM"
@@ -7924,6 +8409,13 @@ these functions.
 \&                  char *const *lines);
 .Ve
 .PP
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"guestfs_part_add\*(R"
+call instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+.PP
 This is a simplified interface to the \f(CW\*(C`guestfs_sfdisk\*(C'\fR command, where
 partition sizes are specified in megabytes only (rounded to the nearest
 cylinder) and you don't need to specify the cyls, heads and sectors
@@ -7933,16 +8425,6 @@ See also: \f(CW\*(C`guestfs_sfdisk\*(C'\fR, the \fIsfdisk\fR\|(8) manpage and
 \&\f(CW\*(C`guestfs_part_disk\*(C'\fR
 .PP
 This function returns 0 on success or \-1 on error.
-.PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
-.PP
-This function is deprecated.  In new code, use the \*(L"guestfs_part_add\*(R" call
-instead.
-.PP
-Deprecated functions will not be removed from the \s-1API\s0, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 .PP
 (Added in 1.0.55)
 .SS "guestfs_sfdisk_N"
@@ -7958,6 +8440,13 @@ these functions.
 \&                   const char *line);
 .Ve
 .PP
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"guestfs_part_add\*(R"
+call instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+.PP
 This runs \fIsfdisk\fR\|(8) option to modify just the single partition \f(CW\*(C`n\*(C'\fR
 (note: \f(CW\*(C`n\*(C'\fR counts from 1).
 .PP
@@ -7967,16 +8456,6 @@ for the cyls/heads/sectors parameters.
 See also: \f(CW\*(C`guestfs_part_add\*(C'\fR
 .PP
 This function returns 0 on success or \-1 on error.
-.PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
-.PP
-This function is deprecated.  In new code, use the \*(L"guestfs_part_add\*(R" call
-instead.
-.PP
-Deprecated functions will not be removed from the \s-1API\s0, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 .PP
 (Added in 1.0.26)
 .SS "guestfs_sfdisk_disk_geometry"
@@ -8022,6 +8501,13 @@ the returned string after use\fR.
 \&                   const char *device);
 .Ve
 .PP
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"guestfs_part_list\*(R"
+call instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+.PP
 This displays the partition table on \f(CW\*(C`device\*(C'\fR, in the human-readable output
 of the \fIsfdisk\fR\|(8) command.  It is not intended to be parsed.
 .PP
@@ -8029,13 +8515,6 @@ See also: \f(CW\*(C`guestfs_part_list\*(C'\fR
 .PP
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
-.PP
-This function is deprecated.  In new code, use the \*(L"guestfs_part_list\*(R"
-call instead.
-.PP
-Deprecated functions will not be removed from the \s-1API\s0, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 .PP
 (Added in 1.0.26)
 .SS "guestfs_sh"
@@ -8966,6 +9445,13 @@ the returned string after use\fR.
 \& guestfs_wait_ready (guestfs_h *g);
 .Ve
 .PP
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"guestfs_launch\*(R" call
+instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+.PP
 This function is a no op.
 .PP
 In versions of the \s-1API\s0 < 1.0.71 you had to call this function just after
@@ -8976,13 +9462,6 @@ If you see any calls to this function in code then you can just remove them,
 unless you want to retain compatibility with older versions of the \s-1API\s0.
 .PP
 This function returns 0 on success or \-1 on error.
-.PP
-This function is deprecated.  In new code, use the \*(L"guestfs_launch\*(R" call
-instead.
-.PP
-Deprecated functions will not be removed from the \s-1API\s0, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 .PP
 (Added in 0.3)
 .SS "guestfs_wc_c"
@@ -9079,6 +9558,13 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 \&                     int size);
 .Ve
 .PP
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"guestfs_write\*(R" call
+instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+.PP
 This call creates a file called \f(CW\*(C`path\*(C'\fR.  The contents of the file is the
 string \f(CW\*(C`content\*(C'\fR (which can contain any 8 bit data), with length \f(CW\*(C`size\*(C'\fR.
 .PP
@@ -9092,13 +9578,6 @@ This function returns 0 on success or \-1 on error.
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
-.PP
-This function is deprecated.  In new code, use the \*(L"guestfs_write\*(R" call
-instead.
-.PP
-Deprecated functions will not be removed from the \s-1API\s0, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 .PP
 (Added in 0.8)
 .SS "guestfs_zegrep"
@@ -9190,9 +9669,6 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 \&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
-.PP
 (Added in 1.3.1)
 .SS "guestfs_zerofree"
 .IX Subsection "guestfs_zerofree"
@@ -9261,6 +9737,13 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 \&                const char *path);
 .Ve
 .PP
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"guestfs_file\*(R" call
+instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+.PP
 This command runs \f(CW\*(C`file\*(C'\fR after first decompressing \f(CW\*(C`path\*(C'\fR using \f(CW\*(C`method\*(C'\fR.
 .PP
 \&\f(CW\*(C`method\*(C'\fR must be one of \f(CW\*(C`gzip\*(C'\fR, \f(CW\*(C`compress\*(C'\fR or \f(CW\*(C`bzip2\*(C'\fR.
@@ -9270,13 +9753,6 @@ files.
 .PP
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
-.PP
-This function is deprecated.  In new code, use the \*(L"guestfs_file\*(R" call
-instead.
-.PP
-Deprecated functions will not be removed from the \s-1API\s0, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 .PP
 (Added in 1.0.59)
 .SS "guestfs_zgrep"
@@ -9991,6 +10467,18 @@ only applies if the trace flag (\*(L"guestfs_set_trace\*(R") is set.
 .Sp
 If no callback is registered: the messages are sent to stderr.  You can
 override the printing of trace messages to stderr by setting up a callback.
+.IP "\s-1GUESTFS_EVENT_ENTER\s0 (payload type: function name)" 4
+.IX Item "GUESTFS_EVENT_ENTER (payload type: function name)"
+The callback function is called whenever a libguestfs function is entered.
+.Sp
+The payload is a string which contains the name of the function that we are
+entering (not including \f(CW\*(C`guestfs_\*(C'\fR prefix).
+.Sp
+Note that libguestfs functions can call themselves, so you may see many
+events from a single call.  A few libguestfs functions do not generate this
+event.
+.Sp
+If no callback is registered: the event is ignored.
 .PP
 \fIguestfs_set_event_callback\fR
 .IX Subsection "guestfs_set_event_callback"
@@ -10282,6 +10770,85 @@ Note that the above loop is guaranteed to terminate because the keys are
 being deleted, but other manipulations of keys within the loop might not
 terminate unless you also maintain an indication of which keys have been
 visited.
+.SH "SYSTEMTAP"
+.IX Header "SYSTEMTAP"
+The libguestfs C library can be probed using systemtap or DTrace.  This is
+true of any library, not just libguestfs.  However libguestfs also contains
+static markers to help in probing internal operations.
+.PP
+You can list all the static markers by doing:
+.PP
+.Vb 2
+\& stap \-l \*(Aqprocess("/usr/lib*/libguestfs.so.0")
+\&              .provider("guestfs").mark("*")\*(Aq
+.Ve
+.PP
+\&\fBNote:\fR These static markers are \fInot\fR part of the stable \s-1API\s0 and may
+change in future versions.
+.SS "\s-1SYSTEMTAP\s0 \s-1SCRIPT\s0 \s-1EXAMPLE\s0"
+.IX Subsection "SYSTEMTAP SCRIPT EXAMPLE"
+This script contains examples of displaying both the static markers and some
+ordinary C entry points:
+.PP
+.Vb 1
+\& global last;
+\& 
+\& function display_time () {
+\&       now = gettimeofday_us ();
+\&       delta = 0;
+\&       if (last > 0)
+\&             delta = now \- last;
+\&       last = now;
+\& 
+\&       printf ("%d (+%d):", now, delta);
+\& }
+\& 
+\& probe begin {
+\&       last = 0;
+\&       printf ("ready\en");
+\& }
+\& 
+\& /* Display all calls to static markers. */
+\& probe process("/usr/lib*/libguestfs.so.0")
+\&           .provider("guestfs").mark("*") ? {
+\&       display_time();
+\&       printf ("\et%s %s\en", $$name, $$parms);
+\& }
+\& 
+\& /* Display all calls to guestfs_mkfs* functions. */
+\& probe process("/usr/lib*/libguestfs.so.0")
+\&           .function("guestfs_mkfs*") ? {
+\&       display_time();
+\&       printf ("\et%s %s\en", probefunc(), $$parms);
+\& }
+.Ve
+.PP
+The script above can be saved to \f(CW\*(C`test.stap\*(C'\fR and run using the \fIstap\fR\|(1)
+program.  Note that you either have to be root, or you have to add yourself
+to several special stap groups.  Consult the systemtap documentation for
+more information.
+.PP
+.Vb 2
+\& # stap /tmp/test.stap
+\& ready
+.Ve
+.PP
+In another terminal, run a guestfish command such as this:
+.PP
+.Vb 1
+\& guestfish \-N fs
+.Ve
+.PP
+In the first terminal, stap trace output similar to this is shown:
+.PP
+.Vb 6
+\& 1318248056692655 (+0): launch_start
+\& 1318248056692850 (+195):       launch_build_appliance_start
+\& 1318248056818285 (+125435):    launch_build_appliance_end
+\& 1318248056838059 (+19774):     launch_run_qemu
+\& 1318248061071167 (+4233108):   launch_end
+\& 1318248061280324 (+209157):    guestfs_mkfs g=0x1024ab0 fstype=0x46116f device=0x1024e60
+.Ve
 .SH "ARCHITECTURE"
 .IX Header "ARCHITECTURE"
 Internally, libguestfs is implemented by running an appliance (a special
@@ -10907,6 +11474,10 @@ Debugging messages are never translated, since they are intended for the
 programmers.
 .SS "\s-1SOURCE\s0 \s-1CODE\s0 \s-1SUBDIRECTORIES\s0"
 .IX Subsection "SOURCE CODE SUBDIRECTORIES"
+.ie n .IP """align""" 4
+.el .IP "\f(CWalign\fR" 4
+.IX Item "align"
+\&\fIvirt\-alignment\-scan\fR\|(1) command and documentation.
 .ie n .IP """appliance""" 4
 .el .IP "\f(CWappliance\fR" 4
 .IX Item "appliance"
@@ -10925,6 +11496,11 @@ documentation.
 .IX Item "caution"
 Safety and liveness tests of components that libguestfs depends upon (not of
 libguestfs itself).  Mainly this is for qemu and the kernel.
+.ie n .IP """clone""" 4
+.el .IP "\f(CWclone\fR" 4
+.IX Item "clone"
+Tools for cloning virtual machines.  Currently contains \fIvirt\-sysprep\fR\|(1)
+command and documentation.
 .ie n .IP """contrib""" 4
 .el .IP "\f(CWcontrib\fR" 4
 .IX Item "contrib"
@@ -11001,6 +11577,10 @@ Regression tests.
 .el .IP "\f(CWresize\fR" 4
 .IX Item "resize"
 \&\fIvirt\-resize\fR\|(1) command and documentation.
+.ie n .IP """sparsify""" 4
+.el .IP "\f(CWsparsify\fR" 4
+.IX Item "sparsify"
+\&\fIvirt\-sparsify\fR\|(1) command and documentation.
 .ie n .IP """src""" 4
 .el .IP "\f(CWsrc\fR" 4
 .IX Item "src"
@@ -11018,6 +11598,9 @@ with libguestfs.
 .el .IP "\f(CWcsharp\fR" 4
 .IX Item "csharp"
 .PD 0
+.ie n .IP """erlang""" 4
+.el .IP "\f(CWerlang\fR" 4
+.IX Item "erlang"
 .ie n .IP """haskell""" 4
 .el .IP "\f(CWhaskell\fR" 4
 .IX Item "haskell"
@@ -11222,15 +11805,18 @@ to the same \s-1EUID\s0.  You can use \f(CW$TMPDIR\fR to configure another direc
 use in case \f(CW\*(C`/var/tmp\*(C'\fR is not large enough.
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
-\&\fIguestfs\-examples\fR\|(3), \fIguestfs\-java\fR\|(3), \fIguestfs\-ocaml\fR\|(3),
-\&\fIguestfs\-perl\fR\|(3), \fIguestfs\-python\fR\|(3), \fIguestfs\-ruby\fR\|(3),
-\&\fIguestfish\fR\|(1), \fIguestmount\fR\|(1), \fIvirt\-cat\fR\|(1), \fIvirt\-copy\-in\fR\|(1),
+\&\fIguestfs\-examples\fR\|(3), \fIguestfs\-erlang\fR\|(3), \fIguestfs\-java\fR\|(3),
+\&\fIguestfs\-ocaml\fR\|(3), \fIguestfs\-perl\fR\|(3), \fIguestfs\-python\fR\|(3),
+\&\fIguestfs\-ruby\fR\|(3), \fIguestfish\fR\|(1), \fIguestmount\fR\|(1),
+\&\fIvirt\-alignment\-scan\fR\|(1), \fIvirt\-cat\fR\|(1), \fIvirt\-copy\-in\fR\|(1),
 \&\fIvirt\-copy\-out\fR\|(1), \fIvirt\-df\fR\|(1), \fIvirt\-edit\fR\|(1), \fIvirt\-filesystems\fR\|(1),
 \&\fIvirt\-inspector\fR\|(1), \fIvirt\-list\-filesystems\fR\|(1),
 \&\fIvirt\-list\-partitions\fR\|(1), \fIvirt\-ls\fR\|(1), \fIvirt\-make\-fs\fR\|(1),
-\&\fIvirt\-rescue\fR\|(1), \fIvirt\-resize\fR\|(1), \fIvirt\-tar\fR\|(1), \fIvirt\-tar\-in\fR\|(1),
-\&\fIvirt\-tar\-out\fR\|(1), \fIvirt\-win\-reg\fR\|(1), \fIqemu\fR\|(1), \fIfebootstrap\fR\|(1),
-\&\fIfebootstrap\-supermin\-helper\fR\|(8), \fIhivex\fR\|(3), <http://libguestfs.org/>.
+\&\fIvirt\-rescue\fR\|(1), \fIvirt\-resize\fR\|(1), \fIvirt\-sparsify\fR\|(1),
+\&\fIvirt\-sysprep\fR\|(1), \fIvirt\-tar\fR\|(1), \fIvirt\-tar\-in\fR\|(1), \fIvirt\-tar\-out\fR\|(1),
+\&\fIvirt\-win\-reg\fR\|(1), \fIqemu\fR\|(1), \fIfebootstrap\fR\|(1),
+\&\fIfebootstrap\-supermin\-helper\fR\|(8), \fIhivex\fR\|(3), \fIstap\fR\|(1),
+<http://libguestfs.org/>.
 .PP
 Tools with a similar purpose: \fIfdisk\fR\|(8), \fIparted\fR\|(8), \fIkpartx\fR\|(8),
 \&\fIlvm\fR\|(8), \fIdisktype\fR\|(1).

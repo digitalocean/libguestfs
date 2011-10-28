@@ -6,13 +6,13 @@ virt-df - Display free space on virtual filesystems
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-df [--options]
+ virt-df [--параметри]
 
  virt-df [--options] -d domname
 
  virt-df [--options] -a disk.img [-a disk.img ...]
 
-Old style:
+Старий стиль:
 
  virt-df [--options] domname
 
@@ -61,11 +61,11 @@ Show disk usage for a disk image file called C<test.img>:
 
 =item B<--help>
 
-Display brief help.
+Показати коротку довідку.
 
-=item B<-a> file
+=item B<-a> файл
 
-=item B<--add> file
+=item B<--add> файл
 
 Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
@@ -74,9 +74,9 @@ separate I<-a> options.
 The format of the disk image is auto-detected.  To override this and force a
 particular format use the I<--format=..> option.
 
-=item B<-c> URI
+=item B<-c> адреса
 
-=item B<--connect> URI
+=item B<--connect> адреса
 
 If using libvirt, connect to the given I<URI>.  If omitted, then we connect
 to the default libvirt hypervisor.
@@ -90,9 +90,9 @@ Write out the results in CSV format (comma-separated values).  This format
 can be imported easily into databases and spreadsheets, but read L</NOTE
 ABOUT CSV FORMAT> below.
 
-=item B<-d> guest
+=item B<-d> гість
 
-=item B<--domain> guest
+=item B<--domain> гість
 
 Add all the disks from the named libvirt guest.  Domain UUIDs can be used
 instead of names.
@@ -232,7 +232,7 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2011 Red Hat Inc.
+©Red Hat Inc., 2009–2011
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -244,7 +244,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, MA 02139, USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 

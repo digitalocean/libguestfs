@@ -20,11 +20,11 @@
 
 set -e
 
-rm -f test1.img test2.img test3.img test.xml test.out
+rm -f test1.img test2.img test3.img test4.img test.xml test.out
 
 cwd="$(pwd)"
 
-truncate -s 1M test1.img test2.img test3.img
+truncate -s 1M test1.img test2.img test3.img test4.img
 
 # Libvirt test XML, see libvirt.git/examples/xml/test/testnode.xml
 cat > test.xml <<EOF
@@ -51,16 +51,23 @@ cat > test.xml <<EOF
         <source file="$cwd/test3.img"/>
         <target dev="hdc"/>
       </disk>
+      <disk type="file">
+        <driver name="qemu" type="raw"/>
+        <source file="$cwd/test4.img"/>
+        <target dev="hdd"/>
+        <readonly/>
+      </disk>
     </devices>
   </domain>
 </node>
 EOF
 
 ../fish/guestfish -c "test://$cwd/test.xml" --ro -d guest \
-  debug-cmdline </dev/null >test.out
+  debug-drives </dev/null >test.out
 grep -sq "test1.img.*snapshot=on" test.out
 ! grep -sq "test1.img.*format" test.out
 grep -sq "test2.img.*snapshot=on.*format=raw" test.out
 grep -sq "test3.img.*snapshot=on.*format=qcow2" test.out
+grep -sq "test4.img.*snapshot=on.*format=raw" test.out
 
-rm -f test1.img test2.img test3.img test.xml test.out
+rm -f test1.img test2.img test3.img test4.img test.xml test.out

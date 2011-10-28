@@ -96,6 +96,7 @@ extern guestfs_abort_cb guestfs_get_out_of_memory_handler (guestfs_h *g);
 #define GUESTFS_EVENT_APPLIANCE        0x0010
 #define GUESTFS_EVENT_LIBRARY          0x0020
 #define GUESTFS_EVENT_TRACE            0x0040
+#define GUESTFS_EVENT_ENTER            0x0080
 #define GUESTFS_EVENT_ALL              UINT64_MAX
 
 #ifndef GUESTFS_TYPEDEF_EVENT_CALLBACK
@@ -420,6 +421,7 @@ extern int guestfs_add_cdrom (guestfs_h *g, const char *filename)
 #define GUESTFS_ADD_DOMAIN_IFACE 2
 #define GUESTFS_ADD_DOMAIN_LIVE 3
 #define GUESTFS_ADD_DOMAIN_ALLOWUUID 4
+#define GUESTFS_ADD_DOMAIN_READONLYDISK 5
 extern int guestfs_add_domain (guestfs_h *g, const char *dom, ...);
 extern int guestfs_add_domain_va (guestfs_h *g, const char *dom, va_list args);
 
@@ -460,6 +462,13 @@ struct guestfs_add_domain_argv {
    * in the bitmask above.  If not, the field is ignored.
    */
   int allowuuid;
+
+# define GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK (UINT64_C(1)<<5)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  const char *readonlydisk;
 };
 
 extern int guestfs_add_domain_argv (guestfs_h *g, const char *dom, const struct guestfs_add_domain_argv *optargs);
@@ -471,6 +480,7 @@ extern int guestfs_add_drive (guestfs_h *g, const char *filename);
 #define GUESTFS_ADD_DRIVE_OPTS_READONLY 0
 #define GUESTFS_ADD_DRIVE_OPTS_FORMAT 1
 #define GUESTFS_ADD_DRIVE_OPTS_IFACE 2
+#define GUESTFS_ADD_DRIVE_OPTS_NAME 3
 extern int guestfs_add_drive_opts (guestfs_h *g, const char *filename, ...);
 extern int guestfs_add_drive_opts_va (guestfs_h *g, const char *filename, va_list args);
 
@@ -497,6 +507,13 @@ struct guestfs_add_drive_opts_argv {
    * in the bitmask above.  If not, the field is ignored.
    */
   const char *iface;
+
+# define GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK (UINT64_C(1)<<3)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  const char *name;
 };
 
 extern int guestfs_add_drive_opts_argv (guestfs_h *g, const char *filename, const struct guestfs_add_drive_opts_argv *optargs);
@@ -639,11 +656,183 @@ extern char *guestfs_command (guestfs_h *g, char *const *arguments);
 #define LIBGUESTFS_HAVE_COMMAND_LINES 1
 extern char **guestfs_command_lines (guestfs_h *g, char *const *arguments);
 
+#define LIBGUESTFS_HAVE_COMPRESS_DEVICE_OUT 1
+#define GUESTFS_COMPRESS_DEVICE_OUT_LEVEL 0
+extern int guestfs_compress_device_out (guestfs_h *g, const char *ctype, const char *device, const char *zdevice, ...);
+extern int guestfs_compress_device_out_va (guestfs_h *g, const char *ctype, const char *device, const char *zdevice, va_list args);
+
+struct guestfs_compress_device_out_argv {
+  uint64_t bitmask;
+
+# define GUESTFS_COMPRESS_DEVICE_OUT_LEVEL_BITMASK (UINT64_C(1)<<0)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_COMPRESS_DEVICE_OUT_LEVEL_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int level;
+};
+
+extern int guestfs_compress_device_out_argv (guestfs_h *g, const char *ctype, const char *device, const char *zdevice, const struct guestfs_compress_device_out_argv *optargs);
+
+#define LIBGUESTFS_HAVE_COMPRESS_OUT 1
+#define GUESTFS_COMPRESS_OUT_LEVEL 0
+extern int guestfs_compress_out (guestfs_h *g, const char *ctype, const char *file, const char *zfile, ...);
+extern int guestfs_compress_out_va (guestfs_h *g, const char *ctype, const char *file, const char *zfile, va_list args);
+
+struct guestfs_compress_out_argv {
+  uint64_t bitmask;
+
+# define GUESTFS_COMPRESS_OUT_LEVEL_BITMASK (UINT64_C(1)<<0)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_COMPRESS_OUT_LEVEL_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int level;
+};
+
+extern int guestfs_compress_out_argv (guestfs_h *g, const char *ctype, const char *file, const char *zfile, const struct guestfs_compress_out_argv *optargs);
+
 #define LIBGUESTFS_HAVE_CONFIG 1
 extern int guestfs_config (guestfs_h *g, const char *qemuparam, const char *qemuvalue);
 
-#define LIBGUESTFS_HAVE_COPY_SIZE 1
-extern int guestfs_copy_size (guestfs_h *g, const char *src, const char *dest, int64_t size);
+#define LIBGUESTFS_HAVE_COPY_DEVICE_TO_DEVICE 1
+#define GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET 0
+#define GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET 1
+#define GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE 2
+extern int guestfs_copy_device_to_device (guestfs_h *g, const char *src, const char *dest, ...);
+extern int guestfs_copy_device_to_device_va (guestfs_h *g, const char *src, const char *dest, va_list args);
+
+struct guestfs_copy_device_to_device_argv {
+  uint64_t bitmask;
+
+# define GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET_BITMASK (UINT64_C(1)<<0)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int64_t srcoffset;
+
+# define GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET_BITMASK (UINT64_C(1)<<1)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int64_t destoffset;
+
+# define GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK (UINT64_C(1)<<2)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int64_t size;
+};
+
+extern int guestfs_copy_device_to_device_argv (guestfs_h *g, const char *src, const char *dest, const struct guestfs_copy_device_to_device_argv *optargs);
+
+#define LIBGUESTFS_HAVE_COPY_DEVICE_TO_FILE 1
+#define GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET 0
+#define GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET 1
+#define GUESTFS_COPY_DEVICE_TO_FILE_SIZE 2
+extern int guestfs_copy_device_to_file (guestfs_h *g, const char *src, const char *dest, ...);
+extern int guestfs_copy_device_to_file_va (guestfs_h *g, const char *src, const char *dest, va_list args);
+
+struct guestfs_copy_device_to_file_argv {
+  uint64_t bitmask;
+
+# define GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET_BITMASK (UINT64_C(1)<<0)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int64_t srcoffset;
+
+# define GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET_BITMASK (UINT64_C(1)<<1)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int64_t destoffset;
+
+# define GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK (UINT64_C(1)<<2)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int64_t size;
+};
+
+extern int guestfs_copy_device_to_file_argv (guestfs_h *g, const char *src, const char *dest, const struct guestfs_copy_device_to_file_argv *optargs);
+
+#define LIBGUESTFS_HAVE_COPY_FILE_TO_DEVICE 1
+#define GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET 0
+#define GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET 1
+#define GUESTFS_COPY_FILE_TO_DEVICE_SIZE 2
+extern int guestfs_copy_file_to_device (guestfs_h *g, const char *src, const char *dest, ...);
+extern int guestfs_copy_file_to_device_va (guestfs_h *g, const char *src, const char *dest, va_list args);
+
+struct guestfs_copy_file_to_device_argv {
+  uint64_t bitmask;
+
+# define GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET_BITMASK (UINT64_C(1)<<0)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int64_t srcoffset;
+
+# define GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET_BITMASK (UINT64_C(1)<<1)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int64_t destoffset;
+
+# define GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK (UINT64_C(1)<<2)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int64_t size;
+};
+
+extern int guestfs_copy_file_to_device_argv (guestfs_h *g, const char *src, const char *dest, const struct guestfs_copy_file_to_device_argv *optargs);
+
+#define LIBGUESTFS_HAVE_COPY_FILE_TO_FILE 1
+#define GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET 0
+#define GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET 1
+#define GUESTFS_COPY_FILE_TO_FILE_SIZE 2
+extern int guestfs_copy_file_to_file (guestfs_h *g, const char *src, const char *dest, ...);
+extern int guestfs_copy_file_to_file_va (guestfs_h *g, const char *src, const char *dest, va_list args);
+
+struct guestfs_copy_file_to_file_argv {
+  uint64_t bitmask;
+
+# define GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET_BITMASK (UINT64_C(1)<<0)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int64_t srcoffset;
+
+# define GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET_BITMASK (UINT64_C(1)<<1)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int64_t destoffset;
+
+# define GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK (UINT64_C(1)<<2)
+  /* The field below is only valid in this struct if the
+   * GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK bit is set
+   * in the bitmask above.  If not, the field is ignored.
+   */
+  int64_t size;
+};
+
+extern int guestfs_copy_file_to_file_argv (guestfs_h *g, const char *src, const char *dest, const struct guestfs_copy_file_to_file_argv *optargs);
+
+extern int guestfs_copy_size (guestfs_h *g, const char *src, const char *dest, int64_t size)
+  GUESTFS_DEPRECATED_BY ("copy_device_to_device");
 
 #define LIBGUESTFS_HAVE_CP 1
 extern int guestfs_cp (guestfs_h *g, const char *src, const char *dest);
@@ -651,12 +840,14 @@ extern int guestfs_cp (guestfs_h *g, const char *src, const char *dest);
 #define LIBGUESTFS_HAVE_CP_A 1
 extern int guestfs_cp_a (guestfs_h *g, const char *src, const char *dest);
 
-#define LIBGUESTFS_HAVE_DD 1
-extern int guestfs_dd (guestfs_h *g, const char *src, const char *dest);
+extern int guestfs_dd (guestfs_h *g, const char *src, const char *dest)
+  GUESTFS_DEPRECATED_BY ("copy_device_to_device");
 
 extern char *guestfs_debug (guestfs_h *g, const char *subcmd, char *const *extraargs);
 
 extern char **guestfs_debug_cmdline (guestfs_h *g);
+
+extern char **guestfs_debug_drives (guestfs_h *g);
 
 extern int guestfs_debug_upload (guestfs_h *g, const char *filename, const char *tmpname, int mode);
 
@@ -782,6 +973,9 @@ extern int guestfs_get_recovery_proc (guestfs_h *g);
 
 #define LIBGUESTFS_HAVE_GET_SELINUX 1
 extern int guestfs_get_selinux (guestfs_h *g);
+
+#define LIBGUESTFS_HAVE_GET_SMP 1
+extern int guestfs_get_smp (guestfs_h *g);
 
 #define LIBGUESTFS_HAVE_GET_STATE 1
 extern int guestfs_get_state (guestfs_h *g);
@@ -1214,8 +1408,8 @@ extern int guestfs_mkswap_file (guestfs_h *g, const char *path);
 #define LIBGUESTFS_HAVE_MODPROBE 1
 extern int guestfs_modprobe (guestfs_h *g, const char *modulename);
 
-extern int guestfs_mount (guestfs_h *g, const char *device, const char *mountpoint)
-  GUESTFS_DEPRECATED_BY ("mount_options");
+#define LIBGUESTFS_HAVE_MOUNT 1
+extern int guestfs_mount (guestfs_h *g, const char *device, const char *mountpoint);
 
 #define LIBGUESTFS_HAVE_MOUNT_9P 1
 #define GUESTFS_MOUNT_9P_OPTIONS 0
@@ -1326,6 +1520,9 @@ extern int guestfs_part_set_name (guestfs_h *g, const char *device, int partnum,
 
 #define LIBGUESTFS_HAVE_PART_TO_DEV 1
 extern char *guestfs_part_to_dev (guestfs_h *g, const char *partition);
+
+#define LIBGUESTFS_HAVE_PART_TO_PARTNUM 1
+extern int guestfs_part_to_partnum (guestfs_h *g, const char *partition);
 
 #define LIBGUESTFS_HAVE_PING_DAEMON 1
 extern int guestfs_ping_daemon (guestfs_h *g);
@@ -1452,6 +1649,9 @@ extern int guestfs_set_recovery_proc (guestfs_h *g, int recoveryproc);
 
 #define LIBGUESTFS_HAVE_SET_SELINUX 1
 extern int guestfs_set_selinux (guestfs_h *g, int selinux);
+
+#define LIBGUESTFS_HAVE_SET_SMP 1
+extern int guestfs_set_smp (guestfs_h *g, int smp);
 
 #define LIBGUESTFS_HAVE_SET_TRACE 1
 extern int guestfs_set_trace (guestfs_h *g, int trace);
@@ -1734,7 +1934,7 @@ extern void *guestfs_safe_malloc (guestfs_h *g, size_t nbytes);
 extern void *guestfs_safe_calloc (guestfs_h *g, size_t n, size_t s);
 extern const char *guestfs_tmpdir (void);
 #ifdef GUESTFS_PRIVATE_FOR_EACH_DISK
-extern int guestfs___for_each_disk (guestfs_h *g, virDomainPtr dom, int (*)(guestfs_h *g, const char *filename, const char *format, void *data), void *data);
+extern int guestfs___for_each_disk (guestfs_h *g, virDomainPtr dom, int (*)(guestfs_h *g, const char *filename, const char *format, int readonly, void *data), void *data);
 #endif
 /* End of private functions. */
 

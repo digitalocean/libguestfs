@@ -81,7 +81,13 @@ extern struct command_entry chmod_cmd_entry;
 extern struct command_entry chown_cmd_entry;
 extern struct command_entry command_cmd_entry;
 extern struct command_entry command_lines_cmd_entry;
+extern struct command_entry compress_device_out_cmd_entry;
+extern struct command_entry compress_out_cmd_entry;
 extern struct command_entry config_cmd_entry;
+extern struct command_entry copy_device_to_device_cmd_entry;
+extern struct command_entry copy_device_to_file_cmd_entry;
+extern struct command_entry copy_file_to_device_cmd_entry;
+extern struct command_entry copy_file_to_file_cmd_entry;
 extern struct command_entry copy_in_cmd_entry;
 extern struct command_entry copy_out_cmd_entry;
 extern struct command_entry copy_size_cmd_entry;
@@ -90,6 +96,7 @@ extern struct command_entry cp_a_cmd_entry;
 extern struct command_entry dd_cmd_entry;
 extern struct command_entry debug_cmd_entry;
 extern struct command_entry debug_cmdline_cmd_entry;
+extern struct command_entry debug_drives_cmd_entry;
 extern struct command_entry debug_upload_cmd_entry;
 extern struct command_entry df_cmd_entry;
 extern struct command_entry df_h_cmd_entry;
@@ -135,6 +142,7 @@ extern struct command_entry get_pid_cmd_entry;
 extern struct command_entry get_qemu_cmd_entry;
 extern struct command_entry get_recovery_proc_cmd_entry;
 extern struct command_entry get_selinux_cmd_entry;
+extern struct command_entry get_smp_cmd_entry;
 extern struct command_entry get_state_cmd_entry;
 extern struct command_entry get_trace_cmd_entry;
 extern struct command_entry get_umask_cmd_entry;
@@ -287,6 +295,7 @@ extern struct command_entry part_set_bootable_cmd_entry;
 extern struct command_entry part_set_mbr_id_cmd_entry;
 extern struct command_entry part_set_name_cmd_entry;
 extern struct command_entry part_to_dev_cmd_entry;
+extern struct command_entry part_to_partnum_cmd_entry;
 extern struct command_entry ping_daemon_cmd_entry;
 extern struct command_entry pread_cmd_entry;
 extern struct command_entry pread_device_cmd_entry;
@@ -330,9 +339,11 @@ extern struct command_entry set_pgroup_cmd_entry;
 extern struct command_entry set_qemu_cmd_entry;
 extern struct command_entry set_recovery_proc_cmd_entry;
 extern struct command_entry set_selinux_cmd_entry;
+extern struct command_entry set_smp_cmd_entry;
 extern struct command_entry set_trace_cmd_entry;
 extern struct command_entry set_verbose_cmd_entry;
 extern struct command_entry setcon_cmd_entry;
+extern struct command_entry setenv_cmd_entry;
 extern struct command_entry setxattr_cmd_entry;
 extern struct command_entry sfdisk_cmd_entry;
 extern struct command_entry sfdiskM_cmd_entry;
@@ -374,6 +385,7 @@ extern struct command_entry txz_out_cmd_entry;
 extern struct command_entry umask_cmd_entry;
 extern struct command_entry umount_cmd_entry;
 extern struct command_entry umount_all_cmd_entry;
+extern struct command_entry unsetenv_cmd_entry;
 extern struct command_entry upload_cmd_entry;
 extern struct command_entry upload_offset_cmd_entry;
 extern struct command_entry utimens_cmd_entry;
@@ -502,7 +514,19 @@ chown, &chown_cmd_entry
 command, &command_cmd_entry
 command_lines, &command_lines_cmd_entry
 command-lines, &command_lines_cmd_entry
+compress_device_out, &compress_device_out_cmd_entry
+compress-device-out, &compress_device_out_cmd_entry
+compress_out, &compress_out_cmd_entry
+compress-out, &compress_out_cmd_entry
 config, &config_cmd_entry
+copy_device_to_device, &copy_device_to_device_cmd_entry
+copy-device-to-device, &copy_device_to_device_cmd_entry
+copy_device_to_file, &copy_device_to_file_cmd_entry
+copy-device-to-file, &copy_device_to_file_cmd_entry
+copy_file_to_device, &copy_file_to_device_cmd_entry
+copy-file-to-device, &copy_file_to_device_cmd_entry
+copy_file_to_file, &copy_file_to_file_cmd_entry
+copy-file-to-file, &copy_file_to_file_cmd_entry
 copy_in, &copy_in_cmd_entry
 copy-in, &copy_in_cmd_entry
 copy_out, &copy_out_cmd_entry
@@ -516,6 +540,8 @@ dd, &dd_cmd_entry
 debug, &debug_cmd_entry
 debug_cmdline, &debug_cmdline_cmd_entry
 debug-cmdline, &debug_cmdline_cmd_entry
+debug_drives, &debug_drives_cmd_entry
+debug-drives, &debug_drives_cmd_entry
 debug_upload, &debug_upload_cmd_entry
 debug-upload, &debug_upload_cmd_entry
 df, &df_cmd_entry
@@ -588,6 +614,8 @@ get_recovery_proc, &get_recovery_proc_cmd_entry
 get-recovery-proc, &get_recovery_proc_cmd_entry
 get_selinux, &get_selinux_cmd_entry
 get-selinux, &get_selinux_cmd_entry
+get_smp, &get_smp_cmd_entry
+get-smp, &get_smp_cmd_entry
 get_state, &get_state_cmd_entry
 get-state, &get_state_cmd_entry
 get_trace, &get_trace_cmd_entry
@@ -851,6 +879,8 @@ part_set_name, &part_set_name_cmd_entry
 part-set-name, &part_set_name_cmd_entry
 part_to_dev, &part_to_dev_cmd_entry
 part-to-dev, &part_to_dev_cmd_entry
+part_to_partnum, &part_to_partnum_cmd_entry
+part-to-partnum, &part_to_partnum_cmd_entry
 ping_daemon, &ping_daemon_cmd_entry
 ping-daemon, &ping_daemon_cmd_entry
 pread, &pread_cmd_entry
@@ -931,6 +961,9 @@ recovery-proc, &set_recovery_proc_cmd_entry
 set_selinux, &set_selinux_cmd_entry
 set-selinux, &set_selinux_cmd_entry
 selinux, &set_selinux_cmd_entry
+set_smp, &set_smp_cmd_entry
+set-smp, &set_smp_cmd_entry
+smp, &set_smp_cmd_entry
 set_trace, &set_trace_cmd_entry
 set-trace, &set_trace_cmd_entry
 trace, &set_trace_cmd_entry
@@ -938,6 +971,7 @@ set_verbose, &set_verbose_cmd_entry
 set-verbose, &set_verbose_cmd_entry
 verbose, &set_verbose_cmd_entry
 setcon, &setcon_cmd_entry
+setenv, &setenv_cmd_entry
 setxattr, &setxattr_cmd_entry
 sfdisk, &sfdisk_cmd_entry
 sfdiskM, &sfdiskM_cmd_entry
@@ -1005,6 +1039,7 @@ unmount, &umount_cmd_entry
 umount_all, &umount_all_cmd_entry
 umount-all, &umount_all_cmd_entry
 unmount-all, &umount_all_cmd_entry
+unsetenv, &unsetenv_cmd_entry
 upload, &upload_cmd_entry
 upload_offset, &upload_offset_cmd_entry
 upload-offset, &upload_offset_cmd_entry

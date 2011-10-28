@@ -1,4 +1,4 @@
-# serial 6
+# serial 8
 # See if we need to provide fdopendir.
 
 dnl Copyright (C) 2009-2011 Free Software Foundation, Inc.
@@ -17,8 +17,6 @@ AC_DEFUN([gl_FUNC_FDOPENDIR],
     ]])
   AC_CHECK_FUNCS_ONCE([fdopendir])
   if test $ac_cv_func_fdopendir = no; then
-    AC_LIBOBJ([openat-proc])
-    AC_LIBOBJ([fdopendir])
     HAVE_FDOPENDIR=0
   else
     AC_CACHE_CHECK([whether fdopendir works],
@@ -28,7 +26,11 @@ AC_DEFUN([gl_FUNC_FDOPENDIR],
 #include <fcntl.h>
 #include <unistd.h>
 #if !HAVE_DECL_FDOPENDIR
-extern DIR *fdopendir (int);
+extern
+# ifdef __cplusplus
+"C"
+# endif
+DIR *fdopendir (int);
 #endif
 ]], [int result = 0;
      int fd = open ("conftest.c", O_RDONLY);
@@ -41,7 +43,6 @@ extern DIR *fdopendir (int);
          [gl_cv_func_fdopendir_works="guessing no"])])
     if test "$gl_cv_func_fdopendir_works" != yes; then
       REPLACE_FDOPENDIR=1
-      AC_LIBOBJ([fdopendir])
     fi
   fi
 ])

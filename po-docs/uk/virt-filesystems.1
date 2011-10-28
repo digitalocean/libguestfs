@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-filesystems 1"
-.TH virt-filesystems 1 "2011-10-19" "libguestfs-1.12.8" "Virtualization Support"
+.TH virt-filesystems 1 "2011-10-27" "libguestfs-1.14.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -74,7 +74,7 @@ virtual machine or disk image
 .SH "КОРОТКИЙ ОПИС"
 .IX Header "КОРОТКИЙ ОПИС"
 .Vb 1
-\& virt\-filesystems [\-\-options] \-d domname
+\& virt\-filesystems [\-\-параметри] \-d назва_домену
 \&
 \& virt\-filesystems [\-\-options] \-a disk.img [\-a disk.img ...]
 .Ve
@@ -167,12 +167,12 @@ For machine-readable output, use \fI\-\-csv\fR to get Comma-Separated Values.
 .IX Header "ПАРАМЕТРИ"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
-Display brief help.
-.IP "\fB\-a\fR file" 4
-.IX Item "-a file"
+Показати коротку довідку.
+.IP "\fB\-a\fR файл" 4
+.IX Item "-a файл"
 .PD 0
-.IP "\fB\-\-add\fR file" 4
-.IX Item "--add file"
+.IP "\fB\-\-add\fR файл" 4
+.IX Item "--add файл"
 .PD
 Add \fIfile\fR which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
@@ -187,19 +187,19 @@ Display everything.  This is currently the same as specifying these options:
 \&\fI\-\-logical\-volumes\fR, \fI\-\-volume\-groups\fR, \fI\-\-physical\-volumes\fR.  (More may
 be added to this list in future).
 .Sp
-See also \fI\-\-long\fR.
+Див. також \fI\-\-long\fR.
 .IP "\fB\-\-blkdevs\fR" 4
 .IX Item "--blkdevs"
 .PD 0
 .IP "\fB\-\-block\-devices\fR" 4
 .IX Item "--block-devices"
 .PD
-Display block devices.
-.IP "\fB\-c\fR \s-1URI\s0" 4
-.IX Item "-c URI"
+Показати список блокових пристроїв.
+.IP "\fB\-c\fR адреса" 4
+.IX Item "-c адреса"
 .PD 0
-.IP "\fB\-\-connect\fR \s-1URI\s0" 4
-.IX Item "--connect URI"
+.IP "\fB\-\-connect\fR адреса" 4
+.IX Item "--connect адреса"
 .PD
 If using libvirt, connect to the given \fI\s-1URI\s0\fR.  If omitted, then we connect
 to the default libvirt hypervisor.
@@ -211,11 +211,11 @@ used at all.
 Write out the results in \s-1CSV\s0 format (comma-separated values).  This format
 can be imported easily into databases and spreadsheets, but read \*(L"\s-1NOTE\s0
 \&\s-1ABOUT\s0 \s-1CSV\s0 \s-1FORMAT\s0\*(R" below.
-.IP "\fB\-d\fR guest" 4
-.IX Item "-d guest"
+.IP "\fB\-d\fR гість" 4
+.IX Item "-d гість"
 .PD 0
-.IP "\fB\-\-domain\fR guest" 4
-.IX Item "--domain guest"
+.IP "\fB\-\-domain\fR гість" 4
+.IX Item "--domain гість"
 .PD
 Add all the disks from the named libvirt guest.  Domain UUIDs can be used
 instead of names.
@@ -252,7 +252,7 @@ auto-detection for subsequent \fI\-a\fR options.
 Приклад:
 .Sp
 .Vb 1
-\& virt\-filesystems \-\-format=raw \-a disk.img
+\& virt\-filesystems \-\-format=raw \-a диск.img
 .Ve
 .Sp
 forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR.
@@ -364,8 +364,8 @@ Display \s-1LVM\s0 volume groups.
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
 Enable tracing of libguestfs \s-1API\s0 calls.
-.SH "COLUMNS"
-.IX Header "COLUMNS"
+.SH "СТОВПЧИКИ"
+.IX Header "СТОВПЧИКИ"
 Note that columns in the output are subject to reordering and change in
 future versions of this tool.
 .IP "\fBName\fR" 4
@@ -389,6 +389,13 @@ one could be detected, eg. \f(CW\*(C`ext4\*(C'\fR.
 .IX Item "Label"
 If the object has a label (used for identifying and mounting filesystems)
 then this column contains the label.
+.IP "\fB\s-1MBR\s0\fR" 4
+.IX Item "MBR"
+The partition type byte, displayed as a two digit hexadecimal number.  A
+comprehensive list of partition types can be found here:
+http://www.win.tue.nl/~aeb/partitions/partition_types\-1.html <http://www.win.tue.nl/~aeb/partitions/partition_types-1.html>
+.Sp
+This is only applicable for \s-1DOS\s0 (\s-1MBR\s0) partitions.
 .IP "\fBSize\fR" 4
 .IX Item "Size"
 The size of the object in bytes.  If the \fI\-\-human\fR option is used then the
@@ -451,7 +458,7 @@ This program returns 0 if successful, or non-zero if there was an error.
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "АВТОРСЬКІ ПРАВА"
 .IX Header "АВТОРСЬКІ ПРАВА"
-Copyright (C) 2010 Red Hat Inc.
+©Red Hat Inc., 2010
 .PP
 This program is free software; you can redistribute it and/or modify it
 under the terms of the \s-1GNU\s0 General Public License as published by the Free
@@ -463,6 +470,6 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
-You should have received a copy of the \s-1GNU\s0 General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, \s-1MA\s0 02139, \s-1USA\s0.
+Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, \s-1MA\s0 02139, \s-1USA\s0.

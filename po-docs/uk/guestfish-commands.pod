@@ -60,7 +60,7 @@ environment variable.  For example to use the GNOME display program:
 
  export GUESTFISH_DISPLAY_IMAGE=eog
 
-See also L<display(1)>.
+Див. також L<display(1)>.
 
 =head2 echo
 
@@ -134,7 +134,7 @@ Note that C<!cd> won't do what you might expect.
 
 =head2 man
 
-=head2 manual
+=head2 підручник
 
   man
 
@@ -161,6 +161,16 @@ Close and reopen the libguestfs handle.  It is not necessary to use this
 normally, because the handle is closed properly when guestfish exits.
 However this is occasionally useful for testing.
 
+=head2 setenv
+
+  setenv VAR value
+
+Set the environment variable C<VAR> to the string C<value>.
+
+To print the value of an environment variable use a shell command such as:
+
+ !echo $VAR
+
 =head2 sparse
 
  sparse filename size
@@ -186,7 +196,7 @@ This command returns a list of the optional groups known to the daemon, and
 indicates which ones are supported by this build of the libguestfs
 appliance.
 
-See also L<guestfs(3)/AVAILABILITY>.
+Див. також L<guestfs(3)/AVAILABILITY>.
 
 =head2 time
 
@@ -194,4 +204,10 @@ See also L<guestfs(3)/AVAILABILITY>.
 
 Run the command as usual, but print the elapsed time afterwards.  This can
 be useful for benchmarking operations.
+
+=head2 unsetenv
+
+  unsetenv VAR
+
+Remove C<VAR> from the environment.
 

@@ -242,6 +242,17 @@ to look at the C<HKLM\SYSTEM\Select> key:
 
 Similarly, other C<Current...> keys in the path may need to be replaced.
 
+=head1 DELETING REGISTRY KEYS AND VALUES
+
+To delete a whole registry key, use the syntax:
+
+ [-HKEY_LOCAL_MACHINE\Foo]
+
+To delete a single value within a key, use the syntax:
+
+ [HKEY_LOCAL_MACHINE\Foo]
+ "Value"=-
+
 =head1 WINDOWS TIPS
 
 Note that some of these tips modify the guest disk image.  The guest I<must>

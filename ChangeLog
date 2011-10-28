@@ -1,8 +1,244 @@
+2011-10-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.14.0.
+
+	Pull latest translations from Transifex.
+
+	generator: Remove DangerWillRobinson.
+	This warning was applied unevenly.  Potentially any command can be
+	dangerous or safe, so it was a needless warning.
+
+	fuse: Skip guestmount test if setfacl is not installed.
+	This dependency is optional, don't fail the test if it's not
+	installed.
+
+	virt-sysprep: Skip test if xmlstarlet is not installed.
+	This dependency is optional, so don't fail the test if it
+	is not installed.
+
+	virt-alignment-scan: Add additional data for 4K sector drives (thanks Matt Booth).
+
+	test-virt-sparsify: Relax size_after constraint (for Debian).
+	size_after on Debian was 10136K.  The host filesystem was ext3 (vs
+	ext4 for Fedora where we did the original testing).  Probably indirect
+	blocks (vs more efficient extents on ext4) causes the difference,
+	although I did not look at it in detail.
+
+	Update RELEASE-NOTES for 1.14 release.
+
+	Update ROADMAP for 1.14 release.
+
+2011-10-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	Update API support.
+
+	Version 1.13.26.
+
+	guestmount: Fix --live option (RHBZ#744795).
+
+	fish and other tools: -d option uses readonlydisk="read" (RHBZ#747290).
+	Tools like virt-edit would not be able to edit disks marked as
+	<readonly/> in the libvirt XML.  It's not clear if this is a bug or a
+	feature.
+
+	add-domain: Add readonlydisk optional argument (RHBZ#747290).
+	This optional argument controls how <readonly/> disks in
+	the libvirt XML are handled.  It can be set to one of:
+
+	  "write" (default) - add them R/W
+	  "read" - add them R/O
+	  "error" - throw an error if asked to add them R/W
+	  "ignore" - ignore these disks
+
+	I have added limited regression tests for this feature.  However
+	libvirt's test:/// XML does not allow you to specify that a domain
+	starts off shut down, so we cannot fully test this.  Instead I tested
+	it by hand.
+
+	libvirt: Detect if a disk has the <readonly/> flag.
+	This changes the private function guestfs___for_each_disk so that the
+	<readonly/> flag on libvirt disks is detected and passed through to
+	the callback function.
+
+	test-user-cancel: Make this test choose smaller cancellation numbers.
+	Use a Gaussian distribution for random numbers so that smaller numbers
+	are chosen more frequently.
+
+	This also exposes a bug in this test which only happens when small
+	numbers are chosen:
+
+	If the test thread starts up quickly, it can get to
+	guestfs_user_cancel before the guestfs_upload command has happened in
+	the main thread.  This causes the cancel to be ignored (correctly) and
+	we end up in the second loop writing data until the disk runs out of
+	space.  Fix this by repeatedly asserting the cancel flag in the second
+	loop.
+
+	Version 1.13.25.
+
+	virt-resize: Be much more conservative about moving first partition.
+	Commit 2910413850c7d9e8df753afad179e415f0638d6d caused Windows 7
+	resizes to break with the 0xc0000225 boot error.
+
+	Change the --align-first auto (default) option so that it is more
+	conservative about when it moves the first partition.  In particular
+	it doesn't move it if it's already aligned (as it is for Win7), nor if
+	there is more than one partition (also Win7).
+
+	Tested with: Windows XP, 2003, 7, Ubuntu 10.10 and RHEL 5.
+
+	Flush stdout for progress bars used by guestfish, virt-resize.
+
+	virt-resize: Handle extended and logical partitions (RHBZ#642821).
+
+	resize: Get the partition table type of the source disk earlier.
+	Also we only permit MBR (DOS) and GPT partition tables.  In theory
+	previously we allowed other partition table types, but it is unlikely
+	that it would have worked in reality.
+
+	New APIs: copy-{file,device}-to-{file,device}.
+	The four new APIs:
+	guestfs_copy_device_to_device,
+	guestfs_copy_device_to_file,
+	guestfs_copy_file_to_device, and
+	guestfs_copy_file_to_file
+	let you copy from a source to a destination, between files and
+	devices, optionally allowing source and destination offsets and size
+	to be specified.
+
+2011-10-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Make sure virt-resize, virt-sparsify are rebuilt if Guestfs API changes.
+	Add a dependency so these tools are rebuilt from scratch if the
+	Guestfs API changes.  This prevents the error:
+	"[...] make inconsistent assumptions over interface Guestfs".
+
+	This commit includes the generated changes to .depend files.
+
+	virt-filesystems: Add MBR partition type byte to the output.
+	This adds an extra column containing this information, looking
+	like this:
+
+	Name       Type        VFS   Label  MBR  Size  Parent
+	/dev/sda1  filesystem  ntfs  -      -    6.0G  -
+	/dev/sda1  partition   -     -      07   6.0G  /dev/sda
+	/dev/sda   device      -     -      -    6.0G  -
+
+	In particular you can use this to tell if a partition is an extended
+	partition, because the field will contain '05' or '0f'.
+
+	New API: part-to-partnum
+	This converts a partition device name (eg. /dev/sda1) to a partition
+	number (eg. 1).  This is useful in conjunction with the parted APIs
+	that mostly take a disk device + partnum.
+
+	virt-cat: Handle Windows paths and drive letters (RHBZ#693359).
+
+2011-10-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.13.24.
+
+	Add test for qemu broken -machine option (RHBZ#748266).
+	Also add this option, if necessary, when testing for virtio-serial
+	support.
+
+	When the workaround is enabled, we specify machine type 'pc'.
+
+	Revert "out-of-tree build: daemon"
+	This reverts commit 025dba7f803419f510fd8f085ce693838af82878.
+
+	If build and source directories are the same, you get this error:
+
+	make[3]: Leaving directory `/home/rjones/d/libguestfs/generator'
+	make[2]: Circular guestfs_protocol.c <- guestfs_protocol.c dependency dropped.
+	make[2]: Circular guestfs_protocol.h <- guestfs_protocol.h dependency dropped.
+	rm -f guestfs_protocol.h
+	ln  guestfs_protocol.h
+	ln: accessing `guestfs_protocol.h': No such file or directory
+
+2011-10-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-win-reg: Document syntax for deleting keys and values (RHBZ#737944).
+	NB: This requires hivex >= 1.3.2 before this syntax becomes true.
+
+	virt-make-fs: Refresh man page.
+
+2011-10-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	Fix ./configure --disable-erlang.
+
+2011-10-21  Hilko Bengen  <bengen@hilluzination.de>
+
+	out-of-tree build: fixed bindtests and inspector
+
+	out-of-tree build: fix HAVE_OCAML=false case
+
+	out-of-tree build: daemon
+
+2011-10-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	add-drive-opts: Correctly handle unreadable and unwritable files (RHBZ#747287).
+
+	virt-make-fs: Set MBR partition type byte correctly (RHBZ#746295).
+
+	lib: Common code for formatting the qemu -drive parameter.
+	This is just code refactoring.
+
+	Allow compilation without hivex (RHBZ#723474).
+
+	po-docs: Force make update-po on first build from git.
+
+2011-10-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.13.23.
+
+	appliance: udev-174 moves udevd to /lib/udev/udevd (instead of /sbin/udevd)
+
+	resize: Add --align-first auto|never|always option.
+	The first partition can now be aligned.  We fix the bootloader
+	correctly for Windows by adjusting the "Hidden Sectors" field.
+
+	resize: Add --alignment flag to allow partition alignment to be picked.
+
+	resize: Refactor the code for creating target partitions.
+	The old code mixed the business of planning the layout of the target
+	partitions with the creation of the target partitions.  The
+	replacement code separates these into two tasks: firstly we create a
+	new 'partitions' list with the target layout, secondly this directly
+	drives the creation of the partitions.
+
+	As part of this change I have *removed* the old code that was supposed
+	to handle extended/logical MBR partitions.  It simply didn't work, and
+	didn't have any hope of working, and there is a separate bug open to
+	fix it.
+
+	resize: Remove p_size field from partitions structure.
+	This field simply contained a duplicate copy of p_part.part_size.
+
+	There is no functional change in this commit.
+
+	Update RELEASE-NOTES.
+
 2011-10-19  Richard W.M. Jones  <rjones@redhat.com>
 
-	inspection: Return root devices sorted. (cherry picked from commit c46bedf925cd9c6c9a9cbaee115358fd1dffcbfe)
+	Version 1.13.22.
+
+	Pushed and pulled latest translations from Transifex.
+	Fixed one bug in the nl PO file:
+
+	msgid "security: cached appliance %s is not owned by UID %d"
+	msgstr "beveiliging: UID %d is geen eigenaar van toepassing %s in cache"
+
+	should be:
+
+	msgid "security: cached appliance %s is not owned by UID %d"
+	msgstr "beveiliging: UID %2$d is geen eigenaar van toepassing %1$s in cache"
+
+	inspection: Return root devices sorted.
 
 2011-10-19  Matthew Booth  <mbooth@redhat.com>
+
+	inspect: Handle cciss devices in /etc/fstab
 
 	inspect: Don't assume number of captures in match functions
 	It is possible for the pcre library to return a variable number of captures for
@@ -17,66 +253,281 @@
 	This change updates match, match1, match2, and match3 to ignore the specific
 	number of matches returned. Instead, any returned captures are assigned to the
 	given arguments, and any remaining arguments are set to NULL.
-	(cherry picked from commit f5c9f0e9ee1729b1260cef3e51ca91936e1868c4)
+
+	inspect: Add drive naming hints
+	We currently use a heuristic to guess how drive names we find
+	referenced in the guest map to drive names in the appliance. If this
+	heuristic fails it can cause inspection to fail.
+
+	This change adds a new 'name' option to add_drive_opts, which allows
+	the user to explicitly pass the name of a drive to libguestfs if it is
+	known. This change also updates the fstab-parsing inspection code to
+	use this information if it is available.
 
 	NFC: Remove unnecessary goto
-	Cherry picked from commit 1f615fddaffd33afc75a582021769583c8f4db4e and
-	backported to libguestfs-1.12 branch.
+
+	launch: Store drive information in guestfs_h
+	This is a NFC on its own, but provides a place-holder for drive metadata which
+	can be used after launch.
+
+	Fixes by RWMJ:
+
+	 - Fix the tests: this requires a new internal function 'debug-drives'
+	   that dumps out the g->drives information so it can be checked in
+	   two of the tests.  Previously these tests used 'debug-cmdline'.
+
+	 - Test file existence / use_cache_off in the add_drive_opts function,
+	   not when launching qemu in the child process.
+
+	 - Call free along error paths.
+
+	 - Add comments.
+
+	inspect: Fix fstab device mapping for >26 disks
+	The regular expression matching disk name assumed that there was only a single
+	letter suffix. This change handles a naming scheme for any number of disks.
 
 2011-10-19  Richard W.M. Jones  <rjones@redhat.com>
 
-	launch: Ensure g->cmdline is allocated before assigning g->cmdline[0]. (cherry picked from commit 138e118d62046b197b715462072256082ecfc0f7)
+	launch: Ensure g->cmdline is allocated before assigning g->cmdline[0].
 
 	valgrind: guestfish -i: free strings before exit.
 	This isn't really necessary, but it keeps valgrind happy.
-	(cherry picked from commit 2f6ec8b4da27c550e2c7187fd17df28f1bdd51a7)
+
+2011-10-18  Richard W.M. Jones  <rjones@redhat.com>
 
 	Ubuntu 11.10: Create /run and /run/lock if not already.
 	In real machines these directories are a ramdisk.
-	(cherry picked from commit 6d7d645cdd4a9c94c4d95fc52de53c37b88847e4)
 
-	Skip guestmount tests if no /dev/fuse.
-	Cherry picked from commit cf4cc1143393d607a7fb4cdbee1434544237d5d4 and
-	modified for libguestfs-1.12 branch which only has guestmount.
+2011-10-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-sysprep: Fix link in documentation.
+
+	Skip guestmount and virt-sysprep tests if no /dev/fuse.
+
+2011-10-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-sysprep: Fix test to use guestmount and virt-inspector binaries that have been built.
+
+2011-10-14  Richard W.M. Jones  <rjones@redhat.com>
 
 	appliance: Fedora cryptsetup-luks renamed to cryptsetup.
 	Therefore we need both names to be listed in the file.
-	(cherry picked from commit af0c123be8cc62acf9e1368b1d00acccdd6d91e9)
 
-	roadmap: Fix Bugzilla URL. (cherry picked from commit db499d98e7a290ccbfc4fb333f85021b23155e9d)
+	roadmap: Fix Bugzilla URL.
+
+	More TODO items.
+
+	Update RELEASE-NOTES file.
+
+	Version 1.13.21.
+
+2011-10-14  Erik Nolte  <erik_nolte@acm.org>
+
+	Use ArchLinux's new kernel package "linux".
+
+2011-10-14  Michael Scherer  <misc@zarb.org>
+
+	Add basic support for netbsd detection.
+
+	Add support for pkgsrc, default NetBSD package manager.
+	For now, only detect the tool, but support from reading
+	installed package could be added later ( may require either
+	a package of pkgsrc, or a smaller tool to read the db ).
+
+	Add support for mounting ufs from NetBSD, and fix FreeBSD detection on Fedora 16
+	While testing on Fedora 16, I noticed that Linux will mount the disk
+	without trouble by using automatically ufstype=old, and yet do not
+	let us read the directories. So we should start directly with usftype=ufs2,
+	and if it fail, try 44bsd, as used for netbsd and openbsd ( as seen on
+	http://wiki-static.aydogan.net/How_to_mount_FFS_partition_under_Linux ).
+
+	Add the Opensuse logo ( thanks to Vincent Untz )
+	Like Ubuntu one, it may not be always present.
+
+	Add Opensuse and zypper detection support
+	This would also erronously detect SLES as Opensuse.
+
+	Add support for Ubuntu logo
+	Ths logo is present on Lucid Lynx, but may not always be installed, like
+	in case of a minimal installation ( or server ). While Edubuntu and Kubuntu
+	have different logo, I didn't check where it would be placed.
+
+	Detect Mageia distribution
+
+	Partially fix --disable-erlang
+	Without this, configure will always enable erlang, no matter what
+	argument are passed. Now, we can disable it, even if configure still
+	need the erlang compiler for some obscure reason.
+
+2011-10-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-sysprep: Add cron-spool, mail-spool, utmp.
+
+2011-10-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-sysprep: Use /dev/urandom instead of /dev/random.
+
+	virt-sysprep: More clarifications to the man page.
+
+	virt-sysprep: Clarify docs on enabling operations.
+
+	virt-sysprep: Add rhn-systemid.
+
+	virt-sysprep: Switch to using guestmount, add more features.
+	This switches virt-sysprep to use guestmount instead of guestfish.
+	This makes the script a little bit easier to modify for sysadmins.
+
+	This commit also adds:
+
+	 - dhcp-client-state
+	 - dhcp-server-state
+	 - logfiles
+	 - random-seed
+	 - smolt-uuid
+	 - yum-uuid
+
+	SELinux relabelling, and a section on security in the manual page.
+
+	virt-sysprep: Use Augeas for config file manipulation.
+
+	virt-sysprep: Add prepend_line utility function.
 
 	fish: docs: note how to clean up the remote process properly.
 	Killing it is always a bad idea, because the qemu subprocess will be
 	left hanging around.  The best thing is to send the exit command.
 
-	Cherry picked from commit 11be7d8eee16e6249ed2868b5bd552f29508ec02
-	and modified.
+	This also makes the change to virt-sysprep.
 
 	fish: Close guestfs handle explicitly before exiting.
 	NOTE this is just a cleanup.  It is NOT necessary for correctness,
 	since libguestfs itself is correctly closing the handle in the exit
 	handler.
-	(cherry picked from commit baa1618e0f917017c1934b7da41250029c1791ef)
 
-	guestmount: Add note to man page about 'fuse' group for Debian. (cherry picked from commit e57c3c37a8648966e19ef33832f353d0f9487a77)
+	virt-sysprep: Trap ERR as well as EXIT.
 
-	fish: Add man page section on calling guestfish remote robustly from bash. (cherry picked from commit 3a546663655abfcd6399d4fdb7febc6b0d83b822)
+	guestmount: Add note to man page about 'fuse' group for Debian.
 
-	Makefile.am: Fix comment. (cherry picked from commit c6be95453d66ea714a9813a21cfb224d8e346d9e)
+	virt-sysprep: Simplify calls to guestfish --remote.
 
-	docs: Add directory section for resize/
-	Based on commit f3341222b37f91d7f7fcdafe30b107ea9da9ad02, but modified
-	since only resize exists in this branch of libguestfs.
+	virt-sysprep: Further TODO items (thanks Nikita Menkovich).
 
-	docs: Add virt-resize to list of links in guestfs(3). (cherry picked from commit 293772bf7511dee41a1f3e842424678c1a6bf9e4)
+	virt-sysprep: Further TODO items (thanks Marko Myllynen, James Antill).
 
-	docs: virt-win-reg is written in Perl, not virt-resize. (cherry picked from commit b39b3c5c74f1dfb88a6074aac476df877f1bfc4d)
+2011-10-11  Richard W.M. Jones  <rjones@redhat.com>
 
-	daemon: mkswap --help output changed, breaking linuxfsuuid group detection. (cherry picked from commit 4e9ed018475ff4bd5171ed50a47ffae7abbdda4b)
+	Version 1.13.20.
+
+	virt-sysprep: Update TODO list again.
+
+	virt-sysprep: Update TODO list (thanks Steve Grubb, Dan Berrange).
+
+2011-10-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	TODO: More virt-sysprep suggestions (thanks librarian).
+
+	Add systemtap/DTrace probes.
+	Mainly this is a documentation change.  However a sample of
+	DTrace-compatible userspace probes are also added.
+
+	Update TODO file with future plans for virt-sysprep.
+
+2011-10-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.13.19.
+
+	New tool: virt-sysprep: system preparation for guests.
+
+2011-10-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Add man page section on calling guestfish remote robustly from bash.
+
+	virt-alignment-scan: Fix SYNOPSIS in manual page.
+
+	Makefile.am: Fix comment.
+
+2011-10-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-alignment-scan: docs: Add link to RHEL Storage Administration Guide.
+
+	virt-alignment-scan: More information in man page.
+	Thanks Mike Snitzer.
+
+	virt-resize: Align partitions to multiple of 128 sectors (instead of 64).
+	This gives us effectively 64 KByte alignment, optimal for all current
+	types of storage.
+
+2011-10-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Update RELEASE-NOTES file.
+
+	Version 1.13.18.
+
+	New tool: virt-alignment-scan to check alignment of partitions.
+
+	docs: Add directory sections for resize/ and sparsify/
+
+2011-10-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	Update RELEASE-NOTES file.
+
+	sparsify: Fix --ignore option to work on canonical device names.
+
+	docs: Clearer language in virt-sparsify man page.
+
+	Version 1.13.17.
+
+	New tool: virt-sparsify to make disk images sparse.
+
+	docs: Add virt-resize to list of links in guestfs(3).
+
+	docs: virt-win-reg is written in Perl, not virt-resize.
+
+	Update API support documentation.
+
+2011-10-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.13.16.
+
+	mount: Not deprecated any more.
+	This updates commit 5c2f1a2d9433eeb5aebeec26f0412c703bbe7269.
+
+	mount: No longer implicitly add -o sync,noatime options.
+
+2011-09-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: mkswap --help output changed, breaking linuxfsuuid group detection.
+
+2011-09-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.13.15.
+
+	New API: set-smp, get-smp
+	These calls allow you to change the number of virtual CPUs assigned to
+	the appliance.
+
+	This also adds a --smp option to virt-rescue.
+
+	New APIs: compress-out, compress-device-out.
+	These APIs let you copy compressed files or devices out from the disk
+	image.
+
+	Compression is useful for large images which are mostly zeroes.  We
+	cannot currently do sparseness detection, and compression gives us a
+	form of zero detection for free.
+
+	Example usage:
+
+	$ guestfish --ro -a /dev/vg_pin/F16x64 -i \
+	    compress-out gzip /etc/passwd /tmp/passwd.gz
+	$ file -z /tmp/passwd.gz
+	/tmp/passwd.gz: ASCII text (gzip compressed data, was "passwd", from
+	Unix, last modified: Sun Aug 28 14:40:46 2011)
 
 	daemon: Move useful is_zero function to header file.
 	Code motion.
-	(cherry picked from commit ffc01285ee4289da90983a3320873f27b3d31c4d)
+
+2011-09-26  Richard W.M. Jones  <rjones@redhat.com>
 
 	Add no_timer_check to disable faulty test during boot (RHBZ#502058).
 	See:
@@ -85,20 +536,46 @@
 	https://bugzilla.redhat.com/show_bug.cgi?id=698842#c8
 
 	This updates commit 79e66f89e2f6c27486476d7857da58feb491bf5c.
-	(cherry picked from commit 322106521f546d7c70c5a38255db7d243a456a6b)
 
-	docs: Show how to use a qemu wrapper to edit the qemu command line. (cherry picked from commit 3c7b3634b2c86a4c41fec044ccb59a1fe3224e66)
+	docs: Show how to use a qemu wrapper to edit the qemu command line.
+
+2011-09-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.13.14.
+
+	Update to latest gnulib.
+
+2011-09-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	erlang: Use the official autoconf macros.
+
+2011-09-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	todo: Suggestion to improve Erlang bindings.
+
+	Enable APIC.
+	Originally this was disabled to work around RHBZ#502058.  That bug was
+	never officially fixed, but it may have fixed itself.
+
+	In the meantime, KVM has broken ordinary PIC support (RHBZ#723822).
+	Since APIC is the most common way that regular Linux and Windows
+	guests run it makes sense to remove this hack.
+
+	Version 1.13.13.
+
+	Add Erlang bindings.
 
 2011-09-16  Richard W.M. Jones  <rjones@redhat.com>
-
-	Version 1.12.7.
 
 	inspection: Handle /dev/root in /etc/fstab.
 	This means "the device that holds /etc/fstab", so map it correctly.
 
 	This fixes support for ttylinux and also some other guests that use
 	/dev/root instead of a real device name.
-	(cherry picked from commit 917f947590c92318fee2545ba88245d0de012e31)
+
+	inspection: Add support for ttylinux (a minimal Linux).
+
+2011-09-15  Richard W.M. Jones  <rjones@redhat.com>
 
 	Add an optional group ("grub") for the guestfs_grub_install API.
 	This also improves the documentation for this call, pointing out
@@ -106,91 +583,114 @@
 
 	This unfortunately breaks existing callers that might use
 	guestfs_grub_install without checking for this new group.
-	(cherry picked from commit 99624d29226ece1abbbdd921183b360f5f80de91)
 
-2011-09-16  Richard Jones  <rjones@redhat.com>
+2011-09-14  Richard W.M. Jones  <rjones@redhat.com>
 
-	test-tool: Display TMPDIR. (cherry picked from commit bddde7799b80b8292879634548c3c92a3cc1c044)
+	Version 1.13.12.
 
-	test-tool: Refresh libguestfs-test-tool man page. (cherry picked from commit cda7fa973cbdd5fc4ad3974dcc6b5ea02ec6bb44)
+2011-09-14  Richard Jones  <rjones@redhat.com>
+
+	test-tool: Display TMPDIR.
+
+	test-tool: Refresh libguestfs-test-tool man page.
 
 	test-tool: Make the default timeout be 600 seconds (10 minutes).
 	We could sometimes hit the 120 second timeout, eg. if the appliance
 	needed to be rebuilt and the machine was very slow and/or under heavy
 	I/O load.  10 minutes should be enough for any reasonable situation.
-	(cherry picked from commit 912284b02e28bd63bdf3397ef841b9782adfd2cd)
 
-	test-tool: Document the -t command line option. (cherry picked from commit 95136b149212b92e87d0c9badb7d6849a084ed4d)
+	test-tool: Document the -t command line option.
 
-	test-tool: Use B<...> for command line options in man page. (cherry picked from commit c7b88da039725ecd0d1d826b112bc69b518d4c78)
+	test-tool: Use B<...> for command line options in man page.
 
-	po-docs: Make podfiles sort stable. (cherry picked from commit 7c521c7211d61a1bac46c155de1f4d3e8b60b3d7)
+2011-09-12  Richard Jones  <rjones@redhat.com>
 
-	Stable OCaml dependencies. (cherry picked from commit cbef2ffb0432756822cd2b02a305384f814e9b50)
+	po-docs: Make podfiles sort stable.
 
-2011-09-16  Richard W.M. Jones  <rjones@redhat.com>
+	Stable OCaml dependencies.
 
-	docs: Add a section explaining the appliance boot process. (cherry picked from commit b3f1457fddd19b1e540866fa01c665aeb371cb44)
+2011-09-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Add a section explaining the appliance boot process.
 
 2011-09-01  Richard W.M. Jones  <rjones@redhat.com>
 
-	Version 1.12.6.
+	Version 1.13.11.
 
 	Remove old regression test that mainly tested a buggy API.
 	The guestfs_ll command currently lists files in the appliance if you
 	prefix filenames with "/..".  However this is a bug, not a feature,
 	and we should not be testing it.
-	(cherry picked from commit 8ab2b85b2a67270b8cc5a91bb62a70c84cd6a02c)
 
-	debian: Missing build dependency on db4.8-util. (cherry picked from commit 8928de32d391e3ad4dd98bb27472c27bb8bc38ac)
-
-	debian: Build libguestfs-ocaml and libguestfs-ocaml-dev subpackages. (cherry picked from commit 1d134301fc4d05338d09517abc978d0a90d82e09)
+	debian: Missing build dependency on db4.8-util.
 
 	daemon: Factor out name of virtio serial channel.
 	This is just code motion.
-	(cherry picked from commit 73be6db9bf1c0ae96262a5f4fa9328bb4e648637)
 
 	Create /sys directory if it doesn't exist already.
 	Ubuntu 10.04 LTS packages don't create /sys.
-	(cherry picked from commit 5b012024c49672cc69635ff01f9b9e4f87de1c65)
-
-	cat: Small documentation correction. (cherry picked from commit 085a56690611980f438e8af2eb47ebb411465775)
 
 2011-08-28  Richard W.M. Jones  <rjones@redhat.com>
 
-	Version 1.12.5.
+	Version 1.13.10.
 
-	inspector: Use xmlstarlet instead of xpath in examples. (cherry picked from commit baefb8225c8cbde56a1637c17af5c0965a81060e)
+	cat: Small documentation correction.
 
-	man pages: Add a standard EXIT STATUS section to most pages. (cherry picked from commit f0f3e1621180724e0a907a30ff5dea9695ddead0)
+2011-08-27  Richard W.M. Jones  <rjones@redhat.com>
 
-	progress: Make default UTF-8 progress bar less black. (cherry picked from commit ceb3a57f67f33b33c1f6cafdd0ef81808273f0c0)
+	inspector: Use xmlstarlet instead of xpath in examples.
+
+	man pages: Add a standard EXIT STATUS section to most pages.
+
+2011-08-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.13.9.
+
+	progress: Make default UTF-8 progress bar less black.
 
 	resize: Add --machine-readable option for machine friendly output.
-	Use virt-resize --machine-readable to print a list of facts about what
-	this version of virt-resize supports.
 
-	This includes parts of commit 09a7545649e6cac0de2c4421cb64b659164174ee
-	from the development branch, but doesn't include the machine-readable
-	progress bar.
+	progress: Add machine readable flag.
+	Machine-readable progress bars look like:
+
+	0/100
+	1/100
+	2/100
+
+	resize: Use guestfish progress bar mini-library.
+	There are two benefits:
+
+	 - the progress bars look better
+	 - there is a reasonably accurate estimate of how long each operation
+	   will take
+
+	Add GUESTFS_EVENT_ENTER event.
+	This event is generated whenever a libguestfs function is called.
 
 	fish: Make progress bars into a mini library.
 	This library could now be called from other virt tools.
-	(cherry picked from commit 6146412f06c2f6f33c3ea7d571f16d4fe71dddb2)
 
-	fish: clarify comment: shared source files are used by virt tools too. (cherry picked from commit 0bd055316f8581f4da33b039e33d5f61cc00294c)
+	fish: clarify comment: shared source files are used by virt tools too.
 
-	ruby: Check Ruby callback exists before we call it (RHBZ#733297). (cherry picked from commit 1a4f1df77eecee053eaae35d5544f151d37342e2)
+	Version 1.13.8.
 
-	ruby: Use a regular C array to pass the arguments through rb_rescue. (cherry picked from commit 675f336319058fdbaf11ee004968b4543a5a9815)
+	ruby: Check Ruby callback exists before we call it (RHBZ#733297).
 
-	ruby: Append newline character after printing exception in callback. (cherry picked from commit 0cd5b9ac15c62eb570ec74d19b4aebde4990fd82)
+2011-08-25  Richard W.M. Jones  <rjones@redhat.com>
 
-2011-08-28  Hilko Bengen  <bengen@hilluzination.de>
+	ruby: Use a regular C array to pass the arguments through rb_rescue.
 
-	python: Newer versions want parentheses around arguments of "print" (cherry picked from commit 54911bdd325393d1f7f2861f298463c364b45469)
+	ruby: Append newline character after printing exception in callback.
 
-2011-08-28  Richard W.M. Jones  <rjones@redhat.com>
+2011-08-24  Hilko Bengen  <bengen@hilluzination.de>
+
+	python: Newer versions want parentheses around arguments of "print"
+
+	python: Don't build static library
+
+2011-08-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.13.7.
 
 	php: Fix bug in PHP tests.
 	We partitioned the disk, and then tried to create a PV on the whole
@@ -200,68 +700,67 @@
 
 	It is unclear how this bug persisted for so long.  It might be due to
 	a change in LVM.
-	(cherry picked from commit 4fb3b23fb69e4274f434f9258e38f185426298f7)
 
-	Coverity: fix memory leak along error path. (cherry picked from commit ce18be33cd5279a8d4120eedd037400c275585c0)
+	Coverity: fix memory leak along error path.
 
 	Coverity: Initialize msg buffer.
 	msg_flags was not being initialized and would have been passed to
 	sendmsg with a random value.
-	(cherry picked from commit a31ac8fc32297cc9185fd20a5578d2bc81cc1bce)
 
-	Coverity: fix memory leak in guestfish. (cherry picked from commit c38cb92ec478c4dca83e4d38963720f463d52314)
+	Coverity: fix memory leak in guestfish.
 
-	Coverity: in daemon, free struct in RStruct, RStructList functions. (cherry picked from commit b2edcbe1b9c9d161e96cb56d0efd944e84d84526)
+	Coverity: in daemon, free struct in RStruct, RStructList functions.
 
 	pclose: Fix other places where we only tested pclose == -1.
 	pclose can return > 0 when the status of the command was non-zero.
-	(cherry picked from commit 631faad97171d7c1238b2e413c663cf61476f440)
 
 	test_qemu: Improve the error message.
 	Note that errno is probably not set to a useful value here, so there
 	is not much point recording it.
-	(cherry picked from commit f15961911316460f7d45342d63c2d784a483f0d1)
 
 	test_qemu: pclose may return any != 0 on error.
 	In particular pclose returns a status > 0 if the command fails.
-	(cherry picked from commit a24652c7b27e8494268ccb6c9a5a2e5541ba5efd)
 
-	qemu detection: Free up previous qemu help/version strings if they exist. (cherry picked from commit 2ace9be4cd69e84cd88e5b0fd74de861a4973c91)
+	qemu detection: Free up previous qemu help/version strings if they exist.
 
 	Coverity: test_qemu: Ensure FILE * is not leaked along error paths.
 	This refactors the code in test_qemu slightly to ensure that
 	FILE *fp is not leaked on error paths.
-	(cherry picked from commit 08e77ad8cb4e8ac70d4217ebd5d236eba81645b5)
 
-	Coverity: Check guestfs_inspect_get_product_name() != NULL before using. (cherry picked from commit fa44536b0ff12102c72ae0337e51d272f0fc2353)
+	Coverity: Check guestfs_inspect_get_product_name() != NULL before using.
 
 	rescue: Ignore errno after guestfs_launch.
 	errno is pretty much random on the error path back from guestfs_launch
 	so there is nothing useful to be gained by checking it.
 
 	We could do with a better way to detect if appliance launch failed.
-	(cherry picked from commit 00fef9eed6a53e10a975814beef775483ff0b3dd)
 
 	Coverity: Ignore return value from guestfs_launch in virt-rescue.
 	We expect guestfs_launch to fail in this program.
-	(cherry picked from commit 9bab154d48e367702b65852c3c822341b474ffd2)
 
-	Coverity: Check return value from sscanf in bindtests calls. (cherry picked from commit 4c76aaa391d591c5917a06b0277fb9eb7d6d790f)
+	Coverity: Check return value from sscanf in bindtests calls.
 
-	autobuild: Only add last 100 lines of the log file. (cherry picked from commit ca727deac186981f4d9784696324c8f3af79f9e5)
+2011-08-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	autobuild: Only add last 100 lines of the log file.
 
 	New autobuild script.
 	Remove the old top-level autobuild.sh that confused a lot
 	of people.
 
 	Add an autobuild.sh script that builds from the latest tarball.
-	(cherry picked from commit 6375aede61d57422ad82f4941693493c07b78aa2)
+
+2011-08-19  Richard W.M. Jones  <rjones@redhat.com>
 
 	configure: Add --with-extra flag to allow setting the extra version string.
 	Intended use in Fedora and RHEL is to encode the release
 	string, eg.
 
 	  ./configure [...] --with-extra="-%{release}"
+
+	Version 1.13.6.
+
+2011-08-18  Richard W.M. Jones  <rjones@redhat.com>
 
 	protocol: Fix case where download can fail for small files.
 	There is another case where downloads of small files could fail if the
@@ -274,7 +773,6 @@
 	This commit also makes test-cancellation-download-librarycancels.sh
 	more robust.  We use Monte-Carlo testing with a range of file sizes.
 	Small file sizes should trigger the error case.
-	(cherry picked from commit e4cba8f2b1a68e7361ce342ff659cccb0490446e)
 
 	Escape special/non-printing characters in debug output (RHBZ#731744).
 	The default event handler in libguestfs was simply writing all debug
@@ -292,7 +790,6 @@
 	specially).
 
 	Furthermore, instead of using write(2), use buffered stderr calls.
-	(cherry picked from commit 06019bc82e107f7715ebc59e491610e06dad1e39)
 
 	Remove guestfs___print_timestamped_argv.
 	This function was used to print the qemu and
@@ -315,35 +812,33 @@
 
 	Also print_febootstrap_command_line is now called before we fork
 	febootstrap-supermin-helper, so that messages no longer overlap.
-	(cherry picked from commit 635af5be04265f845186b40e9a9fe7b102ad6909)
 
-2011-08-28  Hilko Bengen  <bengen@hilluzination.de>
+2011-08-18  Hilko Bengen  <bengen@hilluzination.de>
 
 	out-of-tree build: generate ./run from template, fix image checks
 	./run can now be run in a separate build directory. Since some files
 	needed in the image checks are found in the source tree (but not the
 	build tree), the source tree location is passed to make-*-img.sh via
 	an environment variable.
-	(cherry picked from commit 70c033998e0e721dc4f9eb2a20348098b259752c)
 
-2011-08-28  Richard W.M. Jones  <rjones@redhat.com>
+2011-08-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.13.5
 
 	fish: Add fish-cmds.h to generator_built.
 	This updates commit 3064277680ad11f887691646d0fa17bb35f38c19.
-	(cherry picked from commit 85efbc6aa70d522af066a38fd1aae05b790c46d3)
 
-2011-08-28  Hilko Bengen  <bengen@hilluzination.de>
+2011-08-17  Hilko Bengen  <bengen@hilluzination.de>
 
 	out-of-tree build: fix make and make install
 	$(srcdir) is not needed for guestfs_c.c.
 	*.mli only exists in $(srcdir) and isn't found on "make install" otherwise
-	(cherry picked from commit 0938e43a60f9d729d9795cf45498e60217fece0e)
 
-	out-of-tree build: fix documentation generation II (cherry picked from commit 8876b2d3764b42ebae3c5fdf61b1899095508169)
+	out-of-tree build: fix documentation generation II
 
-	out-of-tree build: remove unneeded explicit paths (cherry picked from commit 4baec012b1b09a888e570fc89dbaa9fbf9944f34)
+	out-of-tree build: remove unneeded explicit paths
 
-2011-08-28  Richard W.M. Jones  <rjones@redhat.com>
+2011-08-16  Richard W.M. Jones  <rjones@redhat.com>
 
 	Improve zeroing and detection of zeroes.
 	This code modifies zero, zero-device, is-zero, is-zero-device.
@@ -386,31 +881,35 @@
 	didn't make any significant difference.
 
 	(Thanks to Federico Simoncelli for suggesting this change)
-	(cherry picked from commit 5a50c04906828f6e99db6a9be420c84114476d39)
 
-	recipes: Remove two C file dependencies which are not actually used in the POD. (cherry picked from commit 1fdd0193fd63af71359748915a0326d623a3d6ad)
+2011-08-15  Richard W.M. Jones  <rjones@redhat.com>
 
-2011-08-28  Hilko Bengen  <bengen@hilluzination.de>
+	recipes: Remove two C file dependencies which are not actually used in the POD.
 
-	out-of-tree build: fix building library (cherry picked from commit 0241c753937e577d51a070f7db471260bf931f9c)
+2011-08-15  Hilko Bengen  <bengen@hilluzination.de>
 
-	out-of-tree build: Fix up OCaml bindings and generator (cherry picked from commit 900c9626b9d4f567b21aae433493b4b3b1d09f6d)
+	out-of-tree build: fix building library
 
-	out-of-tree build: fix appliance (cherry picked from commit 36e0f35a5828458ebeaf72999b3461ab66a230d8)
+	out-of-tree build: Fix up OCaml bindings and generator
 
-	out-of-tree build: fix documentation generation (cherry picked from commit ff101adf7ead7bcdb46bccdb227ef18d844b965f)
+	out-of-tree build: fix appliance
 
-2011-08-17  Richard W.M. Jones  <rjones@redhat.com>
+	out-of-tree build: fix documentation generation
 
-	Version 1.12.4.
+2011-08-14  Richard W.M. Jones  <rjones@redhat.com>
 
-	ruby: Fix typo in Ruby bindings file. (cherry picked from commit 44c3a300265ef7bfa5d49d2b9a2a8faccd9db2de)
+	ruby: Fix typo in Ruby bindings file.
 
-	Note that additional memory may be required to typecheck Augeas lenses (RHBZ#729887). (cherry picked from commit 7739d7f471f9575828bd32489695d92dde005a9c)
+2011-08-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	Note that additional memory may be required to typecheck Augeas lenses (RHBZ#729887).
 
 	fish: Document that remote run in cmd substitution context hangs.
 	This documents bug 592910.
-	(cherry picked from commit 6cabc1cd02e181063596b48df55c3f6db51a6bb9)
+
+2011-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.13.4.
 
 	Fix 'unknown filesystem' warnings in old inspection code (RHBZ#678231 RHBZ#666578).
 	This is a comprehensive fix for the warnings from the old (and
@@ -418,7 +917,8 @@
 	reproducer, see:
 
 	https://bugzilla.redhat.com/show_bug.cgi?id=678231#c5
-	(cherry picked from commit b9838001015a06a69a08b69d9f013d82f0ea3139)
+
+2011-08-08  Richard W.M. Jones  <rjones@redhat.com>
 
 	inspection: Better checking for Windows root disks (RHBZ#729075).
 	Previously any disk that had /autoexec.bat or /boot.ini or /ntldr
@@ -435,63 +935,111 @@
 	failure cannot occur.
 
 	(Thanks to lorimar for reporting this bug).
-	(cherry picked from commit 2c57305f72cd6181d1849ae6e1b892aa01c7f844)
 
 	build: Set TMPDIR for local testing.
 	This avoids conflicts with the globally installed libguestfs
 	appliance, or lets us build in multiple local directories at the same
 	time without conflicts.
-	(cherry picked from commit f7d18c84dde596699ffc5100fec2cf7b0d582450)
 
-	fish: Add fish-cmds.h to generator_built.
-	This updates commit 3064277680ad11f887691646d0fa17bb35f38c19.
-	(cherry picked from commit 85efbc6aa70d522af066a38fd1aae05b790c46d3)
+2011-08-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.13.3.
+
+	daemon: Don't include .gitignore in EXTRA_DIST.
+	This updates commit 60d5a50f4d3d9e2c2f5a7d42a6859de709bda3f6.
+
+	fish: Add setenv and unsetenv commands.
+	These commands allow you to manipulate the environment within
+	guestfish.
 
 	fish: Declare run_* functions in a generated header file.
 	Calls to these functions are generated, so there is no need to declare
 	the functions by hand.
-	(cherry picked from commit 3064277680ad11f887691646d0fa17bb35f38c19)
 
-2011-08-07  Richard W.M. Jones  <rjones@redhat.com>
+2011-08-06  Richard W.M. Jones  <rjones@redhat.com>
 
-	Version 1.12.3.
+	docs: Move deprecation notice up to the top in C man page.
 
-	docs: Fix function names in deprecation notices. (cherry picked from commit 60adf092a8900323c048c94f3f0934be416a3eb6)
+	docs: Emphasize deprecation notice in man pages.
+
+	docs: Fix function names in deprecation notices.
 
 	docs: guestfs_set_out_of_memory_handler returns void, not int.
 	It always has done.  The documentation was wrong.
-	(cherry picked from commit 70f44cc0ea0bcdd025ed657461e07f6778be44ba)
+
+	docs: Clarify error handler example.
+
+2011-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Fix regression tests for new guestfish line numbers.
+	This updates commit 319e946b92e175c05cdd1fdcb85c9b86f5631011.
+
+	fish: Print input file and line number in error messages.
+	eg:
+	*stdin*:37: libguestfs: error: luks_close: Device lukstest is busy.
+
+	gnulib: Add all other libs when linking libguestfs.so.
+	This updates the previous two commits.
+
+	gnulib: Add $(LIB_CLOCK_GETTIME) when linking libguestfs.so.
+	We don't use this library (it is only used in the daemon),
+	but we need to add this to make the linker happy.
+
+	daemon: Remove separate configure of daemon subdirectory.
+	Combine the two Gnulib instances together.
+
+	Add checks from old daemon/configure.ac into configure.ac.
+
+	Fix daemon/Makefile.am so it is like a normal subdirectory
+	Makefile.am.
+
+	Because we are now using the replacement strerror_r function from
+	Gnulib (instead of the one from glibc directly), this requires a small
+	change to src/guestfs.c.
+
+	Update TODO.
 
 	debian: bash is required to run libtool replacement script.
 	This was failing on Debian where $(SHELL) is the minimal dash shell.
-	(cherry picked from commit 6a98ed953b1e3b0d3251385f0ca2dd1dee80b63d)
 
-	configure: Fix info about virt-resize when OCaml bindings are disabled. (cherry picked from commit e1c6d1738a2b9123dd08fb4ecff8176daf558f35)
+	configure: Fix info about virt-resize when OCaml bindings are disabled.
 
-	python: Don't name extension with .so.0.0 and symlinks (thanks Dan Berrange). (cherry picked from commit 36f662c58fcda43829bcef166e600855960fd223)
+	python: Don't name extension with .so.0.0 and symlinks (thanks Dan Berrange).
+
+2011-08-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.13.2.
+
+	Add regression test to catch missing libraries in the appliance.
+	Related to RHBZ#727178.
 
 	debian: Add gawk to packagelist.
 	It's already included, but implicitly.
-	(cherry picked from commit 5f9c168d9135fa81ee2f3a15461467fe04c26888)
+
+2011-08-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	virt-tar test: Stable ordering of test output.
 	The files could be listed in any order, resulting in the test failing
 	for no reason.  Sort the output of tar.
-	(cherry picked from commit 995b3fecb9af7a8bd52b238bad2a631a1193c83a)
 
-	Change link, since PostgreSQL switched to using git. (cherry picked from commit 3cf31c2fe0b356ea5c04117c5235b0a3cfe34971)
+	Change link, since PostgreSQL switched to using git.
 
-	Don't fail if HOSTNAME field is missing on Red Hat guests (RHBZ#726739). (cherry picked from commit bad3f4b54a959685f3c0697238fc5753096834fb)
+2011-07-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	debian: Build libguestfs-ocaml and libguestfs-ocaml-dev subpackages.
+
+2011-07-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	Don't fail if HOSTNAME field is missing on Red Hat guests (RHBZ#726739).
 
 2011-07-27  Richard W.M. Jones  <rjones@redhat.com>
-
-	Version 1.12.2.
 
 	perl: Fix another place where qw() was used as parentheses.
 	This is a fix for Perl 5.14.
 
 	See previous commit 5c3c7e8825341e18c9449976f8a321a04cc78d79.
-	(cherry picked from commit c70532ab4b3d977ed7484e473107808b22d90a2a)
+
+2011-07-26  Richard W.M. Jones  <rjones@redhat.com>
 
 	ocaml: Fix locking in event callbacks.
 	We weren't acquiring the GC lock around some allocations, resulting in
@@ -499,35 +1047,32 @@
 	allocation or garbage collection.
 
 	In particular this fixes a noticable crash in guestfs-browser.
-	(cherry picked from commit 2b8b3f9794ceb43eabd3083e225c669896d8b186)
 
-2011-07-26  Richard W.M. Jones  <rjones@redhat.com>
-
-	Version 1.12.1.
+	Version 1.13.1.
 
 	virt-df: Re-add documentation for --csv option.
 	The documentation for the --csv option disappeared between 1.6 and 1.8
 	when we rewrote virt-df in C.  Re-add it from 1.6 sources.
-	(cherry picked from commit 01f6bce19dbfaf42fa4908683f3cc8785585d023)
 
-	test-tool: Print FEBOOTSTRAP_* environment variables (RHBZ#671082). (cherry picked from commit 15289d4b726d7c38702794df23c61ae40879a46c)
+	test-tool: Print FEBOOTSTRAP_* environment variables (RHBZ#671082).
 
 	test-tool: Display state of pgroup flag from the handle.
 	This updates commit f173543fd207bdc254a5eb75180d82ef25eacae9.
-	(cherry picked from commit deb95471fbd229605d9916ff90b2ff7cf92633eb)
 
 	launch: Add qemu_supports_re function.
 	This function is like qemu_supports, but allows us to grep
 	the help text using regular expressions.
 
 	Note the function is not used yet.
-	(cherry picked from commit 5d7dc0dfb65f367dab3560ee23e404fe21373f45)
+
+2011-07-25  Richard W.M. Jones  <rjones@redhat.com>
 
 	Require PCRE library.
 	This library is widely available in distros.
-	(cherry picked from commit 41cd0e302d6554facd6b9f7daaa78304361efaef)
 
-	docs: Document FEBOOTSTRAP_KERNEL, FEBOOTSTRAP_MODULES (RHBZ#671082). (cherry picked from commit 316817b5ad98e294a9d2498a4403e82911a75b4a)
+2011-07-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Document FEBOOTSTRAP_KERNEL, FEBOOTSTRAP_MODULES (RHBZ#671082).
 
 	perl: Fix CCFLAGS for Perl 5.14.
 	A change to ExtUtils::CBuilder in Perl 5.14 causes CCFLAGS to
@@ -545,20 +1090,24 @@
 	$Config{ccflags} instead of replacing it.  On earlier versions of Perl
 	this means we get two copies of the flags, which is unfortunate but
 	should be safe.
-	(cherry picked from commit 8386a57458aceb768f0e59aa090a15a544f7466e)
 
-	build: Redirect ./configure errors in general to config.log. (cherry picked from commit 71eb0bf45649eefa1f0cd4b1372cfc2653c8e7a5)
+2011-07-21  Richard W.M. Jones  <rjones@redhat.com>
 
-	build: Send failed Perl test configure output to config.log. (cherry picked from commit 610642491a4846f45c7b233060ffde46f6ca09f0)
+	build: Redirect ./configure errors in general to config.log.
+
+	build: Send failed Perl test configure output to config.log.
 
 	build: Allow 'make quickcheck' test-tool args to be overridden.
 	A typical use for this is for packagers who want to increase
 	the default timeout:
 
 	  make quickcheck QUICKCHECK_TEST_TOOL_ARGS="-t 300"
-	(cherry picked from commit 806b6e01506dea4eae68ac3e468d9398d63cafcb)
 
 2011-07-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	Update version number to 1.13.0.
+	There is no build or tarball for this, since it is identical
+	to 1.12.0.
 
 	Version 1.12.0.
 

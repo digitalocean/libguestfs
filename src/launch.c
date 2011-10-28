@@ -76,6 +76,7 @@ static int64_t timeval_diff (const struct timeval *x, const struct timeval *y);
 static void print_qemu_command_line (guestfs_h *g, char **argv);
 static int connect_unix_socket (guestfs_h *g, const char *sock);
 static int qemu_supports (guestfs_h *g, const char *option);
+static char *qemu_drive_param (guestfs_h *g, const struct drive *drv);
 
 #if 0
 static int qemu_supports_re (guestfs_h *g, const pcre *option_regex);
@@ -139,23 +140,18 @@ add_cmdline (guestfs_h *g, const char *str)
   return 0;
 }
 
-size_t
-guestfs___checkpoint_cmdline (guestfs_h *g)
+struct drive **
+guestfs___checkpoint_drives (guestfs_h *g)
 {
-  return g->cmdline_size;
+  struct drive **i = &g->drives;
+  while (*i != NULL) i = &((*i)->next);
+  return i;
 }
 
 void
-guestfs___rollback_cmdline (guestfs_h *g, size_t pos)
+guestfs___rollback_drives (guestfs_h *g, struct drive **i)
 {
-  size_t i;
-
-  assert (g->cmdline_size >= pos);
-
-  for (i = pos; i < g->cmdline_size; ++i)
-    free (g->cmdline[i]);
-
-  g->cmdline_size = pos;
+  guestfs___free_drives(i);
 }
 
 /* Internal command to return the command line. */
@@ -176,6 +172,27 @@ guestfs__debug_cmdline (guestfs_h *g)
   r[g->cmdline_size] = NULL;
 
   return r;                     /* caller frees */
+}
+
+/* Internal command to return the list of drives. */
+char **
+guestfs__debug_drives (guestfs_h *g)
+{
+  size_t i, count;
+  char **ret;
+  struct drive *drv;
+
+  for (count = 0, drv = g->drives; drv; count++, drv = drv->next)
+    ;
+
+  ret = safe_malloc (g, sizeof (char *) * (count + 1));
+
+  for (i = 0, drv = g->drives; drv; i++, drv = drv->next)
+    ret[i] = qemu_drive_param (g, drv);
+
+  ret[count] = NULL;
+
+  return ret;                   /* caller frees */
 }
 
 int
@@ -216,17 +233,21 @@ guestfs__config (guestfs_h *g,
  * O_DIRECT.  This fails on some filesystem types (notably tmpfs).
  * So we check if we can open the file with or without O_DIRECT,
  * and use cache=off (or not) accordingly.
+ *
+ * NB: This function is only called on the !readonly path.  We must
+ * try to open with O_RDWR to test that the file is readable and
+ * writable here.
  */
 static int
 test_cache_off (guestfs_h *g, const char *filename)
 {
-  int fd = open (filename, O_RDONLY|O_DIRECT);
+  int fd = open (filename, O_RDWR|O_DIRECT);
   if (fd >= 0) {
     close (fd);
     return 1;
   }
 
-  fd = open (filename, O_RDONLY);
+  fd = open (filename, O_RDWR);
   if (fd >= 0) {
     close (fd);
     return 0;
@@ -259,8 +280,10 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
                          const struct guestfs_add_drive_opts_argv *optargs)
 {
   int readonly;
-  const char *format;
-  const char *iface;
+  char *format;
+  char *iface;
+  char *name;
+  int use_cache_off;
 
   if (strchr (filename, ',') != NULL) {
     error (g, _("filename cannot contain ',' (comma) character"));
@@ -270,18 +293,26 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
   readonly = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK
              ? optargs->readonly : 0;
   format = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK
-           ? optargs->format : NULL;
+           ? safe_strdup (g, optargs->format) : NULL;
   iface = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK
-          ? optargs->iface : DRIVE_IF;
+          ? safe_strdup (g, optargs->iface) : safe_strdup (g, DRIVE_IF);
+  name = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK
+          ? safe_strdup (g, optargs->name) : NULL;
 
   if (format && !valid_format_iface (format)) {
     error (g, _("%s parameter is empty or contains disallowed characters"),
            "format");
+    free (format);
+    free (iface);
+    free (name);
     return -1;
   }
   if (!valid_format_iface (iface)) {
     error (g, _("%s parameter is empty or contains disallowed characters"),
            "iface");
+    free (format);
+    free (iface);
+    free (name);
     return -1;
   }
 
@@ -289,31 +320,37 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
    * checks for the existence of the file.  For readonly we have
    * to do the check explicitly.
    */
-  int use_cache_off = readonly ? 0 : test_cache_off (g, filename);
-  if (use_cache_off == -1)
+  use_cache_off = readonly ? 0 : test_cache_off (g, filename);
+  if (use_cache_off == -1) {
+    free (format);
+    free (iface);
+    free (name);
     return -1;
+  }
 
   if (readonly) {
-    if (access (filename, F_OK) == -1) {
+    if (access (filename, R_OK) == -1) {
       perrorf (g, "%s", filename);
+      free (format);
+      free (iface);
+      free (name);
       return -1;
     }
   }
 
-  /* Construct the final -drive parameter. */
-  size_t len = 64 + strlen (filename) + strlen (iface);
-  if (format) len += strlen (format);
-  char buf[len];
+  struct drive **i = &(g->drives);
+  while (*i != NULL) i = &((*i)->next);
 
-  snprintf (buf, len, "file=%s%s%s%s%s,if=%s",
-            filename,
-            readonly ? ",snapshot=on" : "",
-            use_cache_off ? ",cache=off" : "",
-            format ? ",format=" : "",
-            format ? format : "",
-            iface);
+  *i = safe_malloc (g, sizeof (struct drive));
+  (*i)->next = NULL;
+  (*i)->path = safe_strdup (g, filename);
+  (*i)->readonly = readonly;
+  (*i)->format = format;
+  (*i)->iface = iface;
+  (*i)->name = name;
+  (*i)->use_cache_off = use_cache_off;
 
-  return guestfs__config (g, "-drive", buf);
+  return 0;
 }
 
 int
@@ -390,6 +427,8 @@ guestfs__launch (guestfs_h *g)
     return -1;
   }
 
+  TRACE0 (launch_start);
+
   /* Make the temporary directory. */
   if (!g->tmpdir) {
     TMP_TEMPLATE_ON_STACK (dir_template);
@@ -431,7 +470,7 @@ launch_appliance (guestfs_h *g)
   /* At present you must add drives before starting the appliance.  In
    * future when we enable hotplugging you won't need to do this.
    */
-  if (!g->cmdline) {
+  if (!g->drives) {
     error (g, _("you must call guestfs_add_drive before guestfs_launch"));
     return -1;
   }
@@ -440,10 +479,14 @@ launch_appliance (guestfs_h *g)
   gettimeofday (&g->launch_t, NULL);
   guestfs___launch_send_progress (g, 0);
 
+  TRACE0 (launch_build_appliance_start);
+
   /* Locate and/or build the appliance. */
   char *kernel = NULL, *initrd = NULL, *appliance = NULL;
   if (guestfs___build_appliance (g, &kernel, &initrd, &appliance) == -1)
     return -1;
+
+  TRACE0 (launch_build_appliance_end);
 
   guestfs___launch_send_progress (g, 3);
 
@@ -521,6 +564,19 @@ launch_appliance (guestfs_h *g)
     alloc_cmdline (g);
     g->cmdline[0] = g->qemu;
 
+    /* Add drives */
+    struct drive *drv = g->drives;
+    while (drv != NULL) {
+      /* Construct the final -drive parameter. */
+      char *buf = qemu_drive_param (g, drv);
+
+      add_cmdline (g, "-drive");
+      add_cmdline (g, buf);
+      free (buf);
+
+      drv = drv->next;
+    }
+
     if (qemu_supports (g, "-nodefconfig"))
       add_cmdline (g, "-nodefconfig");
 
@@ -530,7 +586,19 @@ launch_appliance (guestfs_h *g)
      */
     if (qemu_supports (g, "-machine")) {
       add_cmdline (g, "-machine");
+#if QEMU_MACHINE_TYPE_IS_BROKEN
+      /* Workaround for qemu 0.15: We have to add the '[type=]pc'
+       * since there is no default.  This is not a permanent solution
+       * because this only works on PC-like hardware.  Other platforms
+       * like ppc would need a different machine type.
+       *
+       * This bug is fixed in qemu commit 2645c6dcaf6ea2a51a, and was
+       * not a problem in qemu < 0.15.
+       */
+      add_cmdline (g, "pc,accel=kvm:tcg");
+#else
       add_cmdline (g, "accel=kvm:tcg");
+#endif
     } else {
       /* qemu sometimes needs this option to enable hardware
        * virtualization, but some versions of 'qemu-kvm' will use KVM
@@ -561,6 +629,12 @@ launch_appliance (guestfs_h *g)
       add_cmdline (g, "-nodefaults");
 
     add_cmdline (g, "-nographic");
+
+    if (g->smp > 1) {
+      snprintf (buf, sizeof buf, "%d", g->smp);
+      add_cmdline (g, "-smp");
+      add_cmdline (g, buf);
+    }
 
     snprintf (buf, sizeof buf, "%d", g->memsize);
     add_cmdline (g, "-m");
@@ -613,7 +687,6 @@ launch_appliance (guestfs_h *g)
     "panic=1 "         /* force kernel to panic if daemon exits */	\
     "console=ttyS0 "   /* serial console */				\
     "udevtimeout=300 " /* good for very slow systems (RHBZ#480319) */	\
-    "noapic "          /* workaround for RHBZ#502058 - ok if not SMP */ \
     "no_timer_check "  /* fix for RHBZ#502058 */                        \
     "acpi=off "        /* we don't need ACPI, turn it off */		\
     "printk.time=1 "   /* display timestamp before kernel messages */   \
@@ -697,6 +770,8 @@ launch_appliance (guestfs_h *g)
       setpgid (0, 0);
 
     setenv ("LC_ALL", "C", 1);
+
+    TRACE0 (launch_run_qemu);
 
     execv (g->qemu, g->cmdline); /* Run qemu. */
     perror (g->qemu);
@@ -794,6 +869,13 @@ launch_appliance (guestfs_h *g)
   if (r == -1)
     goto cleanup1;
 
+  /* NB: We reach here just because qemu has opened the socket.  It
+   * does not mean the daemon is up until we read the
+   * GUESTFS_LAUNCH_FLAG below.  Failures in qemu startup can still
+   * happen even if we reach here, even early failures like not being
+   * able to open a drive.
+   */
+
   close (g->sock); /* Close the listening socket. */
   g->sock = r; /* This is the accepted data socket. */
 
@@ -826,6 +908,8 @@ launch_appliance (guestfs_h *g)
     error (g, _("qemu launched and contacted daemon, but state != READY"));
     goto cleanup1;
   }
+
+  TRACE0 (launch_end);
 
   guestfs___launch_send_progress (g, 12);
 
@@ -1198,6 +1282,30 @@ is_openable (guestfs_h *g, const char *path, int flags)
   }
   close (fd);
   return 1;
+}
+
+static char *
+qemu_drive_param (guestfs_h *g, const struct drive *drv)
+{
+  size_t len = 64;
+  char *r;
+
+  len += strlen (drv->path);
+  len += strlen (drv->iface);
+  if (drv->format)
+    len += strlen (drv->format);
+
+  r = safe_malloc (g, len);
+
+  snprintf (r, len, "file=%s%s%s%s%s,if=%s",
+            drv->path,
+            drv->readonly ? ",snapshot=on" : "",
+            drv->use_cache_off ? ",cache=off" : "",
+            drv->format ? ",format=" : "",
+            drv->format ? drv->format : "",
+            drv->iface);
+
+  return r;                     /* caller frees */
 }
 
 /* You had to call this function after launch in versions <= 1.0.70,

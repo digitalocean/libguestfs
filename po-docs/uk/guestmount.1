@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestmount 1"
-.TH guestmount 1 "2011-10-19" "libguestfs-1.12.8" "Virtualization Support"
+.TH guestmount 1 "2011-10-27" "libguestfs-1.14.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -92,9 +92,9 @@ mountable device.
 .PP
 Along with other options, you have to give at least one device (\fI\-a\fR
 option) or libvirt domain (\fI\-d\fR option), and at least one mountpoint (\fI\-m\fR
-option) or use the \fI\-i\fR inspection option.  How this works is better
-explained in the \fIguestfish\fR\|(1) manual page, or by looking at the examples
-below.
+option) or use the \fI\-i\fR inspection option or the \fI\-\-live\fR option.  How
+this works is better explained in the \fIguestfish\fR\|(1) manual page, or by
+looking at the examples below.
 .PP
 \&\s-1FUSE\s0 lets you mount filesystems as non-root.  The mountpoint must be owned
 by you, and the filesystem will not be visible to any other users unless you
@@ -252,11 +252,11 @@ passphrases from the user by opening \f(CW\*(C`/dev/tty\*(C'\fR.
 .IX Item "--live"
 Connect to a live virtual machine.  (Experimental, see
 \&\*(L"\s-1ATTACHING\s0 \s-1TO\s0 \s-1RUNNING\s0 \s-1DAEMONS\s0\*(R" in \fIguestfs\fR\|(3)).
-.IP "\fB\-m dev[:mountpoint[:options]]\fR" 4
-.IX Item "-m dev[:mountpoint[:options]]"
+.IP "\fB\-m пристрій[:точка_монтування[:параметри]]\fR" 4
+.IX Item "-m пристрій[:точка_монтування[:параметри]]"
 .PD 0
-.IP "\fB\-\-mount dev[:mountpoint[:options]]\fR" 4
-.IX Item "--mount dev[:mountpoint[:options]]"
+.IP "\fB\-\-mount пристрій[:точка_монтування[:параметри]]\fR" 4
+.IX Item "--mount пристрій[:точка_монтування[:параметри]]"
 .PD
 Mount the named partition or logical volume on the given mountpoint \fBin the
 guest\fR (this has nothing to do with mountpoints in the host).
@@ -283,11 +283,11 @@ and/or extended attributes if the filesystem can support them:
 By default, we attempt to sync the guest disk when the \s-1FUSE\s0 mountpoint is
 unmounted.  If you specify this option, then we don't attempt to sync the
 disk.  See the discussion of autosync in the \fIguestfs\fR\|(3) manpage.
-.IP "\fB\-o option\fR" 4
-.IX Item "-o option"
+.IP "\fB\-o параметр\fR" 4
+.IX Item "-o параметр"
 .PD 0
-.IP "\fB\-\-option option\fR" 4
-.IX Item "--option option"
+.IP "\fB\-\-option параметр\fR" 4
+.IX Item "--option параметр"
 .PD
 Pass extra options to \s-1FUSE\s0.
 .Sp
@@ -333,7 +333,7 @@ the guest is running and this option is \fInot\fR supplied, then there is a
 strong risk of disk corruption in the guest.  We try to prevent this from
 happening, but it is not always possible.
 .Sp
-See also \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" in \fIguestfish\fR\|(1).
+Див. також \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" in \fIguestfish\fR\|(1).
 .IP "\fB\-\-selinux\fR" 4
 .IX Item "--selinux"
 Enable SELinux support for the guest.
@@ -360,7 +360,7 @@ Display the program version and exit.
 This changes the \fI\-a\fR, \fI\-d\fR and \fI\-m\fR options so that disks are added and
 mounts are done read-write.
 .Sp
-See \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" in \fIguestfish\fR\|(1).
+Див. \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" in \fIguestfish\fR\|(1).
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
 .PD 0
@@ -382,7 +382,7 @@ This also stops the daemon from forking into the background.
 This configuration file controls the default read-only or read-write mode
 (\fI\-\-ro\fR or \fI\-\-rw\fR).
 .Sp
-See \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" in \fIguestfish\fR\|(1).
+Див. \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" in \fIguestfish\fR\|(1).
 .SH "EXIT STATUS"
 .IX Header "EXIT STATUS"
 This program returns 0 if successful, or non-zero if there was an error.
@@ -408,6 +408,6 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
-You should have received a copy of the \s-1GNU\s0 General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, \s-1MA\s0 02139, \s-1USA\s0.
+Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, \s-1MA\s0 02139, \s-1USA\s0.

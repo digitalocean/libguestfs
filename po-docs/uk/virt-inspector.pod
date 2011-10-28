@@ -11,7 +11,7 @@ about a virtual machine
 
  virt-inspector [--options] -a disk.img [-a disk.img ...]
 
-Old-style:
+Застарілий стиль:
 
  virt-inspector domname
 
@@ -56,11 +56,11 @@ WITH OTHER PROGRAMMING LANGUAGES>).
 
 =item B<--help>
 
-Display brief help.
+Показати коротку довідку.
 
-=item B<-a> file
+=item B<-a> файл
 
-=item B<--add> file
+=item B<--add> файл
 
 Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
@@ -80,9 +80,9 @@ Libvirt is only used if you specify a C<domname> on the command line.  If
 you specify guest block devices directly (I<-a>), then libvirt is not used
 at all.
 
-=item B<-d> guest
+=item B<-d> гість
 
-=item B<--domain> guest
+=item B<--domain> гість
 
 Add all the disks from the named libvirt guest.  Domain UUIDs can be used
 instead of names.
@@ -137,7 +137,7 @@ Previous versions of virt-inspector allowed you to write either:
 
  virt-inspector disk.img [disk.img ...]
 
-or
+або
 
  virt-inspector guestname
 
@@ -387,7 +387,7 @@ Matthew Booth L<mbooth@redhat.com>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2010-2011 Red Hat Inc.
+©Red Hat Inc., 2010–2011
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -399,7 +399,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, MA 02139, USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 

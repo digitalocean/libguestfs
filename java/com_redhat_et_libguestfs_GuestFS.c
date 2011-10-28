@@ -1695,7 +1695,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1list_1filesystems  (JNIEnv *env, jobject
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1opts  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jlong joptargs_bitmask, jboolean jreadonly, jstring jformat, jstring jiface)
+Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1opts  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jlong joptargs_bitmask, jboolean jreadonly, jstring jformat, jstring jiface, jstring jname)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -1708,12 +1708,14 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1opts  (JNIEnv *env, jobject 
   optargs_s.readonly = jreadonly;
   optargs_s.format = (*env)->GetStringUTFChars (env, jformat, NULL);
   optargs_s.iface = (*env)->GetStringUTFChars (env, jiface, NULL);
+  optargs_s.name = (*env)->GetStringUTFChars (env, jname, NULL);
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);
 
   (*env)->ReleaseStringUTFChars (env, jfilename, filename);
   (*env)->ReleaseStringUTFChars (env, jformat, optargs_s.format);
   (*env)->ReleaseStringUTFChars (env, jiface, optargs_s.iface);
+  (*env)->ReleaseStringUTFChars (env, jname, optargs_s.name);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
@@ -1808,8 +1810,40 @@ Java_com_redhat_et_libguestfs_GuestFS__1debug_1cmdline  (JNIEnv *env, jobject ob
   return jr;
 }
 
+JNIEXPORT jobjectArray JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1debug_1drives  (JNIEnv *env, jobject obj, jlong jg)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jobjectArray jr;
+  size_t r_len;
+  jclass cl;
+  jstring jstr;
+  char **r;
+  size_t i;
+
+
+  r = guestfs_debug_drives (g);
+
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    return NULL;
+  }
+  for (r_len = 0; r[r_len] != NULL; ++r_len) ;
+  cl = (*env)->FindClass (env, "java/lang/String");
+  jstr = (*env)->NewStringUTF (env, "");
+  jr = (*env)->NewObjectArray (env, r_len, cl, jstr);
+  for (i = 0; i < r_len; ++i) {
+    jstr = (*env)->NewStringUTF (env, r[i]);
+    (*env)->SetObjectArrayElement (env, jr, i, jstr);
+    free (r[i]);
+  }
+  free (r);
+  return jr;
+}
+
 JNIEXPORT jint JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1add_1domain  (JNIEnv *env, jobject obj, jlong jg, jstring jdom, jlong joptargs_bitmask, jstring jlibvirturi, jboolean jreadonly, jstring jiface, jboolean jlive, jboolean jallowuuid)
+Java_com_redhat_et_libguestfs_GuestFS__1add_1domain  (JNIEnv *env, jobject obj, jlong jg, jstring jdom, jlong joptargs_bitmask, jstring jlibvirturi, jboolean jreadonly, jstring jiface, jboolean jlive, jboolean jallowuuid, jstring jreadonlydisk)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -1824,12 +1858,14 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1domain  (JNIEnv *env, jobject obj, 
   optargs_s.iface = (*env)->GetStringUTFChars (env, jiface, NULL);
   optargs_s.live = jlive;
   optargs_s.allowuuid = jallowuuid;
+  optargs_s.readonlydisk = (*env)->GetStringUTFChars (env, jreadonlydisk, NULL);
 
   r = guestfs_add_domain_argv (g, dom, optargs);
 
   (*env)->ReleaseStringUTFChars (env, jdom, dom);
   (*env)->ReleaseStringUTFChars (env, jlibvirturi, optargs_s.libvirturi);
   (*env)->ReleaseStringUTFChars (env, jiface, optargs_s.iface);
+  (*env)->ReleaseStringUTFChars (env, jreadonlydisk, optargs_s.readonlydisk);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
@@ -2228,6 +2264,41 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1pgroup  (JNIEnv *env, jobject obj, 
     return -1;
   }
   return (jboolean) r;
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1set_1smp  (JNIEnv *env, jobject obj, jlong jg, jint jsmp)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  int smp;
+
+  smp = jsmp;
+
+  r = guestfs_set_smp (g, smp);
+
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT jint JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1get_1smp  (JNIEnv *env, jobject obj, jlong jg)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+
+
+  r = guestfs_get_smp (g);
+
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return -1;
+  }
+  return (jint) r;
 }
 
 JNIEXPORT void JNICALL
@@ -9629,6 +9700,196 @@ Java_com_redhat_et_libguestfs_GuestFS__1write_1append  (JNIEnv *env, jobject obj
 
   (*env)->ReleaseStringUTFChars (env, jpath, path);
   (*env)->ReleaseByteArrayElements (env, jcontent, (jbyte *) content, 0);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1compress_1out  (JNIEnv *env, jobject obj, jlong jg, jstring jctype, jstring jfile, jstring jzfile, jlong joptargs_bitmask, jint jlevel)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *ctype;
+  const char *file;
+  const char *zfile;
+  struct guestfs_compress_out_argv optargs_s;
+  const struct guestfs_compress_out_argv *optargs = &optargs_s;
+
+  ctype = (*env)->GetStringUTFChars (env, jctype, NULL);
+  file = (*env)->GetStringUTFChars (env, jfile, NULL);
+  zfile = (*env)->GetStringUTFChars (env, jzfile, NULL);
+  optargs_s.bitmask = joptargs_bitmask;
+  optargs_s.level = jlevel;
+
+  r = guestfs_compress_out_argv (g, ctype, file, zfile, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jctype, ctype);
+  (*env)->ReleaseStringUTFChars (env, jfile, file);
+  (*env)->ReleaseStringUTFChars (env, jzfile, zfile);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1compress_1device_1out  (JNIEnv *env, jobject obj, jlong jg, jstring jctype, jstring jdevice, jstring jzdevice, jlong joptargs_bitmask, jint jlevel)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *ctype;
+  const char *device;
+  const char *zdevice;
+  struct guestfs_compress_device_out_argv optargs_s;
+  const struct guestfs_compress_device_out_argv *optargs = &optargs_s;
+
+  ctype = (*env)->GetStringUTFChars (env, jctype, NULL);
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  zdevice = (*env)->GetStringUTFChars (env, jzdevice, NULL);
+  optargs_s.bitmask = joptargs_bitmask;
+  optargs_s.level = jlevel;
+
+  r = guestfs_compress_device_out_argv (g, ctype, device, zdevice, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jctype, ctype);
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+  (*env)->ReleaseStringUTFChars (env, jzdevice, zdevice);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT jint JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1part_1to_1partnum  (JNIEnv *env, jobject obj, jlong jg, jstring jpartition)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *partition;
+
+  partition = (*env)->GetStringUTFChars (env, jpartition, NULL);
+
+  r = guestfs_part_to_partnum (g, partition);
+
+  (*env)->ReleaseStringUTFChars (env, jpartition, partition);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return -1;
+  }
+  return (jint) r;
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1copy_1device_1to_1device  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest, jlong joptargs_bitmask, jlong jsrcoffset, jlong jdestoffset, jlong jsize)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *src;
+  const char *dest;
+  struct guestfs_copy_device_to_device_argv optargs_s;
+  const struct guestfs_copy_device_to_device_argv *optargs = &optargs_s;
+
+  src = (*env)->GetStringUTFChars (env, jsrc, NULL);
+  dest = (*env)->GetStringUTFChars (env, jdest, NULL);
+  optargs_s.bitmask = joptargs_bitmask;
+  optargs_s.srcoffset = jsrcoffset;
+  optargs_s.destoffset = jdestoffset;
+  optargs_s.size = jsize;
+
+  r = guestfs_copy_device_to_device_argv (g, src, dest, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jsrc, src);
+  (*env)->ReleaseStringUTFChars (env, jdest, dest);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1copy_1device_1to_1file  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest, jlong joptargs_bitmask, jlong jsrcoffset, jlong jdestoffset, jlong jsize)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *src;
+  const char *dest;
+  struct guestfs_copy_device_to_file_argv optargs_s;
+  const struct guestfs_copy_device_to_file_argv *optargs = &optargs_s;
+
+  src = (*env)->GetStringUTFChars (env, jsrc, NULL);
+  dest = (*env)->GetStringUTFChars (env, jdest, NULL);
+  optargs_s.bitmask = joptargs_bitmask;
+  optargs_s.srcoffset = jsrcoffset;
+  optargs_s.destoffset = jdestoffset;
+  optargs_s.size = jsize;
+
+  r = guestfs_copy_device_to_file_argv (g, src, dest, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jsrc, src);
+  (*env)->ReleaseStringUTFChars (env, jdest, dest);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1copy_1file_1to_1device  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest, jlong joptargs_bitmask, jlong jsrcoffset, jlong jdestoffset, jlong jsize)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *src;
+  const char *dest;
+  struct guestfs_copy_file_to_device_argv optargs_s;
+  const struct guestfs_copy_file_to_device_argv *optargs = &optargs_s;
+
+  src = (*env)->GetStringUTFChars (env, jsrc, NULL);
+  dest = (*env)->GetStringUTFChars (env, jdest, NULL);
+  optargs_s.bitmask = joptargs_bitmask;
+  optargs_s.srcoffset = jsrcoffset;
+  optargs_s.destoffset = jdestoffset;
+  optargs_s.size = jsize;
+
+  r = guestfs_copy_file_to_device_argv (g, src, dest, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jsrc, src);
+  (*env)->ReleaseStringUTFChars (env, jdest, dest);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1copy_1file_1to_1file  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest, jlong joptargs_bitmask, jlong jsrcoffset, jlong jdestoffset, jlong jsize)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *src;
+  const char *dest;
+  struct guestfs_copy_file_to_file_argv optargs_s;
+  const struct guestfs_copy_file_to_file_argv *optargs = &optargs_s;
+
+  src = (*env)->GetStringUTFChars (env, jsrc, NULL);
+  dest = (*env)->GetStringUTFChars (env, jdest, NULL);
+  optargs_s.bitmask = joptargs_bitmask;
+  optargs_s.srcoffset = jsrcoffset;
+  optargs_s.destoffset = jdestoffset;
+  optargs_s.size = jsize;
+
+  r = guestfs_copy_file_to_file_argv (g, src, dest, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jsrc, src);
+  (*env)->ReleaseStringUTFChars (env, jdest, dest);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
