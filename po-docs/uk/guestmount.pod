@@ -26,9 +26,9 @@ mountable device.
 
 Along with other options, you have to give at least one device (I<-a>
 option) or libvirt domain (I<-d> option), and at least one mountpoint (I<-m>
-option) or use the I<-i> inspection option.  How this works is better
-explained in the L<guestfish(1)> manual page, or by looking at the examples
-below.
+option) or use the I<-i> inspection option or the I<--live> option.  How
+this works is better explained in the L<guestfish(1)> manual page, or by
+looking at the examples below.
 
 FUSE lets you mount filesystems as non-root.  The mountpoint must be owned
 by you, and the filesystem will not be visible to any other users unless you
@@ -177,9 +177,9 @@ passphrases from the user by opening C</dev/tty>.
 Connect to a live virtual machine.  (Experimental, see
 L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>).
 
-=item B<-m dev[:mountpoint[:options]]>
+=item B<-m пристрій[:точка_монтування[:параметри]]>
 
-=item B<--mount dev[:mountpoint[:options]]>
+=item B<--mount пристрій[:точка_монтування[:параметри]]>
 
 Mount the named partition or logical volume on the given mountpoint B<in the
 guest> (this has nothing to do with mountpoints in the host).
@@ -204,9 +204,9 @@ By default, we attempt to sync the guest disk when the FUSE mountpoint is
 unmounted.  If you specify this option, then we don't attempt to sync the
 disk.  See the discussion of autosync in the L<guestfs(3)> manpage.
 
-=item B<-o option>
+=item B<-o параметр>
 
-=item B<--option option>
+=item B<--option параметр>
 
 Pass extra options to FUSE.
 
@@ -253,7 +253,7 @@ the guest is running and this option is I<not> supplied, then there is a
 strong risk of disk corruption in the guest.  We try to prevent this from
 happening, but it is not always possible.
 
-See also L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+Див. також L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
 
 =item B<--selinux>
 
@@ -278,7 +278,7 @@ Display the program version and exit.
 This changes the I<-a>, I<-d> and I<-m> options so that disks are added and
 mounts are done read-write.
 
-See L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+Див. L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
 
 =item B<-x>
 
@@ -301,7 +301,7 @@ This also stops the daemon from forking into the background.
 This configuration file controls the default read-only or read-write mode
 (I<--ro> or I<--rw>).
 
-See L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+Див. L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
 
 =back
 
@@ -333,7 +333,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, MA 02139, USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 

@@ -893,6 +893,34 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_compress_device_out (IntPtr h, [In] string ctype, [In] string device, [In] string zdevice);
+
+    /// <summary>
+    /// output compressed device
+    /// </summary>
+    public void compress_device_out (string ctype, string device, string zdevice)
+    {
+      int r;
+      r = guestfs_compress_device_out (_handle, ctype, device, zdevice);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_compress_out (IntPtr h, [In] string ctype, [In] string file, [In] string zfile);
+
+    /// <summary>
+    /// output compressed file
+    /// </summary>
+    public void compress_out (string ctype, string file, string zfile)
+    {
+      int r;
+      r = guestfs_compress_out (_handle, ctype, file, zfile);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_config (IntPtr h, [In] string qemuparam, [In] string qemuvalue);
 
     /// <summary>
@@ -902,6 +930,62 @@ namespace Guestfs
     {
       int r;
       r = guestfs_config (_handle, qemuparam, qemuvalue);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_copy_device_to_device (IntPtr h, [In] string src, [In] string dest);
+
+    /// <summary>
+    /// copy from source device to destination device
+    /// </summary>
+    public void copy_device_to_device (string src, string dest)
+    {
+      int r;
+      r = guestfs_copy_device_to_device (_handle, src, dest);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_copy_device_to_file (IntPtr h, [In] string src, [In] string dest);
+
+    /// <summary>
+    /// copy from source device to destination file
+    /// </summary>
+    public void copy_device_to_file (string src, string dest)
+    {
+      int r;
+      r = guestfs_copy_device_to_file (_handle, src, dest);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_copy_file_to_device (IntPtr h, [In] string src, [In] string dest);
+
+    /// <summary>
+    /// copy from source file to destination device
+    /// </summary>
+    public void copy_file_to_device (string src, string dest)
+    {
+      int r;
+      r = guestfs_copy_file_to_device (_handle, src, dest);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_copy_file_to_file (IntPtr h, [In] string src, [In] string dest);
+
+    /// <summary>
+    /// copy from source file to destination file
+    /// </summary>
+    public void copy_file_to_file (string src, string dest)
+    {
+      int r;
+      r = guestfs_copy_file_to_file (_handle, src, dest);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -987,6 +1071,21 @@ namespace Guestfs
     {
       string[] r;
       r = guestfs_debug_cmdline (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_debug_drives (IntPtr h);
+
+    /// <summary>
+    /// debug the drives (internal use only)
+    /// </summary>
+    public string[] debug_drives ()
+    {
+      string[] r;
+      r = guestfs_debug_drives (_handle);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
@@ -1610,6 +1709,21 @@ namespace Guestfs
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_get_smp (IntPtr h);
+
+    /// <summary>
+    /// get number of virtual CPUs in appliance
+    /// </summary>
+    public int get_smp ()
+    {
+      int r;
+      r = guestfs_get_smp (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -3777,6 +3891,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_part_to_partnum (IntPtr h, [In] string partition);
+
+    /// <summary>
+    /// convert partition name to partition number
+    /// </summary>
+    public int part_to_partnum (string partition)
+    {
+      int r;
+      r = guestfs_part_to_partnum (_handle, partition);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_ping_daemon (IntPtr h);
 
     /// <summary>
@@ -4373,6 +4502,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_set_selinux (_handle, selinux);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_smp (IntPtr h, int smp);
+
+    /// <summary>
+    /// set number of virtual CPUs in appliance
+    /// </summary>
+    public void set_smp (int smp)
+    {
+      int r;
+      r = guestfs_set_smp (_handle, smp);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }

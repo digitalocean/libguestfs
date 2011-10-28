@@ -64,8 +64,10 @@ static pcre *re_scientific_linux_no_minor;
 static pcre *re_major_minor;
 static pcre *re_aug_seq;
 static pcre *re_xdev;
+static pcre *re_cciss;
 static pcre *re_first_partition;
 static pcre *re_freebsd;
+static pcre *re_netbsd;
 
 static void compile_regexps (void) __attribute__((constructor));
 static void free_regexps (void) __attribute__((destructor));
@@ -106,8 +108,10 @@ compile_regexps (void)
            "Scientific Linux.*release (\\d+)", 0);
   COMPILE (re_major_minor, "(\\d+)\\.(\\d+)", 0);
   COMPILE (re_aug_seq, "/\\d+$", 0);
-  COMPILE (re_xdev, "^/dev/(?:h|s|v|xv)d([a-z]\\d*)$", 0);
+  COMPILE (re_xdev, "^/dev/(h|s|v|xv)d([a-z]+)(\\d*)$", 0);
+  COMPILE (re_cciss, "^/dev/(cciss/c\\d+d\\d+)(?:p(\\d+))?$", 0);
   COMPILE (re_freebsd, "^/dev/ad(\\d+)s(\\d+)([a-z])$", 0);
+  COMPILE (re_netbsd, "^NetBSD (\\d+)\\.(\\d+)", 0);
 }
 
 static void
@@ -126,7 +130,9 @@ free_regexps (void)
   pcre_free (re_major_minor);
   pcre_free (re_aug_seq);
   pcre_free (re_xdev);
+  pcre_free (re_cciss);
   pcre_free (re_freebsd);
+  pcre_free (re_netbsd);
 }
 
 static void check_architecture (guestfs_h *g, struct inspect_fs *fs);
@@ -212,6 +218,11 @@ parse_lsb_release (guestfs_h *g, struct inspect_fs *fs)
     else if (fs->distro == 0 &&
              STREQ (lines[i], "DISTRIB_ID=MandrivaLinux")) {
       fs->distro = OS_DISTRO_MANDRIVA;
+      r = 1;
+    }
+    else if (fs->distro == 0 &&
+             STREQ (lines[i], "DISTRIB_ID=\"Mageia\"")) {
+      fs->distro = OS_DISTRO_MAGEIA;
       r = 1;
     }
     else if (STRPREFIX (lines[i], "DISTRIB_RELEASE=")) {
@@ -404,6 +415,26 @@ guestfs___check_linux_root (guestfs_h *g, struct inspect_fs *fs)
     if (guestfs___parse_major_minor (g, fs) == -1)
       return -1;
   }
+  else if (guestfs_exists (g, "/etc/ttylinux-target") > 0) {
+    fs->distro = OS_DISTRO_TTYLINUX;
+
+    fs->product_name = guestfs___first_line_of_file (g, "/etc/ttylinux-target");
+    if (fs->product_name == NULL)
+      return -1;
+
+    if (guestfs___parse_major_minor (g, fs) == -1)
+      return -1;
+  }
+  else if (guestfs_exists (g, "/etc/SuSE-release") > 0) {
+    fs->distro = OS_DISTRO_OPENSUSE;
+
+    if (parse_release_file (g, fs, "/etc/SuSE-release") == -1)
+      return -1;
+
+    if (guestfs___parse_major_minor (g, fs) == -1)
+      return -1;
+  }
+
 
  skip_release_checks:;
 
@@ -457,6 +488,48 @@ guestfs___check_freebsd_root (guestfs_h *g, struct inspect_fs *fs)
 
   return 0;
 }
+
+/* The currently mounted device is maybe to be a *BSD root. */
+int
+guestfs___check_netbsd_root (guestfs_h *g, struct inspect_fs *fs)
+{
+
+  if (guestfs_exists (g, "/etc/release") > 0) {
+    char *major, *minor;
+    if (parse_release_file (g, fs, "/etc/release") == -1)
+      return -1;
+
+    if (match2 (g, fs->product_name, re_netbsd, &major, &minor)) {
+      fs->type = OS_TYPE_NETBSD;
+      fs->major_version = guestfs___parse_unsigned_int (g, major);
+      free (major);
+      if (fs->major_version == -1) {
+        free (minor);
+        return -1;
+      }
+      fs->minor_version = guestfs___parse_unsigned_int (g, minor);
+      free (minor);
+      if (fs->minor_version == -1)
+        return -1;
+    }
+  } else {
+    return -1;
+  }
+
+  /* Determine the architecture. */
+  check_architecture (g, fs);
+
+  /* We already know /etc/fstab exists because it's part of the test above. */
+  if (inspect_with_augeas (g, fs, "/etc/fstab", check_fstab) == -1)
+    return -1;
+
+  /* Determine hostname. */
+  if (check_hostname_unix (g, fs) == -1)
+    return -1;
+
+  return 0;
+}
+
 
 static void
 check_architecture (guestfs_h *g, struct inspect_fs *fs)
@@ -517,6 +590,7 @@ check_hostname_unix (guestfs_h *g, struct inspect_fs *fs)
     break;
 
   case OS_TYPE_FREEBSD:
+  case OS_TYPE_NETBSD:
     /* /etc/rc.conf contains the hostname, but there is no Augeas lens
      * for this file.
      */
@@ -745,9 +819,8 @@ add_fstab_entry (guestfs_h *g, struct inspect_fs *fs,
 static char *
 resolve_fstab_device (guestfs_h *g, const char *spec)
 {
-  char *a1;
   char *device = NULL;
-  char *bsddisk, *bsdslice, *bsdpart;
+  char *type, *slice, *disk, *part;
 
   if (STRPREFIX (spec, "/dev/mapper/")) {
     /* LVM2 does some strange munging on /dev/mapper paths for VGs and
@@ -762,43 +835,101 @@ resolve_fstab_device (guestfs_h *g, const char *spec)
      */
     device = guestfs_lvm_canonical_lv_name (g, spec);
   }
-  else if ((a1 = match1 (g, spec, re_xdev)) != NULL) {
+  else if (match3 (g, spec, re_xdev, &type, &disk, &part)) {
+    /* type: (h|s|v|xv)
+     * disk: ([a-z]+)
+     * part: (\d*) */
     char **devices = guestfs_list_devices (g);
     if (devices == NULL)
       return NULL;
 
-    size_t count;
-    for (count = 0; devices[count] != NULL; count++)
-      ;
+    /* Check any hints we were passed for a non-heuristic mapping */
+    char *name = safe_asprintf (g, "%sd%s", type, disk);
+    size_t i = 0;
+    struct drive *drive = g->drives;
+    while (drive) {
+      if (drive->name && STREQ(drive->name, name)) {
+        device = safe_asprintf (g, "%s%s", devices[i], part);
+        break;
+      }
 
-    size_t i = a1[0] - 'a'; /* a1[0] is always [a-z] because of regex. */
-    if (i < count) {
-      size_t len = strlen (devices[i]) + strlen (a1) + 16;
-      device = safe_malloc (g, len);
-      snprintf (device, len, "%s%s", devices[i], &a1[1]);
+      i++; drive = drive->next;
+    }
+    free (name);
+
+    /* Guess the appliance device name if we didn't find a matching hint */
+    if (!device) {
+      /* Count how many disks the libguestfs appliance has */
+      size_t count;
+      for (count = 0; devices[count] != NULL; count++)
+        ;
+
+      /* Calculate the numerical index of the disk */
+      i = disk[0] - 'a';
+      for (char *p = disk + 1; *p != '\0'; p++) {
+        i += 1; i *= 26;
+        i += *p - 'a';
+      }
+
+      /* Check the index makes sense wrt the number of disks the appliance has.
+       * If it does, map it to an appliance disk. */
+      if (i < count) {
+        device = safe_asprintf (g, "%s%s", devices[i], part);
+      }
     }
 
-    free (a1);
+    free (type);
+    free (disk);
+    free (part);
     guestfs___free_string_list (devices);
   }
-  else if (match3 (g, spec, re_freebsd, &bsddisk, &bsdslice, &bsdpart)) {
+  else if (match2 (g, spec, re_cciss, &disk, &part)) {
+    /* disk: (cciss/c\d+d\d+)
+     * part: (\d+)? */
+    char **devices = guestfs_list_devices (g);
+    if (devices == NULL)
+      return NULL;
+
+    /* Check any hints we were passed for a non-heuristic mapping */
+    size_t i = 0;
+    struct drive *drive = g->drives;
+    while (drive) {
+      if (drive->name && STREQ(drive->name, disk)) {
+        if (part) {
+          device = safe_asprintf (g, "%s%s", devices[i], part);
+        } else {
+          device = safe_strdup (g, devices[i]);
+        }
+        break;
+      }
+
+      i++; drive = drive->next;
+    }
+
+    /* We don't try to guess mappings for cciss devices */
+
+    free (disk);
+    free (part);
+    guestfs___free_string_list (devices);
+  }
+  else if (match3 (g, spec, re_freebsd, &disk, &slice, &part)) {
     /* FreeBSD disks are organized quite differently.  See:
      * http://www.freebsd.org/doc/handbook/disk-organization.html
      * FreeBSD "partitions" are exposed as quasi-extended partitions
      * numbered from 5 in Linux.  I have no idea what happens when you
      * have multiple "slices" (the FreeBSD term for MBR partitions).
      */
-    int disk = guestfs___parse_unsigned_int (g, bsddisk);
-    int slice = guestfs___parse_unsigned_int (g, bsdslice);
-    int part = bsdpart[0] - 'a' /* counting from 0 */;
-    free (bsddisk);
-    free (bsdslice);
-    free (bsdpart);
+    int disk_i = guestfs___parse_unsigned_int (g, disk);
+    int slice_i = guestfs___parse_unsigned_int (g, slice);
+    int part_i = part[0] - 'a' /* counting from 0 */;
+    free (disk);
+    free (slice);
+    free (part);
 
-    if (disk != -1 && disk <= 26 &&
-        slice > 0 && slice <= 1 /* > 4 .. see comment above */ &&
-        part >= 0 && part < 26) {
-      device = safe_asprintf (g, "/dev/sd%c%d", disk + 'a', part + 5);
+    if (disk_i != -1 && disk_i <= 26 &&
+        slice_i > 0 && slice_i <= 1 /* > 4 .. see comment above */ &&
+        part_i >= 0 && part_i < 26) {
+      device = safe_asprintf (g, "/dev/sd%c%d", disk_i + 'a', part_i + 5);
     }
   }
 

@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfish 1"
-.TH guestfish 1 "2011-10-19" "libguestfs-1.12.8" "Virtualization Support"
+.TH guestfish 1 "2011-10-27" "libguestfs-1.14.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -1374,6 +1374,19 @@ The default viewer is \f(CW$PAGER\fR.  However if you use the alternate command
 Close and reopen the libguestfs handle.  It is not necessary to use this
 normally, because the handle is closed properly when guestfish exits.
 However this is occasionally useful for testing.
+.SS "setenv"
+.IX Subsection "setenv"
+.Vb 1
+\&  setenv VAR value
+.Ve
+.PP
+Set the environment variable \f(CW\*(C`VAR\*(C'\fR to the string \f(CW\*(C`value\*(C'\fR.
+.PP
+To print the value of an environment variable use a shell command such as:
+.PP
+.Vb 1
+\& !echo $VAR
+.Ve
 .SS "sparse"
 .IX Subsection "sparse"
 .Vb 1
@@ -1411,6 +1424,13 @@ See also \*(L"\s-1AVAILABILITY\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
 Run the command as usual, but print the elapsed time afterwards.  This can
 be useful for benchmarking operations.
+.SS "unsetenv"
+.IX Subsection "unsetenv"
+.Vb 1
+\&  unsetenv VAR
+.Ve
+.PP
+Remove \f(CW\*(C`VAR\*(C'\fR from the environment.
 .SH "COMMANDS"
 .IX Header "COMMANDS"
 .SS "add-cdrom"
@@ -1434,7 +1454,7 @@ If you just want to add an \s-1ISO\s0 file (often you use this as an efficient w
 to transfer large files into the guest), then you should probably use
 \&\*(L"add-drive-ro\*(R" instead.
 .PP
-This function is deprecated.  In new code, use the \*(L"add_drive_opts\*(R" call
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"add_drive_opts\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -1445,7 +1465,7 @@ these functions.
 .SS "domain"
 .IX Subsection "domain"
 .Vb 1
-\& add\-domain dom [libvirturi:..] [readonly:..] [iface:..] [live:..] [allowuuid:..]
+\& add\-domain dom [libvirturi:..] [readonly:..] [iface:..] [live:..] [allowuuid:..] [readonlydisk:..]
 .Ve
 .PP
 This function adds the disk(s) attached to the named libvirt domain \f(CW\*(C`dom\*(C'\fR.
@@ -1479,6 +1499,47 @@ passed instead of the domain name.  The \f(CW\*(C`dom\*(C'\fR string is treated 
 first and looked up, and if that lookup fails then we treat \f(CW\*(C`dom\*(C'\fR as a name
 as usual.
 .PP
+The optional \f(CW\*(C`readonlydisk\*(C'\fR parameter controls what we do for disks which
+are marked <readonly/> in the libvirt \s-1XML\s0.  Possible values are:
+.ie n .IP "readonlydisk = ""error""" 4
+.el .IP "readonlydisk = ``error''" 4
+.IX Item "readonlydisk = error"
+If \f(CW\*(C`readonly\*(C'\fR is false:
+.Sp
+The whole call is aborted with an error if any disk with the
+<readonly/> flag is found.
+.Sp
+If \f(CW\*(C`readonly\*(C'\fR is true:
+.Sp
+Disks with the <readonly/> flag are added read-only.
+.ie n .IP "readonlydisk = ""read""" 4
+.el .IP "readonlydisk = ``read''" 4
+.IX Item "readonlydisk = read"
+If \f(CW\*(C`readonly\*(C'\fR is false:
+.Sp
+Disks with the <readonly/> flag are added read-only.  Other disks
+are added read/write.
+.Sp
+If \f(CW\*(C`readonly\*(C'\fR is true:
+.Sp
+Disks with the <readonly/> flag are added read-only.
+.ie n .IP "readonlydisk = ""write"" (default)" 4
+.el .IP "readonlydisk = ``write'' (default)" 4
+.IX Item "readonlydisk = write (default)"
+If \f(CW\*(C`readonly\*(C'\fR is false:
+.Sp
+Disks with the <readonly/> flag are added read/write.
+.Sp
+If \f(CW\*(C`readonly\*(C'\fR is true:
+.Sp
+Disks with the <readonly/> flag are added read-only.
+.ie n .IP "readonlydisk = ""ignore""" 4
+.el .IP "readonlydisk = ``ignore''" 4
+.IX Item "readonlydisk = ignore"
+If \f(CW\*(C`readonly\*(C'\fR is true or false:
+.Sp
+Disks with the <readonly/> flag are skipped.
+.PP
 The other optional parameters are passed directly through to
 \&\*(L"add-drive-opts\*(R".
 .PP
@@ -1504,7 +1565,7 @@ you should think about replacing calls to this function with calls to
 .SS "add"
 .IX Subsection "add"
 .Vb 1
-\& add\-drive\-opts filename [readonly:..] [format:..] [iface:..]
+\& add\-drive\-opts filename [readonly:..] [format:..] [iface:..] [name:..]
 .Ve
 .PP
 This function adds a virtual machine disk image \f(CW\*(C`filename\*(C'\fR to libguestfs.
@@ -1540,6 +1601,11 @@ RHBZ#642934.  Specifying the format closes this security hole.
 .IX Item "iface"
 This rarely-used option lets you emulate the behaviour of the deprecated
 \&\*(L"add-drive-with-if\*(R" call (q.v.)
+.ie n .IP """name""" 4
+.el .IP "\f(CWname\fR" 4
+.IX Item "name"
+The name the drive had in the original guest, e.g. /dev/sdb. This is used as
+a hint to the guest inspection process if it is available.
 .PP
 This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 \&\s-1ARGUMENTS\s0\*(R".
@@ -1563,7 +1629,7 @@ is added read-only, with the format being detected automatically.
 This is the same as \*(L"add-drive-ro\*(R" but it allows you to specify the \s-1QEMU\s0
 interface emulation to use at run time.
 .PP
-This function is deprecated.  In new code, use the \*(L"add_drive_opts\*(R" call
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"add_drive_opts\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -1578,7 +1644,7 @@ these functions.
 This is the same as \*(L"add-drive\*(R" but it allows you to specify the \s-1QEMU\s0
 interface emulation to use at run time.
 .PP
-This function is deprecated.  In new code, use the \*(L"add_drive_opts\*(R" call
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"add_drive_opts\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -2149,6 +2215,44 @@ See also: \*(L"sh-lines\*(R"
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
+.SS "compress-device-out"
+.IX Subsection "compress-device-out"
+.Vb 1
+\& compress\-device\-out ctype device (zdevice|\-) [level:..]
+.Ve
+.PP
+This command compresses \f(CW\*(C`device\*(C'\fR and writes it out to the local file
+\&\f(CW\*(C`zdevice\*(C'\fR.
+.PP
+The \f(CW\*(C`ctype\*(C'\fR and optional \f(CW\*(C`level\*(C'\fR parameters have the same meaning as in
+\&\*(L"compress-out\*(R".
+.PP
+Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
+.SS "compress-out"
+.IX Subsection "compress-out"
+.Vb 1
+\& compress\-out ctype file (zfile|\-) [level:..]
+.Ve
+.PP
+This command compresses \f(CW\*(C`file\*(C'\fR and writes it out to the local file
+\&\f(CW\*(C`zfile\*(C'\fR.
+.PP
+The compression program used is controlled by the \f(CW\*(C`ctype\*(C'\fR parameter.
+Currently this includes: \f(CW\*(C`compress\*(C'\fR, \f(CW\*(C`gzip\*(C'\fR, \f(CW\*(C`bzip2\*(C'\fR, \f(CW\*(C`xz\*(C'\fR or \f(CW\*(C`lzop\*(C'\fR.
+Some compression types may not be supported by particular builds of
+libguestfs, in which case you will get an error containing the substring
+\&\*(L"not supported\*(R".
+.PP
+The optional \f(CW\*(C`level\*(C'\fR parameter controls compression level.  The meaning and
+default for this parameter depends on the compression program being used.
+.PP
+Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
 .SS "config"
 .IX Subsection "config"
 .Vb 1
@@ -2162,6 +2266,63 @@ setting some parameters which would interfere with parameters that we use.
 The first character of \f(CW\*(C`param\*(C'\fR string must be a \f(CW\*(C`\-\*(C'\fR (dash).
 .PP
 \&\f(CW\*(C`value\*(C'\fR can be \s-1NULL\s0.
+.SS "copy-device-to-device"
+.IX Subsection "copy-device-to-device"
+.Vb 1
+\& copy\-device\-to\-device src dest [srcoffset:..] [destoffset:..] [size:..]
+.Ve
+.PP
+The four calls \*(L"copy-device-to-device\*(R", \*(L"copy-device-to-file\*(R",
+\&\*(L"copy-file-to-device\*(R", and \*(L"copy-file-to-file\*(R" let you copy from a
+source (device|file) to a destination (device|file).
+.PP
+Partial copies can be made since you can specify optionally the source
+offset, destination offset and size to copy.  These values are all specified
+in bytes.  If not given, the offsets both default to zero, and the size
+defaults to copying as much as possible until we hit the end of the source.
+.PP
+The source and destination may be the same object.  However overlapping
+regions may not be copied correctly.
+.PP
+If the destination is a file, it is created if required.  If the destination
+file is not large enough, it is extended.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
+.SS "copy-device-to-file"
+.IX Subsection "copy-device-to-file"
+.Vb 1
+\& copy\-device\-to\-file src dest [srcoffset:..] [destoffset:..] [size:..]
+.Ve
+.PP
+See \*(L"copy-device-to-device\*(R" for a general overview of this call.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
+.SS "copy-file-to-device"
+.IX Subsection "copy-file-to-device"
+.Vb 1
+\& copy\-file\-to\-device src dest [srcoffset:..] [destoffset:..] [size:..]
+.Ve
+.PP
+See \*(L"copy-device-to-device\*(R" for a general overview of this call.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
+.SS "copy-file-to-file"
+.IX Subsection "copy-file-to-file"
+.Vb 1
+\& copy\-file\-to\-file src dest [srcoffset:..] [destoffset:..] [size:..]
+.Ve
+.PP
+See \*(L"copy-device-to-device\*(R" for a general overview of this call.
+.PP
+This is \fBnot\fR the function you want for copying files.  This is for copying
+blocks within existing files.  See \*(L"cp\*(R", \*(L"cp-a\*(R" and \*(L"mv\*(R" for general
+file copying and moving functions.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
 .SS "copy-size"
 .IX Subsection "copy-size"
 .Vb 1
@@ -2173,6 +2334,13 @@ This command copies exactly \f(CW\*(C`size\*(C'\fR bytes from one source device 
 .PP
 Note this will fail if the source is too short or if the destination is not
 large enough.
+.PP
+\&\fIThis function is deprecated.\fR In new code, use the
+\&\*(L"copy_device_to_device\*(R" call instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 .SS "cp"
 .IX Subsection "cp"
 .Vb 1
@@ -2201,7 +2369,14 @@ or from a device or partition, for example to duplicate a filesystem.
 .PP
 If the destination is a device, it must be as large or larger than the
 source file or device, otherwise the copy will fail.  This command cannot do
-partial copies (see \*(L"copy-size\*(R").
+partial copies (see \*(L"copy-device-to-device\*(R").
+.PP
+\&\fIThis function is deprecated.\fR In new code, use the
+\&\*(L"copy_device_to_device\*(R" call instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 .SS "df"
 .IX Subsection "df"
 .Vb 1
@@ -2374,7 +2549,7 @@ size \f(CW\*(C`len\*(C'\fR bytes.  If the file exists already, it is overwritten
 Do not confuse this with the guestfish-specific \f(CW\*(C`alloc\*(C'\fR command which
 allocates a file in the host and attaches it as a device.
 .PP
-This function is deprecated.  In new code, use the \*(L"fallocate64\*(R" call
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"fallocate64\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -2687,7 +2862,7 @@ Return the direct appliance mode flag.
 .PP
 This returns the ext2/3/4 filesystem label of the filesystem on \f(CW\*(C`device\*(C'\fR.
 .PP
-This function is deprecated.  In new code, use the \*(L"vfs_label\*(R" call
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"vfs_label\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -2701,7 +2876,7 @@ these functions.
 .PP
 This returns the ext2/3/4 filesystem \s-1UUID\s0 of the filesystem on \f(CW\*(C`device\*(C'\fR.
 .PP
-This function is deprecated.  In new code, use the \*(L"vfs_uuid\*(R" call
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"vfs_uuid\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -2783,6 +2958,13 @@ This returns the current setting of the selinux flag which is passed to the
 appliance at boot time.  See \*(L"set-selinux\*(R".
 .PP
 For more information on the architecture of libguestfs, see \fIguestfs\fR\|(3).
+.SS "get-smp"
+.IX Subsection "get-smp"
+.Vb 1
+\& get\-smp
+.Ve
+.PP
+This returns the number of virtual CPUs assigned to the appliance.
 .SS "get-state"
 .IX Subsection "get-state"
 .Vb 1
@@ -3124,6 +3306,10 @@ Gentoo.
 .el .IP "``linuxmint''" 4
 .IX Item "linuxmint"
 Linux Mint.
+.ie n .IP """mageia""" 4
+.el .IP "``mageia''" 4
+.IX Item "mageia"
+Mageia.
 .ie n .IP """mandriva""" 4
 .el .IP "``mandriva''" 4
 .IX Item "mandriva"
@@ -3132,6 +3318,10 @@ Mandriva.
 .el .IP "``meego''" 4
 .IX Item "meego"
 MeeGo.
+.ie n .IP """opensuse""" 4
+.el .IP "``opensuse''" 4
+.IX Item "opensuse"
+OpenSUSE.
 .ie n .IP """pardus""" 4
 .el .IP "``pardus''" 4
 .IX Item "pardus"
@@ -3152,6 +3342,10 @@ Scientific Linux.
 .el .IP "``slackware''" 4
 .IX Item "slackware"
 Slackware.
+.ie n .IP """ttylinux""" 4
+.el .IP "``ttylinux''" 4
+.IX Item "ttylinux"
+ttylinux.
 .ie n .IP """ubuntu""" 4
 .el .IP "``ubuntu''" 4
 .IX Item "ubuntu"
@@ -3381,8 +3575,8 @@ This returns the string \f(CW\*(C`unknown\*(C'\fR if we could not determine the 
 format \fIor\fR if the operating system does not have a real packaging system
 (eg. Windows).
 .PP
-Possible strings include: \f(CW\*(C`rpm\*(C'\fR, \f(CW\*(C`deb\*(C'\fR, \f(CW\*(C`ebuild\*(C'\fR, \f(CW\*(C`pisi\*(C'\fR, \f(CW\*(C`pacman\*(C'\fR.
-Future versions of libguestfs may return other strings.
+Possible strings include: \f(CW\*(C`rpm\*(C'\fR, \f(CW\*(C`deb\*(C'\fR, \f(CW\*(C`ebuild\*(C'\fR, \f(CW\*(C`pisi\*(C'\fR, \f(CW\*(C`pacman\*(C'\fR,
+\&\f(CW\*(C`pkgsrc\*(C'\fR.  Future versions of libguestfs may return other strings.
 .PP
 Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-get-package-management"
@@ -3401,8 +3595,8 @@ management tool \fIor\fR if the operating system does not have a real packaging
 system (eg. Windows).
 .PP
 Possible strings include: \f(CW\*(C`yum\*(C'\fR, \f(CW\*(C`up2date\*(C'\fR, \f(CW\*(C`apt\*(C'\fR (for all Debian
-derivatives), \f(CW\*(C`portage\*(C'\fR, \f(CW\*(C`pisi\*(C'\fR, \f(CW\*(C`pacman\*(C'\fR, \f(CW\*(C`urpmi\*(C'\fR.  Future versions of
-libguestfs may return other strings.
+derivatives), \f(CW\*(C`portage\*(C'\fR, \f(CW\*(C`pisi\*(C'\fR, \f(CW\*(C`pacman\*(C'\fR, \f(CW\*(C`urpmi\*(C'\fR, \f(CW\*(C`zypper\*(C'\fR.  Future
+versions of libguestfs may return other strings.
 .PP
 Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-get-product-name"
@@ -3478,6 +3672,10 @@ Any Microsoft Windows operating system.
 .el .IP "``freebsd''" 4
 .IX Item "freebsd"
 FreeBSD.
+.ie n .IP """netbsd""" 4
+.el .IP "``netbsd''" 4
+.IX Item "netbsd"
+NetBSD.
 .ie n .IP """unknown""" 4
 .el .IP "``unknown''" 4
 .IX Item "unknown"
@@ -4079,9 +4277,6 @@ slot \f(CW\*(C`slot\*(C'\fR.  (\s-1LUKS\s0 supports 8 key slots, numbered 0\-7).
 .PP
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
-.PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
 .SS "luks-format-cipher"
 .IX Subsection "luks-format-cipher"
 .Vb 1
@@ -4093,9 +4288,6 @@ the \f(CW\*(C`cipher\*(C'\fR used.
 .PP
 This command has one or more key or passphrase parameters.  Guestfish will
 prompt for these separately.
-.PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
 .SS "luks-kill-slot"
 .IX Subsection "luks-kill-slot"
 .Vb 1
@@ -4183,9 +4375,6 @@ This command also clears the \s-1LVM\s0 cache and performs a volume group scan.
 .PP
 This command removes all \s-1LVM\s0 logical volumes, volume groups and physical
 volumes.
-.PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
 .SS "lvm-set-filter"
 .IX Subsection "lvm-set-filter"
 .Vb 1
@@ -4439,7 +4628,7 @@ filesystem type, but typically they are \f(CW1024\fR, \f(CW2048\fR or \f(CW4096\
 For \s-1VFAT\s0 and \s-1NTFS\s0 the \f(CW\*(C`blocksize\*(C'\fR parameter is treated as the requested
 cluster size.
 .PP
-This function is deprecated.  In new code, use the \*(L"mkfs_opts\*(R" call
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"mkfs_opts\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -4638,20 +4827,11 @@ mounted on directories which already exist.
 The mounted filesystem is writable, if we have sufficient permissions on the
 underlying device.
 .PP
-\&\fBImportant note:\fR When you use this call, the filesystem options \f(CW\*(C`sync\*(C'\fR
-and \f(CW\*(C`noatime\*(C'\fR are set implicitly.  This was originally done because we
-thought it would improve reliability, but it turns out that \fI\-o sync\fR has a
-very large negative performance impact and negligible effect on
-reliability.  Therefore we recommend that you avoid using \*(L"mount\*(R" in any
-code that needs performance, and instead use \*(L"mount-options\*(R" (use an empty
-string for the first parameter if you don't want any options).
-.PP
-This function is deprecated.  In new code, use the \*(L"mount_options\*(R" call
-instead.
-.PP
-Deprecated functions will not be removed from the \s-1API\s0, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
+Before libguestfs 1.13.16, this call implicitly added the options \f(CW\*(C`sync\*(C'\fR
+and \f(CW\*(C`noatime\*(C'\fR.  The \f(CW\*(C`sync\*(C'\fR option greatly slowed writes and caused many
+problems for users.  If your program might need to work with older versions
+of libguestfs, use \*(L"mount-options\*(R" instead (using an empty string for the
+first parameter if you don't want any options).
 .SS "mount\-9p"
 .IX Subsection "mount-9p"
 .Vb 1
@@ -4766,8 +4946,8 @@ without booting into Windows between each resize.
 .PP
 See also \fIntfsresize\fR\|(8).
 .PP
-This function is deprecated.  In new code, use the \*(L"ntfsresize_opts\*(R" call
-instead.
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"ntfsresize_opts\*(R"
+call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4812,8 +4992,8 @@ This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 This command is the same as \*(L"ntfsresize\*(R" except that it allows you to
 specify the new size (in bytes) explicitly.
 .PP
-This function is deprecated.  In new code, use the \*(L"ntfsresize_opts\*(R" call
-instead.
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"ntfsresize_opts\*(R"
+call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4858,9 +5038,6 @@ This command is simply a combination of \*(L"part-init\*(R" followed by
 .PP
 \&\f(CW\*(C`parttype\*(C'\fR is the partition table type, usually \f(CW\*(C`mbr\*(C'\fR or \f(CW\*(C`gpt\*(C'\fR, but other
 possible values are described in \*(L"part-init\*(R".
-.PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
 .SS "part-get-bootable"
 .IX Subsection "part-get-bootable"
 .Vb 1
@@ -5030,6 +5207,21 @@ partition number, returning the device name (eg. \*(L"/dev/sdb\*(R").
 .PP
 The named partition must exist, for example as a string returned from
 \&\*(L"list-partitions\*(R".
+.PP
+See also \*(L"part-to-partnum\*(R".
+.SS "part-to-partnum"
+.IX Subsection "part-to-partnum"
+.Vb 1
+\& part\-to\-partnum partition
+.Ve
+.PP
+This function takes a partition name (eg. \*(L"/dev/sdb1\*(R") and returns the
+partition number (eg. \f(CW1\fR).
+.PP
+The named partition must exist, for example as a string returned from
+\&\*(L"list-partitions\*(R".
+.PP
+See also \*(L"part-to-dev\*(R".
 .SS "ping-daemon"
 .IX Subsection "ping-daemon"
 .Vb 1
@@ -5368,9 +5560,6 @@ difficult.
 .PP
 It is an interface to the \fIscrub\fR\|(1) program.  See that manual page for
 more details.
-.PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
 .SS "scrub-file"
 .IX Subsection "scrub-file"
 .Vb 1
@@ -5607,6 +5796,19 @@ Note that if SELinux is enabled, it is always in Permissive mode
 (\f(CW\*(C`enforcing=0\*(C'\fR).
 .PP
 For more information on the architecture of libguestfs, see \fIguestfs\fR\|(3).
+.SS "set-smp"
+.IX Subsection "set-smp"
+.SS "smp"
+.IX Subsection "smp"
+.Vb 1
+\& set\-smp smp
+.Ve
+.PP
+Change the number of virtual CPUs assigned to the appliance.  The default is
+\&\f(CW1\fR.  Increasing this may improve performance, though often it has no
+effect.
+.PP
+This function must be called before \*(L"launch\*(R".
 .SS "set-trace"
 .IX Subsection "set-trace"
 .SS "trace"
@@ -5688,10 +5890,7 @@ To create a single partition occupying the whole disk, you would pass
 .PP
 See also: \*(L"sfdisk-l\*(R", \*(L"sfdisk-N\*(R", \*(L"part-init\*(R"
 .PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
-.PP
-This function is deprecated.  In new code, use the \*(L"part_add\*(R" call
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"part_add\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -5710,10 +5909,7 @@ rarely if ever used anyway.
 .PP
 See also: \*(L"sfdisk\*(R", the \fIsfdisk\fR\|(8) manpage and \*(L"part-disk\*(R"
 .PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
-.PP
-This function is deprecated.  In new code, use the \*(L"part_add\*(R" call
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"part_add\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -5733,10 +5929,7 @@ cyls/heads/sectors parameters.
 .PP
 See also: \*(L"part-add\*(R"
 .PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
-.PP
-This function is deprecated.  In new code, use the \*(L"part_add\*(R" call
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"part_add\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -5774,7 +5967,7 @@ of the \fIsfdisk\fR\|(8) command.  It is not intended to be parsed.
 .PP
 See also: \*(L"part-list\*(R"
 .PP
-This function is deprecated.  In new code, use the \*(L"part_list\*(R" call
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"part_list\*(R" call
 instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
@@ -6439,7 +6632,7 @@ As a special case, if \f(CW\*(C`size\*(C'\fR is \f(CW0\fR then the length is cal
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-This function is deprecated.  In new code, use the \*(L"write\*(R" call instead.
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"write\*(R" call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -6493,9 +6686,6 @@ which just zeroes the first few blocks of a device.
 If blocks are already zero, then this command avoids writing zeroes.  This
 prevents the underlying device from becoming non-sparse or growing
 unnecessarily.
-.PP
-\&\fBThis command is dangerous.  Without careful use you can easily destroy all
-your data\fR.
 .SS "zerofree"
 .IX Subsection "zerofree"
 .Vb 1
@@ -6542,7 +6732,7 @@ This command runs \f(CW\*(C`file\*(C'\fR after first decompressing \f(CW\*(C`pat
 .PP
 Since 1.0.63, use \*(L"file\*(R" instead which can now process compressed files.
 .PP
-This function is deprecated.  In new code, use the \*(L"file\*(R" call instead.
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"file\*(R" call instead.
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -6707,11 +6897,12 @@ second use of \fI\-N\fR will use \f(CW\*(C`test2.img\*(C'\fR and so on.  Any exi
 the same name will be overwritten.
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
-\&\fIguestfs\fR\|(3), <http://libguestfs.org/>, \fIvirt\-cat\fR\|(1),
-\&\fIvirt\-copy\-in\fR\|(1), \fIvirt\-copy\-out\fR\|(1), \fIvirt\-df\fR\|(1), \fIvirt\-edit\fR\|(1),
-\&\fIvirt\-filesystems\fR\|(1), \fIvirt\-inspector\fR\|(1), \fIvirt\-list\-filesystems\fR\|(1),
-\&\fIvirt\-list\-partitions\fR\|(1), \fIvirt\-ls\fR\|(1), \fIvirt\-make\-fs\fR\|(1),
-\&\fIvirt\-rescue\fR\|(1), \fIvirt\-resize\fR\|(1), \fIvirt\-tar\fR\|(1), \fIvirt\-tar\-in\fR\|(1),
+\&\fIguestfs\fR\|(3), <http://libguestfs.org/>, \fIvirt\-alignment\-scan\fR\|(1),
+\&\fIvirt\-cat\fR\|(1), \fIvirt\-copy\-in\fR\|(1), \fIvirt\-copy\-out\fR\|(1), \fIvirt\-df\fR\|(1),
+\&\fIvirt\-edit\fR\|(1), \fIvirt\-filesystems\fR\|(1), \fIvirt\-inspector\fR\|(1),
+\&\fIvirt\-list\-filesystems\fR\|(1), \fIvirt\-list\-partitions\fR\|(1), \fIvirt\-ls\fR\|(1),
+\&\fIvirt\-make\-fs\fR\|(1), \fIvirt\-rescue\fR\|(1), \fIvirt\-resize\fR\|(1),
+\&\fIvirt\-sparsify\fR\|(1), \fIvirt\-sysprep\fR\|(1), \fIvirt\-tar\fR\|(1), \fIvirt\-tar\-in\fR\|(1),
 \&\fIvirt\-tar\-out\fR\|(1), \fIvirt\-win\-reg\fR\|(1), \fIdisplay\fR\|(1), \fIhexedit\fR\|(1),
 \&\fIfebootstrap\-supermin\-helper\fR\|(8).
 .SH "AUTHORS"

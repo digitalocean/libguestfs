@@ -62,76 +62,77 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-cat 1"
-.TH virt-cat 1 "2011-10-19" "libguestfs-1.12.8" "Virtualization Support"
+.TH virt-cat 1 "2011-10-27" "libguestfs-1.14.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "НАЗВА"
 .IX Header "НАЗВА"
-virt-cat \- Display files in a virtual machine
+virt-cat — показ файлів у віртуальній машині
 .SH "КОРОТКИЙ ОПИС"
 .IX Header "КОРОТКИЙ ОПИС"
 .Vb 1
-\& virt\-cat [\-\-options] \-d domname file [file ...]
+\& virt\-cat [\-\-параметри] \-d назва_домену файл [файл...]
 \&
-\& virt\-cat [\-\-options] \-a disk.img [\-a disk.img ...] file [file ...]
+\& virt\-cat [\-\-параметри] \-a диск.img [\-a диск.img ...] файл [файл...]
 .Ve
 .PP
-Old-style:
+Застарілий стиль:
 .PP
 .Vb 1
-\& virt\-cat domname file
+\& virt\-cat назва_домену файл
 \&
-\& virt\-cat disk.img file
+\& virt\-cat диск.img файл
 .Ve
 .SH "ОПИС"
 .IX Header "ОПИС"
-\&\f(CW\*(C`virt\-cat\*(C'\fR is a command line tool to display the contents of \f(CW\*(C`file\*(C'\fR where
-\&\f(CW\*(C`file\*(C'\fR exists in the named virtual machine (or disk image).
+\&\f(CW\*(C`virt\-cat\*(C'\fR — інструмент командного рядка для показу вмісту \f(CW\*(C`файла\*(C'\fR, який
+зберігається у вказаній віртуальній машині (або образі диска).
 .PP
-Multiple filenames can be given, in which case they are concatenated
-together.  Each filename must be a full path, starting at the root directory
-(starting with '/').
+Ви можете вказати декілька назв файлів. Вміст таких файлів буде
+об’єднано. Назви файлів слід вказувати повністю (разом зі шляхом), починаючи
+з кореневого каталогу (тобто назва має починатися з «/»).
 .PP
-\&\f(CW\*(C`virt\-cat\*(C'\fR can be used to quickly view a file.  To edit a file, use
-\&\f(CW\*(C`virt\-edit\*(C'\fR.  For more complex cases you should look at the \fIguestfish\fR\|(1)
-tool (see \*(L"\s-1USING\s0 \s-1GUESTFISH\s0\*(R" below).
+\&\f(CW\*(C`virt\-cat\*(C'\fR можна скористатися для пришвидшення перегляду файла. Для
+редагування даних слід користуватися \f(CW\*(C`virt\-edit\*(C'\fR. Для виконання складніших
+дій можна скористатися програмою \fIguestfish\fR\|(1) (див. \*(L"\s-1USING\s0 \s-1GUESTFISH\s0\*(R"
+нижче).
 .SH "ПРИКЛАДИ"
 .IX Header "ПРИКЛАДИ"
-Display \f(CW\*(C`/etc/fstab\*(C'\fR file from inside the libvirt \s-1VM\s0 called \f(CW\*(C`mydomain\*(C'\fR:
+Показ файла \f(CW\*(C`/etc/fstab\*(C'\fR з віртуальної машини libvirt з назвою \f(CW\*(C`mydomain\*(C'\fR:
 .PP
 .Vb 1
 \& virt\-cat \-d mydomain /etc/fstab
 .Ve
 .PP
-List syslog messages from a \s-1VM\s0 disk image file:
+Показ списку повідомлень syslog з файла образу диска віртуальної машини:
 .PP
 .Vb 1
 \& virt\-cat \-a disk.img /var/log/messages | tail
 .Ve
 .PP
-Find out what \s-1DHCP\s0 \s-1IP\s0 address a \s-1VM\s0 acquired:
+Визначення IP\-адреси \s-1DHCP\s0, використаної віртуальною машиною:
 .PP
 .Vb 2
 \& virt\-cat \-d mydomain /var/log/messages | \e
 \&   grep \*(Aqdhclient: bound to\*(Aq | tail
 .Ve
 .PP
-Find out what packages were recently installed:
+Пошук нещодавно встановлених пакунків:
 .PP
 .Vb 1
 \& virt\-cat \-d mydomain /var/log/yum.log | tail
 .Ve
 .PP
-Find out who is logged on inside a virtual machine:
+Визначення користувачів, які працюють у віртуальній машині:
 .PP
 .Vb 2
 \& virt\-cat \-d mydomain /var/run/utmp > /tmp/utmp
 \& who /tmp/utmp
 .Ve
 .PP
-or who was logged on:
+або тих, які у ній працювали:
 .PP
 .Vb 2
 \& virt\-cat \-d mydomain /var/log/wtmp > /tmp/wtmp
@@ -141,12 +142,12 @@ or who was logged on:
 .IX Header "ПАРАМЕТРИ"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
-Display brief help.
-.IP "\fB\-a\fR file" 4
-.IX Item "-a file"
+Показати коротку довідку.
+.IP "\fB\-a\fR файл" 4
+.IX Item "-a файл"
 .PD 0
-.IP "\fB\-\-add\fR file" 4
-.IX Item "--add file"
+.IP "\fB\-\-add\fR файл" 4
+.IX Item "--add файл"
 .PD
 Add \fIfile\fR which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
@@ -154,22 +155,22 @@ separate \fI\-a\fR options.
 .Sp
 The format of the disk image is auto-detected.  To override this and force a
 particular format use the \fI\-\-format=..\fR option.
-.IP "\fB\-c\fR \s-1URI\s0" 4
-.IX Item "-c URI"
+.IP "\fB\-c\fR адреса" 4
+.IX Item "-c адреса"
 .PD 0
-.IP "\fB\-\-connect\fR \s-1URI\s0" 4
-.IX Item "--connect URI"
+.IP "\fB\-\-connect\fR адреса" 4
+.IX Item "--connect адреса"
 .PD
 If using libvirt, connect to the given \fI\s-1URI\s0\fR.  If omitted, then we connect
 to the default libvirt hypervisor.
 .Sp
 If you specify guest block devices directly (\fI\-a\fR), then libvirt is not
 used at all.
-.IP "\fB\-d\fR guest" 4
-.IX Item "-d guest"
+.IP "\fB\-d\fR гість" 4
+.IX Item "-d гість"
 .PD 0
-.IP "\fB\-\-domain\fR guest" 4
-.IX Item "--domain guest"
+.IP "\fB\-\-domain\fR гість" 4
+.IX Item "--domain гість"
 .PD
 Add all the disks from the named libvirt guest.  Domain UUIDs can be used
 instead of names.
@@ -237,7 +238,7 @@ Previous versions of virt-cat allowed you to write either:
 \& virt\-cat disk.img [disk.img ...] file
 .Ve
 .PP
-or
+або
 .PP
 .Vb 1
 \& virt\-cat guestname file
@@ -247,8 +248,29 @@ whereas in this version you should use \fI\-a\fR or \fI\-d\fR respectively to av
 the confusing case where a disk image might have the same name as a guest.
 .PP
 For compatibility the old style is still supported.
-.SH "USING GUESTFISH"
-.IX Header "USING GUESTFISH"
+.SH "ШЛЯХИ У WINDOWS"
+.IX Header "ШЛЯХИ У WINDOWS"
+\&\f(CW\*(C`virt\-cat\*(C'\fR has a limited ability to understand Windows drive letters and
+paths (eg. \f(CW\*(C`E:\efoo\ebar.txt\*(C'\fR).
+.PP
+If and only if the guest is running Windows then:
+.IP "\(bu" 4
+Drive letter prefixes like \f(CW\*(C`C:\*(C'\fR are resolved against the Windows Registry
+to the correct filesystem.
+.IP "\(bu" 4
+Any backslash (\f(CW\*(C`\e\*(C'\fR) characters in the path are replaced with forward
+slashes so that libguestfs can process it.
+.IP "\(bu" 4
+The path is resolved case insensitively to locate the file that should be
+displayed.
+.PP
+There are some known shortcomings:
+.IP "\(bu" 4
+Some \s-1NTFS\s0 symbolic links may not be followed correctly.
+.IP "\(bu" 4
+\&\s-1NTFS\s0 junction points that cross filesystems are not followed.
+.SH "ВИКОРИСТАННЯ GUESTFISH"
+.IX Header "ВИКОРИСТАННЯ GUESTFISH"
 \&\fIguestfish\fR\|(1) is a more powerful, lower level tool which you can use when
 \&\f(CW\*(C`virt\-cat\*(C'\fR doesn't work.
 .PP
@@ -290,7 +312,7 @@ This program returns 0 if successful, or non-zero if there was an error.
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "АВТОРСЬКІ ПРАВА"
 .IX Header "АВТОРСЬКІ ПРАВА"
-Copyright (C) 2010\-2011 Red Hat Inc.
+©Red Hat Inc., 2010–2011
 .PP
 This program is free software; you can redistribute it and/or modify it
 under the terms of the \s-1GNU\s0 General Public License as published by the Free
@@ -302,6 +324,6 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
-You should have received a copy of the \s-1GNU\s0 General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, \s-1MA\s0 02139, \s-1USA\s0.
+Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, \s-1MA\s0 02139, \s-1USA\s0.

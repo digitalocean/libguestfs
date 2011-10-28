@@ -66,6 +66,7 @@ type event =
   | EVENT_APPLIANCE
   | EVENT_LIBRARY
   | EVENT_TRACE
+  | EVENT_ENTER
 
 val event_all : event list
 (** A list containing all event types. *)
@@ -250,13 +251,13 @@ val add_cdrom : t -> string -> unit
     @deprecated Use {!add_drive_opts} instead
  *)
 
-val add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> string -> int
+val add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> string -> int
 (** add the disk(s) from a named libvirt domain *)
 
 val add_drive : t -> string -> unit
 (** add an image to examine or modify *)
 
-val add_drive_opts : t -> ?readonly:bool -> ?format:string -> ?iface:string -> string -> unit
+val add_drive_opts : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> string -> unit
 (** add an image to examine or modify *)
 
 val add_drive_ro : t -> string -> unit
@@ -388,11 +389,32 @@ val command : t -> string array -> string
 val command_lines : t -> string array -> string array
 (** run a command, returning lines *)
 
+val compress_device_out : t -> ?level:int -> string -> string -> string -> unit
+(** output compressed device *)
+
+val compress_out : t -> ?level:int -> string -> string -> string -> unit
+(** output compressed file *)
+
 val config : t -> string -> string option -> unit
 (** add qemu parameters *)
 
+val copy_device_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+(** copy from source device to destination device *)
+
+val copy_device_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+(** copy from source device to destination file *)
+
+val copy_file_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+(** copy from source file to destination device *)
+
+val copy_file_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+(** copy from source file to destination file *)
+
 val copy_size : t -> string -> string -> int64 -> unit
-(** copy size bytes from source to destination using dd *)
+(** copy size bytes from source to destination using dd
+
+    @deprecated Use {!copy_device_to_device} instead
+ *)
 
 val cp : t -> string -> string -> unit
 (** copy a file *)
@@ -401,11 +423,16 @@ val cp_a : t -> string -> string -> unit
 (** copy a file or directory recursively *)
 
 val dd : t -> string -> string -> unit
-(** copy from source to destination using dd *)
+(** copy from source to destination using dd
+
+    @deprecated Use {!copy_device_to_device} instead
+ *)
 
 val debug : t -> string -> string array -> string
 
 val debug_cmdline : t -> string array
+
+val debug_drives : t -> string array
 
 val debug_upload : t -> string -> string -> int -> unit
 
@@ -540,6 +567,9 @@ val get_recovery_proc : t -> bool
 
 val get_selinux : t -> bool
 (** get SELinux enabled flag *)
+
+val get_smp : t -> int
+(** get number of virtual CPUs in appliance *)
 
 val get_state : t -> int
 (** get the current state *)
@@ -913,10 +943,7 @@ val modprobe : t -> string -> unit
 (** load a kernel module *)
 
 val mount : t -> string -> string -> unit
-(** mount a guest disk at a position in the filesystem
-
-    @deprecated Use {!mount_options} instead
- *)
+(** mount a guest disk at a position in the filesystem *)
 
 val mount_9p : t -> ?options:string -> string -> string -> unit
 (** mount 9p filesystem *)
@@ -995,6 +1022,9 @@ val part_set_name : t -> string -> int -> string -> unit
 
 val part_to_dev : t -> string -> string
 (** convert partition name to device name *)
+
+val part_to_partnum : t -> string -> int
+(** convert partition name to partition number *)
 
 val ping_daemon : t -> unit
 (** ping the guest daemon *)
@@ -1121,6 +1151,9 @@ val set_recovery_proc : t -> bool -> unit
 
 val set_selinux : t -> bool -> unit
 (** set SELinux enabled or disabled at appliance boot *)
+
+val set_smp : t -> int -> unit
+(** set number of virtual CPUs in appliance *)
 
 val set_trace : t -> bool -> unit
 (** enable or disable command traces *)
@@ -1443,9 +1476,9 @@ class guestfs : unit -> object
   method user_cancel : unit -> unit
   method ocaml_handle : t
   method add_cdrom : string -> unit
-  method add_domain : ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> string -> int
+  method add_domain : ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> string -> int
   method add_drive : string -> unit
-  method add_drive_opts : ?readonly:bool -> ?format:string -> ?iface:string -> string -> unit
+  method add_drive_opts : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> string -> unit
   method add_drive_ro : string -> unit
   method add_drive_ro_with_if : string -> string -> unit
   method add_drive_with_if : string -> string -> unit
@@ -1487,13 +1520,20 @@ class guestfs : unit -> object
   method chown : int -> int -> string -> unit
   method command : string array -> string
   method command_lines : string array -> string array
+  method compress_device_out : ?level:int -> string -> string -> string -> unit
+  method compress_out : ?level:int -> string -> string -> string -> unit
   method config : string -> string option -> unit
+  method copy_device_to_device : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+  method copy_device_to_file : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+  method copy_file_to_device : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+  method copy_file_to_file : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
   method copy_size : string -> string -> int64 -> unit
   method cp : string -> string -> unit
   method cp_a : string -> string -> unit
   method dd : string -> string -> unit
   method debug : string -> string array -> string
   method debug_cmdline : unit -> string array
+  method debug_drives : unit -> string array
   method debug_upload : string -> string -> int -> unit
   method df : unit -> string
   method df_h : unit -> string
@@ -1536,6 +1576,7 @@ class guestfs : unit -> object
   method get_qemu : unit -> string
   method get_recovery_proc : unit -> bool
   method get_selinux : unit -> bool
+  method get_smp : unit -> int
   method get_state : unit -> int
   method get_trace : unit -> bool
   method get_umask : unit -> int
@@ -1684,6 +1725,7 @@ class guestfs : unit -> object
   method part_set_mbr_id : string -> int -> int -> unit
   method part_set_name : string -> int -> string -> unit
   method part_to_dev : string -> string
+  method part_to_partnum : string -> int
   method ping_daemon : unit -> unit
   method pread : string -> int -> int64 -> string
   method pread_device : string -> int -> int64 -> string
@@ -1726,6 +1768,7 @@ class guestfs : unit -> object
   method set_qemu : string option -> unit
   method set_recovery_proc : bool -> unit
   method set_selinux : bool -> unit
+  method set_smp : int -> unit
   method set_trace : bool -> unit
   method set_verbose : bool -> unit
   method setcon : string -> unit

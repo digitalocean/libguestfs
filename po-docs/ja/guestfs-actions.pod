@@ -6,6 +6,13 @@
  guestfs_add_cdrom (guestfs_h *g,
                     const char *filename);
 
+I<This function is deprecated.> In new code, use the
+L</guestfs_add_drive_opts> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 This function adds a virtual CD-ROM disk image to the guest.
 
 This is equivalent to the qemu parameter I<-cdrom filename>.
@@ -31,13 +38,6 @@ C<guestfs_add_drive_ro> instead.
 
 This function returns 0 on success or -1 on error.
 
-This function is deprecated.  In new code, use the
-L</guestfs_add_drive_opts> call instead.
-
-Deprecated functions will not be removed from the API, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
-
 (Added in 0.3)
 
 =head2 guestfs_add_domain
@@ -56,6 +56,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_ADD_DOMAIN_IFACE, const char *iface,
  GUESTFS_ADD_DOMAIN_LIVE, int live,
  GUESTFS_ADD_DOMAIN_ALLOWUUID, int allowuuid,
+ GUESTFS_ADD_DOMAIN_READONLYDISK, const char *readonlydisk,
 
 This function adds the disk(s) attached to the named libvirt domain C<dom>.
 It works by connecting to libvirt, requesting the domain and domain XML from
@@ -88,6 +89,51 @@ If the C<allowuuid> flag is true (default is false) then a UUID I<may> be
 passed instead of the domain name.  The C<dom> string is treated as a UUID
 first and looked up, and if that lookup fails then we treat C<dom> as a name
 as usual.
+
+The optional C<readonlydisk> parameter controls what we do for disks which
+are marked E<lt>readonly/E<gt> in the libvirt XML.  Possible values are:
+
+=over 4
+
+=item readonlydisk = "error"
+
+If C<readonly> is false:
+
+The whole call is aborted with an error if any disk with the
+E<lt>readonly/E<gt> flag is found.
+
+If C<readonly> is true:
+
+Disks with the E<lt>readonly/E<gt> flag are added read-only.
+
+=item readonlydisk = "read"
+
+If C<readonly> is false:
+
+Disks with the E<lt>readonly/E<gt> flag are added read-only.  Other disks
+are added read/write.
+
+If C<readonly> is true:
+
+Disks with the E<lt>readonly/E<gt> flag are added read-only.
+
+=item readonlydisk = "write" (default)
+
+If C<readonly> is false:
+
+Disks with the E<lt>readonly/E<gt> flag are added read/write.
+
+If C<readonly> is true:
+
+Disks with the E<lt>readonly/E<gt> flag are added read-only.
+
+=item readonlydisk = "ignore"
+
+If C<readonly> is true or false:
+
+Disks with the E<lt>readonly/E<gt> flag are skipped.
+
+=back
 
 The other optional parameters are passed directly through to
 C<guestfs_add_drive_opts>.
@@ -152,6 +198,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_ADD_DRIVE_OPTS_READONLY, int readonly,
  GUESTFS_ADD_DRIVE_OPTS_FORMAT, const char *format,
  GUESTFS_ADD_DRIVE_OPTS_IFACE, const char *iface,
+ GUESTFS_ADD_DRIVE_OPTS_NAME, const char *name,
 
 This function adds a virtual machine disk image C<filename> to libguestfs.
 The first time you call this function, the disk appears as C</dev/sda>, the
@@ -188,6 +235,11 @@ RHBZ#642934.  Specifying the format closes this security hole.
 
 This rarely-used option lets you emulate the behaviour of the deprecated
 C<guestfs_add_drive_with_if> call (q.v.)
+
+=item C<name>
+
+The name the drive had in the original guest, e.g. /dev/sdb. This is used as
+a hint to the guest inspection process if it is available.
 
 =back
 
@@ -238,17 +290,17 @@ This function returns 0 on success or -1 on error.
                                const char *filename,
                                const char *iface);
 
-This is the same as C<guestfs_add_drive_ro> but it allows you to specify the
-QEMU interface emulation to use at run time.
-
-This function returns 0 on success or -1 on error.
-
-This function is deprecated.  In new code, use the
+I<This function is deprecated.> In new code, use the
 L</guestfs_add_drive_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+
+This is the same as C<guestfs_add_drive_ro> but it allows you to specify the
+QEMU interface emulation to use at run time.
+
+This function returns 0 on success or -1 on error.
 
 (Added in 1.0.84)
 
@@ -259,17 +311,17 @@ these functions.
                             const char *filename,
                             const char *iface);
 
-This is the same as C<guestfs_add_drive> but it allows you to specify the
-QEMU interface emulation to use at run time.
-
-This function returns 0 on success or -1 on error.
-
-This function is deprecated.  In new code, use the
+I<This function is deprecated.> In new code, use the
 L</guestfs_add_drive_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+
+This is the same as C<guestfs_add_drive> but it allows you to specify the
+QEMU interface emulation to use at run time.
+
+This function returns 0 on success or -1 on error.
 
 (Added in 1.0.84)
 
@@ -1105,6 +1157,114 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 (Added in 0.9.1)
 
+=head2 guestfs_compress_device_out
+
+ int
+ guestfs_compress_device_out (guestfs_h *g,
+                              const char *ctype,
+                              const char *device,
+                              const char *zdevice,
+                              ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_COMPRESS_DEVICE_OUT_LEVEL, int level,
+
+This command compresses C<device> and writes it out to the local file
+C<zdevice>.
+
+The C<ctype> and optional C<level> parameters have the same meaning as in
+C<guestfs_compress_out>.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.13.15)
+
+=head2 guestfs_compress_device_out_va
+
+ int
+ guestfs_compress_device_out_va (guestfs_h *g,
+                                 const char *ctype,
+                                 const char *device,
+                                 const char *zdevice,
+                                 va_list args);
+
+This is the "va_list variant" of L</guestfs_compress_device_out>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_compress_device_out_argv
+
+ int
+ guestfs_compress_device_out_argv (guestfs_h *g,
+                                   const char *ctype,
+                                   const char *device,
+                                   const char *zdevice,
+                                   const struct guestfs_compress_device_out_argv *optargs);
+
+This is the "argv variant" of L</guestfs_compress_device_out>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_compress_out
+
+ int
+ guestfs_compress_out (guestfs_h *g,
+                       const char *ctype,
+                       const char *file,
+                       const char *zfile,
+                       ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_COMPRESS_OUT_LEVEL, int level,
+
+This command compresses C<file> and writes it out to the local file
+C<zfile>.
+
+The compression program used is controlled by the C<ctype> parameter.
+Currently this includes: C<compress>, C<gzip>, C<bzip2>, C<xz> or C<lzop>.
+Some compression types may not be supported by particular builds of
+libguestfs, in which case you will get an error containing the substring
+"not supported".
+
+The optional C<level> parameter controls compression level.  The meaning and
+default for this parameter depends on the compression program being used.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.13.15)
+
+=head2 guestfs_compress_out_va
+
+ int
+ guestfs_compress_out_va (guestfs_h *g,
+                          const char *ctype,
+                          const char *file,
+                          const char *zfile,
+                          va_list args);
+
+This is the "va_list variant" of L</guestfs_compress_out>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_compress_out_argv
+
+ int
+ guestfs_compress_out_argv (guestfs_h *g,
+                            const char *ctype,
+                            const char *file,
+                            const char *zfile,
+                            const struct guestfs_compress_out_argv *optargs);
+
+This is the "argv variant" of L</guestfs_compress_out>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
 =head2 guestfs_config
 
  int
@@ -1124,6 +1284,228 @@ This function returns 0 on success or -1 on error.
 
 (Added in 0.3)
 
+=head2 guestfs_copy_device_to_device
+
+ int
+ guestfs_copy_device_to_device (guestfs_h *g,
+                                const char *src,
+                                const char *dest,
+                                ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,
+ GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET, int64_t destoffset,
+ GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE, int64_t size,
+
+The four calls C<guestfs_copy_device_to_device>,
+C<guestfs_copy_device_to_file>, C<guestfs_copy_file_to_device>, and
+C<guestfs_copy_file_to_file> let you copy from a source (device|file) to a
+destination (device|file).
+
+Partial copies can be made since you can specify optionally the source
+offset, destination offset and size to copy.  These values are all specified
+in bytes.  If not given, the offsets both default to zero, and the size
+defaults to copying as much as possible until we hit the end of the source.
+
+The source and destination may be the same object.  However overlapping
+regions may not be copied correctly.
+
+If the destination is a file, it is created if required.  If the destination
+file is not large enough, it is extended.
+
+This function returns 0 on success or -1 on error.
+
+This long-running command can generate progress notification messages so
+that the caller can display a progress bar or indicator.  To receive these
+messages, the caller must register a progress event callback.  See
+L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
+
+(Added in 1.13.25)
+
+=head2 guestfs_copy_device_to_device_va
+
+ int
+ guestfs_copy_device_to_device_va (guestfs_h *g,
+                                   const char *src,
+                                   const char *dest,
+                                   va_list args);
+
+This is the "va_list variant" of L</guestfs_copy_device_to_device>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_copy_device_to_device_argv
+
+ int
+ guestfs_copy_device_to_device_argv (guestfs_h *g,
+                                     const char *src,
+                                     const char *dest,
+                                     const struct guestfs_copy_device_to_device_argv *optargs);
+
+This is the "argv variant" of L</guestfs_copy_device_to_device>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_copy_device_to_file
+
+ int
+ guestfs_copy_device_to_file (guestfs_h *g,
+                              const char *src,
+                              const char *dest,
+                              ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET, int64_t srcoffset,
+ GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET, int64_t destoffset,
+ GUESTFS_COPY_DEVICE_TO_FILE_SIZE, int64_t size,
+
+See C<guestfs_copy_device_to_device> for a general overview of this call.
+
+This function returns 0 on success or -1 on error.
+
+This long-running command can generate progress notification messages so
+that the caller can display a progress bar or indicator.  To receive these
+messages, the caller must register a progress event callback.  See
+L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
+
+(Added in 1.13.25)
+
+=head2 guestfs_copy_device_to_file_va
+
+ int
+ guestfs_copy_device_to_file_va (guestfs_h *g,
+                                 const char *src,
+                                 const char *dest,
+                                 va_list args);
+
+This is the "va_list variant" of L</guestfs_copy_device_to_file>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_copy_device_to_file_argv
+
+ int
+ guestfs_copy_device_to_file_argv (guestfs_h *g,
+                                   const char *src,
+                                   const char *dest,
+                                   const struct guestfs_copy_device_to_file_argv *optargs);
+
+This is the "argv variant" of L</guestfs_copy_device_to_file>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_copy_file_to_device
+
+ int
+ guestfs_copy_file_to_device (guestfs_h *g,
+                              const char *src,
+                              const char *dest,
+                              ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,
+ GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET, int64_t destoffset,
+ GUESTFS_COPY_FILE_TO_DEVICE_SIZE, int64_t size,
+
+See C<guestfs_copy_device_to_device> for a general overview of this call.
+
+This function returns 0 on success or -1 on error.
+
+This long-running command can generate progress notification messages so
+that the caller can display a progress bar or indicator.  To receive these
+messages, the caller must register a progress event callback.  See
+L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
+
+(Added in 1.13.25)
+
+=head2 guestfs_copy_file_to_device_va
+
+ int
+ guestfs_copy_file_to_device_va (guestfs_h *g,
+                                 const char *src,
+                                 const char *dest,
+                                 va_list args);
+
+This is the "va_list variant" of L</guestfs_copy_file_to_device>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_copy_file_to_device_argv
+
+ int
+ guestfs_copy_file_to_device_argv (guestfs_h *g,
+                                   const char *src,
+                                   const char *dest,
+                                   const struct guestfs_copy_file_to_device_argv *optargs);
+
+This is the "argv variant" of L</guestfs_copy_file_to_device>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_copy_file_to_file
+
+ int
+ guestfs_copy_file_to_file (guestfs_h *g,
+                            const char *src,
+                            const char *dest,
+                            ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET, int64_t srcoffset,
+ GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET, int64_t destoffset,
+ GUESTFS_COPY_FILE_TO_FILE_SIZE, int64_t size,
+
+See C<guestfs_copy_device_to_device> for a general overview of this call.
+
+This is B<not> the function you want for copying files.  This is for copying
+blocks within existing files.  See C<guestfs_cp>, C<guestfs_cp_a> and
+C<guestfs_mv> for general file copying and moving functions.
+
+This function returns 0 on success or -1 on error.
+
+This long-running command can generate progress notification messages so
+that the caller can display a progress bar or indicator.  To receive these
+messages, the caller must register a progress event callback.  See
+L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
+
+(Added in 1.13.25)
+
+=head2 guestfs_copy_file_to_file_va
+
+ int
+ guestfs_copy_file_to_file_va (guestfs_h *g,
+                               const char *src,
+                               const char *dest,
+                               va_list args);
+
+This is the "va_list variant" of L</guestfs_copy_file_to_file>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_copy_file_to_file_argv
+
+ int
+ guestfs_copy_file_to_file_argv (guestfs_h *g,
+                                 const char *src,
+                                 const char *dest,
+                                 const struct guestfs_copy_file_to_file_argv *optargs);
+
+This is the "argv variant" of L</guestfs_copy_file_to_file>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
 =head2 guestfs_copy_size
 
  int
@@ -1131,6 +1513,13 @@ This function returns 0 on success or -1 on error.
                     const char *src,
                     const char *dest,
                     int64_t size);
+
+I<This function is deprecated.> In new code, use the
+L</guestfs_copy_device_to_device> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 This command copies exactly C<size> bytes from one source device or file
 C<src> to another destination device or file C<dest>.
@@ -1182,13 +1571,20 @@ This function returns 0 on success or -1 on error.
              const char *src,
              const char *dest);
 
+I<This function is deprecated.> In new code, use the
+L</guestfs_copy_device_to_device> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 This command copies from one source device or file C<src> to another
 destination device or file C<dest>.  Normally you would use this to copy to
 or from a device or partition, for example to duplicate a filesystem.
 
 If the destination is a device, it must be as large or larger than the
 source file or device, otherwise the copy will fail.  This command cannot do
-partial copies (see C<guestfs_copy_size>).
+partial copies (see C<guestfs_copy_device_to_device>).
 
 This function returns 0 on success or -1 on error.
 
@@ -1449,6 +1845,13 @@ This function returns a C truth value on success or -1 on error.
                     const char *path,
                     int len);
 
+I<This function is deprecated.> In new code, use the L</guestfs_fallocate64>
+call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 This command preallocates a file (containing zero bytes) named C<path> of
 size C<len> bytes.  If the file exists already, it is overwritten.
 
@@ -1456,13 +1859,6 @@ Do not confuse this with the guestfish-specific C<alloc> command which
 allocates a file in the host and attaches it as a device.
 
 This function returns 0 on success or -1 on error.
-
-This function is deprecated.  In new code, use the L</guestfs_fallocate64>
-call instead.
-
-Deprecated functions will not be removed from the API, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 
 (Added in 1.0.66)
 
@@ -1933,17 +2329,17 @@ This function returns a C truth value on success or -1 on error.
  guestfs_get_e2label (guestfs_h *g,
                       const char *device);
 
-This returns the ext2/3/4 filesystem label of the filesystem on C<device>.
-
-This function returns a string, or NULL on error.  I<The caller must free
-the returned string after use>.
-
-This function is deprecated.  In new code, use the L</guestfs_vfs_label>
+I<This function is deprecated.> In new code, use the L</guestfs_vfs_label>
 call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+
+This returns the ext2/3/4 filesystem label of the filesystem on C<device>.
+
+This function returns a string, or NULL on error.  I<The caller must free
+the returned string after use>.
 
 (Added in 1.0.15)
 
@@ -1953,17 +2349,17 @@ these functions.
  guestfs_get_e2uuid (guestfs_h *g,
                      const char *device);
 
-This returns the ext2/3/4 filesystem UUID of the filesystem on C<device>.
-
-This function returns a string, or NULL on error.  I<The caller must free
-the returned string after use>.
-
-This function is deprecated.  In new code, use the L</guestfs_vfs_uuid> call
-instead.
+I<This function is deprecated.> In new code, use the L</guestfs_vfs_uuid>
+call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+
+This returns the ext2/3/4 filesystem UUID of the filesystem on C<device>.
+
+This function returns a string, or NULL on error.  I<The caller must free
+the returned string after use>.
 
 (Added in 1.0.15)
 
@@ -2074,6 +2470,17 @@ For more information on the architecture of libguestfs, see L<guestfs(3)>.
 This function returns a C truth value on success or -1 on error.
 
 (Added in 1.0.67)
+
+=head2 guestfs_get_smp
+
+ int
+ guestfs_get_smp (guestfs_h *g);
+
+This returns the number of virtual CPUs assigned to the appliance.
+
+On error this function returns -1.
+
+(Added in 1.13.15)
 
 =head2 guestfs_get_state
 
@@ -2567,6 +2974,10 @@ Gentoo.
 
 Linux Mint.
 
+=item "mageia"
+
+Mageia.
+
 =item "mandriva"
 
 Mandriva.
@@ -2574,6 +2985,10 @@ Mandriva.
 =item "meego"
 
 MeeGo.
+
+=item "opensuse"
+
+OpenSUSE.
 
 =item "pardus"
 
@@ -2594,6 +3009,10 @@ Scientific Linux.
 =item "slackware"
 
 Slackware.
+
+=item "ttylinux"
+
+ttylinux.
 
 =item "ubuntu"
 
@@ -2929,8 +3348,8 @@ This returns the string C<unknown> if we could not determine the package
 format I<or> if the operating system does not have a real packaging system
 (eg. Windows).
 
-Possible strings include: C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>.
-Future versions of libguestfs may return other strings.
+Possible strings include: C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>,
+C<pkgsrc>.  Future versions of libguestfs may return other strings.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
 
@@ -2955,8 +3374,8 @@ management tool I<or> if the operating system does not have a real packaging
 system (eg. Windows).
 
 Possible strings include: C<yum>, C<up2date>, C<apt> (for all Debian
-derivatives), C<portage>, C<pisi>, C<pacman>, C<urpmi>.  Future versions of
-libguestfs may return other strings.
+derivatives), C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>.  Future
+versions of libguestfs may return other strings.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
 
@@ -3058,6 +3477,10 @@ Any Microsoft Windows operating system.
 =item "freebsd"
 
 FreeBSD.
+
+=item "netbsd"
+
+NetBSD.
 
 =item "unknown"
 
@@ -3922,9 +4345,6 @@ slot C<slot>.  (LUKS supports 8 key slots, numbered 0-7).
 
 This function returns 0 on success or -1 on error.
 
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
-
 This function takes a key or passphrase parameter which could contain
 sensitive material.  Read the section L</KEYS AND PASSPHRASES> for more
 information.
@@ -3944,9 +4364,6 @@ This command is the same as C<guestfs_luks_format> but it also allows you to
 set the C<cipher> used.
 
 This function returns 0 on success or -1 on error.
-
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
 
 This function takes a key or passphrase parameter which could contain
 sensitive material.  Read the section L</KEYS AND PASSPHRASES> for more
@@ -4084,9 +4501,6 @@ This command removes all LVM logical volumes, volume groups and physical
 volumes.
 
 This function returns 0 on success or -1 on error.
-
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
 
 (Added in 0.8)
 
@@ -4465,6 +4879,13 @@ This function returns 0 on success or -1 on error.
                  int blocksize,
                  const char *device);
 
+I<This function is deprecated.> In new code, use the L</guestfs_mkfs_opts>
+call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 This call is similar to C<guestfs_mkfs>, but it allows you to control the
 block size of the resulting filesystem.  Supported block sizes depend on the
 filesystem type, but typically they are C<1024>, C<2048> or C<4096> only.
@@ -4473,13 +4894,6 @@ For VFAT and NTFS the C<blocksize> parameter is treated as the requested
 cluster size.
 
 This function returns 0 on success or -1 on error.
-
-This function is deprecated.  In new code, use the L</guestfs_mkfs_opts>
-call instead.
-
-Deprecated functions will not be removed from the API, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 
 (Added in 1.0.68)
 
@@ -4774,22 +5188,13 @@ mounted on directories which already exist.
 The mounted filesystem is writable, if we have sufficient permissions on the
 underlying device.
 
-B<Important note:> When you use this call, the filesystem options C<sync>
-and C<noatime> are set implicitly.  This was originally done because we
-thought it would improve reliability, but it turns out that I<-o sync> has a
-very large negative performance impact and negligible effect on
-reliability.  Therefore we recommend that you avoid using C<guestfs_mount>
-in any code that needs performance, and instead use C<guestfs_mount_options>
-(use an empty string for the first parameter if you don't want any options).
+Before libguestfs 1.13.16, this call implicitly added the options C<sync>
+and C<noatime>.  The C<sync> option greatly slowed writes and caused many
+problems for users.  If your program might need to work with older versions
+of libguestfs, use C<guestfs_mount_options> instead (using an empty string
+for the first parameter if you don't want any options).
 
 This function returns 0 on success or -1 on error.
-
-This function is deprecated.  In new code, use the L</guestfs_mount_options>
-call instead.
-
-Deprecated functions will not be removed from the API, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 
 (Added in 0.3)
 
@@ -4982,6 +5387,13 @@ On error this function returns -1.
  guestfs_ntfsresize (guestfs_h *g,
                      const char *device);
 
+I<This function is deprecated.> In new code, use the
+L</guestfs_ntfsresize_opts> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 This command resizes an NTFS filesystem, expanding or shrinking it to the
 size of the underlying device.
 
@@ -4995,13 +5407,6 @@ without booting into Windows between each resize.
 See also L<ntfsresize(8)>.
 
 This function returns 0 on success or -1 on error.
-
-This function is deprecated.  In new code, use the
-L</guestfs_ntfsresize_opts> call instead.
-
-Deprecated functions will not be removed from the API, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 
 (Added in 1.3.2)
 
@@ -5080,17 +5485,17 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
                           const char *device,
                           int64_t size);
 
-This command is the same as C<guestfs_ntfsresize> except that it allows you
-to specify the new size (in bytes) explicitly.
-
-This function returns 0 on success or -1 on error.
-
-This function is deprecated.  In new code, use the
+I<This function is deprecated.> In new code, use the
 L</guestfs_ntfsresize_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+
+This command is the same as C<guestfs_ntfsresize> except that it allows you
+to specify the new size (in bytes) explicitly.
+
+This function returns 0 on success or -1 on error.
 
 (Added in 1.3.14)
 
@@ -5152,9 +5557,6 @@ C<parttype> is the partition table type, usually C<mbr> or C<gpt>, but other
 possible values are described in C<guestfs_part_init>.
 
 This function returns 0 on success or -1 on error.
-
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
 
 (Added in 1.0.78)
 
@@ -5400,10 +5802,30 @@ partition number, returning the device name (eg. "/dev/sdb").
 The named partition must exist, for example as a string returned from
 C<guestfs_list_partitions>.
 
+See also C<guestfs_part_to_partnum>.
+
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
 (Added in 1.5.15)
+
+=head2 guestfs_part_to_partnum
+
+ int
+ guestfs_part_to_partnum (guestfs_h *g,
+                          const char *partition);
+
+This function takes a partition name (eg. "/dev/sdb1") and returns the
+partition number (eg. C<1>).
+
+The named partition must exist, for example as a string returned from
+C<guestfs_list_partitions>.
+
+See also C<guestfs_part_to_dev>.
+
+On error this function returns -1.
+
+(Added in 1.13.25)
 
 =head2 guestfs_ping_daemon
 
@@ -5923,9 +6345,6 @@ more details.
 
 This function returns 0 on success or -1 on error.
 
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
-
 (Added in 1.0.52)
 
 =head2 guestfs_scrub_file
@@ -6226,6 +6645,22 @@ This function returns 0 on success or -1 on error.
 
 (Added in 1.0.67)
 
+=head2 guestfs_set_smp
+
+ int
+ guestfs_set_smp (guestfs_h *g,
+                  int smp);
+
+Change the number of virtual CPUs assigned to the appliance.  The default is
+C<1>.  Increasing this may improve performance, though often it has no
+effect.
+
+This function must be called before C<guestfs_launch>.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.13.15)
+
 =head2 guestfs_set_trace
 
  int
@@ -6309,6 +6744,13 @@ This function returns 0 on success or -1 on error.
                  int sectors,
                  char *const *lines);
 
+I<This function is deprecated.> In new code, use the L</guestfs_part_add>
+call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 This is a direct interface to the L<sfdisk(8)> program for creating
 partitions on block devices.
 
@@ -6332,16 +6774,6 @@ See also: C<guestfs_sfdisk_l>, C<guestfs_sfdisk_N>, C<guestfs_part_init>
 
 This function returns 0 on success or -1 on error.
 
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
-
-This function is deprecated.  In new code, use the L</guestfs_part_add> call
-instead.
-
-Deprecated functions will not be removed from the API, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
-
 (Added in 0.8)
 
 =head2 guestfs_sfdiskM
@@ -6350,6 +6782,13 @@ these functions.
  guestfs_sfdiskM (guestfs_h *g,
                   const char *device,
                   char *const *lines);
+
+I<This function is deprecated.> In new code, use the L</guestfs_part_add>
+call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 This is a simplified interface to the C<guestfs_sfdisk> command, where
 partition sizes are specified in megabytes only (rounded to the nearest
@@ -6360,16 +6799,6 @@ See also: C<guestfs_sfdisk>, the L<sfdisk(8)> manpage and
 C<guestfs_part_disk>
 
 This function returns 0 on success or -1 on error.
-
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
-
-This function is deprecated.  In new code, use the L</guestfs_part_add> call
-instead.
-
-Deprecated functions will not be removed from the API, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 
 (Added in 1.0.55)
 
@@ -6384,6 +6813,13 @@ these functions.
                    int sectors,
                    const char *line);
 
+I<This function is deprecated.> In new code, use the L</guestfs_part_add>
+call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 This runs L<sfdisk(8)> option to modify just the single partition C<n>
 (note: C<n> counts from 1).
 
@@ -6393,16 +6829,6 @@ for the cyls/heads/sectors parameters.
 See also: C<guestfs_part_add>
 
 This function returns 0 on success or -1 on error.
-
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
-
-This function is deprecated.  In new code, use the L</guestfs_part_add> call
-instead.
-
-Deprecated functions will not be removed from the API, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 
 (Added in 1.0.26)
 
@@ -6445,6 +6871,13 @@ the returned string after use>.
  guestfs_sfdisk_l (guestfs_h *g,
                    const char *device);
 
+I<This function is deprecated.> In new code, use the L</guestfs_part_list>
+call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 This displays the partition table on C<device>, in the human-readable output
 of the L<sfdisk(8)> command.  It is not intended to be parsed.
 
@@ -6452,13 +6885,6 @@ See also: C<guestfs_part_list>
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
-
-This function is deprecated.  In new code, use the L</guestfs_part_list>
-call instead.
-
-Deprecated functions will not be removed from the API, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 
 (Added in 1.0.26)
 
@@ -7347,6 +7773,13 @@ the returned string after use>.
  int
  guestfs_wait_ready (guestfs_h *g);
 
+I<This function is deprecated.> In new code, use the L</guestfs_launch> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 This function is a no op.
 
 In versions of the API E<lt> 1.0.71 you had to call this function just after
@@ -7357,13 +7790,6 @@ If you see any calls to this function in code then you can just remove them,
 unless you want to retain compatibility with older versions of the API.
 
 This function returns 0 on success or -1 on error.
-
-This function is deprecated.  In new code, use the L</guestfs_launch> call
-instead.
-
-Deprecated functions will not be removed from the API, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 
 (Added in 0.3)
 
@@ -7454,6 +7880,13 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
                      const char *content,
                      int size);
 
+I<This function is deprecated.> In new code, use the L</guestfs_write> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 This call creates a file called C<path>.  The contents of the file is the
 string C<content> (which can contain any 8 bit data), with length C<size>.
 
@@ -7467,13 +7900,6 @@ This function returns 0 on success or -1 on error.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
-
-This function is deprecated.  In new code, use the L</guestfs_write> call
-instead.
-
-Deprecated functions will not be removed from the API, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 
 (Added in 0.8)
 
@@ -7561,9 +7987,6 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
-B<This command is dangerous.  Without careful use you can easily destroy all
-your data>.
-
 (Added in 1.3.1)
 
 =head2 guestfs_zerofree
@@ -7628,6 +8051,13 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
                 const char *meth,
                 const char *path);
 
+I<This function is deprecated.> In new code, use the L</guestfs_file> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 This command runs C<file> after first decompressing C<path> using C<method>.
 
 C<method> must be one of C<gzip>, C<compress> or C<bzip2>.
@@ -7637,13 +8067,6 @@ files.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
-
-This function is deprecated.  In new code, use the L</guestfs_file> call
-instead.
-
-Deprecated functions will not be removed from the API, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
 
 (Added in 1.0.59)
 

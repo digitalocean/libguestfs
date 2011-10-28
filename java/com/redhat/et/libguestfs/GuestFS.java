@@ -383,7 +383,7 @@ public class GuestFS {
    * can just remove them, unless you want to retain
    * compatibility with older versions of the API.
    * <p>
-   * This function is deprecated. In new code, use the
+   * *This function is deprecated.* In new code, use the
    * "launch" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
@@ -476,7 +476,7 @@ public class GuestFS {
    * into the guest), then you should probably use
    * "g.add_drive_ro" instead.
    * <p>
-   * This function is deprecated. In new code, use the
+   * *This function is deprecated.* In new code, use the
    * "add_drive_opts" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
@@ -1236,7 +1236,7 @@ public class GuestFS {
    * This is the same as "g.add_drive" but it allows you to
    * specify the QEMU interface emulation to use at run time.
    * <p>
-   * This function is deprecated. In new code, use the
+   * *This function is deprecated.* In new code, use the
    * "add_drive_opts" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
@@ -1264,7 +1264,7 @@ public class GuestFS {
    * to specify the QEMU interface emulation to use at run
    * time.
    * <p>
-   * This function is deprecated. In new code, use the
+   * *This function is deprecated.* In new code, use the
    * "add_drive_opts" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
@@ -1437,6 +1437,9 @@ public class GuestFS {
    * "freebsd"
    * FreeBSD.
    * <p>
+   * "netbsd"
+   * NetBSD.
+   * <p>
    * "unknown"
    * The operating system type could not be determined.
    * <p>
@@ -1512,11 +1515,17 @@ public class GuestFS {
    * "linuxmint"
    * Linux Mint.
    * <p>
+   * "mageia"
+   * Mageia.
+   * <p>
    * "mandriva"
    * Mandriva.
    * <p>
    * "meego"
    * MeeGo.
+   * <p>
+   * "opensuse"
+   * OpenSUSE.
    * <p>
    * "pardus"
    * Pardus.
@@ -1532,6 +1541,9 @@ public class GuestFS {
    * <p>
    * "slackware"
    * Slackware.
+   * <p>
+   * "ttylinux"
+   * ttylinux.
    * <p>
    * "ubuntu"
    * Ubuntu.
@@ -1864,6 +1876,11 @@ public class GuestFS {
    * behaviour of the deprecated "g.add_drive_with_if"
    * call (q.v.)
    * <p>
+   * "name"
+   * The name the drive had in the original guest, e.g.
+   * /dev/sdb. This is used as a hint to the guest
+   * inspection process if it is available.
+   * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
@@ -1904,11 +1921,19 @@ public class GuestFS {
       iface = ((String) _optobj);
       _optargs_bitmask |= 4;
     }
+    String name = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("name");
+    if (_optobj != null) {
+      name = ((String) _optobj);
+      _optargs_bitmask |= 8;
+    }
 
-    _add_drive_opts (g, filename, _optargs_bitmask, readonly, format, iface);
+    _add_drive_opts (g, filename, _optargs_bitmask, readonly, format, iface, name);
   }
 
-  private native void _add_drive_opts (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface)
+  private native void _add_drive_opts (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name)
     throws LibGuestFSException;
 
   /**
@@ -1977,6 +2002,18 @@ public class GuestFS {
   private native String[] _debug_cmdline (long g)
     throws LibGuestFSException;
 
+  public String[] debug_drives ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("debug_drives: handle is closed");
+
+    return _debug_drives (g);
+  }
+
+  private native String[] _debug_drives (long g)
+    throws LibGuestFSException;
+
   /**
    * add the disk(s) from a named libvirt domain
    * <p>
@@ -2019,6 +2056,45 @@ public class GuestFS {
    * "dom" string is treated as a UUID first and looked up,
    * and if that lookup fails then we treat "dom" as a name
    * as usual.
+   * <p>
+   * The optional "readonlydisk" parameter controls what we
+   * do for disks which are marked <readonly/> in the libvirt
+   * XML. Possible values are:
+   * <p>
+   * readonlydisk = "error"
+   * If "readonly" is false:
+   * <p>
+   * The whole call is aborted with an error if any disk
+   * with the <readonly/> flag is found.
+   * <p>
+   * If "readonly" is true:
+   * <p>
+   * Disks with the <readonly/> flag are added read-only.
+   * <p>
+   * readonlydisk = "read"
+   * If "readonly" is false:
+   * <p>
+   * Disks with the <readonly/> flag are added read-only.
+   * Other disks are added read/write.
+   * <p>
+   * If "readonly" is true:
+   * <p>
+   * Disks with the <readonly/> flag are added read-only.
+   * <p>
+   * readonlydisk = "write" (default)
+   * If "readonly" is false:
+   * <p>
+   * Disks with the <readonly/> flag are added
+   * read/write.
+   * <p>
+   * If "readonly" is true:
+   * <p>
+   * Disks with the <readonly/> flag are added read-only.
+   * <p>
+   * readonlydisk = "ignore"
+   * If "readonly" is true or false:
+   * <p>
+   * Disks with the <readonly/> flag are skipped.
    * <p>
    * The other optional parameters are passed directly
    * through to "g.add_drive_opts".
@@ -2079,11 +2155,19 @@ public class GuestFS {
       allowuuid = ((Boolean) _optobj).booleanValue();
       _optargs_bitmask |= 16;
     }
+    String readonlydisk = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("readonlydisk");
+    if (_optobj != null) {
+      readonlydisk = ((String) _optobj);
+      _optargs_bitmask |= 32;
+    }
 
-    return _add_domain (g, dom, _optargs_bitmask, libvirturi, readonly, iface, live, allowuuid);
+    return _add_domain (g, dom, _optargs_bitmask, libvirturi, readonly, iface, live, allowuuid, readonlydisk);
   }
 
-  private native int _add_domain (long g, String dom, long _optargs_bitmask, String libvirturi, boolean readonly, String iface, boolean live, boolean allowuuid)
+  private native int _add_domain (long g, String dom, long _optargs_bitmask, String libvirturi, boolean readonly, String iface, boolean live, boolean allowuuid, String readonlydisk)
     throws LibGuestFSException;
 
   /**
@@ -2101,8 +2185,8 @@ public class GuestFS {
    * Windows).
    * <p>
    * Possible strings include: "rpm", "deb", "ebuild",
-   * "pisi", "pacman". Future versions of libguestfs may
-   * return other strings.
+   * "pisi", "pacman", "pkgsrc". Future versions of
+   * libguestfs may return other strings.
    * <p>
    * Please read "INSPECTION" in guestfs(3) for more details.
    * <p>
@@ -2136,8 +2220,8 @@ public class GuestFS {
    * <p>
    * Possible strings include: "yum", "up2date", "apt" (for
    * all Debian derivatives), "portage", "pisi", "pacman",
-   * "urpmi". Future versions of libguestfs may return other
-   * strings.
+   * "urpmi", "zypper". Future versions of libguestfs may
+   * return other strings.
    * <p>
    * Please read "INSPECTION" in guestfs(3) for more details.
    * <p>
@@ -2712,6 +2796,49 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * set number of virtual CPUs in appliance
+   * <p>
+   * Change the number of virtual CPUs assigned to the
+   * appliance. The default is 1. Increasing this may improve
+   * performance, though often it has no effect.
+   * <p>
+   * This function must be called before "g.launch".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_smp (int smp)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_smp: handle is closed");
+
+    _set_smp (g, smp);
+  }
+
+  private native void _set_smp (long g, int smp)
+    throws LibGuestFSException;
+
+  /**
+   * get number of virtual CPUs in appliance
+   * <p>
+   * This returns the number of virtual CPUs assigned to the
+   * appliance.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public int get_smp ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_smp: handle is closed");
+
+    return _get_smp (g);
+  }
+
+  private native int _get_smp (long g)
+    throws LibGuestFSException;
+
+  /**
    * mount a guest disk at a position in the filesystem
    * <p>
    * Mount a guest disk at a position in the filesystem.
@@ -2729,22 +2856,13 @@ public class GuestFS {
    * The mounted filesystem is writable, if we have
    * sufficient permissions on the underlying device.
    * <p>
-   * Important note: When you use this call, the filesystem
-   * options "sync" and "noatime" are set implicitly. This
-   * was originally done because we thought it would improve
-   * reliability, but it turns out that *-o sync* has a very
-   * large negative performance impact and negligible effect
-   * on reliability. Therefore we recommend that you avoid
-   * using "g.mount" in any code that needs performance, and
-   * instead use "g.mount_options" (use an empty string for
-   * the first parameter if you don't want any options).
-   * <p>
-   * This function is deprecated. In new code, use the
-   * "mount_options" call instead.
-   * <p>
-   * Deprecated functions will not be removed from the API,
-   * but the fact that they are deprecated indicates that
-   * there are problems with correct use of these functions.
+   * Before libguestfs 1.13.16, this call implicitly added
+   * the options "sync" and "noatime". The "sync" option
+   * greatly slowed writes and caused many problems for
+   * users. If your program might need to work with older
+   * versions of libguestfs, use "g.mount_options" instead
+   * (using an empty string for the first parameter if you
+   * don't want any options).
    * <p>
    * @throws LibGuestFSException
    */
@@ -3764,10 +3882,7 @@ public class GuestFS {
    * <p>
    * See also: "g.sfdisk_l", "g.sfdisk_N", "g.part_init"
    * <p>
-   * This command is dangerous. Without careful use you can
-   * easily destroy all your data.
-   * <p>
-   * This function is deprecated. In new code, use the
+   * *This function is deprecated.* In new code, use the
    * "part_add" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
@@ -3807,7 +3922,7 @@ public class GuestFS {
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
    * <p>
-   * This function is deprecated. In new code, use the
+   * *This function is deprecated.* In new code, use the
    * "write" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
@@ -3900,9 +4015,6 @@ public class GuestFS {
    * <p>
    * This command removes all LVM logical volumes, volume
    * groups and physical volumes.
-   * <p>
-   * This command is dangerous. Without careful use you can
-   * easily destroy all your data.
    * <p>
    * @throws LibGuestFSException
    */
@@ -4734,7 +4846,7 @@ public class GuestFS {
    * This returns the ext2/3/4 filesystem label of the
    * filesystem on "device".
    * <p>
-   * This function is deprecated. In new code, use the
+   * *This function is deprecated.* In new code, use the
    * "vfs_label" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
@@ -4786,7 +4898,7 @@ public class GuestFS {
    * This returns the ext2/3/4 filesystem UUID of the
    * filesystem on "device".
    * <p>
-   * This function is deprecated. In new code, use the
+   * *This function is deprecated.* In new code, use the
    * "vfs_uuid" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
@@ -5237,10 +5349,7 @@ public class GuestFS {
    * <p>
    * See also: "g.part_add"
    * <p>
-   * This command is dangerous. Without careful use you can
-   * easily destroy all your data.
-   * <p>
-   * This function is deprecated. In new code, use the
+   * *This function is deprecated.* In new code, use the
    * "part_add" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
@@ -5270,7 +5379,7 @@ public class GuestFS {
    * <p>
    * See also: "g.part_list"
    * <p>
-   * This function is deprecated. In new code, use the
+   * *This function is deprecated.* In new code, use the
    * "part_list" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
@@ -5648,9 +5757,6 @@ public class GuestFS {
    * <p>
    * It is an interface to the scrub(1) program. See that
    * manual page for more details.
-   * <p>
-   * This command is dangerous. Without careful use you can
-   * easily destroy all your data.
    * <p>
    * @throws LibGuestFSException
    */
@@ -6311,10 +6417,7 @@ public class GuestFS {
    * See also: "g.sfdisk", the sfdisk(8) manpage and
    * "g.part_disk"
    * <p>
-   * This command is dangerous. Without careful use you can
-   * easily destroy all your data.
-   * <p>
-   * This function is deprecated. In new code, use the
+   * *This function is deprecated.* In new code, use the
    * "part_add" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
@@ -6346,8 +6449,8 @@ public class GuestFS {
    * Since 1.0.63, use "g.file" instead which can now process
    * compressed files.
    * <p>
-   * This function is deprecated. In new code, use the "file"
-   * call instead.
+   * *This function is deprecated.* In new code, use the
+   * "file" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
    * but the fact that they are deprecated indicates that
@@ -7057,7 +7160,7 @@ public class GuestFS {
    * command which allocates a file in the host and attaches
    * it as a device.
    * <p>
-   * This function is deprecated. In new code, use the
+   * *This function is deprecated.* In new code, use the
    * "fallocate64" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
@@ -7495,7 +7598,7 @@ public class GuestFS {
    * For VFAT and NTFS the "blocksize" parameter is treated
    * as the requested cluster size.
    * <p>
-   * This function is deprecated. In new code, use the
+   * *This function is deprecated.* In new code, use the
    * "mkfs_opts" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
@@ -8197,9 +8300,6 @@ public class GuestFS {
    * "gpt", but other possible values are described in
    * "g.part_init".
    * <p>
-   * This command is dangerous. Without careful use you can
-   * easily destroy all your data.
-   * <p>
    * @throws LibGuestFSException
    */
   public void part_disk (String device, String parttype)
@@ -8429,7 +8529,14 @@ public class GuestFS {
    * If the destination is a device, it must be as large or
    * larger than the source file or device, otherwise the
    * copy will fail. This command cannot do partial copies
-   * (see "g.copy_size").
+   * (see "g.copy_device_to_device").
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "copy_device_to_device" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -8660,6 +8767,13 @@ public class GuestFS {
    * Note this will fail if the source is too short or if the
    * destination is not large enough.
    * <p>
+   * *This function is deprecated.* In new code, use the
+   * "copy_device_to_device" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public void copy_size (String src, String dest, long size)
@@ -8684,9 +8798,6 @@ public class GuestFS {
    * If blocks are already zero, then this command avoids
    * writing zeroes. This prevents the underlying device from
    * becoming non-sparse or growing unnecessarily.
-   * <p>
-   * This command is dangerous. Without careful use you can
-   * easily destroy all your data.
    * <p>
    * @throws LibGuestFSException
    */
@@ -8760,7 +8871,7 @@ public class GuestFS {
    * <p>
    * See also ntfsresize(8).
    * <p>
-   * This function is deprecated. In new code, use the
+   * *This function is deprecated.* In new code, use the
    * "ntfsresize_opts" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
@@ -9197,7 +9308,7 @@ public class GuestFS {
    * it allows you to specify the new size (in bytes)
    * explicitly.
    * <p>
-   * This function is deprecated. In new code, use the
+   * *This function is deprecated.* In new code, use the
    * "ntfsresize_opts" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
@@ -9480,9 +9591,6 @@ public class GuestFS {
    * the initial key, which is added to key slot "slot".
    * (LUKS supports 8 key slots, numbered 0-7).
    * <p>
-   * This command is dangerous. Without careful use you can
-   * easily destroy all your data.
-   * <p>
    * @throws LibGuestFSException
    */
   public void luks_format (String device, String key, int keyslot)
@@ -9502,9 +9610,6 @@ public class GuestFS {
    * <p>
    * This command is the same as "g.luks_format" but it also
    * allows you to set the "cipher" used.
-   * <p>
-   * This command is dangerous. Without careful use you can
-   * easily destroy all your data.
    * <p>
    * @throws LibGuestFSException
    */
@@ -9752,6 +9857,8 @@ public class GuestFS {
    * <p>
    * The named partition must exist, for example as a string
    * returned from "g.list_partitions".
+   * <p>
+   * See also "g.part_to_partnum".
    * <p>
    * @throws LibGuestFSException
    */
@@ -10395,6 +10502,352 @@ public class GuestFS {
   }
 
   private native void _write_append (long g, String path, byte[] content)
+    throws LibGuestFSException;
+
+  /**
+   * output compressed file
+   * <p>
+   * This command compresses "file" and writes it out to the
+   * local file "zfile".
+   * <p>
+   * The compression program used is controlled by the
+   * "ctype" parameter. Currently this includes: "compress",
+   * "gzip", "bzip2", "xz" or "lzop". Some compression types
+   * may not be supported by particular builds of libguestfs,
+   * in which case you will get an error containing the
+   * substring "not supported".
+   * <p>
+   * The optional "level" parameter controls compression
+   * level. The meaning and default for this parameter
+   * depends on the compression program being used.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void compress_out (String ctype, String file, String zfile, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("compress_out: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    int level = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("level");
+    if (_optobj != null) {
+      level = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 1;
+    }
+
+    _compress_out (g, ctype, file, zfile, _optargs_bitmask, level);
+  }
+
+  private native void _compress_out (long g, String ctype, String file, String zfile, long _optargs_bitmask, int level)
+    throws LibGuestFSException;
+
+  /**
+   * output compressed device
+   * <p>
+   * This command compresses "device" and writes it out to
+   * the local file "zdevice".
+   * <p>
+   * The "ctype" and optional "level" parameters have the
+   * same meaning as in "g.compress_out".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void compress_device_out (String ctype, String device, String zdevice, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("compress_device_out: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    int level = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("level");
+    if (_optobj != null) {
+      level = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 1;
+    }
+
+    _compress_device_out (g, ctype, device, zdevice, _optargs_bitmask, level);
+  }
+
+  private native void _compress_device_out (long g, String ctype, String device, String zdevice, long _optargs_bitmask, int level)
+    throws LibGuestFSException;
+
+  /**
+   * convert partition name to partition number
+   * <p>
+   * This function takes a partition name (eg. "/dev/sdb1")
+   * and returns the partition number (eg. 1).
+   * <p>
+   * The named partition must exist, for example as a string
+   * returned from "g.list_partitions".
+   * <p>
+   * See also "g.part_to_dev".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public int part_to_partnum (String partition)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_to_partnum: handle is closed");
+
+    return _part_to_partnum (g, partition);
+  }
+
+  private native int _part_to_partnum (long g, String partition)
+    throws LibGuestFSException;
+
+  /**
+   * copy from source device to destination device
+   * <p>
+   * The four calls "g.copy_device_to_device",
+   * "g.copy_device_to_file", "g.copy_file_to_device", and
+   * "g.copy_file_to_file" let you copy from a source
+   * (device|file) to a destination (device|file).
+   * <p>
+   * Partial copies can be made since you can specify
+   * optionally the source offset, destination offset and
+   * size to copy. These values are all specified in bytes.
+   * If not given, the offsets both default to zero, and the
+   * size defaults to copying as much as possible until we
+   * hit the end of the source.
+   * <p>
+   * The source and destination may be the same object.
+   * However overlapping regions may not be copied correctly.
+   * <p>
+   * If the destination is a file, it is created if required.
+   * If the destination file is not large enough, it is
+   * extended.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void copy_device_to_device (String src, String dest, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("copy_device_to_device: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    long srcoffset = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("srcoffset");
+    if (_optobj != null) {
+      srcoffset = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 1;
+    }
+    long destoffset = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("destoffset");
+    if (_optobj != null) {
+      destoffset = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 2;
+    }
+    long size = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("size");
+    if (_optobj != null) {
+      size = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 4;
+    }
+
+    _copy_device_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
+  }
+
+  private native void _copy_device_to_device (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size)
+    throws LibGuestFSException;
+
+  /**
+   * copy from source device to destination file
+   * <p>
+   * See "g.copy_device_to_device" for a general overview of
+   * this call.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void copy_device_to_file (String src, String dest, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("copy_device_to_file: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    long srcoffset = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("srcoffset");
+    if (_optobj != null) {
+      srcoffset = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 1;
+    }
+    long destoffset = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("destoffset");
+    if (_optobj != null) {
+      destoffset = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 2;
+    }
+    long size = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("size");
+    if (_optobj != null) {
+      size = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 4;
+    }
+
+    _copy_device_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
+  }
+
+  private native void _copy_device_to_file (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size)
+    throws LibGuestFSException;
+
+  /**
+   * copy from source file to destination device
+   * <p>
+   * See "g.copy_device_to_device" for a general overview of
+   * this call.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void copy_file_to_device (String src, String dest, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("copy_file_to_device: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    long srcoffset = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("srcoffset");
+    if (_optobj != null) {
+      srcoffset = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 1;
+    }
+    long destoffset = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("destoffset");
+    if (_optobj != null) {
+      destoffset = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 2;
+    }
+    long size = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("size");
+    if (_optobj != null) {
+      size = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 4;
+    }
+
+    _copy_file_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
+  }
+
+  private native void _copy_file_to_device (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size)
+    throws LibGuestFSException;
+
+  /**
+   * copy from source file to destination file
+   * <p>
+   * See "g.copy_device_to_device" for a general overview of
+   * this call.
+   * <p>
+   * This is not the function you want for copying files.
+   * This is for copying blocks within existing files. See
+   * "g.cp", "g.cp_a" and "g.mv" for general file copying and
+   * moving functions.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void copy_file_to_file (String src, String dest, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("copy_file_to_file: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    long srcoffset = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("srcoffset");
+    if (_optobj != null) {
+      srcoffset = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 1;
+    }
+    long destoffset = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("destoffset");
+    if (_optobj != null) {
+      destoffset = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 2;
+    }
+    long size = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("size");
+    if (_optobj != null) {
+      size = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 4;
+    }
+
+    _copy_file_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
+  }
+
+  private native void _copy_file_to_file (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size)
     throws LibGuestFSException;
 
 }

@@ -76,7 +76,7 @@ the L<libguestfs(3)> API).
 
 =item B<--help>
 
-Display brief help.
+Показати коротку довідку.
 
 =item B<--version>
 
@@ -162,7 +162,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, MA 02139, USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 

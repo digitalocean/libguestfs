@@ -10,7 +10,7 @@ virt-ls - List files in a virtual machine
 
  virt-ls [--options] -a disk.img [-a disk.img ...] directory [directory ...]
 
-Old style:
+Старий стиль:
 
  virt-ls [--options] domname directory
 
@@ -80,21 +80,21 @@ need to add the I<--checksum> parameter to both C<virt-ls> commands.
 I<--checksum> can be quite slow since it has to read and compute a checksum
 of every regular file in the virtual machine.
 
-=head1 OUTPUT MODES
+=head1 РЕЖИМИ ВИВЕДЕННЯ ДАНИХ
 
 C<virt-ls> has four output modes, controlled by different combinations of
 the I<-l> and I<-R> options.
 
-=head2 SIMPLE LISTING
+=head2 ПРОСТИЙ СПИСОК
 
 A simple listing is like the ordinary L<ls(1)> command:
 
  $ virt-ls -d guest /
  bin
  boot
- [etc.]
+ [тощо]
 
-=head2 LONG LISTING
+=head2 ДОВГИЙ СПИСОК
 
 With the I<-l> (I<--long>) option, the output is like the C<ls -l> command
 (more specifically, like the C<guestfs_ll> function).
@@ -103,13 +103,13 @@ With the I<-l> (I<--long>) option, the output is like the C<ls -l> command
  total 204
  dr-xr-xr-x.   2 root root   4096 2009-08-25 19:06 bin
  dr-xr-xr-x.   5 root root   3072 2009-08-25 19:06 boot
- [etc.]
+ [тощо]
 
 Note that while this is useful for displaying a directory, do not try
 parsing this output in another program.  Use L</RECURSIVE LONG LISTING>
 instead.
 
-=head2 RECURSIVE LISTING
+=head2 РЕКУРСИВНИЙ СПИСОК
 
 With the I<-R> (I<--recursive>) option, C<virt-ls> lists the names of files
 and directories recursively:
@@ -117,12 +117,12 @@ and directories recursively:
  $ virt-ls -R -d guest /tmp
  foo
  foo/bar
- [etc.]
+ [тощо]
 
 To generate this output, C<virt-ls> runs the C<guestfs_find0> function and
 converts C<\0> characters to C<\n>.
 
-=head2 RECURSIVE LONG LISTING
+=head2 РЕКУРСИВНИЙ ДОВГИЙ СПИСОК
 
 Using I<-lR> options together changes the output to display directories
 recursively, with file stats, and optionally other features such as
@@ -149,33 +149,33 @@ command.
  l 0777          4 /bin/awk -> gawk
  - 0755      27216 /bin/basename
  - 0755     943360 /bin/bash
- [etc.]
+ [тощо]
 
 These basic fields are always shown:
 
 =over 4
 
-=item type
+=item тип
 
 The file type, one of: C<-> (regular file), C<d> (directory), C<c>
 (character device), C<b> (block device), C<p> (named pipe), C<l> (symbolic
 link), C<s> (socket) or C<u> (unknown).
 
-=item permissions
+=item права доступу
 
 The Unix permissions, displayed as a 4 digit octal number.
 
-=item size
+=item розмір
 
 The size of the file.  This is shown in bytes unless I<-h> or
 I<--human-readable> option is given, in which case this is shown as a
 human-readable number.
 
-=item path
+=item шлях
 
 The full path of the file or directory.
 
-=item link
+=item посилання
 
 For symbolic links only, the link target.
 
@@ -204,15 +204,15 @@ With the I<--times> flag, these additional fields are displayed:
 
 =item atime
 
-The time of last access.
+Час останнього доступу.
 
 =item mtime
 
-The time of last modification.
+Час останнього внесення змін.
 
 =item ctime
 
-The time of last status change.
+Час останньої зміни стану.
 
 =back
 
@@ -223,7 +223,7 @@ With the I<--extra-stats> flag, these additional fields are displayed:
 
 =over 4
 
-=item device
+=item пристрій
 
 The device containing the file (displayed as major:minor).  This may not
 match devices as known to the guest.
@@ -234,13 +234,13 @@ The inode number.
 
 =item nlink
 
-The number of hard links.
+Кількість жорстких посилань.
 
 =item rdev
 
 For block and char special files, the device (displayed as major:minor).
 
-=item blocks
+=item блоки
 
 The number of 512 byte blocks allocated to the file.
 
@@ -256,11 +256,11 @@ amount of time.
 
 =item B<--help>
 
-Display brief help.
+Показати коротку довідку.
 
-=item B<-a> file
+=item B<-a> файл
 
-=item B<--add> file
+=item B<--add> файл
 
 Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
@@ -280,9 +280,9 @@ checksum type to use.
 This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
 LISTING> above.
 
-=item B<-c> URI
+=item B<-c> адреса
 
-=item B<--connect> URI
+=item B<--connect> адреса
 
 If using libvirt, connect to the given I<URI>.  If omitted, then we connect
 to the default libvirt hypervisor.
@@ -296,9 +296,9 @@ Write out the results in CSV format (comma-separated values).  This format
 can be imported easily into databases and spreadsheets, but read L</NOTE
 ABOUT CSV FORMAT> below.
 
-=item B<-d> guest
+=item B<-d> гість
 
-=item B<--domain> guest
+=item B<--domain> гість
 
 Add all the disks from the named libvirt guest.  Domain UUIDs can be used
 instead of names.
@@ -312,7 +312,7 @@ see what you are typing.
 
 =item B<--extra-stats>
 
-Display extra stats.
+Показати додаткові дані.
 
 This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
 LISTING> above.
@@ -438,7 +438,7 @@ Previous versions of virt-ls allowed you to write either:
 
  virt-ls disk.img [disk.img ...] /dir
 
-or
+або
 
  virt-ls guestname /dir
 
@@ -494,7 +494,7 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2011 Red Hat Inc.
+©Red Hat Inc., 2009–2011
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -506,7 +506,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, MA 02139, USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 

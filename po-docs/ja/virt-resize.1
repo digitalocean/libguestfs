@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-resize 1"
-.TH virt-resize 1 "2011-10-19" "libguestfs-1.12.8" "Virtualization Support"
+.TH virt-resize 1 "2011-10-27" "libguestfs-1.14.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -307,11 +307,81 @@ Similarly, to get non-sparse raw output use:
 .PP
 (on older systems that don't have the \fIfallocate\fR\|(1) command use \f(CW\*(C`dd
 if=/dev/zero of=outdisk bs=1M count=..\*(C'\fR)
+.SS "\s-1LOGICAL\s0 \s-1PARTITIONS\s0"
+.IX Subsection "LOGICAL PARTITIONS"
+Logical partitions (a.k.a. \f(CW\*(C`/dev/sda5+\*(C'\fR on disks using \s-1DOS\s0 partition
+tables) cannot be resized.
+.PP
+To understand what is going on, firstly one of the four partitions
+\&\f(CW\*(C`/dev/sda1\-4\*(C'\fR will have \s-1MBR\s0 partition type \f(CW05\fR or \f(CW\*(C`0f\*(C'\fR.  This is called
+the \fBextended partition\fR.  Use \fIvirt\-filesystems\fR\|(1) to see the \s-1MBR\s0
+partition type.
+.PP
+Logical partitions live inside the extended partition.
+.PP
+The extended partition can be expanded, but not shrunk (unless you force it,
+which is not advisable).  When the extended partition is copied across, all
+the logical partitions contained inside are copied over implicitly.
+Virt-resize does not look inside the extended partition, so it copies the
+logical partitions blindly.
+.PP
+You cannot specify a logical partition (\f(CW\*(C`/dev/sda5+\*(C'\fR) at all on the command
+line.  Doing so will give an error.
 .SH "OPTIONS"
 .IX Header "OPTIONS"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
 Display help.
+.IP "\fB\-\-align\-first auto\fR" 4
+.IX Item "--align-first auto"
+.PD 0
+.IP "\fB\-\-align\-first never\fR" 4
+.IX Item "--align-first never"
+.IP "\fB\-\-align\-first always\fR" 4
+.IX Item "--align-first always"
+.PD
+Align the first partition for improved performance (see also the
+\&\fI\-\-alignment\fR option).
+.Sp
+The default is \fI\-\-align\-first auto\fR which only aligns the first partition
+if it is safe to do so.  That is, only when we know how to fix the
+bootloader automatically, and at the moment that can only be done for
+Windows guests.
+.Sp
+\&\fI\-\-align\-first never\fR means we never move the first partition.  This is the
+safest option.  Try this if the guest does not boot after resizing.
+.Sp
+\&\fI\-\-align\-first always\fR means we always align the first partition (if it
+needs to be aligned).  For some guests this will break the bootloader,
+making the guest unbootable.
+.IP "\fB\-\-alignment N\fR" 4
+.IX Item "--alignment N"
+Set the alignment of partitions to \f(CW\*(C`N\*(C'\fR sectors.  The default in virt-resize
+< 1.13.19 was 64 sectors, and after that is 128 sectors.
+.Sp
+Assuming 512 byte sector size inside the guest, here are some suitable
+values for this:
+.RS 4
+.IP "\fI\-\-alignment 1\fR (512 bytes)" 4
+.IX Item "--alignment 1 (512 bytes)"
+The partitions would be packed together as closely as possible, but would be
+completely unaligned.  In some cases this can cause very poor performance.
+See \fIvirt\-alignment\-scan\fR\|(1) for further details.
+.IP "\fI\-\-alignment 8\fR (4K)" 4
+.IX Item "--alignment 8 (4K)"
+This would be the minimum acceptable alignment for reasonable performance on
+modern hosts.
+.IP "\fI\-\-alignment 128\fR (64K)" 4
+.IX Item "--alignment 128 (64K)"
+This alignment provides good performance when the host is using high end
+network storage.
+.IP "\fI\-\-alignment 2048\fR (1M)" 4
+.IX Item "--alignment 2048 (1M)"
+This is the standard alignment used by all newly installed guests since
+around 2008.
+.RE
+.RS 4
+.RE
 .IP "\fB\-d\fR" 4
 .IX Item "-d"
 .PD 0
@@ -538,8 +608,10 @@ The \fI\-\-machine\-readable\fR option can be used to make the output more machi
 friendly, which is useful when calling virt-resize from other programs, GUIs
 etc.
 .PP
-Use the option on its own to query the capabilities of the virt-resize
-binary.  Typical output looks like this:
+There are two ways to use this option.
+.PP
+Firstly use the option on its own to query the capabilities of the
+virt-resize binary.  Typical output looks like this:
 .PP
 .Vb 6
 \& $ virt\-resize \-\-machine\-readable
@@ -552,23 +624,47 @@ binary.  Typical output looks like this:
 .PP
 A list of features is printed, one per line, and the program exits with
 status 0.
+.PP
+Secondly use the option in conjunction with other options to make the
+regular program output more machine friendly.
+.PP
+At the moment this means:
+.IP "1." 4
+Progress bar messages can be parsed from stdout by looking for this regular
+expression:
+.Sp
+.Vb 1
+\& ^[0\-9]+/[0\-9]+$
+.Ve
+.IP "2." 4
+The calling program should treat messages sent to stdout (except for
+progress bar messages) as status messages.  They can be logged and/or
+displayed to the user.
+.IP "3." 4
+The calling program should treat messages sent to stderr as error messages.
+In addition, virt-resize exits with a non-zero status code if there was a
+fatal error.
+.PP
+Versions of the program prior to 1.13.9 did not support the
+\&\fI\-\-machine\-readable\fR option and will return an error.
 .SH "NOTES"
 .IX Header "NOTES"
 .ie n .SS """Partition 1 does not end on cylinder boundary."""
 .el .SS "``Partition 1 does not end on cylinder boundary.''"
 .IX Subsection "Partition 1 does not end on cylinder boundary."
-Virt-resize aligns partitions to multiples of 64 sectors.  Usually this
-means the partitions will not be aligned to the ancient \s-1CHS\s0 geometry.
-However \s-1CHS\s0 geometry is meaningless for disks manufactured since the early
-1990s, and doubly so for virtual hard drives.  Alignment of partitions to
-cylinders is not required by any modern operating system.
+Virt-resize aligns partitions to multiples of 128 sectors (see the
+\&\fI\-\-alignment\fR parameter).  Usually this means the partitions will not be
+aligned to the ancient \s-1CHS\s0 geometry.  However \s-1CHS\s0 geometry is meaningless
+for disks manufactured since the early 1990s, and doubly so for virtual hard
+drives.  Alignment of partitions to cylinders is not required by any modern
+operating system.
 .SS "\s-1RESIZING\s0 \s-1WINDOWS\s0 \s-1VIRTUAL\s0 \s-1MACHINES\s0"
 .IX Subsection "RESIZING WINDOWS VIRTUAL MACHINES"
 In Windows Vista and later versions, Microsoft switched to using a separate
 boot partition.  In these VMs, typically \f(CW\*(C`/dev/sda1\*(C'\fR is the boot partition
-and \f(CW\*(C`/dev/sda2\*(C'\fR is the main (C:) drive.  We have not had any luck resizing
-the boot partition.  Doing so seems to break the guest completely.  However
-expanding the second partition (ie. C: drive) should work.
+and \f(CW\*(C`/dev/sda2\*(C'\fR is the main (C:) drive.  Resizing the first (boot)
+partition causes the bootloader to fail with \f(CW0xC0000225\fR error.  Resizing
+the second partition (ie. C: drive)  should work.
 .PP
 Windows may initiate a lengthy \*(L"chkdsk\*(R" on first boot after a resize, if
 \&\s-1NTFS\s0 partitions have been expanded.  This is just a safety check and (unless
@@ -577,9 +673,7 @@ it find errors) is nothing to worry about.
 .el .SS "\s-1GUEST\s0 \s-1BOOT\s0 \s-1STUCK\s0 \s-1AT\s0 ``\s-1GRUB\s0''"
 .IX Subsection "GUEST BOOT STUCK AT GRUB"
 If a Linux guest does not boot after resizing, and the boot is stuck after
-printing \f(CW\*(C`GRUB\*(C'\fR on the console, try reinstalling grub.  This sometimes
-happens on older (\s-1RHEL\s0 5\-era) guests, for reasons we don't fully understand,
-although we think is to do with partition alignment.
+printing \f(CW\*(C`GRUB\*(C'\fR on the console, try reinstalling grub.
 .PP
 .Vb 6
 \& guestfish \-i \-a newdisk
@@ -622,7 +716,7 @@ This program returns 0 if successful, or non-zero if there was an error.
 \&\fIlvm\fR\|(8), \fIpvresize\fR\|(8), \fIlvresize\fR\|(8), \fIresize2fs\fR\|(8),
 \&\fIntfsresize\fR\|(8), \fIbtrfs\fR\|(8), \fIvirsh\fR\|(1), \fIparted\fR\|(8), \fItruncate\fR\|(1),
 \&\fIfallocate\fR\|(1), \fIgrub\fR\|(8), \fIgrub\-install\fR\|(8), \fIvirt\-rescue\fR\|(1),
-<http://libguestfs.org/>.
+\&\fIvirt\-sparsify\fR\|(1), \fIvirt\-alignment\-scan\fR\|(1), <http://libguestfs.org/>.
 .SH "AUTHOR"
 .IX Header "AUTHOR"
 Richard W.M. Jones <http://people.redhat.com/~rjones/>

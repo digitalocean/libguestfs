@@ -41,8 +41,8 @@ context of the guest.  Also you can access filesystems over FUSE.
 
 Libguestfs is a library that can be linked with C and C++ management
 programs (or management programs written in OCaml, Perl, Python, Ruby, Java,
-PHP, Haskell or C#).  You can also use it from shell scripts or the command
-line.
+PHP, Erlang, Haskell or C#).  You can also use it from shell scripts or the
+command line.
 
 You don't need to be root to use libguestfs, although obviously you do need
 enough permissions to access the disk images.
@@ -91,8 +91,8 @@ The general structure of all libguestfs-using programs looks like this:
   */
  guestfs_mount (g, "/dev/sda1", "/");
  
- /* Now you can perform filesystem actions on the guest
-  * disk image.
+ /* Тепер ви можете виконувати дії з файловою системою на
+  * образі диска операційної системи.
   */
  guestfs_touch (g, "/hello");
  
@@ -304,18 +304,32 @@ below.
 Use L</guestfs_cp> to copy a single file, or L</guestfs_cp_a> to copy
 directories recursively.
 
-=item B<файл або пристрій> у B<файл або пристрій>
+To copy part of a file (offset and size) use L</guestfs_copy_file_to_file>.
 
-Use L</guestfs_dd> which efficiently uses L<dd(1)> to copy between files and
-devices in the guest.
+=item B<file> to B<device>
+
+=item B<device> to B<file>
+
+=item B<device> to B<device>
+
+Use L</guestfs_copy_file_to_device>, L</guestfs_copy_device_to_file>, or
+L</guestfs_copy_device_to_device>.
 
 Example: duplicate the contents of an LV:
 
- guestfs_dd (g, "/dev/VG/Original", "/dev/VG/Copy");
+ guestfs_copy_device_to_device (g,
+         "/dev/VG/Original", "/dev/VG/Copy",
+         /* -1 marks the end of the list of optional parameters */
+         -1);
 
 The destination (C</dev/VG/Copy>) must be at least as large as the source
-(C</dev/VG/Original>).  To copy less than the whole source device, use
-L</guestfs_copy_size>.
+(C</dev/VG/Original>).  To copy less than the whole source device, use the
+optional C<size> parameter:
+
+ guestfs_copy_device_to_device (g,
+         "/dev/VG/Original", "/dev/VG/Copy",
+         GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE, 10000,
+         -1);
 
 =item B<file on the host> to B<file or device>
 
@@ -690,6 +704,10 @@ identical to the C API.  C++ classes and exceptions are not used.
 The C# bindings are highly experimental.  Please read the warnings at the
 top of C<csharp/Libguestfs.cs>.
 
+=item B<Erlang>
+
+See L<guestfs-erlang(3)>.
+
 =item B<Haskell>
 
 This is the only language binding that is working but incomplete.  Only
@@ -766,6 +784,9 @@ guestfish scripts that forget to sync will work just fine, which can make
 this very puzzling if you are trying to debug a problem.
 
 =item Mount option C<-o sync> should not be the default.
+
+I<Update:> L</guestfs_mount> no longer adds any options starting from
+libguestfs 1.13.16.  This section only applies to older versions.
 
 If you use L</guestfs_mount>, then C<-o sync,noatime> are added implicitly.
 However C<-o sync> does not add any reliability benefit, but does have a
@@ -1317,19 +1338,20 @@ printed to C<stderr> before the program exits.
 For other programs the caller will almost certainly want to install an
 alternate error handler or do error handling in-line like this:
 
- g = guestfs_create ();
- 
  /* This disables the default behaviour of printing errors
     on stderr. */
  guestfs_set_error_handler (g, NULL, NULL);
  
  if (guestfs_launch (g) == -1) {
-   /* Вивчити повідомлення про помилку і вивести його тощо. */
+   /* Examine the error message and print it etc. */
    char *msg = guestfs_last_error (g);
    int errnum = guestfs_last_errno (g);
-   fprintf (stderr, "%s\n", msg);
+   fprintf (stderr, "%s", msg);
+   if (errnum != 0)
+     fprintf (stderr, ": %s", strerror (errnum));
+   fprintf (stderr, "\n");
    /* ... */
-  }
+ }
 
 Out of memory errors are handled differently.  The default action is to call
 L<abort(3)>.  If this is undesirable, then you can set a handler using
@@ -1780,6 +1802,19 @@ only applies if the trace flag (L</guestfs_set_trace>) is set.
 If no callback is registered: the messages are sent to stderr.  You can
 override the printing of trace messages to stderr by setting up a callback.
 
+=item GUESTFS_EVENT_ENTER (payload type: function name)
+
+The callback function is called whenever a libguestfs function is entered.
+
+The payload is a string which contains the name of the function that we are
+entering (not including C<guestfs_> prefix).
+
+Note that libguestfs functions can call themselves, so you may see many
+events from a single call.  A few libguestfs functions do not generate this
+event.
+
+If no callback is registered: the event is ignored.
+
 =back
 
 =head3 guestfs_set_event_callback
@@ -2057,6 +2092,77 @@ Note that the above loop is guaranteed to terminate because the keys are
 being deleted, but other manipulations of keys within the loop might not
 terminate unless you also maintain an indication of which keys have been
 visited.
+
+=head1 SYSTEMTAP
+
+The libguestfs C library can be probed using systemtap or DTrace.  This is
+true of any library, not just libguestfs.  However libguestfs also contains
+static markers to help in probing internal operations.
+
+You can list all the static markers by doing:
+
+ stap -l 'process("/usr/lib*/libguestfs.so.0")
+              .provider("guestfs").mark("*")'
+
+B<Note:> These static markers are I<not> part of the stable API and may
+change in future versions.
+
+=head2 SYSTEMTAP SCRIPT EXAMPLE
+
+This script contains examples of displaying both the static markers and some
+ordinary C entry points:
+
+ global last;
+ 
+ function display_time () {
+       now = gettimeofday_us ();
+       delta = 0;
+       if (last > 0)
+             delta = now - last;
+       last = now;
+ 
+       printf ("%d (+%d):", now, delta);
+ }
+ 
+ probe begin {
+       last = 0;
+       printf ("ready\n");
+ }
+ 
+ /* Display all calls to static markers. */
+ probe process("/usr/lib*/libguestfs.so.0")
+           .provider("guestfs").mark("*") ? {
+       display_time();
+       printf ("\t%s %s\n", $$name, $$parms);
+ }
+ 
+ /* Display all calls to guestfs_mkfs* functions. */
+ probe process("/usr/lib*/libguestfs.so.0")
+           .function("guestfs_mkfs*") ? {
+       display_time();
+       printf ("\t%s %s\n", probefunc(), $$parms);
+ }
+
+The script above can be saved to C<test.stap> and run using the L<stap(1)>
+program.  Note that you either have to be root, or you have to add yourself
+to several special stap groups.  Consult the systemtap documentation for
+more information.
+
+ # stap /tmp/test.stap
+ ready
+
+In another terminal, run a guestfish command such as this:
+
+ guestfish -N fs
+
+In the first terminal, stap trace output similar to this is shown:
+
+ 1318248056692655 (+0):	launch_start
+ 1318248056692850 (+195):       launch_build_appliance_start
+ 1318248056818285 (+125435):    launch_build_appliance_end
+ 1318248056838059 (+19774):     launch_run_qemu
+ 1318248061071167 (+4233108):   launch_end
+ 1318248061280324 (+209157):    guestfs_mkfs g=0x1024ab0 fstype=0x46116f device=0x1024e60
 
 =begin html
 
@@ -2699,6 +2805,10 @@ programmers.
 
 =over 4
 
+=item C<align>
+
+L<virt-alignment-scan(1)> command and documentation.
+
 =item C<appliance>
 
 The libguestfs appliance, build scripts and so on.
@@ -2716,6 +2826,11 @@ documentation.
 
 Safety and liveness tests of components that libguestfs depends upon (not of
 libguestfs itself).  Mainly this is for qemu and the kernel.
+
+=item C<clone>
+
+Tools for cloning virtual machines.  Currently contains L<virt-sysprep(1)>
+command and documentation.
 
 =item C<contrib>
 
@@ -2793,6 +2908,10 @@ L<virt-rescue(1)> command and documentation.
 
 L<virt-resize(1)> command and documentation.
 
+=item C<sparsify>
+
+L<virt-sparsify(1)> command and documentation.
+
 =item C<src>
 
 Source code to the C library.
@@ -2807,6 +2926,8 @@ Test tool for end users to test if their qemu/kernel combination will work
 with libguestfs.
 
 =item C<csharp>
+
+=item C<erlang>
 
 =item C<haskell>
 
@@ -2880,7 +3001,7 @@ Create the branch in git:
 
 =back
 
-=head1 LIMITS
+=head1 ОБМЕЖЕННЯ
 
 =head2 ОБМЕЖЕННЯ ПРОТОКОЛУ
 
@@ -3036,15 +3157,18 @@ use in case C</var/tmp> is not large enough.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
-L<guestfs-examples(3)>, L<guestfs-java(3)>, L<guestfs-ocaml(3)>,
-L<guestfs-perl(3)>, L<guestfs-python(3)>, L<guestfs-ruby(3)>,
-L<guestfish(1)>, L<guestmount(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>,
+L<guestfs-examples(3)>, L<guestfs-erlang(3)>, L<guestfs-java(3)>,
+L<guestfs-ocaml(3)>, L<guestfs-perl(3)>, L<guestfs-python(3)>,
+L<guestfs-ruby(3)>, L<guestfish(1)>, L<guestmount(1)>,
+L<virt-alignment-scan(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>,
 L<virt-copy-out(1)>, L<virt-df(1)>, L<virt-edit(1)>, L<virt-filesystems(1)>,
 L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
 L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
-L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>,
-L<virt-tar-out(1)>, L<virt-win-reg(1)>, L<qemu(1)>, L<febootstrap(1)>,
-L<febootstrap-supermin-helper(8)>, L<hivex(3)>, L<http://libguestfs.org/>.
+L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,
+L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
+L<virt-win-reg(1)>, L<qemu(1)>, L<febootstrap(1)>,
+L<febootstrap-supermin-helper(8)>, L<hivex(3)>, L<stap(1)>,
+L<http://libguestfs.org/>.
 
 Tools with a similar purpose: L<fdisk(8)>, L<parted(8)>, L<kpartx(8)>,
 L<lvm(8)>, L<disktype(1)>.

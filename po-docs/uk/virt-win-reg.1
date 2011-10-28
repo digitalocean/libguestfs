@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-win-reg.pl 1"
-.TH virt-win-reg.pl 1 "2011-10-19" "libguestfs-1.12.8" "Virtualization Support"
+.TH virt-win-reg.pl 1 "2011-10-27" "libguestfs-1.14.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -135,7 +135,7 @@ and access them locally, eg. using \fIhivex\fR\|(3), \fIhivexsh\fR\|(1) or
 .IX Header "ПАРАМЕТРИ"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
-Display brief help.
+Показати коротку довідку.
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
 Показати дані щодо версії і завершити роботу.
@@ -210,8 +210,8 @@ You should only use this option for quick hacking and debugging of the
 Registry contents, and \fInever\fR use it if the output is going to be passed
 into another program or stored in another Registry.
 .RE
-.SH "SUPPORTED SYSTEMS"
-.IX Header "SUPPORTED SYSTEMS"
+.SH "ПІДТРИМУВАНІ СИСТЕМИ"
+.IX Header "ПІДТРИМУВАНІ СИСТЕМИ"
 The program currently supports Windows NT-derived guests starting with
 Windows \s-1XP\s0 through to at least Windows 7.
 .PP
@@ -237,9 +237,9 @@ The following Registry keys are supported:
 .IX Item "HKEY_USERSSID"
 .PD
 where \fI\s-1SID\s0\fR is a Windows User \s-1SID\s0 (eg. \f(CW\*(C`S\-1\-5\-18\*(C'\fR).
-.ie n .IP """HKEY_USERS\e\f(CIusername\f(CW""" 4
-.el .IP "\f(CWHKEY_USERS\e\f(CIusername\f(CW\fR" 4
-.IX Item "HKEY_USERSusername"
+.ie n .IP """HKEY_USERS\e\f(CIкористувач\f(CW""" 4
+.el .IP "\f(CWHKEY_USERS\e\f(CIкористувач\f(CW\fR" 4
+.IX Item "HKEY_USERSкористувач"
 where \fIusername\fR is a local user name (this is a libguestfs extension).
 .PP
 You can use \f(CW\*(C`HKLM\*(C'\fR as a shorthand for \f(CW\*(C`HKEY_LOCAL_MACHINE\*(C'\fR, and \f(CW\*(C`HKU\*(C'\fR for
@@ -304,6 +304,20 @@ to look at the \f(CW\*(C`HKLM\eSYSTEM\eSelect\*(C'\fR key:
 \&\*(L"Current\*(R" is the one which Windows will choose when it boots.
 .PP
 Similarly, other \f(CW\*(C`Current...\*(C'\fR keys in the path may need to be replaced.
+.SH "DELETING REGISTRY KEYS AND VALUES"
+.IX Header "DELETING REGISTRY KEYS AND VALUES"
+To delete a whole registry key, use the syntax:
+.PP
+.Vb 1
+\& [\-HKEY_LOCAL_MACHINE\eFoo]
+.Ve
+.PP
+To delete a single value within a key, use the syntax:
+.PP
+.Vb 2
+\& [HKEY_LOCAL_MACHINE\eFoo]
+\& "Value"=\-
+.Ve
 .SH "WINDOWS TIPS"
 .IX Header "WINDOWS TIPS"
 Note that some of these tips modify the guest disk image.  The guest \fImust\fR
@@ -331,7 +345,7 @@ In this example we use the key \f(CW\*(C`RunOnce\*(C'\fR which means that the sc
 run precisely once when the first user logs in.  If you want it to run every
 time a user logs in, replace \f(CW\*(C`RunOnce\*(C'\fR with \f(CW\*(C`Run\*(C'\fR.
 .PP
-Now update the registry:
+Оновіть регістр:
 .PP
 .Vb 1
 \& virt\-win\-reg \-\-merge WindowsGuest test.reg
@@ -388,7 +402,7 @@ privileged account.
 For the meaning of the magic numbers, see this Microsoft \s-1KB\s0 article:
 <http://support.microsoft.com/kb/103000>.
 .PP
-Update the registry:
+Оновіть регістр:
 .PP
 .Vb 1
 \& virt\-win\-reg \-\-merge WindowsGuest service.reg
@@ -428,7 +442,7 @@ Attach /tmp/virt\-win\-reg.log to a new bug report at
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "АВТОРСЬКІ ПРАВА"
 .IX Header "АВТОРСЬКІ ПРАВА"
-Copyright (C) 2010 Red Hat Inc.
+©Red Hat Inc., 2010
 .PP
 This program is free software; you can redistribute it and/or modify it
 under the terms of the \s-1GNU\s0 General Public License as published by the Free
@@ -440,6 +454,6 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
-You should have received a copy of the \s-1GNU\s0 General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, \s-1MA\s0 02139, \s-1USA\s0.
+Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, \s-1MA\s0 02139, \s-1USA\s0.

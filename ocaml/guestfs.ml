@@ -36,6 +36,7 @@ type event =
   | EVENT_APPLIANCE
   | EVENT_LIBRARY
   | EVENT_TRACE
+  | EVENT_ENTER
 
 let event_all = [
   EVENT_CLOSE;
@@ -45,6 +46,7 @@ let event_all = [
   EVENT_APPLIANCE;
   EVENT_LIBRARY;
   EVENT_TRACE;
+  EVENT_ENTER;
 ]
 
 type event_handle = int
@@ -207,9 +209,9 @@ type application = {
 }
 
 external add_cdrom : t -> string -> unit = "ocaml_guestfs_add_cdrom"
-external add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> string -> int = "ocaml_guestfs_add_domain_byte" "ocaml_guestfs_add_domain"
+external add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> string -> int = "ocaml_guestfs_add_domain_byte" "ocaml_guestfs_add_domain"
 external add_drive : t -> string -> unit = "ocaml_guestfs_add_drive"
-external add_drive_opts : t -> ?readonly:bool -> ?format:string -> ?iface:string -> string -> unit = "ocaml_guestfs_add_drive_opts"
+external add_drive_opts : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> string -> unit = "ocaml_guestfs_add_drive_opts_byte" "ocaml_guestfs_add_drive_opts"
 external add_drive_ro : t -> string -> unit = "ocaml_guestfs_add_drive_ro"
 external add_drive_ro_with_if : t -> string -> string -> unit = "ocaml_guestfs_add_drive_ro_with_if"
 external add_drive_with_if : t -> string -> string -> unit = "ocaml_guestfs_add_drive_with_if"
@@ -251,13 +253,20 @@ external chmod : t -> int -> string -> unit = "ocaml_guestfs_chmod"
 external chown : t -> int -> int -> string -> unit = "ocaml_guestfs_chown"
 external command : t -> string array -> string = "ocaml_guestfs_command"
 external command_lines : t -> string array -> string array = "ocaml_guestfs_command_lines"
+external compress_device_out : t -> ?level:int -> string -> string -> string -> unit = "ocaml_guestfs_compress_device_out"
+external compress_out : t -> ?level:int -> string -> string -> string -> unit = "ocaml_guestfs_compress_out"
 external config : t -> string -> string option -> unit = "ocaml_guestfs_config"
+external copy_device_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit = "ocaml_guestfs_copy_device_to_device_byte" "ocaml_guestfs_copy_device_to_device"
+external copy_device_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit = "ocaml_guestfs_copy_device_to_file_byte" "ocaml_guestfs_copy_device_to_file"
+external copy_file_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit = "ocaml_guestfs_copy_file_to_device_byte" "ocaml_guestfs_copy_file_to_device"
+external copy_file_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit = "ocaml_guestfs_copy_file_to_file_byte" "ocaml_guestfs_copy_file_to_file"
 external copy_size : t -> string -> string -> int64 -> unit = "ocaml_guestfs_copy_size"
 external cp : t -> string -> string -> unit = "ocaml_guestfs_cp"
 external cp_a : t -> string -> string -> unit = "ocaml_guestfs_cp_a"
 external dd : t -> string -> string -> unit = "ocaml_guestfs_dd"
 external debug : t -> string -> string array -> string = "ocaml_guestfs_debug"
 external debug_cmdline : t -> string array = "ocaml_guestfs_debug_cmdline"
+external debug_drives : t -> string array = "ocaml_guestfs_debug_drives"
 external debug_upload : t -> string -> string -> int -> unit = "ocaml_guestfs_debug_upload"
 external df : t -> string = "ocaml_guestfs_df"
 external df_h : t -> string = "ocaml_guestfs_df_h"
@@ -300,6 +309,7 @@ external get_pid : t -> int = "ocaml_guestfs_get_pid"
 external get_qemu : t -> string = "ocaml_guestfs_get_qemu"
 external get_recovery_proc : t -> bool = "ocaml_guestfs_get_recovery_proc"
 external get_selinux : t -> bool = "ocaml_guestfs_get_selinux"
+external get_smp : t -> int = "ocaml_guestfs_get_smp"
 external get_state : t -> int = "ocaml_guestfs_get_state"
 external get_trace : t -> bool = "ocaml_guestfs_get_trace"
 external get_umask : t -> int = "ocaml_guestfs_get_umask"
@@ -448,6 +458,7 @@ external part_set_bootable : t -> string -> int -> bool -> unit = "ocaml_guestfs
 external part_set_mbr_id : t -> string -> int -> int -> unit = "ocaml_guestfs_part_set_mbr_id"
 external part_set_name : t -> string -> int -> string -> unit = "ocaml_guestfs_part_set_name"
 external part_to_dev : t -> string -> string = "ocaml_guestfs_part_to_dev"
+external part_to_partnum : t -> string -> int = "ocaml_guestfs_part_to_partnum"
 external ping_daemon : t -> unit = "ocaml_guestfs_ping_daemon"
 external pread : t -> string -> int -> int64 -> string = "ocaml_guestfs_pread"
 external pread_device : t -> string -> int -> int64 -> string = "ocaml_guestfs_pread_device"
@@ -490,6 +501,7 @@ external set_pgroup : t -> bool -> unit = "ocaml_guestfs_set_pgroup"
 external set_qemu : t -> string option -> unit = "ocaml_guestfs_set_qemu"
 external set_recovery_proc : t -> bool -> unit = "ocaml_guestfs_set_recovery_proc"
 external set_selinux : t -> bool -> unit = "ocaml_guestfs_set_selinux"
+external set_smp : t -> int -> unit = "ocaml_guestfs_set_smp"
 external set_trace : t -> bool -> unit = "ocaml_guestfs_set_trace"
 external set_verbose : t -> bool -> unit = "ocaml_guestfs_set_verbose"
 external setcon : t -> string -> unit = "ocaml_guestfs_setcon"
@@ -642,13 +654,20 @@ class guestfs () =
     method chown = chown g
     method command = command g
     method command_lines = command_lines g
+    method compress_device_out = compress_device_out g
+    method compress_out = compress_out g
     method config = config g
+    method copy_device_to_device = copy_device_to_device g
+    method copy_device_to_file = copy_device_to_file g
+    method copy_file_to_device = copy_file_to_device g
+    method copy_file_to_file = copy_file_to_file g
     method copy_size = copy_size g
     method cp = cp g
     method cp_a = cp_a g
     method dd = dd g
     method debug = debug g
     method debug_cmdline () = debug_cmdline g
+    method debug_drives () = debug_drives g
     method debug_upload = debug_upload g
     method df () = df g
     method df_h () = df_h g
@@ -691,6 +710,7 @@ class guestfs () =
     method get_qemu () = get_qemu g
     method get_recovery_proc () = get_recovery_proc g
     method get_selinux () = get_selinux g
+    method get_smp () = get_smp g
     method get_state () = get_state g
     method get_trace () = get_trace g
     method get_umask () = get_umask g
@@ -839,6 +859,7 @@ class guestfs () =
     method part_set_mbr_id = part_set_mbr_id g
     method part_set_name = part_set_name g
     method part_to_dev = part_to_dev g
+    method part_to_partnum = part_to_partnum g
     method ping_daemon () = ping_daemon g
     method pread = pread g
     method pread_device = pread_device g
@@ -881,6 +902,7 @@ class guestfs () =
     method set_qemu = set_qemu g
     method set_recovery_proc = set_recovery_proc g
     method set_selinux = set_selinux g
+    method set_smp = set_smp g
     method set_trace = set_trace g
     method set_verbose = set_verbose g
     method setcon = setcon g

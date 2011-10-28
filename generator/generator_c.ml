@@ -180,6 +180,11 @@ and generate_actions_pod () =
         generate_prototype ~extern:false ~indent:" " ~handle:"g" name style;
         pr "\n\n";
 
+        (match deprecation_notice ~prefix:"guestfs_" flags with
+         | None -> ()
+         | Some txt -> pr "%s\n\n" txt
+        );
+
         let uc_shortname = String.uppercase shortname in
         if optargs <> [] then (
           pr "You may supply a list of optional arguments to this call.\n";
@@ -249,16 +254,10 @@ I<The caller must free the returned buffer after use>.\n\n"
           pr "%s\n\n" progress_message;
         if List.mem ProtocolLimitWarning flags then
           pr "%s\n\n" protocol_limit_warning;
-        if List.mem DangerWillRobinson flags then
-          pr "%s\n\n" danger_will_robinson;
         if List.exists (function Key _ -> true | _ -> false) (args@optargs) then
           pr "This function takes a key or passphrase parameter which
 could contain sensitive material.  Read the section
 L</KEYS AND PASSPHRASES> for more information.\n\n";
-        (match deprecation_notice ~prefix:"guestfs_" flags with
-         | None -> ()
-         | Some txt -> pr "%s\n\n" txt
-        );
         (match lookup_api_version name with
          | Some version -> pr "(Added in %s)\n\n" version
          | None -> ()
@@ -629,7 +628,7 @@ extern void *guestfs_safe_malloc (guestfs_h *g, size_t nbytes);
 extern void *guestfs_safe_calloc (guestfs_h *g, size_t n, size_t s);
 extern const char *guestfs_tmpdir (void);
 #ifdef GUESTFS_PRIVATE_FOR_EACH_DISK
-extern int guestfs___for_each_disk (guestfs_h *g, virDomainPtr dom, int (*)(guestfs_h *g, const char *filename, const char *format, void *data), void *data);
+extern int guestfs___for_each_disk (guestfs_h *g, virDomainPtr dom, int (*)(guestfs_h *g, const char *filename, const char *format, int readonly, void *data), void *data);
 #endif
 /* End of private functions. */
 
@@ -756,6 +755,13 @@ trace_send_line (guestfs_h *g)
 }
 
 ";
+
+  (* Generate code for enter events. *)
+  let enter_event shortname =
+    pr "  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,\n";
+    pr "                                    \"%s\", %d);\n"
+      shortname (String.length shortname)
+  in
 
   (* Generate code to check String-like parameters are not passed in
    * as NULL (returning an error if they are).
@@ -1026,6 +1032,7 @@ trace_send_line (guestfs_h *g)
            pr "  struct guestfs_%s_list *r;\n" typ
       );
       pr "\n";
+      enter_event shortname;
       check_null_strings shortname style;
       reject_unknown_optargs shortname style;
       trace_call shortname style;
@@ -1118,6 +1125,7 @@ trace_send_line (guestfs_h *g)
         pr "  const uint64_t progress_hint = 0;\n";
 
       pr "\n";
+      enter_event shortname;
       check_null_strings shortname style;
       reject_unknown_optargs shortname style;
       trace_call shortname style;

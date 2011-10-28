@@ -26,6 +26,7 @@ CLEANFILES = *.1 *.3
 MANPAGES = \
 	guestfs.3 \
 	guestfish.1 \
+	virt-alignment-scan.1 \
 	virt-copy-in.1 \
 	virt-copy-out.1 \
 	virt-tar-in.1 \
@@ -40,7 +41,9 @@ MANPAGES = \
 	virt-inspector.1 \
 	virt-ls.1 \
 	virt-rescue.1 \
-	virt-resize.1
+	virt-resize.1 \
+	virt-sparsify.1 \
+	virt-sysprep.1
 
 # Ship the POD files and the translated manpages in the tarball.  This
 # just simplifies building from the tarball, at a small cost in extra
@@ -72,6 +75,11 @@ guestfish.1: guestfish.pod guestfish-actions.pod guestfish-commands.pod
 
 %.1: %.pl
 	$(top_builddir)/podwrapper.sh --man $@ $<
+
+# Ensure that the first time we build from git, since guestfs.pod
+# hasn't been built yet, build it.
+guestfs.pod:
+	if [ ! -f guestfs.pod ]; then make -C .. update-po; fi
 
 # XXX Can automake do this properly?
 install-data-hook:

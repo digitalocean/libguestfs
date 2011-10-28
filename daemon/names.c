@@ -316,4 +316,11 @@ const char *function_names[] = {
   [288] = "ntfsresize_opts",
   [289] = "btrfs_filesystem_resize",
   [290] = "write_append",
+  [291] = "compress_out",
+  [292] = "compress_device_out",
+  [293] = "part_to_partnum",
+  [294] = "copy_device_to_device",
+  [295] = "copy_device_to_file",
+  [296] = "copy_file_to_device",
+  [297] = "copy_file_to_file",
 };

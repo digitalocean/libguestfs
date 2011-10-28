@@ -10,7 +10,7 @@ virt-rescue - Run a rescue shell on a virtual machine
 
  virt-rescue [--options] -a disk.img [-a disk.img ...]
 
-Old style:
+Старий стиль:
 
  virt-rescue [--options] domname
 
@@ -85,11 +85,11 @@ make scripted changes to guests, use L<guestfish(1)>.
 
 =item B<--help>
 
-Display brief help.
+Показати коротку довідку.
 
-=item B<-a> file
+=item B<-a> файл
 
-=item B<--add> file
+=item B<--add> файл
 
 Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
@@ -98,13 +98,13 @@ separate I<-a> options.
 The format of the disk image is auto-detected.  To override this and force a
 particular format use the I<--format=..> option.
 
-=item B<--append kernelopts>
+=item B<--append параметри_ядра>
 
 Pass additional options to the rescue kernel.
 
-=item B<-c> URI
+=item B<-c> адреса
 
-=item B<--connect> URI
+=item B<--connect> адреса
 
 If using libvirt, connect to the given I<URI>.  If omitted, then we connect
 to the default libvirt hypervisor.
@@ -112,9 +112,9 @@ to the default libvirt hypervisor.
 If you specify guest block devices directly (I<-a>), then libvirt is not
 used at all.
 
-=item B<-d> guest
+=item B<-d> гість
 
-=item B<--domain> guest
+=item B<--domain> гість
 
 Add all the disks from the named libvirt guest.  Domain UUIDs can be used
 instead of names.
@@ -143,9 +143,9 @@ If you have untrusted raw-format guest disk images, you should use this
 option to specify the disk format.  This avoids a possible security problem
 with malicious guests (CVE-2010-3851).
 
-=item B<-m MB>
+=item B<-m МБ>
 
-=item B<--memsize MB>
+=item B<--memsize МБ>
 
 Change the amount of memory allocated to the rescue system.  The default is
 set by libguestfs and is small but adequate for running system tools.  The
@@ -166,12 +166,16 @@ The option must always be used if the disk image or virtual machine might be
 running, and is generally recommended in cases where you don't need write
 access to the disk.
 
-See also L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+Див. також L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
 
 =item B<--selinux>
 
 Enable SELinux in the rescue appliance.  You should read
 L<guestfs(3)/SELINUX> before using this option.
+
+=item B<--smp> N
+
+Enable N E<ge> 2 virtual CPUs in the rescue appliance.
 
 =item B<-v>
 
@@ -192,7 +196,7 @@ Enable verbose messages for debugging.
 This changes the I<-a> and I<-d> options so that disks are added and mounts
 are done read-write.
 
-See L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+Див. L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
 
 =item B<-x>
 
@@ -206,7 +210,7 @@ Previous versions of virt-rescue allowed you to write either:
 
  virt-rescue disk.img [disk.img ...]
 
-or
+або
 
  virt-rescue guestname
 
@@ -215,7 +219,7 @@ the confusing case where a disk image might have the same name as a guest.
 
 For compatibility the old style is still supported.
 
-=head1 NETWORK
+=head1 МЕРЕЖА
 
 Adding the I<--network> option enables QEMU user networking in the rescue
 appliance.  There are some differences between user networking and ordinary
@@ -274,7 +278,7 @@ L<sh(1)> for details.
 This configuration file controls the default read-only or read-write mode
 (I<--ro> or I<--rw>).
 
-See L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+Див. L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
 
 =back
 
@@ -289,7 +293,7 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2011 Red Hat Inc.
+©Red Hat Inc., 2009–2011
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -301,7 +305,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, MA 02139, USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 

@@ -1,6 +1,6 @@
 =encoding utf8
 
-=begin comment
+=begin коментар
 
 pod2man and pod2html have differing bugs which makes it hard to write URLs
 here.  The only way which works for both sorts of output is to just write
@@ -9,7 +9,7 @@ the URL directly.  Do NOT use L<...> for URLs.
 We break with tradition here and don't use ALL CAPS for the section
 headings, as this makes them much easier to read.
 
-=end comment
+=end коментар
 
 =head1 НАЗВА
 
@@ -376,9 +376,10 @@ https://rwmj.wordpress.com/2011/05/10/tip-use-libguestfs-on-vmware-esx-guests/#c
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
-L<guestfs(3)>, L<guestfish(1)>, L<guestfs-examples(3)>, L<guestfs-java(3)>,
-L<guestfs-ocaml(3)>, L<guestfs-perl(3)>, L<guestfs-python(3)>,
-L<guestfs-ruby(3)>, L<http://libguestfs.org/>.
+L<guestfs(3)>, L<guestfish(1)>, L<guestfs-examples(3)>,
+L<guestfs-erlang(3)>, L<guestfs-java(3)>, L<guestfs-ocaml(3)>,
+L<guestfs-perl(3)>, L<guestfs-python(3)>, L<guestfs-ruby(3)>,
+L<http://libguestfs.org/>.
 
 =head1 АВТОРИ
 

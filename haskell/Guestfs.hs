@@ -57,6 +57,8 @@ module Guestfs (
   set_network,
   set_attach_method,
   set_pgroup,
+  set_smp,
+  get_smp,
   mount,
   sync,
   touch,
@@ -230,7 +232,8 @@ module Guestfs (
   pwrite_device,
   resize2fs_M,
   internal_autosync,
-  write_append
+  write_append,
+  part_to_partnum
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -670,6 +673,30 @@ set_pgroup h pgroup = do
       err <- last_error h
       fail err
     else return ()
+
+foreign import ccall unsafe "guestfs_set_smp" c_set_smp
+  :: GuestfsP -> CInt -> IO (CInt)
+
+set_smp :: GuestfsH -> Int -> IO ()
+set_smp h smp = do
+  r <- withForeignPtr h (\p -> c_set_smp p (fromIntegral smp))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_get_smp" c_get_smp
+  :: GuestfsP -> IO (CInt)
+
+get_smp :: GuestfsH -> IO (Int)
+get_smp h = do
+  r <- withForeignPtr h (\p -> c_get_smp p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
 
 foreign import ccall unsafe "guestfs_mount" c_mount
   :: GuestfsP -> CString -> CString -> IO (CInt)
@@ -2758,4 +2785,16 @@ write_append h path content = do
       err <- last_error h
       fail err
     else return ()
+
+foreign import ccall unsafe "guestfs_part_to_partnum" c_part_to_partnum
+  :: GuestfsP -> CString -> IO (CInt)
+
+part_to_partnum :: GuestfsH -> String -> IO (Int)
+part_to_partnum h partition = do
+  r <- withCString partition $ \partition -> withForeignPtr h (\p -> c_part_to_partnum p partition)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
 

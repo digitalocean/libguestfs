@@ -120,9 +120,16 @@ guestfs___check_for_filesystem_on (guestfs_h *g, const char *device,
 
   /* Try mounting the device.  As above, ignore errors. */
   g->error_cb = NULL;
-  int r = guestfs_mount_ro (g, device, "/");
-  if (r == -1 && vfs_type && STREQ (vfs_type, "ufs")) /* Hack for the *BSDs. */
+  int r;
+  if (vfs_type && STREQ (vfs_type, "ufs")) { /* Hack for the *BSDs. */
+    /* FreeBSD fs is a variant of ufs called ufs2 ... */
     r = guestfs_mount_vfs (g, "ro,ufstype=ufs2", "ufs", device, "/");
+    if (r == -1)
+      /* while NetBSD and OpenBSD use another variant labeled 44bsd */
+      r = guestfs_mount_vfs (g, "ro,ufstype=44bsd", "ufs", device, "/");
+  } else {
+    r = guestfs_mount_ro (g, device, "/");
+  }
   free (vfs_type);
   g->error_cb = old_error_cb;
   if (r == -1)
@@ -181,6 +188,23 @@ check_filesystem (guestfs_h *g, const char *device,
     fs->content = FS_CONTENT_FREEBSD_ROOT;
     fs->format = OS_FORMAT_INSTALLED;
     if (guestfs___check_freebsd_root (g, fs) == -1)
+      return -1;
+  }
+  else if (is_dir_etc &&
+           is_dir_bin &&
+           guestfs_is_file (g, "/etc/fstab") > 0 &&
+           guestfs_is_file (g, "/etc/release") > 0) {
+    /* Ignore /dev/sda1 which is a shadow of the real root filesystem
+     * that is probably /dev/sda5 (see:
+     * http://www.freebsd.org/doc/handbook/disk-organization.html)
+     */
+    if (match (g, device, re_first_partition))
+      return 0;
+
+    fs->is_root = 1;
+    fs->content = FS_CONTENT_NETBSD_ROOT;
+    fs->format = OS_FORMAT_INSTALLED;
+    if (guestfs___check_netbsd_root (g, fs) == -1)
       return -1;
   }
   /* Linux root? */
@@ -361,7 +385,9 @@ check_package_format (guestfs_h *g, struct inspect_fs *fs)
   case OS_DISTRO_MEEGO:
   case OS_DISTRO_REDHAT_BASED:
   case OS_DISTRO_RHEL:
+  case OS_DISTRO_MAGEIA:
   case OS_DISTRO_MANDRIVA:
+  case OS_DISTRO_OPENSUSE:
   case OS_DISTRO_CENTOS:
   case OS_DISTRO_SCIENTIFIC_LINUX:
     fs->package_format = OS_PACKAGE_FORMAT_RPM;
@@ -384,6 +410,7 @@ check_package_format (guestfs_h *g, struct inspect_fs *fs)
     break;
 
   case OS_DISTRO_SLACKWARE:
+  case OS_DISTRO_TTYLINUX:
   case OS_DISTRO_WINDOWS:
   case OS_DISTRO_UNKNOWN:
   default:
@@ -426,11 +453,17 @@ check_package_management (guestfs_h *g, struct inspect_fs *fs)
   case OS_DISTRO_PARDUS:
     fs->package_management = OS_PACKAGE_MANAGEMENT_PISI;
     break;
+  case OS_DISTRO_MAGEIA:
   case OS_DISTRO_MANDRIVA:
     fs->package_management = OS_PACKAGE_MANAGEMENT_URPMI;
     break;
 
+  case OS_DISTRO_OPENSUSE:
+    fs->package_management = OS_PACKAGE_MANAGEMENT_ZYPPER;
+    break;
+
   case OS_DISTRO_SLACKWARE:
+  case OS_DISTRO_TTYLINUX:
   case OS_DISTRO_WINDOWS:
   case OS_DISTRO_UNKNOWN:
   default:

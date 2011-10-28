@@ -43,6 +43,26 @@
 #define N_(str) str
 #endif
 
+#ifdef HAVE_SYS_SDT_H
+#include <sys/sdt.h>
+/* NB: The 'name' parameter is a literal identifier, NOT a string! */
+#define TRACE0(name) DTRACE_PROBE(guestfs, name)
+#define TRACE1(name, arg1) \
+  DTRACE_PROBE(guestfs, name, (arg1))
+#define TRACE2(name, arg1, arg2) \
+  DTRACE_PROBE(guestfs, name, (arg1), (arg2))
+#define TRACE3(name, arg1, arg2, arg3) \
+  DTRACE_PROBE(guestfs, name, (arg1), (arg2), (arg3))
+#define TRACE4(name, arg1, arg2, arg3, arg4) \
+  DTRACE_PROBE(guestfs, name, (arg1), (arg2), (arg3), (arg4))
+#else
+#define TRACE0(name)
+#define TRACE1(name, arg1)
+#define TRACE2(name, arg1, arg2)
+#define TRACE3(name, arg1, arg2, arg3)
+#define TRACE4(name, arg1, arg2, arg3, arg4)
+#endif
+
 #define TMP_TEMPLATE_ON_STACK(var)                        \
   const char *ttos_tmpdir = guestfs_tmpdir ();            \
   char var[strlen (ttos_tmpdir) + 32];                    \
@@ -129,12 +149,27 @@ struct event {
   void *opaque2;
 };
 
+/* Linked list of drives added to the handle. */
+struct drive {
+  struct drive *next;
+
+  char *path;
+
+  int readonly;
+  char *format;
+  char *iface;
+  char *name;
+  int use_cache_off;
+};
+
 struct guestfs_h
 {
   struct guestfs_h *next;	/* Linked list of open handles. */
 
   /* State: see the state machine diagram in the man page guestfs(3). */
   enum state state;
+
+  struct drive *drives;         /* Drives added by add-drive* APIs. */
 
   int fd[2];			/* Stdin/stdout of qemu. */
   int sock;			/* Daemon communications socket. */
@@ -169,6 +204,8 @@ struct guestfs_h
   int selinux;                  /* selinux enabled? */
 
   int pgroup;                   /* Create process group for children? */
+
+  int smp;                      /* If > 1, -smp flag passed to qemu. */
 
   char *last_error;
   int last_errnum;              /* errno, or 0 if there was no errno */
@@ -217,6 +254,7 @@ enum inspect_fs_content {
   FS_CONTENT_LINUX_USR_LOCAL,
   FS_CONTENT_LINUX_VAR,
   FS_CONTENT_FREEBSD_ROOT,
+  FS_CONTENT_NETBSD_ROOT,
   FS_CONTENT_INSTALLER,
 };
 
@@ -232,6 +270,7 @@ enum inspect_os_type {
   OS_TYPE_LINUX,
   OS_TYPE_WINDOWS,
   OS_TYPE_FREEBSD,
+  OS_TYPE_NETBSD,
 };
 
 enum inspect_os_distro {
@@ -251,6 +290,9 @@ enum inspect_os_distro {
   OS_DISTRO_SLACKWARE,
   OS_DISTRO_CENTOS,
   OS_DISTRO_SCIENTIFIC_LINUX,
+  OS_DISTRO_TTYLINUX,
+  OS_DISTRO_MAGEIA,
+  OS_DISTRO_OPENSUSE,
 };
 
 enum inspect_os_package_format {
@@ -259,7 +301,8 @@ enum inspect_os_package_format {
   OS_PACKAGE_FORMAT_DEB,
   OS_PACKAGE_FORMAT_PACMAN,
   OS_PACKAGE_FORMAT_EBUILD,
-  OS_PACKAGE_FORMAT_PISI
+  OS_PACKAGE_FORMAT_PISI,
+  OS_PACKAGE_FORMAT_PKGSRC,
 };
 
 enum inspect_os_package_management {
@@ -271,6 +314,7 @@ enum inspect_os_package_management {
   OS_PACKAGE_MANAGEMENT_PORTAGE,
   OS_PACKAGE_MANAGEMENT_PISI,
   OS_PACKAGE_MANAGEMENT_URPMI,
+  OS_PACKAGE_MANAGEMENT_ZYPPER,
 };
 
 struct inspect_fs {
@@ -330,6 +374,7 @@ extern void guestfs___trace (guestfs_h *g, const char *fs, ...)
 extern const char *guestfs___persistent_tmpdir (void);
 extern void guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...);
 extern void guestfs___free_inspect_info (guestfs_h *g);
+extern void guestfs___free_drives (struct drive **drives);
 extern int guestfs___set_busy (guestfs_h *g);
 extern int guestfs___end_busy (guestfs_h *g);
 extern int guestfs___send (guestfs_h *g, int proc_nr, uint64_t progress_hint, uint64_t optargs_bitmask, xdrproc_t xdrp, char *args);
@@ -351,18 +396,19 @@ extern int guestfs___match2 (guestfs_h *g, const char *str, const pcre *re, char
 extern int guestfs___match3 (guestfs_h *g, const char *str, const pcre *re, char **ret1, char **ret2, char **ret3);
 extern int guestfs___feature_available (guestfs_h *g, const char *feature);
 extern void guestfs___free_string_list (char **);
-extern size_t guestfs___checkpoint_cmdline (guestfs_h *g);
-extern void guestfs___rollback_cmdline (guestfs_h *g, size_t pos);
+extern struct drive ** guestfs___checkpoint_drives (guestfs_h *g);
+extern void guestfs___rollback_drives (guestfs_h *g, struct drive **i);
 extern void guestfs___call_callbacks_void (guestfs_h *g, uint64_t event);
 extern void guestfs___call_callbacks_message (guestfs_h *g, uint64_t event, const char *buf, size_t buf_len);
 extern void guestfs___call_callbacks_array (guestfs_h *g, uint64_t event, const uint64_t *array, size_t array_len);
 extern int guestfs___is_file_nocase (guestfs_h *g, const char *);
 extern int guestfs___is_dir_nocase (guestfs_h *g, const char *);
-#if defined(HAVE_HIVEX)
-extern int guestfs___check_for_filesystem_on (guestfs_h *g, const char *device, int is_block, int is_partnum);
 extern char *guestfs___download_to_tmp (guestfs_h *g, struct inspect_fs *fs, const char *filename, const char *basename, int64_t max_size);
 extern char *guestfs___case_sensitive_path_silently (guestfs_h *g, const char *);
 extern struct inspect_fs *guestfs___search_for_root (guestfs_h *g, const char *root);
+
+#if defined(HAVE_HIVEX)
+extern int guestfs___check_for_filesystem_on (guestfs_h *g, const char *device, int is_block, int is_partnum);
 extern int guestfs___parse_unsigned_int (guestfs_h *g, const char *str);
 extern int guestfs___parse_unsigned_int_ignore_trailing (guestfs_h *g, const char *str);
 extern int guestfs___parse_major_minor (guestfs_h *g, struct inspect_fs *fs);
@@ -373,6 +419,7 @@ extern int guestfs___read_db_dump (guestfs_h *g, const char *dumpfile, void *opa
 extern int guestfs___check_installer_root (guestfs_h *g, struct inspect_fs *fs);
 extern int guestfs___check_linux_root (guestfs_h *g, struct inspect_fs *fs);
 extern int guestfs___check_freebsd_root (guestfs_h *g, struct inspect_fs *fs);
+extern int guestfs___check_netbsd_root (guestfs_h *g, struct inspect_fs *fs);
 extern int guestfs___has_windows_systemroot (guestfs_h *g);
 extern int guestfs___check_windows_root (guestfs_h *g, struct inspect_fs *fs);
 #endif

@@ -743,6 +743,10 @@ Any Microsoft Windows operating system.
 
 FreeBSD.
 
+=item \"netbsd\"
+
+NetBSD.
+
 =item \"unknown\"
 
 The operating system type could not be determined.
@@ -802,6 +806,10 @@ Gentoo.
 
 Linux Mint.
 
+=item \"mageia\"
+
+Mageia.
+
 =item \"mandriva\"
 
 Mandriva.
@@ -809,6 +817,10 @@ Mandriva.
 =item \"meego\"
 
 MeeGo.
+
+=item \"opensuse\"
+
+OpenSUSE.
 
 =item \"pardus\"
 
@@ -829,6 +841,10 @@ Scientific Linux.
 =item \"slackware\"
 
 Slackware.
+
+=item \"ttylinux\"
+
+ttylinux.
 
 =item \"ubuntu\"
 
@@ -991,7 +1007,7 @@ be mountable but require special options.  Filesystems may
 not all belong to a single logical operating system
 (use C<guestfs_inspect_os> to look for OSes).");
 
-  ("add_drive_opts", (RErr, [String "filename"], [Bool "readonly"; String "format"; String "iface"]), -1, [FishAlias "add"],
+  ("add_drive_opts", (RErr, [String "filename"], [Bool "readonly"; String "format"; String "iface"; String "name"]), -1, [FishAlias "add"],
    [],
    "add an image to examine or modify",
    "\
@@ -1034,6 +1050,11 @@ this security hole.
 This rarely-used option lets you emulate the behaviour of the
 deprecated C<guestfs_add_drive_with_if> call (q.v.)
 
+=item C<name>
+
+The name the drive had in the original guest, e.g. /dev/sdb. This is used as a
+hint to the guest inspection process if it is available.
+
 =back");
 
   ("inspect_get_windows_systemroot", (RString "systemroot", [Device "root"], []), -1, [],
@@ -1069,7 +1090,14 @@ Please read L<guestfs(3)/INSPECTION> for more details.");
 This returns the internal QEMU command line.  'debug' commands are
 not part of the formal API and can be removed or changed at any time.");
 
-  ("add_domain", (RInt "nrdisks", [String "dom"], [String "libvirturi"; Bool "readonly"; String "iface"; Bool "live"; Bool "allowuuid"]), -1, [FishAlias "domain"],
+  ("debug_drives", (RStringList "cmdline", [], []), -1, [NotInDocs],
+   [],
+   "debug the drives (internal use only)",
+   "\
+This returns the internal list of drives.  'debug' commands are
+not part of the formal API and can be removed or changed at any time.");
+
+  ("add_domain", (RInt "nrdisks", [String "dom"], [String "libvirturi"; Bool "readonly"; String "iface"; Bool "live"; Bool "allowuuid"; String "readonlydisk"]), -1, [FishAlias "domain"],
    [],
    "add the disk(s) from a named libvirt domain",
    "\
@@ -1108,12 +1136,58 @@ I<may> be passed instead of the domain name.  The C<dom> string is
 treated as a UUID first and looked up, and if that lookup fails
 then we treat C<dom> as a name as usual.
 
+The optional C<readonlydisk> parameter controls what we do for
+disks which are marked E<lt>readonly/E<gt> in the libvirt XML.
+Possible values are:
+
+=over 4
+
+=item readonlydisk = \"error\"
+
+If C<readonly> is false:
+
+The whole call is aborted with an error if any disk with
+the E<lt>readonly/E<gt> flag is found.
+
+If C<readonly> is true:
+
+Disks with the E<lt>readonly/E<gt> flag are added read-only.
+
+=item readonlydisk = \"read\"
+
+If C<readonly> is false:
+
+Disks with the E<lt>readonly/E<gt> flag are added read-only.
+Other disks are added read/write.
+
+If C<readonly> is true:
+
+Disks with the E<lt>readonly/E<gt> flag are added read-only.
+
+=item readonlydisk = \"write\" (default)
+
+If C<readonly> is false:
+
+Disks with the E<lt>readonly/E<gt> flag are added read/write.
+
+If C<readonly> is true:
+
+Disks with the E<lt>readonly/E<gt> flag are added read-only.
+
+=item readonlydisk = \"ignore\"
+
+If C<readonly> is true or false:
+
+Disks with the E<lt>readonly/E<gt> flag are skipped.
+
+=back
+
 The other optional parameters are passed directly through to
 C<guestfs_add_drive_opts>.");
 
 (*
 This interface is not quite baked yet. -- RWMJ 2010-11-11
-  ("add_libvirt_dom", (RInt "nrdisks", [Pointer ("virDomainPtr", "dom")], [Bool "readonly"; String "iface"; Bool "live"]), -1, [NotInFish],
+  ("add_libvirt_dom", (RInt "nrdisks", [Pointer ("virDomainPtr", "dom")], [Bool "readonly"; String "iface"; Bool "live"; String "readonlydisk"]), -1, [NotInFish],
    [],
    "add the disk(s) from a libvirt domain",
    "\
@@ -1143,6 +1217,10 @@ XML definition.  The default (if the flag is omitted) is never
 to try.  See L<guestfs(3)/ATTACHING TO RUNNING DAEMONS> for more
 information.
 
+The optional C<readonlydisk> parameter controls what we do for
+disks which are marked E<lt>readonly/E<gt> in the libvirt XML.
+See C<guestfs_add_domain> for possible values.
+
 The other optional parameters are passed directly through to
 C<guestfs_add_drive_opts>.");
 *)
@@ -1161,7 +1239,8 @@ This returns the string C<unknown> if we could not determine the
 package format I<or> if the operating system does not have
 a real packaging system (eg. Windows).
 
-Possible strings include: C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>.
+Possible strings include:
+C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>, C<pkgsrc>.
 Future versions of libguestfs may return other strings.
 
 Please read L<guestfs(3)/INSPECTION> for more details.");
@@ -1182,7 +1261,7 @@ a real packaging system (eg. Windows).
 
 Possible strings include: C<yum>, C<up2date>,
 C<apt> (for all Debian derivatives),
-C<portage>, C<pisi>, C<pacman>, C<urpmi>.
+C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>.
 Future versions of libguestfs may return other strings.
 
 Please read L<guestfs(3)/INSPECTION> for more details.");
@@ -1545,6 +1624,22 @@ C<^C> to kill the subprocess.");
    "\
 This returns the process group flag.");
 
+  ("set_smp", (RErr, [Int "smp"], []), -1, [FishAlias "smp"],
+   [],
+   "set number of virtual CPUs in appliance",
+   "\
+Change the number of virtual CPUs assigned to the appliance.  The
+default is C<1>.  Increasing this may improve performance, though
+often it has no effect.
+
+This function must be called before C<guestfs_launch>.");
+
+  ("get_smp", (RInt "smp", [], []), -1, [],
+   [],
+   "get number of virtual CPUs in appliance",
+   "\
+This returns the number of virtual CPUs assigned to the appliance.");
+
 ]
 
 (* daemon_functions are any functions which cause some action
@@ -1552,7 +1647,7 @@ This returns the process group flag.");
  *)
 
 let daemon_functions = [
-  ("mount", (RErr, [Device "device"; String "mountpoint"], []), 1, [DeprecatedBy "mount_options"],
+  ("mount", (RErr, [Device "device"; String "mountpoint"], []), 1, [],
    [InitEmpty, Always, TestOutput (
       [["part_disk"; "/dev/sda"; "mbr"];
        ["mkfs"; "ext2"; "/dev/sda1"];
@@ -1575,15 +1670,12 @@ exist.
 The mounted filesystem is writable, if we have sufficient permissions
 on the underlying device.
 
-B<Important note:>
-When you use this call, the filesystem options C<sync> and C<noatime>
-are set implicitly.  This was originally done because we thought it
-would improve reliability, but it turns out that I<-o sync> has a
-very large negative performance impact and negligible effect on
-reliability.  Therefore we recommend that you avoid using
-C<guestfs_mount> in any code that needs performance, and instead
-use C<guestfs_mount_options> (use an empty string for the first
-parameter if you don't want any options).");
+Before libguestfs 1.13.16, this call implicitly added the options
+C<sync> and C<noatime>.  The C<sync> option greatly slowed
+writes and caused many problems for users.  If your program
+might need to work with older versions of libguestfs, use
+C<guestfs_mount_options> instead (using an empty string for the
+first parameter if you don't want any options).");
 
   ("sync", (RErr, [], []), 2, [],
    [ InitEmpty, Always, TestRun [["sync"]]],
@@ -2165,7 +2257,7 @@ example C<ext3>.");
 
   ("sfdisk", (RErr, [Device "device";
                      Int "cyls"; Int "heads"; Int "sectors";
-                     StringList "lines"], []), 43, [DangerWillRobinson; DeprecatedBy "part_add"],
+                     StringList "lines"], []), 43, [DeprecatedBy "part_add"],
    [],
    "create partitions on a block device",
    "\
@@ -2266,7 +2358,7 @@ This unmounts all mounted filesystems.
 
 Some internal mounts are not unmounted by this call.");
 
-  ("lvm_remove_all", (RErr, [], []), 48, [DangerWillRobinson; Optional "lvm2"],
+  ("lvm_remove_all", (RErr, [], []), 48, [Optional "lvm2"],
    [],
    "remove all LVM LVs, VGs and PVs",
    "\
@@ -3279,7 +3371,7 @@ volume to match the new size of the underlying device.");
 
   ("sfdisk_N", (RErr, [Device "device"; Int "partnum";
                        Int "cyls"; Int "heads"; Int "sectors";
-                       String "line"], []), 99, [DangerWillRobinson; DeprecatedBy "part_add"],
+                       String "line"], []), 99, [DeprecatedBy "part_add"],
    [],
    "modify a single partition on a block device",
    "\
@@ -3525,7 +3617,7 @@ It is just a wrapper around the C L<glob(3)> function
 with flags C<GLOB_MARK|GLOB_BRACE>.
 See that manual page for more details.");
 
-  ("scrub_device", (RErr, [Device "device"], []), 114, [DangerWillRobinson; Optional "scrub"],
+  ("scrub_device", (RErr, [Device "device"], []), 114, [Optional "scrub"],
    [InitNone, Always, TestRun (	(* use /dev/sdc because it's smaller *)
       [["scrub_device"; "/dev/sdc"]])],
    "scrub (securely wipe) a device",
@@ -3904,7 +3996,7 @@ This function is primarily intended for use by programs.  To
 get a simple list of names, use C<guestfs_ls>.  To get a printable
 directory for human consumption, use C<guestfs_ll>.");
 
-  ("sfdiskM", (RErr, [Device "device"; StringList "lines"], []), 139, [DangerWillRobinson; DeprecatedBy "part_add"],
+  ("sfdiskM", (RErr, [Device "device"; StringList "lines"], []), 139, [DeprecatedBy "part_add"],
    [],
    "create partitions on a block device",
    "\
@@ -4967,7 +5059,7 @@ backwards from the end of the disk (C<-1> is the last sector).
 Creating a partition which covers the whole disk is not so easy.
 Use C<guestfs_part_disk> to do that.");
 
-  ("part_disk", (RErr, [Device "device"; String "parttype"], []), 210, [DangerWillRobinson],
+  ("part_disk", (RErr, [Device "device"; String "parttype"], []), 210, [],
    [InitEmpty, Always, TestRun (
       [["part_disk"; "/dev/sda"; "mbr"]]);
     InitEmpty, Always, TestRun (
@@ -5126,7 +5218,7 @@ See also C<guestfs_version>.
 
 =back");
 
-  ("dd", (RErr, [Dev_or_Path "src"; Dev_or_Path "dest"], []), 217, [],
+  ("dd", (RErr, [Dev_or_Path "src"; Dev_or_Path "dest"], []), 217, [DeprecatedBy "copy_device_to_device"],
    [InitScratchFS, Always, TestOutputBuffer (
       [["mkdir"; "/dd"];
        ["write"; "/dd/src"; "hello, world"];
@@ -5141,7 +5233,8 @@ example to duplicate a filesystem.
 
 If the destination is a device, it must be as large or larger
 than the source file or device, otherwise the copy will fail.
-This command cannot do partial copies (see C<guestfs_copy_size>).");
+This command cannot do partial copies
+(see C<guestfs_copy_device_to_device>).");
 
   ("filesize", (RInt64 "size", [Pathname "file"], []), 218, [],
    [InitScratchFS, Always, TestOutputInt (
@@ -5234,7 +5327,7 @@ calls to associate logical volumes and volume groups.
 
 See also C<guestfs_vgpvuuids>.");
 
-  ("copy_size", (RErr, [Dev_or_Path "src"; Dev_or_Path "dest"; Int64 "size"], []), 227, [Progress],
+  ("copy_size", (RErr, [Dev_or_Path "src"; Dev_or_Path "dest"; Int64 "size"], []), 227, [Progress; DeprecatedBy "copy_device_to_device"],
    [InitScratchFS, Always, TestOutputBuffer (
       [["mkdir"; "/copy_size"];
        ["write"; "/copy_size/src"; "hello, world"];
@@ -5248,7 +5341,7 @@ or file C<src> to another destination device or file C<dest>.
 Note this will fail if the source is too short or if the destination
 is not large enough.");
 
-  ("zero_device", (RErr, [Device "device"], []), 228, [DangerWillRobinson; Progress],
+  ("zero_device", (RErr, [Device "device"], []), 228, [Progress],
    [InitBasicFSonLVM, Always, TestRun (
       [["zero_device"; "/dev/VG/LV"]])],
    "write zeroes to an entire device",
@@ -5667,7 +5760,7 @@ C<device> parameter must be the name of the LUKS mapping
 device (ie. C</dev/mapper/mapname>) and I<not> the name
 of the underlying block device.");
 
-  ("luks_format", (RErr, [Device "device"; Key "key"; Int "keyslot"], []), 260, [Optional "luks"; DangerWillRobinson],
+  ("luks_format", (RErr, [Device "device"; Key "key"; Int "keyslot"], []), 260, [Optional "luks"],
    [],
    "format a block device as a LUKS encrypted device",
    "\
@@ -5676,7 +5769,7 @@ the device as a LUKS encrypted device.  C<key> is the
 initial key, which is added to key slot C<slot>.  (LUKS
 supports 8 key slots, numbered 0-7).");
 
-  ("luks_format_cipher", (RErr, [Device "device"; Key "key"; Int "keyslot"; String "cipher"], []), 261, [Optional "luks"; DangerWillRobinson],
+  ("luks_format_cipher", (RErr, [Device "device"; Key "key"; Int "keyslot"; String "cipher"], []), 261, [Optional "luks"],
    [],
    "format a block device as a LUKS encrypted device",
    "\
@@ -5808,7 +5901,9 @@ removes the partition number, returning the device name
 (eg. \"/dev/sdb\").
 
 The named partition must exist, for example as a string returned
-from C<guestfs_list_partitions>.");
+from C<guestfs_list_partitions>.
+
+See also C<guestfs_part_to_partnum>.");
 
   ("upload_offset", (RErr, [FileIn "filename"; Dev_or_Path "remotefilename"; Int64 "offset"], []), 273, [Progress],
    (let md5 = Digest.to_hex (Digest.file "COPYING.LIB") in
@@ -6142,6 +6237,101 @@ C<path> does not exist, then a new file is created.
 
 See also C<guestfs_write>.");
 
+  ("compress_out", (RErr, [String "ctype"; Pathname "file"; FileOut "zfile"], [Int "level"]), 291, [],
+   [],
+   "output compressed file",
+   "\
+This command compresses C<file> and writes it out to the local
+file C<zfile>.
+
+The compression program used is controlled by the C<ctype> parameter.
+Currently this includes: C<compress>, C<gzip>, C<bzip2>, C<xz> or C<lzop>.
+Some compression types may not be supported by particular builds of
+libguestfs, in which case you will get an error containing the
+substring \"not supported\".
+
+The optional C<level> parameter controls compression level.  The
+meaning and default for this parameter depends on the compression
+program being used.");
+
+  ("compress_device_out", (RErr, [String "ctype"; Device "device"; FileOut "zdevice"], [Int "level"]), 292, [],
+   [],
+   "output compressed device",
+   "\
+This command compresses C<device> and writes it out to the local
+file C<zdevice>.
+
+The C<ctype> and optional C<level> parameters have the same meaning
+as in C<guestfs_compress_out>.");
+
+  ("part_to_partnum", (RInt "partnum", [Device "partition"], []), 293, [],
+   [InitPartition, Always, TestOutputInt (
+      [["part_to_partnum"; "/dev/sda1"]], 1);
+    InitEmpty, Always, TestLastFail (
+      [["part_to_partnum"; "/dev/sda"]])],
+   "convert partition name to partition number",
+   "\
+This function takes a partition name (eg. \"/dev/sdb1\") and
+returns the partition number (eg. C<1>).
+
+The named partition must exist, for example as a string returned
+from C<guestfs_list_partitions>.
+
+See also C<guestfs_part_to_dev>.");
+
+  ("copy_device_to_device", (RErr, [Device "src"; Device "dest"], [Int64 "srcoffset"; Int64 "destoffset"; Int64 "size"]), 294, [Progress],
+   [],
+   "copy from source device to destination device",
+   "\
+The four calls C<guestfs_copy_device_to_device>,
+C<guestfs_copy_device_to_file>,
+C<guestfs_copy_file_to_device>, and
+C<guestfs_copy_file_to_file>
+let you copy from a source (device|file) to a destination
+(device|file).
+
+Partial copies can be made since you can specify optionally
+the source offset, destination offset and size to copy.  These
+values are all specified in bytes.  If not given, the offsets
+both default to zero, and the size defaults to copying as much
+as possible until we hit the end of the source.
+
+The source and destination may be the same object.  However
+overlapping regions may not be copied correctly.
+
+If the destination is a file, it is created if required.  If
+the destination file is not large enough, it is extended.");
+
+  ("copy_device_to_file", (RErr, [Device "src"; Pathname "dest"], [Int64 "srcoffset"; Int64 "destoffset"; Int64 "size"]), 295, [Progress],
+   [],
+   "copy from source device to destination file",
+   "\
+See C<guestfs_copy_device_to_device> for a general overview
+of this call.");
+
+  ("copy_file_to_device", (RErr, [Pathname "src"; Device "dest"], [Int64 "srcoffset"; Int64 "destoffset"; Int64 "size"]), 296, [Progress],
+   [],
+   "copy from source file to destination device",
+   "\
+See C<guestfs_copy_device_to_device> for a general overview
+of this call.");
+
+  ("copy_file_to_file", (RErr, [Pathname "src"; Pathname "dest"], [Int64 "srcoffset"; Int64 "destoffset"; Int64 "size"]), 297, [Progress],
+   [InitScratchFS, Always, TestOutputBuffer (
+      [["mkdir"; "/copyff"];
+       ["write"; "/copyff/src"; "hello, world"];
+       ["copy_file_to_file"; "/copyff/src"; "/copyff/dest"; ""; ""; ""];
+       ["read_file"; "/copyff/dest"]], "hello, world")],
+   "copy from source file to destination file",
+   "\
+See C<guestfs_copy_device_to_device> for a general overview
+of this call.
+
+This is B<not> the function you want for copying files.  This
+is for copying blocks within existing files.  See C<guestfs_cp>,
+C<guestfs_cp_a> and C<guestfs_mv> for general file copying and
+moving functions.");
+
 ]
 
 let all_functions = non_daemon_functions @ daemon_functions
@@ -6330,6 +6520,17 @@ Close and reopen the libguestfs handle.  It is not necessary to use
 this normally, because the handle is closed properly when guestfish
 exits.  However this is occasionally useful for testing.");
 
+  ("setenv", (RErr,[], []), -1, [], [],
+   "set an environment variable",
+   "  setenv VAR value
+
+Set the environment variable C<VAR> to the string C<value>.
+
+To print the value of an environment variable use a shell command
+such as:
+
+ !echo $VAR");
+
   ("sparse", (RErr,[], []), -1, [], [],
    "create a sparse disk image and add",
    " sparse filename size
@@ -6363,5 +6564,11 @@ See also L<guestfs(3)/AVAILABILITY>.");
 
 Run the command as usual, but print the elapsed time afterwards.  This
 can be useful for benchmarking operations.");
+
+  ("unsetenv", (RErr,[], []), -1, [], [],
+   "unset an environment variable",
+   "  unsetenv VAR
+
+Remove C<VAR> from the environment.");
 
 ]

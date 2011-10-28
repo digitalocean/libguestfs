@@ -2565,6 +2565,66 @@ struct guestfs_write_append_args {
 };
 typedef struct guestfs_write_append_args guestfs_write_append_args;
 
+struct guestfs_compress_out_args {
+	char *ctype;
+	char *file;
+	int level;
+};
+typedef struct guestfs_compress_out_args guestfs_compress_out_args;
+
+struct guestfs_compress_device_out_args {
+	char *ctype;
+	char *device;
+	int level;
+};
+typedef struct guestfs_compress_device_out_args guestfs_compress_device_out_args;
+
+struct guestfs_part_to_partnum_args {
+	char *partition;
+};
+typedef struct guestfs_part_to_partnum_args guestfs_part_to_partnum_args;
+
+struct guestfs_part_to_partnum_ret {
+	int partnum;
+};
+typedef struct guestfs_part_to_partnum_ret guestfs_part_to_partnum_ret;
+
+struct guestfs_copy_device_to_device_args {
+	char *src;
+	char *dest;
+	quad_t srcoffset;
+	quad_t destoffset;
+	quad_t size;
+};
+typedef struct guestfs_copy_device_to_device_args guestfs_copy_device_to_device_args;
+
+struct guestfs_copy_device_to_file_args {
+	char *src;
+	char *dest;
+	quad_t srcoffset;
+	quad_t destoffset;
+	quad_t size;
+};
+typedef struct guestfs_copy_device_to_file_args guestfs_copy_device_to_file_args;
+
+struct guestfs_copy_file_to_device_args {
+	char *src;
+	char *dest;
+	quad_t srcoffset;
+	quad_t destoffset;
+	quad_t size;
+};
+typedef struct guestfs_copy_file_to_device_args guestfs_copy_file_to_device_args;
+
+struct guestfs_copy_file_to_file_args {
+	char *src;
+	char *dest;
+	quad_t srcoffset;
+	quad_t destoffset;
+	quad_t size;
+};
+typedef struct guestfs_copy_file_to_file_args guestfs_copy_file_to_file_args;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -2856,7 +2916,14 @@ enum guestfs_procedure {
 	GUESTFS_PROC_NTFSRESIZE_OPTS = 288,
 	GUESTFS_PROC_BTRFS_FILESYSTEM_RESIZE = 289,
 	GUESTFS_PROC_WRITE_APPEND = 290,
-	GUESTFS_PROC_NR_PROCS = 290 + 1,
+	GUESTFS_PROC_COMPRESS_OUT = 291,
+	GUESTFS_PROC_COMPRESS_DEVICE_OUT = 292,
+	GUESTFS_PROC_PART_TO_PARTNUM = 293,
+	GUESTFS_PROC_COPY_DEVICE_TO_DEVICE = 294,
+	GUESTFS_PROC_COPY_DEVICE_TO_FILE = 295,
+	GUESTFS_PROC_COPY_FILE_TO_DEVICE = 296,
+	GUESTFS_PROC_COPY_FILE_TO_FILE = 297,
+	GUESTFS_PROC_NR_PROCS = 297 + 1,
 };
 typedef enum guestfs_procedure guestfs_procedure;
 #define GUESTFS_MESSAGE_MAX 4194304
@@ -3333,6 +3400,14 @@ extern  bool_t xdr_guestfs_list_dm_devices_ret (XDR *, guestfs_list_dm_devices_r
 extern  bool_t xdr_guestfs_ntfsresize_opts_args (XDR *, guestfs_ntfsresize_opts_args*);
 extern  bool_t xdr_guestfs_btrfs_filesystem_resize_args (XDR *, guestfs_btrfs_filesystem_resize_args*);
 extern  bool_t xdr_guestfs_write_append_args (XDR *, guestfs_write_append_args*);
+extern  bool_t xdr_guestfs_compress_out_args (XDR *, guestfs_compress_out_args*);
+extern  bool_t xdr_guestfs_compress_device_out_args (XDR *, guestfs_compress_device_out_args*);
+extern  bool_t xdr_guestfs_part_to_partnum_args (XDR *, guestfs_part_to_partnum_args*);
+extern  bool_t xdr_guestfs_part_to_partnum_ret (XDR *, guestfs_part_to_partnum_ret*);
+extern  bool_t xdr_guestfs_copy_device_to_device_args (XDR *, guestfs_copy_device_to_device_args*);
+extern  bool_t xdr_guestfs_copy_device_to_file_args (XDR *, guestfs_copy_device_to_file_args*);
+extern  bool_t xdr_guestfs_copy_file_to_device_args (XDR *, guestfs_copy_file_to_device_args*);
+extern  bool_t xdr_guestfs_copy_file_to_file_args (XDR *, guestfs_copy_file_to_file_args*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -3757,6 +3832,14 @@ extern bool_t xdr_guestfs_list_dm_devices_ret ();
 extern bool_t xdr_guestfs_ntfsresize_opts_args ();
 extern bool_t xdr_guestfs_btrfs_filesystem_resize_args ();
 extern bool_t xdr_guestfs_write_append_args ();
+extern bool_t xdr_guestfs_compress_out_args ();
+extern bool_t xdr_guestfs_compress_device_out_args ();
+extern bool_t xdr_guestfs_part_to_partnum_args ();
+extern bool_t xdr_guestfs_part_to_partnum_ret ();
+extern bool_t xdr_guestfs_copy_device_to_device_args ();
+extern bool_t xdr_guestfs_copy_device_to_file_args ();
+extern bool_t xdr_guestfs_copy_file_to_device_args ();
+extern bool_t xdr_guestfs_copy_file_to_file_args ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

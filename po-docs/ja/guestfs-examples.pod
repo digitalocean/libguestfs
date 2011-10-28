@@ -6,8 +6,7 @@ guestfs-examples - Examples of using libguestfs from C
 
 =head1 SYNOPSIS
 
- #include <guestfs.h>
- 
+#include <guestfs.h>
  guestfs_h *g = guestfs_create ();
  guestfs_add_drive_ro (g, "disk.img");
  guestfs_launch (g);
@@ -32,9 +31,9 @@ also need to read L<guestfs(3)>.
 
 =head1 SEE ALSO
 
-L<guestfs(3)>, L<guestfs-java(3)>, L<guestfs-ocaml(3)>, L<guestfs-perl(3)>,
-L<guestfs-python(3)>, L<guestfs-recipes(1)>, L<guestfs-ruby(3)>,
-L<http://libguestfs.org/>.
+L<guestfs(3)>, L<guestfs-erlang(3)>, L<guestfs-java(3)>,
+L<guestfs-ocaml(3)>, L<guestfs-perl(3)>, L<guestfs-python(3)>,
+L<guestfs-recipes(1)>, L<guestfs-ruby(3)>, L<http://libguestfs.org/>.
 
 =head1 AUTHORS
 

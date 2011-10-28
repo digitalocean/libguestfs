@@ -1343,6 +1343,10 @@ PREINIT:
           optargs_s.iface = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK;
         }
+        else if (strcmp (this_arg, "name") == 0) {
+          optargs_s.name = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK;
+        }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
           croak ("optional argument '%s' given twice",
@@ -1405,6 +1409,24 @@ PREINIT:
       }
       free (r);
 
+void
+debug_drives (g)
+      guestfs_h *g;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_debug_drives (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
 SV *
 add_domain (g, dom, ...)
       guestfs_h *g;
@@ -1441,6 +1463,10 @@ PREINIT:
         else if (strcmp (this_arg, "allowuuid") == 0) {
           optargs_s.allowuuid = SvIV (ST (items_i+1));
           this_mask = GUESTFS_ADD_DOMAIN_ALLOWUUID_BITMASK;
+        }
+        else if (strcmp (this_arg, "readonlydisk") == 0) {
+          optargs_s.readonlydisk = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
@@ -1722,6 +1748,30 @@ PREINIT:
       int r;
    CODE:
       r = guestfs_get_pgroup (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+void
+set_smp (g, smp)
+      guestfs_h *g;
+      int smp;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_smp (g, smp);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+get_smp (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_get_smp (g);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSViv (r);
@@ -6051,6 +6101,252 @@ PREINIT:
       int r;
  PPCODE:
       r = guestfs_write_append (g, path, content, content_size);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+compress_out (g, ctype, file, zfile, ...)
+      guestfs_h *g;
+      char *ctype;
+      char *file;
+      char *zfile;
+PREINIT:
+      int r;
+      struct guestfs_compress_out_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_compress_out_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 4) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 4; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (strcmp (this_arg, "level") == 0) {
+          optargs_s.level = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COMPRESS_OUT_LEVEL_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_compress_out_argv (g, ctype, file, zfile, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+compress_device_out (g, ctype, device, zdevice, ...)
+      guestfs_h *g;
+      char *ctype;
+      char *device;
+      char *zdevice;
+PREINIT:
+      int r;
+      struct guestfs_compress_device_out_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_compress_device_out_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 4) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 4; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (strcmp (this_arg, "level") == 0) {
+          optargs_s.level = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COMPRESS_DEVICE_OUT_LEVEL_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_compress_device_out_argv (g, ctype, device, zdevice, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+part_to_partnum (g, partition)
+      guestfs_h *g;
+      char *partition;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_part_to_partnum (g, partition);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+void
+copy_device_to_device (g, src, dest, ...)
+      guestfs_h *g;
+      char *src;
+      char *dest;
+PREINIT:
+      int r;
+      struct guestfs_copy_device_to_device_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_copy_device_to_device_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (strcmp (this_arg, "srcoffset") == 0) {
+          optargs_s.srcoffset = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET_BITMASK;
+        }
+        else if (strcmp (this_arg, "destoffset") == 0) {
+          optargs_s.destoffset = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET_BITMASK;
+        }
+        else if (strcmp (this_arg, "size") == 0) {
+          optargs_s.size = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_copy_device_to_device_argv (g, src, dest, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+copy_device_to_file (g, src, dest, ...)
+      guestfs_h *g;
+      char *src;
+      char *dest;
+PREINIT:
+      int r;
+      struct guestfs_copy_device_to_file_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_copy_device_to_file_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (strcmp (this_arg, "srcoffset") == 0) {
+          optargs_s.srcoffset = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET_BITMASK;
+        }
+        else if (strcmp (this_arg, "destoffset") == 0) {
+          optargs_s.destoffset = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET_BITMASK;
+        }
+        else if (strcmp (this_arg, "size") == 0) {
+          optargs_s.size = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_copy_device_to_file_argv (g, src, dest, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+copy_file_to_device (g, src, dest, ...)
+      guestfs_h *g;
+      char *src;
+      char *dest;
+PREINIT:
+      int r;
+      struct guestfs_copy_file_to_device_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_copy_file_to_device_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (strcmp (this_arg, "srcoffset") == 0) {
+          optargs_s.srcoffset = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET_BITMASK;
+        }
+        else if (strcmp (this_arg, "destoffset") == 0) {
+          optargs_s.destoffset = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET_BITMASK;
+        }
+        else if (strcmp (this_arg, "size") == 0) {
+          optargs_s.size = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_copy_file_to_device_argv (g, src, dest, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+copy_file_to_file (g, src, dest, ...)
+      guestfs_h *g;
+      char *src;
+      char *dest;
+PREINIT:
+      int r;
+      struct guestfs_copy_file_to_file_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_copy_file_to_file_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (strcmp (this_arg, "srcoffset") == 0) {
+          optargs_s.srcoffset = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET_BITMASK;
+        }
+        else if (strcmp (this_arg, "destoffset") == 0) {
+          optargs_s.destoffset = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET_BITMASK;
+        }
+        else if (strcmp (this_arg, "size") == 0) {
+          optargs_s.size = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_copy_file_to_file_argv (g, src, dest, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 

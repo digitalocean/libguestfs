@@ -9347,6 +9347,260 @@ done:
   return;
 }
 
+static void compress_out_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_compress_out_args args;
+  int level;
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_compress_out_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *ctype = args.ctype;
+  char *file = args.file;
+  ABS_PATH (file, , goto done);
+  level = args.level;
+
+  NEED_ROOT (, goto done);
+  r = do_compress_out (ctype, file, level);
+  if (r == -1)
+    /* do_compress_out has already called reply_with_error */
+    goto done;
+
+  /* do_compress_out has already sent a reply */
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_compress_out_args, (char *) &args);
+  return;
+}
+
+static void compress_device_out_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_compress_device_out_args args;
+  int level;
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_compress_device_out_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *ctype = args.ctype;
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  level = args.level;
+
+  r = do_compress_device_out (ctype, device, level);
+  if (r == -1)
+    /* do_compress_device_out has already called reply_with_error */
+    goto done;
+
+  /* do_compress_device_out has already sent a reply */
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_compress_device_out_args, (char *) &args);
+  return;
+}
+
+static void part_to_partnum_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_part_to_partnum_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_part_to_partnum_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *partition = args.partition;
+  RESOLVE_DEVICE (partition, , goto done);
+
+  r = do_part_to_partnum (partition);
+  if (r == -1)
+    /* do_part_to_partnum has already called reply_with_error */
+    goto done;
+
+  struct guestfs_part_to_partnum_ret ret;
+  ret.partnum = r;
+  reply ((xdrproc_t) &xdr_guestfs_part_to_partnum_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_part_to_partnum_args, (char *) &args);
+  return;
+}
+
+static void copy_device_to_device_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_copy_device_to_device_args args;
+  int64_t srcoffset;
+  int64_t destoffset;
+  int64_t size;
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffff8)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_copy_device_to_device_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *src = args.src;
+  RESOLVE_DEVICE (src, , goto done);
+  char *dest = args.dest;
+  RESOLVE_DEVICE (dest, , goto done);
+  srcoffset = args.srcoffset;
+  destoffset = args.destoffset;
+  size = args.size;
+
+  r = do_copy_device_to_device (src, dest, srcoffset, destoffset, size);
+  if (r == -1)
+    /* do_copy_device_to_device has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_copy_device_to_device_args, (char *) &args);
+  return;
+}
+
+static void copy_device_to_file_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_copy_device_to_file_args args;
+  int64_t srcoffset;
+  int64_t destoffset;
+  int64_t size;
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffff8)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_copy_device_to_file_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *src = args.src;
+  RESOLVE_DEVICE (src, , goto done);
+  char *dest = args.dest;
+  ABS_PATH (dest, , goto done);
+  srcoffset = args.srcoffset;
+  destoffset = args.destoffset;
+  size = args.size;
+
+  NEED_ROOT (, goto done);
+  r = do_copy_device_to_file (src, dest, srcoffset, destoffset, size);
+  if (r == -1)
+    /* do_copy_device_to_file has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_copy_device_to_file_args, (char *) &args);
+  return;
+}
+
+static void copy_file_to_device_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_copy_file_to_device_args args;
+  int64_t srcoffset;
+  int64_t destoffset;
+  int64_t size;
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffff8)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_copy_file_to_device_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *src = args.src;
+  ABS_PATH (src, , goto done);
+  char *dest = args.dest;
+  RESOLVE_DEVICE (dest, , goto done);
+  srcoffset = args.srcoffset;
+  destoffset = args.destoffset;
+  size = args.size;
+
+  NEED_ROOT (, goto done);
+  r = do_copy_file_to_device (src, dest, srcoffset, destoffset, size);
+  if (r == -1)
+    /* do_copy_file_to_device has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_copy_file_to_device_args, (char *) &args);
+  return;
+}
+
+static void copy_file_to_file_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_copy_file_to_file_args args;
+  int64_t srcoffset;
+  int64_t destoffset;
+  int64_t size;
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffff8)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_copy_file_to_file_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *src = args.src;
+  ABS_PATH (src, , goto done);
+  char *dest = args.dest;
+  ABS_PATH (dest, , goto done);
+  srcoffset = args.srcoffset;
+  destoffset = args.destoffset;
+  size = args.size;
+
+  NEED_ROOT (, goto done);
+  r = do_copy_file_to_file (src, dest, srcoffset, destoffset, size);
+  if (r == -1)
+    /* do_copy_file_to_file has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_copy_file_to_file_args, (char *) &args);
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -10219,6 +10473,27 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_WRITE_APPEND:
       write_append_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_COMPRESS_OUT:
+      compress_out_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_COMPRESS_DEVICE_OUT:
+      compress_device_out_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PART_TO_PARTNUM:
+      part_to_partnum_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_COPY_DEVICE_TO_DEVICE:
+      copy_device_to_device_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_COPY_DEVICE_TO_FILE:
+      copy_device_to_file_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_COPY_FILE_TO_DEVICE:
+      copy_file_to_device_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_COPY_FILE_TO_FILE:
+      copy_file_to_file_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

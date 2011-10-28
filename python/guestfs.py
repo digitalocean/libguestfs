@@ -75,6 +75,7 @@ EVENT_PROGRESS = 0x8
 EVENT_APPLIANCE = 0x10
 EVENT_LIBRARY = 0x20
 EVENT_TRACE = 0x40
+EVENT_ENTER = 0x80
 
 class ClosedHandle(ValueError):
     pass
@@ -246,7 +247,7 @@ class GuestFS:
         can just remove them, unless you want to retain
         compatibility with older versions of the API.
         
-        This function is deprecated. In new code, use the
+        *This function is deprecated.* In new code, use the
         "launch" call instead.
         
         Deprecated functions will not be removed from the API,
@@ -300,7 +301,7 @@ class GuestFS:
         into the guest), then you should probably use
         "g.add_drive_ro" instead.
         
-        This function is deprecated. In new code, use the
+        *This function is deprecated.* In new code, use the
         "add_drive_opts" call instead.
         
         Deprecated functions will not be removed from the API,
@@ -673,7 +674,7 @@ class GuestFS:
         u"""This is the same as "g.add_drive" but it allows you to
         specify the QEMU interface emulation to use at run time.
         
-        This function is deprecated. In new code, use the
+        *This function is deprecated.* In new code, use the
         "add_drive_opts" call instead.
         
         Deprecated functions will not be removed from the API,
@@ -688,7 +689,7 @@ class GuestFS:
         to specify the QEMU interface emulation to use at run
         time.
         
-        This function is deprecated. In new code, use the
+        *This function is deprecated.* In new code, use the
         "add_drive_opts" call instead.
         
         Deprecated functions will not be removed from the API,
@@ -824,6 +825,9 @@ class GuestFS:
         "freebsd"
         FreeBSD.
         
+        "netbsd"
+        NetBSD.
+        
         "unknown"
         The operating system type could not be determined.
         
@@ -873,11 +877,17 @@ class GuestFS:
         "linuxmint"
         Linux Mint.
         
+        "mageia"
+        Mageia.
+        
         "mandriva"
         Mandriva.
         
         "meego"
         MeeGo.
+        
+        "opensuse"
+        OpenSUSE.
         
         "pardus"
         Pardus.
@@ -893,6 +903,9 @@ class GuestFS:
         
         "slackware"
         Slackware.
+        
+        "ttylinux"
+        ttylinux.
         
         "ubuntu"
         Ubuntu.
@@ -1064,7 +1077,7 @@ class GuestFS:
         self._check_not_closed ()
         return libguestfsmod.list_filesystems (self._o)
 
-    def add_drive_opts (self, filename, readonly=-1, format=None, iface=None):
+    def add_drive_opts (self, filename, readonly=-1, format=None, iface=None, name=None):
         u"""This function adds a virtual machine disk image
         "filename" to libguestfs. The first time you call this
         function, the disk appears as "/dev/sda", the second
@@ -1103,9 +1116,14 @@ class GuestFS:
         This rarely-used option lets you emulate the
         behaviour of the deprecated "g.add_drive_with_if"
         call (q.v.)
+        
+        "name"
+        The name the drive had in the original guest, e.g.
+        /dev/sdb. This is used as a hint to the guest
+        inspection process if it is available.
         """
         self._check_not_closed ()
-        return libguestfsmod.add_drive_opts (self._o, filename, readonly, format, iface)
+        return libguestfsmod.add_drive_opts (self._o, filename, readonly, format, iface, name)
 
     def inspect_get_windows_systemroot (self, root):
         u"""This returns the Windows systemroot of the inspected
@@ -1141,7 +1159,11 @@ class GuestFS:
         self._check_not_closed ()
         return libguestfsmod.debug_cmdline (self._o)
 
-    def add_domain (self, dom, libvirturi=None, readonly=-1, iface=None, live=-1, allowuuid=-1):
+    def debug_drives (self):
+        self._check_not_closed ()
+        return libguestfsmod.debug_drives (self._o)
+
+    def add_domain (self, dom, libvirturi=None, readonly=-1, iface=None, live=-1, allowuuid=-1, readonlydisk=None):
         u"""This function adds the disk(s) attached to the named
         libvirt domain "dom". It works by connecting to libvirt,
         requesting the domain and domain XML from libvirt,
@@ -1182,11 +1204,50 @@ class GuestFS:
         and if that lookup fails then we treat "dom" as a name
         as usual.
         
+        The optional "readonlydisk" parameter controls what we
+        do for disks which are marked <readonly/> in the libvirt
+        XML. Possible values are:
+        
+        readonlydisk = "error"
+        If "readonly" is false:
+        
+        The whole call is aborted with an error if any disk
+        with the <readonly/> flag is found.
+        
+        If "readonly" is true:
+        
+        Disks with the <readonly/> flag are added read-only.
+        
+        readonlydisk = "read"
+        If "readonly" is false:
+        
+        Disks with the <readonly/> flag are added read-only.
+        Other disks are added read/write.
+        
+        If "readonly" is true:
+        
+        Disks with the <readonly/> flag are added read-only.
+        
+        readonlydisk = "write" (default)
+        If "readonly" is false:
+        
+        Disks with the <readonly/> flag are added
+        read/write.
+        
+        If "readonly" is true:
+        
+        Disks with the <readonly/> flag are added read-only.
+        
+        readonlydisk = "ignore"
+        If "readonly" is true or false:
+        
+        Disks with the <readonly/> flag are skipped.
+        
         The other optional parameters are passed directly
         through to "g.add_drive_opts".
         """
         self._check_not_closed ()
-        return libguestfsmod.add_domain (self._o, dom, libvirturi, readonly, iface, live, allowuuid)
+        return libguestfsmod.add_domain (self._o, dom, libvirturi, readonly, iface, live, allowuuid, readonlydisk)
 
     def inspect_get_package_format (self, root):
         u"""This function and "g.inspect_get_package_management"
@@ -1201,8 +1262,8 @@ class GuestFS:
         Windows).
         
         Possible strings include: "rpm", "deb", "ebuild",
-        "pisi", "pacman". Future versions of libguestfs may
-        return other strings.
+        "pisi", "pacman", "pkgsrc". Future versions of
+        libguestfs may return other strings.
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """
@@ -1223,8 +1284,8 @@ class GuestFS:
         
         Possible strings include: "yum", "up2date", "apt" (for
         all Debian derivatives), "portage", "pisi", "pacman",
-        "urpmi". Future versions of libguestfs may return other
-        strings.
+        "urpmi", "zypper". Future versions of libguestfs may
+        return other strings.
         
         Please read "INSPECTION" in guestfs(3) for more details.
         """
@@ -1580,6 +1641,23 @@ class GuestFS:
         self._check_not_closed ()
         return libguestfsmod.get_pgroup (self._o)
 
+    def set_smp (self, smp):
+        u"""Change the number of virtual CPUs assigned to the
+        appliance. The default is 1. Increasing this may improve
+        performance, though often it has no effect.
+        
+        This function must be called before "g.launch".
+        """
+        self._check_not_closed ()
+        return libguestfsmod.set_smp (self._o, smp)
+
+    def get_smp (self):
+        u"""This returns the number of virtual CPUs assigned to the
+        appliance.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.get_smp (self._o)
+
     def mount (self, device, mountpoint):
         u"""Mount a guest disk at a position in the filesystem.
         Block devices are named "/dev/sda", "/dev/sdb" and so
@@ -1596,22 +1674,13 @@ class GuestFS:
         The mounted filesystem is writable, if we have
         sufficient permissions on the underlying device.
         
-        Important note: When you use this call, the filesystem
-        options "sync" and "noatime" are set implicitly. This
-        was originally done because we thought it would improve
-        reliability, but it turns out that *-o sync* has a very
-        large negative performance impact and negligible effect
-        on reliability. Therefore we recommend that you avoid
-        using "g.mount" in any code that needs performance, and
-        instead use "g.mount_options" (use an empty string for
-        the first parameter if you don't want any options).
-        
-        This function is deprecated. In new code, use the
-        "mount_options" call instead.
-        
-        Deprecated functions will not be removed from the API,
-        but the fact that they are deprecated indicates that
-        there are problems with correct use of these functions.
+        Before libguestfs 1.13.16, this call implicitly added
+        the options "sync" and "noatime". The "sync" option
+        greatly slowed writes and caused many problems for
+        users. If your program might need to work with older
+        versions of libguestfs, use "g.mount_options" instead
+        (using an empty string for the first parameter if you
+        don't want any options).
         """
         self._check_not_closed ()
         return libguestfsmod.mount (self._o, device, mountpoint)
@@ -2116,10 +2185,7 @@ class GuestFS:
         
         See also: "g.sfdisk_l", "g.sfdisk_N", "g.part_init"
         
-        This command is dangerous. Without careful use you can
-        easily destroy all your data.
-        
-        This function is deprecated. In new code, use the
+        *This function is deprecated.* In new code, use the
         "part_add" call instead.
         
         Deprecated functions will not be removed from the API,
@@ -2147,7 +2213,7 @@ class GuestFS:
         limit of somewhere between 2MB and 4MB. See "PROTOCOL
         LIMITS" in guestfs(3).
         
-        This function is deprecated. In new code, use the
+        *This function is deprecated.* In new code, use the
         "write" call instead.
         
         Deprecated functions will not be removed from the API,
@@ -2190,9 +2256,6 @@ class GuestFS:
     def lvm_remove_all (self):
         u"""This command removes all LVM logical volumes, volume
         groups and physical volumes.
-        
-        This command is dangerous. Without careful use you can
-        easily destroy all your data.
         """
         self._check_not_closed ()
         return libguestfsmod.lvm_remove_all (self._o)
@@ -2611,7 +2674,7 @@ class GuestFS:
         u"""This returns the ext2/3/4 filesystem label of the
         filesystem on "device".
         
-        This function is deprecated. In new code, use the
+        *This function is deprecated.* In new code, use the
         "vfs_label" call instead.
         
         Deprecated functions will not be removed from the API,
@@ -2637,7 +2700,7 @@ class GuestFS:
         u"""This returns the ext2/3/4 filesystem UUID of the
         filesystem on "device".
         
-        This function is deprecated. In new code, use the
+        *This function is deprecated.* In new code, use the
         "vfs_uuid" call instead.
         
         Deprecated functions will not be removed from the API,
@@ -2884,10 +2947,7 @@ class GuestFS:
         
         See also: "g.part_add"
         
-        This command is dangerous. Without careful use you can
-        easily destroy all your data.
-        
-        This function is deprecated. In new code, use the
+        *This function is deprecated.* In new code, use the
         "part_add" call instead.
         
         Deprecated functions will not be removed from the API,
@@ -2904,7 +2964,7 @@ class GuestFS:
         
         See also: "g.part_list"
         
-        This function is deprecated. In new code, use the
+        *This function is deprecated.* In new code, use the
         "part_list" call instead.
         
         Deprecated functions will not be removed from the API,
@@ -3107,9 +3167,6 @@ class GuestFS:
         
         It is an interface to the scrub(1) program. See that
         manual page for more details.
-        
-        This command is dangerous. Without careful use you can
-        easily destroy all your data.
         """
         self._check_not_closed ()
         return libguestfsmod.scrub_device (self._o, device)
@@ -3458,10 +3515,7 @@ class GuestFS:
         See also: "g.sfdisk", the sfdisk(8) manpage and
         "g.part_disk"
         
-        This command is dangerous. Without careful use you can
-        easily destroy all your data.
-        
-        This function is deprecated. In new code, use the
+        *This function is deprecated.* In new code, use the
         "part_add" call instead.
         
         Deprecated functions will not be removed from the API,
@@ -3481,8 +3535,8 @@ class GuestFS:
         Since 1.0.63, use "g.file" instead which can now process
         compressed files.
         
-        This function is deprecated. In new code, use the "file"
-        call instead.
+        *This function is deprecated.* In new code, use the
+        "file" call instead.
         
         Deprecated functions will not be removed from the API,
         but the fact that they are deprecated indicates that
@@ -3842,7 +3896,7 @@ class GuestFS:
         command which allocates a file in the host and attaches
         it as a device.
         
-        This function is deprecated. In new code, use the
+        *This function is deprecated.* In new code, use the
         "fallocate64" call instead.
         
         Deprecated functions will not be removed from the API,
@@ -4051,7 +4105,7 @@ class GuestFS:
         For VFAT and NTFS the "blocksize" parameter is treated
         as the requested cluster size.
         
-        This function is deprecated. In new code, use the
+        *This function is deprecated.* In new code, use the
         "mkfs_opts" call instead.
         
         Deprecated functions will not be removed from the API,
@@ -4465,9 +4519,6 @@ class GuestFS:
         "parttype" is the partition table type, usually "mbr" or
         "gpt", but other possible values are described in
         "g.part_init".
-        
-        This command is dangerous. Without careful use you can
-        easily destroy all your data.
         """
         self._check_not_closed ()
         return libguestfsmod.part_disk (self._o, device, parttype)
@@ -4611,7 +4662,14 @@ class GuestFS:
         If the destination is a device, it must be as large or
         larger than the source file or device, otherwise the
         copy will fail. This command cannot do partial copies
-        (see "g.copy_size").
+        (see "g.copy_device_to_device").
+        
+        *This function is deprecated.* In new code, use the
+        "copy_device_to_device" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed ()
         return libguestfsmod.dd (self._o, src, dest)
@@ -4715,6 +4773,13 @@ class GuestFS:
         
         Note this will fail if the source is too short or if the
         destination is not large enough.
+        
+        *This function is deprecated.* In new code, use the
+        "copy_device_to_device" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed ()
         return libguestfsmod.copy_size (self._o, src, dest, size)
@@ -4727,9 +4792,6 @@ class GuestFS:
         If blocks are already zero, then this command avoids
         writing zeroes. This prevents the underlying device from
         becoming non-sparse or growing unnecessarily.
-        
-        This command is dangerous. Without careful use you can
-        easily destroy all your data.
         """
         self._check_not_closed ()
         return libguestfsmod.zero_device (self._o, device)
@@ -4764,7 +4826,7 @@ class GuestFS:
         
         See also ntfsresize(8).
         
-        This function is deprecated. In new code, use the
+        *This function is deprecated.* In new code, use the
         "ntfsresize_opts" call instead.
         
         Deprecated functions will not be removed from the API,
@@ -4959,7 +5021,7 @@ class GuestFS:
         it allows you to specify the new size (in bytes)
         explicitly.
         
-        This function is deprecated. In new code, use the
+        *This function is deprecated.* In new code, use the
         "ntfsresize_opts" call instead.
         
         Deprecated functions will not be removed from the API,
@@ -5114,9 +5176,6 @@ class GuestFS:
         formats the device as a LUKS encrypted device. "key" is
         the initial key, which is added to key slot "slot".
         (LUKS supports 8 key slots, numbered 0-7).
-        
-        This command is dangerous. Without careful use you can
-        easily destroy all your data.
         """
         self._check_not_closed ()
         return libguestfsmod.luks_format (self._o, device, key, keyslot)
@@ -5124,9 +5183,6 @@ class GuestFS:
     def luks_format_cipher (self, device, key, keyslot, cipher):
         u"""This command is the same as "g.luks_format" but it also
         allows you to set the "cipher" used.
-        
-        This command is dangerous. Without careful use you can
-        easily destroy all your data.
         """
         self._check_not_closed ()
         return libguestfsmod.luks_format_cipher (self._o, device, key, keyslot, cipher)
@@ -5231,6 +5287,8 @@ class GuestFS:
         
         The named partition must exist, for example as a string
         returned from "g.list_partitions".
+        
+        See also "g.part_to_partnum".
         """
         self._check_not_closed ()
         return libguestfsmod.part_to_dev (self._o, partition)
@@ -5539,4 +5597,93 @@ class GuestFS:
         """
         self._check_not_closed ()
         return libguestfsmod.write_append (self._o, path, content)
+
+    def compress_out (self, ctype, file, zfile, level=-1):
+        u"""This command compresses "file" and writes it out to the
+        local file "zfile".
+        
+        The compression program used is controlled by the
+        "ctype" parameter. Currently this includes: "compress",
+        "gzip", "bzip2", "xz" or "lzop". Some compression types
+        may not be supported by particular builds of libguestfs,
+        in which case you will get an error containing the
+        substring "not supported".
+        
+        The optional "level" parameter controls compression
+        level. The meaning and default for this parameter
+        depends on the compression program being used.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.compress_out (self._o, ctype, file, zfile, level)
+
+    def compress_device_out (self, ctype, device, zdevice, level=-1):
+        u"""This command compresses "device" and writes it out to
+        the local file "zdevice".
+        
+        The "ctype" and optional "level" parameters have the
+        same meaning as in "g.compress_out".
+        """
+        self._check_not_closed ()
+        return libguestfsmod.compress_device_out (self._o, ctype, device, zdevice, level)
+
+    def part_to_partnum (self, partition):
+        u"""This function takes a partition name (eg. "/dev/sdb1")
+        and returns the partition number (eg. 1).
+        
+        The named partition must exist, for example as a string
+        returned from "g.list_partitions".
+        
+        See also "g.part_to_dev".
+        """
+        self._check_not_closed ()
+        return libguestfsmod.part_to_partnum (self._o, partition)
+
+    def copy_device_to_device (self, src, dest, srcoffset=-1, destoffset=-1, size=-1):
+        u"""The four calls "g.copy_device_to_device",
+        "g.copy_device_to_file", "g.copy_file_to_device", and
+        "g.copy_file_to_file" let you copy from a source
+        (device|file) to a destination (device|file).
+        
+        Partial copies can be made since you can specify
+        optionally the source offset, destination offset and
+        size to copy. These values are all specified in bytes.
+        If not given, the offsets both default to zero, and the
+        size defaults to copying as much as possible until we
+        hit the end of the source.
+        
+        The source and destination may be the same object.
+        However overlapping regions may not be copied correctly.
+        
+        If the destination is a file, it is created if required.
+        If the destination file is not large enough, it is
+        extended.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.copy_device_to_device (self._o, src, dest, srcoffset, destoffset, size)
+
+    def copy_device_to_file (self, src, dest, srcoffset=-1, destoffset=-1, size=-1):
+        u"""See "g.copy_device_to_device" for a general overview of
+        this call.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.copy_device_to_file (self._o, src, dest, srcoffset, destoffset, size)
+
+    def copy_file_to_device (self, src, dest, srcoffset=-1, destoffset=-1, size=-1):
+        u"""See "g.copy_device_to_device" for a general overview of
+        this call.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.copy_file_to_device (self._o, src, dest, srcoffset, destoffset, size)
+
+    def copy_file_to_file (self, src, dest, srcoffset=-1, destoffset=-1, size=-1):
+        u"""See "g.copy_device_to_device" for a general overview of
+        this call.
+        
+        This is not the function you want for copying files.
+        This is for copying blocks within existing files. See
+        "g.cp", "g.cp_a" and "g.mv" for general file copying and
+        moving functions.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.copy_file_to_file (self._o, src, dest, srcoffset, destoffset, size)
 

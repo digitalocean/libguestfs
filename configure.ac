@@ -19,8 +19,8 @@
 # add extra information using --with-extra="..." which may be any
 # freeform string.
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [12])
-m4_define([libguestfs_release], [8])
+m4_define([libguestfs_minor],   [14])
+m4_define([libguestfs_release], [0])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -165,14 +165,72 @@ AC_SYS_LARGEFILE
 dnl Check sizeof long.
 AC_CHECK_SIZEOF([long])
 
+dnl Check if dirent (readdir) supports d_type member.
+AC_STRUCT_DIRENT_D_TYPE
+
+dnl Check if stat has the required fields.
+AC_STRUCT_ST_BLOCKS
+AC_CHECK_MEMBER([struct stat.st_blksize],[
+        AC_DEFINE([HAVE_STRUCT_STAT_ST_BLKSIZE],[1],[Define to 1 if 'st_blksize' is a member of 'struct stat'])])
+
 dnl Define a C symbol for the host CPU architecture.
 AC_DEFINE_UNQUOTED([host_cpu],["$host_cpu"],[Host architecture.])
 
 dnl Headers.
-AC_CHECK_HEADERS([errno.h sys/types.h sys/un.h sys/wait.h sys/socket.h endian.h byteswap.h])
+AC_CHECK_HEADERS([\
+        attr/xattr.h \
+        byteswap.h \
+        endian.h \
+        errno.h \
+        printf.h \
+        sys/inotify.h \
+        sys/socket.h \
+        sys/statvfs.h \
+        sys/types.h \
+        sys/un.h \
+        sys/wait.h \
+        windows.h \
+        sys/xattr.h])
 
 dnl Functions.
-AC_CHECK_FUNCS([futimens posix_fallocate])
+AC_CHECK_FUNCS([\
+        futimens \
+        getxattr \
+        htonl \
+        htons \
+        inotify_init1 \
+        lgetxattr \
+        listxattr \
+        llistxattr \
+        lsetxattr \
+        lremovexattr \
+        mknod \
+        ntohl \
+        ntohs \
+        posix_fallocate \
+        realpath \
+        removexattr \
+        setitimer \
+        setxattr \
+        sigaction \
+        statvfs \
+        sync])
+
+dnl For modified printf in the daemon, we need glibc either (old-style)
+dnl register_printf_function or (new-style) register_printf_specifier.
+AC_CHECK_FUNC([register_printf_specifier],[
+        AC_DEFINE([HAVE_REGISTER_PRINTF_SPECIFIER],[1],
+                [Define to 1 if you have new-style register_printf_specifier])
+        ],[
+        AC_CHECK_FUNC([register_printf_function],[
+                AC_DEFINE([HAVE_REGISTER_PRINTF_FUNCTION],[1],
+                        [Define to 1 if you have old-style register_printf_function])
+                ],[
+                AC_MSG_FAILURE(
+[No support for glibc-style extended printf formatters.
+
+This means you either have a very old glibc (pre-2.0) or you
+are using some other libc where this is not supported.])])])
 
 dnl Build the daemon?
 AC_MSG_CHECKING([if we should build the daemon])
@@ -183,6 +241,18 @@ AC_ARG_ENABLE([daemon],
         [enable_daemon=yes])
 AM_CONDITIONAL([ENABLE_DAEMON],[test "x$enable_daemon" = "xyes"])
 AC_MSG_RESULT([$enable_daemon])
+
+if test "x$enable_daemon" = "xyes"; then
+	dnl Install the daemon (for libguestfs live service)
+        AC_MSG_CHECKING([if we should install the daemon])
+        AC_ARG_ENABLE([install-daemon],
+                [AS_HELP_STRING([--enable-install-daemon],
+                  [enable installing the daemon under $sbindir @<:@default=no@:>@])],
+                [],
+                [enable_install_daemon=no])
+        AM_CONDITIONAL([INSTALL_DAEMON],[test "x$enable_install_daemon" = "xyes"])
+        AC_MSG_RESULT([$enable_install_daemon])
+fi
 
 dnl Build the appliance?
 AC_MSG_CHECKING([if we should build the appliance])
@@ -241,6 +311,45 @@ AM_CONDITIONAL([HAVE_RPCGEN],[test "x$RPCGEN" != "xno"])
 AC_CHECK_LIB([portablexdr],[xdrmem_create],[],[
         AC_SEARCH_LIBS([xdrmem_create],[rpc xdr nsl])
         ])
+
+dnl Check for Augeas (now optional).
+AC_CHECK_LIB([augeas],[aug_match],[
+        have_augeas=yes
+        AUGEAS_LIB="-laugeas"
+
+        old_LIBS="$LIBS"
+        LIBS="$LIBS $AUGEAS_LIB"
+        dnl Check for functions not available in earlier versions of Augeas.
+        AC_CHECK_FUNCS([aug_load aug_defvar aug_defnode])
+        LIBS="$old_LIBS"
+
+        ],[have_augeas=no])
+if test "x$have_augeas" = "xyes"; then
+        AC_DEFINE([HAVE_AUGEAS],[1],[Define to 1 if you have Augeas])
+fi
+AC_SUBST([AUGEAS_LIB])
+
+dnl Check for libselinux (optional).
+AC_CHECK_HEADERS([selinux/selinux.h])
+AC_CHECK_LIB([selinux],[setexeccon],[
+        have_libselinux="$ac_cv_header_selinux_selinux_h"
+        SELINUX_LIB="-lselinux"
+
+        old_LIBS="$LIBS"
+        LIBS="$LIBS $SELINUX_LIB"
+        AC_CHECK_FUNCS([setcon getcon])
+        LIBS="$old_LIBS"
+
+        ],[have_libselinux=no])
+if test "x$have_libselinux" = "xyes"; then
+        AC_DEFINE([HAVE_LIBSELINUX],[1],[Define to 1 if you have libselinux])
+fi
+AC_SUBST([SELINUX_LIB])
+
+dnl Check for systemtap/DTrace userspace probes (optional).
+dnl http://sourceware.org/systemtap/wiki/AddingUserSpaceProbingToApps
+AC_CHECK_HEADERS([sys/sdt.h])
+dnl AC_CHECK_PROG([DTRACE],[dtrace],[dtrace],[no])
 
 dnl Check for cpio which isn't in the default Pardus install amazingly.
 AC_CHECK_PROG([CPIO],[cpio],[cpio],[no])
@@ -337,8 +446,53 @@ working.
 ])
     fi
 
+    dnl qemu 0.15 was released with broken support for '-machine',
+    dnl requiring you to add the machine type: '-machine pc,[...]'.
+    dnl The problem is that 'pc' is only applicable for PC-like
+    dnl hardware, so we cannot do this as a general solution.  Since
+    dnl qemu 0.15, this problem has been fixed so now the default
+    dnl machine type is chosen (qemu commit 2645c6dcaf6ea2a51a).
+    dnl
+    dnl We need to work out if this qemu is the broken version, so we
+    dnl can add 'pc' just for this broken version.
+    dnl
+    dnl Note that old qemu didn't support the '-machine' option at all.
+    dnl
+    dnl We use the -kernel option for testing this, because this option
+    dnl is processed very late, after qemu has set up the machine.
+    AC_MSG_CHECKING([for broken '-machine accel=tcg' option in $QEMU])
+    LC_ALL=C $QEMU -nographic -machine accel=tcg -kernel /NO_SUCH_FILE \
+             > config1.tmp 2>&1
+    LC_ALL=C $QEMU -nographic -machine pc,accel=tcg -kernel /NO_SUCH_FILE \
+             > config2.tmp 2>&1
+    if cmp -s config1.tmp config2.tmp; then
+        AC_MSG_RESULT([no])
+    else
+        AC_MSG_RESULT([yes])
+        AC_DEFINE([QEMU_MACHINE_TYPE_IS_BROKEN],[1],[qemu -machine accel=tcg option is broken (in qemu 0.15 only)])
+    fi
+    rm config1.tmp config2.tmp
+
+    dnl See if the '-machine [pc,]accel=tcg' option is required in
+    dnl order to run the virtio-serial test below.  This happens when
+    dnl we run qemu-kvm inside a VM without forcing TCG:
+    dnl
+    dnl   Could not access KVM kernel module: No such file or directory
+    dnl   failed to initialize KVM: No such file or directory
+    dnl   No accelerator found!
+    AC_MSG_CHECKING([if -machine @<:@pc,@:>@accel=tcg option is required to test virtio-serial feature])
+    if $QEMU -nographic -device \? >/dev/null 2>&1; then
+        :
+    elif $QEMU -machine accel=tcg -nographic -device \? >/dev/null 2>&1; then
+        QEMU_EXTRA_OPTIONS_FOR_TEST="-machine accel=tcg"
+    elif $QEMU -machine pc,accel=tcg -nographic -device \? >/dev/null 2>&1; then
+        QEMU_EXTRA_OPTIONS_FOR_TEST="-machine pc,accel=tcg"
+    # else nothing ... it'll fail below.
+    fi
+    AC_MSG_RESULT([$QEMU_EXTRA_OPTIONS_FOR_TEST])
+
     AC_MSG_CHECKING([for virtio-serial support in $QEMU])
-    if $QEMU -nographic -device \? 2>&1 | grep -sq virtio-serial; then
+    if $QEMU $QEMU_EXTRA_OPTIONS_FOR_TEST -nographic -device \? 2>&1 | grep -sq virtio-serial; then
         AC_MSG_RESULT([yes])
     else
         AC_MSG_RESULT([no])
@@ -782,6 +936,25 @@ AS_IF([test "x$enable_php" != "xno"],
         ])
 AM_CONDITIONAL([HAVE_PHP], [test "x$PHP" != "xno" && test "x$PHPIZE" != "xno"])
 
+dnl Erlang
+ERLANG=no
+AC_ARG_ENABLE([erlang],
+    AS_HELP_STRING([--disable-erlang], [Disable Erlang language bindings]),
+         [],
+         [enable_erlang=yes])
+# NB: Don't use AS_IF here: it doesn't work.
+if test "x$enable_erlang" != "xno"; then
+        ERLANG=
+        AC_ERLANG_PATH_ERLC([no])
+
+        if test "x$ERLC" != "xno"; then
+            AC_ERLANG_CHECK_LIB([erl_interface], [],
+                                [AC_MSG_FAILURE([Erlang erl_interface library not installed.  Use --disable-erlang to disable.])])
+            AC_ERLANG_SUBST_LIB_DIR
+        fi
+fi
+AM_CONDITIONAL([HAVE_ERLANG], [test "x$ERLANG" != "xno" && test "x$ERLC" != "xno"])
+
 dnl Check for Perl modules needed by Perl virt tools (virt-df, etc.)
 AS_IF([test "x$PERL" != "xno"],
         [
@@ -812,27 +985,29 @@ dnl http://lists.fedoraproject.org/pipermail/devel/2010-November/146343.html
 LIBTOOL='bash $(top_srcdir)/libtool-kill-dependency_libs.sh $(top_builddir)/libtool'
 AC_SUBST([LIBTOOL])
 
-dnl Run in subdirs.
-if test "x$enable_daemon" = "xyes"; then
-    AC_CONFIG_SUBDIRS([daemon])
-fi
-
 dnl Produce output files.
 AC_CONFIG_HEADERS([config.h])
 dnl http://www.mail-archive.com/automake@gnu.org/msg10204.html
+AC_CONFIG_FILES([clone/virt-sysprep],
+                [chmod +x clone/virt-sysprep])
 AC_CONFIG_FILES([podwrapper.sh],
                 [chmod +x podwrapper.sh])
 AC_CONFIG_FILES([run],
                 [chmod +x run])
 AC_CONFIG_FILES([Makefile
+                 align/Makefile
                  appliance/Makefile
                  capitests/Makefile
                  cat/Makefile
                  caution/Makefile
+                 clone/Makefile
                  csharp/Makefile
+                 daemon/Makefile
                  debian/changelog
                  df/Makefile
                  edit/Makefile
+                 erlang/Makefile
+                 erlang/examples/Makefile
                  examples/Makefile
                  fish/Makefile
                  fuse/Makefile
@@ -864,6 +1039,7 @@ AC_CONFIG_FILES([Makefile
                  ruby/Makefile
                  ruby/Rakefile
                  ruby/examples/Makefile
+                 sparsify/Makefile
                  src/Makefile
                  test-tool/Makefile
                  tools/Makefile])
@@ -894,6 +1070,8 @@ echo -n "Haskell bindings .................... "
 if test "x$HAVE_HASKELL_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 echo -n "PHP bindings ........................ "
 if test "x$HAVE_PHP_TRUE" = "x"; then echo "yes"; else echo "no"; fi
+echo -n "Erlang bindings ..................... "
+if test "x$HAVE_ERLANG_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 echo    "guestfish and C virt tools .......... yes"
 echo -n "Perl virt tools ..................... "
 if test "x$HAVE_TOOLS_TRUE" = "x"; then echo "yes"; else echo "no"; fi

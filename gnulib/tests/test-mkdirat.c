@@ -30,6 +30,7 @@ SIGNATURE_CHECK (mkdirat, int, (int, char const *, mode_t));
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "progname.h"
 #include "ignore-value.h"
 #include "macros.h"
 
@@ -47,12 +48,26 @@ do_mkdir (char const *name, mode_t mode)
 }
 
 int
-main (void)
+main (int argc _GL_UNUSED, char *argv[])
 {
   int result;
 
+  set_program_name (argv[0]);
+
   /* Clean up any trash from prior testsuite runs.  */
   ignore_value (system ("rm -rf " BASE "*"));
+
+  /* Test behaviour for invalid file descriptors.  */
+  {
+    errno = 0;
+    ASSERT (mkdirat (-1, "foo", 0700) == -1);
+    ASSERT (errno == EBADF);
+  }
+  {
+    errno = 0;
+    ASSERT (mkdirat (99, "foo", 0700) == -1);
+    ASSERT (errno == EBADF);
+  }
 
   /* Test basic mkdir functionality.  */
   result = test_mkdir (do_mkdir, false);

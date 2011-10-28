@@ -85,7 +85,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.290';
+$VERSION = '0.297';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -175,6 +175,14 @@ See L<guestfs(3)/GUESTFS_EVENT_TRACE>.
 =cut
 
 our $EVENT_TRACE = 0x40;
+
+=item $Sys::Guestfs::EVENT_ENTER
+
+See L<guestfs(3)/GUESTFS_EVENT_ENTER>.
+
+=cut
+
+our $EVENT_ENTER = 0x80;
 
 =item $event_handle = $h->set_event_callback (\&cb, $event_bitmask);
 
@@ -271,14 +279,14 @@ should probably use C<$h-E<gt>add_drive_ro> instead.
 
 =back
 
-This function is deprecated.
+I<This function is deprecated.>
 In new code, use the L</add_drive_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
 
-=item $nrdisks = $h->add_domain ($dom [, libvirturi => $libvirturi] [, readonly => $readonly] [, iface => $iface] [, live => $live] [, allowuuid => $allowuuid]);
+=item $nrdisks = $h->add_domain ($dom [, libvirturi => $libvirturi] [, readonly => $readonly] [, iface => $iface] [, live => $live] [, allowuuid => $allowuuid] [, readonlydisk => $readonlydisk]);
 
 This function adds the disk(s) attached to the named libvirt
 domain C<dom>.  It works by connecting to libvirt, requesting
@@ -315,6 +323,52 @@ I<may> be passed instead of the domain name.  The C<dom> string is
 treated as a UUID first and looked up, and if that lookup fails
 then we treat C<dom> as a name as usual.
 
+The optional C<readonlydisk> parameter controls what we do for
+disks which are marked E<lt>readonly/E<gt> in the libvirt XML.
+Possible values are:
+
+=over 4
+
+=item readonlydisk = "error"
+
+If C<readonly> is false:
+
+The whole call is aborted with an error if any disk with
+the E<lt>readonly/E<gt> flag is found.
+
+If C<readonly> is true:
+
+Disks with the E<lt>readonly/E<gt> flag are added read-only.
+
+=item readonlydisk = "read"
+
+If C<readonly> is false:
+
+Disks with the E<lt>readonly/E<gt> flag are added read-only.
+Other disks are added read/write.
+
+If C<readonly> is true:
+
+Disks with the E<lt>readonly/E<gt> flag are added read-only.
+
+=item readonlydisk = "write" (default)
+
+If C<readonly> is false:
+
+Disks with the E<lt>readonly/E<gt> flag are added read/write.
+
+If C<readonly> is true:
+
+Disks with the E<lt>readonly/E<gt> flag are added read-only.
+
+=item readonlydisk = "ignore"
+
+If C<readonly> is true or false:
+
+Disks with the E<lt>readonly/E<gt> flag are skipped.
+
+=back
+
 The other optional parameters are passed directly through to
 C<$h-E<gt>add_drive_opts>.
 
@@ -331,7 +385,7 @@ this security hole.  Therefore you should think about replacing
 calls to this function with calls to C<$h-E<gt>add_drive_opts>,
 and specifying the format.
 
-=item $h->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface]);
+=item $h->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name]);
 
 This function adds a virtual machine disk image C<filename> to
 libguestfs.  The first time you call this function, the disk
@@ -372,6 +426,11 @@ this security hole.
 This rarely-used option lets you emulate the behaviour of the
 deprecated C<$h-E<gt>add_drive_with_if> call (q.v.)
 
+=item C<name>
+
+The name the drive had in the original guest, e.g. /dev/sdb. This is used as a
+hint to the guest inspection process if it is available.
+
 =back
 
 =item $h->add_drive_ro ($filename);
@@ -386,7 +445,7 @@ automatically.
 This is the same as C<$h-E<gt>add_drive_ro> but it allows you
 to specify the QEMU interface emulation to use at run time.
 
-This function is deprecated.
+I<This function is deprecated.>
 In new code, use the L</add_drive_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
@@ -398,7 +457,7 @@ with correct use of these functions.
 This is the same as C<$h-E<gt>add_drive> but it allows you
 to specify the QEMU interface emulation to use at run time.
 
-This function is deprecated.
+I<This function is deprecated.>
 In new code, use the L</add_drive_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
@@ -909,6 +968,29 @@ See also: C<$h-E<gt>sh_lines>
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+=item $h->compress_device_out ($ctype, $device, $zdevice [, level => $level]);
+
+This command compresses C<device> and writes it out to the local
+file C<zdevice>.
+
+The C<ctype> and optional C<level> parameters have the same meaning
+as in C<$h-E<gt>compress_out>.
+
+=item $h->compress_out ($ctype, $file, $zfile [, level => $level]);
+
+This command compresses C<file> and writes it out to the local
+file C<zfile>.
+
+The compression program used is controlled by the C<ctype> parameter.
+Currently this includes: C<compress>, C<gzip>, C<bzip2>, C<xz> or C<lzop>.
+Some compression types may not be supported by particular builds of
+libguestfs, in which case you will get an error containing the
+substring "not supported".
+
+The optional C<level> parameter controls compression level.  The
+meaning and default for this parameter depends on the compression
+program being used.
+
 =item $h->config ($qemuparam, $qemuvalue);
 
 This can be used to add arbitrary qemu command line parameters
@@ -920,6 +1002,47 @@ The first character of C<param> string must be a C<-> (dash).
 
 C<value> can be NULL.
 
+=item $h->copy_device_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size]);
+
+The four calls C<$h-E<gt>copy_device_to_device>,
+C<$h-E<gt>copy_device_to_file>,
+C<$h-E<gt>copy_file_to_device>, and
+C<$h-E<gt>copy_file_to_file>
+let you copy from a source (device|file) to a destination
+(device|file).
+
+Partial copies can be made since you can specify optionally
+the source offset, destination offset and size to copy.  These
+values are all specified in bytes.  If not given, the offsets
+both default to zero, and the size defaults to copying as much
+as possible until we hit the end of the source.
+
+The source and destination may be the same object.  However
+overlapping regions may not be copied correctly.
+
+If the destination is a file, it is created if required.  If
+the destination file is not large enough, it is extended.
+
+=item $h->copy_device_to_file ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size]);
+
+See C<$h-E<gt>copy_device_to_device> for a general overview
+of this call.
+
+=item $h->copy_file_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size]);
+
+See C<$h-E<gt>copy_device_to_device> for a general overview
+of this call.
+
+=item $h->copy_file_to_file ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size]);
+
+See C<$h-E<gt>copy_device_to_device> for a general overview
+of this call.
+
+This is B<not> the function you want for copying files.  This
+is for copying blocks within existing files.  See C<$h-E<gt>cp>,
+C<$h-E<gt>cp_a> and C<$h-E<gt>mv> for general file copying and
+moving functions.
+
 =item $h->copy_size ($src, $dest, $size);
 
 This command copies exactly C<size> bytes from one source device
@@ -927,6 +1050,13 @@ or file C<src> to another destination device or file C<dest>.
 
 Note this will fail if the source is too short or if the destination
 is not large enough.
+
+I<This function is deprecated.>
+In new code, use the L</copy_device_to_device> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $h->cp ($src, $dest);
 
@@ -947,7 +1077,15 @@ example to duplicate a filesystem.
 
 If the destination is a device, it must be as large or larger
 than the source file or device, otherwise the copy will fail.
-This command cannot do partial copies (see C<$h-E<gt>copy_size>).
+This command cannot do partial copies
+(see C<$h-E<gt>copy_device_to_device>).
+
+I<This function is deprecated.>
+In new code, use the L</copy_device_to_device> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $output = $h->df ();
 
@@ -1083,7 +1221,7 @@ Do not confuse this with the guestfish-specific
 C<alloc> command which allocates a file in the host and
 attaches it as a device.
 
-This function is deprecated.
+I<This function is deprecated.>
 In new code, use the L</fallocate64> call instead.
 
 Deprecated functions will not be removed from the API, but the
@@ -1405,7 +1543,7 @@ Return the direct appliance mode flag.
 This returns the ext2/3/4 filesystem label of the filesystem on
 C<device>.
 
-This function is deprecated.
+I<This function is deprecated.>
 In new code, use the L</vfs_label> call instead.
 
 Deprecated functions will not be removed from the API, but the
@@ -1417,7 +1555,7 @@ with correct use of these functions.
 This returns the ext2/3/4 filesystem UUID of the filesystem on
 C<device>.
 
-This function is deprecated.
+I<This function is deprecated.>
 In new code, use the L</vfs_uuid> call instead.
 
 Deprecated functions will not be removed from the API, but the
@@ -1476,6 +1614,10 @@ is passed to the appliance at boot time.  See C<$h-E<gt>set_selinux>.
 
 For more information on the architecture of libguestfs,
 see L<guestfs(3)>.
+
+=item $smp = $h->get_smp ();
+
+This returns the number of virtual CPUs assigned to the appliance.
 
 =item $state = $h->get_state ();
 
@@ -1781,6 +1923,10 @@ Gentoo.
 
 Linux Mint.
 
+=item "mageia"
+
+Mageia.
+
 =item "mandriva"
 
 Mandriva.
@@ -1788,6 +1934,10 @@ Mandriva.
 =item "meego"
 
 MeeGo.
+
+=item "opensuse"
+
+OpenSUSE.
 
 =item "pardus"
 
@@ -1808,6 +1958,10 @@ Scientific Linux.
 =item "slackware"
 
 Slackware.
+
+=item "ttylinux"
+
+ttylinux.
 
 =item "ubuntu"
 
@@ -2040,7 +2194,8 @@ This returns the string C<unknown> if we could not determine the
 package format I<or> if the operating system does not have
 a real packaging system (eg. Windows).
 
-Possible strings include: C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>.
+Possible strings include:
+C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>, C<pkgsrc>.
 Future versions of libguestfs may return other strings.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
@@ -2059,7 +2214,7 @@ a real packaging system (eg. Windows).
 
 Possible strings include: C<yum>, C<up2date>,
 C<apt> (for all Debian derivatives),
-C<portage>, C<pisi>, C<pacman>, C<urpmi>.
+C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>.
 Future versions of libguestfs may return other strings.
 
 Please read L<guestfs(3)/INSPECTION> for more details.
@@ -2130,6 +2285,10 @@ Any Microsoft Windows operating system.
 =item "freebsd"
 
 FreeBSD.
+
+=item "netbsd"
+
+NetBSD.
 
 =item "unknown"
 
@@ -2627,16 +2786,10 @@ the device as a LUKS encrypted device.  C<key> is the
 initial key, which is added to key slot C<slot>.  (LUKS
 supports 8 key slots, numbered 0-7).
 
-B<This command is dangerous.  Without careful use you
-can easily destroy all your data>.
-
 =item $h->luks_format_cipher ($device, $key, $keyslot, $cipher);
 
 This command is the same as C<$h-E<gt>luks_format> but
 it also allows you to set the C<cipher> used.
-
-B<This command is dangerous.  Without careful use you
-can easily destroy all your data>.
 
 =item $h->luks_kill_slot ($device, $key, $keyslot);
 
@@ -2698,9 +2851,6 @@ group scan.
 
 This command removes all LVM logical volumes, volume groups
 and physical volumes.
-
-B<This command is dangerous.  Without careful use you
-can easily destroy all your data>.
 
 =item $h->lvm_set_filter (\@devices);
 
@@ -2900,7 +3050,7 @@ are C<1024>, C<2048> or C<4096> only.
 For VFAT and NTFS the C<blocksize> parameter is treated as
 the requested cluster size.
 
-This function is deprecated.
+I<This function is deprecated.>
 In new code, use the L</mkfs_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
@@ -3073,22 +3223,12 @@ exist.
 The mounted filesystem is writable, if we have sufficient permissions
 on the underlying device.
 
-B<Important note:>
-When you use this call, the filesystem options C<sync> and C<noatime>
-are set implicitly.  This was originally done because we thought it
-would improve reliability, but it turns out that I<-o sync> has a
-very large negative performance impact and negligible effect on
-reliability.  Therefore we recommend that you avoid using
-C<$h-E<gt>mount> in any code that needs performance, and instead
-use C<$h-E<gt>mount_options> (use an empty string for the first
-parameter if you don't want any options).
-
-This function is deprecated.
-In new code, use the L</mount_options> call instead.
-
-Deprecated functions will not be removed from the API, but the
-fact that they are deprecated indicates that there are problems
-with correct use of these functions.
+Before libguestfs 1.13.16, this call implicitly added the options
+C<sync> and C<noatime>.  The C<sync> option greatly slowed
+writes and caused many problems for users.  If your program
+might need to work with older versions of libguestfs, use
+C<$h-E<gt>mount_options> instead (using an empty string for the
+first parameter if you don't want any options).
 
 =item $h->mount_9p ($mounttag, $mountpoint [, options => $options]);
 
@@ -3175,7 +3315,7 @@ filesystem without booting into Windows between each resize.
 
 See also L<ntfsresize(8)>.
 
-This function is deprecated.
+I<This function is deprecated.>
 In new code, use the L</ntfsresize_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
@@ -3217,7 +3357,7 @@ See also L<ntfsresize(8)>.
 This command is the same as C<$h-E<gt>ntfsresize> except that it
 allows you to specify the new size (in bytes) explicitly.
 
-This function is deprecated.
+I<This function is deprecated.>
 In new code, use the L</ntfsresize_opts> call instead.
 
 Deprecated functions will not be removed from the API, but the
@@ -3257,9 +3397,6 @@ covering the whole disk.
 
 C<parttype> is the partition table type, usually C<mbr> or C<gpt>,
 but other possible values are described in C<$h-E<gt>part_init>.
-
-B<This command is dangerous.  Without careful use you
-can easily destroy all your data>.
 
 =item $bootable = $h->part_get_bootable ($device, $partnum);
 
@@ -3427,6 +3564,18 @@ removes the partition number, returning the device name
 
 The named partition must exist, for example as a string returned
 from C<$h-E<gt>list_partitions>.
+
+See also C<$h-E<gt>part_to_partnum>.
+
+=item $partnum = $h->part_to_partnum ($partition);
+
+This function takes a partition name (eg. "/dev/sdb1") and
+returns the partition number (eg. C<1>).
+
+The named partition must exist, for example as a string returned
+from C<$h-E<gt>list_partitions>.
+
+See also C<$h-E<gt>part_to_dev>.
 
 =item $h->ping_daemon ();
 
@@ -3712,9 +3861,6 @@ more difficult.
 It is an interface to the L<scrub(1)> program.  See that
 manual page for more details.
 
-B<This command is dangerous.  Without careful use you
-can easily destroy all your data>.
-
 =item $h->scrub_file ($file);
 
 This command writes patterns over a file to make data retrieval
@@ -3904,6 +4050,14 @@ Permissive mode (C<enforcing=0>).
 For more information on the architecture of libguestfs,
 see L<guestfs(3)>.
 
+=item $h->set_smp ($smp);
+
+Change the number of virtual CPUs assigned to the appliance.  The
+default is C<1>.  Increasing this may improve performance, though
+often it has no effect.
+
+This function must be called before C<$h-E<gt>launch>.
+
 =item $h->set_trace ($trace);
 
 If the command trace flag is set to 1, then libguestfs
@@ -3971,10 +4125,7 @@ the string C<,> (comma).
 See also: C<$h-E<gt>sfdisk_l>, C<$h-E<gt>sfdisk_N>,
 C<$h-E<gt>part_init>
 
-B<This command is dangerous.  Without careful use you
-can easily destroy all your data>.
-
-This function is deprecated.
+I<This function is deprecated.>
 In new code, use the L</part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the
@@ -3992,10 +4143,7 @@ were rarely if ever used anyway.
 See also: C<$h-E<gt>sfdisk>, the L<sfdisk(8)> manpage
 and C<$h-E<gt>part_disk>
 
-B<This command is dangerous.  Without careful use you
-can easily destroy all your data>.
-
-This function is deprecated.
+I<This function is deprecated.>
 In new code, use the L</part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the
@@ -4012,10 +4160,7 @@ pass C<0> for the cyls/heads/sectors parameters.
 
 See also: C<$h-E<gt>part_add>
 
-B<This command is dangerous.  Without careful use you
-can easily destroy all your data>.
-
-This function is deprecated.
+I<This function is deprecated.>
 In new code, use the L</part_add> call instead.
 
 Deprecated functions will not be removed from the API, but the
@@ -4047,7 +4192,7 @@ not intended to be parsed.
 
 See also: C<$h-E<gt>part_list>
 
-This function is deprecated.
+I<This function is deprecated.>
 In new code, use the L</part_list> call instead.
 
 Deprecated functions will not be removed from the API, but the
@@ -4528,7 +4673,7 @@ If you see any calls to this function in code then you can just
 remove them, unless you want to retain compatibility with older
 versions of the API.
 
-This function is deprecated.
+I<This function is deprecated.>
 In new code, use the L</launch> call instead.
 
 Deprecated functions will not be removed from the API, but the
@@ -4586,7 +4731,7 @@ characters does I<not> work, even if the length is specified.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-This function is deprecated.
+I<This function is deprecated.>
 In new code, use the L</write> call instead.
 
 Deprecated functions will not be removed from the API, but the
@@ -4634,9 +4779,6 @@ If blocks are already zero, then this command avoids writing
 zeroes.  This prevents the underlying device from becoming non-sparse
 or growing unnecessarily.
 
-B<This command is dangerous.  Without careful use you
-can easily destroy all your data>.
-
 =item $h->zerofree ($device);
 
 This runs the I<zerofree> program on C<device>.  This program
@@ -4676,7 +4818,7 @@ C<method> must be one of C<gzip>, C<compress> or C<bzip2>.
 Since 1.0.63, use C<$h-E<gt>file> instead which can now
 process compressed files.
 
-This function is deprecated.
+I<This function is deprecated.>
 In new code, use the L</file> call instead.
 
 Deprecated functions will not be removed from the API, but the

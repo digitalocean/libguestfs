@@ -73,7 +73,7 @@
 #endif /* DEBIAN */
 
 #ifdef ARCHLINUX
-  kernel26
+  linux
   vim
   btrfs-progs-unstable
   cryptsetup
@@ -107,6 +107,7 @@ gzip
 jfsutils
 lsof
 lvm2
+lzop
 module-init-tools
 net-tools
 /*

@@ -5,6 +5,8 @@ daemon/names.c
 daemon/optgroups.c
 daemon/optgroups.h
 daemon/stubs.c
+erlang/erl-guestfs.c
+erlang/guestfs.erl
 fish/cmds.c
 fish/cmds_gperf.gperf
 fish/completion.c

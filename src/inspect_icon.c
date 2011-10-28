@@ -53,6 +53,9 @@ static char *icon_favicon (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
 static char *icon_fedora (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
 static char *icon_rhel (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
 static char *icon_debian (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
+static char *icon_ubuntu (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
+static char *icon_mageia (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
+static char *icon_opensuse (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
 static char *icon_windows (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
 
 /* Dummy static object. */
@@ -126,6 +129,18 @@ guestfs__inspect_get_icon (guestfs_h *g, const char *root, size_t *size_r,
       r = icon_debian (g, fs, &size);
       break;
 
+    case OS_DISTRO_UBUNTU:
+      r = icon_ubuntu (g, fs, &size);
+      break;
+
+    case OS_DISTRO_MAGEIA:
+      r = icon_mageia (g, fs, &size);
+      break;
+
+    case OS_DISTRO_OPENSUSE:
+      r = icon_opensuse(g, fs, &size);
+      break;
+
       /* These are just to keep gcc warnings happy. */
     case OS_DISTRO_ARCHLINUX:
     case OS_DISTRO_GENTOO:
@@ -134,7 +149,7 @@ guestfs__inspect_get_icon (guestfs_h *g, const char *root, size_t *size_r,
     case OS_DISTRO_MEEGO:
     case OS_DISTRO_PARDUS:
     case OS_DISTRO_SLACKWARE:
-    case OS_DISTRO_UBUNTU:
+    case OS_DISTRO_TTYLINUX:
     case OS_DISTRO_WINDOWS:
     case OS_DISTRO_UNKNOWN:
     default: ;
@@ -150,6 +165,7 @@ guestfs__inspect_get_icon (guestfs_h *g, const char *root, size_t *size_r,
     break;
 
   case OS_TYPE_FREEBSD:
+  case OS_TYPE_NETBSD:
   case OS_TYPE_UNKNOWN:
   default: ;
   }
@@ -276,13 +292,36 @@ icon_rhel (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
   return get_png (g, fs, SHADOWMAN_ICON, size_r, max_size);
 }
 
-/* NB: I've not located an Ubuntu logo yet. */
 #define DEBIAN_ICON "/usr/share/pixmaps/debian-logo.png"
 
 static char *
 icon_debian (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
 {
   return get_png (g, fs, DEBIAN_ICON, size_r, 2048);
+}
+
+#define UBUNTU_ICON "/usr/share/icons/gnome/24x24/places/ubuntu-logo.png"
+
+static char *
+icon_ubuntu (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
+{
+  return get_png (g, fs, UBUNTU_ICON, size_r, 2048);
+}
+
+#define MAGEIA_ICON "/usr/share/icons/mageia.png"
+
+static char *
+icon_mageia (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
+{
+  return get_png (g, fs, MAGEIA_ICON, size_r, 2048);
+}
+
+#define OPENSUSE_ICON "/usr/share/icons/hicolor/24x24/apps/distributor.png"
+
+static char *
+icon_opensuse (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
+{
+  return get_png (g, fs, OPENSUSE_ICON, size_r, 2048);
 }
 
 /* Windows, as usual, has to be much more complicated and stupid than

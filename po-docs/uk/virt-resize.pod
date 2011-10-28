@@ -66,9 +66,9 @@ raw disk:
 
 =back
 
-=head1 DETAILED USAGE
+=head1 ДОКЛАДНІШЕ ЩОДО ВИКОРИСТАННЯ
 
-=head2 EXPANDING A VIRTUAL MACHINE DISK
+=head2 РОЗШИРЕННЯ ДИСКА ВІРТУАЛЬНОЇ МАШИНИ
 
 =over 4
 
@@ -117,7 +117,7 @@ Or use L<virsh(1)> vol-create-as to create a libvirt storage volume:
  # virsh pool-list
  # virsh vol-create-as poolname newvol 10G
 
-=item 5. Resize
+=item 5. Зміна розміру
 
 virt-resize takes two mandatory parameters, the input disk (eg. device or
 file) and the output disk.  The output disk is the one created in the
@@ -159,7 +159,7 @@ guest.
 
 Other options are covered below.
 
-=item 6. Test
+=item 6. Перевірка
 
 Thoroughly test the new disk image I<before> discarding the old one.
 
@@ -232,6 +232,27 @@ Similarly, to get non-sparse raw output use:
 (on older systems that don't have the L<fallocate(1)> command use C<dd
 if=/dev/zero of=outdisk bs=1M count=..>)
 
+=head2 LOGICAL PARTITIONS
+
+Logical partitions (a.k.a. C</dev/sda5+> on disks using DOS partition
+tables) cannot be resized.
+
+To understand what is going on, firstly one of the four partitions
+C</dev/sda1-4> will have MBR partition type C<05> or C<0f>.  This is called
+the B<extended partition>.  Use L<virt-filesystems(1)> to see the MBR
+partition type.
+
+Logical partitions live inside the extended partition.
+
+The extended partition can be expanded, but not shrunk (unless you force it,
+which is not advisable).  When the extended partition is copied across, all
+the logical partitions contained inside are copied over implicitly.
+Virt-resize does not look inside the extended partition, so it copies the
+logical partitions blindly.
+
+You cannot specify a logical partition (C</dev/sda5+>) at all on the command
+line.  Doing so will give an error.
+
 =head1 ПАРАМЕТРИ
 
 =over 4
@@ -240,13 +261,67 @@ if=/dev/zero of=outdisk bs=1M count=..>)
 
 Display help.
 
+=item B<--align-first auto>
+
+=item B<--align-first never>
+
+=item B<--align-first always>
+
+Align the first partition for improved performance (see also the
+I<--alignment> option).
+
+The default is I<--align-first auto> which only aligns the first partition
+if it is safe to do so.  That is, only when we know how to fix the
+bootloader automatically, and at the moment that can only be done for
+Windows guests.
+
+I<--align-first never> means we never move the first partition.  This is the
+safest option.  Try this if the guest does not boot after resizing.
+
+I<--align-first always> means we always align the first partition (if it
+needs to be aligned).  For some guests this will break the bootloader,
+making the guest unbootable.
+
+=item B<--alignment N>
+
+Set the alignment of partitions to C<N> sectors.  The default in virt-resize
+E<lt> 1.13.19 was 64 sectors, and after that is 128 sectors.
+
+Assuming 512 byte sector size inside the guest, here are some suitable
+values for this:
+
+=over 4
+
+=item I<--alignment 1> (512 bytes)
+
+The partitions would be packed together as closely as possible, but would be
+completely unaligned.  In some cases this can cause very poor performance.
+See L<virt-alignment-scan(1)> for further details.
+
+=item I<--alignment 8> (4K)
+
+This would be the minimum acceptable alignment for reasonable performance on
+modern hosts.
+
+=item I<--alignment 128> (64K)
+
+This alignment provides good performance when the host is using high end
+network storage.
+
+=item I<--alignment 2048> (1M)
+
+This is the standard alignment used by all newly installed guests since
+around 2008.
+
+=back
+
 =item B<-d>
 
 =item B<--debug>
 
 Enable debugging messages.
 
-=item B<--delete part>
+=item B<--delete розділ>
 
 Delete the named partition.  It would be more accurate to describe this as
 "don't copy it over", since virt-resize doesn't do in-place changes and the
@@ -258,7 +333,7 @@ come after to be I<renumbered>, which can easily make your guest unbootable.
 
 You can give this option multiple times.
 
-=item B<--expand part>
+=item B<--expand розділ>
 
 Expand the named partition so it uses up all extra space (space left over
 after any other resize changes that you request have been done).
@@ -310,7 +385,7 @@ the format is always specified.
 Note that this option I<does not> affect the output format.  See L</QCOW2
 AND NON-SPARSE RAW FORMATS>.
 
-=item B<--ignore part>
+=item B<--ignore розділ>
 
 Ignore the named partition.  Effectively this means the partition is
 allocated on the destination disk, but the content is not copied across from
@@ -319,7 +394,7 @@ bytes).
 
 You can give this option multiple times.
 
-=item B<--LV-expand logvol>
+=item B<--LV-expand логічний_том>
 
 This takes the logical volume and, as a final step, expands it to fill all
 the space available in its volume group.  A typical usage, assuming a Linux
@@ -408,7 +483,7 @@ NON-SPARSE RAW FORMATS>.
 
 Don't print the summary.
 
-=item B<--resize part=size>
+=item B<--resize розділ=розмір>
 
 Resize the named partition (expanding or shrinking it) so that it has the
 given size.
@@ -441,7 +516,7 @@ I<--resize-force>).
 
 You can give this option multiple times.
 
-=item B<--resize-force part=size>
+=item B<--resize-force розділ=розмір>
 
 This is the same as I<--resize> except that it will let you decrease the
 size of any partition.  Generally this means you will lose any data which
@@ -451,7 +526,7 @@ as a swap partition).
 
 See also the I<--ignore> option.
 
-=item B<--shrink part>
+=item B<--shrink розділ>
 
 Shrink the named partition until the overall disk image fits in the
 destination.  The named partition B<must> contain a filesystem or PV which
@@ -482,8 +557,10 @@ The I<--machine-readable> option can be used to make the output more machine
 friendly, which is useful when calling virt-resize from other programs, GUIs
 etc.
 
-Use the option on its own to query the capabilities of the virt-resize
-binary.  Typical output looks like this:
+There are two ways to use this option.
+
+Firstly use the option on its own to query the capabilities of the
+virt-resize binary.  Typical output looks like this:
 
  $ virt-resize --machine-readable
  virt-resize
@@ -495,23 +572,55 @@ binary.  Typical output looks like this:
 A list of features is printed, one per line, and the program exits with
 status 0.
 
+Secondly use the option in conjunction with other options to make the
+regular program output more machine friendly.
+
+At the moment this means:
+
+=over 4
+
+=item 1.
+
+Progress bar messages can be parsed from stdout by looking for this regular
+expression:
+
+ ^[0-9]+/[0-9]+$
+
+=item 2.
+
+The calling program should treat messages sent to stdout (except for
+progress bar messages) as status messages.  They can be logged and/or
+displayed to the user.
+
+=item 3.
+
+The calling program should treat messages sent to stderr as error messages.
+In addition, virt-resize exits with a non-zero status code if there was a
+fatal error.
+
+=back
+
+Versions of the program prior to 1.13.9 did not support the
+I<--machine-readable> option and will return an error.
+
 =head1 ПРИМІТКИ
 
 =head2 "Partition 1 does not end on cylinder boundary."
 
-Virt-resize aligns partitions to multiples of 64 sectors.  Usually this
-means the partitions will not be aligned to the ancient CHS geometry.
-However CHS geometry is meaningless for disks manufactured since the early
-1990s, and doubly so for virtual hard drives.  Alignment of partitions to
-cylinders is not required by any modern operating system.
+Virt-resize aligns partitions to multiples of 128 sectors (see the
+I<--alignment> parameter).  Usually this means the partitions will not be
+aligned to the ancient CHS geometry.  However CHS geometry is meaningless
+for disks manufactured since the early 1990s, and doubly so for virtual hard
+drives.  Alignment of partitions to cylinders is not required by any modern
+operating system.
 
 =head2 RESIZING WINDOWS VIRTUAL MACHINES
 
 In Windows Vista and later versions, Microsoft switched to using a separate
 boot partition.  In these VMs, typically C</dev/sda1> is the boot partition
-and C</dev/sda2> is the main (C:) drive.  We have not had any luck resizing
-the boot partition.  Doing so seems to break the guest completely.  However
-expanding the second partition (ie. C: drive) should work.
+and C</dev/sda2> is the main (C:) drive.  Resizing the first (boot)
+partition causes the bootloader to fail with C<0xC0000225> error.  Resizing
+the second partition (ie. C: drive)  should work.
 
 Windows may initiate a lengthy "chkdsk" on first boot after a resize, if
 NTFS partitions have been expanded.  This is just a safety check and (unless
@@ -520,9 +629,7 @@ it find errors) is nothing to worry about.
 =head2 GUEST BOOT STUCK AT "GRUB"
 
 If a Linux guest does not boot after resizing, and the boot is stuck after
-printing C<GRUB> on the console, try reinstalling grub.  This sometimes
-happens on older (RHEL 5-era) guests, for reasons we don't fully understand,
-although we think is to do with partition alignment.
+printing C<GRUB> on the console, try reinstalling grub.
 
  guestfish -i -a newdisk
  ><fs> cat /boot/grub/device.map
@@ -567,7 +674,7 @@ L<virt-filesystems(1)>, L<virt-df(1)>, L<guestfs(3)>, L<guestfish(1)>,
 L<lvm(8)>, L<pvresize(8)>, L<lvresize(8)>, L<resize2fs(8)>,
 L<ntfsresize(8)>, L<btrfs(8)>, L<virsh(1)>, L<parted(8)>, L<truncate(1)>,
 L<fallocate(1)>, L<grub(8)>, L<grub-install(8)>, L<virt-rescue(1)>,
-L<http://libguestfs.org/>.
+L<virt-sparsify(1)>, L<virt-alignment-scan(1)>, L<http://libguestfs.org/>.
 
 =head1 АВТОР
 
@@ -575,7 +682,7 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2010-2011 Red Hat Inc.
+©Red Hat Inc., 2010–2011
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -587,7 +694,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, MA 02139, USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 

@@ -35,8 +35,10 @@ extern int run_lcd (const char *cmd, size_t argc, char *argv[]);
 extern int run_man (const char *cmd, size_t argc, char *argv[]);
 extern int run_more (const char *cmd, size_t argc, char *argv[]);
 extern int run_reopen (const char *cmd, size_t argc, char *argv[]);
+extern int run_setenv (const char *cmd, size_t argc, char *argv[]);
 extern int run_sparse (const char *cmd, size_t argc, char *argv[]);
 extern int run_supported (const char *cmd, size_t argc, char *argv[]);
 extern int run_time (const char *cmd, size_t argc, char *argv[]);
+extern int run_unsetenv (const char *cmd, size_t argc, char *argv[]);
 
 #endif /* FISH_CMDS_H */

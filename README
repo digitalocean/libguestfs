@@ -77,6 +77,9 @@ For basic functionality and the C tools:
 - Berkeley DB 'db_dump' and 'db_load' utilities
   (db4-utils or db4.X-util or similar) (optional)
 
+- systemtap/DTrace userspace probes (optional)
+  http://sourceware.org/systemtap/wiki/AddingUserSpaceProbingToApps
+
 - perldoc (pod2man, pod2text, pod2html) to generate the manual pages
   and other documentation.
 
@@ -130,6 +133,12 @@ To build the Perl tools:
 - Perl String::ShellQuote module (optional)
 
 - perl-libintl for translating perl code (optional)
+
+To run virt-sysprep:
+
+- xmlstarlet (optional)
+
+- virt-sysprep also requires FUSE support since it uses guestmount
 
 
 Building

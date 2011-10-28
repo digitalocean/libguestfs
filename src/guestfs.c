@@ -144,6 +144,9 @@ guestfs_create (void)
    */
   g->msg_next_serial = 0x00123400;
 
+  /* Default is uniprocessor appliance. */
+  g->smp = 1;
+
   /* Link the handles onto a global list. */
   gl_lock_lock (handles_lock);
   g->next = handles;
@@ -203,6 +206,7 @@ guestfs_close (guestfs_h *g)
   g->events = NULL;
 
   guestfs___free_inspect_info (g);
+  guestfs___free_drives (&g->drives);
 
   /* Close sockets. */
   if (g->fd[0] >= 0)
@@ -433,14 +437,8 @@ guestfs_perrorf (guestfs_h *g, const char *fs, ...)
 
   if (err < 0) return;
 
-#if !defined(_GNU_SOURCE) || defined(__APPLE__)
   char buf[256];
   strerror_r (errnum, buf, sizeof buf);
-#else
-  char _buf[256];
-  char *buf;
-  buf = strerror_r (errnum, _buf, sizeof _buf);
-#endif
 
   msg = safe_realloc (g, msg, strlen (msg) + 2 + strlen (buf) + 1);
   strcat (msg, ": ");
@@ -820,6 +818,24 @@ guestfs__get_pgroup (guestfs_h *g)
   return g->pgroup;
 }
 
+int
+guestfs__set_smp (guestfs_h *g, int v)
+{
+  if (v >= 1) {
+    g->smp = v;
+    return 0;
+  } else {
+    error (g, "invalid smp parameter: %d", v);
+    return -1;
+  }
+}
+
+int
+guestfs__get_smp (guestfs_h *g)
+{
+  return g->smp;
+}
+
 /* Note the private data area is allocated lazily, since the vast
  * majority of callers will never use it.  This means g->pda is
  * likely to be NULL.
@@ -978,4 +994,23 @@ guestfs___free_string_list (char **argv)
   for (i = 0; argv[i] != NULL; ++i)
     free (argv[i]);
   free (argv);
+}
+
+void
+guestfs___free_drives (struct drive **drives)
+{
+  struct drive *i = *drives;
+  *drives = NULL;
+
+  while (i != NULL) {
+    struct drive *next = i->next;
+
+    free (i->path);
+    free (i->format);
+    free (i->iface);
+    free (i->name);
+    free (i);
+
+    i = next;
+  }
 }

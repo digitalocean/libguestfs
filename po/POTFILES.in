@@ -1,3 +1,4 @@
+align/scan.c
 cat/virt-cat.c
 cat/virt-filesystems.c
 cat/virt-ls.c
@@ -11,6 +12,8 @@ daemon/btrfs.c
 daemon/checksum.c
 daemon/cmp.c
 daemon/command.c
+daemon/compress.c
+daemon/copy.c
 daemon/cpmv.c
 daemon/dd.c
 daemon/debug.c
@@ -81,6 +84,8 @@ df/domains.c
 df/main.c
 df/output.c
 edit/virt-edit.c
+erlang/erl-guestfs-proto.c
+erlang/erl-guestfs.c
 fish/alloc.c
 fish/cmds.c
 fish/cmds_gperf.c
@@ -111,6 +116,7 @@ fish/prepopts.c
 fish/progress.c
 fish/rc.c
 fish/reopen.c
+fish/setenv.c
 fish/supported.c
 fish/tilde.c
 fish/time.c
@@ -133,7 +139,9 @@ regressions/test-launch-race.pl
 regressions/test-lvm-mapping.pl
 regressions/test-noexec-stack.pl
 rescue/virt-rescue.c
+resize/progress_c.c
 ruby/ext/guestfs/_guestfs.c
+sparsify/progress_c.c
 src/actions.c
 src/appliance.c
 src/bindtests.c

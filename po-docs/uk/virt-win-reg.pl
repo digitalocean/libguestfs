@@ -67,7 +67,7 @@ L<hivexregedit(1)>.
 
 =item B<--help>
 
-Display brief help.
+Показати коротку довідку.
 
 =item B<--version>
 
@@ -156,7 +156,7 @@ into another program or stored in another Registry.
 
 =back
 
-=head1 SUPPORTED SYSTEMS
+=head1 ПІДТРИМУВАНІ СИСТЕМИ
 
 The program currently supports Windows NT-derived guests starting with
 Windows XP through to at least Windows 7.
@@ -179,7 +179,7 @@ The following Registry keys are supported:
 
 where I<SID> is a Windows User SID (eg. C<S-1-5-18>).
 
-=item C<HKEY_USERS\I<username>>
+=item C<HKEY_USERS\I<користувач>>
 
 where I<username> is a local user name (this is a libguestfs extension).
 
@@ -242,6 +242,17 @@ to look at the C<HKLM\SYSTEM\Select> key:
 
 Similarly, other C<Current...> keys in the path may need to be replaced.
 
+=head1 DELETING REGISTRY KEYS AND VALUES
+
+To delete a whole registry key, use the syntax:
+
+ [-HKEY_LOCAL_MACHINE\Foo]
+
+To delete a single value within a key, use the syntax:
+
+ [HKEY_LOCAL_MACHINE\Foo]
+ "Value"=-
+
 =head1 WINDOWS TIPS
 
 Note that some of these tips modify the guest disk image.  The guest I<must>
@@ -266,7 +277,7 @@ In this example we use the key C<RunOnce> which means that the script will
 run precisely once when the first user logs in.  If you want it to run every
 time a user logs in, replace C<RunOnce> with C<Run>.
 
-Now update the registry:
+Оновіть регістр:
 
  virt-win-reg --merge WindowsGuest test.reg
 
@@ -328,7 +339,7 @@ L<http://support.microsoft.com/kb/103000>.
 
 =back
 
-Update the registry:
+Оновіть регістр:
 
  virt-win-reg --merge WindowsGuest service.reg
 
@@ -369,7 +380,7 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2010 Red Hat Inc.
+©Red Hat Inc., 2010
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -381,7 +392,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, MA 02139, USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 

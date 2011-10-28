@@ -95,6 +95,7 @@ static int run_add_drive_opts (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_windows_systemroot (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_roots (const char *cmd, size_t argc, char *argv[]);
 static int run_debug_cmdline (const char *cmd, size_t argc, char *argv[]);
+static int run_debug_drives (const char *cmd, size_t argc, char *argv[]);
 static int run_add_domain (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_package_format (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_package_management (const char *cmd, size_t argc, char *argv[]);
@@ -112,6 +113,8 @@ static int run_inspect_get_drive_mappings (const char *cmd, size_t argc, char *a
 static int run_inspect_get_icon (const char *cmd, size_t argc, char *argv[]);
 static int run_set_pgroup (const char *cmd, size_t argc, char *argv[]);
 static int run_get_pgroup (const char *cmd, size_t argc, char *argv[]);
+static int run_set_smp (const char *cmd, size_t argc, char *argv[]);
+static int run_get_smp (const char *cmd, size_t argc, char *argv[]);
 static int run_mount (const char *cmd, size_t argc, char *argv[]);
 static int run_sync (const char *cmd, size_t argc, char *argv[]);
 static int run_touch (const char *cmd, size_t argc, char *argv[]);
@@ -401,6 +404,13 @@ static int run_list_dm_devices (const char *cmd, size_t argc, char *argv[]);
 static int run_ntfsresize_opts (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_filesystem_resize (const char *cmd, size_t argc, char *argv[]);
 static int run_write_append (const char *cmd, size_t argc, char *argv[]);
+static int run_compress_out (const char *cmd, size_t argc, char *argv[]);
+static int run_compress_device_out (const char *cmd, size_t argc, char *argv[]);
+static int run_part_to_partnum (const char *cmd, size_t argc, char *argv[]);
+static int run_copy_device_to_device (const char *cmd, size_t argc, char *argv[]);
+static int run_copy_device_to_file (const char *cmd, size_t argc, char *argv[]);
+static int run_copy_file_to_device (const char *cmd, size_t argc, char *argv[]);
+static int run_copy_file_to_file (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -474,6 +484,12 @@ struct command_entry reopen_cmd_entry = {
   .run = run_reopen
 };
 
+struct command_entry setenv_cmd_entry = {
+  .name = "setenv",
+  .help = "NAME\n    setenv - set an environment variable\n\nDESCRIPTION\n      setenv VAR value\n\n    Set the environment variable \"VAR\" to the string \"value\".\n\n    To print the value of an environment variable use a shell command such\n    as:\n\n     !echo $VAR\n\n",
+  .run = run_setenv
+};
+
 struct command_entry sparse_cmd_entry = {
   .name = "sparse",
   .help = "NAME\n    sparse - create a sparse disk image and add\n\nDESCRIPTION\n     sparse filename size\n\n    This creates an empty sparse file of the given size, and then adds so it\n    can be further examined.\n\n    In all respects it works the same as the \"alloc\" command, except that\n    the image file is allocated sparsely, which means that disk blocks are\n    not assigned to the file until they are needed. Sparse disk files only\n    use space when written to, but they are slower and there is a danger you\n    could run out of real disk space during a write operation.\n\n    For more advanced image creation, see qemu-img(1) utility.\n\n    Size can be specified using standard suffixes, eg. \"1M\".\n\n",
@@ -490,6 +506,12 @@ struct command_entry time_cmd_entry = {
   .name = "time",
   .help = "NAME\n    time - print elapsed time taken to run a command\n\nDESCRIPTION\n     time command args...\n\n    Run the command as usual, but print the elapsed time afterwards. This\n    can be useful for benchmarking operations.\n\n",
   .run = run_time
+};
+
+struct command_entry unsetenv_cmd_entry = {
+  .name = "unsetenv",
+  .help = "NAME\n    unsetenv - unset an environment variable\n\nDESCRIPTION\n      unsetenv VAR\n\n    Remove \"VAR\" from the environment.\n\n",
+  .run = run_unsetenv
 };
 
 struct command_entry launch_cmd_entry = {
@@ -512,7 +534,7 @@ struct command_entry add_drive_cmd_entry = {
 
 struct command_entry add_cdrom_cmd_entry = {
   .name = "add-cdrom",
-  .help = "NAME\n    add-cdrom - add a CD-ROM disk image to examine\n\nSYNOPSIS\n     add-cdrom filename\n\nDESCRIPTION\n    This function adds a virtual CD-ROM disk image to the guest.\n\n    This is equivalent to the qemu parameter *-cdrom filename*.\n\n    Notes:\n\n    *   This call checks for the existence of \"filename\". This stops you\n        from specifying other types of drive which are supported by qemu\n        such as \"nbd:\" and \"http:\" URLs. To specify those, use the general\n        \"config\" call instead.\n\n    *   If you just want to add an ISO file (often you use this as an\n        efficient way to transfer large files into the guest), then you\n        should probably use \"add_drive_ro\" instead.\n\n    This function is deprecated. In new code, use the \"add_drive_opts\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    add-cdrom - add a CD-ROM disk image to examine\n\nSYNOPSIS\n     add-cdrom filename\n\nDESCRIPTION\n    This function adds a virtual CD-ROM disk image to the guest.\n\n    This is equivalent to the qemu parameter *-cdrom filename*.\n\n    Notes:\n\n    *   This call checks for the existence of \"filename\". This stops you\n        from specifying other types of drive which are supported by qemu\n        such as \"nbd:\" and \"http:\" URLs. To specify those, use the general\n        \"config\" call instead.\n\n    *   If you just want to add an ISO file (often you use this as an\n        efficient way to transfer large files into the guest), then you\n        should probably use \"add_drive_ro\" instead.\n\n    *This function is deprecated.* In new code, use the \"add_drive_opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_add_cdrom
 };
 
@@ -692,13 +714,13 @@ struct command_entry get_recovery_proc_cmd_entry = {
 
 struct command_entry add_drive_with_if_cmd_entry = {
   .name = "add-drive-with-if",
-  .help = "NAME\n    add-drive-with-if - add a drive specifying the QEMU block emulation to\n    use\n\nSYNOPSIS\n     add-drive-with-if filename iface\n\nDESCRIPTION\n    This is the same as \"add_drive\" but it allows you to specify the QEMU\n    interface emulation to use at run time.\n\n    This function is deprecated. In new code, use the \"add_drive_opts\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    add-drive-with-if - add a drive specifying the QEMU block emulation to\n    use\n\nSYNOPSIS\n     add-drive-with-if filename iface\n\nDESCRIPTION\n    This is the same as \"add_drive\" but it allows you to specify the QEMU\n    interface emulation to use at run time.\n\n    *This function is deprecated.* In new code, use the \"add_drive_opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_add_drive_with_if
 };
 
 struct command_entry add_drive_ro_with_if_cmd_entry = {
   .name = "add-drive-ro-with-if",
-  .help = "NAME\n    add-drive-ro-with-if - add a drive read-only specifying the QEMU block\n    emulation to use\n\nSYNOPSIS\n     add-drive-ro-with-if filename iface\n\nDESCRIPTION\n    This is the same as \"add_drive_ro\" but it allows you to specify the QEMU\n    interface emulation to use at run time.\n\n    This function is deprecated. In new code, use the \"add_drive_opts\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    add-drive-ro-with-if - add a drive read-only specifying the QEMU block\n    emulation to use\n\nSYNOPSIS\n     add-drive-ro-with-if filename iface\n\nDESCRIPTION\n    This is the same as \"add_drive_ro\" but it allows you to specify the QEMU\n    interface emulation to use at run time.\n\n    *This function is deprecated.* In new code, use the \"add_drive_opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_add_drive_ro_with_if
 };
 
@@ -716,7 +738,7 @@ struct command_entry inspect_os_cmd_entry = {
 
 struct command_entry inspect_get_type_cmd_entry = {
   .name = "inspect-get-type",
-  .help = "NAME\n    inspect-get-type - get type of inspected operating system\n\nSYNOPSIS\n     inspect-get-type root\n\nDESCRIPTION\n    This returns the type of the inspected operating system. Currently\n    defined types are:\n\n    \"linux\"\n        Any Linux-based operating system.\n\n    \"windows\"\n        Any Microsoft Windows operating system.\n\n    \"freebsd\"\n        FreeBSD.\n\n    \"unknown\"\n        The operating system type could not be determined.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-type - get type of inspected operating system\n\nSYNOPSIS\n     inspect-get-type root\n\nDESCRIPTION\n    This returns the type of the inspected operating system. Currently\n    defined types are:\n\n    \"linux\"\n        Any Linux-based operating system.\n\n    \"windows\"\n        Any Microsoft Windows operating system.\n\n    \"freebsd\"\n        FreeBSD.\n\n    \"netbsd\"\n        NetBSD.\n\n    \"unknown\"\n        The operating system type could not be determined.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_type
 };
 
@@ -728,7 +750,7 @@ struct command_entry inspect_get_arch_cmd_entry = {
 
 struct command_entry inspect_get_distro_cmd_entry = {
   .name = "inspect-get-distro",
-  .help = "NAME\n    inspect-get-distro - get distro of inspected operating system\n\nSYNOPSIS\n     inspect-get-distro root\n\nDESCRIPTION\n    This returns the distro (distribution) of the inspected operating\n    system.\n\n    Currently defined distros are:\n\n    \"archlinux\"\n        Arch Linux.\n\n    \"centos\"\n        CentOS.\n\n    \"debian\"\n        Debian.\n\n    \"fedora\"\n        Fedora.\n\n    \"gentoo\"\n        Gentoo.\n\n    \"linuxmint\"\n        Linux Mint.\n\n    \"mandriva\"\n        Mandriva.\n\n    \"meego\"\n        MeeGo.\n\n    \"pardus\"\n        Pardus.\n\n    \"redhat-based\"\n        Some Red Hat-derived distro.\n\n    \"rhel\"\n        Red Hat Enterprise Linux.\n\n    \"scientificlinux\"\n        Scientific Linux.\n\n    \"slackware\"\n        Slackware.\n\n    \"ubuntu\"\n        Ubuntu.\n\n    \"unknown\"\n        The distro could not be determined.\n\n    \"windows\"\n        Windows does not have distributions. This string is returned if the\n        OS type is Windows.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-distro - get distro of inspected operating system\n\nSYNOPSIS\n     inspect-get-distro root\n\nDESCRIPTION\n    This returns the distro (distribution) of the inspected operating\n    system.\n\n    Currently defined distros are:\n\n    \"archlinux\"\n        Arch Linux.\n\n    \"centos\"\n        CentOS.\n\n    \"debian\"\n        Debian.\n\n    \"fedora\"\n        Fedora.\n\n    \"gentoo\"\n        Gentoo.\n\n    \"linuxmint\"\n        Linux Mint.\n\n    \"mageia\"\n        Mageia.\n\n    \"mandriva\"\n        Mandriva.\n\n    \"meego\"\n        MeeGo.\n\n    \"opensuse\"\n        OpenSUSE.\n\n    \"pardus\"\n        Pardus.\n\n    \"redhat-based\"\n        Some Red Hat-derived distro.\n\n    \"rhel\"\n        Red Hat Enterprise Linux.\n\n    \"scientificlinux\"\n        Scientific Linux.\n\n    \"slackware\"\n        Slackware.\n\n    \"ttylinux\"\n        ttylinux.\n\n    \"ubuntu\"\n        Ubuntu.\n\n    \"unknown\"\n        The distro could not be determined.\n\n    \"windows\"\n        Windows does not have distributions. This string is returned if the\n        OS type is Windows.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_distro
 };
 
@@ -782,7 +804,7 @@ struct command_entry list_filesystems_cmd_entry = {
 
 struct command_entry add_drive_opts_cmd_entry = {
   .name = "add-drive-opts",
-  .help = "NAME\n    add-drive-opts - add an image to examine or modify\n\nSYNOPSIS\n     add-drive-opts filename [readonly:..] [format:..] [iface:..]\n\nDESCRIPTION\n    This function adds a virtual machine disk image \"filename\" to\n    libguestfs. The first time you call this function, the disk appears as\n    \"/dev/sda\", the second time as \"/dev/sdb\", and so on.\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that \"filename\" exists.\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    You can use 'add' as an alias for this command.\n\n",
+  .help = "NAME\n    add-drive-opts - add an image to examine or modify\n\nSYNOPSIS\n     add-drive-opts filename [readonly:..] [format:..] [iface:..] [name:..]\n\nDESCRIPTION\n    This function adds a virtual machine disk image \"filename\" to\n    libguestfs. The first time you call this function, the disk appears as\n    \"/dev/sda\", the second time as \"/dev/sdb\", and so on.\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that \"filename\" exists.\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    \"name\"\n        The name the drive had in the original guest, e.g. /dev/sdb. This is\n        used as a hint to the guest inspection process if it is available.\n\n    You can use 'add' as an alias for this command.\n\n",
   .run = run_add_drive_opts
 };
 
@@ -804,21 +826,27 @@ struct command_entry debug_cmdline_cmd_entry = {
   .run = run_debug_cmdline
 };
 
+struct command_entry debug_drives_cmd_entry = {
+  .name = "debug-drives",
+  .help = "NAME\n    debug-drives - debug the drives (internal use only)\n\nSYNOPSIS\n     debug-drives\n\nDESCRIPTION\n    This returns the internal list of drives. 'debug' commands are not part\n    of the formal API and can be removed or changed at any time.\n\n",
+  .run = run_debug_drives
+};
+
 struct command_entry add_domain_cmd_entry = {
   .name = "add-domain",
-  .help = "NAME\n    add-domain - add the disk(s) from a named libvirt domain\n\nSYNOPSIS\n     add-domain dom [libvirturi:..] [readonly:..] [iface:..] [live:..] [allowuuid:..]\n\nDESCRIPTION\n    This function adds the disk(s) attached to the named libvirt domain\n    \"dom\". It works by connecting to libvirt, requesting the domain and\n    domain XML from libvirt, parsing it for disks, and calling\n    \"add_drive_opts\" on each one.\n\n    The number of disks added is returned. This operation is atomic: if an\n    error is returned, then no disks are added.\n\n    This function does some minimal checks to make sure the libvirt domain\n    is not running (unless \"readonly\" is true). In a future version we will\n    try to acquire the libvirt lock on each disk.\n\n    Disks must be accessible locally. This often means that adding disks\n    from a remote libvirt connection (see <http://libvirt.org/remote.html>)\n    will fail unless those disks are accessible via the same device path\n    locally too.\n\n    The optional \"libvirturi\" parameter sets the libvirt URI (see\n    <http://libvirt.org/uri.html>). If this is not set then we connect to\n    the default libvirt URI (or one set through an environment variable, see\n    the libvirt documentation for full details).\n\n    The optional \"live\" flag controls whether this call will try to connect\n    to a running virtual machine \"guestfsd\" process if it sees a suitable\n    <channel> element in the libvirt XML definition. The default (if the\n    flag is omitted) is never to try. See \"ATTACHING TO RUNNING DAEMONS\" in\n    guestfs(3) for more information.\n\n    If the \"allowuuid\" flag is true (default is false) then a UUID *may* be\n    passed instead of the domain name. The \"dom\" string is treated as a UUID\n    first and looked up, and if that lookup fails then we treat \"dom\" as a\n    name as usual.\n\n    The other optional parameters are passed directly through to\n    \"add_drive_opts\".\n\n    You can use 'domain' as an alias for this command.\n\n",
+  .help = "NAME\n    add-domain - add the disk(s) from a named libvirt domain\n\nSYNOPSIS\n     add-domain dom [libvirturi:..] [readonly:..] [iface:..] [live:..] [allowuuid:..] [readonlydisk:..]\n\nDESCRIPTION\n    This function adds the disk(s) attached to the named libvirt domain\n    \"dom\". It works by connecting to libvirt, requesting the domain and\n    domain XML from libvirt, parsing it for disks, and calling\n    \"add_drive_opts\" on each one.\n\n    The number of disks added is returned. This operation is atomic: if an\n    error is returned, then no disks are added.\n\n    This function does some minimal checks to make sure the libvirt domain\n    is not running (unless \"readonly\" is true). In a future version we will\n    try to acquire the libvirt lock on each disk.\n\n    Disks must be accessible locally. This often means that adding disks\n    from a remote libvirt connection (see <http://libvirt.org/remote.html>)\n    will fail unless those disks are accessible via the same device path\n    locally too.\n\n    The optional \"libvirturi\" parameter sets the libvirt URI (see\n    <http://libvirt.org/uri.html>). If this is not set then we connect to\n    the default libvirt URI (or one set through an environment variable, see\n    the libvirt documentation for full details).\n\n    The optional \"live\" flag controls whether this call will try to connect\n    to a running virtual machine \"guestfsd\" process if it sees a suitable\n    <channel> element in the libvirt XML definition. The default (if the\n    flag is omitted) is never to try. See \"ATTACHING TO RUNNING DAEMONS\" in\n    guestfs(3) for more information.\n\n    If the \"allowuuid\" flag is true (default is false) then a UUID *may* be\n    passed instead of the domain name. The \"dom\" string is treated as a UUID\n    first and looked up, and if that lookup fails then we treat \"dom\" as a\n    name as usual.\n\n    The optional \"readonlydisk\" parameter controls what we do for disks\n    which are marked <readonly/> in the libvirt XML. Possible values are:\n\n    readonlydisk = \"error\"\n        If \"readonly\" is false:\n\n        The whole call is aborted with an error if any disk with the\n        <readonly/> flag is found.\n\n        If \"readonly\" is true:\n\n        Disks with the <readonly/> flag are added read-only.\n\n    readonlydisk = \"read\"\n        If \"readonly\" is false:\n\n        Disks with the <readonly/> flag are added read-only. Other disks are\n        added read/write.\n\n        If \"readonly\" is true:\n\n        Disks with the <readonly/> flag are added read-only.\n\n    readonlydisk = \"write\" (default)\n        If \"readonly\" is false:\n\n        Disks with the <readonly/> flag are added read/write.\n\n        If \"readonly\" is true:\n\n        Disks with the <readonly/> flag are added read-only.\n\n    readonlydisk = \"ignore\"\n        If \"readonly\" is true or false:\n\n        Disks with the <readonly/> flag are skipped.\n\n    The other optional parameters are passed directly through to\n    \"add_drive_opts\".\n\n    You can use 'domain' as an alias for this command.\n\n",
   .run = run_add_domain
 };
 
 struct command_entry inspect_get_package_format_cmd_entry = {
   .name = "inspect-get-package-format",
-  .help = "NAME\n    inspect-get-package-format - get package format used by the operating\n    system\n\nSYNOPSIS\n     inspect-get-package-format root\n\nDESCRIPTION\n    This function and \"inspect_get_package_management\" return the package\n    format and package management tool used by the inspected operating\n    system. For example for Fedora these functions would return \"rpm\"\n    (package format) and \"yum\" (package management).\n\n    This returns the string \"unknown\" if we could not determine the package\n    format *or* if the operating system does not have a real packaging\n    system (eg. Windows).\n\n    Possible strings include: \"rpm\", \"deb\", \"ebuild\", \"pisi\", \"pacman\".\n    Future versions of libguestfs may return other strings.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-package-format - get package format used by the operating\n    system\n\nSYNOPSIS\n     inspect-get-package-format root\n\nDESCRIPTION\n    This function and \"inspect_get_package_management\" return the package\n    format and package management tool used by the inspected operating\n    system. For example for Fedora these functions would return \"rpm\"\n    (package format) and \"yum\" (package management).\n\n    This returns the string \"unknown\" if we could not determine the package\n    format *or* if the operating system does not have a real packaging\n    system (eg. Windows).\n\n    Possible strings include: \"rpm\", \"deb\", \"ebuild\", \"pisi\", \"pacman\",\n    \"pkgsrc\". Future versions of libguestfs may return other strings.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_package_format
 };
 
 struct command_entry inspect_get_package_management_cmd_entry = {
   .name = "inspect-get-package-management",
-  .help = "NAME\n    inspect-get-package-management - get package management tool used by the\n    operating system\n\nSYNOPSIS\n     inspect-get-package-management root\n\nDESCRIPTION\n    \"inspect_get_package_format\" and this function return the package format\n    and package management tool used by the inspected operating system. For\n    example for Fedora these functions would return \"rpm\" (package format)\n    and \"yum\" (package management).\n\n    This returns the string \"unknown\" if we could not determine the package\n    management tool *or* if the operating system does not have a real\n    packaging system (eg. Windows).\n\n    Possible strings include: \"yum\", \"up2date\", \"apt\" (for all Debian\n    derivatives), \"portage\", \"pisi\", \"pacman\", \"urpmi\". Future versions of\n    libguestfs may return other strings.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-package-management - get package management tool used by the\n    operating system\n\nSYNOPSIS\n     inspect-get-package-management root\n\nDESCRIPTION\n    \"inspect_get_package_format\" and this function return the package format\n    and package management tool used by the inspected operating system. For\n    example for Fedora these functions would return \"rpm\" (package format)\n    and \"yum\" (package management).\n\n    This returns the string \"unknown\" if we could not determine the package\n    management tool *or* if the operating system does not have a real\n    packaging system (eg. Windows).\n\n    Possible strings include: \"yum\", \"up2date\", \"apt\" (for all Debian\n    derivatives), \"portage\", \"pisi\", \"pacman\", \"urpmi\", \"zypper\". Future\n    versions of libguestfs may return other strings.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_package_management
 };
 
@@ -906,9 +934,21 @@ struct command_entry get_pgroup_cmd_entry = {
   .run = run_get_pgroup
 };
 
+struct command_entry set_smp_cmd_entry = {
+  .name = "set-smp",
+  .help = "NAME\n    set-smp - set number of virtual CPUs in appliance\n\nSYNOPSIS\n     set-smp smp\n\nDESCRIPTION\n    Change the number of virtual CPUs assigned to the appliance. The default\n    is 1. Increasing this may improve performance, though often it has no\n    effect.\n\n    This function must be called before \"launch\".\n\n    You can use 'smp' as an alias for this command.\n\n",
+  .run = run_set_smp
+};
+
+struct command_entry get_smp_cmd_entry = {
+  .name = "get-smp",
+  .help = "NAME\n    get-smp - get number of virtual CPUs in appliance\n\nSYNOPSIS\n     get-smp\n\nDESCRIPTION\n    This returns the number of virtual CPUs assigned to the appliance.\n\n",
+  .run = run_get_smp
+};
+
 struct command_entry mount_cmd_entry = {
   .name = "mount",
-  .help = "NAME\n    mount - mount a guest disk at a position in the filesystem\n\nSYNOPSIS\n     mount device mountpoint\n\nDESCRIPTION\n    Mount a guest disk at a position in the filesystem. Block devices are\n    named \"/dev/sda\", \"/dev/sdb\" and so on, as they were added to the guest.\n    If those block devices contain partitions, they will have the usual\n    names (eg. \"/dev/sda1\"). Also LVM \"/dev/VG/LV\"-style names can be used.\n\n    The rules are the same as for mount(2): A filesystem must first be\n    mounted on \"/\" before others can be mounted. Other filesystems can only\n    be mounted on directories which already exist.\n\n    The mounted filesystem is writable, if we have sufficient permissions on\n    the underlying device.\n\n    Important note: When you use this call, the filesystem options \"sync\"\n    and \"noatime\" are set implicitly. This was originally done because we\n    thought it would improve reliability, but it turns out that *-o sync*\n    has a very large negative performance impact and negligible effect on\n    reliability. Therefore we recommend that you avoid using \"mount\" in any\n    code that needs performance, and instead use \"mount_options\" (use an\n    empty string for the first parameter if you don't want any options).\n\n    This function is deprecated. In new code, use the \"mount_options\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    mount - mount a guest disk at a position in the filesystem\n\nSYNOPSIS\n     mount device mountpoint\n\nDESCRIPTION\n    Mount a guest disk at a position in the filesystem. Block devices are\n    named \"/dev/sda\", \"/dev/sdb\" and so on, as they were added to the guest.\n    If those block devices contain partitions, they will have the usual\n    names (eg. \"/dev/sda1\"). Also LVM \"/dev/VG/LV\"-style names can be used.\n\n    The rules are the same as for mount(2): A filesystem must first be\n    mounted on \"/\" before others can be mounted. Other filesystems can only\n    be mounted on directories which already exist.\n\n    The mounted filesystem is writable, if we have sufficient permissions on\n    the underlying device.\n\n    Before libguestfs 1.13.16, this call implicitly added the options \"sync\"\n    and \"noatime\". The \"sync\" option greatly slowed writes and caused many\n    problems for users. If your program might need to work with older\n    versions of libguestfs, use \"mount_options\" instead (using an empty\n    string for the first parameter if you don't want any options).\n\n",
   .run = run_mount
 };
 
@@ -1160,13 +1200,13 @@ struct command_entry mkfs_cmd_entry = {
 
 struct command_entry sfdisk_cmd_entry = {
   .name = "sfdisk",
-  .help = "NAME\n    sfdisk - create partitions on a block device\n\nSYNOPSIS\n     sfdisk device cyls heads sectors lines\n\nDESCRIPTION\n    This is a direct interface to the sfdisk(8) program for creating\n    partitions on block devices.\n\n    \"device\" should be a block device, for example \"/dev/sda\".\n\n    \"cyls\", \"heads\" and \"sectors\" are the number of cylinders, heads and\n    sectors on the device, which are passed directly to sfdisk as the *-C*,\n    *-H* and *-S* parameters. If you pass 0 for any of these, then the\n    corresponding parameter is omitted. Usually for 'large' disks, you can\n    just pass 0 for these, but for small (floppy-sized) disks, sfdisk (or\n    rather, the kernel) cannot work out the right geometry and you will need\n    to tell it.\n\n    \"lines\" is a list of lines that we feed to \"sfdisk\". For more\n    information refer to the sfdisk(8) manpage.\n\n    To create a single partition occupying the whole disk, you would pass\n    \"lines\" as a single element list, when the single element being the\n    string \",\" (comma).\n\n    See also: \"sfdisk_l\", \"sfdisk_N\", \"part_init\"\n\n    This command is dangerous. Without careful use you can easily destroy\n    all your data.\n\n    This function is deprecated. In new code, use the \"part_add\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    sfdisk - create partitions on a block device\n\nSYNOPSIS\n     sfdisk device cyls heads sectors lines\n\nDESCRIPTION\n    This is a direct interface to the sfdisk(8) program for creating\n    partitions on block devices.\n\n    \"device\" should be a block device, for example \"/dev/sda\".\n\n    \"cyls\", \"heads\" and \"sectors\" are the number of cylinders, heads and\n    sectors on the device, which are passed directly to sfdisk as the *-C*,\n    *-H* and *-S* parameters. If you pass 0 for any of these, then the\n    corresponding parameter is omitted. Usually for 'large' disks, you can\n    just pass 0 for these, but for small (floppy-sized) disks, sfdisk (or\n    rather, the kernel) cannot work out the right geometry and you will need\n    to tell it.\n\n    \"lines\" is a list of lines that we feed to \"sfdisk\". For more\n    information refer to the sfdisk(8) manpage.\n\n    To create a single partition occupying the whole disk, you would pass\n    \"lines\" as a single element list, when the single element being the\n    string \",\" (comma).\n\n    See also: \"sfdisk_l\", \"sfdisk_N\", \"part_init\"\n\n    *This function is deprecated.* In new code, use the \"part_add\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_sfdisk
 };
 
 struct command_entry write_file_cmd_entry = {
   .name = "write-file",
-  .help = "NAME\n    write-file - create a file\n\nSYNOPSIS\n     write-file path content size\n\nDESCRIPTION\n    This call creates a file called \"path\". The contents of the file is the\n    string \"content\" (which can contain any 8 bit data), with length \"size\".\n\n    As a special case, if \"size\" is 0 then the length is calculated using\n    \"strlen\" (so in this case the content cannot contain embedded ASCII\n    NULs).\n\n    *NB.* Owing to a bug, writing content containing ASCII NUL characters\n    does *not* work, even if the length is specified.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n    This function is deprecated. In new code, use the \"write\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    write-file - create a file\n\nSYNOPSIS\n     write-file path content size\n\nDESCRIPTION\n    This call creates a file called \"path\". The contents of the file is the\n    string \"content\" (which can contain any 8 bit data), with length \"size\".\n\n    As a special case, if \"size\" is 0 then the length is calculated using\n    \"strlen\" (so in this case the content cannot contain embedded ASCII\n    NULs).\n\n    *NB.* Owing to a bug, writing content containing ASCII NUL characters\n    does *not* work, even if the length is specified.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n    *This function is deprecated.* In new code, use the \"write\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_write_file
 };
 
@@ -1190,7 +1230,7 @@ struct command_entry umount_all_cmd_entry = {
 
 struct command_entry lvm_remove_all_cmd_entry = {
   .name = "lvm-remove-all",
-  .help = "NAME\n    lvm-remove-all - remove all LVM LVs, VGs and PVs\n\nSYNOPSIS\n     lvm-remove-all\n\nDESCRIPTION\n    This command removes all LVM logical volumes, volume groups and physical\n    volumes.\n\n    This command is dangerous. Without careful use you can easily destroy\n    all your data.\n\n",
+  .help = "NAME\n    lvm-remove-all - remove all LVM LVs, VGs and PVs\n\nSYNOPSIS\n     lvm-remove-all\n\nDESCRIPTION\n    This command removes all LVM logical volumes, volume groups and physical\n    volumes.\n\n",
   .run = run_lvm_remove_all
 };
 
@@ -1388,7 +1428,7 @@ struct command_entry set_e2label_cmd_entry = {
 
 struct command_entry get_e2label_cmd_entry = {
   .name = "get-e2label",
-  .help = "NAME\n    get-e2label - get the ext2/3/4 filesystem label\n\nSYNOPSIS\n     get-e2label device\n\nDESCRIPTION\n    This returns the ext2/3/4 filesystem label of the filesystem on\n    \"device\".\n\n    This function is deprecated. In new code, use the \"vfs_label\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    get-e2label - get the ext2/3/4 filesystem label\n\nSYNOPSIS\n     get-e2label device\n\nDESCRIPTION\n    This returns the ext2/3/4 filesystem label of the filesystem on\n    \"device\".\n\n    *This function is deprecated.* In new code, use the \"vfs_label\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_get_e2label
 };
 
@@ -1400,7 +1440,7 @@ struct command_entry set_e2uuid_cmd_entry = {
 
 struct command_entry get_e2uuid_cmd_entry = {
   .name = "get-e2uuid",
-  .help = "NAME\n    get-e2uuid - get the ext2/3/4 filesystem UUID\n\nSYNOPSIS\n     get-e2uuid device\n\nDESCRIPTION\n    This returns the ext2/3/4 filesystem UUID of the filesystem on \"device\".\n\n    This function is deprecated. In new code, use the \"vfs_uuid\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    get-e2uuid - get the ext2/3/4 filesystem UUID\n\nSYNOPSIS\n     get-e2uuid device\n\nDESCRIPTION\n    This returns the ext2/3/4 filesystem UUID of the filesystem on \"device\".\n\n    *This function is deprecated.* In new code, use the \"vfs_uuid\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_get_e2uuid
 };
 
@@ -1496,13 +1536,13 @@ struct command_entry pvresize_cmd_entry = {
 
 struct command_entry sfdisk_N_cmd_entry = {
   .name = "sfdisk-N",
-  .help = "NAME\n    sfdisk-N - modify a single partition on a block device\n\nSYNOPSIS\n     sfdisk-N device partnum cyls heads sectors line\n\nDESCRIPTION\n    This runs sfdisk(8) option to modify just the single partition \"n\"\n    (note: \"n\" counts from 1).\n\n    For other parameters, see \"sfdisk\". You should usually pass 0 for the\n    cyls/heads/sectors parameters.\n\n    See also: \"part_add\"\n\n    This command is dangerous. Without careful use you can easily destroy\n    all your data.\n\n    This function is deprecated. In new code, use the \"part_add\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    sfdisk-N - modify a single partition on a block device\n\nSYNOPSIS\n     sfdisk-N device partnum cyls heads sectors line\n\nDESCRIPTION\n    This runs sfdisk(8) option to modify just the single partition \"n\"\n    (note: \"n\" counts from 1).\n\n    For other parameters, see \"sfdisk\". You should usually pass 0 for the\n    cyls/heads/sectors parameters.\n\n    See also: \"part_add\"\n\n    *This function is deprecated.* In new code, use the \"part_add\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_sfdisk_N
 };
 
 struct command_entry sfdisk_l_cmd_entry = {
   .name = "sfdisk-l",
-  .help = "NAME\n    sfdisk-l - display the partition table\n\nSYNOPSIS\n     sfdisk-l device\n\nDESCRIPTION\n    This displays the partition table on \"device\", in the human-readable\n    output of the sfdisk(8) command. It is not intended to be parsed.\n\n    See also: \"part_list\"\n\n    This function is deprecated. In new code, use the \"part_list\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    sfdisk-l - display the partition table\n\nSYNOPSIS\n     sfdisk-l device\n\nDESCRIPTION\n    This displays the partition table on \"device\", in the human-readable\n    output of the sfdisk(8) command. It is not intended to be parsed.\n\n    See also: \"part_list\"\n\n    *This function is deprecated.* In new code, use the \"part_list\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_sfdisk_l
 };
 
@@ -1586,7 +1626,7 @@ struct command_entry glob_expand_cmd_entry = {
 
 struct command_entry scrub_device_cmd_entry = {
   .name = "scrub-device",
-  .help = "NAME\n    scrub-device - scrub (securely wipe) a device\n\nSYNOPSIS\n     scrub-device device\n\nDESCRIPTION\n    This command writes patterns over \"device\" to make data retrieval more\n    difficult.\n\n    It is an interface to the scrub(1) program. See that manual page for\n    more details.\n\n    This command is dangerous. Without careful use you can easily destroy\n    all your data.\n\n",
+  .help = "NAME\n    scrub-device - scrub (securely wipe) a device\n\nSYNOPSIS\n     scrub-device device\n\nDESCRIPTION\n    This command writes patterns over \"device\" to make data retrieval more\n    difficult.\n\n    It is an interface to the scrub(1) program. See that manual page for\n    more details.\n\n",
   .run = run_scrub_device
 };
 
@@ -1736,13 +1776,13 @@ struct command_entry readdir_cmd_entry = {
 
 struct command_entry sfdiskM_cmd_entry = {
   .name = "sfdiskM",
-  .help = "NAME\n    sfdiskM - create partitions on a block device\n\nSYNOPSIS\n     sfdiskM device lines\n\nDESCRIPTION\n    This is a simplified interface to the \"sfdisk\" command, where partition\n    sizes are specified in megabytes only (rounded to the nearest cylinder)\n    and you don't need to specify the cyls, heads and sectors parameters\n    which were rarely if ever used anyway.\n\n    See also: \"sfdisk\", the sfdisk(8) manpage and \"part_disk\"\n\n    This command is dangerous. Without careful use you can easily destroy\n    all your data.\n\n    This function is deprecated. In new code, use the \"part_add\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    sfdiskM - create partitions on a block device\n\nSYNOPSIS\n     sfdiskM device lines\n\nDESCRIPTION\n    This is a simplified interface to the \"sfdisk\" command, where partition\n    sizes are specified in megabytes only (rounded to the nearest cylinder)\n    and you don't need to specify the cyls, heads and sectors parameters\n    which were rarely if ever used anyway.\n\n    See also: \"sfdisk\", the sfdisk(8) manpage and \"part_disk\"\n\n    *This function is deprecated.* In new code, use the \"part_add\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_sfdiskM
 };
 
 struct command_entry zfile_cmd_entry = {
   .name = "zfile",
-  .help = "NAME\n    zfile - determine file type inside a compressed file\n\nSYNOPSIS\n     zfile meth path\n\nDESCRIPTION\n    This command runs \"file\" after first decompressing \"path\" using\n    \"method\".\n\n    \"method\" must be one of \"gzip\", \"compress\" or \"bzip2\".\n\n    Since 1.0.63, use \"file\" instead which can now process compressed files.\n\n    This function is deprecated. In new code, use the \"file\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    zfile - determine file type inside a compressed file\n\nSYNOPSIS\n     zfile meth path\n\nDESCRIPTION\n    This command runs \"file\" after first decompressing \"path\" using\n    \"method\".\n\n    \"method\" must be one of \"gzip\", \"compress\" or \"bzip2\".\n\n    Since 1.0.63, use \"file\" instead which can now process compressed files.\n\n    *This function is deprecated.* In new code, use the \"file\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_zfile
 };
 
@@ -1916,7 +1956,7 @@ struct command_entry readlink_cmd_entry = {
 
 struct command_entry fallocate_cmd_entry = {
   .name = "fallocate",
-  .help = "NAME\n    fallocate - preallocate a file in the guest filesystem\n\nSYNOPSIS\n     fallocate path len\n\nDESCRIPTION\n    This command preallocates a file (containing zero bytes) named \"path\" of\n    size \"len\" bytes. If the file exists already, it is overwritten.\n\n    Do not confuse this with the guestfish-specific \"alloc\" command which\n    allocates a file in the host and attaches it as a device.\n\n    This function is deprecated. In new code, use the \"fallocate64\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    fallocate - preallocate a file in the guest filesystem\n\nSYNOPSIS\n     fallocate path len\n\nDESCRIPTION\n    This command preallocates a file (containing zero bytes) named \"path\" of\n    size \"len\" bytes. If the file exists already, it is overwritten.\n\n    Do not confuse this with the guestfish-specific \"alloc\" command which\n    allocates a file in the host and attaches it as a device.\n\n    *This function is deprecated.* In new code, use the \"fallocate64\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_fallocate
 };
 
@@ -2024,7 +2064,7 @@ struct command_entry getcon_cmd_entry = {
 
 struct command_entry mkfs_b_cmd_entry = {
   .name = "mkfs-b",
-  .help = "NAME\n    mkfs-b - make a filesystem with block size\n\nSYNOPSIS\n     mkfs-b fstype blocksize device\n\nDESCRIPTION\n    This call is similar to \"mkfs\", but it allows you to control the block\n    size of the resulting filesystem. Supported block sizes depend on the\n    filesystem type, but typically they are 1024, 2048 or 4096 only.\n\n    For VFAT and NTFS the \"blocksize\" parameter is treated as the requested\n    cluster size.\n\n    This function is deprecated. In new code, use the \"mkfs_opts\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    mkfs-b - make a filesystem with block size\n\nSYNOPSIS\n     mkfs-b fstype blocksize device\n\nDESCRIPTION\n    This call is similar to \"mkfs\", but it allows you to control the block\n    size of the resulting filesystem. Supported block sizes depend on the\n    filesystem type, but typically they are 1024, 2048 or 4096 only.\n\n    For VFAT and NTFS the \"blocksize\" parameter is treated as the requested\n    cluster size.\n\n    *This function is deprecated.* In new code, use the \"mkfs_opts\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_mkfs_b
 };
 
@@ -2162,7 +2202,7 @@ struct command_entry part_add_cmd_entry = {
 
 struct command_entry part_disk_cmd_entry = {
   .name = "part-disk",
-  .help = "NAME\n    part-disk - partition whole disk with a single primary partition\n\nSYNOPSIS\n     part-disk device parttype\n\nDESCRIPTION\n    This command is simply a combination of \"part_init\" followed by\n    \"part_add\" to create a single primary partition covering the whole disk.\n\n    \"parttype\" is the partition table type, usually \"mbr\" or \"gpt\", but\n    other possible values are described in \"part_init\".\n\n    This command is dangerous. Without careful use you can easily destroy\n    all your data.\n\n",
+  .help = "NAME\n    part-disk - partition whole disk with a single primary partition\n\nSYNOPSIS\n     part-disk device parttype\n\nDESCRIPTION\n    This command is simply a combination of \"part_init\" followed by\n    \"part_add\" to create a single primary partition covering the whole disk.\n\n    \"parttype\" is the partition table type, usually \"mbr\" or \"gpt\", but\n    other possible values are described in \"part_init\".\n\n",
   .run = run_part_disk
 };
 
@@ -2204,7 +2244,7 @@ struct command_entry available_cmd_entry = {
 
 struct command_entry dd_cmd_entry = {
   .name = "dd",
-  .help = "NAME\n    dd - copy from source to destination using dd\n\nSYNOPSIS\n     dd src dest\n\nDESCRIPTION\n    This command copies from one source device or file \"src\" to another\n    destination device or file \"dest\". Normally you would use this to copy\n    to or from a device or partition, for example to duplicate a filesystem.\n\n    If the destination is a device, it must be as large or larger than the\n    source file or device, otherwise the copy will fail. This command cannot\n    do partial copies (see \"copy_size\").\n\n",
+  .help = "NAME\n    dd - copy from source to destination using dd\n\nSYNOPSIS\n     dd src dest\n\nDESCRIPTION\n    This command copies from one source device or file \"src\" to another\n    destination device or file \"dest\". Normally you would use this to copy\n    to or from a device or partition, for example to duplicate a filesystem.\n\n    If the destination is a device, it must be as large or larger than the\n    source file or device, otherwise the copy will fail. This command cannot\n    do partial copies (see \"copy_device_to_device\").\n\n    *This function is deprecated.* In new code, use the\n    \"copy_device_to_device\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_dd
 };
 
@@ -2264,13 +2304,13 @@ struct command_entry vglvuuids_cmd_entry = {
 
 struct command_entry copy_size_cmd_entry = {
   .name = "copy-size",
-  .help = "NAME\n    copy-size - copy size bytes from source to destination using dd\n\nSYNOPSIS\n     copy-size src dest size\n\nDESCRIPTION\n    This command copies exactly \"size\" bytes from one source device or file\n    \"src\" to another destination device or file \"dest\".\n\n    Note this will fail if the source is too short or if the destination is\n    not large enough.\n\n",
+  .help = "NAME\n    copy-size - copy size bytes from source to destination using dd\n\nSYNOPSIS\n     copy-size src dest size\n\nDESCRIPTION\n    This command copies exactly \"size\" bytes from one source device or file\n    \"src\" to another destination device or file \"dest\".\n\n    Note this will fail if the source is too short or if the destination is\n    not large enough.\n\n    *This function is deprecated.* In new code, use the\n    \"copy_device_to_device\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_copy_size
 };
 
 struct command_entry zero_device_cmd_entry = {
   .name = "zero-device",
-  .help = "NAME\n    zero-device - write zeroes to an entire device\n\nSYNOPSIS\n     zero-device device\n\nDESCRIPTION\n    This command writes zeroes over the entire \"device\". Compare with \"zero\"\n    which just zeroes the first few blocks of a device.\n\n    If blocks are already zero, then this command avoids writing zeroes.\n    This prevents the underlying device from becoming non-sparse or growing\n    unnecessarily.\n\n    This command is dangerous. Without careful use you can easily destroy\n    all your data.\n\n",
+  .help = "NAME\n    zero-device - write zeroes to an entire device\n\nSYNOPSIS\n     zero-device device\n\nDESCRIPTION\n    This command writes zeroes over the entire \"device\". Compare with \"zero\"\n    which just zeroes the first few blocks of a device.\n\n    If blocks are already zero, then this command avoids writing zeroes.\n    This prevents the underlying device from becoming non-sparse or growing\n    unnecessarily.\n\n",
   .run = run_zero_device
 };
 
@@ -2288,7 +2328,7 @@ struct command_entry txz_out_cmd_entry = {
 
 struct command_entry ntfsresize_cmd_entry = {
   .name = "ntfsresize",
-  .help = "NAME\n    ntfsresize - resize an NTFS filesystem\n\nSYNOPSIS\n     ntfsresize device\n\nDESCRIPTION\n    This command resizes an NTFS filesystem, expanding or shrinking it to\n    the size of the underlying device.\n\n    *Note:* After the resize operation, the filesystem is marked as\n    requiring a consistency check (for safety). You have to boot into\n    Windows to perform this check and clear this condition. Furthermore,\n    ntfsresize refuses to resize filesystems which have been marked in this\n    way. So in effect it is not possible to call ntfsresize multiple times\n    on a single filesystem without booting into Windows between each resize.\n\n    See also ntfsresize(8).\n\n    This function is deprecated. In new code, use the \"ntfsresize_opts\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    ntfsresize - resize an NTFS filesystem\n\nSYNOPSIS\n     ntfsresize device\n\nDESCRIPTION\n    This command resizes an NTFS filesystem, expanding or shrinking it to\n    the size of the underlying device.\n\n    *Note:* After the resize operation, the filesystem is marked as\n    requiring a consistency check (for safety). You have to boot into\n    Windows to perform this check and clear this condition. Furthermore,\n    ntfsresize refuses to resize filesystems which have been marked in this\n    way. So in effect it is not possible to call ntfsresize multiple times\n    on a single filesystem without booting into Windows between each resize.\n\n    See also ntfsresize(8).\n\n    *This function is deprecated.* In new code, use the \"ntfsresize_opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_ntfsresize
 };
 
@@ -2402,7 +2442,7 @@ struct command_entry pvresize_size_cmd_entry = {
 
 struct command_entry ntfsresize_size_cmd_entry = {
   .name = "ntfsresize-size",
-  .help = "NAME\n    ntfsresize-size - resize an NTFS filesystem (with size)\n\nSYNOPSIS\n     ntfsresize-size device size\n\nDESCRIPTION\n    This command is the same as \"ntfsresize\" except that it allows you to\n    specify the new size (in bytes) explicitly.\n\n    This function is deprecated. In new code, use the \"ntfsresize_opts\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    ntfsresize-size - resize an NTFS filesystem (with size)\n\nSYNOPSIS\n     ntfsresize-size device size\n\nDESCRIPTION\n    This command is the same as \"ntfsresize\" except that it allows you to\n    specify the new size (in bytes) explicitly.\n\n    *This function is deprecated.* In new code, use the \"ntfsresize_opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_ntfsresize_size
 };
 
@@ -2462,13 +2502,13 @@ struct command_entry luks_close_cmd_entry = {
 
 struct command_entry luks_format_cmd_entry = {
   .name = "luks-format",
-  .help = "NAME\n    luks-format - format a block device as a LUKS encrypted device\n\nSYNOPSIS\n     luks-format device keyslot\n\nDESCRIPTION\n    This command erases existing data on \"device\" and formats the device as\n    a LUKS encrypted device. \"key\" is the initial key, which is added to key\n    slot \"slot\". (LUKS supports 8 key slots, numbered 0-7).\n\n    This command has one or more key or passphrase parameters. Guestfish\n    will prompt for these separately.\n\n    This command is dangerous. Without careful use you can easily destroy\n    all your data.\n\n",
+  .help = "NAME\n    luks-format - format a block device as a LUKS encrypted device\n\nSYNOPSIS\n     luks-format device keyslot\n\nDESCRIPTION\n    This command erases existing data on \"device\" and formats the device as\n    a LUKS encrypted device. \"key\" is the initial key, which is added to key\n    slot \"slot\". (LUKS supports 8 key slots, numbered 0-7).\n\n    This command has one or more key or passphrase parameters. Guestfish\n    will prompt for these separately.\n\n",
   .run = run_luks_format
 };
 
 struct command_entry luks_format_cipher_cmd_entry = {
   .name = "luks-format-cipher",
-  .help = "NAME\n    luks-format-cipher - format a block device as a LUKS encrypted device\n\nSYNOPSIS\n     luks-format-cipher device keyslot cipher\n\nDESCRIPTION\n    This command is the same as \"luks_format\" but it also allows you to set\n    the \"cipher\" used.\n\n    This command has one or more key or passphrase parameters. Guestfish\n    will prompt for these separately.\n\n    This command is dangerous. Without careful use you can easily destroy\n    all your data.\n\n",
+  .help = "NAME\n    luks-format-cipher - format a block device as a LUKS encrypted device\n\nSYNOPSIS\n     luks-format-cipher device keyslot cipher\n\nDESCRIPTION\n    This command is the same as \"luks_format\" but it also allows you to set\n    the \"cipher\" used.\n\n    This command has one or more key or passphrase parameters. Guestfish\n    will prompt for these separately.\n\n",
   .run = run_luks_format_cipher
 };
 
@@ -2534,7 +2574,7 @@ struct command_entry is_socket_cmd_entry = {
 
 struct command_entry part_to_dev_cmd_entry = {
   .name = "part-to-dev",
-  .help = "NAME\n    part-to-dev - convert partition name to device name\n\nSYNOPSIS\n     part-to-dev partition\n\nDESCRIPTION\n    This function takes a partition name (eg. \"/dev/sdb1\") and removes the\n    partition number, returning the device name (eg. \"/dev/sdb\").\n\n    The named partition must exist, for example as a string returned from\n    \"list_partitions\".\n\n",
+  .help = "NAME\n    part-to-dev - convert partition name to device name\n\nSYNOPSIS\n     part-to-dev partition\n\nDESCRIPTION\n    This function takes a partition name (eg. \"/dev/sdb1\") and removes the\n    partition number, returning the device name (eg. \"/dev/sdb\").\n\n    The named partition must exist, for example as a string returned from\n    \"list_partitions\".\n\n    See also \"part_to_partnum\".\n\n",
   .run = run_part_to_dev
 };
 
@@ -2640,6 +2680,48 @@ struct command_entry write_append_cmd_entry = {
   .run = run_write_append
 };
 
+struct command_entry compress_out_cmd_entry = {
+  .name = "compress-out",
+  .help = "NAME\n    compress-out - output compressed file\n\nSYNOPSIS\n     compress-out ctype file zfile [level:..]\n\nDESCRIPTION\n    This command compresses \"file\" and writes it out to the local file\n    \"zfile\".\n\n    The compression program used is controlled by the \"ctype\" parameter.\n    Currently this includes: \"compress\", \"gzip\", \"bzip2\", \"xz\" or \"lzop\".\n    Some compression types may not be supported by particular builds of\n    libguestfs, in which case you will get an error containing the substring\n    \"not supported\".\n\n    The optional \"level\" parameter controls compression level. The meaning\n    and default for this parameter depends on the compression program being\n    used.\n\n",
+  .run = run_compress_out
+};
+
+struct command_entry compress_device_out_cmd_entry = {
+  .name = "compress-device-out",
+  .help = "NAME\n    compress-device-out - output compressed device\n\nSYNOPSIS\n     compress-device-out ctype device zdevice [level:..]\n\nDESCRIPTION\n    This command compresses \"device\" and writes it out to the local file\n    \"zdevice\".\n\n    The \"ctype\" and optional \"level\" parameters have the same meaning as in\n    \"compress_out\".\n\n",
+  .run = run_compress_device_out
+};
+
+struct command_entry part_to_partnum_cmd_entry = {
+  .name = "part-to-partnum",
+  .help = "NAME\n    part-to-partnum - convert partition name to partition number\n\nSYNOPSIS\n     part-to-partnum partition\n\nDESCRIPTION\n    This function takes a partition name (eg. \"/dev/sdb1\") and returns the\n    partition number (eg. 1).\n\n    The named partition must exist, for example as a string returned from\n    \"list_partitions\".\n\n    See also \"part_to_dev\".\n\n",
+  .run = run_part_to_partnum
+};
+
+struct command_entry copy_device_to_device_cmd_entry = {
+  .name = "copy-device-to-device",
+  .help = "NAME\n    copy-device-to-device - copy from source device to destination device\n\nSYNOPSIS\n     copy-device-to-device src dest [srcoffset:..] [destoffset:..] [size:..]\n\nDESCRIPTION\n    The four calls \"copy_device_to_device\", \"copy_device_to_file\",\n    \"copy_file_to_device\", and \"copy_file_to_file\" let you copy from a\n    source (device|file) to a destination (device|file).\n\n    Partial copies can be made since you can specify optionally the source\n    offset, destination offset and size to copy. These values are all\n    specified in bytes. If not given, the offsets both default to zero, and\n    the size defaults to copying as much as possible until we hit the end of\n    the source.\n\n    The source and destination may be the same object. However overlapping\n    regions may not be copied correctly.\n\n    If the destination is a file, it is created if required. If the\n    destination file is not large enough, it is extended.\n\n",
+  .run = run_copy_device_to_device
+};
+
+struct command_entry copy_device_to_file_cmd_entry = {
+  .name = "copy-device-to-file",
+  .help = "NAME\n    copy-device-to-file - copy from source device to destination file\n\nSYNOPSIS\n     copy-device-to-file src dest [srcoffset:..] [destoffset:..] [size:..]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
+  .run = run_copy_device_to_file
+};
+
+struct command_entry copy_file_to_device_cmd_entry = {
+  .name = "copy-file-to-device",
+  .help = "NAME\n    copy-file-to-device - copy from source file to destination device\n\nSYNOPSIS\n     copy-file-to-device src dest [srcoffset:..] [destoffset:..] [size:..]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
+  .run = run_copy_file_to_device
+};
+
+struct command_entry copy_file_to_file_cmd_entry = {
+  .name = "copy-file-to-file",
+  .help = "NAME\n    copy-file-to-file - copy from source file to destination file\n\nSYNOPSIS\n     copy-file-to-file src dest [srcoffset:..] [destoffset:..] [size:..]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n    This is not the function you want for copying files. This is for copying\n    blocks within existing files. See \"cp\", \"cp_a\" and \"mv\" for general file\n    copying and moving functions.\n\n",
+  .run = run_copy_file_to_file
+};
+
 void list_commands (void)
 {
   printf ("    %-16s     %s\n", _("Command"), _("Description"));
@@ -2690,7 +2772,13 @@ void list_commands (void)
   printf ("%-20s %s\n", "chown", _("change file owner and group"));
   printf ("%-20s %s\n", "command", _("run a command from the guest filesystem"));
   printf ("%-20s %s\n", "command-lines", _("run a command, returning lines"));
+  printf ("%-20s %s\n", "compress-device-out", _("output compressed device"));
+  printf ("%-20s %s\n", "compress-out", _("output compressed file"));
   printf ("%-20s %s\n", "config", _("add qemu parameters"));
+  printf ("%-20s %s\n", "copy-device-to-device", _("copy from source device to destination device"));
+  printf ("%-20s %s\n", "copy-device-to-file", _("copy from source device to destination file"));
+  printf ("%-20s %s\n", "copy-file-to-device", _("copy from source file to destination device"));
+  printf ("%-20s %s\n", "copy-file-to-file", _("copy from source file to destination file"));
   printf ("%-20s %s\n", "copy-in", _("copy local files or directories into an image"));
   printf ("%-20s %s\n", "copy-out", _("copy remote files or directories out of an image"));
   printf ("%-20s %s\n", "copy-size", _("copy size bytes from source to destination using dd"));
@@ -2699,6 +2787,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "dd", _("copy from source to destination using dd"));
   printf ("%-20s %s\n", "debug", _("debugging and internals"));
   printf ("%-20s %s\n", "debug-cmdline", _("debug the QEMU command line (internal use only)"));
+  printf ("%-20s %s\n", "debug-drives", _("debug the drives (internal use only)"));
   printf ("%-20s %s\n", "debug-upload", _("upload a file to the appliance (internal use only)"));
   printf ("%-20s %s\n", "df", _("report file system disk space usage"));
   printf ("%-20s %s\n", "df-h", _("report file system disk space usage (human readable)"));
@@ -2744,6 +2833,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "get-qemu", _("get the qemu binary"));
   printf ("%-20s %s\n", "get-recovery-proc", _("get recovery process enabled flag"));
   printf ("%-20s %s\n", "get-selinux", _("get SELinux enabled flag"));
+  printf ("%-20s %s\n", "get-smp", _("get number of virtual CPUs in appliance"));
   printf ("%-20s %s\n", "get-state", _("get the current state"));
   printf ("%-20s %s\n", "get-trace", _("get command trace enabled flag"));
   printf ("%-20s %s\n", "get-umask", _("get the current umask"));
@@ -2896,6 +2986,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "part-set-mbr-id", _("set the MBR type byte (ID byte) of a partition"));
   printf ("%-20s %s\n", "part-set-name", _("set partition name"));
   printf ("%-20s %s\n", "part-to-dev", _("convert partition name to device name"));
+  printf ("%-20s %s\n", "part-to-partnum", _("convert partition name to partition number"));
   printf ("%-20s %s\n", "ping-daemon", _("ping the guest daemon"));
   printf ("%-20s %s\n", "pread", _("read part of a file"));
   printf ("%-20s %s\n", "pread-device", _("read part of a device"));
@@ -2939,9 +3030,11 @@ void list_commands (void)
   printf ("%-20s %s\n", "set-qemu", _("set the qemu binary"));
   printf ("%-20s %s\n", "set-recovery-proc", _("enable or disable the recovery process"));
   printf ("%-20s %s\n", "set-selinux", _("set SELinux enabled or disabled at appliance boot"));
+  printf ("%-20s %s\n", "set-smp", _("set number of virtual CPUs in appliance"));
   printf ("%-20s %s\n", "set-trace", _("enable or disable command traces"));
   printf ("%-20s %s\n", "set-verbose", _("set verbose mode"));
   printf ("%-20s %s\n", "setcon", _("set SELinux security context"));
+  printf ("%-20s %s\n", "setenv", _("set an environment variable"));
   printf ("%-20s %s\n", "setxattr", _("set extended attribute of a file or directory"));
   printf ("%-20s %s\n", "sfdisk", _("create partitions on a block device"));
   printf ("%-20s %s\n", "sfdiskM", _("create partitions on a block device"));
@@ -2983,6 +3076,7 @@ void list_commands (void)
   printf ("%-20s %s\n", "umask", _("set file mode creation mask (umask)"));
   printf ("%-20s %s\n", "umount", _("unmount a filesystem"));
   printf ("%-20s %s\n", "umount-all", _("unmount all filesystems"));
+  printf ("%-20s %s\n", "unsetenv", _("unset an environment variable"));
   printf ("%-20s %s\n", "upload", _("upload a file from the local machine"));
   printf ("%-20s %s\n", "upload-offset", _("upload a file from the local machine with offset"));
   printf ("%-20s %s\n", "utimens", _("set timestamp of a file with nanosecond precision"));
@@ -4185,8 +4279,8 @@ run_add_drive_opts (const char *cmd, size_t argc, char *argv[])
   struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 1 || argc > 4) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 4);
+  if (argc < 1 || argc > 5) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 5);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     return -1;
   }
@@ -4210,6 +4304,11 @@ run_add_drive_opts (const char *cmd, size_t argc, char *argv[])
       optargs_s.iface = &argv[i][6];
       this_mask = GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK;
       this_arg = "iface";
+    }
+    else if (STRPREFIX (argv[i], "name:")) {
+      optargs_s.name = &argv[i][5];
+      this_mask = GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK;
+      this_arg = "name";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
@@ -4284,6 +4383,23 @@ run_debug_cmdline (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_debug_drives (const char *cmd, size_t argc, char *argv[])
+{
+  char **r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  r = guestfs_debug_drives (g);
+  if (r == NULL) return -1;
+  print_strings (r);
+  free_strings (r);
+  return 0;
+}
+
+static int
 run_add_domain (const char *cmd, size_t argc, char *argv[])
 {
   int r;
@@ -4292,8 +4408,8 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
   struct guestfs_add_domain_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 1 || argc > 6) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 6);
+  if (argc < 1 || argc > 7) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 7);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     return -1;
   }
@@ -4327,6 +4443,11 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
       optargs_s.allowuuid = is_true (&argv[i][10]) ? 1 : 0;
       this_mask = GUESTFS_ADD_DOMAIN_ALLOWUUID_BITMASK;
       this_arg = "allowuuid";
+    }
+    else if (STRPREFIX (argv[i], "readonlydisk:")) {
+      optargs_s.readonlydisk = &argv[i][13];
+      this_mask = GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK;
+      this_arg = "readonlydisk";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
@@ -4685,6 +4806,57 @@ run_get_pgroup (const char *cmd, size_t argc, char *argv[])
   r = guestfs_get_pgroup (g);
   if (r == -1) return -1;
   if (r) printf ("true\n"); else printf ("false\n");
+  return 0;
+}
+
+static int
+run_set_smp (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  int smp;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "smp", "xstrtoll", xerr);
+      return -1;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "smp");
+      return -1;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    smp = r;
+  }
+  r = guestfs_set_smp (g, smp);
+  return r;
+}
+
+static int
+run_get_smp (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  r = guestfs_get_smp (g);
+  if (r == -1) return -1;
+  printf ("%d\n", r);
   return 0;
 }
 
@@ -11163,6 +11335,8 @@ run_luks_open (const char *cmd, size_t argc, char *argv[])
   }
   device = argv[i++];
   key = read_key ("key");
+  if (keys_from_stdin)
+    input_lineno++;
   if (key == NULL) return -1;
   mapname = argv[i++];
   r = guestfs_luks_open (g, device, key, mapname);
@@ -11186,6 +11360,8 @@ run_luks_open_ro (const char *cmd, size_t argc, char *argv[])
   }
   device = argv[i++];
   key = read_key ("key");
+  if (keys_from_stdin)
+    input_lineno++;
   if (key == NULL) return -1;
   mapname = argv[i++];
   r = guestfs_luks_open_ro (g, device, key, mapname);
@@ -11226,6 +11402,8 @@ run_luks_format (const char *cmd, size_t argc, char *argv[])
   }
   device = argv[i++];
   key = read_key ("key");
+  if (keys_from_stdin)
+    input_lineno++;
   if (key == NULL) return -1;
   {
     strtol_error xerr;
@@ -11268,6 +11446,8 @@ run_luks_format_cipher (const char *cmd, size_t argc, char *argv[])
   }
   device = argv[i++];
   key = read_key ("key");
+  if (keys_from_stdin)
+    input_lineno++;
   if (key == NULL) return -1;
   {
     strtol_error xerr;
@@ -11311,8 +11491,12 @@ run_luks_add_key (const char *cmd, size_t argc, char *argv[])
   }
   device = argv[i++];
   key = read_key ("key");
+  if (keys_from_stdin)
+    input_lineno++;
   if (key == NULL) return -1;
   newkey = read_key ("newkey");
+  if (keys_from_stdin)
+    input_lineno++;
   if (newkey == NULL) return -1;
   {
     strtol_error xerr;
@@ -11355,6 +11539,8 @@ run_luks_kill_slot (const char *cmd, size_t argc, char *argv[])
   }
   device = argv[i++];
   key = read_key ("key");
+  if (keys_from_stdin)
+    input_lineno++;
   if (key == NULL) return -1;
   {
     strtol_error xerr;
@@ -12215,6 +12401,533 @@ run_write_append (const char *cmd, size_t argc, char *argv[])
   i++;
   r = guestfs_write_append (g, path, content, content_size);
   free (path);
+  return r;
+}
+
+static int
+run_compress_out (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  const char *ctype;
+  char *file;
+  char *zfile;
+  struct guestfs_compress_out_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_compress_out_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 3 || argc > 4) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 3, 4);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  ctype = argv[i++];
+  file = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (file == NULL) return -1;
+  zfile = file_out (argv[i++]);
+  if (zfile == NULL) return -1;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "level:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.level", "xstrtoll", xerr);
+      return -1;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.level");
+      return -1;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    optargs_s.level = r;
+  }
+      this_mask = GUESTFS_COMPRESS_OUT_LEVEL_BITMASK;
+      this_arg = "level";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      return -1;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      return -1;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_compress_out_argv (g, ctype, file, zfile, optargs);
+  free (file);
+  free (zfile);
+  return r;
+}
+
+static int
+run_compress_device_out (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  const char *ctype;
+  const char *device;
+  char *zdevice;
+  struct guestfs_compress_device_out_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_compress_device_out_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 3 || argc > 4) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 3, 4);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  ctype = argv[i++];
+  device = argv[i++];
+  zdevice = file_out (argv[i++]);
+  if (zdevice == NULL) return -1;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "level:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.level", "xstrtoll", xerr);
+      return -1;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.level");
+      return -1;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    optargs_s.level = r;
+  }
+      this_mask = GUESTFS_COMPRESS_DEVICE_OUT_LEVEL_BITMASK;
+      this_arg = "level";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      return -1;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      return -1;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_compress_device_out_argv (g, ctype, device, zdevice, optargs);
+  free (zdevice);
+  return r;
+}
+
+static int
+run_part_to_partnum (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  const char *partition;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  partition = argv[i++];
+  r = guestfs_part_to_partnum (g, partition);
+  if (r == -1) return -1;
+  printf ("%d\n", r);
+  return 0;
+}
+
+static int
+run_copy_device_to_device (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  const char *src;
+  const char *dest;
+  struct guestfs_copy_device_to_device_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_copy_device_to_device_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 2 || argc > 5) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 5);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  src = argv[i++];
+  dest = argv[i++];
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "srcoffset:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.srcoffset", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.srcoffset = r;
+  }
+      this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET_BITMASK;
+      this_arg = "srcoffset";
+    }
+    else if (STRPREFIX (argv[i], "destoffset:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.destoffset", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.destoffset = r;
+  }
+      this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET_BITMASK;
+      this_arg = "destoffset";
+    }
+    else if (STRPREFIX (argv[i], "size:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.size", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.size = r;
+  }
+      this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
+      this_arg = "size";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      return -1;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      return -1;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_copy_device_to_device_argv (g, src, dest, optargs);
+  return r;
+}
+
+static int
+run_copy_device_to_file (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  const char *src;
+  char *dest;
+  struct guestfs_copy_device_to_file_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_copy_device_to_file_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 2 || argc > 5) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 5);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  src = argv[i++];
+  dest = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (dest == NULL) return -1;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "srcoffset:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.srcoffset", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.srcoffset = r;
+  }
+      this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET_BITMASK;
+      this_arg = "srcoffset";
+    }
+    else if (STRPREFIX (argv[i], "destoffset:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.destoffset", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.destoffset = r;
+  }
+      this_mask = GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET_BITMASK;
+      this_arg = "destoffset";
+    }
+    else if (STRPREFIX (argv[i], "size:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.size", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.size = r;
+  }
+      this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
+      this_arg = "size";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      return -1;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      return -1;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_copy_device_to_file_argv (g, src, dest, optargs);
+  free (dest);
+  return r;
+}
+
+static int
+run_copy_file_to_device (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  char *src;
+  const char *dest;
+  struct guestfs_copy_file_to_device_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_copy_file_to_device_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 2 || argc > 5) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 5);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  src = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (src == NULL) return -1;
+  dest = argv[i++];
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "srcoffset:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.srcoffset", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.srcoffset = r;
+  }
+      this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET_BITMASK;
+      this_arg = "srcoffset";
+    }
+    else if (STRPREFIX (argv[i], "destoffset:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.destoffset", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.destoffset = r;
+  }
+      this_mask = GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET_BITMASK;
+      this_arg = "destoffset";
+    }
+    else if (STRPREFIX (argv[i], "size:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.size", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.size = r;
+  }
+      this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
+      this_arg = "size";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      return -1;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      return -1;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_copy_file_to_device_argv (g, src, dest, optargs);
+  free (src);
+  return r;
+}
+
+static int
+run_copy_file_to_file (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  char *src;
+  char *dest;
+  struct guestfs_copy_file_to_file_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_copy_file_to_file_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 2 || argc > 5) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 5);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  src = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (src == NULL) return -1;
+  dest = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (dest == NULL) return -1;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "srcoffset:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.srcoffset", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.srcoffset = r;
+  }
+      this_mask = GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET_BITMASK;
+      this_arg = "srcoffset";
+    }
+    else if (STRPREFIX (argv[i], "destoffset:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.destoffset", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.destoffset = r;
+  }
+      this_mask = GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET_BITMASK;
+      this_arg = "destoffset";
+    }
+    else if (STRPREFIX (argv[i], "size:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.size", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.size = r;
+  }
+      this_mask = GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
+      this_arg = "size";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      return -1;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      return -1;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_copy_file_to_file_argv (g, src, dest, optargs);
+  free (src);
+  free (dest);
   return r;
 }
 

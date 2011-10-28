@@ -1935,6 +1935,58 @@ struct guestfs_write_append_args {
   opaque content<>;
 };
 
+struct guestfs_compress_out_args {
+  string ctype<>;
+  string file<>;
+  int level;
+};
+
+struct guestfs_compress_device_out_args {
+  string ctype<>;
+  string device<>;
+  int level;
+};
+
+struct guestfs_part_to_partnum_args {
+  string partition<>;
+};
+
+struct guestfs_part_to_partnum_ret {
+  int partnum;
+};
+
+struct guestfs_copy_device_to_device_args {
+  string src<>;
+  string dest<>;
+  hyper srcoffset;
+  hyper destoffset;
+  hyper size;
+};
+
+struct guestfs_copy_device_to_file_args {
+  string src<>;
+  string dest<>;
+  hyper srcoffset;
+  hyper destoffset;
+  hyper size;
+};
+
+struct guestfs_copy_file_to_device_args {
+  string src<>;
+  string dest<>;
+  hyper srcoffset;
+  hyper destoffset;
+  hyper size;
+};
+
+struct guestfs_copy_file_to_file_args {
+  string src<>;
+  string dest<>;
+  hyper srcoffset;
+  hyper destoffset;
+  hyper size;
+};
+
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
   GUESTFS_PROC_SYNC = 2,
@@ -2226,6 +2278,13 @@ enum guestfs_procedure {
   GUESTFS_PROC_NTFSRESIZE_OPTS = 288,
   GUESTFS_PROC_BTRFS_FILESYSTEM_RESIZE = 289,
   GUESTFS_PROC_WRITE_APPEND = 290,
+  GUESTFS_PROC_COMPRESS_OUT = 291,
+  GUESTFS_PROC_COMPRESS_DEVICE_OUT = 292,
+  GUESTFS_PROC_PART_TO_PARTNUM = 293,
+  GUESTFS_PROC_COPY_DEVICE_TO_DEVICE = 294,
+  GUESTFS_PROC_COPY_DEVICE_TO_FILE = 295,
+  GUESTFS_PROC_COPY_FILE_TO_DEVICE = 296,
+  GUESTFS_PROC_COPY_FILE_TO_FILE = 297,
   GUESTFS_PROC_NR_PROCS
 };
 
