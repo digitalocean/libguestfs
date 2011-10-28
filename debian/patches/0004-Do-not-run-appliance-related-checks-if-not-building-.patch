@@ -3,21 +3,23 @@ Date: Sat, 20 Aug 2011 10:34:46 +0200
 Subject: Do not run appliance-related checks if not building appliance
 
 ---
- Makefile.am        |    5 ++++-
- cat/Makefile.am    |    2 ++
- df/Makefile.am     |    2 ++
- edit/Makefile.am   |    2 ++
- fuse/Makefile.am   |    4 +++-
- images/Makefile.am |    2 ++
- ocaml/Makefile.am  |   10 +++++++---
- perl/Makefile.am   |   10 ++++++++--
- python/Makefile.am |    8 ++++++--
- resize/Makefile.am |    2 ++
- tools/Makefile.am  |    2 ++
- 11 files changed, 40 insertions(+), 9 deletions(-)
+ Makefile.am          |    5 ++++-
+ cat/Makefile.am      |    2 ++
+ clone/Makefile.am    |    2 ++
+ df/Makefile.am       |    2 ++
+ edit/Makefile.am     |    2 ++
+ fuse/Makefile.am     |    4 +++-
+ images/Makefile.am   |    2 ++
+ ocaml/Makefile.am    |   10 +++++++---
+ perl/Makefile.am     |   10 ++++++++--
+ python/Makefile.am   |    8 ++++++--
+ resize/Makefile.am   |    2 ++
+ sparsify/Makefile.am |    2 ++
+ tools/Makefile.am    |    2 ++
+ 13 files changed, 44 insertions(+), 9 deletions(-)
 
 diff --git a/Makefile.am b/Makefile.am
-index ca31727..1c5e873 100644
+index 388cdeb..927e442 100644
 --- a/Makefile.am
 +++ b/Makefile.am
 @@ -30,7 +30,10 @@ SUBDIRS += appliance
@@ -42,6 +44,17 @@ index 91abfac..b1a672e 100644
  
 +if ENABLE_APPLIANCE
  TESTS = test-virt-cat.sh test-virt-filesystems.sh test-virt-ls.sh
++endif ENABLE_APPLIANCE
+diff --git a/clone/Makefile.am b/clone/Makefile.am
+index 20e1d52..b01637c 100644
+--- a/clone/Makefile.am
++++ b/clone/Makefile.am
+@@ -48,4 +48,6 @@ TESTS_ENVIRONMENT = \
+ 	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+ 	TMPDIR=$(top_builddir)
+ 
++if ENABLE_APPLIANCE
+ TESTS = test-virt-sysprep.sh
 +endif ENABLE_APPLIANCE
 diff --git a/df/Makefile.am b/df/Makefile.am
 index 6281c96..63ba403 100644
@@ -96,7 +109,7 @@ index 90c4ce3..1b554f4 100644
  CLEANFILES = \
  	test.iso test.sqsh \
 diff --git a/ocaml/Makefile.am b/ocaml/Makefile.am
-index 8daa671..ba9aee7 100644
+index 28c13c5..83b8f09 100644
 --- a/ocaml/Makefile.am
 +++ b/ocaml/Makefile.am
 @@ -75,11 +75,15 @@ TESTS_ENVIRONMENT = \
@@ -141,7 +154,7 @@ index d8167d1..6212915 100644
  TESTS_ENVIRONMENT = \
  	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
 diff --git a/python/Makefile.am b/python/Makefile.am
-index 5884762..19f6e00 100644
+index 82960d6..97fae83 100644
 --- a/python/Makefile.am
 +++ b/python/Makefile.am
 @@ -50,6 +50,10 @@ TESTS_ENVIRONMENT = \
@@ -158,16 +171,30 @@ index 5884762..19f6e00 100644
 +
 +endif HAVE_PYTHON
 diff --git a/resize/Makefile.am b/resize/Makefile.am
-index 93a2600..395f32d 100644
+index e8ffff0..5112605 100644
 --- a/resize/Makefile.am
 +++ b/resize/Makefile.am
-@@ -86,7 +86,9 @@ TESTS_ENVIRONMENT = \
+@@ -99,7 +99,9 @@ TESTS_ENVIRONMENT = \
  	LIBGUESTFS_PATH=$(top_builddir)/appliance \
  	TMPDIR=$(top_builddir)
  
 +if ENABLE_APPLIANCE
  TESTS = test-virt-resize.sh
 +endif
+ 
+ # Dependencies.
+ depend: .depend
+diff --git a/sparsify/Makefile.am b/sparsify/Makefile.am
+index ab90818..8e6bfc3 100644
+--- a/sparsify/Makefile.am
++++ b/sparsify/Makefile.am
+@@ -98,7 +98,9 @@ TESTS_ENVIRONMENT = \
+ 	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+ 	TMPDIR=$(top_builddir)
+ 
++if ENABLE_APPLIANCE
+ TESTS = test-virt-sparsify.sh
++endif ENABLE_APPLIANCE
  
  # Dependencies.
  depend: .depend

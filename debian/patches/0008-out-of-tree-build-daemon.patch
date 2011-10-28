@@ -7,10 +7,10 @@ Subject: out-of-tree build: daemon
  1 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/daemon/Makefile.am b/daemon/Makefile.am
-index 3fe8c88..c6c3cef 100644
+index f8e0ecb..87c92f2 100644
 --- a/daemon/Makefile.am
 +++ b/daemon/Makefile.am
-@@ -52,10 +52,10 @@ noinst_LIBRARIES = libprotocol.a
+@@ -42,10 +42,10 @@ noinst_LIBRARIES = libprotocol.a
  libprotocol_a_SOURCES = guestfs_protocol.c guestfs_protocol.h
  libprotocol_a_CFLAGS = -Wall -Wno-unused -fno-strict-aliasing
  
