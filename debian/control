@@ -6,11 +6,11 @@ Uploaders: Richard Jones <rjones@redhat.com>, Guido Günther <agx@sigxcpu.org>, 
 Build-Depends: debhelper (>= 7.0.50~), autotools-dev, aptitude,
   po-debconf,
   febootstrap (>= 3.2),
-  libreadline-dev, libaugeas-dev, libhivex-dev, libvirt-dev,
+  libreadline-dev, libaugeas-dev, libselinux1-dev, libhivex-dev, libvirt-dev,
   libmagic-dev, libncurses5-dev, libpcre3-dev, libxml2-dev,
-  libconfig-dev,
+  libconfig-dev, libc-dev-bin, systemtap-sdt-dev,
   automake, autoconf, libtool,
-  gperf,
+  gperf, libxml2-utils,
   qemu-kvm (>= 0.13),
   genisoimage, pkg-config,
   dh-ocaml, ocaml, ocaml-findlib, libpcre-ocaml-dev,
@@ -18,7 +18,7 @@ Build-Depends: debhelper (>= 7.0.50~), autotools-dev, aptitude,
   libtest-pod-coverage-perl, libextutils-command-perl, libintl-perl, libtest-pod-perl,
   libstring-shellquote-perl,
   libsys-virt-perl, libwin-hivex-perl,
-  libfuse-dev, fuse-utils 
+  libfuse-dev, fuse-utils
 Homepage: http://libguestfs.org
 Standards-Version: 3.9.2
 Vcs-Git: git://git.debian.org/git/pkg-libvirt/libguestfs.git
