@@ -12,8 +12,7 @@ COMMON_CONFIG_FLAGS = \
 	--disable-ruby       \
 	--disable-haskell    \
 	--disable-erlang     \
-	--disable-php        \
-	vmchannel_test=no
+	--disable-php
 
 override_dh_auto_clean:
 	set -e; for p in $(PYTHONS); do \
