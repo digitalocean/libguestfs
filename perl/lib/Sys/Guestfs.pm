@@ -4843,6 +4843,3343 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =cut
 
+use vars qw(%guestfs_introspection);
+%guestfs_introspection = (
+  "add_cdrom" => {
+    ret => 'void',
+    args => [
+      [ 'filename', 'string', 0 ],
+    ],
+    name => "add_cdrom",
+    description => "add a CD-ROM disk image to examine",
+  },
+  "add_domain" => {
+    ret => 'int',
+    args => [
+      [ 'dom', 'string', 0 ],
+    ],
+    optargs => {
+      libvirturi => [ 'libvirturi', 'string', 0 ],
+      readonly => [ 'readonly', 'bool', 1 ],
+      iface => [ 'iface', 'string', 2 ],
+      live => [ 'live', 'bool', 3 ],
+      allowuuid => [ 'allowuuid', 'bool', 4 ],
+      readonlydisk => [ 'readonlydisk', 'string', 5 ],
+    },
+    name => "add_domain",
+    description => "add the disk(s) from a named libvirt domain",
+  },
+  "add_drive" => {
+    ret => 'void',
+    args => [
+      [ 'filename', 'string', 0 ],
+    ],
+    name => "add_drive",
+    description => "add an image to examine or modify",
+  },
+  "add_drive_opts" => {
+    ret => 'void',
+    args => [
+      [ 'filename', 'string', 0 ],
+    ],
+    optargs => {
+      readonly => [ 'readonly', 'bool', 0 ],
+      format => [ 'format', 'string', 1 ],
+      iface => [ 'iface', 'string', 2 ],
+      name => [ 'name', 'string', 3 ],
+    },
+    name => "add_drive_opts",
+    description => "add an image to examine or modify",
+  },
+  "add_drive_ro" => {
+    ret => 'void',
+    args => [
+      [ 'filename', 'string', 0 ],
+    ],
+    name => "add_drive_ro",
+    description => "add a drive in snapshot mode (read-only)",
+  },
+  "add_drive_ro_with_if" => {
+    ret => 'void',
+    args => [
+      [ 'filename', 'string', 0 ],
+      [ 'iface', 'string', 1 ],
+    ],
+    name => "add_drive_ro_with_if",
+    description => "add a drive read-only specifying the QEMU block emulation to use",
+  },
+  "add_drive_with_if" => {
+    ret => 'void',
+    args => [
+      [ 'filename', 'string', 0 ],
+      [ 'iface', 'string', 1 ],
+    ],
+    name => "add_drive_with_if",
+    description => "add a drive specifying the QEMU block emulation to use",
+  },
+  "aug_clear" => {
+    ret => 'void',
+    args => [
+      [ 'augpath', 'string', 0 ],
+    ],
+    name => "aug_clear",
+    description => "clear Augeas path",
+  },
+  "aug_close" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "aug_close",
+    description => "close the current Augeas handle",
+  },
+  "aug_defnode" => {
+    ret => 'struct int_bool',
+    args => [
+      [ 'name', 'string', 0 ],
+      [ 'expr', 'string', 1 ],
+      [ 'val', 'string', 2 ],
+    ],
+    name => "aug_defnode",
+    description => "define an Augeas node",
+  },
+  "aug_defvar" => {
+    ret => 'int',
+    args => [
+      [ 'name', 'string', 0 ],
+      [ 'expr', 'nullable string', 1 ],
+    ],
+    name => "aug_defvar",
+    description => "define an Augeas variable",
+  },
+  "aug_get" => {
+    ret => 'string',
+    args => [
+      [ 'augpath', 'string', 0 ],
+    ],
+    name => "aug_get",
+    description => "look up the value of an Augeas path",
+  },
+  "aug_init" => {
+    ret => 'void',
+    args => [
+      [ 'root', 'string(path)', 0 ],
+      [ 'flags', 'int', 1 ],
+    ],
+    name => "aug_init",
+    description => "create a new Augeas handle",
+  },
+  "aug_insert" => {
+    ret => 'void',
+    args => [
+      [ 'augpath', 'string', 0 ],
+      [ 'label', 'string', 1 ],
+      [ 'before', 'bool', 2 ],
+    ],
+    name => "aug_insert",
+    description => "insert a sibling Augeas node",
+  },
+  "aug_load" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "aug_load",
+    description => "load files into the tree",
+  },
+  "aug_ls" => {
+    ret => 'string list',
+    args => [
+      [ 'augpath', 'string', 0 ],
+    ],
+    name => "aug_ls",
+    description => "list Augeas nodes under augpath",
+  },
+  "aug_match" => {
+    ret => 'string list',
+    args => [
+      [ 'augpath', 'string', 0 ],
+    ],
+    name => "aug_match",
+    description => "return Augeas nodes which match augpath",
+  },
+  "aug_mv" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string', 0 ],
+      [ 'dest', 'string', 1 ],
+    ],
+    name => "aug_mv",
+    description => "move Augeas node",
+  },
+  "aug_rm" => {
+    ret => 'int',
+    args => [
+      [ 'augpath', 'string', 0 ],
+    ],
+    name => "aug_rm",
+    description => "remove an Augeas path",
+  },
+  "aug_save" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "aug_save",
+    description => "write all pending Augeas changes to disk",
+  },
+  "aug_set" => {
+    ret => 'void',
+    args => [
+      [ 'augpath', 'string', 0 ],
+      [ 'val', 'string', 1 ],
+    ],
+    name => "aug_set",
+    description => "set Augeas path to value",
+  },
+  "available" => {
+    ret => 'void',
+    args => [
+      [ 'groups', 'string list', 0 ],
+    ],
+    name => "available",
+    description => "test availability of some parts of the API",
+  },
+  "available_all_groups" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "available_all_groups",
+    description => "return a list of all optional groups",
+  },
+  "base64_in" => {
+    ret => 'void',
+    args => [
+      [ 'base64file', 'string(filename)', 0 ],
+      [ 'filename', 'string(path)', 1 ],
+    ],
+    name => "base64_in",
+    description => "upload base64-encoded data to file",
+  },
+  "base64_out" => {
+    ret => 'void',
+    args => [
+      [ 'filename', 'string(path)', 0 ],
+      [ 'base64file', 'string(filename)', 1 ],
+    ],
+    name => "base64_out",
+    description => "download file and encode as base64",
+  },
+  "blockdev_flushbufs" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "blockdev_flushbufs",
+    description => "flush device buffers",
+  },
+  "blockdev_getbsz" => {
+    ret => 'int',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "blockdev_getbsz",
+    description => "get blocksize of block device",
+  },
+  "blockdev_getro" => {
+    ret => 'bool',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "blockdev_getro",
+    description => "is block device set to read-only",
+  },
+  "blockdev_getsize64" => {
+    ret => 'int64',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "blockdev_getsize64",
+    description => "get total size of device in bytes",
+  },
+  "blockdev_getss" => {
+    ret => 'int',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "blockdev_getss",
+    description => "get sectorsize of block device",
+  },
+  "blockdev_getsz" => {
+    ret => 'int64',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "blockdev_getsz",
+    description => "get total size of device in 512-byte sectors",
+  },
+  "blockdev_rereadpt" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "blockdev_rereadpt",
+    description => "reread partition table",
+  },
+  "blockdev_setbsz" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'blocksize', 'int', 1 ],
+    ],
+    name => "blockdev_setbsz",
+    description => "set blocksize of block device",
+  },
+  "blockdev_setro" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "blockdev_setro",
+    description => "set block device to read-only",
+  },
+  "blockdev_setrw" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "blockdev_setrw",
+    description => "set block device to read-write",
+  },
+  "btrfs_filesystem_resize" => {
+    ret => 'void',
+    args => [
+      [ 'mountpoint', 'string(path)', 0 ],
+    ],
+    optargs => {
+      size => [ 'size', 'int64', 0 ],
+    },
+    name => "btrfs_filesystem_resize",
+    description => "resize a btrfs filesystem",
+  },
+  "case_sensitive_path" => {
+    ret => 'string',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "case_sensitive_path",
+    description => "return true path on case-insensitive filesystem",
+  },
+  "cat" => {
+    ret => 'string',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "cat",
+    description => "list the contents of a file",
+  },
+  "checksum" => {
+    ret => 'string',
+    args => [
+      [ 'csumtype', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "checksum",
+    description => "compute MD5, SHAx or CRC checksum of file",
+  },
+  "checksum_device" => {
+    ret => 'string',
+    args => [
+      [ 'csumtype', 'string', 0 ],
+      [ 'device', 'string(device)', 1 ],
+    ],
+    name => "checksum_device",
+    description => "compute MD5, SHAx or CRC checksum of the contents of a device",
+  },
+  "checksums_out" => {
+    ret => 'void',
+    args => [
+      [ 'csumtype', 'string', 0 ],
+      [ 'directory', 'string(path)', 1 ],
+      [ 'sumsfile', 'string(filename)', 2 ],
+    ],
+    name => "checksums_out",
+    description => "compute MD5, SHAx or CRC checksum of files in a directory",
+  },
+  "chmod" => {
+    ret => 'void',
+    args => [
+      [ 'mode', 'int', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "chmod",
+    description => "change file mode",
+  },
+  "chown" => {
+    ret => 'void',
+    args => [
+      [ 'owner', 'int', 0 ],
+      [ 'group', 'int', 1 ],
+      [ 'path', 'string(path)', 2 ],
+    ],
+    name => "chown",
+    description => "change file owner and group",
+  },
+  "command" => {
+    ret => 'string',
+    args => [
+      [ 'arguments', 'string list', 0 ],
+    ],
+    name => "command",
+    description => "run a command from the guest filesystem",
+  },
+  "command_lines" => {
+    ret => 'string list',
+    args => [
+      [ 'arguments', 'string list', 0 ],
+    ],
+    name => "command_lines",
+    description => "run a command, returning lines",
+  },
+  "compress_device_out" => {
+    ret => 'void',
+    args => [
+      [ 'ctype', 'string', 0 ],
+      [ 'device', 'string(device)', 1 ],
+      [ 'zdevice', 'string(filename)', 2 ],
+    ],
+    optargs => {
+      level => [ 'level', 'int', 0 ],
+    },
+    name => "compress_device_out",
+    description => "output compressed device",
+  },
+  "compress_out" => {
+    ret => 'void',
+    args => [
+      [ 'ctype', 'string', 0 ],
+      [ 'file', 'string(path)', 1 ],
+      [ 'zfile', 'string(filename)', 2 ],
+    ],
+    optargs => {
+      level => [ 'level', 'int', 0 ],
+    },
+    name => "compress_out",
+    description => "output compressed file",
+  },
+  "config" => {
+    ret => 'void',
+    args => [
+      [ 'qemuparam', 'string', 0 ],
+      [ 'qemuvalue', 'nullable string', 1 ],
+    ],
+    name => "config",
+    description => "add qemu parameters",
+  },
+  "copy_device_to_device" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string(device)', 0 ],
+      [ 'dest', 'string(device)', 1 ],
+    ],
+    optargs => {
+      srcoffset => [ 'srcoffset', 'int64', 0 ],
+      destoffset => [ 'destoffset', 'int64', 1 ],
+      size => [ 'size', 'int64', 2 ],
+    },
+    name => "copy_device_to_device",
+    description => "copy from source device to destination device",
+  },
+  "copy_device_to_file" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string(device)', 0 ],
+      [ 'dest', 'string(path)', 1 ],
+    ],
+    optargs => {
+      srcoffset => [ 'srcoffset', 'int64', 0 ],
+      destoffset => [ 'destoffset', 'int64', 1 ],
+      size => [ 'size', 'int64', 2 ],
+    },
+    name => "copy_device_to_file",
+    description => "copy from source device to destination file",
+  },
+  "copy_file_to_device" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string(path)', 0 ],
+      [ 'dest', 'string(device)', 1 ],
+    ],
+    optargs => {
+      srcoffset => [ 'srcoffset', 'int64', 0 ],
+      destoffset => [ 'destoffset', 'int64', 1 ],
+      size => [ 'size', 'int64', 2 ],
+    },
+    name => "copy_file_to_device",
+    description => "copy from source file to destination device",
+  },
+  "copy_file_to_file" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string(path)', 0 ],
+      [ 'dest', 'string(path)', 1 ],
+    ],
+    optargs => {
+      srcoffset => [ 'srcoffset', 'int64', 0 ],
+      destoffset => [ 'destoffset', 'int64', 1 ],
+      size => [ 'size', 'int64', 2 ],
+    },
+    name => "copy_file_to_file",
+    description => "copy from source file to destination file",
+  },
+  "copy_size" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string(dev_or_path)', 0 ],
+      [ 'dest', 'string(dev_or_path)', 1 ],
+      [ 'size', 'int64', 2 ],
+    ],
+    name => "copy_size",
+    description => "copy size bytes from source to destination using dd",
+  },
+  "cp" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string(path)', 0 ],
+      [ 'dest', 'string(path)', 1 ],
+    ],
+    name => "cp",
+    description => "copy a file",
+  },
+  "cp_a" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string(path)', 0 ],
+      [ 'dest', 'string(path)', 1 ],
+    ],
+    name => "cp_a",
+    description => "copy a file or directory recursively",
+  },
+  "dd" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string(dev_or_path)', 0 ],
+      [ 'dest', 'string(dev_or_path)', 1 ],
+    ],
+    name => "dd",
+    description => "copy from source to destination using dd",
+  },
+  "debug" => {
+    ret => 'string',
+    args => [
+      [ 'subcmd', 'string', 0 ],
+      [ 'extraargs', 'string list', 1 ],
+    ],
+    name => "debug",
+    description => "debugging and internals",
+  },
+  "debug_cmdline" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "debug_cmdline",
+    description => "debug the QEMU command line (internal use only)",
+  },
+  "debug_drives" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "debug_drives",
+    description => "debug the drives (internal use only)",
+  },
+  "debug_upload" => {
+    ret => 'void',
+    args => [
+      [ 'filename', 'string(filename)', 0 ],
+      [ 'tmpname', 'string', 1 ],
+      [ 'mode', 'int', 2 ],
+    ],
+    name => "debug_upload",
+    description => "upload a file to the appliance (internal use only)",
+  },
+  "df" => {
+    ret => 'string',
+    args => [
+    ],
+    name => "df",
+    description => "report file system disk space usage",
+  },
+  "df_h" => {
+    ret => 'string',
+    args => [
+    ],
+    name => "df_h",
+    description => "report file system disk space usage (human readable)",
+  },
+  "dmesg" => {
+    ret => 'string',
+    args => [
+    ],
+    name => "dmesg",
+    description => "return kernel messages",
+  },
+  "download" => {
+    ret => 'void',
+    args => [
+      [ 'remotefilename', 'string(dev_or_path)', 0 ],
+      [ 'filename', 'string(filename)', 1 ],
+    ],
+    name => "download",
+    description => "download a file to the local machine",
+  },
+  "download_offset" => {
+    ret => 'void',
+    args => [
+      [ 'remotefilename', 'string(dev_or_path)', 0 ],
+      [ 'filename', 'string(filename)', 1 ],
+      [ 'offset', 'int64', 2 ],
+      [ 'size', 'int64', 3 ],
+    ],
+    name => "download_offset",
+    description => "download a file to the local machine with offset and size",
+  },
+  "drop_caches" => {
+    ret => 'void',
+    args => [
+      [ 'whattodrop', 'int', 0 ],
+    ],
+    name => "drop_caches",
+    description => "drop kernel page cache, dentries and inodes",
+  },
+  "du" => {
+    ret => 'int64',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "du",
+    description => "estimate file space usage",
+  },
+  "e2fsck_f" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "e2fsck_f",
+    description => "check an ext2/ext3 filesystem",
+  },
+  "echo_daemon" => {
+    ret => 'string',
+    args => [
+      [ 'words', 'string list', 0 ],
+    ],
+    name => "echo_daemon",
+    description => "echo arguments back to the client",
+  },
+  "egrep" => {
+    ret => 'string list',
+    args => [
+      [ 'regex', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "egrep",
+    description => "return lines matching a pattern",
+  },
+  "egrepi" => {
+    ret => 'string list',
+    args => [
+      [ 'regex', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "egrepi",
+    description => "return lines matching a pattern",
+  },
+  "equal" => {
+    ret => 'bool',
+    args => [
+      [ 'file1', 'string(path)', 0 ],
+      [ 'file2', 'string(path)', 1 ],
+    ],
+    name => "equal",
+    description => "test if two files have equal contents",
+  },
+  "exists" => {
+    ret => 'bool',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "exists",
+    description => "test if file or directory exists",
+  },
+  "fallocate" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'len', 'int', 1 ],
+    ],
+    name => "fallocate",
+    description => "preallocate a file in the guest filesystem",
+  },
+  "fallocate64" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'len', 'int64', 1 ],
+    ],
+    name => "fallocate64",
+    description => "preallocate a file in the guest filesystem",
+  },
+  "fgrep" => {
+    ret => 'string list',
+    args => [
+      [ 'pattern', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "fgrep",
+    description => "return lines matching a pattern",
+  },
+  "fgrepi" => {
+    ret => 'string list',
+    args => [
+      [ 'pattern', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "fgrepi",
+    description => "return lines matching a pattern",
+  },
+  "file" => {
+    ret => 'string',
+    args => [
+      [ 'path', 'string(dev_or_path)', 0 ],
+    ],
+    name => "file",
+    description => "determine file type",
+  },
+  "file_architecture" => {
+    ret => 'string',
+    args => [
+      [ 'filename', 'string(path)', 0 ],
+    ],
+    name => "file_architecture",
+    description => "detect the architecture of a binary file",
+  },
+  "filesize" => {
+    ret => 'int64',
+    args => [
+      [ 'file', 'string(path)', 0 ],
+    ],
+    name => "filesize",
+    description => "return the size of the file in bytes",
+  },
+  "fill" => {
+    ret => 'void',
+    args => [
+      [ 'c', 'int', 0 ],
+      [ 'len', 'int', 1 ],
+      [ 'path', 'string(path)', 2 ],
+    ],
+    name => "fill",
+    description => "fill a file with octets",
+  },
+  "fill_pattern" => {
+    ret => 'void',
+    args => [
+      [ 'pattern', 'string', 0 ],
+      [ 'len', 'int', 1 ],
+      [ 'path', 'string(path)', 2 ],
+    ],
+    name => "fill_pattern",
+    description => "fill a file with a repeating pattern of bytes",
+  },
+  "find" => {
+    ret => 'string list',
+    args => [
+      [ 'directory', 'string(path)', 0 ],
+    ],
+    name => "find",
+    description => "find all files and directories",
+  },
+  "find0" => {
+    ret => 'void',
+    args => [
+      [ 'directory', 'string(path)', 0 ],
+      [ 'files', 'string(filename)', 1 ],
+    ],
+    name => "find0",
+    description => "find all files and directories, returning NUL-separated list",
+  },
+  "findfs_label" => {
+    ret => 'string',
+    args => [
+      [ 'label', 'string', 0 ],
+    ],
+    name => "findfs_label",
+    description => "find a filesystem by label",
+  },
+  "findfs_uuid" => {
+    ret => 'string',
+    args => [
+      [ 'uuid', 'string', 0 ],
+    ],
+    name => "findfs_uuid",
+    description => "find a filesystem by UUID",
+  },
+  "fsck" => {
+    ret => 'int',
+    args => [
+      [ 'fstype', 'string', 0 ],
+      [ 'device', 'string(device)', 1 ],
+    ],
+    name => "fsck",
+    description => "run the filesystem checker",
+  },
+  "get_append" => {
+    ret => 'const nullable string',
+    args => [
+    ],
+    name => "get_append",
+    description => "get the additional kernel options",
+  },
+  "get_attach_method" => {
+    ret => 'string',
+    args => [
+    ],
+    name => "get_attach_method",
+    description => "get the attach method",
+  },
+  "get_autosync" => {
+    ret => 'bool',
+    args => [
+    ],
+    name => "get_autosync",
+    description => "get autosync mode",
+  },
+  "get_direct" => {
+    ret => 'bool',
+    args => [
+    ],
+    name => "get_direct",
+    description => "get direct appliance mode flag",
+  },
+  "get_e2label" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "get_e2label",
+    description => "get the ext2/3/4 filesystem label",
+  },
+  "get_e2uuid" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "get_e2uuid",
+    description => "get the ext2/3/4 filesystem UUID",
+  },
+  "get_memsize" => {
+    ret => 'int',
+    args => [
+    ],
+    name => "get_memsize",
+    description => "get memory allocated to the qemu subprocess",
+  },
+  "get_network" => {
+    ret => 'bool',
+    args => [
+    ],
+    name => "get_network",
+    description => "get enable network flag",
+  },
+  "get_path" => {
+    ret => 'const string',
+    args => [
+    ],
+    name => "get_path",
+    description => "get the search path",
+  },
+  "get_pgroup" => {
+    ret => 'bool',
+    args => [
+    ],
+    name => "get_pgroup",
+    description => "get process group flag",
+  },
+  "get_pid" => {
+    ret => 'int',
+    args => [
+    ],
+    name => "get_pid",
+    description => "get PID of qemu subprocess",
+  },
+  "get_qemu" => {
+    ret => 'const string',
+    args => [
+    ],
+    name => "get_qemu",
+    description => "get the qemu binary",
+  },
+  "get_recovery_proc" => {
+    ret => 'bool',
+    args => [
+    ],
+    name => "get_recovery_proc",
+    description => "get recovery process enabled flag",
+  },
+  "get_selinux" => {
+    ret => 'bool',
+    args => [
+    ],
+    name => "get_selinux",
+    description => "get SELinux enabled flag",
+  },
+  "get_smp" => {
+    ret => 'int',
+    args => [
+    ],
+    name => "get_smp",
+    description => "get number of virtual CPUs in appliance",
+  },
+  "get_state" => {
+    ret => 'int',
+    args => [
+    ],
+    name => "get_state",
+    description => "get the current state",
+  },
+  "get_trace" => {
+    ret => 'bool',
+    args => [
+    ],
+    name => "get_trace",
+    description => "get command trace enabled flag",
+  },
+  "get_umask" => {
+    ret => 'int',
+    args => [
+    ],
+    name => "get_umask",
+    description => "get the current umask",
+  },
+  "get_verbose" => {
+    ret => 'bool',
+    args => [
+    ],
+    name => "get_verbose",
+    description => "get verbose mode",
+  },
+  "getcon" => {
+    ret => 'string',
+    args => [
+    ],
+    name => "getcon",
+    description => "get SELinux security context",
+  },
+  "getxattr" => {
+    ret => 'buffer',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'name', 'string', 1 ],
+    ],
+    name => "getxattr",
+    description => "get a single extended attribute",
+  },
+  "getxattrs" => {
+    ret => 'struct xattr list',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "getxattrs",
+    description => "list extended attributes of a file or directory",
+  },
+  "glob_expand" => {
+    ret => 'string list',
+    args => [
+      [ 'pattern', 'string(path)', 0 ],
+    ],
+    name => "glob_expand",
+    description => "expand a wildcard path",
+  },
+  "grep" => {
+    ret => 'string list',
+    args => [
+      [ 'regex', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "grep",
+    description => "return lines matching a pattern",
+  },
+  "grepi" => {
+    ret => 'string list',
+    args => [
+      [ 'regex', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "grepi",
+    description => "return lines matching a pattern",
+  },
+  "grub_install" => {
+    ret => 'void',
+    args => [
+      [ 'root', 'string(path)', 0 ],
+      [ 'device', 'string(device)', 1 ],
+    ],
+    name => "grub_install",
+    description => "install GRUB 1",
+  },
+  "head" => {
+    ret => 'string list',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "head",
+    description => "return first 10 lines of a file",
+  },
+  "head_n" => {
+    ret => 'string list',
+    args => [
+      [ 'nrlines', 'int', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "head_n",
+    description => "return first N lines of a file",
+  },
+  "hexdump" => {
+    ret => 'string',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "hexdump",
+    description => "dump a file in hexadecimal",
+  },
+  "initrd_cat" => {
+    ret => 'buffer',
+    args => [
+      [ 'initrdpath', 'string(path)', 0 ],
+      [ 'filename', 'string', 1 ],
+    ],
+    name => "initrd_cat",
+    description => "list the contents of a single file in an initrd",
+  },
+  "initrd_list" => {
+    ret => 'string list',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "initrd_list",
+    description => "list files in an initrd",
+  },
+  "inotify_add_watch" => {
+    ret => 'int64',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'mask', 'int', 1 ],
+    ],
+    name => "inotify_add_watch",
+    description => "add an inotify watch",
+  },
+  "inotify_close" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "inotify_close",
+    description => "close the inotify handle",
+  },
+  "inotify_files" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "inotify_files",
+    description => "return list of watched files that had events",
+  },
+  "inotify_init" => {
+    ret => 'void',
+    args => [
+      [ 'maxevents', 'int', 0 ],
+    ],
+    name => "inotify_init",
+    description => "create an inotify handle",
+  },
+  "inotify_read" => {
+    ret => 'struct inotify_event list',
+    args => [
+    ],
+    name => "inotify_read",
+    description => "return list of inotify events",
+  },
+  "inotify_rm_watch" => {
+    ret => 'void',
+    args => [
+      [ 'wd', 'int', 0 ],
+    ],
+    name => "inotify_rm_watch",
+    description => "remove an inotify watch",
+  },
+  "inspect_get_arch" => {
+    ret => 'string',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_get_arch",
+    description => "get architecture of inspected operating system",
+  },
+  "inspect_get_distro" => {
+    ret => 'string',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_get_distro",
+    description => "get distro of inspected operating system",
+  },
+  "inspect_get_drive_mappings" => {
+    ret => 'hash',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_get_drive_mappings",
+    description => "get drive letter mappings",
+  },
+  "inspect_get_filesystems" => {
+    ret => 'string list',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_get_filesystems",
+    description => "get filesystems associated with inspected operating system",
+  },
+  "inspect_get_format" => {
+    ret => 'string',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_get_format",
+    description => "get format of inspected operating system",
+  },
+  "inspect_get_hostname" => {
+    ret => 'string',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_get_hostname",
+    description => "get hostname of the operating system",
+  },
+  "inspect_get_icon" => {
+    ret => 'buffer',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    optargs => {
+      favicon => [ 'favicon', 'bool', 0 ],
+      highquality => [ 'highquality', 'bool', 1 ],
+    },
+    name => "inspect_get_icon",
+    description => "get the icon corresponding to this operating system",
+  },
+  "inspect_get_major_version" => {
+    ret => 'int',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_get_major_version",
+    description => "get major version of inspected operating system",
+  },
+  "inspect_get_minor_version" => {
+    ret => 'int',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_get_minor_version",
+    description => "get minor version of inspected operating system",
+  },
+  "inspect_get_mountpoints" => {
+    ret => 'hash',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_get_mountpoints",
+    description => "get mountpoints of inspected operating system",
+  },
+  "inspect_get_package_format" => {
+    ret => 'string',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_get_package_format",
+    description => "get package format used by the operating system",
+  },
+  "inspect_get_package_management" => {
+    ret => 'string',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_get_package_management",
+    description => "get package management tool used by the operating system",
+  },
+  "inspect_get_product_name" => {
+    ret => 'string',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_get_product_name",
+    description => "get product name of inspected operating system",
+  },
+  "inspect_get_product_variant" => {
+    ret => 'string',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_get_product_variant",
+    description => "get product variant of inspected operating system",
+  },
+  "inspect_get_roots" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "inspect_get_roots",
+    description => "return list of operating systems found by last inspection",
+  },
+  "inspect_get_type" => {
+    ret => 'string',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_get_type",
+    description => "get type of inspected operating system",
+  },
+  "inspect_get_windows_current_control_set" => {
+    ret => 'string',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_get_windows_current_control_set",
+    description => "get Windows CurrentControlSet of inspected operating system",
+  },
+  "inspect_get_windows_systemroot" => {
+    ret => 'string',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_get_windows_systemroot",
+    description => "get Windows systemroot of inspected operating system",
+  },
+  "inspect_is_live" => {
+    ret => 'bool',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_is_live",
+    description => "get live flag for install disk",
+  },
+  "inspect_is_multipart" => {
+    ret => 'bool',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_is_multipart",
+    description => "get multipart flag for install disk",
+  },
+  "inspect_is_netinst" => {
+    ret => 'bool',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_is_netinst",
+    description => "get netinst (network installer) flag for install disk",
+  },
+  "inspect_list_applications" => {
+    ret => 'struct application list',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_list_applications",
+    description => "get list of applications installed in the operating system",
+  },
+  "inspect_os" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "inspect_os",
+    description => "inspect disk and return list of operating systems found",
+  },
+  "internal_autosync" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "internal_autosync",
+    description => "internal autosync operation",
+  },
+  "is_blockdev" => {
+    ret => 'bool',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "is_blockdev",
+    description => "test if block device",
+  },
+  "is_busy" => {
+    ret => 'bool',
+    args => [
+    ],
+    name => "is_busy",
+    description => "is busy processing a command",
+  },
+  "is_chardev" => {
+    ret => 'bool',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "is_chardev",
+    description => "test if character device",
+  },
+  "is_config" => {
+    ret => 'bool',
+    args => [
+    ],
+    name => "is_config",
+    description => "is in configuration state",
+  },
+  "is_dir" => {
+    ret => 'bool',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "is_dir",
+    description => "test if a directory",
+  },
+  "is_fifo" => {
+    ret => 'bool',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "is_fifo",
+    description => "test if FIFO (named pipe)",
+  },
+  "is_file" => {
+    ret => 'bool',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "is_file",
+    description => "test if a regular file",
+  },
+  "is_launching" => {
+    ret => 'bool',
+    args => [
+    ],
+    name => "is_launching",
+    description => "is launching subprocess",
+  },
+  "is_lv" => {
+    ret => 'bool',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "is_lv",
+    description => "test if device is a logical volume",
+  },
+  "is_ready" => {
+    ret => 'bool',
+    args => [
+    ],
+    name => "is_ready",
+    description => "is ready to accept commands",
+  },
+  "is_socket" => {
+    ret => 'bool',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "is_socket",
+    description => "test if socket",
+  },
+  "is_symlink" => {
+    ret => 'bool',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "is_symlink",
+    description => "test if symbolic link",
+  },
+  "is_zero" => {
+    ret => 'bool',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "is_zero",
+    description => "test if a file contains all zero bytes",
+  },
+  "is_zero_device" => {
+    ret => 'bool',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "is_zero_device",
+    description => "test if a device contains all zero bytes",
+  },
+  "kill_subprocess" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "kill_subprocess",
+    description => "kill the qemu subprocess",
+  },
+  "launch" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "launch",
+    description => "launch the qemu subprocess",
+  },
+  "lchown" => {
+    ret => 'void',
+    args => [
+      [ 'owner', 'int', 0 ],
+      [ 'group', 'int', 1 ],
+      [ 'path', 'string(path)', 2 ],
+    ],
+    name => "lchown",
+    description => "change file owner and group",
+  },
+  "lgetxattr" => {
+    ret => 'buffer',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'name', 'string', 1 ],
+    ],
+    name => "lgetxattr",
+    description => "get a single extended attribute",
+  },
+  "lgetxattrs" => {
+    ret => 'struct xattr list',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "lgetxattrs",
+    description => "list extended attributes of a file or directory",
+  },
+  "list_9p" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "list_9p",
+    description => "list 9p filesystems",
+  },
+  "list_devices" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "list_devices",
+    description => "list the block devices",
+  },
+  "list_dm_devices" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "list_dm_devices",
+    description => "list device mapper devices",
+  },
+  "list_filesystems" => {
+    ret => 'hash',
+    args => [
+    ],
+    name => "list_filesystems",
+    description => "list filesystems",
+  },
+  "list_partitions" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "list_partitions",
+    description => "list the partitions",
+  },
+  "ll" => {
+    ret => 'string',
+    args => [
+      [ 'directory', 'string(path)', 0 ],
+    ],
+    name => "ll",
+    description => "list the files in a directory (long format)",
+  },
+  "ln" => {
+    ret => 'void',
+    args => [
+      [ 'target', 'string', 0 ],
+      [ 'linkname', 'string(path)', 1 ],
+    ],
+    name => "ln",
+    description => "create a hard link",
+  },
+  "ln_f" => {
+    ret => 'void',
+    args => [
+      [ 'target', 'string', 0 ],
+      [ 'linkname', 'string(path)', 1 ],
+    ],
+    name => "ln_f",
+    description => "create a hard link",
+  },
+  "ln_s" => {
+    ret => 'void',
+    args => [
+      [ 'target', 'string', 0 ],
+      [ 'linkname', 'string(path)', 1 ],
+    ],
+    name => "ln_s",
+    description => "create a symbolic link",
+  },
+  "ln_sf" => {
+    ret => 'void',
+    args => [
+      [ 'target', 'string', 0 ],
+      [ 'linkname', 'string(path)', 1 ],
+    ],
+    name => "ln_sf",
+    description => "create a symbolic link",
+  },
+  "lremovexattr" => {
+    ret => 'void',
+    args => [
+      [ 'xattr', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "lremovexattr",
+    description => "remove extended attribute of a file or directory",
+  },
+  "ls" => {
+    ret => 'string list',
+    args => [
+      [ 'directory', 'string(path)', 0 ],
+    ],
+    name => "ls",
+    description => "list the files in a directory",
+  },
+  "lsetxattr" => {
+    ret => 'void',
+    args => [
+      [ 'xattr', 'string', 0 ],
+      [ 'val', 'string', 1 ],
+      [ 'vallen', 'int', 2 ],
+      [ 'path', 'string(path)', 3 ],
+    ],
+    name => "lsetxattr",
+    description => "set extended attribute of a file or directory",
+  },
+  "lstat" => {
+    ret => 'struct stat',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "lstat",
+    description => "get file information for a symbolic link",
+  },
+  "lstatlist" => {
+    ret => 'struct stat list',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'names', 'string list', 1 ],
+    ],
+    name => "lstatlist",
+    description => "lstat on multiple files",
+  },
+  "luks_add_key" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'key', 'string(key)', 1 ],
+      [ 'newkey', 'string(key)', 2 ],
+      [ 'keyslot', 'int', 3 ],
+    ],
+    name => "luks_add_key",
+    description => "add a key on a LUKS encrypted device",
+  },
+  "luks_close" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "luks_close",
+    description => "close a LUKS device",
+  },
+  "luks_format" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'key', 'string(key)', 1 ],
+      [ 'keyslot', 'int', 2 ],
+    ],
+    name => "luks_format",
+    description => "format a block device as a LUKS encrypted device",
+  },
+  "luks_format_cipher" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'key', 'string(key)', 1 ],
+      [ 'keyslot', 'int', 2 ],
+      [ 'cipher', 'string', 3 ],
+    ],
+    name => "luks_format_cipher",
+    description => "format a block device as a LUKS encrypted device",
+  },
+  "luks_kill_slot" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'key', 'string(key)', 1 ],
+      [ 'keyslot', 'int', 2 ],
+    ],
+    name => "luks_kill_slot",
+    description => "remove a key from a LUKS encrypted device",
+  },
+  "luks_open" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'key', 'string(key)', 1 ],
+      [ 'mapname', 'string', 2 ],
+    ],
+    name => "luks_open",
+    description => "open a LUKS-encrypted block device",
+  },
+  "luks_open_ro" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'key', 'string(key)', 1 ],
+      [ 'mapname', 'string', 2 ],
+    ],
+    name => "luks_open_ro",
+    description => "open a LUKS-encrypted block device read-only",
+  },
+  "lvcreate" => {
+    ret => 'void',
+    args => [
+      [ 'logvol', 'string', 0 ],
+      [ 'volgroup', 'string', 1 ],
+      [ 'mbytes', 'int', 2 ],
+    ],
+    name => "lvcreate",
+    description => "create an LVM logical volume",
+  },
+  "lvm_canonical_lv_name" => {
+    ret => 'string',
+    args => [
+      [ 'lvname', 'string(device)', 0 ],
+    ],
+    name => "lvm_canonical_lv_name",
+    description => "get canonical name of an LV",
+  },
+  "lvm_clear_filter" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "lvm_clear_filter",
+    description => "clear LVM device filter",
+  },
+  "lvm_remove_all" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "lvm_remove_all",
+    description => "remove all LVM LVs, VGs and PVs",
+  },
+  "lvm_set_filter" => {
+    ret => 'void',
+    args => [
+      [ 'devices', 'string(device) list', 0 ],
+    ],
+    name => "lvm_set_filter",
+    description => "set LVM device filter",
+  },
+  "lvremove" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "lvremove",
+    description => "remove an LVM logical volume",
+  },
+  "lvrename" => {
+    ret => 'void',
+    args => [
+      [ 'logvol', 'string', 0 ],
+      [ 'newlogvol', 'string', 1 ],
+    ],
+    name => "lvrename",
+    description => "rename an LVM logical volume",
+  },
+  "lvresize" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'mbytes', 'int', 1 ],
+    ],
+    name => "lvresize",
+    description => "resize an LVM logical volume",
+  },
+  "lvresize_free" => {
+    ret => 'void',
+    args => [
+      [ 'lv', 'string(device)', 0 ],
+      [ 'percent', 'int', 1 ],
+    ],
+    name => "lvresize_free",
+    description => "expand an LV to fill free space",
+  },
+  "lvs" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "lvs",
+    description => "list the LVM logical volumes (LVs)",
+  },
+  "lvs_full" => {
+    ret => 'struct lvm_lv list',
+    args => [
+    ],
+    name => "lvs_full",
+    description => "list the LVM logical volumes (LVs)",
+  },
+  "lvuuid" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "lvuuid",
+    description => "get the UUID of a logical volume",
+  },
+  "lxattrlist" => {
+    ret => 'struct xattr list',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'names', 'string list', 1 ],
+    ],
+    name => "lxattrlist",
+    description => "lgetxattr on multiple files",
+  },
+  "mkdir" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "mkdir",
+    description => "create a directory",
+  },
+  "mkdir_mode" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'mode', 'int', 1 ],
+    ],
+    name => "mkdir_mode",
+    description => "create a directory with a particular mode",
+  },
+  "mkdir_p" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "mkdir_p",
+    description => "create a directory and parents",
+  },
+  "mkdtemp" => {
+    ret => 'string',
+    args => [
+      [ 'template', 'string(path)', 0 ],
+    ],
+    name => "mkdtemp",
+    description => "create a temporary directory",
+  },
+  "mke2fs_J" => {
+    ret => 'void',
+    args => [
+      [ 'fstype', 'string', 0 ],
+      [ 'blocksize', 'int', 1 ],
+      [ 'device', 'string(device)', 2 ],
+      [ 'journal', 'string(device)', 3 ],
+    ],
+    name => "mke2fs_J",
+    description => "make ext2/3/4 filesystem with external journal",
+  },
+  "mke2fs_JL" => {
+    ret => 'void',
+    args => [
+      [ 'fstype', 'string', 0 ],
+      [ 'blocksize', 'int', 1 ],
+      [ 'device', 'string(device)', 2 ],
+      [ 'label', 'string', 3 ],
+    ],
+    name => "mke2fs_JL",
+    description => "make ext2/3/4 filesystem with external journal",
+  },
+  "mke2fs_JU" => {
+    ret => 'void',
+    args => [
+      [ 'fstype', 'string', 0 ],
+      [ 'blocksize', 'int', 1 ],
+      [ 'device', 'string(device)', 2 ],
+      [ 'uuid', 'string', 3 ],
+    ],
+    name => "mke2fs_JU",
+    description => "make ext2/3/4 filesystem with external journal",
+  },
+  "mke2journal" => {
+    ret => 'void',
+    args => [
+      [ 'blocksize', 'int', 0 ],
+      [ 'device', 'string(device)', 1 ],
+    ],
+    name => "mke2journal",
+    description => "make ext2/3/4 external journal",
+  },
+  "mke2journal_L" => {
+    ret => 'void',
+    args => [
+      [ 'blocksize', 'int', 0 ],
+      [ 'label', 'string', 1 ],
+      [ 'device', 'string(device)', 2 ],
+    ],
+    name => "mke2journal_L",
+    description => "make ext2/3/4 external journal with label",
+  },
+  "mke2journal_U" => {
+    ret => 'void',
+    args => [
+      [ 'blocksize', 'int', 0 ],
+      [ 'uuid', 'string', 1 ],
+      [ 'device', 'string(device)', 2 ],
+    ],
+    name => "mke2journal_U",
+    description => "make ext2/3/4 external journal with UUID",
+  },
+  "mkfifo" => {
+    ret => 'void',
+    args => [
+      [ 'mode', 'int', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "mkfifo",
+    description => "make FIFO (named pipe)",
+  },
+  "mkfs" => {
+    ret => 'void',
+    args => [
+      [ 'fstype', 'string', 0 ],
+      [ 'device', 'string(device)', 1 ],
+    ],
+    name => "mkfs",
+    description => "make a filesystem",
+  },
+  "mkfs_b" => {
+    ret => 'void',
+    args => [
+      [ 'fstype', 'string', 0 ],
+      [ 'blocksize', 'int', 1 ],
+      [ 'device', 'string(device)', 2 ],
+    ],
+    name => "mkfs_b",
+    description => "make a filesystem with block size",
+  },
+  "mkfs_opts" => {
+    ret => 'void',
+    args => [
+      [ 'fstype', 'string', 0 ],
+      [ 'device', 'string(device)', 1 ],
+    ],
+    optargs => {
+      blocksize => [ 'blocksize', 'int', 0 ],
+      features => [ 'features', 'string', 1 ],
+      inode => [ 'inode', 'int', 2 ],
+      sectorsize => [ 'sectorsize', 'int', 3 ],
+    },
+    name => "mkfs_opts",
+    description => "make a filesystem",
+  },
+  "mkmountpoint" => {
+    ret => 'void',
+    args => [
+      [ 'exemptpath', 'string', 0 ],
+    ],
+    name => "mkmountpoint",
+    description => "create a mountpoint",
+  },
+  "mknod" => {
+    ret => 'void',
+    args => [
+      [ 'mode', 'int', 0 ],
+      [ 'devmajor', 'int', 1 ],
+      [ 'devminor', 'int', 2 ],
+      [ 'path', 'string(path)', 3 ],
+    ],
+    name => "mknod",
+    description => "make block, character or FIFO devices",
+  },
+  "mknod_b" => {
+    ret => 'void',
+    args => [
+      [ 'mode', 'int', 0 ],
+      [ 'devmajor', 'int', 1 ],
+      [ 'devminor', 'int', 2 ],
+      [ 'path', 'string(path)', 3 ],
+    ],
+    name => "mknod_b",
+    description => "make block device node",
+  },
+  "mknod_c" => {
+    ret => 'void',
+    args => [
+      [ 'mode', 'int', 0 ],
+      [ 'devmajor', 'int', 1 ],
+      [ 'devminor', 'int', 2 ],
+      [ 'path', 'string(path)', 3 ],
+    ],
+    name => "mknod_c",
+    description => "make char device node",
+  },
+  "mkswap" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "mkswap",
+    description => "create a swap partition",
+  },
+  "mkswap_L" => {
+    ret => 'void',
+    args => [
+      [ 'label', 'string', 0 ],
+      [ 'device', 'string(device)', 1 ],
+    ],
+    name => "mkswap_L",
+    description => "create a swap partition with a label",
+  },
+  "mkswap_U" => {
+    ret => 'void',
+    args => [
+      [ 'uuid', 'string', 0 ],
+      [ 'device', 'string(device)', 1 ],
+    ],
+    name => "mkswap_U",
+    description => "create a swap partition with an explicit UUID",
+  },
+  "mkswap_file" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "mkswap_file",
+    description => "create a swap file",
+  },
+  "modprobe" => {
+    ret => 'void',
+    args => [
+      [ 'modulename', 'string', 0 ],
+    ],
+    name => "modprobe",
+    description => "load a kernel module",
+  },
+  "mount" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'mountpoint', 'string', 1 ],
+    ],
+    name => "mount",
+    description => "mount a guest disk at a position in the filesystem",
+  },
+  "mount_9p" => {
+    ret => 'void',
+    args => [
+      [ 'mounttag', 'string', 0 ],
+      [ 'mountpoint', 'string', 1 ],
+    ],
+    optargs => {
+      options => [ 'options', 'string', 0 ],
+    },
+    name => "mount_9p",
+    description => "mount 9p filesystem",
+  },
+  "mount_loop" => {
+    ret => 'void',
+    args => [
+      [ 'file', 'string(path)', 0 ],
+      [ 'mountpoint', 'string(path)', 1 ],
+    ],
+    name => "mount_loop",
+    description => "mount a file using the loop device",
+  },
+  "mount_options" => {
+    ret => 'void',
+    args => [
+      [ 'options', 'string', 0 ],
+      [ 'device', 'string(device)', 1 ],
+      [ 'mountpoint', 'string', 2 ],
+    ],
+    name => "mount_options",
+    description => "mount a guest disk with mount options",
+  },
+  "mount_ro" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'mountpoint', 'string', 1 ],
+    ],
+    name => "mount_ro",
+    description => "mount a guest disk, read-only",
+  },
+  "mount_vfs" => {
+    ret => 'void',
+    args => [
+      [ 'options', 'string', 0 ],
+      [ 'vfstype', 'string', 1 ],
+      [ 'device', 'string(device)', 2 ],
+      [ 'mountpoint', 'string', 3 ],
+    ],
+    name => "mount_vfs",
+    description => "mount a guest disk with mount options and vfstype",
+  },
+  "mountpoints" => {
+    ret => 'hash',
+    args => [
+    ],
+    name => "mountpoints",
+    description => "show mountpoints",
+  },
+  "mounts" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "mounts",
+    description => "show mounted filesystems",
+  },
+  "mv" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string(path)', 0 ],
+      [ 'dest', 'string(path)', 1 ],
+    ],
+    name => "mv",
+    description => "move a file",
+  },
+  "ntfs_3g_probe" => {
+    ret => 'int',
+    args => [
+      [ 'rw', 'bool', 0 ],
+      [ 'device', 'string(device)', 1 ],
+    ],
+    name => "ntfs_3g_probe",
+    description => "probe NTFS volume",
+  },
+  "ntfsresize" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "ntfsresize",
+    description => "resize an NTFS filesystem",
+  },
+  "ntfsresize_opts" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    optargs => {
+      size => [ 'size', 'int64', 0 ],
+      force => [ 'force', 'bool', 1 ],
+    },
+    name => "ntfsresize_opts",
+    description => "resize an NTFS filesystem",
+  },
+  "ntfsresize_size" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'size', 'int64', 1 ],
+    ],
+    name => "ntfsresize_size",
+    description => "resize an NTFS filesystem (with size)",
+  },
+  "part_add" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'prlogex', 'string', 1 ],
+      [ 'startsect', 'int64', 2 ],
+      [ 'endsect', 'int64', 3 ],
+    ],
+    name => "part_add",
+    description => "add a partition to the device",
+  },
+  "part_del" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'partnum', 'int', 1 ],
+    ],
+    name => "part_del",
+    description => "delete a partition",
+  },
+  "part_disk" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'parttype', 'string', 1 ],
+    ],
+    name => "part_disk",
+    description => "partition whole disk with a single primary partition",
+  },
+  "part_get_bootable" => {
+    ret => 'bool',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'partnum', 'int', 1 ],
+    ],
+    name => "part_get_bootable",
+    description => "return true if a partition is bootable",
+  },
+  "part_get_mbr_id" => {
+    ret => 'int',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'partnum', 'int', 1 ],
+    ],
+    name => "part_get_mbr_id",
+    description => "get the MBR type byte (ID byte) from a partition",
+  },
+  "part_get_parttype" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "part_get_parttype",
+    description => "get the partition table type",
+  },
+  "part_init" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'parttype', 'string', 1 ],
+    ],
+    name => "part_init",
+    description => "create an empty partition table",
+  },
+  "part_list" => {
+    ret => 'struct partition list',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "part_list",
+    description => "list partitions on a device",
+  },
+  "part_set_bootable" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'partnum', 'int', 1 ],
+      [ 'bootable', 'bool', 2 ],
+    ],
+    name => "part_set_bootable",
+    description => "make a partition bootable",
+  },
+  "part_set_mbr_id" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'partnum', 'int', 1 ],
+      [ 'idbyte', 'int', 2 ],
+    ],
+    name => "part_set_mbr_id",
+    description => "set the MBR type byte (ID byte) of a partition",
+  },
+  "part_set_name" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'partnum', 'int', 1 ],
+      [ 'name', 'string', 2 ],
+    ],
+    name => "part_set_name",
+    description => "set partition name",
+  },
+  "part_to_dev" => {
+    ret => 'string',
+    args => [
+      [ 'partition', 'string(device)', 0 ],
+    ],
+    name => "part_to_dev",
+    description => "convert partition name to device name",
+  },
+  "part_to_partnum" => {
+    ret => 'int',
+    args => [
+      [ 'partition', 'string(device)', 0 ],
+    ],
+    name => "part_to_partnum",
+    description => "convert partition name to partition number",
+  },
+  "ping_daemon" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "ping_daemon",
+    description => "ping the guest daemon",
+  },
+  "pread" => {
+    ret => 'buffer',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'count', 'int', 1 ],
+      [ 'offset', 'int64', 2 ],
+    ],
+    name => "pread",
+    description => "read part of a file",
+  },
+  "pread_device" => {
+    ret => 'buffer',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'count', 'int', 1 ],
+      [ 'offset', 'int64', 2 ],
+    ],
+    name => "pread_device",
+    description => "read part of a device",
+  },
+  "pvcreate" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "pvcreate",
+    description => "create an LVM physical volume",
+  },
+  "pvremove" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "pvremove",
+    description => "remove an LVM physical volume",
+  },
+  "pvresize" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "pvresize",
+    description => "resize an LVM physical volume",
+  },
+  "pvresize_size" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'size', 'int64', 1 ],
+    ],
+    name => "pvresize_size",
+    description => "resize an LVM physical volume (with size)",
+  },
+  "pvs" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "pvs",
+    description => "list the LVM physical volumes (PVs)",
+  },
+  "pvs_full" => {
+    ret => 'struct lvm_pv list',
+    args => [
+    ],
+    name => "pvs_full",
+    description => "list the LVM physical volumes (PVs)",
+  },
+  "pvuuid" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "pvuuid",
+    description => "get the UUID of a physical volume",
+  },
+  "pwrite" => {
+    ret => 'int',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'content', 'buffer', 1 ],
+      [ 'offset', 'int64', 2 ],
+    ],
+    name => "pwrite",
+    description => "write to part of a file",
+  },
+  "pwrite_device" => {
+    ret => 'int',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'content', 'buffer', 1 ],
+      [ 'offset', 'int64', 2 ],
+    ],
+    name => "pwrite_device",
+    description => "write to part of a device",
+  },
+  "read_file" => {
+    ret => 'buffer',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "read_file",
+    description => "read a file",
+  },
+  "read_lines" => {
+    ret => 'string list',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "read_lines",
+    description => "read file as lines",
+  },
+  "readdir" => {
+    ret => 'struct dirent list',
+    args => [
+      [ 'dir', 'string(path)', 0 ],
+    ],
+    name => "readdir",
+    description => "read directories entries",
+  },
+  "readlink" => {
+    ret => 'string',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "readlink",
+    description => "read the target of a symbolic link",
+  },
+  "readlinklist" => {
+    ret => 'string list',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'names', 'string list', 1 ],
+    ],
+    name => "readlinklist",
+    description => "readlink on multiple files",
+  },
+  "realpath" => {
+    ret => 'string',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "realpath",
+    description => "canonicalized absolute pathname",
+  },
+  "removexattr" => {
+    ret => 'void',
+    args => [
+      [ 'xattr', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "removexattr",
+    description => "remove extended attribute of a file or directory",
+  },
+  "resize2fs" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "resize2fs",
+    description => "resize an ext2, ext3 or ext4 filesystem",
+  },
+  "resize2fs_M" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "resize2fs_M",
+    description => "resize an ext2, ext3 or ext4 filesystem to the minimum size",
+  },
+  "resize2fs_size" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'size', 'int64', 1 ],
+    ],
+    name => "resize2fs_size",
+    description => "resize an ext2, ext3 or ext4 filesystem (with size)",
+  },
+  "rm" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "rm",
+    description => "remove a file",
+  },
+  "rm_rf" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "rm_rf",
+    description => "remove a file or directory recursively",
+  },
+  "rmdir" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "rmdir",
+    description => "remove a directory",
+  },
+  "rmmountpoint" => {
+    ret => 'void',
+    args => [
+      [ 'exemptpath', 'string', 0 ],
+    ],
+    name => "rmmountpoint",
+    description => "remove a mountpoint",
+  },
+  "scrub_device" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "scrub_device",
+    description => "scrub (securely wipe) a device",
+  },
+  "scrub_file" => {
+    ret => 'void',
+    args => [
+      [ 'file', 'string(path)', 0 ],
+    ],
+    name => "scrub_file",
+    description => "scrub (securely wipe) a file",
+  },
+  "scrub_freespace" => {
+    ret => 'void',
+    args => [
+      [ 'dir', 'string(path)', 0 ],
+    ],
+    name => "scrub_freespace",
+    description => "scrub (securely wipe) free space",
+  },
+  "set_append" => {
+    ret => 'void',
+    args => [
+      [ 'append', 'nullable string', 0 ],
+    ],
+    name => "set_append",
+    description => "add options to kernel command line",
+  },
+  "set_attach_method" => {
+    ret => 'void',
+    args => [
+      [ 'attachmethod', 'string', 0 ],
+    ],
+    name => "set_attach_method",
+    description => "set the attach method",
+  },
+  "set_autosync" => {
+    ret => 'void',
+    args => [
+      [ 'autosync', 'bool', 0 ],
+    ],
+    name => "set_autosync",
+    description => "set autosync mode",
+  },
+  "set_direct" => {
+    ret => 'void',
+    args => [
+      [ 'direct', 'bool', 0 ],
+    ],
+    name => "set_direct",
+    description => "enable or disable direct appliance mode",
+  },
+  "set_e2label" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'label', 'string', 1 ],
+    ],
+    name => "set_e2label",
+    description => "set the ext2/3/4 filesystem label",
+  },
+  "set_e2uuid" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'uuid', 'string', 1 ],
+    ],
+    name => "set_e2uuid",
+    description => "set the ext2/3/4 filesystem UUID",
+  },
+  "set_memsize" => {
+    ret => 'void',
+    args => [
+      [ 'memsize', 'int', 0 ],
+    ],
+    name => "set_memsize",
+    description => "set memory allocated to the qemu subprocess",
+  },
+  "set_network" => {
+    ret => 'void',
+    args => [
+      [ 'network', 'bool', 0 ],
+    ],
+    name => "set_network",
+    description => "set enable network flag",
+  },
+  "set_path" => {
+    ret => 'void',
+    args => [
+      [ 'searchpath', 'nullable string', 0 ],
+    ],
+    name => "set_path",
+    description => "set the search path",
+  },
+  "set_pgroup" => {
+    ret => 'void',
+    args => [
+      [ 'pgroup', 'bool', 0 ],
+    ],
+    name => "set_pgroup",
+    description => "set process group flag",
+  },
+  "set_qemu" => {
+    ret => 'void',
+    args => [
+      [ 'qemu', 'nullable string', 0 ],
+    ],
+    name => "set_qemu",
+    description => "set the qemu binary",
+  },
+  "set_recovery_proc" => {
+    ret => 'void',
+    args => [
+      [ 'recoveryproc', 'bool', 0 ],
+    ],
+    name => "set_recovery_proc",
+    description => "enable or disable the recovery process",
+  },
+  "set_selinux" => {
+    ret => 'void',
+    args => [
+      [ 'selinux', 'bool', 0 ],
+    ],
+    name => "set_selinux",
+    description => "set SELinux enabled or disabled at appliance boot",
+  },
+  "set_smp" => {
+    ret => 'void',
+    args => [
+      [ 'smp', 'int', 0 ],
+    ],
+    name => "set_smp",
+    description => "set number of virtual CPUs in appliance",
+  },
+  "set_trace" => {
+    ret => 'void',
+    args => [
+      [ 'trace', 'bool', 0 ],
+    ],
+    name => "set_trace",
+    description => "enable or disable command traces",
+  },
+  "set_verbose" => {
+    ret => 'void',
+    args => [
+      [ 'verbose', 'bool', 0 ],
+    ],
+    name => "set_verbose",
+    description => "set verbose mode",
+  },
+  "setcon" => {
+    ret => 'void',
+    args => [
+      [ 'context', 'string', 0 ],
+    ],
+    name => "setcon",
+    description => "set SELinux security context",
+  },
+  "setxattr" => {
+    ret => 'void',
+    args => [
+      [ 'xattr', 'string', 0 ],
+      [ 'val', 'string', 1 ],
+      [ 'vallen', 'int', 2 ],
+      [ 'path', 'string(path)', 3 ],
+    ],
+    name => "setxattr",
+    description => "set extended attribute of a file or directory",
+  },
+  "sfdisk" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'cyls', 'int', 1 ],
+      [ 'heads', 'int', 2 ],
+      [ 'sectors', 'int', 3 ],
+      [ 'lines', 'string list', 4 ],
+    ],
+    name => "sfdisk",
+    description => "create partitions on a block device",
+  },
+  "sfdiskM" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'lines', 'string list', 1 ],
+    ],
+    name => "sfdiskM",
+    description => "create partitions on a block device",
+  },
+  "sfdisk_N" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'partnum', 'int', 1 ],
+      [ 'cyls', 'int', 2 ],
+      [ 'heads', 'int', 3 ],
+      [ 'sectors', 'int', 4 ],
+      [ 'line', 'string', 5 ],
+    ],
+    name => "sfdisk_N",
+    description => "modify a single partition on a block device",
+  },
+  "sfdisk_disk_geometry" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "sfdisk_disk_geometry",
+    description => "display the disk geometry from the partition table",
+  },
+  "sfdisk_kernel_geometry" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "sfdisk_kernel_geometry",
+    description => "display the kernel geometry",
+  },
+  "sfdisk_l" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "sfdisk_l",
+    description => "display the partition table",
+  },
+  "sh" => {
+    ret => 'string',
+    args => [
+      [ 'command', 'string', 0 ],
+    ],
+    name => "sh",
+    description => "run a command via the shell",
+  },
+  "sh_lines" => {
+    ret => 'string list',
+    args => [
+      [ 'command', 'string', 0 ],
+    ],
+    name => "sh_lines",
+    description => "run a command via the shell returning lines",
+  },
+  "sleep" => {
+    ret => 'void',
+    args => [
+      [ 'secs', 'int', 0 ],
+    ],
+    name => "sleep",
+    description => "sleep for some seconds",
+  },
+  "stat" => {
+    ret => 'struct stat',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "stat",
+    description => "get file information",
+  },
+  "statvfs" => {
+    ret => 'struct statvfs',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "statvfs",
+    description => "get file system statistics",
+  },
+  "strings" => {
+    ret => 'string list',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "strings",
+    description => "print the printable strings in a file",
+  },
+  "strings_e" => {
+    ret => 'string list',
+    args => [
+      [ 'encoding', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "strings_e",
+    description => "print the printable strings in a file",
+  },
+  "swapoff_device" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "swapoff_device",
+    description => "disable swap on device",
+  },
+  "swapoff_file" => {
+    ret => 'void',
+    args => [
+      [ 'file', 'string(path)', 0 ],
+    ],
+    name => "swapoff_file",
+    description => "disable swap on file",
+  },
+  "swapoff_label" => {
+    ret => 'void',
+    args => [
+      [ 'label', 'string', 0 ],
+    ],
+    name => "swapoff_label",
+    description => "disable swap on labeled swap partition",
+  },
+  "swapoff_uuid" => {
+    ret => 'void',
+    args => [
+      [ 'uuid', 'string', 0 ],
+    ],
+    name => "swapoff_uuid",
+    description => "disable swap on swap partition by UUID",
+  },
+  "swapon_device" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "swapon_device",
+    description => "enable swap on device",
+  },
+  "swapon_file" => {
+    ret => 'void',
+    args => [
+      [ 'file', 'string(path)', 0 ],
+    ],
+    name => "swapon_file",
+    description => "enable swap on file",
+  },
+  "swapon_label" => {
+    ret => 'void',
+    args => [
+      [ 'label', 'string', 0 ],
+    ],
+    name => "swapon_label",
+    description => "enable swap on labeled swap partition",
+  },
+  "swapon_uuid" => {
+    ret => 'void',
+    args => [
+      [ 'uuid', 'string', 0 ],
+    ],
+    name => "swapon_uuid",
+    description => "enable swap on swap partition by UUID",
+  },
+  "sync" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "sync",
+    description => "sync disks, writes are flushed through to the disk image",
+  },
+  "tail" => {
+    ret => 'string list',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "tail",
+    description => "return last 10 lines of a file",
+  },
+  "tail_n" => {
+    ret => 'string list',
+    args => [
+      [ 'nrlines', 'int', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "tail_n",
+    description => "return last N lines of a file",
+  },
+  "tar_in" => {
+    ret => 'void',
+    args => [
+      [ 'tarfile', 'string(filename)', 0 ],
+      [ 'directory', 'string(path)', 1 ],
+    ],
+    name => "tar_in",
+    description => "unpack tarfile to directory",
+  },
+  "tar_out" => {
+    ret => 'void',
+    args => [
+      [ 'directory', 'string', 0 ],
+      [ 'tarfile', 'string(filename)', 1 ],
+    ],
+    name => "tar_out",
+    description => "pack directory into tarfile",
+  },
+  "test0" => {
+    ret => 'void',
+    args => [
+      [ 'str', 'string', 0 ],
+      [ 'optstr', 'nullable string', 1 ],
+      [ 'strlist', 'string list', 2 ],
+      [ 'b', 'bool', 3 ],
+      [ 'integer', 'int', 4 ],
+      [ 'integer64', 'int64', 5 ],
+      [ 'filein', 'string(filename)', 6 ],
+      [ 'fileout', 'string(filename)', 7 ],
+      [ 'bufferin', 'buffer', 8 ],
+    ],
+    name => "test0",
+    description => "internal test function - do not use",
+  },
+  "test0rbool" => {
+    ret => 'bool',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "test0rbool",
+    description => "internal test function - do not use",
+  },
+  "test0rboolerr" => {
+    ret => 'bool',
+    args => [
+    ],
+    name => "test0rboolerr",
+    description => "internal test function - do not use",
+  },
+  "test0rconstoptstring" => {
+    ret => 'const nullable string',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "test0rconstoptstring",
+    description => "internal test function - do not use",
+  },
+  "test0rconstoptstringerr" => {
+    ret => 'const nullable string',
+    args => [
+    ],
+    name => "test0rconstoptstringerr",
+    description => "internal test function - do not use",
+  },
+  "test0rconststring" => {
+    ret => 'const string',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "test0rconststring",
+    description => "internal test function - do not use",
+  },
+  "test0rconststringerr" => {
+    ret => 'const string',
+    args => [
+    ],
+    name => "test0rconststringerr",
+    description => "internal test function - do not use",
+  },
+  "test0rhashtable" => {
+    ret => 'hash',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "test0rhashtable",
+    description => "internal test function - do not use",
+  },
+  "test0rhashtableerr" => {
+    ret => 'hash',
+    args => [
+    ],
+    name => "test0rhashtableerr",
+    description => "internal test function - do not use",
+  },
+  "test0rint" => {
+    ret => 'int',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "test0rint",
+    description => "internal test function - do not use",
+  },
+  "test0rint64" => {
+    ret => 'int64',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "test0rint64",
+    description => "internal test function - do not use",
+  },
+  "test0rint64err" => {
+    ret => 'int64',
+    args => [
+    ],
+    name => "test0rint64err",
+    description => "internal test function - do not use",
+  },
+  "test0rinterr" => {
+    ret => 'int',
+    args => [
+    ],
+    name => "test0rinterr",
+    description => "internal test function - do not use",
+  },
+  "test0rstring" => {
+    ret => 'string',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "test0rstring",
+    description => "internal test function - do not use",
+  },
+  "test0rstringerr" => {
+    ret => 'string',
+    args => [
+    ],
+    name => "test0rstringerr",
+    description => "internal test function - do not use",
+  },
+  "test0rstringlist" => {
+    ret => 'string list',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "test0rstringlist",
+    description => "internal test function - do not use",
+  },
+  "test0rstringlisterr" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "test0rstringlisterr",
+    description => "internal test function - do not use",
+  },
+  "test0rstruct" => {
+    ret => 'struct lvm_pv',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "test0rstruct",
+    description => "internal test function - do not use",
+  },
+  "test0rstructerr" => {
+    ret => 'struct lvm_pv',
+    args => [
+    ],
+    name => "test0rstructerr",
+    description => "internal test function - do not use",
+  },
+  "test0rstructlist" => {
+    ret => 'struct lvm_pv list',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "test0rstructlist",
+    description => "internal test function - do not use",
+  },
+  "test0rstructlisterr" => {
+    ret => 'struct lvm_pv list',
+    args => [
+    ],
+    name => "test0rstructlisterr",
+    description => "internal test function - do not use",
+  },
+  "tgz_in" => {
+    ret => 'void',
+    args => [
+      [ 'tarball', 'string(filename)', 0 ],
+      [ 'directory', 'string(path)', 1 ],
+    ],
+    name => "tgz_in",
+    description => "unpack compressed tarball to directory",
+  },
+  "tgz_out" => {
+    ret => 'void',
+    args => [
+      [ 'directory', 'string(path)', 0 ],
+      [ 'tarball', 'string(filename)', 1 ],
+    ],
+    name => "tgz_out",
+    description => "pack directory into compressed tarball",
+  },
+  "touch" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "touch",
+    description => "update file timestamps or create a new file",
+  },
+  "truncate" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "truncate",
+    description => "truncate a file to zero size",
+  },
+  "truncate_size" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'size', 'int64', 1 ],
+    ],
+    name => "truncate_size",
+    description => "truncate a file to a particular size",
+  },
+  "tune2fs_l" => {
+    ret => 'hash',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "tune2fs_l",
+    description => "get ext2/ext3/ext4 superblock details",
+  },
+  "txz_in" => {
+    ret => 'void',
+    args => [
+      [ 'tarball', 'string(filename)', 0 ],
+      [ 'directory', 'string(path)', 1 ],
+    ],
+    name => "txz_in",
+    description => "unpack compressed tarball to directory",
+  },
+  "txz_out" => {
+    ret => 'void',
+    args => [
+      [ 'directory', 'string(path)', 0 ],
+      [ 'tarball', 'string(filename)', 1 ],
+    ],
+    name => "txz_out",
+    description => "pack directory into compressed tarball",
+  },
+  "umask" => {
+    ret => 'int',
+    args => [
+      [ 'mask', 'int', 0 ],
+    ],
+    name => "umask",
+    description => "set file mode creation mask (umask)",
+  },
+  "umount" => {
+    ret => 'void',
+    args => [
+      [ 'pathordevice', 'string', 0 ],
+    ],
+    name => "umount",
+    description => "unmount a filesystem",
+  },
+  "umount_all" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "umount_all",
+    description => "unmount all filesystems",
+  },
+  "upload" => {
+    ret => 'void',
+    args => [
+      [ 'filename', 'string(filename)', 0 ],
+      [ 'remotefilename', 'string(dev_or_path)', 1 ],
+    ],
+    name => "upload",
+    description => "upload a file from the local machine",
+  },
+  "upload_offset" => {
+    ret => 'void',
+    args => [
+      [ 'filename', 'string(filename)', 0 ],
+      [ 'remotefilename', 'string(dev_or_path)', 1 ],
+      [ 'offset', 'int64', 2 ],
+    ],
+    name => "upload_offset",
+    description => "upload a file from the local machine with offset",
+  },
+  "utimens" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'atsecs', 'int64', 1 ],
+      [ 'atnsecs', 'int64', 2 ],
+      [ 'mtsecs', 'int64', 3 ],
+      [ 'mtnsecs', 'int64', 4 ],
+    ],
+    name => "utimens",
+    description => "set timestamp of a file with nanosecond precision",
+  },
+  "version" => {
+    ret => 'struct version',
+    args => [
+    ],
+    name => "version",
+    description => "get the library version number",
+  },
+  "vfs_label" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "vfs_label",
+    description => "get the filesystem label",
+  },
+  "vfs_type" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "vfs_type",
+    description => "get the Linux VFS type corresponding to a mounted device",
+  },
+  "vfs_uuid" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "vfs_uuid",
+    description => "get the filesystem UUID",
+  },
+  "vg_activate" => {
+    ret => 'void',
+    args => [
+      [ 'activate', 'bool', 0 ],
+      [ 'volgroups', 'string list', 1 ],
+    ],
+    name => "vg_activate",
+    description => "activate or deactivate some volume groups",
+  },
+  "vg_activate_all" => {
+    ret => 'void',
+    args => [
+      [ 'activate', 'bool', 0 ],
+    ],
+    name => "vg_activate_all",
+    description => "activate or deactivate all volume groups",
+  },
+  "vgcreate" => {
+    ret => 'void',
+    args => [
+      [ 'volgroup', 'string', 0 ],
+      [ 'physvols', 'string(device) list', 1 ],
+    ],
+    name => "vgcreate",
+    description => "create an LVM volume group",
+  },
+  "vglvuuids" => {
+    ret => 'string list',
+    args => [
+      [ 'vgname', 'string', 0 ],
+    ],
+    name => "vglvuuids",
+    description => "get the LV UUIDs of all LVs in the volume group",
+  },
+  "vgpvuuids" => {
+    ret => 'string list',
+    args => [
+      [ 'vgname', 'string', 0 ],
+    ],
+    name => "vgpvuuids",
+    description => "get the PV UUIDs containing the volume group",
+  },
+  "vgremove" => {
+    ret => 'void',
+    args => [
+      [ 'vgname', 'string', 0 ],
+    ],
+    name => "vgremove",
+    description => "remove an LVM volume group",
+  },
+  "vgrename" => {
+    ret => 'void',
+    args => [
+      [ 'volgroup', 'string', 0 ],
+      [ 'newvolgroup', 'string', 1 ],
+    ],
+    name => "vgrename",
+    description => "rename an LVM volume group",
+  },
+  "vgs" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "vgs",
+    description => "list the LVM volume groups (VGs)",
+  },
+  "vgs_full" => {
+    ret => 'struct lvm_vg list',
+    args => [
+    ],
+    name => "vgs_full",
+    description => "list the LVM volume groups (VGs)",
+  },
+  "vgscan" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "vgscan",
+    description => "rescan for LVM physical volumes, volume groups and logical volumes",
+  },
+  "vguuid" => {
+    ret => 'string',
+    args => [
+      [ 'vgname', 'string', 0 ],
+    ],
+    name => "vguuid",
+    description => "get the UUID of a volume group",
+  },
+  "wait_ready" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "wait_ready",
+    description => "wait until the qemu subprocess launches (no op)",
+  },
+  "wc_c" => {
+    ret => 'int',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "wc_c",
+    description => "count characters in a file",
+  },
+  "wc_l" => {
+    ret => 'int',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "wc_l",
+    description => "count lines in a file",
+  },
+  "wc_w" => {
+    ret => 'int',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "wc_w",
+    description => "count words in a file",
+  },
+  "write" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'content', 'buffer', 1 ],
+    ],
+    name => "write",
+    description => "create a new file",
+  },
+  "write_append" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'content', 'buffer', 1 ],
+    ],
+    name => "write_append",
+    description => "append content to end of file",
+  },
+  "write_file" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'content', 'string', 1 ],
+      [ 'size', 'int', 2 ],
+    ],
+    name => "write_file",
+    description => "create a file",
+  },
+  "zegrep" => {
+    ret => 'string list',
+    args => [
+      [ 'regex', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "zegrep",
+    description => "return lines matching a pattern",
+  },
+  "zegrepi" => {
+    ret => 'string list',
+    args => [
+      [ 'regex', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "zegrepi",
+    description => "return lines matching a pattern",
+  },
+  "zero" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "zero",
+    description => "write zeroes to the device",
+  },
+  "zero_device" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "zero_device",
+    description => "write zeroes to an entire device",
+  },
+  "zerofree" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "zerofree",
+    description => "zero unused inodes and disk blocks on ext2/3 filesystem",
+  },
+  "zfgrep" => {
+    ret => 'string list',
+    args => [
+      [ 'pattern', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "zfgrep",
+    description => "return lines matching a pattern",
+  },
+  "zfgrepi" => {
+    ret => 'string list',
+    args => [
+      [ 'pattern', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "zfgrepi",
+    description => "return lines matching a pattern",
+  },
+  "zfile" => {
+    ret => 'string',
+    args => [
+      [ 'meth', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "zfile",
+    description => "determine file type inside a compressed file",
+  },
+  "zgrep" => {
+    ret => 'string list',
+    args => [
+      [ 'regex', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "zgrep",
+    description => "return lines matching a pattern",
+  },
+  "zgrepi" => {
+    ret => 'string list',
+    args => [
+      [ 'regex', 'string', 0 ],
+      [ 'path', 'string(path)', 1 ],
+    ],
+    name => "zgrepi",
+    description => "return lines matching a pattern",
+  },
+);
+
 1;
 
 =back
@@ -4863,6 +8200,33 @@ class, use the ordinary Perl UNIVERSAL method C<can(METHOD)>
  if (defined (Sys::Guestfs->can ("set_verbose"))) {
    print "\$h->set_verbose is available\n";
  }
+
+Perl does not offer a way to list the arguments of a method, and
+from time to time we may add extra arguments to calls that take
+optional arguments.  For this reason, we provide a global hash
+variable C<%guestfs_introspection> which contains the arguments
+and their types for each libguestfs method.  The keys of this
+hash are the method names, and the values are an hashref
+containing useful introspection information about the method
+(further fields may be added to this in future).
+
+ use Sys::Guestfs;
+ $Sys::Guestfs::guestfs_introspection{mkfs_opts}
+ => {
+    ret => 'void',                    # return type
+    args => [                         # required arguments
+      [ 'fstype', 'string', 0 ],
+      [ 'device', 'string(device)', 1 ],
+    ],
+    optargs => {                      # optional arguments
+      blocksize => [ 'blocksize', 'int', 0 ],
+      features => [ 'features', 'string', 1 ],
+      inode => [ 'inode', 'int', 2 ],
+      sectorsize => [ 'sectorsize', 'int', 3 ],
+    },
+    name => "mkfs_opts",
+    description => "make a filesystem",
+  }
 
 To test if particular features are supported by the current
 build, use the L</available> method like the example below.  Note

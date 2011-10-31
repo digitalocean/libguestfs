@@ -1,3 +1,10 @@
+2011-10-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	perl: Add %guestfs_introspection hash with introspection information.
+	Because this is a useful introspection API, it is a candidate for
+	being backported into older stable branches.
+	(cherry picked from commit 365885dab2ae6dcdf0b2c45d0adeb803ade03f63)
+
 2011-10-27  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.14.0.
