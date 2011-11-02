@@ -2,7 +2,7 @@
 
 # export DH_VERBOSE=1
 
-PYTHONS        := $(shell pyversions --installed; py3versions --installed)
+PYTHONS        := $(shell pyversions --installed)
 PYTHON_DEFAULT := $(shell pyversions --default)
 
 COMMON_CONFIG_FLAGS = \
@@ -92,4 +92,4 @@ override_dh_install:
 	dh_install
 
 %:
-	dh --without=python-support --with=autotools-dev,ocaml,python2,python3 $@
+	dh --without=python-support --with=autotools-dev,ocaml,python2 $@
