@@ -3,23 +3,24 @@ Date: Sat, 20 Aug 2011 20:43:22 +0200
 Subject: autoreconf
 
 ---
- Makefile.in          |   47 ++++++++++++--------------
- aclocal.m4           |   14 ++++---
+ Makefile.in          |   47 +++++++--------
+ aclocal.m4           |   14 +++--
  cat/Makefile.in      |    2 +-
  clone/Makefile.in    |    2 +-
- configure            |   91 ++++++++++++++++++++++++++++----------------------
+ config.h.in          |    3 +
+ configure            |  166 ++++++++++++++++++++++++++++++++++++--------------
  daemon/Makefile.in   |    4 +-
  df/Makefile.in       |    2 +-
  edit/Makefile.in     |    2 +-
  fuse/Makefile.in     |    2 +-
  images/Makefile.in   |    2 +-
- ocaml/Makefile.in    |   19 +++++-----
- perl/Makefile.in     |    8 +++-
- python/Makefile.in   |    3 +-
- resize/Makefile.in   |    6 ++--
- sparsify/Makefile.in |    8 ++--
- tools/Makefile.in    |    6 ++--
- 16 files changed, 116 insertions(+), 102 deletions(-)
+ ocaml/Makefile.in    |   19 +++---
+ perl/Makefile.in     |    8 ++-
+ python/Makefile.in   |    8 ++-
+ resize/Makefile.in   |    6 +-
+ sparsify/Makefile.in |    8 +-
+ tools/Makefile.in    |    6 +-
+ 17 files changed, 190 insertions(+), 111 deletions(-)
 
 diff --git a/Makefile.in b/Makefile.in
 index 3a8c3f6..58d7d6d 100644
@@ -206,8 +207,22 @@ index feba17d..b271059 100644
  all: all-am
  
  .SUFFIXES:
+diff --git a/config.h.in b/config.h.in
+index 6f8080b..475e86e 100644
+--- a/config.h.in
++++ b/config.h.in
+@@ -981,6 +981,9 @@
+ /* Define to 1 if you have the `PyCapsule_New' function. */
+ #undef HAVE_PYCAPSULE_NEW
+ 
++/* Define to 1 if you have the `PyString_AsString' function. */
++#undef HAVE_PYSTRING_ASSTRING
++
+ /* Define to 1 if you have the `raise' function. */
+ #undef HAVE_RAISE
+ 
 diff --git a/configure b/configure
-index b42aec5..d623475 100755
+index d0a99e2..7233d72 100755
 --- a/configure
 +++ b/configure
 @@ -46476,7 +46476,10 @@ else
@@ -494,7 +509,98 @@ index b42aec5..d623475 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$FUSE_PKG_ERRORS" >&5
-@@ -52441,7 +52453,7 @@ ac_config_files="$ac_config_files podwrapper.sh"
+@@ -51318,7 +51330,9 @@ $as_echo "$PYTHON_PREFIX" >&6; }
+ 
+ 	    { $as_echo "$as_me:${as_lineno-$LINENO}: checking Python version" >&5
+ $as_echo_n "checking Python version... " >&6; }
+-            PYTHON_VERSION=`$PYTHON -c "import sys; print (sys.version[0:3])"`
++            PYTHON_VERSION_MAJOR=`$PYTHON -c "import sys; print (sys.version_info[0])"`
++            PYTHON_VERSION_MINOR=`$PYTHON -c "import sys; print (sys.version_info[1])"`
++            PYTHON_VERSION="$PYTHON_VERSION_MAJOR.$PYTHON_VERSION_MINOR"
+ 	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON_VERSION" >&5
+ $as_echo "$PYTHON_VERSION" >&6; }
+ 
+@@ -51355,14 +51369,73 @@ $as_echo_n "checking for Python site-packages path... " >&6; }
+ $as_echo "$PYTHON_INSTALLDIR" >&6; }
+             fi
+ 
+-            old_LIBS="$LIBS"
+-            LIBS="$LIBS -lpython$PYTHON_VERSION"
+-            for ac_func in PyCapsule_New
++                        old_LIBS="$LIBS"
++            if test "x$PYTHON_VERSION_MAJOR" = "x3"; then
++                                LIBPYTHON="python${PYTHON_VERSION}mu"
++            else
++                LIBPYTHON="python$PYTHON_VERSION"
++            fi
++            as_ac_Lib=`$as_echo "ac_cv_lib_$LIBPYTHON''_PyList_Size" | $as_tr_sh`
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for PyList_Size in -l$LIBPYTHON" >&5
++$as_echo_n "checking for PyList_Size in -l$LIBPYTHON... " >&6; }
++if eval \${$as_ac_Lib+:} false; then :
++  $as_echo_n "(cached) " >&6
++else
++  ac_check_lib_save_LIBS=$LIBS
++LIBS="-l$LIBPYTHON  $LIBS"
++cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++
++/* Override any GCC internal prototype to avoid an error.
++   Use char because int might match the return type of a GCC
++   builtin and then its argument prototype would still apply.  */
++#ifdef __cplusplus
++extern "C"
++#endif
++char PyList_Size ();
++int
++main ()
++{
++return PyList_Size ();
++  ;
++  return 0;
++}
++_ACEOF
++if ac_fn_c_try_link "$LINENO"; then :
++  eval "$as_ac_Lib=yes"
++else
++  eval "$as_ac_Lib=no"
++fi
++rm -f core conftest.err conftest.$ac_objext \
++    conftest$ac_exeext conftest.$ac_ext
++LIBS=$ac_check_lib_save_LIBS
++fi
++eval ac_res=\$$as_ac_Lib
++	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
++$as_echo "$ac_res" >&6; }
++if eval test \"x\$"$as_ac_Lib"\" = x"yes"; then :
++  cat >>confdefs.h <<_ACEOF
++#define `$as_echo "HAVE_LIB$LIBPYTHON" | $as_tr_cpp` 1
++_ACEOF
++
++  LIBS="-l$LIBPYTHON $LIBS"
++
++else
++  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
++$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
++as_fn_error $? "$LIBPYTHON is not installed
++See \`config.log' for more details" "$LINENO" 5; }
++fi
++
++
++            for ac_func in PyCapsule_New \
++                            PyString_AsString
+ do :
+-  ac_fn_c_check_func "$LINENO" "PyCapsule_New" "ac_cv_func_PyCapsule_New"
+-if test "x$ac_cv_func_PyCapsule_New" = xyes; then :
++  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
++ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
++if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
+   cat >>confdefs.h <<_ACEOF
+-#define HAVE_PYCAPSULE_NEW 1
++#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
+ _ACEOF
+ 
+ fi
+@@ -52441,7 +52514,7 @@ ac_config_files="$ac_config_files podwrapper.sh"
  
  ac_config_files="$ac_config_files run"
  
@@ -503,7 +609,7 @@ index b42aec5..d623475 100755
  
  cat >confcache <<\_ACEOF
  # This file is a shell script that caches the results of configure
-@@ -53654,7 +53666,6 @@ do
+@@ -53654,7 +53727,6 @@ do
      "clone/Makefile") CONFIG_FILES="$CONFIG_FILES clone/Makefile" ;;
      "csharp/Makefile") CONFIG_FILES="$CONFIG_FILES csharp/Makefile" ;;
      "daemon/Makefile") CONFIG_FILES="$CONFIG_FILES daemon/Makefile" ;;
@@ -663,9 +769,18 @@ index f8232d3..12444e8 100644
  
  # No!  Otherwise it is deleted before the clean-local rule runs.
 diff --git a/python/Makefile.in b/python/Makefile.in
-index d3cd517..43078d3 100644
+index d3cd517..9f80541 100644
 --- a/python/Makefile.in
 +++ b/python/Makefile.in
+@@ -16,7 +16,7 @@
+ @SET_MAKE@
+ 
+ # libguestfs Python bindings
+-# Copyright (C) 2009 Red Hat Inc.
++# Copyright (C) 2009-2011 Red Hat Inc.
+ #
+ # This program is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
 @@ -70,6 +70,7 @@ build_triplet = @build@
  host_triplet = @host@
  DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
@@ -674,9 +789,13 @@ index d3cd517..43078d3 100644
  subdir = python
  ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
  am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
-@@ -1281,7 +1282,7 @@ EXTRA_DIST = \
+@@ -1279,9 +1280,10 @@ EXTRA_DIST = \
+ @HAVE_PYTHON_TRUE@TESTS_ENVIRONMENT = \
+ @HAVE_PYTHON_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
  @HAVE_PYTHON_TRUE@	PYTHONPATH=$(builddir):$(builddir)/.libs \
- @HAVE_PYTHON_TRUE@	TMPDIR=$(top_builddir)
+-@HAVE_PYTHON_TRUE@	TMPDIR=$(top_builddir)
++@HAVE_PYTHON_TRUE@	TMPDIR=$(top_builddir) \
++@HAVE_PYTHON_TRUE@	PYTHON=$(PYTHON)
  
 -@HAVE_PYTHON_TRUE@TESTS = run-bindtests run-python-tests
 +@HAVE_PYTHON_TRUE@TESTS = run-bindtests $(am__append_1)
