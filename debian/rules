@@ -56,7 +56,9 @@ override_dh_auto_build:
 	done
 
 override_dh_auto_test:
-	dh_auto_test --builddir=$(CURDIR)/debian/build-$(PYTHON_DEFAULT)
+	set -e; for p in $(PYTHONS); do \
+		dh_auto_test --builddir=$(CURDIR)/debian/build-$$p ; \
+	done
 
 override_dh_auto_install:
 # All build trees contain the library plus guestfish and C virt tools.
