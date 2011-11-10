@@ -38,7 +38,7 @@ these functions.
 
 =head2 domain
 
- add-domain dom [libvirturi:..] [readonly:..] [iface:..] [live:..] [allowuuid:..] [readonlydisk:..]
+ add-domain dom [libvirturi:..] [readonly:true|false] [iface:..] [live:true|false] [allowuuid:true|false] [readonlydisk:..]
 
 This function adds the disk(s) attached to the named libvirt domain C<dom>.
 It works by connecting to libvirt, requesting the domain and domain XML from
@@ -140,7 +140,7 @@ L</add-drive-opts>, and specifying the format.
 
 =head2 add
 
- add-drive-opts filename [readonly:..] [format:..] [iface:..] [name:..]
+ add-drive-opts filename [readonly:true|false] [format:..] [iface:..] [name:..]
 
 This function adds a virtual machine disk image C<filename> to libguestfs.
 The first time you call this function, the disk appears as C</dev/sda>, the
@@ -571,7 +571,7 @@ This uses the L<blockdev(8)> command.
 
 =head2 btrfs-filesystem-resize
 
- btrfs-filesystem-resize mountpoint [size:..]
+ btrfs-filesystem-resize mountpoint [size:N]
 
 This command resizes a btrfs filesystem.
 
@@ -779,7 +779,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 compress-device-out
 
- compress-device-out ctype device (zdevice|-) [level:..]
+ compress-device-out ctype device (zdevice|-) [level:N]
 
 This command compresses C<device> and writes it out to the local file
 C<zdevice>.
@@ -794,7 +794,7 @@ ARGUMENTS>.
 
 =head2 compress-out
 
- compress-out ctype file (zfile|-) [level:..]
+ compress-out ctype file (zfile|-) [level:N]
 
 This command compresses C<file> and writes it out to the local file
 C<zfile>.
@@ -827,7 +827,7 @@ C<value> can be NULL.
 
 =head2 copy-device-to-device
 
- copy-device-to-device src dest [srcoffset:..] [destoffset:..] [size:..]
+ copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N]
 
 The four calls L</copy-device-to-device>, L</copy-device-to-file>,
 L</copy-file-to-device>, and L</copy-file-to-file> let you copy from a
@@ -849,7 +849,7 @@ ARGUMENTS>.
 
 =head2 copy-device-to-file
 
- copy-device-to-file src dest [srcoffset:..] [destoffset:..] [size:..]
+ copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N]
 
 See L</copy-device-to-device> for a general overview of this call.
 
@@ -858,7 +858,7 @@ ARGUMENTS>.
 
 =head2 copy-file-to-device
 
- copy-file-to-device src dest [srcoffset:..] [destoffset:..] [size:..]
+ copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N]
 
 See L</copy-device-to-device> for a general overview of this call.
 
@@ -867,7 +867,7 @@ ARGUMENTS>.
 
 =head2 copy-file-to-file
 
- copy-file-to-file src dest [srcoffset:..] [destoffset:..] [size:..]
+ copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N]
 
 See L</copy-device-to-device> for a general overview of this call.
 
@@ -1999,7 +1999,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 =head2 inspect-get-icon
 
- inspect-get-icon root [favicon:..] [highquality:..]
+ inspect-get-icon root [favicon:true|false] [highquality:true|false]
 
 This function returns an icon corresponding to the inspected operating
 system.  The icon is returned as a buffer containing a PNG image (re-encoded
@@ -3111,7 +3111,7 @@ these functions.
 
 =head2 mkfs-opts
 
- mkfs-opts fstype device [blocksize:..] [features:..] [inode:..] [sectorsize:..]
+ mkfs-opts fstype device [blocksize:N] [features:..] [inode:N] [sectorsize:N]
 
 This function creates a filesystem on C<device>.  The filesystem type is
 C<fstype>, for example C<ext3>.
@@ -3410,7 +3410,7 @@ these functions.
 
 =head2 ntfsresize-opts
 
- ntfsresize-opts device [size:..] [force:..]
+ ntfsresize-opts device [size:N] [force:true|false]
 
 This command resizes an NTFS filesystem, expanding or shrinking it to the
 size of the underlying device.

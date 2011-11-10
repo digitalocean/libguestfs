@@ -1,4 +1,133 @@
+2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Fix bindings when a function takes more than 10 parameters.
+	If any function had more than 10 required + optional parameters, OCaml
+	bindings could not be generated.  Currently there are no such
+	functions.
+	(cherry picked from commit 29172e7c4878085a680812f7f3b8ad6ea5f1193c)
+
+	tests: Fix bitmask parameter when testing optional arguments.
+	The bitmask was being constructed backwards(!)
+
+	As a result, any test which tested optional arguments didn't work.
+	There are very few such tests and they happened not to be affected by
+	this.
+	(cherry picked from commit af2b0378bbb178a4e3db326ac3082d66170fcafc)
+
+	fish: More informative documentation of optargs. (cherry picked from commit 271f8e4b70e4acf2db96f6fe6317fda327fa5f2e)
+
+	ocaml: Compile OCaml bindings and tests with -warn-error. (cherry picked from commit 145ed04e41a3fcd3be87c11cae0085f4551f1da8)
+
+	ocaml: Catch EVENT_ENTER case in test.
+	For some reason we are not compiling the tests with -warn-error so
+	this problem was not noticed before.
+
+	This fixes commit 9420eaf44ec4067c3740b91b0be0fede08a0c515.
+	(cherry picked from commit 22c72b911e65b93cfd049f42e6bd1b9ad7d55299)
+
+2011-11-09  Matthew Booth  <mbooth@redhat.com>
+
+	Update FSF address. (cherry picked from commit 04ea1375c55aa67df4e7fc61dbb534111767f3b6)
+
+2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Use a private copy of /etc/lvm so we don't modify the real config.
+	In the libguestfs live case we need to be careful not to modify the
+	real /etc/lvm/lvm.conf file (when setting the filter rule).
+
+	When the daemon starts, make a complete copy of /etc/lvm in a
+	temporary directory, and adjust LVM_SYSTEM_DIR to point to the copy.
+	All changes are made in the temporary copy.
+	(cherry picked from commit 9c299b64bb24cefafa582fe425bb65b78373d205)
+
+	daemon: Don't use files with fixed names in /tmp (thanks Steve Kemp).
+	Although this doesn't matter for the ordinary (appliance) case, it
+	matters for the libguestfs live case.  In that case it could cause the
+	guest to be exploited by a tmp/symlink attack.
+	(cherry picked from commit 6011b1f803ba7308c6a94b9bf6b7212cfccb9f42)
+
+	virt-sysprep: Don't use xmlstarlet.
+	Use virt-inspector --xpath option instead.
+	(cherry picked from commit 22998927f91f123e7c35d3ebf49e5744f3d7eafe)
+
+	Add virt-inspector --xpath to run XPath queries directly.
+	xmlstarlet is good, but not available in Red Hat Enterprise Linux.
+
+	Build a simple but sane XPath query parser into virt-inspector
+	directly so that we don't need any external tools.
+	(cherry picked from commit d1ee71782ace98a11c5aabaf1f9fd5f601e08367)
+
+	resize: Remove requirement for ocaml Pcre library.
+	This library is not available in RHEL 6, and in any case removing the
+	dependency is a simple change.
+	(cherry picked from commit ffbafadcb8dfebcaba529cb8d7e2da52dd032d8a)
+
+	resize: Add tests for some Utils functions. (cherry picked from commit 63898268101e5ec91c8dac46651dbee5976272ce)
+
+	python: Use sys.version_info[0] instead of sys.version_info.major.
+	The major/minor fields only exist in Python >= 2.7.  This works for at
+	least Python 2.5 and 2.6.
+
+	Thanks to Hilko Bengen.
+
+	This updates commit 646142f5136da9cfe2b908703a822c53350f70e9.
+	(cherry picked from commit 31e5539a14f78d8815d0d930e91023a65b5395e7)
+
+	python: Fixes for Python 3 (RHBZ#750889).
+	These fixes allow libguestfs bindings to work with Python 3 (tested
+	with Python 3.2)
+
+	You can select which Python you compile against by doing:
+
+	  PYTHON=python ./configure && make && make check
+
+	or:
+
+	  PYTHON=python3 ./configure && make && make check
+	(cherry picked from commit 2116f79cbcd4605b4997931285f14dde1f72a992)
+
+	python: Pass $PYTHON environment variable to tests.
+	If the user set PYTHON when configuring, this variable is not passed
+	through to the tests, so it is possible the tests will fail because
+	they are testing the wrong version of python.  By passing $PYTHON
+	through to the tests we ensure that we test against the same version
+	of python that we configured with.
+	(cherry picked from commit e2249b7ce1dd0a2f8f110e0e47aca397185a6373)
+
+	python: Include <config.h>.
+	Ooops ...
+	(cherry picked from commit 25454b83082a4cfed4f1664d2f9cdfcb222ba7c2)
+
+	python: Correctly check for Python major/minor.
+	The manual for sys.version warns that you should not parse the string,
+	which we were doing.  It would have failed on python "2.10" or
+	similar.
+
+	Do it correctly using the sys.version_info struct instead.
+	(cherry picked from commit 646142f5136da9cfe2b908703a822c53350f70e9)
+
+	fish: Use size_t instead of int when counting strings. (cherry picked from commit b4da051d54a1597c7d8db8880d21a52265a6172e)
+
+2011-11-09  Matthew Booth  <mbooth@redhat.com>
+
+	Fix debug help error message.
+	When given an invalid debug command, libguestfs responds with the
+	error message:
+
+	  libguestfs: error: debug: use 'debug help' to list the supported commands
+
+	However this command does not work, as debug requires two
+	arguments. This change updates the message to prompt the user to use
+	'debug help 0'.
+	(cherry picked from commit 4e3a1205ebfec1a5cbc3062d6f73a684090e80b5)
+
+2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Add 'mdadm' package. (cherry picked from commit 6f84ef6768e9c625d67f7eb015277b0ec1b2c2af)
+
 2011-10-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.14.1.
 
 	perl: Add %guestfs_introspection hash with introspection information.
 	Because this is a useful introspection API, it is a candidate for

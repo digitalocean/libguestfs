@@ -14,18 +14,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 export LANG=C
 set -e
 
 if [ ! -w /dev/fuse ]; then
     echo "SKIPPING virt-sysprep test, because there is no /dev/fuse."
-    exit 0
-fi
-
-if ! xmlstarlet --help >/dev/null 2>&1; then
-    echo "SKIPPING virt-sysprep test, because xmlstarlet is not installed."
     exit 0
 fi
 

@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfish 1"
-.TH guestfish 1 "2011-10-31" "libguestfs-1.14.1" "Virtualization Support"
+.TH guestfish 1 "2011-11-09" "libguestfs-1.14.2" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -1465,7 +1465,7 @@ these functions.
 .SS "домен"
 .IX Subsection "домен"
 .Vb 1
-\& add\-domain dom [libvirturi:..] [readonly:..] [iface:..] [live:..] [allowuuid:..] [readonlydisk:..]
+\& add\-domain dom [libvirturi:..] [readonly:true|false] [iface:..] [live:true|false] [allowuuid:true|false] [readonlydisk:..]
 .Ve
 .PP
 This function adds the disk(s) attached to the named libvirt domain \f(CW\*(C`dom\*(C'\fR.
@@ -1565,7 +1565,7 @@ you should think about replacing calls to this function with calls to
 .SS "add"
 .IX Subsection "add"
 .Vb 1
-\& add\-drive\-opts filename [readonly:..] [format:..] [iface:..] [name:..]
+\& add\-drive\-opts filename [readonly:true|false] [format:..] [iface:..] [name:..]
 .Ve
 .PP
 This function adds a virtual machine disk image \f(CW\*(C`filename\*(C'\fR to libguestfs.
@@ -2008,7 +2008,7 @@ This uses the \fIblockdev\fR\|(8) command.
 .SS "btrfs-filesystem-resize"
 .IX Subsection "btrfs-filesystem-resize"
 .Vb 1
-\& btrfs\-filesystem\-resize mountpoint [size:..]
+\& btrfs\-filesystem\-resize mountpoint [size:N]
 .Ve
 .PP
 This command resizes a btrfs filesystem.
@@ -2218,7 +2218,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .SS "compress-device-out"
 .IX Subsection "compress-device-out"
 .Vb 1
-\& compress\-device\-out ctype device (zdevice|\-) [level:..]
+\& compress\-device\-out ctype device (zdevice|\-) [level:N]
 .Ve
 .PP
 This command compresses \f(CW\*(C`device\*(C'\fR and writes it out to the local file
@@ -2234,7 +2234,7 @@ This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 .SS "compress-out"
 .IX Subsection "compress-out"
 .Vb 1
-\& compress\-out ctype file (zfile|\-) [level:..]
+\& compress\-out ctype file (zfile|\-) [level:N]
 .Ve
 .PP
 This command compresses \f(CW\*(C`file\*(C'\fR and writes it out to the local file
@@ -2269,7 +2269,7 @@ The first character of \f(CW\*(C`param\*(C'\fR string must be a \f(CW\*(C`\-\*(C
 .SS "copy-device-to-device"
 .IX Subsection "copy-device-to-device"
 .Vb 1
-\& copy\-device\-to\-device src dest [srcoffset:..] [destoffset:..] [size:..]
+\& copy\-device\-to\-device src dest [srcoffset:N] [destoffset:N] [size:N]
 .Ve
 .PP
 The four calls \*(L"copy-device-to-device\*(R", \*(L"copy-device-to-file\*(R",
@@ -2292,7 +2292,7 @@ This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 .SS "copy-device-to-file"
 .IX Subsection "copy-device-to-file"
 .Vb 1
-\& copy\-device\-to\-file src dest [srcoffset:..] [destoffset:..] [size:..]
+\& copy\-device\-to\-file src dest [srcoffset:N] [destoffset:N] [size:N]
 .Ve
 .PP
 See \*(L"copy-device-to-device\*(R" for a general overview of this call.
@@ -2302,7 +2302,7 @@ This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 .SS "copy-file-to-device"
 .IX Subsection "copy-file-to-device"
 .Vb 1
-\& copy\-file\-to\-device src dest [srcoffset:..] [destoffset:..] [size:..]
+\& copy\-file\-to\-device src dest [srcoffset:N] [destoffset:N] [size:N]
 .Ve
 .PP
 See \*(L"copy-device-to-device\*(R" for a general overview of this call.
@@ -2312,7 +2312,7 @@ This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 .SS "copy-file-to-file"
 .IX Subsection "copy-file-to-file"
 .Vb 1
-\& copy\-file\-to\-file src dest [srcoffset:..] [destoffset:..] [size:..]
+\& copy\-file\-to\-file src dest [srcoffset:N] [destoffset:N] [size:N]
 .Ve
 .PP
 See \*(L"copy-device-to-device\*(R" for a general overview of this call.
@@ -3457,7 +3457,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-get-icon"
 .IX Subsection "inspect-get-icon"
 .Vb 1
-\& inspect\-get\-icon root [favicon:..] [highquality:..]
+\& inspect\-get\-icon root [favicon:true|false] [highquality:true|false]
 .Ve
 .PP
 This function returns an icon corresponding to the inspected operating
@@ -4637,7 +4637,7 @@ these functions.
 .SS "mkfs-opts"
 .IX Subsection "mkfs-opts"
 .Vb 1
-\& mkfs\-opts fstype device [blocksize:..] [features:..] [inode:..] [sectorsize:..]
+\& mkfs\-opts fstype device [blocksize:N] [features:..] [inode:N] [sectorsize:N]
 .Ve
 .PP
 This function creates a filesystem on \f(CW\*(C`device\*(C'\fR.  The filesystem type is
@@ -4955,7 +4955,7 @@ these functions.
 .SS "ntfsresize-opts"
 .IX Subsection "ntfsresize-opts"
 .Vb 1
-\& ntfsresize\-opts device [size:..] [force:..]
+\& ntfsresize\-opts device [size:N] [force:true|false]
 .Ve
 .PP
 This command resizes an \s-1NTFS\s0 filesystem, expanding or shrinking it to the
@@ -6924,4 +6924,4 @@ any later version.
 .PP
 Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
 якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 675 Mass Ave, Cambridge, \s-1MA\s0 02139, \s-1USA\s0.
+Inc., 51 Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.

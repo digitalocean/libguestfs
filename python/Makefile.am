@@ -1,5 +1,5 @@
 # libguestfs Python bindings
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2011 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # Old RHEL 5 autoconf doesn't have builddir.
 builddir ?= $(top_builddir)/python
@@ -48,7 +48,8 @@ libguestfsmod_la_LDFLAGS = -avoid-version -shared
 TESTS_ENVIRONMENT = \
 	LIBGUESTFS_PATH=$(top_builddir)/appliance \
 	PYTHONPATH=$(builddir):$(builddir)/.libs \
-	TMPDIR=$(top_builddir)
+	TMPDIR=$(top_builddir) \
+	PYTHON=$(PYTHON)
 
 TESTS = run-bindtests run-python-tests
 

@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 include $(top_srcdir)/subdir-rules.mk
 
@@ -69,10 +69,7 @@ SUBDIRS += csharp
 
 # virt-resize (new version) and virt-sparsify are written in OCaml.
 if HAVE_OCAML
-if HAVE_OCAML_PCRE
-SUBDIRS += resize
-endif
-SUBDIRS += sparsify
+SUBDIRS += resize sparsify
 endif
 
 # Perl tools.

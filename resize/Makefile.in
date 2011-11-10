@@ -30,7 +30,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
 # Copyright (C) 2009 Red Hat Inc.
@@ -47,7 +47,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
 VPATH = @srcdir@
@@ -71,7 +71,7 @@ host_triplet = @host@
 DIST_COMMON = $(srcdir)/.depend $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/subdir-rules.mk
 SOURCES =
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@am__append_1 = stamp-virt-resize.pod
+@HAVE_OCAML_TRUE@am__append_1 = stamp-virt-resize.pod
 subdir = resize
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -957,7 +957,6 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLOPTDOTOPT = @OCAMLOPTDOTOPT@
 OCAMLVERSION = @OCAMLVERSION@
-OCAML_PKG_pcre = @OCAML_PKG_pcre@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -1231,48 +1230,50 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize test.img \
 	$(am__append_1)
 
 # Alphabetical order.
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@SOURCES = \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	progress_c.c \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	progress.mli \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	progress.ml \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	resize.ml \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	utils.ml
+@HAVE_OCAML_TRUE@SOURCES = \
+@HAVE_OCAML_TRUE@	progress_c.c \
+@HAVE_OCAML_TRUE@	progress.mli \
+@HAVE_OCAML_TRUE@	progress.ml \
+@HAVE_OCAML_TRUE@	resize.ml \
+@HAVE_OCAML_TRUE@	utils.ml \
+@HAVE_OCAML_TRUE@	utils_tests.ml
 
 
 # Note this list must be in dependency order.
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@OBJECTS = \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	../fish/guestfish-progress.o \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	progress_c.o \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	utils.cmx \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	progress.cmx \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	resize.cmx
+@HAVE_OCAML_TRUE@OBJECTS = \
+@HAVE_OCAML_TRUE@	../fish/guestfish-progress.o \
+@HAVE_OCAML_TRUE@	progress_c.o \
+@HAVE_OCAML_TRUE@	utils.cmx \
+@HAVE_OCAML_TRUE@	progress.cmx \
+@HAVE_OCAML_TRUE@	resize.cmx
 
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@bin_SCRIPTS = virt-resize
+@HAVE_OCAML_TRUE@bin_SCRIPTS = virt-resize
 
 # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@OCAMLPACKAGES = -package pcre -I $(top_builddir)/src/.libs -I ../ocaml
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
+@HAVE_OCAML_TRUE@OCAMLPACKAGES = -package str -I $(top_builddir)/src/.libs -I ../ocaml
+@HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
+@HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 
 # automake will decide we don't need C support in this file.  Really
 # we do, so we have to provide it ourselves.
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@DEFAULT_INCLUDES = -I. -I$(top_builddir) -I$(shell $(OCAMLC) -where) -I../fish
+@HAVE_OCAML_TRUE@DEFAULT_INCLUDES = -I. -I$(top_builddir) -I$(shell $(OCAMLC) -where) -I../fish
 
 # Manual pages and HTML files for the website.
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@man_MANS = virt-resize.1
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@noinst_DATA = $(top_builddir)/html/virt-resize.1.html
+@HAVE_OCAML_TRUE@man_MANS = virt-resize.1
+@HAVE_OCAML_TRUE@noinst_DATA = $(top_builddir)/html/virt-resize.1.html
 
 # Tests.
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	MALLOC_PERTURB_=$(random_val) \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	TMPDIR=$(top_builddir)
+@HAVE_OCAML_TRUE@check_SCRIPTS = utils_tests
+@HAVE_OCAML_TRUE@random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
+@HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = \
+@HAVE_OCAML_TRUE@	MALLOC_PERTURB_=$(random_val) \
+@HAVE_OCAML_TRUE@	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
+@HAVE_OCAML_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
+@HAVE_OCAML_TRUE@	TMPDIR=$(top_builddir)
 
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@TESTS = test-virt-resize.sh
+@HAVE_OCAML_TRUE@TESTS = test-virt-resize.sh utils_tests
 all: all-am
 
 .SUFFIXES:
@@ -1528,6 +1529,7 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) $(check_SCRIPTS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile $(SCRIPTS) $(MANS) $(DATA)
@@ -1667,48 +1669,54 @@ $(top_builddir)/daemon/guestfsd: force
 appliance: force
 	$(MAKE) -C $(top_builddir)/appliance
 
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@virt-resize: $(OBJECTS)
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib -lncurses -o $@
+@HAVE_OCAML_TRUE@virt-resize: $(OBJECTS)
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
+@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib -lncurses -o $@
 
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@.mli.cmi:
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@.ml.cmo:
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@.ml.cmx:
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLCFLAGS) -c $< -o $@
+@HAVE_OCAML_TRUE@.mli.cmi:
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
+@HAVE_OCAML_TRUE@.ml.cmo:
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
+@HAVE_OCAML_TRUE@.ml.cmx:
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLCFLAGS) -c $< -o $@
 
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@.c.o:
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	$(CC) $(CFLAGS) $(PROF_CFLAGS) $(DEFAULT_INCLUDES) -c $< -o $@
+@HAVE_OCAML_TRUE@.c.o:
+@HAVE_OCAML_TRUE@	$(CC) $(CFLAGS) $(PROF_CFLAGS) $(DEFAULT_INCLUDES) -c $< -o $@
 
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@virt-resize.1 $(top_builddir)/html/virt-resize.1.html: stamp-virt-resize.pod
+@HAVE_OCAML_TRUE@virt-resize.1 $(top_builddir)/html/virt-resize.1.html: stamp-virt-resize.pod
 
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@stamp-virt-resize.pod: virt-resize.pod
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	$(top_builddir)/podwrapper.sh \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	  --man virt-resize.1 \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	  --html $(top_builddir)/html/virt-resize.1.html \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	  $<
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	touch $@
+@HAVE_OCAML_TRUE@stamp-virt-resize.pod: virt-resize.pod
+@HAVE_OCAML_TRUE@	$(top_builddir)/podwrapper.sh \
+@HAVE_OCAML_TRUE@	  --man virt-resize.1 \
+@HAVE_OCAML_TRUE@	  --html $(top_builddir)/html/virt-resize.1.html \
+@HAVE_OCAML_TRUE@	  $<
+@HAVE_OCAML_TRUE@	touch $@
+
+@HAVE_OCAML_TRUE@utils_tests: utils.cmx utils_tests.cmx
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
+@HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib -lncurses -o $@
 
 # Dependencies.
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@depend: .depend
+@HAVE_OCAML_TRUE@depend: .depend
 
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@.depend: $(wildcard *.mli) $(wildcard *.ml)
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml $^ | \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	  $(SED) 's/ *$$//' | \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	  sort > $@-t
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@	mv $@-t $@
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@progress.cmi: ../ocaml/guestfs.cmi
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@progress.cmo: utils.cmo ../ocaml/guestfs.cmi progress.cmi
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@progress.cmx: utils.cmx ../ocaml/guestfs.cmx progress.cmi
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@resize.cmo: utils.cmo progress.cmi ../ocaml/guestfs.cmi
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@resize.cmx: utils.cmx progress.cmx ../ocaml/guestfs.cmx
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@utils.cmo: ../ocaml/guestfs.cmi
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@utils.cmx: ../ocaml/guestfs.cmx
+@HAVE_OCAML_TRUE@.depend: $(wildcard *.mli) $(wildcard *.ml)
+@HAVE_OCAML_TRUE@	rm -f $@ $@-t
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml $^ | \
+@HAVE_OCAML_TRUE@	  $(SED) 's/ *$$//' | \
+@HAVE_OCAML_TRUE@	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
+@HAVE_OCAML_TRUE@	  sort > $@-t
+@HAVE_OCAML_TRUE@	mv $@-t $@
+@HAVE_OCAML_TRUE@progress.cmi: ../ocaml/guestfs.cmi
+@HAVE_OCAML_TRUE@progress.cmo: utils.cmo ../ocaml/guestfs.cmi progress.cmi
+@HAVE_OCAML_TRUE@progress.cmx: utils.cmx ../ocaml/guestfs.cmx progress.cmi
+@HAVE_OCAML_TRUE@resize.cmo: utils.cmo progress.cmi ../ocaml/guestfs.cmi
+@HAVE_OCAML_TRUE@resize.cmx: utils.cmx progress.cmx ../ocaml/guestfs.cmx
+@HAVE_OCAML_TRUE@utils.cmo: ../ocaml/guestfs.cmi
+@HAVE_OCAML_TRUE@utils.cmx: ../ocaml/guestfs.cmx
+@HAVE_OCAML_TRUE@utils_tests.cmo: utils.cmo
+@HAVE_OCAML_TRUE@utils_tests.cmx: utils.cmx
 
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@.PHONY: depend docs
+@HAVE_OCAML_TRUE@.PHONY: depend docs
 
 # Parallel builds don't obey dependencies for some reason we
 # don't understand.
