@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *)
 
 open Printf
@@ -27,7 +27,8 @@ let log g ev eh buf array =
     | Guestfs.EVENT_PROGRESS -> "progress"
     | Guestfs.EVENT_APPLIANCE -> "appliance"
     | Guestfs.EVENT_LIBRARY -> "library"
-    | Guestfs.EVENT_TRACE -> "trace" in
+    | Guestfs.EVENT_TRACE -> "trace"
+    | Guestfs.EVENT_ENTER -> "enter" in
 
   let eh : int = Obj.magic eh in
 

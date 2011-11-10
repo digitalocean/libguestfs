@@ -30,7 +30,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
 # Copyright (C) 2009 Red Hat Inc.
@@ -47,7 +47,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
@@ -91,19 +91,18 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 @HAVE_ERLANG_TRUE@am__append_10 = erlang erlang/examples
 
 # virt-resize (new version) and virt-sparsify are written in OCaml.
-@HAVE_OCAML_PCRE_TRUE@@HAVE_OCAML_TRUE@am__append_11 = resize
-@HAVE_OCAML_TRUE@am__append_12 = sparsify
+@HAVE_OCAML_TRUE@am__append_11 = resize sparsify
 
 # Perl tools.
-@HAVE_TOOLS_TRUE@am__append_13 = tools
+@HAVE_TOOLS_TRUE@am__append_12 = tools
 
 # guestmount
 
 # virt-tools in shell.  This uses guestmount and virt-inspector.
-@HAVE_FUSE_TRUE@am__append_14 = fuse clone
+@HAVE_FUSE_TRUE@am__append_13 = fuse clone
 
 # po-docs must come after tools, inspector.
-@HAVE_PO4A_TRUE@am__append_15 = po-docs
+@HAVE_PO4A_TRUE@am__append_14 = po-docs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -1041,7 +1040,6 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLOPTDOTOPT = @OCAMLOPTDOTOPT@
 OCAMLVERSION = @OCAMLVERSION@
-OCAML_PKG_pcre = @OCAML_PKG_pcre@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -1323,8 +1321,7 @@ SUBDIRS = gnulib/lib images generator src examples po $(am__append_1) \
 	$(am__append_3) $(am__append_4) $(am__append_5) \
 	$(am__append_6) $(am__append_7) $(am__append_8) \
 	$(am__append_9) $(am__append_10) csharp $(am__append_11) \
-	$(am__append_12) $(am__append_13) $(am__append_14) \
-	$(am__append_15)
+	$(am__append_12) $(am__append_13) $(am__append_14)
 EXTRA_DIST = \
 	$(generator_built) \
 	BUGS HACKING RELEASE-NOTES ROADMAP TODO \

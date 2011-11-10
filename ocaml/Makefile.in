@@ -30,7 +30,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
 # Copyright (C) 2009 Red Hat Inc.
@@ -47,7 +47,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
@@ -932,7 +932,6 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLOPTDOTOPT = @OCAMLOPTDOTOPT@
 OCAMLVERSION = @OCAMLVERSION@
-OCAML_PKG_pcre = @OCAML_PKG_pcre@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -1218,6 +1217,8 @@ AM_CPPFLAGS = -I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
   -I$(top_srcdir)/src -I$(top_builddir)/src \
   $(WARN_CFLAGS) $(WERROR_CFLAGS)
 
+@HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX
+@HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@noinst_DATA = mlguestfs.cma mlguestfs.cmxa META \
 @HAVE_OCAML_TRUE@	$(am__append_1) bindtests t/guestfs_005_load \
 @HAVE_OCAML_TRUE@	t/guestfs_010_basic t/guestfs_070_threads \
@@ -1565,46 +1566,46 @@ appliance: force
 
 @HAVE_OCAML_TRUE@bindtests: bindtests.cmx mlguestfs.cmxa
 @HAVE_OCAML_TRUE@	mkdir -p t
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
 @HAVE_OCAML_TRUE@t/guestfs_005_load: t/guestfs_005_load.cmx mlguestfs.cmxa
 @HAVE_OCAML_TRUE@	mkdir -p t
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
 @HAVE_OCAML_TRUE@t/guestfs_010_basic: t/guestfs_010_basic.cmx mlguestfs.cmxa
 @HAVE_OCAML_TRUE@	mkdir -p t
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
 @HAVE_OCAML_TRUE@t/guestfs_070_threads: t/guestfs_070_threads.cmx mlguestfs.cmxa
 @HAVE_OCAML_TRUE@	mkdir -p t
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package unix,threads -thread -linkpkg mlguestfs.cmxa $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix,threads -thread -linkpkg mlguestfs.cmxa $< -o $@
 
 @HAVE_OCAML_TRUE@t/guestfs_080_optargs: t/guestfs_080_optargs.cmx mlguestfs.cmxa
 @HAVE_OCAML_TRUE@	mkdir -p t
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
 @HAVE_OCAML_TRUE@t/guestfs_400_events: t/guestfs_400_events.cmx mlguestfs.cmxa
 @HAVE_OCAML_TRUE@	mkdir -p t
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
 @HAVE_OCAML_TRUE@t/guestfs_400_progress: t/guestfs_400_progress.cmx mlguestfs.cmxa
 @HAVE_OCAML_TRUE@	mkdir -p t
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
 # Need to rebuild the tests from source if the main library has
 # changed at all, otherwise we get inconsistent assumptions.
 @HAVE_OCAML_TRUE@t/guestfs_070_threads.cmx: t/guestfs_070_threads.ml mlguestfs.cmxa
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt -package unix,threads -thread -linkpkg -c $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -package unix,threads -thread -linkpkg -c $< -o $@
 
 @HAVE_OCAML_TRUE@t/%.cmx: t/%.ml mlguestfs.cmxa
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt -package unix -linkpkg -c $< -o $(builddir)/$@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -package unix -linkpkg -c $< -o $(builddir)/$@
 
 @HAVE_OCAML_TRUE@%.cmi: %.mli
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc -package unix -c $< -o $(builddir)/$@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -package unix -c $< -o $(builddir)/$@
 @HAVE_OCAML_TRUE@%.cmo: %.ml
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc -package unix -c $< -o $(builddir)/$@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -package unix -c $< -o $(builddir)/$@
 @HAVE_OCAML_TRUE@%.cmx: %.ml
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt -package unix -c $< -o $(builddir)/$@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -package unix -c $< -o $(builddir)/$@
 
 @HAVE_OCAML_TRUE@depend: .depend
 

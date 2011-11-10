@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
 #include <config.h>
@@ -43,14 +43,14 @@ free_strings (char **argv)
   free (argv);
 }
 
-static int
+static size_t
 count_strings (char *const *argv)
 {
-  int c;
+  size_t i;
 
-  for (c = 0; argv[c]; ++c)
+  for (i = 0; argv[i]; ++i)
     ;
-  return c;
+  return i;
 }
 
 static int

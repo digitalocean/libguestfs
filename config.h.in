@@ -981,6 +981,9 @@
 /* Define to 1 if you have the `PyCapsule_New' function. */
 #undef HAVE_PYCAPSULE_NEW
 
+/* Define to 1 if you have the `PyString_AsString' function. */
+#undef HAVE_PYSTRING_ASSTRING
+
 /* Define to 1 if you have the `raise' function. */
 #undef HAVE_RAISE
 

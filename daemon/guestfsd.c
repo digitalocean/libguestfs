@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
 #include <config.h>
@@ -238,6 +238,11 @@ main (int argc, char *argv[])
    */
   _umask (0);
 #endif
+
+  /* Make a private copy of /etc/lvm so we can change the config (see
+   * daemon/lvm-filter.c).
+   */
+  copy_lvm ();
 
   /* Connect to virtio-serial channel. */
   int sock = open (VIRTIO_SERIAL_CHANNEL, O_RDWR | O_CLOEXEC);

@@ -20,6 +20,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -32,6 +34,9 @@ get_string_list (PyObject *obj)
 {
   size_t i, len;
   char **r;
+#ifndef HAVE_PYSTRING_ASSTRING
+  PyObject *bytes;
+#endif
 
   assert (obj);
 
@@ -52,8 +57,14 @@ get_string_list (PyObject *obj)
     return NULL;
   }
 
-  for (i = 0; i < len; ++i)
+  for (i = 0; i < len; ++i) {
+#ifdef HAVE_PYSTRING_ASSTRING
     r[i] = PyString_AsString (PyList_GetItem (obj, i));
+#else
+    bytes = PyUnicode_AsUTF8String (PyList_GetItem (obj, i));
+    r[i] = PyBytes_AS_STRING (bytes);
+#endif
+  }
   r[len] = NULL;
 
   return r;
@@ -69,8 +80,13 @@ put_string_list (char * const * const argv)
     ;
 
   list = PyList_New (argc);
-  for (i = 0; i < argc; ++i)
+  for (i = 0; i < argc; ++i) {
+#ifdef HAVE_PYSTRING_ASSTRING
     PyList_SetItem (list, i, PyString_FromString (argv[i]));
+#else
+    PyList_SetItem (list, i, PyUnicode_FromString (argv[i]));
+#endif
+  }
 
   return list;
 }
@@ -87,8 +103,13 @@ put_table (char * const * const argv)
   list = PyList_New (argc >> 1);
   for (i = 0; i < argc; i += 2) {
     item = PyTuple_New (2);
+#ifdef HAVE_PYSTRING_ASSTRING
     PyTuple_SetItem (item, 0, PyString_FromString (argv[i]));
     PyTuple_SetItem (item, 1, PyString_FromString (argv[i+1]));
+#else
+    PyTuple_SetItem (item, 0, PyUnicode_FromString (argv[i]));
+    PyTuple_SetItem (item, 1, PyUnicode_FromString (argv[i+1]));
+#endif
     PyList_SetItem (list, i >> 1, item);
   }
 
@@ -125,11 +146,23 @@ put_lvm_pv (struct guestfs_lvm_pv *lvm_pv)
 
   dict = PyDict_New ();
   PyDict_SetItemString (dict, "pv_name",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (lvm_pv->pv_name));
+#else
+                        PyUnicode_FromString (lvm_pv->pv_name));
+#endif
   PyDict_SetItemString (dict, "pv_uuid",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromStringAndSize (lvm_pv->pv_uuid, 32));
+#else
+                        PyBytes_FromStringAndSize (lvm_pv->pv_uuid, 32));
+#endif
   PyDict_SetItemString (dict, "pv_fmt",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (lvm_pv->pv_fmt));
+#else
+                        PyUnicode_FromString (lvm_pv->pv_fmt));
+#endif
   PyDict_SetItemString (dict, "pv_size",
                         PyLong_FromUnsignedLongLong (lvm_pv->pv_size));
   PyDict_SetItemString (dict, "dev_size",
@@ -139,13 +172,21 @@ put_lvm_pv (struct guestfs_lvm_pv *lvm_pv)
   PyDict_SetItemString (dict, "pv_used",
                         PyLong_FromUnsignedLongLong (lvm_pv->pv_used));
   PyDict_SetItemString (dict, "pv_attr",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (lvm_pv->pv_attr));
+#else
+                        PyUnicode_FromString (lvm_pv->pv_attr));
+#endif
   PyDict_SetItemString (dict, "pv_pe_count",
                         PyLong_FromLongLong (lvm_pv->pv_pe_count));
   PyDict_SetItemString (dict, "pv_pe_alloc_count",
                         PyLong_FromLongLong (lvm_pv->pv_pe_alloc_count));
   PyDict_SetItemString (dict, "pv_tags",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (lvm_pv->pv_tags));
+#else
+                        PyUnicode_FromString (lvm_pv->pv_tags));
+#endif
   PyDict_SetItemString (dict, "pe_start",
                         PyLong_FromUnsignedLongLong (lvm_pv->pe_start));
   PyDict_SetItemString (dict, "pv_mda_count",
@@ -162,19 +203,39 @@ put_lvm_vg (struct guestfs_lvm_vg *lvm_vg)
 
   dict = PyDict_New ();
   PyDict_SetItemString (dict, "vg_name",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (lvm_vg->vg_name));
+#else
+                        PyUnicode_FromString (lvm_vg->vg_name));
+#endif
   PyDict_SetItemString (dict, "vg_uuid",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromStringAndSize (lvm_vg->vg_uuid, 32));
+#else
+                        PyBytes_FromStringAndSize (lvm_vg->vg_uuid, 32));
+#endif
   PyDict_SetItemString (dict, "vg_fmt",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (lvm_vg->vg_fmt));
+#else
+                        PyUnicode_FromString (lvm_vg->vg_fmt));
+#endif
   PyDict_SetItemString (dict, "vg_attr",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (lvm_vg->vg_attr));
+#else
+                        PyUnicode_FromString (lvm_vg->vg_attr));
+#endif
   PyDict_SetItemString (dict, "vg_size",
                         PyLong_FromUnsignedLongLong (lvm_vg->vg_size));
   PyDict_SetItemString (dict, "vg_free",
                         PyLong_FromUnsignedLongLong (lvm_vg->vg_free));
   PyDict_SetItemString (dict, "vg_sysid",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (lvm_vg->vg_sysid));
+#else
+                        PyUnicode_FromString (lvm_vg->vg_sysid));
+#endif
   PyDict_SetItemString (dict, "vg_extent_size",
                         PyLong_FromUnsignedLongLong (lvm_vg->vg_extent_size));
   PyDict_SetItemString (dict, "vg_extent_count",
@@ -194,7 +255,11 @@ put_lvm_vg (struct guestfs_lvm_vg *lvm_vg)
   PyDict_SetItemString (dict, "vg_seqno",
                         PyLong_FromLongLong (lvm_vg->vg_seqno));
   PyDict_SetItemString (dict, "vg_tags",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (lvm_vg->vg_tags));
+#else
+                        PyUnicode_FromString (lvm_vg->vg_tags));
+#endif
   PyDict_SetItemString (dict, "vg_mda_count",
                         PyLong_FromLongLong (lvm_vg->vg_mda_count));
   PyDict_SetItemString (dict, "vg_mda_free",
@@ -209,11 +274,23 @@ put_lvm_lv (struct guestfs_lvm_lv *lvm_lv)
 
   dict = PyDict_New ();
   PyDict_SetItemString (dict, "lv_name",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (lvm_lv->lv_name));
+#else
+                        PyUnicode_FromString (lvm_lv->lv_name));
+#endif
   PyDict_SetItemString (dict, "lv_uuid",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromStringAndSize (lvm_lv->lv_uuid, 32));
+#else
+                        PyBytes_FromStringAndSize (lvm_lv->lv_uuid, 32));
+#endif
   PyDict_SetItemString (dict, "lv_attr",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (lvm_lv->lv_attr));
+#else
+                        PyUnicode_FromString (lvm_lv->lv_attr));
+#endif
   PyDict_SetItemString (dict, "lv_major",
                         PyLong_FromLongLong (lvm_lv->lv_major));
   PyDict_SetItemString (dict, "lv_minor",
@@ -227,7 +304,11 @@ put_lvm_lv (struct guestfs_lvm_lv *lvm_lv)
   PyDict_SetItemString (dict, "seg_count",
                         PyLong_FromLongLong (lvm_lv->seg_count));
   PyDict_SetItemString (dict, "origin",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (lvm_lv->origin));
+#else
+                        PyUnicode_FromString (lvm_lv->origin));
+#endif
   if (lvm_lv->snap_percent >= 0)
     PyDict_SetItemString (dict, "snap_percent",
                           PyFloat_FromDouble ((double) lvm_lv->snap_percent));
@@ -243,13 +324,29 @@ put_lvm_lv (struct guestfs_lvm_lv *lvm_lv)
     PyDict_SetItemString (dict, "copy_percent", Py_None);
   }
   PyDict_SetItemString (dict, "move_pv",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (lvm_lv->move_pv));
+#else
+                        PyUnicode_FromString (lvm_lv->move_pv));
+#endif
   PyDict_SetItemString (dict, "lv_tags",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (lvm_lv->lv_tags));
+#else
+                        PyUnicode_FromString (lvm_lv->lv_tags));
+#endif
   PyDict_SetItemString (dict, "mirror_log",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (lvm_lv->mirror_log));
+#else
+                        PyUnicode_FromString (lvm_lv->mirror_log));
+#endif
   PyDict_SetItemString (dict, "modules",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (lvm_lv->modules));
+#else
+                        PyUnicode_FromString (lvm_lv->modules));
+#endif
   return dict;
 };
 
@@ -327,10 +424,19 @@ put_dirent (struct guestfs_dirent *dirent)
   dict = PyDict_New ();
   PyDict_SetItemString (dict, "ino",
                         PyLong_FromLongLong (dirent->ino));
+#ifdef HAVE_PYSTRING_ASSTRING
   PyDict_SetItemString (dict, "ftyp",
                         PyString_FromStringAndSize (&dirent->ftyp, 1));
+#else
+  PyDict_SetItemString (dict, "ftyp",
+                        PyUnicode_FromStringAndSize (&dirent->ftyp, 1));
+#endif
   PyDict_SetItemString (dict, "name",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (dirent->name));
+#else
+                        PyUnicode_FromString (dirent->name));
+#endif
   return dict;
 };
 
@@ -347,7 +453,11 @@ put_version (struct guestfs_version *version)
   PyDict_SetItemString (dict, "release",
                         PyLong_FromLongLong (version->release));
   PyDict_SetItemString (dict, "extra",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (version->extra));
+#else
+                        PyUnicode_FromString (version->extra));
+#endif
   return dict;
 };
 
@@ -358,9 +468,17 @@ put_xattr (struct guestfs_xattr *xattr)
 
   dict = PyDict_New ();
   PyDict_SetItemString (dict, "attrname",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (xattr->attrname));
+#else
+                        PyUnicode_FromString (xattr->attrname));
+#endif
   PyDict_SetItemString (dict, "attrval",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromStringAndSize (xattr->attrval, xattr->attrval_len));
+#else
+                        PyBytes_FromStringAndSize (xattr->attrval, xattr->attrval_len));
+#endif
   return dict;
 };
 
@@ -377,7 +495,11 @@ put_inotify_event (struct guestfs_inotify_event *inotify_event)
   PyDict_SetItemString (dict, "in_cookie",
                         PyLong_FromUnsignedLong (inotify_event->in_cookie));
   PyDict_SetItemString (dict, "in_name",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (inotify_event->in_name));
+#else
+                        PyUnicode_FromString (inotify_event->in_name));
+#endif
   return dict;
 };
 
@@ -405,29 +527,73 @@ put_application (struct guestfs_application *application)
 
   dict = PyDict_New ();
   PyDict_SetItemString (dict, "app_name",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (application->app_name));
+#else
+                        PyUnicode_FromString (application->app_name));
+#endif
   PyDict_SetItemString (dict, "app_display_name",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (application->app_display_name));
+#else
+                        PyUnicode_FromString (application->app_display_name));
+#endif
   PyDict_SetItemString (dict, "app_epoch",
                         PyLong_FromLong (application->app_epoch));
   PyDict_SetItemString (dict, "app_version",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (application->app_version));
+#else
+                        PyUnicode_FromString (application->app_version));
+#endif
   PyDict_SetItemString (dict, "app_release",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (application->app_release));
+#else
+                        PyUnicode_FromString (application->app_release));
+#endif
   PyDict_SetItemString (dict, "app_install_path",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (application->app_install_path));
+#else
+                        PyUnicode_FromString (application->app_install_path));
+#endif
   PyDict_SetItemString (dict, "app_trans_path",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (application->app_trans_path));
+#else
+                        PyUnicode_FromString (application->app_trans_path));
+#endif
   PyDict_SetItemString (dict, "app_publisher",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (application->app_publisher));
+#else
+                        PyUnicode_FromString (application->app_publisher));
+#endif
   PyDict_SetItemString (dict, "app_url",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (application->app_url));
+#else
+                        PyUnicode_FromString (application->app_url));
+#endif
   PyDict_SetItemString (dict, "app_source_package",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (application->app_source_package));
+#else
+                        PyUnicode_FromString (application->app_source_package));
+#endif
   PyDict_SetItemString (dict, "app_summary",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (application->app_summary));
+#else
+                        PyUnicode_FromString (application->app_summary));
+#endif
   PyDict_SetItemString (dict, "app_description",
+#ifdef HAVE_PYSTRING_ASSTRING
                         PyString_FromString (application->app_description));
+#else
+                        PyUnicode_FromString (application->app_description));
+#endif
   return dict;
 };
 
@@ -613,7 +779,7 @@ py_guestfs_test0rint (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -644,7 +810,7 @@ py_guestfs_test0rinterr (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -739,7 +905,7 @@ py_guestfs_test0rbool (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -770,7 +936,7 @@ py_guestfs_test0rboolerr (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -802,7 +968,11 @@ py_guestfs_test0rconststring (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   return py_r;
 }
 
@@ -833,7 +1003,11 @@ py_guestfs_test0rconststringerr (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   return py_r;
 }
 
@@ -861,9 +1035,13 @@ py_guestfs_test0rconstoptstring (PyObject *self, PyObject *args)
     PyEval_RestoreThread (py_save);
 
 
-  if (r)
+  if (r) {
+#ifdef HAVE_PYSTRING_ASSTRING
     py_r = PyString_FromString (r);
-  else {
+#else
+    py_r = PyUnicode_FromString (r);
+#endif
+  } else {
     Py_INCREF (Py_None);
     py_r = Py_None;
   }
@@ -893,9 +1071,13 @@ py_guestfs_test0rconstoptstringerr (PyObject *self, PyObject *args)
     PyEval_RestoreThread (py_save);
 
 
-  if (r)
+  if (r) {
+#ifdef HAVE_PYSTRING_ASSTRING
     py_r = PyString_FromString (r);
-  else {
+#else
+    py_r = PyUnicode_FromString (r);
+#endif
+  } else {
     Py_INCREF (Py_None);
     py_r = Py_None;
   }
@@ -930,7 +1112,11 @@ py_guestfs_test0rstring (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -962,7 +1148,11 @@ py_guestfs_test0rstringerr (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -1516,7 +1706,11 @@ py_guestfs_get_qemu (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   return py_r;
 }
 
@@ -1580,7 +1774,11 @@ py_guestfs_get_path (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   return py_r;
 }
 
@@ -1640,9 +1838,13 @@ py_guestfs_get_append (PyObject *self, PyObject *args)
     PyEval_RestoreThread (py_save);
 
 
-  if (r)
+  if (r) {
+#ifdef HAVE_PYSTRING_ASSTRING
     py_r = PyString_FromString (r);
-  else {
+#else
+    py_r = PyUnicode_FromString (r);
+#endif
+  } else {
     Py_INCREF (Py_None);
     py_r = Py_None;
   }
@@ -1709,7 +1911,7 @@ py_guestfs_get_autosync (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -1773,7 +1975,7 @@ py_guestfs_get_verbose (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -1804,7 +2006,7 @@ py_guestfs_is_ready (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -1835,7 +2037,7 @@ py_guestfs_is_config (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -1866,7 +2068,7 @@ py_guestfs_is_launching (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -1897,7 +2099,7 @@ py_guestfs_is_busy (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -1928,7 +2130,7 @@ py_guestfs_get_state (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -1992,7 +2194,7 @@ py_guestfs_get_memsize (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -2023,7 +2225,7 @@ py_guestfs_get_pid (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -2119,7 +2321,7 @@ py_guestfs_get_selinux (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -2183,7 +2385,7 @@ py_guestfs_get_trace (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -2247,7 +2449,7 @@ py_guestfs_get_direct (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -2311,7 +2513,7 @@ py_guestfs_get_recovery_proc (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -2411,7 +2613,11 @@ py_guestfs_file_architecture (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -2476,7 +2682,11 @@ py_guestfs_inspect_get_type (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -2509,7 +2719,11 @@ py_guestfs_inspect_get_arch (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -2542,7 +2756,11 @@ py_guestfs_inspect_get_distro (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -2575,7 +2793,7 @@ py_guestfs_inspect_get_major_version (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -2607,7 +2825,7 @@ py_guestfs_inspect_get_minor_version (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -2639,7 +2857,11 @@ py_guestfs_inspect_get_product_name (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -2770,7 +2992,7 @@ py_guestfs_get_network (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -2892,7 +3114,11 @@ py_guestfs_inspect_get_windows_systemroot (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -3056,7 +3282,7 @@ py_guestfs_add_domain (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -3088,7 +3314,11 @@ py_guestfs_inspect_get_package_format (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -3121,7 +3351,11 @@ py_guestfs_inspect_get_package_management (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -3187,7 +3421,11 @@ py_guestfs_inspect_get_hostname (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -3220,7 +3458,11 @@ py_guestfs_inspect_get_format (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -3253,7 +3495,7 @@ py_guestfs_inspect_is_live (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -3285,7 +3527,7 @@ py_guestfs_inspect_is_netinst (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -3317,7 +3559,7 @@ py_guestfs_inspect_is_multipart (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -3381,7 +3623,11 @@ py_guestfs_get_attach_method (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -3414,7 +3660,11 @@ py_guestfs_inspect_get_product_variant (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -3447,7 +3697,11 @@ py_guestfs_inspect_get_windows_current_control_set (PyObject *self, PyObject *ar
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -3529,7 +3783,11 @@ py_guestfs_inspect_get_icon (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromStringAndSize (r, size);
+#else
+  py_r = PyBytes_FromStringAndSize (r, size);
+#endif
   free (r);
   return py_r;
 }
@@ -3594,7 +3852,7 @@ py_guestfs_get_pgroup (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -3658,7 +3916,7 @@ py_guestfs_get_smp (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -3789,7 +4047,11 @@ py_guestfs_cat (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -3822,7 +4084,11 @@ py_guestfs_ll (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -4244,7 +4510,7 @@ py_guestfs_aug_defvar (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -4311,7 +4577,11 @@ py_guestfs_aug_get (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -4413,7 +4683,7 @@ py_guestfs_aug_rm (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -4843,7 +5113,7 @@ py_guestfs_exists (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -4875,7 +5145,7 @@ py_guestfs_is_file (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -4907,7 +5177,7 @@ py_guestfs_is_dir (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -5284,7 +5554,11 @@ py_guestfs_file (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -5321,7 +5595,11 @@ py_guestfs_command (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -5589,7 +5867,7 @@ py_guestfs_blockdev_getro (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -5621,7 +5899,7 @@ py_guestfs_blockdev_getss (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -5653,7 +5931,7 @@ py_guestfs_blockdev_getbsz (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -5918,7 +6196,11 @@ py_guestfs_checksum (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -6197,7 +6479,11 @@ py_guestfs_debug (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -6363,7 +6649,11 @@ py_guestfs_get_e2label (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -6430,7 +6720,11 @@ py_guestfs_get_e2uuid (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -6464,7 +6758,7 @@ py_guestfs_fsck (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -6697,7 +6991,11 @@ py_guestfs_dmesg (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -6763,7 +7061,7 @@ py_guestfs_equal (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -6862,7 +7160,11 @@ py_guestfs_hexdump (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -6999,7 +7301,11 @@ py_guestfs_sfdisk_l (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -7032,7 +7338,11 @@ py_guestfs_sfdisk_kernel_geometry (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -7065,7 +7375,11 @@ py_guestfs_sfdisk_disk_geometry (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -7336,7 +7650,7 @@ py_guestfs_ntfs_3g_probe (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -7368,7 +7682,11 @@ py_guestfs_sh (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -7566,7 +7884,11 @@ py_guestfs_mkdtemp (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -7599,7 +7921,7 @@ py_guestfs_wc_l (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -7631,7 +7953,7 @@ py_guestfs_wc_w (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -7663,7 +7985,7 @@ py_guestfs_wc_c (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -7828,7 +8150,11 @@ py_guestfs_df (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -7860,7 +8186,11 @@ py_guestfs_df_h (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -8235,7 +8565,7 @@ py_guestfs_umask (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -8339,7 +8669,11 @@ py_guestfs_zfile (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -8677,7 +9011,11 @@ py_guestfs_read_file (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromStringAndSize (r, size);
+#else
+  py_r = PyBytes_FromStringAndSize (r, size);
+#endif
   free (r);
   return py_r;
 }
@@ -9118,7 +9456,11 @@ py_guestfs_realpath (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -9287,7 +9629,11 @@ py_guestfs_readlink (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -9878,7 +10224,11 @@ py_guestfs_getcon (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -10195,7 +10545,11 @@ py_guestfs_echo_daemon (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -10262,7 +10616,11 @@ py_guestfs_case_sensitive_path (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -10295,7 +10653,11 @@ py_guestfs_vfs_type (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -10618,7 +10980,11 @@ py_guestfs_pread (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromStringAndSize (r, size);
+#else
+  py_r = PyBytes_FromStringAndSize (r, size);
+#endif
   free (r);
   return py_r;
 }
@@ -10858,7 +11224,11 @@ py_guestfs_part_get_parttype (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -11099,7 +11469,11 @@ py_guestfs_initrd_cat (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromStringAndSize (r, size);
+#else
+  py_r = PyBytes_FromStringAndSize (r, size);
+#endif
   free (r);
   return py_r;
 }
@@ -11132,7 +11506,11 @@ py_guestfs_pvuuid (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -11165,7 +11543,11 @@ py_guestfs_vguuid (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -11198,7 +11580,11 @@ py_guestfs_lvuuid (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -11533,7 +11919,7 @@ py_guestfs_part_get_bootable (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -11566,7 +11952,7 @@ py_guestfs_part_get_mbr_id (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -11634,7 +12020,11 @@ py_guestfs_checksum_device (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -11733,7 +12123,7 @@ py_guestfs_get_umask (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -11976,7 +12366,7 @@ py_guestfs_pwrite (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -12176,7 +12566,11 @@ py_guestfs_vfs_label (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -12209,7 +12603,11 @@ py_guestfs_vfs_uuid (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -12556,7 +12954,7 @@ py_guestfs_is_lv (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -12588,7 +12986,11 @@ py_guestfs_findfs_uuid (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -12621,7 +13023,11 @@ py_guestfs_findfs_label (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -12654,7 +13060,7 @@ py_guestfs_is_chardev (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -12686,7 +13092,7 @@ py_guestfs_is_blockdev (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -12718,7 +13124,7 @@ py_guestfs_is_fifo (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -12750,7 +13156,7 @@ py_guestfs_is_symlink (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -12782,7 +13188,7 @@ py_guestfs_is_socket (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -12814,7 +13220,11 @@ py_guestfs_part_to_dev (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -12921,7 +13331,7 @@ py_guestfs_pwrite_device (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -12956,7 +13366,11 @@ py_guestfs_pread_device (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromStringAndSize (r, size);
+#else
+  py_r = PyBytes_FromStringAndSize (r, size);
+#endif
   free (r);
   return py_r;
 }
@@ -12989,7 +13403,11 @@ py_guestfs_lvm_canonical_lv_name (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
   free (r);
   return py_r;
 }
@@ -13083,7 +13501,11 @@ py_guestfs_getxattr (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromStringAndSize (r, size);
+#else
+  py_r = PyBytes_FromStringAndSize (r, size);
+#endif
   free (r);
   return py_r;
 }
@@ -13118,7 +13540,11 @@ py_guestfs_lgetxattr (PyObject *self, PyObject *args)
     return NULL;
   }
 
+#ifdef HAVE_PYSTRING_ASSTRING
   py_r = PyString_FromStringAndSize (r, size);
+#else
+  py_r = PyBytes_FromStringAndSize (r, size);
+#endif
   free (r);
   return py_r;
 }
@@ -13216,7 +13642,7 @@ py_guestfs_is_zero (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -13248,7 +13674,7 @@ py_guestfs_is_zero_device (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -13604,7 +14030,7 @@ py_guestfs_part_to_partnum (PyObject *self, PyObject *args)
     return NULL;
   }
 
-  py_r = PyInt_FromLong ((long) r);
+  py_r = PyLong_FromLong ((long) r);
   return py_r;
 }
 
@@ -14225,12 +14651,44 @@ static PyMethodDef methods[] = {
   { NULL, NULL, 0, NULL }
 };
 
+#if PY_MAJOR_VERSION >= 3
+static struct PyModuleDef moduledef = {
+  PyModuleDef_HEAD_INIT,
+  "libguestfsmod",     /* m_name */
+  "libguestfs module",   /* m_doc */
+  -1,                    /* m_size */
+  methods,               /* m_methods */
+  NULL,                  /* m_reload */
+  NULL,                  /* m_traverse */
+  NULL,                  /* m_clear */
+  NULL,                  /* m_free */
+};
+#endif
+
+static PyObject *
+moduleinit (void)
+{
+  PyObject *m;
+
+#if PY_MAJOR_VERSION >= 3
+  m = PyModule_Create (&moduledef);
+#else
+  m = Py_InitModule ((char *) "libguestfsmod", methods);
+#endif
+
+  return m; /* m might be NULL if module init failed */
+}
+
+#if PY_MAJOR_VERSION >= 3
+PyMODINIT_FUNC
+PyInit_libguestfsmod (void)
+{
+  return moduleinit ();
+}
+#else
 void
 initlibguestfsmod (void)
 {
-  static int initialized = 0;
-
-  if (initialized) return;
-  Py_InitModule ((char *) "libguestfsmod", methods);
-  initialized = 1;
+  (void) moduleinit ();
 }
+#endif

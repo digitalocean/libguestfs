@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-inspector 1"
-.TH virt-inspector 1 "2011-10-31" "libguestfs-1.14.1" "Virtualization Support"
+.TH virt-inspector 1 "2011-11-09" "libguestfs-1.14.2" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -197,6 +197,11 @@ Display version number and exit.
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
 Enable tracing of libguestfs \s-1API\s0 calls.
+.IP "\fB\-\-xpath\fR query" 4
+.IX Item "--xpath query"
+Perform an XPath query on the \s-1XML\s0 on stdin, and print the result on stdout.
+In this mode virt-inspector simply runs an XPath query; all other inspection
+functions are disabled.  See \*(L"\s-1XPATH\s0 \s-1QUERIES\s0\*(R" below for some examples.
 .SH "OLD-STYLE COMMAND LINE ARGUMENTS"
 .IX Header "OLD-STYLE COMMAND LINE ARGUMENTS"
 Previous versions of virt-inspector allowed you to write either:
@@ -395,27 +400,33 @@ of a multipart \s-1CD\s0.  For example:
 \&     <format>installer</format>
 \&     <live/>
 .Ve
-.SH "USING XPATH"
-.IX Header "USING XPATH"
-You can use the XPath query language to select parts of the \s-1XML\s0.  We
-recommend using \f(CW\*(C`xmlstarlet\*(C'\fR to perform XPath queries from the command
-line.
+.SH "XPATH QUERIES"
+.IX Header "XPATH QUERIES"
+Virt-inspector includes built in support for running XPath queries.  The
+reason for including XPath support directly in virt-inspector is simply that
+there are no good and widely available command line programs that can do
+XPath queries.  The only good one is \fIxmlstarlet\fR\|(1) and that is not
+available on Red Hat Enterprise Linux.
+.PP
+To perform an XPath query, use the \fI\-\-xpath\fR option.  Note that in this
+mode, virt-inspector simply reads \s-1XML\s0 from stdin and outputs the query
+result on stdout.  All other inspection features are disabled in this mode.
 .PP
 For example:
 .PP
 .Vb 5
-\& $ virt\-inspector \-d Guest | xmlstarlet sel \-t \-c \*(Aq//filesystems\*(Aq
+\& $ virt\-inspector \-d Guest | virt\-inspector \-\-xpath \*(Aq//filesystems\*(Aq
 \& <filesystems>
 \&      <filesystem dev="/dev/vg_f13x64/lv_root">
 \&        <type>ext4</type>
 \& [...]
 \&
 \& $ virt\-inspector \-d Guest | \e
-\&     xmlstarlet sel \-t \-c "string(//filesystem[@dev=\*(Aq/dev/sda1\*(Aq]/type)"
+\&     virt\-inspector \-\-xpath "string(//filesystem[@dev=\*(Aq/dev/sda1\*(Aq]/type)"
 \& ext4
 \&
 \& $ virt\-inspector \-d Guest | \e
-\&    xmlstarlet sel \-t \-v \*(Aq//icon\*(Aq | base64 \-i \-d | display \-
+\&     virt\-inspector \-\-xpath \*(Aqstring(//icon)\*(Aq | base64 \-i \-d | display \-
 \& [displays the guest icon, if there is one]
 .Ve
 .SH "SHELL QUOTING"
@@ -468,5 +479,5 @@ This program is distributed in the hope that it will be useful, but \s-1WITHOUT\
 more details.
 .PP
 You should have received a copy of the \s-1GNU\s0 General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 675 Mass
-Ave, Cambridge, \s-1MA\s0 02139, \s-1USA\s0.
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.

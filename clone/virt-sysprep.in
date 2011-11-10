@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 unset CDPATH
 program="virt-sysprep"
@@ -222,18 +222,18 @@ trap cleanup EXIT ERR
 
 # Run virt-inspector and grab inspection information about this guest.
 virt-inspector "${params[@]}" > $tmpdir/xml
-xmlstarlet sel -t -c \
+virt-inspector --xpath \
     "string(/operatingsystems/operatingsystem[position()=1]/name)" \
-    $tmpdir/xml > $tmpdir/type
-xmlstarlet sel -t -c \
+    < $tmpdir/xml > $tmpdir/type
+virt-inspector --xpath \
     "string(/operatingsystems/operatingsystem[position()=1]/distro)" \
-    $tmpdir/xml > $tmpdir/distro ||:
-xmlstarlet sel -t -c \
+    < $tmpdir/xml > $tmpdir/distro ||:
+virt-inspector --xpath \
     "string(/operatingsystems/operatingsystem[position()=1]/package_format)" \
-    $tmpdir/xml > $tmpdir/package_format ||:
-xmlstarlet sel -t -c \
+    < $tmpdir/xml > $tmpdir/package_format ||:
+virt-inspector --xpath \
     "string(/operatingsystems/operatingsystem[position()=1]/package_management)" \
-    $tmpdir/xml > $tmpdir/package_management ||:
+    < $tmpdir/xml > $tmpdir/package_management ||:
 
 type="$(cat $tmpdir/type)"
 distro="$(cat $tmpdir/distro)"

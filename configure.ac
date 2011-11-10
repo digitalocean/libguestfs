@@ -13,14 +13,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # The major, minor, and release fields MUST be numbers.  Packagers can
 # add extra information using --with-extra="..." which may be any
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [14])
-m4_define([libguestfs_release], [1])
+m4_define([libguestfs_release], [2])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -652,14 +652,9 @@ AS_IF([test "x$enable_ocaml" != "xno"],
          OCAMLFIND=
          AC_PROG_OCAML
          AC_PROG_FINDLIB
-
-         AS_IF([test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno"],
-         	[AC_CHECK_OCAML_PKG([pcre])])
         ])
 AM_CONDITIONAL([HAVE_OCAML],
                [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno"])
-AM_CONDITIONAL([HAVE_OCAML_PCRE],
-               [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && test "x$OCAML_PKG_pcre" != "xno"])
 AM_CONDITIONAL([HAVE_OCAMLDOC],
                [test "x$OCAMLDOC" != "xno"])
 
@@ -713,7 +708,9 @@ AS_IF([test "x$enable_python" != "xno"],
 	    AC_MSG_RESULT([$PYTHON_PREFIX])
 
 	    AC_MSG_CHECKING([Python version])
-            PYTHON_VERSION=`$PYTHON -c "import sys; print (sys.version[[0:3]])"`
+            PYTHON_VERSION_MAJOR=`$PYTHON -c "import sys; print (sys.version_info@<:@0@:>@)"`
+            PYTHON_VERSION_MINOR=`$PYTHON -c "import sys; print (sys.version_info@<:@1@:>@)"`
+            PYTHON_VERSION="$PYTHON_VERSION_MAJOR.$PYTHON_VERSION_MINOR"
 	    AC_MSG_RESULT([$PYTHON_VERSION])
 
             AC_MSG_CHECKING([for Python include path])
@@ -741,9 +738,19 @@ AS_IF([test "x$enable_python" != "xno"],
                 AC_MSG_RESULT([$PYTHON_INSTALLDIR])
             fi
 
+            dnl Look for libpython and some optional symbols in it.
             old_LIBS="$LIBS"
-            LIBS="$LIBS -lpython$PYTHON_VERSION"
-            AC_CHECK_FUNCS([PyCapsule_New])
+            if test "x$PYTHON_VERSION_MAJOR" = "x3"; then
+                dnl libpython3 is called "libpython3.Xmu.so"
+                LIBPYTHON="python${PYTHON_VERSION}mu"
+            else
+                LIBPYTHON="python$PYTHON_VERSION"
+            fi
+            AC_CHECK_LIB([$LIBPYTHON], [PyList_Size], [],
+                         [AC_MSG_FAILURE([$LIBPYTHON is not installed])])
+
+            AC_CHECK_FUNCS([PyCapsule_New \
+                            PyString_AsString])
             LIBS="$old_LIBS"
         fi
 
@@ -1076,7 +1083,7 @@ echo    "guestfish and C virt tools .......... yes"
 echo -n "Perl virt tools ..................... "
 if test "x$HAVE_TOOLS_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 echo -n "virt-resize ......................... "
-if test "x$HAVE_OCAML_TRUE" = "x" && test "x$HAVE_OCAML_PCRE_TRUE" = "x"; then echo "yes"; else echo "no"; fi
+if test "x$HAVE_OCAML_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 echo "FUSE filesystem ..................... $enable_fuse"
 echo
 echo "If any optional component is configured 'no' when you expected 'yes'"

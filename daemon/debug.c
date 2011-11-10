@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
 #include <config.h>
@@ -92,7 +92,7 @@ do_debug (const char *subcmd, char *const *argv)
       return cmds[i].f (subcmd, argc, argv);
   }
 
-  reply_with_error ("use 'debug help' to list the supported commands");
+  reply_with_error ("use 'debug help 0' to list the supported commands");
   return NULL;
 }
 

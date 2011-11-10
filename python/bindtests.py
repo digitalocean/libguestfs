@@ -35,4 +35,4 @@ g.test0 ("abc", "def", ["1"], 0, 1, 1, "123", "456", "abc\0abc")
 g.test0 ("abc", "def", ["1"], 0, 2, 2, "123", "456", "abc\0abc")
 g.test0 ("abc", "def", ["1"], 0, 4095, 4095, "123", "456", "abc\0abc")
 g.test0 ("abc", "def", ["1"], 0, 0, 0, "", "", "abc\0abc")
-print "EOF"
+print ("EOF")

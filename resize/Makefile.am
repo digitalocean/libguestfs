@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 include $(top_srcdir)/subdir-rules.mk
 
@@ -25,7 +25,6 @@ EXTRA_DIST = \
 CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize test.img
 
 if HAVE_OCAML
-if HAVE_OCAML_PCRE
 
 # Alphabetical order.
 SOURCES = \
@@ -33,7 +32,8 @@ SOURCES = \
 	progress.mli \
 	progress.ml \
 	resize.ml \
-	utils.ml
+	utils.ml \
+	utils_tests.ml
 
 # Note this list must be in dependency order.
 OBJECTS = \
@@ -48,7 +48,7 @@ bin_SCRIPTS = virt-resize
 # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
-OCAMLPACKAGES = -package pcre -I $(top_builddir)/src/.libs -I ../ocaml
+OCAMLPACKAGES = -package str -I $(top_builddir)/src/.libs -I ../ocaml
 
 OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
 OCAMLOPTFLAGS = $(OCAMLCFLAGS)
@@ -91,6 +91,12 @@ CLEANFILES += stamp-virt-resize.pod
 
 # Tests.
 
+check_SCRIPTS = utils_tests
+
+utils_tests: utils.cmx utils_tests.cmx
+	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
+	  mlguestfs.cmxa -linkpkg $^ -cclib -lncurses -o $@
+
 random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
 
 TESTS_ENVIRONMENT = \
@@ -99,7 +105,7 @@ TESTS_ENVIRONMENT = \
 	LIBGUESTFS_PATH=$(top_builddir)/appliance \
 	TMPDIR=$(top_builddir)
 
-TESTS = test-virt-resize.sh
+TESTS = test-virt-resize.sh utils_tests
 
 # Dependencies.
 depend: .depend
@@ -116,7 +122,6 @@ include .depend
 
 .PHONY: depend docs
 
-endif
 endif
 
 # Parallel builds don't obey dependencies for some reason we
