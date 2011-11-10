@@ -1,0 +1,3 @@
+/usr/bin/erl-guestfs
+/usr/lib/erlang/lib/libguestfs*
+/usr/share/man/man3/guestfs-erlang.3

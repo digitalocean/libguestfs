@@ -11,7 +11,6 @@ COMMON_CONFIG_FLAGS = \
 	--with-java-home=no  \
 	--disable-ruby       \
 	--disable-haskell    \
-	--disable-erlang     \
 	--disable-php
 
 override_dh_auto_clean:
@@ -32,6 +31,7 @@ override_dh_auto_configure:
 		    $(COMMON_CONFIG_FLAGS) \
 	            --disable-daemon --disable-fuse \
 	            --disable-ocaml --disable-perl \
+		    --disable-erlang \
 	            PYTHON=$$p ; \
 	    fi ; \
 	done
@@ -91,6 +91,7 @@ override_dh_install:
 		debian/build-${PYTHON_DEFAULT}/appliance/supermin.d/daemon.img \
 		debian/tmp/usr/lib/guestfs/supermin.d/
 
+	erlang-depends -perlang-guestfs
 	dh_install
 
 %:

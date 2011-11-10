@@ -13,6 +13,7 @@ Build-Depends: debhelper (>= 7.0.50~), autotools-dev, aptitude,
   gperf, libxml2-utils,
   qemu-kvm (>= 0.13),
   genisoimage, pkg-config,
+  erlang-dev,
   dh-ocaml, ocaml, ocaml-findlib, libpcre-ocaml-dev,
   python (>= 2.6.7-2), python-all-dev (>= 2.6.6-3~), python3-all-dev,
   libtest-pod-coverage-perl, libextutils-command-perl, libintl-perl, libtest-pod-perl,
@@ -410,3 +411,29 @@ Description: guest disk image management system - OCaml development files
  .
  This package contains all the files needed to develop OCaml programs
  which use OCaml bindings to libguestfs.
+
+Package: erlang-guestfs
+Section: interpreters
+Architecture: i386 amd64
+Depends: ${erlang-base:Depends}, ${erlang-abi:Depends}, ${shlibs:Depends}, ${misc:Depends}
+Description: guest disk image management system - OCaml development files
+ The libguestfs library allows accessing and modifying guest disk
+ images. It offers the following features, among many others:
+  * making batch configuration changes to guests;
+  * viewing and editing files inside guests;
+  * getting disk used/free statistics;
+  * migrating between virtualization systems;
+  * performing partial backups;
+  * performing partial guest clones;
+  * cloning guests and changing registry/UUID/hostname info.
+ .
+ It uses the Linux kernel and qemu code, and can access any type of guest
+ file system that Linux and qemu can, including but not limited to: ext2/3/4,
+ btrfs, FAT and NTFS, LVM, many different disk partition schemes, qcow, qcow2,
+ vmdk.
+ .
+ The library provides ways to enumerate guest storage (such as partitions, LVs,
+ what file system is in each LV, etc.); to run commands in the context of the
+ guest; and to upload and download files and directories.
+ .
+ This package contains Erlang bindings to libguestfs.
