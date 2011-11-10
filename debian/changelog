@@ -1,3 +1,11 @@
+libguestfs (1.14.2-1) unstable; urgency=low
+
+  * New upstream version
+  * [c27fa27] Rebased patch queue, added fix for Erlang bindings build
+  * [a563153] Added package for Erlang bindings
+
+ -- Hilko Bengen <bengen@debian.org>  Thu, 10 Nov 2011 23:50:41 +0100
+
 libguestfs (1.14.1-2) unstable; urgency=low
 
   * [44d13ed] Run tests in all build directories
