@@ -6,11 +6,7 @@
 0006-Fix-for-systemd-based-Debian-systems.patch
 0007-out-of-tree-build-fix-building-Perl-bindings.patch
 0008-out-of-tree-build-daemon.patch
-0009-Fix-en-dis-able-install-daemon.patch
-0010-Fix-include.patch
-0011-python-Correctly-check-for-Python-major-minor.patch
-0012-python-Include-config.h.patch
-0013-python-Pass-PYTHON-environment-variable-to-tests.patch
-0014-python-Fixes-for-Python-3-RHBZ-750889.patch
-0015-python-Use-sys.version_info-0-instead-of-sys.version.patch
-0016-autoreconf.patch
+0009-out-of-tree-build-erlang.patch
+0010-Fix-en-dis-able-install-daemon.patch
+0011-Fix-include.patch
+0012-autoreconf.patch

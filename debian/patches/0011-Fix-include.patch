@@ -8,7 +8,7 @@ Subject: Fix include
  2 files changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/resize/Makefile.am b/resize/Makefile.am
-index 5112605..0872349 100644
+index a4ca7cd..0f12a3d 100644
 --- a/resize/Makefile.am
 +++ b/resize/Makefile.am
 @@ -37,7 +37,7 @@ SOURCES = \
@@ -30,7 +30,7 @@ index 5112605..0872349 100644
  .c.o:
  	$(CC) $(CFLAGS) $(PROF_CFLAGS) $(DEFAULT_INCLUDES) -c $< -o $@
 diff --git a/sparsify/Makefile.am b/sparsify/Makefile.am
-index 8e6bfc3..b8ef398 100644
+index f4898da..c057a65 100644
 --- a/sparsify/Makefile.am
 +++ b/sparsify/Makefile.am
 @@ -36,7 +36,7 @@ SOURCES = \

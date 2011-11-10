@@ -1,0 +1,22 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Thu, 10 Nov 2011 21:58:23 +0100
+Subject: out of tree build: erlang
+
+---
+ erlang/Makefile.am |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/erlang/Makefile.am b/erlang/Makefile.am
+index f336375..2c9e359 100644
+--- a/erlang/Makefile.am
++++ b/erlang/Makefile.am
+@@ -32,7 +32,7 @@ erlang_bindir = $(libdir)/erlang/lib/$(PACKAGE_NAME)-$(PACKAGE_VERSION)/ebin
+ erlang_bin_DATA = guestfs.beam
+ 
+ guestfs.beam: guestfs.erl
+-	$(ERLC) +debug_info guestfs.erl
++	$(ERLC) +debug_info $^
+ 
+ bin_PROGRAMS = erl-guestfs
+ 
+-- 

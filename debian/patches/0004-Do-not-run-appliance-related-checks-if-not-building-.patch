@@ -154,12 +154,12 @@ index d8167d1..6212915 100644
  TESTS_ENVIRONMENT = \
  	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
 diff --git a/python/Makefile.am b/python/Makefile.am
-index 82960d6..97fae83 100644
+index bbccb1a..62a4f5f 100644
 --- a/python/Makefile.am
 +++ b/python/Makefile.am
-@@ -50,6 +50,10 @@ TESTS_ENVIRONMENT = \
- 	PYTHONPATH=$(builddir):$(builddir)/.libs \
- 	TMPDIR=$(top_builddir)
+@@ -51,6 +51,10 @@ TESTS_ENVIRONMENT = \
+ 	TMPDIR=$(top_builddir) \
+ 	PYTHON=$(PYTHON)
  
 -TESTS = run-bindtests run-python-tests
 +TESTS = run-bindtests
@@ -171,15 +171,17 @@ index 82960d6..97fae83 100644
 +
 +endif HAVE_PYTHON
 diff --git a/resize/Makefile.am b/resize/Makefile.am
-index e8ffff0..5112605 100644
+index 5046a8c..a4ca7cd 100644
 --- a/resize/Makefile.am
 +++ b/resize/Makefile.am
-@@ -99,7 +99,9 @@ TESTS_ENVIRONMENT = \
+@@ -105,7 +105,10 @@ TESTS_ENVIRONMENT = \
  	LIBGUESTFS_PATH=$(top_builddir)/appliance \
  	TMPDIR=$(top_builddir)
  
+-TESTS = test-virt-resize.sh utils_tests
++TESTS = utils_tests
 +if ENABLE_APPLIANCE
- TESTS = test-virt-resize.sh
++TESTS += test-virt-resize.sh
 +endif
  
  # Dependencies.
