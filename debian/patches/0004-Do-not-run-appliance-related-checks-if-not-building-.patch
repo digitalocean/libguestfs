@@ -108,11 +108,28 @@ index 90c4ce3..1b554f4 100644
  
  CLEANFILES = \
  	test.iso test.sqsh \
+diff --git a/java/Makefile.am b/java/Makefile.am
+index 7686047..31b793f 100644
+--- a/java/Makefile.am
++++ b/java/Makefile.am
+@@ -102,7 +102,11 @@ install-data-hook:
+ 
+ # Tests (not comprehensive).
+ 
+-TESTS = run-bindtests run-java-tests
++TESTS = run-bindtests
++if ENABLE_APPLIANCE
++TESTS += run-java-tests
++endif ENABLE_APPLIANCE
++
+ TESTS_ENVIRONMENT = \
+ 	JAVA=$(JAVA) \
+ 	CLASSPATH=.:t:libguestfs-$(VERSION).jar \
 diff --git a/ocaml/Makefile.am b/ocaml/Makefile.am
-index 28c13c5..83b8f09 100644
+index 5287035..eed15b1 100644
 --- a/ocaml/Makefile.am
 +++ b/ocaml/Makefile.am
-@@ -75,11 +75,15 @@ TESTS_ENVIRONMENT = \
+@@ -78,11 +78,15 @@ TESTS_ENVIRONMENT = \
  
  TESTS = run-bindtests \
  	t/guestfs_005_load \

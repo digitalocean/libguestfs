@@ -9,4 +9,5 @@
 0009-out-of-tree-build-erlang.patch
 0010-Fix-en-dis-able-install-daemon.patch
 0011-Fix-include.patch
-0012-autoreconf.patch
+0012-Java-build-fixes.patch
+0013-autoreconf.patch

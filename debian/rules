@@ -8,7 +8,6 @@ PYTHON_DEFAULT := $(shell pyversions --default)
 COMMON_CONFIG_FLAGS = \
 	--disable-appliance  \
 	--with-readline	     \
-	--with-java-home=no  \
 	--disable-ruby       \
 	--disable-haskell    \
 	--disable-php
@@ -24,14 +23,15 @@ override_dh_auto_configure:
 		dh_auto_configure --builddir=$(CURDIR)/debian/build-$$p \
 		    -- \
 		    $(COMMON_CONFIG_FLAGS) \
-		    --enable-install-daemon ; \
+		    --enable-install-daemon \
+		    --with-java-home=/usr/lib/jvm/default-java ; \
 	    else \
 	        dh_auto_configure --builddir=$(CURDIR)/debian/build-$$p \
 	            -- \
 		    $(COMMON_CONFIG_FLAGS) \
 	            --disable-daemon --disable-fuse \
 	            --disable-ocaml --disable-perl \
-		    --disable-erlang \
+		    --disable-erlang --with-java-home=no \
 	            PYTHON=$$p ; \
 	    fi ; \
 	done
