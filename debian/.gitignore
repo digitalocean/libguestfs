@@ -4,6 +4,7 @@
 /substvars
 /files
 
+/build-*
 /tmp
 /guestfish
 /guestfsd
@@ -11,6 +12,7 @@
 /libguestfs-dev
 /libguestfs-doc
 /libguestfs-perl
+/erlang-guestfs
 /libguestfs-tools
 /libguestfs0-dbg
 /libguestfs0
