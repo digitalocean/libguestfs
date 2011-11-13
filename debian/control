@@ -416,7 +416,7 @@ Package: erlang-guestfs
 Section: interpreters
 Architecture: i386 amd64
 Depends: ${erlang-base:Depends}, ${erlang-abi:Depends}, ${shlibs:Depends}, ${misc:Depends}
-Description: guest disk image management system - OCaml development files
+Description: guest disk image management system - Erlang bindings
  The libguestfs library allows accessing and modifying guest disk
  images. It offers the following features, among many others:
   * making batch configuration changes to guests;
