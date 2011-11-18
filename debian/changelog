@@ -1,3 +1,10 @@
+libguestfs (1:1.14.2-3) unstable; urgency=low
+
+  * Added an epoch after uploading an 1.15 package to unstable instead of
+    experimental.
+
+ -- Hilko Bengen <bengen@debian.org>  Fri, 18 Nov 2011 17:10:30 +0100
+
 libguestfs (1.14.2-2) unstable; urgency=low
 
   * [cf7da64] Updated .gitignore
