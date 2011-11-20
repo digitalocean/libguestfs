@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: libguestfs@packages.debian.org\n"
-"POT-Creation-Date: 2011-08-07 18:42+0200\n"
+"POT-Creation-Date: 2011-11-21 00:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,22 +19,30 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../libguestfs0.templates:1001
+#: ../libguestfs0.templates:2001
 msgid "Create or update supermin appliance now?"
 msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../libguestfs0.templates:1001
+#: ../libguestfs0.templates:2001
 msgid ""
-"libguestfs needs a supermin appliance to perform its work. To generate or "
-"update it, network access to a package repository is needed."
+"A \"supermin appliance\" is mandatory for libguestfs. It contains lists of "
+"files and directories. These will be copied into an ad-hoc file system "
+"whenever libguestfs starts a virtual machine."
 msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../libguestfs0.templates:1001
+#: ../libguestfs0.templates:2001
 msgid ""
-"update-guestfs-appliance(8) can also be used at a later time to create or "
-"update the supermin appliance."
+"To generate or update a supermin appliance, network access to a package "
+"repository is needed."
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../libguestfs0.templates:2001
+msgid ""
+"This can be done later by using the update-guestfs-appliance(8) utility."
 msgstr ""
