@@ -14,17 +14,17 @@ Subject: autoreconf
  erlang/Makefile.in   |    2 +-
  fuse/Makefile.in     |    2 +-
  images/Makefile.in   |    2 +-
- java/Makefile.in     |   10 +++--
+ java/Makefile.in     |   12 ++++---
  ocaml/Makefile.in    |   19 +++++-----
  perl/Makefile.in     |    8 +++-
  python/Makefile.in   |    3 +-
  resize/Makefile.in   |    7 ++--
  sparsify/Makefile.in |    8 ++--
  tools/Makefile.in    |    6 ++--
- 18 files changed, 123 insertions(+), 105 deletions(-)
+ 18 files changed, 124 insertions(+), 106 deletions(-)
 
 diff --git a/Makefile.in b/Makefile.in
-index b554b95..5080d5a 100644
+index 8729a23..e7fc02a 100644
 --- a/Makefile.in
 +++ b/Makefile.in
 @@ -71,7 +71,6 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
@@ -116,7 +116,7 @@ index b554b95..5080d5a 100644
  EXTRA_DIST = \
  	$(generator_built) \
  	BUGS HACKING RELEASE-NOTES ROADMAP TODO \
-@@ -1488,8 +1488,6 @@ podwrapper.sh: $(top_builddir)/config.status $(srcdir)/podwrapper.sh.in
+@@ -1472,8 +1472,6 @@ podwrapper.sh: $(top_builddir)/config.status $(srcdir)/podwrapper.sh.in
  	cd $(top_builddir) && $(SHELL) ./config.status $@
  run: $(top_builddir)/config.status $(srcdir)/run.in
  	cd $(top_builddir) && $(SHELL) ./config.status $@
@@ -206,7 +206,7 @@ index 28fcec7..fb84fce 100644
  
  .SUFFIXES:
 diff --git a/configure b/configure
-index 44f310a..a224259 100755
+index aed418b..a97a6a8 100755
 --- a/configure
 +++ b/configure
 @@ -46473,7 +46473,10 @@ else
@@ -593,7 +593,7 @@ index f2e3f4e..4a51f55 100644
  	test.iso test.sqsh \
  	100kallzeroes 100kallnewlines 100kallspaces 100krandom 10klines \
 diff --git a/java/Makefile.in b/java/Makefile.in
-index b900c4b..f732d5e 100644
+index b900c4b..2b141f4 100644
 --- a/java/Makefile.in
 +++ b/java/Makefile.in
 @@ -92,6 +92,7 @@ build_triplet = @build@
@@ -604,6 +604,15 @@ index b900c4b..f732d5e 100644
  subdir = java
  ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
  am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
+@@ -1258,7 +1259,7 @@ htmldir = @htmldir@
+ includedir = @includedir@
+ infodir = @infodir@
+ install_sh = @install_sh@
+-libdir = @libdir@
++libdir = ${prefix}/lib/jni
+ libexecdir = @libexecdir@
+ lispdir = @lispdir@
+ localedir = @localedir@
 @@ -1335,7 +1336,7 @@ CLEANFILES = doc-stamp $(builddir)/com/redhat/et/libguestfs/*.class com_redhat_e
  @HAVE_JAVA_TRUE@	com_redhat_et_libguestfs_GuestFS.c
  

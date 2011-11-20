@@ -10,4 +10,5 @@
 0010-Fix-en-dis-able-install-daemon.patch
 0011-Fix-include.patch
 0012-Java-build-fixes.patch
-0013-autoreconf.patch
+0013-Install-Java-bindings-to-jni-subdirectory.patch
+0014-autoreconf.patch
