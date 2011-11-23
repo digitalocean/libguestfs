@@ -1674,7 +1674,7 @@ appliance: force
 	$(MAKE) -C $(top_builddir)/appliance
 
 @HAVE_ERLANG_TRUE@guestfs.beam: guestfs.erl
-@HAVE_ERLANG_TRUE@	$(ERLC) +debug_info guestfs.erl
+@HAVE_ERLANG_TRUE@	$(ERLC) +debug_info $^
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
