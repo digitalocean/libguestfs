@@ -11,20 +11,19 @@ Subject: autoreconf
  daemon/Makefile.in   |    4 +-
  df/Makefile.in       |    2 +-
  edit/Makefile.in     |    2 +-
- erlang/Makefile.in   |    2 +-
  fuse/Makefile.in     |    2 +-
  images/Makefile.in   |    2 +-
- java/Makefile.in     |   12 ++++---
+ java/Makefile.in     |    5 ++-
  ocaml/Makefile.in    |   19 +++++-----
  perl/Makefile.in     |    8 +++-
  python/Makefile.in   |    3 +-
  resize/Makefile.in   |    7 ++--
  sparsify/Makefile.in |    8 ++--
  tools/Makefile.in    |    6 ++--
- 18 files changed, 124 insertions(+), 106 deletions(-)
+ 17 files changed, 119 insertions(+), 102 deletions(-)
 
 diff --git a/Makefile.in b/Makefile.in
-index 8729a23..e7fc02a 100644
+index c3fa95f..d7fae02 100644
 --- a/Makefile.in
 +++ b/Makefile.in
 @@ -71,7 +71,6 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
@@ -116,7 +115,7 @@ index 8729a23..e7fc02a 100644
  EXTRA_DIST = \
  	$(generator_built) \
  	BUGS HACKING RELEASE-NOTES ROADMAP TODO \
-@@ -1472,8 +1472,6 @@ podwrapper.sh: $(top_builddir)/config.status $(srcdir)/podwrapper.sh.in
+@@ -1473,8 +1473,6 @@ podwrapper.sh: $(top_builddir)/config.status $(srcdir)/podwrapper.sh.in
  	cd $(top_builddir) && $(SHELL) ./config.status $@
  run: $(top_builddir)/config.status $(srcdir)/run.in
  	cd $(top_builddir) && $(SHELL) ./config.status $@
@@ -206,7 +205,7 @@ index 28fcec7..fb84fce 100644
  
  .SUFFIXES:
 diff --git a/configure b/configure
-index aed418b..a97a6a8 100755
+index 7a43c2e..d7d7390 100755
 --- a/configure
 +++ b/configure
 @@ -46473,7 +46473,10 @@ else
@@ -553,19 +552,6 @@ index 16ff4c3..6784b21 100644
  all: all-am
  
  .SUFFIXES:
-diff --git a/erlang/Makefile.in b/erlang/Makefile.in
-index 99e450e..45f4f63 100644
---- a/erlang/Makefile.in
-+++ b/erlang/Makefile.in
-@@ -1674,7 +1674,7 @@ appliance: force
- 	$(MAKE) -C $(top_builddir)/appliance
- 
- @HAVE_ERLANG_TRUE@guestfs.beam: guestfs.erl
--@HAVE_ERLANG_TRUE@	$(ERLC) +debug_info guestfs.erl
-+@HAVE_ERLANG_TRUE@	$(ERLC) +debug_info $^
- 
- # Tell versions [3.59,3.63) of GNU make to not export all variables.
- # Otherwise a system limit (for SysV at least) may be exceeded.
 diff --git a/fuse/Makefile.in b/fuse/Makefile.in
 index 08a38a8..ab092bf 100644
 --- a/fuse/Makefile.in
@@ -593,7 +579,7 @@ index f2e3f4e..4a51f55 100644
  	test.iso test.sqsh \
  	100kallzeroes 100kallnewlines 100kallspaces 100krandom 10klines \
 diff --git a/java/Makefile.in b/java/Makefile.in
-index b900c4b..2b141f4 100644
+index ea9a6bf..2b141f4 100644
 --- a/java/Makefile.in
 +++ b/java/Makefile.in
 @@ -92,6 +92,7 @@ build_triplet = @build@
@@ -613,15 +599,6 @@ index b900c4b..2b141f4 100644
  libexecdir = @libexecdir@
  lispdir = @lispdir@
  localedir = @localedir@
-@@ -1335,7 +1336,7 @@ CLEANFILES = doc-stamp $(builddir)/com/redhat/et/libguestfs/*.class com_redhat_e
- @HAVE_JAVA_TRUE@	com_redhat_et_libguestfs_GuestFS.c
- 
- @HAVE_JAVA_TRUE@libguestfs_jni_la_LIBADD = $(top_builddir)/src/libguestfs.la
--@HAVE_JAVA_TRUE@libguestfs_jni_la_LDFLAGS = -version-info $(JNI_VERSION_INFO)
-+@HAVE_JAVA_TRUE@libguestfs_jni_la_LDFLAGS = -version-info $(JNI_VERSION_INFO) -shared
- @HAVE_JAVA_TRUE@libguestfs_jni_la_CFLAGS = \
- @HAVE_JAVA_TRUE@  $(WARN_CFLAGS) $(WERROR_CFLAGS) \
- @HAVE_JAVA_TRUE@  -I$(top_srcdir)/src -I$(top_builddir)/src \
 @@ -1347,7 +1348,7 @@ CLEANFILES = doc-stamp $(builddir)/com/redhat/et/libguestfs/*.class com_redhat_e
  @HAVE_JAVA_TRUE@noinst_SCRIPTS = doc-stamp
  
@@ -631,20 +608,6 @@ index b900c4b..2b141f4 100644
  @HAVE_JAVA_TRUE@TESTS_ENVIRONMENT = \
  @HAVE_JAVA_TRUE@	JAVA=$(JAVA) \
  @HAVE_JAVA_TRUE@	CLASSPATH=.:t:libguestfs-$(VERSION).jar \
-@@ -1840,10 +1841,11 @@ builddir ?= $(top_builddir)/java
- @HAVE_JAVA_TRUE@	cp -a api/* $(DESTDIR)$(datadir)/javadoc/$(PACKAGE_NAME)-java-$(PACKAGE_VERSION)
- 
- @HAVE_JAVA_TRUE@t/%.class: t/%.java
--@HAVE_JAVA_TRUE@	$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar $<
-+@HAVE_JAVA_TRUE@	mkdir -p t
-+@HAVE_JAVA_TRUE@	$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar -d $(builddir)/t $<
- 
- @HAVE_JAVA_TRUE@Bindtests.class: Bindtests.java
--@HAVE_JAVA_TRUE@	$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar $<
-+@HAVE_JAVA_TRUE@	$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar -d $(builddir) $<
- 
- # Tell version 3.79 and up of GNU make to not build goals in this
- # directory in parallel.
 diff --git a/ocaml/Makefile.in b/ocaml/Makefile.in
 index 060d7a2..52f4ab9 100644
 --- a/ocaml/Makefile.in

@@ -7,7 +7,7 @@ Subject: Fix --{en,dis}able-install-daemon
  1 files changed, 1 insertions(+), 1 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index a179e3f..5562df4 100644
+index bd99db9..ceee22b 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -250,9 +250,9 @@ if test "x$enable_daemon" = "xyes"; then
