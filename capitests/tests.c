@@ -100,6 +100,24 @@ md5sum (const char *filename, char *result)
   result[32] = '\0';
 }
 
+#if 0 /* <- Remove this if we add RHashtable tests in 1.14 branch. */
+/* Return the value for a key in a hashtable.
+ * Note: the return value is part of the hash and should not be freed.
+ */
+static const char *
+get_key (char **hash, const char *key)
+{
+  size_t i;
+
+  for (i = 0; hash[i] != NULL; i += 2) {
+    if (STREQ (hash[i], key))
+      return hash[i+1];
+  }
+
+  return NULL; /* key not found */
+}
+#endif
+
 static void no_test_warnings (void)
 {
   fprintf (stderr, "warning: \"guestfs_test0\" has no tests\n");

@@ -1207,7 +1207,7 @@ EXTRA_DIST = $(generator_built) *.hs run-bindtests
 
 @HAVE_HASKELL_TRUE@TESTS = run-bindtests Guestfs005Load Guestfs010Basic
 @HAVE_HASKELL_TRUE@check_DATA = Bindtests
-@HAVE_HASKELL_TRUE@GHCFLAGS = -I$(top_builddir)/src -L$(top_builddir)/src/.libs
+@HAVE_HASKELL_TRUE@GHCFLAGS = -I$(top_builddir)/src -L$(top_builddir)/src/.libs -i$(srcdir)
 @HAVE_HASKELL_TRUE@all_targets = Bindtests Guestfs005Load Guestfs010Basic
 @HAVE_HASKELL_TRUE@CLEANFILES = $(all_targets) *~ *.hi *.o
 all: all-am
@@ -1516,16 +1516,16 @@ appliance: force
 
 @HAVE_HASKELL_TRUE@all: $(all_targets)
 
-@HAVE_HASKELL_TRUE@Guestfs.o: Guestfs.hs
-@HAVE_HASKELL_TRUE@	$(GHC)  $(GHCFLAGS) -c $<
+@HAVE_HASKELL_TRUE@Guestfs.o: $(srcdir)/Guestfs.hs
+@HAVE_HASKELL_TRUE@	$(GHC)  $(GHCFLAGS) -c $< -o $@
 
-@HAVE_HASKELL_TRUE@Bindtests: Bindtests.hs Guestfs.o
+@HAVE_HASKELL_TRUE@Bindtests: $(srcdir)/Bindtests.hs Guestfs.o
 @HAVE_HASKELL_TRUE@	$(GHC)  $(GHCFLAGS) -main-is $(shell basename $@) --make -o $@ $< -lguestfs
 
-@HAVE_HASKELL_TRUE@Guestfs005Load: Guestfs005Load.hs Guestfs.o
+@HAVE_HASKELL_TRUE@Guestfs005Load: $(srcdir)/Guestfs005Load.hs Guestfs.o
 @HAVE_HASKELL_TRUE@	$(GHC)  $(GHCFLAGS) -main-is $(shell basename $@) --make -o $@ $< -lguestfs
 
-@HAVE_HASKELL_TRUE@Guestfs010Basic: Guestfs010Basic.hs Guestfs.o
+@HAVE_HASKELL_TRUE@Guestfs010Basic: $(srcdir)/Guestfs010Basic.hs Guestfs.o
 @HAVE_HASKELL_TRUE@	$(GHC)  $(GHCFLAGS) -main-is $(shell basename $@) --make -o $@ $< -lguestfs
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

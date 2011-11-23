@@ -1,3 +1,59 @@
+2011-11-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.14.3.
+
+	df, testing: Add notes on virt-df numbers (thanks Kashyap Chamarthy). (cherry picked from commit 7b3137e664c3f4edf6ac7043a34c4166567e17bd)
+
+	sparsify: Add auto-detection of .vdi files.
+	Note that for this to work properly, it requires a patch to
+	the 'file' command.  See:
+	https://www.redhat.com/archives/libguestfs/2011-November/msg00120.html
+	(cherry picked from commit 342b4a55d056734a0344db8b4bcf1a90104a8a59)
+
+	guestfs-testing: Link to libguestfs-test-tool. (cherry picked from commit 6f39cfaeacda146d0eaa35da6f6413fa6ab3d40a)
+
+2011-11-22  Hilko Bengen  <bengen@hilluzination.de>
+
+	out-of-tree build: ruby (cherry picked from commit 8bc6e9d6a89672bbe1e7469774abe889354deb67)
+
+2011-11-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	Add guestfs-testing(1) man page.
+	This contains suggested manual tests that users can run.
+	(cherry picked from commit a3b24296810d98e47552c6838dcd6ab6845aba03)
+
+2011-11-22  Hilko Bengen  <bengen@hilluzination.de>
+
+	out of tree build: haskell (cherry picked from commit 730fb50780df860474dc1fae16c9891187e99c82)
+
+	java: out-of-tree build, don't build static library (cherry picked from commit a0509ff0715533e341573e24f6888fd7dcf4ba51)
+
+	out of tree build: erlang (cherry picked from commit ddb3fac1bf1b0493779c9425b518598473ef106a)
+
+2011-11-22  Richard Jones  <rjones@redhat.com>
+
+	32 bit: Fix printf off_t. (cherry picked from commit 47963bc9cc0b47af0541010a4fa14260405acaa5)
+
+2011-11-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	32 bit: Use %td for ptrdiff_t (difference between two pointers). (cherry picked from commit 5d48250224fcb140b7e6e17f36b37deab4e0659b)
+
+	df: Disable part of virt-df test.
+	See:
+	https://www.redhat.com/archives/libguestfs/2011-November/msg00051.html
+	(cherry picked from commit 6e6b3ff35f9baafb22d5459ca13c112b1e00ae1b)
+
+	generator: Support testing the output of RHashtable functions.
+	You can use TestOutputHashtable to test the output of RHashtable
+	functions.
+	(cherry picked from commit 5f0b75f040b118c4394466438adc99f38144722d)
+
+	daemon: Define safe ADD_ARG macro for constructing arg lists on the stack. (cherry picked from commit edd502543adbdc2fa5dda0c015ea7c390bb39f64)
+
+2011-11-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.14.2.
+
 2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
 
 	ocaml: Fix bindings when a function takes more than 10 parameters.

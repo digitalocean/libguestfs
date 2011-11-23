@@ -1335,7 +1335,7 @@ CLEANFILES = doc-stamp $(builddir)/com/redhat/et/libguestfs/*.class com_redhat_e
 @HAVE_JAVA_TRUE@	com_redhat_et_libguestfs_GuestFS.c
 
 @HAVE_JAVA_TRUE@libguestfs_jni_la_LIBADD = $(top_builddir)/src/libguestfs.la
-@HAVE_JAVA_TRUE@libguestfs_jni_la_LDFLAGS = -version-info $(JNI_VERSION_INFO)
+@HAVE_JAVA_TRUE@libguestfs_jni_la_LDFLAGS = -version-info $(JNI_VERSION_INFO) -shared
 @HAVE_JAVA_TRUE@libguestfs_jni_la_CFLAGS = \
 @HAVE_JAVA_TRUE@  $(WARN_CFLAGS) $(WERROR_CFLAGS) \
 @HAVE_JAVA_TRUE@  -I$(top_srcdir)/src -I$(top_builddir)/src \
@@ -1840,10 +1840,11 @@ builddir ?= $(top_builddir)/java
 @HAVE_JAVA_TRUE@	cp -a api/* $(DESTDIR)$(datadir)/javadoc/$(PACKAGE_NAME)-java-$(PACKAGE_VERSION)
 
 @HAVE_JAVA_TRUE@t/%.class: t/%.java
-@HAVE_JAVA_TRUE@	$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar $<
+@HAVE_JAVA_TRUE@	mkdir -p t
+@HAVE_JAVA_TRUE@	$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar -d $(builddir)/t $<
 
 @HAVE_JAVA_TRUE@Bindtests.class: Bindtests.java
-@HAVE_JAVA_TRUE@	$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar $<
+@HAVE_JAVA_TRUE@	$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar -d $(builddir) $<
 
 # Tell version 3.79 and up of GNU make to not build goals in this
 # directory in parallel.

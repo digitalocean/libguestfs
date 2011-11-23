@@ -3166,7 +3166,7 @@ L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
 L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
 L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,
 L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
-L<virt-win-reg(1)>, L<qemu(1)>, L<febootstrap(1)>,
+L<virt-win-reg(1)>, L<guestfs-testing(1)>, L<qemu(1)>, L<febootstrap(1)>,
 L<febootstrap-supermin-helper(8)>, L<hivex(3)>, L<stap(1)>,
 L<http://libguestfs.org/>.
 

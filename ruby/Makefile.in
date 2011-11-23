@@ -1535,8 +1535,8 @@ appliance: force
 @HAVE_RUBY_TRUE@install:
 @HAVE_RUBY_TRUE@	$(MKDIR_P) $(DESTDIR)$(RUBY_SITELIB)
 @HAVE_RUBY_TRUE@	$(MKDIR_P) $(DESTDIR)$(RUBY_SITEARCH)
-@HAVE_RUBY_TRUE@	$(INSTALL) -p -m 0644 lib/guestfs.rb $(DESTDIR)$(RUBY_SITELIB)
-@HAVE_RUBY_TRUE@	$(INSTALL) -p -m 0755 ext/guestfs/_guestfs.so $(DESTDIR)$(RUBY_SITEARCH)
+@HAVE_RUBY_TRUE@	$(INSTALL) -p -m 0644 $(srcdir)/lib/guestfs.rb $(DESTDIR)$(RUBY_SITELIB)
+@HAVE_RUBY_TRUE@	$(INSTALL) -p -m 0755 $(builddir)/ext/guestfs/_guestfs.so $(DESTDIR)$(RUBY_SITEARCH)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
