@@ -25,7 +25,10 @@ SIGNATURE_CHECK (raise, int, (int));
 
 #include "macros.h"
 
-static void
+/* It is safe to use _Noreturn here: exit() never returns, and GCC knows that
+   exit() is a non-returning function, even on platforms where its declaration
+   in <stdlib.h> does not have the 'noreturn' attribute.  */
+static _Noreturn void
 handler (int sig)
 {
   exit (0);
@@ -36,7 +39,7 @@ main (void)
 {
   /* Test behaviour for invalid argument.  */
   ASSERT (raise (-1) != 0);
-  ASSERT (raise (99) != 0);
+  ASSERT (raise (199) != 0);
 
   /* Test behaviour for SIGINT.  */
   ASSERT (signal (SIGINT, handler) != SIG_ERR);

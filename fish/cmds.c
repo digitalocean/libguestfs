@@ -2722,7 +2722,8 @@ struct command_entry copy_file_to_file_cmd_entry = {
   .run = run_copy_file_to_file
 };
 
-void list_commands (void)
+void
+list_commands (void)
 {
   printf ("    %-16s     %s\n", _("Command"), _("Description"));
   list_builtin_commands ();
@@ -3114,7 +3115,8 @@ void list_commands (void)
   printf ("    %s\n",          _("Use -h <cmd> / help <cmd> to show detailed help for a command."));
 }
 
-int display_command (const char *cmd)
+int
+display_command (const char *cmd)
 {
   const struct command_table *ct;
 
@@ -3127,13 +3129,15 @@ int display_command (const char *cmd)
     return display_builtin_command (cmd);
 }
 
-static void print_int_bool_indent (struct guestfs_int_bool *int_bool, const char *indent)
+static void
+print_int_bool_indent (struct guestfs_int_bool *int_bool, const char *indent)
 {
   printf ("%si: %" PRIi32 "\n", indent, int_bool->i);
   printf ("%sb: %" PRIi32 "\n", indent, int_bool->b);
 }
 
-static void print_lvm_pv_indent (struct guestfs_lvm_pv *lvm_pv, const char *indent)
+static void
+print_lvm_pv_indent (struct guestfs_lvm_pv *lvm_pv, const char *indent)
 {
   unsigned int i;
 
@@ -3156,7 +3160,8 @@ static void print_lvm_pv_indent (struct guestfs_lvm_pv *lvm_pv, const char *inde
   printf ("%spv_mda_free: %" PRIu64 "\n", indent, lvm_pv->pv_mda_free);
 }
 
-static void print_lvm_vg_indent (struct guestfs_lvm_vg *lvm_vg, const char *indent)
+static void
+print_lvm_vg_indent (struct guestfs_lvm_vg *lvm_vg, const char *indent)
 {
   unsigned int i;
 
@@ -3184,7 +3189,8 @@ static void print_lvm_vg_indent (struct guestfs_lvm_vg *lvm_vg, const char *inde
   printf ("%svg_mda_free: %" PRIu64 "\n", indent, lvm_vg->vg_mda_free);
 }
 
-static void print_lvm_lv_indent (struct guestfs_lvm_lv *lvm_lv, const char *indent)
+static void
+print_lvm_lv_indent (struct guestfs_lvm_lv *lvm_lv, const char *indent)
 {
   unsigned int i;
 
@@ -3201,17 +3207,22 @@ static void print_lvm_lv_indent (struct guestfs_lvm_lv *lvm_lv, const char *inde
   printf ("%slv_size: %" PRIu64 "\n", indent, lvm_lv->lv_size);
   printf ("%sseg_count: %" PRIi64 "\n", indent, lvm_lv->seg_count);
   printf ("%sorigin: %s\n", indent, lvm_lv->origin);
-  if (lvm_lv->snap_percent >= 0) printf ("%ssnap_percent: %g %%\n", indent, lvm_lv->snap_percent);
-  else printf ("%ssnap_percent: \n", indent);
-  if (lvm_lv->copy_percent >= 0) printf ("%scopy_percent: %g %%\n", indent, lvm_lv->copy_percent);
-  else printf ("%scopy_percent: \n", indent);
+  if (lvm_lv->snap_percent >= 0)
+    printf ("%ssnap_percent: %g %%\n", indent, (double) lvm_lv->snap_percent);
+  else
+    printf ("%ssnap_percent: \n", indent);
+  if (lvm_lv->copy_percent >= 0)
+    printf ("%scopy_percent: %g %%\n", indent, (double) lvm_lv->copy_percent);
+  else
+    printf ("%scopy_percent: \n", indent);
   printf ("%smove_pv: %s\n", indent, lvm_lv->move_pv);
   printf ("%slv_tags: %s\n", indent, lvm_lv->lv_tags);
   printf ("%smirror_log: %s\n", indent, lvm_lv->mirror_log);
   printf ("%smodules: %s\n", indent, lvm_lv->modules);
 }
 
-static void print_stat_indent (struct guestfs_stat *stat, const char *indent)
+static void
+print_stat_indent (struct guestfs_stat *stat, const char *indent)
 {
   printf ("%sdev: %" PRIi64 "\n", indent, stat->dev);
   printf ("%sino: %" PRIi64 "\n", indent, stat->ino);
@@ -3228,7 +3239,8 @@ static void print_stat_indent (struct guestfs_stat *stat, const char *indent)
   printf ("%sctime: %" PRIi64 "\n", indent, stat->ctime);
 }
 
-static void print_statvfs_indent (struct guestfs_statvfs *statvfs, const char *indent)
+static void
+print_statvfs_indent (struct guestfs_statvfs *statvfs, const char *indent)
 {
   printf ("%sbsize: %" PRIi64 "\n", indent, statvfs->bsize);
   printf ("%sfrsize: %" PRIi64 "\n", indent, statvfs->frsize);
@@ -3243,14 +3255,16 @@ static void print_statvfs_indent (struct guestfs_statvfs *statvfs, const char *i
   printf ("%snamemax: %" PRIi64 "\n", indent, statvfs->namemax);
 }
 
-static void print_dirent_indent (struct guestfs_dirent *dirent, const char *indent)
+static void
+print_dirent_indent (struct guestfs_dirent *dirent, const char *indent)
 {
   printf ("%sino: %" PRIi64 "\n", indent, dirent->ino);
   printf ("%sftyp: %c\n", indent, dirent->ftyp);
   printf ("%sname: %s\n", indent, dirent->name);
 }
 
-static void print_version_indent (struct guestfs_version *version, const char *indent)
+static void
+print_version_indent (struct guestfs_version *version, const char *indent)
 {
   printf ("%smajor: %" PRIi64 "\n", indent, version->major);
   printf ("%sminor: %" PRIi64 "\n", indent, version->minor);
@@ -3258,7 +3272,8 @@ static void print_version_indent (struct guestfs_version *version, const char *i
   printf ("%sextra: %s\n", indent, version->extra);
 }
 
-static void print_xattr_indent (struct guestfs_xattr *xattr, const char *indent)
+static void
+print_xattr_indent (struct guestfs_xattr *xattr, const char *indent)
 {
   unsigned int i;
 
@@ -3272,7 +3287,8 @@ static void print_xattr_indent (struct guestfs_xattr *xattr, const char *indent)
   printf ("\n");
 }
 
-static void print_inotify_event_indent (struct guestfs_inotify_event *inotify_event, const char *indent)
+static void
+print_inotify_event_indent (struct guestfs_inotify_event *inotify_event, const char *indent)
 {
   printf ("%sin_wd: %" PRIi64 "\n", indent, inotify_event->in_wd);
   printf ("%sin_mask: %" PRIu32 "\n", indent, inotify_event->in_mask);
@@ -3280,7 +3296,8 @@ static void print_inotify_event_indent (struct guestfs_inotify_event *inotify_ev
   printf ("%sin_name: %s\n", indent, inotify_event->in_name);
 }
 
-static void print_partition_indent (struct guestfs_partition *partition, const char *indent)
+static void
+print_partition_indent (struct guestfs_partition *partition, const char *indent)
 {
   printf ("%spart_num: %" PRIi32 "\n", indent, partition->part_num);
   printf ("%spart_start: %" PRIu64 "\n", indent, partition->part_start);
@@ -3288,7 +3305,8 @@ static void print_partition_indent (struct guestfs_partition *partition, const c
   printf ("%spart_size: %" PRIu64 "\n", indent, partition->part_size);
 }
 
-static void print_application_indent (struct guestfs_application *application, const char *indent)
+static void
+print_application_indent (struct guestfs_application *application, const char *indent)
 {
   printf ("%sapp_name: %s\n", indent, application->app_name);
   printf ("%sapp_display_name: %s\n", indent, application->app_display_name);
@@ -3304,7 +3322,8 @@ static void print_application_indent (struct guestfs_application *application, c
   printf ("%sapp_description: %s\n", indent, application->app_description);
 }
 
-static void print_lvm_vg_list (struct guestfs_lvm_vg_list *lvm_vgs)
+static void
+print_lvm_vg_list (struct guestfs_lvm_vg_list *lvm_vgs)
 {
   unsigned int i;
 
@@ -3315,7 +3334,8 @@ static void print_lvm_vg_list (struct guestfs_lvm_vg_list *lvm_vgs)
   }
 }
 
-static void print_stat_list (struct guestfs_stat_list *stats)
+static void
+print_stat_list (struct guestfs_stat_list *stats)
 {
   unsigned int i;
 
@@ -3326,7 +3346,8 @@ static void print_stat_list (struct guestfs_stat_list *stats)
   }
 }
 
-static void print_dirent_list (struct guestfs_dirent_list *dirents)
+static void
+print_dirent_list (struct guestfs_dirent_list *dirents)
 {
   unsigned int i;
 
@@ -3337,7 +3358,8 @@ static void print_dirent_list (struct guestfs_dirent_list *dirents)
   }
 }
 
-static void print_partition_list (struct guestfs_partition_list *partitions)
+static void
+print_partition_list (struct guestfs_partition_list *partitions)
 {
   unsigned int i;
 
@@ -3348,7 +3370,8 @@ static void print_partition_list (struct guestfs_partition_list *partitions)
   }
 }
 
-static void print_lvm_lv_list (struct guestfs_lvm_lv_list *lvm_lvs)
+static void
+print_lvm_lv_list (struct guestfs_lvm_lv_list *lvm_lvs)
 {
   unsigned int i;
 
@@ -3359,7 +3382,8 @@ static void print_lvm_lv_list (struct guestfs_lvm_lv_list *lvm_lvs)
   }
 }
 
-static void print_xattr_list (struct guestfs_xattr_list *xattrs)
+static void
+print_xattr_list (struct guestfs_xattr_list *xattrs)
 {
   unsigned int i;
 
@@ -3370,7 +3394,8 @@ static void print_xattr_list (struct guestfs_xattr_list *xattrs)
   }
 }
 
-static void print_lvm_pv_list (struct guestfs_lvm_pv_list *lvm_pvs)
+static void
+print_lvm_pv_list (struct guestfs_lvm_pv_list *lvm_pvs)
 {
   unsigned int i;
 
@@ -3381,7 +3406,8 @@ static void print_lvm_pv_list (struct guestfs_lvm_pv_list *lvm_pvs)
   }
 }
 
-static void print_application_list (struct guestfs_application_list *applications)
+static void
+print_application_list (struct guestfs_application_list *applications)
 {
   unsigned int i;
 
@@ -3392,7 +3418,8 @@ static void print_application_list (struct guestfs_application_list *application
   }
 }
 
-static void print_inotify_event_list (struct guestfs_inotify_event_list *inotify_events)
+static void
+print_inotify_event_list (struct guestfs_inotify_event_list *inotify_events)
 {
   unsigned int i;
 
@@ -3403,22 +3430,26 @@ static void print_inotify_event_list (struct guestfs_inotify_event_list *inotify
   }
 }
 
-static void print_stat (struct guestfs_stat *stat)
+static void
+print_stat (struct guestfs_stat *stat)
 {
   print_stat_indent (stat, "");
 }
 
-static void print_statvfs (struct guestfs_statvfs *statvfs)
+static void
+print_statvfs (struct guestfs_statvfs *statvfs)
 {
   print_statvfs_indent (statvfs, "");
 }
 
-static void print_version (struct guestfs_version *version)
+static void
+print_version (struct guestfs_version *version)
 {
   print_version_indent (version, "");
 }
 
-static void print_int_bool (struct guestfs_int_bool *int_bool)
+static void
+print_int_bool (struct guestfs_int_bool *int_bool)
 {
   print_int_bool_indent (int_bool, "");
 }

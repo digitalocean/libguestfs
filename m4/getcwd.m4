@@ -6,7 +6,7 @@
 # with or without modifications, as long as this notice is preserved.
 
 # Written by Paul Eggert.
-# serial 9
+# serial 10
 
 AC_DEFUN([gl_FUNC_GETCWD_NULL],
   [
@@ -108,12 +108,35 @@ AC_DEFUN([gl_FUNC_GETCWD],
   AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles
 
   gl_abort_bug=no
-  case $gl_cv_func_getcwd_null,$host_os in
-  *,mingw*)
-    gl_cv_func_getcwd_path_max=yes;;
-  yes,*)
-    gl_FUNC_GETCWD_PATH_MAX
-    gl_FUNC_GETCWD_ABORT_BUG([gl_abort_bug=yes]);;
+  case "$host_os" in
+    mingw*)
+      gl_cv_func_getcwd_path_max=yes
+      ;;
+    *)
+      gl_FUNC_GETCWD_PATH_MAX
+      case "$gl_cv_func_getcwd_null" in
+        *yes)
+          gl_FUNC_GETCWD_ABORT_BUG([gl_abort_bug=yes])
+          ;;
+      esac
+      ;;
+  esac
+  dnl Define HAVE_MINIMALLY_WORKING_GETCWD and HAVE_PARTLY_WORKING_GETCWD
+  dnl if appropriate.
+  case "$gl_cv_func_getcwd_path_max" in
+    "no, it has the AIX bug") ;;
+    *)
+      AC_DEFINE([HAVE_MINIMALLY_WORKING_GETCWD], [1],
+        [Define to 1 if getcwd minimally works, that is, its result can be
+         trusted when it succeeds.])
+      ;;
+  esac
+  case "$gl_cv_func_getcwd_path_max" in
+    "no, but it is partly working")
+      AC_DEFINE([HAVE_PARTLY_WORKING_GETCWD], [1],
+        [Define to 1 if getcwd works, except it sometimes fails when it
+         shouldn't, setting errno to ERANGE, ENAMETOOLONG, or ENOENT.])
+      ;;
   esac
 
   case $gl_cv_func_getcwd_null,$gl_cv_func_getcwd_posix_signature$gl_cv_func_getcwd_path_max,$gl_abort_bug in
