@@ -1018,7 +1018,9 @@ hash_rehash (Hash_table *table, size_t candidate)
   return false;
 }
 
-/* Return -1 upon memory allocation failure.
+/* Insert ENTRY into hash TABLE if there is not already a matching entry.
+
+   Return -1 upon memory allocation failure.
    Return 1 if insertion succeeded.
    Return 0 if there is already a matching entry in the table,
    and in that case, if MATCHED_ENT is non-NULL, set *MATCHED_ENT
@@ -1030,10 +1032,11 @@ hash_rehash (Hash_table *table, size_t candidate)
    hash_insert, the only way to distinguish those cases is to compare
    the return value and ENTRY.  That works only when you can have two
    different ENTRY values that point to data that compares "equal".  Thus,
-   when the ENTRY value is a simple scalar, you must use hash_insert0.
-   ENTRY must not be NULL.  */
+   when the ENTRY value is a simple scalar, you must use
+   hash_insert_if_absent.  ENTRY must not be NULL.  */
 int
-hash_insert0 (Hash_table *table, void const *entry, void const **matched_ent)
+hash_insert_if_absent (Hash_table *table, void const *entry,
+                       void const **matched_ent)
 {
   void *data;
   struct hash_entry *bucket;
@@ -1113,6 +1116,14 @@ hash_insert0 (Hash_table *table, void const *entry, void const **matched_ent)
   return 1;
 }
 
+/* hash_insert0 is the deprecated name for hash_insert_if_absent.
+   .  */
+int
+hash_insert0 (Hash_table *table, void const *entry, void const **matched_ent)
+{
+  return hash_insert_if_absent (table, entry, matched_ent);
+}
+
 /* If ENTRY matches an entry already in the hash table, return the pointer
    to the entry from the table.  Otherwise, insert ENTRY and return ENTRY.
    Return NULL if the storage required for insertion cannot be allocated.
@@ -1123,7 +1134,7 @@ void *
 hash_insert (Hash_table *table, void const *entry)
 {
   void const *matched_ent;
-  int err = hash_insert0 (table, entry, &matched_ent);
+  int err = hash_insert_if_absent (table, entry, &matched_ent);
   return (err == -1
           ? NULL
           : (void *) (err == 0 ? matched_ent : entry));

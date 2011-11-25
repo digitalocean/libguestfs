@@ -1,3 +1,72 @@
+2011-11-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	ubuntu: Add extra suppressions for libnl.1 leaks. (cherry picked from commit b5b4816ab006ce09b7a7103dbe87b3129046648d)
+
+	extra-tests: Include valgrind suppressions file.
+	This updates commit c55bad93fbde03a3daa6058913f02098c45e55f5.
+	(cherry picked from commit be7cb789069afc93e7c1b0e7a1a9a293dc846d45)
+
+	regressions: Allow test-launch-race.pl to be skipped.
+	export SKIP_TEST_LAUNCH_RACE_PL=1
+	will cause this test to be skipped.
+	(cherry picked from commit 3bbcbd5eeadabb1cc5a40b2f8ae586e6aafd39c6)
+
+	Add 'make extra-tests' rule and run extra tests.
+	These tests are optional, and require a special environment and
+	tools to run.
+	(cherry picked from commit c55bad93fbde03a3daa6058913f02098c45e55f5)
+
+	lib: Fix memory leak when debugging enabled (found by valgrind).
+	If you enabled debugging (eg. LIBGUESTFS_DEBUG=1) then every
+	debug message printed would be leaked.
+	(cherry picked from commit dd76ce2b4c93dd10d8eca9ab7c77bc831f103d03)
+
+	test-tool: Fix multiple memory leaks found by valgrind. (cherry picked from commit bfc0a5f58d3cb6faad5a44bed392f33190e62246)
+
+	filesystems: Fix memory leak found by valgrind. (cherry picked from commit cd3d28491dd19d25a6c04a8bc6a7ec94bded413b)
+
+	part-disk: Change default alignment of this to 64K (128 sectors).
+	This is the minimum alignment.  1MB would be better.
+
+	Note that the exact behaviour is not defined in the API.
+	(cherry picked from commit c4381dba737d5cb8aad8e1b2e2123b0fcaff1d1a)
+
+	virt-alignment-scan: Add checks for when API calls return NULL.
+	In particular, virt-alignment-scan -a /dev/null would segfault
+	because of an error returned by parted.
+	(cherry picked from commit 7b192f5a672197ad67ac23501e420c674aa2f3a9)
+
+2011-11-24  Matthew Booth  <mbooth@redhat.com>
+
+	NFC: Allow multiple config files in inspect_with_augeas in inspect_fs_unix.c
+	This change is in support of the addition of MD support to fstab inspection.
+	(cherry picked from commit 373dca7d12a8741e116205b4a3ac67a7d82cc782)
+
+	NFC: Consolidate the error path in check_fstab in inspect_fs_unix.c (cherry picked from commit 011a248381cacd6751deb1d1be122cc9bd6aba09)
+
+	NFC: Declare and use variables on the same line in inspect.c (cherry picked from commit c8cb3d27b62da20be6b2fa06f1ce6b63a722c32b)
+
+	build: Nothing under images/ should be translated (cherry picked from commit 34c0542189a443e57f2b09886f31b5bdad404bbf)
+
+	run script: Don't overwrite LD_LIBRARY_PATH and PERL5LIB
+	This change allows the run scripts of virt-v2v and libguestfs to be chained.
+	(cherry picked from commit 252ad4aa41c213948e4ee1f01e6c7ff7861f75e3)
+
+2011-11-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	gnulib: Rebase to latest. (cherry picked from commit 065b6b5798913c9bb40215944920199ae7d27007)
+
+	Don't rely on implicit promotion of float to double in printf args. (cherry picked from commit 9b102aae65449a8d321e8cf44a3993af558291db)
+
+	fish: In generated code, put function names on a new line.
+	eg:
+
+	static void
+	run_foo ()
+	{
+	}
+	(cherry picked from commit 99ec97dcdfaf242ba0683a230ba51e4a87f7458b)
+
 2011-11-22  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.14.3.

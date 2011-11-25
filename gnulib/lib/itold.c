@@ -1,5 +1,6 @@
-/* Test of realloc function.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+/* Replacement for 'int' to 'long double' conversion routine.
+   Copyright (C) 2011 Free Software Foundation, Inc.
+   Written by Bruno Haible <bruno@clisp.org>, 2011.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -16,14 +17,12 @@
 
 #include <config.h>
 
-#include <stdlib.h>
+/* Specification.  */
+#include <float.h>
 
-int
-main ()
+void
+_Qp_itoq (long double *result, int a)
 {
-  /* Check that realloc (NULL, 0) is not a NULL pointer.  */
-  if (realloc (NULL, 0) == NULL)
-    return 1;
-
-  return 0;
+  /* Convert from 'int' to 'double', then from 'double' to 'long double'.  */
+  *result = (double) a;
 }

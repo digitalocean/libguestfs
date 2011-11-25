@@ -18,19 +18,6 @@
 /* Define to the number of bits in type 'wint_t'. */
 #undef BITSIZEOF_WINT_T
 
-/* Define to 1 if chown fails to change ctime when at least one argument was
-   not -1. */
-#undef CHOWN_CHANGE_TIME_BUG
-
-/* Define if chown is not POSIX compliant regarding IDs of -1. */
-#undef CHOWN_FAILS_TO_HONOR_ID_OF_NEGATIVE_ONE
-
-/* Define if chown modifies symlinks. */
-#undef CHOWN_MODIFIES_SYMLINK
-
-/* Define to 1 if chown mishandles trailing slash. */
-#undef CHOWN_TRAILING_SLASH_BUG
-
 /* Define to one of `_getb67', `GETB67', `getb67' for Cray-2 and Cray-YMP
    systems. This function is required for `alloca.c' support on those systems.
    */
@@ -38,6 +25,13 @@
 
 /* Define to 1 if using `alloca.c'. */
 #undef C_ALLOCA
+
+/* Define as the bit index in the word where to find bit 0 of the exponent of
+   'double'. */
+#undef DBL_EXPBIT0_BIT
+
+/* Define as the word index where to find the exponent of 'double'. */
+#undef DBL_EXPBIT0_WORD
 
 /* Name of db_dump program. */
 #undef DB_DUMP
@@ -71,40 +65,17 @@
 /* Enable packet dumps in verbose mode. */
 #undef ENABLE_PACKET_DUMP
 
-/* Define to 1 if your platform has fchownat, but it does not reject an empty
-   file name. */
-#undef FCHOWNAT_EMPTY_FILENAME_BUG
-
-/* Define to 1 if your platform has fchownat, but it cannot perform lchown
-   tasks. */
-#undef FCHOWNAT_NOFOLLOW_BUG
-
 /* Define this to 1 if F_DUPFD behavior does not match POSIX */
 #undef FCNTL_DUPFD_BUGGY
 
-/* Define to 1 if fstatat (..., 0) does not work, as in AIX 7.1. */
-#undef FSTATAT_ZERO_FLAG_BROKEN
-
 /* Define to 1 if the system's ftello function has the Solaris bug. */
 #undef FTELLO_BROKEN_AFTER_SWITCHING_FROM_READ_TO_WRITE
-
-/* Define to 1 if mkdir mistakenly creates a directory given with a trailing
-   dot component. */
-#undef FUNC_MKDIR_DOT_BUG
 
 /* Define to 1 if ungetc is broken when used on arbitrary bytes. */
 #undef FUNC_UNGETC_BROKEN
 
 /* Define to 1 if futimesat mishandles a NULL file name. */
 #undef FUTIMESAT_NULL_BUG
-
-/* Define to the type of elements in the array set by `getgroups'. Usually
-   this is either `int' or `gid_t'. */
-#undef GETGROUPS_T
-
-/* Define this to 1 if getgroups(0,NULL) does not return the number of groups.
-   */
-#undef GETGROUPS_ZERO_BUG
 
 /* Define if gettimeofday clobbers the localtime buffer. */
 #undef GETTIMEOFDAY_CLOBBERS_LOCALTIME
@@ -129,10 +100,6 @@
 #undef GNULIB_FCNTL_SAFER
 
 /* Define to a C preprocessor expression that evaluates to 1 or 0, depending
-   whether the gnulib module fdopendir shall be considered present. */
-#undef GNULIB_FDOPENDIR
-
-/* Define to a C preprocessor expression that evaluates to 1 or 0, depending
    whether the gnulib module fd-safer-flag shall be considered present. */
 #undef GNULIB_FD_SAFER_FLAG
 
@@ -146,10 +113,6 @@
 
 /* enable some gnulib portability checks */
 #undef GNULIB_PORTCHECK
-
-/* Define to a C preprocessor expression that evaluates to 1 or 0, depending
-   whether the gnulib module realloc-gnu shall be considered present. */
-#undef GNULIB_REALLOC_GNU
 
 /* Define to a C preprocessor expression that evaluates to 1 or 0, depending
    whether the gnulib module snprintf shall be considered present. */
@@ -170,9 +133,6 @@
 
 /* Define to 1 when the gnulib module chdir should be tested. */
 #undef GNULIB_TEST_CHDIR
-
-/* Define to 1 when the gnulib module chown should be tested. */
-#undef GNULIB_TEST_CHOWN
 
 /* Define to 1 when the gnulib module cloexec should be tested. */
 #undef GNULIB_TEST_CLOEXEC
@@ -207,8 +167,8 @@
 /* Define to 1 when the gnulib module fdopen should be tested. */
 #undef GNULIB_TEST_FDOPEN
 
-/* Define to 1 when the gnulib module fdopendir should be tested. */
-#undef GNULIB_TEST_FDOPENDIR
+/* Define to 1 when the gnulib module fstat should be tested. */
+#undef GNULIB_TEST_FSTAT
 
 /* Define to 1 when the gnulib module ftell should be tested. */
 #undef GNULIB_TEST_FTELL
@@ -234,9 +194,6 @@
 /* Define to 1 when the gnulib module getdtablesize should be tested. */
 #undef GNULIB_TEST_GETDTABLESIZE
 
-/* Define to 1 when the gnulib module getgroups should be tested. */
-#undef GNULIB_TEST_GETGROUPS
-
 /* Define to 1 when the gnulib module getline should be tested. */
 #undef GNULIB_TEST_GETLINE
 
@@ -254,9 +211,6 @@
 
 /* Define to 1 when the gnulib module ioctl should be tested. */
 #undef GNULIB_TEST_IOCTL
-
-/* Define to 1 when the gnulib module lchown should be tested. */
-#undef GNULIB_TEST_LCHOWN
 
 /* Define to 1 when the gnulib module listen should be tested. */
 #undef GNULIB_TEST_LISTEN
@@ -297,6 +251,9 @@
 /* Define to 1 when the gnulib module open should be tested. */
 #undef GNULIB_TEST_OPEN
 
+/* Define to 1 when the gnulib module openat should be tested. */
+#undef GNULIB_TEST_OPENAT
+
 /* Define to 1 when the gnulib module opendir should be tested. */
 #undef GNULIB_TEST_OPENDIR
 
@@ -329,9 +286,6 @@
 
 /* Define to 1 when the gnulib module realloc-posix should be tested. */
 #undef GNULIB_TEST_REALLOC_POSIX
-
-/* Define to 1 when the gnulib module rmdir should be tested. */
-#undef GNULIB_TEST_RMDIR
 
 /* Define to 1 when the gnulib module select should be tested. */
 #undef GNULIB_TEST_SELECT
@@ -386,9 +340,6 @@
 
 /* Define to 1 when the gnulib module symlinkat should be tested. */
 #undef GNULIB_TEST_SYMLINKAT
-
-/* Define to 1 when the gnulib module unlink should be tested. */
-#undef GNULIB_TEST_UNLINK
 
 /* Define to 1 when the gnulib module unsetenv should be tested. */
 #undef GNULIB_TEST_UNSETENV
@@ -460,9 +411,6 @@
    the CoreFoundation framework. */
 #undef HAVE_CFPREFERENCESCOPYAPPVALUE
 
-/* Define to 1 if you have the `chown' function. */
-#undef HAVE_CHOWN
-
 /* Define to 1 if you have the `chsize' function. */
 #undef HAVE_CHSIZE
 
@@ -493,10 +441,6 @@
 /* Define to 1 if you have the declaration of `fchdir', and to 0 if you don't.
    */
 #undef HAVE_DECL_FCHDIR
-
-/* Define to 1 if you have the declaration of `fdopendir', and to 0 if you
-   don't. */
-#undef HAVE_DECL_FDOPENDIR
 
 /* Define to 1 if you have the declaration of `freeaddrinfo', and to 0 if you
    don't. */
@@ -670,12 +614,6 @@
 /* Define to 1 if you have the `fchdir' function. */
 #undef HAVE_FCHDIR
 
-/* Define to 1 if you have the `fchmodat' function. */
-#undef HAVE_FCHMODAT
-
-/* Define to 1 if you have the `fchown' function. */
-#undef HAVE_FCHOWN
-
 /* Define to 1 if you have the `fcntl' function. */
 #undef HAVE_FCNTL
 
@@ -721,15 +659,6 @@
 /* Define to 1 if you have the `getdtablesize' function. */
 #undef HAVE_GETDTABLESIZE
 
-/* Define to 1 if you have the `getegid' function. */
-#undef HAVE_GETEGID
-
-/* Define to 1 if you have the `getgrouplist' function. */
-#undef HAVE_GETGROUPLIST
-
-/* Define to 1 if your system has a working `getgroups' function. */
-#undef HAVE_GETGROUPS
-
 /* Define to 1 if you have the `gethostbyname' function. */
 #undef HAVE_GETHOSTBYNAME
 
@@ -744,9 +673,6 @@
 
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
-
-/* Define to 1 if you have the `getppriv' function. */
-#undef HAVE_GETPPRIV
 
 /* Define to 1 if you have the `getpwnam_r' function. */
 #undef HAVE_GETPWNAM_R
@@ -765,9 +691,6 @@
 
 /* Define to 1 if you have the <glob.h> header file. */
 #undef HAVE_GLOB_H
-
-/* Define to 1 if you have the <grp.h> header file. */
-#undef HAVE_GRP_H
 
 /* hivex library found at compile time. */
 #undef HAVE_HIVEX
@@ -825,12 +748,6 @@
 
 /* Define if you have <langinfo.h> and nl_langinfo(CODESET). */
 #undef HAVE_LANGINFO_CODESET
-
-/* Define to 1 if you have the `lchmod' function. */
-#undef HAVE_LCHMOD
-
-/* Define to 1 if you have the `lchown' function. */
-#undef HAVE_LCHOWN
 
 /* Define if your <locale.h> file defines LC_MESSAGES. */
 #undef HAVE_LC_MESSAGES
@@ -908,9 +825,6 @@
 /* Define to 1 if you have the `memrchr' function. */
 #undef HAVE_MEMRCHR
 
-/* Define to 1 if you have the `mkdirat' function. */
-#undef HAVE_MKDIRAT
-
 /* Define to 1 if you have the `mkdtemp' function. */
 #undef HAVE_MKDTEMP
 
@@ -965,9 +879,6 @@
 
 /* Define to 1 if you have the <printf.h> header file. */
 #undef HAVE_PRINTF_H
-
-/* Define to 1 if you have the <priv.h> header file. */
-#undef HAVE_PRIV_H
 
 /* Define to 1 if you have the `pthread_atfork' function. */
 #undef HAVE_PTHREAD_ATFORK
@@ -1087,6 +998,9 @@
 /* Define to 1 if fseeko is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_FSEEKO
 
+/* Define to 1 if fstat is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_FSTAT
+
 /* Define to 1 if fstatat is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_FSTATAT
 
@@ -1180,8 +1094,8 @@
 /* Define to 1 if inet_pton is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_INET_PTON
 
-/* Define to 1 if initstat_r is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_INITSTAT_R
+/* Define to 1 if initstate_r is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_INITSTATE_R
 
 /* Define to 1 if ioctl is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_IOCTL
@@ -1282,6 +1196,9 @@
 /* Define to 1 if popen is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_POPEN
 
+/* Define to 1 if posix_openpt is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_POSIX_OPENPT
+
 /* Define to 1 if pread is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_PREAD
 
@@ -1293,6 +1210,9 @@
 
 /* Define to 1 if ptsname is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_PTSNAME
+
+/* Define to 1 if ptsname_r is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_PTSNAME_R
 
 /* Define to 1 if pwrite is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_PWRITE
@@ -1615,10 +1535,6 @@
 /* Define to 1 if you have the `readlink' function. */
 #undef HAVE_READLINK
 
-/* Define to 1 if your system has a GNU libc compatible 'realloc' function,
-   and to 0 otherwise. */
-#undef HAVE_REALLOC_GNU
-
 /* Define if the 'realloc' function is POSIX compliant. */
 #undef HAVE_REALLOC_POSIX
 
@@ -1692,6 +1608,9 @@
 
 /* Define to 1 if you have the `statvfs' function. */
 #undef HAVE_STATVFS
+
+/* Define to 1 if you have the <stdalign.h> header file. */
+#undef HAVE_STDALIGN_H
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
@@ -1889,9 +1808,6 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
-
-/* Define to 1 if you have the `unlinkat' function. */
-#undef HAVE_UNLINKAT
 
 /* Define to 1 if you have the `unsetenv' function. */
 #undef HAVE_UNSETENV
@@ -2179,12 +2095,6 @@
    timespec. */
 #undef TYPEOF_STRUCT_STAT_ST_ATIM_IS_STRUCT_TIMESPEC
 
-/* Define to 1 if unlink (dir) cannot possibly succeed. */
-#undef UNLINK_CANNOT_UNLINK_DIR
-
-/* Define to 1 if unlink() on a parent directory may succeed */
-#undef UNLINK_PARENT_BUG
-
 /* Define if the POSIX multithreading library can be used. */
 #undef USE_POSIX_THREADS
 
@@ -2263,7 +2173,7 @@
 # if (3 <= __GNUC__ || (__GNUC__ == 2 && 8 <= __GNUC_MINOR__) \
       || 0x5110 <= __SUNPRO_C)
 #  define _Noreturn __attribute__ ((__noreturn__))
-# elif 1200 <= _MSC_VER
+# elif defined _MSC_VER && 1200 <= _MSC_VER
 #  define _Noreturn __declspec (noreturn)
 # else
 #  define _Noreturn

@@ -39,20 +39,58 @@
      DONE_MSVC_INVAL;
 
    This entire block expands to a single statement.
+
+   The handling of invalid parameters can be done in three ways:
+
+     * The default way, which is reasonable for programs (not libraries):
+       AC_DEFINE([MSVC_INVALID_PARAMETER_HANDLING], [DEFAULT_HANDLING])
+
+     * The way for libraries that make "hairy" calls (like close(-1), or
+       fclose(fp) where fileno(fp) is closed, or simply getdtablesize()):
+       AC_DEFINE([MSVC_INVALID_PARAMETER_HANDLING], [HAIRY_LIBRARY_HANDLING])
+
+     * The way for libraries that make no "hairy" calls:
+       AC_DEFINE([MSVC_INVALID_PARAMETER_HANDLING], [SANE_LIBRARY_HANDLING])
  */
 
-#if HAVE_MSVC_INVALID_PARAMETER_HANDLER
-/* A native Windows platform with the "invalid parameter handler" concept.  */
+#define DEFAULT_HANDLING       0
+#define HAIRY_LIBRARY_HANDLING 1
+#define SANE_LIBRARY_HANDLING  2
 
-/* Get _invalid_parameter_handler type and _set_invalid_parameter_handler
-   declaration.  */
-# include <stdlib.h>
+#if HAVE_MSVC_INVALID_PARAMETER_HANDLER \
+    && !(MSVC_INVALID_PARAMETER_HANDLING == SANE_LIBRARY_HANDLING)
+/* A native Windows platform with the "invalid parameter handler" concept,
+   and either DEFAULT_HANDLING or HAIRY_LIBRARY_HANDLING.  */
 
-# if defined _MSC_VER
-/* A compiler that supports __try/__except, as described in the page
-   "try-except statement" on microsoft.com
-   <http://msdn.microsoft.com/en-us/library/s58ftw19.aspx>.
-   With __try/__except, we can use the multithread-safe exception handling.  */
+# if MSVC_INVALID_PARAMETER_HANDLING == DEFAULT_HANDLING
+/* Default handling.  */
+
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+
+/* Ensure that the invalid parameter handler in installed that just returns.
+   Because we assume no other part of the program installs a different
+   invalid parameter handler, this solution is multithread-safe.  */
+extern void gl_msvc_inval_ensure_handler (void);
+
+#  ifdef __cplusplus
+}
+#  endif
+
+#  define TRY_MSVC_INVAL \
+     do                                                                        \
+       {                                                                       \
+         gl_msvc_inval_ensure_handler ();                                      \
+         if (1)
+#  define CATCH_MSVC_INVAL \
+         else
+#  define DONE_MSVC_INVAL \
+       }                                                                       \
+     while (0)
+
+# else
+/* Handling for hairy libraries.  */
 
 #  include <excpt.h>
 
@@ -66,9 +104,15 @@
        same API.  */
 #  define STATUS_GNULIB_INVALID_PARAMETER (0xE0000000 + 0x474E550 + 0)
 
-#  ifdef __cplusplus
+#  if defined _MSC_VER
+/* A compiler that supports __try/__except, as described in the page
+   "try-except statement" on microsoft.com
+   <http://msdn.microsoft.com/en-us/library/s58ftw19.aspx>.
+   With __try/__except, we can use the multithread-safe exception handling.  */
+
+#   ifdef __cplusplus
 extern "C" {
-#  endif
+#   endif
 
 /* Ensure that the invalid parameter handler in installed that raises a
    software exception with code STATUS_GNULIB_INVALID_PARAMETER.
@@ -76,81 +120,91 @@ extern "C" {
    invalid parameter handler, this solution is multithread-safe.  */
 extern void gl_msvc_inval_ensure_handler (void);
 
-#  ifdef __cplusplus
+#   ifdef __cplusplus
 }
-#  endif
+#   endif
 
-#  define TRY_MSVC_INVAL \
-     do                                                                        \
-       {                                                                       \
-         gl_msvc_inval_ensure_handler ();                                      \
-         __try
-#  define CATCH_MSVC_INVAL \
-         __except (GetExceptionCode () == STATUS_GNULIB_INVALID_PARAMETER      \
-                   ? EXCEPTION_EXECUTE_HANDLER                                 \
-                   : EXCEPTION_CONTINUE_SEARCH)
-#  define DONE_MSVC_INVAL \
-       }                                                                       \
-     while (0)
+#   define TRY_MSVC_INVAL \
+      do                                                                       \
+        {                                                                      \
+          gl_msvc_inval_ensure_handler ();                                     \
+          __try
+#   define CATCH_MSVC_INVAL \
+          __except (GetExceptionCode () == STATUS_GNULIB_INVALID_PARAMETER     \
+                    ? EXCEPTION_EXECUTE_HANDLER                                \
+                    : EXCEPTION_CONTINUE_SEARCH)
+#   define DONE_MSVC_INVAL \
+        }                                                                      \
+      while (0)
 
-# else
+#  else
 /* Any compiler.
-   We can only use setjmp/longjmp.
-   Unfortunately, this is *not* multithread-safe.  */
+   We can only use setjmp/longjmp.  */
 
-#  include <setjmp.h>
+#   include <setjmp.h>
 
-#  ifdef __cplusplus
+#   ifdef __cplusplus
 extern "C" {
-#  endif
+#   endif
 
-/* The restart that will resume execution at the code between
-   CATCH_MSVC_INVAL and DONE_MSVC_INVAL.  It is enabled only between
-   TRY_MSVC_INVAL and CATCH_MSVC_INVAL.  */
-extern jmp_buf gl_msvc_inval_restart;
+struct gl_msvc_inval_per_thread
+{
+  /* The restart that will resume execution at the code between
+     CATCH_MSVC_INVAL and DONE_MSVC_INVAL.  It is enabled only between
+     TRY_MSVC_INVAL and CATCH_MSVC_INVAL.  */
+  jmp_buf restart;
 
-/* The invalid parameter handler that unwinds the stack up to the
-   gl_msvc_inval_restart.  It is enabled only between TRY_MSVC_INVAL
-   and CATCH_MSVC_INVAL.  */
-extern void cdecl gl_msvc_invalid_parameter_handler (const wchar_t *expression,
-                                                     const wchar_t *function,
-                                                     const wchar_t *file,
-                                                     unsigned int line,
-                                                     uintptr_t dummy);
+  /* Tells whether the contents of restart is valid.  */
+  int restart_valid;
+};
 
-#  ifdef __cplusplus
+/* Ensure that the invalid parameter handler in installed that passes
+   control to the gl_msvc_inval_restart if it is valid, or raises a
+   software exception with code STATUS_GNULIB_INVALID_PARAMETER otherwise.
+   Because we assume no other part of the program installs a different
+   invalid parameter handler, this solution is multithread-safe.  */
+extern void gl_msvc_inval_ensure_handler (void);
+
+/* Return a pointer to the per-thread data for the current thread.  */
+extern struct gl_msvc_inval_per_thread *gl_msvc_inval_current (void);
+
+#   ifdef __cplusplus
 }
-#  endif
+#   endif
 
-#  define TRY_MSVC_INVAL \
-     do                                                                        \
-       {                                                                       \
-         _invalid_parameter_handler orig_handler;                              \
-         /* First, initialize gl_msvc_inval_restart.  */                       \
-         if (setjmp (gl_msvc_inval_restart) == 0)                              \
-           {                                                                   \
-             /* Then, enable gl_msvc_invalid_parameter_handler.  */            \
-             orig_handler =                                                    \
-               _set_invalid_parameter_handler (gl_msvc_invalid_parameter_handler);
-#  define CATCH_MSVC_INVAL \
-             /* Execution completed.                                           \
-                Disable gl_msvc_invalid_parameter_handler.  */                 \
-             _set_invalid_parameter_handler (orig_handler);                    \
-           }                                                                   \
-         else                                                                  \
-           {                                                                   \
-             /* Execution triggered an invalid parameter notification.         \
-                Disable gl_msvc_invalid_parameter_handler.  */                 \
-             _set_invalid_parameter_handler (orig_handler);
-#  define DONE_MSVC_INVAL \
-           }                                                                   \
-       }                                                                       \
-     while (0)
+#   define TRY_MSVC_INVAL \
+      do                                                                       \
+        {                                                                      \
+          struct gl_msvc_inval_per_thread *msvc_inval_current;                 \
+          gl_msvc_inval_ensure_handler ();                                     \
+          msvc_inval_current = gl_msvc_inval_current ();                       \
+          /* First, initialize gl_msvc_inval_restart.  */                      \
+          if (setjmp (msvc_inval_current->restart) == 0)                       \
+            {                                                                  \
+              /* Then, mark it as valid.  */                                   \
+              msvc_inval_current->restart_valid = 1;
+#   define CATCH_MSVC_INVAL \
+              /* Execution completed.                                          \
+                 Mark gl_msvc_inval_restart as invalid.  */                    \
+              msvc_inval_current->restart_valid = 0;                           \
+            }                                                                  \
+          else                                                                 \
+            {                                                                  \
+              /* Execution triggered an invalid parameter notification.        \
+                 Mark gl_msvc_inval_restart as invalid.  */                    \
+              msvc_inval_current->restart_valid = 0;
+#   define DONE_MSVC_INVAL \
+            }                                                                  \
+        }                                                                      \
+      while (0)
+
+#  endif
 
 # endif
 
 #else
-/* A platform that does not need to the invalid parameter handler.  */
+/* A platform that does not need to the invalid parameter handler,
+   or when SANE_LIBRARY_HANDLING is desired.  */
 
 /* The braces here avoid GCC warnings like
    "warning: suggest explicit braces to avoid ambiguous `else'".  */
