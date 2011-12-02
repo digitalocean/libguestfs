@@ -1616,9 +1616,9 @@ appliance: force
 @HAVE_OCAML_TRUE@.depend: $(wildcard *.mli) $(wildcard *.ml)
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep $^ | \
-@HAVE_OCAML_TRUE@	  $(SED) 's/ *$$//' | \
+@HAVE_OCAML_TRUE@	  $(SED) -e 's/ *$$//' | \
 @HAVE_OCAML_TRUE@	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
-@HAVE_OCAML_TRUE@	  sort > $@-t
+@HAVE_OCAML_TRUE@	  LANG=C sort > $@-t
 @HAVE_OCAML_TRUE@	mv $@-t $@
 @HAVE_OCAML_TRUE@bindtests.cmo: guestfs.cmi
 @HAVE_OCAML_TRUE@bindtests.cmx: guestfs.cmx

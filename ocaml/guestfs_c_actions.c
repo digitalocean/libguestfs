@@ -4208,6 +4208,7 @@ ocaml_guestfs_getxattr (value gv, value pathv, value namev)
 
   rv = caml_alloc_string (size);
   memcpy (String_val (rv), r, size);
+  free (r);
   CAMLreturn (rv);
 }
 
@@ -4515,6 +4516,7 @@ ocaml_guestfs_initrd_cat (value gv, value initrdpathv, value filenamev)
 
   rv = caml_alloc_string (size);
   memcpy (String_val (rv), r, size);
+  free (r);
   CAMLreturn (rv);
 }
 
@@ -4971,6 +4973,7 @@ ocaml_guestfs_inspect_get_icon (value gv, value faviconv, value highqualityv, va
 
   rv = caml_alloc_string (size);
   memcpy (String_val (rv), r, size);
+  free (r);
   CAMLreturn (rv);
 }
 
@@ -6061,6 +6064,7 @@ ocaml_guestfs_lgetxattr (value gv, value pathv, value namev)
 
   rv = caml_alloc_string (size);
   memcpy (String_val (rv), r, size);
+  free (r);
   CAMLreturn (rv);
 }
 
@@ -8958,6 +8962,7 @@ ocaml_guestfs_pread (value gv, value pathv, value countv, value offsetv)
 
   rv = caml_alloc_string (size);
   memcpy (String_val (rv), r, size);
+  free (r);
   CAMLreturn (rv);
 }
 
@@ -8993,6 +8998,7 @@ ocaml_guestfs_pread_device (value gv, value devicev, value countv, value offsetv
 
   rv = caml_alloc_string (size);
   memcpy (String_val (rv), r, size);
+  free (r);
   CAMLreturn (rv);
 }
 
@@ -9315,6 +9321,7 @@ ocaml_guestfs_read_file (value gv, value pathv)
 
   rv = caml_alloc_string (size);
   memcpy (String_val (rv), r, size);
+  free (r);
   CAMLreturn (rv);
 }
 
