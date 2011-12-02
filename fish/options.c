@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "c-ctype.h"
+
 #include "guestfs.h"
 
 #include "options.h"
@@ -97,6 +99,9 @@ add_drives (struct drv *drv, char next_drive)
   return next_drive;
 }
 
+static void display_mountpoints_on_failure (const char *mp_device);
+static void canonical_device_name (char *dev);
+
 /* List is built in reverse order, so mount them in reverse order. */
 void
 mount_mps (struct mp *mp)
@@ -120,21 +125,52 @@ mount_mps (struct mp *mp)
      */
     r = guestfs_mount_options (g, options, mp->device, mp->mountpoint);
     if (r == -1) {
-      /* Display possible mountpoints before exiting. */
-      char **fses = guestfs_list_filesystems (g);
-      if (fses == NULL || fses[0] == NULL)
-        goto out;
-      fprintf (stderr,
-               _("%s: '%s' could not be mounted.  Did you mean one of these?\n"),
-               program_name, mp->device);
-      size_t i;
-      for (i = 0; fses[i] != NULL; i += 2)
-        fprintf (stderr, "\t%s (%s)\n", fses[i], fses[i+1]);
-
-    out:
+      display_mountpoints_on_failure (mp->device);
       exit (EXIT_FAILURE);
     }
   }
+}
+
+/* If the -m option fails on any command, display a useful error
+ * message listing the mountpoints.
+ */
+static void
+display_mountpoints_on_failure (const char *mp_device)
+{
+  char **fses;
+  size_t i;
+
+  fses = guestfs_list_filesystems (g);
+  if (fses == NULL)
+    return;
+  if (fses[0] == NULL) {
+    free (fses);
+    return;
+  }
+
+  fprintf (stderr,
+           _("%s: '%s' could not be mounted.  Did you mean one of these?\n"),
+           program_name, mp_device);
+
+  for (i = 0; fses[i] != NULL; i += 2) {
+    canonical_device_name (fses[i]);
+    fprintf (stderr, "\t%s (%s)\n", fses[i], fses[i+1]);
+    free (fses[i]);
+    free (fses[i+1]);
+  }
+
+  free (fses);
+}
+
+static void
+canonical_device_name (char *dev)
+{
+  if (STRPREFIX (dev, "/dev/") &&
+      (dev[5] == 'h' || dev[5] == 'v') &&
+      dev[6] == 'd' &&
+      c_isalpha (dev[7]) &&
+      (c_isdigit (dev[8]) || dev[8] == '\0'))
+    dev[5] = 's';
 }
 
 void

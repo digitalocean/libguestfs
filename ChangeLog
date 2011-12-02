@@ -1,4 +1,82 @@
+2011-12-02  Hilko Bengen  <bengen@hilluzination.de>
+
+	libguestfs: Added gnulib includes from builddir, as suggested by the Gnulib documentation
+	    Since some modules (`getopt', for example) may copy files
+	    into the build directory, `top_builddir/lib' is needed as well as
+	    `top_srcdir/lib'. -- GNU Gnulib manual, section 2.2 Initial import
+	(cherry picked from commit 1a35ca59088e572c11633e85524bb282cb436186)
+
+2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Fix OCaml dependencies. (cherry picked from commit ce331df0f1857bccebaaddfac79677bc9f527197)
+
+	python: Memory leak: Free roots array along handle close path. (cherry picked from commit e7e3a32edc29e3448b1d7efb3f6b53c5173c4e9c)
+
+	perl: Memory leak: Free roots array along handle close path. (cherry picked from commit 00c9755ee3bea98968acea47bac858db94f7fbe2)
+
+	ruby: Memory leak: Free roots array along handle close path. (cherry picked from commit eb7ec6170eca278fb910e18ca1f7ca81c6b507c0)
+
+	extra tests: Add comments about what is not tested here. (cherry picked from commit efef3e3c1205e5476044f41fb88385e3ba07468d)
+
+	extra tests: Absolute path for 'run' command. (cherry picked from commit 27d00960c93b26c68fa1f4068502c32a6e3b5e94)
+
+	extra tests: Split up and reorder tests more logically. (cherry picked from commit cee513112adcf4084d6be9e3b5037b7b54c9f514)
+
+	extra tests: Test virt-sparsify.
+	This adds the virt-sparsify --debug-gc option which causes
+	virt-sparsify to call Gc.compact before exiting, allowing
+	GC and memory problems to be tested.
+
+	Add an extratest which runs virt-sparsify under valgrind.
+	(cherry picked from commit 14b1e7b963cd5446ab76a067085b91925dd5d3e3)
+
+	extra tests: Test virt-resize.
+	This adds the virt-resize --debug-gc option which causes
+	virt-resize to call Gc.compact before exiting, allowing
+	GC and memory problems to be tested.
+
+	Add an extratest which runs virt-resize under valgrind.
+	(cherry picked from commit 7708d3e04f6ec3985fd74ee1a44a5615d43065e2)
+
+	ocaml: Load test should call Gc.compact to flag memory errors. (cherry picked from commit 082a55f76cd61f3590976f6b095552ea65259ced)
+
+	ocaml: Fix memory leak in bindings for functions that return buffers.
+	RBufferOut binding didn't free the buffer after copying it onto
+	the OCaml heap.
+
+	Found by valgrind.
+	(cherry picked from commit 6bd0eec12f2e39360847bfe7a9f50628cc89ed8e)
+
+	extra tests: Run C API tests under valgrind. (cherry picked from commit e1f395defc6db5bbc82537af6e517d94216b7d4b)
+
+	protocol: Memory leak: Free temporary buffer along recv_discard path. (cherry picked from commit d81c0829ea4a99aadb98df37be9543a973269041)
+
+	extra tests: Run OCaml tests under valgrind. (cherry picked from commit aa4eb4cd109dda0dc7dfdd66a5163a18b0be2277)
+
+	extra tests: Split VG variable into VG / RUN_VG.
+	This is just code motion.
+	(cherry picked from commit 6ccae55ddcf0c08cd1b1cdbc07afeed043ad410d)
+
+	ocaml: Memory leak: Free roots array along handle close path. (cherry picked from commit c5dbb1e63a8e0c45c7088dd2e58f5abbcfc30620)
+
+	fish: When -m option fails, canonicalize device names that are printed.
+	The error message now looks like this:
+
+	  guestfish: '/dev/vda6' could not be mounted.  Did you mean one of these?
+	            /dev/sda1 (ext4)
+	            /dev/vg_f15x32/lv_root (ext4)
+	            /dev/vg_f15x32/lv_swap (swap)
+
+	Note that '/dev/sda1' has been canonicalized.
+	(cherry picked from commit f5bfc68fdb3e25b9d75c65e3f5e88983584b25ed)
+
+	fish: Rearrange code for displaying mountpoints when -m option fails.
+	This also frees the list returned by guestfs_list_filesystems.
+	(cherry picked from commit 450134501c37f1dd1b898dc390591a3f84ec18b4)
+
 2011-11-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.14.4.
 
 	ubuntu: Add extra suppressions for libnl.1 leaks. (cherry picked from commit b5b4816ab006ce09b7a7103dbe87b3129046648d)
 
