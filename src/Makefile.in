@@ -231,11 +231,12 @@ am__DEPENDENCIES_1 =
 libguestfs_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	../gnulib/lib/libgnu.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) liberrnostring.la libprotocol.la
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) liberrnostring.la \
+	libprotocol.la
 am_libguestfs_la_OBJECTS = libguestfs_la-guestfs.lo \
 	libguestfs_la-actions.lo libguestfs_la-appliance.lo \
 	libguestfs_la-bindtests.lo libguestfs_la-dbdump.lo \
@@ -305,7 +306,8 @@ AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 APPLE_UNIVERSAL_BUILD = @APPLE_UNIVERSAL_BUILD@
 AR = @AR@
 ARFLAGS = @ARFLAGS@
-AUGEAS_LIB = @AUGEAS_LIB@
+AUGEAS_CFLAGS = @AUGEAS_CFLAGS@
+AUGEAS_LIBS = @AUGEAS_LIBS@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -2056,7 +2058,7 @@ errnostring_gperf.c: errnostring_gperf.gperf
 @HAVE_RPCGEN_TRUE@guestfs_protocol.c: guestfs_protocol.x
 @HAVE_RPCGEN_TRUE@	rm -f $@-t $@-t2
 @HAVE_RPCGEN_TRUE@	$(RPCGEN) -c -o $@-t $(srcdir)/$<
-@HAVE_RPCGEN_TRUE@	sed 's,\.\./\.\./src/,,' < $@-t > $@-t2
+@HAVE_RPCGEN_TRUE@	sed 's,\.\./\(\.\./\)*src,.,' < $@-t > $@-t2
 @HAVE_RPCGEN_TRUE@	rm $@-t
 @HAVE_RPCGEN_TRUE@	mv $@-t2 $@
 

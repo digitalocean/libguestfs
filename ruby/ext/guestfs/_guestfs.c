@@ -35,6 +35,15 @@
 #define RARRAY_LEN(r) (RARRAY((r))->len)
 #endif
 
+/* For Ruby < 1.8 */
+#ifndef RSTRING_LEN
+#define RSTRING_LEN(r) (RSTRING((r))->len)
+#endif
+
+#ifndef RSTRING_PTR
+#define RSTRING_PTR(r) (RSTRING((r))->ptr)
+#endif
+
 static VALUE m_guestfs;			/* guestfs module */
 static VALUE c_guestfs;			/* guestfs_h handle */
 static VALUE e_Error;			/* used for all errors */
@@ -344,11 +353,11 @@ ruby_guestfs_test0 (VALUE gv, VALUE strv, VALUE optstrv, VALUE strlistv, VALUE b
   const char *filein = StringValueCStr (fileinv);
   const char *fileout = StringValueCStr (fileoutv);
   Check_Type (bufferinv, T_STRING);
-  const char *bufferin = RSTRING (bufferinv)->ptr;
+  const char *bufferin = RSTRING_PTR (bufferinv);
   if (!bufferin)
     rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
               "bufferin", "test0");
-  size_t bufferin_size = RSTRING (bufferinv)->len;
+  size_t bufferin_size = RSTRING_LEN (bufferinv);
 
   int r;
 
@@ -14408,11 +14417,11 @@ ruby_guestfs_write (VALUE gv, VALUE pathv, VALUE contentv)
 
   const char *path = StringValueCStr (pathv);
   Check_Type (contentv, T_STRING);
-  const char *content = RSTRING (contentv)->ptr;
+  const char *content = RSTRING_PTR (contentv);
   if (!content)
     rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
               "content", "write");
-  size_t content_size = RSTRING (contentv)->len;
+  size_t content_size = RSTRING_LEN (contentv);
 
   int r;
 
@@ -14460,11 +14469,11 @@ ruby_guestfs_pwrite (VALUE gv, VALUE pathv, VALUE contentv, VALUE offsetv)
 
   const char *path = StringValueCStr (pathv);
   Check_Type (contentv, T_STRING);
-  const char *content = RSTRING (contentv)->ptr;
+  const char *content = RSTRING_PTR (contentv);
   if (!content)
     rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
               "content", "pwrite");
-  size_t content_size = RSTRING (contentv)->len;
+  size_t content_size = RSTRING_LEN (contentv);
   long long offset = NUM2LL (offsetv);
 
   int r;
@@ -15567,11 +15576,11 @@ ruby_guestfs_pwrite_device (VALUE gv, VALUE devicev, VALUE contentv, VALUE offse
 
   const char *device = StringValueCStr (devicev);
   Check_Type (contentv, T_STRING);
-  const char *content = RSTRING (contentv)->ptr;
+  const char *content = RSTRING_PTR (contentv);
   if (!content)
     rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
               "content", "pwrite_device");
-  size_t content_size = RSTRING (contentv)->len;
+  size_t content_size = RSTRING_LEN (contentv);
   long long offset = NUM2LL (offsetv);
 
   int r;
@@ -16287,11 +16296,11 @@ ruby_guestfs_write_append (VALUE gv, VALUE pathv, VALUE contentv)
 
   const char *path = StringValueCStr (pathv);
   Check_Type (contentv, T_STRING);
-  const char *content = RSTRING (contentv)->ptr;
+  const char *content = RSTRING_PTR (contentv);
   if (!content)
     rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
               "content", "write_append");
-  size_t content_size = RSTRING (contentv)->len;
+  size_t content_size = RSTRING_LEN (contentv);
 
   int r;
 

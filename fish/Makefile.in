@@ -310,7 +310,8 @@ AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 APPLE_UNIVERSAL_BUILD = @APPLE_UNIVERSAL_BUILD@
 AR = @AR@
 ARFLAGS = @ARFLAGS@
-AUGEAS_LIB = @AUGEAS_LIB@
+AUGEAS_CFLAGS = @AUGEAS_CFLAGS@
+AUGEAS_LIBS = @AUGEAS_LIBS@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -2529,7 +2530,7 @@ cmds_gperf.c: cmds_gperf.gperf
 @HAVE_RPCGEN_TRUE@rc_protocol.c: rc_protocol.x
 @HAVE_RPCGEN_TRUE@	rm -f $@-t $@-t2
 @HAVE_RPCGEN_TRUE@	$(RPCGEN) -c -o $@-t $<
-@HAVE_RPCGEN_TRUE@	sed 's,\.\./\.\./fish/,,' < $@-t > $@-t2
+@HAVE_RPCGEN_TRUE@	sed 's,\.\./\(\.\./\)*fish,.,' < $@-t > $@-t2
 @HAVE_RPCGEN_TRUE@	rm $@-t
 @HAVE_RPCGEN_TRUE@	mv $@-t2 $@
 

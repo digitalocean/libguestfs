@@ -1,3 +1,48 @@
+2011-12-06  Hilko Bengen  <bengen@hilluzination.de>
+
+	Fix rpcgen post-processing for out-of-tree builds (cherry picked from commit 43942b08cfbcf91bef29ec532f3d097a8519c982)
+
+2011-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	ruby: Use RSTRING_PTR, RSTRING_LEN for compat with Ruby 1.9 (RHBZ#760000). (cherry picked from commit 2972987d0257d9c3d26b53f961e802d121b436cd)
+
+	daemon: Use pkg-config to locate Augeas CFLAGS / libraries.
+	Augeas 0.10 depends on libxml2, so this is now required in the
+	appliance (in fact, it was already present).
+
+	However this exposed two bugs:
+
+	(1) In libguestfs we use a home-brewed recipe for Augeas flags,
+	resulting in this error:
+	/usr/include/augeas.h:24:25: fatal error: libxml/tree.h: No such file or directory
+
+	(2) Augeas's own augeas.pc didn't include the libxml2 flags, so
+	it was broken.  This requires a patch to Augeas 0.10, see:
+	https://www.redhat.com/archives/augeas-devel/2011-December/msg00008.html
+
+	Change to using pkg-config to detect Augeas.  It is still an optional
+	library.
+	(cherry picked from commit 615924abaa968398d6529529fa2f31ae23de825b)
+
+	extra tests: Test that valgrind and libtool are installed. (cherry picked from commit b7addee24d211014086c44bcef6a0c799e4fb987)
+
+2011-12-06  Matthew Booth  <mbooth@redhat.com>
+
+	build: Add more suppressions for valgrind tests (cherry picked from commit 655f8037def7742a608fb272004eec51424ac31d)
+
+2011-12-06  Wanlong Gao  <wanlong.gao@gmail.com>
+
+	mkfs: enable to make xfs filesystems when the device already has a filesystem
+	Just add the -f option to mkfs.xfs to make sure we can
+	make a xfs filesystem when the device already has a
+	filesystem on it.
+
+	(cherry picked from commit 1970a14178b5c53569965d35e54efead6c4c4bdc)
+
+2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.14.5.
+
 2011-12-02  Hilko Bengen  <bengen@hilluzination.de>
 
 	libguestfs: Added gnulib includes from builddir, as suggested by the Gnulib documentation
