@@ -39,6 +39,7 @@
 #   - the disks of these guests are accessible by the current user
 #     (tip: add yourself to the 'disk' group)
 #   - valgrind
+#   - libtool
 #
 # These tests may fail for reasons which aren't necessarily real problems.
 #
@@ -224,7 +225,8 @@ AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 APPLE_UNIVERSAL_BUILD = @APPLE_UNIVERSAL_BUILD@
 AR = @AR@
 ARFLAGS = @ARFLAGS@
-AUGEAS_LIB = @AUGEAS_LIB@
+AUGEAS_CFLAGS = @AUGEAS_CFLAGS@
+AUGEAS_LIBS = @AUGEAS_LIBS@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -1412,6 +1414,7 @@ export LIBVIRT_DEFAULT_URI = \
 	qemu+unix:///system?socket=/var/run/libvirt/libvirt-sock-ro
 
 extra-tests: \
+	test-prerequisites \
 	test-capitests \
 	test-tools-null \
 	test-tools-internal \
@@ -1421,6 +1424,16 @@ extra-tests: \
 	test-ocaml \
 	test-resize \
 	test-sparsify
+
+test-prerequisites:
+	@libtool --help >/dev/null 2>&1 || { \
+	  echo "extra-tests: libtool is not installed"; \
+	  exit 1; \
+	}
+	@valgrind --help >/dev/null 2>&1 || { \
+	  echo "extra-tests: valgrind is not installed"; \
+	  exit 1; \
+	}
 
 # Null invocations of the basic tools shouldn't leak memory.
 test-tools-null:
