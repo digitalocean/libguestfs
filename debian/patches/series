@@ -9,4 +9,5 @@
 0009-Fix-en-dis-able-install-daemon.patch
 0010-Fix-include.patch
 0011-Install-Java-bindings-to-jni-subdirectory.patch
-0012-autoreconf.patch
+0012-Fixed-check-for-libpython-squeeze-s-python3.1-does-n.patch
+0013-autoreconf.patch
