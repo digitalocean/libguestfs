@@ -2,7 +2,7 @@
 
 # export DH_VERBOSE=1
 
-PYTHONS        := $(shell pyversions --installed; py3versions --installed)
+PYTHONS        := $(filter-out python2.5, $(shell pyversions --installed; py3versions --installed))
 PYTHON_DEFAULT := $(shell pyversions --default)
 
 COMMON_CONFIG_FLAGS = \
@@ -93,6 +93,13 @@ override_dh_install:
 
 	erlang-depends -perlang-guestfs
 	dh_install
+
+# Workaround for python3-defaults < 3.2~b2-1
+# ("do not rename .so files outside dist-packages directory")
+override_dh_python3:
+	dh_python3 -p python-libguestfs
+override_dh_python2:
+	dh_python2 -p python-libguestfs -V 2.6-
 
 %:
 	dh --without=python-support --with=autotools-dev,ocaml,python2,python3,bash-completion $@
