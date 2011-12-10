@@ -2781,10 +2781,10 @@ static int test_vfs_uuid_0 (void)
       return -1;
   }
   /* TestOutput for vfs_uuid (0) */
-  const char *expected = "c737ac57-1eec-1439-e960-3d2442a4716d";
+  const char *expected = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "c737ac57-1eec-1439-e960-3d2442a4716d";
+    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
@@ -6446,7 +6446,7 @@ static int test_utimens_0 (void)
   }
   /* TestOutputStruct for utimens (0) */
   {
-    const char *path = "/utimens";
+    const char *path = "/utimens-file";
     int r;
     suppress_error = 0;
     r = guestfs_touch (g, path);
@@ -6454,7 +6454,7 @@ static int test_utimens_0 (void)
       return -1;
   }
   {
-    const char *path = "/utimens";
+    const char *path = "/utimens-file";
     int r;
     suppress_error = 0;
     r = guestfs_utimens (g, path, 12345, 67890, 9876, 5432);
@@ -6462,7 +6462,7 @@ static int test_utimens_0 (void)
       return -1;
   }
   {
-    const char *path = "/utimens";
+    const char *path = "/utimens-file";
     struct guestfs_stat *r;
     suppress_error = 0;
     r = guestfs_stat (g, path);
@@ -6470,6 +6470,447 @@ static int test_utimens_0 (void)
       return -1;
     if (r->mtime != 9876) {
       fprintf (stderr, "test_utimens_0: mtime was %d, expected 9876\n",
+               (int) r->mtime);
+      return -1;
+    }
+    guestfs_free_stat (r);
+  }
+  return 0;
+}
+
+static int test_utimens_1_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "utimens") == NULL;
+  str = getenv ("SKIP_TEST_UTIMENS_1");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_UTIMENS");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_utimens_1 (void)
+{
+  if (test_utimens_1_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_utimens_1");
+    return 0;
+  }
+
+  /* InitScratchFS for test_utimens_1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputStruct for utimens (1) */
+  {
+    const char *path = "/utimens-dir";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/utimens-dir";
+    int r;
+    suppress_error = 0;
+    r = guestfs_utimens (g, path, 12345, 67890, 9876, 5432);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/utimens-dir";
+    struct guestfs_stat *r;
+    suppress_error = 0;
+    r = guestfs_stat (g, path);
+    if (r == NULL)
+      return -1;
+    if (r->mtime != 9876) {
+      fprintf (stderr, "test_utimens_1: mtime was %d, expected 9876\n",
+               (int) r->mtime);
+      return -1;
+    }
+    guestfs_free_stat (r);
+  }
+  return 0;
+}
+
+static int test_utimens_2_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "utimens") == NULL;
+  str = getenv ("SKIP_TEST_UTIMENS_2");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_UTIMENS");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_utimens_2 (void)
+{
+  if (test_utimens_2_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_utimens_2");
+    return 0;
+  }
+
+  /* InitScratchFS for test_utimens_2 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputStruct for utimens (2) */
+  {
+    const char *path = "/utimens-fifo";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkfifo (g, 420, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/utimens-fifo";
+    int r;
+    suppress_error = 0;
+    r = guestfs_utimens (g, path, 12345, 67890, 9876, 5432);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/utimens-fifo";
+    struct guestfs_stat *r;
+    suppress_error = 0;
+    r = guestfs_stat (g, path);
+    if (r == NULL)
+      return -1;
+    if (r->mtime != 9876) {
+      fprintf (stderr, "test_utimens_2: mtime was %d, expected 9876\n",
+               (int) r->mtime);
+      return -1;
+    }
+    guestfs_free_stat (r);
+  }
+  return 0;
+}
+
+static int test_utimens_3_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "utimens") == NULL;
+  str = getenv ("SKIP_TEST_UTIMENS_3");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_UTIMENS");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_utimens_3 (void)
+{
+  if (test_utimens_3_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_utimens_3");
+    return 0;
+  }
+
+  /* InitScratchFS for test_utimens_3 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputStruct for utimens (3) */
+  {
+    const char *target = "/utimens-file";
+    const char *linkname = "/utimens-link";
+    int r;
+    suppress_error = 0;
+    r = guestfs_ln_sf (g, target, linkname);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/utimens-link";
+    int r;
+    suppress_error = 0;
+    r = guestfs_utimens (g, path, 12345, 67890, 9876, 5432);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/utimens-link";
+    struct guestfs_stat *r;
+    suppress_error = 0;
+    r = guestfs_stat (g, path);
+    if (r == NULL)
+      return -1;
+    if (r->mtime != 9876) {
+      fprintf (stderr, "test_utimens_3: mtime was %d, expected 9876\n",
+               (int) r->mtime);
+      return -1;
+    }
+    guestfs_free_stat (r);
+  }
+  return 0;
+}
+
+static int test_utimens_4_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "utimens") == NULL;
+  str = getenv ("SKIP_TEST_UTIMENS_4");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_UTIMENS");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_utimens_4 (void)
+{
+  if (test_utimens_4_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_utimens_4");
+    return 0;
+  }
+
+  /* InitScratchFS for test_utimens_4 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputStruct for utimens (4) */
+  {
+    const char *path = "/utimens-block";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mknod_b (g, 420, 8, 0, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/utimens-block";
+    int r;
+    suppress_error = 0;
+    r = guestfs_utimens (g, path, 12345, 67890, 9876, 5432);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/utimens-block";
+    struct guestfs_stat *r;
+    suppress_error = 0;
+    r = guestfs_stat (g, path);
+    if (r == NULL)
+      return -1;
+    if (r->mtime != 9876) {
+      fprintf (stderr, "test_utimens_4: mtime was %d, expected 9876\n",
+               (int) r->mtime);
+      return -1;
+    }
+    guestfs_free_stat (r);
+  }
+  return 0;
+}
+
+static int test_utimens_5_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "utimens") == NULL;
+  str = getenv ("SKIP_TEST_UTIMENS_5");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_UTIMENS");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_utimens_5 (void)
+{
+  if (test_utimens_5_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_utimens_5");
+    return 0;
+  }
+
+  /* InitScratchFS for test_utimens_5 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputStruct for utimens (5) */
+  {
+    const char *path = "/utimens-char";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mknod_c (g, 420, 1, 3, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/utimens-char";
+    int r;
+    suppress_error = 0;
+    r = guestfs_utimens (g, path, 12345, 67890, 9876, 5432);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/utimens-char";
+    struct guestfs_stat *r;
+    suppress_error = 0;
+    r = guestfs_stat (g, path);
+    if (r == NULL)
+      return -1;
+    if (r->mtime != 9876) {
+      fprintf (stderr, "test_utimens_5: mtime was %d, expected 9876\n",
                (int) r->mtime);
       return -1;
     }
@@ -7500,7 +7941,7 @@ static int test_mke2journal_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "c737ac57-1eec-1439-e960-3d2442a4716d";
+    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
     const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
@@ -7511,7 +7952,7 @@ static int test_mke2journal_U_0 (void)
   {
     const char *fstype = "ext2";
     const char *device = "/dev/sda2";
-    const char *uuid = "c737ac57-1eec-1439-e960-3d2442a4716d";
+    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
     int r;
     suppress_error = 0;
     r = guestfs_mke2fs_JU (g, fstype, 4096, device, uuid);
@@ -8519,7 +8960,7 @@ static int test_swapon_uuid_0 (void)
   }
   /* TestRun for swapon_uuid (0) */
   {
-    const char *uuid = "c737ac57-1eec-1439-e960-3d2442a4716d";
+    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
     const char *device = "/dev/sdc";
     int r;
     suppress_error = 0;
@@ -8528,7 +8969,7 @@ static int test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "c737ac57-1eec-1439-e960-3d2442a4716d";
+    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
     int r;
     suppress_error = 0;
     r = guestfs_swapon_uuid (g, uuid);
@@ -8536,7 +8977,7 @@ static int test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "c737ac57-1eec-1439-e960-3d2442a4716d";
+    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
     int r;
     suppress_error = 0;
     r = guestfs_swapoff_uuid (g, uuid);
@@ -11650,7 +12091,7 @@ static int test_mkswap_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "c737ac57-1eec-1439-e960-3d2442a4716d";
+    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
     const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
@@ -17153,7 +17594,7 @@ static int test_get_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for get_e2uuid (0) */
-  const char *expected = "c737ac57-1eec-1439-e960-3d2442a4716d";
+  const char *expected = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
   {
     const char *device = "/dev/sdc";
     int r;
@@ -17164,7 +17605,7 @@ static int test_get_e2uuid_0 (void)
   }
   {
     const char *device = "/dev/sdc";
-    const char *uuid = "c737ac57-1eec-1439-e960-3d2442a4716d";
+    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
@@ -17260,10 +17701,10 @@ static int test_set_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for set_e2uuid (0) */
-  const char *expected = "c737ac57-1eec-1439-e960-3d2442a4716d";
+  const char *expected = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "c737ac57-1eec-1439-e960-3d2442a4716d";
+    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
@@ -30414,7 +30855,7 @@ int main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  nr_tests = 330;
+  nr_tests = 335;
 
   test_num++;
   if (guestfs_get_verbose (g))
@@ -30998,6 +31439,46 @@ int main (int argc, char *argv[])
   printf ("%3d/%3d test_utimens_0\n", test_num, nr_tests);
   if (test_utimens_0 () == -1) {
     printf ("test_utimens_0 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_utimens_1\n", test_num, nr_tests);
+  if (test_utimens_1 () == -1) {
+    printf ("test_utimens_1 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_utimens_2\n", test_num, nr_tests);
+  if (test_utimens_2 () == -1) {
+    printf ("test_utimens_2 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_utimens_3\n", test_num, nr_tests);
+  if (test_utimens_3 () == -1) {
+    printf ("test_utimens_3 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_utimens_4\n", test_num, nr_tests);
+  if (test_utimens_4 () == -1) {
+    printf ("test_utimens_4 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_utimens_5\n", test_num, nr_tests);
+  if (test_utimens_5 () == -1) {
+    printf ("test_utimens_5 FAILED\n");
     n_failed++;
   }
   test_num++;

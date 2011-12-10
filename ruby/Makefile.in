@@ -1103,6 +1103,7 @@ REPLACE_WCTOMB = @REPLACE_WCTOMB@
 REPLACE_WCWIDTH = @REPLACE_WCWIDTH@
 REPLACE_WRITE = @REPLACE_WRITE@
 RPCGEN = @RPCGEN@
+RUBY = @RUBY@
 SED = @SED@
 SELINUX_LIB = @SELINUX_LIB@
 SERVENT_LIB = @SERVENT_LIB@
@@ -1225,10 +1226,11 @@ CLEANFILES = \
 @HAVE_RUBY_TRUE@TESTS_ENVIRONMENT = \
 @HAVE_RUBY_TRUE@	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
 @HAVE_RUBY_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
-@HAVE_RUBY_TRUE@	TMPDIR=$(top_builddir)
+@HAVE_RUBY_TRUE@	TMPDIR=$(top_builddir) \
+@HAVE_RUBY_TRUE@	RUBY=$(RUBY)
 
-@HAVE_RUBY_TRUE@RUBY_SITELIB := $(shell ruby -rrbconfig -e "puts Config::CONFIG['sitelibdir']")
-@HAVE_RUBY_TRUE@RUBY_SITEARCH := $(shell ruby -rrbconfig -e "puts Config::CONFIG['sitearchdir']")
+@HAVE_RUBY_TRUE@RUBY_SITELIB := $(shell $(RUBY) -rrbconfig -e "puts Config::CONFIG['sitelibdir']")
+@HAVE_RUBY_TRUE@RUBY_SITEARCH := $(shell $(RUBY) -rrbconfig -e "puts Config::CONFIG['sitearchdir']")
 all: all-am
 
 .SUFFIXES:
@@ -1534,8 +1536,8 @@ appliance: force
 	$(MAKE) -C $(top_builddir)/appliance
 
 @HAVE_RUBY_TRUE@all: $(generator_built)
-@HAVE_RUBY_TRUE@	rake build
-@HAVE_RUBY_TRUE@	rake rdoc
+@HAVE_RUBY_TRUE@	$(RAKE) build
+@HAVE_RUBY_TRUE@	$(RAKE) rdoc
 
 @HAVE_RUBY_TRUE@install:
 @HAVE_RUBY_TRUE@	$(MKDIR_P) $(DESTDIR)$(RUBY_SITELIB)
