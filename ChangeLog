@@ -1,3 +1,53 @@
+2011-12-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.14.7.
+
+	fuse: Return EXIT_FAILURE if fuse_main fails.
+	fuse_main can return any non-zero value on error.  In particular on
+	certain sorts of error such as unsupported -o options it returns 1
+	(not -1).
+
+	Therefore make sure any non-zero return is turned into EXIT_FAILURE.
+
+	(Thanks Pádraig Brady)
+	(cherry picked from commit ae45cee728039d7724fc73e5ffb2550c8054d268)
+
+	fish: -i option should fail if / is not mountable, but warn about others.
+	In particular this stops a problem with guestmount where if the -i
+	option half-recognizes the guest OS, it would mount the disk (and
+	fail, giving only warnings), leaving the mountpoint unusable.
+
+	(Thanks Pádraig Brady)
+	(cherry picked from commit 54e91da925323642e67b8ce4b95899fe4b7a51c4)
+
+	daemon: Fix utimens so it doesn't hang on named pipes (RHBZ#761460).
+	This also adds comprehensive tests for utimens on regular files,
+	directories (RHBZ#761451), named pipes (RHBZ#761460), symbolic links,
+	block and char devices.
+
+	Note that there is a small change in the (previously undefined)
+	semantics of this call: It now sets the time on a symbolic link
+	itself, not on what the symbolic link points to.
+	(cherry picked from commit 19e2f5aa4fd4ed70b505661d918b5575616ad441)
+
+	daemon: Allow utimens to work for directories (RHBZ#761451).
+	You don't need to open the file O_WRONLY in order to call futimens on
+	the file descriptor.  Opening it O_WRONLY fails for directories.
+	Therefore open O_RDONLY instead.
+	(cherry picked from commit 31fba8d8033216f8a288e75fe3f575b73b9ef925)
+
+	copy-in/copy-out: Wait for the tar subprocess only (RHBZ#760669). (cherry picked from commit 98edfac1ee70bcf15ee7caebc306e11cdbbb0d9a)
+
+	fish: Improve error messages when no OS / multi-boot OS found with inspection (RHBZ#760775). (cherry picked from commit 7d3848ddc046f79cc1112809bd9970eea8060018)
+
+2011-12-09  Hilko Bengen  <bengen@hilluzination.de>
+
+	let the user explicitly choose ruby and rake programs (cherry picked from commit 41a7a68cf33a174ba950aa29951a07c391a16b4d)
+
+2011-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.14.6.
+
 2011-12-06  Hilko Bengen  <bengen@hilluzination.de>
 
 	Fix rpcgen post-processing for out-of-tree builds (cherry picked from commit 43942b08cfbcf91bef29ec532f3d097a8519c982)
