@@ -1,3 +1,11 @@
+libguestfs (1:1.14.8-1) unstable; urgency=high
+
+  * New upstream version
+  * Mitigate possible privilege escalation via SG_IO ioctl (CVE-2011-4127,
+    RHBZ#757071)
+
+ -- Hilko Bengen <bengen@debian.org>  Thu, 22 Dec 2011 23:12:21 +0100
+
 libguestfs (1:1.14.7-1) unstable; urgency=low
 
   * New upstream version
