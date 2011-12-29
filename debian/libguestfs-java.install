@@ -1,3 +1,5 @@
 usr/share/javadoc/libguestfs-java-*/* usr/share/doc/libguestfs-java/api/
 usr/share/java
 usr/lib/*jni*
+
+usr/share/man/man3/guestfs-java.3*
