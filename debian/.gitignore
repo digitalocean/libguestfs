@@ -12,6 +12,7 @@
 /libguestfs-dev
 /libguestfs-doc
 /libguestfs-perl
+/libguestfs-java
 /erlang-guestfs
 /libguestfs-tools
 /libguestfs0-dbg
