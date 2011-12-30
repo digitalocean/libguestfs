@@ -270,32 +270,6 @@ Description: guest disk image management system - debug symbols
  .
  This package contains the debugging symbols.
 
-Package: libguestfs-doc
-Section: doc
-Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: guest disk image management system - documentation
- The libguestfs library allows accessing and modifying guest disk
- images. It offers the following features, among many others:
-  * making batch configuration changes to guests;
-  * viewing and editing files inside guests;
-  * getting disk used/free statistics;
-  * migrating between virtualization systems;
-  * performing partial backups;
-  * performing partial guest clones;
-  * cloning guests and changing registry/UUID/hostname info.
- .
- It uses the Linux kernel and qemu code, and can access any type of guest
- file system that Linux and qemu can, including but not limited to: ext2/3/4,
- btrfs, FAT and NTFS, LVM, many different disk partition schemes, qcow, qcow2,
- vmdk.
- .
- The library provides ways to enumerate guest storage (such as partitions, LVs,
- what file system is in each LV, etc.); to run commands in the context of the
- guest; and to upload and download files and directories.
- .
- This package contains the documentation.
-
 Package: python-guestfs
 Section: python
 Architecture: i386 amd64
