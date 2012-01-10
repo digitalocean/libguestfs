@@ -1,6 +1,6 @@
 ## DO NOT EDIT! GENERATED AUTOMATICALLY!
 ## Process this file with automake to produce Makefile.in.
-# Copyright (C) 2002-2011 Free Software Foundation, Inc.
+# Copyright (C) 2002-2012 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -870,7 +870,7 @@ EXTRA_DIST += test-pathmax.c
 
 TESTS += test-perror.sh test-perror2
 check_PROGRAMS += test-perror test-perror2
-EXTRA_DIST += init.sh macros.h signature.h test-perror.c test-perror2.c test-perror.sh
+EXTRA_DIST += macros.h signature.h test-perror.c test-perror2.c test-perror.sh
 
 ## end   gnulib module perror-tests
 
@@ -895,7 +895,7 @@ EXTRA_DIST += test-pipe.c signature.h macros.h
 
 TESTS += test-pread.sh
 check_PROGRAMS += test-pread
-EXTRA_DIST += test-pread.c test-pread.sh init.sh signature.h macros.h
+EXTRA_DIST += test-pread.c test-pread.sh signature.h macros.h
 
 ## end   gnulib module pread-tests
 
@@ -1237,6 +1237,22 @@ EXTRA_DIST += test-strnlen.c zerosize-ptr.h signature.h macros.h
 
 ## end   gnulib module strnlen-tests
 
+## begin gnulib module strtoll-tests
+
+TESTS += test-strtoll
+check_PROGRAMS += test-strtoll
+EXTRA_DIST += test-strtoll.c signature.h macros.h
+
+## end   gnulib module strtoll-tests
+
+## begin gnulib module strtoull-tests
+
+TESTS += test-strtoull
+check_PROGRAMS += test-strtoull
+EXTRA_DIST += test-strtoull.c signature.h macros.h
+
+## end   gnulib module strtoull-tests
+
 ## begin gnulib module strtoumax-tests
 
 TESTS += test-strtoumax
@@ -1358,6 +1374,14 @@ EXTRA_DIST += test-sys_wait.c test-sys_wait.h
 
 ## end   gnulib module sys_wait-tests
 
+## begin gnulib module test-framework-sh-tests
+
+TESTS += test-init.sh
+EXTRA_DIST += init.sh
+EXTRA_DIST += test-init.sh
+
+## end   gnulib module test-framework-sh-tests
+
 ## begin gnulib module thread
 
 libtests_a_SOURCES += glthread/thread.h glthread/thread.c
@@ -1472,7 +1496,7 @@ EXTRA_DIST += test-vasprintf.c signature.h macros.h
 TESTS += test-vc-list-files-git.sh
 TESTS += test-vc-list-files-cvs.sh
 TESTS_ENVIRONMENT += abs_aux_dir='$(abs_aux_dir)'
-EXTRA_DIST += test-vc-list-files-git.sh test-vc-list-files-cvs.sh init.sh
+EXTRA_DIST += test-vc-list-files-git.sh test-vc-list-files-cvs.sh
 
 ## end   gnulib module vc-list-files-tests
 
@@ -1481,7 +1505,7 @@ EXTRA_DIST += test-vc-list-files-git.sh test-vc-list-files-cvs.sh init.sh
 TESTS_ENVIRONMENT += MAKE='$(MAKE)'
 TESTS += test-verify test-verify.sh
 check_PROGRAMS += test-verify
-EXTRA_DIST += test-verify.c test-verify.sh init.sh
+EXTRA_DIST += test-verify.c test-verify.sh
 
 ## end   gnulib module verify-tests
 
@@ -1558,7 +1582,7 @@ EXTRA_DIST += test-write.c signature.h macros.h
 TESTS += test-xalloc-die.sh
 check_PROGRAMS += test-xalloc-die
 test_xalloc_die_LDADD = $(LDADD) @LIBINTL@
-EXTRA_DIST += test-xalloc-die.c test-xalloc-die.sh init.sh
+EXTRA_DIST += test-xalloc-die.c test-xalloc-die.sh
 
 ## end   gnulib module xalloc-die-tests
 
@@ -1568,7 +1592,7 @@ TESTS += test-xstrtol.sh
 check_PROGRAMS += test-xstrtol test-xstrtoul
 test_xstrtol_LDADD = $(LDADD) @LIBINTL@
 test_xstrtoul_LDADD = $(LDADD) @LIBINTL@
-EXTRA_DIST += init.sh test-xstrtol.c test-xstrtoul.c test-xstrtol.sh
+EXTRA_DIST += test-xstrtol.c test-xstrtoul.c test-xstrtol.sh
 
 ## end   gnulib module xstrtol-tests
 
@@ -1578,7 +1602,7 @@ TESTS += test-xstrtoll.sh
 check_PROGRAMS += test-xstrtoll test-xstrtoull
 test_xstrtoll_LDADD = $(LDADD) $(LIBINTL)
 test_xstrtoull_LDADD = $(LDADD) $(LIBINTL)
-EXTRA_DIST += init.sh test-xstrtol.c test-xstrtoll.c test-xstrtoull.c test-xstrtoll.sh
+EXTRA_DIST += test-xstrtol.c test-xstrtoll.c test-xstrtoull.c test-xstrtoll.sh
 
 ## end   gnulib module xstrtoll-tests
 
@@ -1587,7 +1611,7 @@ EXTRA_DIST += init.sh test-xstrtol.c test-xstrtoll.c test-xstrtoull.c test-xstrt
 TESTS += test-xstrtoumax.sh
 check_PROGRAMS += test-xstrtoumax
 test_xstrtoumax_LDADD = $(LDADD) @LIBINTL@
-EXTRA_DIST += init.sh test-xstrtoumax.c test-xstrtoumax.sh
+EXTRA_DIST += test-xstrtoumax.c test-xstrtoumax.sh
 
 ## end   gnulib module xstrtoumax-tests
 

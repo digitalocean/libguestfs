@@ -1,4 +1,4 @@
-/* Copyright (C) 1991-1993, 1996-2007, 2009-2011 Free Software Foundation, Inc.
+/* Copyright (C) 1991-1993, 1996-2007, 2009-2012 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ extern int fnmatch (const char *pattern, const char *string, int flags);
    Library, but also included in many other GNU distributions.  Compiling
    and linking in this code is a waste when using the GNU C library
    (especially if it is a shared library).  Rather than having every GNU
-   program understand `configure --with-gnu-libc' and omit the object files,
+   program understand 'configure --with-gnu-libc' and omit the object files,
    it is simpler to just do this in the source for each such file.  */
 
 #if defined _LIBC || !defined __GNU_LIBRARY__ || !HAVE_FNMATCH_GNU
@@ -119,7 +119,7 @@ extern int fnmatch (const char *pattern, const char *string, int flags);
 #  endif
 
 # else
-#  define CHAR_CLASS_MAX_LENGTH  6 /* Namely, `xdigit'.  */
+#  define CHAR_CLASS_MAX_LENGTH  6 /* Namely, 'xdigit'.  */
 
 #  define IS_CHAR_CLASS(string)                                               \
    (STREQ (string, "alpha") || STREQ (string, "upper")                        \
@@ -168,7 +168,6 @@ static int posixly_correct;
 #  endif
 # endif
 # define MEMCHR(S, C, N) memchr (S, C, N)
-# define STRCOLL(S1, S2) strcoll (S1, S2)
 # include "fnmatch_loop.c"
 
 
@@ -196,7 +195,6 @@ static int posixly_correct;
 #   endif
 #  endif
 #  define MEMCHR(S, C, N) wmemchr (S, C, N)
-#  define STRCOLL(S1, S2) wcscoll (S1, S2)
 #  define WIDE_CHAR_VERSION 1
 
 #  undef IS_CHAR_CLASS

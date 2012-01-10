@@ -1,5 +1,5 @@
 /* provide a replacement openat function
-   Copyright (C) 2004-2011 Free Software Foundation, Inc.
+   Copyright (C) 2004-2012 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -180,7 +180,7 @@ openat (int fd, char const *file, int flags, ...)
    directory argument.
 
    If a previous attempt to restore the current working directory
-   failed, then we must not even try to access a `.'-relative name.
+   failed, then we must not even try to access a '.'-relative name.
    It is the caller's responsibility not to call this function
    in that case.  */
 

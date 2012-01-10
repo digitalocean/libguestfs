@@ -1,3 +1,125 @@
+2012-01-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: debug segv correct use of dereferencing NULL. (cherry picked from commit 01e717b3c141c509a7200b0a6c560f75815c08f2)
+
+2012-01-10  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	launch: move the filename checking to a wrapper
+	Move the filename's comma character checking to a wrapper.
+
+	(cherry picked from commit e0c309379556ad50d43a08b4aa4ec0146d2b60d8)
+
+2012-01-10  Matthew Booth  <mbooth@redhat.com>
+
+	generator: Create a separate type for optional arguments
+	Previously, optional arguments had the same type as regular arguments, but were
+	constrained by various runtime tests to be only Bool, Int, Int64 or String. This
+	change makes the type of optional arguments stronger by giving them their own
+	type.
+
+	A convenience function, optargs_to_args is defined to convert optargs in the few
+	places where they are genuinely treated identically to mandatory arguments.
+
+	It also allows for future changes to optional arguments which do not affect
+	mandatory arguments.
+
+	RWMJ:
+	 - removed redundant parens
+	 - readded the check for > 64 optargs, but changed it to > 63
+	 - changed the new function to args_of_optargs
+
+	(cherry picked from commit 0a7b734d2f54d4e98882532da9887feb66c9824a)
+
+2012-01-10  Matthew Booth  <mbooth@redhat.com>
+
+	generator: Rename java_structs to camel_structs to better reflect their purpose
+	This map was originally included just for the java bindings, but is generally
+	useful to any binding which uses camel case by requirement or convention.
+	(cherry picked from commit e24af214fe8f9dccac39ed520b57ce7d458f9fd1)
+
+2012-01-10  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	launch: add a goto label when add_drive error
+	Code cleanup.
+	Add a goto label to simplify the code.
+
+	(cherry picked from commit 6f6485ec34f29401bbab65dd4275a3b564ed11b3)
+
+2012-01-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	debian: Add build-dep erlang-dev. (cherry picked from commit 49b894599bf82790c83e2949626b7a8958732b6a)
+
+	Update to latest gnulib. (cherry picked from commit c51caebea20b499ca0f9e652da0d964689969d79)
+
+2012-01-10  Matthew Booth  <mbooth@redhat.com>
+
+	Tempora mutantur, nos et mutamur in illis. (cherry picked from commit ebdda911b5dc4e2695413578ed2e0f0b387c0d89)
+
+	build: Fix automake warnings (cherry picked from commit c655415dc051b84d6178399e5f7cb76ff7af06c0)
+
+2012-01-10  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	fish: fix the Ctrl-\ causes guestfish to abort bug(RHBZ#596761)
+	Handle SIGQUIT by guestfish, so that it can't be terminated.
+
+	(cherry picked from commit f49a30eba8bb9f352637c3c24138074bbe3f5555)
+
+2012-01-10  Wanlong Gao  <wanlong.gao@gmail.com>
+
+	AUTHORS: add the email address for each authors
+	Add the email address for authors.
+	It would be better.
+
+	(cherry picked from commit 10df9d88ab4191c4092f4a88c7343ab3f5f31a70)
+
+2012-01-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: mount can be used instead of mount-options with libguestfs >= 1.14 (cherry picked from commit 49218ae6b451004c8f7b5549d5876c8568a7c1a6)
+
+	fish: Fix --format parameter in man page. (cherry picked from commit 871e1cfe3ae28028eaa4be7d87d7c43f68b4d5ec)
+
+	lib: Try harder to remove temporary directory along error paths (RHBZ#769680). (cherry picked from commit 6032da66819b7ccf99001ba636926100f475cb89)
+
+2012-01-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Add guestfs___remove_tmpdir helper function.
+	This function does 'rm -rf <dir>' for temporary directories, safely
+	working if '<dir>' contains shell meta-characters.
+
+	Replace existing code for removing directories with this.
+	(cherry picked from commit 690ff694ca6db586c06ec484ea158261c156aa2f)
+
+2012-01-10  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	mkfs: optimization and code cleanup
+	v1->v2: fix a typo pointed by Matt
+
+	Optimizations by reducing the STREQ operations and do some
+	code cleanup.
+
+
+	RWMJ: Whitespace changes.
+	(cherry picked from commit 2ac869bcc86fbf0dd7e878f10a2b60769a58c962)
+
+2012-01-10  Hilko Bengen  <bengen@hilluzination.de>
+
+	Fixed checks for libpython features
+	The python3.1 package shipped with Debian/squeeze does not have the
+	'mu' suffix that was assumed before.
+	(cherry picked from commit ad5b5f96da53a6f51424e22e26f2d8a325eec681)
+
+2012-01-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Arrange directory names in alphabetical order. (cherry picked from commit f5a49bf1cae335889da6be53fd1ca302273be78b)
+
+	extra-tests: Add an extra suppression for OCaml 3.11.2 in RHEL 6. (cherry picked from commit a0a8de4253ad545d668977dbf54f90118f601192)
+
+	python: Missing () in guestfs-python(1) examples. (cherry picked from commit 3c9dfd1e95fae5c31df1fbcb6bdec2982a69a004)
+
+2011-12-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.14.8.
+
 2011-12-22  Richard W.M. Jones  <rjones@redhat.com>
 
 	Security: Mitigate possible privilege escalation via SG_IO ioctl (CVE-2011-4127, RHBZ#757071)
@@ -47,6 +169,8 @@
 
 	Version 1.14.7.
 
+2011-12-09  Richard W.M. Jones  <rjones@redhat.com>
+
 	fuse: Return EXIT_FAILURE if fuse_main fails.
 	fuse_main can return any non-zero value on error.  In particular on
 	certain sorts of error such as unsupported -o options it returns 1
@@ -57,6 +181,8 @@
 	(Thanks Pádraig Brady)
 	(cherry picked from commit ae45cee728039d7724fc73e5ffb2550c8054d268)
 
+2011-12-09  Richard W.M. Jones  <rjones@redhat.com>
+
 	fish: -i option should fail if / is not mountable, but warn about others.
 	In particular this stops a problem with guestmount where if the -i
 	option half-recognizes the guest OS, it would mount the disk (and
@@ -64,6 +190,8 @@
 
 	(Thanks Pádraig Brady)
 	(cherry picked from commit 54e91da925323642e67b8ce4b95899fe4b7a51c4)
+
+2011-12-09  Richard W.M. Jones  <rjones@redhat.com>
 
 	daemon: Fix utimens so it doesn't hang on named pipes (RHBZ#761460).
 	This also adds comprehensive tests for utimens on regular files,
@@ -74,6 +202,8 @@
 	semantics of this call: It now sets the time on a symbolic link
 	itself, not on what the symbolic link points to.
 	(cherry picked from commit 19e2f5aa4fd4ed70b505661d918b5575616ad441)
+
+2011-12-09  Richard W.M. Jones  <rjones@redhat.com>
 
 	daemon: Allow utimens to work for directories (RHBZ#761451).
 	You don't need to open the file O_WRONLY in order to call futimens on
@@ -101,6 +231,8 @@
 
 	ruby: Use RSTRING_PTR, RSTRING_LEN for compat with Ruby 1.9 (RHBZ#760000). (cherry picked from commit 2972987d0257d9c3d26b53f961e802d121b436cd)
 
+2011-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
 	daemon: Use pkg-config to locate Augeas CFLAGS / libraries.
 	Augeas 0.10 depends on libxml2, so this is now required in the
 	appliance (in fact, it was already present).
@@ -118,6 +250,8 @@
 	Change to using pkg-config to detect Augeas.  It is still an optional
 	library.
 	(cherry picked from commit 615924abaa968398d6529529fa2f31ae23de825b)
+
+2011-12-06  Richard W.M. Jones  <rjones@redhat.com>
 
 	extra tests: Test that valgrind and libtool are installed. (cherry picked from commit b7addee24d211014086c44bcef6a0c799e4fb987)
 
@@ -162,6 +296,8 @@
 
 	extra tests: Split up and reorder tests more logically. (cherry picked from commit cee513112adcf4084d6be9e3b5037b7b54c9f514)
 
+2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
+
 	extra tests: Test virt-sparsify.
 	This adds the virt-sparsify --debug-gc option which causes
 	virt-sparsify to call Gc.compact before exiting, allowing
@@ -169,6 +305,8 @@
 
 	Add an extratest which runs virt-sparsify under valgrind.
 	(cherry picked from commit 14b1e7b963cd5446ab76a067085b91925dd5d3e3)
+
+2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
 
 	extra tests: Test virt-resize.
 	This adds the virt-resize --debug-gc option which causes
@@ -178,7 +316,11 @@
 	Add an extratest which runs virt-resize under valgrind.
 	(cherry picked from commit 7708d3e04f6ec3985fd74ee1a44a5615d43065e2)
 
+2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
+
 	ocaml: Load test should call Gc.compact to flag memory errors. (cherry picked from commit 082a55f76cd61f3590976f6b095552ea65259ced)
+
+2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
 
 	ocaml: Fix memory leak in bindings for functions that return buffers.
 	RBufferOut binding didn't free the buffer after copying it onto
@@ -186,6 +328,8 @@
 
 	Found by valgrind.
 	(cherry picked from commit 6bd0eec12f2e39360847bfe7a9f50628cc89ed8e)
+
+2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
 
 	extra tests: Run C API tests under valgrind. (cherry picked from commit e1f395defc6db5bbc82537af6e517d94216b7d4b)
 
@@ -199,6 +343,8 @@
 
 	ocaml: Memory leak: Free roots array along handle close path. (cherry picked from commit c5dbb1e63a8e0c45c7088dd2e58f5abbcfc30620)
 
+2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
+
 	fish: When -m option fails, canonicalize device names that are printed.
 	The error message now looks like this:
 
@@ -209,6 +355,8 @@
 
 	Note that '/dev/sda1' has been canonicalized.
 	(cherry picked from commit f5bfc68fdb3e25b9d75c65e3f5e88983584b25ed)
+
+2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
 
 	fish: Rearrange code for displaying mountpoints when -m option fails.
 	This also frees the list returned by guestfs_list_filesystems.
@@ -243,11 +391,15 @@
 
 	filesystems: Fix memory leak found by valgrind. (cherry picked from commit cd3d28491dd19d25a6c04a8bc6a7ec94bded413b)
 
+2011-11-24  Richard W.M. Jones  <rjones@redhat.com>
+
 	part-disk: Change default alignment of this to 64K (128 sectors).
 	This is the minimum alignment.  1MB would be better.
 
 	Note that the exact behaviour is not defined in the API.
 	(cherry picked from commit c4381dba737d5cb8aad8e1b2e2123b0fcaff1d1a)
+
+2011-11-24  Richard W.M. Jones  <rjones@redhat.com>
 
 	virt-alignment-scan: Add checks for when API calls return NULL.
 	In particular, virt-alignment-scan -a /dev/null would segfault
@@ -275,6 +427,8 @@
 	gnulib: Rebase to latest. (cherry picked from commit 065b6b5798913c9bb40215944920199ae7d27007)
 
 	Don't rely on implicit promotion of float to double in printf args. (cherry picked from commit 9b102aae65449a8d321e8cf44a3993af558291db)
+
+2011-11-24  Richard W.M. Jones  <rjones@redhat.com>
 
 	fish: In generated code, put function names on a new line.
 	eg:
@@ -349,6 +503,8 @@
 	functions.
 	(cherry picked from commit 29172e7c4878085a680812f7f3b8ad6ea5f1193c)
 
+2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+
 	tests: Fix bitmask parameter when testing optional arguments.
 	The bitmask was being constructed backwards(!)
 
@@ -357,9 +513,13 @@
 	this.
 	(cherry picked from commit af2b0378bbb178a4e3db326ac3082d66170fcafc)
 
+2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+
 	fish: More informative documentation of optargs. (cherry picked from commit 271f8e4b70e4acf2db96f6fe6317fda327fa5f2e)
 
 	ocaml: Compile OCaml bindings and tests with -warn-error. (cherry picked from commit 145ed04e41a3fcd3be87c11cae0085f4551f1da8)
+
+2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
 
 	ocaml: Catch EVENT_ENTER case in test.
 	For some reason we are not compiling the tests with -warn-error so
@@ -383,6 +543,8 @@
 	All changes are made in the temporary copy.
 	(cherry picked from commit 9c299b64bb24cefafa582fe425bb65b78373d205)
 
+2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+
 	daemon: Don't use files with fixed names in /tmp (thanks Steve Kemp).
 	Although this doesn't matter for the ordinary (appliance) case, it
 	matters for the libguestfs live case.  In that case it could cause the
@@ -393,6 +555,8 @@
 	Use virt-inspector --xpath option instead.
 	(cherry picked from commit 22998927f91f123e7c35d3ebf49e5744f3d7eafe)
 
+2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+
 	Add virt-inspector --xpath to run XPath queries directly.
 	xmlstarlet is good, but not available in Red Hat Enterprise Linux.
 
@@ -400,12 +564,16 @@
 	directly so that we don't need any external tools.
 	(cherry picked from commit d1ee71782ace98a11c5aabaf1f9fd5f601e08367)
 
+2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+
 	resize: Remove requirement for ocaml Pcre library.
 	This library is not available in RHEL 6, and in any case removing the
 	dependency is a simple change.
 	(cherry picked from commit ffbafadcb8dfebcaba529cb8d7e2da52dd032d8a)
 
 	resize: Add tests for some Utils functions. (cherry picked from commit 63898268101e5ec91c8dac46651dbee5976272ce)
+
+2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
 
 	python: Use sys.version_info[0] instead of sys.version_info.major.
 	The major/minor fields only exist in Python >= 2.7.  This works for at
@@ -415,6 +583,8 @@
 
 	This updates commit 646142f5136da9cfe2b908703a822c53350f70e9.
 	(cherry picked from commit 31e5539a14f78d8815d0d930e91023a65b5395e7)
+
+2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
 
 	python: Fixes for Python 3 (RHBZ#750889).
 	These fixes allow libguestfs bindings to work with Python 3 (tested
@@ -429,6 +599,8 @@
 	  PYTHON=python3 ./configure && make && make check
 	(cherry picked from commit 2116f79cbcd4605b4997931285f14dde1f72a992)
 
+2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+
 	python: Pass $PYTHON environment variable to tests.
 	If the user set PYTHON when configuring, this variable is not passed
 	through to the tests, so it is possible the tests will fail because
@@ -441,6 +613,8 @@
 	Ooops ...
 	(cherry picked from commit 25454b83082a4cfed4f1664d2f9cdfcb222ba7c2)
 
+2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+
 	python: Correctly check for Python major/minor.
 	The manual for sys.version warns that you should not parse the string,
 	which we were doing.  It would have failed on python "2.10" or
@@ -448,6 +622,8 @@
 
 	Do it correctly using the sys.version_info struct instead.
 	(cherry picked from commit 646142f5136da9cfe2b908703a822c53350f70e9)
+
+2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
 
 	fish: Use size_t instead of int when counting strings. (cherry picked from commit b4da051d54a1597c7d8db8880d21a52265a6172e)
 
@@ -520,6 +696,8 @@
 	<readonly/> in the libvirt XML.  It's not clear if this is a bug or a
 	feature.
 
+2011-10-26  Richard W.M. Jones  <rjones@redhat.com>
+
 	add-domain: Add readonlydisk optional argument (RHBZ#747290).
 	This optional argument controls how <readonly/> disks in
 	the libvirt XML are handled.  It can be set to one of:
@@ -534,10 +712,14 @@
 	starts off shut down, so we cannot fully test this.  Instead I tested
 	it by hand.
 
+2011-10-26  Richard W.M. Jones  <rjones@redhat.com>
+
 	libvirt: Detect if a disk has the <readonly/> flag.
 	This changes the private function guestfs___for_each_disk so that the
 	<readonly/> flag on libvirt disks is detected and passed through to
 	the callback function.
+
+2011-10-26  Richard W.M. Jones  <rjones@redhat.com>
 
 	test-user-cancel: Make this test choose smaller cancellation numbers.
 	Use a Gaussian distribution for random numbers so that smaller numbers
@@ -553,7 +735,11 @@
 	space.  Fix this by repeatedly asserting the cancel flag in the second
 	loop.
 
+2011-10-26  Richard W.M. Jones  <rjones@redhat.com>
+
 	Version 1.13.25.
+
+2011-10-26  Richard W.M. Jones  <rjones@redhat.com>
 
 	virt-resize: Be much more conservative about moving first partition.
 	Commit 2910413850c7d9e8df753afad179e415f0638d6d caused Windows 7
@@ -565,6 +751,8 @@
 	there is more than one partition (also Win7).
 
 	Tested with: Windows XP, 2003, 7, Ubuntu 10.10 and RHEL 5.
+
+2011-10-26  Richard W.M. Jones  <rjones@redhat.com>
 
 	Flush stdout for progress bars used by guestfish, virt-resize.
 
@@ -594,6 +782,8 @@
 
 	This commit includes the generated changes to .depend files.
 
+2011-10-25  Richard W.M. Jones  <rjones@redhat.com>
+
 	virt-filesystems: Add MBR partition type byte to the output.
 	This adds an extra column containing this information, looking
 	like this:
@@ -606,6 +796,8 @@
 	In particular you can use this to tell if a partition is an extended
 	partition, because the field will contain '05' or '0f'.
 
+2011-10-25  Richard W.M. Jones  <rjones@redhat.com>
+
 	New API: part-to-partnum
 	This converts a partition device name (eg. /dev/sda1) to a partition
 	number (eg. 1).  This is useful in conjunction with the parted APIs
@@ -617,11 +809,15 @@
 
 	Version 1.13.24.
 
+2011-10-24  Richard W.M. Jones  <rjones@redhat.com>
+
 	Add test for qemu broken -machine option (RHBZ#748266).
 	Also add this option, if necessary, when testing for virtio-serial
 	support.
 
 	When the workaround is enabled, we specify machine type 'pc'.
+
+2011-10-24  Richard W.M. Jones  <rjones@redhat.com>
 
 	Revert "out-of-tree build: daemon"
 	This reverts commit 025dba7f803419f510fd8f085ce693838af82878.
@@ -679,6 +875,8 @@
 
 	resize: Add --alignment flag to allow partition alignment to be picked.
 
+2011-10-20  Richard W.M. Jones  <rjones@redhat.com>
+
 	resize: Refactor the code for creating target partitions.
 	The old code mixed the business of planning the layout of the target
 	partitions with the creation of the target partitions.  The
@@ -691,16 +889,22 @@
 	didn't have any hope of working, and there is a separate bug open to
 	fix it.
 
+2011-10-20  Richard W.M. Jones  <rjones@redhat.com>
+
 	resize: Remove p_size field from partitions structure.
 	This field simply contained a duplicate copy of p_part.part_size.
 
 	There is no functional change in this commit.
+
+2011-10-20  Richard W.M. Jones  <rjones@redhat.com>
 
 	Update RELEASE-NOTES.
 
 2011-10-19  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.13.22.
+
+2011-10-19  Richard W.M. Jones  <rjones@redhat.com>
 
 	Pushed and pulled latest translations from Transifex.
 	Fixed one bug in the nl PO file:
@@ -713,11 +917,15 @@
 	msgid "security: cached appliance %s is not owned by UID %d"
 	msgstr "beveiliging: UID %2$d is geen eigenaar van toepassing %1$s in cache"
 
+2011-10-19  Richard W.M. Jones  <rjones@redhat.com>
+
 	inspection: Return root devices sorted.
 
 2011-10-19  Matthew Booth  <mbooth@redhat.com>
 
 	inspect: Handle cciss devices in /etc/fstab
+
+2011-10-19  Matthew Booth  <mbooth@redhat.com>
 
 	inspect: Don't assume number of captures in match functions
 	It is possible for the pcre library to return a variable number of captures for
@@ -733,6 +941,8 @@
 	number of matches returned. Instead, any returned captures are assigned to the
 	given arguments, and any remaining arguments are set to NULL.
 
+2011-10-19  Matthew Booth  <mbooth@redhat.com>
+
 	inspect: Add drive naming hints
 	We currently use a heuristic to guess how drive names we find
 	referenced in the guest map to drive names in the appliance. If this
@@ -743,7 +953,11 @@
 	known. This change also updates the fstab-parsing inspection code to
 	use this information if it is available.
 
+2011-10-19  Matthew Booth  <mbooth@redhat.com>
+
 	NFC: Remove unnecessary goto
+
+2011-10-19  Matthew Booth  <mbooth@redhat.com>
 
 	launch: Store drive information in guestfs_h
 	This is a NFC on its own, but provides a place-holder for drive metadata which
@@ -761,6 +975,8 @@
 	 - Call free along error paths.
 
 	 - Add comments.
+
+2011-10-19  Matthew Booth  <mbooth@redhat.com>
 
 	inspect: Fix fstab device mapping for >26 disks
 	The regular expression matching disk name assumed that there was only a single
@@ -853,6 +1069,8 @@
 
 	virt-sysprep: Add rhn-systemid.
 
+2011-10-13  Richard W.M. Jones  <rjones@redhat.com>
+
 	virt-sysprep: Switch to using guestmount, add more features.
 	This switches virt-sysprep to use guestmount instead of guestfish.
 	This makes the script a little bit easier to modify for sysadmins.
@@ -868,15 +1086,21 @@
 
 	SELinux relabelling, and a section on security in the manual page.
 
+2011-10-13  Richard W.M. Jones  <rjones@redhat.com>
+
 	virt-sysprep: Use Augeas for config file manipulation.
 
 	virt-sysprep: Add prepend_line utility function.
+
+2011-10-13  Richard W.M. Jones  <rjones@redhat.com>
 
 	fish: docs: note how to clean up the remote process properly.
 	Killing it is always a bad idea, because the qemu subprocess will be
 	left hanging around.  The best thing is to send the exit command.
 
 	This also makes the change to virt-sysprep.
+
+2011-10-13  Richard W.M. Jones  <rjones@redhat.com>
 
 	fish: Close guestfs handle explicitly before exiting.
 	NOTE this is just a cleanup.  It is NOT necessary for correctness,
@@ -981,11 +1205,15 @@
 
 	Version 1.13.15.
 
+2011-09-28  Richard W.M. Jones  <rjones@redhat.com>
+
 	New API: set-smp, get-smp
 	These calls allow you to change the number of virtual CPUs assigned to
 	the appliance.
 
 	This also adds a --smp option to virt-rescue.
+
+2011-09-28  Richard W.M. Jones  <rjones@redhat.com>
 
 	New APIs: compress-out, compress-device-out.
 	These APIs let you copy compressed files or devices out from the disk
@@ -1003,6 +1231,8 @@
 	/tmp/passwd.gz: ASCII text (gzip compressed data, was "passwd", from
 	Unix, last modified: Sun Aug 28 14:40:46 2011)
 
+2011-09-28  Richard W.M. Jones  <rjones@redhat.com>
+
 	daemon: Move useful is_zero function to header file.
 	Code motion.
 
@@ -1015,6 +1245,8 @@
 	https://bugzilla.redhat.com/show_bug.cgi?id=698842#c8
 
 	This updates commit 79e66f89e2f6c27486476d7857da58feb491bf5c.
+
+2011-09-26  Richard W.M. Jones  <rjones@redhat.com>
 
 	docs: Show how to use a qemu wrapper to edit the qemu command line.
 
@@ -1032,6 +1264,8 @@
 
 	todo: Suggestion to improve Erlang bindings.
 
+2011-09-21  Richard W.M. Jones  <rjones@redhat.com>
+
 	Enable APIC.
 	Originally this was disabled to work around RHBZ#502058.  That bug was
 	never officially fixed, but it may have fixed itself.
@@ -1039,6 +1273,8 @@
 	In the meantime, KVM has broken ordinary PIC support (RHBZ#723822).
 	Since APIC is the most common way that regular Linux and Windows
 	guests run it makes sense to remove this hack.
+
+2011-09-21  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.13.13.
 
@@ -1051,6 +1287,8 @@
 
 	This fixes support for ttylinux and also some other guests that use
 	/dev/root instead of a real device name.
+
+2011-09-16  Richard W.M. Jones  <rjones@redhat.com>
 
 	inspection: Add support for ttylinux (a minimal Linux).
 
@@ -1129,6 +1367,8 @@
 
 	resize: Add --machine-readable option for machine friendly output.
 
+2011-08-26  Richard W.M. Jones  <rjones@redhat.com>
+
 	progress: Add machine readable flag.
 	Machine-readable progress bars look like:
 
@@ -1136,12 +1376,16 @@
 	1/100
 	2/100
 
+2011-08-26  Richard W.M. Jones  <rjones@redhat.com>
+
 	resize: Use guestfish progress bar mini-library.
 	There are two benefits:
 
 	 - the progress bars look better
 	 - there is a reasonably accurate estimate of how long each operation
 	   will take
+
+2011-08-26  Richard W.M. Jones  <rjones@redhat.com>
 
 	Add GUESTFS_EVENT_ENTER event.
 	This event is generated whenever a libguestfs function is called.
@@ -1171,6 +1415,8 @@
 
 	Version 1.13.7.
 
+2011-08-23  Richard W.M. Jones  <rjones@redhat.com>
+
 	php: Fix bug in PHP tests.
 	We partitioned the disk, and then tried to create a PV on the whole
 	disk.  LVM gave the error:
@@ -1179,6 +1425,8 @@
 
 	It is unclear how this bug persisted for so long.  It might be due to
 	a change in LVM.
+
+2011-08-23  Richard W.M. Jones  <rjones@redhat.com>
 
 	Coverity: fix memory leak along error path.
 
@@ -1208,11 +1456,15 @@
 
 	Coverity: Check guestfs_inspect_get_product_name() != NULL before using.
 
+2011-08-23  Richard W.M. Jones  <rjones@redhat.com>
+
 	rescue: Ignore errno after guestfs_launch.
 	errno is pretty much random on the error path back from guestfs_launch
 	so there is nothing useful to be gained by checking it.
 
 	We could do with a better way to detect if appliance launch failed.
+
+2011-08-23  Richard W.M. Jones  <rjones@redhat.com>
 
 	Coverity: Ignore return value from guestfs_launch in virt-rescue.
 	We expect guestfs_launch to fail in this program.
@@ -1222,6 +1474,8 @@
 2011-08-20  Richard W.M. Jones  <rjones@redhat.com>
 
 	autobuild: Only add last 100 lines of the log file.
+
+2011-08-20  Richard W.M. Jones  <rjones@redhat.com>
 
 	New autobuild script.
 	Remove the old top-level autobuild.sh that confused a lot
@@ -1236,6 +1490,8 @@
 	string, eg.
 
 	  ./configure [...] --with-extra="-%{release}"
+
+2011-08-19  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.13.6.
 
@@ -1253,6 +1509,8 @@
 	more robust.  We use Monte-Carlo testing with a range of file sizes.
 	Small file sizes should trigger the error case.
 
+2011-08-18  Richard W.M. Jones  <rjones@redhat.com>
+
 	Escape special/non-printing characters in debug output (RHBZ#731744).
 	The default event handler in libguestfs was simply writing all debug
 	output directly to stderr.  However if the output contains
@@ -1269,6 +1527,8 @@
 	specially).
 
 	Furthermore, instead of using write(2), use buffered stderr calls.
+
+2011-08-18  Richard W.M. Jones  <rjones@redhat.com>
 
 	Remove guestfs___print_timestamped_argv.
 	This function was used to print the qemu and
@@ -1390,6 +1650,8 @@
 
 	Version 1.13.4.
 
+2011-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
 	Fix 'unknown filesystem' warnings in old inspection code (RHBZ#678231 RHBZ#666578).
 	This is a comprehensive fix for the warnings from the old (and
 	obsolete) Perl inspection code.  For a full description and
@@ -1414,6 +1676,8 @@
 	failure cannot occur.
 
 	(Thanks to lorimar for reporting this bug).
+
+2011-08-08  Richard W.M. Jones  <rjones@redhat.com>
 
 	build: Set TMPDIR for local testing.
 	This avoids conflicts with the globally installed libguestfs
@@ -1464,6 +1728,8 @@
 	We don't use this library (it is only used in the daemon),
 	but we need to add this to make the linker happy.
 
+2011-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
 	daemon: Remove separate configure of daemon subdirectory.
 	Combine the two Gnulib instances together.
 
@@ -1475,6 +1741,8 @@
 	Because we are now using the replacement strerror_r function from
 	Gnulib (instead of the one from glibc directly), this requires a small
 	change to src/guestfs.c.
+
+2011-08-05  Richard W.M. Jones  <rjones@redhat.com>
 
 	Update TODO.
 
@@ -1527,6 +1795,8 @@
 
 	In particular this fixes a noticable crash in guestfs-browser.
 
+2011-07-26  Richard W.M. Jones  <rjones@redhat.com>
+
 	Version 1.13.1.
 
 	virt-df: Re-add documentation for --csv option.
@@ -1537,6 +1807,8 @@
 
 	test-tool: Display state of pgroup flag from the handle.
 	This updates commit f173543fd207bdc254a5eb75180d82ef25eacae9.
+
+2011-07-26  Richard W.M. Jones  <rjones@redhat.com>
 
 	launch: Add qemu_supports_re function.
 	This function is like qemu_supports, but allows us to grep
@@ -1552,6 +1824,8 @@
 2011-07-22  Richard W.M. Jones  <rjones@redhat.com>
 
 	docs: Document FEBOOTSTRAP_KERNEL, FEBOOTSTRAP_MODULES (RHBZ#671082).
+
+2011-07-22  Richard W.M. Jones  <rjones@redhat.com>
 
 	perl: Fix CCFLAGS for Perl 5.14.
 	A change to ExtUtils::CBuilder in Perl 5.14 causes CCFLAGS to
@@ -1576,6 +1850,8 @@
 
 	build: Send failed Perl test configure output to config.log.
 
+2011-07-21  Richard W.M. Jones  <rjones@redhat.com>
+
 	build: Allow 'make quickcheck' test-tool args to be overridden.
 	A typical use for this is for packagers who want to increase
 	the default timeout:
@@ -1597,6 +1873,8 @@
 	Rather than chasing the cache file around (it may move to /run in future)
 	use the -c /dev/null option to stop blkid from reading the cache.
 
+2011-07-20  Richard W.M. Jones  <rjones@redhat.com>
+
 	blkid: Detect when value not found and return empty string.
 	If the blkid command returns 2, that means the value was not found.
 
@@ -1609,6 +1887,8 @@
 
 	This change broke list-filesystems, since that code was assuming that
 	vfs-type could only return a filesystem type or an error.
+
+2011-07-20  Richard W.M. Jones  <rjones@redhat.com>
 
 	docs: Update stable release instructions.
 
@@ -1696,6 +1976,8 @@
 	fish: Don't make --ro the default yet.
 	Defer this decision to a future version of libguestfs.
 
+2011-07-16  Richard W.M. Jones  <rjones@redhat.com>
+
 	docs: Separate out combined =item 's in man pages.
 	Turn:
 
@@ -1710,6 +1992,8 @@
 	This gives a more natural-looking manual page, as well as making it
 	easier to directly link to these sections.
 
+2011-07-16  Richard W.M. Jones  <rjones@redhat.com>
+
 	Update and rearrange release notes.
 
 2011-07-15  Richard W.M. Jones  <rjones@redhat.com>
@@ -1720,6 +2004,8 @@
 	stderr.
 
 	This updates commit 617e7f6bafa7de2303c08e1715004aae3141c389.
+
+2011-07-15  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.11.18.
 
@@ -1739,6 +2025,8 @@
 	Decide early (before launch) if this is going to be an interactive
 	session, and set the is_interactive flag.
 
+2011-07-15  Richard W.M. Jones  <rjones@redhat.com>
+
 	Add user cancellation to the C API.
 	This allows long transfers (FileIn and FileOut operations) to be
 	cancelled by calling the signal and thread safe guestfs_user_cancel
@@ -1746,6 +2034,8 @@
 
 	Most of this commit consists of a multithreaded program that tests
 	user cancellation of uploads and downloads.
+
+2011-07-15  Richard W.M. Jones  <rjones@redhat.com>
 
 	New APIs: set-pgroup, get-pgroup
 	If the pgroup flag is set in the handle, then the qemu and recovery
@@ -1756,6 +2046,8 @@
 	passed from the main process down to these processes (killing them).
 	This allows ^C and other keyboard events to be caught and handled in
 	the main process.
+
+2011-07-15  Richard W.M. Jones  <rjones@redhat.com>
 
 	guestfs.h: Add missing extern keyword before event functions.
 
@@ -1773,12 +2065,16 @@
 
 	fish: Handle backslash escapes in guestfish double-quoted strings.
 
+2011-07-14  Richard W.M. Jones  <rjones@redhat.com>
+
 	build: Add ./configure --enable-install-daemon
 	If enabled, then the daemon will be installed in $sbindir
 	(eg. /usr/sbin/guestfsd).  The default is off, as now.
 
 	This option should be used by packagers when building the libguestfs
 	live service.
+
+2011-07-14  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.11.17.
 
@@ -1801,11 +2097,15 @@
 
 	Update release notes.
 
+2011-07-13  Richard W.M. Jones  <rjones@redhat.com>
+
 	Refresh README file.
 	Update and verify the list of requirements, by checking it against
 	both configure.ac and the Fedora specfile.
 
 	Remove some obsolete sections that covered historical ground.
+
+2011-07-13  Richard W.M. Jones  <rjones@redhat.com>
 
 	appliance: Add systemd to get /sbin/reboot for virt-rescue (RHBZ#661280).
 
@@ -1832,6 +2132,8 @@
 
 	Document that ntfsresize cannot be used multiple times (RHBZ#685009).
 
+2011-07-12  Richard W.M. Jones  <rjones@redhat.com>
+
 	fish: Show device mapper device in tab completion (RHBZ#688062).
 	With this change:
 
@@ -1839,6 +2141,8 @@
 	Enter key or passphrase ("key"):
 	><fs> ll /dev/<TAB>
 	/dev/mapper/lukstest  /dev/vda              /dev/vda1
+
+2011-07-12  Richard W.M. Jones  <rjones@redhat.com>
 
 	New API: list-dm-devices (RHBZ#688062).
 	List device mapper devices.
@@ -1907,6 +2211,8 @@
 
 	fish: Add 'display' command for displaying graphical files.
 
+2011-06-28  Richard W.M. Jones  <rjones@redhat.com>
+
 	New API: inspect-get-icon returns the guest icon.
 	This API returns the guest's favicon if found, else an icon
 	representing the guest operating system.  Currently supported by this
@@ -1915,6 +2221,8 @@
 
 	This also updates virt-inspector to include an <icon> element
 	containing the icon in base64 encoding.
+
+2011-06-28  Richard W.M. Jones  <rjones@redhat.com>
 
 	Change download_to_tmp so it can work with multi-root operating systems.
 	The previous guestfs___download_to_tmp function did not handle
@@ -1931,6 +2239,8 @@
 
 	This updates and fixes commit 3c1f762abed92f7a358f3bc93e3396d0606b18ad.
 
+2011-06-28  Richard W.M. Jones  <rjones@redhat.com>
+
 	generator: Fix functions with both RBufferOut and optional args.
 	No current function returns RBufferOut and has optional args.  Such
 	functions would be generated incorrectly.
@@ -1939,6 +2249,8 @@
 	the regular arguments and before the optional arguments.  Various
 	changes to the code generator need to be made to take this into
 	account.
+
+2011-06-28  Richard W.M. Jones  <rjones@redhat.com>
 
 	inspector: Fix comment in virt-inspector.rng.
 	The comment referred to the command line syntax of the old
@@ -1961,6 +2273,8 @@
 	The updated patch makes 'options' into an optional parameter.
 
 	New API: list-9p lists 9p filesystem mount tags (RHBZ#714981).
+
+2011-06-22  Richard W.M. Jones  <rjones@redhat.com>
 
 	trace: Print empty list correctly.
 	Empty lists returned by RStringList and RHashtable functions
@@ -1986,6 +2300,8 @@
 	This file is created by one of the build tools used by Perl 5.14.
 
 	todo: Idea for interactive disk creator program.
+
+2011-06-18  Richard W.M. Jones  <rjones@redhat.com>
 
 	perl: Don't use qw() as parentheses.
 	In Perl 5.14:
@@ -2020,6 +2336,8 @@
 
 	daemon: Keep Coverity happy by ignoring some return values.
 
+2011-06-09  Richard W.M. Jones  <rjones@redhat.com>
+
 	Coverity: Don't return freed pointers from command* along error path.
 	If the external command failed to run, we could free up the allocated
 	*stdoutput and *stderror pointers, but then return those freed
@@ -2028,6 +2346,8 @@
 
 	Instead, return *stdoutput as NULL, and *stderror pointing to a
 	generic error message.
+
+2011-06-09  Richard W.M. Jones  <rjones@redhat.com>
 
 	Coverity: Missing return on error path.
 
@@ -2146,11 +2466,15 @@
 	generator: Mark sfdisk functions as deprecated.
 	Point to the part-* API calls as replacements.
 
+2011-05-17  Richard W.M. Jones  <rjones@redhat.com>
+
 	generator: Mark mount as deprecated.
 	Callers should use 'mount_options' or 'mount_vfs' instead.
 
 	See also:
 	http://libguestfs.org/guestfs.3.html#libguestfs_gotchas
+
+2011-05-17  Richard W.M. Jones  <rjones@redhat.com>
 
 	generator: Mark wait_ready as deprecated.
 	The function has been a no op for a very long time.  By marking
@@ -2165,6 +2489,8 @@
 	This was left over from earlier code.  It is used in the base library,
 	but not in guestfish or guestmount.
 
+2011-05-17  Richard W.M. Jones  <rjones@redhat.com>
+
 	lib: Warn about deprecated functions (enable with -DGUESTFS_WARN_DEPRECATED=1).
 	This allows C API users to be warned if they are using any deprecated
 	functions.
@@ -2172,12 +2498,16 @@
 	We don't warn about this by default.  Users have to specifically
 	request this by defining the cpp symbol GUESTFS_WARN_DEPRECATED as 1.
 
+2011-05-17  Richard W.M. Jones  <rjones@redhat.com>
+
 	lib: Add GCC version macro to the header file.
 	This will be used to internally enable various GCC enhancements.
 
 	lib: Add vertical space between each function in <guestfs.h>.
 
 	appliance: Use qemu -machine option where available (RHBZ#700369).
+
+2011-05-17  Richard W.M. Jones  <rjones@redhat.com>
 
 	virt-win-reg: Support HKEY_USERS keys.
 	This adds support for various Registry keys under HKEY_USERS (user
@@ -2205,7 +2535,11 @@
 	HKU can be used as an abbreviation for HKEY_USERS.  Merging is also
 	supported.
 
+2011-05-17  Richard W.M. Jones  <rjones@redhat.com>
+
 	virt-win-reg: Don't use implicit $_ in map_path_to_hive function.
+
+2011-05-17  Richard W.M. Jones  <rjones@redhat.com>
 
 	virt-win-reg: Don't hard-code the relationship between hive name and path.
 	The crucial change is the tuple that is returned by map_path_to_hive:
@@ -2227,6 +2561,8 @@
 
 	Although this is just code motion, it requires some quite extensive
 	changes to virt-win-reg.
+
+2011-05-17  Richard W.M. Jones  <rjones@redhat.com>
 
 	virt-win-reg: Add --unsafe-printable-strings option.
 	This also requires hivex >= 1.2.7.
@@ -2275,7 +2611,11 @@
 	However we leave debug messages where it is printing an external
 	command that is about to be executed, since those are useful.
 
+2011-05-08  Richard W.M. Jones  <rjones@redhat.com>
+
 	Version 1.11.4.
+
+2011-05-08  Richard W.M. Jones  <rjones@redhat.com>
 
 	Fix guestfs___rollback_cmdline when pos == 0.
 	Because of the previous change to size_t, when pos == 0 the loop would
@@ -2287,6 +2627,8 @@
 2011-05-06  Richard W.M. Jones  <rjones@redhat.com>
 
 	configure: Sort output files in AC_CONFIG_FILES section.
+
+2011-05-06  Richard W.M. Jones  <rjones@redhat.com>
 
 	fish: Allow -d UUID (specify libvirt domains by UUID).
 	This applies in all the commands which use the common C option parsing
@@ -2301,10 +2643,14 @@
 	* virt-ls
 	* virt-rescue
 
+2011-05-06  Richard W.M. Jones  <rjones@redhat.com>
+
 	add-domain: Add allowuuid flag to allow UUIDs to be used for names.
 	This makes a backwards-compatible change to the add-domain API.  If
 	the optional allowuuid flag is true then UUIDs can be used instead of
 	names in the domain name parameter.
+
+2011-05-06  Richard W.M. Jones  <rjones@redhat.com>
 
 	add-domain: Suppress libvirt errors on stderr.
 	Install an error handler on the libvirt error connection so that
@@ -2321,12 +2667,16 @@
 	doc: Use I<-...> for cross-references to command line options.
 	This is now used consistently across all the documentation.
 
+2011-05-01  Richard W.M. Jones  <rjones@redhat.com>
+
 	df: Refresh virt-df(1) man page.
 	Add examples.
 
 	Refresh description.
 
 	Use I<...> to refer to command line options.
+
+2011-05-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	guestfs(3): Note that host file size limits affect guest disk limits.
 
@@ -2344,6 +2694,8 @@
 
 	guestfs(3): Refresh documentation for guestfs_create, guestfs_close.
 
+2011-04-30  Richard W.M. Jones  <rjones@redhat.com>
+
 	Add a trace message to guestfs_close.
 	Only the "first half" (ie. the call) is traced, because by the time
 	the function returns the handle has gone and there's no way to
@@ -2352,6 +2704,8 @@
 	You should see:
 
 	  libguestfs: trace: close
+
+2011-04-30  Richard W.M. Jones  <rjones@redhat.com>
 
 	internal: Use size_t instead of int for command line size.
 
@@ -2379,11 +2733,15 @@
 	This implements set_event_callback and delete_event_callback so that
 	Python programs can use the new event mechanism.
 
+2011-04-22  Richard W.M. Jones  <rjones@redhat.com>
+
 	python: Rearrange C files for bindings.
 	Move the hand-written functions into two new files:
 	guestfs-py.h and guestfs-py-byhand.c
 
 	This is just code motion.
+
+2011-04-22  Richard W.M. Jones  <rjones@redhat.com>
 
 	perl: Decrement refcount in $g->delete_event_callback.
 	This updates commit bc468c87d04b34faacd208c49cca4a5096e5103c.
@@ -2406,6 +2764,8 @@
 2011-04-18  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.11.2.
+
+2011-04-18  Richard W.M. Jones  <rjones@redhat.com>
 
 	python: Release Python GIL while running libguestfs calls.
 	Release the Python global interpreter lock while running libguestfs
@@ -2440,6 +2800,8 @@
 	Add images/guestfs-aux/fedora-packages.db{,.txt} to EXTRA_DIST.
 	This updates commit d95874db3dc6c415061b86275d03770b4f28ffbb.
 
+2011-04-16  Richard W.M. Jones  <rjones@redhat.com>
+
 	Remove local LIBGUESTFS_PATH detection from guestfish and guestmount.
 	Remove the hack that let you run ./fish/guestfish or
 	./fuse/guestmount.  You now have to do:
@@ -2450,6 +2812,8 @@
 
 	to run these programs without installing.
 
+2011-04-16  Richard W.M. Jones  <rjones@redhat.com>
+
 	Remove ad-hoc run*locally scripts, replace with './run'
 	Remove all the run*locally scripts and replace with a single top level
 	./run shell script.
@@ -2458,6 +2822,8 @@
 
 	inspector: Handle write failures when creating example-*.xml.
 
+2011-04-14  Richard W.M. Jones  <rjones@redhat.com>
+
 	Delete file so db_load doesn't run incrementally.
 	It turns out that db_load incrementally updates the database (instead
 	of writing a new one).  Remove the old database to force db_load to
@@ -2465,7 +2831,11 @@
 
 	This also ensures that we handle write failure gracefully.
 
+2011-04-14  Richard W.M. Jones  <rjones@redhat.com>
+
 	inspector: Include <hostname> in output.
+
+2011-04-14  Richard W.M. Jones  <rjones@redhat.com>
 
 	inspect: Get version and release of RPM packages.
 	This commit downloads the Packages RPM database allowing us to find
@@ -2476,6 +2846,8 @@
 	This commit also updates the Fedora example image so that it contains
 	a dummy RPM Packages database with some data.
 
+2011-04-14  Richard W.M. Jones  <rjones@redhat.com>
+
 	inspect: Abstract out db_dump code for listing RPM applications.
 	There are two changes here:
 
@@ -2485,6 +2857,8 @@
 
 	(2) The old db_dump parsing code used db_dump -p (printable) format.
 	Instead use db_dump -k (hex) format so we can read binary fields.
+
+2011-04-14  Richard W.M. Jones  <rjones@redhat.com>
 
 	inspect: Split code into separate files.
 	The src/inspect.c file had grown rather large -- 3,500 lines.  Split
@@ -2507,6 +2881,8 @@
 	inspect: Move shared PCRE match functions to separate file.
 	This is just moving code around.
 
+2011-04-13  Richard W.M. Jones  <rjones@redhat.com>
+
 	inspect: Cache downloaded files in the handle g->tmpdir.
 	During inspection we download various files such as the Windows
 	'software' and 'system' registries.  Previously these were downloaded
@@ -2523,6 +2899,8 @@
 	the actual registry from the VM (unless you close and reopen the
 	handle).  It says in the documentation that the results of inspection
 	may be cached in the handle.
+
+2011-04-13  Richard W.M. Jones  <rjones@redhat.com>
 
 	Remove temporary directory containing arbitrary files.
 	In preparation for caching inspection information in the temporary
@@ -2611,6 +2989,8 @@
 
 	build: virt-resize manpage.
 
+2011-04-09  Richard W.M. Jones  <rjones@redhat.com>
+
 	Rewrite virt-resize in OCaml.
 	This is a fairly straightforward translation of Perl virt-resize into
 	OCaml.  It is bug-for-bug and feature-for-feature identical to the
@@ -2682,6 +3062,8 @@
 
 	This change also adds some more debugging of libguestfs state.
 
+2011-04-06  Richard W.M. Jones  <rjones@redhat.com>
+
 	Update RELEASE-NOTES file.
 
 2011-04-05  Richard W.M. Jones  <rjones@redhat.com>
@@ -2694,6 +3076,8 @@
 
 	edit: Allow Windows-style drive letters and paths to be used.
 
+2011-04-05  Richard W.M. Jones  <rjones@redhat.com>
+
 	New API: inspect-get-drive-mappings
 	This returns the drive mappings from the Windows Registry.
 
@@ -2704,6 +3088,8 @@
 	    <drive_mapping name="C">/dev/sda2</drive_mapping>
 	    <drive_mapping name="E">/dev/sdb1</drive_mapping>
 	  </drive_mappings>
+
+2011-04-05  Richard W.M. Jones  <rjones@redhat.com>
 
 	New API: inspect-get-windows-current-control-set
 	This returns the actual registry key corresponding to
@@ -2718,6 +3104,8 @@
 
 	virt-inspector displays the current control set when available.
 
+2011-04-05  Richard W.M. Jones  <rjones@redhat.com>
+
 	daemon: Reimplement 'mounts' and 'mountpoints' commands.
 	Reimplement these so they read /proc/mounts instead of trying to parse
 	the output of the 'mount' external command.
@@ -2725,10 +3113,14 @@
 	One consequence of this is that these commands now work again for
 	ntfs-3g filesystems.
 
+2011-04-05  Richard W.M. Jones  <rjones@redhat.com>
+
 	Rename resolve_windows_path_silently to case_sensitive_path_silently.
 	A more accurate description of what this function does.
 
 	This is just code motion.
+
+2011-04-05  Richard W.M. Jones  <rjones@redhat.com>
 
 	edit: Move 'exit 0' to end of file.
 	This is just code motion.
@@ -2771,6 +3163,8 @@
 
 	checksum: Add pulse mode progress messages.
 
+2011-04-01  Richard W.M. Jones  <rjones@redhat.com>
+
 	daemon: Introduce "pulse mode" progress events.
 	This introduces a new form of progress event, where we don't know how
 	much of the operation has taken place, but we nevertheless want to
@@ -2806,9 +3200,13 @@
 	back progress messages if it's doing something, where "doing
 	something" might indicate it's using CPU time or it's printing output.
 
+2011-04-01  Richard W.M. Jones  <rjones@redhat.com>
+
 	daemon: When running commands, restart select if we receive a signal.
 
 	daemon: Reset SIGPIPE to default before running subprocesses.
+
+2011-04-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	Generate progress messages during launch.
 	This commit generates approximate progress messages during the
@@ -2828,6 +3226,8 @@
 	appliance (not if using attach-method to attach to an existing virtio
 	serial port).
 
+2011-04-01  Richard W.M. Jones  <rjones@redhat.com>
+
 	protocol: Sleep for 1ms before reading log messages.
 	As explained in the comment:
 
@@ -2841,6 +3241,8 @@
 	   * based console (not yet implemented) we may be able to remove
 	   * this.  XXX
 	   */
+
+2011-04-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	Shared function to send progress messages.
 	This is just code motion.
@@ -2877,11 +3279,15 @@
 
 	contrib: Fix URLs in README file.
 
+2011-03-31  Richard W.M. Jones  <rjones@redhat.com>
+
 	inspect: Detect 32 bit applications running on WOW64 emulator (RHBZ#692545).
 	These applications are located along a different Registry path.  See
 	http://support.microsoft.com/kb/896459 for all the details.
 
 	Thanks Jinxin Zheng for finding the bug and the solution.
+
+2011-03-31  Richard W.M. Jones  <rjones@redhat.com>
 
 	Add /etc/libguestfs-tools.conf configuration file.
 	This allows the default for --ro or --rw to be controlled for the
@@ -2910,6 +3316,8 @@
 
 	Version 1.9.14.
 
+2011-03-28  Richard W.M. Jones  <rjones@redhat.com>
+
 	fuse: Fix getxattr, listxattr calls and add a regression test (RHBZ#691389).
 	The documentation for the getxattr and listxattr calls is not very
 	clear and as a result we were always returning something different
@@ -2923,6 +3331,8 @@
 
 	http://www.spinics.net/lists/selinux/msg09460.html
 
+2011-03-28  Richard W.M. Jones  <rjones@redhat.com>
+
 	fish: fuse: Add -m dev:mnt:opts to allow mount options to be specified.
 	This lets you turn on ACLs and xattrs by doing:
 
@@ -2931,6 +3341,8 @@
 	The extra parameter is passed through to mount_options:
 
 	  libguestfs: trace: mount_options "acl,user_xattr" "/dev/sda1" "/"
+
+2011-03-28  Richard W.M. Jones  <rjones@redhat.com>
 
 	roadmap: Move QMP to 'beyond 1.10'.
 	See: https://www.redhat.com/archives/libguestfs/2011-March/msg00124.html
@@ -2998,6 +3410,8 @@
 
 	Version 1.9.12.
 
+2011-03-18  Richard W.M. Jones  <rjones@redhat.com>
+
 	proto: Fix both-ends-cancel case.
 	In the case where both ends cancel at the same time (eg. both ends
 	realize there are errors before or during the transfer), previously we
@@ -3029,6 +3443,8 @@
 	makes the code considerably simpler.
 
 	This commit also (re-)enables a test for this case.
+
+2011-03-18  Richard W.M. Jones  <rjones@redhat.com>
 
 	proto: Fix FileIn ops that abort during the chunk upload stage.
 	As a previous, incorrect attempt to fix RHBZ#576879 we tried to
@@ -3103,6 +3519,8 @@
 	to do with sending partial data although I don't think we
 	ever saw that in practice).
 
+2011-03-18  Richard Jones  <rjones@redhat.com>
+
 	daemon: Improve protocol debug messages.
 	This adds 'guestfsd: ...' prefix before each message, and
 	also puts a message at the top of the main loop just after
@@ -3128,6 +3546,8 @@
 
 	regressions: Rename the file we are uploading too.
 	This updates commit cbd8da6d4dd2e4cbc3b87fbc7cb7d6129eb69172.
+
+2011-03-17  Richard W.M. Jones  <rjones@redhat.com>
 
 	regressions: Split the test rhbz576879.sh into two halves.
 	We suspect that there are in fact two separate bugs.  In any
@@ -3155,6 +3575,8 @@
 
 	New event API - Ruby bindings (RHBZ#664558).
 
+2011-03-15  Richard W.M. Jones  <rjones@redhat.com>
+
 	New event API - Perl bindings (RHBZ#664558).
 	The methods $h->set_progress_callback and $h->clear_progress_callback
 	have been removed, and replaced with a complete mechanism for setting
@@ -3162,10 +3584,14 @@
 
 	This also updates virt-resize to use the new API.
 
+2011-03-15  Richard W.M. Jones  <rjones@redhat.com>
+
 	New event API - OCaml bindings (RHBZ#664558).
 	The functions set_progress_callback and clear_progress_callback have
 	been removed, and replaced with a complete mechanism for setting and
 	deleting general-purpose events.
+
+2011-03-15  Richard W.M. Jones  <rjones@redhat.com>
 
 	New event API (RHBZ#664558).
 	This API allows more than one callback to be registered for each
@@ -3178,6 +3604,8 @@
 	https://www.redhat.com/archives/libguestfs/2011-January/msg00012.html
 
 	This also updates guestfish to use the new API for its progress bars.
+
+2011-03-15  Richard W.M. Jones  <rjones@redhat.com>
 
 	New APIs: guestfs_first_private, guestfs_next_private to walk over the private data area.
 	This commit adds new APIs for walking over the keys and pointers in
@@ -3205,6 +3633,8 @@
 
 	Version 1.9.10.
 
+2011-03-08  Richard W.M. Jones  <rjones@redhat.com>
+
 	Detect Red Hat Desktop as 'rhel' distro (RHBZ#682979).
 	/etc/redhat-release on Red Hat Desktop contains the following
 	string:
@@ -3222,12 +3652,16 @@
 	Include <locale.h> in compilation units that use setlocale function.
 	Fix required by gcc 4.6.0.
 
+2011-03-07  Richard W.M. Jones  <rjones@redhat.com>
+
 	generator: Introduce error code (errcode) concept.
 	There was a lot of repeated code to map return types (eg. RErr)
 	to error cases (eg. -1 or NULL).
 
 	This commit introduces an error code type and two functions to
 	map return types to error codes and error codes to strings.
+
+2011-03-07  Richard W.M. Jones  <rjones@redhat.com>
 
 	Fix trace segfault for non-daemon functions (RHBZ#682756).
 	Previously we expanded the code for 'trace_return' unconditionally for
@@ -3240,6 +3674,8 @@
 
 	Note the difficult case for RConstOptString which returns NULL in
 	non-error cases.
+
+2011-03-07  Richard W.M. Jones  <rjones@redhat.com>
 
 	Fix URL of transifex instance to be the canonical one.
 	This updates commit 182a2ceae6d6f50448159e24d8b5c0c92f44407f.
@@ -3271,6 +3707,8 @@
 
 	java: Add a test of g.list_filesystems (a function that returns a Map).
 
+2011-03-02  Richard W.M. Jones  <rjones@redhat.com>
+
 	java: Fix generated functions that return RHashtable.
 	Creating a HashMap directly from JNI is possible but very tedious
 	(see: http://java.sun.com/docs/books/jni/html/fldmeth.html#26254)
@@ -3279,12 +3717,16 @@
 	String[], then add some code in the Java wrapper to convert these to
 	HashMap<String,String>.
 
+2011-03-02  Richard W.M. Jones  <rjones@redhat.com>
+
 	java: Return Map<String,String> for RHashtable functions.
 	There's no point returning the specific HashMap type here.
 	Return the generic interface type instead.
 
 	Note that no users are actually calling these functions yet,
 	since at present they always fail.
+
+2011-03-02  Richard W.M. Jones  <rjones@redhat.com>
 
 	java: Fix a minor whitespace error in generated code.
 	In functions that don't have javadoc, the function prototype wasn't
@@ -3294,6 +3736,8 @@
 	If a test.img file was left over from a previous run, then it
 	would cause the subsequent test to fail.  Therefore remove any
 	old test.img file.
+
+2011-03-02  Richard W.M. Jones  <rjones@redhat.com>
 
 	java: Enable assertions when doing 'make check'.
 	It turns out that Java assertions are disabled by default.  You have
@@ -3321,6 +3765,8 @@
 
 	Add documentation for attach method.
 
+2011-02-03  Richard W.M. Jones  <rjones@redhat.com>
+
 	Add guestfs_add_domain 'live' flag.
 	This optional flag controls whether this API call will try to connect
 	to a running virtual machine 'guestfsd' process.
@@ -3329,6 +3775,8 @@
 	libvirt XML is parsed looking for a suitable <channel> element, and
 	'guestfs_set_attach_method' is called with the corresponding
 	virtio-serial socket path.
+
+2011-02-03  Richard W.M. Jones  <rjones@redhat.com>
 
 	lib: Implement attach-method unix:<path>
 	Allow connections to a Unix domain socket which is connected
@@ -3354,8 +3802,12 @@
 
 	(or any other commands as desired).
 
+2011-02-03  Richard W.M. Jones  <rjones@redhat.com>
+
 	daemon: Remove -f (don't fork) option.
 	This option was not being used.
+
+2011-02-03  Richard W.M. Jones  <rjones@redhat.com>
 
 	daemon: Allow -r option to run daemon standalone.
 	This changes several aspects of the daemon.  Currently:
@@ -3364,8 +3816,12 @@
 	* CHROOT_IN/CHROOT_OUT are disabled
 	* autosync doesn't try to unmount everything
 
+2011-02-03  Richard W.M. Jones  <rjones@redhat.com>
+
 	daemon: change to root directory
 	Ensure the daemon always starts with current directory == root.
+
+2011-02-03  Richard W.M. Jones  <rjones@redhat.com>
 
 	New APIs: set-attach-method, get-attach-method.
 	These allow you to get and set the attach method.  The format
@@ -3376,10 +3832,14 @@
 
 	It's stored broken out into an enum and a string in the handle.
 
+2011-02-03  Richard W.M. Jones  <rjones@redhat.com>
+
 	lib: Move appliance launching to separate function.
 	This is just code motion.
 
 	php: Ignore another generated file in php/extension directory.
+
+2011-02-03  Richard W.M. Jones  <rjones@redhat.com>
 
 	daemon: Parse /proc/mounts instead of /etc/mtab
 	Since Fedora util-linux 2.19, the %post script does:
@@ -3402,6 +3862,8 @@
 	is rather tricky:
 
 	http://lxr.linux.no/#linux+v2.6.37/Documentation/filesystems/proc.txt#L1462
+
+2011-02-03  Richard W.M. Jones  <rjones@redhat.com>
 
 	regressions: Fix rhbz557655.sh so it works with tracing enabled.
 
@@ -3432,6 +3894,8 @@
 
 	lib: Fix use-after-free bug in XPath parsing code.
 
+2011-01-28  Richard W.M. Jones  <rjones@redhat.com>
+
 	Add a new internal-autosync API to perform autosync.
 	Instead of explicitly calling umount-all; sync, we add a daemon
 	function called internal-autosync which does the same.
@@ -3439,6 +3903,8 @@
 	Apart from slightly simplifying the process of closing the handle, the
 	main advantage is we can modify the daemon for the standalone case so
 	that internal-autosync does not do the umount-all operation.
+
+2011-01-28  Richard W.M. Jones  <rjones@redhat.com>
 
 	Add a prefix to output when tracing (RHBZ#673479).
 	Also separate the call and return lines so that everything can be
@@ -3475,6 +3941,8 @@
 	This also replaces a rather convoluted "have we mounted root yet"
 	check in the mount* APIs with a simpler check to see if the mountpoint
 	exists and is an ordinary directory.
+
+2011-01-27  Richard W.M. Jones  <rjones@redhat.com>
 
 	daemon: Add perror to two exit paths to make errors clearer.
 
@@ -3527,7 +3995,11 @@
 	fish.c:690: error: 'pcmd.cmd' may be used uninitialized in this
 	function [-Wuninitialized]
 
+2011-01-18  Richard W.M. Jones  <rjones@redhat.com>
+
 	Version 1.9.5
+
+2011-01-18  Richard W.M. Jones  <rjones@redhat.com>
 
 	fish: <! cmd executes a shell command and inlines the resulting commands.
 	The new guestfish construct "<! cmd" executes the shell command
@@ -3535,6 +4007,8 @@
 	and executed as a guestfish command.
 
 	This allows some very hairy shell scripting with guestfish.
+
+2011-01-18  Richard W.M. Jones  <rjones@redhat.com>
 
 	fish: Factor out command line parsing.
 	Factor out the code which splits a string into a command line.
@@ -3571,6 +4045,8 @@
 
 	Version 1.9.3.
 
+2011-01-11  Richard W.M. Jones  <rjones@redhat.com>
+
 	df: Skip final '/' character when calculating basename.
 	Previously it was including the final '/' character when calculating
 	the basename for the -a option eg:
@@ -3579,6 +4055,8 @@
 	/Ubuntu1010x64:/dev/sda1                  9.4G       2.3G       6.6G   25%
 
 	With this patch the '/' is not printed.
+
+2011-01-11  Richard W.M. Jones  <rjones@redhat.com>
 
 	fish: Don't fail if some mountpoints in /etc/fstab are bogus (RHBZ#668574).
 	Fix guestfish (and other C tools) so that they ignore errors
@@ -3596,6 +4074,8 @@
 	For more detail see:
 	https://bugzilla.redhat.com/show_bug.cgi?id=668574
 
+2011-01-11  Richard W.M. Jones  <rjones@redhat.com>
+
 	Add logo used on the website.
 
 2011-01-10  Richard W.M. Jones  <rjones@redhat.com>
@@ -3609,6 +4089,8 @@
 2011-01-08  Richard W.M. Jones  <rjones@redhat.com>
 
 	todo: Add notes on inspecting ISO images.
+
+2011-01-08  Richard W.M. Jones  <rjones@redhat.com>
 
 	virt-filesystems: Ignore errors when getting label and UUID (RHBZ#668112).
 	If virt-filesystems was pointed to an image that contained
@@ -3628,6 +4110,8 @@
 
 	fish: fails to tilde expand '~' when $HOME env is unset (RHBZ#617440).
 	This also adds a regression test.
+
+2011-01-04  Richard W.M. Jones  <rjones@redhat.com>
 
 	fish: Fix off-by-one bug in tilde expansion.
 	Although this doesn't seem to cause a crash, valgrind confirms
@@ -3670,6 +4154,8 @@
 
 	https://bugzilla.redhat.com/show_bug.cgi?id=666577
 
+2011-01-02  Douglas Schilling Landgraf  <dougsland@redhat.com>
+
 	Lib.pm: unknown filesystem label SWAP-sda2 (RHBZ#666578)
 	Hi,
 
@@ -3682,6 +4168,8 @@
 
 	Thanks
 	Douglas
+
+2011-01-02  Douglas Schilling Landgraf  <dougsland@redhat.com>
 
 	Lib.pm: avoid message "unknown filesystem /dev/fd0" (RHBZ#666577)
 	This patch to avoid the message "unknown filesystem /dev/fd0".
@@ -3786,6 +4274,8 @@
 
 	ntfs-3g: Document problems with symlinks and alternatives (RHBZ#663407).
 
+2010-12-16  Richard W.M. Jones  <rjones@redhat.com>
+
 	New APIs: getxattr and lgetxattr to get single extended attributes.
 	These APIs are essentially required to work around a problem
 	with ntfs-3g.  This filesystem (or FUSE?) does not list all
@@ -3818,6 +4308,8 @@
 	><fs> getxattr "/Users" system.ntfs_attrib | hexdump -C
 	00000000  11 00 00 00                                       |....|
 	00000004
+
+2010-12-16  Richard W.M. Jones  <rjones@redhat.com>
 
 	appliance: Add 'attr' package for xattr support in virt-rescue.
 
@@ -3854,6 +4346,8 @@
 	Remove extra \n character from end of error messages.
 
 	Version 1.7.22.
+
+2010-12-11  Richard W.M. Jones  <rjones@redhat.com>
 
 	appliance: Be careful about cleaning up old appliances.
 	This change resolves several issues with current appliance
@@ -3895,6 +4389,8 @@
 
 	cat: Remove some unused local variables in virt-cat.c and virt-ls.c.
 
+2010-12-09  Richard W.M. Jones  <rjones@redhat.com>
+
 	Add debian/ directory (temporarily).
 	This was created initially from pkg-libvirt/libguestfs.git
 	commit 680ff0b0e8c9133ef987e68392bd3990715f6891.
@@ -3906,6 +4402,8 @@
 	To build a Debian package, use this command:
 
 	  debuild -i -us -uc -b
+
+2010-12-09  Richard W.M. Jones  <rjones@redhat.com>
 
 	debian: Exclude file-rc.
 	This package duplicates /etc/init.d/README which is
@@ -3951,6 +4449,8 @@
 	build: relink-static.sh script removed from EXTRA_DIST.
 	This updates commit 9bc15f5d98a3a17d465a94f42dc3ffb60c077293.
 
+2010-12-07  Richard W.M. Jones  <rjones@redhat.com>
+
 	ubuntu: deactivate LVs and VGs before removing them.
 	Even with the '-f' option, LVM on Ubuntu sometimes cannot remove
 	active LVs and VGs.
@@ -3958,11 +4458,15 @@
 	Change lvm-remove-all so it deactivates each LV and VG before
 	removing them.
 
+2010-12-07  Richard W.M. Jones  <rjones@redhat.com>
+
 	Revert "umount-all: Add udev_settle after unmounting disks."
 	This reverts commit ad2abf89c364d5ec73fb12af63b053637d99d757.
 
 	Ubuntu still has errors even with the addition of udev_settle
 	after umount-all.  Therefore this was just masking the problem.
+
+2010-12-07  Richard W.M. Jones  <rjones@redhat.com>
 
 	debian: Fix ntfs3g available API on Debian.
 	Really we should have a test for "is program on $PATH?" but this
@@ -4005,11 +4509,15 @@
 	$ echo $s
 	--foo 'bar'
 
+2010-12-06  Richard W.M. Jones  <rjones@redhat.com>
+
 	Add --with-febootstrap-yum-config.
 	This allows the febootstrap --yum-config option to be passed through,
 	allowing a separate yum configuration to be used.
 
 	The hope is that this will enable building in Koji.
+
+2010-12-06  Richard W.M. Jones  <rjones@redhat.com>
 
 	Remove ability to build static distribution.
 	We are now going to build binaries for each distribution so
@@ -4047,6 +4555,8 @@
 
 	Debian: Extra packages needed to run C API tests.
 
+2010-12-05  Richard W.M. Jones  <rjones@redhat.com>
+
 	appliance: Change to using febootstrap 3.x supermin appliance.
 	This removes all support for building the ordinary / old
 	style appliance using febootstrap 2.x, debootstrap, debirf,
@@ -4069,12 +4579,16 @@
 	arguments.  There is now no need for 'mkfs_b' since you should
 	use 'mkfs_opts' with the optional 'blocksize' argument instead.
 
+2010-12-02  Richard W.M. Jones  <rjones@redhat.com>
+
 	generator: Code to handle optional arguments in daemon functions.
 	Previously we only supported optional arguments for library
 	functions (commit 14490c3e1aac61c6ac90f28828896683f64f0dc9).
 
 	This extends that work so that optional arguments can also be
 	passed through to the daemon.
+
+2010-12-02  Richard W.M. Jones  <rjones@redhat.com>
 
 	fish: Fix generation of code to handle Int/Int64 optional arguments.
 
@@ -4094,6 +4608,8 @@
 	check_for_daemon_cancellation_or_eof.  Modify this library
 	function so that it turns these messages into callbacks.
 
+2010-12-01  Richard W.M. Jones  <rjones@redhat.com>
+
 	protocol: Really read 4 bytes while checking for cancellation.
 	We've not actually hit this bug in practice, but at least in
 	theory while checking for cancellation we could read > 0 but
@@ -4105,10 +4621,14 @@
 	Change the code so that we temporarily set the socket back to
 	blocking and force the read of all 4 bytes.
 
+2010-12-01  Richard W.M. Jones  <rjones@redhat.com>
+
 	protocol: Send progress_hint in header.
 	For actions that have FileIn arguments, count the size of all
 	the input files and send that in the progress_hint field of the
 	request header.
+
+2010-12-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	protocol: Upload progress messages and optional arguments.
 	Two unrelated changes to the protocol to support progress
@@ -4138,6 +4658,8 @@
 	single 'basic' test, so that we don't launch the appliance
 	so often when testing in this subdirectory.
 
+2010-11-30  Richard W.M. Jones  <rjones@redhat.com>
+
 	capitests: Convert many InitBasicFS tests to InitScratchFS.
 	These tests run much more quickly if you don't have to run
 	'mkfs' and (particularly) partitioning/LV commands between each
@@ -4146,12 +4668,16 @@
 	The total time for running 'make -C capitests check' on my laptop
 	has gone from 413 seconds down to 221 seconds.
 
+2010-11-30  Richard W.M. Jones  <rjones@redhat.com>
+
 	capitests: Add 'InitScratchFS' test environment.
 	This should allow us to perform filesystem-based write
 	tests much more quickly, because we don't need to recreate
 	the filesystem from scratch each time.
 
 	capitests: Move test documentation into HACKING file.
+
+2010-11-30  Richard W.M. Jones  <rjones@redhat.com>
 
 	capitests: Use /dev/sdc for misc tests (instead of /dev/sdb).
 	This change means that /dev/sdb is not being used during
@@ -4182,6 +4708,8 @@
 	guestfish).  This is done by storing the formatted pod2text
 	output in guestfish as the help text.
 
+2010-11-26  Richard W.M. Jones  <rjones@redhat.com>
+
 	generator: More options for internal pod2text generator.
 	Allow extra width, and trimming options.
 
@@ -4189,14 +4717,20 @@
 	causing crashes if a new generator loads the old format, also
 	change the filename of the memo file.
 
+2010-11-26  Richard W.M. Jones  <rjones@redhat.com>
+
 	libtool fix: Don't do fix if there was no -o option to libtool.
 	For example if libtool is being run as 'libtool --mode=execute ...'
 
 	This fixes commit 4cf4f2b66f850bb39c5bf29d3cd12ada9114d67e.
 
+2010-11-26  Richard W.M. Jones  <rjones@redhat.com>
+
 	Version 1.7.15.
 
 	build: Add several missing shell scripts to dist.
+
+2010-11-26  Richard W.M. Jones  <rjones@redhat.com>
 
 	Remove dependency_libs from libtool *.la files.
 	Add a libtool wrapper which kills dependency_libs in libtool *.la
@@ -4204,6 +4738,8 @@
 	when linking.
 
 	See http://lists.fedoraproject.org/pipermail/devel/2010-November/146343.html
+
+2010-11-26  Richard W.M. Jones  <rjones@redhat.com>
 
 	df: Missing direct dependency on libvirt.
 	virt-df has an (optional) direct dependency on libvirt.  Because of
@@ -4220,6 +4756,8 @@
 
 	Version 1.7.14.
 
+2010-11-25  Richard W.M. Jones  <rjones@redhat.com>
+
 	df: Rewrite virt-df in C.
 	I have diffed the output from the original virt-df with this
 	new version, and they agree very closely.  Some differences:
@@ -4230,6 +4768,8 @@
 	 - New virt-df uses gnulib human_readable library which displays
 	   numbers to 3 significant figures for -h output (old version
 	   used an ad hoc function).
+
+2010-11-25  Richard W.M. Jones  <rjones@redhat.com>
 
 	Export private function 'guestfs___for_each_disk' for use by virt-df.
 	This private function (not part of the API) allows us to
@@ -4279,10 +4819,14 @@
 	This allows us to build NTFS filesystems at least.  Mounting
 	NTFS doesn't work in Debian because of a problem with debirf.
 
+2010-11-24  Richard W.M. Jones  <rjones@redhat.com>
+
 	inspect: Detect if db_dump and db_load programs are available.
 	If db_dump is not available then disable RPM application detection.
 
 	Note these utilities have odd names on Debian.
+
+2010-11-24  Richard W.M. Jones  <rjones@redhat.com>
 
 	build: Move po4a detection up near other program detection.
 
@@ -4303,12 +4847,16 @@
 
 	fish: Link to virt-inspector from guestfish man page.
 
+2010-11-23  Richard W.M. Jones  <rjones@redhat.com>
+
 	New tool: virt-filesystems
 	This tool replaces virt-list-filesystems and virt-list-partitions with
 	a new tool written in C with a more uniform command line structure
 	and output.
 
 	This existing Perl tools are deprecated but remain indefinitely.
+
+2010-11-23  Richard W.M. Jones  <rjones@redhat.com>
 
 	ls: Rewrite virt-ls in C.
 
@@ -4408,12 +4956,16 @@
 
 	inspector: Replace code for listing applications with new core API.
 
+2010-11-15  Richard W.M. Jones  <rjones@redhat.com>
+
 	New API: inspect-list-applications.
 	This converts the current Perl code in virt-inspector for
 	listing applications, into C, making it a part of the core API.
 
 	This is also capable of fetching the list of Windows applications
 	from the registry.
+
+2010-11-15  Richard W.M. Jones  <rjones@redhat.com>
 
 	inspect: Centralize all file downloads through a single function.
 
@@ -4425,6 +4977,8 @@
 	Mandriva has a release file, but it also has /etc/lsb-release and
 	the same parsing code can be reused.  Mandriva has a package manager
 	called urpmi.
+
+2010-11-15  Richard Jones  <rjones@redhat.com>
 
 	docs: Put list of distros in alphabetical order.
 
@@ -4454,6 +5008,8 @@
 
 	lib: Make some error strings localizable.
 
+2010-11-13  Richard W.M. Jones  <rjones@redhat.com>
+
 	inspect: Inspection support for FreeBSD.
 	This adds inspection support for FreeBSD.
 
@@ -4462,6 +5018,8 @@
 	which cannot be done because Linux requires special mount options
 	for the Universal Filesystem (UFS) used by *BSD.  Nevertheless
 	you can manually run the same commands.
+
+2010-11-13  Richard W.M. Jones  <rjones@redhat.com>
 
 	inspect: Optimize root filesystem check.
 	Avoid duplicate checks for things like /etc and /bin.
@@ -4472,6 +5030,8 @@
 
 	docs: Add a section on security.
 
+2010-11-13  Richard W.M. Jones  <rjones@redhat.com>
+
 	docs: Rearrange guestfs(3) sections.
 	This rearranges the sections into a more logical order:
 
@@ -4481,6 +5041,8 @@
 	 - API in detail
 	 - architecture and other internals
 	 - usual end sections
+
+2010-11-13  Richard W.M. Jones  <rjones@redhat.com>
 
 	static: Use correct libraries for static binaries.
 	Also add virt-cat.static target.
@@ -4505,11 +5067,15 @@
 
 	Check that just including <guestfs.h> on its own works.
 
+2010-11-11  Richard W.M. Jones  <rjones@redhat.com>
+
 	Don't need to include XDR headers in <guestfs.h>.
 	Include the XDR headers in the internal guestfs-internal.h instead.
 
 	This is knock-on effects to several other source files which
 	were implicitly relying on indirectly loaded headers.
+
+2010-11-11  Richard W.M. Jones  <rjones@redhat.com>
 
 	Be less verbose in the macros defending typedefs in <guestfs.h>.
 	This updates commit 4d59e271046f2b5f0d9b1730cd23425fd631c76c.
@@ -4522,6 +5088,8 @@
 	At some point we removed the last thing that required
 	xml-light, but were still testing for it at various places
 	in the build.  This removes all traces.
+
+2010-11-11  Richard W.M. Jones  <rjones@redhat.com>
 
 	Rewrite virt-cat in C.
 	With changes in the core API since 1.5, virt-cat was little
@@ -4539,12 +5107,16 @@
 	and with the new style multiple files can be downloaded.  See the
 	man page for details.
 
+2010-11-11  Richard W.M. Jones  <rjones@redhat.com>
+
 	Generate a dummy 'Fedora' fedora.img in images directory for use by tests.
 	We were generating this dummy 'Fedora' image already in the
 	tools directory.  It contains just enough Fedora-like files
 	to fool our inspection code and thus to test the tools.
 
 	This is general enough that we can use it everywhere.
+
+2010-11-11  Richard W.M. Jones  <rjones@redhat.com>
 
 	Defend all typedefs in <guestfs.h> with #ifdefs.
 	This allows other libraries to redefine those typedefs
@@ -4566,6 +5138,8 @@
 	This also makes libxml2 and libvirt into optional dependencies.
 	If they are missing then the core API will print an error, as
 	will the '-d' option to guestfish.
+
+2010-11-11  Richard Jones  <rjones@redhat.com>
 
 	New API: add-domain
 	This new API allows you to add the disks from a libvirt
@@ -4617,6 +5191,8 @@
 	This internal interface can be used to ensure that certain
 	operations are atomic.
 
+2010-11-10  Richard Jones  <rjones@redhat.com>
+
 	lib: Make pcre, libmagic and hivex libraries optional.
 	This change makes these libraries optional.  If they are not
 	available at compile time then certain core API features will
@@ -4654,6 +5230,8 @@
 
 	Revert "autogen: Touch ocaml/.depend"
 	This reverts commit a0f85ba643990da25b6afe6a2bbd2407cf312c73.
+
+2010-11-08  Richard Jones  <rjones@redhat.com>
 
 	Revert "Remove ocaml/.depend from git."
 	This reverts commit 064569bcbf854a9cf588ce31851d987d5f114ec8.
@@ -4729,6 +5307,8 @@
 
 	  sh: febootstrap-supermin-helper: command not found
 
+2010-11-08  Richard W.M. Jones  <rjones@redhat.com>
+
 	fish: Add --rw option (does nothing yet).
 	This adds the guestfish --rw option, intended in future
 	to be required for writing to disk images.
@@ -4752,6 +5332,8 @@
 	fish: Add --listen --csh to for csh, tcsh compatibility.
 	(Thanks Eric Blake).
 
+2010-11-05  Richard W.M. Jones  <rjones@redhat.com>
+
 	fish: Suggest safer form of eval.
 	eval "$(guestfish --listen)"
 
@@ -4759,11 +5341,15 @@
 
 	(Thanks Eric Blake).
 
+2010-11-05  Richard W.M. Jones  <rjones@redhat.com>
+
 	fish: More portable export sh statment.
 	Don't depend on bash, but allow sh/dash/etc format:
 	GUESTFISH_PID=nn; export GUESTFISH_PID
 
 	(Thanks Eric Blake).
+
+2010-11-05  Richard W.M. Jones  <rjones@redhat.com>
 
 	New API: inspect-get-roots to return roots from last inspection.
 	Return the roots found by the last call to inspect-os, but
@@ -4786,6 +5372,8 @@
 
 	Don't print out key material in trace output.
 
+2010-11-05  Richard W.M. Jones  <rjones@redhat.com>
+
 	fish: '-i' option automatically handles whole-disk encryption.
 	This feature is also available in guestmount because of the
 	shared option parsing code.
@@ -4805,6 +5393,8 @@
 	fish: Fix missing guestfish commands in HTML docs.
 
 	fish: Make the 'help' command more helpful.
+
+2010-11-04  Richard W.M. Jones  <rjones@redhat.com>
 
 	docs: Which API calls were first supported in which upstream versions.
 	Run src/api-support/update-from-tarballs.sh (this won't work
@@ -4849,12 +5439,16 @@
 	make it available to callers through the guestfs_last_errno
 	function.
 
+2010-11-03  Richard W.M. Jones  <rjones@redhat.com>
+
 	daemon: Send back the errno as a string.
 	This changes the protocol again so that if the errno is available,
 	it is converted to a string (like "EIO") and sent back over the
 	protocol to the library.
 
 	In this commit the library just discards the string.
+
+2010-11-03  Richard W.M. Jones  <rjones@redhat.com>
 
 	capitests: Test guestfs_add_drive_opts with optional args from C.
 
@@ -4965,6 +5559,8 @@
 
 	This patch resolves RHBZ#639405
 
+2010-10-28  Matthew Booth  <mbooth@redhat.com>
+
 	Call febootstrap-supermin-helper using the new -u and -g options
 	Use febootstrap-supermin-helper's new -u and -g command line options to setuid,
 	rather than doing it in libguestfs.
@@ -4977,6 +5573,8 @@
 	created for root with permissions for uid 36.
 
 	Note this requires febootstrap 2.10.
+
+2010-10-28  Matthew Booth  <mbooth@redhat.com>
 
 	Log the febootstrap-supermin-helper command line
 	A side-effect of change 17e7cb9937a63ed8f9bb0fb6ac7302758be76846 was the the
@@ -5000,6 +5598,8 @@
 	However the code is left since this function is used
 	by virt-v2v amongst others.
 
+2010-10-28  Richard W.M. Jones  <rjones@redhat.com>
+
 	inspector: Rewrite virt-inspector (RHBZ#642930).
 	Rewrite virt-inspector:
 
@@ -5010,6 +5610,8 @@
 	The RNG has been updated to reflect the new XML-only output.
 
 	The new example files show the new XML output.
+
+2010-10-28  Richard W.M. Jones  <rjones@redhat.com>
 
 	tools: Use C API for inspection (RHBZ#642930).
 	Update the following tools to use the C API for inspection:
@@ -5023,10 +5625,14 @@
 	None of the tools in the tools/ directory now use the deprecated
 	Perl inspection APIs.
 
+2010-10-28  Richard W.M. Jones  <rjones@redhat.com>
+
 	New API: inspect-get-windows-systemroot to get systemroot.
 	We are already using heuristics in the C inspection code to
 	determine the Windows %SYSTEMROOT% directory.  This change
 	just exposes this information through the API.
+
+2010-10-28  Richard W.M. Jones  <rjones@redhat.com>
 
 	Sys::Guestfs::Lib: deprecate inspection functions (RHBZ#642930).
 	Deprecate the guest inspection functions in this module, remove
@@ -5035,14 +5641,20 @@
 	However we will keep the code here since it is used by virt-v2v
 	and virt-inspector.
 
+2010-10-28  Richard W.M. Jones  <rjones@redhat.com>
+
 	daemon: Fix /dev/mapper paths from mounts and mountpoints (RHBZ#646432).
 	Make the LV paths returned by these two commands canonical.
+
+2010-10-28  Richard W.M. Jones  <rjones@redhat.com>
 
 	edit: Clean up tmp file handling in virt-edit.
 	This was probably not a security issue, but this change
 	makes the code cleaner by not opening the tmp file twice.
 
 	Also be more careful about error checking in close syscall.
+
+2010-10-28  Richard W.M. Jones  <rjones@redhat.com>
 
 	doc: Warn about security implications of running commands.
 
@@ -5060,6 +5672,8 @@
 	Disable test for RHBZ#576879 comment 5.
 	This test has started to hang, for reasons we don't understand.
 
+2010-10-27  Richard W.M. Jones  <rjones@redhat.com>
+
 	Unify guestfish and guestmount options processing (RHBZ#642932).
 	In guestfish, factor out the processing of the options -a, -c,
 	-d, -i, -m, -n, -r, -v, -V, -x into a separate set of files:
@@ -5073,6 +5687,8 @@
 	can now do:
 
 	  guestmount -d Guest -i --ro mnt/
+
+2010-10-27  Richard W.M. Jones  <rjones@redhat.com>
 
 	df: Add --uuid option to print guest UUIDs instead of names (RHBZ#646821).
 
@@ -5095,6 +5711,8 @@
 
 	Enable autosync by default.
 
+2010-10-27  Richard W.M. Jones  <rjones@redhat.com>
+
 	/dev/mapper paths should not be returned from C inspection APIs (RHBZ#638899).
 	With this patch, /dev/mapper paths do not appear in the output
 	of guestfs_inspect_os, as you can see from this example:
@@ -5109,6 +5727,8 @@
 	Operating system: Fedora release 13 (Goddard)
 	/dev/vg_f13x64/lv_root mounted on /              <--- NB
 	/dev/vda1 mounted on /boot
+
+2010-10-27  Richard W.M. Jones  <rjones@redhat.com>
 
 	New API: lvm-canonical-lv-name: make LV name canonical.
 	When logical volume names appear in places like /etc/fstab
@@ -5141,8 +5761,12 @@
 	><fs> lvm-canonical-lv-name /dev/vg_f13x64/lv_root
 	/dev/vg_f13x64/lv_root
 
+2010-10-27  Richard W.M. Jones  <rjones@redhat.com>
+
 	rescue: Add --network option.
 	This enables networking in the rescue shell.
+
+2010-10-27  Richard W.M. Jones  <rjones@redhat.com>
 
 	Don't use kernel module whitelist with ext2-based appliance.
 	Since the ext2-based appliance is cached, and since it is not
@@ -5195,6 +5819,8 @@
 	fish: Reject unknown opt args (RHBZ#642934,CVE-2010-3851).
 	This updates commit 0c1d3c02a8147617ee0646e37d011235abdd2c22.
 
+2010-10-23  Richard W.M. Jones  <rjones@redhat.com>
+
 	fuse: Add --format option to docs (RHBZ#642934,CVE-2010-3851).
 	This updates commit 44c5ee1163918bd5c9e6aa6c292f0c3bb15b7b25.
 
@@ -5203,6 +5829,8 @@
 2010-10-22  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.5.23.
+
+2010-10-22  Richard W.M. Jones  <rjones@redhat.com>
 
 	resize: Specify format of input, output disk (RHBZ#642934,CVE-2010-3851).
 	This adds two new options: --format specifies the format of the
@@ -5216,12 +5844,16 @@
 	could write a qcow2 header here and have it copied to the output
 	disk, which we would subsequently reopen.
 
+2010-10-22  Richard W.M. Jones  <rjones@redhat.com>
+
 	virt-make-fs: Specify format of disk (RHBZ#642934,CVE-2010-3851).
 
 	df: Specify format of disks (RHBZ#642934,CVE-2010-3851).
 	The format parameter is taken from libvirt if available, else
 	the user should supply the '--format' parameter (eg. for local
 	disk files).
+
+2010-10-22  Richard W.M. Jones  <rjones@redhat.com>
 
 	tools: Specify format of disks (RHBZ#642934,CVE-2010-3851).
 	Sys::Guestfs::Lib is changed in two ways: firstly we take the format
@@ -5232,9 +5864,13 @@
 	All the tools are changed to add an extra --format parameter allowing
 	the format to be specified for direct disk images.
 
+2010-10-22  Richard W.M. Jones  <rjones@redhat.com>
+
 	fuse: Specify format of disks (RHBZ#642934,CVE-2010-3851).
 	For command line disk images, specify the format using --format option
 	in the same way as for guestfish.
+
+2010-10-22  Richard W.M. Jones  <rjones@redhat.com>
 
 	fish: Specify format of disks (RHBZ#642934,CVE-2010-3851).
 	For libvirt guests, the disk format is copied from libvirt (if
@@ -5242,6 +5878,8 @@
 
 	For command line disk images, you can use --format to override
 	format auto-detection.
+
+2010-10-22  Richard W.M. Jones  <rjones@redhat.com>
 
 	generator: Optional arguments, add-drive-opts (RHBZ#642934,CVE-2010-3851).
 	This large commit changes the generator so that optional arguments
@@ -5313,6 +5951,8 @@
 	as a language.
 
 	Unimplemented in: Haskell, C#, Java.
+
+2010-10-22  Richard W.M. Jones  <rjones@redhat.com>
 
 	generator: Rearrange argt logically (RHBZ#642934,CVE-2010-3851).
 	This structure has accreted over time.  Rearrange the types
@@ -5437,6 +6077,8 @@
 
 	Version 1.5.21.
 
+2010-10-01  Richard W.M. Jones  <rjones@redhat.com>
+
 	fish: Fix glob command (RHBZ#635969).
 	This is a fix for the glob command in guestfish which was inadvertently
 	broken in commit c359347dd42c9f5b875630537ee3641264826b89.
@@ -5460,6 +6102,8 @@
 	done by virt-resize.  We are not interested here in whether e2fsprogs
 	and LVM actually works.
 
+2010-09-27  Richard W.M. Jones  <rjones@redhat.com>
+
 	resize: Fix handling of GPT and qcow2 (RHBZ#633766, RHBZ#633096).
 	Previously we copied the bootloader data directly from the
 	source disk image to the target disk image using host file
@@ -5476,6 +6120,8 @@
 	using the new APIs pread-device and pwrite-device.
 
 	Shrinking now works, at least for simple cases (RHBZ#633766).
+
+2010-09-27  Richard W.M. Jones  <rjones@redhat.com>
 
 	New API: pread-device, partial read for devices.
 
@@ -5525,10 +6171,14 @@
 
 	Version 1.5.19.
 
+2010-09-22  Richard W.M. Jones  <rjones@redhat.com>
+
 	regressions: Test just-built guestfish.
 	Instead of testing the installed /usr/bin/guestfish.
 
 	This fixes commit ddda0f7bd00a37274dae38f4ce93955b8cfdf7d7.
+
+2010-09-22  Richard W.M. Jones  <rjones@redhat.com>
 
 	Call blockdev --rereadpt after sfdisk commands.
 	On fast machines sfdisk has some sort of race where it
@@ -5540,6 +6190,8 @@
 	blockdev --rereadpt after sfdisk operations, which
 	experience shows is enough to stop the problem from
 	happening.
+
+2010-09-22  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.5.18.
 
@@ -5569,6 +6221,8 @@
 	These APIs allow you to efficiently write and read parts of
 	files or devices.
 
+2010-09-21  Richard W.M. Jones  <rjones@redhat.com>
+
 	leak: Clear history before exiting guestfish.
 	Clear the in-memory history before exiting.  This removes
 	some but not all memory leaks associated with using the GNU
@@ -5576,6 +6230,8 @@
 	free up everything used by GNU History.
 
 	(Found by valgrind).
+
+2010-09-21  Richard W.M. Jones  <rjones@redhat.com>
 
 	leak: Free list of drives and mountpoints in guestfish.
 	Previously the list of -a, -d, -m, -N parameters were leaked.  This
@@ -5586,11 +6242,15 @@
 
 	(Found by valgrind).
 
+2010-09-21  Richard W.M. Jones  <rjones@redhat.com>
+
 	leak: Free PCRE regexps when library is unloaded.
 	The compiled PCRE regexps used for inspection were being leaked when
 	the library was unloaded.
 
 	(Found by valgrind).
+
+2010-09-21  Richard W.M. Jones  <rjones@redhat.com>
 
 	leak: Appliance name was leaked during guestfs_launch.
 	This frees the string containing the name of the appliance
@@ -5601,6 +6261,8 @@
 2010-09-21  Matthew Booth  <mbooth@redhat.com>
 
 	Add more exclusions to .gitignore.
+
+2010-09-21  Matthew Booth  <mbooth@redhat.com>
 
 	Fix appliance build dependency problem
 	The appliance was being completely rebuilt every time guestfsd was updated. This
@@ -5621,6 +6283,8 @@
 
 	df: Add --one-per-guest option for using one appliance per guest.
 
+2010-09-20  Richard W.M. Jones  <rjones@redhat.com>
+
 	Fix error launching libguestfs when euid != uid.
 	When writing to a RHEV target, virt-v2v launches the libguestfs
 	appliance with euid:egid = 36:36, which is required to write to
@@ -5636,6 +6300,8 @@
 	This patch fixes the issue by using explicit fork/exec instead of
 	system (ie. not going via a shell) and by setting the real UID and
 	GID to the effective UID and GID before execing.
+
+2010-09-20  Richard W.M. Jones  <rjones@redhat.com>
 
 	todo: Suggest removing repo name from appliance name.
 
@@ -5666,6 +6332,8 @@
 
 	Version 1.5.15.
 
+2010-09-15  Richard Jones  <rjones@redhat.com>
+
 	New API: list-filesystems: list filesystems
 	This API is a simpler replacement for the guestfish commands
 	list-devices / list-partitions / lvs, in the case where you are
@@ -5682,6 +6350,8 @@
 
 	It can also be used to replace programs that try to mount
 	devices to determine if they are mountable filesystems.
+
+2010-09-15  Richard Jones  <rjones@redhat.com>
 
 	New API: part-to-dev: Convert partition name to device name.
 	This adds a formal API for going from a partition to the containing
@@ -5755,6 +6425,8 @@
 
 	build: Don't distribute src/generator.ml, no longer exists.
 
+2010-09-11  Richard Jones  <rjones@redhat.com>
+
 	generator: Calculate MD5 of test.iso at runtime.
 	Because this used to be compiled into the C test, it changed
 	every time the ISO was rebuilt (which because of Makefile deps
@@ -5763,9 +6435,13 @@
 	Now it is calculated at runtime so the C test file doesn't keep
 	changing.
 
+2010-09-11  Richard Jones  <rjones@redhat.com>
+
 	generator: Don't use real uuidgen for UUIDs.
 	This was one reason why capitests/tests.c changed every time the
 	generator was run.
+
+2010-09-11  Richard Jones  <rjones@redhat.com>
 
 	Split generator into separate source files.
 	'src/generator.ml' is no more.  Instead the generator is logically
@@ -5775,6 +6451,8 @@
 
 	We compile the generator down to bytecode, not native code.  This
 	means it will run more slowly, but is done for maximum portability.
+
+2010-09-11  Richard Jones  <rjones@redhat.com>
 
 	syntax: Replace -a and -o with && and || for portability.
 
@@ -5897,6 +6575,8 @@
 	offer any convenient 64 bit type (on 32 bit).  Therefore you should
 	always use these PHP bindings on 64 bit.
 
+2010-09-04  Richard Jones  <rjones@redhat.com>
+
 	Define LIBGUESTFS_HAVE_<shortname> for C API functions.
 	The actions each have a corresponding define, eg:
 
@@ -5907,6 +6587,8 @@
 	not have the corresponding define.  Also a few functions are so
 	basic (eg. guestfs_create) that there is no point defining a symbol
 	for them.
+
+2010-09-04  Richard Jones  <rjones@redhat.com>
 
 	build: guestfs-structs.h was missing from libguestfs_la_SOURCES.
 
@@ -5959,16 +6641,22 @@
 
 	debug: Arrange prototypes in alphabetical order.
 
+2010-09-01  Richard Jones  <rjones@redhat.com>
+
 	daemon: Enable debug command by default.
 	The debug command is useful for internal testing, and so should
 	be enabled by default in all builds.
 
 	Note that it is still *not* part of the stable ABI.
 
+2010-09-01  Richard Jones  <rjones@redhat.com>
+
 	Consistent use of 'void *opaque' to refer to opaque pointer in C API.
 	We inconsistently used 'void *data' or 'void *opaque' all over to
 	refer to the same thing.  Use 'void *opaque' in all places in the
 	published API and documentation.
+
+2010-09-01  Richard Jones  <rjones@redhat.com>
 
 	resize: Add progress bar to virt-resize.
 	With this commit you will see a plain progress bar during the
@@ -5983,9 +6671,13 @@
 	Copying /dev/sda2 ...
 	[########################################------------------------------------]
 
+2010-09-01  Richard Jones  <rjones@redhat.com>
+
 	perl: bindings to progress callback.
 
 	ocaml: bindings to progress callback.
+
+2010-09-01  Richard Jones  <rjones@redhat.com>
 
 	Implement private data area.
 	The private data area is a hash table which is associated with
@@ -5994,6 +6686,8 @@
 
 	Later the OCaml bindings will use this in order to implement
 	callbacks.
+
+2010-09-01  Richard Jones  <rjones@redhat.com>
 
 	fish: Implement progress bars in guestfish.
 	The progress bar is updated 3 times per second, and is not displayed
@@ -6010,6 +6704,8 @@
 	          zero-device /dev/sda
 
 	(adjust "10G" to get different lengths of time).
+
+2010-09-01  Richard Jones  <rjones@redhat.com>
 
 	fish: Detect UTF-8 output and open termcap/terminfo database.
 	Provide a generic mechanism within guestfish to detect if
@@ -6030,6 +6726,8 @@
 
 	Add progress messages to copy-size command.
 
+2010-08-31  Richard Jones  <rjones@redhat.com>
+
 	Implement progress messages in the daemon and library.
 	This implements progress notification messages in the daemon, and
 	adds a callback in the library to handle them.
@@ -6041,6 +6739,8 @@
 	https://www.redhat.com/archives/libguestfs/2010-July/msg00003.html
 	https://www.redhat.com/archives/libguestfs/2010-July/msg00024.html
 
+2010-08-31  Richard Jones  <rjones@redhat.com>
+
 	ocaml: Remove old entry from .gitignore file.
 
 2010-08-27  Richard Jones  <rjones@redhat.com>
@@ -6050,6 +6750,8 @@
 	Requires febootstrap >= 2.9.
 
 	daemon: Set O_CLOEXEC flag on the virtio-serial file descriptor.
+
+2010-08-27  Richard Jones  <rjones@redhat.com>
 
 	build: Don't add version extra string to the version number.
 	If this string was non-empty, then it broke a lot of things because
@@ -6088,6 +6790,8 @@
 	launch() expects guestfsd to start, which it never does in virt-rescue, so it
 	always returns an error about the appliance shutting down unexpectedly.
 
+2010-08-26  Matthew Booth  <mbooth@redhat.com>
+
 	Shut down the appliance cleanly
 	When guestfsd exits, or the user exits the virt-rescue shell, the init script
 	exits which causes the kernel to panic. This isn't really a functional issue, as
@@ -6099,12 +6803,16 @@
 	ACPI is disabled in the appliance, meaning poweroff doesn't work, but qemu is
 	configured not to restart on reboot.
 
+2010-08-26  Matthew Booth  <mbooth@redhat.com>
+
 	Call sync after guestfsd exits
 	Core files are not reliably written to disk if guestfsd dumps core. This patch
 	makes libguestfs do the same appliance cleanup for guestfsd and virt-rescue,
 	which seems to fix the matter.
 
 	It also removes a redundant sleep and additional sync when exiting virt-rescue.
+
+2010-08-26  Matthew Booth  <mbooth@redhat.com>
 
 	Add a core_pattern debug command
 	This adds a new debug command, core_pattern, which writes a new pattern for
@@ -6145,6 +6853,8 @@
 	made available to callers, since it is not clear how best to
 	present this Linux-specific number.
 
+2010-08-24  Richard Jones  <rjones@redhat.com>
+
 	Raise error message max size to 64K.
 	This commit removes one of the protocol limits, by raising the
 	maximum error message size from 256 bytes to 64K.
@@ -6152,6 +6862,8 @@
 	Although we could consider raising this further, since the
 	error messages are currently stored in fixed sized buffers on
 	the stack, that would require more invasive code changes.
+
+2010-08-24  Richard Jones  <rjones@redhat.com>
 
 	Use virtio-serial, remove other vmchannel methods.
 	This adds support for virtio-serial, and removes all other
@@ -6178,6 +6890,8 @@
 
 	Requires febootstrap >= 2.8.
 
+2010-08-23  Richard Jones  <rjones@redhat.com>
+
 	Make print_timestamped_message into a cross-module function.
 	This is just code movement.
 
@@ -6199,6 +6913,8 @@
 	Not used by anyone, didn't work well, and replaced now by the
 	C inspection APIs.
 
+2010-08-17  Richard Jones  <rjones@redhat.com>
+
 	fish: Reimplement -i option using new C-based inspection.
 	Don't shell out to virt-inspector.  Instead, use the new C-based
 	inspection APIs.
@@ -6212,12 +6928,16 @@
 
 	However, the old syntax still works.
 
+2010-08-17  Richard Jones  <rjones@redhat.com>
+
 	fish: Add -c/--connect and -d/--domain options.
 	The -d option lets you specify libvirt domains.  The disks from
 	these domains are found and added, as if you'd named them with -a.
 
 	The -c option lets you specify a libvirt URI, which is needed
 	when we consult libvirt to implement the above.
+
+2010-08-17  Richard Jones  <rjones@redhat.com>
 
 	New APIs for guest inspection.
 	This commit converts (some of) the Perl inspection code to C and
@@ -6238,6 +6958,8 @@
 	  filesystems     - get all filesystems associated with the OS
 
 	This works for all existing supported Linux and Windows OSes.
+
+2010-08-17  Richard Jones  <rjones@redhat.com>
 
 	New APIs: findfs-label and findfs-uuid
 	These two calls wrap up the /sbin/findfs command, allowing you
@@ -6262,6 +6984,8 @@
 	/dev/mapper/VolGroup00-LogVol00
 	><fs> findfs-uuid 12345678
 	libguestfs: error: findfs_uuid: findfs: unable to resolve 'UUID=12345678'
+
+2010-08-17  Richard Jones  <rjones@redhat.com>
 
 	New API: file-architecture
 	This change simply converts the existing Perl-only function
@@ -6338,6 +7062,8 @@
 
 	This is just code movement.
 
+2010-07-27  Richard Jones  <rjones@redhat.com>
+
 	Rename guestfs-{actions,bindtests}.c to {actions,bindtests}.c
 	Rename these two generated files, in preparation for splitting
 	up the main src/guestfs.c file.
@@ -6352,6 +7078,8 @@
 
 	Version 1.5.2.
 
+2010-07-22  Richard Jones  <rjones@redhat.com>
+
 	regressions: Don't print misleading 'Expect error ...' lines.
 	Some tests in the regressions directory deliberately print
 	error messages.  As long as they still PASS, this is OK.
@@ -6363,6 +7091,8 @@
 	Therefore remove these messages, and replace with a general
 	message before all tests telling users not to worry about
 	errors from the tests as long as the tests don't fail.
+
+2010-07-22  Richard Jones  <rjones@redhat.com>
 
 	New APIs: Support for creating LUKS and managing keys.
 	This commit adds four APIs for creating new LUKS devices
@@ -6382,7 +7112,11 @@
 	This also includes a regression test covering all the LUKS
 	functions.
 
+2010-07-22  Richard Jones  <rjones@redhat.com>
+
 	Move variable initialization close to variable use.
+
+2010-07-22  Richard Jones  <rjones@redhat.com>
 
 	Revert "add_drive_ro adds readonly=on option if available." (RHBZ#617200).
 	Adding the readonly=on option is not so clever.  This causes
@@ -6401,11 +7135,15 @@
 
 	This reverts commit 676462684e05dd8341dd695762dd99a87d8ec022.
 
+2010-07-22  Richard Jones  <rjones@redhat.com>
+
 	generator: Make documentation inside guestfish match man page.
 
 2010-07-21  Richard Jones  <rjones@redhat.com>
 
 	Version 1.5.1.
+
+2010-07-21  Richard Jones  <rjones@redhat.com>
 
 	New APIs: Support for opening LUKS-encrypted disks.
 	This adds support for opening LUKS-encrypted disks, via
@@ -6456,6 +7194,8 @@
 	 - Direct access to the /dev/mapper device (eg. if it contains
 	   anything apart from VGs).
 
+2010-07-21  Richard Jones  <rjones@redhat.com>
+
 	generator: Add 'Key' parameter type.
 	Add a 'Key' parameter type, used for passing sensitive key material
 	into libguestfs.
@@ -6467,6 +7207,8 @@
 
 	The only difference between 'Key' and 'String' currently is that
 	guestfish requests the key from /dev/tty with echoing turned off.
+
+2010-07-21  Richard Jones  <rjones@redhat.com>
 
 	generator: Remove unnecessary parameter.
 	The 'name' parameter is not used on the right hand side of the
@@ -6488,11 +7230,15 @@
 	(2) We have to use LVM filters (lvm-set-filter) to confine LVM to
 	the disks of a single guest.
 
+2010-07-16  Richard Jones  <rjones@redhat.com>
+
 	New APIs: lvm-set-filter and lvm-clear-filter.
 	These APIs allow you to change the device filter, the list of
 	block devices that LVM "sees".  Either you can set it to a fixed
 	list of devices / partitions, or you can clear it so that LVM sees
 	everything.
+
+2010-07-16  Richard Jones  <rjones@redhat.com>
 
 	Use an unsigned type (size_t) for all loop iterators.
 	This resolves a warning from gcc 4.5:
@@ -6501,6 +7247,8 @@
 
 	This page explains the issues in some detail:
 	  http://www.airs.com/blog/archives/120
+
+2010-07-16  Richard Jones  <rjones@redhat.com>
 
 	generator: Don't hard-code name in DeviceList check.
 	Only one function currently uses DeviceList.  The generated code
@@ -6560,6 +7308,8 @@
 	-rw-r--r--.  1 rjones rjones 118869504 Jul  2 18:03 initrd
 	lrwxrwxrwx.  1 rjones rjones        46 Jul  2 18:03 kernel -> /boot/vmlinuz-2.6.33-0.40.rc7.git0.fc13.x86_64
 
+2010-07-07  Richard Jones  <rjones@redhat.com>
+
 	fish: Don't fail if -m and --listen flags are both given (RHBZ#612178).
 	Testing this against a Fedora disk image:
 
@@ -6589,6 +7339,8 @@
 
 	Version 1.3.21.
 
+2010-06-16  Richard Jones  <rjones@redhat.com>
+
 	ocaml: Fix thread safety of strings in bindings (RHBZ#604691).
 	There's a thread safety issue with the current OCaml bindings which
 	is well explained in the bug report:
@@ -6609,6 +7361,8 @@
 	    ocaml_guestfs_raise_error (g, "add_drive_ro");
 
 	Also included is a regression test.
+
+2010-06-16  Richard Jones  <rjones@redhat.com>
 
 	TODO: Add a note about impl of list-filesystems.
 
@@ -6650,6 +7404,8 @@
 	a method without a Sys::Guestfs handle as the first parameter,
 	into an error.  This is because such cases are always errors.
 
+2010-06-10  Richard Jones  <rjones@redhat.com>
+
 	Add error callback (RHBZ#602599).
 	Read the note in the man page before using this feature.
 
@@ -6667,6 +7423,8 @@
 	TODO: Need to add regression test for virt-inspector.
 
 	TODO: 'file' command should be fixed.
+
+2010-06-08  Richard Jones  <rjones@redhat.com>
 
 	virt-df: Disallow -h and --csv options together (RHBZ#600977).
 	Before this commit, if you used the -h and --csv options together
@@ -6690,6 +7448,8 @@
 	misinterpret, eg. thinking that "1M" and "1G" are both 1.
 
 	Therefore this commit disallows this combination of options.
+
+2010-06-08  Richard Jones  <rjones@redhat.com>
 
 	file: Fix file command on /dev/VG/LV paths (RHBZ#582484).
 	Previous commit 4df593496e116dfb635731c058b7627e81fc179c broke the
@@ -6726,6 +7486,8 @@
 	Version 1.3.19.
 	Update BUGS and PO files.
 
+2010-06-04  Richard Jones  <rjones@redhat.com>
+
 	file: Restrict to regular files (RHBZ#582484).
 	The file call can hang if called on char devices (because we are
 	using the file -s option).
@@ -6747,7 +7509,11 @@
 	that (eg) /etc/redhat-release was a char device, which would have
 	caused virt-inspector and virt-v2v to hang.  Now it will not hang.
 
+2010-06-04  Richard Jones  <rjones@redhat.com>
+
 	touch: Restrict touch to regular files only (RHBZ#582484).
+
+2010-06-04  Richard Jones  <rjones@redhat.com>
 
 	daemon: Rearrange code in 'file' command.
 	  path = path to access file (/sysroot/.. or /dev/..)
@@ -6755,6 +7521,8 @@
 	  buf = optional buffer which is freed along return codepaths
 
 	There should be no change to the semantics of the code.
+
+2010-06-04  Richard Jones  <rjones@redhat.com>
 
 	gnulib: Ignore asm-underscore.m4 in the correct place.
 
@@ -6768,12 +7536,16 @@
 
 	mkfs-b: Check that blocksize parameter is > 0 and a power of 2.
 
+2010-06-03  Richard Jones  <rjones@redhat.com>
+
 	generator: Allow individual tests to depend on daemon features.
 	Using IfAvailable "featurename" we allow individual tests to
 	only run if the feature is available in the daemon.
 
 	This will allow us to extend testing to a lot more optional
 	features such as NTFS.
+
+2010-06-03  Richard Jones  <rjones@redhat.com>
 
 	tests: Factor out common code into 'is_available' function.
 	This commit is just code motion.
@@ -6791,6 +7563,8 @@
 
 	parted: Check partition number >= 1 in several calls.
 
+2010-06-02  Richard Jones  <rjones@redhat.com>
+
 	daemon: Parse output of old parted which didn't support -m option (RHBZ#598309).
 	This fixes the following commands when run with RHEL 5-era parted:
 
@@ -6798,7 +7572,11 @@
 	  get-parttype
 	  part-list
 
+2010-06-02  Richard Jones  <rjones@redhat.com>
+
 	daemon: count_strings function returns size_t
+
+2010-06-02  Richard Jones  <rjones@redhat.com>
 
 	base64-in: Ignore garbage characters in input.
 	On RHEL 5 you have to specify the -i option to get the
@@ -6807,7 +7585,11 @@
 
 	Add this option so the tests can pass on RHEL 5.
 
+2010-06-02  Richard Jones  <rjones@redhat.com>
+
 	resize2fs: Document this command also works with ext4 (thanks Yufang Zhang).
+
+2010-06-02  Richard Jones  <rjones@redhat.com>
 
 	fish: help command return error for non-existent commands (RHBZ#597145).
 	With this change, the exit status indicates error for non-existent
@@ -6821,6 +7603,8 @@
 	foo: command not known, use -h to list all commands
 	$ echo $?
 	1
+
+2010-06-02  Richard Jones  <rjones@redhat.com>
 
 	daemon: write-file: Check range of size parameter (RHBZ#597135).
 	This also adds a regression test.
@@ -6839,6 +7623,8 @@
 	This also adds a regression test for the original bug reported
 	in RHBZ#597112.
 
+2010-06-01  Richard Jones  <rjones@redhat.com>
+
 	New APIs: vfs-label and vfs-uuid return label and uuid for many fs types.
 	These APIs generalize the existing 'get-e2label' and 'get-e2uuid'
 	calls, to provide calls which should be able to get the label
@@ -6848,6 +7634,8 @@
 	I have tested that the blkid commands themselves work on RHEL 5.
 
 	(Suggested by Yufang Zhang).
+
+2010-06-01  Richard Jones  <rjones@redhat.com>
 
 	daemon: Kill blkid cache to improve reliability of blkid commands.
 	By killing the cache file, we make blkid work in situations such
@@ -6865,6 +7653,8 @@
 2010-05-27  Matthew Booth  <mbooth@redhat.com>
 
 	Make the supermin appliance include local augeas lenses
+
+2010-05-27  Matthew Booth  <mbooth@redhat.com>
 
 	Rely on new augeas lens for modules.conf and conf.modules
 	Latest augeas includes a lens for /etc/modules.conf. If this new lens is
@@ -6942,6 +7732,8 @@
 	Follow the example on other manual pages by making the warning
 	more prominent.
 
+2010-05-25  Richard Jones  <rjones@redhat.com>
+
 	fish: New command: 'supported'
 	This checks all available optional groups and prints out which
 	ones are supported by the daemon.  Note you must launch the appliance
@@ -6964,6 +7756,8 @@
 	     selinux yes
 	          xz yes
 	    zerofree yes
+
+2010-05-25  Richard Jones  <rjones@redhat.com>
 
 	New API: available-all-groups to return list of all optional groups.
 
@@ -7008,6 +7802,8 @@
 
 	New API: resize2fs-size to allow shrinking ext2 filesystems (RHBZ#585221).
 
+2010-05-21  Richard Jones  <rjones@redhat.com>
+
 	fish: Allow suffixes on number parameters (eg. 1M)
 	This small change uses the gnulib xstrtoll functionality to
 	enable suffixes on integer parameters in guestfish.  For example:
@@ -7022,6 +7818,8 @@
 	units, allocating 1000000 bytes instead of a true megabyte.  All
 	existing uses would use 'alloc foo 1M' which still allocates true
 	megabytes.
+
+2010-05-21  Richard Jones  <rjones@redhat.com>
 
 	fish: Fix '-N part' disk partition type sub-option.
 
@@ -7039,11 +7837,15 @@
 	direct start of udevd.  This shouldn't affect Debian because the
 	file is not a symlink on standard Debian.
 
+2010-05-20  Richard Jones  <rjones@redhat.com>
+
 	ubuntu: Remove two FUSE packages from the default list.
 	fuse-utils (a dependency of these) cannot be installed under
 	debirf because it does something with the system udevd which is
 	not permitted.  Seems to be a bug either in fakeroot or in the
 	post install scripts for fuse-utils.
+
+2010-05-20  Richard Jones  <rjones@redhat.com>
 
 	ubuntu: Ignore packages in packagelist.in which are missing.
 	For distros using 'yum', packages which cannot be found are just
@@ -7072,6 +7874,8 @@
 	group so that we can test for this and avoid running the tests
 	if xz utils are not present.
 
+2010-05-20  Richard Jones  <rjones@redhat.com>
+
 	generator: Check parameters are not NULL (RHBZ#501893).
 	This adds additional tests to check that several types of parameter
 	including String are not NULL when passed to the C functions.
@@ -7085,6 +7889,8 @@
 	XS code was already adding similar checks if you passed undef into
 	a parameter expecting a string.
 
+2010-05-20  Richard Jones  <rjones@redhat.com>
+
 	generator: Some String parameters should be OptString (RHBZ#501894).
 	I haven't checked the list of functions exhaustively, but
 	these are the obvious ones.
@@ -7092,6 +7898,8 @@
 	fuse: Implement write syscall (RHBZ#592883).
 
 	New API: Implement pwrite system call (partial fix for RHBZ#592883).
+
+2010-05-20  Richard Jones  <rjones@redhat.com>
 
 	New API: write for creating files with fixed content (RHBZ#501889).
 	The guestfs_write call can be used to create small files with
@@ -7105,6 +7913,8 @@
 	the daemon tries to do strlen on a (really) zero length buffer, not
 	even containing a terminating \0 character, thus segfaulting.
 
+2010-05-20  Richard Jones  <rjones@redhat.com>
+
 	generator: Implement BufferIn parameter type (RHBZ#501889).
 	The BufferIn argument turns into various things:
 
@@ -7116,10 +7926,14 @@
 	           mostly just a string, since most languages except for C
 	           permit strings to contain any 8 bit data
 
+2010-05-20  Richard Jones  <rjones@redhat.com>
+
 	fish: Fix build error if built without readline.
 	fish.c:1447: error: 'add_history_line' defined but not used [-Wunused-function]
 
 	(Reported by Matt Booth)
+
+2010-05-20  Richard Jones  <rjones@redhat.com>
 
 	appliance: Fix /etc/resolv.conf
 	Since changing to use link local address
@@ -7168,6 +7982,8 @@
 
 	Unify supermin appliance building using febootstrap 2.7
 
+2010-05-13  Richard Jones  <rjones@redhat.com>
+
 	Improve errors from tar-in/tgz-in commands (RHBZ#591155 RHBZ#591250).
 	This commit improves the error messages from the tar-in, tgz-in (etc)
 	commands by capturing the stderr from the tar command in a file and
@@ -7187,9 +8003,13 @@
 	tar_in: tar subcommand failed on directory: /: tar: access.log: Cannot open: Read-only file system
 	tar: Exiting with failure status due to previous errors at /home/rjones/d/libguestfs/tools/virt-tar line 247.
 
+2010-05-13  Richard Jones  <rjones@redhat.com>
+
 	Combine common code in daemon/tar.c.
 	This commit shouldn't result in any change in the semantics
 	of the code.
+
+2010-05-13  Richard Jones  <rjones@redhat.com>
 
 	Fix FileIn cmds losing synch if both ends send cancel messages (RHBZ#576879).
 	During a FileIn command (eg. upload, tar-in) if both sides
@@ -7213,6 +8033,8 @@
 	More details can be found here:
 	https://bugzilla.redhat.com/show_bug.cgi?id=576879#c5
 
+2010-05-13  Richard Jones  <rjones@redhat.com>
+
 	guestfish: Fix build error in 'print_shell_quote' function.
 	Amend commit 1c6ed48bd3cd471dc so the prototype of
 	'print_shell_quote' function is correct.
@@ -7224,6 +8046,8 @@
 	Improved error if virt-inspector cannot find OSes in image (RHBZ#591142).
 
 	Fix error message in string-e command (RHBZ#588651).
+
+2010-05-13  Richard Jones  <rjones@redhat.com>
 
 	guestfish -i and virt-inspector work on filenames containing spaces (RHBZ#507810).
 	This commit fixes a long-standing bug which prevented guestfish -i
@@ -7247,7 +8071,11 @@
 	Sys::Guestfs::Lib now contains a synthetic version number which
 	will reflect future changes in that module.
 
+2010-05-12  Richard Jones  <rjones@redhat.com>
+
 	Update PO files, including extra strings from Perl files.
+
+2010-05-12  Richard Jones  <rjones@redhat.com>
 
 	po: Include strings from Perl programs in the PO files (RHBZ#559963).
 	xgettext will only recognize '*.pl' as being a Perl file (otherwise
@@ -7257,6 +8085,8 @@
 	This commit also fixes two actual bugs that xgettext found in the
 	strings in our Perl programs.
 
+2010-05-12  Richard Jones  <rjones@redhat.com>
+
 	po: Don't generate po/Makevars file and include Perl keywords (RHBZ#559963).
 	I don't see a reason to autogenerate po/Makevars, and in the
 	earlier commit which changed this file to being autogenerated
@@ -7264,6 +8094,8 @@
 	and bug reporting address.  Fix all of that.
 
 	This partially reverts commit febff9d2a35c4f40abbaf8943146476bdeac671e.
+
+2010-05-12  Richard Jones  <rjones@redhat.com>
 
 	Reduce imported functions in virt-df to ones which are actually used.
 
@@ -7330,6 +8162,8 @@
 
 	Version 1.3.10.
 
+2010-05-07  Richard Jones  <rjones@redhat.com>
+
 	daemon: Fix read-file so it fails gracefully for large files (RHBZ#589039).
 	Pengzhen Cao noticed that read-file would fail for files
 	larger than the protocol size; this is *not* the bug.  However
@@ -7345,6 +8179,8 @@
 	This also adds regression tests for read-file with various categories
 	of large file.
 
+2010-05-07  Richard Jones  <rjones@redhat.com>
+
 	daemon: Fix wc* commands to work on absolute symbolic links (RHBZ#579608).
 
 	daemon: Fix strings to work on absolute symbolic links (RHBZ#579608).
@@ -7356,6 +8192,8 @@
 	daemon: Fix checksum to work on absolute symbolic links (RHBZ#579608).
 
 	daemon: Fix hexdump to work on absolute symbolic links (RHBZ#579608).
+
+2010-05-07  Richard Jones  <rjones@redhat.com>
 
 	daemon: Fix for commands working on absolute symbolic links (RHBZ#579608).
 	The original idea (suggested by Al Viro) was to fork and chroot
@@ -7371,6 +8209,8 @@
 	functions in daemon/guestfsd.c and adds an absolute symlink to
 	the test ISO for testing it.  Later commits will fix the broken
 	daemon commands themselves.
+
+2010-05-07  Richard Jones  <rjones@redhat.com>
 
 	daemon: Change command to abort() on resource problems.
 	The comment in the code describes it thus:
@@ -7395,6 +8235,8 @@
 2010-05-04  Richard Jones  <rjones@redhat.com>
 
 	Use link-local addresses between appliance and host (RHBZ#588763).
+
+2010-05-04  Richard Jones  <rjones@redhat.com>
 
 	Change network configuration to use macros.
 	Change the network configuration so everything is set using
@@ -7475,6 +8317,8 @@
 
 	Version 1.3.6.
 
+2010-04-22  Richard Jones  <rjones@redhat.com>
+
 	fish: Add -N option for making prepared disk images.
 	Previously you might have typed:
 
@@ -7490,6 +8334,8 @@
 
 	Some tests have also been updated to use this new
 	functionality.
+
+2010-04-22  Richard Jones  <rjones@redhat.com>
 
 	fish docs: Be consistent about using I<-..> for options.
 
@@ -7535,6 +8381,8 @@
 	So use the guestfish 'sparse' command instead (which also avoids
 	allocating disk space).
 
+2010-04-20  Richard Jones  <rjones@redhat.com>
+
 	Document new version numbering policy.
 	See discussion on mailing list:
 
@@ -7554,6 +8402,8 @@
 
 	New APIs: base64-in and base64-out for uploading/downloading base64 content.
 
+2010-04-19  Richard Jones  <rjones@redhat.com>
+
 	New API: debug-upload (not a formal part of the API/ABI).
 	Allow arbitrary files to be uploaded into the appliance, but
 	only when --enable-debug-command is enabled.  This lets you
@@ -7565,6 +8415,8 @@
 	  EOF
 	  ><fs> debug sh "/tmp/script.sh"
 
+2010-04-19  Richard Jones  <rjones@redhat.com>
+
 	fish: Allow -<<END as a syntax for uploading "heredocs".
 	For example:
 
@@ -7575,6 +8427,8 @@
 	    ><fs> cat /foo
 	    some data
 	    some more data
+
+2010-04-19  Richard Jones  <rjones@redhat.com>
 
 	todo docs: Feature for base64 uploads and scripts.
 
@@ -7613,6 +8467,8 @@
 	The MD5 hash of this file is embedded in the output of the
 	generator.
 
+2010-04-17  Richard Jones  <rjones@redhat.com>
+
 	Fix upload losing synchronization if root not mounted (RHBZ#576879).
 	Modify the generator so that it can correctly handle early
 	cancellation for Pathname|Device|.. parameters.  This fixes
@@ -7624,7 +8480,11 @@
 
 	Adds a regression test for the original problem.
 
+2010-04-17  Richard Jones  <rjones@redhat.com>
+
 	generator: Fix typo in a comment.
+
+2010-04-17  Richard Jones  <rjones@redhat.com>
 
 	Improved checking, documentation of modes (RHBZ#582901, RHBZ#582929).
 	chmod: Disallow negative mode, document mode affected by umask.
@@ -7635,6 +8495,8 @@
 	mknod: Disallow negative mode, document mode affected by umask.
 
 	umask: Check the range of umask mask value carefully.
+
+2010-04-17  Richard Jones  <rjones@redhat.com>
 
 	fish: Autocomplete 'sparse' command (RHBZ#582899).
 	I also rechecked the list of built-in commands against
@@ -7665,6 +8527,8 @@
 
 	New API: Add aug-clear call for clearing an Augeas node.
 
+2010-04-13  Richard Jones  <rjones@redhat.com>
+
 	fish: Allow '-' prefix on command line to override exit on error (RHBZ#578407).
 	Allow -cmd on the command line to mean that normal exit on error
 	behaviour is overridden, ie. we will not exit.
@@ -7678,6 +8542,8 @@
 
 	Also this fixes the remote case which is what the original
 	bug report was about.
+
+2010-04-13  Richard Jones  <rjones@redhat.com>
 
 	fish: Update documentation: Add another pipe example.
 
@@ -7720,6 +8586,8 @@
 	New API: checksum-device for checksumming devices.
 	Analogous to the usual 'checksum' call.
 
+2010-04-10  Richard Jones  <rjones@redhat.com>
+
 	virt-resize: Enhance virt-resize so it can expand partition content.
 	Enhance virt-resize so it can expand "first level" partition
 	content, including ext/2/3/4/ntfs filesystems and PVs.
@@ -7728,6 +8596,8 @@
 
 	This has been tested on a variety of Linux and Windows guests.
 
+2010-04-10  Richard Jones  <rjones@redhat.com>
+
 	virt-list-partitions: Add -t / --total option.
 	This option lists out block devices separately:
 
@@ -7735,6 +8605,8 @@
 	 /dev/sda1 ntfs 100.0M
 	 /dev/sda2 ntfs 11.9G
 	 /dev/sda device 12.0G
+
+2010-04-10  Richard Jones  <rjones@redhat.com>
 
 	Bugfixes for virt-resize.
 	 - copy more than 64 boot loader sectors across, since real boot
@@ -7788,12 +8660,16 @@
 	issue was that sometimes pid == 0, and this ends up killing
 	ourselves.
 
+2010-04-08  Richard Jones  <rjones@redhat.com>
+
 	Fix for "warning: unexpected connection from UID ..."
 	This warning is currently a fatal error.  The code attempts
 	to retry the accept call, but because we don't reset sock = -1
 	the retry doesn't happen and it dies anyway.
 
 	Set sock = -1 so the retry attempt can happen.
+
+2010-04-08  Richard Jones  <rjones@redhat.com>
 
 	New API calls to upload/download txz files (RHBZ#580556).
 
@@ -7803,6 +8679,8 @@
 	Version 1.3.1.
 
 	New tool: virt-make-fs for creating filesystems on devices.
+
+2010-04-08  Richard Jones  <rjones@redhat.com>
 
 	Code cleanups related to RHBZ#580246.
 	This includes various code cleanups:
@@ -7816,6 +8694,8 @@
 	 (c) Use size_t instead of int for length.
 
 	 (d) Clearer debug messages when in verbose mode.
+
+2010-04-08  Richard Jones  <rjones@redhat.com>
 
 	Fix tar-in command hangs when running out of disk space (RHBZ#580246).
 	The problem was this sequence of events:
@@ -7845,6 +8725,8 @@
 	For a list of commands:             guestfish -h
 	For complete documentation:         man guestfish
 
+2010-04-07  Richard Jones  <rjones@redhat.com>
+
 	Check error returns from posix_fallocate (RHBZ#579664).
 	posix_fallocate has a non-standard way to return error indications.
 	Thus all our calls to posix_fallocate were effectively unchecked.  For
@@ -7864,6 +8746,8 @@
 
 	This is a fix for:
 	https://bugzilla.redhat.com/show_bug.cgi?id=579664
+
+2010-04-07  Richard Jones  <rjones@redhat.com>
 
 	Signed/unsigned warning on 64 bit.
 
@@ -7887,6 +8771,8 @@
 
 	Improved version of virt-win-reg, supporting exporting and merging.
 
+2010-03-30  Richard Jones  <rjones@redhat.com>
+
 	virt-df: Match output with native (coreutils) 'df' command (RHBZ#578123).
 	This commit fixes the 'Use%' field in the output so it matches what
 	coreutils' 'df' command would print.
@@ -7906,11 +8792,15 @@
 
 	Thanks: Rita Wu
 
+2010-03-30  Richard Jones  <rjones@redhat.com>
+
 	tools: Add basic tests for the virt-* tools.
 
 	tools: Sectional header for manpages in Makefile.am
 
 	tools: Rearrange list of tools in Makefile.am.
+
+2010-03-30  Richard Jones  <rjones@redhat.com>
 
 	daemon: Set TERM=dumb inside the daemon.
 	Since commit 977edb3185fe8f we have been passing TERM from the
@@ -7986,12 +8876,16 @@
 
 	Version 1.0.87.
 
+2010-03-23  Richard Jones  <rjones@redhat.com>
+
 	New tools: virt-resize and virt-list-partitions.
 	Virt-resize is the main contribution here, a program which can
 	be used to expand and shrink partitions in disk images.
 
 	Virt-list-partitions is used as an ancillary tool for planning
 	resize operations.
+
+2010-03-23  Richard Jones  <rjones@redhat.com>
 
 	New API: guestfs_copy_size to copy a fixed number of bytes.
 	This is similar to 'guestfs_dd', but it copies just a fixed
@@ -8012,6 +8906,8 @@
 	We also add a test for the <guestfs.h> header and include
 	that header when testing the library.
 
+2010-03-22  Richard Jones  <rich@koneko.home.annexia.org>
+
 	guestfs.h: Include <stdint.h>.
 	This allows programs to work if they just
 	  #include <guestfs.h>
@@ -8021,6 +8917,8 @@
 
 	ocaml examples: Fix linking line so it uses local library.
 
+2010-03-22  Richard Jones  <rich@koneko.home.annexia.org>
+
 	Mac OS X: Disable null vmchannel implementation.
 	As far as I can tell, Darwin has no way to check the peer euid
 	of a _loopback_ TCP socket.  This is required for the "null vmchannel"
@@ -8028,6 +8926,8 @@
 
 	Therefore disable this - Darwin will use one of the other supported
 	vmchannel implementations instead.
+
+2010-03-22  Richard Jones  <rich@koneko.home.annexia.org>
 
 	Mac OS X: 'xdr_uint32_t' is 'xdr_u_int32_t'
 
@@ -8104,6 +9004,8 @@
 	See the example / test program 'regressions/test-lvm-mapping.pl'
 	for an example of how to do this from Perl.
 
+2010-03-18  Richard Jones  <rjones@redhat.com>
+
 	daemon: Add a trim utility function.
 	This function trims the whitespace from around a string.  It
 	does this in-place, so it can be called for malloc'd strings.
@@ -8122,6 +9024,8 @@
 	However it should alleviate RHBZ#571714 where udev was deciding
 	to incorrectly relabel a device because we had opened the device
 	for writing (even though we didn't actually write to it).
+
+2010-03-16  Richard Jones  <rjones@redhat.com>
 
 	Allow qemu_supports to run earlier.
 	Reimplement qemu_supports() internal function.  Allow it to run
@@ -8155,6 +9059,8 @@
 
 	Docs: Change exit(1) -> exit(EXIT_FAILURE)
 
+2010-03-12  Richard Jones  <rjones@redhat.com>
+
 	Rewrite libguestfs-supermin-helper in C.
 	libguestfs-supermin-helper was previously a shell script.  Although
 	we had steadily optimized it, there were a number of intractable
@@ -8187,10 +9093,14 @@
 
 	Updated with feedback from Jim Meyering.
 
+2010-03-12  Richard Jones  <rjones@redhat.com>
+
 	guestfish: Use xstrtoll to parse Int params (RHBZ#569757 RHBZ#567567).
 	Change guestfish so it uses xstrtoll to parse Int (31 bit)
 	parameters.  This fixes two bugs on 32 bit platforms which
 	failed when long = 32 bits.  long long = 64 bits on both.
+
+2010-03-12  Richard Jones  <rjones@redhat.com>
 
 	Special case hostfiles handling for libntfs-3g.so
 	The ntfs-3g project keeps bumping their soname, and this causes
@@ -8238,6 +9148,8 @@
 	%systemroot%, in the case when we cannot find boot.ini (ie.
 	Windows Vista and more recent).  This ensures we can get more
 	detail from those versions of Windows.
+
+2010-03-08  Richard Jones  <rjones@redhat.com>
 
 	inspector: Add product_name field to output.
 	This is a free text string containing the "product name" of
@@ -8288,6 +9200,8 @@
 
 	fuse: Fix typo in test.
 
+2010-03-01  Richard Jones  <rjones@redhat.com>
+
 	build: Fix for bash quoting in supermin-split.sh.in (RHBZ#566511 RHBZ#566512)
 	Bash changed how the =~ operator worked, see bash FAQ question
 	E14 http://tiswww.case.edu/php/chet/bash/FAQ and
@@ -8319,6 +9233,8 @@
 	Date: Tue, 23 Feb 2010 21:05:02 +0100
 	Subject: [PATCH 2/2] Add application listing for Debian
 
+2010-02-24  Guido Günther  <agx@sigxcpu.org>
+
 	Debian package format
 	Hi,
 	Minor nitpick: the Debian folks usually refer to deb as the package format not dpkg.
@@ -8329,6 +9245,8 @@
 	From: =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
 	Date: Tue, 23 Feb 2010 21:04:37 +0100
 	Subject: [PATCH 1/2] Debina package format is called 'deb' not 'dpkg'
+
+2010-02-24  Guido Günther  <agx@sigxcpu.org>
 
 	check for grub/menu.lst too
 	On Tue, Feb 23, 2010 at 08:07:14PM +0100, Guido Günther wrote:
@@ -8345,6 +9263,8 @@
 	From: =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
 	Date: Tue, 23 Feb 2010 19:50:40 +0100
 	Subject: [PATCH] Check for grub/menu.lst if /etc/grub.conf can't be found
+
+2010-02-24  Guido Günther  <agx@sigxcpu.org>
 
 	Use 'service' if installed
 	Hi,
@@ -8437,6 +9357,8 @@
 
 	Version 1.0.84.
 
+2010-02-12  Richard Jones  <rjones@redhat.com>
+
 	daemon: Don't need to prefix error messages with the command name.
 	The RPC stubs already prefix the command name to error messages.
 	The daemon doesn't have to do this.  As a (small) benefit this also
@@ -8456,6 +9378,8 @@
 
 	(whereas previously you would have seen ..command: command:..)
 
+2010-02-12  Richard Jones  <rjones@redhat.com>
+
 	generator: Don't prefix error messages with command name.
 	The command name is already being added by the RPC stubs, so
 	adding it again in Perl and C# just results in doubled error messages
@@ -8465,6 +9389,8 @@
 	Sys::Guestfs::Lib::open_guest: Add interface parameter.
 	This allows you to override the default QEMU block device emulation.
 
+2010-02-12  Richard Jones  <rjones@redhat.com>
+
 	Sys::Guestfs::Lib::open_guest: Remove freeform parameters.
 	Remove the ability to pass freeform parameters to Sys::Virt->new.
 	We don't use it, it makes the code more complex to modify, and
@@ -8472,6 +9398,8 @@
 	this would never be used.
 
 	Also change $readwrite to $rw to match parameter name.
+
+2010-02-12  Richard Jones  <rjones@redhat.com>
 
 	New APIs: add-drive{,-ro}-with-if allows you to set QEMU block emulation.
 	The default if=... comes from configure time (currently it
@@ -8482,6 +9410,8 @@
 	We don't think this will be used very often, but virt-v2v
 	requires it in order to work around a subtle problem with
 	running 'mkinitrd' in an appliance attached to a guest.
+
+2010-02-12  Richard Jones  <rjones@redhat.com>
 
 	generator: 'interface' is a reserved word in Java.
 
@@ -8512,6 +9442,8 @@
 
 	I have found this option makes no difference, although it is
 	*supposed* to enable KVM (hardware virtualization) support.
+
+2010-02-09  Richard Jones  <rjones@redhat.com>
 
 	New API call: initrd-cat to list a file from an initrd.
 
@@ -8599,6 +9531,8 @@
 
 	hivex: Implement deleting child nodes.
 
+2010-02-04  Richard Jones  <rjones@redhat.com>
+
 	hivex: Add flags argument to internal get_children() function.
 	When we later call get_children to visit the intermediate
 	ri/lf/lh records, we have already deleted the subkey nk-records,
@@ -8606,6 +9540,8 @@
 	helpful.
 
 	This commit adds a flag to turn these checks off.
+
+2010-02-04  Richard Jones  <rjones@redhat.com>
 
 	hivex: Don't die on valid registries which have bad declared data lengths.
 	Some apparently valid registries contain value data length
@@ -8617,14 +9553,20 @@
 	turn this into a warning and just use the allocated block size
 	as the data length (in other words, truncate the value).
 
+2010-02-04  Richard Jones  <rjones@redhat.com>
+
 	hivex: Minimal registry example.
 	This is the smallest registry you can make and still have it
 	load correctly in Windows regedit.
+
+2010-02-04  Richard Jones  <rjones@redhat.com>
 
 	hivexsh: Add 'setval' and 'commit' commands.
 	This adds the 'setval' and 'commit' commands to the hivex shell.
 
 	Also adds some example scripts showing use of these.
+
+2010-02-04  Richard Jones  <rjones@redhat.com>
 
 	hivex: Begin implementation of writing to hives.
 	This implements hivex_node_set_values which is used to
@@ -8633,6 +9575,8 @@
 
 	This also implements hivex_commit which is used to commit
 	changes to hives back to disk.
+
+2010-02-04  Richard Jones  <rjones@redhat.com>
 
 	hivex: Add HIVEX_OPEN_WRITE flag to allow hive to be opened for writing.
 	If this flag is omitted (as in the case for all existing callers)
@@ -8648,6 +9592,8 @@
 	Note the manpage section L</WRITING TO HIVE FILES> comes in a later
 	commit.
 
+2010-02-04  Richard Jones  <rjones@redhat.com>
+
 	Tools for analyzing and reverse engineering hive files.
 	This commit is not of general interest.  It contains the tools which
 	I used to reverse engineer the hive format and to test changes.
@@ -8661,6 +9607,8 @@
 
 	You will also need ocaml-extlib-devel and ocaml-bitstring-devel.
 
+2010-02-04  Richard Jones  <rjones@redhat.com>
+
 	hivexsh: Change some exit(1) -> exit(EXIT_FAILURE)
 
 	hivexsh: Only print final \n when interactive.
@@ -8668,12 +9616,16 @@
 	annoying extra line.  Only print this line if we are being
 	used interactively.
 
+2010-02-04  Richard Jones  <rjones@redhat.com>
+
 	hivexsh: Change handling of prompt argument to rl_gets()
 	Make the result of isatty into a global variable (is_tty).
 
 	Change the rl_gets() function so it takes the prompt string
 	instead of a "display prompt?" flag.  rl_gets() then consults
 	the global to find out if it should display the prompt at all.
+
+2010-02-04  Richard Jones  <rjones@redhat.com>
 
 	Document that this flag is clear for default keys.
 
@@ -8709,6 +9661,8 @@
 
 	hivex: Add 'hivexsh' program (shell for navigating registry hives).
 
+2010-01-29  Richard Jones  <rjones@redhat.com>
+
 	Set locale in C programs so l10n works (RHBZ#559962).
 	This commit adds the calls to setlocale &c to all of the current
 	C programs.
@@ -8723,6 +9677,8 @@
 	(You can only do this test after installing the package, or at
 	least the 'pa.mo' mo-file in the correct place).
 
+2010-01-29  Richard Jones  <rjones@redhat.com>
+
 	Another unreadable file: /var/log/yum.log
 
 	Update PO files.
@@ -8730,6 +9686,8 @@
 	Add Tamil translation (RHBZ#559877) (thanks to I.Felix)
 
 	Update Punjabi translation (RHBZ#559480) (thanks Jaswinder Singh)
+
+2010-01-29  Richard Jones  <rjones@redhat.com>
 
 	Fix regressions/rhbz557655.sh when debugging is enabled (v2).
 	The previous fix didn't cope with ordinary warnings emitted by
@@ -8750,6 +9708,8 @@
 	LIBGUESTFS_DEBUG=1 make -C regressions TESTS=rhbz557655.sh check
 
 	This commit disables debug for just this test.
+
+2010-01-28  Richard Jones  <rjones@redhat.com>
 
 	Implement 'vgrename' and 'lvrename' APIs.
 
@@ -8777,6 +9737,8 @@
 	hivex: Clarify some more fields.
 	Taken from sentinelchicken.com documentation.
 
+2010-01-28  Richard Jones  <rjones@redhat.com>
+
 	hivex: Modify children/values functions to return intermediate blocks.
 	Modify the functions that return child subnodes and values so they
 	can also be used to return a list of the intermediate blocks.  This
@@ -8787,6 +9749,8 @@
 
 	Note that this commit should not change the semantics of the code.
 
+2010-01-28  Richard Jones  <rjones@redhat.com>
+
 	hivex: Add value_any callback to the visitor.
 	The visitor currently contains lots of value_* callbacks, such as
 	value_string which is called back when the value has type string.
@@ -8795,6 +9759,8 @@
 	you just want to see 'a value', and don't care about its type.
 
 	The value_any callback allows visitors to see values generically.
+
+2010-01-28  Richard Jones  <rjones@redhat.com>
 
 	hivex: Move header checksum code into a function.
 	This function can be reused later.
@@ -8817,6 +9783,8 @@
 	Because this file contains the GCC version and a date, it frequently
 	changes on the host.  Create a special case so that this file is
 	matched using a wildcard for the version/date part of the name.
+
+2010-01-28  Richard Jones  <rjones@redhat.com>
 
 	Added translations for Punjabi (pa-IN) (RHBZ#559480).
 	Translated by Jaswinder Singh.
@@ -8843,6 +9811,8 @@
 	http://rwmj.wordpress.com/2009/11/16/please-someone-shoot-multilib/#content
 	https://bugzilla.redhat.com/show_bug.cgi?id=235752
 
+2010-01-27  Richard Jones  <rjones@redhat.com>
+
 	Added Telugu translations (RHBZ#559237).
 	Also ran 'make -C po update-po' to update the POT file.
 
@@ -8851,6 +9821,8 @@
 	supermin: Ignore more unreadable files found on RHEL 6.
 
 	Sync to latest Gnulib.
+
+2010-01-25  Richard Jones  <rjones@redhat.com>
 
 	guestfish: Use xstrtol to parse integers (RHBZ#557655).
 	Current code uses atoi to parse the generator Int type and
@@ -8910,6 +9882,8 @@
 
 	Replace this with Gnulib 'full-write', and check the return value
 	and report errors.
+
+2010-01-25  Richard Jones  <rjones@redhat.com>
 
 	Add 'filesize' call.
 	Returns the size of a file.  You can already do this with 'stat',
@@ -9009,6 +9983,8 @@
 	Clean up this situation by moving those manual pages (plus associated
 	generated files) into the src/ and fish/ subdirectories respectively.
 
+2009-12-31  Richard Jones  <rjones@redhat.com>
+
 	generator: Move src/guestfs-bindtests.c next to other src/ files.
 
 	generator: Use Continuation Passing Style (CPS) in output_to function.
@@ -9020,6 +9996,8 @@
 
 	generated code: Set copyright years to 2009-xxxx when current year > 2009.
 
+2009-12-31  Richard Jones  <rjones@redhat.com>
+
 	Remove separate inspector_generator.ml, combine this with generator.ml.
 	This commit combines the previously separate "inspector_generator.ml"
 	program which generated bindings for virt-inspector.
@@ -9029,6 +10007,8 @@
 
 	NOTE: OCaml xml-light is now *required* in order to rebuild the
 	generated code.
+
+2009-12-31  Richard Jones  <rjones@redhat.com>
 
 	generator: Comment and whitespace changes only.
 
@@ -9048,6 +10028,8 @@
 
 	build: Remove references to old contrib/ files which were removed.
 
+2009-12-16  Richard Jones  <rjones@redhat.com>
+
 	appliance: Special case handling for libbfd in the supermin appliance.
 	The libbfd library has a constantly changing, non-standard and
 	very long name, eg:
@@ -9057,6 +10039,8 @@
 	Just add a special case to deal with this.  This fixes the guestfs_strings
 	command, which relies on the external strings binary which uses this
 	library.
+
+2009-12-16  Richard Jones  <rjones@redhat.com>
 
 	appliance: Ignore unreadable dbus helper programs.
 
@@ -9094,6 +10078,8 @@
 
 	Please enter the commit message for your changes. Lines starting
 
+2009-12-07  Richard Jones  <rjones@redhat.com>
+
 	daemon error handling: Define a new function reply_with_perror_errno.
 	This allows you to save the errno from a previous call and
 	pass it to reply_with_perror.
@@ -9118,6 +10104,8 @@
 	    reply_with_perror_errno (err, "failed");
 	    return -1;
 	  }
+
+2009-12-07  Richard Jones  <rjones@redhat.com>
 
 	daemon error handling: recursive_mkdir shouldn't need to set errno.
 
@@ -9146,6 +10134,8 @@
 
 	Fix error handling in 'zero' function.
 
+2009-11-26  Richard Jones  <rjones@redhat.com>
+
 	daemon/Win32: Add contributed test script to test daemon using Wine.
 	This test script allows you to test limited features of the
 	Windows daemon by running it on a standard Fedora host using
@@ -9153,6 +10143,8 @@
 
 	Read contrib/README and contrib/guestfsd-in-wine.sh in detail
 	before using.
+
+2009-11-26  Richard Jones  <rjones@redhat.com>
 
 	Ignore guestfsd.exe (Windows daemon).
 
@@ -9173,6 +10165,8 @@
 
 	daemon/Win32: Use Gnulib perror module.
 
+2009-11-26  Richard Jones  <rjones@redhat.com>
+
 	daemon: Link guestfs_protocol.[ch] into the daemon directory.
 	Instead of doing a recursive call into the src/ directory to build
 	the object files, hard link the source files into the daemon
@@ -9182,6 +10176,8 @@
 	http://www.redhat.com/archives/libguestfs/2009-November/msg00254.html
 
 	Thanks to Jim Meyering for noticing a typo in the original version.
+
+2009-11-26  Richard Jones  <rjones@redhat.com>
 
 	daemon: Typo generator_build -> generator_built
 
@@ -9233,6 +10229,8 @@
 	statvfs-related code out of daemon/stat.c into a new file called
 	daemon/statvfs.c.
 
+2009-11-25  Richard Jones  <rjones@redhat.com>
+
 	daemon: Use gnulib futimens module.
 	Instead of checking for futimens support and falling back
 	(incorrectly in one case) to using futimes, use gnulib's
@@ -9240,6 +10238,8 @@
 
 	However the gnulib module does not yet support Win32, so
 	this change is only really useful on platforms like RHEL 5.
+
+2009-11-25  Richard Jones  <rjones@redhat.com>
 
 	daemon/Win32: Use gnulib pread module.
 
@@ -9289,6 +10289,8 @@
 	  /dev/sda2
 	  $ guestmount -a unknowndisk.img -m /dev/sda1 /mnt
 
+2009-11-24  Richard Jones  <rjones@redhat.com>
+
 	availability: Document how to check for single API calls
 	This documents how to use autotools and dlopen(3) to test for
 	the availability of single API calls at compile time and run time
@@ -9331,6 +10333,8 @@
 	make check in the perl directory was missing a check that the appliance and test
 	images had been built.
 
+2009-11-21  Matthew Booth  <mbooth@redhat.com>
+
 	build: Ensure building appliance depends on guestfsd
 	Previously, only the update.sh rule checked the daemon had been built. update.sh
 	is called directly from within make.sh, so in that path the dependency was never
@@ -9355,7 +10359,11 @@
 	Update the other code in Sys::Guestfs::Lib to use it before using
 	LVM, Augeas.
 
+2009-11-20  Richard Jones  <rjones@redhat.com>
+
 	availability: Skip tests when functions are not available.
+
+2009-11-20  Richard Jones  <rjones@redhat.com>
 
 	availability: Add optional groups and implement guestfs_available call.
 	The current groups are defined very conservatively using the
@@ -9405,6 +10413,8 @@
 	existing places where we had a message equivalent to
 	"function __func__ is not available".
 
+2009-11-20  Richard Jones  <rjones@redhat.com>
+
 	availability: Add guestfs_available.
 	Start a new API allowing groups of functions to be tested for
 	availability.
@@ -9443,6 +10453,8 @@
 	  r = guestfs_available (g, apis);
 	  enable_config_edit_menus = r == 0;
 
+2009-11-20  Richard Jones  <rjones@redhat.com>
+
 	daemon/Win32: Use gnulib modules for first porting to Win32.
 
 2009-11-20  Matthew Booth  <mbooth@redhat.com>
@@ -9465,6 +10477,8 @@
 	* autogen.sh: Use a more strict sed transformation so it works also
 	on the contents of .git-module-status, which has no prefix.
 	* cfg.mk (_submodule_hash): Use a stricter sed regexp.
+
+2009-11-20  Jim Meyering  <jim@meyering.net>
 
 	build: make autogen.sh update .git-module-status, as it should
 	I ran autogen.sh, but then make was always failing like this:
@@ -9498,6 +10512,8 @@
 	* fish/fish.c (main): Replace 0/1 with EXIT_SUCCESS/EXIT_FAILURE.
 	* fuse/guestmount.c (main): Likewise.
 
+2009-11-20  Jim Meyering  <meyering@redhat.com>
+
 	maint: use EXIT_SUCCESS and EXIT_FAILURE, not 0 and 1 to exit
 	Convert all uses automatically, via these two commands:
 	git grep -l '\<exit *(1)' \
@@ -9512,6 +10528,8 @@
 
 	Edit (RWMJ): Don't change Java code.
 
+2009-11-20  Jim Meyering  <meyering@redhat.com>
+
 	maint: remove unnecessary include of openat.h
 	* daemon/realpath.c: Don't include "openat.h".  not used.
 
@@ -9525,6 +10543,8 @@
 	This is a partial fix for code in guestfsd.c where many of these
 	header files are missing on Win32.
 
+2009-11-20  Richard Jones  <rjones@redhat.com>
+
 	daemon/Win32: make some functions and fields optional.
 	inotify: Make this optional on platforms that don't have this interface.
 
@@ -9535,6 +10555,8 @@
 
 	stat: st_blocks and st_blksize are missing on non-Unix platforms, so
 	set these fields to -1 in the corresponding structures.
+
+2009-11-20  Richard Jones  <rjones@redhat.com>
 
 	daemon/Win32: NAME_MAX does not exist on Windows, use FILENAME_MAX instead.
 
@@ -9559,6 +10581,8 @@
 	symbol is 'stdout'.  So we replace this with 'Pervasives.stdout'
 	in two places.  Still a net reduction in code size.
 
+2009-11-19  Richard Jones  <rjones@redhat.com>
+
 	syntax-check: Fix tab-vs-space issue in the generator.
 
 	Update PO files.
@@ -9572,6 +10596,8 @@
 	change makes the 1 dependency explicit.
 
 	It also adds a dependency on src/libguestfs.la.
+
+2009-11-19  Matthew Booth  <mbooth@redhat.com>
 
 	build: Fix inter-directory dependencies
 	This change adds an explicit dependency on generator.ml for every file it
@@ -9656,6 +10682,8 @@
 
 	This commit chooses the correct program to run.
 
+2009-11-18  Richard Jones  <rjones@centos5x32.home.annexia.org>
+
 	fuse/RHEL: Don't require UTIME_{NOW,OMIT} to be defined.
 	These macros don't exist on RHEL/CentOS 5.4.  If the feature
 	is missing then just don't implement it in the FUSE layer.
@@ -9671,6 +10699,8 @@
 	Prepare for version 1.0.79.
 
 	fuse: Add test-fuse.sh to EXTRA_DIST.
+
+2009-11-18  Richard Jones  <rjones@redhat.com>
 
 	generator: Fix API of functions that return RBufferOut
 	(NB: The API / ABI doesn't actually change here - it's just made much
@@ -9702,10 +10732,14 @@
 	Error handling for the guestfs_pread call was incorrect, which
 	meant that empty files could produce spurious error messages.
 
+2009-11-17  Richard Jones  <rjones@redhat.com>
+
 	fish: Improve output of guestfish -h cmd
 	Display this output like a short manual page.
 
 	Don't put <..> around the parameters to the command.
+
+2009-11-17  Richard Jones  <rjones@redhat.com>
 
 	New API call: fill - fill a file with octets
 
@@ -9811,6 +10845,8 @@
 	In verbose mode, print timestamped messages during guestfs_launch
 	so we can see how long each step takes.
 
+2009-11-10  Richard Jones  <rjones@redhat.com>
+
 	Record time of guest launch.
 	The guest handle field start_t was previously used (when we
 	had the wait_ready call), but had fallen into disuse.  Note
@@ -9820,7 +10856,11 @@
 	use it to measure the time since guestfs_launch was called
 	so that we can start profiling guest launch.
 
+2009-11-10  Richard Jones  <rjones@redhat.com>
+
 	appliance: Prefix kernel messages with timestamp.
+
+2009-11-10  Richard Jones  <rjones@redhat.com>
 
 	Generic partition creation interface.
 	This commit introduces a generic partition creation interface
@@ -9861,6 +10901,8 @@
 	  guestfs_part_get_name
 	  guestfs_part_set_type
 	  guestfs_part_get_type
+
+2009-11-10  Richard Jones  <rjones@redhat.com>
 
 	Add ata_piix to kernel module whitelist (RHBZ#533886).
 
@@ -9958,6 +11000,8 @@
 
 	GFS & GFS2 default to single node (no lock manager etc).
 
+2009-11-09  Richard Jones  <rjones@redhat.com>
+
 	Fix prototype of commandv to match prototype of commandrv.
 
 2009-11-09  Richard W.M. Jones  <rjones@redhat.com>
@@ -9970,6 +11014,8 @@
 	Previously if stderror == NULL in command*, stderr output was
 	just eaten and discarded which meant useful error messages could
 	be lost.
+
+2009-11-09  Richard W.M. Jones  <rjones@redhat.com>
 
 	daemon: Add flags argument to command*() functions.
 	This adds new variations of the command*() functions which
@@ -10019,6 +11065,8 @@
 
 	fish: Allow <nn>T for terabyte allocations.
 
+2009-11-04  Richard Jones  <rjones@redhat.com>
+
 	fish: New command 'sparse', like 'alloc' but to generate sparse files.
 	With sparse you can make sparse files, which is fun because you
 	can experiment with really large devices:
@@ -10035,6 +11083,8 @@
 	  ><fs> !du -h /tmp/test.img
 	  1.6G -rw-rw-r-- 1 rjones rjones 100G 2009-11-04 17:40 /tmp/test.img
 
+2009-11-04  Richard Jones  <rjones@redhat.com>
+
 	daemon: Build daemon with AC_SYS_LARGEFILE.
 
 2009-11-04  Richard Jones  <rjones@debian5x64.home.annexia.org>
@@ -10048,12 +11098,16 @@
 	Change all of these scripts to use #!/bin/bash explicitly to avoid
 	these sorts of problems.
 
+2009-11-04  Richard Jones  <rjones@debian5x64.home.annexia.org>
+
 	daemon: When running external commands, open stdin as /dev/null
 	Previously when we ran external commands from the daemon, stdin
 	(ie. fd 0) was closed.  This caused a problem when running the
 	external hexdump command which seems to break if stdin is closed.
 
 	This patch opens stdin on /dev/null.
+
+2009-11-04  Richard Jones  <rjones@debian5x64.home.annexia.org>
 
 	Debian: Include ISOFS driver in the kernel.
 
@@ -10097,6 +11151,8 @@
 
 	Prepare for 1.0.77.
 
+2009-11-03  Richard Jones  <rjones@redhat.com>
+
 	FUSE filesystem support.
 	This implements FUSE filesystem support so that any libguestfs-
 	accessible disk image can be mounted as a local filesystem.
@@ -10110,6 +11166,8 @@
 	IDs and the host.  It's not easy to automate this because you need
 	extra details about the guest itself in order to get to its
 	UID->username map (eg. /etc/passwd from the guest).
+
+2009-11-03  Richard Jones  <rjones@redhat.com>
 
 	Allow callers to disable the recovery process.
 
@@ -10126,6 +11184,8 @@
 	three calls per directory to grab all the attributes (which we
 	then cache briefly).
 
+2009-11-02  Richard Jones  <rjones@redhat.com>
+
 	New API calls: truncate, truncate_size, mkdir_mode, utimens, lchown.
 	truncate, truncate_size: Used to truncate files to a particular
 	size, or to zero bytes.
@@ -10140,9 +11200,13 @@
 	The implementation is complicated by the fact that we had to
 	add an Int64 parameter type to the generator.
 
+2009-11-02  Richard Jones  <rjones@redhat.com>
+
 	examples/to-xml.c: Don't depend on Gnulib function.
 	Since this program is just an example, it shouldn't require
 	the Gnulib c-ctype functions.
+
+2009-11-02  Richard Jones  <rjones@redhat.com>
 
 	appliance: Don't rebuild the appliance every time configure runs.
 	config.status touches make.sh each time it runs, even if the
@@ -10153,9 +11217,13 @@
 	config.status command into a Makefile rule to stop this
 	undesirable behaviour.
 
+2009-11-02  Richard Jones  <rjones@redhat.com>
+
 	guestfish: Fix a third indentation problem.
 
 	guestfish: Another indentation fix.
+
+2009-11-02  Richard Jones  <rjones@redhat.com>
 
 	guestfish: Fix printing of buffers in structs.
 	Somehow an 'indent' string crept in there, so it was printing:
@@ -10165,6 +11233,8 @@
 	instead of:
 
 	  <char><char><char>...
+
+2009-11-02  Richard Jones  <rjones@redhat.com>
 
 	Fix rstructs_used handling in guestfish generated code.
 	rstructs_used wasn't correctly generating code for guestfish
@@ -10176,6 +11246,8 @@
 	In fact this error didn't affect us before - but I discovered
 	it when I added some extra struct-returning functions (future
 	commit).
+
+2009-11-02  Richard Jones  <rjones@redhat.com>
 
 	daemon: Don't warn on -Wunsafe-loop-optimizations.
 	Ignore -Wunsafe-loop-optimizations, same as in the top level
@@ -10199,6 +11271,8 @@
 
 	Prepare for version 1.0.75.
 
+2009-10-29  Richard Jones  <rjones@redhat.com>
+
 	Support for Windows Registry.
 	In hivex/:  This mini-library allows us to extract Windows
 	Registry binary files ("hives").
@@ -10217,14 +11291,20 @@
 
 	Modify Sys::Guestfs::Lib::resolve_windows_path to use case_sensitive_path.
 
+2009-10-26  Richard Jones  <rjones@redhat.com>
+
 	guestfish: Add win: prefix to use Windows paths.
 	Add a win: prefix for path arguments in guestfish:
 
 	><fs> file win:c:\windows\system32\config\system.log
 	MS Windows registry file, NT/2000 or above
 
+2009-10-26  Richard Jones  <rjones@redhat.com>
+
 	daemon: Change chdir to use openat/fdopendir.
 	Uses Gnulib implementation of openat which should be portable.
+
+2009-10-26  Richard Jones  <rjones@redhat.com>
 
 	New API: case-sensitive-path to return case sensitive path on NTFS 3g fs
 	This function handles an annoyance/peculiarity of the Linux
@@ -10244,6 +11324,8 @@
 	  /WINDOWS/system32/config/system.LOG
 	  ><fs> file /WINDOWS/system32/config/system.LOG
 	  MS Windows registry file, NT/2000 or above
+
+2009-10-26  Richard Jones  <rjones@redhat.com>
 
 	inspector: Remove inaccurate paragraph from documentation.
 
@@ -10275,6 +11357,8 @@
 	find0 is more scalable than find.  virt-ls will no longer
 	crash if asked to recursively list / on a Linux guest.
 
+2009-10-20  Richard Jones  <rjones@redhat.com>
+
 	New API: find0 (unlimited version of find)
 	This adds a new API call guestfs_find0, which is like guestfs_find
 	but mainly doesn't suffer from the protocol limit of the earlier
@@ -10287,6 +11371,8 @@
 
 	There is also the addition of a regression test for this command.
 
+2009-10-20  Richard Jones  <rjones@redhat.com>
+
 	guestfs_find: Document protocol limits for this API call.
 	guestfs_find has to send the complete list of files in a single
 	protocol message (hence, limited to 2-4 MB).  Unfortunately on
@@ -10296,6 +11382,8 @@
 	Therefore we should add an unlimited version of this call in a
 	future commit.  This commit just documents the current limit.
 
+2009-10-20  Richard Jones  <rjones@redhat.com>
+
 	New tool: virt-ls
 	This tool makes available the functionality of "ls", "ll", and "find"
 	in a slightly simpler to use form.
@@ -10303,6 +11391,8 @@
 	Examples:
 
 	  virt-ls -l myguest /tmp
+
+2009-10-20  Richard Jones  <rjones@redhat.com>
 
 	New tool: virt-tar
 	This adds a new tool call virt-tar which is a general purpose
@@ -10321,6 +11411,8 @@
 	Add prominent warnings to the man pages about how it is dangerous
 	to run these tools against live guests.
 
+2009-10-19  Richard Jones  <rjones@redhat.com>
+
 	Move virt tools (virt-cat, virt-edit etc) into tools/ subdirectory.
 	This moves the tool programs into a single directory:
 	  cat/* -> tools/virt-cat
@@ -10337,6 +11429,8 @@
 
 	virt-inspector stays in its own directory, because this contains
 	more than just a single Perl script.
+
+2009-10-19  Richard Jones  <rjones@redhat.com>
 
 	Comment: Describe the build order requirements for toplevel directories.
 
@@ -10424,6 +11518,8 @@
 	run-*-locally: The programs are now virt-[tool], not virt-[tool].pl
 	This fixes commit b488436cc54288fcae8988493749f2e6c87f274c.
 
+2009-10-01  Richard Jones  <rjones@trick.home.annexia.org>
+
 	inspector: Don't bomb if no kernels detected.
 	If $os->{kernels} wasn't defined, virt-inspector would exit with
 	an error, leaving partial XML output.
@@ -10510,6 +11606,8 @@
 
 	guestfish: Update 'SEE ALSO' section of the manpage.
 
+2009-09-23  Richard Jones  <rjones@trick.home.annexia.org>
+
 	New tool: virt-edit
 	Edit any file in a guest.  This was possibly previously
 	using guestfish, but having a separate command makes it
@@ -10522,7 +11620,11 @@
 	It runs $EDITOR or vi on the file, and if the user changes
 	it, uploads the result back to the VM.
 
+2009-09-23  Richard Jones  <rjones@trick.home.annexia.org>
+
 	virt-cat: Remove some unused Perl module includes.
+
+2009-09-23  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Add 'virt-rescue' command.
 	This command runs a "rescue appliance" against a virtual machine
@@ -10552,6 +11654,8 @@
 	  boot  etc  lib   lost+found  mnt    proc  sbin  srv      tmp  var
 	  ><rescue> exit
 
+2009-09-23  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Add direct appliance mode flag and implementation.
 	When the g->direct flag is set, the appliance stdin/stdout
 	are not connected to the library.  Instead they inherit the
@@ -10559,9 +11663,13 @@
 
 	This is used to implement virt-rescue.
 
+2009-09-23  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Tidy up appliance rescue code.
 	The appliance shouldn't run the daemon after we leave the
 	rescue shell.  It should just exit instead.
+
+2009-09-23  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Rejig configure.ac tests for qemu vmchannel support.
 	vmchannel is no longer required, so we shouldn't test for it.
@@ -10580,9 +11688,13 @@
 
 	Put latest version and release date on the website front page.
 
+2009-09-22  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Change handling of spaces on Linux kernel command line.
 
 	Update documentation of qemu / vmchannel.
+
+2009-09-22  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Implement "null vmchannel" - no vmchannel needed!
 	This commit removes the requirement for vmchannel, although retaining
@@ -10614,7 +11726,11 @@
 	In particular, in recent versions of qemu it is possible to compile
 	out SLIRP.
 
+2009-09-22  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Gnulib: Add arpa-inet and netinet-in modules.
+
+2009-09-22  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Flexible guestfs_vmchannel parameter for future appliances.
 	This reimplements parts of commit da0a4f8d1f6ddd302ceba028d87c6e009589e503
@@ -10637,6 +11753,8 @@
 	* Maybe this last one should be dev:/dev/vcon4 or file:/dev/vcon4, but
 	we don't need to decide that now.
 
+2009-09-22  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Rearrange and tidy up code in guestfsd.c
 	This just tidies up the main() function in the daemon.  There is
 	no longer a huge fixed-sized buffer used for the kernel command
@@ -10657,6 +11775,8 @@
 
 	Remove unnecessary extra space from qemu command line.
 
+2009-09-21  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Remove guestfs_wait_ready (turn it into a no-op).
 	This commit changes guestfs_launch so that it both launches
 	the appliance and waits until it is ready (ie. the daemon communicates
@@ -10670,11 +11790,15 @@
 	API for backwards compatibility.  Any calls to guestfs_wait_ready()
 	can be removed from client code.
 
+2009-09-21  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Combine temporary buffers.
 	buf[], append[] and memsize_str[] were all temporary buffers
 	used in non-overlapping code.
 
 	Combine them to use a single buffer (buf[]).
+
+2009-09-21  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Rearrange qemu command line order (no functional change).
 
@@ -10698,6 +11822,8 @@
 	so it failed if uncommented.  Add ignore_value() around the
 	call to system.  However, leave the code still disabled.
 
+2009-09-17  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Remove explicit guestfs=10.0.2.4:6666 kernel command line parameter.
 	Since we control the appliance tightly, we can just specify
 	that it will always use a particular host and port, and we
@@ -10707,10 +11833,14 @@
 	particular guestfwd vmchannel implementation, so we rename
 	them as GUESTFWD_*.
 
+2009-09-17  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Daemon: fix handling of errors from xread and xwrite.
 	If xread or xwrite returns -1, that indicates an error and we
 	should exit.  Note that xread/xwrite has already printed the
 	error message.
+
+2009-09-17  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Fix verbose packet dumping functions.
 	Add the configure parameter --enable-packet-dump so that this
@@ -10720,6 +11850,8 @@
 	unless you happen to be debugging the underlying protocol.  Because
 	it is normally commented out, I found it had bit-rotted slightly.
 	This commit also fixes the obvious problems.
+
+2009-09-17  Richard Jones  <rjones@trick.home.annexia.org>
 
 	'len' should be an unsigned 32 bit int.
 	This only happened to work by accident before because 'unsigned len'
@@ -10737,6 +11869,8 @@
 	Prepare for version 1.0.70.
 
 	Update PO files.
+
+2009-09-15  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Set minimum gettext version to 0.17.
 	This fixes the problem that the 1.0.69 tarball would fail in
@@ -10766,6 +11900,8 @@
 	Move guestfs-internal-actions.h to EXTRA_DIST.
 
 	Prepare for 1.0.69.
+
+2009-09-14  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Remove main loop.
 	This commit removes the external main loop, which never worked
@@ -10798,6 +11934,8 @@
 
 	One other benefit of this is that 'set_busy/end_busy' calls
 	no longer appear in traces.
+
+2009-09-14  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Don't enable trace in set_trace test.
 	This leaves trace enabled afterwards, resulting in some
@@ -10837,6 +11975,8 @@
 	Add command trace functionality.
 	Enable this by calling guestfs_trace (handle, 1) or by
 	setting the LIBGUESTFS_TRACE=1 environment variable.
+
+2009-09-14  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Non-daemon actions indirect through generated code.
 	Previously non-daemon actions were called directly by
@@ -11106,6 +12246,8 @@
 	platforms we care about (RHEL 5, Fedora 11, Debian), so use that
 	to test instead.
 
+2009-08-19  Richard W.M. Jones  <rjones@redhat.com>
+
 	tests: Conditionally skip UUID tests.
 	More tests introduced which break with old e2fsprogs that didn't
 	support UUIDs.  Skip those tests when the old platform is
@@ -11314,6 +12456,8 @@
 
 	mke2fs-J and friends: Lets you create ext2/3/4 filesystems with
 	external journals.
+
+2009-08-15  Richard W.M. Jones  <rjones@redhat.com>
 
 	generator: Generate the UUIDs for tests randomly.
 	Adds a uuidgen function which gets the random UUID from the
@@ -11586,6 +12730,8 @@
 	--disable-silent-rules or use "make V=1".
 	* daemon/configure.ac: Likewise.
 
+2009-08-10  Jim Meyering  <meyering@redhat.com>
+
 	build: daemon/do_debug: parameters aren't always unused
 	* daemon/debug.c (MAYBE_UNUSED): Define.
 	(do_debug): Mark parameters as unused only when they really
@@ -11593,6 +12739,8 @@
 
 	SCALAR(0xdd8370)
 	prefer sizeof *VAR sizeof TYPE (no semantic change)
+
+2009-08-10  Jim Meyering  <meyering@redhat.com>
 
 	build: avoid warnings in daemon/inotify.c
 	Avoid "comparison between signed and unsigned integer expressions"
@@ -11622,6 +12770,8 @@
 	(Just whitespace and comment changes, and small restructuring
 	of the code).
 
+2009-08-07  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Debug: Improve the way the qemu command line is printed.
 	Change the way the qemu command is displayed to look like
 	this:
@@ -11637,12 +12787,16 @@
 	This allows the command line to be copied and pasted directly
 	into the shell, and also makes it simpler to read.
 
+2009-08-07  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Allow network interface to be configured.
 	Add ./configure --with-net-if=(virtio|ne2k_pci) option.
 
 	This lets you workaround the following virtio_net bug:
 
 	https://bugzilla.redhat.com/show_bug.cgi?id=516022
+
+2009-08-07  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Tests: swapon_device test mkswap /dev/sda1 instead of /dev/sdb.
 	On RHEL 5, mkswap /dev/sdb fails, even with the '-f' option
@@ -11657,11 +12811,15 @@
 	Otherwise mkswap will give a silly error if you ask it to
 	swap on a whole device.
 
+2009-08-06  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Tests: Don't test block size in statvfs test.
 	The block size changes between kernel releases, causing
 	a false failure in the tests.  The error was:
 
 	test_statvfs_0: bsize was 65536, expected 131072
+
+2009-08-06  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Version 1.0.66
 
@@ -11733,6 +12891,8 @@
 	* Un-duplicate device detection code by creating a common mapping function.
 	* Add some more comments.
 
+2009-08-06  Matthew Booth  <mbooth@redhat.com>
+
 	Fix test failures in upload and download (RHBZ#515764)
 	The tests hardcoded an MD5 of the test file, COPYING.LIB, whose contents had
 	change. This change causes it to compute the MD5 rather than hardcoding it.
@@ -11747,12 +12907,16 @@
 
 	Add some newly-untracked files to .gitignore
 
+2009-08-05  Matthew Booth  <mbooth@redhat.com>
+
 	Fix swapon_label test
 	The swapon label test has a side-effect, in that it creates a new partition.
 	This causes the later failure of the list_partitions test.
 
 	This change causes the swapon_label test to zero /dev/sdb after the test, and
 	then re-read the partition table.
+
+2009-08-05  Matthew Booth  <mbooth@redhat.com>
 
 	Add resultant change to po/POTFILES.in
 	I missed this when committing 7e9cb884492aec243337ffc8e4432a9ff2690956
@@ -11826,6 +12990,8 @@
 	* .x-sc_TAB_in_indentation: New file.  Exceptions.
 	* HACKING: Document the policy, with tips on how to conform.
 
+2009-08-03  Jim Meyering  <meyering@redhat.com>
+
 	Convert all TABs-as-indentation to spaces.
 	Do it by running this command:
 	[exempted files are matched via .x-sc_TAB_in_indentation]
@@ -11835,6 +13001,8 @@
 	    | xargs pcregrep -l '^ *\t' \
 	    | xargs perl -MText::Tabs -ni -le \
 	      '$m=/^( *\t[ \t]*)(.*)/; print $m ? expand($1) . $2 : $_'
+
+2009-08-03  Jim Meyering  <meyering@redhat.com>
 
 	Remove files imported via autogen.sh.
 	* m4/.gitignore: Ignore these files.
@@ -11922,6 +13090,8 @@
 
 	Cleanup whitespace warnings in Lib.pm
 
+2009-08-03  Matthew Booth  <mbooth@redhat.com>
+
 	Use grub entries to find Linux kernels
 	This change adds grub parsing to Lib.pm. It adds the following structure to $os:
 	  {boot}
@@ -11954,6 +13124,8 @@
 
 	Add interface to Linux 'inotify' API.
 
+2009-07-31  Richard W.M. Jones  <rjones@redhat.com>
+
 	lib: Add selinux=0 to default kernel command line.
 	SELinux exists in a very disturbed state if it is enabled at
 	boot time, but no policy is loaded.  In particular, it messes
@@ -11977,6 +13149,8 @@
 
 	Instead check other commands' tests so we get a definitive
 	(and much smaller) list of commands that are not tested anywhere.
+
+2009-07-31  Richard W.M. Jones  <rjones@redhat.com>
 
 	New commands: swapon-*, swapoff-*, mkswap-file.
 	swapon-device
@@ -12032,6 +13206,8 @@
 	Subject: [PATCH] build: quote the other option test similarly
 
 	* configure.ac: Quote properly.
+
+2009-07-30  Jim Meyering  <jim@meyering.net>
 
 	build: fix test for --nocompress option
 	The test for febootstrap-to-initramfs' --nocompress option
@@ -12094,6 +13270,8 @@
 	However this doesn't yet attempt to translate the POD
 	command documentation.  We need a plan to do that.
 
+2009-07-29  Richard Jones  <rjones@trick.home.annexia.org>
+
 	tests: Use squashfs for static data where possible.
 	Instead of creating a new InitBasicFS for just about every test,
 	where a test doesn't need to write to the filesystem it is far
@@ -12102,6 +13280,8 @@
 	This commit changes as many tests as possible to make this so,
 	making the tests much faster.
 
+2009-07-29  Richard Jones  <rjones@trick.home.annexia.org>
+
 	tests: Fix read_file test.
 	The test ignored the fact that this function returns a (char *, size_t)
 	pair, and just treated the char * as a string.  This of course would
@@ -12109,6 +13289,8 @@
 
 	The tests are updated to add a new TestOutputBuffer type which should
 	be used with functions that return RBufferOut.
+
+2009-07-29  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Implement '*grep*' family of commands.
 
@@ -12208,6 +13390,8 @@
 
 	Need to declare asprintf_nowarn as inline to avoid gcc complaining.
 
+2009-07-28  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Replace shell_quote function with %Q and %R printf specifiers.
 	%Q => simple shell quoted string
 	%R => path will be prefixed by /sysroot
@@ -12260,6 +13444,8 @@
 
 	Also this is intended to be used when reporting bugs.
 
+2009-07-22  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Fix typo in error message.
 
 	Revert "Add 'set-kernel'/'get-kernel'/LIBGUESTFS_KERNEL to override appliance kernel."
@@ -12298,6 +13484,8 @@
 
 	Allow TMPDIR to override directory used for temporary files (RHBZ#512905).
 
+2009-07-21  Richard W.M. Jones  <rjones@redhat.com>
+
 	Generator: Implement RBufferOut and "read-file" call.
 	This commit implements the RBufferOut type for returning
 	arbitrary 8 bit data from calls.
@@ -12305,6 +13493,8 @@
 	We also implement the guestfs_read_file call to read a
 	whole file that can contain any 8 bit content, but up to
 	a limit of ~ 2 MB.
+
+2009-07-21  Richard W.M. Jones  <rjones@redhat.com>
 
 	Docs: Fully document the guestfs_readdir ftyp return field.
 
@@ -12316,6 +13506,8 @@
 2009-07-20  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Generator: Improve accuracy of a comment.
+
+2009-07-20  Richard Jones  <rjones@trick.home.annexia.org>
 
 	virt-inspector --fish: Fix incorrect '-a' parameter (RHBZ#512709)
 	virt-inspector --fish dom
@@ -12443,6 +13635,8 @@
 
 	The inner filesystem is now unpacked under the /ext3 mountpoint.
 
+2009-07-15  Richard W.M. Jones  <rjones@redhat.com>
+
 	New command: 'mountpoints' which returns a hash of device -> mountpoint.
 
 2009-07-15  Richard Jones  <rjones@trick.home.annexia.org>
@@ -12450,6 +13644,8 @@
 	Build fix: perl-libintl is not required for the basic Perl bindings.
 
 	Version 1.0.61
+
+2009-07-15  Richard Jones  <rjones@trick.home.annexia.org>
 
 	New tool virt-cat: display a file in a virtual machine.
 	This script is just a simpler way to cat a file from a VM.  It
@@ -12459,6 +13655,8 @@
 
 	 virt-cat someguest /var/log/messages | tail
 
+2009-07-15  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Make Perl strings translatable using perl-libintl.
 	All Perl strings are now marked as translatable using __"string"
 	or __x("string {placeholder}", placeholder => $_).  Perl strings
@@ -12466,6 +13664,8 @@
 
 	The po/POTFILES.in file is now updated automagically whenever we
 	add new *.c, *.pl or *.pm files into the repository.
+
+2009-07-15  Richard Jones  <rjones@trick.home.annexia.org>
 
 	guestfish: Add tilde expansion for paths (RHBZ#511372).
 	This commit adds tilde expansion for local users in guestfish:
@@ -12524,6 +13724,8 @@
 
 	Removed getfattr/setfattr from TODO list, since now implemented.
 
+2009-07-14  Richard W.M. Jones  <rjones@redhat.com>
+
 	Support for Linux extended attributes.
 	This commit adds six calls to support Linux extended attributes.
 	They are:
@@ -12543,6 +13745,8 @@
 
 	virt-inspector: Ignore swap partitions marked as "none".
 
+2009-07-14  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Improve launch error message.
 	The previous error message was confusing for new users:
 
@@ -12554,6 +13758,8 @@
 	  ><fs> mount /dev/sda1 /
 	  libguestfs: error: guestfs_mount: call launch before using this function
 	  (in guestfish, don't forget to use the 'run' command)
+
+2009-07-14  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Add reiserfs module to kernel whitelist.
 
@@ -12574,6 +13780,8 @@
 2009-07-13  Matthew Booth  <mbooth@redhat.com>
 
 	Automatically generate list of built java sources
+
+2009-07-13  Matthew Booth  <mbooth@redhat.com>
 
 	Revert "Fix checking of generator being run from the right directory."
 	This reverts commit 35c646965a21d452cf74ef3683612210a653c36d.
@@ -12614,6 +13822,8 @@
 	Add comment to the code about InitNone and InitEmpty.
 	These two constructors are treated as identical, but they
 	should be distinct concepts.
+
+2009-07-11  Richard W.M. Jones  <rjones@redhat.com>
 
 	Fix UPDATES and host_cpu in configure.ac.
 	UPDATES does not need to be propagated into config.h.
@@ -12663,6 +13873,8 @@
 
 	Working version of virt-df.
 
+2009-07-10  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Fix for returning structures (hashes) from Perl calls.
 	Calls such as stat and statvfs which returned a single structure
 	were returning an array of values instead of a full hash of keys +
@@ -12670,7 +13882,11 @@
 
 	Fix this by pushing the key names on the stack too.
 
+2009-07-10  Richard Jones  <rjones@trick.home.annexia.org>
+
 	'$_' should be marked as a local variable in Sys::Guestfs::Lib::open_guest.
+
+2009-07-10  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Properly close fds and unregister handlers in guestfs_close.
 	This caused a segfault if you tried to repeatedly open and close
@@ -12679,6 +13895,8 @@
 
 	This adds proper cleanup to the guestfs_close path, also for file
 	descriptors.
+
+2009-07-10  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Added framework for 'virt-df' command.
 
@@ -12695,6 +13913,8 @@
 
 	Sys::Guestfs::Lib minor documentation clean-up.
 
+2009-07-09  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Move the inspection analysis code into Sys::Guestfs::Lib library.
 	Creates new functions:
 	  inspect_all_partitions
@@ -12705,9 +13925,13 @@
 
 	Includes far more documentation for the process.
 
+2009-07-09  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Move 'resolve_windows_path' to Sys::Guestfs::Lib.
 
 	Move 'get_partitions' call into Sys::Guestfs::Lib.
+
+2009-07-09  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Add Sys::Guestfs::Lib - useful functions for using libguestfs from Perl.
 	This adds an extra Perl module called Sys::Guestfs::Lib which
@@ -12717,6 +13941,8 @@
 	virt-df and virt-v2v will move into this library.
 
 	This patch also changes virt-inspector to use this library.
+
+2009-07-09  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Just whitespace changes in the generator code.
 
@@ -12763,6 +13989,8 @@
 	I have also inspected the changes that are made to the generated
 	code by hand.
 
+2009-07-07  Richard Jones  <rjones@trick.home.annexia.org>
+
 	Fix for 349814e9d912c4: Get correct path when building Ruby bindings.
 
 2009-07-06  Richard Jones  <rjones@trick.home.annexia.org>
@@ -12770,6 +13998,8 @@
 	Test two (of four) cancellation paths.
 
 	Add a debug message to the library cancellation path.
+
+2009-07-06  Richard Jones  <rjones@trick.home.annexia.org>
 
 	Introduce regression tests for various qemu failures.
 	Test failure of qemu and recovery of the library:
@@ -12780,6 +14010,8 @@
 
 	Also this patch cleans up the other tests in this directory
 	and disables the long-winded test-bootbootboot test.
+
+2009-07-06  Richard Jones  <rjones@trick.home.annexia.org>
 
 	guestfish: Always fflush stdout between commands.
 
@@ -12860,6 +14092,8 @@
 
 	'readdir-and-stat' call is now effectively implemented.
 
+2009-07-03  Richard W.M. Jones  <rjones@redhat.com>
+
 	Add Debian appliance directory to the distfile.
 	'make dist' won't copy symlinks into the output file, so we
 	have to add a rule to the Makefile to copy these.
@@ -12889,6 +14123,8 @@
 
 	Prepare for 1.0.55.  PO files also updated.
 
+2009-07-02  Richard W.M. Jones  <rjones@redhat.com>
+
 	Add 'sfdiskM' command.
 	This command is a saner interface to partitioning.
 
@@ -12897,6 +14133,8 @@
 
 	All the test code has been updated to use this, so it is now
 	CHS-independent (eg. when CHS changes as between IDE and virtio).
+
+2009-07-02  Richard W.M. Jones  <rjones@redhat.com>
 
 	Remove generated files guestfs_protocol.[ch].
 	These generated files were accidentally left in when we
@@ -12958,6 +14196,8 @@
 
 	Updated PO files.
 
+2009-07-02  Richard W.M. Jones  <rjones@redhat.com>
+
 	Remove generated code from git.
 	Git users now require the OCaml compiler in order to regenerate
 	the generated code after a checkout.
@@ -12965,7 +14205,11 @@
 	Generated code will remain in the tarball, so users of the
 	source tarball will not need the OCaml compiler.
 
+2009-07-02  Richard W.M. Jones  <rjones@redhat.com>
+
 	Generator now runs automatically when it has changed.
+
+2009-07-02  Richard W.M. Jones  <rjones@redhat.com>
 
 	Add 'readdir' call.
 	This adds a readdir call (mostly intended for programs).  The
@@ -13006,10 +14250,14 @@
 	If udev is not being used or not available, this should have no
 	effect.  The command fails and this is silently ignored.
 
+2009-07-01  Richard W.M. Jones  <rjones@redhat.com>
+
 	All instances of 'pclose' now check for return value != 0.
 	We are generally interested that the subcommand ran without
 	error, ie. had exit status of 0.  'pclose' returns the exit
 	status, so we now check that pclose (fp) != 0.
+
+2009-07-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	Fix error handling of external sfdisk command.
 	Should use 'pclose' instead of 'fclose' (although fclose happens
@@ -13018,7 +14266,11 @@
 	The result of pclose is the exit status of the command, so we
 	need to test this is != 0.
 
+2009-07-01  Richard W.M. Jones  <rjones@redhat.com>
+
 	Generated code for the virtio_blk change.
+
+2009-07-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	Change to use virtio_blk (virtio block device) by default.
 	virtio_blk is the fast, virt-native block device driver
@@ -13058,11 +14310,15 @@
 	not really necessary to test the call, so instead just check
 	for filesystem features.
 
+2009-06-30  Richard W.M. Jones  <rjones@redhat.com>
+
 	Clean up the output of the C API test code.
 	Set output mode to unbuffered so that we see ordinary output
 	messages and errors at the same time.
 
 	Align "skipped" messages.
+
+2009-06-30  Richard W.M. Jones  <rjones@redhat.com>
 
 	Todo: getfattr, setfattr.
 
@@ -13076,6 +14332,8 @@
 
 	Generated code for mknod, mkfifo, mknod_b, mknod_c, umask.
 
+2009-06-30  Richard W.M. Jones  <rjones@redhat.com>
+
 	New commands: mknod, mkfifo, mknod_b, mknod_c and umask.
 	These commands are used to create block and char device
 	nodes or FIFOs (named pipes) in the filesystem.
@@ -13084,6 +14342,8 @@
 	used by mknod are masked by the umask.
 
 	Also document and guarantee that the umask starts as 022.
+
+2009-06-30  Richard W.M. Jones  <rjones@redhat.com>
 
 	Use octal numbers for modes in the test suite.
 	We have to use the OCaml convention (0o...).  Note that in
@@ -13139,6 +14399,8 @@
 
 	Generated code for mount-loop command.
 
+2009-06-29  Richard W.M. Jones  <rjones@redhat.com>
+
 	Add mount-loop command (RHBZ#508668).
 	Loop device mounts don't work for the generic 'mount' commands
 	because the first parameter should be a file not a device.
@@ -13146,6 +14408,8 @@
 	We want to separate out files parameters from device parameters
 	in the long term, so this adds a new mount-loop command for this
 	purpose.
+
+2009-06-29  Richard W.M. Jones  <rjones@redhat.com>
 
 	Fix memory leak in daemon/mount.c:do_mount_vfs.
 
@@ -13190,13 +14454,19 @@
 
 	Generated code for df / df-h.
 
+2009-06-29  Richard W.M. Jones  <rjones@redhat.com>
+
 	Add 'df' and 'df-h' commands.
 	df and df-h commands can be used interactively to show disk
 	space usage.
 
 	Use existing statvfs command from programs.
 
+2009-06-29  Richard W.M. Jones  <rjones@redhat.com>
+
 	Todo: Removed suggestion for short form for pipes.
+
+2009-06-29  Richard W.M. Jones  <rjones@redhat.com>
 
 	Implement "more" and "less" commands in guestfish.
 	Use commands such as:
@@ -13204,6 +14474,8 @@
 	  less /etc/fstab
 
 	These commands are specific to guestfish.
+
+2009-06-29  Richard W.M. Jones  <rjones@redhat.com>
 
 	Todo list: Pipes now implemented, so remove from list.
 
