@@ -103,6 +103,7 @@ Package: libguestfs-dev
 Section: libdevel
 Architecture: i386 amd64
 Depends: libguestfs0 (= ${binary:Version}), ${misc:Depends}
+Conflicts: libguestfs0 (<< 1:1.14.9-1~)
 Description: guest disk image management system - development headers
  The libguestfs library allows accessing and modifying guest disk
  images. It offers the following features, among many others:
@@ -275,7 +276,7 @@ Section: python
 Architecture: i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, libguestfs0 (= ${binary:Version})
 Provides: python-libguestfs
-Conflicts: python-libguestfs
+Conflicts: python-libguestfs, libguestfs-dev (<< 1:1.14.9-1~)
 Description: guest disk image management system - Python bindings
  The libguestfs library allows accessing and modifying guest disk
  images. It offers the following features, among many others:
@@ -364,6 +365,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
  libguestfs-dev (= ${binary:Version}), 
  ${ocaml:Depends}
 Provides: ${ocaml:Provides}
+Conflicts: libguestfs-dev (<< 1:1.14.9-1~)
 Description: guest disk image management system - OCaml development files
  The libguestfs library allows accessing and modifying guest disk
  images. It offers the following features, among many others:
@@ -391,6 +393,7 @@ Package: erlang-guestfs
 Section: interpreters
 Architecture: i386 amd64
 Depends: ${erlang-base:Depends}, ${erlang-abi:Depends}, ${shlibs:Depends}, ${misc:Depends}
+Conflicts: libguestfs-dev (<< 1:1.14.9-1~)
 Description: guest disk image management system - Erlang bindings
  The libguestfs library allows accessing and modifying guest disk
  images. It offers the following features, among many others:
@@ -417,6 +420,7 @@ Package: libguestfs-java
 Section: java
 Architecture: i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: libguestfs-dev (<< 1:1.14.9-1~)
 Description: guest disk image management system - Java bindings
  The libguestfs library allows accessing and modifying guest disk
  images. It offers the following features, among many others:
