@@ -3,28 +3,27 @@ Date: Sat, 20 Aug 2011 20:43:22 +0200
 Subject: autoreconf
 
 ---
- Makefile.in          |   50 +++++++-------
- aclocal.m4           |   14 ++--
+ Makefile.in          |   50 ++++++++++++-------------
+ aclocal.m4           |   14 ++++---
  cat/Makefile.in      |    2 +-
  clone/Makefile.in    |    2 +-
- config.h.in          |    4 +-
- configure            |  186 +++++++++++++++++++++++++++++---------------------
+ configure            |   97 ++++++++++++++++++++++++++++---------------------
  daemon/Makefile.in   |    4 +-
  df/Makefile.in       |    2 +-
  edit/Makefile.in     |    2 +-
  fuse/Makefile.in     |    2 +-
  images/Makefile.in   |    2 +-
- java/Makefile.in     |    5 +-
- ocaml/Makefile.in    |   19 +++---
- perl/Makefile.in     |    8 ++-
+ java/Makefile.in     |    5 ++-
+ ocaml/Makefile.in    |   19 +++++-----
+ perl/Makefile.in     |    8 +++-
  python/Makefile.in   |    3 +-
- resize/Makefile.in   |    7 +-
- sparsify/Makefile.in |    8 +-
- tools/Makefile.in    |    6 +-
- 18 files changed, 181 insertions(+), 145 deletions(-)
+ resize/Makefile.in   |    7 ++--
+ sparsify/Makefile.in |    8 ++--
+ tools/Makefile.in    |    6 ++--
+ 17 files changed, 126 insertions(+), 107 deletions(-)
 
 diff --git a/Makefile.in b/Makefile.in
-index 20f6faf..35f226f 100644
+index 01f44c3..34d72f0 100644
 --- a/Makefile.in
 +++ b/Makefile.in
 @@ -71,7 +71,6 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
@@ -103,7 +102,7 @@ index 20f6faf..35f226f 100644
  	erlang/examples csharp resize sparsify tools fuse clone \
  	po-docs
  DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-@@ -1323,12 +1323,12 @@ ACLOCAL_AMFLAGS = -I m4
+@@ -1329,12 +1329,12 @@ ACLOCAL_AMFLAGS = -I m4
  
  # Unconditional because nothing is built yet.
  SUBDIRS = gnulib/lib images generator src examples po $(am__append_1) \
@@ -122,7 +121,7 @@ index 20f6faf..35f226f 100644
  EXTRA_DIST = \
  	$(generator_built) \
  	BUGS HACKING RELEASE-NOTES ROADMAP TODO \
-@@ -1480,8 +1480,6 @@ podwrapper.sh: $(top_builddir)/config.status $(srcdir)/podwrapper.sh.in
+@@ -1486,8 +1486,6 @@ podwrapper.sh: $(top_builddir)/config.status $(srcdir)/podwrapper.sh.in
  	cd $(top_builddir) && $(SHELL) ./config.status $@
  run: $(top_builddir)/config.status $(srcdir)/run.in
  	cd $(top_builddir) && $(SHELL) ./config.status $@
@@ -186,10 +185,10 @@ index 44c3f1c..01d9587 100644
  else
  	$1[]_CFLAGS=$pkg_cv_[]$1[]_CFLAGS
 diff --git a/cat/Makefile.in b/cat/Makefile.in
-index 6bcc62e..9f6c814 100644
+index 1d5e09a..65a2aa1 100644
 --- a/cat/Makefile.in
 +++ b/cat/Makefile.in
-@@ -1378,7 +1378,7 @@ TESTS_ENVIRONMENT = \
+@@ -1384,7 +1384,7 @@ TESTS_ENVIRONMENT = \
  	LIBGUESTFS_PATH=$(top_builddir)/appliance \
  	TMPDIR=$(top_builddir)
  
@@ -199,10 +198,10 @@ index 6bcc62e..9f6c814 100644
  
  .SUFFIXES:
 diff --git a/clone/Makefile.in b/clone/Makefile.in
-index 5c3f5b3..2fcacf4 100644
+index b618855..8bea9e5 100644
 --- a/clone/Makefile.in
 +++ b/clone/Makefile.in
-@@ -1245,7 +1245,7 @@ TESTS_ENVIRONMENT = \
+@@ -1251,7 +1251,7 @@ TESTS_ENVIRONMENT = \
  	LIBGUESTFS_PATH=$(top_builddir)/appliance \
  	TMPDIR=$(top_builddir)
  
@@ -211,28 +210,11 @@ index 5c3f5b3..2fcacf4 100644
  all: all-am
  
  .SUFFIXES:
-diff --git a/config.h.in b/config.h.in
-index dae6bce..1e5b162 100644
---- a/config.h.in
-+++ b/config.h.in
-@@ -889,10 +889,10 @@
- /* Define if the POSIX multithreading library has read/write locks. */
- #undef HAVE_PTHREAD_RWLOCK
- 
--/* Define to 1 if you have the `PyCapsule_New' function. */
-+/* Found PyCapsule_New in libpython */
- #undef HAVE_PYCAPSULE_NEW
- 
--/* Define to 1 if you have the `PyString_AsString' function. */
-+/* Found PyString_AsString in libpython */
- #undef HAVE_PYSTRING_ASSTRING
- 
- /* Define to 1 if you have the `raise' function. */
 diff --git a/configure b/configure
-index 423a3e7..2b14d8b 100755
+index 94b2e5d..9855ec8 100755
 --- a/configure
 +++ b/configure
-@@ -45148,7 +45148,10 @@ else
+@@ -45189,7 +45189,10 @@ else
    enable_install_daemon=no
  fi
  
@@ -244,7 +226,7 @@ index 423a3e7..2b14d8b 100755
    INSTALL_DAEMON_TRUE=
    INSTALL_DAEMON_FALSE='#'
  else
-@@ -45156,9 +45159,6 @@ else
+@@ -45197,9 +45200,6 @@ else
    INSTALL_DAEMON_FALSE=
  fi
  
@@ -254,7 +236,7 @@ index 423a3e7..2b14d8b 100755
  
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if we should build the appliance" >&5
  $as_echo_n "checking if we should build the appliance... " >&6; }
-@@ -45180,8 +45180,7 @@ fi
+@@ -45221,8 +45221,7 @@ fi
  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_appliance" >&5
  $as_echo "$enable_appliance" >&6; }
  
@@ -264,7 +246,7 @@ index 423a3e7..2b14d8b 100755
  set dummy febootstrap; ac_word=$2
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
  $as_echo_n "checking for $ac_word... " >&6; }
-@@ -45219,12 +45218,8 @@ $as_echo "no" >&6; }
+@@ -45260,12 +45259,8 @@ $as_echo "no" >&6; }
  fi
  
  
@@ -278,7 +260,7 @@ index 423a3e7..2b14d8b 100755
  $as_echo_n "checking if user requested febootstrap --yum-config option... " >&6; }
  
  # Check whether --with-febootstrap-yum-config was given.
-@@ -45234,26 +45229,32 @@ else
+@@ -45275,26 +45270,32 @@ else
    FEBOOTSTRAP_YUM_CONFIG=no
  fi
  
@@ -324,7 +306,7 @@ index 423a3e7..2b14d8b 100755
  
  # Extract the first word of "rpcgen", so it can be a program name with args.
  set dummy rpcgen; ac_word=$2
-@@ -45412,6 +45413,7 @@ fi
+@@ -45453,6 +45454,7 @@ fi
  
  
  
@@ -332,7 +314,7 @@ index 423a3e7..2b14d8b 100755
  if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
  	if test -n "$ac_tool_prefix"; then
    # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
-@@ -45540,6 +45542,7 @@ if test -n "$AUGEAS_CFLAGS"; then
+@@ -45581,6 +45583,7 @@ if test -n "$AUGEAS_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_AUGEAS_CFLAGS=`$PKG_CONFIG --cflags "augeas" 2>/dev/null`
@@ -340,7 +322,7 @@ index 423a3e7..2b14d8b 100755
  else
    pkg_failed=yes
  fi
-@@ -45556,6 +45559,7 @@ if test -n "$AUGEAS_LIBS"; then
+@@ -45597,6 +45600,7 @@ if test -n "$AUGEAS_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_AUGEAS_LIBS=`$PKG_CONFIG --libs "augeas" 2>/dev/null`
@@ -348,7 +330,7 @@ index 423a3e7..2b14d8b 100755
  else
    pkg_failed=yes
  fi
-@@ -45575,9 +45579,9 @@ else
+@@ -45616,9 +45620,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -360,7 +342,7 @@ index 423a3e7..2b14d8b 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$AUGEAS_PKG_ERRORS" >&5
-@@ -48249,6 +48253,7 @@ if test -n "$PCRE_CFLAGS"; then
+@@ -48290,6 +48294,7 @@ if test -n "$PCRE_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_PCRE_CFLAGS=`$PKG_CONFIG --cflags "libpcre" 2>/dev/null`
@@ -368,7 +350,7 @@ index 423a3e7..2b14d8b 100755
  else
    pkg_failed=yes
  fi
-@@ -48265,6 +48270,7 @@ if test -n "$PCRE_LIBS"; then
+@@ -48306,6 +48311,7 @@ if test -n "$PCRE_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_PCRE_LIBS=`$PKG_CONFIG --libs "libpcre" 2>/dev/null`
@@ -376,7 +358,7 @@ index 423a3e7..2b14d8b 100755
  else
    pkg_failed=yes
  fi
-@@ -48284,9 +48290,9 @@ else
+@@ -48325,9 +48331,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -388,7 +370,7 @@ index 423a3e7..2b14d8b 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$PCRE_PKG_ERRORS" >&5
-@@ -48301,7 +48307,6 @@ installed software in a non-standard prefix.
+@@ -48342,7 +48348,6 @@ installed software in a non-standard prefix.
  Alternatively, you may set the environment variables PCRE_CFLAGS
  and PCRE_LIBS to avoid the need to call pkg-config.
  See the pkg-config man page for more details." "$LINENO" 5
@@ -396,7 +378,7 @@ index 423a3e7..2b14d8b 100755
  elif test $pkg_failed = untried; then
       	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
  $as_echo "no" >&6; }
-@@ -48317,7 +48322,6 @@ See the pkg-config man page for more details.
+@@ -48358,7 +48363,6 @@ See the pkg-config man page for more details.
  
  To get pkg-config, see <http://pkg-config.freedesktop.org/>.
  See \`config.log' for more details" "$LINENO" 5; }
@@ -404,7 +386,7 @@ index 423a3e7..2b14d8b 100755
  else
  	PCRE_CFLAGS=$pkg_cv_PCRE_CFLAGS
  	PCRE_LIBS=$pkg_cv_PCRE_LIBS
-@@ -48396,6 +48400,7 @@ if test -n "$LIBVIRT_CFLAGS"; then
+@@ -48437,6 +48441,7 @@ if test -n "$LIBVIRT_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBVIRT_CFLAGS=`$PKG_CONFIG --cflags "libvirt" 2>/dev/null`
@@ -412,7 +394,7 @@ index 423a3e7..2b14d8b 100755
  else
    pkg_failed=yes
  fi
-@@ -48412,6 +48417,7 @@ if test -n "$LIBVIRT_LIBS"; then
+@@ -48453,6 +48458,7 @@ if test -n "$LIBVIRT_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBVIRT_LIBS=`$PKG_CONFIG --libs "libvirt" 2>/dev/null`
@@ -420,7 +402,7 @@ index 423a3e7..2b14d8b 100755
  else
    pkg_failed=yes
  fi
-@@ -48431,9 +48437,9 @@ else
+@@ -48472,9 +48478,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -432,7 +414,7 @@ index 423a3e7..2b14d8b 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBVIRT_PKG_ERRORS" >&5
-@@ -48481,6 +48487,7 @@ if test -n "$LIBXML2_CFLAGS"; then
+@@ -48522,6 +48528,7 @@ if test -n "$LIBXML2_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBXML2_CFLAGS=`$PKG_CONFIG --cflags "libxml-2.0" 2>/dev/null`
@@ -440,7 +422,7 @@ index 423a3e7..2b14d8b 100755
  else
    pkg_failed=yes
  fi
-@@ -48497,6 +48504,7 @@ if test -n "$LIBXML2_LIBS"; then
+@@ -48538,6 +48545,7 @@ if test -n "$LIBXML2_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBXML2_LIBS=`$PKG_CONFIG --libs "libxml-2.0" 2>/dev/null`
@@ -448,7 +430,7 @@ index 423a3e7..2b14d8b 100755
  else
    pkg_failed=yes
  fi
-@@ -48516,9 +48524,9 @@ else
+@@ -48557,9 +48565,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -460,7 +442,7 @@ index 423a3e7..2b14d8b 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBXML2_PKG_ERRORS" >&5
-@@ -48566,6 +48574,7 @@ if test -n "$LIBCONFIG_CFLAGS"; then
+@@ -48607,6 +48615,7 @@ if test -n "$LIBCONFIG_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBCONFIG_CFLAGS=`$PKG_CONFIG --cflags "libconfig" 2>/dev/null`
@@ -468,7 +450,7 @@ index 423a3e7..2b14d8b 100755
  else
    pkg_failed=yes
  fi
-@@ -48582,6 +48591,7 @@ if test -n "$LIBCONFIG_LIBS"; then
+@@ -48623,6 +48632,7 @@ if test -n "$LIBCONFIG_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBCONFIG_LIBS=`$PKG_CONFIG --libs "libconfig" 2>/dev/null`
@@ -476,7 +458,7 @@ index 423a3e7..2b14d8b 100755
  else
    pkg_failed=yes
  fi
-@@ -48601,9 +48611,9 @@ else
+@@ -48642,9 +48652,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -488,7 +470,7 @@ index 423a3e7..2b14d8b 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBCONFIG_PKG_ERRORS" >&5
-@@ -48651,6 +48661,7 @@ if test -n "$HIVEX_CFLAGS"; then
+@@ -48692,6 +48702,7 @@ if test -n "$HIVEX_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_HIVEX_CFLAGS=`$PKG_CONFIG --cflags "hivex" 2>/dev/null`
@@ -496,7 +478,7 @@ index 423a3e7..2b14d8b 100755
  else
    pkg_failed=yes
  fi
-@@ -48667,6 +48678,7 @@ if test -n "$HIVEX_LIBS"; then
+@@ -48708,6 +48719,7 @@ if test -n "$HIVEX_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_HIVEX_LIBS=`$PKG_CONFIG --libs "hivex" 2>/dev/null`
@@ -504,7 +486,7 @@ index 423a3e7..2b14d8b 100755
  else
    pkg_failed=yes
  fi
-@@ -48686,9 +48698,9 @@ else
+@@ -48727,9 +48739,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -516,7 +498,7 @@ index 423a3e7..2b14d8b 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$HIVEX_PKG_ERRORS" >&5
-@@ -48744,6 +48756,7 @@ if test -n "$FUSE_CFLAGS"; then
+@@ -48785,6 +48797,7 @@ if test -n "$FUSE_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_FUSE_CFLAGS=`$PKG_CONFIG --cflags "fuse" 2>/dev/null`
@@ -524,7 +506,7 @@ index 423a3e7..2b14d8b 100755
  else
    pkg_failed=yes
  fi
-@@ -48760,6 +48773,7 @@ if test -n "$FUSE_LIBS"; then
+@@ -48801,6 +48814,7 @@ if test -n "$FUSE_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_FUSE_LIBS=`$PKG_CONFIG --libs "fuse" 2>/dev/null`
@@ -532,7 +514,7 @@ index 423a3e7..2b14d8b 100755
  else
    pkg_failed=yes
  fi
-@@ -48779,9 +48793,9 @@ else
+@@ -48820,9 +48834,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -544,135 +526,7 @@ index 423a3e7..2b14d8b 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$FUSE_PKG_ERRORS" >&5
-@@ -50019,19 +50033,16 @@ $as_echo "$PYTHON_INSTALLDIR" >&6; }
-             fi
- 
-                         old_LIBS="$LIBS"
--            if test "x$PYTHON_VERSION_MAJOR" = "x3"; then
--                                LIBPYTHON="python${PYTHON_VERSION}mu"
--            else
--                LIBPYTHON="python$PYTHON_VERSION"
--            fi
--            as_ac_Lib=`$as_echo "ac_cv_lib_$LIBPYTHON''_PyList_Size" | $as_tr_sh`
--{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for PyList_Size in -l$LIBPYTHON" >&5
--$as_echo_n "checking for PyList_Size in -l$LIBPYTHON... " >&6; }
--if eval \${$as_ac_Lib+:} false; then :
-+
-+            PYTHON_BLDLIBRARY=`$PYTHON -c "import distutils.sysconfig; \
-+                                           print (distutils.sysconfig.get_config_var('BLDLIBRARY'))"`
-+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PyCapsule_New in -lc" >&5
-+$as_echo_n "checking for PyCapsule_New in -lc... " >&6; }
-+if ${ac_cv_lib_c_PyCapsule_New+:} false; then :
-   $as_echo_n "(cached) " >&6
- else
-   ac_check_lib_save_LIBS=$LIBS
--LIBS="-l$LIBPYTHON  $LIBS"
-+LIBS="-lc $PYTHON_BLDLIBRARY $LIBS"
- cat confdefs.h - <<_ACEOF >conftest.$ac_ext
- /* end confdefs.h.  */
- 
-@@ -50041,54 +50052,74 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
- #ifdef __cplusplus
- extern "C"
- #endif
--char PyList_Size ();
-+char PyCapsule_New ();
- int
- main ()
- {
--return PyList_Size ();
-+return PyCapsule_New ();
-   ;
-   return 0;
- }
- _ACEOF
- if ac_fn_c_try_link "$LINENO"; then :
--  eval "$as_ac_Lib=yes"
-+  ac_cv_lib_c_PyCapsule_New=yes
- else
--  eval "$as_ac_Lib=no"
-+  ac_cv_lib_c_PyCapsule_New=no
- fi
- rm -f core conftest.err conftest.$ac_objext \
-     conftest$ac_exeext conftest.$ac_ext
- LIBS=$ac_check_lib_save_LIBS
- fi
--eval ac_res=\$$as_ac_Lib
--	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
--$as_echo "$ac_res" >&6; }
--if eval test \"x\$"$as_ac_Lib"\" = x"yes"; then :
--  cat >>confdefs.h <<_ACEOF
--#define `$as_echo "HAVE_LIB$LIBPYTHON" | $as_tr_cpp` 1
--_ACEOF
-+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_c_PyCapsule_New" >&5
-+$as_echo "$ac_cv_lib_c_PyCapsule_New" >&6; }
-+if test "x$ac_cv_lib_c_PyCapsule_New" = xyes; then :
- 
--  LIBS="-l$LIBPYTHON $LIBS"
-+$as_echo "#define HAVE_PYCAPSULE_NEW 1" >>confdefs.h
- 
--else
--  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
--$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
--as_fn_error $? "$LIBPYTHON is not installed
--See \`config.log' for more details" "$LINENO" 5; }
- fi
- 
-+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PyString_AsString in -lc" >&5
-+$as_echo_n "checking for PyString_AsString in -lc... " >&6; }
-+if ${ac_cv_lib_c_PyString_AsString+:} false; then :
-+  $as_echo_n "(cached) " >&6
-+else
-+  ac_check_lib_save_LIBS=$LIBS
-+LIBS="-lc $PYTHON_BLDLIBRARY $LIBS"
-+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-+/* end confdefs.h.  */
- 
--            for ac_func in PyCapsule_New \
--                            PyString_AsString
--do :
--  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
--ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
--if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
--  cat >>confdefs.h <<_ACEOF
--#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
-+/* Override any GCC internal prototype to avoid an error.
-+   Use char because int might match the return type of a GCC
-+   builtin and then its argument prototype would still apply.  */
-+#ifdef __cplusplus
-+extern "C"
-+#endif
-+char PyString_AsString ();
-+int
-+main ()
-+{
-+return PyString_AsString ();
-+  ;
-+  return 0;
-+}
- _ACEOF
-+if ac_fn_c_try_link "$LINENO"; then :
-+  ac_cv_lib_c_PyString_AsString=yes
-+else
-+  ac_cv_lib_c_PyString_AsString=no
-+fi
-+rm -f core conftest.err conftest.$ac_objext \
-+    conftest$ac_exeext conftest.$ac_ext
-+LIBS=$ac_check_lib_save_LIBS
-+fi
-+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_c_PyString_AsString" >&5
-+$as_echo "$ac_cv_lib_c_PyString_AsString" >&6; }
-+if test "x$ac_cv_lib_c_PyString_AsString" = xyes; then :
-+
-+$as_echo "#define HAVE_PYSTRING_ASSTRING 1" >>confdefs.h
- 
- fi
--done
-+
- 
-             LIBS="$old_LIBS"
-         fi
-@@ -51202,7 +51233,7 @@ ac_config_files="$ac_config_files podwrapper.sh"
+@@ -51260,7 +51274,7 @@ ac_config_files="$ac_config_files podwrapper.sh"
  
  ac_config_files="$ac_config_files run"
  
@@ -681,7 +535,7 @@ index 423a3e7..2b14d8b 100755
  
  cat >confcache <<\_ACEOF
  # This file is a shell script that caches the results of configure
-@@ -52416,7 +52447,6 @@ do
+@@ -52474,7 +52488,6 @@ do
      "clone/Makefile") CONFIG_FILES="$CONFIG_FILES clone/Makefile" ;;
      "csharp/Makefile") CONFIG_FILES="$CONFIG_FILES csharp/Makefile" ;;
      "daemon/Makefile") CONFIG_FILES="$CONFIG_FILES daemon/Makefile" ;;
@@ -690,10 +544,10 @@ index 423a3e7..2b14d8b 100755
      "edit/Makefile") CONFIG_FILES="$CONFIG_FILES edit/Makefile" ;;
      "erlang/Makefile") CONFIG_FILES="$CONFIG_FILES erlang/Makefile" ;;
 diff --git a/daemon/Makefile.in b/daemon/Makefile.in
-index 1729c71..bb3c501 100644
+index b55be4b..07f439e 100644
 --- a/daemon/Makefile.in
 +++ b/daemon/Makefile.in
-@@ -3112,10 +3112,10 @@ $(top_builddir)/daemon/guestfsd: force
+@@ -3118,10 +3118,10 @@ $(top_builddir)/daemon/guestfsd: force
  appliance: force
  	$(MAKE) -C $(top_builddir)/appliance
  
@@ -707,10 +561,10 @@ index 1729c71..bb3c501 100644
  	ln $< $@
  $(libsrcdir)/guestfs_protocol.c: force
 diff --git a/df/Makefile.in b/df/Makefile.in
-index 5295978..65af300 100644
+index f9ac8fb..aeb09d4 100644
 --- a/df/Makefile.in
 +++ b/df/Makefile.in
-@@ -1318,7 +1318,7 @@ TESTS_ENVIRONMENT = \
+@@ -1324,7 +1324,7 @@ TESTS_ENVIRONMENT = \
  	LIBGUESTFS_PATH=$(top_builddir)/appliance \
  	TMPDIR=$(top_builddir)
  
@@ -720,10 +574,10 @@ index 5295978..65af300 100644
  
  .SUFFIXES:
 diff --git a/edit/Makefile.in b/edit/Makefile.in
-index 2ca79f7..fee9e78 100644
+index 0dcc5d7..e7de79f 100644
 --- a/edit/Makefile.in
 +++ b/edit/Makefile.in
-@@ -1307,7 +1307,7 @@ TESTS_ENVIRONMENT = \
+@@ -1313,7 +1313,7 @@ TESTS_ENVIRONMENT = \
  	LIBGUESTFS_PATH=$(top_builddir)/appliance \
  	TMPDIR=$(top_builddir)
  
@@ -733,10 +587,10 @@ index 2ca79f7..fee9e78 100644
  
  .SUFFIXES:
 diff --git a/fuse/Makefile.in b/fuse/Makefile.in
-index 3653843..c02863b 100644
+index 91cde04..0bfdc79 100644
 --- a/fuse/Makefile.in
 +++ b/fuse/Makefile.in
-@@ -1314,7 +1314,7 @@ CLEANFILES = stamp-guestmount.pod
+@@ -1320,7 +1320,7 @@ CLEANFILES = stamp-guestmount.pod
  @HAVE_FUSE_TRUE@noinst_DATA = $(top_builddir)/html/guestmount.1.html
  
  # Tests.
@@ -746,10 +600,10 @@ index 3653843..c02863b 100644
  @HAVE_FUSE_TRUE@	top_builddir=..
  
 diff --git a/images/Makefile.in b/images/Makefile.in
-index b056a5d..c66b982 100644
+index fa0b93c..c10eac0 100644
 --- a/images/Makefile.in
 +++ b/images/Makefile.in
-@@ -1233,7 +1233,7 @@ noinst_DATA = test.iso
+@@ -1239,7 +1239,7 @@ noinst_DATA = test.iso
  
  # This is 'check_DATA' because we don't need it until 'make check'
  # time and we need the tools we have built in order to make it.
@@ -759,7 +613,7 @@ index b056a5d..c66b982 100644
  	test.iso test.sqsh \
  	100kallzeroes 100kallnewlines 100kallspaces 100krandom 10klines \
 diff --git a/java/Makefile.in b/java/Makefile.in
-index 0437ee7..e8bc684 100644
+index 81ceaca..51ae178 100644
 --- a/java/Makefile.in
 +++ b/java/Makefile.in
 @@ -92,6 +92,7 @@ build_triplet = @build@
@@ -770,7 +624,7 @@ index 0437ee7..e8bc684 100644
  subdir = java
  ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
  am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
-@@ -1264,7 +1265,7 @@ htmldir = @htmldir@
+@@ -1270,7 +1271,7 @@ htmldir = @htmldir@
  includedir = @includedir@
  infodir = @infodir@
  install_sh = @install_sh@
@@ -779,7 +633,7 @@ index 0437ee7..e8bc684 100644
  libexecdir = @libexecdir@
  lispdir = @lispdir@
  localedir = @localedir@
-@@ -1353,7 +1354,7 @@ CLEANFILES = doc-stamp $(builddir)/com/redhat/et/libguestfs/*.class com_redhat_e
+@@ -1359,7 +1360,7 @@ CLEANFILES = doc-stamp $(builddir)/com/redhat/et/libguestfs/*.class com_redhat_e
  @HAVE_JAVA_TRUE@noinst_SCRIPTS = doc-stamp
  
  # Tests (not comprehensive).
@@ -789,7 +643,7 @@ index 0437ee7..e8bc684 100644
  @HAVE_JAVA_TRUE@	JAVA=$(JAVA) \
  @HAVE_JAVA_TRUE@	CLASSPATH=.:t:libguestfs-$(VERSION).jar \
 diff --git a/ocaml/Makefile.in b/ocaml/Makefile.in
-index b0aef84..6d86177 100644
+index d736650..6742481 100644
 --- a/ocaml/Makefile.in
 +++ b/ocaml/Makefile.in
 @@ -71,7 +71,11 @@ DIST_COMMON = $(srcdir)/.depend $(srcdir)/META.in \
@@ -805,7 +659,7 @@ index b0aef84..6d86177 100644
  subdir = ocaml
  ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
  am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
-@@ -1218,7 +1222,7 @@ EXTRA_DIST = \
+@@ -1224,7 +1228,7 @@ EXTRA_DIST = \
  	t/*.ml
  
  CLEANFILES = *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so t/*.cmi \
@@ -814,7 +668,7 @@ index b0aef84..6d86177 100644
  AM_CPPFLAGS = -I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
    -I$(top_srcdir)/src -I$(top_builddir)/src \
    $(WARN_CFLAGS) $(WERROR_CFLAGS)
-@@ -1238,14 +1242,9 @@ AM_CPPFLAGS = -I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
+@@ -1244,14 +1248,9 @@ AM_CPPFLAGS = -I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
  @HAVE_OCAML_TRUE@	TMPDIR=$(top_builddir) \
  @HAVE_OCAML_TRUE@	$(VG)
  
@@ -833,7 +687,7 @@ index b0aef84..6d86177 100644
  all: all-am
  
 diff --git a/perl/Makefile.in b/perl/Makefile.in
-index 95a8f68..6d477fa 100644
+index 248f3ea..fe974cf 100644
 --- a/perl/Makefile.in
 +++ b/perl/Makefile.in
 @@ -68,6 +68,8 @@ build_triplet = @build@
@@ -845,7 +699,7 @@ index 95a8f68..6d477fa 100644
  subdir = perl
  ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
  am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
-@@ -1214,7 +1216,8 @@ EXTRA_DIST = \
+@@ -1220,7 +1222,8 @@ EXTRA_DIST = \
  	t/*.t \
  	typemap
  
@@ -855,7 +709,7 @@ index 95a8f68..6d477fa 100644
  @HAVE_PERL_TRUE@TESTS_ENVIRONMENT = \
  @HAVE_PERL_TRUE@	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
  @HAVE_PERL_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
-@@ -1539,12 +1542,13 @@ appliance: force
+@@ -1543,12 +1546,13 @@ appliance: force
  @HAVE_PERL_TRUE@test_images:
  @HAVE_PERL_TRUE@	$(MAKE) -C $(top_builddir)/images
  
@@ -871,7 +725,7 @@ index 95a8f68..6d477fa 100644
  
  # No!  Otherwise it is deleted before the clean-local rule runs.
 diff --git a/python/Makefile.in b/python/Makefile.in
-index 7db00ab..8aa691b 100644
+index 1d0b4fc..f57d173 100644
 --- a/python/Makefile.in
 +++ b/python/Makefile.in
 @@ -70,6 +70,7 @@ build_triplet = @build@
@@ -882,7 +736,7 @@ index 7db00ab..8aa691b 100644
  subdir = python
  ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
  am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
-@@ -1287,7 +1288,7 @@ EXTRA_DIST = \
+@@ -1293,7 +1294,7 @@ EXTRA_DIST = \
  @HAVE_PYTHON_TRUE@	TMPDIR=$(top_builddir) \
  @HAVE_PYTHON_TRUE@	PYTHON=$(PYTHON)
  
@@ -892,18 +746,18 @@ index 7db00ab..8aa691b 100644
  
  .SUFFIXES:
 diff --git a/resize/Makefile.in b/resize/Makefile.in
-index 069f76e..5a8a828 100644
+index f988e1e..412fbde 100644
 --- a/resize/Makefile.in
 +++ b/resize/Makefile.in
-@@ -72,6 +72,7 @@ DIST_COMMON = $(srcdir)/.depend $(srcdir)/Makefile.am \
- 	$(srcdir)/Makefile.in $(top_srcdir)/subdir-rules.mk
- SOURCES =
- @HAVE_OCAML_TRUE@am__append_1 = stamp-virt-resize.pod
-+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_2 = test-virt-resize.sh
+@@ -81,6 +81,7 @@ DIST_COMMON = $(srcdir)/.depend $(srcdir)/Makefile.am \
+ @HAVE_OCAML_TRUE@	utils_tests.ml
+ 
+ @HAVE_OCAML_TRUE@am__append_2 = stamp-virt-resize.pod
++@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_3 = test-virt-resize.sh
  subdir = resize
  ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
  am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
-@@ -1247,7 +1248,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize test.img \
+@@ -1253,7 +1254,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize test.img \
  
  # Note this list must be in dependency order.
  @HAVE_OCAML_TRUE@OBJECTS = \
@@ -912,7 +766,7 @@ index 069f76e..5a8a828 100644
  @HAVE_OCAML_TRUE@	progress_c.o \
  @HAVE_OCAML_TRUE@	utils.cmx \
  @HAVE_OCAML_TRUE@	progress.cmx \
-@@ -1264,7 +1265,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize test.img \
+@@ -1270,7 +1271,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize test.img \
  
  # automake will decide we don't need C support in this file.  Really
  # we do, so we have to provide it ourselves.
@@ -921,20 +775,20 @@ index 069f76e..5a8a828 100644
  
  # Manual pages and HTML files for the website.
  @HAVE_OCAML_TRUE@man_MANS = virt-resize.1
-@@ -1279,7 +1280,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize test.img \
+@@ -1285,7 +1286,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize test.img \
  @HAVE_OCAML_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
  @HAVE_OCAML_TRUE@	TMPDIR=$(top_builddir)
  
 -@HAVE_OCAML_TRUE@TESTS = test-virt-resize.sh utils_tests
-+@HAVE_OCAML_TRUE@TESTS = utils_tests $(am__append_2)
++@HAVE_OCAML_TRUE@TESTS = utils_tests $(am__append_3)
  all: all-am
  
  .SUFFIXES:
 diff --git a/sparsify/Makefile.in b/sparsify/Makefile.in
-index 422291e..e7fda17 100644
+index 5b0fcc9..8cbc7ef 100644
 --- a/sparsify/Makefile.in
 +++ b/sparsify/Makefile.in
-@@ -1246,7 +1246,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify test.img \
+@@ -1252,7 +1252,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify test.img \
  
  # Note this list must be in dependency order.
  @HAVE_OCAML_TRUE@OBJECTS = \
@@ -943,7 +797,7 @@ index 422291e..e7fda17 100644
  @HAVE_OCAML_TRUE@	progress_c.o \
  @HAVE_OCAML_TRUE@	utils.cmx \
  @HAVE_OCAML_TRUE@	progress.cmx \
-@@ -1257,13 +1257,13 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify test.img \
+@@ -1263,13 +1263,13 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify test.img \
  # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
  # option to be passed to gcc, so we don't try linking against an
  # installed copy of libguestfs.
@@ -959,7 +813,7 @@ index 422291e..e7fda17 100644
  
  # Manual pages and HTML files for the website.
  @HAVE_OCAML_TRUE@man_MANS = virt-sparsify.1
-@@ -1277,7 +1277,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify test.img \
+@@ -1283,7 +1283,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify test.img \
  @HAVE_OCAML_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
  @HAVE_OCAML_TRUE@	TMPDIR=$(top_builddir)
  
@@ -969,10 +823,10 @@ index 422291e..e7fda17 100644
  
  .SUFFIXES:
 diff --git a/tools/Makefile.in b/tools/Makefile.in
-index 47fd69f..6f5171a 100644
+index dc6d36a..6499a99 100644
 --- a/tools/Makefile.in
 +++ b/tools/Makefile.in
-@@ -1257,9 +1257,9 @@ CLEANFILES = test.img
+@@ -1263,9 +1263,9 @@ CLEANFILES = test.img
  @HAVE_TOOLS_TRUE@	TMPDIR=$(top_builddir) \
  @HAVE_TOOLS_TRUE@	PERL5LIB=$(top_builddir)/perl/blib/lib:$(top_builddir)/perl/blib/arch
  
