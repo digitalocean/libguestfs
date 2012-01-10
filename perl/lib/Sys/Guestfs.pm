@@ -3,7 +3,7 @@
 #   generator/generator_*.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2011 Red Hat Inc.
+# Copyright (C) 2009-2012 Red Hat Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -8262,7 +8262,7 @@ with some unique string, to avoid conflicts with other users.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2011 Red Hat Inc.
+Copyright (C) 2009-2012 Red Hat Inc.
 
 =head1 LICENSE
 

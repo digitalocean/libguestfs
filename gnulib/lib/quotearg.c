@@ -1,6 +1,6 @@
 /* quotearg.c - quote arguments for output
 
-   Copyright (C) 1998-2002, 2004-2011 Free Software Foundation, Inc.
+   Copyright (C) 1998-2002, 2004-2012 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -16,6 +16,13 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* Written by Paul Eggert <eggert@twinsun.com> */
+
+/* Without this pragma, gcc 4.7.0 20111124 mistakenly suggests that
+   the quoting_options_from_style function might be candidate for
+   attribute 'pure'  */
+#if (__GNUC__ == 4 && 6 <= __GNUC_MINOR__) || 4 < __GNUC__
+# pragma GCC diagnostic ignored "-Wsuggest-attribute=pure"
+#endif
 
 #include <config.h>
 
@@ -165,7 +172,7 @@ set_custom_quoting (struct quoting_options *o,
 }
 
 /* Return quoting options for STYLE, with no extra quoting.  */
-static struct quoting_options
+static struct quoting_options /* NOT PURE!! */
 quoting_options_from_style (enum quoting_style style)
 {
   struct quoting_options o = { 0 };
@@ -730,7 +737,7 @@ quotearg_n_options (int n, char const *arg, size_t argsize,
 
   if (nslots <= n0)
     {
-      /* FIXME: technically, the type of n1 should be `unsigned int',
+      /* FIXME: technically, the type of n1 should be 'unsigned int',
          but that evokes an unsuppressible warning from gcc-4.0.1 and
          older.  If gcc ever provides an option to suppress that warning,
          revert to the original type, so that the test in xalloc_oversized

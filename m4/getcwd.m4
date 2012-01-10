@@ -1,12 +1,12 @@
 # getcwd.m4 - check for working getcwd that is compatible with glibc
 
-# Copyright (C) 2001, 2003-2007, 2009-2011 Free Software Foundation, Inc.
+# Copyright (C) 2001, 2003-2007, 2009-2012 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
 
 # Written by Paul Eggert.
-# serial 10
+# serial 11
 
 AC_DEFUN([gl_FUNC_GETCWD_NULL],
   [
@@ -139,12 +139,12 @@ AC_DEFUN([gl_FUNC_GETCWD],
       ;;
   esac
 
-  case $gl_cv_func_getcwd_null,$gl_cv_func_getcwd_posix_signature$gl_cv_func_getcwd_path_max,$gl_abort_bug in
-  *yes,yes,yes,no) ;;
-  *)
-    dnl Full replacement lib/getcwd.c, overrides LGPL replacement.
-    REPLACE_GETCWD=1;;
-  esac
+  if { case "$gl_cv_func_getcwd_null" in *yes) false;; *) true;; esac; } \
+     || test $gl_cv_func_getcwd_posix_signature != yes \
+     || test "$gl_cv_func_getcwd_path_max" != yes \
+     || test $gl_abort_bug = yes; then
+    REPLACE_GETCWD=1
+  fi
 ])
 
 # Prerequisites of lib/getcwd.c, when full replacement is in effect.

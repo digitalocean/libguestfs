@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2011 Free Software Foundation, Inc.
+# Copyright (C) 2002-2012 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -337,7 +337,9 @@ AC_DEFUN([gl_EARLY],
   # Code from module strnlen-tests:
   # Code from module strnlen1:
   # Code from module strtoll:
+  # Code from module strtoll-tests:
   # Code from module strtoull:
+  # Code from module strtoull-tests:
   # Code from module strtoumax:
   # Code from module strtoumax-tests:
   # Code from module symlink:
@@ -361,6 +363,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module sys_wait:
   # Code from module sys_wait-tests:
   # Code from module tempname:
+  # Code from module test-framework-sh:
+  # Code from module test-framework-sh-tests:
   # Code from module thread:
   # Code from module thread-tests:
   # Code from module threadlib:
@@ -604,14 +608,20 @@ if test $REPLACE_GETOPT = 1; then
   AC_LIBOBJ([getopt])
   AC_LIBOBJ([getopt1])
   gl_PREREQ_GETOPT
+  dnl Arrange for unistd.h to include getopt.h.
+  GNULIB_GL_UNISTD_H_GETOPT=1
 fi
+AC_SUBST([GNULIB_GL_UNISTD_H_GETOPT])
 gl_MODULE_INDICATOR_FOR_TESTS([getopt-gnu])
 gl_FUNC_GETOPT_POSIX
 if test $REPLACE_GETOPT = 1; then
   AC_LIBOBJ([getopt])
   AC_LIBOBJ([getopt1])
   gl_PREREQ_GETOPT
+  dnl Arrange for unistd.h to include getopt.h.
+  GNULIB_GL_UNISTD_H_GETOPT=1
 fi
+AC_SUBST([GNULIB_GL_UNISTD_H_GETOPT])
 AC_SUBST([LIBINTL])
 AC_SUBST([LTLIBINTL])
 gl_GETTIME
@@ -650,7 +660,7 @@ gl_ARPA_INET_MODULE_INDICATOR([inet_ntop])
 gl_INLINE
 gl_INTTYPES_INCOMPLETE
 gl_LOCALCHARSET
-LOCALCHARSET_TESTS_ENVIRONMENT="CHARSETALIASDIR=\"\$(top_builddir)/$gl_source_base\""
+LOCALCHARSET_TESTS_ENVIRONMENT="CHARSETALIASDIR=\"\$(abs_top_builddir)/$gl_source_base\""
 AC_SUBST([LOCALCHARSET_TESTS_ENVIRONMENT])
 gl_LOCK
 gl_FUNC_LSEEK
@@ -1820,6 +1830,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-ignore-value.c
   tests/test-inet_ntop.c
   tests/test-inet_pton.c
+  tests/test-init.sh
   tests/test-intprops.c
   tests/test-inttostr.c
   tests/test-inttypes.c
@@ -1905,6 +1916,8 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-strerror_r.c
   tests/test-string.c
   tests/test-strnlen.c
+  tests/test-strtoll.c
+  tests/test-strtoull.c
   tests/test-strtoumax.c
   tests/test-symlink.c
   tests/test-symlink.h

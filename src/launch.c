@@ -32,6 +32,8 @@
 #include <time.h>
 #include <sys/stat.h>
 #include <sys/select.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <dirent.h>
 #include <signal.h>
 #include <assert.h>
@@ -275,6 +277,16 @@ valid_format_iface (const char *str)
   return 1;
 }
 
+static int
+check_path (guestfs_h *g, const char *filename)
+{
+  if (strchr (filename, ',') != NULL) {
+    error (g, _("filename cannot contain ',' (comma) character"));
+    return -1;
+  }
+  return 0;
+}
+
 int
 guestfs__add_drive_opts (guestfs_h *g, const char *filename,
                          const struct guestfs_add_drive_opts_argv *optargs)
@@ -285,10 +297,8 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
   char *name;
   int use_cache_off;
 
-  if (strchr (filename, ',') != NULL) {
-    error (g, _("filename cannot contain ',' (comma) character"));
+  if (check_path(g, filename) == -1)
     return -1;
-  }
 
   readonly = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK
              ? optargs->readonly : 0;
@@ -302,18 +312,12 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
   if (format && !valid_format_iface (format)) {
     error (g, _("%s parameter is empty or contains disallowed characters"),
            "format");
-    free (format);
-    free (iface);
-    free (name);
-    return -1;
+    goto err_out;
   }
   if (!valid_format_iface (iface)) {
     error (g, _("%s parameter is empty or contains disallowed characters"),
            "iface");
-    free (format);
-    free (iface);
-    free (name);
-    return -1;
+    goto err_out;
   }
 
   /* For writable files, see if we can use cache=off.  This also
@@ -321,20 +325,13 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
    * to do the check explicitly.
    */
   use_cache_off = readonly ? 0 : test_cache_off (g, filename);
-  if (use_cache_off == -1) {
-    free (format);
-    free (iface);
-    free (name);
-    return -1;
-  }
+  if (use_cache_off == -1)
+    goto err_out;
 
   if (readonly) {
     if (access (filename, R_OK) == -1) {
       perrorf (g, "%s", filename);
-      free (format);
-      free (iface);
-      free (name);
-      return -1;
+      goto err_out;
     }
   }
 
@@ -351,6 +348,12 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
   (*i)->use_cache_off = use_cache_off;
 
   return 0;
+
+err_out:
+  free (format);
+  free (iface);
+  free (name);
+  return -1;
 }
 
 int
@@ -403,10 +406,8 @@ guestfs__add_drive_ro_with_if (guestfs_h *g, const char *filename,
 int
 guestfs__add_cdrom (guestfs_h *g, const char *filename)
 {
-  if (strchr (filename, ',') != NULL) {
-    error (g, _("filename cannot contain ',' (comma) character"));
+  if (check_path(g, filename) == -1)
     return -1;
-  }
 
   if (access (filename, F_OK) == -1) {
     perrorf (g, "%s", filename);
@@ -1090,6 +1091,34 @@ guestfs___persistent_tmpdir (void)
   if (t) tmpdir = t;
 
   return tmpdir;
+}
+
+/* Recursively remove a temporary directory.  If removal fails, just
+ * return (it's a temporary directory so it'll eventually be cleaned
+ * up by a temp cleaner).  This is done using "rm -rf" because that's
+ * simpler and safer, but we have to exec to ensure that paths don't
+ * need to be quoted.
+ */
+void
+guestfs___remove_tmpdir (const char *dir)
+{
+  pid_t pid = fork ();
+
+  if (pid == -1) {
+    perror ("remove tmpdir: fork");
+    return;
+  }
+  if (pid == 0) {
+    execlp ("rm", "rm", "-rf", dir, NULL);
+    perror ("remove tmpdir: exec: rm");
+    _exit (EXIT_FAILURE);
+  }
+
+  /* Parent. */
+  if (waitpid (pid, NULL, 0) == -1) {
+    perror ("remove tmpdir: waitpid");
+    return;
+  }
 }
 
 /* Compute Y - X and return the result in milliseconds.

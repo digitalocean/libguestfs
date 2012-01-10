@@ -1,7 +1,7 @@
 # serial 29
 # Obtaining file system usage information.
 
-# Copyright (C) 1997-1998, 2000-2001, 2003-2011 Free Software Foundation, Inc.
+# Copyright (C) 1997-1998, 2000-2001, 2003-2012 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -42,7 +42,7 @@ ac_fsusage_space=no
 # Perform only the link test since it seems there are no variants of the
 # statvfs function.  This check is more than just AC_CHECK_FUNCS([statvfs])
 # because that got a false positive on SCO OSR5.  Adding the declaration
-# of a `struct statvfs' causes this test to fail (as it should) on such
+# of a 'struct statvfs' causes this test to fail (as it should) on such
 # systems.  That system is reported to work fine with STAT_STATFS4 which
 # is what it gets when this test fails.
 if test $ac_fsusage_space = no; then

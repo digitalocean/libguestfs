@@ -3,7 +3,7 @@
  *   generator/generator_*.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2011 Red Hat Inc.
+ * Copyright (C) 2009-2012 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -2781,10 +2781,10 @@ static int test_vfs_uuid_0 (void)
       return -1;
   }
   /* TestOutput for vfs_uuid (0) */
-  const char *expected = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
+  const char *expected = "f9d3b13e-ff9d-fa4a-5627-9251ede70629";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
+    const char *uuid = "f9d3b13e-ff9d-fa4a-5627-9251ede70629";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
@@ -7941,7 +7941,7 @@ static int test_mke2journal_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
+    const char *uuid = "f9d3b13e-ff9d-fa4a-5627-9251ede70629";
     const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
@@ -7952,7 +7952,7 @@ static int test_mke2journal_U_0 (void)
   {
     const char *fstype = "ext2";
     const char *device = "/dev/sda2";
-    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
+    const char *uuid = "f9d3b13e-ff9d-fa4a-5627-9251ede70629";
     int r;
     suppress_error = 0;
     r = guestfs_mke2fs_JU (g, fstype, 4096, device, uuid);
@@ -8960,7 +8960,7 @@ static int test_swapon_uuid_0 (void)
   }
   /* TestRun for swapon_uuid (0) */
   {
-    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
+    const char *uuid = "f9d3b13e-ff9d-fa4a-5627-9251ede70629";
     const char *device = "/dev/sdc";
     int r;
     suppress_error = 0;
@@ -8969,7 +8969,7 @@ static int test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
+    const char *uuid = "f9d3b13e-ff9d-fa4a-5627-9251ede70629";
     int r;
     suppress_error = 0;
     r = guestfs_swapon_uuid (g, uuid);
@@ -8977,7 +8977,7 @@ static int test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
+    const char *uuid = "f9d3b13e-ff9d-fa4a-5627-9251ede70629";
     int r;
     suppress_error = 0;
     r = guestfs_swapoff_uuid (g, uuid);
@@ -12091,7 +12091,7 @@ static int test_mkswap_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
+    const char *uuid = "f9d3b13e-ff9d-fa4a-5627-9251ede70629";
     const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
@@ -17594,7 +17594,7 @@ static int test_get_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for get_e2uuid (0) */
-  const char *expected = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
+  const char *expected = "f9d3b13e-ff9d-fa4a-5627-9251ede70629";
   {
     const char *device = "/dev/sdc";
     int r;
@@ -17605,7 +17605,7 @@ static int test_get_e2uuid_0 (void)
   }
   {
     const char *device = "/dev/sdc";
-    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
+    const char *uuid = "f9d3b13e-ff9d-fa4a-5627-9251ede70629";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
@@ -17701,10 +17701,10 @@ static int test_set_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for set_e2uuid (0) */
-  const char *expected = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
+  const char *expected = "f9d3b13e-ff9d-fa4a-5627-9251ede70629";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "4c0ce235-993f-d15c-df11-c70f77b7ff8d";
+    const char *uuid = "f9d3b13e-ff9d-fa4a-5627-9251ede70629";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
