@@ -4,36 +4,53 @@
 
 PYTHONS        := $(filter-out python2.5, $(shell pyversions --installed; py3versions --installed))
 PYTHON_DEFAULT := $(shell pyversions --default)
+RUBIES         := ruby1.8 ruby1.9.1
+RUBY_DEFAULT   := ruby1.8
 
-COMMON_CONFIG_FLAGS = \
+DEFAULT_CONFIG_FLAGS = \
 	--disable-appliance  \
 	--with-readline	     \
-	--disable-ruby       \
 	--disable-haskell    \
 	--disable-php
 
+BARE_CONFIG_FLAGS = \
+	$(DEFAULT_CONFIG_FLAGS) \
+	--disable-daemon --disable-fuse \
+	--disable-ocaml --disable-perl \
+	--disable-erlang --with-java-home=no
+
 override_dh_auto_clean:
-	set -e; for p in $(PYTHONS); do \
-	    dh_auto_clean --builddir=$(CURDIR)/debian/build-$$p ; \
+	set -e; for p in \
+		default \
+		$(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
+		$(filter-out $(RUBY_DEFAULT), $(RUBIES)) \
+	; do \
+		dh_auto_clean --builddir=$(CURDIR)/debian/build-$$p ; \
 	done
 
 override_dh_auto_configure:
-	set -e; for p in $(PYTHONS); do \
-	    if [ $$p = $(PYTHON_DEFAULT) ]; then \
+	dh_auto_configure --builddir=$(CURDIR)/debian/build-default \
+		-- \
+		$(DEFAULT_CONFIG_FLAGS) \
+		--enable-install-daemon \
+		--with-java-home=/usr/lib/jvm/default-java \
+		RAKE=rake \
+		PYTHON=$(PYTHON_DEFAULT)
+
+	set -e; for v in $(patsubst ruby%,%,$(filter-out $(RUBY_DEFAULT), $(RUBIES))) \
+	; do \
+		dh_auto_configure --builddir=$(CURDIR)/debian/build-ruby$$v \
+			-- \
+			$(BARE_CONFIG_FLAGS) \
+			--disable-python RUBY=ruby$$v RAKE=rake$$v; \
+	done
+
+	set -e; for p in $(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
+	; do \
 		dh_auto_configure --builddir=$(CURDIR)/debian/build-$$p \
-		    -- \
-		    $(COMMON_CONFIG_FLAGS) \
-		    --enable-install-daemon \
-		    --with-java-home=/usr/lib/jvm/default-java ; \
-	    else \
-	        dh_auto_configure --builddir=$(CURDIR)/debian/build-$$p \
-	            -- \
-		    $(COMMON_CONFIG_FLAGS) \
-	            --disable-daemon --disable-fuse \
-	            --disable-ocaml --disable-perl \
-		    --disable-erlang --with-java-home=no \
-	            PYTHON=$$p ; \
-	    fi ; \
+			-- \
+			$(BARE_CONFIG_FLAGS) \
+			--disable-ruby PYTHON=$$p ; \
 	done
 
 override_dh_strip:
@@ -41,22 +58,27 @@ override_dh_strip:
 
 override_dh_auto_build:
 # also build part of appliance
-	set -e; for p in $(PYTHONS); do \
-	    if [ $$p = $(PYTHON_DEFAULT) ]; then \
-		dh_auto_build --builddir=$(CURDIR)/debian/build-$$p \
-		    -- \
-		    INSTALLDIRS=vendor LD_RUN_PATH="" ; \
-	        $(MAKE) -C $(CURDIR)/debian/build-$$p/appliance \
-		    make.sh \
-		    packagelist excludelist \
-		    supermin.d/daemon.img supermin.d/init.img ; \
-	    else \
+	dh_auto_build --builddir=$(CURDIR)/debian/build-default \
+		-- INSTALLDIRS=vendor LD_RUN_PATH=""
+
+	$(MAKE) -C $(CURDIR)/debian/build-default/appliance \
+		make.sh \
+		packagelist excludelist \
+		supermin.d/daemon.img supermin.d/init.img
+
+	set -e; for p in \
+		$(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
+		$(filter-out $(RUBY_DEFAULT), $(RUBIES)) \
+	; do \
 		dh_auto_build --builddir=$(CURDIR)/debian/build-$$p ; \
-	    fi ; \
 	done
 
 override_dh_auto_test:
-	set -e; for p in $(PYTHONS); do \
+	set -e; for p in \
+		default \
+		$(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
+		$(filter-out $(RUBY_DEFAULT), $(RUBIES)) \
+	; do \
 		dh_auto_test --builddir=$(CURDIR)/debian/build-$$p ; \
 	done
 
@@ -64,7 +86,11 @@ override_dh_auto_install:
 # All build trees contain the library plus guestfish and C virt tools.
 # We assume that the Python version used for building the Python
 # bindings doesn't affect the outcome of those builds.
-	set -e; for p in $(PYTHONS); do \
+	set -e; for p in \
+		default \
+		$(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
+		$(filter-out $(RUBY_DEFAULT), $(RUBIES)) \
+	; do \
 		dh_auto_install --builddir=$(CURDIR)/debian/build-$$p ; \
 	done
 
@@ -82,13 +108,13 @@ override_dh_install:
 # We do not install supermin.d/base.img, but ship make.sh which can be
 # used to build it.
 	mkdir -p debian/tmp/usr/lib/guestfs/supermin.d
-	install -m755 debian/build-${PYTHON_DEFAULT}/appliance/make.sh \
+	install -m755 debian/build-default/appliance/make.sh \
 		debian/tmp/usr/lib/guestfs
-	install -m644 debian/build-${PYTHON_DEFAULT}/appliance/*list \
+	install -m644 debian/build-default/appliance/*list \
 		debian/tmp/usr/lib/guestfs
 	install -m644 \
-		debian/build-${PYTHON_DEFAULT}/appliance/supermin.d/init.img \
-		debian/build-${PYTHON_DEFAULT}/appliance/supermin.d/daemon.img \
+		debian/build-default/appliance/supermin.d/init.img \
+		debian/build-default/appliance/supermin.d/daemon.img \
 		debian/tmp/usr/lib/guestfs/supermin.d/
 
 	erlang-depends -perlang-guestfs
@@ -102,4 +128,6 @@ override_dh_python2:
 	dh_python2 -p python-libguestfs -V 2.6-
 
 %:
-	dh --without=python-support --with=autotools-dev,ocaml,python2,python3,bash-completion $@
+	dh --without=python-support \
+	   --with=autotools-dev,ocaml,python2,python3,bash-completion,ruby \
+	   $@
