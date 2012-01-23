@@ -1,7 +1,7 @@
-usr/include/*
-usr/lib/lib*.a
-usr/lib/lib*.so
-usr/lib/*.la
+usr/include/guestfs.h
+usr/lib/libguestfs.a
+usr/lib/libguestfs.so
+usr/lib/libguestfs.la
 usr/lib/pkgconfig/*
 
 usr/share/man/man3/guestfs.3*

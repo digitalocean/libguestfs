@@ -21,7 +21,8 @@ Build-Depends: debhelper (>= 7.0.50~), autotools-dev, aptitude,
   libtest-pod-coverage-perl, libextutils-command-perl, libintl-perl, libtest-pod-perl,
   libstring-shellquote-perl,
   libsys-virt-perl, libwin-hivex-perl,
-  libfuse-dev, fuse-utils
+  libfuse-dev, fuse-utils,
+  libglib2.0-dev, gjs, gobject-introspection, libgirepository1.0-dev
 Homepage: http://libguestfs.org
 Standards-Version: 3.9.2
 Vcs-Git: git://git.debian.org/git/pkg-libvirt/libguestfs.git
@@ -246,7 +247,7 @@ Package: libguestfs-java
 Section: java
 Architecture: i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Conflicts: libguestfs-dev (<< 1:1.14.9-1~)
+Conflicts: libguestfs-dev (<< 1:1.15.15-1~)
 Description: guest disk image management system - Java bindings
  The libguestfs library allows accessing and modifying guest disk
  images.
@@ -258,9 +259,42 @@ Section: ruby
 XB-Ruby-Versions: ${ruby:Versions}
 Architecture: i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}, ruby | ruby-interpreter
-Conflicts: libguestfs-dev (<< 1:1.14.9-1~)
+Conflicts: libguestfs-dev (<< 1:1.15.15-1~)
 Description: guest disk image management system - Ruby bindings
  The libguestfs library allows accessing and modifying guest disk
  images.
  .
  This package contains Ruby bindings to libguestfs.
+
+Package: libguestfs-gobject-1.0-0
+Section: libs
+Architecture: i386 amd64
+Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: libguestfs0 (<< 1:1.14.9-1~)
+Description: guest disk image management system - GObject bindings
+ The libguestfs library allows accessing and modifying guest disk
+ images.
+ .
+ This package contains the GObject bindings.
+
+Package: libguestfs-gobject-dev
+Section: libdevel
+Architecture: i386 amd64
+Depends: libguestfs-gobject-1.0-0 (= ${binary:Version}), ${misc:Depends}
+Conflicts: libguestfs0 (<< 1:1.14.9-1~)
+Description: guest disk image management system - GObject development headers
+ The libguestfs library allows accessing and modifying guest disk
+ images.
+ .
+ This package contains the development headers for the GObject bindings.
+
+Package: gir1.2-guestfs-1.0
+Section: introspection
+Architecture: i386 amd64
+Depends: libguestfs-gobject-1.0-0 (= ${binary:Version}), ${misc:Depends}
+Conflicts: libguestfs0 (<< 1:1.14.9-1~)
+Description: guest disk image management system - GObject introspection files
+ The libguestfs library allows accessing and modifying guest disk
+ images.
+ .
+ This package contains the GObject introspection data.
