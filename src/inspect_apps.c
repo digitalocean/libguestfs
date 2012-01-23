@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2010-2011 Red Hat Inc.
+ * Copyright (C) 2010-2012 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -72,6 +72,7 @@ guestfs__inspect_list_applications (guestfs_h *g, const char *root)
   if (fs->format == OS_FORMAT_INSTALLED) {
     switch (fs->type) {
     case OS_TYPE_LINUX:
+    case OS_TYPE_HURD:
       switch (fs->package_format) {
       case OS_PACKAGE_FORMAT_RPM:
 #ifdef DB_DUMP

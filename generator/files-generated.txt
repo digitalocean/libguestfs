@@ -1,4 +1,3 @@
-capitests/tests.c
 csharp/Libguestfs.cs
 daemon/actions.h
 daemon/names.c
@@ -10,11 +9,15 @@ erlang/guestfs.erl
 fish/cmds.c
 fish/cmds_gperf.gperf
 fish/completion.c
+fish/event-names.c
 fish/fish-cmds.h
 fish/guestfish-actions.pod
 fish/guestfish-commands.pod
 fish/prepopts.c
 fish/prepopts.h
+gobject/bindtests.js
+gobject/guestfs-gobject.c
+gobject/guestfs-gobject.h
 haskell/Bindtests.hs
 haskell/Guestfs.hs
 java/Bindtests.java
@@ -60,3 +63,4 @@ src/guestfs-structs.pod
 src/guestfs.h
 src/guestfs_protocol.x
 src/libguestfs.syms
+tests/c-api/tests.c

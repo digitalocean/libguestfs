@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2010 Red Hat Inc.
+ * Copyright (C) 2009-2012 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,7 +106,7 @@ PHP_MINIT_FUNCTION (guestfs_php)
     NULL, PHP_GUESTFS_HANDLE_RES_NAME, module_number);
 }
 
-static function_entry guestfs_php_functions[] = {
+static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_create, NULL)
   PHP_FE (guestfs_last_error, NULL)
 ";

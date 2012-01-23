@@ -84,16 +84,52 @@ public class GuestFS {
     close ();
   }
 
-  public void test0 (String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout, byte[] bufferin)
+  public void test0 (String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout, byte[] bufferin, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("test0: handle is closed");
 
-    _test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin);
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean obool = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("obool");
+    if (_optobj != null) {
+      obool = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1;
+    }
+    int oint = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("oint");
+    if (_optobj != null) {
+      oint = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 2;
+    }
+    long oint64 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("oint64");
+    if (_optobj != null) {
+      oint64 = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 4;
+    }
+    String ostring = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("ostring");
+    if (_optobj != null) {
+      ostring = ((String) _optobj);
+      _optargs_bitmask |= 8;
+    }
+
+    _test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, _optargs_bitmask, obool, oint, oint64, ostring);
   }
 
-  private native void _test0 (long g, String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout, byte[] bufferin)
+  private native void _test0 (long g, String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout, byte[] bufferin, long _optargs_bitmask, boolean obool, int oint, long oint64, String ostring)
     throws LibGuestFSException;
 
   public int test0rint (String val)
@@ -344,6 +380,30 @@ public class GuestFS {
   }
 
   private native String[] _test0rhashtableerr (long g)
+    throws LibGuestFSException;
+
+  public String test0rbufferout (String val)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("test0rbufferout: handle is closed");
+
+    return _test0rbufferout (g, val);
+  }
+
+  private native String _test0rbufferout (long g, String val)
+    throws LibGuestFSException;
+
+  public String test0rbufferouterr ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("test0rbufferouterr: handle is closed");
+
+    return _test0rbufferouterr (g);
+  }
+
+  private native String _test0rbufferouterr (long g)
     throws LibGuestFSException;
 
   /**
@@ -1439,6 +1499,9 @@ public class GuestFS {
    * <p>
    * "netbsd"
    * NetBSD.
+   * <p>
+   * "hurd"
+   * GNU/Hurd.
    * <p>
    * "unknown"
    * The operating system type could not be determined.
@@ -10848,6 +10911,474 @@ public class GuestFS {
   }
 
   private native void _copy_file_to_file (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size)
+    throws LibGuestFSException;
+
+  /**
+   * adjust ext2/ext3/ext4 filesystem parameters
+   * <p>
+   * This call allows you to adjust various filesystem
+   * parameters of an ext2/ext3/ext4 filesystem called
+   * "device".
+   * <p>
+   * The optional parameters are:
+   * <p>
+   * "force"
+   * Force tune2fs to complete the operation even in the
+   * face of errors. This is the same as the tune2fs "-f"
+   * option.
+   * <p>
+   * "maxmountcount"
+   * Set the number of mounts after which the filesystem
+   * is checked by e2fsck(8). If this is 0 then the
+   * number of mounts is disregarded. This is the same as
+   * the tune2fs "-c" option.
+   * <p>
+   * "mountcount"
+   * Set the number of times the filesystem has been
+   * mounted. This is the same as the tune2fs "-C"
+   * option.
+   * <p>
+   * "errorbehavior"
+   * Change the behavior of the kernel code when errors
+   * are detected. Possible values currently are:
+   * "continue", "remount-ro", "panic". In practice these
+   * options don't really make any difference,
+   * particularly for write errors.
+   * <p>
+   * This is the same as the tune2fs "-e" option.
+   * <p>
+   * "group"
+   * Set the group which can use reserved filesystem
+   * blocks. This is the same as the tune2fs "-g" option
+   * except that it can only be specified as a number.
+   * <p>
+   * "intervalbetweenchecks"
+   * Adjust the maximal time between two filesystem
+   * checks (in seconds). If the option is passed as 0
+   * then time-dependent checking is disabled.
+   * <p>
+   * This is the same as the tune2fs "-i" option.
+   * <p>
+   * "reservedblockspercentage"
+   * Set the percentage of the filesystem which may only
+   * be allocated by privileged processes. This is the
+   * same as the tune2fs "-m" option.
+   * <p>
+   * "lastmounteddirectory"
+   * Set the last mounted directory. This is the same as
+   * the tune2fs "-M" option.
+   * <p>
+   * "reservedblockscount" Set the number of reserved
+   * filesystem blocks. This is the same as the tune2fs "-r"
+   * option.
+   * "user"
+   * Set the user who can use the reserved filesystem
+   * blocks. This is the same as the tune2fs "-u" option
+   * except that it can only be specified as a number.
+   * <p>
+   * To get the current values of filesystem parameters, see
+   * "g.tune2fs_l". For precise details of how tune2fs works,
+   * see the tune2fs(8) man page.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void tune2fs (String device, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("tune2fs: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean force = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("force");
+    if (_optobj != null) {
+      force = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1;
+    }
+    int maxmountcount = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("maxmountcount");
+    if (_optobj != null) {
+      maxmountcount = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 2;
+    }
+    int mountcount = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("mountcount");
+    if (_optobj != null) {
+      mountcount = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 4;
+    }
+    String errorbehavior = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("errorbehavior");
+    if (_optobj != null) {
+      errorbehavior = ((String) _optobj);
+      _optargs_bitmask |= 8;
+    }
+    long group = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("group");
+    if (_optobj != null) {
+      group = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 16;
+    }
+    int intervalbetweenchecks = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("intervalbetweenchecks");
+    if (_optobj != null) {
+      intervalbetweenchecks = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 32;
+    }
+    int reservedblockspercentage = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("reservedblockspercentage");
+    if (_optobj != null) {
+      reservedblockspercentage = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 64;
+    }
+    String lastmounteddirectory = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("lastmounteddirectory");
+    if (_optobj != null) {
+      lastmounteddirectory = ((String) _optobj);
+      _optargs_bitmask |= 128;
+    }
+    long reservedblockscount = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("reservedblockscount");
+    if (_optobj != null) {
+      reservedblockscount = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 256;
+    }
+    long user = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("user");
+    if (_optobj != null) {
+      user = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 512;
+    }
+
+    _tune2fs (g, device, _optargs_bitmask, force, maxmountcount, mountcount, errorbehavior, group, intervalbetweenchecks, reservedblockspercentage, lastmounteddirectory, reservedblockscount, user);
+  }
+
+  private native void _tune2fs (long g, String device, long _optargs_bitmask, boolean force, int maxmountcount, int mountcount, String errorbehavior, long group, int intervalbetweenchecks, int reservedblockspercentage, String lastmounteddirectory, long reservedblockscount, long user)
+    throws LibGuestFSException;
+
+  /**
+   * create a Linux md (RAID) device
+   * <p>
+   * Create a Linux md (RAID) device named "name" on the
+   * devices in the list "devices".
+   * <p>
+   * The optional parameters are:
+   * <p>
+   * "missingbitmap"
+   * A bitmap of missing devices. If a bit is set it
+   * means that a missing device is added to the array.
+   * The least significant bit corresponds to the first
+   * device in the array.
+   * <p>
+   * As examples:
+   * <p>
+   * If "devices = ["/dev/sda"]" and "missingbitmap =
+   * 0x1" then the resulting array would be "[<missing>,
+   * "/dev/sda"]".
+   * <p>
+   * If "devices = ["/dev/sda"]" and "missingbitmap =
+   * 0x2" then the resulting array would be "["/dev/sda",
+   * <missing>]".
+   * <p>
+   * This defaults to 0 (no missing devices).
+   * <p>
+   * The length of "devices" + the number of bits set in
+   * "missingbitmap" must equal "nrdevices" + "spare".
+   * <p>
+   * "nrdevices"
+   * The number of active RAID devices.
+   * <p>
+   * If not set, this defaults to the length of "devices"
+   * plus the number of bits set in "missingbitmap".
+   * <p>
+   * "spare"
+   * The number of spare devices.
+   * <p>
+   * If not set, this defaults to 0.
+   * <p>
+   * "chunk"
+   * The chunk size in bytes.
+   * <p>
+   * "level"
+   * The RAID level, which can be one of: *linear*,
+   * *raid0*, *0*, *stripe*, *raid1*, *1*, *mirror*,
+   * *raid4*, *4*, *raid5*, *5*, *raid6*, *6*, *raid10*,
+   * *10*. Some of these are synonymous, and more levels
+   * may be added in future.
+   * <p>
+   * If not set, this defaults to "raid1".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void md_create (String name, String[] devices, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("md_create: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    long missingbitmap = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("missingbitmap");
+    if (_optobj != null) {
+      missingbitmap = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 1;
+    }
+    int nrdevices = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("nrdevices");
+    if (_optobj != null) {
+      nrdevices = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 2;
+    }
+    int spare = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("spare");
+    if (_optobj != null) {
+      spare = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 4;
+    }
+    long chunk = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("chunk");
+    if (_optobj != null) {
+      chunk = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 8;
+    }
+    String level = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("level");
+    if (_optobj != null) {
+      level = ((String) _optobj);
+      _optargs_bitmask |= 16;
+    }
+
+    _md_create (g, name, devices, _optargs_bitmask, missingbitmap, nrdevices, spare, chunk, level);
+  }
+
+  private native void _md_create (long g, String name, String[] devices, long _optargs_bitmask, long missingbitmap, int nrdevices, int spare, long chunk, String level)
+    throws LibGuestFSException;
+
+  /**
+   * list Linux md (RAID) devices
+   * <p>
+   * List all Linux md devices.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] list_md_devices ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("list_md_devices: handle is closed");
+
+    return _list_md_devices (g);
+  }
+
+  private native String[] _list_md_devices (long g)
+    throws LibGuestFSException;
+
+  /**
+   * obtain metadata for an MD device
+   * <p>
+   * This command exposes the output of 'mdadm -DY <md>'. The
+   * following fields are usually present in the returned
+   * hash. Other fields may also be present.
+   * <p>
+   * "level"
+   * The raid level of the MD device.
+   * <p>
+   * "devices"
+   * The number of underlying devices in the MD device.
+   * <p>
+   * "metadata"
+   * The metadata version used.
+   * <p>
+   * "uuid"
+   * The UUID of the MD device.
+   * <p>
+   * "name"
+   * The name of the MD device.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public Map<String,String> md_detail (String md)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("md_detail: handle is closed");
+
+    String[] r = _md_detail (g, md);
+
+    HashMap rhash = new HashMap ();
+    for (int i = 0; i < r.length; i += 2)
+      rhash.put (r[i], r[i+1]);
+    return rhash;
+  }
+
+  private native String[] _md_detail (long g, String md)
+    throws LibGuestFSException;
+
+  /**
+   * stop a Linux md (RAID) device
+   * <p>
+   * This command deactivates the MD array named "md". The
+   * device is stopped, but it is not destroyed or zeroed.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void md_stop (String md)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("md_stop: handle is closed");
+
+    _md_stop (g, md);
+  }
+
+  private native void _md_stop (long g, String md)
+    throws LibGuestFSException;
+
+  /**
+   * print block device attributes
+   * <p>
+   * This command returns block device attributes for
+   * "device". The following fields are usually present in
+   * the returned hash. Other fields may also be present.
+   * <p>
+   * "UUID"
+   * The uuid of this device.
+   * <p>
+   * "LABEL"
+   * The label of this device.
+   * <p>
+   * "VERSION"
+   * The version of blkid command.
+   * <p>
+   * "TYPE"
+   * The filesystem type or RAID of this device.
+   * <p>
+   * "USAGE"
+   * The usage of this device, for example "filesystem"
+   * or "raid".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public Map<String,String> blkid (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("blkid: handle is closed");
+
+    String[] r = _blkid (g, device);
+
+    HashMap rhash = new HashMap ();
+    for (int i = 0; i < r.length; i += 2)
+      rhash.put (r[i], r[i+1]);
+    return rhash;
+  }
+
+  private native String[] _blkid (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * check an ext2/ext3 filesystem
+   * <p>
+   * This runs the ext2/ext3 filesystem checker on "device".
+   * It can take the following optional arguments:
+   * <p>
+   * "correct"
+   * Automatically repair the file system. This option
+   * will cause e2fsck to automatically fix any
+   * filesystem problems that can be safely fixed without
+   * human intervention.
+   * <p>
+   * This option may not be specified at the same time as
+   * the "forceall" option.
+   * <p>
+   * "forceall"
+   * Assume an answer of 'yes' to all questions; allows
+   * e2fsck to be used non-interactively.
+   * <p>
+   * This option may not be specified at the same time as
+   * the "correct" option.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void e2fsck (String device, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("e2fsck: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean correct = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("correct");
+    if (_optobj != null) {
+      correct = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1;
+    }
+    boolean forceall = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("forceall");
+    if (_optobj != null) {
+      forceall = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2;
+    }
+
+    _e2fsck (g, device, _optargs_bitmask, correct, forceall);
+  }
+
+  private native void _e2fsck (long g, String device, long _optargs_bitmask, boolean correct, boolean forceall)
     throws LibGuestFSException;
 
 }

@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2010-2011 Red Hat Inc.
+ * Copyright (C) 2010-2012 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -91,6 +91,22 @@ guestfs__inspect_os (guestfs_h *g)
   }
   guestfs___free_string_list (partitions);
 
+  /* Look at MD devices. */
+  char **mds = guestfs_list_md_devices (g);
+  if (mds == NULL) {
+    guestfs___free_inspect_info (g);
+    return NULL;
+  }
+
+  for (i = 0; mds[i] != NULL; ++i) {
+    if (guestfs___check_for_filesystem_on (g, mds[i], 0, i+1) == -1) {
+      guestfs___free_string_list (mds);
+      guestfs___free_inspect_info (g);
+      return NULL;
+    }
+  }
+  guestfs___free_string_list (mds);
+
   /* Look at all LVs. */
   if (guestfs___feature_available (g, "lvm2")) {
     char **lvs;
@@ -173,6 +189,7 @@ guestfs__inspect_get_type (guestfs_h *g, const char *root)
   char *ret;
   switch (fs->type) {
   case OS_TYPE_FREEBSD: ret = safe_strdup (g, "freebsd"); break;
+  case OS_TYPE_HURD: ret = safe_strdup (g, "hurd"); break;
   case OS_TYPE_LINUX: ret = safe_strdup (g, "linux"); break;
   case OS_TYPE_NETBSD: ret = safe_strdup (g, "netbsd"); break;
   case OS_TYPE_WINDOWS: ret = safe_strdup (g, "windows"); break;

@@ -104,6 +104,11 @@ image.
 
 Display help.
 
+=item B<--compress>
+
+Compress the output file.  This I<only> works if the output format is
+C<qcow2>.
+
 =item B<--convert> raw
 
 =item B<--convert> qcow2
@@ -120,6 +125,8 @@ eg. C<vmdk>, but support for other formats is reliant on qemu.
 
 Specifying the I<--convert> option is usually a good idea, because
 then virt-sparsify doesn't need to try to guess the input format.
+
+For fine-tuning the output format, see: I<--compress>, I<-o>.
 
 =item B<--debug-gc>
 
@@ -154,6 +161,18 @@ You can give this option multiple times.
 This option is used to make the output more machine friendly
 when being parsed by other programs.  See
 L</MACHINE READABLE OUTPUT> below.
+
+=item B<-o> option[,option,...]
+
+Pass I<-o> option(s) to the L<qemu-img(1)> command to fine-tune the
+output format.  Options available depend on the output format (see
+I<--convert>) and the installed version of the qemu-img program.
+
+You should use I<-o> at most once.  To pass multiple options, separate
+them with commas, eg:
+
+ virt-sparsify --convert qcow2 \
+   -o cluster_size=512,preallocation=metadata ...
 
 =item B<-q>
 

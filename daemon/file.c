@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2011 Red Hat Inc.
+ * Copyright (C) 2009-2012 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -483,7 +483,6 @@ pread_fd (int fd, int count, int64_t offset, size_t *size_r,
 
   if (close (fd) == -1) {
     reply_with_perror ("close: %s", display_path);
-    close (fd);
     free (buf);
     return NULL;
   }
@@ -526,7 +525,7 @@ do_pread_device (const char *device, int count, int64_t offset, size_t *size_r)
 
 static int
 pwrite_fd (int fd, const char *content, size_t size, int64_t offset,
-           const char *display_path)
+           const char *display_path, int settle)
 {
   ssize_t r;
 
@@ -539,9 +538,20 @@ pwrite_fd (int fd, const char *content, size_t size, int64_t offset,
 
   if (close (fd) == -1) {
     reply_with_perror ("close: %s", display_path);
-    close (fd);
     return -1;
   }
+
+  /* When you call close on any block device, udev kicks off a rule
+   * which runs blkid to reexamine the device.  We need to wait for
+   * this rule to finish running since it holds the device open and
+   * can cause other operations to fail, notably BLKRRPART.  'settle'
+   * flag is only set on block devices.
+   *
+   * XXX We should be smarter about when we do this or should get rid
+   * of the udev rules since we don't use blkid in cached mode.
+   */
+  if (settle)
+    udev_settle ();
 
   return r;
 }
@@ -565,7 +575,7 @@ do_pwrite (const char *path, const char *content, size_t size, int64_t offset)
     return -1;
   }
 
-  return pwrite_fd (fd, content, size, offset, path);
+  return pwrite_fd (fd, content, size, offset, path, 0);
 }
 
 int
@@ -583,7 +593,7 @@ do_pwrite_device (const char *device, const char *content, size_t size,
     return -1;
   }
 
-  return pwrite_fd (fd, content, size, offset, device);
+  return pwrite_fd (fd, content, size, offset, device, 1);
 }
 
 /* This runs the 'file' command. */

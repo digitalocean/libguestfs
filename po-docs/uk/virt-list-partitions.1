@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-list-partitions.pl 1"
-.TH virt-list-partitions.pl 1 "2012-01-10" "libguestfs-1.14.9" "Virtualization Support"
+.TH virt-list-partitions.pl 1 "2012-01-23" "libguestfs-1.16.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -77,11 +77,12 @@ virt-list-partitions \- List partitions in a virtual machine or disk image
 \&
 \& virt\-list\-partitions [\-\-параметри] диск.img [диск.img ...]
 .Ve
-.SH "ОПИС"
-.IX Header "ОПИС"
+.SH "OBSOLETE"
+.IX Header "OBSOLETE"
 This tool is obsolete.  Use \fIvirt\-filesystems\fR\|(1) as a more flexible
 replacement.
-.PP
+.SH "ОПИС"
+.IX Header "ОПИС"
 \&\f(CW\*(C`virt\-list\-partitions\*(C'\fR is a command line tool to list the partitions that
 are contained in a virtual machine or disk image.  It is mainly useful as a
 first step to using \fIvirt\-resize\fR\|(1).
@@ -157,7 +158,7 @@ escape these characters on the command line.  See the shell manual page
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "АВТОРСЬКІ ПРАВА"
 .IX Header "АВТОРСЬКІ ПРАВА"
-© Red Hat Inc., 2009–2010
+Copyright (C) 2009\-2012 Red Hat Inc.
 .PP
 This program is free software; you can redistribute it and/or modify it
 under the terms of the \s-1GNU\s0 General Public License as published by the Free
@@ -169,6 +170,6 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
-Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.
+You should have received a copy of the \s-1GNU\s0 General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.

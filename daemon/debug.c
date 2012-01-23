@@ -286,7 +286,9 @@ debug_env (const char *subcmd, int argc, char *const *const argv)
   return out;
 }
 
-/* Return binaries in the appliance.  See regressions/rhbz727178.sh */
+/* Return binaries in the appliance.
+ * See tests/regressions/rhbz727178.sh
+ */
 static char *
 debug_binaries (const char *subcmd, int argc, char *const *const argv)
 {
@@ -312,7 +314,9 @@ debug_binaries (const char *subcmd, int argc, char *const *const argv)
   return out;
 }
 
-/* Run 'ldd' on a file from the appliance.  See regressions/rhbz727178.sh */
+/* Run 'ldd' on a file from the appliance.
+ * See tests/regressions/rhbz727178.sh
+ */
 static char *
 debug_ldd (const char *subcmd, int argc, char *const *const argv)
 {

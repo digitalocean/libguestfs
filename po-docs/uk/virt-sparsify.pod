@@ -100,6 +100,11 @@ See L<virt-filesystems(1)> to get a list of filesystems within a disk image.
 
 Display help.
 
+=item B<--compress>
+
+Compress the output file.  This I<only> works if the output format is
+C<qcow2>.
+
 =item B<--convert> raw
 
 =item B<--convert> qcow2
@@ -116,6 +121,8 @@ eg. C<vmdk>, but support for other formats is reliant on qemu.
 
 Specifying the I<--convert> option is usually a good idea, because then
 virt-sparsify doesn't need to try to guess the input format.
+
+For fine-tuning the output format, see: I<--compress>, I<-o>.
 
 =item B<--debug-gc>
 
@@ -149,6 +156,18 @@ You can give this option multiple times.
 This option is used to make the output more machine friendly when being
 parsed by other programs.  See L</MACHINE READABLE OUTPUT> below.
 
+=item B<-o> option[,option,...]
+
+Pass I<-o> option(s) to the L<qemu-img(1)> command to fine-tune the output
+format.  Options available depend on the output format (see I<--convert>)
+and the installed version of the qemu-img program.
+
+You should use I<-o> at most once.  To pass multiple options, separate them
+with commas, eg:
+
+ virt-sparsify --convert qcow2 \
+   -o cluster_size=512,preallocation=metadata ...
+
 =item B<-q>
 
 =item B<--quiet>
@@ -159,7 +178,7 @@ This disables progress bars and other unnecessary output.
 
 =item B<--verbose>
 
-Enable verbose messages for debugging.
+Увімкнути докладний показ повідомлень з метою діагностики.
 
 =item B<-V>
 
@@ -223,7 +242,7 @@ fatal error.
 All versions of virt-sparsify have supported the I<--machine-readable>
 option.
 
-=head1 EXIT STATUS
+=head1 СТАН ВИХОДУ
 
 This program returns 0 if successful, or non-zero if there was an error.
 
@@ -258,7 +277,7 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011 Red Hat Inc.
+© Red Hat Inc., 2011
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -270,7 +289,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-Ви маєте отримати копію GNU General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 

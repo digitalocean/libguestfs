@@ -2,13 +2,13 @@
 
 =head1 НАЗВА
 
-virt-alignment-scan - Check alignment of virtual machine partitions
+virt-alignment-scan — перевірити вирівнювання розділів віртуальної машини
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-alignment-scan [--options] -d domname
+ virt-alignment-scan [--параметри] -d назва_домену
 
- virt-alignment-scan [--options] -a disk.img [-a disk.img ...]
+ virt-alignment-scan [--параметри] -a диск.img [-a диск.img ...]
 
 =head1 ОПИС
 
@@ -26,7 +26,7 @@ reinstall the guest operating system.  The following NetApp document
 summarises the problem and possible solutions:
 L<http://media.netapp.com/documents/tr-3747.pdf>
 
-=head1 OUTPUT
+=head1 ВИВЕДЕННЯ
 
 To run this tool on a disk image directly, use the I<-a> option:
 
@@ -56,27 +56,27 @@ The columns are:
 
 =over 4
 
-=item col 1
+=item стовпчик 1
 
 the device and partition name (eg. C</dev/sda1> meaning the first partition
 on the first block device)
 
-=item col 2
+=item стовпчик 2
 
 the start of the partition in bytes
 
-=item col 3
+=item стовпчик 3
 
 the alignment in bytes or Kbytes (eg. C<512> or C<4K>)
 
-=item col 4
+=item стовпчик 4
 
 C<ok> if the alignment is best for performance, or C<bad> if the alignment
 can cause performance problems
 
-=item cols 5+
+=item стовпчик 5 і далі
 
-optional free-text explanation.
+додаткові пояснення у довільному форматі.
 
 =back
 
@@ -134,7 +134,7 @@ auto-detection for subsequent I<-a> options.
 
 forces raw format (no auto-detection) for C<disk.img>.
 
- virt-alignment-scan --format=raw -a disk.img --format -a another.img
+ virt-cat --format=raw -a disk.img --format -a another.img file
 
 forces raw format (no auto-detection) for C<disk.img> and reverts to
 auto-detection for C<another.img>.
@@ -154,7 +154,7 @@ below).
 
 =item B<--verbose>
 
-Enable verbose messages for debugging.
+Увімкнути докладний показ повідомлень з метою діагностики.
 
 =item B<-V>
 
@@ -168,7 +168,7 @@ Enable tracing of libguestfs API calls.
 
 =back
 
-=head1 RECOMMENDED ALIGNMENT
+=head1 РЕКОМЕНДОВАНЕ ВИРІВНЮВАННЯ
 
 Operating systems older than Windows 2008 and Linux before ca.2010 place the
 first sector of the first partition at sector 63, with a 512 byte sector
@@ -183,23 +183,23 @@ may prefer accesses aligned to one of:
 
 =over 4
 
-=item * 512 bytes
+=item * 512 байти
 
 if the host OS uses local storage directly on hard drive partitions, and the
 hard drive has 512 byte physical sectors.
 
-=item * 4 Kbytes
+=item * 4 кілобайтів
 
 for local storage on new hard drives with 4Kbyte physical sectors; for
 file-backed storage on filesystems with 4Kbyte block size; or for some types
 of network-attached storage.
 
-=item * 64 Kbytes
+=item * 64 кілобайтів
 
 for high-end network-attached storage.  This is the optimal block size for
 some NetApp hardware.
 
-=item * 1 Mbyte
+=item * 1 мегабайт
 
 see L</1 MB PARTITION ALIGNMENT> below.
 
@@ -285,7 +285,7 @@ multiple of 2048 sectors.
 1 MB alignment is compatible with all current alignment requirements (4K,
 64K) and provides room for future growth in physical block sizes.
 
-=head2 SETTING ALIGNMENT
+=head2 ВСТАНОВЛЕННЯ ВИРІВНЮВАННЯ
 
 L<virt-resize(1)> can change the alignment of the partitions of some
 guests.  Currently it can fully align all the partitions of all Windows
@@ -312,9 +312,9 @@ meaning to the shell such as C<#> and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 L<sh(1)> for details.
 
-=head1 EXIT STATUS
+=head1 СТАН ВИХОДУ
 
-This program returns:
+Ця програма повертає:
 
 =over 4
 
@@ -357,7 +357,7 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011 Red Hat Inc.
+© Red Hat Inc., 2011
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -369,7 +369,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-Ви маєте отримати копію GNU General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 

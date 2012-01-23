@@ -14,7 +14,7 @@ virt-tar - Extract or upload files to a virtual machine
 
  virt-tar [--options] disk.img [disk.img ...] -u tarball directory
 
-=head1 ПРИМІТКА
+=head1 OBSOLETE
 
 This tool is obsolete.  Use L<virt-copy-in(1)>, L<virt-copy-out(1)>,
 L<virt-tar-in(1)>, L<virt-tar-out(1)> as replacements.
@@ -162,7 +162,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-Ви маєте отримати копію GNU General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 

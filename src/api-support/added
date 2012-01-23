@@ -30,6 +30,7 @@ guestfs_available 1.0.80
 guestfs_available_all_groups 1.3.15
 guestfs_base64_in 1.3.5
 guestfs_base64_out 1.3.5
+guestfs_blkid 1.15.9
 guestfs_blockdev_flushbufs 0.9.3
 guestfs_blockdev_getbsz 0.9.3
 guestfs_blockdev_getro 0.9.3
@@ -90,7 +91,10 @@ guestfs_download 1.0.2
 guestfs_download_offset 1.5.17
 guestfs_drop_caches 1.0.18
 guestfs_du 1.0.54
+guestfs_e2fsck 1.15.17
+guestfs_e2fsck_argv 1.15.17
 guestfs_e2fsck_f 1.0.29
+guestfs_e2fsck_va 1.15.17
 guestfs_echo_daemon 1.0.69
 guestfs_egrep 1.0.66
 guestfs_egrepi 1.0.66
@@ -232,6 +236,7 @@ guestfs_list_9p 1.11.12
 guestfs_list_devices 0.4
 guestfs_list_dm_devices 1.11.15
 guestfs_list_filesystems 1.5.15
+guestfs_list_md_devices 1.15.4
 guestfs_list_partitions 0.4
 guestfs_ll 0.4
 guestfs_ln 1.0.66
@@ -269,6 +274,11 @@ guestfs_lvs 0.4
 guestfs_lvs_full 0.4
 guestfs_lvuuid 1.0.87
 guestfs_lxattrlist 1.0.77
+guestfs_md_create 1.15.6
+guestfs_md_create_argv 1.15.6
+guestfs_md_create_va 1.15.6
+guestfs_md_detail 1.15.6
+guestfs_md_stop 1.15.6
 guestfs_mkdir 0.8
 guestfs_mkdir_mode 1.0.77
 guestfs_mkdir_p 0.8
@@ -419,7 +429,10 @@ guestfs_tgz_out 1.0.3
 guestfs_touch 0.3
 guestfs_truncate 1.0.77
 guestfs_truncate_size 1.0.77
+guestfs_tune2fs 1.15.4
+guestfs_tune2fs_argv 1.15.4
 guestfs_tune2fs_l 0.9.2
+guestfs_tune2fs_va 1.15.4
 guestfs_txz_in 1.3.2
 guestfs_txz_out 1.3.2
 guestfs_umask 1.0.55

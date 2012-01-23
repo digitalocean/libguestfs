@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfish 1"
-.TH guestfish 1 "2012-01-10" "libguestfs-1.14.9" "Virtualization Support"
+.TH guestfish 1 "2012-01-23" "libguestfs-1.16.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -1246,6 +1246,17 @@ the help of \*(L"glob\*(R" like this:
 .Vb 1
 \& glob copy\-out /home/* .
 .Ve
+.SS "delete-event"
+.IX Subsection "delete-event"
+.Vb 1
+\& delete\-event name
+.Ve
+.PP
+Delete the event handler which was previously registered as \f(CW\*(C`name\*(C'\fR.  If
+multiple event handlers were registered with the same name, they are all
+deleted.
+.PP
+See also the guestfish commands \f(CW\*(C`event\*(C'\fR and \f(CW\*(C`list\-events\*(C'\fR.
 .SS "display"
 .IX Subsection "display"
 .Vb 1
@@ -1285,6 +1296,41 @@ your editor, then uploads the result.
 .PP
 The editor is \f(CW$EDITOR\fR.  However if you use the alternate commands \f(CW\*(C`vi\*(C'\fR
 or \f(CW\*(C`emacs\*(C'\fR you will get those corresponding editors.
+.SS "event"
+.IX Subsection "event"
+.Vb 1
+\& event name eventset "shell script ..."
+.Ve
+.PP
+Register a shell script fragment which is executed when an event is raised.
+See \*(L"guestfs_set_event_callback\*(R" in \fIguestfs\fR\|(3) for a discussion of the event
+\&\s-1API\s0 in libguestfs.
+.PP
+The \f(CW\*(C`name\*(C'\fR parameter is a name that you give to this event handler.  It can
+be any string (even the empty string) and is simply there so you can delete
+the handler using the guestfish \f(CW\*(C`delete\-event\*(C'\fR command.
+.PP
+The \f(CW\*(C`eventset\*(C'\fR parameter is a comma-separated list of one or more events,
+for example \f(CW\*(C`close\*(C'\fR or \f(CW\*(C`close,trace\*(C'\fR.  The special value \f(CW\*(C`*\*(C'\fR means all
+events.
+.PP
+The third and final parameter is the shell script fragment (or any external
+command) that is executed when any of the events in the eventset occurs.  It
+is executed using \f(CW\*(C`$SHELL \-c\*(C'\fR, or if \f(CW$SHELL\fR is not set then \f(CW\*(C`/bin/sh
+\&\-c\*(C'\fR.
+.PP
+The shell script fragment receives callback parameters as arguments \f(CW$1\fR,
+\&\f(CW$2\fR etc.  The actual event that was called is available in the environment
+variable \f(CW$EVENT\fR.
+.PP
+.Vb 4
+\& event "" close "echo closed"
+\& event messages appliance,library,trace "echo $@"
+\& event "" progress "echo progress: $3/$4"
+\& event "" * "echo $EVENT $@"
+.Ve
+.PP
+See also the guestfish commands \f(CW\*(C`delete\-event\*(C'\fR and \f(CW\*(C`list\-events\*(C'\fR.
 .SS "glob"
 .IX Subsection "glob"
 .Vb 1
@@ -1342,6 +1388,13 @@ See also \*(L"hexdump\*(R".
 Change the local directory, ie. the current directory of guestfish itself.
 .PP
 Note that \f(CW\*(C`!cd\*(C'\fR won't do what you might expect.
+.SS "list-events"
+.IX Subsection "list-events"
+.Vb 1
+\& list\-events
+.Ve
+.PP
+List the event handlers registered using the guestfish \f(CW\*(C`event\*(C'\fR command.
 .SS "man"
 .IX Subsection "man"
 .SS "manual"
@@ -1899,6 +1952,35 @@ This command downloads the contents of \f(CW\*(C`filename\*(C'\fR, writing it ou
 file \f(CW\*(C`base64file\*(C'\fR encoded as base64.
 .PP
 Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
+.SS "blkid"
+.IX Subsection "blkid"
+.Vb 1
+\& blkid device
+.Ve
+.PP
+This command returns block device attributes for \f(CW\*(C`device\*(C'\fR. The following
+fields are usually present in the returned hash. Other fields may also be
+present.
+.ie n .IP """UUID""" 4
+.el .IP "\f(CWUUID\fR" 4
+.IX Item "UUID"
+The uuid of this device.
+.ie n .IP """LABEL""" 4
+.el .IP "\f(CWLABEL\fR" 4
+.IX Item "LABEL"
+The label of this device.
+.ie n .IP """VERSION""" 4
+.el .IP "\f(CWVERSION\fR" 4
+.IX Item "VERSION"
+The version of blkid command.
+.ie n .IP """TYPE""" 4
+.el .IP "\f(CWTYPE\fR" 4
+.IX Item "TYPE"
+The filesystem type or \s-1RAID\s0 of this device.
+.ie n .IP """USAGE""" 4
+.el .IP "\f(CWUSAGE\fR" 4
+.IX Item "USAGE"
+The usage of this device, for example \f(CW\*(C`filesystem\*(C'\fR or \f(CW\*(C`raid\*(C'\fR.
 .SS "blockdev-flushbufs"
 .IX Subsection "blockdev-flushbufs"
 .Vb 1
@@ -2473,6 +2555,32 @@ estimate includes the contents of the directory and all subdirectories
 (recursively).
 .PP
 The result is the estimated size in \fIkilobytes\fR (ie. units of 1024 bytes).
+.SS "e2fsck"
+.IX Subsection "e2fsck"
+.Vb 1
+\& e2fsck device [correct:true|false] [forceall:true|false]
+.Ve
+.PP
+This runs the ext2/ext3 filesystem checker on \f(CW\*(C`device\*(C'\fR.  It can take the
+following optional arguments:
+.ie n .IP """correct""" 4
+.el .IP "\f(CWcorrect\fR" 4
+.IX Item "correct"
+Automatically repair the file system. This option will cause e2fsck to
+automatically fix any filesystem problems that can be safely fixed without
+human intervention.
+.Sp
+This option may not be specified at the same time as the \f(CW\*(C`forceall\*(C'\fR option.
+.ie n .IP """forceall""" 4
+.el .IP "\f(CWforceall\fR" 4
+.IX Item "forceall"
+Assume an answer of 'yes' to all questions; allows e2fsck to be used
+non-interactively.
+.Sp
+This option may not be specified at the same time as the \f(CW\*(C`correct\*(C'\fR option.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
 .SS "e2fsck\-f"
 .IX Subsection "e2fsck-f"
 .Vb 1
@@ -3676,6 +3784,10 @@ FreeBSD.
 .el .IP "``netbsd''" 4
 .IX Item "netbsd"
 NetBSD.
+.ie n .IP """hurd""" 4
+.el .IP "``hurd''" 4
+.IX Item "hurd"
+GNU/Hurd.
 .ie n .IP """unknown""" 4
 .el .IP "``unknown''" 4
 .IX Item "unknown"
@@ -4125,6 +4237,13 @@ partitions are returned in the list.  Also this command does not check that
 each filesystem found is valid and mountable, and some filesystems might be
 mountable but require special options.  Filesystems may not all belong to a
 single logical operating system (use \*(L"inspect-os\*(R" to look for OSes).
+.SS "list-md-devices"
+.IX Subsection "list-md-devices"
+.Vb 1
+\& list\-md\-devices
+.Ve
+.PP
+List all Linux md devices.
 .SS "list-partitions"
 .IX Subsection "list-partitions"
 .Vb 1
@@ -4487,6 +4606,100 @@ similarly efficient call for getting standard stats.  Very long directory
 listings might cause the protocol message size to be exceeded, causing this
 call to fail.  The caller must split up such requests into smaller groups of
 names.
+.SS "md-create"
+.IX Subsection "md-create"
+.Vb 1
+\& md\-create name \*(Aqdevices ...\*(Aq [missingbitmap:N] [nrdevices:N] [spare:N] [chunk:N] [level:..]
+.Ve
+.PP
+Create a Linux md (\s-1RAID\s0) device named \f(CW\*(C`name\*(C'\fR on the devices in the list
+\&\f(CW\*(C`devices\*(C'\fR.
+.PP
+The optional parameters are:
+.ie n .IP """missingbitmap""" 4
+.el .IP "\f(CWmissingbitmap\fR" 4
+.IX Item "missingbitmap"
+A bitmap of missing devices.  If a bit is set it means that a missing device
+is added to the array.  The least significant bit corresponds to the first
+device in the array.
+.Sp
+As examples:
+.Sp
+If \f(CW\*(C`devices = ["/dev/sda"]\*(C'\fR and \f(CW\*(C`missingbitmap = 0x1\*(C'\fR then the resulting
+array would be \f(CW\*(C`[<missing>, "/dev/sda"]\*(C'\fR.
+.Sp
+If \f(CW\*(C`devices = ["/dev/sda"]\*(C'\fR and \f(CW\*(C`missingbitmap = 0x2\*(C'\fR then the resulting
+array would be \f(CW\*(C`["/dev/sda", <missing>]\*(C'\fR.
+.Sp
+This defaults to \f(CW0\fR (no missing devices).
+.Sp
+The length of \f(CW\*(C`devices\*(C'\fR + the number of bits set in \f(CW\*(C`missingbitmap\*(C'\fR must
+equal \f(CW\*(C`nrdevices\*(C'\fR + \f(CW\*(C`spare\*(C'\fR.
+.ie n .IP """nrdevices""" 4
+.el .IP "\f(CWnrdevices\fR" 4
+.IX Item "nrdevices"
+The number of active \s-1RAID\s0 devices.
+.Sp
+If not set, this defaults to the length of \f(CW\*(C`devices\*(C'\fR plus the number of
+bits set in \f(CW\*(C`missingbitmap\*(C'\fR.
+.ie n .IP """spare""" 4
+.el .IP "\f(CWspare\fR" 4
+.IX Item "spare"
+The number of spare devices.
+.Sp
+If not set, this defaults to \f(CW0\fR.
+.ie n .IP """chunk""" 4
+.el .IP "\f(CWchunk\fR" 4
+.IX Item "chunk"
+The chunk size in bytes.
+.ie n .IP """level""" 4
+.el .IP "\f(CWlevel\fR" 4
+.IX Item "level"
+The \s-1RAID\s0 level, which can be one of: \fIlinear\fR, \fIraid0\fR, \fI0\fR, \fIstripe\fR,
+\&\fIraid1\fR, \fI1\fR, \fImirror\fR, \fIraid4\fR, \fI4\fR, \fIraid5\fR, \fI5\fR, \fIraid6\fR, \fI6\fR,
+\&\fIraid10\fR, \fI10\fR.  Some of these are synonymous, and more levels may be
+added in future.
+.Sp
+If not set, this defaults to \f(CW\*(C`raid1\*(C'\fR.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
+.SS "md-detail"
+.IX Subsection "md-detail"
+.Vb 1
+\& md\-detail md
+.Ve
+.PP
+This command exposes the output of 'mdadm \-DY <md>'. The following fields
+are usually present in the returned hash. Other fields may also be present.
+.ie n .IP """level""" 4
+.el .IP "\f(CWlevel\fR" 4
+.IX Item "level"
+The raid level of the \s-1MD\s0 device.
+.ie n .IP """devices""" 4
+.el .IP "\f(CWdevices\fR" 4
+.IX Item "devices"
+The number of underlying devices in the \s-1MD\s0 device.
+.ie n .IP """metadata""" 4
+.el .IP "\f(CWmetadata\fR" 4
+.IX Item "metadata"
+The metadata version used.
+.ie n .IP """uuid""" 4
+.el .IP "\f(CWuuid\fR" 4
+.IX Item "uuid"
+The \s-1UUID\s0 of the \s-1MD\s0 device.
+.ie n .IP """name""" 4
+.el .IP "\f(CWname\fR" 4
+.IX Item "name"
+The name of the \s-1MD\s0 device.
+.SS "md-stop"
+.IX Subsection "md-stop"
+.Vb 1
+\& md\-stop md
+.Ve
+.PP
+This command deactivates the \s-1MD\s0 array named \f(CW\*(C`md\*(C'\fR.  The device is stopped,
+but it is not destroyed or zeroed.
 .SS "mkdir"
 .IX Subsection "mkdir"
 .Vb 1
@@ -6261,6 +6474,80 @@ If the current file size is less than \f(CW\*(C`size\*(C'\fR then the file is ex
 the required size with zero bytes.  This creates a sparse file (ie. disk
 blocks are not allocated for the file until you write to it).  To create a
 non-sparse file of zeroes, use \*(L"fallocate64\*(R" instead.
+.SS "tune2fs"
+.IX Subsection "tune2fs"
+.Vb 1
+\& tune2fs device [force:true|false] [maxmountcount:N] [mountcount:N] [errorbehavior:..] [group:N] [intervalbetweenchecks:N] [reservedblockspercentage:N] [lastmounteddirectory:..] [reservedblockscount:N] [user:N]
+.Ve
+.PP
+This call allows you to adjust various filesystem parameters of an
+ext2/ext3/ext4 filesystem called \f(CW\*(C`device\*(C'\fR.
+.PP
+The optional parameters are:
+.ie n .IP """force""" 4
+.el .IP "\f(CWforce\fR" 4
+.IX Item "force"
+Force tune2fs to complete the operation even in the face of errors.  This is
+the same as the tune2fs \f(CW\*(C`\-f\*(C'\fR option.
+.ie n .IP """maxmountcount""" 4
+.el .IP "\f(CWmaxmountcount\fR" 4
+.IX Item "maxmountcount"
+Set the number of mounts after which the filesystem is checked by
+\&\fIe2fsck\fR\|(8).  If this is \f(CW0\fR then the number of mounts is disregarded.
+This is the same as the tune2fs \f(CW\*(C`\-c\*(C'\fR option.
+.ie n .IP """mountcount""" 4
+.el .IP "\f(CWmountcount\fR" 4
+.IX Item "mountcount"
+Set the number of times the filesystem has been mounted.  This is the same
+as the tune2fs \f(CW\*(C`\-C\*(C'\fR option.
+.ie n .IP """errorbehavior""" 4
+.el .IP "\f(CWerrorbehavior\fR" 4
+.IX Item "errorbehavior"
+Change the behavior of the kernel code when errors are detected.  Possible
+values currently are: \f(CW\*(C`continue\*(C'\fR, \f(CW\*(C`remount\-ro\*(C'\fR, \f(CW\*(C`panic\*(C'\fR.  In practice
+these options don't really make any difference, particularly for write
+errors.
+.Sp
+This is the same as the tune2fs \f(CW\*(C`\-e\*(C'\fR option.
+.ie n .IP """group""" 4
+.el .IP "\f(CWgroup\fR" 4
+.IX Item "group"
+Set the group which can use reserved filesystem blocks.  This is the same as
+the tune2fs \f(CW\*(C`\-g\*(C'\fR option except that it can only be specified as a number.
+.ie n .IP """intervalbetweenchecks""" 4
+.el .IP "\f(CWintervalbetweenchecks\fR" 4
+.IX Item "intervalbetweenchecks"
+Adjust the maximal time between two filesystem checks (in seconds).  If the
+option is passed as \f(CW0\fR then time-dependent checking is disabled.
+.Sp
+This is the same as the tune2fs \f(CW\*(C`\-i\*(C'\fR option.
+.ie n .IP """reservedblockspercentage""" 4
+.el .IP "\f(CWreservedblockspercentage\fR" 4
+.IX Item "reservedblockspercentage"
+Set the percentage of the filesystem which may only be allocated by
+privileged processes.  This is the same as the tune2fs \f(CW\*(C`\-m\*(C'\fR option.
+.ie n .IP """lastmounteddirectory""" 4
+.el .IP "\f(CWlastmounteddirectory\fR" 4
+.IX Item "lastmounteddirectory"
+Set the last mounted directory.  This is the same as the tune2fs \f(CW\*(C`\-M\*(C'\fR
+option.
+.ie n .IP """reservedblockscount"" Set the number of reserved filesystem blocks.  This is the same as the tune2fs ""\-r"" option." 4
+.el .IP "\f(CWreservedblockscount\fR Set the number of reserved filesystem blocks.  This is the same as the tune2fs \f(CW\-r\fR option." 4
+.IX Item "reservedblockscount Set the number of reserved filesystem blocks.  This is the same as the tune2fs -r option."
+.PD 0
+.ie n .IP """user""" 4
+.el .IP "\f(CWuser\fR" 4
+.IX Item "user"
+.PD
+Set the user who can use the reserved filesystem blocks.  This is the same
+as the tune2fs \f(CW\*(C`\-u\*(C'\fR option except that it can only be specified as a
+number.
+.PP
+To get the current values of filesystem parameters, see \*(L"tune2fs\-l\*(R".  For
+precise details of how tune2fs works, see the \fItune2fs\fR\|(8) man page.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
 .SS "tune2fs\-l"
 .IX Subsection "tune2fs-l"
 .Vb 1
@@ -6910,7 +7197,7 @@ the same name will be overwritten.
 Richard W.M. Jones (\f(CW\*(C`rjones at redhat dot com\*(C'\fR)
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"
-Copyright (C) 2009\-2011 Red Hat Inc.  <http://libguestfs.org/>
+Copyright (C) 2009\-2012 Red Hat Inc.  <http://libguestfs.org/>
 .PP
 This program is free software; you can redistribute it and/or modify it
 under the terms of the \s-1GNU\s0 General Public License as published by the Free

@@ -49,6 +49,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -67,11 +68,14 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-DIST_COMMON = $(srcdir)/.depend $(srcdir)/META.in \
-	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(top_srcdir)/subdir-rules.mk
+DIST_COMMON = $(srcdir)/META.in $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in $(top_srcdir)/subdir-rules.mk
 @HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@am__append_1 = html/index.html
-@HAVE_OCAML_TRUE@am__append_2 = $(noinst_DATA)
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_2 = t/guestfs_010_basic \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	t/guestfs_070_threads \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	t/guestfs_400_progress
+
+@HAVE_OCAML_TRUE@am__append_3 = $(noinst_DATA)
 subdir = ocaml
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -112,27 +116,27 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/include_next.m4 \
 	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
 	$(top_srcdir)/m4/inline.m4 $(top_srcdir)/m4/intlmacosx.m4 \
-	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/inttostr.m4 \
-	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
-	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/ioctl.m4 \
-	$(top_srcdir)/m4/largefile.m4 $(top_srcdir)/m4/lcmessage.m4 \
-	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
-	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/localcharset.m4 $(top_srcdir)/m4/locale-fr.m4 \
-	$(top_srcdir)/m4/locale-ja.m4 $(top_srcdir)/m4/locale-zh.m4 \
-	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localename.m4 \
-	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
-	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
-	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
-	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
-	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
-	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/mempcpy.m4 \
-	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
-	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
-	$(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/introspection.m4 \
+	$(top_srcdir)/m4/inttostr.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
+	$(top_srcdir)/m4/inttypes.m4 $(top_srcdir)/m4/inttypes_h.m4 \
+	$(top_srcdir)/m4/ioctl.m4 $(top_srcdir)/m4/largefile.m4 \
+	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
+	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
+	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
+	$(top_srcdir)/m4/locale-zh.m4 $(top_srcdir)/m4/locale_h.m4 \
+	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
+	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
+	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
+	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
+	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
+	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
+	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
+	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
+	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
+	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/nocrash.m4 \
@@ -193,15 +197,51 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES = META
 CONFIG_CLEAN_VPATH_FILES =
-AM_V_GEN = $(am__v_GEN_$(V))
-am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
-am__v_GEN_0 = @echo "  GEN   " $@;
+LIBRARIES = $(noinst_LIBRARIES)
+AM_V_AR = $(am__v_AR_$(V))
+am__v_AR_ = $(am__v_AR_$(AM_DEFAULT_VERBOSITY))
+am__v_AR_0 = @echo "  AR    " $@;
 AM_V_at = $(am__v_at_$(V))
 am__v_at_ = $(am__v_at_$(AM_DEFAULT_VERBOSITY))
 am__v_at_0 = @
-SOURCES =
-DIST_SOURCES =
+libguestfsocaml_a_AR = $(AR) $(ARFLAGS)
+libguestfsocaml_a_LIBADD =
+am__libguestfsocaml_a_SOURCES_DIST = guestfs_c.c guestfs_c_actions.c
+@HAVE_OCAML_TRUE@am_libguestfsocaml_a_OBJECTS =  \
+@HAVE_OCAML_TRUE@	libguestfsocaml_a-guestfs_c.$(OBJEXT) \
+@HAVE_OCAML_TRUE@	libguestfsocaml_a-guestfs_c_actions.$(OBJEXT)
+libguestfsocaml_a_OBJECTS = $(am_libguestfsocaml_a_OBJECTS)
+DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
+am__depfiles_maybe = depfiles
+am__mv = mv -f
+AM_V_lt = $(am__v_lt_$(V))
+am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
+am__v_lt_0 = --silent
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_$(V))
+am__v_CC_ = $(am__v_CC_$(AM_DEFAULT_VERBOSITY))
+am__v_CC_0 = @echo "  CC    " $@;
+CCLD = $(CC)
+LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_$(V))
+am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
+am__v_CCLD_0 = @echo "  CCLD  " $@;
+AM_V_GEN = $(am__v_GEN_$(V))
+am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
+am__v_GEN_0 = @echo "  GEN   " $@;
+SOURCES = $(libguestfsocaml_a_SOURCES)
+DIST_SOURCES = $(am__libguestfsocaml_a_SOURCES_DIST)
 DATA = $(noinst_DATA)
+ETAGS = etags
+CTAGS = ctags
 am__tty_colors = \
 red=; grn=; lgn=; blu=; std=
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -267,11 +307,13 @@ FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
 FUSE_CFLAGS = @FUSE_CFLAGS@
 FUSE_LIBS = @FUSE_LIBS@
+GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
 GENISOIMAGE = @GENISOIMAGE@
 GETADDRINFO_LIB = @GETADDRINFO_LIB@
 GETOPT_H = @GETOPT_H@
 GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GHC = @GHC@
+GJS = @GJS@
 GLIBC21 = @GLIBC21@
 GLOB_H = @GLOB_H@
 GMSGFMT = @GMSGFMT@
@@ -554,6 +596,8 @@ GNULIB_WMEMMOVE = @GNULIB_WMEMMOVE@
 GNULIB_WMEMSET = @GNULIB_WMEMSET@
 GNULIB_WRITE = @GNULIB_WRITE@
 GNULIB__EXIT = @GNULIB__EXIT@
+GOBJECT_CFLAGS = @GOBJECT_CFLAGS@
+GOBJECT_LIBS = @GOBJECT_LIBS@
 GPERF = @GPERF@
 GREP = @GREP@
 HAVE_ACCEPT4 = @HAVE_ACCEPT4@
@@ -807,6 +851,14 @@ INT32_MAX_LT_INTMAX_MAX = @INT32_MAX_LT_INTMAX_MAX@
 INT64_MAX_EQ_LONG_MAX = @INT64_MAX_EQ_LONG_MAX@
 INTLLIBS = @INTLLIBS@
 INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
+INTROSPECTION_CFLAGS = @INTROSPECTION_CFLAGS@
+INTROSPECTION_COMPILER = @INTROSPECTION_COMPILER@
+INTROSPECTION_GENERATE = @INTROSPECTION_GENERATE@
+INTROSPECTION_GIRDIR = @INTROSPECTION_GIRDIR@
+INTROSPECTION_LIBS = @INTROSPECTION_LIBS@
+INTROSPECTION_MAKEFILE = @INTROSPECTION_MAKEFILE@
+INTROSPECTION_SCANNER = @INTROSPECTION_SCANNER@
+INTROSPECTION_TYPELIBDIR = @INTROSPECTION_TYPELIBDIR@
 JAR = @JAR@
 JAR_INSTALL_DIR = @JAR_INSTALL_DIR@
 JAVA = @JAVA@
@@ -1224,11 +1276,7 @@ EXTRA_DIST = \
 	t/*.ml
 
 CLEANFILES = *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so t/*.cmi \
-	t/*.cmo t/*.cmx t/*.o t/*.a t/*.so $(am__append_2)
-AM_CPPFLAGS = -I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
-  -I$(top_srcdir)/src -I$(top_builddir)/src \
-  $(WARN_CFLAGS) $(WERROR_CFLAGS)
-
+	t/*.cmo t/*.cmx t/*.o t/*.a t/*.so $(am__append_3)
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@noinst_DATA = mlguestfs.cma mlguestfs.cmxa META \
@@ -1236,28 +1284,31 @@ AM_CPPFLAGS = -I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
 @HAVE_OCAML_TRUE@	t/guestfs_010_basic t/guestfs_070_threads \
 @HAVE_OCAML_TRUE@	t/guestfs_080_optargs t/guestfs_400_events \
 @HAVE_OCAML_TRUE@	t/guestfs_400_progress
-@HAVE_OCAML_TRUE@OBJS = guestfs_c.o guestfs_c_actions.o guestfs.cmo
-@HAVE_OCAML_TRUE@XOBJS = $(OBJS:.cmo=.cmx)
+
+# Build the C part into a library, so that automake handles the C
+# compilation step for us.  Note that we don't directly use this
+# library; we link with the object files that it generates.
+@HAVE_OCAML_TRUE@noinst_LIBRARIES = libguestfsocaml.a
+@HAVE_OCAML_TRUE@libguestfsocaml_a_CFLAGS = \
+@HAVE_OCAML_TRUE@	-I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
+@HAVE_OCAML_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_OCAML_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+@HAVE_OCAML_TRUE@	-fPIC
+
+@HAVE_OCAML_TRUE@libguestfsocaml_a_SOURCES = guestfs_c.c guestfs_c_actions.c
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = \
-@HAVE_OCAML_TRUE@	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
-@HAVE_OCAML_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
-@HAVE_OCAML_TRUE@	TMPDIR=$(top_builddir) \
+@HAVE_OCAML_TRUE@	$(top_builddir)/run \
 @HAVE_OCAML_TRUE@	$(VG)
 
-@HAVE_OCAML_TRUE@TESTS = run-bindtests \
-@HAVE_OCAML_TRUE@	t/guestfs_005_load \
-@HAVE_OCAML_TRUE@	t/guestfs_010_basic \
-@HAVE_OCAML_TRUE@	t/guestfs_070_threads \
-@HAVE_OCAML_TRUE@	t/guestfs_080_optargs \
-@HAVE_OCAML_TRUE@	t/guestfs_400_events \
-@HAVE_OCAML_TRUE@	t/guestfs_400_progress
-
+@HAVE_OCAML_TRUE@TESTS = run-bindtests t/guestfs_005_load \
+@HAVE_OCAML_TRUE@	t/guestfs_080_optargs t/guestfs_400_events \
+@HAVE_OCAML_TRUE@	$(am__append_2)
 @HAVE_OCAML_TRUE@SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cmo .cmi .cmx .ml .mli .mll .mly
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(srcdir)/.depend $(am__configure_deps)
+.SUFFIXES: .cmo .cmi .cmx .ml .mli .mll .mly .c .lo .o .obj
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -1290,17 +1341,135 @@ $(am__aclocal_m4_deps):
 META: $(top_builddir)/config.status $(srcdir)/META.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
+clean-noinstLIBRARIES:
+	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+libguestfsocaml.a: $(libguestfsocaml_a_OBJECTS) $(libguestfsocaml_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libguestfsocaml.a
+	$(AM_V_AR)$(libguestfsocaml_a_AR) libguestfsocaml.a $(libguestfsocaml_a_OBJECTS) $(libguestfsocaml_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libguestfsocaml.a
+
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT)
+
+distclean-compile:
+	-rm -f *.tab.c
+
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfsocaml_a-guestfs_c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfsocaml_a-guestfs_c_actions.Po@am__quote@
+
+.c.o:
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(COMPILE) -c $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
+
+.c.lo:
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+libguestfsocaml_a-guestfs_c.o: guestfs_c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -MT libguestfsocaml_a-guestfs_c.o -MD -MP -MF $(DEPDIR)/libguestfsocaml_a-guestfs_c.Tpo -c -o libguestfsocaml_a-guestfs_c.o `test -f 'guestfs_c.c' || echo '$(srcdir)/'`guestfs_c.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfsocaml_a-guestfs_c.Tpo $(DEPDIR)/libguestfsocaml_a-guestfs_c.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='guestfs_c.c' object='libguestfsocaml_a-guestfs_c.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -c -o libguestfsocaml_a-guestfs_c.o `test -f 'guestfs_c.c' || echo '$(srcdir)/'`guestfs_c.c
+
+libguestfsocaml_a-guestfs_c.obj: guestfs_c.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -MT libguestfsocaml_a-guestfs_c.obj -MD -MP -MF $(DEPDIR)/libguestfsocaml_a-guestfs_c.Tpo -c -o libguestfsocaml_a-guestfs_c.obj `if test -f 'guestfs_c.c'; then $(CYGPATH_W) 'guestfs_c.c'; else $(CYGPATH_W) '$(srcdir)/guestfs_c.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfsocaml_a-guestfs_c.Tpo $(DEPDIR)/libguestfsocaml_a-guestfs_c.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='guestfs_c.c' object='libguestfsocaml_a-guestfs_c.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -c -o libguestfsocaml_a-guestfs_c.obj `if test -f 'guestfs_c.c'; then $(CYGPATH_W) 'guestfs_c.c'; else $(CYGPATH_W) '$(srcdir)/guestfs_c.c'; fi`
+
+libguestfsocaml_a-guestfs_c_actions.o: guestfs_c_actions.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -MT libguestfsocaml_a-guestfs_c_actions.o -MD -MP -MF $(DEPDIR)/libguestfsocaml_a-guestfs_c_actions.Tpo -c -o libguestfsocaml_a-guestfs_c_actions.o `test -f 'guestfs_c_actions.c' || echo '$(srcdir)/'`guestfs_c_actions.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfsocaml_a-guestfs_c_actions.Tpo $(DEPDIR)/libguestfsocaml_a-guestfs_c_actions.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='guestfs_c_actions.c' object='libguestfsocaml_a-guestfs_c_actions.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -c -o libguestfsocaml_a-guestfs_c_actions.o `test -f 'guestfs_c_actions.c' || echo '$(srcdir)/'`guestfs_c_actions.c
+
+libguestfsocaml_a-guestfs_c_actions.obj: guestfs_c_actions.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -MT libguestfsocaml_a-guestfs_c_actions.obj -MD -MP -MF $(DEPDIR)/libguestfsocaml_a-guestfs_c_actions.Tpo -c -o libguestfsocaml_a-guestfs_c_actions.obj `if test -f 'guestfs_c_actions.c'; then $(CYGPATH_W) 'guestfs_c_actions.c'; else $(CYGPATH_W) '$(srcdir)/guestfs_c_actions.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfsocaml_a-guestfs_c_actions.Tpo $(DEPDIR)/libguestfsocaml_a-guestfs_c_actions.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='guestfs_c_actions.c' object='libguestfsocaml_a-guestfs_c_actions.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfsocaml_a_CFLAGS) $(CFLAGS) -c -o libguestfsocaml_a-guestfs_c_actions.obj `if test -f 'guestfs_c_actions.c'; then $(CYGPATH_W) 'guestfs_c_actions.c'; else $(CYGPATH_W) '$(srcdir)/guestfs_c_actions.c'; fi`
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
+
+ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
+	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '{ files[$$0] = 1; nonempty = 1; } \
+	      END { if (nonempty) { for (i in files) print i; }; }'`; \
+	mkid -fID $$unique
 tags: TAGS
-TAGS:
 
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+		$(TAGS_FILES) $(LISP)
+	set x; \
+	here=`pwd`; \
+	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '{ files[$$0] = 1; nonempty = 1; } \
+	      END { if (nonempty) { for (i in files) print i; }; }'`; \
+	shift; \
+	if test -z "$(ETAGS_ARGS)$$*$$unique"; then :; else \
+	  test -n "$$unique" || unique=$$empty_fix; \
+	  if test $$# -gt 0; then \
+	    $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
+	      "$$@" $$unique; \
+	  else \
+	    $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
+	      $$unique; \
+	  fi; \
+	fi
 ctags: CTAGS
-CTAGS:
+CTAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+		$(TAGS_FILES) $(LISP)
+	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '{ files[$$0] = 1; nonempty = 1; } \
+	      END { if (nonempty) { for (i in files) print i; }; }'`; \
+	test -z "$(CTAGS_ARGS)$$unique" \
+	  || $(CTAGS) $(CTAGSFLAGS) $(AM_CTAGSFLAGS) $(CTAGS_ARGS) \
+	     $$unique
 
+GTAGS:
+	here=`$(am__cd) $(top_builddir) && pwd` \
+	  && $(am__cd) $(top_srcdir) \
+	  && gtags -i $(GTAGS_ARGS) "$$here"
+
+distclean-tags:
+	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 check-TESTS: $(TESTS)
 	@failed=0; all=0; xfail=0; xpass=0; skip=0; \
@@ -1427,7 +1596,7 @@ distdir: $(DISTFILES)
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
-all-am: Makefile $(DATA)
+all-am: Makefile $(LIBRARIES) $(DATA)
 installdirs:
 install: install-am
 install-exec: install-exec-am
@@ -1458,11 +1627,14 @@ maintainer-clean-generic:
 @HAVE_OCAML_FALSE@install-data-hook:
 clean: clean-am
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
+	mostlyclean-am
 
 distclean: distclean-am
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic
+distclean-am: clean-am distclean-compile distclean-generic \
+	distclean-tags
 
 dvi: dvi-am
 
@@ -1506,12 +1678,14 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-generic mostlyclean-libtool
+mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool
 
 pdf: pdf-am
 
@@ -1525,17 +1699,19 @@ uninstall-am:
 
 .MAKE: check-am install-am install-data-am install-strip
 
-.PHONY: all all-am check check-TESTS check-am clean clean-generic \
-	clean-libtool distclean distclean-generic distclean-libtool \
-	distdir dvi dvi-am html html-am info info-am install \
-	install-am install-data install-data-am install-data-hook \
-	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am uninstall uninstall-am
+.PHONY: CTAGS GTAGS all all-am check check-TESTS check-am clean \
+	clean-generic clean-libtool clean-noinstLIBRARIES ctags \
+	distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-data-hook install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am
 
 
 # Define a force dependency which will always be rebuilt
@@ -1560,17 +1736,15 @@ $(top_builddir)/daemon/guestfsd: force
 appliance: force
 	$(MAKE) -C $(top_builddir)/appliance
 
-@HAVE_OCAML_TRUE@mlguestfs.cma: $(OBJS)
-@HAVE_OCAML_TRUE@	$(OCAMLMKLIB) -o mlguestfs $^ -L$(top_builddir)/src/.libs -lguestfs
+@HAVE_OCAML_TRUE@mlguestfs.cma: libguestfsocaml.a guestfs.cmo
+@HAVE_OCAML_TRUE@	$(OCAMLMKLIB) -o mlguestfs \
+@HAVE_OCAML_TRUE@	  $(libguestfsocaml_a_OBJECTS) guestfs.cmo \
+@HAVE_OCAML_TRUE@	  -L$(top_builddir)/src/.libs -lguestfs
 
-@HAVE_OCAML_TRUE@mlguestfs.cmxa: $(XOBJS)
-@HAVE_OCAML_TRUE@	$(OCAMLMKLIB) -o mlguestfs $^ -L$(top_builddir)/src/.libs -lguestfs
-
-@HAVE_OCAML_TRUE@guestfs_c.o: guestfs_c.c
-@HAVE_OCAML_TRUE@	$(CC) $(AM_CPPFLAGS) $(CFLAGS) -fPIC -Wall -c $<
-
-@HAVE_OCAML_TRUE@guestfs_c_actions.o: guestfs_c_actions.c
-@HAVE_OCAML_TRUE@	$(CC) $(AM_CPPFLAGS) $(CFLAGS) -fPIC -Wall -c $(srcdir)/$<
+@HAVE_OCAML_TRUE@mlguestfs.cmxa: libguestfsocaml.a guestfs.cmx
+@HAVE_OCAML_TRUE@	$(OCAMLMKLIB) -o mlguestfs \
+@HAVE_OCAML_TRUE@	  $(libguestfsocaml_a_OBJECTS) guestfs.cmx \
+@HAVE_OCAML_TRUE@	  -L$(top_builddir)/src/.libs -lguestfs
 
 @HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@html/index.html: $(srcdir)/guestfs*.mli $(srcdir)/guestfs*.ml
 @HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@	mkdir -p html
@@ -1621,18 +1795,16 @@ appliance: force
 
 @HAVE_OCAML_TRUE@depend: .depend
 
-@HAVE_OCAML_TRUE@.depend: $(wildcard *.mli) $(wildcard *.ml)
+@HAVE_OCAML_TRUE@.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep $^ | \
-@HAVE_OCAML_TRUE@	  $(SED) -e 's/ *$$//' | \
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) $^ | \
+@HAVE_OCAML_TRUE@	  $(SED) 's/ *$$//' | \
 @HAVE_OCAML_TRUE@	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
-@HAVE_OCAML_TRUE@	  LANG=C sort > $@-t
+@HAVE_OCAML_TRUE@	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
+@HAVE_OCAML_TRUE@	  sort > $@-t
 @HAVE_OCAML_TRUE@	mv $@-t $@
-@HAVE_OCAML_TRUE@bindtests.cmo: guestfs.cmi
-@HAVE_OCAML_TRUE@bindtests.cmx: guestfs.cmx
-@HAVE_OCAML_TRUE@guestfs.cmi:
-@HAVE_OCAML_TRUE@guestfs.cmo: guestfs.cmi
-@HAVE_OCAML_TRUE@guestfs.cmx: guestfs.cmi
+
+@HAVE_OCAML_TRUE@-include .depend
 
 # Do the installation by hand, because we want to run ocamlfind.
 @HAVE_OCAML_TRUE@install-data-hook:

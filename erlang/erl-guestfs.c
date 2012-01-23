@@ -845,6 +845,23 @@ run_base64_out (ETERM *message)
 }
 
 static ETERM *
+run_blkid (ETERM *message)
+{
+  char *device = erl_iolist_to_string (ARG (0));
+  size_t i;
+  char **r;
+
+  r = guestfs_blkid (g, device);
+  free (device);
+  if (r == NULL)
+    return make_error ("blkid");
+
+  ETERM *rt = make_table (r);
+  free_strings (r);
+  return rt;
+}
+
+static ETERM *
 run_blockdev_flushbufs (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
@@ -1669,6 +1686,43 @@ run_du (ETERM *message)
     return make_error ("du");
 
   return erl_mk_longlong (r);
+}
+
+static ETERM *
+run_e2fsck (ETERM *message)
+{
+  char *device = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_e2fsck_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_e2fsck_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "correct")) {
+      optargs_s.bitmask |= GUESTFS_E2FSCK_CORRECT_BITMASK;
+      optargs_s.correct = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "forceall")) {
+      optargs_s.bitmask |= GUESTFS_E2FSCK_FORCEALL_BITMASK;
+      optargs_s.forceall = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("e2fsck", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_e2fsck_argv (g, device, optargs);
+  free (device);
+  if (r == -1)
+    return make_error ("e2fsck");
+
+  return erl_mk_atom ("ok");
 }
 
 static ETERM *
@@ -3264,6 +3318,22 @@ run_list_filesystems (ETERM *message)
 }
 
 static ETERM *
+run_list_md_devices (ETERM *message)
+{
+  size_t i;
+  char **r;
+
+  r = guestfs_list_md_devices (g);
+  if (r == NULL)
+    return make_error ("list_md_devices");
+
+  ETERM *rt = make_string_list (r);
+  free_strings (r);
+
+  return rt;
+}
+
+static ETERM *
 run_list_partitions (ETERM *message)
 {
   size_t i;
@@ -3761,6 +3831,93 @@ run_lxattrlist (ETERM *message)
   ETERM *rt = make_xattr_list (r);
   guestfs_free_xattr_list (r);
   return rt;
+}
+
+static ETERM *
+run_md_create (ETERM *message)
+{
+  char *name = erl_iolist_to_string (ARG (0));
+  char **devices = get_string_list (ARG (1));
+
+  struct guestfs_md_create_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_md_create_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (2);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "missingbitmap")) {
+      optargs_s.bitmask |= GUESTFS_MD_CREATE_MISSINGBITMAP_BITMASK;
+      optargs_s.missingbitmap = ERL_LL_VALUE (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "nrdevices")) {
+      optargs_s.bitmask |= GUESTFS_MD_CREATE_NRDEVICES_BITMASK;
+      optargs_s.nrdevices = ERL_INT_VALUE (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "spare")) {
+      optargs_s.bitmask |= GUESTFS_MD_CREATE_SPARE_BITMASK;
+      optargs_s.spare = ERL_INT_VALUE (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "chunk")) {
+      optargs_s.bitmask |= GUESTFS_MD_CREATE_CHUNK_BITMASK;
+      optargs_s.chunk = ERL_LL_VALUE (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "level")) {
+      optargs_s.bitmask |= GUESTFS_MD_CREATE_LEVEL_BITMASK;
+      optargs_s.level = erl_iolist_to_string (hd_value);
+    }
+    else
+      return unknown_optarg ("md_create", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_md_create_argv (g, name, devices, optargs);
+  free (name);
+  free_strings (devices);
+  if ((optargs_s.bitmask & GUESTFS_MD_CREATE_LEVEL_BITMASK))
+    free ((char *) optargs_s.level);
+  if (r == -1)
+    return make_error ("md_create");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_md_detail (ETERM *message)
+{
+  char *md = erl_iolist_to_string (ARG (0));
+  size_t i;
+  char **r;
+
+  r = guestfs_md_detail (g, md);
+  free (md);
+  if (r == NULL)
+    return make_error ("md_detail");
+
+  ETERM *rt = make_table (r);
+  free_strings (r);
+  return rt;
+}
+
+static ETERM *
+run_md_stop (ETERM *message)
+{
+  char *md = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_md_stop (g, md);
+  free (md);
+  if (r == -1)
+    return make_error ("md_stop");
+
+  return erl_mk_atom ("ok");
 }
 
 static ETERM *
@@ -5764,15 +5921,50 @@ run_test0 (ETERM *message)
   char *fileout = erl_iolist_to_string (ARG (7));
   size_t bufferin_size = erl_iolist_length (ARG (8));
   char *bufferin = erl_iolist_to_string (ARG (8));
+
+  struct guestfs_test0_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_test0_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (9);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "obool")) {
+      optargs_s.bitmask |= GUESTFS_TEST0_OBOOL_BITMASK;
+      optargs_s.obool = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "oint")) {
+      optargs_s.bitmask |= GUESTFS_TEST0_OINT_BITMASK;
+      optargs_s.oint = ERL_INT_VALUE (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "oint64")) {
+      optargs_s.bitmask |= GUESTFS_TEST0_OINT64_BITMASK;
+      optargs_s.oint64 = ERL_LL_VALUE (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "ostring")) {
+      optargs_s.bitmask |= GUESTFS_TEST0_OSTRING_BITMASK;
+      optargs_s.ostring = erl_iolist_to_string (hd_value);
+    }
+    else
+      return unknown_optarg ("test0", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
   int r;
 
-  r = guestfs_test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size);
+  r = guestfs_test0_argv (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size, optargs);
   free (str);
   free (optstr);
   free_strings (strlist);
   free (filein);
   free (fileout);
   free (bufferin);
+  if ((optargs_s.bitmask & GUESTFS_TEST0_OSTRING_BITMASK))
+    free ((char *) optargs_s.ostring);
   if (r == -1)
     return make_error ("test0");
 
@@ -5803,6 +5995,38 @@ run_test0rboolerr (ETERM *message)
     return make_error ("test0rboolerr");
 
   return make_bool (r);
+}
+
+static ETERM *
+run_test0rbufferout (ETERM *message)
+{
+  char *val = erl_iolist_to_string (ARG (0));
+  char *r;
+  size_t size;
+
+  r = guestfs_test0rbufferout (g, val, &size);
+  free (val);
+  if (r == NULL)
+    return make_error ("test0rbufferout");
+
+  ETERM *rt = erl_mk_estring (r, size);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_test0rbufferouterr (ETERM *message)
+{
+  char *r;
+  size_t size;
+
+  r = guestfs_test0rbufferouterr (g, &size);
+  if (r == NULL)
+    return make_error ("test0rbufferouterr");
+
+  ETERM *rt = erl_mk_estring (r, size);
+  free (r);
+  return rt;
 }
 
 static ETERM *
@@ -6142,6 +6366,87 @@ run_truncate_size (ETERM *message)
   free (path);
   if (r == -1)
     return make_error ("truncate_size");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_tune2fs (ETERM *message)
+{
+  char *device = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_tune2fs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_tune2fs_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "force")) {
+      optargs_s.bitmask |= GUESTFS_TUNE2FS_FORCE_BITMASK;
+      optargs_s.force = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "maxmountcount")) {
+      optargs_s.bitmask |= GUESTFS_TUNE2FS_MAXMOUNTCOUNT_BITMASK;
+      optargs_s.maxmountcount = ERL_INT_VALUE (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "mountcount")) {
+      optargs_s.bitmask |= GUESTFS_TUNE2FS_MOUNTCOUNT_BITMASK;
+      optargs_s.mountcount = ERL_INT_VALUE (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "errorbehavior")) {
+      optargs_s.bitmask |= GUESTFS_TUNE2FS_ERRORBEHAVIOR_BITMASK;
+      optargs_s.errorbehavior = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "group")) {
+      optargs_s.bitmask |= GUESTFS_TUNE2FS_GROUP_BITMASK;
+      optargs_s.group = ERL_LL_VALUE (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "intervalbetweenchecks")) {
+      optargs_s.bitmask |= GUESTFS_TUNE2FS_INTERVALBETWEENCHECKS_BITMASK;
+      optargs_s.intervalbetweenchecks = ERL_INT_VALUE (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "reservedblockspercentage")) {
+      optargs_s.bitmask |= GUESTFS_TUNE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK;
+      optargs_s.reservedblockspercentage = ERL_INT_VALUE (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "lastmounteddirectory")) {
+      optargs_s.bitmask |= GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY_BITMASK;
+      optargs_s.lastmounteddirectory = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "reservedblockscount")) {
+      optargs_s.bitmask |= GUESTFS_TUNE2FS_RESERVEDBLOCKSCOUNT_BITMASK;
+      optargs_s.reservedblockscount = ERL_LL_VALUE (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "user")) {
+      optargs_s.bitmask |= GUESTFS_TUNE2FS_USER_BITMASK;
+      optargs_s.user = ERL_LL_VALUE (hd_value);
+    }
+    else
+      return unknown_optarg ("tune2fs", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_tune2fs_argv (g, device, optargs);
+  free (device);
+  if ((optargs_s.bitmask & GUESTFS_TUNE2FS_ERRORBEHAVIOR_BITMASK))
+    free ((char *) optargs_s.errorbehavior);
+  if ((optargs_s.bitmask & GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY_BITMASK))
+    free ((char *) optargs_s.lastmounteddirectory);
+  if (r == -1)
+    return make_error ("tune2fs");
 
   return erl_mk_atom ("ok");
 }
@@ -6859,6 +7164,8 @@ dispatch (ETERM *message)
     return run_base64_in (message);
   else if (atom_equals (fun, "base64_out"))
     return run_base64_out (message);
+  else if (atom_equals (fun, "blkid"))
+    return run_blkid (message);
   else if (atom_equals (fun, "blockdev_flushbufs"))
     return run_blockdev_flushbufs (message);
   else if (atom_equals (fun, "blockdev_getbsz"))
@@ -6943,6 +7250,8 @@ dispatch (ETERM *message)
     return run_drop_caches (message);
   else if (atom_equals (fun, "du"))
     return run_du (message);
+  else if (atom_equals (fun, "e2fsck"))
+    return run_e2fsck (message);
   else if (atom_equals (fun, "e2fsck_f"))
     return run_e2fsck_f (message);
   else if (atom_equals (fun, "echo_daemon"))
@@ -7151,6 +7460,8 @@ dispatch (ETERM *message)
     return run_list_dm_devices (message);
   else if (atom_equals (fun, "list_filesystems"))
     return run_list_filesystems (message);
+  else if (atom_equals (fun, "list_md_devices"))
+    return run_list_md_devices (message);
   else if (atom_equals (fun, "list_partitions"))
     return run_list_partitions (message);
   else if (atom_equals (fun, "ll"))
@@ -7213,6 +7524,12 @@ dispatch (ETERM *message)
     return run_lvuuid (message);
   else if (atom_equals (fun, "lxattrlist"))
     return run_lxattrlist (message);
+  else if (atom_equals (fun, "md_create"))
+    return run_md_create (message);
+  else if (atom_equals (fun, "md_detail"))
+    return run_md_detail (message);
+  else if (atom_equals (fun, "md_stop"))
+    return run_md_stop (message);
   else if (atom_equals (fun, "mkdir"))
     return run_mkdir (message);
   else if (atom_equals (fun, "mkdir_mode"))
@@ -7463,6 +7780,10 @@ dispatch (ETERM *message)
     return run_test0rbool (message);
   else if (atom_equals (fun, "test0rboolerr"))
     return run_test0rboolerr (message);
+  else if (atom_equals (fun, "test0rbufferout"))
+    return run_test0rbufferout (message);
+  else if (atom_equals (fun, "test0rbufferouterr"))
+    return run_test0rbufferouterr (message);
   else if (atom_equals (fun, "test0rconstoptstring"))
     return run_test0rconstoptstring (message);
   else if (atom_equals (fun, "test0rconstoptstringerr"))
@@ -7509,6 +7830,8 @@ dispatch (ETERM *message)
     return run_truncate (message);
   else if (atom_equals (fun, "truncate_size"))
     return run_truncate_size (message);
+  else if (atom_equals (fun, "tune2fs"))
+    return run_tune2fs (message);
   else if (atom_equals (fun, "tune2fs_l"))
     return run_tune2fs_l (message);
   else if (atom_equals (fun, "txz_in"))

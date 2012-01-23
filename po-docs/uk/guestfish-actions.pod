@@ -473,6 +473,38 @@ file C<base64file> encoded as base64.
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
 
+=head2 blkid
+
+ blkid device
+
+This command returns block device attributes for C<device>. The following
+fields are usually present in the returned hash. Other fields may also be
+present.
+
+=over 
+
+=item C<UUID>
+
+The uuid of this device.
+
+=item C<LABEL>
+
+The label of this device.
+
+=item C<VERSION>
+
+The version of blkid command.
+
+=item C<TYPE>
+
+The filesystem type or RAID of this device.
+
+=item C<USAGE>
+
+The usage of this device, for example C<filesystem> or C<raid>.
+
+=back
+
 =head2 blockdev-flushbufs
 
  blockdev-flushbufs device
@@ -1016,6 +1048,35 @@ estimate includes the contents of the directory and all subdirectories
 (recursively).
 
 The result is the estimated size in I<kilobytes> (ie. units of 1024 bytes).
+
+=head2 e2fsck
+
+ e2fsck device [correct:true|false] [forceall:true|false]
+
+This runs the ext2/ext3 filesystem checker on C<device>.  It can take the
+following optional arguments:
+
+=over 4
+
+=item C<correct>
+
+Automatically repair the file system. This option will cause e2fsck to
+automatically fix any filesystem problems that can be safely fixed without
+human intervention.
+
+This option may not be specified at the same time as the C<forceall> option.
+
+=item C<forceall>
+
+Assume an answer of 'yes' to all questions; allows e2fsck to be used
+non-interactively.
+
+This option may not be specified at the same time as the C<correct> option.
+
+=back
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 e2fsck-f
 
@@ -1821,7 +1882,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 This returns the distro (distribution) of the inspected operating system.
 
-Currently defined distros are:
+У поточній версії визначено такі дистрибутиви:
 
 =over 4
 
@@ -2225,9 +2286,13 @@ FreeBSD.
 
 NetBSD.
 
+=item "hurd"
+
+GNU/Hurd.
+
 =item "unknown"
 
-The operating system type could not be determined.
+Не вдалося визначити тип операційної системи.
 
 =back
 
@@ -2648,6 +2713,12 @@ each filesystem found is valid and mountable, and some filesystems might be
 mountable but require special options.  Filesystems may not all belong to a
 single logical operating system (use L</inspect-os> to look for OSes).
 
+=head2 list-md-devices
+
+ list-md-devices
+
+List all Linux md devices.
+
 =head2 list-partitions
 
  list-partitions
@@ -2978,6 +3049,105 @@ similarly efficient call for getting standard stats.  Very long directory
 listings might cause the protocol message size to be exceeded, causing this
 call to fail.  The caller must split up such requests into smaller groups of
 names.
+
+=head2 md-create
+
+ md-create name 'devices ...' [missingbitmap:N] [nrdevices:N] [spare:N] [chunk:N] [level:..]
+
+Create a Linux md (RAID) device named C<name> on the devices in the list
+C<devices>.
+
+The optional parameters are:
+
+=over 4
+
+=item C<missingbitmap>
+
+A bitmap of missing devices.  If a bit is set it means that a missing device
+is added to the array.  The least significant bit corresponds to the first
+device in the array.
+
+As examples:
+
+If C<devices = ["/dev/sda"]> and C<missingbitmap = 0x1> then the resulting
+array would be C<[E<lt>missingE<gt>, "/dev/sda"]>.
+
+If C<devices = ["/dev/sda"]> and C<missingbitmap = 0x2> then the resulting
+array would be C<["/dev/sda", E<lt>missingE<gt>]>.
+
+This defaults to C<0> (no missing devices).
+
+The length of C<devices> + the number of bits set in C<missingbitmap> must
+equal C<nrdevices> + C<spare>.
+
+=item C<nrdevices>
+
+The number of active RAID devices.
+
+If not set, this defaults to the length of C<devices> plus the number of
+bits set in C<missingbitmap>.
+
+=item C<spare>
+
+The number of spare devices.
+
+If not set, this defaults to C<0>.
+
+=item C<chunk>
+
+The chunk size in bytes.
+
+=item C<level>
+
+The RAID level, which can be one of: I<linear>, I<raid0>, I<0>, I<stripe>,
+I<raid1>, I<1>, I<mirror>, I<raid4>, I<4>, I<raid5>, I<5>, I<raid6>, I<6>,
+I<raid10>, I<10>.  Some of these are synonymous, and more levels may be
+added in future.
+
+If not set, this defaults to C<raid1>.
+
+=back
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 md-detail
+
+ md-detail md
+
+This command exposes the output of 'mdadm -DY <md>'. The following fields
+are usually present in the returned hash. Other fields may also be present.
+
+=over 
+
+=item C<level>
+
+The raid level of the MD device.
+
+=item C<devices>
+
+The number of underlying devices in the MD device.
+
+=item C<metadata>
+
+The metadata version used.
+
+=item C<uuid>
+
+The UUID of the MD device.
+
+=item C<name>
+
+The name of the MD device.
+
+=back
+
+=head2 md-stop
+
+ md-stop md
+
+This command deactivates the MD array named C<md>.  The device is stopped,
+but it is not destroyed or zeroed.
 
 =head2 mkdir
 
@@ -3673,7 +3843,7 @@ partition number, returning the device name (eg. "/dev/sdb").
 The named partition must exist, for example as a string returned from
 L</list-partitions>.
 
-See also L</part-to-partnum>.
+Див. також L</part-to-partnum>.
 
 =head2 part-to-partnum
 
@@ -3685,7 +3855,7 @@ partition number (eg. C<1>).
 The named partition must exist, for example as a string returned from
 L</list-partitions>.
 
-See also L</part-to-dev>.
+Див. також L</part-to-dev>.
 
 =head2 ping-daemon
 
@@ -4673,6 +4843,81 @@ If the current file size is less than C<size> then the file is extended to
 the required size with zero bytes.  This creates a sparse file (ie. disk
 blocks are not allocated for the file until you write to it).  To create a
 non-sparse file of zeroes, use L</fallocate64> instead.
+
+=head2 tune2fs
+
+ tune2fs device [force:true|false] [maxmountcount:N] [mountcount:N] [errorbehavior:..] [group:N] [intervalbetweenchecks:N] [reservedblockspercentage:N] [lastmounteddirectory:..] [reservedblockscount:N] [user:N]
+
+This call allows you to adjust various filesystem parameters of an
+ext2/ext3/ext4 filesystem called C<device>.
+
+The optional parameters are:
+
+=over 4
+
+=item C<force>
+
+Force tune2fs to complete the operation even in the face of errors.  This is
+the same as the tune2fs C<-f> option.
+
+=item C<maxmountcount>
+
+Set the number of mounts after which the filesystem is checked by
+L<e2fsck(8)>.  If this is C<0> then the number of mounts is disregarded.
+This is the same as the tune2fs C<-c> option.
+
+=item C<mountcount>
+
+Set the number of times the filesystem has been mounted.  This is the same
+as the tune2fs C<-C> option.
+
+=item C<errorbehavior>
+
+Change the behavior of the kernel code when errors are detected.  Possible
+values currently are: C<continue>, C<remount-ro>, C<panic>.  In practice
+these options don't really make any difference, particularly for write
+errors.
+
+This is the same as the tune2fs C<-e> option.
+
+=item C<group>
+
+Set the group which can use reserved filesystem blocks.  This is the same as
+the tune2fs C<-g> option except that it can only be specified as a number.
+
+=item C<intervalbetweenchecks>
+
+Adjust the maximal time between two filesystem checks (in seconds).  If the
+option is passed as C<0> then time-dependent checking is disabled.
+
+This is the same as the tune2fs C<-i> option.
+
+=item C<reservedblockspercentage>
+
+Set the percentage of the filesystem which may only be allocated by
+privileged processes.  This is the same as the tune2fs C<-m> option.
+
+=item C<lastmounteddirectory>
+
+Set the last mounted directory.  This is the same as the tune2fs C<-M>
+option.
+
+=item C<reservedblockscount> Set the number of reserved filesystem blocks.  This
+is the same as the tune2fs C<-r> option.
+
+=item C<user>
+
+Set the user who can use the reserved filesystem blocks.  This is the same
+as the tune2fs C<-u> option except that it can only be specified as a
+number.
+
+=back
+
+To get the current values of filesystem parameters, see L</tune2fs-l>.  For
+precise details of how tune2fs works, see the L<tune2fs(8)> man page.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 tune2fs-l
 

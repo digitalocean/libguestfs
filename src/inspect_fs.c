@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2010-2011 Red Hat Inc.
+ * Copyright (C) 2010-2012 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -205,6 +205,16 @@ check_filesystem (guestfs_h *g, const char *device,
     fs->content = FS_CONTENT_NETBSD_ROOT;
     fs->format = OS_FORMAT_INSTALLED;
     if (guestfs___check_netbsd_root (g, fs) == -1)
+      return -1;
+  }
+  /* Hurd root? */
+  else if (guestfs_is_file (g, "/hurd/console") > 0 &&
+           guestfs_is_file (g, "/hurd/hello") > 0 &&
+           guestfs_is_file (g, "/hurd/null") > 0) {
+    fs->is_root = 1;
+    fs->content = FS_CONTENT_HURD_ROOT;
+    fs->format = OS_FORMAT_INSTALLED; /* XXX could be more specific */
+    if (guestfs___check_hurd_root (g, fs) == -1)
       return -1;
   }
   /* Linux root? */

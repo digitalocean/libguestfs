@@ -411,6 +411,13 @@ static int run_copy_device_to_device (const char *cmd, size_t argc, char *argv[]
 static int run_copy_device_to_file (const char *cmd, size_t argc, char *argv[]);
 static int run_copy_file_to_device (const char *cmd, size_t argc, char *argv[]);
 static int run_copy_file_to_file (const char *cmd, size_t argc, char *argv[]);
+static int run_tune2fs (const char *cmd, size_t argc, char *argv[]);
+static int run_md_create (const char *cmd, size_t argc, char *argv[]);
+static int run_list_md_devices (const char *cmd, size_t argc, char *argv[]);
+static int run_md_detail (const char *cmd, size_t argc, char *argv[]);
+static int run_md_stop (const char *cmd, size_t argc, char *argv[]);
+static int run_blkid (const char *cmd, size_t argc, char *argv[]);
+static int run_e2fsck (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -428,6 +435,12 @@ struct command_entry copy_out_cmd_entry = {
   .name = "copy-out",
   .help = "NAME\n    copy-out - copy remote files or directories out of an image\n\nDESCRIPTION\n     copy-out remote [remote ...] localdir\n\n    \"copy-out\" copies remote files or directories recursively out of the\n    disk image, placing them on the host disk in a local directory called\n    \"localdir\" (which must exist). This guestfish meta-command turns into a\n    sequence of \"download\", \"tar-out\" and other commands as necessary.\n\n    Multiple remote files and directories can be specified, but the last\n    parameter must always be a local directory. To download to the current\n    directory, use \".\" as in:\n\n     copy-out /home .\n\n    Wildcards cannot be used in the ordinary command, but you can use them\n    with the help of \"glob\" like this:\n\n     glob copy-out /home/* .\n\n",
   .run = run_copy_out
+};
+
+struct command_entry delete_event_cmd_entry = {
+  .name = "delete-event",
+  .help = "NAME\n    delete-event - delete a previously registered event handler\n\nDESCRIPTION\n     delete-event name\n\n    Delete the event handler which was previously registered as \"name\". If\n    multiple event handlers were registered with the same name, they are all\n    deleted.\n\n    See also the guestfish commands \"event\" and \"list-events\".\n\n",
+  .run = run_delete_event
 };
 
 struct command_entry display_cmd_entry = {
@@ -448,6 +461,12 @@ struct command_entry edit_cmd_entry = {
   .run = run_edit
 };
 
+struct command_entry event_cmd_entry = {
+  .name = "event",
+  .help = "NAME\n    event - register a handler for an event or events\n\nDESCRIPTION\n     event name eventset \"shell script ...\"\n\n    Register a shell script fragment which is executed when an event is\n    raised. See \"guestfs_set_event_callback\" in guestfs(3) for a discussion\n    of the event API in libguestfs.\n\n    The \"name\" parameter is a name that you give to this event handler. It\n    can be any string (even the empty string) and is simply there so you can\n    delete the handler using the guestfish \"delete-event\" command.\n\n    The \"eventset\" parameter is a comma-separated list of one or more\n    events, for example \"close\" or \"close,trace\". The special value \"*\"\n    means all events.\n\n    The third and final parameter is the shell script fragment (or any\n    external command) that is executed when any of the events in the\n    eventset occurs. It is executed using \"$SHELL -c\", or if $SHELL is not\n    set then \"/bin/sh -c\".\n\n    The shell script fragment receives callback parameters as arguments $1,\n    $2 etc. The actual event that was called is available in the environment\n    variable $EVENT.\n\n     event \"\" close \"echo closed\"\n     event messages appliance,library,trace \"echo $@\"\n     event \"\" progress \"echo progress: $3/$4\"\n     event \"\" * \"echo $EVENT $@\"\n\n    See also the guestfish commands \"delete-event\" and \"list-events\".\n\n",
+  .run = run_event
+};
+
 struct command_entry glob_cmd_entry = {
   .name = "glob",
   .help = "NAME\n    glob - expand wildcards in command\n\nDESCRIPTION\n     glob command args...\n\n    Expand wildcards in any paths in the args list, and run \"command\"\n    repeatedly on each matching path.\n\n    See \"WILDCARDS AND GLOBBING\".\n\n",
@@ -464,6 +483,12 @@ struct command_entry lcd_cmd_entry = {
   .name = "lcd",
   .help = "NAME\n    lcd - change working directory\n\nDESCRIPTION\n     lcd directory\n\n    Change the local directory, ie. the current directory of guestfish\n    itself.\n\n    Note that \"!cd\" won't do what you might expect.\n\n",
   .run = run_lcd
+};
+
+struct command_entry list_events_cmd_entry = {
+  .name = "list-events",
+  .help = "NAME\n    list-events - list event handlers\n\nDESCRIPTION\n     list-events\n\n    List the event handlers registered using the guestfish \"event\" command.\n\n",
+  .run = run_list_events
 };
 
 struct command_entry man_cmd_entry = {
@@ -738,7 +763,7 @@ struct command_entry inspect_os_cmd_entry = {
 
 struct command_entry inspect_get_type_cmd_entry = {
   .name = "inspect-get-type",
-  .help = "NAME\n    inspect-get-type - get type of inspected operating system\n\nSYNOPSIS\n     inspect-get-type root\n\nDESCRIPTION\n    This returns the type of the inspected operating system. Currently\n    defined types are:\n\n    \"linux\"\n        Any Linux-based operating system.\n\n    \"windows\"\n        Any Microsoft Windows operating system.\n\n    \"freebsd\"\n        FreeBSD.\n\n    \"netbsd\"\n        NetBSD.\n\n    \"unknown\"\n        The operating system type could not be determined.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-type - get type of inspected operating system\n\nSYNOPSIS\n     inspect-get-type root\n\nDESCRIPTION\n    This returns the type of the inspected operating system. Currently\n    defined types are:\n\n    \"linux\"\n        Any Linux-based operating system.\n\n    \"windows\"\n        Any Microsoft Windows operating system.\n\n    \"freebsd\"\n        FreeBSD.\n\n    \"netbsd\"\n        NetBSD.\n\n    \"hurd\"\n        GNU/Hurd.\n\n    \"unknown\"\n        The operating system type could not be determined.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_type
 };
 
@@ -2722,6 +2747,48 @@ struct command_entry copy_file_to_file_cmd_entry = {
   .run = run_copy_file_to_file
 };
 
+struct command_entry tune2fs_cmd_entry = {
+  .name = "tune2fs",
+  .help = "NAME\n    tune2fs - adjust ext2/ext3/ext4 filesystem parameters\n\nSYNOPSIS\n     tune2fs device [force:true|false] [maxmountcount:N] [mountcount:N] [errorbehavior:..] [group:N] [intervalbetweenchecks:N] [reservedblockspercentage:N] [lastmounteddirectory:..] [reservedblockscount:N] [user:N]\n\nDESCRIPTION\n    This call allows you to adjust various filesystem parameters of an\n    ext2/ext3/ext4 filesystem called \"device\".\n\n    The optional parameters are:\n\n    \"force\"\n        Force tune2fs to complete the operation even in the face of errors.\n        This is the same as the tune2fs \"-f\" option.\n\n    \"maxmountcount\"\n        Set the number of mounts after which the filesystem is checked by\n        e2fsck(8). If this is 0 then the number of mounts is disregarded.\n        This is the same as the tune2fs \"-c\" option.\n\n    \"mountcount\"\n        Set the number of times the filesystem has been mounted. This is the\n        same as the tune2fs \"-C\" option.\n\n    \"errorbehavior\"\n        Change the behavior of the kernel code when errors are detected.\n        Possible values currently are: \"continue\", \"remount-ro\", \"panic\". In\n        practice these options don't really make any difference,\n        particularly for write errors.\n\n        This is the same as the tune2fs \"-e\" option.\n\n    \"group\"\n        Set the group which can use reserved filesystem blocks. This is the\n        same as the tune2fs \"-g\" option except that it can only be specified\n        as a number.\n\n    \"intervalbetweenchecks\"\n        Adjust the maximal time between two filesystem checks (in seconds).\n        If the option is passed as 0 then time-dependent checking is\n        disabled.\n\n        This is the same as the tune2fs \"-i\" option.\n\n    \"reservedblockspercentage\"\n        Set the percentage of the filesystem which may only be allocated by\n        privileged processes. This is the same as the tune2fs \"-m\" option.\n\n    \"lastmounteddirectory\"\n        Set the last mounted directory. This is the same as the tune2fs \"-M\"\n        option.\n\n    \"reservedblockscount\" Set the number of reserved filesystem blocks. This\n    is the same as the tune2fs \"-r\" option.\n    \"user\"\n        Set the user who can use the reserved filesystem blocks. This is the\n        same as the tune2fs \"-u\" option except that it can only be specified\n        as a number.\n\n    To get the current values of filesystem parameters, see \"tune2fs_l\". For\n    precise details of how tune2fs works, see the tune2fs(8) man page.\n\n",
+  .run = run_tune2fs
+};
+
+struct command_entry md_create_cmd_entry = {
+  .name = "md-create",
+  .help = "NAME\n    md-create - create a Linux md (RAID) device\n\nSYNOPSIS\n     md-create name devices [missingbitmap:N] [nrdevices:N] [spare:N] [chunk:N] [level:..]\n\nDESCRIPTION\n    Create a Linux md (RAID) device named \"name\" on the devices in the list\n    \"devices\".\n\n    The optional parameters are:\n\n    \"missingbitmap\"\n        A bitmap of missing devices. If a bit is set it means that a missing\n        device is added to the array. The least significant bit corresponds\n        to the first device in the array.\n\n        As examples:\n\n        If \"devices = [\"/dev/sda\"]\" and \"missingbitmap = 0x1\" then the\n        resulting array would be \"[<missing>, \"/dev/sda\"]\".\n\n        If \"devices = [\"/dev/sda\"]\" and \"missingbitmap = 0x2\" then the\n        resulting array would be \"[\"/dev/sda\", <missing>]\".\n\n        This defaults to 0 (no missing devices).\n\n        The length of \"devices\" + the number of bits set in \"missingbitmap\"\n        must equal \"nrdevices\" + \"spare\".\n\n    \"nrdevices\"\n        The number of active RAID devices.\n\n        If not set, this defaults to the length of \"devices\" plus the number\n        of bits set in \"missingbitmap\".\n\n    \"spare\"\n        The number of spare devices.\n\n        If not set, this defaults to 0.\n\n    \"chunk\"\n        The chunk size in bytes.\n\n    \"level\"\n        The RAID level, which can be one of: *linear*, *raid0*, *0*,\n        *stripe*, *raid1*, *1*, *mirror*, *raid4*, *4*, *raid5*, *5*,\n        *raid6*, *6*, *raid10*, *10*. Some of these are synonymous, and more\n        levels may be added in future.\n\n        If not set, this defaults to \"raid1\".\n\n",
+  .run = run_md_create
+};
+
+struct command_entry list_md_devices_cmd_entry = {
+  .name = "list-md-devices",
+  .help = "NAME\n    list-md-devices - list Linux md (RAID) devices\n\nSYNOPSIS\n     list-md-devices\n\nDESCRIPTION\n    List all Linux md devices.\n\n",
+  .run = run_list_md_devices
+};
+
+struct command_entry md_detail_cmd_entry = {
+  .name = "md-detail",
+  .help = "NAME\n    md-detail - obtain metadata for an MD device\n\nSYNOPSIS\n     md-detail md\n\nDESCRIPTION\n    This command exposes the output of 'mdadm -DY <md>'. The following\n    fields are usually present in the returned hash. Other fields may also\n    be present.\n\n    \"level\"\n        The raid level of the MD device.\n\n    \"devices\"\n        The number of underlying devices in the MD device.\n\n    \"metadata\"\n        The metadata version used.\n\n    \"uuid\"\n        The UUID of the MD device.\n\n    \"name\"\n        The name of the MD device.\n\n",
+  .run = run_md_detail
+};
+
+struct command_entry md_stop_cmd_entry = {
+  .name = "md-stop",
+  .help = "NAME\n    md-stop - stop a Linux md (RAID) device\n\nSYNOPSIS\n     md-stop md\n\nDESCRIPTION\n    This command deactivates the MD array named \"md\". The device is stopped,\n    but it is not destroyed or zeroed.\n\n",
+  .run = run_md_stop
+};
+
+struct command_entry blkid_cmd_entry = {
+  .name = "blkid",
+  .help = "NAME\n    blkid - print block device attributes\n\nSYNOPSIS\n     blkid device\n\nDESCRIPTION\n    This command returns block device attributes for \"device\". The following\n    fields are usually present in the returned hash. Other fields may also\n    be present.\n\n    \"UUID\"\n        The uuid of this device.\n\n    \"LABEL\"\n        The label of this device.\n\n    \"VERSION\"\n        The version of blkid command.\n\n    \"TYPE\"\n        The filesystem type or RAID of this device.\n\n    \"USAGE\"\n        The usage of this device, for example \"filesystem\" or \"raid\".\n\n",
+  .run = run_blkid
+};
+
+struct command_entry e2fsck_cmd_entry = {
+  .name = "e2fsck",
+  .help = "NAME\n    e2fsck - check an ext2/ext3 filesystem\n\nSYNOPSIS\n     e2fsck device [correct:true|false] [forceall:true|false]\n\nDESCRIPTION\n    This runs the ext2/ext3 filesystem checker on \"device\". It can take the\n    following optional arguments:\n\n    \"correct\"\n        Automatically repair the file system. This option will cause e2fsck\n        to automatically fix any filesystem problems that can be safely\n        fixed without human intervention.\n\n        This option may not be specified at the same time as the \"forceall\"\n        option.\n\n    \"forceall\"\n        Assume an answer of 'yes' to all questions; allows e2fsck to be used\n        non-interactively.\n\n        This option may not be specified at the same time as the \"correct\"\n        option.\n\n",
+  .run = run_e2fsck
+};
+
 void
 list_commands (void)
 {
@@ -2753,6 +2820,7 @@ list_commands (void)
   printf ("%-20s %s\n", "available-all-groups", _("return a list of all optional groups"));
   printf ("%-20s %s\n", "base64-in", _("upload base64-encoded data to file"));
   printf ("%-20s %s\n", "base64-out", _("download file and encode as base64"));
+  printf ("%-20s %s\n", "blkid", _("print block device attributes"));
   printf ("%-20s %s\n", "blockdev-flushbufs", _("flush device buffers"));
   printf ("%-20s %s\n", "blockdev-getbsz", _("get blocksize of block device"));
   printf ("%-20s %s\n", "blockdev-getro", _("is block device set to read-only"));
@@ -2790,6 +2858,7 @@ list_commands (void)
   printf ("%-20s %s\n", "debug-cmdline", _("debug the QEMU command line (internal use only)"));
   printf ("%-20s %s\n", "debug-drives", _("debug the drives (internal use only)"));
   printf ("%-20s %s\n", "debug-upload", _("upload a file to the appliance (internal use only)"));
+  printf ("%-20s %s\n", "delete-event", _("delete a previously registered event handler"));
   printf ("%-20s %s\n", "df", _("report file system disk space usage"));
   printf ("%-20s %s\n", "df-h", _("report file system disk space usage (human readable)"));
   printf ("%-20s %s\n", "display", _("display an image"));
@@ -2798,6 +2867,7 @@ list_commands (void)
   printf ("%-20s %s\n", "download-offset", _("download a file to the local machine with offset and size"));
   printf ("%-20s %s\n", "drop-caches", _("drop kernel page cache, dentries and inodes"));
   printf ("%-20s %s\n", "du", _("estimate file space usage"));
+  printf ("%-20s %s\n", "e2fsck", _("check an ext2/ext3 filesystem"));
   printf ("%-20s %s\n", "e2fsck-f", _("check an ext2/ext3 filesystem"));
   printf ("%-20s %s\n", "echo", _("display a line of text"));
   printf ("%-20s %s\n", "echo-daemon", _("echo arguments back to the client"));
@@ -2805,6 +2875,7 @@ list_commands (void)
   printf ("%-20s %s\n", "egrep", _("return lines matching a pattern"));
   printf ("%-20s %s\n", "egrepi", _("return lines matching a pattern"));
   printf ("%-20s %s\n", "equal", _("test if two files have equal contents"));
+  printf ("%-20s %s\n", "event", _("register a handler for an event or events"));
   printf ("%-20s %s\n", "exists", _("test if file or directory exists"));
   printf ("%-20s %s\n", "fallocate", _("preallocate a file in the guest filesystem"));
   printf ("%-20s %s\n", "fallocate64", _("preallocate a file in the guest filesystem"));
@@ -2905,7 +2976,9 @@ list_commands (void)
   printf ("%-20s %s\n", "list-9p", _("list 9p filesystems"));
   printf ("%-20s %s\n", "list-devices", _("list the block devices"));
   printf ("%-20s %s\n", "list-dm-devices", _("list device mapper devices"));
+  printf ("%-20s %s\n", "list-events", _("list event handlers"));
   printf ("%-20s %s\n", "list-filesystems", _("list filesystems"));
+  printf ("%-20s %s\n", "list-md-devices", _("list Linux md (RAID) devices"));
   printf ("%-20s %s\n", "list-partitions", _("list the partitions"));
   printf ("%-20s %s\n", "ll", _("list the files in a directory (long format)"));
   printf ("%-20s %s\n", "ln", _("create a hard link"));
@@ -2938,6 +3011,9 @@ list_commands (void)
   printf ("%-20s %s\n", "lvuuid", _("get the UUID of a logical volume"));
   printf ("%-20s %s\n", "lxattrlist", _("lgetxattr on multiple files"));
   printf ("%-20s %s\n", "man", _("open the manual"));
+  printf ("%-20s %s\n", "md-create", _("create a Linux md (RAID) device"));
+  printf ("%-20s %s\n", "md-detail", _("obtain metadata for an MD device"));
+  printf ("%-20s %s\n", "md-stop", _("stop a Linux md (RAID) device"));
   printf ("%-20s %s\n", "mkdir", _("create a directory"));
   printf ("%-20s %s\n", "mkdir-mode", _("create a directory with a particular mode"));
   printf ("%-20s %s\n", "mkdir-p", _("create a directory and parents"));
@@ -3071,6 +3147,7 @@ list_commands (void)
   printf ("%-20s %s\n", "touch", _("update file timestamps or create a new file"));
   printf ("%-20s %s\n", "truncate", _("truncate a file to zero size"));
   printf ("%-20s %s\n", "truncate-size", _("truncate a file to a particular size"));
+  printf ("%-20s %s\n", "tune2fs", _("adjust ext2/ext3/ext4 filesystem parameters"));
   printf ("%-20s %s\n", "tune2fs-l", _("get ext2/ext3/ext4 superblock details"));
   printf ("%-20s %s\n", "txz-in", _("unpack compressed tarball to directory"));
   printf ("%-20s %s\n", "txz-out", _("pack directory into compressed tarball"));
@@ -12959,6 +13036,451 @@ run_copy_file_to_file (const char *cmd, size_t argc, char *argv[])
   r = guestfs_copy_file_to_file_argv (g, src, dest, optargs);
   free (src);
   free (dest);
+  return r;
+}
+
+static int
+run_tune2fs (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  const char *device;
+  struct guestfs_tune2fs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_tune2fs_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 11) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 11);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  device = argv[i++];
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "force:")) {
+      optargs_s.force = is_true (&argv[i][6]) ? 1 : 0;
+      this_mask = GUESTFS_TUNE2FS_FORCE_BITMASK;
+      this_arg = "force";
+    }
+    else if (STRPREFIX (argv[i], "maxmountcount:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][14], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.maxmountcount", "xstrtoll", xerr);
+      return -1;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.maxmountcount");
+      return -1;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    optargs_s.maxmountcount = r;
+  }
+      this_mask = GUESTFS_TUNE2FS_MAXMOUNTCOUNT_BITMASK;
+      this_arg = "maxmountcount";
+    }
+    else if (STRPREFIX (argv[i], "mountcount:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.mountcount", "xstrtoll", xerr);
+      return -1;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.mountcount");
+      return -1;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    optargs_s.mountcount = r;
+  }
+      this_mask = GUESTFS_TUNE2FS_MOUNTCOUNT_BITMASK;
+      this_arg = "mountcount";
+    }
+    else if (STRPREFIX (argv[i], "errorbehavior:")) {
+      optargs_s.errorbehavior = &argv[i][14];
+      this_mask = GUESTFS_TUNE2FS_ERRORBEHAVIOR_BITMASK;
+      this_arg = "errorbehavior";
+    }
+    else if (STRPREFIX (argv[i], "group:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.group", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.group = r;
+  }
+      this_mask = GUESTFS_TUNE2FS_GROUP_BITMASK;
+      this_arg = "group";
+    }
+    else if (STRPREFIX (argv[i], "intervalbetweenchecks:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][22], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.intervalbetweenchecks", "xstrtoll", xerr);
+      return -1;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.intervalbetweenchecks");
+      return -1;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    optargs_s.intervalbetweenchecks = r;
+  }
+      this_mask = GUESTFS_TUNE2FS_INTERVALBETWEENCHECKS_BITMASK;
+      this_arg = "intervalbetweenchecks";
+    }
+    else if (STRPREFIX (argv[i], "reservedblockspercentage:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][25], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.reservedblockspercentage", "xstrtoll", xerr);
+      return -1;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.reservedblockspercentage");
+      return -1;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    optargs_s.reservedblockspercentage = r;
+  }
+      this_mask = GUESTFS_TUNE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK;
+      this_arg = "reservedblockspercentage";
+    }
+    else if (STRPREFIX (argv[i], "lastmounteddirectory:")) {
+      optargs_s.lastmounteddirectory = &argv[i][21];
+      this_mask = GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY_BITMASK;
+      this_arg = "lastmounteddirectory";
+    }
+    else if (STRPREFIX (argv[i], "reservedblockscount:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][20], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.reservedblockscount", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.reservedblockscount = r;
+  }
+      this_mask = GUESTFS_TUNE2FS_RESERVEDBLOCKSCOUNT_BITMASK;
+      this_arg = "reservedblockscount";
+    }
+    else if (STRPREFIX (argv[i], "user:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.user", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.user = r;
+  }
+      this_mask = GUESTFS_TUNE2FS_USER_BITMASK;
+      this_arg = "user";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      return -1;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      return -1;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_tune2fs_argv (g, device, optargs);
+  return r;
+}
+
+static int
+run_md_create (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  const char *name;
+  char **devices;
+  struct guestfs_md_create_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_md_create_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 2 || argc > 7) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 7);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  name = argv[i++];
+  devices = parse_string_list (argv[i++]);
+  if (devices == NULL) return -1;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "missingbitmap:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][14], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.missingbitmap", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.missingbitmap = r;
+  }
+      this_mask = GUESTFS_MD_CREATE_MISSINGBITMAP_BITMASK;
+      this_arg = "missingbitmap";
+    }
+    else if (STRPREFIX (argv[i], "nrdevices:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.nrdevices", "xstrtoll", xerr);
+      return -1;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.nrdevices");
+      return -1;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    optargs_s.nrdevices = r;
+  }
+      this_mask = GUESTFS_MD_CREATE_NRDEVICES_BITMASK;
+      this_arg = "nrdevices";
+    }
+    else if (STRPREFIX (argv[i], "spare:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.spare", "xstrtoll", xerr);
+      return -1;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.spare");
+      return -1;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    optargs_s.spare = r;
+  }
+      this_mask = GUESTFS_MD_CREATE_SPARE_BITMASK;
+      this_arg = "spare";
+    }
+    else if (STRPREFIX (argv[i], "chunk:")) {
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "optargs_s.chunk", "xstrtoll", xerr);
+      return -1;
+    }
+    optargs_s.chunk = r;
+  }
+      this_mask = GUESTFS_MD_CREATE_CHUNK_BITMASK;
+      this_arg = "chunk";
+    }
+    else if (STRPREFIX (argv[i], "level:")) {
+      optargs_s.level = &argv[i][6];
+      this_mask = GUESTFS_MD_CREATE_LEVEL_BITMASK;
+      this_arg = "level";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      return -1;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      return -1;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_md_create_argv (g, name, devices, optargs);
+  free_strings (devices);
+  return r;
+}
+
+static int
+run_list_md_devices (const char *cmd, size_t argc, char *argv[])
+{
+  char **r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  r = guestfs_list_md_devices (g);
+  if (r == NULL) return -1;
+  print_strings (r);
+  free_strings (r);
+  return 0;
+}
+
+static int
+run_md_detail (const char *cmd, size_t argc, char *argv[])
+{
+  char **r;
+  const char *md;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  md = argv[i++];
+  r = guestfs_md_detail (g, md);
+  if (r == NULL) return -1;
+  print_table (r);
+  free_strings (r);
+  return 0;
+}
+
+static int
+run_md_stop (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  const char *md;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  md = argv[i++];
+  r = guestfs_md_stop (g, md);
+  return r;
+}
+
+static int
+run_blkid (const char *cmd, size_t argc, char *argv[])
+{
+  char **r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  device = argv[i++];
+  r = guestfs_blkid (g, device);
+  if (r == NULL) return -1;
+  print_table (r);
+  free_strings (r);
+  return 0;
+}
+
+static int
+run_e2fsck (const char *cmd, size_t argc, char *argv[])
+{
+  int r;
+  const char *device;
+  struct guestfs_e2fsck_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_e2fsck_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 3) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 3);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    return -1;
+  }
+  device = argv[i++];
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "correct:")) {
+      optargs_s.correct = is_true (&argv[i][8]) ? 1 : 0;
+      this_mask = GUESTFS_E2FSCK_CORRECT_BITMASK;
+      this_arg = "correct";
+    }
+    else if (STRPREFIX (argv[i], "forceall:")) {
+      optargs_s.forceall = is_true (&argv[i][9]) ? 1 : 0;
+      this_mask = GUESTFS_E2FSCK_FORCEALL_BITMASK;
+      this_arg = "forceall";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      return -1;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      return -1;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_e2fsck_argv (g, device, optargs);
   return r;
 }
 

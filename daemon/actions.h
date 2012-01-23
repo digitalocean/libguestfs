@@ -44,6 +44,23 @@
 #define GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_TUNE2FS_FORCE_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_TUNE2FS_MAXMOUNTCOUNT_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_TUNE2FS_MOUNTCOUNT_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_TUNE2FS_ERRORBEHAVIOR_BITMASK (UINT64_C(1)<<3)
+#define GUESTFS_TUNE2FS_GROUP_BITMASK (UINT64_C(1)<<4)
+#define GUESTFS_TUNE2FS_INTERVALBETWEENCHECKS_BITMASK (UINT64_C(1)<<5)
+#define GUESTFS_TUNE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK (UINT64_C(1)<<6)
+#define GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY_BITMASK (UINT64_C(1)<<7)
+#define GUESTFS_TUNE2FS_RESERVEDBLOCKSCOUNT_BITMASK (UINT64_C(1)<<8)
+#define GUESTFS_TUNE2FS_USER_BITMASK (UINT64_C(1)<<9)
+#define GUESTFS_MD_CREATE_MISSINGBITMAP_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_MD_CREATE_NRDEVICES_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_MD_CREATE_SPARE_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_MD_CREATE_CHUNK_BITMASK (UINT64_C(1)<<3)
+#define GUESTFS_MD_CREATE_LEVEL_BITMASK (UINT64_C(1)<<4)
+#define GUESTFS_E2FSCK_CORRECT_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_E2FSCK_FORCEALL_BITMASK (UINT64_C(1)<<1)
 extern int do_mount (const char *device, const char *mountpoint);
 extern int do_sync (void);
 extern int do_touch (const char *path);
@@ -341,3 +358,10 @@ extern int do_copy_device_to_device (const char *src, const char *dest, int64_t 
 extern int do_copy_device_to_file (const char *src, const char *dest, int64_t srcoffset, int64_t destoffset, int64_t size);
 extern int do_copy_file_to_device (const char *src, const char *dest, int64_t srcoffset, int64_t destoffset, int64_t size);
 extern int do_copy_file_to_file (const char *src, const char *dest, int64_t srcoffset, int64_t destoffset, int64_t size);
+extern int do_tune2fs (const char *device, int force, int maxmountcount, int mountcount, const char *errorbehavior, int64_t group, int intervalbetweenchecks, int reservedblockspercentage, const char *lastmounteddirectory, int64_t reservedblockscount, int64_t user);
+extern int do_md_create (const char *name, char *const *devices, int64_t missingbitmap, int nrdevices, int spare, int64_t chunk, const char *level);
+extern char **do_list_md_devices (void);
+extern char **do_md_detail (const char *md);
+extern int do_md_stop (const char *md);
+extern char **do_blkid (const char *device);
+extern int do_e2fsck (const char *device, int correct, int forceall);

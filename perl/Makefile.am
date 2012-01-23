@@ -44,16 +44,20 @@ src_deps: $(top_builddir)/src/libguestfs.la $(generator_built)
 
 # Images used by tests
 test_images:
-	$(MAKE) -C $(top_builddir)/images
+	$(MAKE) -C $(top_builddir)/tests/data
 
-TESTS = run-bindtests run-perl-tests
+TESTS = run-bindtests
+test_prereq = src_deps all test_images
 
-$(TESTS): src_deps all appliance test_images
+if ENABLE_APPLIANCE
+test_prereq += appliance
+TESTS += run-perl-tests
+endif
+
+$(TESTS): $(test_prereq)
 
 TESTS_ENVIRONMENT = \
-	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
-	LIBGUESTFS_PATH=$(top_builddir)/appliance \
-	TMPDIR=$(top_builddir)
+	$(top_builddir)/run
 
 INSTALLDIRS = site
 

@@ -1,5 +1,5 @@
 # libguestfs Python bindings
-# Copyright (C) 2009-2011 Red Hat Inc.
+# Copyright (C) 2009-2012 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -51,6 +51,10 @@ TESTS_ENVIRONMENT = \
 	TMPDIR=$(top_builddir) \
 	PYTHON=$(PYTHON)
 
-TESTS = run-bindtests run-python-tests
+TESTS = run-bindtests
 
-endif
+if ENABLE_APPLIANCE
+TESTS += run-python-tests
+endif ENABLE_APPLIANCE
+
+endif HAVE_PYTHON

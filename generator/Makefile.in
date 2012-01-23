@@ -16,7 +16,7 @@
 @SET_MAKE@
 
 # libguestfs
-# Copyright (C) 2010-2011 Red Hat Inc.
+# Copyright (C) 2010-2012 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -50,9 +50,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-DIST_COMMON = README $(srcdir)/.depend $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in
 subdir = generator
+DIST_COMMON = README $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/alloca.m4 $(top_srcdir)/m4/arpa_inet_h.m4 \
@@ -92,27 +91,27 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/include_next.m4 \
 	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
 	$(top_srcdir)/m4/inline.m4 $(top_srcdir)/m4/intlmacosx.m4 \
-	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/inttostr.m4 \
-	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
-	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/ioctl.m4 \
-	$(top_srcdir)/m4/largefile.m4 $(top_srcdir)/m4/lcmessage.m4 \
-	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
-	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/localcharset.m4 $(top_srcdir)/m4/locale-fr.m4 \
-	$(top_srcdir)/m4/locale-ja.m4 $(top_srcdir)/m4/locale-zh.m4 \
-	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localename.m4 \
-	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
-	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
-	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
-	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
-	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
-	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/mempcpy.m4 \
-	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
-	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
-	$(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/introspection.m4 \
+	$(top_srcdir)/m4/inttostr.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
+	$(top_srcdir)/m4/inttypes.m4 $(top_srcdir)/m4/inttypes_h.m4 \
+	$(top_srcdir)/m4/ioctl.m4 $(top_srcdir)/m4/largefile.m4 \
+	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
+	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
+	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
+	$(top_srcdir)/m4/locale-zh.m4 $(top_srcdir)/m4/locale_h.m4 \
+	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
+	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
+	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
+	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
+	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
+	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
+	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
+	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
+	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
+	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/nocrash.m4 \
@@ -244,11 +243,13 @@ FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
 FUSE_CFLAGS = @FUSE_CFLAGS@
 FUSE_LIBS = @FUSE_LIBS@
+GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
 GENISOIMAGE = @GENISOIMAGE@
 GETADDRINFO_LIB = @GETADDRINFO_LIB@
 GETOPT_H = @GETOPT_H@
 GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GHC = @GHC@
+GJS = @GJS@
 GLIBC21 = @GLIBC21@
 GLOB_H = @GLOB_H@
 GMSGFMT = @GMSGFMT@
@@ -531,6 +532,8 @@ GNULIB_WMEMMOVE = @GNULIB_WMEMMOVE@
 GNULIB_WMEMSET = @GNULIB_WMEMSET@
 GNULIB_WRITE = @GNULIB_WRITE@
 GNULIB__EXIT = @GNULIB__EXIT@
+GOBJECT_CFLAGS = @GOBJECT_CFLAGS@
+GOBJECT_LIBS = @GOBJECT_LIBS@
 GPERF = @GPERF@
 GREP = @GREP@
 HAVE_ACCEPT4 = @HAVE_ACCEPT4@
@@ -784,6 +787,14 @@ INT32_MAX_LT_INTMAX_MAX = @INT32_MAX_LT_INTMAX_MAX@
 INT64_MAX_EQ_LONG_MAX = @INT64_MAX_EQ_LONG_MAX@
 INTLLIBS = @INTLLIBS@
 INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
+INTROSPECTION_CFLAGS = @INTROSPECTION_CFLAGS@
+INTROSPECTION_COMPILER = @INTROSPECTION_COMPILER@
+INTROSPECTION_GENERATE = @INTROSPECTION_GENERATE@
+INTROSPECTION_GIRDIR = @INTROSPECTION_GIRDIR@
+INTROSPECTION_LIBS = @INTROSPECTION_LIBS@
+INTROSPECTION_MAKEFILE = @INTROSPECTION_MAKEFILE@
+INTROSPECTION_SCANNER = @INTROSPECTION_SCANNER@
+INTROSPECTION_TYPELIBDIR = @INTROSPECTION_TYPELIBDIR@
 JAR = @JAR@
 JAR_INSTALL_DIR = @JAR_INSTALL_DIR@
 JAVA = @JAVA@
@@ -1206,7 +1217,7 @@ SOURCES = \
 	generator_c.ml \
 	generator_xdr.ml \
 	generator_daemon.ml \
-	generator_capitests.ml \
+	generator_tests_c_api.ml \
 	generator_fish.ml \
 	generator_ocaml.ml \
 	generator_perl.ml \
@@ -1217,6 +1228,7 @@ SOURCES = \
 	generator_csharp.ml \
 	generator_php.ml \
 	generator_erlang.ml \
+	generator_gobject.ml \
 	generator_bindtests.ml \
 	generator_errnostring.ml \
 	generator_main.ml
@@ -1234,7 +1246,7 @@ all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .cmo .cmi .cmx .ml .mli .mll .mly
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(srcdir)/.depend $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -1432,164 +1444,8 @@ uninstall-am:
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
 @HAVE_OCAML_TRUE@	$(OCAMLDEP) $^ | sed 's/  *$$//' > $@-t
 @HAVE_OCAML_TRUE@	mv $@-t $@
-@HAVE_OCAML_TRUE@generator_types.cmo:
-@HAVE_OCAML_TRUE@generator_types.cmx:
-@HAVE_OCAML_TRUE@generator_utils.cmi: generator_types.cmo
-@HAVE_OCAML_TRUE@generator_utils.cmo: generator_types.cmo generator_utils.cmi
-@HAVE_OCAML_TRUE@generator_utils.cmx: generator_types.cmx generator_utils.cmi
-@HAVE_OCAML_TRUE@generator_actions.cmi: generator_types.cmo
-@HAVE_OCAML_TRUE@generator_actions.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_actions.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_structs.cmi: generator_types.cmo
-@HAVE_OCAML_TRUE@generator_structs.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_structs.cmi
-@HAVE_OCAML_TRUE@generator_structs.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_structs.cmi
-@HAVE_OCAML_TRUE@generator_api_versions.cmi:
-@HAVE_OCAML_TRUE@generator_api_versions.cmo: generator_utils.cmi generator_api_versions.cmi
-@HAVE_OCAML_TRUE@generator_api_versions.cmx: generator_utils.cmx generator_api_versions.cmi
-@HAVE_OCAML_TRUE@generator_optgroups.cmo: generator_types.cmo generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_optgroups.cmx: generator_types.cmx generator_actions.cmx
-@HAVE_OCAML_TRUE@generator_prepopts.cmi:
-@HAVE_OCAML_TRUE@generator_prepopts.cmo: generator_prepopts.cmi
-@HAVE_OCAML_TRUE@generator_prepopts.cmx: generator_prepopts.cmi
-@HAVE_OCAML_TRUE@generator_events.cmo: generator_utils.cmi
-@HAVE_OCAML_TRUE@generator_events.cmx: generator_utils.cmx
-@HAVE_OCAML_TRUE@generator_pr.cmi:
-@HAVE_OCAML_TRUE@generator_pr.cmo: generator_utils.cmi generator_pr.cmi
-@HAVE_OCAML_TRUE@generator_pr.cmx: generator_utils.cmx generator_pr.cmi
-@HAVE_OCAML_TRUE@generator_docstrings.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_pr.cmi
-@HAVE_OCAML_TRUE@generator_docstrings.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_pr.cmx
-@HAVE_OCAML_TRUE@generator_checks.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_checks.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_actions.cmx
-@HAVE_OCAML_TRUE@generator_c.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_structs.cmi generator_pr.cmi generator_optgroups.cmo \
-@HAVE_OCAML_TRUE@    generator_events.cmo generator_docstrings.cmo generator_api_versions.cmi \
-@HAVE_OCAML_TRUE@    generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_c.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_structs.cmx generator_pr.cmx generator_optgroups.cmx \
-@HAVE_OCAML_TRUE@    generator_events.cmx generator_docstrings.cmx generator_api_versions.cmx \
-@HAVE_OCAML_TRUE@    generator_actions.cmx
-@HAVE_OCAML_TRUE@generator_xdr.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_structs.cmi generator_pr.cmi generator_optgroups.cmo \
-@HAVE_OCAML_TRUE@    generator_docstrings.cmo generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_xdr.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_structs.cmx generator_pr.cmx generator_optgroups.cmx \
-@HAVE_OCAML_TRUE@    generator_docstrings.cmx generator_actions.cmx
-@HAVE_OCAML_TRUE@generator_daemon.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_structs.cmi generator_pr.cmi generator_optgroups.cmo \
-@HAVE_OCAML_TRUE@    generator_docstrings.cmo generator_c.cmo generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_daemon.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_structs.cmx generator_pr.cmx generator_optgroups.cmx \
-@HAVE_OCAML_TRUE@    generator_docstrings.cmx generator_c.cmx generator_actions.cmx
-@HAVE_OCAML_TRUE@generator_capitests.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_structs.cmi generator_pr.cmi generator_optgroups.cmo \
-@HAVE_OCAML_TRUE@    generator_docstrings.cmo generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_capitests.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_structs.cmx generator_pr.cmx generator_optgroups.cmx \
-@HAVE_OCAML_TRUE@    generator_docstrings.cmx generator_actions.cmx
-@HAVE_OCAML_TRUE@generator_fish.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_structs.cmi generator_prepopts.cmi generator_pr.cmi \
-@HAVE_OCAML_TRUE@    generator_optgroups.cmo generator_docstrings.cmo generator_c.cmo \
-@HAVE_OCAML_TRUE@    generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_fish.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_structs.cmx generator_prepopts.cmx generator_pr.cmx \
-@HAVE_OCAML_TRUE@    generator_optgroups.cmx generator_docstrings.cmx generator_c.cmx \
-@HAVE_OCAML_TRUE@    generator_actions.cmx
-@HAVE_OCAML_TRUE@generator_ocaml.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_structs.cmi generator_pr.cmi generator_optgroups.cmo \
-@HAVE_OCAML_TRUE@    generator_events.cmo generator_docstrings.cmo generator_c.cmo \
-@HAVE_OCAML_TRUE@    generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_ocaml.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_structs.cmx generator_pr.cmx generator_optgroups.cmx \
-@HAVE_OCAML_TRUE@    generator_events.cmx generator_docstrings.cmx generator_c.cmx \
-@HAVE_OCAML_TRUE@    generator_actions.cmx
-@HAVE_OCAML_TRUE@generator_perl.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_structs.cmi generator_pr.cmi generator_optgroups.cmo \
-@HAVE_OCAML_TRUE@    generator_events.cmo generator_docstrings.cmo generator_c.cmo \
-@HAVE_OCAML_TRUE@    generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_perl.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_structs.cmx generator_pr.cmx generator_optgroups.cmx \
-@HAVE_OCAML_TRUE@    generator_events.cmx generator_docstrings.cmx generator_c.cmx \
-@HAVE_OCAML_TRUE@    generator_actions.cmx
-@HAVE_OCAML_TRUE@generator_python.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_structs.cmi generator_pr.cmi generator_optgroups.cmo \
-@HAVE_OCAML_TRUE@    generator_events.cmo generator_docstrings.cmo generator_c.cmo \
-@HAVE_OCAML_TRUE@    generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_python.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_structs.cmx generator_pr.cmx generator_optgroups.cmx \
-@HAVE_OCAML_TRUE@    generator_events.cmx generator_docstrings.cmx generator_c.cmx \
-@HAVE_OCAML_TRUE@    generator_actions.cmx
-@HAVE_OCAML_TRUE@generator_ruby.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_structs.cmi generator_pr.cmi generator_optgroups.cmo \
-@HAVE_OCAML_TRUE@    generator_events.cmo generator_docstrings.cmo generator_c.cmo \
-@HAVE_OCAML_TRUE@    generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_ruby.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_structs.cmx generator_pr.cmx generator_optgroups.cmx \
-@HAVE_OCAML_TRUE@    generator_events.cmx generator_docstrings.cmx generator_c.cmx \
-@HAVE_OCAML_TRUE@    generator_actions.cmx
-@HAVE_OCAML_TRUE@generator_java.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_structs.cmi generator_pr.cmi generator_optgroups.cmo \
-@HAVE_OCAML_TRUE@    generator_docstrings.cmo generator_c.cmo generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_java.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_structs.cmx generator_pr.cmx generator_optgroups.cmx \
-@HAVE_OCAML_TRUE@    generator_docstrings.cmx generator_c.cmx generator_actions.cmx
-@HAVE_OCAML_TRUE@generator_haskell.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_structs.cmi generator_pr.cmi generator_optgroups.cmo \
-@HAVE_OCAML_TRUE@    generator_docstrings.cmo generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_haskell.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_structs.cmx generator_pr.cmx generator_optgroups.cmx \
-@HAVE_OCAML_TRUE@    generator_docstrings.cmx generator_actions.cmx
-@HAVE_OCAML_TRUE@generator_csharp.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_structs.cmi generator_pr.cmi generator_optgroups.cmo \
-@HAVE_OCAML_TRUE@    generator_docstrings.cmo generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_csharp.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_structs.cmx generator_pr.cmx generator_optgroups.cmx \
-@HAVE_OCAML_TRUE@    generator_docstrings.cmx generator_actions.cmx
-@HAVE_OCAML_TRUE@generator_php.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_structs.cmi generator_pr.cmi generator_optgroups.cmo \
-@HAVE_OCAML_TRUE@    generator_docstrings.cmo generator_c.cmo generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_php.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_structs.cmx generator_pr.cmx generator_optgroups.cmx \
-@HAVE_OCAML_TRUE@    generator_docstrings.cmx generator_c.cmx generator_actions.cmx
-@HAVE_OCAML_TRUE@generator_erlang.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_structs.cmi generator_pr.cmi generator_optgroups.cmo \
-@HAVE_OCAML_TRUE@    generator_events.cmo generator_docstrings.cmo generator_c.cmo \
-@HAVE_OCAML_TRUE@    generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_erlang.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_structs.cmx generator_pr.cmx generator_optgroups.cmx \
-@HAVE_OCAML_TRUE@    generator_events.cmx generator_docstrings.cmx generator_c.cmx \
-@HAVE_OCAML_TRUE@    generator_actions.cmx
-@HAVE_OCAML_TRUE@generator_bindtests.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_structs.cmi generator_pr.cmi generator_optgroups.cmo \
-@HAVE_OCAML_TRUE@    generator_docstrings.cmo generator_c.cmo generator_actions.cmi
-@HAVE_OCAML_TRUE@generator_bindtests.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_structs.cmx generator_pr.cmx generator_optgroups.cmx \
-@HAVE_OCAML_TRUE@    generator_docstrings.cmx generator_c.cmx generator_actions.cmx
-@HAVE_OCAML_TRUE@generator_errnostring.cmo: generator_utils.cmi generator_types.cmo \
-@HAVE_OCAML_TRUE@    generator_pr.cmi generator_docstrings.cmo
-@HAVE_OCAML_TRUE@generator_errnostring.cmx: generator_utils.cmx generator_types.cmx \
-@HAVE_OCAML_TRUE@    generator_pr.cmx generator_docstrings.cmx
-@HAVE_OCAML_TRUE@generator_main.cmo: generator_xdr.cmo generator_structs.cmi \
-@HAVE_OCAML_TRUE@    generator_ruby.cmo generator_python.cmo generator_pr.cmi \
-@HAVE_OCAML_TRUE@    generator_php.cmo generator_perl.cmo generator_ocaml.cmo \
-@HAVE_OCAML_TRUE@    generator_java.cmo generator_haskell.cmo generator_fish.cmo \
-@HAVE_OCAML_TRUE@    generator_errnostring.cmo generator_erlang.cmo generator_daemon.cmo \
-@HAVE_OCAML_TRUE@    generator_csharp.cmo generator_capitests.cmo generator_c.cmo \
-@HAVE_OCAML_TRUE@    generator_bindtests.cmo generator_api_versions.cmi
-@HAVE_OCAML_TRUE@generator_main.cmx: generator_xdr.cmx generator_structs.cmx \
-@HAVE_OCAML_TRUE@    generator_ruby.cmx generator_python.cmx generator_pr.cmx \
-@HAVE_OCAML_TRUE@    generator_php.cmx generator_perl.cmx generator_ocaml.cmx \
-@HAVE_OCAML_TRUE@    generator_java.cmx generator_haskell.cmx generator_fish.cmx \
-@HAVE_OCAML_TRUE@    generator_errnostring.cmx generator_erlang.cmx generator_daemon.cmx \
-@HAVE_OCAML_TRUE@    generator_csharp.cmx generator_capitests.cmx generator_c.cmx \
-@HAVE_OCAML_TRUE@    generator_bindtests.cmx generator_api_versions.cmx
+
+@HAVE_OCAML_TRUE@-include .depend
 
 # No OCaml compiler.  Just replace the generator with a script that
 # touches stamp-generator and prints a warning.

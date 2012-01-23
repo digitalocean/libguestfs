@@ -16,7 +16,7 @@
 @SET_MAKE@
 
 # libguestfs
-# Copyright (C) 2009-2011 Red Hat Inc.
+# Copyright (C) 2009-2012 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -78,7 +78,12 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	build-aux/config.sub build-aux/depcomp build-aux/install-sh \
 	build-aux/ltmain.sh build-aux/missing
 @ENABLE_DAEMON_TRUE@am__append_1 = daemon
-@ENABLE_APPLIANCE_TRUE@am__append_2 = appliance
+
+# Tests - order is important.
+@ENABLE_APPLIANCE_TRUE@am__append_2 = appliance tests/qemu \
+@ENABLE_APPLIANCE_TRUE@	tests/guests tests/c-api tests/protocol \
+@ENABLE_APPLIANCE_TRUE@	tests/lvm tests/luks tests/md \
+@ENABLE_APPLIANCE_TRUE@	tests/regressions
 
 # Language bindings.
 @HAVE_PERL_TRUE@am__append_3 = perl perl/examples
@@ -89,20 +94,21 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 @HAVE_HASKELL_TRUE@am__append_8 = haskell
 @HAVE_PHP_TRUE@am__append_9 = php
 @HAVE_ERLANG_TRUE@am__append_10 = erlang erlang/examples
+@HAVE_GOBJECT_TRUE@am__append_11 = gobject
 
 # virt-resize (new version) and virt-sparsify are written in OCaml.
-@HAVE_OCAML_TRUE@am__append_11 = resize sparsify
+@HAVE_OCAML_TRUE@am__append_12 = resize sparsify
 
 # Perl tools.
-@HAVE_TOOLS_TRUE@am__append_12 = tools
+@HAVE_TOOLS_TRUE@am__append_13 = tools
 
 # guestmount
 
 # virt-tools in shell.  This uses guestmount and virt-inspector.
-@HAVE_FUSE_TRUE@am__append_13 = fuse clone
+@HAVE_FUSE_TRUE@am__append_14 = fuse clone
 
 # po-docs must come after tools, inspector.
-@HAVE_PO4A_TRUE@am__append_14 = po-docs
+@HAVE_PO4A_TRUE@am__append_15 = po-docs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -143,27 +149,27 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/include_next.m4 \
 	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
 	$(top_srcdir)/m4/inline.m4 $(top_srcdir)/m4/intlmacosx.m4 \
-	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/inttostr.m4 \
-	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
-	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/ioctl.m4 \
-	$(top_srcdir)/m4/largefile.m4 $(top_srcdir)/m4/lcmessage.m4 \
-	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
-	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/localcharset.m4 $(top_srcdir)/m4/locale-fr.m4 \
-	$(top_srcdir)/m4/locale-ja.m4 $(top_srcdir)/m4/locale-zh.m4 \
-	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localename.m4 \
-	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
-	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
-	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
-	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
-	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
-	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/mempcpy.m4 \
-	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
-	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
-	$(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/introspection.m4 \
+	$(top_srcdir)/m4/inttostr.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
+	$(top_srcdir)/m4/inttypes.m4 $(top_srcdir)/m4/inttypes_h.m4 \
+	$(top_srcdir)/m4/ioctl.m4 $(top_srcdir)/m4/largefile.m4 \
+	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
+	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
+	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
+	$(top_srcdir)/m4/locale-zh.m4 $(top_srcdir)/m4/locale_h.m4 \
+	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
+	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
+	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
+	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
+	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
+	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
+	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
+	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
+	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
+	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/nocrash.m4 \
@@ -271,13 +277,14 @@ AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
 	distdir dist dist-all distcheck
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = gnulib/lib images generator src examples po daemon \
-	appliance gnulib/tests capitests caution regressions \
-	extratests test-tool fish align cat df edit inspector rescue \
-	perl perl/examples ocaml ocaml/examples python python/examples \
-	ruby ruby/examples java java/examples haskell php erlang \
-	erlang/examples csharp resize sparsify tools fuse clone \
-	po-docs
+DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
+	examples po daemon appliance tests/qemu tests/guests \
+	tests/c-api tests/protocol tests/lvm tests/luks tests/md \
+	tests/regressions tests/extra test-tool fish align cat df edit \
+	format inspector rescue perl perl/examples ocaml \
+	ocaml/examples python python/examples ruby ruby/examples java \
+	java/examples haskell php erlang erlang/examples gobject \
+	csharp resize sparsify tools fuse clone po-docs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -376,11 +383,13 @@ FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
 FUSE_CFLAGS = @FUSE_CFLAGS@
 FUSE_LIBS = @FUSE_LIBS@
+GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
 GENISOIMAGE = @GENISOIMAGE@
 GETADDRINFO_LIB = @GETADDRINFO_LIB@
 GETOPT_H = @GETOPT_H@
 GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GHC = @GHC@
+GJS = @GJS@
 GLIBC21 = @GLIBC21@
 GLOB_H = @GLOB_H@
 GMSGFMT = @GMSGFMT@
@@ -663,6 +672,8 @@ GNULIB_WMEMMOVE = @GNULIB_WMEMMOVE@
 GNULIB_WMEMSET = @GNULIB_WMEMSET@
 GNULIB_WRITE = @GNULIB_WRITE@
 GNULIB__EXIT = @GNULIB__EXIT@
+GOBJECT_CFLAGS = @GOBJECT_CFLAGS@
+GOBJECT_LIBS = @GOBJECT_LIBS@
 GPERF = @GPERF@
 GREP = @GREP@
 HAVE_ACCEPT4 = @HAVE_ACCEPT4@
@@ -916,6 +927,14 @@ INT32_MAX_LT_INTMAX_MAX = @INT32_MAX_LT_INTMAX_MAX@
 INT64_MAX_EQ_LONG_MAX = @INT64_MAX_EQ_LONG_MAX@
 INTLLIBS = @INTLLIBS@
 INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
+INTROSPECTION_CFLAGS = @INTROSPECTION_CFLAGS@
+INTROSPECTION_COMPILER = @INTROSPECTION_COMPILER@
+INTROSPECTION_GENERATE = @INTROSPECTION_GENERATE@
+INTROSPECTION_GIRDIR = @INTROSPECTION_GIRDIR@
+INTROSPECTION_LIBS = @INTROSPECTION_LIBS@
+INTROSPECTION_MAKEFILE = @INTROSPECTION_MAKEFILE@
+INTROSPECTION_SCANNER = @INTROSPECTION_SCANNER@
+INTROSPECTION_TYPELIBDIR = @INTROSPECTION_TYPELIBDIR@
 JAR = @JAR@
 JAR_INSTALL_DIR = @JAR_INSTALL_DIR@
 JAVA = @JAVA@
@@ -1319,22 +1338,26 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I m4
 
+# Gnulib - must be built and tested before the library.
+
 # Basic source for the library.
 
-# Tests and the test-tool.
+# Extra tests don't run by default.  You have to do 'make extra-tests'.
+
+# libguestfs-test-tool
 
 # Guestfish.
 
 # virt-tools in C.
 
 # Unconditional because nothing is built yet.
-SUBDIRS = gnulib/lib images generator src examples po $(am__append_1) \
-	$(am__append_2) gnulib/tests capitests caution regressions \
-	extratests test-tool fish align cat df edit inspector rescue \
-	$(am__append_3) $(am__append_4) $(am__append_5) \
-	$(am__append_6) $(am__append_7) $(am__append_8) \
-	$(am__append_9) $(am__append_10) csharp $(am__append_11) \
-	$(am__append_12) $(am__append_13) $(am__append_14)
+SUBDIRS = gnulib/lib gnulib/tests tests/data generator src examples po \
+	$(am__append_1) $(am__append_2) tests/extra test-tool fish \
+	align cat df edit format inspector rescue $(am__append_3) \
+	$(am__append_4) $(am__append_5) $(am__append_6) \
+	$(am__append_7) $(am__append_8) $(am__append_9) \
+	$(am__append_10) $(am__append_11) csharp $(am__append_12) \
+	$(am__append_13) $(am__append_14) $(am__append_15)
 EXTRA_DIST = \
 	$(generator_built) \
 	BUGS HACKING RELEASE-NOTES ROADMAP TODO \
@@ -1342,7 +1365,23 @@ EXTRA_DIST = \
 	bugs-in-changelog.sh \
 	autogen.sh \
 	bindtests \
+	contrib/autobuild/autobuild.sh \
+	contrib/guestfsd-in-wine.sh \
+	contrib/intro/libguestfs-intro.html \
+	contrib/intro/overview.svg \
+	contrib/intro/talk.txt \
+	contrib/intro/tools.svg \
 	contrib/README \
+	contrib/visualize-alignment/.gitignore \
+	contrib/visualize-alignment/guestfish-add-mount.qtr \
+	contrib/visualize-alignment/guestfish-lv-ext4-4k.qtr \
+	contrib/visualize-alignment/guestfish-lv-ext4-4k-write-hello.qtr \
+	contrib/visualize-alignment/guestfish-N-fs-10M-aligned-part-disk.qtr \
+	contrib/visualize-alignment/guestfish-N-fs-10M.qtr \
+	contrib/visualize-alignment/guestfish-write-hello.qtr \
+	contrib/visualize-alignment/qemu-0.13-trace-block-device-access.patch \
+	contrib/visualize-alignment/README \
+	contrib/visualize-alignment/tracetops.ml \
 	debian/.gitignore \
 	debian/changelog \
 	debian/compat \
@@ -1378,6 +1417,8 @@ EXTRA_DIST = \
 	run \
 	update-bugs.sh
 
+
+# The website.
 HTMLFILES = \
 	html/guestfs.3.html \
 	html/guestfs-examples.3.html \
@@ -1398,6 +1439,7 @@ HTMLFILES = \
 	html/virt-df.1.html \
 	html/virt-edit.1.html \
 	html/virt-filesystems.1.html \
+	html/virt-format.1.html \
 	html/virt-inspector.1.html \
 	html/virt-list-filesystems.1.html \
 	html/virt-list-partitions.1.html \
@@ -1981,7 +2023,11 @@ $(top_builddir)/daemon/guestfsd: force
 appliance: force
 	$(MAKE) -C $(top_builddir)/appliance
 
+# For reasons not fully understood, we need to rebuild all the
+# man pages and HTMLFILES from scratch here.
 website: $(HTMLFILES) $(TEXTFILES)
+	find -name 'stamp-*.pod' -delete
+	$(MAKE)
 	cp $(HTMLFILES) $(WEBSITEDIR)
 	for f in $(TEXTFILES); do cp $$f $(WEBSITEDIR)/$$f.txt; done
 	cd $(WEBSITEDIR) && \
@@ -2010,7 +2056,7 @@ all-local:
 	find $(DIST_SUBDIRS) \
 	    -name '*.c' -o -name '*.pl' -o -name '*.pm' | \
 	grep -v '^perl/blib/' | \
-	grep -v '^capitests/' | \
+	grep -v '^tests/' | \
 	grep -v '^daemon/lib/' | \
 	grep -v '^daemon/tests/' | \
 	grep -v '^examples/' | \
@@ -2031,10 +2077,10 @@ all-local:
 quickcheck:
 	./run test-tool/libguestfs-test-tool $(QUICKCHECK_TEST_TOOL_ARGS)
 
-# Run extra-tests in extratests/ subdirectory.
+# Run extra-tests in tests/extra/ subdirectory.
 
 extra-tests:
-	make -C extratests $@
+	make -C tests/extra $@
 bindist:
 	rm -rf $(BINTMPDIR)
 	mkdir $(BINTMPDIR)

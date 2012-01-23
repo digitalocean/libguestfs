@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2010 Red Hat Inc.
+ * Copyright (C) 2009-2012 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -182,7 +182,7 @@ let () =
 
   (* Check flags. *)
   List.iter (
-    fun (name, _, _, flags, _, _, _) ->
+    fun (name, (ret, _, _), _, flags, _, _, _) ->
       List.iter (
         function
         | ProtocolLimitWarning
@@ -208,6 +208,17 @@ let () =
               failwithf "%s: Optional group name %s should not contain uppercase chars" name n;
             if String.contains n '-' || String.contains n '_' then
               failwithf "%s: Optional group name %s should not contain '-' or '_'" name n
+        | CamelName n ->
+            if not (contains_uppercase n) then
+              failwithf "%s: camel case name must contains uppercase characters" name n;
+            if String.contains n '_' then
+              failwithf "%s: camel case name must not contain '_'" name n;
+        | Cancellable ->
+          (match ret with
+          | RConstOptString n ->
+            failwithf "%s: Cancellable function cannot return RConstOptString"
+                      name
+          | _ -> ())
       ) flags
   ) (all_functions @ fish_commands);
 

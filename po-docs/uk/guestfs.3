@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfs 3"
-.TH guestfs 3 "2012-01-10" "libguestfs-1.14.9" "Virtualization Support"
+.TH guestfs 3 "2012-01-23" "libguestfs-1.16.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -375,13 +375,13 @@ Use \*(L"guestfs_cp\*(R" to copy a single file, or \*(L"guestfs_cp_a\*(R" to cop
 directories recursively.
 .Sp
 To copy part of a file (offset and size) use \*(L"guestfs_copy_file_to_file\*(R".
-.IP "\fBfile\fR to \fBdevice\fR" 4
-.IX Item "file to device"
+.IP "\fBфайл\fR на \fBпристрій\fR" 4
+.IX Item "файл на пристрій"
 .PD 0
-.IP "\fBdevice\fR to \fBfile\fR" 4
-.IX Item "device to file"
-.IP "\fBdevice\fR to \fBdevice\fR" 4
-.IX Item "device to device"
+.IP "\fBпристрій\fR до \fBфайла\fR" 4
+.IX Item "пристрій до файла"
+.IP "\fBпристрій\fR на \fBпристрій\fR" 4
+.IX Item "пристрій на пристрій"
 .PD
 Use \*(L"guestfs_copy_file_to_device\*(R", \*(L"guestfs_copy_device_to_file\*(R", or
 \&\*(L"guestfs_copy_device_to_device\*(R".
@@ -408,8 +408,8 @@ optional \f(CW\*(C`size\*(C'\fR parameter:
 .IP "\fBfile on the host\fR to \fBfile or device\fR" 4
 .IX Item "file on the host to file or device"
 Use \*(L"guestfs_upload\*(R".  See \*(L"\s-1UPLOADING\s0\*(R" above.
-.IP "\fBfile or device\fR to \fBfile on the host\fR" 4
-.IX Item "file or device to file on the host"
+.IP "\fBфайл або пристрій\fR у \fBфайл на вузлі\fR" 4
+.IX Item "файл або пристрій у файл на вузлі"
 Use \*(L"guestfs_download\*(R".  See \*(L"\s-1DOWNLOADING\s0\*(R" above.
 .SS "\s-1UPLOADING\s0 \s-1AND\s0 \s-1DOWNLOADING\s0 \s-1TO\s0 \s-1PIPES\s0 \s-1AND\s0 \s-1FILE\s0 \s-1DESCRIPTORS\s0"
 .IX Subsection "UPLOADING AND DOWNLOADING TO PIPES AND FILE DESCRIPTORS"
@@ -749,7 +749,11 @@ The C# bindings are highly experimental.  Please read the warnings at the
 top of \f(CW\*(C`csharp/Libguestfs.cs\*(C'\fR.
 .IP "\fBErlang\fR" 4
 .IX Item "Erlang"
-See \fIguestfs\-erlang\fR\|(3).
+Див. \fIguestfs\-erlang\fR\|(3).
+.IP "\fBGObject\fR" 4
+.IX Item "GObject"
+Experimental GObject bindings (with GObject Introspection support) are
+available.  See the \f(CW\*(C`gobject\*(C'\fR directory in the source.
 .IP "\fBHaskell\fR" 4
 .IX Item "Haskell"
 This is the only language binding that is working but incomplete.  Only
@@ -1475,7 +1479,7 @@ to transfer large files into the guest), then you should probably use
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.3)
+(Added in 0.3~)
 .SS "guestfs_add_domain"
 .IX Subsection "guestfs_add_domain"
 .Vb 4
@@ -1576,7 +1580,7 @@ The other optional parameters are passed directly through to
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 1.7.4)
+(Added in 1.7.4~)
 .SS "guestfs_add_domain_va"
 .IX Subsection "guestfs_add_domain_va"
 .Vb 4
@@ -1621,7 +1625,7 @@ you should think about replacing calls to this function with calls to
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.3)
+(Added in 0.3~)
 .SS "guestfs_add_drive_opts"
 .IX Subsection "guestfs_add_drive_opts"
 .Vb 4
@@ -1683,7 +1687,7 @@ a hint to the guest inspection process if it is available.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.5.23)
+(Added in 1.5.23~)
 .SS "guestfs_add_drive_opts_va"
 .IX Subsection "guestfs_add_drive_opts_va"
 .Vb 4
@@ -1722,7 +1726,7 @@ disk is added read-only, with the format being detected automatically.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.38)
+(Added in 1.0.38~)
 .SS "guestfs_add_drive_ro_with_if"
 .IX Subsection "guestfs_add_drive_ro_with_if"
 .Vb 4
@@ -1744,7 +1748,7 @@ This is the same as \f(CW\*(C`guestfs_add_drive_ro\*(C'\fR but it allows you to 
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.84)
+(Added in 1.0.84~)
 .SS "guestfs_add_drive_with_if"
 .IX Subsection "guestfs_add_drive_with_if"
 .Vb 4
@@ -1766,7 +1770,7 @@ This is the same as \f(CW\*(C`guestfs_add_drive\*(C'\fR but it allows you to spe
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.84)
+(Added in 1.0.84~)
 .SS "guestfs_aug_clear"
 .IX Subsection "guestfs_aug_clear"
 .Vb 3
@@ -1780,7 +1784,7 @@ Set the value associated with \f(CW\*(C`path\*(C'\fR to \f(CW\*(C`NULL\*(C'\fR. 
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.3.4)
+(Added in 1.3.4~)
 .SS "guestfs_aug_close"
 .IX Subsection "guestfs_aug_close"
 .Vb 2
@@ -1794,7 +1798,7 @@ any other Augeas functions.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.7)
+(Added in 0.7~)
 .SS "guestfs_aug_defnode"
 .IX Subsection "guestfs_aug_defnode"
 .Vb 5
@@ -1817,7 +1821,7 @@ nodeset, and a boolean flag if a node was created.
 This function returns a \f(CW\*(C`struct guestfs_int_bool *\*(C'\fR, or \s-1NULL\s0 if there was
 an error.  \fIThe caller must call \f(CI\*(C`guestfs_free_int_bool\*(C'\fI after use\fR.
 .PP
-(Додано у 0.7)
+(Added in 0.7~)
 .SS "guestfs_aug_defvar"
 .IX Subsection "guestfs_aug_defvar"
 .Vb 4
@@ -1835,7 +1839,7 @@ evaluates to something which is not a nodeset.
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 0.7)
+(Added in 0.7~)
 .SS "guestfs_aug_get"
 .IX Subsection "guestfs_aug_get"
 .Vb 3
@@ -1850,7 +1854,7 @@ node, the \f(CW\*(C`value\*(C'\fR is returned.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 0.7)
+(Added in 0.7~)
 .SS "guestfs_aug_init"
 .IX Subsection "guestfs_aug_init"
 .Vb 4
@@ -1907,7 +1911,7 @@ To find out more about Augeas, see <http://augeas.net/>.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.7)
+(Added in 0.7~)
 .SS "guestfs_aug_insert"
 .IX Subsection "guestfs_aug_insert"
 .Vb 5
@@ -1926,7 +1930,7 @@ be a label, ie. not contain \f(CW\*(C`/\*(C'\fR, \f(CW\*(C`*\*(C'\fR or end with
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.7)
+(Added in 0.7~)
 .SS "guestfs_aug_load"
 .IX Subsection "guestfs_aug_load"
 .Vb 2
@@ -1940,7 +1944,7 @@ See \f(CW\*(C`aug_load\*(C'\fR in the Augeas documentation for the full gory det
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.7)
+(Added in 0.7~)
 .SS "guestfs_aug_ls"
 .IX Subsection "guestfs_aug_ls"
 .Vb 3
@@ -1956,7 +1960,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_aug_match"
 .IX Subsection "guestfs_aug_match"
 .Vb 3
@@ -1973,7 +1977,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 0.7)
+(Added in 0.7~)
 .SS "guestfs_aug_mv"
 .IX Subsection "guestfs_aug_mv"
 .Vb 4
@@ -1988,7 +1992,7 @@ Move the node \f(CW\*(C`src\*(C'\fR to \f(CW\*(C`dest\*(C'\fR.  \f(CW\*(C`src\*(
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.7)
+(Added in 0.7~)
 .SS "guestfs_aug_rm"
 .IX Subsection "guestfs_aug_rm"
 .Vb 3
@@ -2003,7 +2007,7 @@ On success this returns the number of entries which were removed.
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 0.7)
+(Added in 0.7~)
 .SS "guestfs_aug_save"
 .IX Subsection "guestfs_aug_save"
 .Vb 2
@@ -2018,7 +2022,7 @@ are saved.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.7)
+(Added in 0.7~)
 .SS "guestfs_aug_set"
 .IX Subsection "guestfs_aug_set"
 .Vb 4
@@ -2036,7 +2040,7 @@ this call.  Instead you must use the \f(CW\*(C`guestfs_aug_clear\*(C'\fR call.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.7)
+(Added in 0.7~)
 .SS "guestfs_available"
 .IX Subsection "guestfs_available"
 .Vb 3
@@ -2086,7 +2090,7 @@ find out if the daemon implemented it.  See also \f(CW\*(C`guestfs_version\*(C'\
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.80)
+(Added in 1.0.80~)
 .SS "guestfs_available_all_groups"
 .IX Subsection "guestfs_available_all_groups"
 .Vb 2
@@ -2105,7 +2109,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 1.3.15)
+(Added in 1.3.15~)
 .SS "guestfs_base64_in"
 .IX Subsection "guestfs_base64_in"
 .Vb 4
@@ -2119,7 +2123,7 @@ This command uploads base64\-encoded data from \f(CW\*(C`base64file\*(C'\fR to \
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.3.5)
+(Added in 1.3.5~)
 .SS "guestfs_base64_out"
 .IX Subsection "guestfs_base64_out"
 .Vb 4
@@ -2134,7 +2138,45 @@ file \f(CW\*(C`base64file\*(C'\fR encoded as base64.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.3.5)
+(Added in 1.3.5~)
+.SS "guestfs_blkid"
+.IX Subsection "guestfs_blkid"
+.Vb 3
+\& char **
+\& guestfs_blkid (guestfs_h *g,
+\&                const char *device);
+.Ve
+.PP
+This command returns block device attributes for \f(CW\*(C`device\*(C'\fR. The following
+fields are usually present in the returned hash. Other fields may also be
+present.
+.ie n .IP """UUID""" 4
+.el .IP "\f(CWUUID\fR" 4
+.IX Item "UUID"
+The uuid of this device.
+.ie n .IP """LABEL""" 4
+.el .IP "\f(CWLABEL\fR" 4
+.IX Item "LABEL"
+The label of this device.
+.ie n .IP """VERSION""" 4
+.el .IP "\f(CWVERSION\fR" 4
+.IX Item "VERSION"
+The version of blkid command.
+.ie n .IP """TYPE""" 4
+.el .IP "\f(CWTYPE\fR" 4
+.IX Item "TYPE"
+The filesystem type or \s-1RAID\s0 of this device.
+.ie n .IP """USAGE""" 4
+.el .IP "\f(CWUSAGE\fR" 4
+.IX Item "USAGE"
+The usage of this device, for example \f(CW\*(C`filesystem\*(C'\fR or \f(CW\*(C`raid\*(C'\fR.
+.PP
+This function returns a NULL-terminated array of strings, or \s-1NULL\s0 if there
+was an error.  The array of strings will always have length \f(CW\*(C`2n+1\*(C'\fR, where
+\&\f(CW\*(C`n\*(C'\fR keys and values alternate, followed by the trailing \s-1NULL\s0 entry.  \fIThe
+caller must free the strings and the array after use\fR.
+.PP
+(Added in 1.15.9)
 .SS "guestfs_blockdev_flushbufs"
 .IX Subsection "guestfs_blockdev_flushbufs"
 .Vb 3
@@ -2149,7 +2191,7 @@ This uses the \fIblockdev\fR\|(8) command.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.9.3)
+(Added in 0.9.3~)
 .SS "guestfs_blockdev_getbsz"
 .IX Subsection "guestfs_blockdev_getbsz"
 .Vb 3
@@ -2167,7 +2209,7 @@ This uses the \fIblockdev\fR\|(8) command.
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 0.9.3)
+(Added in 0.9.3~)
 .SS "guestfs_blockdev_getro"
 .IX Subsection "guestfs_blockdev_getro"
 .Vb 3
@@ -2183,7 +2225,7 @@ This uses the \fIblockdev\fR\|(8) command.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 0.9.3)
+(Added in 0.9.3~)
 .SS "guestfs_blockdev_getsize64"
 .IX Subsection "guestfs_blockdev_getsize64"
 .Vb 3
@@ -2200,7 +2242,7 @@ This uses the \fIblockdev\fR\|(8) command.
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 0.9.3)
+(Added in 0.9.3~)
 .SS "guestfs_blockdev_getss"
 .IX Subsection "guestfs_blockdev_getss"
 .Vb 3
@@ -2219,7 +2261,7 @@ This uses the \fIblockdev\fR\|(8) command.
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 0.9.3)
+(Added in 0.9.3~)
 .SS "guestfs_blockdev_getsz"
 .IX Subsection "guestfs_blockdev_getsz"
 .Vb 3
@@ -2238,7 +2280,7 @@ This uses the \fIblockdev\fR\|(8) command.
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 0.9.3)
+(Added in 0.9.3~)
 .SS "guestfs_blockdev_rereadpt"
 .IX Subsection "guestfs_blockdev_rereadpt"
 .Vb 3
@@ -2253,7 +2295,7 @@ This uses the \fIblockdev\fR\|(8) command.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.9.3)
+(Added in 0.9.3~)
 .SS "guestfs_blockdev_setbsz"
 .IX Subsection "guestfs_blockdev_setbsz"
 .Vb 4
@@ -2272,7 +2314,7 @@ This uses the \fIblockdev\fR\|(8) command.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.9.3)
+(Added in 0.9.3~)
 .SS "guestfs_blockdev_setro"
 .IX Subsection "guestfs_blockdev_setro"
 .Vb 3
@@ -2287,7 +2329,7 @@ This uses the \fIblockdev\fR\|(8) command.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.9.3)
+(Added in 0.9.3~)
 .SS "guestfs_blockdev_setrw"
 .IX Subsection "guestfs_blockdev_setrw"
 .Vb 3
@@ -2302,7 +2344,7 @@ This uses the \fIblockdev\fR\|(8) command.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.9.3)
+(Added in 0.9.3~)
 .SS "guestfs_btrfs_filesystem_resize"
 .IX Subsection "guestfs_btrfs_filesystem_resize"
 .Vb 4
@@ -2337,7 +2379,7 @@ resized to the maximum size.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.11.17)
+(Added in 1.11.17~)
 .SS "guestfs_btrfs_filesystem_resize_va"
 .IX Subsection "guestfs_btrfs_filesystem_resize_va"
 .Vb 4
@@ -2401,7 +2443,7 @@ See also \f(CW\*(C`guestfs_realpath\*(C'\fR.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.75)
+(Added in 1.0.75~)
 .SS "guestfs_cat"
 .IX Subsection "guestfs_cat"
 .Vb 3
@@ -2423,7 +2465,7 @@ the returned string after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 0.4)
+(Added in 0.4~)
 .SS "guestfs_checksum"
 .IX Subsection "guestfs_checksum"
 .Vb 4
@@ -2476,7 +2518,7 @@ To get the checksums for many files, use \f(CW\*(C`guestfs_checksums_out\*(C'\fR
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.2)
+(Added in 1.0.2~)
 .SS "guestfs_checksum_device"
 .IX Subsection "guestfs_checksum_device"
 .Vb 4
@@ -2493,7 +2535,7 @@ device named \f(CW\*(C`device\*(C'\fR.  For the types of checksums supported see
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.3.2)
+(Added in 1.3.2~)
 .SS "guestfs_checksums_out"
 .IX Subsection "guestfs_checksums_out"
 .Vb 5
@@ -2515,7 +2557,7 @@ more information, see the \s-1GNU\s0 coreutils info file.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.3.7)
+(Added in 1.3.7~)
 .SS "guestfs_chmod"
 .IX Subsection "guestfs_chmod"
 .Vb 4
@@ -2536,7 +2578,7 @@ The mode actually set is affected by the umask.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_chown"
 .IX Subsection "guestfs_chown"
 .Vb 5
@@ -2555,7 +2597,7 @@ this relatively easy).
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_command"
 .IX Subsection "guestfs_command"
 .Vb 3
@@ -2595,7 +2637,7 @@ the returned string after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 0.9.1)
+(Added in 0.9.1~)
 .SS "guestfs_command_lines"
 .IX Subsection "guestfs_command_lines"
 .Vb 3
@@ -2616,7 +2658,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 0.9.1)
+(Added in 0.9.1~)
 .SS "guestfs_compress_device_out"
 .IX Subsection "guestfs_compress_device_out"
 .Vb 6
@@ -2644,7 +2686,7 @@ The \f(CW\*(C`ctype\*(C'\fR and optional \f(CW\*(C`level\*(C'\fR parameters have
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Added in 1.13.15)
+(Added in 1.13.15~)
 .SS "guestfs_compress_device_out_va"
 .IX Subsection "guestfs_compress_device_out_va"
 .Vb 6
@@ -2706,7 +2748,7 @@ default for this parameter depends on the compression program being used.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Added in 1.13.15)
+(Added in 1.13.15~)
 .SS "guestfs_compress_out_va"
 .IX Subsection "guestfs_compress_out_va"
 .Vb 6
@@ -2754,7 +2796,7 @@ The first character of \f(CW\*(C`param\*(C'\fR string must be a \f(CW\*(C`\-\*(C
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.3)
+(Added in 0.3~)
 .SS "guestfs_copy_device_to_device"
 .IX Subsection "guestfs_copy_device_to_device"
 .Vb 5
@@ -2798,7 +2840,7 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 \&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Added in 1.13.25)
+(Added in 1.13.25~)
 .SS "guestfs_copy_device_to_device_va"
 .IX Subsection "guestfs_copy_device_to_device_va"
 .Vb 5
@@ -2854,7 +2896,7 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 \&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Added in 1.13.25)
+(Added in 1.13.25~)
 .SS "guestfs_copy_device_to_file_va"
 .IX Subsection "guestfs_copy_device_to_file_va"
 .Vb 5
@@ -2910,7 +2952,7 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 \&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Added in 1.13.25)
+(Added in 1.13.25~)
 .SS "guestfs_copy_file_to_device_va"
 .IX Subsection "guestfs_copy_file_to_device_va"
 .Vb 5
@@ -2970,7 +3012,7 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 \&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Added in 1.13.25)
+(Added in 1.13.25~)
 .SS "guestfs_copy_file_to_file_va"
 .IX Subsection "guestfs_copy_file_to_file_va"
 .Vb 5
@@ -3027,7 +3069,7 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 \&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.87)
+(Added in 1.0.87~)
 .SS "guestfs_cp"
 .IX Subsection "guestfs_cp"
 .Vb 4
@@ -3042,7 +3084,7 @@ destination filename or destination directory.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.18)
+(Added in 1.0.18~)
 .SS "guestfs_cp_a"
 .IX Subsection "guestfs_cp_a"
 .Vb 4
@@ -3057,7 +3099,7 @@ This copies a file or directory from \f(CW\*(C`src\*(C'\fR to \f(CW\*(C`dest\*(C
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.18)
+(Added in 1.0.18~)
 .SS "guestfs_dd"
 .IX Subsection "guestfs_dd"
 .Vb 4
@@ -3084,7 +3126,7 @@ partial copies (see \f(CW\*(C`guestfs_copy_device_to_device\*(C'\fR).
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.80)
+(Added in 1.0.80~)
 .SS "guestfs_df"
 .IX Subsection "guestfs_df"
 .Vb 2
@@ -3101,7 +3143,7 @@ from programs.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.54)
+(Added in 1.0.54~)
 .SS "guestfs_df_h"
 .IX Subsection "guestfs_df_h"
 .Vb 2
@@ -3119,7 +3161,7 @@ from programs.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.54)
+(Added in 1.0.54~)
 .SS "guestfs_dmesg"
 .IX Subsection "guestfs_dmesg"
 .Vb 2
@@ -3137,7 +3179,7 @@ Another way to get the same information is to enable verbose messages with
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.18)
+(Added in 1.0.18~)
 .SS "guestfs_download"
 .IX Subsection "guestfs_download"
 .Vb 4
@@ -3161,7 +3203,7 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 \&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.2)
+(Added in 1.0.2~)
 .SS "guestfs_download_offset"
 .IX Subsection "guestfs_download_offset"
 .Vb 6
@@ -3192,7 +3234,7 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 \&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.5.17)
+(Added in 1.5.17~)
 .SS "guestfs_drop_caches"
 .IX Subsection "guestfs_drop_caches"
 .Vb 3
@@ -3212,7 +3254,7 @@ maximum guest memory is freed.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.18)
+(Added in 1.0.18~)
 .SS "guestfs_du"
 .IX Subsection "guestfs_du"
 .Vb 3
@@ -3237,7 +3279,70 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 \&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.54)
+(Added in 1.0.54~)
+.SS "guestfs_e2fsck"
+.IX Subsection "guestfs_e2fsck"
+.Vb 4
+\& int
+\& guestfs_e2fsck (guestfs_h *g,
+\&                 const char *device,
+\&                 ...);
+.Ve
+.PP
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with \f(CW\*(C`\-1\*(C'\fR on
+its own.  See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.PP
+.Vb 2
+\& GUESTFS_E2FSCK_CORRECT, int correct,
+\& GUESTFS_E2FSCK_FORCEALL, int forceall,
+.Ve
+.PP
+This runs the ext2/ext3 filesystem checker on \f(CW\*(C`device\*(C'\fR.  It can take the
+following optional arguments:
+.ie n .IP """correct""" 4
+.el .IP "\f(CWcorrect\fR" 4
+.IX Item "correct"
+Automatically repair the file system. This option will cause e2fsck to
+automatically fix any filesystem problems that can be safely fixed without
+human intervention.
+.Sp
+This option may not be specified at the same time as the \f(CW\*(C`forceall\*(C'\fR option.
+.ie n .IP """forceall""" 4
+.el .IP "\f(CWforceall\fR" 4
+.IX Item "forceall"
+Assume an answer of 'yes' to all questions; allows e2fsck to be used
+non-interactively.
+.Sp
+This option may not be specified at the same time as the \f(CW\*(C`correct\*(C'\fR option.
+.PP
+This function returns 0 on success or \-1 on error.
+.PP
+(Added in 1.15.17)
+.SS "guestfs_e2fsck_va"
+.IX Subsection "guestfs_e2fsck_va"
+.Vb 4
+\& int
+\& guestfs_e2fsck_va (guestfs_h *g,
+\&                    const char *device,
+\&                    va_list args);
+.Ve
+.PP
+This is the \*(L"va_list variant\*(R" of \*(L"guestfs_e2fsck\*(R".
+.PP
+Див. \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_e2fsck_argv"
+.IX Subsection "guestfs_e2fsck_argv"
+.Vb 4
+\& int
+\& guestfs_e2fsck_argv (guestfs_h *g,
+\&                      const char *device,
+\&                      const struct guestfs_e2fsck_argv *optargs);
+.Ve
+.PP
+This is the \*(L"argv variant\*(R" of \*(L"guestfs_e2fsck\*(R".
+.PP
+Див. \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
 .SS "guestfs_e2fsck_f"
 .IX Subsection "guestfs_e2fsck_f"
 .Vb 3
@@ -3255,7 +3360,7 @@ Normally you should use \f(CW\*(C`guestfs_fsck\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.29)
+(Added in 1.0.29~)
 .SS "guestfs_echo_daemon"
 .IX Subsection "guestfs_echo_daemon"
 .Vb 3
@@ -3274,7 +3379,7 @@ See also \f(CW\*(C`guestfs_ping_daemon\*(C'\fR.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.69)
+(Added in 1.0.69~)
 .SS "guestfs_egrep"
 .IX Subsection "guestfs_egrep"
 .Vb 4
@@ -3293,7 +3398,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_egrepi"
 .IX Subsection "guestfs_egrepi"
 .Vb 4
@@ -3312,7 +3417,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_equal"
 .IX Subsection "guestfs_equal"
 .Vb 4
@@ -3329,7 +3434,7 @@ The external \fIcmp\fR\|(1) program is used for the comparison.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.0.18)
+(Added in 1.0.18~)
 .SS "guestfs_exists"
 .IX Subsection "guestfs_exists"
 .Vb 3
@@ -3345,7 +3450,7 @@ See also \f(CW\*(C`guestfs_is_file\*(C'\fR, \f(CW\*(C`guestfs_is_dir\*(C'\fR, \f
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_fallocate"
 .IX Subsection "guestfs_fallocate"
 .Vb 4
@@ -3370,7 +3475,7 @@ allocates a file in the host and attaches it as a device.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_fallocate64"
 .IX Subsection "guestfs_fallocate64"
 .Vb 4
@@ -3395,7 +3500,7 @@ commands which create a file in the host and attach it as a device.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.3.17)
+(Added in 1.3.17~)
 .SS "guestfs_fgrep"
 .IX Subsection "guestfs_fgrep"
 .Vb 4
@@ -3414,7 +3519,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_fgrepi"
 .IX Subsection "guestfs_fgrepi"
 .Vb 4
@@ -3433,7 +3538,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_file"
 .IX Subsection "guestfs_file"
 .Vb 3
@@ -3461,7 +3566,7 @@ See also: \fIfile\fR\|(1), \f(CW\*(C`guestfs_vfs_type\*(C'\fR, \f(CW\*(C`guestfs
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 0.9.1)
+(Added in 0.9.1~)
 .SS "guestfs_file_architecture"
 .IX Subsection "guestfs_file_architecture"
 .Vb 3
@@ -3542,7 +3647,7 @@ kernel module(s) instead.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.5.3)
+(Added in 1.5.3~)
 .SS "guestfs_filesize"
 .IX Subsection "guestfs_filesize"
 .Vb 3
@@ -3559,7 +3664,7 @@ devices, use \f(CW\*(C`guestfs_blockdev_getsize64\*(C'\fR.
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 1.0.82)
+(Added in 1.0.82~)
 .SS "guestfs_fill"
 .IX Subsection "guestfs_fill"
 .Vb 5
@@ -3585,7 +3690,7 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 \&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.79)
+(Added in 1.0.79~)
 .SS "guestfs_fill_pattern"
 .IX Subsection "guestfs_fill_pattern"
 .Vb 5
@@ -3608,7 +3713,7 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 \&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.3.12)
+(Added in 1.3.12~)
 .SS "guestfs_find"
 .IX Subsection "guestfs_find"
 .Vb 3
@@ -3653,7 +3758,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.27)
+(Added in 1.0.27~)
 .SS "guestfs_find0"
 .IX Subsection "guestfs_find0"
 .Vb 4
@@ -3681,7 +3786,7 @@ The result list is not sorted.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.74)
+(Added in 1.0.74~)
 .SS "guestfs_findfs_label"
 .IX Subsection "guestfs_findfs_label"
 .Vb 3
@@ -3698,7 +3803,7 @@ To find the label of a filesystem, use \f(CW\*(C`guestfs_vfs_label\*(C'\fR.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.5.3)
+(Added in 1.5.3~)
 .SS "guestfs_findfs_uuid"
 .IX Subsection "guestfs_findfs_uuid"
 .Vb 3
@@ -3715,7 +3820,7 @@ To find the \s-1UUID\s0 of a filesystem, use \f(CW\*(C`guestfs_vfs_uuid\*(C'\fR.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.5.3)
+(Added in 1.5.3~)
 .SS "guestfs_fsck"
 .IX Subsection "guestfs_fsck"
 .Vb 4
@@ -3744,7 +3849,7 @@ This command is entirely equivalent to running \f(CW\*(C`fsck \-a \-t fstype dev
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 1.0.16)
+(Added in 1.0.16~)
 .SS "guestfs_get_append"
 .IX Subsection "guestfs_get_append"
 .Vb 2
@@ -3761,7 +3866,7 @@ This function returns a string which may be \s-1NULL\s0.  There is no way to ret
 an error from this function.  The string is owned by the guest handle and
 must \fInot\fR be freed.
 .PP
-(Додано у 1.0.26)
+(Added in 1.0.26~)
 .SS "guestfs_get_attach_method"
 .IX Subsection "guestfs_get_attach_method"
 .Vb 2
@@ -3774,7 +3879,7 @@ Return the current attach method.  See \f(CW\*(C`guestfs_set_attach_method\*(C'\
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.9.8)
+(Added in 1.9.8~)
 .SS "guestfs_get_autosync"
 .IX Subsection "guestfs_get_autosync"
 .Vb 2
@@ -3786,7 +3891,7 @@ Get the autosync flag.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 0.3)
+(Added in 0.3~)
 .SS "guestfs_get_direct"
 .IX Subsection "guestfs_get_direct"
 .Vb 2
@@ -3798,7 +3903,7 @@ Return the direct appliance mode flag.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.0.72)
+(Added in 1.0.72~)
 .SS "guestfs_get_e2label"
 .IX Subsection "guestfs_get_e2label"
 .Vb 3
@@ -3819,7 +3924,7 @@ This returns the ext2/3/4 filesystem label of the filesystem on \f(CW\*(C`device
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.15)
+(Added in 1.0.15~)
 .SS "guestfs_get_e2uuid"
 .IX Subsection "guestfs_get_e2uuid"
 .Vb 3
@@ -3840,7 +3945,7 @@ This returns the ext2/3/4 filesystem \s-1UUID\s0 of the filesystem on \f(CW\*(C`
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.15)
+(Added in 1.0.15~)
 .SS "guestfs_get_memsize"
 .IX Subsection "guestfs_get_memsize"
 .Vb 2
@@ -3858,7 +3963,7 @@ For more information on the architecture of libguestfs, see \fIguestfs\fR\|(3).
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 1.0.55)
+(Added in 1.0.55~)
 .SS "guestfs_get_network"
 .IX Subsection "guestfs_get_network"
 .Vb 2
@@ -3870,7 +3975,7 @@ This returns the enable network flag.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.5.4)
+(Added in 1.5.4~)
 .SS "guestfs_get_path"
 .IX Subsection "guestfs_get_path"
 .Vb 2
@@ -3886,7 +3991,7 @@ the default path.
 This function returns a string, or \s-1NULL\s0 on error.  The string is owned by
 the guest handle and must \fInot\fR be freed.
 .PP
-(Додано у 0.3)
+(Added in 0.3~)
 .SS "guestfs_get_pgroup"
 .IX Subsection "guestfs_get_pgroup"
 .Vb 2
@@ -3898,7 +4003,7 @@ This returns the process group flag.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.11.18)
+(Added in 1.11.18~)
 .SS "guestfs_get_pid"
 .IX Subsection "guestfs_get_pid"
 .Vb 2
@@ -3913,7 +4018,7 @@ This is an internal call used for debugging and testing.
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 1.0.56)
+(Added in 1.0.56~)
 .SS "guestfs_get_qemu"
 .IX Subsection "guestfs_get_qemu"
 .Vb 2
@@ -3929,7 +4034,7 @@ the default qemu binary name.
 This function returns a string, or \s-1NULL\s0 on error.  The string is owned by
 the guest handle and must \fInot\fR be freed.
 .PP
-(Додано у 1.0.6)
+(Added in 1.0.6~)
 .SS "guestfs_get_recovery_proc"
 .IX Subsection "guestfs_get_recovery_proc"
 .Vb 2
@@ -3941,7 +4046,7 @@ Return the recovery process enabled flag.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.0.77)
+(Added in 1.0.77~)
 .SS "guestfs_get_selinux"
 .IX Subsection "guestfs_get_selinux"
 .Vb 2
@@ -3956,7 +4061,7 @@ For more information on the architecture of libguestfs, see \fIguestfs\fR\|(3).
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.0.67)
+(Added in 1.0.67~)
 .SS "guestfs_get_smp"
 .IX Subsection "guestfs_get_smp"
 .Vb 2
@@ -3968,7 +4073,7 @@ This returns the number of virtual CPUs assigned to the appliance.
 .PP
 On error this function returns \-1.
 .PP
-(Added in 1.13.15)
+(Added in 1.13.15~)
 .SS "guestfs_get_state"
 .IX Subsection "guestfs_get_state"
 .Vb 2
@@ -3983,7 +4088,7 @@ For more information on states, see \fIguestfs\fR\|(3).
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 1.0.2)
+(Added in 1.0.2~)
 .SS "guestfs_get_trace"
 .IX Subsection "guestfs_get_trace"
 .Vb 2
@@ -3995,7 +4100,7 @@ Return the command trace flag.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.0.69)
+(Added in 1.0.69~)
 .SS "guestfs_get_umask"
 .IX Subsection "guestfs_get_umask"
 .Vb 2
@@ -4008,7 +4113,7 @@ set by calling \f(CW\*(C`guestfs_umask\*(C'\fR.
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 1.3.4)
+(Added in 1.3.4~)
 .SS "guestfs_get_verbose"
 .IX Subsection "guestfs_get_verbose"
 .Vb 2
@@ -4020,7 +4125,7 @@ This returns the verbose messages flag.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 0.3)
+(Added in 0.3~)
 .SS "guestfs_getcon"
 .IX Subsection "guestfs_getcon"
 .Vb 2
@@ -4035,7 +4140,7 @@ See the documentation about \s-1SELINUX\s0 in \fIguestfs\fR\|(3), and \f(CW\*(C`
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.67)
+(Added in 1.0.67~)
 .SS "guestfs_getxattr"
 .IX Subsection "guestfs_getxattr"
 .Vb 5
@@ -4065,7 +4170,7 @@ This function returns a buffer, or \s-1NULL\s0 on error.  The size of the return
 buffer is written to \f(CW*size_r\fR.  \fIThe caller must free the returned buffer
 after use\fR.
 .PP
-(Додано у 1.7.24)
+(Added in 1.7.24~)
 .SS "guestfs_getxattrs"
 .IX Subsection "guestfs_getxattrs"
 .Vb 3
@@ -4084,7 +4189,7 @@ See also: \f(CW\*(C`guestfs_lgetxattrs\*(C'\fR, \fIattr\fR\|(5).
 This function returns a \f(CW\*(C`struct guestfs_xattr_list *\*(C'\fR, or \s-1NULL\s0 if there was
 an error.  \fIThe caller must call \f(CI\*(C`guestfs_free_xattr_list\*(C'\fI after use\fR.
 .PP
-(Додано у 1.0.59)
+(Added in 1.0.59~)
 .SS "guestfs_glob_expand"
 .IX Subsection "guestfs_glob_expand"
 .Vb 3
@@ -4105,7 +4210,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 1.0.50)
+(Added in 1.0.50~)
 .SS "guestfs_grep"
 .IX Subsection "guestfs_grep"
 .Vb 4
@@ -4124,7 +4229,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_grepi"
 .IX Subsection "guestfs_grepi"
 .Vb 4
@@ -4143,7 +4248,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_grub_install"
 .IX Subsection "guestfs_grub_install"
 .Vb 4
@@ -4180,7 +4285,7 @@ replacing \f(CW\*(C`/dev/vda\*(C'\fR with the name of the installation device.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.17)
+(Added in 1.0.17~)
 .SS "guestfs_head"
 .IX Subsection "guestfs_head"
 .Vb 3
@@ -4199,7 +4304,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.54)
+(Added in 1.0.54~)
 .SS "guestfs_head_n"
 .IX Subsection "guestfs_head_n"
 .Vb 4
@@ -4224,7 +4329,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.54)
+(Added in 1.0.54~)
 .SS "guestfs_hexdump"
 .IX Subsection "guestfs_hexdump"
 .Vb 3
@@ -4242,7 +4347,7 @@ the returned string after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.22)
+(Added in 1.0.22~)
 .SS "guestfs_initrd_cat"
 .IX Subsection "guestfs_initrd_cat"
 .Vb 5
@@ -4274,7 +4379,7 @@ after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.84)
+(Added in 1.0.84~)
 .SS "guestfs_initrd_list"
 .IX Subsection "guestfs_initrd_list"
 .Vb 3
@@ -4297,7 +4402,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 1.0.54)
+(Added in 1.0.54~)
 .SS "guestfs_inotify_add_watch"
 .IX Subsection "guestfs_inotify_add_watch"
 .Vb 4
@@ -4317,7 +4422,7 @@ Linux kernel \s-1ABI\s0 and are listed in \f(CW\*(C`/usr/include/sys/inotify.h\*
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_inotify_close"
 .IX Subsection "guestfs_inotify_close"
 .Vb 2
@@ -4331,7 +4436,7 @@ resources.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_inotify_files"
 .IX Subsection "guestfs_inotify_files"
 .Vb 2
@@ -4347,7 +4452,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_inotify_init"
 .IX Subsection "guestfs_inotify_init"
 .Vb 3
@@ -4385,7 +4490,7 @@ that there is one global inotify handle per libguestfs instance.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_inotify_read"
 .IX Subsection "guestfs_inotify_read"
 .Vb 2
@@ -4407,7 +4512,7 @@ This function returns a \f(CW\*(C`struct guestfs_inotify_event_list *\*(C'\fR, o
 there was an error.  \fIThe caller must call
 \&\f(CI\*(C`guestfs_free_inotify_event_list\*(C'\fI after use\fR.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_inotify_rm_watch"
 .IX Subsection "guestfs_inotify_rm_watch"
 .Vb 3
@@ -4421,7 +4526,7 @@ Remove a previously defined inotify watch.  See
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_inspect_get_arch"
 .IX Subsection "guestfs_inspect_get_arch"
 .Vb 3
@@ -4441,7 +4546,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.5.3)
+(Added in 1.5.3~)
 .SS "guestfs_inspect_get_distro"
 .IX Subsection "guestfs_inspect_get_distro"
 .Vb 3
@@ -4452,7 +4557,7 @@ the returned string after use\fR.
 .PP
 This returns the distro (distribution) of the inspected operating system.
 .PP
-Currently defined distros are:
+У поточній версії визначено такі дистрибутиви:
 .ie n .IP """archlinux""" 4
 .el .IP "``archlinux''" 4
 .IX Item "archlinux"
@@ -4539,7 +4644,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.5.3)
+(Added in 1.5.3~)
 .SS "guestfs_inspect_get_drive_mappings"
 .IX Subsection "guestfs_inspect_get_drive_mappings"
 .Vb 3
@@ -4582,7 +4687,7 @@ was an error.  The array of strings will always have length \f(CW\*(C`2n+1\*(C'\
 \&\f(CW\*(C`n\*(C'\fR keys and values alternate, followed by the trailing \s-1NULL\s0 entry.  \fIThe
 caller must free the strings and the array after use\fR.
 .PP
-(Додано у 1.9.17)
+(Added in 1.9.17~)
 .SS "guestfs_inspect_get_filesystems"
 .IX Subsection "guestfs_inspect_get_filesystems"
 .Vb 3
@@ -4605,7 +4710,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 1.5.3)
+(Added in 1.5.3~)
 .SS "guestfs_inspect_get_format"
 .IX Subsection "guestfs_inspect_get_format"
 .Vb 3
@@ -4640,7 +4745,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.9.4)
+(Added in 1.9.4~)
 .SS "guestfs_inspect_get_hostname"
 .IX Subsection "guestfs_inspect_get_hostname"
 .Vb 3
@@ -4660,7 +4765,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.7.9)
+(Added in 1.7.9~)
 .SS "guestfs_inspect_get_icon"
 .IX Subsection "guestfs_inspect_get_icon"
 .Vb 5
@@ -4727,7 +4832,7 @@ This function returns a buffer, or \s-1NULL\s0 on error.  The size of the return
 buffer is written to \f(CW*size_r\fR.  \fIThe caller must free the returned buffer
 after use\fR.
 .PP
-(Додано у 1.11.12)
+(Added in 1.11.12~)
 .SS "guestfs_inspect_get_icon_va"
 .IX Subsection "guestfs_inspect_get_icon_va"
 .Vb 5
@@ -4776,7 +4881,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 1.5.3)
+(Added in 1.5.3~)
 .SS "guestfs_inspect_get_minor_version"
 .IX Subsection "guestfs_inspect_get_minor_version"
 .Vb 3
@@ -4794,7 +4899,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details. 
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 1.5.3)
+(Added in 1.5.3~)
 .SS "guestfs_inspect_get_mountpoints"
 .IX Subsection "guestfs_inspect_get_mountpoints"
 .Vb 3
@@ -4829,7 +4934,7 @@ was an error.  The array of strings will always have length \f(CW\*(C`2n+1\*(C'\
 \&\f(CW\*(C`n\*(C'\fR keys and values alternate, followed by the trailing \s-1NULL\s0 entry.  \fIThe
 caller must free the strings and the array after use\fR.
 .PP
-(Додано у 1.5.3)
+(Added in 1.5.3~)
 .SS "guestfs_inspect_get_package_format"
 .IX Subsection "guestfs_inspect_get_package_format"
 .Vb 3
@@ -4855,7 +4960,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.7.5)
+(Added in 1.7.5~)
 .SS "guestfs_inspect_get_package_management"
 .IX Subsection "guestfs_inspect_get_package_management"
 .Vb 3
@@ -4882,7 +4987,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.7.5)
+(Added in 1.7.5~)
 .SS "guestfs_inspect_get_product_name"
 .IX Subsection "guestfs_inspect_get_product_name"
 .Vb 3
@@ -4903,7 +5008,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.5.3)
+(Added in 1.5.3~)
 .SS "guestfs_inspect_get_product_variant"
 .IX Subsection "guestfs_inspect_get_product_variant"
 .Vb 3
@@ -4935,7 +5040,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details. 
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.9.13)
+(Added in 1.9.13~)
 .SS "guestfs_inspect_get_roots"
 .IX Subsection "guestfs_inspect_get_roots"
 .Vb 2
@@ -4956,7 +5061,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 1.7.3)
+(Added in 1.7.3~)
 .SS "guestfs_inspect_get_type"
 .IX Subsection "guestfs_inspect_get_type"
 .Vb 3
@@ -4983,10 +5088,14 @@ FreeBSD.
 .el .IP "``netbsd''" 4
 .IX Item "netbsd"
 NetBSD.
+.ie n .IP """hurd""" 4
+.el .IP "``hurd''" 4
+.IX Item "hurd"
+GNU/Hurd.
 .ie n .IP """unknown""" 4
 .el .IP "``unknown''" 4
 .IX Item "unknown"
-The operating system type could not be determined.
+Не вдалося визначити тип операційної системи.
 .PP
 Future versions of libguestfs may return other strings here.  The caller
 should be prepared to handle any string.
@@ -4996,7 +5105,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.5.3)
+(Added in 1.5.3~)
 .SS "guestfs_inspect_get_windows_current_control_set"
 .IX Subsection "guestfs_inspect_get_windows_current_control_set"
 .Vb 3
@@ -5016,7 +5125,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.9.17)
+(Added in 1.9.17~)
 .SS "guestfs_inspect_get_windows_systemroot"
 .IX Subsection "guestfs_inspect_get_windows_systemroot"
 .Vb 3
@@ -5037,7 +5146,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.5.25)
+(Added in 1.5.25~)
 .SS "guestfs_inspect_is_live"
 .IX Subsection "guestfs_inspect_is_live"
 .Vb 3
@@ -5053,7 +5162,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.9.4)
+(Added in 1.9.4~)
 .SS "guestfs_inspect_is_multipart"
 .IX Subsection "guestfs_inspect_is_multipart"
 .Vb 3
@@ -5069,7 +5178,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.9.4)
+(Added in 1.9.4~)
 .SS "guestfs_inspect_is_netinst"
 .IX Subsection "guestfs_inspect_is_netinst"
 .Vb 3
@@ -5087,7 +5196,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.9.4)
+(Added in 1.9.4~)
 .SS "guestfs_inspect_list_applications"
 .IX Subsection "guestfs_inspect_list_applications"
 .Vb 3
@@ -5184,7 +5293,7 @@ This function returns a \f(CW\*(C`struct guestfs_application_list *\*(C'\fR, or 
 there was an error.  \fIThe caller must call \f(CI\*(C`guestfs_free_application_list\*(C'\fI
 after use\fR.
 .PP
-(Додано у 1.7.8)
+(Added in 1.7.8~)
 .SS "guestfs_inspect_os"
 .IX Subsection "guestfs_inspect_os"
 .Vb 2
@@ -5224,7 +5333,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 1.5.3)
+(Added in 1.5.3~)
 .SS "guestfs_is_blockdev"
 .IX Subsection "guestfs_is_blockdev"
 .Vb 3
@@ -5240,7 +5349,7 @@ See also \f(CW\*(C`guestfs_stat\*(C'\fR.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.5.10)
+(Added in 1.5.10~)
 .SS "guestfs_is_busy"
 .IX Subsection "guestfs_is_busy"
 .Vb 2
@@ -5255,7 +5364,7 @@ For more information on states, see \fIguestfs\fR\|(3).
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.0.2)
+(Added in 1.0.2~)
 .SS "guestfs_is_chardev"
 .IX Subsection "guestfs_is_chardev"
 .Vb 3
@@ -5271,7 +5380,7 @@ See also \f(CW\*(C`guestfs_stat\*(C'\fR.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.5.10)
+(Added in 1.5.10~)
 .SS "guestfs_is_config"
 .IX Subsection "guestfs_is_config"
 .Vb 2
@@ -5286,7 +5395,7 @@ For more information on states, see \fIguestfs\fR\|(3).
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.0.2)
+(Added in 1.0.2~)
 .SS "guestfs_is_dir"
 .IX Subsection "guestfs_is_dir"
 .Vb 3
@@ -5302,7 +5411,7 @@ See also \f(CW\*(C`guestfs_stat\*(C'\fR.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_is_fifo"
 .IX Subsection "guestfs_is_fifo"
 .Vb 3
@@ -5318,7 +5427,7 @@ See also \f(CW\*(C`guestfs_stat\*(C'\fR.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.5.10)
+(Added in 1.5.10~)
 .SS "guestfs_is_file"
 .IX Subsection "guestfs_is_file"
 .Vb 3
@@ -5335,7 +5444,7 @@ See also \f(CW\*(C`guestfs_stat\*(C'\fR.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_is_launching"
 .IX Subsection "guestfs_is_launching"
 .Vb 2
@@ -5350,7 +5459,7 @@ For more information on states, see \fIguestfs\fR\|(3).
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.0.2)
+(Added in 1.0.2~)
 .SS "guestfs_is_lv"
 .IX Subsection "guestfs_is_lv"
 .Vb 3
@@ -5364,7 +5473,7 @@ iff this is the case.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.5.3)
+(Added in 1.5.3~)
 .SS "guestfs_is_ready"
 .IX Subsection "guestfs_is_ready"
 .Vb 2
@@ -5379,7 +5488,7 @@ For more information on states, see \fIguestfs\fR\|(3).
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.0.2)
+(Added in 1.0.2~)
 .SS "guestfs_is_socket"
 .IX Subsection "guestfs_is_socket"
 .Vb 3
@@ -5395,7 +5504,7 @@ See also \f(CW\*(C`guestfs_stat\*(C'\fR.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.5.10)
+(Added in 1.5.10~)
 .SS "guestfs_is_symlink"
 .IX Subsection "guestfs_is_symlink"
 .Vb 3
@@ -5411,7 +5520,7 @@ See also \f(CW\*(C`guestfs_stat\*(C'\fR.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.5.10)
+(Added in 1.5.10~)
 .SS "guestfs_is_zero"
 .IX Subsection "guestfs_is_zero"
 .Vb 3
@@ -5425,7 +5534,7 @@ all zero bytes.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.11.8)
+(Added in 1.11.8~)
 .SS "guestfs_is_zero_device"
 .IX Subsection "guestfs_is_zero_device"
 .Vb 3
@@ -5440,7 +5549,7 @@ Note that for large devices this can take a long time to run.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.11.8)
+(Added in 1.11.8~)
 .SS "guestfs_kill_subprocess"
 .IX Subsection "guestfs_kill_subprocess"
 .Vb 2
@@ -5452,7 +5561,7 @@ This kills the qemu subprocess.  You should never need to call this.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.3)
+(Added in 0.3~)
 .SS "guestfs_launch"
 .IX Subsection "guestfs_launch"
 .Vb 2
@@ -5473,7 +5582,7 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 \&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 0.3)
+(Added in 0.3~)
 .SS "guestfs_lchown"
 .IX Subsection "guestfs_lchown"
 .Vb 5
@@ -5494,7 +5603,7 @@ this relatively easy).
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.77)
+(Added in 1.0.77~)
 .SS "guestfs_lgetxattr"
 .IX Subsection "guestfs_lgetxattr"
 .Vb 5
@@ -5523,7 +5632,7 @@ This function returns a buffer, or \s-1NULL\s0 on error.  The size of the return
 buffer is written to \f(CW*size_r\fR.  \fIThe caller must free the returned buffer
 after use\fR.
 .PP
-(Додано у 1.7.24)
+(Added in 1.7.24~)
 .SS "guestfs_lgetxattrs"
 .IX Subsection "guestfs_lgetxattrs"
 .Vb 3
@@ -5538,7 +5647,7 @@ then it returns the extended attributes of the link itself.
 This function returns a \f(CW\*(C`struct guestfs_xattr_list *\*(C'\fR, or \s-1NULL\s0 if there was
 an error.  \fIThe caller must call \f(CI\*(C`guestfs_free_xattr_list\*(C'\fI after use\fR.
 .PP
-(Додано у 1.0.59)
+(Added in 1.0.59~)
 .SS "guestfs_list_9p"
 .IX Subsection "guestfs_list_9p"
 .Vb 2
@@ -5553,7 +5662,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 1.11.12)
+(Added in 1.11.12~)
 .SS "guestfs_list_devices"
 .IX Subsection "guestfs_list_devices"
 .Vb 2
@@ -5571,7 +5680,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 0.4)
+(Added in 0.4~)
 .SS "guestfs_list_dm_devices"
 .IX Subsection "guestfs_list_dm_devices"
 .Vb 2
@@ -5592,7 +5701,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 1.11.15)
+(Added in 1.11.15~)
 .SS "guestfs_list_filesystems"
 .IX Subsection "guestfs_list_filesystems"
 .Vb 2
@@ -5633,7 +5742,21 @@ was an error.  The array of strings will always have length \f(CW\*(C`2n+1\*(C'\
 \&\f(CW\*(C`n\*(C'\fR keys and values alternate, followed by the trailing \s-1NULL\s0 entry.  \fIThe
 caller must free the strings and the array after use\fR.
 .PP
-(Додано у 1.5.15)
+(Added in 1.5.15~)
+.SS "guestfs_list_md_devices"
+.IX Subsection "guestfs_list_md_devices"
+.Vb 2
+\& char **
+\& guestfs_list_md_devices (guestfs_h *g);
+.Ve
+.PP
+List all Linux md devices.
+.PP
+This function returns a NULL-terminated array of strings (like
+\&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
+strings and the array after use\fR.
+.PP
+(Added in 1.15.4~)
 .SS "guestfs_list_partitions"
 .IX Subsection "guestfs_list_partitions"
 .Vb 2
@@ -5654,7 +5777,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 0.4)
+(Added in 0.4~)
 .SS "guestfs_ll"
 .IX Subsection "guestfs_ll"
 .Vb 3
@@ -5672,7 +5795,7 @@ intended that you try to parse the output string.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 0.4)
+(Added in 0.4~)
 .SS "guestfs_ln"
 .IX Subsection "guestfs_ln"
 .Vb 4
@@ -5686,7 +5809,7 @@ This command creates a hard link using the \f(CW\*(C`ln\*(C'\fR command.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_ln_f"
 .IX Subsection "guestfs_ln_f"
 .Vb 4
@@ -5701,7 +5824,7 @@ option removes the link (\f(CW\*(C`linkname\*(C'\fR) if it exists already.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_ln_s"
 .IX Subsection "guestfs_ln_s"
 .Vb 4
@@ -5715,7 +5838,7 @@ This command creates a symbolic link using the \f(CW\*(C`ln \-s\*(C'\fR command.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_ln_sf"
 .IX Subsection "guestfs_ln_sf"
 .Vb 4
@@ -5730,7 +5853,7 @@ option removes the link (\f(CW\*(C`linkname\*(C'\fR) if it exists already.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_lremovexattr"
 .IX Subsection "guestfs_lremovexattr"
 .Vb 4
@@ -5745,7 +5868,7 @@ link, then it removes an extended attribute of the link itself.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.59)
+(Added in 1.0.59~)
 .SS "guestfs_ls"
 .IX Subsection "guestfs_ls"
 .Vb 3
@@ -5765,7 +5888,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 0.4)
+(Added in 0.4~)
 .SS "guestfs_lsetxattr"
 .IX Subsection "guestfs_lsetxattr"
 .Vb 6
@@ -5782,7 +5905,7 @@ then it sets an extended attribute of the link itself.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.59)
+(Added in 1.0.59~)
 .SS "guestfs_lstat"
 .IX Subsection "guestfs_lstat"
 .Vb 3
@@ -5801,7 +5924,7 @@ This is the same as the \f(CWlstat(2)\fR system call.
 This function returns a \f(CW\*(C`struct guestfs_stat *\*(C'\fR, or \s-1NULL\s0 if there was an
 error.  \fIThe caller must call \f(CI\*(C`guestfs_free_stat\*(C'\fI after use\fR.
 .PP
-(Додано у 0.9.2)
+(Added in 0.9.2~)
 .SS "guestfs_lstatlist"
 .IX Subsection "guestfs_lstatlist"
 .Vb 4
@@ -5829,7 +5952,7 @@ smaller groups of names.
 This function returns a \f(CW\*(C`struct guestfs_stat_list *\*(C'\fR, or \s-1NULL\s0 if there was
 an error.  \fIThe caller must call \f(CI\*(C`guestfs_free_stat_list\*(C'\fI after use\fR.
 .PP
-(Додано у 1.0.77)
+(Added in 1.0.77~)
 .SS "guestfs_luks_add_key"
 .IX Subsection "guestfs_luks_add_key"
 .Vb 6
@@ -5854,7 +5977,7 @@ This function takes a key or passphrase parameter which could contain
 sensitive material.  Read the section \*(L"\s-1KEYS\s0 \s-1AND\s0 \s-1PASSPHRASES\s0\*(R" for more
 information.
 .PP
-(Додано у 1.5.2)
+(Added in 1.5.2~)
 .SS "guestfs_luks_close"
 .IX Subsection "guestfs_luks_close"
 .Vb 3
@@ -5870,7 +5993,7 @@ underlying block device.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.5.1)
+(Added in 1.5.1~)
 .SS "guestfs_luks_format"
 .IX Subsection "guestfs_luks_format"
 .Vb 5
@@ -5891,7 +6014,7 @@ This function takes a key or passphrase parameter which could contain
 sensitive material.  Read the section \*(L"\s-1KEYS\s0 \s-1AND\s0 \s-1PASSPHRASES\s0\*(R" for more
 information.
 .PP
-(Додано у 1.5.2)
+(Added in 1.5.2~)
 .SS "guestfs_luks_format_cipher"
 .IX Subsection "guestfs_luks_format_cipher"
 .Vb 6
@@ -5912,7 +6035,7 @@ This function takes a key or passphrase parameter which could contain
 sensitive material.  Read the section \*(L"\s-1KEYS\s0 \s-1AND\s0 \s-1PASSPHRASES\s0\*(R" for more
 information.
 .PP
-(Додано у 1.5.2)
+(Added in 1.5.2~)
 .SS "guestfs_luks_kill_slot"
 .IX Subsection "guestfs_luks_kill_slot"
 .Vb 5
@@ -5932,7 +6055,7 @@ This function takes a key or passphrase parameter which could contain
 sensitive material.  Read the section \*(L"\s-1KEYS\s0 \s-1AND\s0 \s-1PASSPHRASES\s0\*(R" for more
 information.
 .PP
-(Додано у 1.5.2)
+(Added in 1.5.2~)
 .SS "guestfs_luks_open"
 .IX Subsection "guestfs_luks_open"
 .Vb 5
@@ -5967,7 +6090,7 @@ This function takes a key or passphrase parameter which could contain
 sensitive material.  Read the section \*(L"\s-1KEYS\s0 \s-1AND\s0 \s-1PASSPHRASES\s0\*(R" for more
 information.
 .PP
-(Додано у 1.5.1)
+(Added in 1.5.1~)
 .SS "guestfs_luks_open_ro"
 .IX Subsection "guestfs_luks_open_ro"
 .Vb 5
@@ -5987,7 +6110,7 @@ This function takes a key or passphrase parameter which could contain
 sensitive material.  Read the section \*(L"\s-1KEYS\s0 \s-1AND\s0 \s-1PASSPHRASES\s0\*(R" for more
 information.
 .PP
-(Додано у 1.5.1)
+(Added in 1.5.1~)
 .SS "guestfs_lvcreate"
 .IX Subsection "guestfs_lvcreate"
 .Vb 5
@@ -6003,7 +6126,7 @@ This creates an \s-1LVM\s0 logical volume called \f(CW\*(C`logvol\*(C'\fR on the
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_lvm_canonical_lv_name"
 .IX Subsection "guestfs_lvm_canonical_lv_name"
 .Vb 3
@@ -6024,7 +6147,7 @@ See also \f(CW\*(C`guestfs_is_lv\*(C'\fR.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.5.24)
+(Added in 1.5.24~)
 .SS "guestfs_lvm_clear_filter"
 .IX Subsection "guestfs_lvm_clear_filter"
 .Vb 2
@@ -6039,7 +6162,7 @@ This command also clears the \s-1LVM\s0 cache and performs a volume group scan.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.5.1)
+(Added in 1.5.1~)
 .SS "guestfs_lvm_remove_all"
 .IX Subsection "guestfs_lvm_remove_all"
 .Vb 2
@@ -6052,7 +6175,7 @@ volumes.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_lvm_set_filter"
 .IX Subsection "guestfs_lvm_set_filter"
 .Vb 3
@@ -6082,7 +6205,7 @@ filesystem), even if you are not filtering out that \s-1VG\s0.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.5.1)
+(Added in 1.5.1~)
 .SS "guestfs_lvremove"
 .IX Subsection "guestfs_lvremove"
 .Vb 3
@@ -6099,7 +6222,7 @@ You can also remove all LVs in a volume group by specifying the \s-1VG\s0 name,
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.13)
+(Added in 1.0.13~)
 .SS "guestfs_lvrename"
 .IX Subsection "guestfs_lvrename"
 .Vb 4
@@ -6113,7 +6236,7 @@ Rename a logical volume \f(CW\*(C`logvol\*(C'\fR with the new name \f(CW\*(C`new
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.83)
+(Added in 1.0.83~)
 .SS "guestfs_lvresize"
 .IX Subsection "guestfs_lvresize"
 .Vb 4
@@ -6128,7 +6251,7 @@ This resizes (expands or shrinks) an existing \s-1LVM\s0 logical volume to
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.27)
+(Added in 1.0.27~)
 .SS "guestfs_lvresize_free"
 .IX Subsection "guestfs_lvresize_free"
 .Vb 4
@@ -6145,7 +6268,7 @@ remaining free space in the volume group.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.3.3)
+(Added in 1.3.3~)
 .SS "guestfs_lvs"
 .IX Subsection "guestfs_lvs"
 .Vb 2
@@ -6165,7 +6288,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 0.4)
+(Added in 0.4~)
 .SS "guestfs_lvs_full"
 .IX Subsection "guestfs_lvs_full"
 .Vb 2
@@ -6180,7 +6303,7 @@ This function returns a \f(CW\*(C`struct guestfs_lvm_lv_list *\*(C'\fR, or \s-1N
 was an error.  \fIThe caller must call \f(CI\*(C`guestfs_free_lvm_lv_list\*(C'\fI after
 use\fR.
 .PP
-(Додано у 0.4)
+(Added in 0.4~)
 .SS "guestfs_lvuuid"
 .IX Subsection "guestfs_lvuuid"
 .Vb 3
@@ -6194,7 +6317,7 @@ This command returns the \s-1UUID\s0 of the \s-1LVM\s0 \s-1LV\s0 \f(CW\*(C`devic
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.87)
+(Added in 1.0.87~)
 .SS "guestfs_lxattrlist"
 .IX Subsection "guestfs_lxattrlist"
 .Vb 4
@@ -6226,7 +6349,159 @@ names.
 This function returns a \f(CW\*(C`struct guestfs_xattr_list *\*(C'\fR, or \s-1NULL\s0 if there was
 an error.  \fIThe caller must call \f(CI\*(C`guestfs_free_xattr_list\*(C'\fI after use\fR.
 .PP
-(Додано у 1.0.77)
+(Added in 1.0.77~)
+.SS "guestfs_md_create"
+.IX Subsection "guestfs_md_create"
+.Vb 5
+\& int
+\& guestfs_md_create (guestfs_h *g,
+\&                    const char *name,
+\&                    char *const *devices,
+\&                    ...);
+.Ve
+.PP
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with \f(CW\*(C`\-1\*(C'\fR on
+its own.  See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.PP
+.Vb 5
+\& GUESTFS_MD_CREATE_MISSINGBITMAP, int64_t missingbitmap,
+\& GUESTFS_MD_CREATE_NRDEVICES, int nrdevices,
+\& GUESTFS_MD_CREATE_SPARE, int spare,
+\& GUESTFS_MD_CREATE_CHUNK, int64_t chunk,
+\& GUESTFS_MD_CREATE_LEVEL, const char *level,
+.Ve
+.PP
+Create a Linux md (\s-1RAID\s0) device named \f(CW\*(C`name\*(C'\fR on the devices in the list
+\&\f(CW\*(C`devices\*(C'\fR.
+.PP
+The optional parameters are:
+.ie n .IP """missingbitmap""" 4
+.el .IP "\f(CWmissingbitmap\fR" 4
+.IX Item "missingbitmap"
+A bitmap of missing devices.  If a bit is set it means that a missing device
+is added to the array.  The least significant bit corresponds to the first
+device in the array.
+.Sp
+As examples:
+.Sp
+If \f(CW\*(C`devices = ["/dev/sda"]\*(C'\fR and \f(CW\*(C`missingbitmap = 0x1\*(C'\fR then the resulting
+array would be \f(CW\*(C`[<missing>, "/dev/sda"]\*(C'\fR.
+.Sp
+If \f(CW\*(C`devices = ["/dev/sda"]\*(C'\fR and \f(CW\*(C`missingbitmap = 0x2\*(C'\fR then the resulting
+array would be \f(CW\*(C`["/dev/sda", <missing>]\*(C'\fR.
+.Sp
+This defaults to \f(CW0\fR (no missing devices).
+.Sp
+The length of \f(CW\*(C`devices\*(C'\fR + the number of bits set in \f(CW\*(C`missingbitmap\*(C'\fR must
+equal \f(CW\*(C`nrdevices\*(C'\fR + \f(CW\*(C`spare\*(C'\fR.
+.ie n .IP """nrdevices""" 4
+.el .IP "\f(CWnrdevices\fR" 4
+.IX Item "nrdevices"
+The number of active \s-1RAID\s0 devices.
+.Sp
+If not set, this defaults to the length of \f(CW\*(C`devices\*(C'\fR plus the number of
+bits set in \f(CW\*(C`missingbitmap\*(C'\fR.
+.ie n .IP """spare""" 4
+.el .IP "\f(CWspare\fR" 4
+.IX Item "spare"
+The number of spare devices.
+.Sp
+If not set, this defaults to \f(CW0\fR.
+.ie n .IP """chunk""" 4
+.el .IP "\f(CWchunk\fR" 4
+.IX Item "chunk"
+The chunk size in bytes.
+.ie n .IP """level""" 4
+.el .IP "\f(CWlevel\fR" 4
+.IX Item "level"
+The \s-1RAID\s0 level, which can be one of: \fIlinear\fR, \fIraid0\fR, \fI0\fR, \fIstripe\fR,
+\&\fIraid1\fR, \fI1\fR, \fImirror\fR, \fIraid4\fR, \fI4\fR, \fIraid5\fR, \fI5\fR, \fIraid6\fR, \fI6\fR,
+\&\fIraid10\fR, \fI10\fR.  Some of these are synonymous, and more levels may be
+added in future.
+.Sp
+If not set, this defaults to \f(CW\*(C`raid1\*(C'\fR.
+.PP
+This function returns 0 on success or \-1 on error.
+.PP
+(Added in 1.15.6)
+.SS "guestfs_md_create_va"
+.IX Subsection "guestfs_md_create_va"
+.Vb 5
+\& int
+\& guestfs_md_create_va (guestfs_h *g,
+\&                       const char *name,
+\&                       char *const *devices,
+\&                       va_list args);
+.Ve
+.PP
+This is the \*(L"va_list variant\*(R" of \*(L"guestfs_md_create\*(R".
+.PP
+Див. \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_md_create_argv"
+.IX Subsection "guestfs_md_create_argv"
+.Vb 5
+\& int
+\& guestfs_md_create_argv (guestfs_h *g,
+\&                         const char *name,
+\&                         char *const *devices,
+\&                         const struct guestfs_md_create_argv *optargs);
+.Ve
+.PP
+This is the \*(L"argv variant\*(R" of \*(L"guestfs_md_create\*(R".
+.PP
+Див. \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_md_detail"
+.IX Subsection "guestfs_md_detail"
+.Vb 3
+\& char **
+\& guestfs_md_detail (guestfs_h *g,
+\&                    const char *md);
+.Ve
+.PP
+This command exposes the output of 'mdadm \-DY <md>'. The following fields
+are usually present in the returned hash. Other fields may also be present.
+.ie n .IP """level""" 4
+.el .IP "\f(CWlevel\fR" 4
+.IX Item "level"
+The raid level of the \s-1MD\s0 device.
+.ie n .IP """devices""" 4
+.el .IP "\f(CWdevices\fR" 4
+.IX Item "devices"
+The number of underlying devices in the \s-1MD\s0 device.
+.ie n .IP """metadata""" 4
+.el .IP "\f(CWmetadata\fR" 4
+.IX Item "metadata"
+The metadata version used.
+.ie n .IP """uuid""" 4
+.el .IP "\f(CWuuid\fR" 4
+.IX Item "uuid"
+The \s-1UUID\s0 of the \s-1MD\s0 device.
+.ie n .IP """name""" 4
+.el .IP "\f(CWname\fR" 4
+.IX Item "name"
+The name of the \s-1MD\s0 device.
+.PP
+This function returns a NULL-terminated array of strings, or \s-1NULL\s0 if there
+was an error.  The array of strings will always have length \f(CW\*(C`2n+1\*(C'\fR, where
+\&\f(CW\*(C`n\*(C'\fR keys and values alternate, followed by the trailing \s-1NULL\s0 entry.  \fIThe
+caller must free the strings and the array after use\fR.
+.PP
+(Added in 1.15.6)
+.SS "guestfs_md_stop"
+.IX Subsection "guestfs_md_stop"
+.Vb 3
+\& int
+\& guestfs_md_stop (guestfs_h *g,
+\&                  const char *md);
+.Ve
+.PP
+This command deactivates the \s-1MD\s0 array named \f(CW\*(C`md\*(C'\fR.  The device is stopped,
+but it is not destroyed or zeroed.
+.PP
+This function returns 0 on success or \-1 on error.
+.PP
+(Added in 1.15.6)
 .SS "guestfs_mkdir"
 .IX Subsection "guestfs_mkdir"
 .Vb 3
@@ -6239,7 +6514,7 @@ Create a directory named \f(CW\*(C`path\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_mkdir_mode"
 .IX Subsection "guestfs_mkdir_mode"
 .Vb 4
@@ -6260,7 +6535,7 @@ See also \f(CW\*(C`guestfs_mkdir\*(C'\fR, \f(CW\*(C`guestfs_umask\*(C'\fR
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.77)
+(Added in 1.0.77~)
 .SS "guestfs_mkdir_p"
 .IX Subsection "guestfs_mkdir_p"
 .Vb 3
@@ -6274,7 +6549,7 @@ necessary.  This is like the \f(CW\*(C`mkdir \-p\*(C'\fR shell command.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_mkdtemp"
 .IX Subsection "guestfs_mkdtemp"
 .Vb 3
@@ -6302,7 +6577,7 @@ contents after use.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.54)
+(Added in 1.0.54~)
 .SS "guestfs_mke2fs_J"
 .IX Subsection "guestfs_mke2fs_J"
 .Vb 6
@@ -6325,7 +6600,7 @@ See also \f(CW\*(C`guestfs_mke2journal\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.68)
+(Added in 1.0.68~)
 .SS "guestfs_mke2fs_JL"
 .IX Subsection "guestfs_mke2fs_JL"
 .Vb 6
@@ -6344,7 +6619,7 @@ See also \f(CW\*(C`guestfs_mke2journal_L\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.68)
+(Added in 1.0.68~)
 .SS "guestfs_mke2fs_JU"
 .IX Subsection "guestfs_mke2fs_JU"
 .Vb 6
@@ -6363,7 +6638,7 @@ See also \f(CW\*(C`guestfs_mke2journal_U\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.68)
+(Added in 1.0.68~)
 .SS "guestfs_mke2journal"
 .IX Subsection "guestfs_mke2journal"
 .Vb 4
@@ -6382,7 +6657,7 @@ command:
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.68)
+(Added in 1.0.68~)
 .SS "guestfs_mke2journal_L"
 .IX Subsection "guestfs_mke2journal_L"
 .Vb 5
@@ -6397,7 +6672,7 @@ This creates an ext2 external journal on \f(CW\*(C`device\*(C'\fR with label \f(
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.68)
+(Added in 1.0.68~)
 .SS "guestfs_mke2journal_U"
 .IX Subsection "guestfs_mke2journal_U"
 .Vb 5
@@ -6412,7 +6687,7 @@ This creates an ext2 external journal on \f(CW\*(C`device\*(C'\fR with \s-1UUID\
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.68)
+(Added in 1.0.68~)
 .SS "guestfs_mkfifo"
 .IX Subsection "guestfs_mkfifo"
 .Vb 4
@@ -6429,7 +6704,7 @@ The mode actually set is affected by the umask.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.55)
+(Added in 1.0.55~)
 .SS "guestfs_mkfs"
 .IX Subsection "guestfs_mkfs"
 .Vb 4
@@ -6444,7 +6719,7 @@ volume).  The filesystem type is \f(CW\*(C`fstype\*(C'\fR, for example \f(CW\*(C
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_mkfs_b"
 .IX Subsection "guestfs_mkfs_b"
 .Vb 5
@@ -6471,7 +6746,7 @@ cluster size.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.68)
+(Added in 1.0.68~)
 .SS "guestfs_mkfs_opts"
 .IX Subsection "guestfs_mkfs_opts"
 .Vb 5
@@ -6531,7 +6806,7 @@ sets sector size for ufs filesystem.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.7.19)
+(Added in 1.7.19~)
 .SS "guestfs_mkfs_opts_va"
 .IX Subsection "guestfs_mkfs_opts_va"
 .Vb 5
@@ -6608,7 +6883,7 @@ can also trigger these issues.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.62)
+(Added in 1.0.62~)
 .SS "guestfs_mknod"
 .IX Subsection "guestfs_mknod"
 .Vb 6
@@ -6638,7 +6913,7 @@ The mode actually set is affected by the umask.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.55)
+(Added in 1.0.55~)
 .SS "guestfs_mknod_b"
 .IX Subsection "guestfs_mknod_b"
 .Vb 6
@@ -6658,7 +6933,7 @@ The mode actually set is affected by the umask.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.55)
+(Added in 1.0.55~)
 .SS "guestfs_mknod_c"
 .IX Subsection "guestfs_mknod_c"
 .Vb 6
@@ -6678,7 +6953,7 @@ The mode actually set is affected by the umask.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.55)
+(Added in 1.0.55~)
 .SS "guestfs_mkswap"
 .IX Subsection "guestfs_mkswap"
 .Vb 3
@@ -6691,7 +6966,7 @@ Create a swap partition on \f(CW\*(C`device\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.55)
+(Added in 1.0.55~)
 .SS "guestfs_mkswap_L"
 .IX Subsection "guestfs_mkswap_L"
 .Vb 4
@@ -6709,7 +6984,7 @@ the kernel or swap tools.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.55)
+(Added in 1.0.55~)
 .SS "guestfs_mkswap_U"
 .IX Subsection "guestfs_mkswap_U"
 .Vb 4
@@ -6723,7 +6998,7 @@ Create a swap partition on \f(CW\*(C`device\*(C'\fR with \s-1UUID\s0 \f(CW\*(C`u
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.55)
+(Added in 1.0.55~)
 .SS "guestfs_mkswap_file"
 .IX Subsection "guestfs_mkswap_file"
 .Vb 3
@@ -6739,7 +7014,7 @@ create the file itself, use something like \f(CW\*(C`guestfs_fallocate\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_modprobe"
 .IX Subsection "guestfs_modprobe"
 .Vb 3
@@ -6755,7 +7030,7 @@ The kernel module must have been whitelisted when libguestfs was built (see
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.68)
+(Added in 1.0.68~)
 .SS "guestfs_mount"
 .IX Subsection "guestfs_mount"
 .Vb 4
@@ -6785,7 +7060,7 @@ for the first parameter if you don't want any options).
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.3)
+(Added in 0.3~)
 .SS "guestfs_mount_9p"
 .IX Subsection "guestfs_mount_9p"
 .Vb 5
@@ -6813,7 +7088,7 @@ parameter.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.11.12)
+(Added in 1.11.12~)
 .SS "guestfs_mount_9p_va"
 .IX Subsection "guestfs_mount_9p_va"
 .Vb 5
@@ -6855,7 +7130,7 @@ mountpoint\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.54)
+(Added in 1.0.54~)
 .SS "guestfs_mount_options"
 .IX Subsection "guestfs_mount_options"
 .Vb 5
@@ -6874,7 +7149,7 @@ If the \f(CW\*(C`options\*(C'\fR parameter is an empty string, then no options a
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.10)
+(Added in 1.0.10~)
 .SS "guestfs_mount_ro"
 .IX Subsection "guestfs_mount_ro"
 .Vb 4
@@ -6889,7 +7164,7 @@ filesystem with the read-only (\fI\-o ro\fR) flag.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.10)
+(Added in 1.0.10~)
 .SS "guestfs_mount_vfs"
 .IX Subsection "guestfs_mount_vfs"
 .Vb 6
@@ -6907,7 +7182,7 @@ both the mount options and the vfstype as for the \fImount\fR\|(8) \fI\-o\fR and
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.10)
+(Added in 1.0.10~)
 .SS "guestfs_mountpoints"
 .IX Subsection "guestfs_mountpoints"
 .Vb 2
@@ -6924,7 +7199,7 @@ was an error.  The array of strings will always have length \f(CW\*(C`2n+1\*(C'\
 \&\f(CW\*(C`n\*(C'\fR keys and values alternate, followed by the trailing \s-1NULL\s0 entry.  \fIThe
 caller must free the strings and the array after use\fR.
 .PP
-(Додано у 1.0.62)
+(Added in 1.0.62~)
 .SS "guestfs_mounts"
 .IX Subsection "guestfs_mounts"
 .Vb 2
@@ -6943,7 +7218,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_mv"
 .IX Subsection "guestfs_mv"
 .Vb 4
@@ -6958,7 +7233,7 @@ destination filename or destination directory.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.18)
+(Added in 1.0.18~)
 .SS "guestfs_ntfs_3g_probe"
 .IX Subsection "guestfs_ntfs_3g_probe"
 .Vb 4
@@ -6981,7 +7256,7 @@ some non-zero value documented in the \fIntfs\-3g.probe\fR\|(8) manual page.
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 1.0.43)
+(Added in 1.0.43~)
 .SS "guestfs_ntfsresize"
 .IX Subsection "guestfs_ntfsresize"
 .Vb 3
@@ -7011,7 +7286,7 @@ without booting into Windows between each resize.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.3.2)
+(Added in 1.3.2~)
 .SS "guestfs_ntfsresize_opts"
 .IX Subsection "guestfs_ntfsresize_opts"
 .Vb 4
@@ -7056,7 +7331,7 @@ resize.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.11.15)
+(Added in 1.11.15~)
 .SS "guestfs_ntfsresize_opts_va"
 .IX Subsection "guestfs_ntfsresize_opts_va"
 .Vb 4
@@ -7102,7 +7377,7 @@ to specify the new size (in bytes) explicitly.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.3.14)
+(Added in 1.3.14~)
 .SS "guestfs_part_add"
 .IX Subsection "guestfs_part_add"
 .Vb 6
@@ -7130,7 +7405,7 @@ Creating a partition which covers the whole disk is not so easy.  Use
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.78)
+(Added in 1.0.78~)
 .SS "guestfs_part_del"
 .IX Subsection "guestfs_part_del"
 .Vb 4
@@ -7147,7 +7422,7 @@ also deletes any logical partitions it contains.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.3.2)
+(Added in 1.3.2~)
 .SS "guestfs_part_disk"
 .IX Subsection "guestfs_part_disk"
 .Vb 4
@@ -7166,7 +7441,7 @@ possible values are described in \f(CW\*(C`guestfs_part_init\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.78)
+(Added in 1.0.78~)
 .SS "guestfs_part_get_bootable"
 .IX Subsection "guestfs_part_get_bootable"
 .Vb 4
@@ -7183,7 +7458,7 @@ See also \f(CW\*(C`guestfs_part_set_bootable\*(C'\fR.
 .PP
 This function returns a C truth value on success or \-1 on error.
 .PP
-(Додано у 1.3.2)
+(Added in 1.3.2~)
 .SS "guestfs_part_get_mbr_id"
 .IX Subsection "guestfs_part_get_mbr_id"
 .Vb 4
@@ -7202,7 +7477,7 @@ undefined results for other partition table types (see
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 1.3.2)
+(Added in 1.3.2~)
 .SS "guestfs_part_get_parttype"
 .IX Subsection "guestfs_part_get_parttype"
 .Vb 3
@@ -7221,7 +7496,7 @@ possible, although unusual.  See \f(CW\*(C`guestfs_part_init\*(C'\fR for a full 
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.78)
+(Added in 1.0.78~)
 .SS "guestfs_part_init"
 .IX Subsection "guestfs_part_init"
 .Vb 4
@@ -7292,7 +7567,7 @@ Other partition table types that may work but are not supported include:
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.78)
+(Added in 1.0.78~)
 .SS "guestfs_part_list"
 .IX Subsection "guestfs_part_list"
 .Vb 3
@@ -7323,7 +7598,7 @@ This function returns a \f(CW\*(C`struct guestfs_partition_list *\*(C'\fR, or \s
 was an error.  \fIThe caller must call \f(CI\*(C`guestfs_free_partition_list\*(C'\fI after
 use\fR.
 .PP
-(Додано у 1.0.78)
+(Added in 1.0.78~)
 .SS "guestfs_part_set_bootable"
 .IX Subsection "guestfs_part_set_bootable"
 .Vb 5
@@ -7343,7 +7618,7 @@ recognized.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.78)
+(Added in 1.0.78~)
 .SS "guestfs_part_set_mbr_id"
 .IX Subsection "guestfs_part_set_mbr_id"
 .Vb 5
@@ -7365,7 +7640,7 @@ undefined results for other partition table types (see
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.3.2)
+(Added in 1.3.2~)
 .SS "guestfs_part_set_name"
 .IX Subsection "guestfs_part_set_name"
 .Vb 5
@@ -7384,7 +7659,7 @@ This works on \f(CW\*(C`gpt\*(C'\fR but not on \f(CW\*(C`mbr\*(C'\fR partitions.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.78)
+(Added in 1.0.78~)
 .SS "guestfs_part_to_dev"
 .IX Subsection "guestfs_part_to_dev"
 .Vb 3
@@ -7404,7 +7679,7 @@ See also \f(CW\*(C`guestfs_part_to_partnum\*(C'\fR.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.5.15)
+(Added in 1.5.15~)
 .SS "guestfs_part_to_partnum"
 .IX Subsection "guestfs_part_to_partnum"
 .Vb 3
@@ -7423,7 +7698,7 @@ See also \f(CW\*(C`guestfs_part_to_dev\*(C'\fR.
 .PP
 On error this function returns \-1.
 .PP
-(Added in 1.13.25)
+(Added in 1.13.25~)
 .SS "guestfs_ping_daemon"
 .IX Subsection "guestfs_ping_daemon"
 .Vb 2
@@ -7438,7 +7713,7 @@ any other way.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.18)
+(Added in 1.0.18~)
 .SS "guestfs_pread"
 .IX Subsection "guestfs_pread"
 .Vb 6
@@ -7465,7 +7740,7 @@ after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.77)
+(Added in 1.0.77~)
 .SS "guestfs_pread_device"
 .IX Subsection "guestfs_pread_device"
 .Vb 6
@@ -7492,7 +7767,7 @@ after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.5.21)
+(Added in 1.5.21~)
 .SS "guestfs_pvcreate"
 .IX Subsection "guestfs_pvcreate"
 .Vb 3
@@ -7506,7 +7781,7 @@ should usually be a partition name such as \f(CW\*(C`/dev/sda1\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_pvremove"
 .IX Subsection "guestfs_pvremove"
 .Vb 3
@@ -7524,7 +7799,7 @@ first.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.13)
+(Added in 1.0.13~)
 .SS "guestfs_pvresize"
 .IX Subsection "guestfs_pvresize"
 .Vb 3
@@ -7538,7 +7813,7 @@ the new size of the underlying device.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.26)
+(Added in 1.0.26~)
 .SS "guestfs_pvresize_size"
 .IX Subsection "guestfs_pvresize_size"
 .Vb 4
@@ -7553,7 +7828,7 @@ specify the new size (in bytes) explicitly.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.3.14)
+(Added in 1.3.14~)
 .SS "guestfs_pvs"
 .IX Subsection "guestfs_pvs"
 .Vb 2
@@ -7573,7 +7848,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 0.4)
+(Added in 0.4~)
 .SS "guestfs_pvs_full"
 .IX Subsection "guestfs_pvs_full"
 .Vb 2
@@ -7588,7 +7863,7 @@ This function returns a \f(CW\*(C`struct guestfs_lvm_pv_list *\*(C'\fR, or \s-1N
 was an error.  \fIThe caller must call \f(CI\*(C`guestfs_free_lvm_pv_list\*(C'\fI after
 use\fR.
 .PP
-(Додано у 0.4)
+(Added in 0.4~)
 .SS "guestfs_pvuuid"
 .IX Subsection "guestfs_pvuuid"
 .Vb 3
@@ -7602,7 +7877,7 @@ This command returns the \s-1UUID\s0 of the \s-1LVM\s0 \s-1PV\s0 \f(CW\*(C`devic
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.87)
+(Added in 1.0.87~)
 .SS "guestfs_pwrite"
 .IX Subsection "guestfs_pwrite"
 .Vb 6
@@ -7630,7 +7905,7 @@ On error this function returns \-1.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.3.14)
+(Added in 1.3.14~)
 .SS "guestfs_pwrite_device"
 .IX Subsection "guestfs_pwrite_device"
 .Vb 6
@@ -7656,7 +7931,7 @@ On error this function returns \-1.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.5.20)
+(Added in 1.5.20~)
 .SS "guestfs_read_file"
 .IX Subsection "guestfs_read_file"
 .Vb 4
@@ -7679,7 +7954,7 @@ after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.63)
+(Added in 1.0.63~)
 .SS "guestfs_read_lines"
 .IX Subsection "guestfs_read_lines"
 .Vb 3
@@ -7702,7 +7977,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 0.7)
+(Added in 0.7~)
 .SS "guestfs_readdir"
 .IX Subsection "guestfs_readdir"
 .Vb 3
@@ -7754,7 +8029,7 @@ This function returns a \f(CW\*(C`struct guestfs_dirent_list *\*(C'\fR, or \s-1N
 was an error.  \fIThe caller must call \f(CI\*(C`guestfs_free_dirent_list\*(C'\fI after
 use\fR.
 .PP
-(Додано у 1.0.55)
+(Added in 1.0.55~)
 .SS "guestfs_readlink"
 .IX Subsection "guestfs_readlink"
 .Vb 3
@@ -7768,7 +8043,7 @@ This command reads the target of a symbolic link.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_readlinklist"
 .IX Subsection "guestfs_readlinklist"
 .Vb 4
@@ -7800,7 +8075,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 1.0.77)
+(Added in 1.0.77~)
 .SS "guestfs_realpath"
 .IX Subsection "guestfs_realpath"
 .Vb 3
@@ -7815,7 +8090,7 @@ has no \f(CW\*(C`.\*(C'\fR, \f(CW\*(C`..\*(C'\fR or symbolic link path elements.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_removexattr"
 .IX Subsection "guestfs_removexattr"
 .Vb 4
@@ -7831,7 +8106,7 @@ See also: \f(CW\*(C`guestfs_lremovexattr\*(C'\fR, \fIattr\fR\|(5).
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.59)
+(Added in 1.0.59~)
 .SS "guestfs_resize2fs"
 .IX Subsection "guestfs_resize2fs"
 .Vb 3
@@ -7850,7 +8125,7 @@ always safe to call \f(CW\*(C`guestfs_e2fsck_f\*(C'\fR before calling this funct
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.27)
+(Added in 1.0.27~)
 .SS "guestfs_resize2fs_M"
 .IX Subsection "guestfs_resize2fs_M"
 .Vb 3
@@ -7870,7 +8145,7 @@ minimal filesystem in bytes.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.9.4)
+(Added in 1.9.4~)
 .SS "guestfs_resize2fs_size"
 .IX Subsection "guestfs_resize2fs_size"
 .Vb 4
@@ -7885,7 +8160,7 @@ to specify the new size (in bytes) explicitly.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.3.14)
+(Added in 1.3.14~)
 .SS "guestfs_rm"
 .IX Subsection "guestfs_rm"
 .Vb 3
@@ -7898,7 +8173,7 @@ Remove the single file \f(CW\*(C`path\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_rm_rf"
 .IX Subsection "guestfs_rm_rf"
 .Vb 3
@@ -7912,7 +8187,7 @@ its a directory.  This is like the \f(CW\*(C`rm \-rf\*(C'\fR shell command.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_rmdir"
 .IX Subsection "guestfs_rmdir"
 .Vb 3
@@ -7925,7 +8200,7 @@ Remove the single directory \f(CW\*(C`path\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_rmmountpoint"
 .IX Subsection "guestfs_rmmountpoint"
 .Vb 3
@@ -7939,7 +8214,7 @@ This calls removes a mountpoint that was previously created with
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.62)
+(Added in 1.0.62~)
 .SS "guestfs_scrub_device"
 .IX Subsection "guestfs_scrub_device"
 .Vb 3
@@ -7956,7 +8231,7 @@ more details.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.52)
+(Added in 1.0.52~)
 .SS "guestfs_scrub_file"
 .IX Subsection "guestfs_scrub_file"
 .Vb 3
@@ -7975,7 +8250,7 @@ more details.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.52)
+(Added in 1.0.52~)
 .SS "guestfs_scrub_freespace"
 .IX Subsection "guestfs_scrub_freespace"
 .Vb 3
@@ -7994,7 +8269,7 @@ more details.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.52)
+(Added in 1.0.52~)
 .SS "guestfs_set_append"
 .IX Subsection "guestfs_set_append"
 .Vb 3
@@ -8014,7 +8289,7 @@ Setting \f(CW\*(C`append\*(C'\fR to \f(CW\*(C`NULL\*(C'\fR means \fIno\fR additi
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.26)
+(Added in 1.0.26~)
 .SS "guestfs_set_attach_method"
 .IX Subsection "guestfs_set_attach_method"
 .Vb 3
@@ -8041,7 +8316,7 @@ to a live guest.  For more information, see \*(L"\s-1ATTACHING\s0 \s-1TO\s0
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.9.8)
+(Added in 1.9.8~)
 .SS "guestfs_set_autosync"
 .IX Subsection "guestfs_set_autosync"
 .Vb 3
@@ -8059,7 +8334,7 @@ disabled by default).
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.3)
+(Added in 0.3~)
 .SS "guestfs_set_direct"
 .IX Subsection "guestfs_set_direct"
 .Vb 3
@@ -8081,7 +8356,7 @@ The default is disabled.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.72)
+(Added in 1.0.72~)
 .SS "guestfs_set_e2label"
 .IX Subsection "guestfs_set_e2label"
 .Vb 4
@@ -8099,7 +8374,7 @@ the existing label on a filesystem.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.15)
+(Added in 1.0.15~)
 .SS "guestfs_set_e2uuid"
 .IX Subsection "guestfs_set_e2uuid"
 .Vb 4
@@ -8118,7 +8393,7 @@ the existing \s-1UUID\s0 of a filesystem.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.15)
+(Added in 1.0.15~)
 .SS "guestfs_set_memsize"
 .IX Subsection "guestfs_set_memsize"
 .Vb 3
@@ -8137,7 +8412,7 @@ For more information on the architecture of libguestfs, see \fIguestfs\fR\|(3).
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.55)
+(Added in 1.0.55~)
 .SS "guestfs_set_network"
 .IX Subsection "guestfs_set_network"
 .Vb 3
@@ -8157,7 +8432,7 @@ effect.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.5.4)
+(Added in 1.5.4~)
 .SS "guestfs_set_path"
 .IX Subsection "guestfs_set_path"
 .Vb 3
@@ -8175,7 +8450,7 @@ Setting \f(CW\*(C`path\*(C'\fR to \f(CW\*(C`NULL\*(C'\fR restores the default pa
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.3)
+(Added in 0.3~)
 .SS "guestfs_set_pgroup"
 .IX Subsection "guestfs_set_pgroup"
 .Vb 3
@@ -8195,7 +8470,7 @@ the subprocess.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.11.18)
+(Added in 1.11.18~)
 .SS "guestfs_set_qemu"
 .IX Subsection "guestfs_set_qemu"
 .Vb 3
@@ -8222,7 +8497,7 @@ the qemu binary at the same time as the handle is created.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.6)
+(Added in 1.0.6~)
 .SS "guestfs_set_recovery_proc"
 .IX Subsection "guestfs_set_recovery_proc"
 .Vb 3
@@ -8246,7 +8521,7 @@ so kills qemu, which is not very helpful.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.77)
+(Added in 1.0.77~)
 .SS "guestfs_set_selinux"
 .IX Subsection "guestfs_set_selinux"
 .Vb 3
@@ -8265,7 +8540,7 @@ For more information on the architecture of libguestfs, see \fIguestfs\fR\|(3).
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.67)
+(Added in 1.0.67~)
 .SS "guestfs_set_smp"
 .IX Subsection "guestfs_set_smp"
 .Vb 3
@@ -8282,7 +8557,7 @@ This function must be called before \f(CW\*(C`guestfs_launch\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Added in 1.13.15)
+(Added in 1.13.15~)
 .SS "guestfs_set_trace"
 .IX Subsection "guestfs_set_trace"
 .Vb 3
@@ -8305,7 +8580,7 @@ callback to send them somewhere else (see \f(CW\*(C`guestfs_set_event_callback\*
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.69)
+(Added in 1.0.69~)
 .SS "guestfs_set_verbose"
 .IX Subsection "guestfs_set_verbose"
 .Vb 3
@@ -8324,7 +8599,7 @@ callback to send them somewhere else (see \f(CW\*(C`guestfs_set_event_callback\*
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.3)
+(Added in 0.3~)
 .SS "guestfs_setcon"
 .IX Subsection "guestfs_setcon"
 .Vb 3
@@ -8340,7 +8615,7 @@ See the documentation about \s-1SELINUX\s0 in \fIguestfs\fR\|(3).
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.67)
+(Added in 1.0.67~)
 .SS "guestfs_setxattr"
 .IX Subsection "guestfs_setxattr"
 .Vb 6
@@ -8359,7 +8634,7 @@ See also: \f(CW\*(C`guestfs_lsetxattr\*(C'\fR, \fIattr\fR\|(5).
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.59)
+(Added in 1.0.59~)
 .SS "guestfs_sfdisk"
 .IX Subsection "guestfs_sfdisk"
 .Vb 7
@@ -8402,7 +8677,7 @@ See also: \f(CW\*(C`guestfs_sfdisk_l\*(C'\fR, \f(CW\*(C`guestfs_sfdisk_N\*(C'\fR
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_sfdiskM"
 .IX Subsection "guestfs_sfdiskM"
 .Vb 4
@@ -8429,7 +8704,7 @@ See also: \f(CW\*(C`guestfs_sfdisk\*(C'\fR, the \fIsfdisk\fR\|(8) manpage and
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.55)
+(Added in 1.0.55~)
 .SS "guestfs_sfdisk_N"
 .IX Subsection "guestfs_sfdisk_N"
 .Vb 8
@@ -8460,7 +8735,7 @@ See also: \f(CW\*(C`guestfs_part_add\*(C'\fR
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.26)
+(Added in 1.0.26~)
 .SS "guestfs_sfdisk_disk_geometry"
 .IX Subsection "guestfs_sfdisk_disk_geometry"
 .Vb 3
@@ -8479,7 +8754,7 @@ The result is in human-readable format, and not designed to be parsed.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.26)
+(Added in 1.0.26~)
 .SS "guestfs_sfdisk_kernel_geometry"
 .IX Subsection "guestfs_sfdisk_kernel_geometry"
 .Vb 3
@@ -8495,7 +8770,7 @@ The result is in human-readable format, and not designed to be parsed.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.26)
+(Added in 1.0.26~)
 .SS "guestfs_sfdisk_l"
 .IX Subsection "guestfs_sfdisk_l"
 .Vb 3
@@ -8519,7 +8794,7 @@ See also: \f(CW\*(C`guestfs_part_list\*(C'\fR
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.26)
+(Added in 1.0.26~)
 .SS "guestfs_sh"
 .IX Subsection "guestfs_sh"
 .Vb 3
@@ -8545,7 +8820,7 @@ All the provisos about \f(CW\*(C`guestfs_command\*(C'\fR apply to this call.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.50)
+(Added in 1.0.50~)
 .SS "guestfs_sh_lines"
 .IX Subsection "guestfs_sh_lines"
 .Vb 3
@@ -8563,7 +8838,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 1.0.50)
+(Added in 1.0.50~)
 .SS "guestfs_sleep"
 .IX Subsection "guestfs_sleep"
 .Vb 3
@@ -8576,7 +8851,7 @@ Sleep for \f(CW\*(C`secs\*(C'\fR seconds.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.41)
+(Added in 1.0.41~)
 .SS "guestfs_stat"
 .IX Subsection "guestfs_stat"
 .Vb 3
@@ -8592,7 +8867,7 @@ This is the same as the \f(CWstat(2)\fR system call.
 This function returns a \f(CW\*(C`struct guestfs_stat *\*(C'\fR, or \s-1NULL\s0 if there was an
 error.  \fIThe caller must call \f(CI\*(C`guestfs_free_stat\*(C'\fI after use\fR.
 .PP
-(Додано у 0.9.2)
+(Added in 0.9.2~)
 .SS "guestfs_statvfs"
 .IX Subsection "guestfs_statvfs"
 .Vb 3
@@ -8610,7 +8885,7 @@ This is the same as the \f(CWstatvfs(2)\fR system call.
 This function returns a \f(CW\*(C`struct guestfs_statvfs *\*(C'\fR, or \s-1NULL\s0 if there was an
 error.  \fIThe caller must call \f(CI\*(C`guestfs_free_statvfs\*(C'\fI after use\fR.
 .PP
-(Додано у 0.9.2)
+(Added in 0.9.2~)
 .SS "guestfs_strings"
 .IX Subsection "guestfs_strings"
 .Vb 3
@@ -8629,7 +8904,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.22)
+(Added in 1.0.22~)
 .SS "guestfs_strings_e"
 .IX Subsection "guestfs_strings_e"
 .Vb 4
@@ -8673,7 +8948,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.22)
+(Added in 1.0.22~)
 .SS "guestfs_swapoff_device"
 .IX Subsection "guestfs_swapoff_device"
 .Vb 3
@@ -8687,7 +8962,7 @@ named \f(CW\*(C`device\*(C'\fR.  See \f(CW\*(C`guestfs_swapon_device\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_swapoff_file"
 .IX Subsection "guestfs_swapoff_file"
 .Vb 3
@@ -8700,7 +8975,7 @@ This command disables the libguestfs appliance swap on file.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_swapoff_label"
 .IX Subsection "guestfs_swapoff_label"
 .Vb 3
@@ -8714,7 +8989,7 @@ partition.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_swapoff_uuid"
 .IX Subsection "guestfs_swapoff_uuid"
 .Vb 3
@@ -8728,7 +9003,7 @@ This command disables the libguestfs appliance swap partition with the given
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_swapon_device"
 .IX Subsection "guestfs_swapon_device"
 .Vb 3
@@ -8749,7 +9024,7 @@ host device to the guest and swap on that.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_swapon_file"
 .IX Subsection "guestfs_swapon_file"
 .Vb 3
@@ -8763,7 +9038,7 @@ notes.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_swapon_label"
 .IX Subsection "guestfs_swapon_label"
 .Vb 3
@@ -8777,7 +9052,7 @@ This command enables swap to a labeled swap partition.  See
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_swapon_uuid"
 .IX Subsection "guestfs_swapon_uuid"
 .Vb 3
@@ -8791,7 +9066,7 @@ This command enables swap to a swap partition with the given \s-1UUID\s0.  See
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_sync"
 .IX Subsection "guestfs_sync"
 .Vb 2
@@ -8807,7 +9082,7 @@ closing the handle.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.3)
+(Added in 0.3~)
 .SS "guestfs_tail"
 .IX Subsection "guestfs_tail"
 .Vb 3
@@ -8825,7 +9100,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.54)
+(Added in 1.0.54~)
 .SS "guestfs_tail_n"
 .IX Subsection "guestfs_tail_n"
 .Vb 4
@@ -8850,7 +9125,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.54)
+(Added in 1.0.54~)
 .SS "guestfs_tar_in"
 .IX Subsection "guestfs_tar_in"
 .Vb 4
@@ -8867,7 +9142,7 @@ To upload a compressed tarball, use \f(CW\*(C`guestfs_tgz_in\*(C'\fR or \f(CW\*(
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.3)
+(Added in 1.0.3~)
 .SS "guestfs_tar_out"
 .IX Subsection "guestfs_tar_out"
 .Vb 4
@@ -8885,7 +9160,7 @@ To download a compressed tarball, use \f(CW\*(C`guestfs_tgz_out\*(C'\fR or
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.3)
+(Added in 1.0.3~)
 .SS "guestfs_tgz_in"
 .IX Subsection "guestfs_tgz_in"
 .Vb 4
@@ -8902,7 +9177,7 @@ To upload an uncompressed tarball, use \f(CW\*(C`guestfs_tar_in\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.3)
+(Added in 1.0.3~)
 .SS "guestfs_tgz_out"
 .IX Subsection "guestfs_tgz_out"
 .Vb 4
@@ -8919,7 +9194,7 @@ To download an uncompressed tarball, use \f(CW\*(C`guestfs_tar_out\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.3)
+(Added in 1.0.3~)
 .SS "guestfs_touch"
 .IX Subsection "guestfs_touch"
 .Vb 3
@@ -8937,7 +9212,7 @@ such as directories, symbolic links, block special etc.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.3)
+(Added in 0.3~)
 .SS "guestfs_truncate"
 .IX Subsection "guestfs_truncate"
 .Vb 3
@@ -8951,7 +9226,7 @@ already.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.77)
+(Added in 1.0.77~)
 .SS "guestfs_truncate_size"
 .IX Subsection "guestfs_truncate_size"
 .Vb 4
@@ -8971,7 +9246,127 @@ non-sparse file of zeroes, use \f(CW\*(C`guestfs_fallocate64\*(C'\fR instead.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.77)
+(Added in 1.0.77~)
+.SS "guestfs_tune2fs"
+.IX Subsection "guestfs_tune2fs"
+.Vb 4
+\& int
+\& guestfs_tune2fs (guestfs_h *g,
+\&                  const char *device,
+\&                  ...);
+.Ve
+.PP
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with \f(CW\*(C`\-1\*(C'\fR on
+its own.  See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.PP
+.Vb 10
+\& GUESTFS_TUNE2FS_FORCE, int force,
+\& GUESTFS_TUNE2FS_MAXMOUNTCOUNT, int maxmountcount,
+\& GUESTFS_TUNE2FS_MOUNTCOUNT, int mountcount,
+\& GUESTFS_TUNE2FS_ERRORBEHAVIOR, const char *errorbehavior,
+\& GUESTFS_TUNE2FS_GROUP, int64_t group,
+\& GUESTFS_TUNE2FS_INTERVALBETWEENCHECKS, int intervalbetweenchecks,
+\& GUESTFS_TUNE2FS_RESERVEDBLOCKSPERCENTAGE, int reservedblockspercentage,
+\& GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY, const char *lastmounteddirectory,
+\& GUESTFS_TUNE2FS_RESERVEDBLOCKSCOUNT, int64_t reservedblockscount,
+\& GUESTFS_TUNE2FS_USER, int64_t user,
+.Ve
+.PP
+This call allows you to adjust various filesystem parameters of an
+ext2/ext3/ext4 filesystem called \f(CW\*(C`device\*(C'\fR.
+.PP
+The optional parameters are:
+.ie n .IP """force""" 4
+.el .IP "\f(CWforce\fR" 4
+.IX Item "force"
+Force tune2fs to complete the operation even in the face of errors.  This is
+the same as the tune2fs \f(CW\*(C`\-f\*(C'\fR option.
+.ie n .IP """maxmountcount""" 4
+.el .IP "\f(CWmaxmountcount\fR" 4
+.IX Item "maxmountcount"
+Set the number of mounts after which the filesystem is checked by
+\&\fIe2fsck\fR\|(8).  If this is \f(CW0\fR then the number of mounts is disregarded.
+This is the same as the tune2fs \f(CW\*(C`\-c\*(C'\fR option.
+.ie n .IP """mountcount""" 4
+.el .IP "\f(CWmountcount\fR" 4
+.IX Item "mountcount"
+Set the number of times the filesystem has been mounted.  This is the same
+as the tune2fs \f(CW\*(C`\-C\*(C'\fR option.
+.ie n .IP """errorbehavior""" 4
+.el .IP "\f(CWerrorbehavior\fR" 4
+.IX Item "errorbehavior"
+Change the behavior of the kernel code when errors are detected.  Possible
+values currently are: \f(CW\*(C`continue\*(C'\fR, \f(CW\*(C`remount\-ro\*(C'\fR, \f(CW\*(C`panic\*(C'\fR.  In practice
+these options don't really make any difference, particularly for write
+errors.
+.Sp
+This is the same as the tune2fs \f(CW\*(C`\-e\*(C'\fR option.
+.ie n .IP """group""" 4
+.el .IP "\f(CWgroup\fR" 4
+.IX Item "group"
+Set the group which can use reserved filesystem blocks.  This is the same as
+the tune2fs \f(CW\*(C`\-g\*(C'\fR option except that it can only be specified as a number.
+.ie n .IP """intervalbetweenchecks""" 4
+.el .IP "\f(CWintervalbetweenchecks\fR" 4
+.IX Item "intervalbetweenchecks"
+Adjust the maximal time between two filesystem checks (in seconds).  If the
+option is passed as \f(CW0\fR then time-dependent checking is disabled.
+.Sp
+This is the same as the tune2fs \f(CW\*(C`\-i\*(C'\fR option.
+.ie n .IP """reservedblockspercentage""" 4
+.el .IP "\f(CWreservedblockspercentage\fR" 4
+.IX Item "reservedblockspercentage"
+Set the percentage of the filesystem which may only be allocated by
+privileged processes.  This is the same as the tune2fs \f(CW\*(C`\-m\*(C'\fR option.
+.ie n .IP """lastmounteddirectory""" 4
+.el .IP "\f(CWlastmounteddirectory\fR" 4
+.IX Item "lastmounteddirectory"
+Set the last mounted directory.  This is the same as the tune2fs \f(CW\*(C`\-M\*(C'\fR
+option.
+.ie n .IP """reservedblockscount"" Set the number of reserved filesystem blocks.  This is the same as the tune2fs ""\-r"" option." 4
+.el .IP "\f(CWreservedblockscount\fR Set the number of reserved filesystem blocks.  This is the same as the tune2fs \f(CW\-r\fR option." 4
+.IX Item "reservedblockscount Set the number of reserved filesystem blocks.  This is the same as the tune2fs -r option."
+.PD 0
+.ie n .IP """user""" 4
+.el .IP "\f(CWuser\fR" 4
+.IX Item "user"
+.PD
+Set the user who can use the reserved filesystem blocks.  This is the same
+as the tune2fs \f(CW\*(C`\-u\*(C'\fR option except that it can only be specified as a
+number.
+.PP
+To get the current values of filesystem parameters, see
+\&\f(CW\*(C`guestfs_tune2fs_l\*(C'\fR.  For precise details of how tune2fs works, see the
+\&\fItune2fs\fR\|(8) man page.
+.PP
+This function returns 0 on success or \-1 on error.
+.PP
+(Added in 1.15.4~)
+.SS "guestfs_tune2fs_va"
+.IX Subsection "guestfs_tune2fs_va"
+.Vb 4
+\& int
+\& guestfs_tune2fs_va (guestfs_h *g,
+\&                     const char *device,
+\&                     va_list args);
+.Ve
+.PP
+This is the \*(L"va_list variant\*(R" of \*(L"guestfs_tune2fs\*(R".
+.PP
+Див. \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
+.SS "guestfs_tune2fs_argv"
+.IX Subsection "guestfs_tune2fs_argv"
+.Vb 4
+\& int
+\& guestfs_tune2fs_argv (guestfs_h *g,
+\&                       const char *device,
+\&                       const struct guestfs_tune2fs_argv *optargs);
+.Ve
+.PP
+This is the \*(L"argv variant\*(R" of \*(L"guestfs_tune2fs\*(R".
+.PP
+Див. \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
 .SS "guestfs_tune2fs_l"
 .IX Subsection "guestfs_tune2fs_l"
 .Vb 3
@@ -8993,7 +9388,7 @@ was an error.  The array of strings will always have length \f(CW\*(C`2n+1\*(C'\
 \&\f(CW\*(C`n\*(C'\fR keys and values alternate, followed by the trailing \s-1NULL\s0 entry.  \fIThe
 caller must free the strings and the array after use\fR.
 .PP
-(Додано у 0.9.2)
+(Added in 0.9.2~)
 .SS "guestfs_txz_in"
 .IX Subsection "guestfs_txz_in"
 .Vb 4
@@ -9008,7 +9403,7 @@ tar file) into \f(CW\*(C`directory\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.3.2)
+(Added in 1.3.2~)
 .SS "guestfs_txz_out"
 .IX Subsection "guestfs_txz_out"
 .Vb 4
@@ -9023,7 +9418,7 @@ file \f(CW\*(C`tarball\*(C'\fR (as an xz compressed tar archive).
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.3.2)
+(Added in 1.3.2~)
 .SS "guestfs_umask"
 .IX Subsection "guestfs_umask"
 .Vb 3
@@ -9050,7 +9445,7 @@ This call returns the previous umask.
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 1.0.55)
+(Added in 1.0.55~)
 .SS "guestfs_umount"
 .IX Subsection "guestfs_umount"
 .Vb 3
@@ -9064,7 +9459,7 @@ by its mountpoint (path) or the device which contains the filesystem.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_umount_all"
 .IX Subsection "guestfs_umount_all"
 .Vb 2
@@ -9078,7 +9473,7 @@ Some internal mounts are not unmounted by this call.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_upload"
 .IX Subsection "guestfs_upload"
 .Vb 4
@@ -9101,7 +9496,7 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 \&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.2)
+(Added in 1.0.2~)
 .SS "guestfs_upload_offset"
 .IX Subsection "guestfs_upload_offset"
 .Vb 5
@@ -9133,7 +9528,7 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 \&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.5.17)
+(Added in 1.5.17~)
 .SS "guestfs_utimens"
 .IX Subsection "guestfs_utimens"
 .Vb 7
@@ -9164,7 +9559,7 @@ in this case).
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.77)
+(Added in 1.0.77~)
 .SS "guestfs_version"
 .IX Subsection "guestfs_version"
 .Vb 2
@@ -9201,7 +9596,7 @@ earlier versions, making this an unreliable way to test for features.  Use
 This function returns a \f(CW\*(C`struct guestfs_version *\*(C'\fR, or \s-1NULL\s0 if there was an
 error.  \fIThe caller must call \f(CI\*(C`guestfs_free_version\*(C'\fI after use\fR.
 .PP
-(Додано у 1.0.58)
+(Added in 1.0.58~)
 .SS "guestfs_vfs_label"
 .IX Subsection "guestfs_vfs_label"
 .Vb 3
@@ -9219,7 +9614,7 @@ To find a filesystem from the label, use \f(CW\*(C`guestfs_findfs_label\*(C'\fR.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.3.18)
+(Added in 1.3.18~)
 .SS "guestfs_vfs_type"
 .IX Subsection "guestfs_vfs_type"
 .Vb 3
@@ -9238,7 +9633,7 @@ the filesystem type.  For example a string such as \f(CW\*(C`ext3\*(C'\fR or \f(
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.75)
+(Added in 1.0.75~)
 .SS "guestfs_vfs_uuid"
 .IX Subsection "guestfs_vfs_uuid"
 .Vb 3
@@ -9256,7 +9651,7 @@ To find a filesystem from the \s-1UUID\s0, use \f(CW\*(C`guestfs_findfs_uuid\*(C
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.3.18)
+(Added in 1.3.18~)
 .SS "guestfs_vg_activate"
 .IX Subsection "guestfs_vg_activate"
 .Vb 4
@@ -9276,7 +9671,7 @@ activated or deactivated.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.26)
+(Added in 1.0.26~)
 .SS "guestfs_vg_activate_all"
 .IX Subsection "guestfs_vg_activate_all"
 .Vb 3
@@ -9292,7 +9687,7 @@ This command is the same as running \f(CW\*(C`vgchange \-a y|n\*(C'\fR
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.26)
+(Added in 1.0.26~)
 .SS "guestfs_vgcreate"
 .IX Subsection "guestfs_vgcreate"
 .Vb 4
@@ -9307,7 +9702,7 @@ of physical volumes \f(CW\*(C`physvols\*(C'\fR.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_vglvuuids"
 .IX Subsection "guestfs_vglvuuids"
 .Vb 3
@@ -9328,7 +9723,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 1.0.87)
+(Added in 1.0.87~)
 .SS "guestfs_vgpvuuids"
 .IX Subsection "guestfs_vgpvuuids"
 .Vb 3
@@ -9349,7 +9744,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 1.0.87)
+(Added in 1.0.87~)
 .SS "guestfs_vgremove"
 .IX Subsection "guestfs_vgremove"
 .Vb 3
@@ -9364,7 +9759,7 @@ This also forcibly removes all logical volumes in the volume group (if any).
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.13)
+(Added in 1.0.13~)
 .SS "guestfs_vgrename"
 .IX Subsection "guestfs_vgrename"
 .Vb 4
@@ -9378,7 +9773,7 @@ Rename a volume group \f(CW\*(C`volgroup\*(C'\fR with the new name \f(CW\*(C`new
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.83)
+(Added in 1.0.83~)
 .SS "guestfs_vgs"
 .IX Subsection "guestfs_vgs"
 .Vb 2
@@ -9398,7 +9793,7 @@ This function returns a NULL-terminated array of strings (like
 \&\fIenviron\fR\|(3)), or \s-1NULL\s0 if there was an error.  \fIThe caller must free the
 strings and the array after use\fR.
 .PP
-(Додано у 0.4)
+(Added in 0.4~)
 .SS "guestfs_vgs_full"
 .IX Subsection "guestfs_vgs_full"
 .Vb 2
@@ -9413,7 +9808,7 @@ This function returns a \f(CW\*(C`struct guestfs_lvm_vg_list *\*(C'\fR, or \s-1N
 was an error.  \fIThe caller must call \f(CI\*(C`guestfs_free_lvm_vg_list\*(C'\fI after
 use\fR.
 .PP
-(Додано у 0.4)
+(Added in 0.4~)
 .SS "guestfs_vgscan"
 .IX Subsection "guestfs_vgscan"
 .Vb 2
@@ -9426,7 +9821,7 @@ volumes, volume groups and logical volumes.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.3.2)
+(Added in 1.3.2~)
 .SS "guestfs_vguuid"
 .IX Subsection "guestfs_vguuid"
 .Vb 3
@@ -9440,7 +9835,7 @@ This command returns the \s-1UUID\s0 of the \s-1LVM\s0 \s-1VG\s0 named \f(CW\*(C
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.87)
+(Added in 1.0.87~)
 .SS "guestfs_wait_ready"
 .IX Subsection "guestfs_wait_ready"
 .Vb 2
@@ -9466,7 +9861,7 @@ unless you want to retain compatibility with older versions of the \s-1API\s0.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 0.3)
+(Added in 0.3~)
 .SS "guestfs_wc_c"
 .IX Subsection "guestfs_wc_c"
 .Vb 3
@@ -9480,7 +9875,7 @@ command.
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 1.0.54)
+(Added in 1.0.54~)
 .SS "guestfs_wc_l"
 .IX Subsection "guestfs_wc_l"
 .Vb 3
@@ -9494,7 +9889,7 @@ command.
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 1.0.54)
+(Added in 1.0.54~)
 .SS "guestfs_wc_w"
 .IX Subsection "guestfs_wc_w"
 .Vb 3
@@ -9508,7 +9903,7 @@ command.
 .PP
 On error this function returns \-1.
 .PP
-(Додано у 1.0.54)
+(Added in 1.0.54~)
 .SS "guestfs_write"
 .IX Subsection "guestfs_write"
 .Vb 5
@@ -9529,7 +9924,7 @@ This function returns 0 on success or \-1 on error.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.3.14)
+(Added in 1.3.14~)
 .SS "guestfs_write_append"
 .IX Subsection "guestfs_write_append"
 .Vb 5
@@ -9550,7 +9945,7 @@ This function returns 0 on success or \-1 on error.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.11.18)
+(Added in 1.11.18~)
 .SS "guestfs_write_file"
 .IX Subsection "guestfs_write_file"
 .Vb 5
@@ -9582,7 +9977,7 @@ This function returns 0 on success or \-1 on error.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 0.8)
+(Added in 0.8~)
 .SS "guestfs_zegrep"
 .IX Subsection "guestfs_zegrep"
 .Vb 4
@@ -9601,7 +9996,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_zegrepi"
 .IX Subsection "guestfs_zegrepi"
 .Vb 4
@@ -9620,7 +10015,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_zero"
 .IX Subsection "guestfs_zero"
 .Vb 3
@@ -9649,7 +10044,7 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 \&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.16)
+(Added in 1.0.16~)
 .SS "guestfs_zero_device"
 .IX Subsection "guestfs_zero_device"
 .Vb 3
@@ -9672,7 +10067,7 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 \&\*(L"\s-1GUESTFS_EVENT_PROGRESS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.3.1)
+(Added in 1.3.1~)
 .SS "guestfs_zerofree"
 .IX Subsection "guestfs_zerofree"
 .Vb 3
@@ -9692,7 +10087,7 @@ the filesystem.
 .PP
 This function returns 0 on success or \-1 on error.
 .PP
-(Додано у 1.0.26)
+(Added in 1.0.26~)
 .SS "guestfs_zfgrep"
 .IX Subsection "guestfs_zfgrep"
 .Vb 4
@@ -9711,7 +10106,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_zfgrepi"
 .IX Subsection "guestfs_zfgrepi"
 .Vb 4
@@ -9730,7 +10125,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_zfile"
 .IX Subsection "guestfs_zfile"
 .Vb 4
@@ -9757,7 +10152,7 @@ files.
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
 .PP
-(Додано у 1.0.59)
+(Added in 1.0.59~)
 .SS "guestfs_zgrep"
 .IX Subsection "guestfs_zgrep"
 .Vb 4
@@ -9776,7 +10171,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SS "guestfs_zgrepi"
 .IX Subsection "guestfs_zgrepi"
 .Vb 4
@@ -9795,7 +10190,7 @@ strings and the array after use\fR.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-(Додано у 1.0.66)
+(Added in 1.0.66~)
 .SH "СТРУКТУРИ"
 .IX Header "СТРУКТУРИ"
 .SS "guestfs_int_bool"
@@ -10130,6 +10525,10 @@ The following functions: \*(L"guestfs_is_lv\*(R" \*(L"guestfs_lvcreate\*(R"
 \&\*(L"guestfs_pvs_full\*(R" \*(L"guestfs_vg_activate\*(R" \*(L"guestfs_vg_activate_all\*(R"
 \&\*(L"guestfs_vgcreate\*(R" \*(L"guestfs_vgremove\*(R" \*(L"guestfs_vgs\*(R"
 \&\*(L"guestfs_vgs_full\*(R"
+.IP "\fBmdadm\fR" 4
+.IX Item "mdadm"
+The following functions: \*(L"guestfs_md_create\*(R" \*(L"guestfs_md_detail\*(R"
+\&\*(L"guestfs_md_stop\*(R"
 .IP "\fBmknod\fR" 4
 .IX Item "mknod"
 The following functions: \*(L"guestfs_mkfifo\*(R" \*(L"guestfs_mknod\*(R"
@@ -10951,8 +11350,8 @@ at the same time.
 Finally, the child process sends asynchronous messages back to the main
 program, such as kernel log messages.  You can register a callback to
 receive these messages.
-.SH "INTERNALS"
-.IX Header "INTERNALS"
+.SH "ВНУТРІШНІ ПРИНЦИПИ РОБОТИ"
+.IX Header "ВНУТРІШНІ ПРИНЦИПИ РОБОТИ"
 .SS "\s-1APPLIANCE\s0 \s-1BOOT\s0 \s-1PROCESS\s0"
 .IX Subsection "APPLIANCE BOOT PROCESS"
 This process has evolved and continues to evolve.  The description here
@@ -11310,8 +11709,8 @@ description.
 You can supply zero or as many tests as you want per \s-1API\s0 call.  The tests
 can either be added as part of the \s-1API\s0 description
 (\f(CW\*(C`generator/generator_actions.ml\*(C'\fR), or in some rarer cases you may want to
-drop a script into \f(CW\*(C`regressions/\*(C'\fR.  Note that adding a script to
-\&\f(CW\*(C`regressions/\*(C'\fR is slower, so if possible use the first method.
+drop a script into \f(CW\*(C`tests/*/\*(C'\fR.  Note that adding a script to \f(CW\*(C`tests/*/\*(C'\fR is
+slower, so if possible use the first method.
 .PP
 The following describes the test environment used when you add an \s-1API\s0 test
 in \f(CW\*(C`generator_actions.ml\*(C'\fR.
@@ -11374,8 +11773,8 @@ Packagers can run only certain tests by setting for example:
 \& TEST_ONLY="vfs_type zerofree"
 .Ve
 .PP
-See \f(CW\*(C`capitests/tests.c\*(C'\fR for more details of how these environment variables
-work.
+See \f(CW\*(C`tests/c\-api/tests.c\*(C'\fR for more details of how these environment
+variables work.
 .SS "\s-1DEBUGGING\s0 \s-1NEW\s0 \s-1API\s0 \s-1ACTIONS\s0"
 .IX Subsection "DEBUGGING NEW API ACTIONS"
 Test new actions work before submitting them.
@@ -11485,20 +11884,11 @@ programmers.
 .el .IP "\f(CWappliance\fR" 4
 .IX Item "appliance"
 The libguestfs appliance, build scripts and so on.
-.ie n .IP """capitests""" 4
-.el .IP "\f(CWcapitests\fR" 4
-.IX Item "capitests"
-Automated tests of the C \s-1API\s0.
 .ie n .IP """cat""" 4
 .el .IP "\f(CWcat\fR" 4
 .IX Item "cat"
 The \fIvirt\-cat\fR\|(1), \fIvirt\-filesystems\fR\|(1) and \fIvirt\-ls\fR\|(1) commands and
 documentation.
-.ie n .IP """caution""" 4
-.el .IP "\f(CWcaution\fR" 4
-.IX Item "caution"
-Safety and liveness tests of components that libguestfs depends upon (not of
-libguestfs itself).  Mainly this is for qemu and the kernel.
 .ie n .IP """clone""" 4
 .el .IP "\f(CWclone\fR" 4
 .IX Item "clone"
@@ -11525,17 +11915,16 @@ actions.
 .el .IP "\f(CWexamples\fR" 4
 .IX Item "examples"
 Код прикладів використання програмного інтерфейсу мовою C.
-.ie n .IP """extratests""" 4
-.el .IP "\f(CWextratests\fR" 4
-.IX Item "extratests"
-Extra tests.  These are not run by default because they require special
-tools or configuration.
 .ie n .IP """fish""" 4
 .el .IP "\f(CWfish\fR" 4
 .IX Item "fish"
 \&\fIguestfish\fR\|(1), the command-line shell, and various shell scripts built on
 top such as \fIvirt\-copy\-in\fR\|(1), \fIvirt\-copy\-out\fR\|(1), \fIvirt\-tar\-in\fR\|(1),
 \&\fIvirt\-tar\-out\fR\|(1).
+.ie n .IP """format""" 4
+.el .IP "\f(CWformat\fR" 4
+.IX Item "format"
+\&\fIvirt\-format\fR\|(1) command and documentation.
 .ie n .IP """fuse""" 4
 .el .IP "\f(CWfuse\fR" 4
 .IX Item "fuse"
@@ -11545,12 +11934,6 @@ top such as \fIvirt\-copy\-in\fR\|(1), \fIvirt\-copy\-out\fR\|(1), \fIvirt\-tar\
 .IX Item "generator"
 The crucially important generator, used to automatically generate large
 amounts of boilerplate C code for things like \s-1RPC\s0 and bindings.
-.ie n .IP """images""" 4
-.el .IP "\f(CWimages\fR" 4
-.IX Item "images"
-Files used by the test suite.
-.Sp
-Some \*(L"phony\*(R" guest images which we test against.
 .ie n .IP """inspector""" 4
 .el .IP "\f(CWinspector\fR" 4
 .IX Item "inspector"
@@ -11573,10 +11956,6 @@ M4 macros used by autoconf.
 The build infrastructure and \s-1PO\s0 files for translations of manpages and \s-1POD\s0
 files.  Eventually this will be combined with the \f(CW\*(C`po\*(C'\fR directory, but that
 is rather complicated.
-.ie n .IP """regressions""" 4
-.el .IP "\f(CWregressions\fR" 4
-.IX Item "regressions"
-Тести на регресії.
 .ie n .IP """rescue""" 4
 .el .IP "\f(CWrescue\fR" 4
 .IX Item "rescue"
@@ -11598,6 +11977,10 @@ Source code to the C library.
 .IX Item "test-tool"
 Test tool for end users to test if their qemu/kernel combination will work
 with libguestfs.
+.ie n .IP """tests""" 4
+.el .IP "\f(CWtests\fR" 4
+.IX Item "tests"
+Tests.
 .ie n .IP """tools""" 4
 .el .IP "\f(CWtools\fR" 4
 .IX Item "tools"
@@ -11609,6 +11992,9 @@ Command line tools written in Perl (\fIvirt\-win\-reg\fR\|(1) and many others).
 .ie n .IP """erlang""" 4
 .el .IP "\f(CWerlang\fR" 4
 .IX Item "erlang"
+.ie n .IP """gobject""" 4
+.el .IP "\f(CWgobject\fR" 4
+.IX Item "gobject"
 .ie n .IP """haskell""" 4
 .el .IP "\f(CWhaskell\fR" 4
 .IX Item "haskell"
@@ -11646,15 +12032,15 @@ Update \s-1ROADMAP\s0.
 .IP "\(bu" 4
 Run \f(CW\*(C`src/api\-support/update\-from\-tarballs.sh\*(C'\fR.
 .IP "\(bu" 4
-Push and pull from Transifex.
+Передавання даних на Transifex та отримання даних з Transifex.
 .Sp
-Run:
+Віддайте команду:
 .Sp
 .Vb 1
 \& tx push \-s
 .Ve
 .Sp
-to push the latest \s-1POT\s0 files to Transifex.  Then run:
+щоб надіслати найсвіжіші файли \s-1POT\s0 на Transifex. Потім віддайте команду:
 .Sp
 .Vb 1
 \& ./tx\-pull.sh
@@ -11665,7 +12051,7 @@ which is a wrapper to pull the latest translated \f(CW\*(C`*.po\*(C'\fR files.
 Create new stable and development directories under
 <http://libguestfs.org/download>.
 .IP "\(bu" 4
-Create the branch in git:
+Створення гілки у git:
 .Sp
 .Vb 4
 \& git tag \-a 1.XX.0 \-m "Version 1.XX.0 (stable)"
@@ -11818,7 +12204,7 @@ use in case \f(CW\*(C`/var/tmp\*(C'\fR is not large enough.
 \&\fIguestfs\-ruby\fR\|(3), \fIguestfish\fR\|(1), \fIguestmount\fR\|(1),
 \&\fIvirt\-alignment\-scan\fR\|(1), \fIvirt\-cat\fR\|(1), \fIvirt\-copy\-in\fR\|(1),
 \&\fIvirt\-copy\-out\fR\|(1), \fIvirt\-df\fR\|(1), \fIvirt\-edit\fR\|(1), \fIvirt\-filesystems\fR\|(1),
-\&\fIvirt\-inspector\fR\|(1), \fIvirt\-list\-filesystems\fR\|(1),
+\&\fIvirt\-format\fR\|(1), \fIvirt\-inspector\fR\|(1), \fIvirt\-list\-filesystems\fR\|(1),
 \&\fIvirt\-list\-partitions\fR\|(1), \fIvirt\-ls\fR\|(1), \fIvirt\-make\-fs\fR\|(1),
 \&\fIvirt\-rescue\fR\|(1), \fIvirt\-resize\fR\|(1), \fIvirt\-sparsify\fR\|(1),
 \&\fIvirt\-sysprep\fR\|(1), \fIvirt\-tar\fR\|(1), \fIvirt\-tar\-in\fR\|(1), \fIvirt\-tar\-out\fR\|(1),
@@ -11839,13 +12225,13 @@ Tools with a similar purpose: \fIfdisk\fR\|(8), \fIparted\fR\|(8), \fIkpartx\fR\
 .PP
 <https://bugzilla.redhat.com/enter_bug.cgi?component=libguestfs&product=Virtualization+Tools>
 .PP
-When reporting a bug, please check:
+Під час створення повідомлення щодо вади вам слід переконатися:
 .IP "\(bu" 4
-That the bug hasn't been reported already.
+Що про ваду вже не повідомлено кимось іншим.
 .IP "\(bu" 4
-That you are testing a recent version.
+Що ви користуєтеся найсвіжішою версією.
 .IP "\(bu" 4
-Describe the bug accurately, and give a way to reproduce it.
+Що ви точно описали ваду та способи її відтворення.
 .IP "\(bu" 4
 Run libguestfs-test-tool and paste the \fBcomplete, unedited\fR output into the
 bug report.
@@ -11854,7 +12240,7 @@ bug report.
 Richard W.M. Jones (\f(CW\*(C`rjones at redhat dot com\*(C'\fR)
 .SH "АВТОРСЬКІ ПРАВА"
 .IX Header "АВТОРСЬКІ ПРАВА"
-Copyright (C) 2009\-2011 Red Hat Inc.  <http://libguestfs.org/>
+Copyright (C) 2009\-2012 Red Hat Inc.  <http://libguestfs.org/>
 .PP
 This library is free software; you can redistribute it and/or modify it
 under the terms of the \s-1GNU\s0 Lesser General Public License as published by the

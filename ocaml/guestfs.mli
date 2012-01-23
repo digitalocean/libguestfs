@@ -329,6 +329,9 @@ val base64_in : t -> string -> string -> unit
 val base64_out : t -> string -> string -> unit
 (** download file and encode as base64 *)
 
+val blkid : t -> string -> (string * string) list
+(** print block device attributes *)
+
 val blockdev_flushbufs : t -> string -> unit
 (** flush device buffers *)
 
@@ -456,6 +459,9 @@ val drop_caches : t -> int -> unit
 
 val du : t -> string -> int64
 (** estimate file space usage *)
+
+val e2fsck : t -> ?correct:bool -> ?forceall:bool -> string -> unit
+(** check an ext2/ext3 filesystem *)
 
 val e2fsck_f : t -> string -> unit
 (** check an ext2/ext3 filesystem *)
@@ -777,6 +783,9 @@ val list_dm_devices : t -> string array
 val list_filesystems : t -> (string * string) list
 (** list filesystems *)
 
+val list_md_devices : t -> string array
+(** list Linux md (RAID) devices *)
+
 val list_partitions : t -> string array
 (** list the partitions *)
 
@@ -869,6 +878,15 @@ val lvuuid : t -> string -> string
 
 val lxattrlist : t -> string -> string array -> xattr array
 (** lgetxattr on multiple files *)
+
+val md_create : t -> ?missingbitmap:int64 -> ?nrdevices:int -> ?spare:int -> ?chunk:int64 -> ?level:string -> string -> string array -> unit
+(** create a Linux md (RAID) device *)
+
+val md_detail : t -> string -> (string * string) list
+(** obtain metadata for an MD device *)
+
+val md_stop : t -> string -> unit
+(** stop a Linux md (RAID) device *)
 
 val mkdir : t -> string -> unit
 (** create a directory *)
@@ -1257,11 +1275,15 @@ val tar_in : t -> string -> string -> unit
 val tar_out : t -> string -> string -> unit
 (** pack directory into tarfile *)
 
-val test0 : t -> string -> string option -> string array -> bool -> int -> int64 -> string -> string -> string -> unit
+val test0 : t -> ?obool:bool -> ?oint:int -> ?oint64:int64 -> ?ostring:string -> string -> string option -> string array -> bool -> int -> int64 -> string -> string -> string -> unit
 
 val test0rbool : t -> string -> bool
 
 val test0rboolerr : t -> bool
+
+val test0rbufferout : t -> string -> string
+
+val test0rbufferouterr : t -> string
 
 val test0rconstoptstring : t -> string -> string option
 
@@ -1313,6 +1335,9 @@ val truncate : t -> string -> unit
 
 val truncate_size : t -> string -> int64 -> unit
 (** truncate a file to a particular size *)
+
+val tune2fs : t -> ?force:bool -> ?maxmountcount:int -> ?mountcount:int -> ?errorbehavior:string -> ?group:int64 -> ?intervalbetweenchecks:int -> ?reservedblockspercentage:int -> ?lastmounteddirectory:string -> ?reservedblockscount:int64 -> ?user:int64 -> string -> unit
+(** adjust ext2/ext3/ext4 filesystem parameters *)
 
 val tune2fs_l : t -> string -> (string * string) list
 (** get ext2/ext3/ext4 superblock details *)
@@ -1500,6 +1525,7 @@ class guestfs : unit -> object
   method available_all_groups : unit -> string array
   method base64_in : string -> string -> unit
   method base64_out : string -> string -> unit
+  method blkid : string -> (string * string) list
   method blockdev_flushbufs : string -> unit
   method blockdev_getbsz : string -> int
   method blockdev_getro : string -> bool
@@ -1542,6 +1568,7 @@ class guestfs : unit -> object
   method download_offset : string -> string -> int64 -> int64 -> unit
   method drop_caches : int -> unit
   method du : string -> int64
+  method e2fsck : ?correct:bool -> ?forceall:bool -> string -> unit
   method e2fsck_f : string -> unit
   method echo_daemon : string array -> string
   method egrep : string -> string -> string array
@@ -1646,6 +1673,7 @@ class guestfs : unit -> object
   method list_devices : unit -> string array
   method list_dm_devices : unit -> string array
   method list_filesystems : unit -> (string * string) list
+  method list_md_devices : unit -> string array
   method list_partitions : unit -> string array
   method ll : string -> string
   method ln : string -> string -> unit
@@ -1677,6 +1705,9 @@ class guestfs : unit -> object
   method lvs_full : unit -> lvm_lv array
   method lvuuid : string -> string
   method lxattrlist : string -> string array -> xattr array
+  method md_create : ?missingbitmap:int64 -> ?nrdevices:int -> ?spare:int -> ?chunk:int64 -> ?level:string -> string -> string array -> unit
+  method md_detail : string -> (string * string) list
+  method md_stop : string -> unit
   method mkdir : string -> unit
   method mkdir_mode : string -> int -> unit
   method mkdir_p : string -> unit
@@ -1799,9 +1830,11 @@ class guestfs : unit -> object
   method tail_n : int -> string -> string array
   method tar_in : string -> string -> unit
   method tar_out : string -> string -> unit
-  method test0 : string -> string option -> string array -> bool -> int -> int64 -> string -> string -> string -> unit
+  method test0 : ?obool:bool -> ?oint:int -> ?oint64:int64 -> ?ostring:string -> string -> string option -> string array -> bool -> int -> int64 -> string -> string -> string -> unit
   method test0rbool : string -> bool
   method test0rboolerr : unit -> bool
+  method test0rbufferout : string -> string
+  method test0rbufferouterr : unit -> string
   method test0rconstoptstring : string -> string option
   method test0rconstoptstringerr : unit -> string option
   method test0rconststring : string -> string
@@ -1825,6 +1858,7 @@ class guestfs : unit -> object
   method touch : string -> unit
   method truncate : string -> unit
   method truncate_size : string -> int64 -> unit
+  method tune2fs : ?force:bool -> ?maxmountcount:int -> ?mountcount:int -> ?errorbehavior:string -> ?group:int64 -> ?intervalbetweenchecks:int -> ?reservedblockspercentage:int -> ?lastmounteddirectory:string -> ?reservedblockscount:int64 -> ?user:int64 -> string -> unit
   method tune2fs_l : string -> (string * string) list
   method txz_in : string -> string -> unit
   method txz_out : string -> string -> unit

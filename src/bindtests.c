@@ -55,7 +55,8 @@ guestfs__test0 (guestfs_h *g,
                 const char *filein,
                 const char *fileout,
                 const char *bufferin,
-                size_t bufferin_size)
+                size_t bufferin_size,
+                const struct guestfs_test0_argv *optargs)
 {
   printf ("%s\n", str);
   printf ("%s\n", optstr ? optstr : "null");
@@ -70,6 +71,30 @@ guestfs__test0 (guestfs_h *g,
     for (i = 0; i < bufferin_size; ++i)
       printf ("<%02x>", bufferin[i]);
     printf ("\n");
+  }
+  printf ("obool: ");
+  if (optargs->bitmask & GUESTFS_TEST0_OBOOL_BITMASK) {
+    printf("%s\n", optargs->obool ? "true" : "false");
+  } else {
+    printf ("unset\n");
+  }
+  printf ("oint: ");
+  if (optargs->bitmask & GUESTFS_TEST0_OINT_BITMASK) {
+    printf("%i\n", optargs->oint);
+  } else {
+    printf ("unset\n");
+  }
+  printf ("oint64: ");
+  if (optargs->bitmask & GUESTFS_TEST0_OINT64_BITMASK) {
+    printf("%" PRIi64 "\n", optargs->oint64);
+  } else {
+    printf ("unset\n");
+  }
+  printf ("ostring: ");
+  if (optargs->bitmask & GUESTFS_TEST0_OSTRING_BITMASK) {
+    printf("%s\n", optargs->ostring);
+  } else {
+    printf ("unset\n");
   }
   /* Java changes stdout line buffering so we need this: */
   fflush (stdout);
@@ -242,6 +267,9 @@ guestfs__test0rstructlist (guestfs_h *g,
   r = safe_calloc (g, sizeof *r, 1);
   r->len = len;
   r->val = safe_calloc (g, r->len, sizeof *r->val);
+  for (size_t i = 0; i < r->len; i++) {
+    r->val[i].pv_size = i;
+  }
   return r;
 }
 
@@ -260,7 +288,7 @@ guestfs__test0rhashtable (guestfs_h *g,
 {
   char **strs;
   int n, i;
-  if (sscanf (val, "%d", &n) != -1) {
+  if (sscanf (val, "%d", &n) != 1) {
     error (g, "%s: expecting int argument", "test0rhashtable");
     return NULL;
   }
@@ -278,6 +306,25 @@ guestfs__test0rhashtable (guestfs_h *g,
 /* Test error return. */
 char **
 guestfs__test0rhashtableerr (guestfs_h *g)
+{
+  error (g, "error");
+  return NULL;
+}
+
+/* Test normal return. */
+char *
+guestfs__test0rbufferout (guestfs_h *g,
+                          const char *val,
+                          size_t *size_r)
+{
+  *size_r = strlen (val);
+  return strdup (val);
+}
+
+/* Test error return. */
+char *
+guestfs__test0rbufferouterr (guestfs_h *g,
+                             size_t *size_r)
 {
   error (g, "error");
   return NULL;

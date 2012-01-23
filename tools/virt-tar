@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 # virt-tar
-# Copyright (C) 2009-2010 Red Hat Inc.
+# Copyright (C) 2009-2012 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ virt-tar - Extract or upload files to a virtual machine
 
  virt-tar [--options] disk.img [disk.img ...] -u tarball directory
 
-=head1 NOTE
+=head1 OBSOLETE
 
 This tool is obsolete.  Use L<virt-copy-in(1)>, L<virt-copy-out(1)>,
 L<virt-tar-in(1)>, L<virt-tar-out(1)> as replacements.

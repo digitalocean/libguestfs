@@ -705,6 +705,11 @@ top of C<csharp/Libguestfs.cs>.
 
 See L<guestfs-erlang(3)>.
 
+=item B<GObject>
+
+Experimental GObject bindings (with GObject Introspection support) are
+available.  See the C<gobject> directory in the source.
+
 =item B<Haskell>
 
 This is the only language binding that is working but incomplete.  Only
@@ -2633,8 +2638,8 @@ description.
 You can supply zero or as many tests as you want per API call.  The tests
 can either be added as part of the API description
 (C<generator/generator_actions.ml>), or in some rarer cases you may want to
-drop a script into C<regressions/>.  Note that adding a script to
-C<regressions/> is slower, so if possible use the first method.
+drop a script into C<tests/*/>.  Note that adding a script to C<tests/*/> is
+slower, so if possible use the first method.
 
 The following describes the test environment used when you add an API test
 in C<generator_actions.ml>.
@@ -2695,8 +2700,8 @@ Packagers can run only certain tests by setting for example:
 
  TEST_ONLY="vfs_type zerofree"
 
-See C<capitests/tests.c> for more details of how these environment variables
-work.
+See C<tests/c-api/tests.c> for more details of how these environment
+variables work.
 
 =head2 DEBUGGING NEW API ACTIONS
 
@@ -2810,19 +2815,10 @@ L<virt-alignment-scan(1)> command and documentation.
 
 The libguestfs appliance, build scripts and so on.
 
-=item C<capitests>
-
-Automated tests of the C API.
-
 =item C<cat>
 
 The L<virt-cat(1)>, L<virt-filesystems(1)> and L<virt-ls(1)> commands and
 documentation.
-
-=item C<caution>
-
-Safety and liveness tests of components that libguestfs depends upon (not of
-libguestfs itself).  Mainly this is for qemu and the kernel.
 
 =item C<clone>
 
@@ -2850,16 +2846,15 @@ L<virt-edit(1)> command and documentation.
 
 C API example code.
 
-=item C<extratests>
-
-Extra tests.  These are not run by default because they require special
-tools or configuration.
-
 =item C<fish>
 
 L<guestfish(1)>, the command-line shell, and various shell scripts built on
 top such as L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-tar-in(1)>,
 L<virt-tar-out(1)>.
+
+=item C<format>
+
+L<virt-format(1)> command and documentation.
 
 =item C<fuse>
 
@@ -2869,12 +2864,6 @@ L<guestmount(1)>, FUSE (userspace filesystem) built on top of libguestfs.
 
 The crucially important generator, used to automatically generate large
 amounts of boilerplate C code for things like RPC and bindings.
-
-=item C<images>
-
-Files used by the test suite.
-
-Some "phony" guest images which we test against.
 
 =item C<inspector>
 
@@ -2898,10 +2887,6 @@ The build infrastructure and PO files for translations of manpages and POD
 files.  Eventually this will be combined with the C<po> directory, but that
 is rather complicated.
 
-=item C<regressions>
-
-Regression tests.
-
 =item C<rescue>
 
 L<virt-rescue(1)> command and documentation.
@@ -2923,6 +2908,10 @@ Source code to the C library.
 Test tool for end users to test if their qemu/kernel combination will work
 with libguestfs.
 
+=item C<tests>
+
+Tests.
+
 =item C<tools>
 
 Command line tools written in Perl (L<virt-win-reg(1)> and many others).
@@ -2930,6 +2919,8 @@ Command line tools written in Perl (L<virt-win-reg(1)> and many others).
 =item C<csharp>
 
 =item C<erlang>
+
+=item C<gobject>
 
 =item C<haskell>
 
@@ -3164,7 +3155,7 @@ L<guestfs-ocaml(3)>, L<guestfs-perl(3)>, L<guestfs-python(3)>,
 L<guestfs-ruby(3)>, L<guestfish(1)>, L<guestmount(1)>,
 L<virt-alignment-scan(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>,
 L<virt-copy-out(1)>, L<virt-df(1)>, L<virt-edit(1)>, L<virt-filesystems(1)>,
-L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
+L<virt-format(1)>, L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
 L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
 L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,
 L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
@@ -3214,7 +3205,7 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2011 Red Hat Inc.  L<http://libguestfs.org/>
+Copyright (C) 2009-2012 Red Hat Inc.  L<http://libguestfs.org/>
 
 This library is free software; you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published by the

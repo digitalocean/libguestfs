@@ -35,10 +35,6 @@ EXTRA_DIST = \
 CLEANFILES = *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so
 CLEANFILES += t/*.cmi t/*.cmo t/*.cmx t/*.o t/*.a t/*.so
 
-AM_CPPFLAGS = -I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
-  -I$(top_srcdir)/src -I$(top_builddir)/src \
-  $(WARN_CFLAGS) $(WERROR_CFLAGS)
-
 if HAVE_OCAML
 
 OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX
@@ -46,20 +42,27 @@ OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 
 noinst_DATA = mlguestfs.cma mlguestfs.cmxa META
 
-OBJS = guestfs_c.o guestfs_c_actions.o guestfs.cmo
-XOBJS = $(OBJS:.cmo=.cmx)
+# Build the C part into a library, so that automake handles the C
+# compilation step for us.  Note that we don't directly use this
+# library; we link with the object files that it generates.
+noinst_LIBRARIES = libguestfsocaml.a
 
-mlguestfs.cma: $(OBJS)
-	$(OCAMLMKLIB) -o mlguestfs $^ -L$(top_builddir)/src/.libs -lguestfs
+mlguestfs.cma: libguestfsocaml.a guestfs.cmo
+	$(OCAMLMKLIB) -o mlguestfs \
+	  $(libguestfsocaml_a_OBJECTS) guestfs.cmo \
+	  -L$(top_builddir)/src/.libs -lguestfs
 
-mlguestfs.cmxa: $(XOBJS)
-	$(OCAMLMKLIB) -o mlguestfs $^ -L$(top_builddir)/src/.libs -lguestfs
+mlguestfs.cmxa: libguestfsocaml.a guestfs.cmx
+	$(OCAMLMKLIB) -o mlguestfs \
+	  $(libguestfsocaml_a_OBJECTS) guestfs.cmx \
+	  -L$(top_builddir)/src/.libs -lguestfs
 
-guestfs_c.o: guestfs_c.c
-	$(CC) $(AM_CPPFLAGS) $(CFLAGS) -fPIC -Wall -c $<
-
-guestfs_c_actions.o: guestfs_c_actions.c
-	$(CC) $(AM_CPPFLAGS) $(CFLAGS) -fPIC -Wall -c $(srcdir)/$<
+libguestfsocaml_a_CFLAGS = \
+	-I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	-fPIC
+libguestfsocaml_a_SOURCES = guestfs_c.c guestfs_c_actions.c
 
 if HAVE_OCAMLDOC
 
@@ -71,18 +74,20 @@ html/index.html: $(srcdir)/guestfs*.mli $(srcdir)/guestfs*.ml
 endif
 
 TESTS_ENVIRONMENT = \
-	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
-	LIBGUESTFS_PATH=$(top_builddir)/appliance \
-	TMPDIR=$(top_builddir) \
+	$(top_builddir)/run \
 	$(VG)
 
 TESTS = run-bindtests \
 	t/guestfs_005_load \
-	t/guestfs_010_basic \
-	t/guestfs_070_threads \
 	t/guestfs_080_optargs \
-	t/guestfs_400_events \
+	t/guestfs_400_events
+
+if ENABLE_APPLIANCE
+TESTS += t/guestfs_010_basic \
+	t/guestfs_070_threads \
 	t/guestfs_400_progress
+endif
+
 noinst_DATA += bindtests \
 	t/guestfs_005_load \
 	t/guestfs_010_basic \
@@ -136,15 +141,16 @@ t/%.cmx: t/%.ml mlguestfs.cmxa
 
 depend: .depend
 
-.depend: $(wildcard *.mli) $(wildcard *.ml)
+.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
 	rm -f $@ $@-t
-	$(OCAMLFIND) ocamldep $^ | \
-	  $(SED) -e 's/ *$$//' | \
+	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) $^ | \
+	  $(SED) 's/ *$$//' | \
 	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
-	  LANG=C sort > $@-t
+	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
+	  sort > $@-t
 	mv $@-t $@
 
-include .depend
+-include .depend
 
 SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly
 

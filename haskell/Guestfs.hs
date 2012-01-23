@@ -25,7 +25,6 @@
 
 module Guestfs (
   create,
-  test0,
   test0rint,
   test0rinterr,
   test0rint64,
@@ -233,7 +232,8 @@ module Guestfs (
   resize2fs_M,
   internal_autosync,
   write_append,
-  part_to_partnum
+  part_to_partnum,
+  md_stop
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -289,18 +289,6 @@ last_error h = do
   if (str == nullPtr)
     then return "no error"
     else peekCString str
-
-foreign import ccall unsafe "guestfs_test0" c_test0
-  :: GuestfsP -> CString -> CString -> Ptr CString -> CInt -> CInt -> CInt -> CString -> CString -> CString -> CInt -> IO (CInt)
-
-test0 :: GuestfsH -> String -> Maybe String -> [String] -> Bool -> Int -> Int -> String -> String -> String -> IO ()
-test0 h str optstr strlist b integer integer64 filein fileout bufferin = do
-  r <- withCString str $ \str -> maybeWith withCString optstr $ \optstr -> withMany withCString strlist $ \strlist -> withArray0 nullPtr strlist $ \strlist -> withCString filein $ \filein -> withCString fileout $ \fileout -> withCStringLen bufferin $ \(bufferin, bufferin_size) -> withForeignPtr h (\p -> c_test0 p str optstr strlist (fromBool b) (fromIntegral integer) (fromIntegral integer64) filein fileout bufferin (fromIntegral bufferin_size))
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return ()
 
 foreign import ccall unsafe "guestfs_test0rint" c_test0rint
   :: GuestfsP -> CString -> IO (CInt)
@@ -2797,4 +2785,16 @@ part_to_partnum h partition = do
       err <- last_error h
       fail err
     else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs_md_stop" c_md_stop
+  :: GuestfsP -> CString -> IO (CInt)
+
+md_stop :: GuestfsH -> String -> IO ()
+md_stop h md = do
+  r <- withCString md $ \md -> withForeignPtr h (\p -> c_md_stop p md)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
 

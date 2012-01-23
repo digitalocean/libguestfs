@@ -83,3 +83,176 @@ do_vfs_uuid (const char *device)
 {
   return get_blkid_tag (device, "UUID");
 }
+
+/* RHEL5 blkid doesn't have the -p (low-level probing) option and the
+ * -i(I/O limits) option so we must test for these options the first
+ * time the function is called.
+ *
+ * Debian 6 has -p but not -i.
+ */
+static int
+test_blkid_p_i_opt (void)
+{
+  int r;
+  int result;
+  char *err;
+
+  r = commandr (NULL, &err, "blkid", "-p", "/dev/null", NULL);
+  if (r == -1) {
+    /* This means we couldn't run the blkid command at all. */
+  command_failed:
+    reply_with_error ("could not run 'blkid' command: %s", err);
+    free (err);
+    return -1;
+  }
+
+  if (strstr (err, "invalid option --")) {
+    free (err);
+    return 0;
+  }
+  free (err);
+
+  r = commandr (NULL, &err, "blkid", "-i", NULL);
+  if (r == -1)
+    goto command_failed;
+
+  if (strstr (err, "invalid option --")) {
+    free (err);
+    return 0;
+  }
+  free (err);
+
+  /* We have both options. */
+  return 1;
+}
+
+static char **
+blkid_with_p_i_opt (const char *device)
+{
+  int r;
+  char *out = NULL, *err = NULL;
+  char **lines = NULL;
+  char **ret = NULL;
+  int size = 0, alloc = 0;
+
+  r = command(&out, &err, "blkid", "-c", "/dev/null",
+               "-p", "-i", "-o", "export", device, NULL);
+  if (r == -1) {
+    reply_with_error("%s", err);
+    goto error;
+  }
+
+  /* Split the command output into lines */
+  lines = split_lines(out);
+  if (lines == NULL) {
+    reply_with_perror("malloc");
+    goto error;
+  }
+
+  /* Parse the output of blkid -p -i -o export:
+   * UUID=b6d83437-c6b4-4bf0-8381-ef3fc3578590
+   * VERSION=1.0
+   * TYPE=ext2
+   * USAGE=filesystem
+   * MINIMUM_IO_SIZE=512
+   * PHYSICAL_SECTOR_SIZE=512
+   * LOGICAL_SECTOR_SIZE=512
+   * PART_ENTRY_SCHEME=dos
+   * PART_ENTRY_TYPE=0x83
+   * PART_ENTRY_NUMBER=6
+   * PART_ENTRY_OFFSET=642875153
+   * PART_ENTRY_SIZE=104857600
+   * PART_ENTRY_DISK=8:0
+   */
+  for (char **i = lines; *i != NULL; i++) {
+    char *line = *i;
+
+    /* Skip blank lines (shouldn't happen) */
+    if (line[0] == '\0') continue;
+
+    /* Split the line in 2 at the equals sign */
+    char *eq = strchr(line, '=');
+    if (eq) {
+      *eq = '\0'; eq++;
+
+      /* Add the key/value pair to the output */
+      if (add_string(&ret, &size, &alloc, line) == -1 ||
+          add_string(&ret, &size, &alloc, eq) == -1) goto error;
+    } else {
+      fprintf(stderr, "blkid: unexpected blkid output ignored: %s", line);
+    }
+  }
+
+  if (add_string(&ret, &size, &alloc, NULL) == -1) goto error;
+
+  free(out);
+  free(err);
+  free(lines);
+
+  return ret;
+
+error:
+  free(out);
+  free(err);
+  if (lines) free(lines);
+  if (ret) free_strings(ret);
+
+  return NULL;
+}
+
+static char **
+blkid_without_p_i_opt(const char *device)
+{
+  char *s;
+  char **ret = NULL;
+  int size = 0, alloc = 0;
+
+  if (add_string (&ret, &size, &alloc, "TYPE") == -1) goto error;
+  s = get_blkid_tag (device, "TYPE");
+  if (s == NULL) goto error;
+  if (add_string (&ret, &size, &alloc, s) == -1)
+    goto error;
+
+  if (add_string (&ret, &size, &alloc, "LABEL") == -1) goto error;
+  s = get_blkid_tag (device, "LABEL");
+  if (s == NULL) goto error;
+  if (add_string (&ret, &size, &alloc, s) == -1)
+    goto error;
+
+  if (add_string (&ret, &size, &alloc, "UUID") == -1) goto error;
+  s = get_blkid_tag (device, "UUID");
+  if (s == NULL) goto error;
+  if (add_string (&ret, &size, &alloc, s) == -1)
+    goto error;
+
+  if (add_string (&ret, &size, &alloc, NULL) == -1) goto error;
+
+  return ret;
+error:
+  if (ret)
+    free_strings (ret);
+  return NULL;
+}
+
+char **
+do_blkid (const char *device)
+{
+  static int blkid_has_p_i_opt = -1;
+  int r;
+  char *out = NULL, *err = NULL;
+  char **lines = NULL;
+
+  char **ret = NULL;
+  int size = 0, alloc = 0;
+
+  if (blkid_has_p_i_opt == -1) {
+    blkid_has_p_i_opt = test_blkid_p_i_opt ();
+    if (blkid_has_p_i_opt == -1)
+      return NULL;
+  }
+
+  if (blkid_has_p_i_opt)
+    return blkid_with_p_i_opt (device);
+  else
+    return blkid_without_p_i_opt (device);
+}

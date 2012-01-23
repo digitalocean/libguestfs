@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2010-2011 Red Hat Inc.
+# Copyright (C) 2010-2012 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ SOURCES = \
 	generator_c.ml \
 	generator_xdr.ml \
 	generator_daemon.ml \
-	generator_capitests.ml \
+	generator_tests_c_api.ml \
 	generator_fish.ml \
 	generator_ocaml.ml \
 	generator_perl.ml \
@@ -47,6 +47,7 @@ SOURCES = \
 	generator_csharp.ml \
 	generator_php.ml \
 	generator_erlang.ml \
+	generator_gobject.ml \
 	generator_bindtests.ml \
 	generator_errnostring.ml \
 	generator_main.ml
@@ -79,7 +80,7 @@ depend: .depend
 	$(OCAMLDEP) $^ | sed 's/  *$$//' > $@-t
 	mv $@-t $@
 
-include .depend
+-include .depend
 
 else
 

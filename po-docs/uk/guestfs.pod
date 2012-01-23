@@ -306,11 +306,11 @@ directories recursively.
 
 To copy part of a file (offset and size) use L</guestfs_copy_file_to_file>.
 
-=item B<file> to B<device>
+=item B<файл> на B<пристрій>
 
-=item B<device> to B<file>
+=item B<пристрій> до B<файла>
 
-=item B<device> to B<device>
+=item B<пристрій> на B<пристрій>
 
 Use L</guestfs_copy_file_to_device>, L</guestfs_copy_device_to_file>, or
 L</guestfs_copy_device_to_device>.
@@ -335,7 +335,7 @@ optional C<size> parameter:
 
 Use L</guestfs_upload>.  See L</UPLOADING> above.
 
-=item B<file or device> to B<file on the host>
+=item B<файл або пристрій> у B<файл на вузлі>
 
 Use L</guestfs_download>.  See L</DOWNLOADING> above.
 
@@ -706,7 +706,12 @@ top of C<csharp/Libguestfs.cs>.
 
 =item B<Erlang>
 
-See L<guestfs-erlang(3)>.
+Див. L<guestfs-erlang(3)>.
+
+=item B<GObject>
+
+Experimental GObject bindings (with GObject Introspection support) are
+available.  See the C<gobject> directory in the source.
 
 =item B<Haskell>
 
@@ -2268,7 +2273,7 @@ Finally, the child process sends asynchronous messages back to the main
 program, such as kernel log messages.  You can register a callback to
 receive these messages.
 
-=head1 INTERNALS
+=head1 ВНУТРІШНІ ПРИНЦИПИ РОБОТИ
 
 =head2 APPLIANCE BOOT PROCESS
 
@@ -2636,8 +2641,8 @@ description.
 You can supply zero or as many tests as you want per API call.  The tests
 can either be added as part of the API description
 (C<generator/generator_actions.ml>), or in some rarer cases you may want to
-drop a script into C<regressions/>.  Note that adding a script to
-C<regressions/> is slower, so if possible use the first method.
+drop a script into C<tests/*/>.  Note that adding a script to C<tests/*/> is
+slower, so if possible use the first method.
 
 The following describes the test environment used when you add an API test
 in C<generator_actions.ml>.
@@ -2698,8 +2703,8 @@ Packagers can run only certain tests by setting for example:
 
  TEST_ONLY="vfs_type zerofree"
 
-See C<capitests/tests.c> for more details of how these environment variables
-work.
+See C<tests/c-api/tests.c> for more details of how these environment
+variables work.
 
 =head2 DEBUGGING NEW API ACTIONS
 
@@ -2813,19 +2818,10 @@ L<virt-alignment-scan(1)> command and documentation.
 
 The libguestfs appliance, build scripts and so on.
 
-=item C<capitests>
-
-Automated tests of the C API.
-
 =item C<cat>
 
 The L<virt-cat(1)>, L<virt-filesystems(1)> and L<virt-ls(1)> commands and
 documentation.
-
-=item C<caution>
-
-Safety and liveness tests of components that libguestfs depends upon (not of
-libguestfs itself).  Mainly this is for qemu and the kernel.
 
 =item C<clone>
 
@@ -2853,16 +2849,15 @@ L<virt-edit(1)> command and documentation.
 
 Код прикладів використання програмного інтерфейсу мовою C.
 
-=item C<extratests>
-
-Extra tests.  These are not run by default because they require special
-tools or configuration.
-
 =item C<fish>
 
 L<guestfish(1)>, the command-line shell, and various shell scripts built on
 top such as L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-tar-in(1)>,
 L<virt-tar-out(1)>.
+
+=item C<format>
+
+L<virt-format(1)> command and documentation.
 
 =item C<fuse>
 
@@ -2872,12 +2867,6 @@ L<guestmount(1)>, FUSE (userspace filesystem) built on top of libguestfs.
 
 The crucially important generator, used to automatically generate large
 amounts of boilerplate C code for things like RPC and bindings.
-
-=item C<images>
-
-Files used by the test suite.
-
-Some "phony" guest images which we test against.
 
 =item C<inspector>
 
@@ -2901,10 +2890,6 @@ The build infrastructure and PO files for translations of manpages and POD
 files.  Eventually this will be combined with the C<po> directory, but that
 is rather complicated.
 
-=item C<regressions>
-
-Тести на регресії.
-
 =item C<rescue>
 
 L<virt-rescue(1)> command and documentation.
@@ -2926,6 +2911,10 @@ Source code to the C library.
 Test tool for end users to test if their qemu/kernel combination will work
 with libguestfs.
 
+=item C<tests>
+
+Tests.
+
 =item C<tools>
 
 Command line tools written in Perl (L<virt-win-reg(1)> and many others).
@@ -2933,6 +2922,8 @@ Command line tools written in Perl (L<virt-win-reg(1)> and many others).
 =item C<csharp>
 
 =item C<erlang>
+
+=item C<gobject>
 
 =item C<haskell>
 
@@ -2978,13 +2969,13 @@ Run C<src/api-support/update-from-tarballs.sh>.
 
 =item *
 
-Push and pull from Transifex.
+Передавання даних на Transifex та отримання даних з Transifex.
 
-Run:
+Віддайте команду:
 
  tx push -s
 
-to push the latest POT files to Transifex.  Then run:
+щоб надіслати найсвіжіші файли POT на Transifex. Потім віддайте команду:
 
  ./tx-pull.sh
 
@@ -2997,7 +2988,7 @@ L<http://libguestfs.org/download>.
 
 =item *
 
-Create the branch in git:
+Створення гілки у git:
 
  git tag -a 1.XX.0 -m "Version 1.XX.0 (stable)"
  git tag -a 1.YY.0 -m "Version 1.YY.0 (development)"
@@ -3167,7 +3158,7 @@ L<guestfs-ocaml(3)>, L<guestfs-perl(3)>, L<guestfs-python(3)>,
 L<guestfs-ruby(3)>, L<guestfish(1)>, L<guestmount(1)>,
 L<virt-alignment-scan(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>,
 L<virt-copy-out(1)>, L<virt-df(1)>, L<virt-edit(1)>, L<virt-filesystems(1)>,
-L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
+L<virt-format(1)>, L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
 L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
 L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,
 L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
@@ -3189,21 +3180,21 @@ L<https://bugzilla.redhat.com/buglist.cgi?component=libguestfs&product=Virtualiz
 
 L<https://bugzilla.redhat.com/enter_bug.cgi?component=libguestfs&product=Virtualization+Tools>
 
-When reporting a bug, please check:
+Під час створення повідомлення щодо вади вам слід переконатися:
 
 =over 4
 
 =item *
 
-That the bug hasn't been reported already.
+Що про ваду вже не повідомлено кимось іншим.
 
 =item *
 
-That you are testing a recent version.
+Що ви користуєтеся найсвіжішою версією.
 
 =item *
 
-Describe the bug accurately, and give a way to reproduce it.
+Що ви точно описали ваду та способи її відтворення.
 
 =item *
 
@@ -3218,7 +3209,7 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2011 Red Hat Inc.  L<http://libguestfs.org/>
+Copyright (C) 2009-2012 Red Hat Inc.  L<http://libguestfs.org/>
 
 This library is free software; you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published by the

@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2011 Red Hat Inc.
+# Copyright (C) 2009-2012 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
 # add extra information using --with-extra="..." which may be any
 # freeform string.
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [14])
-m4_define([libguestfs_release], [9])
+m4_define([libguestfs_minor],   [16])
+m4_define([libguestfs_release], [0])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -141,6 +141,10 @@ if test "$gl_gcc_warnings" = yes; then
   # Work around warning in src/inspect.c.  This seems to be a bug in gcc 4.5.1.
   gl_WARN_ADD([-Wno-strict-overflow])
 
+  # Missing field initializers is not a bug in C.  Adding this to $nw above
+  # did not work, so force it here instead.
+  gl_WARN_ADD([-Wno-missing-field-initializers])
+
   gl_WARN_ADD([-fdiagnostics-show-option])
 
   AC_SUBST([WARN_CFLAGS])
@@ -161,6 +165,12 @@ VERSION_SCRIPT_FLAGS=-Wl,--version-script=
 `/usr/bin/ld --help 2>&1 | grep -- --version-script >/dev/null` || \
     VERSION_SCRIPT_FLAGS="-Wl,-M -Wl,"
 AC_SUBST(VERSION_SCRIPT_FLAGS)
+
+dnl Use -fvisibility=hidden by default in the library.
+dnl http://gcc.gnu.org/wiki/Visibility
+AS_IF([test -n "$GCC"],
+    [AC_SUBST([GCC_VISIBILITY_HIDDEN], [-fvisibility=hidden])],
+    [AC_SUBST([GCC_VISIBILITY_HIDDEN], [:])])
 
 dnl Check support for 64 bit file offsets.
 AC_SYS_LARGEFILE
@@ -267,46 +277,47 @@ AC_ARG_ENABLE([appliance],
 AM_CONDITIONAL([ENABLE_APPLIANCE],[test "x$enable_appliance" = "xyes"])
 AC_MSG_RESULT([$enable_appliance])
 
+dnl Check for febootstrap >= 3.0
+AC_CHECK_PROG([FEBOOTSTRAP],
+              [febootstrap],[febootstrap],[no])
+
+dnl Pass a febootstrap --yum-config option.
+AC_MSG_CHECKING([if user requested febootstrap --yum-config option])
+AC_ARG_WITH([febootstrap-yum-config],
+    [AS_HELP_STRING([--with-febootstrap-yum-config=FILE],
+      [pass febootstrap --yum-config option @<:@default=no@:>@])],
+    [FEBOOTSTRAP_YUM_CONFIG="$withval"],
+    [FEBOOTSTRAP_YUM_CONFIG=no])
+AC_MSG_RESULT([$FEBOOTSTRAP_YUM_CONFIG])
+AC_SUBST([FEBOOTSTRAP_YUM_CONFIG])
+
 if test "x$enable_appliance" = "xyes"; then
-    dnl Check for febootstrap >= 3.0
-    AC_CHECK_PROG([FEBOOTSTRAP],
-                  [febootstrap],[febootstrap],[no])
     test "x$FEBOOTSTRAP" = "xno" &&
         AC_MSG_ERROR([febootstrap must be installed])
     dnl febootstrap 2.x did not support the --version parameter
     $FEBOOTSTRAP --version >&AS_MESSAGE_LOG_FD 2>&1 ||
         AC_MSG_ERROR([febootstrap >= 3.0 must be installed, your version is too old])
-
-    dnl Pass a febootstrap --yum-config option.
-    AC_MSG_CHECKING([if user requested febootstrap --yum-config option])
-    AC_ARG_WITH([febootstrap-yum-config],
-        [AS_HELP_STRING([--with-febootstrap-yum-config=FILE],
-          [pass febootstrap --yum-config option @<:@default=no@:>@])],
-        [FEBOOTSTRAP_YUM_CONFIG="$withval"],
-        [FEBOOTSTRAP_YUM_CONFIG=no])
-    AC_MSG_RESULT([$FEBOOTSTRAP_YUM_CONFIG])
-    AC_SUBST([FEBOOTSTRAP_YUM_CONFIG])
-
-    dnl Which distro?
-    dnl
-    dnl This used to be Very Important but is now just used to select
-    dnl which packages to install in the appliance, since the package
-    dnl names vary slightly across distros.  (See
-    dnl appliance/packagelist.in and appliance/excludelist.in)
-    AC_MSG_CHECKING([which Linux distro for package names])
-    DISTRO=REDHAT
-    if test -f /etc/debian_version; then
-        DISTRO=DEBIAN
-	if grep -q 'DISTRIB_ID=Ubuntu' /etc/lsb-release 2>&AS_MESSAGE_LOG_FD; then
-            DISTRO=UBUNTU
-	fi
-    fi
-    if test -f /etc/arch-release; then
-        DISTRO=ARCHLINUX
-    fi
-    AC_MSG_RESULT([$DISTRO])
-    AC_SUBST([DISTRO])
 fi
+
+dnl Which distro?
+dnl
+dnl This used to be Very Important but is now just used to select
+dnl which packages to install in the appliance, since the package
+dnl names vary slightly across distros.  (See
+dnl appliance/packagelist.in and appliance/excludelist.in)
+AC_MSG_CHECKING([which Linux distro for package names])
+DISTRO=REDHAT
+if test -f /etc/debian_version; then
+    DISTRO=DEBIAN
+    if grep -q 'DISTRIB_ID=Ubuntu' /etc/lsb-release 2>&AS_MESSAGE_LOG_FD; then
+        DISTRO=UBUNTU
+    fi
+fi
+if test -f /etc/arch-release; then
+    DISTRO=ARCHLINUX
+fi
+AC_MSG_RESULT([$DISTRO])
+AC_SUBST([DISTRO])
 
 dnl Check for rpcgen and XDR library.  rpcgen is optional.
 AC_CHECK_PROG([RPCGEN],[rpcgen],[rpcgen],[no])
@@ -986,6 +997,44 @@ AS_IF([test "x$PERL" != "xno"],
 AM_CONDITIONAL([HAVE_TOOLS],
     [test "x$PERL" != "xno" && test "x$missing_perl_modules" != "xyes"])
 
+dnl gobject library
+AC_ARG_ENABLE([gobject],
+    AS_HELP_STRING([--disable-gobject], [Disable GObject bindings]),
+    [],
+    [enable_gobject=yes])
+AS_IF(
+  [test "x$enable_gobject" != "xno"],
+  [
+    PKG_CHECK_MODULES([GOBJECT], [gobject-2.0 >= 2.26.0],
+      [
+        AC_SUBST([GOBJECT_CFLAGS])
+        AC_SUBST([GOBJECT_LIBS])
+        AC_DEFINE([HAVE_GOBJECT],[1],
+                  [gobject library found at compile time.])
+      ],
+      [AC_MSG_WARN([gobject library not found, gobject binding will be disabled])]
+    )
+  ]
+)
+AM_CONDITIONAL([HAVE_GOBJECT],[test "x$GOBJECT_LIBS" != "x"])
+
+AC_CHECK_PROG([GJS],[gjs],[gjs])
+AS_IF(
+  [test "x$GJS" = "x"],
+  [AC_MSG_WARN([gjs not found, gobject bindtests will not run])]
+)
+
+dnl gobject introspection
+GOBJECT_INTROSPECTION_CHECK([1.30.0])
+
+dnl The above check automatically sets HAVE_INTROSPECTION, but we want this to
+dnl be conditional on gobject also being available. We can't move the above
+dnl check inside the gobject if block above or HAVE_INTROSPECTION ends up
+dnl undefined, so we recheck it here.
+AM_CONDITIONAL([HAVE_INTROSPECTION],
+               [test "x$HAVE_INTROSPECTION_TRUE" = "x" &&
+                test "x$HAVE_GOBJECT_TRUE" = "x"])
+
 dnl Library versioning.
 MAX_PROC_NR=`cat $srcdir/src/MAX_PROC_NR`
 AC_SUBST(MAX_PROC_NR)
@@ -1007,9 +1056,7 @@ AC_CONFIG_FILES([run],
 AC_CONFIG_FILES([Makefile
                  align/Makefile
                  appliance/Makefile
-                 capitests/Makefile
                  cat/Makefile
-                 caution/Makefile
                  clone/Makefile
                  csharp/Makefile
                  daemon/Makefile
@@ -1019,14 +1066,14 @@ AC_CONFIG_FILES([Makefile
                  erlang/Makefile
                  erlang/examples/Makefile
                  examples/Makefile
-                 extratests/Makefile
                  fish/Makefile
+                 format/Makefile
                  fuse/Makefile
                  generator/Makefile
                  gnulib/lib/Makefile
                  gnulib/tests/Makefile
+                 gobject/Makefile
                  haskell/Makefile
-                 images/Makefile
                  inspector/Makefile
                  java/Makefile
                  java/examples/Makefile
@@ -1044,7 +1091,6 @@ AC_CONFIG_FILES([Makefile
                  po/Makefile.in
                  python/Makefile
                  python/examples/Makefile
-                 regressions/Makefile
                  rescue/Makefile
                  resize/Makefile
                  ruby/Makefile
@@ -1053,6 +1099,16 @@ AC_CONFIG_FILES([Makefile
                  sparsify/Makefile
                  src/Makefile
                  test-tool/Makefile
+                 tests/c-api/Makefile
+                 tests/data/Makefile
+                 tests/extra/Makefile
+                 tests/guests/Makefile
+                 tests/luks/Makefile
+                 tests/lvm/Makefile
+                 tests/md/Makefile
+                 tests/protocol/Makefile
+                 tests/qemu/Makefile
+                 tests/regressions/Makefile
                  tools/Makefile])
 AC_OUTPUT
 
@@ -1089,6 +1145,10 @@ if test "x$HAVE_TOOLS_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 echo -n "virt-resize ......................... "
 if test "x$HAVE_OCAML_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 echo "FUSE filesystem ..................... $enable_fuse"
+echo -n "gobject bindings .................... "
+if test "x$HAVE_GOBJECT_TRUE" = "x"; then echo "yes"; else echo "no"; fi
+echo -n "gobject introspection ............... "
+if test "x$HAVE_INTROSPECTION_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 echo
 echo "If any optional component is configured 'no' when you expected 'yes'"
 echo "then you should check the preceeding messages."

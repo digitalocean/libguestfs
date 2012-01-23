@@ -1,5 +1,5 @@
 # libguestfs virt-df
-# Copyright (C) 2010-2011 Red Hat Inc.
+# Copyright (C) 2010-2012 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -78,8 +78,8 @@ random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
 
 TESTS_ENVIRONMENT = \
 	MALLOC_PERTURB_=$(random_val) \
-	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
-	LIBGUESTFS_PATH=$(top_builddir)/appliance \
-	TMPDIR=$(top_builddir)
+	$(top_builddir)/run
 
+if ENABLE_APPLIANCE
 TESTS = test-virt-df.sh
+endif ENABLE_APPLIANCE

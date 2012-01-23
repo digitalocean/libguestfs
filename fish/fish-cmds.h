@@ -26,12 +26,15 @@
 extern int run_alloc (const char *cmd, size_t argc, char *argv[]);
 extern int run_copy_in (const char *cmd, size_t argc, char *argv[]);
 extern int run_copy_out (const char *cmd, size_t argc, char *argv[]);
+extern int run_delete_event (const char *cmd, size_t argc, char *argv[]);
 extern int run_display (const char *cmd, size_t argc, char *argv[]);
 extern int run_echo (const char *cmd, size_t argc, char *argv[]);
 extern int run_edit (const char *cmd, size_t argc, char *argv[]);
+extern int run_event (const char *cmd, size_t argc, char *argv[]);
 extern int run_glob (const char *cmd, size_t argc, char *argv[]);
 extern int run_hexedit (const char *cmd, size_t argc, char *argv[]);
 extern int run_lcd (const char *cmd, size_t argc, char *argv[]);
+extern int run_list_events (const char *cmd, size_t argc, char *argv[]);
 extern int run_man (const char *cmd, size_t argc, char *argv[]);
 extern int run_more (const char *cmd, size_t argc, char *argv[]);
 extern int run_reopen (const char *cmd, size_t argc, char *argv[]);

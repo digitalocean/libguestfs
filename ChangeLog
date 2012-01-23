@@ -1,15 +1,375 @@
+2012-01-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.0.
+
+	API support: Fix src/api-support/added file.
+	This fixes commit 37e07db1598b433c12ee643302712d81b2c5415d.
+	(cherry picked from commit 734b1f662f4e563cc8baad3aca8cf751314e0e49)
+
+	Update ROADMAP.
+
+	Finalize RELEASE NOTES.
+
+	Pull translations from Transifex.
+
+2012-01-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	debian: Debian 6 blkid has -p but not -i.
+	Fix the existing test to work correctly in this case.
+
+	Other cleanups.
+
+2012-01-23  Matthew Booth  <mbooth@redhat.com>
+
+	gobject: Require minimum gobject library version of 2.26.0
+	The GObject bindings require G_DEFINE_BOXED_TYPE, which was not added until
+	2.25.15. There are probably other dependencies.
+
+2012-01-23  Jim Meyering  <jim@meyering.net>
+
+	maint: use $var notation rather than ${var} when possible
+	I noticed some uses of ${srcdir} in shell scripts.
+	That is almost always better written as $srcdir.
+	The patch below converts most such variable references.
+	Here are the few remaining candidates:
+
+	$ git grep -i -E '\$\{[a-zA-Z_0-9]+\}'|grep -v Makefile.in.in
+	configure.ac:        JAR_INSTALL_DIR=\${prefix}/share/java
+	configure.ac:        JNI_INSTALL_DIR=\${libdir}
+	debian/rules:   for TEST in ${DEBIAN_SKIP_TEST}; do \
+	debian/rules:#          mv $${mod} $$(dirname $${mod})/libguestfsmod.so; \
+	java/Makefile.am:libguestfs_jar_DATA = libguestfs-${VERSION}.jar
+	java/Makefile.am:libguestfs-${VERSION}.jar: $(libguestfs_jar_class_files)
+	perl/lib/Sys/Guestfs/Lib.pm:                      "-f", '${Package} ${Version} ${Architecture} ${Status}\n',
+	perl/typemap:            croak (\"${Package}::$func_name(): called on a closed handle\");
+	perl/typemap:        croak (\"${Package}::$func_name(): $var is not a blessed HV reference\");
+	tests/data/Makefile.am:   echo "$${i}abcdefghijklmnopqrstuvwxyz"; \
+
+	We could change all of those, too, except the ones in configure.ac
+	and Makefile.am, since they refer to Make variables.  Even those
+	should be changed, but to use the preferred Makefile notation:
+	$(prefix), $(libdir), $(VERSION).
+
+	>From a86770ecd45666232a94d76c8725c8f9b1c76e3a Mon Sep 17 00:00:00 2001
+	From: Jim Meyering <meyering@redhat.com>
+	Date: Mon, 23 Jan 2012 11:15:12 +0100
+	Subject: [PATCH libguestfs] maint: use $var notation rather than ${var} when
+	 possible
+
+	The only case to avoid in a shell script is when the byte after the
+	"}" is word-constituent, and concatenating it would thus change the
+	name of the variable.
+
+	These changes were induced by running this command:
+	  git grep -l -i -E '\$\{(srcdir|md)' \
+	    |xargs perl -pi -e 's/\$\{(srcdir|md)\}($|\w)/\$$1$2/gi'
+
+	The "g" was needed because there was one line with two instances.
+	The "i" is to handle ${SRCDIR}.  The ($|\w) ensures that concatenating
+	whatever follows the "}" won't change semantics.
+
+	* gobject/run-bindtests: Use "$srcdir", not "${srcdir}".
+	* haskell/run-bindtests: Likewise.
+	* java/run-bindtests: Likewise.
+	* ocaml/run-bindtests: Likewise.
+	* perl/run-bindtests: Likewise.
+	* python/run-bindtests: Likewise.
+	* ruby/run-bindtests: Likewise.
+	* tests/guests/guest-aux/make-debian-img.sh: Likewise, but $SRCDIR.
+	* tests/guests/guest-aux/make-ubuntu-img.sh: Likewise.
+	* tests/guests/guest-aux/make-windows-img.sh: Likewise.
+	* tests/md/test-mdadm.sh: Likewise, but $md.
+
+2012-01-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	Update API support.
+
+2012-01-23  Hilko Bengen  <bengen@hilluzination.de>
+
+	gobject: Run bindtests from srcdir.
+
+2012-01-23  Jim Meyering  <jim@meyering.net>
+
+	build: don't use automake-internal variable
+	Hi Rich,
+
+	I realized a day or two late that my suggestion was not quite right.
+	Here's the fix:
+
+	>From 5294c21cf07c4ec2f094182ba9f32696f3de2751 Mon Sep 17 00:00:00 2001
+	From: Jim Meyering <meyering@redhat.com>
+	Date: Mon, 23 Jan 2012 10:01:40 +0100
+	Subject: [PATCH libguestfs] build: don't use automake-internal variable
+
+	* ocaml/Makefile.am (mlguestfs.cma): Use the documented variable form,
+	$(libguestfsocaml_a_OBJECTS), not the $(am_libguestfsocaml_a_OBJECTS)
+	that I suggested for commit 1.15.16-17-g8b9eaec.
+
+2012-01-23  Hilko Bengen  <bengen@hilluzination.de>
+
+	check for febootstrap etc. even if not building appliance
+
+	fish: Filter out error messages about history file in test script
+
+	Do not run appliance-related checks if not building appliance
+
+	Replace setting of environment variables with usage of local run script
+	(Includes fix by RWMJ)
+
+2012-01-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	php: function_entry -> zend_function_entry.
+	function_entry was left over from PHP 3.
+
+	See: http://news.php.net/php.pecl.dev/7123
+
+2012-01-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	php: Enable 'make clean' in extension subdirectory.
+
+	Version 1.15.19.
+
+	gobject: Include bindtests-manual.js in EXTRA_DIST.
+	This fixes commit 93b0769ec7929a909678411d75840f81bed55a81.
+
+	gobject: Document these bindings in guestfs(3).
+
+	website: Rebuild the HTML manual pages from scratch.
+
+2012-01-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Move internal-autosync function to new file internal.c.
+	This is just code motion.
+
+2012-01-20  Matthew Booth  <mbooth@redhat.com>
+
+	gobject: Add bindtests for return values
+
+	bindtests: Test optargs in test0
+	Note that this change disables compiling and running the haskell bindtests. The
+	haskell bindings do not implement optargs, and adding optargs to test0 causes
+	that method not to be bound in the haskell bindings. This prevents the haskell
+	bindtests from compiling. These should be re-enabled when optargs are
+	implemented.
+
+	gobject: Add basic bindtests
+
+	run script: Add support for gobject introspection
+
+	gobject: Add GObject bindings
+
+2012-01-20  Matthew Booth  <mbooth@redhat.com>
+
+	generator: Add CamelName flag
+	We can make a good guess at camel case names for most APIs. For example,
+	add_drive_opts can be automatically transformed to AddDriveOpts. However, other
+	apis don't produce a satisfactory name when transformed automatically. For
+	example, we would want md_create to produce MDCreate rather than MdCreate.
+
+	This change adds a CamelName flag which allows a camel case name to be specified
+	explicitly when the automatic transformation isn't satisfactory.
+
+2012-01-20  Hilko Bengen  <bengen@hilluzination.de>
+
+	resize, sparsify: find progress mini-library in out-of-tree builds
+
+	Fixed out-of-tree compilation of OCaml code after .depend files removal
+
+	fish: Remove hard-coded path from test script
+
+2012-01-20  Matthew Booth  <mbooth@redhat.com>
+
+	c: Fix prototype generator when last argument is a BufferIn
+	We were passing the name of the last argument directly to va_start. However, if
+	the last argument is a BufferIn it expands to 2 arguments, the latter of which
+	is <name>_size.
+
+	bindtests: Add a test for RBufferOut
+	Fixup the existing test, and add an entry in actions so it's actually generated.
+
+	bindtests: Fix sscanf test in test0rhashtable
+
+	bindtests: Add something non-zero to the RStructList test output
+
+2012-01-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	Update release notes with feedback from Hilko Bengen.
+
+	Revert "generator: Add CamelName flag"
+	This reverts commit 83c20f02dc0e97b098e9de837839a3f4a4416129.
+
+2012-01-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.15.18.
+
+	Update release notes.
+
+	daemon: Run udev_settle after pwrite-device finishes.
+	When you call close on any block device, udev kicks off a rule which
+	runs blkid to reexamine the device.  We need to wait for this rule to
+	finish running since it holds the device open and can cause other
+	operations to fail, notably BLKRRPART.
+
+	appliance: Add psmisc package to the appliance.
+	This allows us to use 'fuser' and other ps tools.
+
+	daemon: pwrite/pread: Don't double close on error path.
+	In Linux, close (fd) closes the file descriptor even if it returns an
+	error.
+
+2012-01-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	Tempus fugit.
+	Update all copyright dates to 2012.
+
+	tools: Mark obsolete tools clearly in the man pages.
+
+	Version 1.15.17.
+
+	lib: Use -fvisibilty=hidden by default; only ABI symbols are now visible.
+	http://gcc.gnu.org/wiki/Visibility
+
+	ocaml: Use automake to build the C part of the bindings.
+	By arranging the C part of the bindings into a library, we can get
+	automake to build it instead of using $(CC) directly.
+
+	ocaml: Don't include guestfs-internal.h directly.
+	However since the OCaml bindings use guestfs_safe_strdup and
+	guestfs_safe_memdup we need to export those two (in the private
+	functions section) from <guestfs.h>.
+
+	ocaml: Add -Wno-missing-field-initializers to avoid a warning.
+
+	New tool: virt-format: erase and make blank disks.
+	This tool allows you to easily reformat a disk, creating a blank disk
+	with optional partition, LVM and empty filesystem.
+
+2012-01-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish options parsing: Allow add_drives to be called multiple times.
+	Ensure that the drv structure is always zeroed on allocation.
+
+	Don't leak old drv->device when add_drives is called multiple times.
+
+2012-01-17  Matthew Booth  <mbooth@redhat.com>
+
+	c: Allow NULL optargs to be passed to _argv calls
+	Previously, passing NULL optargs to an _argv call resulted in a segfault. This
+	change causes NULL optargs to be interpreted as no optargs, and to be correctly
+	handled accordingly.
+
+	c: NFC Remove redundant parentheses
+
+2012-01-17  Matthew Booth  <mbooth@redhat.com>
+
+	generator: Add an explicit Cancellable flag
+	Currently any api which takes a FileIn or FileOut parameter is implicitly
+	cancellable. This change make cancellable an explicit flag in anticipation of it
+	being added to other apis.
+
+	Note that a Cancellable function must be able to return an error, which means it
+	can't return RConstOptString.
+
+2012-01-17  Matthew Booth  <mbooth@redhat.com>
+
+	generator: Add CamelName flag
+	We can make a good guess at camel case names for most APIs. For example,
+	add_drive_opts can be automatically transformed to AddDriveOpts. However, other
+	apis don't produce a satisfactory name when transformed automatically. For
+	example, we would want md_create to produce MDCreate rather than MdCreate.
+
+	This change adds a CamelName flag which allows a camel case name to be specified
+	explicitly when the automatic transformation isn't satisfactory.
+
+2012-01-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	resize2fs-M: fix double-free along error path (thanks Matthew Booth).
+
+	e2fsck: Tidy up the documentation for this API.
+
+2012-01-13  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	e2fsck-f: change the internal to use e2fsck
+	Since we implement the new api e2fsck, just change the
+	internal of e2fsck_f to use e2fsck now.
+	v1->v2: use optargs_bitmask
+
+2012-01-13  Wanlong Gao  <wanlong.gao@gmail.com>
+
+	NEW API: add a new api e2fsck
+	m: Wanlong Gao <gaowanlong@cn.fujitsu.com>
+
+	Add a new api e2fsck with two options:
+	correct: same as '-p' option of e2fsck
+	forceall: same as '-y' option of e2fsck
+
+	Thanks for Rich's idea.
+	v1->v2: use optargs_bitmask
+	v2->v3: change the optargs_bitmask check
+
+2012-01-13  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	ext2: tweak the error returned message of resize2fs-M(BZ755729)
+	Tweak the error message "e2fsck -f" and "e2fsck -fy".
+	Indicate the user to use the correct and/or forceall options.
+
+2012-01-11  Matthew Booth  <mbooth@redhat.com>
+
+	build: Remove .depend files from git
+	Remove generated .depend files from source control, and don't barf when they
+	don't exist while bootstrapping.
+
+2012-01-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Update RELEASE-NOTES.
+
 2012-01-10  Richard W.M. Jones  <rjones@redhat.com>
 
-	daemon: debug segv correct use of dereferencing NULL. (cherry picked from commit 01e717b3c141c509a7200b0a6c560f75815c08f2)
+	extra-tests: Only test 5 random guests.
+	If you have a lot of guests, running extra tests takes a lot of time,
+	but (arguably) you're not really doing any more detailed testing.
 
-2012-01-10  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+	Thus pick up to 5 guests at random to test.  A different random
+	selection is done on each run, ensuring that data-driven errors (eg in
+	inspection) will still be found eventually.
+
+2012-01-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.15.16.
+
+2012-01-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	Allow /dev/null to be added multiple times.
+	Change the test for duplicate drives so that you're allowed to
+	add /dev/null multiple times.  This corresponds to traditional
+	usage.
+
+	This amends commit be47b66c3033105a2b880dbc10bfc2b163b7eafe.
+
+2012-01-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: debug segv correct use of dereferencing NULL.
+
+2012-01-09  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
 
 	launch: move the filename checking to a wrapper
 	Move the filename's comma character checking to a wrapper.
 
-	(cherry picked from commit e0c309379556ad50d43a08b4aa4ec0146d2b60d8)
+2012-01-09  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
 
-2012-01-10  Matthew Booth  <mbooth@redhat.com>
+	launch: don't add a drive twice
+	1. Change the g->path to restore a absolute path instead of the mixed.
+	2. Check that if the adding drive is duplicated with the added drive.
+
+
+	RWMJ:
+
+	- Make sure abs_path is NULL before it is assigned, so freeing it
+	  will work along the error path.
+
+	- Fix the test which added /dev/null multiple times.
+
+2012-01-09  Matthew Booth  <mbooth@redhat.com>
 
 	generator: Create a separate type for optional arguments
 	Previously, optional arguments had the same type as regular arguments, but were
@@ -28,68 +388,96 @@
 	 - readded the check for > 64 optargs, but changed it to > 63
 	 - changed the new function to args_of_optargs
 
-	(cherry picked from commit 0a7b734d2f54d4e98882532da9887feb66c9824a)
-
-2012-01-10  Matthew Booth  <mbooth@redhat.com>
+2012-01-09  Matthew Booth  <mbooth@redhat.com>
 
 	generator: Rename java_structs to camel_structs to better reflect their purpose
 	This map was originally included just for the java bindings, but is generally
 	useful to any binding which uses camel case by requirement or convention.
-	(cherry picked from commit e24af214fe8f9dccac39ed520b57ce7d458f9fd1)
 
-2012-01-10  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+2012-01-09  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
 
 	launch: add a goto label when add_drive error
 	Code cleanup.
 	Add a goto label to simplify the code.
 
-	(cherry picked from commit 6f6485ec34f29401bbab65dd4275a3b564ed11b3)
+2012-01-08  Richard W.M. Jones  <rjones@redhat.com>
 
-2012-01-10  Richard W.M. Jones  <rjones@redhat.com>
+	Version 1.15.15.
 
-	debian: Add build-dep erlang-dev. (cherry picked from commit 49b894599bf82790c83e2949626b7a8958732b6a)
+2012-01-06  Richard W.M. Jones  <rjones@redhat.com>
 
-	Update to latest gnulib. (cherry picked from commit c51caebea20b499ca0f9e652da0d964689969d79)
+	debian: Add build-dep erlang-dev.
 
-2012-01-10  Matthew Booth  <mbooth@redhat.com>
+	Update to latest gnulib.
 
-	Tempora mutantur, nos et mutamur in illis. (cherry picked from commit ebdda911b5dc4e2695413578ed2e0f0b387c0d89)
+2012-01-04  Matthew Booth  <mbooth@redhat.com>
 
-	build: Fix automake warnings (cherry picked from commit c655415dc051b84d6178399e5f7cb76ff7af06c0)
+	Tempora mutantur, nos et mutamur in illis.
 
-2012-01-10  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+	build: Fix automake warnings
+
+2012-01-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	Sort .gitignore (using sort -d -- dictionary order).
+
+2012-01-04  Wanlong Gao  <wanlong.gao@gmail.com>
+
+	gitignore: ignore the git related files
+	*.eml for email picked patches
+	other for orginal git patch related files.
+
+2012-01-04  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
 
 	fish: fix the Ctrl-\ causes guestfish to abort bug(RHBZ#596761)
 	Handle SIGQUIT by guestfish, so that it can't be terminated.
 
-	(cherry picked from commit f49a30eba8bb9f352637c3c24138074bbe3f5555)
-
-2012-01-10  Wanlong Gao  <wanlong.gao@gmail.com>
+2012-01-03  Wanlong Gao  <wanlong.gao@gmail.com>
 
 	AUTHORS: add the email address for each authors
 	Add the email address for authors.
 	It would be better.
 
-	(cherry picked from commit 10df9d88ab4191c4092f4a88c7343ab3f5f31a70)
+2011-12-23  Richard W.M. Jones  <rjones@redhat.com>
 
-2012-01-10  Richard W.M. Jones  <rjones@redhat.com>
+	fish: mount can be used instead of mount-options with libguestfs >= 1.14
 
-	fish: mount can be used instead of mount-options with libguestfs >= 1.14 (cherry picked from commit 49218ae6b451004c8f7b5549d5876c8568a7c1a6)
+	fish: Fix --format parameter in man page.
 
-	fish: Fix --format parameter in man page. (cherry picked from commit 871e1cfe3ae28028eaa4be7d87d7c43f68b4d5ec)
+	Version 1.15.14.
 
-	lib: Try harder to remove temporary directory along error paths (RHBZ#769680). (cherry picked from commit 6032da66819b7ccf99001ba636926100f475cb89)
+	lib: Try harder to remove temporary directory along error paths (RHBZ#769680).
 
-2012-01-10  Richard W.M. Jones  <rjones@redhat.com>
+2011-12-23  Richard W.M. Jones  <rjones@redhat.com>
 
 	lib: Add guestfs___remove_tmpdir helper function.
 	This function does 'rm -rf <dir>' for temporary directories, safely
 	working if '<dir>' contains shell meta-characters.
 
 	Replace existing code for removing directories with this.
-	(cherry picked from commit 690ff694ca6db586c06ec484ea158261c156aa2f)
 
-2012-01-10  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+2011-12-23  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	gitignore: ignore the guestfs.* directory
+	Let git ignore the guestfs.* directorys.
+
+2011-12-23  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	extra-tests: add test-guests to prevent test error
+	extra-tests is depending on tests-guests.
+	We need guests/*.img when doing extra-tests.
+
+	/work/git/libguestfs/run valgrind --log-file=/work/git/libguestfs/tests/extra/valgrind.log --leak-check=full --error-exitcode=119 --suppressions=/work/git/libguestfs/tests/extra/suppressions ../../cat/virt-cat -a ../guests/fedora.img /etc/fstab >/dev/null
+	../guests/fedora.img: No such file or directory
+	make[1]: *** [test-tools-internal] Error 1
+	make[1]: Leaving directory `/work/git/libguestfs/tests/extra'
+
+2011-12-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Fix test-guestfish-events.sh so it works when LIBGUESTFS_DEBUG=1 is set.
+	Various messages were added and changed when this variable was set
+	while tests were running.
+
+2011-12-23  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
 
 	mkfs: optimization and code cleanup
 	v1->v2: fix a typo pointed by Matt
@@ -99,26 +487,16 @@
 
 
 	RWMJ: Whitespace changes.
-	(cherry picked from commit 2ac869bcc86fbf0dd7e878f10a2b60769a58c962)
-
-2012-01-10  Hilko Bengen  <bengen@hilluzination.de>
-
-	Fixed checks for libpython features
-	The python3.1 package shipped with Debian/squeeze does not have the
-	'mu' suffix that was assumed before.
-	(cherry picked from commit ad5b5f96da53a6f51424e22e26f2d8a325eec681)
-
-2012-01-10  Richard W.M. Jones  <rjones@redhat.com>
-
-	docs: Arrange directory names in alphabetical order. (cherry picked from commit f5a49bf1cae335889da6be53fd1ca302273be78b)
-
-	extra-tests: Add an extra suppression for OCaml 3.11.2 in RHEL 6. (cherry picked from commit a0a8de4253ad545d668977dbf54f90118f601192)
-
-	python: Missing () in guestfs-python(1) examples. (cherry picked from commit 3c9dfd1e95fae5c31df1fbcb6bdec2982a69a004)
 
 2011-12-22  Richard W.M. Jones  <rjones@redhat.com>
 
-	Version 1.14.8.
+	tests/lvm: Contains a Perl test so we must set PERL5LIB.
+	This fixes commit 498758faee6be7e989869bf7feba5e1026a1bb65.
+
+	tests/protocol: Contains a Perl test so we must set PERL5LIB.
+	This fixes commit 498758faee6be7e989869bf7feba5e1026a1bb65.
+
+	Version 1.15.13.
 
 2011-12-22  Richard W.M. Jones  <rjones@redhat.com>
 
@@ -163,11 +541,57 @@
 	applied this patch.
 
 	Cc: Hilko Bengen <bengen@hilluzination.de>
-	(cherry picked from commit 9a5f784d511a8f00a8386f316eab41fe660430db)
+
+2011-12-22  Hilko Bengen  <bengen@hilluzination.de>
+
+	Fixed checks for libpython features
+	The python3.1 package shipped with Debian/squeeze does not have the
+	'mu' suffix that was assumed before.
+
+2011-12-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.15.12.
+
+	tests: Add a simple liveness tests for qemu.
+
+	tests: Finalize the order we run the tests.
+
+	tests: Put test-tool and comment into own section.
+
+	tests: Split images -> tests/data + tests/guests
+
+	tests: Rename extratests -> tests/extra.
+
+	tests: Split regressions -> various subdirectories of tests/
+
+	tests: Rename capitests -> tests/c-api.
+
+	tests: Rename caution -> tests/qemu.
+
+	tests: Document new tests/ subdirectory.
+
+	docs: Arrange directory names in alphabetical order.
+
+2011-12-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	extra-tests: Add an extra suppression for OCaml 3.11.2 in RHEL 6.
+
+2011-12-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Allow events to be processed in guestfish.
+	Add 'event', 'list-events' and 'delete-event' commands so that event
+	handlers can be registered, listed and deleted in guestfish.  The
+	event handler is a shell script snippet or host command.
+
+	Cc: Pádraig Brady <P@draigBrady.com>
+
+2011-12-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	python: Missing () in guestfs-python(1) examples.
 
 2011-12-09  Richard W.M. Jones  <rjones@redhat.com>
 
-	Version 1.14.7.
+	Version 1.15.11.
 
 2011-12-09  Richard W.M. Jones  <rjones@redhat.com>
 
@@ -179,7 +603,6 @@
 	Therefore make sure any non-zero return is turned into EXIT_FAILURE.
 
 	(Thanks Pádraig Brady)
-	(cherry picked from commit ae45cee728039d7724fc73e5ffb2550c8054d268)
 
 2011-12-09  Richard W.M. Jones  <rjones@redhat.com>
 
@@ -189,9 +612,8 @@
 	fail, giving only warnings), leaving the mountpoint unusable.
 
 	(Thanks Pádraig Brady)
-	(cherry picked from commit 54e91da925323642e67b8ce4b95899fe4b7a51c4)
 
-2011-12-09  Richard W.M. Jones  <rjones@redhat.com>
+2011-12-08  Richard W.M. Jones  <rjones@redhat.com>
 
 	daemon: Fix utimens so it doesn't hang on named pipes (RHBZ#761460).
 	This also adds comprehensive tests for utimens on regular files,
@@ -201,37 +623,61 @@
 	Note that there is a small change in the (previously undefined)
 	semantics of this call: It now sets the time on a symbolic link
 	itself, not on what the symbolic link points to.
-	(cherry picked from commit 19e2f5aa4fd4ed70b505661d918b5575616ad441)
 
-2011-12-09  Richard W.M. Jones  <rjones@redhat.com>
+2011-12-08  Richard W.M. Jones  <rjones@redhat.com>
 
 	daemon: Allow utimens to work for directories (RHBZ#761451).
 	You don't need to open the file O_WRONLY in order to call futimens on
 	the file descriptor.  Opening it O_WRONLY fails for directories.
 	Therefore open O_RDONLY instead.
-	(cherry picked from commit 31fba8d8033216f8a288e75fe3f575b73b9ef925)
 
-	copy-in/copy-out: Wait for the tar subprocess only (RHBZ#760669). (cherry picked from commit 98edfac1ee70bcf15ee7caebc306e11cdbbb0d9a)
+2011-12-07  Richard W.M. Jones  <rjones@redhat.com>
 
-	fish: Improve error messages when no OS / multi-boot OS found with inspection (RHBZ#760775). (cherry picked from commit 7d3848ddc046f79cc1112809bd9970eea8060018)
+	copy-in/copy-out: Wait for the tar subprocess only (RHBZ#760669).
 
-2011-12-09  Hilko Bengen  <bengen@hilluzination.de>
-
-	let the user explicitly choose ruby and rake programs (cherry picked from commit 41a7a68cf33a174ba950aa29951a07c391a16b4d)
-
-2011-12-06  Richard W.M. Jones  <rjones@redhat.com>
-
-	Version 1.14.6.
+	fish: Improve error messages when no OS / multi-boot OS found with inspection (RHBZ#760775).
 
 2011-12-06  Hilko Bengen  <bengen@hilluzination.de>
 
-	Fix rpcgen post-processing for out-of-tree builds (cherry picked from commit 43942b08cfbcf91bef29ec532f3d097a8519c982)
+	let the user explicitly choose ruby and rake programs
 
 2011-12-06  Richard W.M. Jones  <rjones@redhat.com>
 
-	ruby: Use RSTRING_PTR, RSTRING_LEN for compat with Ruby 1.9 (RHBZ#760000). (cherry picked from commit 2972987d0257d9c3d26b53f961e802d121b436cd)
+	Version 1.15.10.
 
-2011-12-06  Richard W.M. Jones  <rjones@redhat.com>
+2011-12-06  Hilko Bengen  <bengen@hilluzination.de>
+
+	Fix rpcgen post-processing for out-of-tree builds
+
+2011-12-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	ruby: Use RSTRING_PTR, RSTRING_LEN for compat with Ruby 1.9 (RHBZ#760000).
+
+2011-12-05  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	blkid: split the RHEL5 which can't support some options
+	RHEL5 shoult not support '-p', '-i' and '-o export' options.
+	But we just split it according to the '-p' option.
+
+	TODO: remove the implemented command blkid
+	Remove the implemented command blkid from TODO lists.
+
+2011-12-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	Revert "blkid: Use -c /dev/null because RHEL 5 blkid doesn't have -p option."
+	This reverts commit 6533491b178d18bfab8240cf093be4ef9b547548.
+
+	Revert "blkid: Fix mistake in previous commit."
+	This reverts commit c48226a5026816b115ab63b50d3601531aff59dc.
+
+2011-12-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	blkid: Fix mistake in previous commit.
+	This updates commit 6533491b178d18bfab8240cf093be4ef9b547548.
+
+	blkid: Use -c /dev/null because RHEL 5 blkid doesn't have -p option.
+
+2011-12-03  Richard W.M. Jones  <rjones@redhat.com>
 
 	daemon: Use pkg-config to locate Augeas CFLAGS / libraries.
 	Augeas 0.10 depends on libxml2, so this is now required in the
@@ -249,54 +695,83 @@
 
 	Change to using pkg-config to detect Augeas.  It is still an optional
 	library.
-	(cherry picked from commit 615924abaa968398d6529529fa2f31ae23de825b)
 
-2011-12-06  Richard W.M. Jones  <rjones@redhat.com>
+2011-12-03  Richard W.M. Jones  <rjones@redhat.com>
 
-	extra tests: Test that valgrind and libtool are installed. (cherry picked from commit b7addee24d211014086c44bcef6a0c799e4fb987)
+	Version 1.15.9.
 
-2011-12-06  Matthew Booth  <mbooth@redhat.com>
+2011-12-03  Wanlong Gao  <wanlong.gao@gmail.com>
 
-	build: Add more suppressions for valgrind tests (cherry picked from commit 655f8037def7742a608fb272004eec51424ac31d)
+	NEW API: add blkid command to print the attributes of the device
+	A NEW API blkid.
+	It can print the device attributes.
+	Use it after list-devices, we can list ower devices and the attributes
+	of each device.
+	Use it like:
+	blkid <device>
+	It's should be a usefull function.
 
-2011-12-06  Wanlong Gao  <wanlong.gao@gmail.com>
+2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	extra tests: Test that valgrind and libtool are installed.
+
+2011-12-02  Matthew Booth  <mbooth@redhat.com>
+
+	inspection: Add a test for MD device mapping in fstab
+	Check that we properly handle fstab entries of the form /dev/md0 and
+	/dev/md/foo.
+
+	RWMJ: Add a skip to test if the Augeas lens is not available.
+
+2011-12-02  Matthew Booth  <mbooth@redhat.com>
+
+	inspection: Handle MD devices in fstab
+	This patch fixes inspection when fstab contains devices md devices
+	specified as /dev/mdN. The appliance creates these devices without reference to
+	the guest's mdadm.conf so, for e.g. /dev/md0 in the guest will often be created
+	as /dev/md127 in the appliance. With this patch, we match the uuids of detected
+	md devices against uuids specified in mdadm.conf, and map them appropriately
+	when we encounter them in fstab.
+
+	build: Add more suppressions for valgrind tests
+
+2011-12-02  Wanlong Gao  <wanlong.gao@gmail.com>
 
 	mkfs: enable to make xfs filesystems when the device already has a filesystem
 	Just add the -f option to mkfs.xfs to make sure we can
 	make a xfs filesystem when the device already has a
 	filesystem on it.
 
-	(cherry picked from commit 1970a14178b5c53569965d35e54efead6c4c4bdc)
-
-2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
-
-	Version 1.14.5.
-
-2011-12-02  Hilko Bengen  <bengen@hilluzination.de>
+2011-12-01  Hilko Bengen  <bengen@hilluzination.de>
 
 	libguestfs: Added gnulib includes from builddir, as suggested by the Gnulib documentation
 	    Since some modules (`getopt', for example) may copy files
 	    into the build directory, `top_builddir/lib' is needed as well as
 	    `top_srcdir/lib'. -- GNU Gnulib manual, section 2.2 Initial import
-	(cherry picked from commit 1a35ca59088e572c11633e85524bb282cb436186)
 
-2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-30  Richard W.M. Jones  <rjones@redhat.com>
 
-	ocaml: Fix OCaml dependencies. (cherry picked from commit ce331df0f1857bccebaaddfac79677bc9f527197)
+	todo: Suggestion for UUIDs in /etc/fstab (thanks Joshua Daniel Franklin).
 
-	python: Memory leak: Free roots array along handle close path. (cherry picked from commit e7e3a32edc29e3448b1d7efb3f6b53c5173c4e9c)
+	ocaml: Fix OCaml dependencies.
 
-	perl: Memory leak: Free roots array along handle close path. (cherry picked from commit 00c9755ee3bea98968acea47bac858db94f7fbe2)
+2011-11-29  Richard W.M. Jones  <rjones@redhat.com>
 
-	ruby: Memory leak: Free roots array along handle close path. (cherry picked from commit eb7ec6170eca278fb910e18ca1f7ca81c6b507c0)
+	Version 1.15.8.
 
-	extra tests: Add comments about what is not tested here. (cherry picked from commit efef3e3c1205e5476044f41fb88385e3ba07468d)
+	python: Memory leak: Free roots array along handle close path.
 
-	extra tests: Absolute path for 'run' command. (cherry picked from commit 27d00960c93b26c68fa1f4068502c32a6e3b5e94)
+	perl: Memory leak: Free roots array along handle close path.
 
-	extra tests: Split up and reorder tests more logically. (cherry picked from commit cee513112adcf4084d6be9e3b5037b7b54c9f514)
+	ruby: Memory leak: Free roots array along handle close path.
 
-2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
+	extra tests: Add comments about what is not tested here.
+
+	extra tests: Absolute path for 'run' command.
+
+	extra tests: Split up and reorder tests more logically.
+
+2011-11-29  Richard W.M. Jones  <rjones@redhat.com>
 
 	extra tests: Test virt-sparsify.
 	This adds the virt-sparsify --debug-gc option which causes
@@ -304,9 +779,8 @@
 	GC and memory problems to be tested.
 
 	Add an extratest which runs virt-sparsify under valgrind.
-	(cherry picked from commit 14b1e7b963cd5446ab76a067085b91925dd5d3e3)
 
-2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-29  Richard W.M. Jones  <rjones@redhat.com>
 
 	extra tests: Test virt-resize.
 	This adds the virt-resize --debug-gc option which causes
@@ -314,36 +788,54 @@
 	GC and memory problems to be tested.
 
 	Add an extratest which runs virt-resize under valgrind.
-	(cherry picked from commit 7708d3e04f6ec3985fd74ee1a44a5615d43065e2)
 
-2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-29  Richard W.M. Jones  <rjones@redhat.com>
 
-	ocaml: Load test should call Gc.compact to flag memory errors. (cherry picked from commit 082a55f76cd61f3590976f6b095552ea65259ced)
+	ocaml: Load test should call Gc.compact to flag memory errors.
 
-2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-29  Richard W.M. Jones  <rjones@redhat.com>
 
 	ocaml: Fix memory leak in bindings for functions that return buffers.
 	RBufferOut binding didn't free the buffer after copying it onto
 	the OCaml heap.
 
 	Found by valgrind.
-	(cherry picked from commit 6bd0eec12f2e39360847bfe7a9f50628cc89ed8e)
 
-2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-29  Richard W.M. Jones  <rjones@redhat.com>
 
-	extra tests: Run C API tests under valgrind. (cherry picked from commit e1f395defc6db5bbc82537af6e517d94216b7d4b)
+	Version 1.15.7.
 
-	protocol: Memory leak: Free temporary buffer along recv_discard path. (cherry picked from commit d81c0829ea4a99aadb98df37be9543a973269041)
+	extra tests: Run C API tests under valgrind.
 
-	extra tests: Run OCaml tests under valgrind. (cherry picked from commit aa4eb4cd109dda0dc7dfdd66a5163a18b0be2277)
+	protocol: Memory leak: Free temporary buffer along recv_discard path.
+
+	extra tests: Run OCaml tests under valgrind.
 
 	extra tests: Split VG variable into VG / RUN_VG.
 	This is just code motion.
-	(cherry picked from commit 6ccae55ddcf0c08cd1b1cdbc07afeed043ad410d)
 
-	ocaml: Memory leak: Free roots array along handle close path. (cherry picked from commit c5dbb1e63a8e0c45c7088dd2e58f5abbcfc30620)
+	ocaml: Memory leak: Free roots array along handle close path.
 
-2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-29  Matthew Booth  <mbooth@redhat.com>
+
+	inspection: Cleanup iteration over fstab entries in inspect_fs_unix.c
+	Select non-comment labels using an augeas path to return the correct
+	nodes in the first instance, rather than applying a regular expression
+	to all results.
+
+	There is no functional change to the code.
+
+	RWMJ:
+	 - Rebased to current HEAD.
+	 - Move variable decls to top of function.
+	 - Some whitespace changes.
+	 - Remove check for errors from snprintf since it can never happen.
+
+2011-11-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Add outline support for GNU/Hurd.
+
+2011-11-28  Richard W.M. Jones  <rjones@redhat.com>
 
 	fish: When -m option fails, canonicalize device names that are printed.
 	The error message now looks like this:
@@ -354,42 +846,46 @@
 	            /dev/vg_f15x32/lv_swap (swap)
 
 	Note that '/dev/sda1' has been canonicalized.
-	(cherry picked from commit f5bfc68fdb3e25b9d75c65e3f5e88983584b25ed)
 
-2011-12-02  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-28  Richard W.M. Jones  <rjones@redhat.com>
 
 	fish: Rearrange code for displaying mountpoints when -m option fails.
 	This also frees the list returned by guestfs_list_filesystems.
-	(cherry picked from commit 450134501c37f1dd1b898dc390591a3f84ec18b4)
+
+2011-11-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Tidy up documentation for md-stop.
+	This cleans up commit cbd1c45d95c530c8d94103dcc2c521bf5501ef59.
 
 2011-11-24  Richard W.M. Jones  <rjones@redhat.com>
 
-	Version 1.14.4.
+	Version 1.15.6.
 
-	ubuntu: Add extra suppressions for libnl.1 leaks. (cherry picked from commit b5b4816ab006ce09b7a7103dbe87b3129046648d)
+	ubuntu: Add extra suppressions for libnl.1 leaks.
+
+	Update API support.
 
 	extra-tests: Include valgrind suppressions file.
 	This updates commit c55bad93fbde03a3daa6058913f02098c45e55f5.
-	(cherry picked from commit be7cb789069afc93e7c1b0e7a1a9a293dc846d45)
 
 	regressions: Allow test-launch-race.pl to be skipped.
 	export SKIP_TEST_LAUNCH_RACE_PL=1
 	will cause this test to be skipped.
-	(cherry picked from commit 3bbcbd5eeadabb1cc5a40b2f8ae586e6aafd39c6)
+
+	debian: Use mdadm -D --export instead of mdadm -DY.
+	For compatibility with mdadm on Debian Squeeze.
 
 	Add 'make extra-tests' rule and run extra tests.
 	These tests are optional, and require a special environment and
 	tools to run.
-	(cherry picked from commit c55bad93fbde03a3daa6058913f02098c45e55f5)
 
 	lib: Fix memory leak when debugging enabled (found by valgrind).
 	If you enabled debugging (eg. LIBGUESTFS_DEBUG=1) then every
 	debug message printed would be leaked.
-	(cherry picked from commit dd76ce2b4c93dd10d8eca9ab7c77bc831f103d03)
 
-	test-tool: Fix multiple memory leaks found by valgrind. (cherry picked from commit bfc0a5f58d3cb6faad5a44bed392f33190e62246)
+	test-tool: Fix multiple memory leaks found by valgrind.
 
-	filesystems: Fix memory leak found by valgrind. (cherry picked from commit cd3d28491dd19d25a6c04a8bc6a7ec94bded413b)
+	filesystems: Fix memory leak found by valgrind.
 
 2011-11-24  Richard W.M. Jones  <rjones@redhat.com>
 
@@ -397,38 +893,58 @@
 	This is the minimum alignment.  1MB would be better.
 
 	Note that the exact behaviour is not defined in the API.
-	(cherry picked from commit c4381dba737d5cb8aad8e1b2e2123b0fcaff1d1a)
 
 2011-11-24  Richard W.M. Jones  <rjones@redhat.com>
 
 	virt-alignment-scan: Add checks for when API calls return NULL.
 	In particular, virt-alignment-scan -a /dev/null would segfault
 	because of an error returned by parted.
-	(cherry picked from commit 7b192f5a672197ad67ac23501e420c674aa2f3a9)
+
+2011-11-24  Wanlong Gao  <wanlong.gao@gmail.com>
+
+	New API: md-stop for stopping MD devices
+	This API is used to stop a md device.
+	When we want to move a device to another md array, we should
+	stop the md device which contained this device first.
+
+2011-11-24  Matthew Booth  <mbooth@redhat.com>
+
+	Rename mdadm_ apis to md_
+	This change renames the following 2 apis:
+	* mdadm_create -> md_create
+	* mdadm_detail -> md_detail
+
+	This is more consistent with list_md_devices, and removes a reference to an
+	implementation detail from the api.
 
 2011-11-24  Matthew Booth  <mbooth@redhat.com>
 
 	NFC: Allow multiple config files in inspect_with_augeas in inspect_fs_unix.c
 	This change is in support of the addition of MD support to fstab inspection.
-	(cherry picked from commit 373dca7d12a8741e116205b4a3ac67a7d82cc782)
 
-	NFC: Consolidate the error path in check_fstab in inspect_fs_unix.c (cherry picked from commit 011a248381cacd6751deb1d1be122cc9bd6aba09)
+	NFC: Consolidate the error path in check_fstab in inspect_fs_unix.c
 
-	NFC: Declare and use variables on the same line in inspect.c (cherry picked from commit c8cb3d27b62da20be6b2fa06f1ce6b63a722c32b)
+	md: Inspect MD devices
 
-	build: Nothing under images/ should be translated (cherry picked from commit 34c0542189a443e57f2b09886f31b5bdad404bbf)
+	NFC: Declare and use variables on the same line in inspect.c
+
+	build: Nothing under images/ should be translated
+
+	build: Create an MD variant of the dummy Fedora image
+	This change involves rewriting make-fedora-img.sh in perl. This allows the
+	flexibility to write mdadm.conf containing whichever uuids where randomly
+	generated when the md devices were created.
 
 	run script: Don't overwrite LD_LIBRARY_PATH and PERL5LIB
 	This change allows the run scripts of virt-v2v and libguestfs to be chained.
-	(cherry picked from commit 252ad4aa41c213948e4ee1f01e6c7ff7861f75e3)
 
-2011-11-24  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-22  Richard W.M. Jones  <rjones@redhat.com>
 
-	gnulib: Rebase to latest. (cherry picked from commit 065b6b5798913c9bb40215944920199ae7d27007)
+	gnulib: Rebase to latest.
 
-	Don't rely on implicit promotion of float to double in printf args. (cherry picked from commit 9b102aae65449a8d321e8cf44a3993af558291db)
+	Don't rely on implicit promotion of float to double in printf args.
 
-2011-11-24  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-22  Richard W.M. Jones  <rjones@redhat.com>
 
 	fish: In generated code, put function names on a new line.
 	eg:
@@ -437,71 +953,120 @@
 	run_foo ()
 	{
 	}
-	(cherry picked from commit 99ec97dcdfaf242ba0683a230ba51e4a87f7458b)
 
 2011-11-22  Richard W.M. Jones  <rjones@redhat.com>
 
-	Version 1.14.3.
+	df, testing: Add notes on virt-df numbers (thanks Kashyap Chamarthy).
 
-	df, testing: Add notes on virt-df numbers (thanks Kashyap Chamarthy). (cherry picked from commit 7b3137e664c3f4edf6ac7043a34c4166567e17bd)
+	sparsify: Add -o option for passing qemu-img output format options.
+
+	sparsify: Add --compress option.
+	This adds the -c option to the final qemu-img command.
 
 	sparsify: Add auto-detection of .vdi files.
 	Note that for this to work properly, it requires a patch to
 	the 'file' command.  See:
 	https://www.redhat.com/archives/libguestfs/2011-November/msg00120.html
-	(cherry picked from commit 342b4a55d056734a0344db8b4bcf1a90104a8a59)
 
-	guestfs-testing: Link to libguestfs-test-tool. (cherry picked from commit 6f39cfaeacda146d0eaa35da6f6413fa6ab3d40a)
+2011-11-21  Matthew Booth  <mbooth@redhat.com>
 
-2011-11-22  Hilko Bengen  <bengen@hilluzination.de>
+	fish: Add MD devices to guestfish device autocompletion.
 
-	out-of-tree build: ruby (cherry picked from commit 8bc6e9d6a89672bbe1e7469774abe889354deb67)
+2011-11-21  Richard W.M. Jones  <rjones@redhat.com>
 
-2011-11-22  Richard W.M. Jones  <rjones@redhat.com>
+	Version 1.15.5.
+
+	guestfs-testing: Link to libguestfs-test-tool.
+
+	contrib: Update introduction to libguestfs.
+
+2011-11-21  Hilko Bengen  <bengen@hilluzination.de>
+
+	out-of-tree build: ruby
+
+2011-11-20  Richard W.M. Jones  <rjones@redhat.com>
 
 	Add guestfs-testing(1) man page.
 	This contains suggested manual tests that users can run.
-	(cherry picked from commit a3b24296810d98e47552c6838dcd6ab6845aba03)
 
-2011-11-22  Hilko Bengen  <bengen@hilluzination.de>
+2011-11-17  Richard W.M. Jones  <rjones@redhat.com>
 
-	out of tree build: haskell (cherry picked from commit 730fb50780df860474dc1fae16c9891187e99c82)
+	Version 1.15.4.
 
-	java: out-of-tree build, don't build static library (cherry picked from commit a0509ff0715533e341573e24f6888fd7dcf4ba51)
+2011-11-17  Matthew Booth  <mbooth@redhat.com>
 
-	out of tree build: erlang (cherry picked from commit ddb3fac1bf1b0493779c9425b518598473ef106a)
+	New API: mdadm-detail.
 
-2011-11-22  Richard Jones  <rjones@redhat.com>
+	Add custom indentation config for vim.
 
-	32 bit: Fix printf off_t. (cherry picked from commit 47963bc9cc0b47af0541010a4fa14260405acaa5)
+2011-11-16  Hilko Bengen  <bengen@hilluzination.de>
 
-2011-11-22  Richard W.M. Jones  <rjones@redhat.com>
+	out of tree build: haskell
 
-	32 bit: Use %td for ptrdiff_t (difference between two pointers). (cherry picked from commit 5d48250224fcb140b7e6e17f36b37deab4e0659b)
+	java: out-of-tree build, don't build static library
+
+	out of tree build: erlang
+
+2011-11-11  Matthew Booth  <mbooth@redhat.com>
+
+	Update list-filesystems to check md devices.
+
+2011-11-11  Matthew Booth  <mbooth@redhat.com>
+
+	New API: list-md-devices.
+	Return a list of Linux MD devices detected in the guest.
+
+	This API complements list_devices, list_partitions, list_lvs and
+	list_dm_devices.
+
+2011-11-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	New API: mdadm-create for creating MD devices.
+
+2011-11-11  Richard Jones  <rjones@redhat.com>
+
+	32 bit: Fix printf off_t.
+
+2011-11-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	32 bit: Use %td for ptrdiff_t (difference between two pointers).
 
 	df: Disable part of virt-df test.
 	See:
 	https://www.redhat.com/archives/libguestfs/2011-November/msg00051.html
-	(cherry picked from commit 6e6b3ff35f9baafb22d5459ca13c112b1e00ae1b)
+
+2011-11-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	New API: Bind the tune2fs command.
+	Previously we bound the 'tune2fs -l' command so that we could list out
+	the tunables of an ext2/3/4 filesystem.  Also commands like
+	set_e2label and set_e2uuid used tune2fs.
+
+	This commit binds many of the tunables that can be set using tune2fs.
+
+	The coverage is not complete, but we can add more later because this
+	uses optional parameters so the call is extensible without breaking
+	ABI.  The current change gives us enough for using libguestfs within
+	OpenStack.
+
+2011-11-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	tune2fs-l: Add a test.
 
 	generator: Support testing the output of RHashtable functions.
 	You can use TestOutputHashtable to test the output of RHashtable
 	functions.
-	(cherry picked from commit 5f0b75f040b118c4394466438adc99f38144722d)
 
-	daemon: Define safe ADD_ARG macro for constructing arg lists on the stack. (cherry picked from commit edd502543adbdc2fa5dda0c015ea7c390bb39f64)
-
-2011-11-10  Richard W.M. Jones  <rjones@redhat.com>
-
-	Version 1.14.2.
+	daemon: Define safe ADD_ARG macro for constructing arg lists on the stack.
 
 2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.15.3.
 
 	ocaml: Fix bindings when a function takes more than 10 parameters.
 	If any function had more than 10 required + optional parameters, OCaml
 	bindings could not be generated.  Currently there are no such
 	functions.
-	(cherry picked from commit 29172e7c4878085a680812f7f3b8ad6ea5f1193c)
 
 2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
 
@@ -511,13 +1076,12 @@
 	As a result, any test which tested optional arguments didn't work.
 	There are very few such tests and they happened not to be affected by
 	this.
-	(cherry picked from commit af2b0378bbb178a4e3db326ac3082d66170fcafc)
 
 2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
 
-	fish: More informative documentation of optargs. (cherry picked from commit 271f8e4b70e4acf2db96f6fe6317fda327fa5f2e)
+	fish: More informative documentation of optargs.
 
-	ocaml: Compile OCaml bindings and tests with -warn-error. (cherry picked from commit 145ed04e41a3fcd3be87c11cae0085f4551f1da8)
+	ocaml: Compile OCaml bindings and tests with -warn-error.
 
 2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
 
@@ -526,13 +1090,12 @@
 	this problem was not noticed before.
 
 	This fixes commit 9420eaf44ec4067c3740b91b0be0fede08a0c515.
-	(cherry picked from commit 22c72b911e65b93cfd049f42e6bd1b9ad7d55299)
 
-2011-11-09  Matthew Booth  <mbooth@redhat.com>
+2011-11-08  Matthew Booth  <mbooth@redhat.com>
 
-	Update FSF address. (cherry picked from commit 04ea1375c55aa67df4e7fc61dbb534111767f3b6)
+	Update FSF address.
 
-2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-04  Richard W.M. Jones  <rjones@redhat.com>
 
 	daemon: Use a private copy of /etc/lvm so we don't modify the real config.
 	In the libguestfs live case we need to be careful not to modify the
@@ -541,39 +1104,38 @@
 	When the daemon starts, make a complete copy of /etc/lvm in a
 	temporary directory, and adjust LVM_SYSTEM_DIR to point to the copy.
 	All changes are made in the temporary copy.
-	(cherry picked from commit 9c299b64bb24cefafa582fe425bb65b78373d205)
 
-2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-04  Richard W.M. Jones  <rjones@redhat.com>
 
 	daemon: Don't use files with fixed names in /tmp (thanks Steve Kemp).
 	Although this doesn't matter for the ordinary (appliance) case, it
 	matters for the libguestfs live case.  In that case it could cause the
 	guest to be exploited by a tmp/symlink attack.
-	(cherry picked from commit 6011b1f803ba7308c6a94b9bf6b7212cfccb9f42)
+
+2011-11-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.15.2.
 
 	virt-sysprep: Don't use xmlstarlet.
 	Use virt-inspector --xpath option instead.
-	(cherry picked from commit 22998927f91f123e7c35d3ebf49e5744f3d7eafe)
 
-2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-03  Richard W.M. Jones  <rjones@redhat.com>
 
 	Add virt-inspector --xpath to run XPath queries directly.
 	xmlstarlet is good, but not available in Red Hat Enterprise Linux.
 
 	Build a simple but sane XPath query parser into virt-inspector
 	directly so that we don't need any external tools.
-	(cherry picked from commit d1ee71782ace98a11c5aabaf1f9fd5f601e08367)
 
-2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-03  Richard W.M. Jones  <rjones@redhat.com>
 
 	resize: Remove requirement for ocaml Pcre library.
 	This library is not available in RHEL 6, and in any case removing the
 	dependency is a simple change.
-	(cherry picked from commit ffbafadcb8dfebcaba529cb8d7e2da52dd032d8a)
 
-	resize: Add tests for some Utils functions. (cherry picked from commit 63898268101e5ec91c8dac46651dbee5976272ce)
+	resize: Add tests for some Utils functions.
 
-2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-03  Richard W.M. Jones  <rjones@redhat.com>
 
 	python: Use sys.version_info[0] instead of sys.version_info.major.
 	The major/minor fields only exist in Python >= 2.7.  This works for at
@@ -582,9 +1144,8 @@
 	Thanks to Hilko Bengen.
 
 	This updates commit 646142f5136da9cfe2b908703a822c53350f70e9.
-	(cherry picked from commit 31e5539a14f78d8815d0d930e91023a65b5395e7)
 
-2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-02  Richard W.M. Jones  <rjones@redhat.com>
 
 	python: Fixes for Python 3 (RHBZ#750889).
 	These fixes allow libguestfs bindings to work with Python 3 (tested
@@ -597,9 +1158,8 @@
 	or:
 
 	  PYTHON=python3 ./configure && make && make check
-	(cherry picked from commit 2116f79cbcd4605b4997931285f14dde1f72a992)
 
-2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-02  Richard W.M. Jones  <rjones@redhat.com>
 
 	python: Pass $PYTHON environment variable to tests.
 	If the user set PYTHON when configuring, this variable is not passed
@@ -607,13 +1167,11 @@
 	they are testing the wrong version of python.  By passing $PYTHON
 	through to the tests we ensure that we test against the same version
 	of python that we configured with.
-	(cherry picked from commit e2249b7ce1dd0a2f8f110e0e47aca397185a6373)
 
 	python: Include <config.h>.
 	Ooops ...
-	(cherry picked from commit 25454b83082a4cfed4f1664d2f9cdfcb222ba7c2)
 
-2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-02  Richard W.M. Jones  <rjones@redhat.com>
 
 	python: Correctly check for Python major/minor.
 	The manual for sys.version warns that you should not parse the string,
@@ -621,13 +1179,30 @@
 	similar.
 
 	Do it correctly using the sys.version_info struct instead.
-	(cherry picked from commit 646142f5136da9cfe2b908703a822c53350f70e9)
 
-2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
+2011-11-02  Richard W.M. Jones  <rjones@redhat.com>
 
-	fish: Use size_t instead of int when counting strings. (cherry picked from commit b4da051d54a1597c7d8db8880d21a52265a6172e)
+	contrib: Use PNG images as fallback for IE compatibility.
 
-2011-11-09  Matthew Booth  <mbooth@redhat.com>
+2011-11-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	contrib: Update talk.
+
+	Version 1.15.1.
+
+	contrib: Add all contrib files to EXTRA_DIST.
+
+	contrib: Add libguestfs talk.
+	This is a short (10-15 min) talk that I give to introduce the main
+	features of libguestfs.  The "slides" are in the form of a complete
+	self-contained HTML page with a handful images that can be easily
+	distributed before the talk.
+
+	rescue: Add --suggest option to suggest mount commands.
+
+	fish: Use size_t instead of int when counting strings.
+
+2011-10-31  Matthew Booth  <mbooth@redhat.com>
 
 	Fix debug help error message.
 	When given an invalid debug command, libguestfs responds with the
@@ -638,24 +1213,20 @@
 	However this command does not work, as debug requires two
 	arguments. This change updates the message to prompt the user to use
 	'debug help 0'.
-	(cherry picked from commit 4e3a1205ebfec1a5cbc3062d6f73a684090e80b5)
-
-2011-11-09  Richard W.M. Jones  <rjones@redhat.com>
-
-	appliance: Add 'mdadm' package. (cherry picked from commit 6f84ef6768e9c625d67f7eb015277b0ec1b2c2af)
 
 2011-10-31  Richard W.M. Jones  <rjones@redhat.com>
 
-	Version 1.14.1.
+	appliance: Add 'mdadm' package.
+
+2011-10-28  Richard W.M. Jones  <rjones@redhat.com>
 
 	perl: Add %guestfs_introspection hash with introspection information.
 	Because this is a useful introspection API, it is a candidate for
 	being backported into older stable branches.
-	(cherry picked from commit 365885dab2ae6dcdf0b2c45d0adeb803ade03f63)
 
 2011-10-27  Richard W.M. Jones  <rjones@redhat.com>
 
-	Version 1.14.0.
+	Version 1.15.0.
 
 	Pull latest translations from Transifex.
 

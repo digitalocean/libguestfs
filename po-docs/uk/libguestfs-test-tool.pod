@@ -2,7 +2,7 @@
 
 =head1 НАЗВА
 
-libguestfs-test-tool - Diagnostics for libguestfs
+libguestfs-test-tool — діагностика libguestfs
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -41,12 +41,12 @@ L<http://libguestfs.org/> website.
 
 Display short usage information and exit.
 
-=item B<--qemu qemu_binary>
+=item B<--qemu виконуваний_файл_qemu>
 
 If you have downloaded another qemu binary, point this option at the full
 path of the binary to try it.
 
-=item B<--qemudir qemu_source_dir>
+=item B<--qemudir каталог_коду_qemu>
 
 If you have compiled qemu from source, point this option at the source
 directory to try it.
@@ -82,12 +82,12 @@ C<FEBOOTSTRAP_KERNEL> and/or C<FEBOOTSTRAP_MODULES>.
 Refer to L<febootstrap-supermin-helper(8)/ENVIRONMENT VARIABLES> for further
 information.
 
-=head1 SELF-DIAGNOSIS
+=head1 САМОДІАГНОСТИКА
 
 Refer to L<guestfs(3)/APPLIANCE BOOT PROCESS> to understand the messages
 produced by libguestfs-test-tool and/or possible errors.
 
-=head1 EXIT STATUS
+=head1 СТАН ВИХОДУ
 
 libguestfs-test-tool returns I<0> if the tests completed without error, or
 I<1> if there was an error.
@@ -107,7 +107,7 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2011 Red Hat Inc.  L<http://libguestfs.org/>
+Copyright (C) 2009-2012 Red Hat Inc.  L<http://libguestfs.org/>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -119,7 +119,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-Ви маєте отримати копію GNU General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
