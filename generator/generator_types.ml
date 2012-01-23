@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2011 Red Hat Inc.
+ * Copyright (C) 2009-2012 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -222,6 +222,12 @@ type flags =
   | DeprecatedBy of string (* function is deprecated, use .. instead *)
   | Optional of string	  (* function is part of an optional group *)
   | Progress              (* function can generate progress messages *)
+  | CamelName of string   (* Pretty camel case name of function. Only specify
+                             this if the generator doesn't make a good job of
+                             it, for example if it contains an abbreviation.
+                             This flag is currently only used by the GObject
+                             bindings. *)
+  | Cancellable           (* The user can cancel this long-running function *)
 
 and fish_output_t =
   | FishOutputOctal       (* for int return, print in octal *)
@@ -416,3 +422,9 @@ type callt =
   | CallInt64 of int64
   | CallBool of bool
   | CallBuffer of string
+
+type call_optargt =
+  | CallOBool of string * bool
+  | CallOInt of string * int
+  | CallOInt64 of string * int64
+  | CallOString of string * string

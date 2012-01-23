@@ -68,8 +68,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-DIST_COMMON = $(srcdir)/.depend $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(top_srcdir)/subdir-rules.mk
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	$(top_srcdir)/subdir-rules.mk
 
 # Alphabetical order.
 @HAVE_OCAML_TRUE@am__append_1 = \
@@ -120,27 +120,27 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/include_next.m4 \
 	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
 	$(top_srcdir)/m4/inline.m4 $(top_srcdir)/m4/intlmacosx.m4 \
-	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/inttostr.m4 \
-	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
-	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/ioctl.m4 \
-	$(top_srcdir)/m4/largefile.m4 $(top_srcdir)/m4/lcmessage.m4 \
-	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
-	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/localcharset.m4 $(top_srcdir)/m4/locale-fr.m4 \
-	$(top_srcdir)/m4/locale-ja.m4 $(top_srcdir)/m4/locale-zh.m4 \
-	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localename.m4 \
-	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
-	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
-	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
-	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
-	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
-	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/mempcpy.m4 \
-	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
-	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
-	$(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/introspection.m4 \
+	$(top_srcdir)/m4/inttostr.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
+	$(top_srcdir)/m4/inttypes.m4 $(top_srcdir)/m4/inttypes_h.m4 \
+	$(top_srcdir)/m4/ioctl.m4 $(top_srcdir)/m4/largefile.m4 \
+	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
+	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
+	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
+	$(top_srcdir)/m4/locale-zh.m4 $(top_srcdir)/m4/locale_h.m4 \
+	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
+	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
+	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
+	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
+	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
+	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
+	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
+	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
+	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
+	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/nocrash.m4 \
@@ -300,11 +300,13 @@ FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
 FUSE_CFLAGS = @FUSE_CFLAGS@
 FUSE_LIBS = @FUSE_LIBS@
+GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
 GENISOIMAGE = @GENISOIMAGE@
 GETADDRINFO_LIB = @GETADDRINFO_LIB@
 GETOPT_H = @GETOPT_H@
 GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GHC = @GHC@
+GJS = @GJS@
 GLIBC21 = @GLIBC21@
 GLOB_H = @GLOB_H@
 GMSGFMT = @GMSGFMT@
@@ -587,6 +589,8 @@ GNULIB_WMEMMOVE = @GNULIB_WMEMMOVE@
 GNULIB_WMEMSET = @GNULIB_WMEMSET@
 GNULIB_WRITE = @GNULIB_WRITE@
 GNULIB__EXIT = @GNULIB__EXIT@
+GOBJECT_CFLAGS = @GOBJECT_CFLAGS@
+GOBJECT_LIBS = @GOBJECT_LIBS@
 GPERF = @GPERF@
 GREP = @GREP@
 HAVE_ACCEPT4 = @HAVE_ACCEPT4@
@@ -840,6 +844,14 @@ INT32_MAX_LT_INTMAX_MAX = @INT32_MAX_LT_INTMAX_MAX@
 INT64_MAX_EQ_LONG_MAX = @INT64_MAX_EQ_LONG_MAX@
 INTLLIBS = @INTLLIBS@
 INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
+INTROSPECTION_CFLAGS = @INTROSPECTION_CFLAGS@
+INTROSPECTION_COMPILER = @INTROSPECTION_COMPILER@
+INTROSPECTION_GENERATE = @INTROSPECTION_GENERATE@
+INTROSPECTION_GIRDIR = @INTROSPECTION_GIRDIR@
+INTROSPECTION_LIBS = @INTROSPECTION_LIBS@
+INTROSPECTION_MAKEFILE = @INTROSPECTION_MAKEFILE@
+INTROSPECTION_SCANNER = @INTROSPECTION_SCANNER@
+INTROSPECTION_TYPELIBDIR = @INTROSPECTION_TYPELIBDIR@
 JAR = @JAR@
 JAR_INSTALL_DIR = @JAR_INSTALL_DIR@
 JAVA = @JAVA@
@@ -1269,7 +1281,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify test.img \
 
 # automake will decide we don't need C support in this file.  Really
 # we do, so we have to provide it ourselves.
-@HAVE_OCAML_TRUE@DEFAULT_INCLUDES = -I. -I$(top_builddir) -I$(shell $(OCAMLC) -where) -I../fish
+@HAVE_OCAML_TRUE@DEFAULT_INCLUDES = -I. -I$(top_builddir) -I$(shell $(OCAMLC) -where) -I$(top_srcdir)/fish
 
 # Manual pages and HTML files for the website.
 @HAVE_OCAML_TRUE@man_MANS = virt-sparsify.1
@@ -1279,16 +1291,14 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify test.img \
 @HAVE_OCAML_TRUE@random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = \
 @HAVE_OCAML_TRUE@	MALLOC_PERTURB_=$(random_val) \
-@HAVE_OCAML_TRUE@	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
-@HAVE_OCAML_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
-@HAVE_OCAML_TRUE@	TMPDIR=$(top_builddir)
+@HAVE_OCAML_TRUE@	$(top_builddir)/run
 
-@HAVE_OCAML_TRUE@TESTS = test-virt-sparsify.sh
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@TESTS = test-virt-sparsify.sh
 all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .cmi .cmo .cmx .ml .mli .o
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(srcdir)/.depend $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -1704,20 +1714,16 @@ appliance: force
 # Dependencies.
 @HAVE_OCAML_TRUE@depend: .depend
 
-@HAVE_OCAML_TRUE@.depend: $(wildcard *.mli) $(wildcard *.ml)
+@HAVE_OCAML_TRUE@.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml $^ | \
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) $^ | \
 @HAVE_OCAML_TRUE@	  $(SED) 's/ *$$//' | \
 @HAVE_OCAML_TRUE@	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
+@HAVE_OCAML_TRUE@	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
 @HAVE_OCAML_TRUE@	  sort > $@-t
 @HAVE_OCAML_TRUE@	mv $@-t $@
-@HAVE_OCAML_TRUE@progress.cmi: ../ocaml/guestfs.cmi
-@HAVE_OCAML_TRUE@progress.cmo: utils.cmo ../ocaml/guestfs.cmi progress.cmi
-@HAVE_OCAML_TRUE@progress.cmx: utils.cmx ../ocaml/guestfs.cmx progress.cmi
-@HAVE_OCAML_TRUE@sparsify.cmo: utils.cmo progress.cmi ../ocaml/guestfs.cmi
-@HAVE_OCAML_TRUE@sparsify.cmx: utils.cmx progress.cmx ../ocaml/guestfs.cmx
-@HAVE_OCAML_TRUE@utils.cmo: ../ocaml/guestfs.cmi
-@HAVE_OCAML_TRUE@utils.cmx: ../ocaml/guestfs.cmx
+
+@HAVE_OCAML_TRUE@-include .depend
 
 .PHONY: depend docs
 

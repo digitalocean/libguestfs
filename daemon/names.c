@@ -323,4 +323,11 @@ const char *function_names[] = {
   [295] = "copy_device_to_file",
   [296] = "copy_file_to_device",
   [297] = "copy_file_to_file",
+  [298] = "tune2fs",
+  [299] = "md_create",
+  [300] = "list_md_devices",
+  [301] = "md_detail",
+  [302] = "md_stop",
+  [303] = "blkid",
+  [304] = "e2fsck",
 };

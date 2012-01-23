@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2011 Red Hat Inc.
+ * Copyright (C) 2009-2012 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -295,7 +295,9 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
   char *format;
   char *iface;
   char *name;
+  char *abs_path = NULL;
   int use_cache_off;
+  int check_duplicate;
 
   if (check_path(g, filename) == -1)
     return -1;
@@ -335,24 +337,39 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
     }
   }
 
+  /* Make the path canonical, so we can check if the user is trying to
+   * add the same path twice.  Allow /dev/null to be added multiple
+   * times, in accordance with traditional usage.
+   */
+  abs_path = realpath (filename, NULL);
+  check_duplicate = STRNEQ (abs_path, "/dev/null");
+
   struct drive **i = &(g->drives);
-  while (*i != NULL) i = &((*i)->next);
+  while (*i != NULL) {
+    if (check_duplicate && STREQ((*i)->path, abs_path)) {
+      error (g, _("drive %s can't be added twice"), abs_path);
+      goto err_out;
+    }
+    i = &((*i)->next);
+  }
 
   *i = safe_malloc (g, sizeof (struct drive));
   (*i)->next = NULL;
-  (*i)->path = safe_strdup (g, filename);
+  (*i)->path = safe_strdup (g, abs_path);
   (*i)->readonly = readonly;
   (*i)->format = format;
   (*i)->iface = iface;
   (*i)->name = name;
   (*i)->use_cache_off = use_cache_off;
 
+  free (abs_path);
   return 0;
 
 err_out:
   free (format);
   free (iface);
   free (name);
+  free (abs_path);
   return -1;
 }
 

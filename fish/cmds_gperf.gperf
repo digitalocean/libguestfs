@@ -61,6 +61,7 @@ extern struct command_entry available_cmd_entry;
 extern struct command_entry available_all_groups_cmd_entry;
 extern struct command_entry base64_in_cmd_entry;
 extern struct command_entry base64_out_cmd_entry;
+extern struct command_entry blkid_cmd_entry;
 extern struct command_entry blockdev_flushbufs_cmd_entry;
 extern struct command_entry blockdev_getbsz_cmd_entry;
 extern struct command_entry blockdev_getro_cmd_entry;
@@ -98,6 +99,7 @@ extern struct command_entry debug_cmd_entry;
 extern struct command_entry debug_cmdline_cmd_entry;
 extern struct command_entry debug_drives_cmd_entry;
 extern struct command_entry debug_upload_cmd_entry;
+extern struct command_entry delete_event_cmd_entry;
 extern struct command_entry df_cmd_entry;
 extern struct command_entry df_h_cmd_entry;
 extern struct command_entry display_cmd_entry;
@@ -106,6 +108,7 @@ extern struct command_entry download_cmd_entry;
 extern struct command_entry download_offset_cmd_entry;
 extern struct command_entry drop_caches_cmd_entry;
 extern struct command_entry du_cmd_entry;
+extern struct command_entry e2fsck_cmd_entry;
 extern struct command_entry e2fsck_f_cmd_entry;
 extern struct command_entry echo_cmd_entry;
 extern struct command_entry echo_daemon_cmd_entry;
@@ -113,6 +116,7 @@ extern struct command_entry edit_cmd_entry;
 extern struct command_entry egrep_cmd_entry;
 extern struct command_entry egrepi_cmd_entry;
 extern struct command_entry equal_cmd_entry;
+extern struct command_entry event_cmd_entry;
 extern struct command_entry exists_cmd_entry;
 extern struct command_entry fallocate_cmd_entry;
 extern struct command_entry fallocate64_cmd_entry;
@@ -213,7 +217,9 @@ extern struct command_entry lgetxattrs_cmd_entry;
 extern struct command_entry list_9p_cmd_entry;
 extern struct command_entry list_devices_cmd_entry;
 extern struct command_entry list_dm_devices_cmd_entry;
+extern struct command_entry list_events_cmd_entry;
 extern struct command_entry list_filesystems_cmd_entry;
+extern struct command_entry list_md_devices_cmd_entry;
 extern struct command_entry list_partitions_cmd_entry;
 extern struct command_entry ll_cmd_entry;
 extern struct command_entry ln_cmd_entry;
@@ -246,6 +252,9 @@ extern struct command_entry lvs_full_cmd_entry;
 extern struct command_entry lvuuid_cmd_entry;
 extern struct command_entry lxattrlist_cmd_entry;
 extern struct command_entry man_cmd_entry;
+extern struct command_entry md_create_cmd_entry;
+extern struct command_entry md_detail_cmd_entry;
+extern struct command_entry md_stop_cmd_entry;
 extern struct command_entry mkdir_cmd_entry;
 extern struct command_entry mkdir_mode_cmd_entry;
 extern struct command_entry mkdir_p_cmd_entry;
@@ -379,6 +388,7 @@ extern struct command_entry time_cmd_entry;
 extern struct command_entry touch_cmd_entry;
 extern struct command_entry truncate_cmd_entry;
 extern struct command_entry truncate_size_cmd_entry;
+extern struct command_entry tune2fs_cmd_entry;
 extern struct command_entry tune2fs_l_cmd_entry;
 extern struct command_entry txz_in_cmd_entry;
 extern struct command_entry txz_out_cmd_entry;
@@ -479,6 +489,7 @@ base64_in, &base64_in_cmd_entry
 base64-in, &base64_in_cmd_entry
 base64_out, &base64_out_cmd_entry
 base64-out, &base64_out_cmd_entry
+blkid, &blkid_cmd_entry
 blockdev_flushbufs, &blockdev_flushbufs_cmd_entry
 blockdev-flushbufs, &blockdev_flushbufs_cmd_entry
 blockdev_getbsz, &blockdev_getbsz_cmd_entry
@@ -544,6 +555,8 @@ debug_drives, &debug_drives_cmd_entry
 debug-drives, &debug_drives_cmd_entry
 debug_upload, &debug_upload_cmd_entry
 debug-upload, &debug_upload_cmd_entry
+delete_event, &delete_event_cmd_entry
+delete-event, &delete_event_cmd_entry
 df, &df_cmd_entry
 df_h, &df_h_cmd_entry
 df-h, &df_h_cmd_entry
@@ -555,6 +568,7 @@ download-offset, &download_offset_cmd_entry
 drop_caches, &drop_caches_cmd_entry
 drop-caches, &drop_caches_cmd_entry
 du, &du_cmd_entry
+e2fsck, &e2fsck_cmd_entry
 e2fsck_f, &e2fsck_f_cmd_entry
 e2fsck-f, &e2fsck_f_cmd_entry
 echo, &echo_cmd_entry
@@ -566,6 +580,7 @@ emacs, &edit_cmd_entry
 egrep, &egrep_cmd_entry
 egrepi, &egrepi_cmd_entry
 equal, &equal_cmd_entry
+event, &event_cmd_entry
 exists, &exists_cmd_entry
 fallocate, &fallocate_cmd_entry
 fallocate64, &fallocate64_cmd_entry
@@ -743,8 +758,12 @@ list_devices, &list_devices_cmd_entry
 list-devices, &list_devices_cmd_entry
 list_dm_devices, &list_dm_devices_cmd_entry
 list-dm-devices, &list_dm_devices_cmd_entry
+list_events, &list_events_cmd_entry
+list-events, &list_events_cmd_entry
 list_filesystems, &list_filesystems_cmd_entry
 list-filesystems, &list_filesystems_cmd_entry
+list_md_devices, &list_md_devices_cmd_entry
+list-md-devices, &list_md_devices_cmd_entry
 list_partitions, &list_partitions_cmd_entry
 list-partitions, &list_partitions_cmd_entry
 ll, &ll_cmd_entry
@@ -795,6 +814,12 @@ lvuuid, &lvuuid_cmd_entry
 lxattrlist, &lxattrlist_cmd_entry
 man, &man_cmd_entry
 manual, &man_cmd_entry
+md_create, &md_create_cmd_entry
+md-create, &md_create_cmd_entry
+md_detail, &md_detail_cmd_entry
+md-detail, &md_detail_cmd_entry
+md_stop, &md_stop_cmd_entry
+md-stop, &md_stop_cmd_entry
 mkdir, &mkdir_cmd_entry
 mkdir_mode, &mkdir_mode_cmd_entry
 mkdir-mode, &mkdir_mode_cmd_entry
@@ -1027,6 +1052,7 @@ touch, &touch_cmd_entry
 truncate, &truncate_cmd_entry
 truncate_size, &truncate_size_cmd_entry
 truncate-size, &truncate_size_cmd_entry
+tune2fs, &tune2fs_cmd_entry
 tune2fs_l, &tune2fs_l_cmd_entry
 tune2fs-l, &tune2fs_l_cmd_entry
 txz_in, &txz_in_cmd_entry

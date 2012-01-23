@@ -21,6 +21,8 @@ it can create common filesystem types like ext2/3 or NTFS, which can be
 useful if you want to attach these filesystems to existing virtual machines
 (eg. to import large amounts of read-only data to a VM).
 
+To create blank disks, use L<virt-format(1)>.
+
 Basic usage is:
 
  virt-make-fs input output.img
@@ -214,9 +216,10 @@ L<sh(1)> for details.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
-L<guestfish(1)>, L<virt-resize(1)>, L<virt-tar-in(1)>, L<mkisofs(1)>,
-L<genisoimage(1)>, L<mksquashfs(1)>, L<mke2fs(8)>, L<resize2fs(8)>,
-L<guestfs(3)>, L<Sys::Guestfs(3)>, L<http://libguestfs.org/>.
+L<guestfish(1)>, L<virt-format(1)>, L<virt-resize(1)>, L<virt-tar-in(1)>,
+L<mkisofs(1)>, L<genisoimage(1)>, L<mksquashfs(1)>, L<mke2fs(8)>,
+L<resize2fs(8)>, L<guestfs(3)>, L<Sys::Guestfs(3)>,
+L<http://libguestfs.org/>.
 
 =head1 ВАДИ
 
@@ -235,7 +238,7 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-©Red Hat Inc., 2010–2011
+Copyright (C) 2010-2012 Red Hat Inc.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -247,7 +250,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-Ви маєте отримати копію GNU General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 

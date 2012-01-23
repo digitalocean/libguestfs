@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2011 Red Hat Inc.
+ * Copyright (C) 2009-2012 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,8 @@
  * COMMAND_FLAG_FOLD_STDOUT_ON_STDERR flag.
  *
  * parted occasionally fails to do ioctl(BLKRRPART) on the device,
- * apparently because of some internal race in the code.  We attempt
+ * probably because udev monitors all 'close' on block devices
+ * and runs 'blkid' which opens and examines the device.  We attempt
  * to detect and recover from this error if we can.
  */
 static int

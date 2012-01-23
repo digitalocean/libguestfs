@@ -10,10 +10,12 @@ virt-list-partitions - List partitions in a virtual machine or disk image
 
  virt-list-partitions [--параметри] диск.img [диск.img ...]
 
-=head1 ОПИС
+=head1 OBSOLETE
 
 This tool is obsolete.  Use L<virt-filesystems(1)> as a more flexible
 replacement.
+
+=head1 ОПИС
 
 C<virt-list-partitions> is a command line tool to list the partitions that
 are contained in a virtual machine or disk image.  It is mainly useful as a
@@ -97,7 +99,7 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2010
+Copyright (C) 2009-2012 Red Hat Inc.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -109,7 +111,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-Ви маєте отримати копію GNU General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 

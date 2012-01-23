@@ -1,5 +1,5 @@
 /* virt-edit
- * Copyright (C) 2009-2011 Red Hat Inc.
+ * Copyright (C) 2009-2012 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,7 +75,7 @@ usage (int status)
   else {
     fprintf (stdout,
            _("%s: Edit a file in a virtual machine\n"
-             "Copyright (C) 2009-2011 Red Hat Inc.\n"
+             "Copyright (C) 2009-2012 Red Hat Inc.\n"
              "Usage:\n"
              "  %s [--options] -d domname file [file ...]\n"
              "  %s [--options] -a disk.img [-a disk.img ...] file [file ...]\n"
@@ -227,18 +227,17 @@ main (int argc, char *argv[])
     while (optind < argc - 1) {
       if (strchr (argv[optind], '/') ||
           access (argv[optind], F_OK) == 0) { /* simulate -a option */
-        drv = malloc (sizeof (struct drv));
+        drv = calloc (1, sizeof (struct drv));
         if (!drv) {
           perror ("malloc");
           exit (EXIT_FAILURE);
         }
         drv->type = drv_a;
         drv->a.filename = argv[optind];
-        drv->a.format = NULL;
         drv->next = drvs;
         drvs = drv;
       } else {                  /* simulate -d option */
-        drv = malloc (sizeof (struct drv));
+        drv = calloc (1, sizeof (struct drv));
         if (!drv) {
           perror ("malloc");
           exit (EXIT_FAILURE);

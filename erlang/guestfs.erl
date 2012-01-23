@@ -48,6 +48,7 @@
 -export([available_all_groups/1]).
 -export([base64_in/3]).
 -export([base64_out/3]).
+-export([blkid/2]).
 -export([blockdev_flushbufs/2]).
 -export([blockdev_getbsz/2]).
 -export([blockdev_getro/2]).
@@ -90,6 +91,7 @@
 -export([download_offset/5]).
 -export([drop_caches/2]).
 -export([du/2]).
+-export([e2fsck/2, e2fsck/3]).
 -export([e2fsck_f/2]).
 -export([echo_daemon/2]).
 -export([egrep/3]).
@@ -194,6 +196,7 @@
 -export([list_devices/1]).
 -export([list_dm_devices/1]).
 -export([list_filesystems/1]).
+-export([list_md_devices/1]).
 -export([list_partitions/1]).
 -export([ll/2]).
 -export([ln/3]).
@@ -225,6 +228,9 @@
 -export([lvs_full/1]).
 -export([lvuuid/2]).
 -export([lxattrlist/3]).
+-export([md_create/3, md_create/4]).
+-export([md_detail/2]).
+-export([md_stop/2]).
 -export([mkdir/2]).
 -export([mkdir_mode/3]).
 -export([mkdir_p/2]).
@@ -347,9 +353,11 @@
 -export([tail_n/3]).
 -export([tar_in/3]).
 -export([tar_out/3]).
--export([test0/10]).
+-export([test0/10, test0/11]).
 -export([test0rbool/2]).
 -export([test0rboolerr/1]).
+-export([test0rbufferout/2]).
+-export([test0rbufferouterr/1]).
 -export([test0rconstoptstring/2]).
 -export([test0rconstoptstringerr/1]).
 -export([test0rconststring/2]).
@@ -373,6 +381,7 @@
 -export([touch/2]).
 -export([truncate/2]).
 -export([truncate_size/3]).
+-export([tune2fs/2, tune2fs/3]).
 -export([tune2fs_l/2]).
 -export([txz_in/3]).
 -export([txz_out/3]).
@@ -532,6 +541,9 @@ base64_in(G, Base64file, Filename) ->
 base64_out(G, Filename, Base64file) ->
   call_port(G, {base64_out, Filename, Base64file}).
 
+blkid(G, Device) ->
+  call_port(G, {blkid, Device}).
+
 blockdev_flushbufs(G, Device) ->
   call_port(G, {blockdev_flushbufs, Device}).
 
@@ -671,6 +683,11 @@ drop_caches(G, Whattodrop) ->
 
 du(G, Path) ->
   call_port(G, {du, Path}).
+
+e2fsck(G, Device, Optargs) ->
+  call_port(G, {e2fsck, Device, Optargs}).
+e2fsck(G, Device) ->
+  e2fsck(G, Device, []).
 
 e2fsck_f(G, Device) ->
   call_port(G, {e2fsck_f, Device}).
@@ -986,6 +1003,9 @@ list_dm_devices(G) ->
 list_filesystems(G) ->
   call_port(G, {list_filesystems}).
 
+list_md_devices(G) ->
+  call_port(G, {list_md_devices}).
+
 list_partitions(G) ->
   call_port(G, {list_partitions}).
 
@@ -1078,6 +1098,17 @@ lvuuid(G, Device) ->
 
 lxattrlist(G, Path, Names) ->
   call_port(G, {lxattrlist, Path, Names}).
+
+md_create(G, Name, Devices, Optargs) ->
+  call_port(G, {md_create, Name, Devices, Optargs}).
+md_create(G, Name, Devices) ->
+  md_create(G, Name, Devices, []).
+
+md_detail(G, Md) ->
+  call_port(G, {md_detail, Md}).
+
+md_stop(G, Md) ->
+  call_port(G, {md_stop, Md}).
 
 mkdir(G, Path) ->
   call_port(G, {mkdir, Path}).
@@ -1451,14 +1482,22 @@ tar_in(G, Tarfile, Directory) ->
 tar_out(G, Directory, Tarfile) ->
   call_port(G, {tar_out, Directory, Tarfile}).
 
+test0(G, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin, Optargs) ->
+  call_port(G, {test0, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin, Optargs}).
 test0(G, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin) ->
-  call_port(G, {test0, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin}).
+  test0(G, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin, []).
 
 test0rbool(G, Val) ->
   call_port(G, {test0rbool, Val}).
 
 test0rboolerr(G) ->
   call_port(G, {test0rboolerr}).
+
+test0rbufferout(G, Val) ->
+  call_port(G, {test0rbufferout, Val}).
+
+test0rbufferouterr(G) ->
+  call_port(G, {test0rbufferouterr}).
 
 test0rconstoptstring(G, Val) ->
   call_port(G, {test0rconstoptstring, Val}).
@@ -1528,6 +1567,11 @@ truncate(G, Path) ->
 
 truncate_size(G, Path, Size) ->
   call_port(G, {truncate_size, Path, Size}).
+
+tune2fs(G, Device, Optargs) ->
+  call_port(G, {tune2fs, Device, Optargs}).
+tune2fs(G, Device) ->
+  tune2fs(G, Device, []).
 
 tune2fs_l(G, Device) ->
   call_port(G, {tune2fs_l, Device}).

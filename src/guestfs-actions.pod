@@ -36,7 +36,7 @@ should probably use C<guestfs_add_drive_ro> instead.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.3)
+(Added in 0.3~)
 
 =head2 guestfs_add_domain
 
@@ -143,7 +143,7 @@ C<guestfs_add_drive_opts>.
 
 On error this function returns -1.
 
-(Added in 1.7.4)
+(Added in 1.7.4~)
 
 =head2 guestfs_add_domain_va
 
@@ -186,7 +186,7 @@ and specifying the format.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.3)
+(Added in 0.3~)
 
 =head2 guestfs_add_drive_opts
 
@@ -253,7 +253,7 @@ hint to the guest inspection process if it is available.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.5.23)
+(Added in 1.5.23~)
 
 =head2 guestfs_add_drive_opts_va
 
@@ -290,7 +290,7 @@ automatically.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.38)
+(Added in 1.0.38~)
 
 =head2 guestfs_add_drive_ro_with_if
 
@@ -311,7 +311,7 @@ to specify the QEMU interface emulation to use at run time.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.84)
+(Added in 1.0.84~)
 
 =head2 guestfs_add_drive_with_if
 
@@ -332,7 +332,7 @@ to specify the QEMU interface emulation to use at run time.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.84)
+(Added in 1.0.84~)
 
 =head2 guestfs_aug_clear
 
@@ -345,7 +345,7 @@ is the same as the L<augtool(1)> C<clear> command.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.3.4)
+(Added in 1.3.4~)
 
 =head2 guestfs_aug_close
 
@@ -359,7 +359,7 @@ Augeas functions.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.7)
+(Added in 0.7~)
 
 =head2 guestfs_aug_defnode
 
@@ -384,7 +384,7 @@ This function returns a C<struct guestfs_int_bool *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_int_bool> after use>.
 
-(Added in 0.7)
+(Added in 0.7~)
 
 =head2 guestfs_aug_defvar
 
@@ -402,7 +402,7 @@ C<0> if C<expr> evaluates to something which is not a nodeset.
 
 On error this function returns -1.
 
-(Added in 0.7)
+(Added in 0.7~)
 
 =head2 guestfs_aug_get
 
@@ -416,7 +416,7 @@ matches exactly one node, the C<value> is returned.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 0.7)
+(Added in 0.7~)
 
 =head2 guestfs_aug_init
 
@@ -479,7 +479,7 @@ To find out more about Augeas, see L<http://augeas.net/>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.7)
+(Added in 0.7~)
 
 =head2 guestfs_aug_insert
 
@@ -499,7 +499,7 @@ with a bracketed index C<[N]>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.7)
+(Added in 0.7~)
 
 =head2 guestfs_aug_load
 
@@ -513,7 +513,7 @@ details.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.7)
+(Added in 0.7~)
 
 =head2 guestfs_aug_ls
 
@@ -528,7 +528,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_aug_match
 
@@ -544,7 +544,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 0.7)
+(Added in 0.7~)
 
 =head2 guestfs_aug_mv
 
@@ -558,7 +558,7 @@ one node.  C<dest> is overwritten if it exists.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.7)
+(Added in 0.7~)
 
 =head2 guestfs_aug_rm
 
@@ -572,7 +572,7 @@ On success this returns the number of entries which were removed.
 
 On error this function returns -1.
 
-(Added in 0.7)
+(Added in 0.7~)
 
 =head2 guestfs_aug_save
 
@@ -586,7 +586,7 @@ how files are saved.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.7)
+(Added in 0.7~)
 
 =head2 guestfs_aug_set
 
@@ -604,7 +604,7 @@ C<guestfs_aug_clear> call.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.7)
+(Added in 0.7~)
 
 =head2 guestfs_available
 
@@ -671,7 +671,7 @@ See also C<guestfs_version>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.80)
+(Added in 1.0.80~)
 
 =head2 guestfs_available_all_groups
 
@@ -690,7 +690,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 1.3.15)
+(Added in 1.3.15~)
 
 =head2 guestfs_base64_in
 
@@ -704,7 +704,7 @@ to C<filename>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.3.5)
+(Added in 1.3.5~)
 
 =head2 guestfs_base64_out
 
@@ -718,7 +718,48 @@ it out to local file C<base64file> encoded as base64.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.3.5)
+(Added in 1.3.5~)
+
+=head2 guestfs_blkid
+
+ char **
+ guestfs_blkid (guestfs_h *g,
+                const char *device);
+
+This command returns block device attributes for C<device>. The following fields are
+usually present in the returned hash. Other fields may also be present.
+
+=over
+
+=item C<UUID>
+
+The uuid of this device.
+
+=item C<LABEL>
+
+The label of this device.
+
+=item C<VERSION>
+
+The version of blkid command.
+
+=item C<TYPE>
+
+The filesystem type or RAID of this device.
+
+=item C<USAGE>
+
+The usage of this device, for example C<filesystem> or C<raid>.
+
+=back
+
+This function returns a NULL-terminated array of
+strings, or NULL if there was an error.
+The array of strings will always have length C<2n+1>, where
+C<n> keys and values alternate, followed by the trailing NULL entry.
+I<The caller must free the strings and the array after use>.
+
+(Added in 1.15.9)
 
 =head2 guestfs_blockdev_flushbufs
 
@@ -733,7 +774,7 @@ This uses the L<blockdev(8)> command.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.9.3)
+(Added in 0.9.3~)
 
 =head2 guestfs_blockdev_getbsz
 
@@ -750,7 +791,7 @@ This uses the L<blockdev(8)> command.
 
 On error this function returns -1.
 
-(Added in 0.9.3)
+(Added in 0.9.3~)
 
 =head2 guestfs_blockdev_getro
 
@@ -765,7 +806,7 @@ This uses the L<blockdev(8)> command.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 0.9.3)
+(Added in 0.9.3~)
 
 =head2 guestfs_blockdev_getsize64
 
@@ -781,7 +822,7 @@ This uses the L<blockdev(8)> command.
 
 On error this function returns -1.
 
-(Added in 0.9.3)
+(Added in 0.9.3~)
 
 =head2 guestfs_blockdev_getss
 
@@ -799,7 +840,7 @@ This uses the L<blockdev(8)> command.
 
 On error this function returns -1.
 
-(Added in 0.9.3)
+(Added in 0.9.3~)
 
 =head2 guestfs_blockdev_getsz
 
@@ -818,7 +859,7 @@ This uses the L<blockdev(8)> command.
 
 On error this function returns -1.
 
-(Added in 0.9.3)
+(Added in 0.9.3~)
 
 =head2 guestfs_blockdev_rereadpt
 
@@ -832,7 +873,7 @@ This uses the L<blockdev(8)> command.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.9.3)
+(Added in 0.9.3~)
 
 =head2 guestfs_blockdev_setbsz
 
@@ -850,7 +891,7 @@ This uses the L<blockdev(8)> command.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.9.3)
+(Added in 0.9.3~)
 
 =head2 guestfs_blockdev_setro
 
@@ -864,7 +905,7 @@ This uses the L<blockdev(8)> command.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.9.3)
+(Added in 0.9.3~)
 
 =head2 guestfs_blockdev_setrw
 
@@ -878,7 +919,7 @@ This uses the L<blockdev(8)> command.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.9.3)
+(Added in 0.9.3~)
 
 =head2 guestfs_btrfs_filesystem_resize
 
@@ -915,7 +956,7 @@ See also L<btrfs(8)>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.11.17)
+(Added in 1.11.17~)
 
 =head2 guestfs_btrfs_filesystem_resize_va
 
@@ -980,7 +1021,7 @@ See also C<guestfs_realpath>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.75)
+(Added in 1.0.75~)
 
 =head2 guestfs_cat
 
@@ -1001,7 +1042,7 @@ I<The caller must free the returned string after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 0.4)
+(Added in 0.4~)
 
 =head2 guestfs_checksum
 
@@ -1058,7 +1099,7 @@ To get the checksums for many files, use C<guestfs_checksums_out>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.2)
+(Added in 1.0.2~)
 
 =head2 guestfs_checksum_device
 
@@ -1074,7 +1115,7 @@ checksums supported see the C<guestfs_checksum> command.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.3.2)
+(Added in 1.3.2~)
 
 =head2 guestfs_checksums_out
 
@@ -1098,7 +1139,7 @@ coreutils info file.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.3.7)
+(Added in 1.3.7~)
 
 =head2 guestfs_chmod
 
@@ -1118,7 +1159,7 @@ The mode actually set is affected by the umask.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_chown
 
@@ -1136,7 +1177,7 @@ yourself (Augeas support makes this relatively easy).
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_command
 
@@ -1180,7 +1221,7 @@ I<The caller must free the returned string after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 0.9.1)
+(Added in 0.9.1~)
 
 =head2 guestfs_command_lines
 
@@ -1200,7 +1241,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 0.9.1)
+(Added in 0.9.1~)
 
 =head2 guestfs_compress_device_out
 
@@ -1226,7 +1267,7 @@ as in C<guestfs_compress_out>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.13.15)
+(Added in 1.13.15~)
 
 =head2 guestfs_compress_device_out_va
 
@@ -1285,7 +1326,7 @@ program being used.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.13.15)
+(Added in 1.13.15~)
 
 =head2 guestfs_compress_out_va
 
@@ -1331,7 +1372,7 @@ C<value> can be NULL.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.3)
+(Added in 0.3~)
 
 =head2 guestfs_copy_device_to_device
 
@@ -1376,7 +1417,7 @@ so that the caller can display a progress bar or indicator.
 To receive these messages, the caller must register a progress
 event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
-(Added in 1.13.25)
+(Added in 1.13.25~)
 
 =head2 guestfs_copy_device_to_device_va
 
@@ -1429,7 +1470,7 @@ so that the caller can display a progress bar or indicator.
 To receive these messages, the caller must register a progress
 event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
-(Added in 1.13.25)
+(Added in 1.13.25~)
 
 =head2 guestfs_copy_device_to_file_va
 
@@ -1482,7 +1523,7 @@ so that the caller can display a progress bar or indicator.
 To receive these messages, the caller must register a progress
 event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
-(Added in 1.13.25)
+(Added in 1.13.25~)
 
 =head2 guestfs_copy_file_to_device_va
 
@@ -1540,7 +1581,7 @@ so that the caller can display a progress bar or indicator.
 To receive these messages, the caller must register a progress
 event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
-(Added in 1.13.25)
+(Added in 1.13.25~)
 
 =head2 guestfs_copy_file_to_file_va
 
@@ -1594,7 +1635,7 @@ so that the caller can display a progress bar or indicator.
 To receive these messages, the caller must register a progress
 event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
-(Added in 1.0.87)
+(Added in 1.0.87~)
 
 =head2 guestfs_cp
 
@@ -1608,7 +1649,7 @@ either a destination filename or destination directory.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.18)
+(Added in 1.0.18~)
 
 =head2 guestfs_cp_a
 
@@ -1622,7 +1663,7 @@ recursively using the C<cp -a> command.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.18)
+(Added in 1.0.18~)
 
 =head2 guestfs_dd
 
@@ -1650,7 +1691,7 @@ This command cannot do partial copies
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.80)
+(Added in 1.0.80~)
 
 =head2 guestfs_df
 
@@ -1666,7 +1707,7 @@ Use C<guestfs_statvfs> from programs.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.54)
+(Added in 1.0.54~)
 
 =head2 guestfs_df_h
 
@@ -1683,7 +1724,7 @@ Use C<guestfs_statvfs> from programs.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.54)
+(Added in 1.0.54~)
 
 =head2 guestfs_dmesg
 
@@ -1702,7 +1743,7 @@ running the program.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.18)
+(Added in 1.0.18~)
 
 =head2 guestfs_download
 
@@ -1725,7 +1766,7 @@ so that the caller can display a progress bar or indicator.
 To receive these messages, the caller must register a progress
 event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
-(Added in 1.0.2)
+(Added in 1.0.2~)
 
 =head2 guestfs_download_offset
 
@@ -1756,7 +1797,7 @@ so that the caller can display a progress bar or indicator.
 To receive these messages, the caller must register a progress
 event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
-(Added in 1.5.17)
+(Added in 1.5.17~)
 
 =head2 guestfs_drop_caches
 
@@ -1776,7 +1817,7 @@ so that the maximum guest memory is freed.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.18)
+(Added in 1.0.18~)
 
 =head2 guestfs_du
 
@@ -1801,7 +1842,70 @@ so that the caller can display a progress bar or indicator.
 To receive these messages, the caller must register a progress
 event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
-(Added in 1.0.54)
+(Added in 1.0.54~)
+
+=head2 guestfs_e2fsck
+
+ int
+ guestfs_e2fsck (guestfs_h *g,
+                 const char *device,
+                 ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_E2FSCK_CORRECT, int correct,
+ GUESTFS_E2FSCK_FORCEALL, int forceall,
+
+This runs the ext2/ext3 filesystem checker on C<device>.
+It can take the following optional arguments:
+
+=over 4
+
+=item C<correct>
+
+Automatically repair the file system. This option will cause e2fsck
+to automatically fix any filesystem problems that can be safely
+fixed without human intervention.
+
+This option may not be specified at the same time as the C<forceall> option.
+
+=item C<forceall>
+
+Assume an answer of 'yes' to all questions; allows e2fsck to be used
+non-interactively.
+
+This option may not be specified at the same time as the C<correct> option.
+
+=back
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.15.17)
+
+=head2 guestfs_e2fsck_va
+
+ int
+ guestfs_e2fsck_va (guestfs_h *g,
+                    const char *device,
+                    va_list args);
+
+This is the "va_list variant" of L</guestfs_e2fsck>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_e2fsck_argv
+
+ int
+ guestfs_e2fsck_argv (guestfs_h *g,
+                      const char *device,
+                      const struct guestfs_e2fsck_argv *optargs);
+
+This is the "argv variant" of L</guestfs_e2fsck>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_e2fsck_f
 
@@ -1818,7 +1922,7 @@ This command is only needed because of C<guestfs_resize2fs>
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.29)
+(Added in 1.0.29~)
 
 =head2 guestfs_echo_daemon
 
@@ -1836,7 +1940,7 @@ See also C<guestfs_ping_daemon>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.69)
+(Added in 1.0.69~)
 
 =head2 guestfs_egrep
 
@@ -1855,7 +1959,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_egrepi
 
@@ -1874,7 +1978,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_equal
 
@@ -1890,7 +1994,7 @@ The external L<cmp(1)> program is used for the comparison.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.0.18)
+(Added in 1.0.18~)
 
 =head2 guestfs_exists
 
@@ -1905,7 +2009,7 @@ See also C<guestfs_is_file>, C<guestfs_is_dir>, C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_fallocate
 
@@ -1931,7 +2035,7 @@ attaches it as a device.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_fallocate64
 
@@ -1958,7 +2062,7 @@ a file in the host and attach it as a device.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.3.17)
+(Added in 1.3.17~)
 
 =head2 guestfs_fgrep
 
@@ -1977,7 +2081,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_fgrepi
 
@@ -1996,7 +2100,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_file
 
@@ -2024,7 +2128,7 @@ C<guestfs_is_file>, C<guestfs_is_blockdev> (etc), C<guestfs_is_zero>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 0.9.1)
+(Added in 0.9.1~)
 
 =head2 guestfs_file_architecture
 
@@ -2136,7 +2240,7 @@ initrd or kernel module(s) instead.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.5.3)
+(Added in 1.5.3~)
 
 =head2 guestfs_filesize
 
@@ -2152,7 +2256,7 @@ To get the size of block devices, use C<guestfs_blockdev_getsize64>.
 
 On error this function returns -1.
 
-(Added in 1.0.82)
+(Added in 1.0.82~)
 
 =head2 guestfs_fill
 
@@ -2178,7 +2282,7 @@ so that the caller can display a progress bar or indicator.
 To receive these messages, the caller must register a progress
 event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
-(Added in 1.0.79)
+(Added in 1.0.79~)
 
 =head2 guestfs_fill_pattern
 
@@ -2200,7 +2304,7 @@ so that the caller can display a progress bar or indicator.
 To receive these messages, the caller must register a progress
 event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
-(Added in 1.3.12)
+(Added in 1.3.12~)
 
 =head2 guestfs_find
 
@@ -2242,7 +2346,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.27)
+(Added in 1.0.27~)
 
 =head2 guestfs_find0
 
@@ -2282,7 +2386,7 @@ The result list is not sorted.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.74)
+(Added in 1.0.74~)
 
 =head2 guestfs_findfs_label
 
@@ -2299,7 +2403,7 @@ To find the label of a filesystem, use C<guestfs_vfs_label>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.5.3)
+(Added in 1.5.3~)
 
 =head2 guestfs_findfs_uuid
 
@@ -2316,7 +2420,7 @@ To find the UUID of a filesystem, use C<guestfs_vfs_uuid>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.5.3)
+(Added in 1.5.3~)
 
 =head2 guestfs_fsck
 
@@ -2355,7 +2459,7 @@ This command is entirely equivalent to running C<fsck -a -t fstype device>.
 
 On error this function returns -1.
 
-(Added in 1.0.16)
+(Added in 1.0.16~)
 
 =head2 guestfs_get_append
 
@@ -2371,7 +2475,7 @@ This function returns a string which may be NULL.
 There is no way to return an error from this function.
 The string is owned by the guest handle and must I<not> be freed.
 
-(Added in 1.0.26)
+(Added in 1.0.26~)
 
 =head2 guestfs_get_attach_method
 
@@ -2383,7 +2487,7 @@ Return the current attach method.  See C<guestfs_set_attach_method>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.9.8)
+(Added in 1.9.8~)
 
 =head2 guestfs_get_autosync
 
@@ -2394,7 +2498,7 @@ Get the autosync flag.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 0.3)
+(Added in 0.3~)
 
 =head2 guestfs_get_direct
 
@@ -2405,7 +2509,7 @@ Return the direct appliance mode flag.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.0.72)
+(Added in 1.0.72~)
 
 =head2 guestfs_get_e2label
 
@@ -2426,7 +2530,7 @@ C<device>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.15)
+(Added in 1.0.15~)
 
 =head2 guestfs_get_e2uuid
 
@@ -2447,7 +2551,7 @@ C<device>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.15)
+(Added in 1.0.15~)
 
 =head2 guestfs_get_memsize
 
@@ -2466,7 +2570,7 @@ see L<guestfs(3)>.
 
 On error this function returns -1.
 
-(Added in 1.0.55)
+(Added in 1.0.55~)
 
 =head2 guestfs_get_network
 
@@ -2477,7 +2581,7 @@ This returns the enable network flag.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.5.4)
+(Added in 1.5.4~)
 
 =head2 guestfs_get_path
 
@@ -2492,7 +2596,7 @@ return the default path.
 This function returns a string, or NULL on error.
 The string is owned by the guest handle and must I<not> be freed.
 
-(Added in 0.3)
+(Added in 0.3~)
 
 =head2 guestfs_get_pgroup
 
@@ -2503,7 +2607,7 @@ This returns the process group flag.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.11.18)
+(Added in 1.11.18~)
 
 =head2 guestfs_get_pid
 
@@ -2517,7 +2621,7 @@ This is an internal call used for debugging and testing.
 
 On error this function returns -1.
 
-(Added in 1.0.56)
+(Added in 1.0.56~)
 
 =head2 guestfs_get_qemu
 
@@ -2532,7 +2636,7 @@ return the default qemu binary name.
 This function returns a string, or NULL on error.
 The string is owned by the guest handle and must I<not> be freed.
 
-(Added in 1.0.6)
+(Added in 1.0.6~)
 
 =head2 guestfs_get_recovery_proc
 
@@ -2543,7 +2647,7 @@ Return the recovery process enabled flag.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.0.77)
+(Added in 1.0.77~)
 
 =head2 guestfs_get_selinux
 
@@ -2558,7 +2662,7 @@ see L<guestfs(3)>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.0.67)
+(Added in 1.0.67~)
 
 =head2 guestfs_get_smp
 
@@ -2569,7 +2673,7 @@ This returns the number of virtual CPUs assigned to the appliance.
 
 On error this function returns -1.
 
-(Added in 1.13.15)
+(Added in 1.13.15~)
 
 =head2 guestfs_get_state
 
@@ -2583,7 +2687,7 @@ For more information on states, see L<guestfs(3)>.
 
 On error this function returns -1.
 
-(Added in 1.0.2)
+(Added in 1.0.2~)
 
 =head2 guestfs_get_trace
 
@@ -2594,7 +2698,7 @@ Return the command trace flag.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.0.69)
+(Added in 1.0.69~)
 
 =head2 guestfs_get_umask
 
@@ -2606,7 +2710,7 @@ unless it has been set by calling C<guestfs_umask>.
 
 On error this function returns -1.
 
-(Added in 1.3.4)
+(Added in 1.3.4~)
 
 =head2 guestfs_get_verbose
 
@@ -2617,7 +2721,7 @@ This returns the verbose messages flag.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 0.3)
+(Added in 0.3~)
 
 =head2 guestfs_getcon
 
@@ -2632,7 +2736,7 @@ and C<guestfs_setcon>
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.67)
+(Added in 1.0.67~)
 
 =head2 guestfs_getxattr
 
@@ -2662,7 +2766,7 @@ This function returns a buffer, or NULL on error.
 The size of the returned buffer is written to C<*size_r>.
 I<The caller must free the returned buffer after use>.
 
-(Added in 1.7.24)
+(Added in 1.7.24~)
 
 =head2 guestfs_getxattrs
 
@@ -2682,7 +2786,7 @@ This function returns a C<struct guestfs_xattr_list *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_xattr_list> after use>.
 
-(Added in 1.0.59)
+(Added in 1.0.59~)
 
 =head2 guestfs_glob_expand
 
@@ -2705,7 +2809,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 1.0.50)
+(Added in 1.0.50~)
 
 =head2 guestfs_grep
 
@@ -2724,7 +2828,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_grepi
 
@@ -2743,7 +2847,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_grub_install
 
@@ -2790,7 +2894,7 @@ replacing C</dev/vda> with the name of the installation device.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.17)
+(Added in 1.0.17~)
 
 =head2 guestfs_head
 
@@ -2808,7 +2912,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.54)
+(Added in 1.0.54~)
 
 =head2 guestfs_head_n
 
@@ -2832,7 +2936,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.54)
+(Added in 1.0.54~)
 
 =head2 guestfs_hexdump
 
@@ -2849,7 +2953,7 @@ I<The caller must free the returned string after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.22)
+(Added in 1.0.22~)
 
 =head2 guestfs_initrd_cat
 
@@ -2878,7 +2982,7 @@ I<The caller must free the returned buffer after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.84)
+(Added in 1.0.84~)
 
 =head2 guestfs_initrd_list
 
@@ -2900,7 +3004,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 1.0.54)
+(Added in 1.0.54~)
 
 =head2 guestfs_inotify_add_watch
 
@@ -2921,7 +3025,7 @@ C</usr/include/sys/inotify.h>.
 
 On error this function returns -1.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_inotify_close
 
@@ -2934,7 +3038,7 @@ away any pending events, and deallocates all resources.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_inotify_files
 
@@ -2949,7 +3053,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_inotify_init
 
@@ -2995,7 +3099,7 @@ per libguestfs instance.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_inotify_read
 
@@ -3017,7 +3121,7 @@ This function returns a C<struct guestfs_inotify_event_list *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_inotify_event_list> after use>.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_inotify_rm_watch
 
@@ -3030,7 +3134,7 @@ See C<guestfs_inotify_add_watch>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_inspect_get_arch
 
@@ -3050,7 +3154,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.5.3)
+(Added in 1.5.3~)
 
 =head2 guestfs_inspect_get_distro
 
@@ -3152,7 +3256,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.5.3)
+(Added in 1.5.3~)
 
 =head2 guestfs_inspect_get_drive_mappings
 
@@ -3195,7 +3299,7 @@ The array of strings will always have length C<2n+1>, where
 C<n> keys and values alternate, followed by the trailing NULL entry.
 I<The caller must free the strings and the array after use>.
 
-(Added in 1.9.17)
+(Added in 1.9.17~)
 
 =head2 guestfs_inspect_get_filesystems
 
@@ -3218,7 +3322,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 1.5.3)
+(Added in 1.5.3~)
 
 =head2 guestfs_inspect_get_format
 
@@ -3256,7 +3360,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.9.4)
+(Added in 1.9.4~)
 
 =head2 guestfs_inspect_get_hostname
 
@@ -3275,7 +3379,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.7.9)
+(Added in 1.7.9~)
 
 =head2 guestfs_inspect_get_icon
 
@@ -3357,7 +3461,7 @@ This function returns a buffer, or NULL on error.
 The size of the returned buffer is written to C<*size_r>.
 I<The caller must free the returned buffer after use>.
 
-(Added in 1.11.12)
+(Added in 1.11.12~)
 
 =head2 guestfs_inspect_get_icon_va
 
@@ -3405,7 +3509,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 On error this function returns -1.
 
-(Added in 1.5.3)
+(Added in 1.5.3~)
 
 =head2 guestfs_inspect_get_minor_version
 
@@ -3423,7 +3527,7 @@ See also C<guestfs_inspect_get_major_version>.
 
 On error this function returns -1.
 
-(Added in 1.5.3)
+(Added in 1.5.3~)
 
 =head2 guestfs_inspect_get_mountpoints
 
@@ -3463,7 +3567,7 @@ The array of strings will always have length C<2n+1>, where
 C<n> keys and values alternate, followed by the trailing NULL entry.
 I<The caller must free the strings and the array after use>.
 
-(Added in 1.5.3)
+(Added in 1.5.3~)
 
 =head2 guestfs_inspect_get_package_format
 
@@ -3490,7 +3594,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.7.5)
+(Added in 1.7.5~)
 
 =head2 guestfs_inspect_get_package_management
 
@@ -3518,7 +3622,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.7.5)
+(Added in 1.7.5~)
 
 =head2 guestfs_inspect_get_product_name
 
@@ -3539,7 +3643,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.5.3)
+(Added in 1.5.3~)
 
 =head2 guestfs_inspect_get_product_variant
 
@@ -3573,7 +3677,7 @@ C<guestfs_inspect_get_major_version>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.9.13)
+(Added in 1.9.13~)
 
 =head2 guestfs_inspect_get_roots
 
@@ -3593,7 +3697,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 1.7.3)
+(Added in 1.7.3~)
 
 =head2 guestfs_inspect_get_type
 
@@ -3622,6 +3726,10 @@ FreeBSD.
 
 NetBSD.
 
+=item "hurd"
+
+GNU/Hurd.
+
 =item "unknown"
 
 The operating system type could not be determined.
@@ -3636,7 +3744,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.5.3)
+(Added in 1.5.3~)
 
 =head2 guestfs_inspect_get_windows_current_control_set
 
@@ -3656,7 +3764,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.9.17)
+(Added in 1.9.17~)
 
 =head2 guestfs_inspect_get_windows_systemroot
 
@@ -3676,7 +3784,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.5.25)
+(Added in 1.5.25~)
 
 =head2 guestfs_inspect_is_live
 
@@ -3692,7 +3800,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.9.4)
+(Added in 1.9.4~)
 
 =head2 guestfs_inspect_is_multipart
 
@@ -3708,7 +3816,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.9.4)
+(Added in 1.9.4~)
 
 =head2 guestfs_inspect_is_netinst
 
@@ -3726,7 +3834,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.9.4)
+(Added in 1.9.4~)
 
 =head2 guestfs_inspect_list_applications
 
@@ -3830,7 +3938,7 @@ This function returns a C<struct guestfs_application_list *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_application_list> after use>.
 
-(Added in 1.7.8)
+(Added in 1.7.8~)
 
 =head2 guestfs_inspect_os
 
@@ -3873,7 +3981,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 1.5.3)
+(Added in 1.5.3~)
 
 =head2 guestfs_is_blockdev
 
@@ -3888,7 +3996,7 @@ See also C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.5.10)
+(Added in 1.5.10~)
 
 =head2 guestfs_is_busy
 
@@ -3902,7 +4010,7 @@ For more information on states, see L<guestfs(3)>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.0.2)
+(Added in 1.0.2~)
 
 =head2 guestfs_is_chardev
 
@@ -3917,7 +4025,7 @@ See also C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.5.10)
+(Added in 1.5.10~)
 
 =head2 guestfs_is_config
 
@@ -3931,7 +4039,7 @@ For more information on states, see L<guestfs(3)>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.0.2)
+(Added in 1.0.2~)
 
 =head2 guestfs_is_dir
 
@@ -3947,7 +4055,7 @@ See also C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_is_fifo
 
@@ -3962,7 +4070,7 @@ See also C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.5.10)
+(Added in 1.5.10~)
 
 =head2 guestfs_is_file
 
@@ -3978,7 +4086,7 @@ See also C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_is_launching
 
@@ -3992,7 +4100,7 @@ For more information on states, see L<guestfs(3)>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.0.2)
+(Added in 1.0.2~)
 
 =head2 guestfs_is_lv
 
@@ -4005,7 +4113,7 @@ returns true iff this is the case.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.5.3)
+(Added in 1.5.3~)
 
 =head2 guestfs_is_ready
 
@@ -4019,7 +4127,7 @@ For more information on states, see L<guestfs(3)>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.0.2)
+(Added in 1.0.2~)
 
 =head2 guestfs_is_socket
 
@@ -4034,7 +4142,7 @@ See also C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.5.10)
+(Added in 1.5.10~)
 
 =head2 guestfs_is_symlink
 
@@ -4049,7 +4157,7 @@ See also C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.5.10)
+(Added in 1.5.10~)
 
 =head2 guestfs_is_zero
 
@@ -4062,7 +4170,7 @@ it contains all zero bytes.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.11.8)
+(Added in 1.11.8~)
 
 =head2 guestfs_is_zero_device
 
@@ -4076,7 +4184,7 @@ Note that for large devices this can take a long time to run.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.11.8)
+(Added in 1.11.8~)
 
 =head2 guestfs_kill_subprocess
 
@@ -4087,7 +4195,7 @@ This kills the qemu subprocess.  You should never need to call this.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.3)
+(Added in 0.3~)
 
 =head2 guestfs_launch
 
@@ -4107,7 +4215,7 @@ so that the caller can display a progress bar or indicator.
 To receive these messages, the caller must register a progress
 event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
-(Added in 0.3)
+(Added in 0.3~)
 
 =head2 guestfs_lchown
 
@@ -4127,7 +4235,7 @@ yourself (Augeas support makes this relatively easy).
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.77)
+(Added in 1.0.77~)
 
 =head2 guestfs_lgetxattr
 
@@ -4157,7 +4265,7 @@ This function returns a buffer, or NULL on error.
 The size of the returned buffer is written to C<*size_r>.
 I<The caller must free the returned buffer after use>.
 
-(Added in 1.7.24)
+(Added in 1.7.24~)
 
 =head2 guestfs_lgetxattrs
 
@@ -4173,7 +4281,7 @@ This function returns a C<struct guestfs_xattr_list *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_xattr_list> after use>.
 
-(Added in 1.0.59)
+(Added in 1.0.59~)
 
 =head2 guestfs_list_9p
 
@@ -4187,7 +4295,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 1.11.12)
+(Added in 1.11.12~)
 
 =head2 guestfs_list_devices
 
@@ -4204,7 +4312,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 0.4)
+(Added in 0.4~)
 
 =head2 guestfs_list_dm_devices
 
@@ -4224,7 +4332,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 1.11.15)
+(Added in 1.11.15~)
 
 =head2 guestfs_list_filesystems
 
@@ -4266,7 +4374,20 @@ The array of strings will always have length C<2n+1>, where
 C<n> keys and values alternate, followed by the trailing NULL entry.
 I<The caller must free the strings and the array after use>.
 
-(Added in 1.5.15)
+(Added in 1.5.15~)
+
+=head2 guestfs_list_md_devices
+
+ char **
+ guestfs_list_md_devices (guestfs_h *g);
+
+List all Linux md devices.
+
+This function returns a NULL-terminated array of strings
+(like L<environ(3)>), or NULL if there was an error.
+I<The caller must free the strings and the array after use>.
+
+(Added in 1.15.4~)
 
 =head2 guestfs_list_partitions
 
@@ -4286,7 +4407,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 0.4)
+(Added in 0.4~)
 
 =head2 guestfs_ll
 
@@ -4303,7 +4424,7 @@ is I<not> intended that you try to parse the output string.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 0.4)
+(Added in 0.4~)
 
 =head2 guestfs_ln
 
@@ -4316,7 +4437,7 @@ This command creates a hard link using the C<ln> command.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_ln_f
 
@@ -4330,7 +4451,7 @@ The I<-f> option removes the link (C<linkname>) if it exists already.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_ln_s
 
@@ -4343,7 +4464,7 @@ This command creates a symbolic link using the C<ln -s> command.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_ln_sf
 
@@ -4357,7 +4478,7 @@ The I<-f> option removes the link (C<linkname>) if it exists already.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_lremovexattr
 
@@ -4372,7 +4493,7 @@ of the link itself.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.59)
+(Added in 1.0.59~)
 
 =head2 guestfs_ls
 
@@ -4391,7 +4512,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 0.4)
+(Added in 0.4~)
 
 =head2 guestfs_lsetxattr
 
@@ -4408,7 +4529,7 @@ of the link itself.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.59)
+(Added in 1.0.59~)
 
 =head2 guestfs_lstat
 
@@ -4428,7 +4549,7 @@ This function returns a C<struct guestfs_stat *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_stat> after use>.
 
-(Added in 0.9.2)
+(Added in 0.9.2~)
 
 =head2 guestfs_lstatlist
 
@@ -4458,7 +4579,7 @@ This function returns a C<struct guestfs_stat_list *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_stat_list> after use>.
 
-(Added in 1.0.77)
+(Added in 1.0.77~)
 
 =head2 guestfs_luks_add_key
 
@@ -4484,7 +4605,7 @@ This function takes a key or passphrase parameter which
 could contain sensitive material.  Read the section
 L</KEYS AND PASSPHRASES> for more information.
 
-(Added in 1.5.2)
+(Added in 1.5.2~)
 
 =head2 guestfs_luks_close
 
@@ -4500,7 +4621,7 @@ of the underlying block device.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.5.1)
+(Added in 1.5.1~)
 
 =head2 guestfs_luks_format
 
@@ -4521,7 +4642,7 @@ This function takes a key or passphrase parameter which
 could contain sensitive material.  Read the section
 L</KEYS AND PASSPHRASES> for more information.
 
-(Added in 1.5.2)
+(Added in 1.5.2~)
 
 =head2 guestfs_luks_format_cipher
 
@@ -4541,7 +4662,7 @@ This function takes a key or passphrase parameter which
 could contain sensitive material.  Read the section
 L</KEYS AND PASSPHRASES> for more information.
 
-(Added in 1.5.2)
+(Added in 1.5.2~)
 
 =head2 guestfs_luks_kill_slot
 
@@ -4561,7 +4682,7 @@ This function takes a key or passphrase parameter which
 could contain sensitive material.  Read the section
 L</KEYS AND PASSPHRASES> for more information.
 
-(Added in 1.5.2)
+(Added in 1.5.2~)
 
 =head2 guestfs_luks_open
 
@@ -4596,7 +4717,7 @@ This function takes a key or passphrase parameter which
 could contain sensitive material.  Read the section
 L</KEYS AND PASSPHRASES> for more information.
 
-(Added in 1.5.1)
+(Added in 1.5.1~)
 
 =head2 guestfs_luks_open_ro
 
@@ -4615,7 +4736,7 @@ This function takes a key or passphrase parameter which
 could contain sensitive material.  Read the section
 L</KEYS AND PASSPHRASES> for more information.
 
-(Added in 1.5.1)
+(Added in 1.5.1~)
 
 =head2 guestfs_lvcreate
 
@@ -4630,7 +4751,7 @@ on the volume group C<volgroup>, with C<size> megabytes.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_lvm_canonical_lv_name
 
@@ -4650,7 +4771,7 @@ See also C<guestfs_is_lv>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.5.24)
+(Added in 1.5.24~)
 
 =head2 guestfs_lvm_clear_filter
 
@@ -4665,7 +4786,7 @@ group scan.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.5.1)
+(Added in 1.5.1~)
 
 =head2 guestfs_lvm_remove_all
 
@@ -4677,7 +4798,7 @@ and physical volumes.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_lvm_set_filter
 
@@ -4710,7 +4831,7 @@ filtering out that VG.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.5.1)
+(Added in 1.5.1~)
 
 =head2 guestfs_lvremove
 
@@ -4726,7 +4847,7 @@ the VG name, C</dev/VG>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.13)
+(Added in 1.0.13~)
 
 =head2 guestfs_lvrename
 
@@ -4739,7 +4860,7 @@ Rename a logical volume C<logvol> with the new name C<newlogvol>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.83)
+(Added in 1.0.83~)
 
 =head2 guestfs_lvresize
 
@@ -4754,7 +4875,7 @@ is lost.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.27)
+(Added in 1.0.27~)
 
 =head2 guestfs_lvresize_free
 
@@ -4771,7 +4892,7 @@ group.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.3.3)
+(Added in 1.3.3~)
 
 =head2 guestfs_lvs
 
@@ -4790,7 +4911,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 0.4)
+(Added in 0.4~)
 
 =head2 guestfs_lvs_full
 
@@ -4804,7 +4925,7 @@ This function returns a C<struct guestfs_lvm_lv_list *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_lvm_lv_list> after use>.
 
-(Added in 0.4)
+(Added in 0.4~)
 
 =head2 guestfs_lvuuid
 
@@ -4817,7 +4938,7 @@ This command returns the UUID of the LVM LV C<device>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.87)
+(Added in 1.0.87~)
 
 =head2 guestfs_lxattrlist
 
@@ -4852,7 +4973,162 @@ This function returns a C<struct guestfs_xattr_list *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_xattr_list> after use>.
 
-(Added in 1.0.77)
+(Added in 1.0.77~)
+
+=head2 guestfs_md_create
+
+ int
+ guestfs_md_create (guestfs_h *g,
+                    const char *name,
+                    char *const *devices,
+                    ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_MD_CREATE_MISSINGBITMAP, int64_t missingbitmap,
+ GUESTFS_MD_CREATE_NRDEVICES, int nrdevices,
+ GUESTFS_MD_CREATE_SPARE, int spare,
+ GUESTFS_MD_CREATE_CHUNK, int64_t chunk,
+ GUESTFS_MD_CREATE_LEVEL, const char *level,
+
+Create a Linux md (RAID) device named C<name> on the devices
+in the list C<devices>.
+
+The optional parameters are:
+
+=over 4
+
+=item C<missingbitmap>
+
+A bitmap of missing devices.  If a bit is set it means that a
+missing device is added to the array.  The least significant bit
+corresponds to the first device in the array.
+
+As examples:
+
+If C<devices = ["/dev/sda"]> and C<missingbitmap = 0x1> then
+the resulting array would be C<[E<lt>missingE<gt>, "/dev/sda"]>.
+
+If C<devices = ["/dev/sda"]> and C<missingbitmap = 0x2> then
+the resulting array would be C<["/dev/sda", E<lt>missingE<gt>]>.
+
+This defaults to C<0> (no missing devices).
+
+The length of C<devices> + the number of bits set in
+C<missingbitmap> must equal C<nrdevices> + C<spare>.
+
+=item C<nrdevices>
+
+The number of active RAID devices.
+
+If not set, this defaults to the length of C<devices> plus
+the number of bits set in C<missingbitmap>.
+
+=item C<spare>
+
+The number of spare devices.
+
+If not set, this defaults to C<0>.
+
+=item C<chunk>
+
+The chunk size in bytes.
+
+=item C<level>
+
+The RAID level, which can be one of:
+I<linear>, I<raid0>, I<0>, I<stripe>, I<raid1>, I<1>, I<mirror>,
+I<raid4>, I<4>, I<raid5>, I<5>, I<raid6>, I<6>, I<raid10>, I<10>.
+Some of these are synonymous, and more levels may be added in future.
+
+If not set, this defaults to C<raid1>.
+
+=back
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.15.6)
+
+=head2 guestfs_md_create_va
+
+ int
+ guestfs_md_create_va (guestfs_h *g,
+                       const char *name,
+                       char *const *devices,
+                       va_list args);
+
+This is the "va_list variant" of L</guestfs_md_create>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_md_create_argv
+
+ int
+ guestfs_md_create_argv (guestfs_h *g,
+                         const char *name,
+                         char *const *devices,
+                         const struct guestfs_md_create_argv *optargs);
+
+This is the "argv variant" of L</guestfs_md_create>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_md_detail
+
+ char **
+ guestfs_md_detail (guestfs_h *g,
+                    const char *md);
+
+This command exposes the output of 'mdadm -DY <md>'. The following fields are
+usually present in the returned hash. Other fields may also be present.
+
+=over
+
+=item C<level>
+
+The raid level of the MD device.
+
+=item C<devices>
+
+The number of underlying devices in the MD device.
+
+=item C<metadata>
+
+The metadata version used.
+
+=item C<uuid>
+
+The UUID of the MD device.
+
+=item C<name>
+
+The name of the MD device.
+
+=back
+
+This function returns a NULL-terminated array of
+strings, or NULL if there was an error.
+The array of strings will always have length C<2n+1>, where
+C<n> keys and values alternate, followed by the trailing NULL entry.
+I<The caller must free the strings and the array after use>.
+
+(Added in 1.15.6)
+
+=head2 guestfs_md_stop
+
+ int
+ guestfs_md_stop (guestfs_h *g,
+                  const char *md);
+
+This command deactivates the MD array named C<md>.  The
+device is stopped, but it is not destroyed or zeroed.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.15.6)
 
 =head2 guestfs_mkdir
 
@@ -4864,7 +5140,7 @@ Create a directory named C<path>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_mkdir_mode
 
@@ -4884,7 +5160,7 @@ See also C<guestfs_mkdir>, C<guestfs_umask>
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.77)
+(Added in 1.0.77~)
 
 =head2 guestfs_mkdir_p
 
@@ -4897,7 +5173,7 @@ as necessary.  This is like the C<mkdir -p> shell command.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_mkdtemp
 
@@ -4927,7 +5203,7 @@ See also: L<mkdtemp(3)>
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.54)
+(Added in 1.0.54~)
 
 =head2 guestfs_mke2fs_J
 
@@ -4948,7 +5224,7 @@ See also C<guestfs_mke2journal>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.68)
+(Added in 1.0.68~)
 
 =head2 guestfs_mke2fs_JL
 
@@ -4966,7 +5242,7 @@ See also C<guestfs_mke2journal_L>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.68)
+(Added in 1.0.68~)
 
 =head2 guestfs_mke2fs_JU
 
@@ -4984,7 +5260,7 @@ See also C<guestfs_mke2journal_U>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.68)
+(Added in 1.0.68~)
 
 =head2 guestfs_mke2journal
 
@@ -5000,7 +5276,7 @@ to the command:
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.68)
+(Added in 1.0.68~)
 
 =head2 guestfs_mke2journal_L
 
@@ -5014,7 +5290,7 @@ This creates an ext2 external journal on C<device> with label C<label>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.68)
+(Added in 1.0.68~)
 
 =head2 guestfs_mke2journal_U
 
@@ -5028,7 +5304,7 @@ This creates an ext2 external journal on C<device> with UUID C<uuid>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.68)
+(Added in 1.0.68~)
 
 =head2 guestfs_mkfifo
 
@@ -5045,7 +5321,7 @@ The mode actually set is affected by the umask.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.55)
+(Added in 1.0.55~)
 
 =head2 guestfs_mkfs
 
@@ -5060,7 +5336,7 @@ example C<ext3>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_mkfs_b
 
@@ -5087,7 +5363,7 @@ the requested cluster size.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.68)
+(Added in 1.0.68~)
 
 =head2 guestfs_mkfs_opts
 
@@ -5150,7 +5426,7 @@ which sets sector size for ufs filesystem.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.7.19)
+(Added in 1.7.19~)
 
 =head2 guestfs_mkfs_opts_va
 
@@ -5223,7 +5499,7 @@ is closed which can also trigger these issues.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.62)
+(Added in 1.0.62~)
 
 =head2 guestfs_mknod
 
@@ -5254,7 +5530,7 @@ The mode actually set is affected by the umask.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.55)
+(Added in 1.0.55~)
 
 =head2 guestfs_mknod_b
 
@@ -5273,7 +5549,7 @@ The mode actually set is affected by the umask.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.55)
+(Added in 1.0.55~)
 
 =head2 guestfs_mknod_c
 
@@ -5292,7 +5568,7 @@ The mode actually set is affected by the umask.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.55)
+(Added in 1.0.55~)
 
 =head2 guestfs_mkswap
 
@@ -5304,7 +5580,7 @@ Create a swap partition on C<device>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.55)
+(Added in 1.0.55~)
 
 =head2 guestfs_mkswap_L
 
@@ -5321,7 +5597,7 @@ a limitation of the kernel or swap tools.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.55)
+(Added in 1.0.55~)
 
 =head2 guestfs_mkswap_U
 
@@ -5334,7 +5610,7 @@ Create a swap partition on C<device> with UUID C<uuid>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.55)
+(Added in 1.0.55~)
 
 =head2 guestfs_mkswap_file
 
@@ -5349,7 +5625,7 @@ file.  To create the file itself, use something like C<guestfs_fallocate>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_modprobe
 
@@ -5364,7 +5640,7 @@ was built (see C<appliance/kmod.whitelist.in> in the source).
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.68)
+(Added in 1.0.68~)
 
 =head2 guestfs_mount
 
@@ -5396,7 +5672,7 @@ first parameter if you don't want any options).
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.3)
+(Added in 0.3~)
 
 =head2 guestfs_mount_9p
 
@@ -5422,7 +5698,7 @@ parameter.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.11.12)
+(Added in 1.11.12~)
 
 =head2 guestfs_mount_9p_va
 
@@ -5461,7 +5737,7 @@ the command C<mount -o loop file mountpoint>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.54)
+(Added in 1.0.54~)
 
 =head2 guestfs_mount_options
 
@@ -5481,7 +5757,7 @@ the filesystem uses).
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.10)
+(Added in 1.0.10~)
 
 =head2 guestfs_mount_ro
 
@@ -5495,7 +5771,7 @@ mounts the filesystem with the read-only (I<-o ro>) flag.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.10)
+(Added in 1.0.10~)
 
 =head2 guestfs_mount_vfs
 
@@ -5512,7 +5788,7 @@ as for the L<mount(8)> I<-o> and I<-t> flags.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.10)
+(Added in 1.0.10~)
 
 =head2 guestfs_mountpoints
 
@@ -5529,7 +5805,7 @@ The array of strings will always have length C<2n+1>, where
 C<n> keys and values alternate, followed by the trailing NULL entry.
 I<The caller must free the strings and the array after use>.
 
-(Added in 1.0.62)
+(Added in 1.0.62~)
 
 =head2 guestfs_mounts
 
@@ -5547,7 +5823,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_mv
 
@@ -5561,7 +5837,7 @@ either a destination filename or destination directory.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.18)
+(Added in 1.0.18~)
 
 =head2 guestfs_ntfs_3g_probe
 
@@ -5584,7 +5860,7 @@ L<ntfs-3g.probe(8)> manual page.
 
 On error this function returns -1.
 
-(Added in 1.0.43)
+(Added in 1.0.43~)
 
 =head2 guestfs_ntfsresize
 
@@ -5614,7 +5890,7 @@ See also L<ntfsresize(8)>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.3.2)
+(Added in 1.3.2~)
 
 =head2 guestfs_ntfsresize_opts
 
@@ -5661,7 +5937,7 @@ See also L<ntfsresize(8)>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.11.15)
+(Added in 1.11.15~)
 
 =head2 guestfs_ntfsresize_opts_va
 
@@ -5704,7 +5980,7 @@ allows you to specify the new size (in bytes) explicitly.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.3.14)
+(Added in 1.3.14~)
 
 =head2 guestfs_part_add
 
@@ -5732,7 +6008,7 @@ Use C<guestfs_part_disk> to do that.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.78)
+(Added in 1.0.78~)
 
 =head2 guestfs_part_del
 
@@ -5749,7 +6025,7 @@ it contains.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.3.2)
+(Added in 1.3.2~)
 
 =head2 guestfs_part_disk
 
@@ -5767,7 +6043,7 @@ but other possible values are described in C<guestfs_part_init>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.78)
+(Added in 1.0.78~)
 
 =head2 guestfs_part_get_bootable
 
@@ -5783,7 +6059,7 @@ See also C<guestfs_part_set_bootable>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.3.2)
+(Added in 1.3.2~)
 
 =head2 guestfs_part_get_mbr_id
 
@@ -5801,7 +6077,7 @@ types (see C<guestfs_part_get_parttype>).
 
 On error this function returns -1.
 
-(Added in 1.3.2)
+(Added in 1.3.2~)
 
 =head2 guestfs_part_get_parttype
 
@@ -5820,7 +6096,7 @@ for a full list.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.78)
+(Added in 1.0.78~)
 
 =head2 guestfs_part_init
 
@@ -5904,7 +6180,7 @@ Sun disk labels.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.78)
+(Added in 1.0.78~)
 
 =head2 guestfs_part_list
 
@@ -5942,7 +6218,7 @@ This function returns a C<struct guestfs_partition_list *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_partition_list> after use>.
 
-(Added in 1.0.78)
+(Added in 1.0.78~)
 
 =head2 guestfs_part_set_bootable
 
@@ -5961,7 +6237,7 @@ no means universally recognized.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.78)
+(Added in 1.0.78~)
 
 =head2 guestfs_part_set_mbr_id
 
@@ -5983,7 +6259,7 @@ types (see C<guestfs_part_get_parttype>).
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.3.2)
+(Added in 1.3.2~)
 
 =head2 guestfs_part_set_name
 
@@ -6001,7 +6277,7 @@ table.  This works on C<gpt> but not on C<mbr> partitions.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.78)
+(Added in 1.0.78~)
 
 =head2 guestfs_part_to_dev
 
@@ -6021,7 +6297,7 @@ See also C<guestfs_part_to_partnum>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.5.15)
+(Added in 1.5.15~)
 
 =head2 guestfs_part_to_partnum
 
@@ -6039,7 +6315,7 @@ See also C<guestfs_part_to_dev>.
 
 On error this function returns -1.
 
-(Added in 1.13.25)
+(Added in 1.13.25~)
 
 =head2 guestfs_ping_daemon
 
@@ -6053,7 +6329,7 @@ or attached block device(s) in any other way.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.18)
+(Added in 1.0.18~)
 
 =head2 guestfs_pread
 
@@ -6079,7 +6355,7 @@ I<The caller must free the returned buffer after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.77)
+(Added in 1.0.77~)
 
 =head2 guestfs_pread_device
 
@@ -6105,7 +6381,7 @@ I<The caller must free the returned buffer after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.5.21)
+(Added in 1.5.21~)
 
 =head2 guestfs_pvcreate
 
@@ -6119,7 +6395,7 @@ as C</dev/sda1>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_pvremove
 
@@ -6136,7 +6412,7 @@ to remove those first.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.13)
+(Added in 1.0.13~)
 
 =head2 guestfs_pvresize
 
@@ -6149,7 +6425,7 @@ volume to match the new size of the underlying device.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.26)
+(Added in 1.0.26~)
 
 =head2 guestfs_pvresize_size
 
@@ -6163,7 +6439,7 @@ allows you to specify the new size (in bytes) explicitly.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.3.14)
+(Added in 1.3.14~)
 
 =head2 guestfs_pvs
 
@@ -6182,7 +6458,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 0.4)
+(Added in 0.4~)
 
 =head2 guestfs_pvs_full
 
@@ -6196,7 +6472,7 @@ This function returns a C<struct guestfs_lvm_pv_list *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_lvm_pv_list> after use>.
 
-(Added in 0.4)
+(Added in 0.4~)
 
 =head2 guestfs_pvuuid
 
@@ -6209,7 +6485,7 @@ This command returns the UUID of the LVM PV C<device>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.87)
+(Added in 1.0.87~)
 
 =head2 guestfs_pwrite
 
@@ -6236,7 +6512,7 @@ On error this function returns -1.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.3.14)
+(Added in 1.3.14~)
 
 =head2 guestfs_pwrite_device
 
@@ -6262,7 +6538,7 @@ On error this function returns -1.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.5.20)
+(Added in 1.5.20~)
 
 =head2 guestfs_read_file
 
@@ -6286,7 +6562,7 @@ I<The caller must free the returned buffer after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.63)
+(Added in 1.0.63~)
 
 =head2 guestfs_read_lines
 
@@ -6308,7 +6584,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 0.7)
+(Added in 0.7~)
 
 =head2 guestfs_readdir
 
@@ -6374,7 +6650,7 @@ This function returns a C<struct guestfs_dirent_list *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_dirent_list> after use>.
 
-(Added in 1.0.55)
+(Added in 1.0.55~)
 
 =head2 guestfs_readlink
 
@@ -6387,7 +6663,7 @@ This command reads the target of a symbolic link.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_readlinklist
 
@@ -6422,7 +6698,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 1.0.77)
+(Added in 1.0.77~)
 
 =head2 guestfs_realpath
 
@@ -6436,7 +6712,7 @@ returned path has no C<.>, C<..> or symbolic link path elements.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_removexattr
 
@@ -6452,7 +6728,7 @@ See also: C<guestfs_lremovexattr>, L<attr(5)>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.59)
+(Added in 1.0.59~)
 
 =head2 guestfs_resize2fs
 
@@ -6471,7 +6747,7 @@ calling this function.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.27)
+(Added in 1.0.27~)
 
 =head2 guestfs_resize2fs_M
 
@@ -6490,7 +6766,7 @@ resulting size of the minimal filesystem in bytes.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.9.4)
+(Added in 1.9.4~)
 
 =head2 guestfs_resize2fs_size
 
@@ -6504,7 +6780,7 @@ allows you to specify the new size (in bytes) explicitly.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.3.14)
+(Added in 1.3.14~)
 
 =head2 guestfs_rm
 
@@ -6516,7 +6792,7 @@ Remove the single file C<path>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_rm_rf
 
@@ -6530,7 +6806,7 @@ command.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_rmdir
 
@@ -6542,7 +6818,7 @@ Remove the single directory C<path>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_rmmountpoint
 
@@ -6556,7 +6832,7 @@ for full details.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.62)
+(Added in 1.0.62~)
 
 =head2 guestfs_scrub_device
 
@@ -6572,7 +6848,7 @@ manual page for more details.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.52)
+(Added in 1.0.52~)
 
 =head2 guestfs_scrub_file
 
@@ -6590,7 +6866,7 @@ manual page for more details.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.52)
+(Added in 1.0.52~)
 
 =head2 guestfs_scrub_freespace
 
@@ -6609,7 +6885,7 @@ manual page for more details.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.52)
+(Added in 1.0.52~)
 
 =head2 guestfs_set_append
 
@@ -6628,7 +6904,7 @@ are passed (libguestfs always adds a few of its own).
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.26)
+(Added in 1.0.26~)
 
 =head2 guestfs_set_attach_method
 
@@ -6658,7 +6934,7 @@ L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.9.8)
+(Added in 1.9.8~)
 
 =head2 guestfs_set_autosync
 
@@ -6676,7 +6952,7 @@ disabled by default).
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.3)
+(Added in 0.3~)
 
 =head2 guestfs_set_direct
 
@@ -6699,7 +6975,7 @@ The default is disabled.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.72)
+(Added in 1.0.72~)
 
 =head2 guestfs_set_e2label
 
@@ -6717,7 +6993,7 @@ to return the existing label on a filesystem.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.15)
+(Added in 1.0.15~)
 
 =head2 guestfs_set_e2uuid
 
@@ -6736,7 +7012,7 @@ to return the existing UUID of a filesystem.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.15)
+(Added in 1.0.15~)
 
 =head2 guestfs_set_memsize
 
@@ -6757,7 +7033,7 @@ see L<guestfs(3)>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.55)
+(Added in 1.0.55~)
 
 =head2 guestfs_set_network
 
@@ -6776,7 +7052,7 @@ it has no effect.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.5.4)
+(Added in 1.5.4~)
 
 =head2 guestfs_set_path
 
@@ -6793,7 +7069,7 @@ Setting C<path> to C<NULL> restores the default path.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.3)
+(Added in 0.3~)
 
 =head2 guestfs_set_pgroup
 
@@ -6812,7 +7088,7 @@ C<^C> to kill the subprocess.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.11.18)
+(Added in 1.11.18~)
 
 =head2 guestfs_set_qemu
 
@@ -6840,7 +7116,7 @@ the qemu binary at the same time as the handle is created.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.6)
+(Added in 1.0.6~)
 
 =head2 guestfs_set_recovery_proc
 
@@ -6864,7 +7140,7 @@ qemu, which is not very helpful.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.77)
+(Added in 1.0.77~)
 
 =head2 guestfs_set_selinux
 
@@ -6883,7 +7159,7 @@ see L<guestfs(3)>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.67)
+(Added in 1.0.67~)
 
 =head2 guestfs_set_smp
 
@@ -6899,7 +7175,7 @@ This function must be called before C<guestfs_launch>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.13.15)
+(Added in 1.13.15~)
 
 =head2 guestfs_set_trace
 
@@ -6923,7 +7199,7 @@ C<guestfs_set_event_callback>).
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.69)
+(Added in 1.0.69~)
 
 =head2 guestfs_set_verbose
 
@@ -6942,7 +7218,7 @@ C<guestfs_set_event_callback>).
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.3)
+(Added in 0.3~)
 
 =head2 guestfs_setcon
 
@@ -6957,7 +7233,7 @@ See the documentation about SELINUX in L<guestfs(3)>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.67)
+(Added in 1.0.67~)
 
 =head2 guestfs_setxattr
 
@@ -6976,7 +7252,7 @@ See also: C<guestfs_lsetxattr>, L<attr(5)>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.59)
+(Added in 1.0.59~)
 
 =head2 guestfs_sfdisk
 
@@ -7020,7 +7296,7 @@ C<guestfs_part_init>
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_sfdiskM
 
@@ -7047,7 +7323,7 @@ and C<guestfs_part_disk>
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.55)
+(Added in 1.0.55~)
 
 =head2 guestfs_sfdisk_N
 
@@ -7077,7 +7353,7 @@ See also: C<guestfs_part_add>
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.26)
+(Added in 1.0.26~)
 
 =head2 guestfs_sfdisk_disk_geometry
 
@@ -7096,7 +7372,7 @@ be parsed.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.26)
+(Added in 1.0.26~)
 
 =head2 guestfs_sfdisk_kernel_geometry
 
@@ -7112,7 +7388,7 @@ be parsed.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.26)
+(Added in 1.0.26~)
 
 =head2 guestfs_sfdisk_l
 
@@ -7136,7 +7412,7 @@ See also: C<guestfs_part_list>
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.26)
+(Added in 1.0.26~)
 
 =head2 guestfs_sh
 
@@ -7160,7 +7436,7 @@ All the provisos about C<guestfs_command> apply to this call.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.50)
+(Added in 1.0.50~)
 
 =head2 guestfs_sh_lines
 
@@ -7177,7 +7453,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 1.0.50)
+(Added in 1.0.50~)
 
 =head2 guestfs_sleep
 
@@ -7189,7 +7465,7 @@ Sleep for C<secs> seconds.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.41)
+(Added in 1.0.41~)
 
 =head2 guestfs_stat
 
@@ -7205,7 +7481,7 @@ This function returns a C<struct guestfs_stat *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_stat> after use>.
 
-(Added in 0.9.2)
+(Added in 0.9.2~)
 
 =head2 guestfs_statvfs
 
@@ -7223,7 +7499,7 @@ This function returns a C<struct guestfs_statvfs *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_statvfs> after use>.
 
-(Added in 0.9.2)
+(Added in 0.9.2~)
 
 =head2 guestfs_strings
 
@@ -7241,7 +7517,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.22)
+(Added in 1.0.22~)
 
 =head2 guestfs_strings_e
 
@@ -7296,7 +7572,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.22)
+(Added in 1.0.22~)
 
 =head2 guestfs_swapoff_device
 
@@ -7310,7 +7586,7 @@ See C<guestfs_swapon_device>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_swapoff_file
 
@@ -7322,7 +7598,7 @@ This command disables the libguestfs appliance swap on file.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_swapoff_label
 
@@ -7335,7 +7611,7 @@ labeled swap partition.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_swapoff_uuid
 
@@ -7348,7 +7624,7 @@ with the given UUID.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_swapon_device
 
@@ -7370,7 +7646,7 @@ attach a new host device to the guest and swap on that.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_swapon_file
 
@@ -7383,7 +7659,7 @@ See C<guestfs_swapon_device> for other notes.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_swapon_label
 
@@ -7396,7 +7672,7 @@ See C<guestfs_swapon_device> for other notes.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_swapon_uuid
 
@@ -7409,7 +7685,7 @@ See C<guestfs_swapon_device> for other notes.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_sync
 
@@ -7424,7 +7700,7 @@ closing the handle.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.3)
+(Added in 0.3~)
 
 =head2 guestfs_tail
 
@@ -7442,7 +7718,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.54)
+(Added in 1.0.54~)
 
 =head2 guestfs_tail_n
 
@@ -7466,7 +7742,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.54)
+(Added in 1.0.54~)
 
 =head2 guestfs_tar_in
 
@@ -7483,7 +7759,7 @@ or C<guestfs_txz_in>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.3)
+(Added in 1.0.3~)
 
 =head2 guestfs_tar_out
 
@@ -7500,7 +7776,7 @@ or C<guestfs_txz_out>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.3)
+(Added in 1.0.3~)
 
 =head2 guestfs_tgz_in
 
@@ -7516,7 +7792,7 @@ To upload an uncompressed tarball, use C<guestfs_tar_in>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.3)
+(Added in 1.0.3~)
 
 =head2 guestfs_tgz_out
 
@@ -7532,7 +7808,7 @@ To download an uncompressed tarball, use C<guestfs_tar_out>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.3)
+(Added in 1.0.3~)
 
 =head2 guestfs_touch
 
@@ -7549,7 +7825,7 @@ file types such as directories, symbolic links, block special etc.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.3)
+(Added in 0.3~)
 
 =head2 guestfs_truncate
 
@@ -7562,7 +7838,7 @@ file must exist already.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.77)
+(Added in 1.0.77~)
 
 =head2 guestfs_truncate_size
 
@@ -7582,7 +7858,129 @@ file of zeroes, use C<guestfs_fallocate64> instead.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.77)
+(Added in 1.0.77~)
+
+=head2 guestfs_tune2fs
+
+ int
+ guestfs_tune2fs (guestfs_h *g,
+                  const char *device,
+                  ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_TUNE2FS_FORCE, int force,
+ GUESTFS_TUNE2FS_MAXMOUNTCOUNT, int maxmountcount,
+ GUESTFS_TUNE2FS_MOUNTCOUNT, int mountcount,
+ GUESTFS_TUNE2FS_ERRORBEHAVIOR, const char *errorbehavior,
+ GUESTFS_TUNE2FS_GROUP, int64_t group,
+ GUESTFS_TUNE2FS_INTERVALBETWEENCHECKS, int intervalbetweenchecks,
+ GUESTFS_TUNE2FS_RESERVEDBLOCKSPERCENTAGE, int reservedblockspercentage,
+ GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY, const char *lastmounteddirectory,
+ GUESTFS_TUNE2FS_RESERVEDBLOCKSCOUNT, int64_t reservedblockscount,
+ GUESTFS_TUNE2FS_USER, int64_t user,
+
+This call allows you to adjust various filesystem parameters of
+an ext2/ext3/ext4 filesystem called C<device>.
+
+The optional parameters are:
+
+=over 4
+
+=item C<force>
+
+Force tune2fs to complete the operation even in the face of errors.
+This is the same as the tune2fs C<-f> option.
+
+=item C<maxmountcount>
+
+Set the number of mounts after which the filesystem is checked
+by L<e2fsck(8)>.  If this is C<0> then the number of mounts is
+disregarded.  This is the same as the tune2fs C<-c> option.
+
+=item C<mountcount>
+
+Set the number of times the filesystem has been mounted.
+This is the same as the tune2fs C<-C> option.
+
+=item C<errorbehavior>
+
+Change the behavior of the kernel code when errors are detected.
+Possible values currently are: C<continue>, C<remount-ro>, C<panic>.
+In practice these options don't really make any difference,
+particularly for write errors.
+
+This is the same as the tune2fs C<-e> option.
+
+=item C<group>
+
+Set the group which can use reserved filesystem blocks.
+This is the same as the tune2fs C<-g> option except that it
+can only be specified as a number.
+
+=item C<intervalbetweenchecks>
+
+Adjust the maximal time between two filesystem checks
+(in seconds).  If the option is passed as C<0> then
+time-dependent checking is disabled.
+
+This is the same as the tune2fs C<-i> option.
+
+=item C<reservedblockspercentage>
+
+Set the percentage of the filesystem which may only be allocated
+by privileged processes.
+This is the same as the tune2fs C<-m> option.
+
+=item C<lastmounteddirectory>
+
+Set the last mounted directory.
+This is the same as the tune2fs C<-M> option.
+
+=item C<reservedblockscount>
+Set the number of reserved filesystem blocks.
+This is the same as the tune2fs C<-r> option.
+
+=item C<user>
+
+Set the user who can use the reserved filesystem blocks.
+This is the same as the tune2fs C<-u> option except that it
+can only be specified as a number.
+
+=back
+
+To get the current values of filesystem parameters, see
+C<guestfs_tune2fs_l>.  For precise details of how tune2fs
+works, see the L<tune2fs(8)> man page.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.15.4~)
+
+=head2 guestfs_tune2fs_va
+
+ int
+ guestfs_tune2fs_va (guestfs_h *g,
+                     const char *device,
+                     va_list args);
+
+This is the "va_list variant" of L</guestfs_tune2fs>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_tune2fs_argv
+
+ int
+ guestfs_tune2fs_argv (guestfs_h *g,
+                       const char *device,
+                       const struct guestfs_tune2fs_argv *optargs);
+
+This is the "argv variant" of L</guestfs_tune2fs>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_tune2fs_l
 
@@ -7604,7 +8002,7 @@ The array of strings will always have length C<2n+1>, where
 C<n> keys and values alternate, followed by the trailing NULL entry.
 I<The caller must free the strings and the array after use>.
 
-(Added in 0.9.2)
+(Added in 0.9.2~)
 
 =head2 guestfs_txz_in
 
@@ -7618,7 +8016,7 @@ I<xz compressed> tar file) into C<directory>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.3.2)
+(Added in 1.3.2~)
 
 =head2 guestfs_txz_out
 
@@ -7632,7 +8030,7 @@ it to local file C<tarball> (as an xz compressed tar archive).
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.3.2)
+(Added in 1.3.2~)
 
 =head2 guestfs_umask
 
@@ -7659,7 +8057,7 @@ This call returns the previous umask.
 
 On error this function returns -1.
 
-(Added in 1.0.55)
+(Added in 1.0.55~)
 
 =head2 guestfs_umount
 
@@ -7673,7 +8071,7 @@ contains the filesystem.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_umount_all
 
@@ -7686,7 +8084,7 @@ Some internal mounts are not unmounted by this call.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_upload
 
@@ -7709,7 +8107,7 @@ so that the caller can display a progress bar or indicator.
 To receive these messages, the caller must register a progress
 event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
-(Added in 1.0.2)
+(Added in 1.0.2~)
 
 =head2 guestfs_upload_offset
 
@@ -7743,7 +8141,7 @@ so that the caller can display a progress bar or indicator.
 To receive these messages, the caller must register a progress
 event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
-(Added in 1.5.17)
+(Added in 1.5.17~)
 
 =head2 guestfs_utimens
 
@@ -7774,7 +8172,7 @@ C<*secs> field is ignored in this case).
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.77)
+(Added in 1.0.77~)
 
 =head2 guestfs_version
 
@@ -7816,7 +8214,7 @@ This function returns a C<struct guestfs_version *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_version> after use>.
 
-(Added in 1.0.58)
+(Added in 1.0.58~)
 
 =head2 guestfs_vfs_label
 
@@ -7834,7 +8232,7 @@ To find a filesystem from the label, use C<guestfs_findfs_label>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.3.18)
+(Added in 1.3.18~)
 
 =head2 guestfs_vfs_type
 
@@ -7853,7 +8251,7 @@ For example a string such as C<ext3> or C<ntfs>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.75)
+(Added in 1.0.75~)
 
 =head2 guestfs_vfs_uuid
 
@@ -7871,7 +8269,7 @@ To find a filesystem from the UUID, use C<guestfs_findfs_uuid>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.3.18)
+(Added in 1.3.18~)
 
 =head2 guestfs_vg_activate
 
@@ -7890,7 +8288,7 @@ are activated or deactivated.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.26)
+(Added in 1.0.26~)
 
 =head2 guestfs_vg_activate_all
 
@@ -7905,7 +8303,7 @@ This command is the same as running C<vgchange -a y|n>
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.26)
+(Added in 1.0.26~)
 
 =head2 guestfs_vgcreate
 
@@ -7919,7 +8317,7 @@ from the non-empty list of physical volumes C<physvols>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_vglvuuids
 
@@ -7939,7 +8337,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 1.0.87)
+(Added in 1.0.87~)
 
 =head2 guestfs_vgpvuuids
 
@@ -7959,7 +8357,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 1.0.87)
+(Added in 1.0.87~)
 
 =head2 guestfs_vgremove
 
@@ -7974,7 +8372,7 @@ group (if any).
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.13)
+(Added in 1.0.13~)
 
 =head2 guestfs_vgrename
 
@@ -7987,7 +8385,7 @@ Rename a volume group C<volgroup> with the new name C<newvolgroup>.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.83)
+(Added in 1.0.83~)
 
 =head2 guestfs_vgs
 
@@ -8006,7 +8404,7 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
-(Added in 0.4)
+(Added in 0.4~)
 
 =head2 guestfs_vgs_full
 
@@ -8020,7 +8418,7 @@ This function returns a C<struct guestfs_lvm_vg_list *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_lvm_vg_list> after use>.
 
-(Added in 0.4)
+(Added in 0.4~)
 
 =head2 guestfs_vgscan
 
@@ -8032,7 +8430,7 @@ physical volumes, volume groups and logical volumes.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.3.2)
+(Added in 1.3.2~)
 
 =head2 guestfs_vguuid
 
@@ -8045,7 +8443,7 @@ This command returns the UUID of the LVM VG named C<vgname>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.87)
+(Added in 1.0.87~)
 
 =head2 guestfs_wait_ready
 
@@ -8072,7 +8470,7 @@ versions of the API.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.3)
+(Added in 0.3~)
 
 =head2 guestfs_wc_c
 
@@ -8085,7 +8483,7 @@ C<wc -c> external command.
 
 On error this function returns -1.
 
-(Added in 1.0.54)
+(Added in 1.0.54~)
 
 =head2 guestfs_wc_l
 
@@ -8098,7 +8496,7 @@ C<wc -l> external command.
 
 On error this function returns -1.
 
-(Added in 1.0.54)
+(Added in 1.0.54~)
 
 =head2 guestfs_wc_w
 
@@ -8111,7 +8509,7 @@ C<wc -w> external command.
 
 On error this function returns -1.
 
-(Added in 1.0.54)
+(Added in 1.0.54~)
 
 =head2 guestfs_write
 
@@ -8131,7 +8529,7 @@ This function returns 0 on success or -1 on error.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.3.14)
+(Added in 1.3.14~)
 
 =head2 guestfs_write_append
 
@@ -8151,7 +8549,7 @@ This function returns 0 on success or -1 on error.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.11.18)
+(Added in 1.11.18~)
 
 =head2 guestfs_write_file
 
@@ -8184,7 +8582,7 @@ This function returns 0 on success or -1 on error.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 0.8)
+(Added in 0.8~)
 
 =head2 guestfs_zegrep
 
@@ -8203,7 +8601,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_zegrepi
 
@@ -8222,7 +8620,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_zero
 
@@ -8250,7 +8648,7 @@ so that the caller can display a progress bar or indicator.
 To receive these messages, the caller must register a progress
 event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
-(Added in 1.0.16)
+(Added in 1.0.16~)
 
 =head2 guestfs_zero_device
 
@@ -8273,7 +8671,7 @@ so that the caller can display a progress bar or indicator.
 To receive these messages, the caller must register a progress
 event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
-(Added in 1.3.1)
+(Added in 1.3.1~)
 
 =head2 guestfs_zerofree
 
@@ -8294,7 +8692,7 @@ or data on the filesystem.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.26)
+(Added in 1.0.26~)
 
 =head2 guestfs_zfgrep
 
@@ -8313,7 +8711,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_zfgrepi
 
@@ -8332,7 +8730,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_zfile
 
@@ -8359,7 +8757,7 @@ process compressed files.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
-(Added in 1.0.59)
+(Added in 1.0.59~)
 
 =head2 guestfs_zgrep
 
@@ -8378,7 +8776,7 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 
 =head2 guestfs_zgrepi
 
@@ -8397,5 +8795,5 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.66)
+(Added in 1.0.66~)
 

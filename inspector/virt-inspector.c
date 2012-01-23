@@ -1,5 +1,5 @@
 /* virt-inspector
- * Copyright (C) 2010-2011 Red Hat Inc.
+ * Copyright (C) 2010-2012 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -209,18 +209,17 @@ main (int argc, char *argv[])
     while (optind < argc) {
       if (strchr (argv[optind], '/') ||
           access (argv[optind], F_OK) == 0) { /* simulate -a option */
-        drv = malloc (sizeof (struct drv));
+        drv = calloc (1, sizeof (struct drv));
         if (!drv) {
           perror ("malloc");
           exit (EXIT_FAILURE);
         }
         drv->type = drv_a;
         drv->a.filename = argv[optind];
-        drv->a.format = NULL;
         drv->next = drvs;
         drvs = drv;
       } else {                  /* simulate -d option */
-        drv = malloc (sizeof (struct drv));
+        drv = calloc (1, sizeof (struct drv));
         if (!drv) {
           perror ("malloc");
           exit (EXIT_FAILURE);

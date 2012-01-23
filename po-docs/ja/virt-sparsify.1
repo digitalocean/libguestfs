@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-sparsify 1"
-.TH virt-sparsify 1 "2012-01-10" "libguestfs-1.14.9" "Virtualization Support"
+.TH virt-sparsify 1 "2012-01-23" "libguestfs-1.16.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -150,6 +150,10 @@ See \fIvirt\-filesystems\fR\|(1) to get a list of filesystems within a disk imag
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
 Display help.
+.IP "\fB\-\-compress\fR" 4
+.IX Item "--compress"
+Compress the output file.  This \fIonly\fR works if the output format is
+\&\f(CW\*(C`qcow2\*(C'\fR.
 .IP "\fB\-\-convert\fR raw" 4
 .IX Item "--convert raw"
 .PD 0
@@ -168,6 +172,8 @@ eg. \f(CW\*(C`vmdk\*(C'\fR, but support for other formats is reliant on qemu.
 .Sp
 Specifying the \fI\-\-convert\fR option is usually a good idea, because then
 virt-sparsify doesn't need to try to guess the input format.
+.Sp
+For fine-tuning the output format, see: \fI\-\-compress\fR, \fI\-o\fR.
 .IP "\fB\-\-debug\-gc\fR" 4
 .IX Item "--debug-gc"
 Debug garbage collection and memory allocation.  This is only useful when
@@ -200,6 +206,19 @@ You can give this option multiple times.
 .IX Item "--machine-readable"
 This option is used to make the output more machine friendly when being
 parsed by other programs.  See \*(L"\s-1MACHINE\s0 \s-1READABLE\s0 \s-1OUTPUT\s0\*(R" below.
+.IP "\fB\-o\fR option[,option,...]" 4
+.IX Item "-o option[,option,...]"
+Pass \fI\-o\fR option(s) to the \fIqemu\-img\fR\|(1) command to fine-tune the output
+format.  Options available depend on the output format (see \fI\-\-convert\fR)
+and the installed version of the qemu-img program.
+.Sp
+You should use \fI\-o\fR at most once.  To pass multiple options, separate them
+with commas, eg:
+.Sp
+.Vb 2
+\& virt\-sparsify \-\-convert qcow2 \e
+\&   \-o cluster_size=512,preallocation=metadata ...
+.Ve
 .IP "\fB\-q\fR" 4
 .IX Item "-q"
 .PD 0

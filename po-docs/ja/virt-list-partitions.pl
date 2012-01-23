@@ -10,10 +10,12 @@ virt-list-partitions - List partitions in a virtual machine or disk image
 
  virt-list-partitions [--options] disk.img [disk.img ...]
 
-=head1 DESCRIPTION
+=head1 OBSOLETE
 
 This tool is obsolete.  Use L<virt-filesystems(1)> as a more flexible
 replacement.
+
+=head1 DESCRIPTION
 
 C<virt-list-partitions> is a command line tool to list the partitions that
 are contained in a virtual machine or disk image.  It is mainly useful as a
@@ -97,7 +99,7 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2010 Red Hat Inc.
+Copyright (C) 2009-2012 Red Hat Inc.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free

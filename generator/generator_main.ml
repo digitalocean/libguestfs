@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2011 Red Hat Inc.
+ * Copyright (C) 2009-2012 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ open Generator_api_versions
 open Generator_c
 open Generator_xdr
 open Generator_daemon
-open Generator_capitests
+open Generator_tests_c_api
 open Generator_fish
 open Generator_ocaml
 open Generator_perl
@@ -39,6 +39,7 @@ open Generator_haskell
 open Generator_csharp
 open Generator_php
 open Generator_erlang
+open Generator_gobject
 open Generator_bindtests
 open Generator_errnostring
 
@@ -95,10 +96,11 @@ Run it from the top source directory using the command
   output_to "daemon/names.c" generate_daemon_names;
   output_to "daemon/optgroups.c" generate_daemon_optgroups_c;
   output_to "daemon/optgroups.h" generate_daemon_optgroups_h;
-  output_to "capitests/tests.c" generate_tests;
+  output_to "tests/c-api/tests.c" generate_tests;
   output_to "fish/cmds_gperf.gperf" generate_fish_cmds_gperf;
   output_to "fish/cmds.c" generate_fish_cmds;
   output_to "fish/completion.c" generate_fish_completion;
+  output_to "fish/event-names.c" generate_fish_event_names;
   output_to "fish/fish-cmds.h" generate_fish_cmds_h;
   output_to "fish/guestfish-commands.pod" generate_fish_commands_pod;
   output_to "fish/guestfish-actions.pod" generate_fish_actions_pod;
@@ -135,6 +137,9 @@ Run it from the top source directory using the command
   output_to "php/extension/guestfs_php.c" generate_php_c;
   output_to "erlang/guestfs.erl" generate_erlang_erl;
   output_to "erlang/erl-guestfs.c" generate_erlang_c;
+  output_to "gobject/bindtests.js" generate_gobject_js_bindtests;
+  output_to "gobject/guestfs-gobject.h" generate_gobject_header;
+  output_to "gobject/guestfs-gobject.c" generate_gobject_c;
 
   (* Generate the list of files generated -- last. *)
   printf "generated %d lines of code\n" (get_lines_generated ());

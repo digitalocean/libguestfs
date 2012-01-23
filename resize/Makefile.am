@@ -69,7 +69,7 @@ virt-resize: $(OBJECTS)
 # automake will decide we don't need C support in this file.  Really
 # we do, so we have to provide it ourselves.
 
-DEFAULT_INCLUDES = -I. -I$(top_builddir) -I$(shell $(OCAMLC) -where) -I../fish
+DEFAULT_INCLUDES = -I. -I$(top_builddir) -I$(shell $(OCAMLC) -where) -I$(top_srcdir)/fish
 
 .c.o:
 	$(CC) $(CFLAGS) $(PROF_CFLAGS) $(DEFAULT_INCLUDES) -c $< -o $@
@@ -103,24 +103,26 @@ random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
 
 TESTS_ENVIRONMENT = \
 	MALLOC_PERTURB_=$(random_val) \
-	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
-	LIBGUESTFS_PATH=$(top_builddir)/appliance \
-	TMPDIR=$(top_builddir)
+	$(top_builddir)/run
 
-TESTS = test-virt-resize.sh utils_tests
+TESTS = utils_tests
+if ENABLE_APPLIANCE
+TESTS += test-virt-resize.sh
+endif
 
 # Dependencies.
 depend: .depend
 
-.depend: $(wildcard *.mli) $(wildcard *.ml)
+.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
 	rm -f $@ $@-t
-	$(OCAMLFIND) ocamldep -I ../ocaml $^ | \
+	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) $^ | \
 	  $(SED) 's/ *$$//' | \
 	  $(SED) -e :a -e '/ *\\$$/N; s/ *\\\n */ /; ta' | \
+	  $(SED) -e 's,$(abs_srcdir)/,$(builddir)/,g' | \
 	  sort > $@-t
 	mv $@-t $@
 
-include .depend
+-include .depend
 
 endif
 

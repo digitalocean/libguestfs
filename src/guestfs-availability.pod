@@ -101,6 +101,13 @@ L</guestfs_vgremove>
 L</guestfs_vgs>
 L</guestfs_vgs_full>
 
+=item B<mdadm>
+
+The following functions:
+L</guestfs_md_create>
+L</guestfs_md_detail>
+L</guestfs_md_stop>
+
 =item B<mknod>
 
 The following functions:

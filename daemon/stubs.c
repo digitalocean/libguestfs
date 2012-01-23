@@ -9601,6 +9601,264 @@ done:
   return;
 }
 
+static void tune2fs_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_tune2fs_args args;
+  int force;
+  int maxmountcount;
+  int mountcount;
+  int64_t group;
+  int intervalbetweenchecks;
+  int reservedblockspercentage;
+  int64_t reservedblockscount;
+  int64_t user;
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffc00)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_tune2fs_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  force = args.force;
+  maxmountcount = args.maxmountcount;
+  mountcount = args.mountcount;
+  char *errorbehavior = args.errorbehavior;
+  group = args.group;
+  intervalbetweenchecks = args.intervalbetweenchecks;
+  reservedblockspercentage = args.reservedblockspercentage;
+  char *lastmounteddirectory = args.lastmounteddirectory;
+  reservedblockscount = args.reservedblockscount;
+  user = args.user;
+
+  r = do_tune2fs (device, force, maxmountcount, mountcount, errorbehavior, group, intervalbetweenchecks, reservedblockspercentage, lastmounteddirectory, reservedblockscount, user);
+  if (r == -1)
+    /* do_tune2fs has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_tune2fs_args, (char *) &args);
+  return;
+}
+
+static void md_create_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_md_create_args args;
+  char **devices;
+  int64_t missingbitmap;
+  int nrdevices;
+  int spare;
+  int64_t chunk;
+
+  if (optargs_bitmask & UINT64_C(0xffffffffffffffe0)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_md_create_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *name = args.name;
+  devices = realloc (args.devices.devices_val,
+                sizeof (char *) * (args.devices.devices_len+1));
+  if (devices == NULL) {
+    reply_with_perror ("realloc");
+    goto done;
+  }
+  devices[args.devices.devices_len] = NULL;
+  args.devices.devices_val = devices;
+  /* Ensure that each is a device,
+   * and perform device name translation.
+   */
+  {
+    size_t i;
+    for (i = 0; devices[i] != NULL; ++i)
+      RESOLVE_DEVICE (devices[i], , goto done);
+  }
+  missingbitmap = args.missingbitmap;
+  nrdevices = args.nrdevices;
+  spare = args.spare;
+  chunk = args.chunk;
+  char *level = args.level;
+
+  r = do_md_create (name, devices, missingbitmap, nrdevices, spare, chunk, level);
+  if (r == -1)
+    /* do_md_create has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_md_create_args, (char *) &args);
+  return;
+}
+
+static void list_md_devices_stub (XDR *xdr_in)
+{
+  char **r;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
+  r = do_list_md_devices ();
+  if (r == NULL)
+    /* do_list_md_devices has already called reply_with_error */
+    goto done;
+
+  struct guestfs_list_md_devices_ret ret;
+  ret.devices.devices_len = count_strings (r);
+  ret.devices.devices_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_list_md_devices_ret, (char *) &ret);
+  free_strings (r);
+done:
+  return;
+}
+
+static void md_detail_stub (XDR *xdr_in)
+{
+  char **r;
+  struct guestfs_md_detail_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_md_detail_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *md = args.md;
+  RESOLVE_DEVICE (md, , goto done);
+
+  r = do_md_detail (md);
+  if (r == NULL)
+    /* do_md_detail has already called reply_with_error */
+    goto done;
+
+  struct guestfs_md_detail_ret ret;
+  ret.info.info_len = count_strings (r);
+  ret.info.info_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_md_detail_ret, (char *) &ret);
+  free_strings (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_md_detail_args, (char *) &args);
+  return;
+}
+
+static void md_stop_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_md_stop_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_md_stop_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *md = args.md;
+  RESOLVE_DEVICE (md, , goto done);
+
+  r = do_md_stop (md);
+  if (r == -1)
+    /* do_md_stop has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_md_stop_args, (char *) &args);
+  return;
+}
+
+static void blkid_stub (XDR *xdr_in)
+{
+  char **r;
+  struct guestfs_blkid_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_blkid_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+
+  r = do_blkid (device);
+  if (r == NULL)
+    /* do_blkid has already called reply_with_error */
+    goto done;
+
+  struct guestfs_blkid_ret ret;
+  ret.info.info_len = count_strings (r);
+  ret.info.info_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_blkid_ret, (char *) &ret);
+  free_strings (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_blkid_args, (char *) &args);
+  return;
+}
+
+static void e2fsck_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_e2fsck_args args;
+  int correct;
+  int forceall;
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffc)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_e2fsck_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  correct = args.correct;
+  forceall = args.forceall;
+
+  r = do_e2fsck (device, correct, forceall);
+  if (r == -1)
+    /* do_e2fsck has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_e2fsck_args, (char *) &args);
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -10494,6 +10752,27 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_COPY_FILE_TO_FILE:
       copy_file_to_file_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_TUNE2FS:
+      tune2fs_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_MD_CREATE:
+      md_create_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LIST_MD_DEVICES:
+      list_md_devices_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_MD_DETAIL:
+      md_detail_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_MD_STOP:
+      md_stop_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_BLKID:
+      blkid_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_E2FSCK:
+      e2fsck_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

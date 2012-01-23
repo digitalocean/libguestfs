@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-rescue 1"
-.TH virt-rescue 1 "2012-01-10" "libguestfs-1.14.9" "Virtualization Support"
+.TH virt-rescue 1 "2012-01-23" "libguestfs-1.16.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -76,6 +76,8 @@ virt-rescue \- Run a rescue shell on a virtual machine
 \& virt\-rescue [\-\-options] \-d domname
 \&
 \& virt\-rescue [\-\-options] \-a disk.img [\-a disk.img ...]
+\&
+\& virt\-rescue \-\-suggest (\-d domname | \-a disk.img ...)
 .Ve
 .PP
 Старий стиль:
@@ -120,20 +122,50 @@ commands.  What you see in \f(CW\*(C`/\*(C'\fR (\f(CW\*(C`/bin\*(C'\fR, \f(CW\*(
 appliance.  You must mount the virtual machine's filesystems by hand.  There
 is an empty directory called \f(CW\*(C`/sysroot\*(C'\fR where you can mount filesystems.
 .PP
-In the example below, we list logical volumes, then choose one to mount
-under \f(CW\*(C`/sysroot\*(C'\fR:
+You can get virt-rescue to suggest mount commands for you by using the
+\&\fI\-\-suggest\fR option (in another terminal):
 .PP
-.Vb 6
+.Vb 2
+\& $ virt\-rescue \-\-suggest \-d Fedora15
+\& Inspecting the virtual machine or disk image ...
+\& 
+\& This disk contains one or more operating systems.  You can use these
+\& mount commands in virt\-rescue (at the ><rescue> prompt) to mount the
+\& filesystems.
+\& 
+\& # /dev/vg_f15x32/lv_root is the root of a linux operating system
+\& # type: linux, distro: fedora, version: 15.0
+\& # Fedora release 15 (Lovelock)
+\& 
+\& mount /dev/vg_f15x32/lv_root /sysroot/
+\& mount /dev/vda1 /sysroot/boot
+\& mount \-\-bind /dev /sysroot/dev
+\& mount \-\-bind /dev/pts /sysroot/dev/pts
+\& mount \-\-bind /proc /sysroot/proc
+\& mount \-\-bind /sys /sysroot/sys
+.Ve
+.PP
+Another way is to list the logical volumes (with \fIlvs\fR\|(8)) and partitions
+(with \fIparted\fR\|(8)) and mount them by hand:
+.PP
+.Vb 7
 \& ><rescue> lvs
 \& LV      VG        Attr   LSize   Origin Snap%  Move Log Copy%  Convert
-\& lv_root vg_f11x64 \-wi\-a\-   8.83G
-\& lv_swap vg_f11x64 \-wi\-a\- 992.00M
-\& ><rescue> mount /dev/vg_f11x64/lv_root /sysroot
+\& lv_root vg_f15x32 \-wi\-a\-   8.83G
+\& lv_swap vg_f15x32 \-wi\-a\- 992.00M
+\& ><rescue> mount /dev/vg_f15x32/lv_root /sysroot
+\& ><rescue> mount /dev/vda1 /sysroot/boot
 \& ><rescue> ls /sysroot
 .Ve
 .PP
-If you don't know what filesystems are available on the virtual machine then
-you can use commands such as \fIparted\fR\|(8) and \fIlvs\fR\|(8) to find out.
+Another command to list available filesystems is \fIvirt\-filesystems\fR\|(1).
+.PP
+To run commands in a Linux guest (for example, grub), you should chroot into
+the /sysroot directory first:
+.PP
+.Vb 1
+\& ><rescue> chroot /sysroot
+.Ve
 .SS "ПРИМІТКИ"
 .IX Subsection "ПРИМІТКИ"
 Virt-rescue can be used on \fIany\fR disk image file or device, not just a
@@ -250,13 +282,21 @@ Enable SELinux in the rescue appliance.  You should read
 .IP "\fB\-\-smp\fR N" 4
 .IX Item "--smp N"
 Enable N ≥ 2 virtual CPUs in the rescue appliance.
+.IP "\fB\-\-suggest\fR" 4
+.IX Item "--suggest"
+Inspect the disk image and suggest what mount commands should be used to
+mount the disks.  You should use the \fI\-\-suggest\fR option in a second
+terminal, then paste the commands into another virt-rescue.
+.Sp
+This option implies \fI\-\-ro\fR and is safe to use even if the guest is up or if
+another virt-rescue is running.
 .IP "\fB\-v\fR" 4
 .IX Item "-v"
 .PD 0
 .IP "\fB\-\-verbose\fR" 4
 .IX Item "--verbose"
 .PD
-Enable verbose messages for debugging.
+Увімкнути докладний показ повідомлень з метою діагностики.
 .IP "\fB\-V\fR" 4
 .IX Item "-V"
 .PD 0
@@ -351,13 +391,13 @@ This configuration file controls the default read-only or read-write mode
 .SH "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 .IX Header "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 \&\fIguestfs\fR\|(3), \fIguestfish\fR\|(1), \fIvirt\-cat\fR\|(1), \fIvirt\-edit\fR\|(1),
-<http://libguestfs.org/>.
+\&\fIvirt\-filesystems\fR\|(1), <http://libguestfs.org/>.
 .SH "АВТОР"
 .IX Header "АВТОР"
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "АВТОРСЬКІ ПРАВА"
 .IX Header "АВТОРСЬКІ ПРАВА"
-©Red Hat Inc., 2009–2011
+Copyright (C) 2009\-2012 Red Hat Inc.
 .PP
 This program is free software; you can redistribute it and/or modify it
 under the terms of the \s-1GNU\s0 General Public License as published by the Free
@@ -369,6 +409,6 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
-Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.
+You should have received a copy of the \s-1GNU\s0 General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.

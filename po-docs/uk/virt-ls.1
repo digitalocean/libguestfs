@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-ls 1"
-.TH virt-ls 1 "2012-01-10" "libguestfs-1.14.9" "Virtualization Support"
+.TH virt-ls 1 "2012-01-23" "libguestfs-1.16.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -295,7 +295,7 @@ The device containing the file (displayed as major:minor).  This may not
 match devices as known to the guest.
 .IP "inode" 4
 .IX Item "inode"
-The inode number.
+Номер inode.
 .IP "nlink" 4
 .IX Item "nlink"
 Кількість жорстких посилань.
@@ -441,7 +441,7 @@ directory.  See \*(L"\s-1RECURSIVE\s0 \s-1LISTING\s0\*(R".
 parsed.  See \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0 \s-1LISTING\s0\*(R".
 .IP "\fB\-\-times\fR" 4
 .IX Item "--times"
-Display time fields.
+Показати поля часу.
 .Sp
 This option only has effect in \fI\-lR\fR output mode.  See \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0
 \&\s-1LISTING\s0\*(R" above.
@@ -468,7 +468,7 @@ This option only has effect in \fI\-lR\fR output mode.  See \*(L"\s-1RECURSIVE\s
 \&\s-1LISTING\s0\*(R" above.
 .IP "\fB\-\-uids\fR" 4
 .IX Item "--uids"
-Display \s-1UID\s0 and \s-1GID\s0 fields.
+Показати поля \s-1UID\s0 і \s-1GID\s0.
 .Sp
 This option only has effect in \fI\-lR\fR output mode.  See \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0
 \&\s-1LISTING\s0\*(R" above.
@@ -478,7 +478,7 @@ This option only has effect in \fI\-lR\fR output mode.  See \*(L"\s-1RECURSIVE\s
 .IP "\fB\-\-verbose\fR" 4
 .IX Item "--verbose"
 .PD
-Enable verbose messages for debugging.
+Увімкнути докладний показ повідомлень з метою діагностики.
 .IP "\fB\-V\fR" 4
 .IX Item "-V"
 .PD 0
@@ -540,8 +540,8 @@ Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
-.SH "EXIT STATUS"
-.IX Header "EXIT STATUS"
+.SH "СТАН ВИХОДУ"
+.IX Header "СТАН ВИХОДУ"
 This program returns 0 if successful, or non-zero if there was an error.
 .SH "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 .IX Header "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
@@ -553,7 +553,7 @@ This program returns 0 if successful, or non-zero if there was an error.
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "АВТОРСЬКІ ПРАВА"
 .IX Header "АВТОРСЬКІ ПРАВА"
-©Red Hat Inc., 2009–2011
+Copyright (C) 2009\-2012 Red Hat Inc.
 .PP
 This program is free software; you can redistribute it and/or modify it
 under the terms of the \s-1GNU\s0 General Public License as published by the Free
@@ -565,6 +565,6 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
-Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.
+You should have received a copy of the \s-1GNU\s0 General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.

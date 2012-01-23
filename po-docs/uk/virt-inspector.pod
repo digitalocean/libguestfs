@@ -117,7 +117,7 @@ passphrases from the user by opening C</dev/tty>.
 
 =item B<--verbose>
 
-Enable verbose messages for debugging.
+Увімкнути докладний показ повідомлень з метою діагностики.
 
 =item B<-V>
 
@@ -374,7 +374,7 @@ versions of virt-inspector with different names:
  virt-inspector     Old Perl version.
  virt-inspector2    New C version.
 
-=head1 EXIT STATUS
+=head1 СТАН ВИХОДУ
 
 This program returns 0 if successful, or non-zero if there was an error.
 
@@ -399,7 +399,7 @@ Matthew Booth L<mbooth@redhat.com>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-©Red Hat Inc., 2010–2011
+Copyright (C) 2010-2012 Red Hat Inc.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -411,7 +411,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-Ви маєте отримати копію GNU General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 

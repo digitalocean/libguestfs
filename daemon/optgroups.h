@@ -29,6 +29,7 @@ extern int optgroup_linuxmodules_available (void);
 extern int optgroup_linuxxattrs_available (void);
 extern int optgroup_luks_available (void);
 extern int optgroup_lvm2_available (void);
+extern int optgroup_mdadm_available (void);
 extern int optgroup_mknod_available (void);
 extern int optgroup_ntfs3g_available (void);
 extern int optgroup_ntfsprogs_available (void);

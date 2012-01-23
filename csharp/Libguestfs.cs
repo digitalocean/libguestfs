@@ -602,6 +602,24 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_blkid (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// print block device attributes
+    /// </summary>
+    public Hashtable blkid (string device)
+    {
+      string[] r;
+      r = guestfs_blkid (_handle, device);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      Hashtable rr = new Hashtable ();
+      for (size_t i = 0; i < r.Length; i += 2)
+        rr.Add (r[i], r[i+1]);
+      return rr;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_blockdev_flushbufs (IntPtr h, [In] string device);
 
     /// <summary>
@@ -1205,6 +1223,20 @@ namespace Guestfs
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_e2fsck (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// check an ext2/ext3 filesystem
+    /// </summary>
+    public void e2fsck (string device)
+    {
+      int r;
+      r = guestfs_e2fsck (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -2763,6 +2795,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_list_md_devices (IntPtr h);
+
+    /// <summary>
+    /// list Linux md (RAID) devices
+    /// </summary>
+    public string[] list_md_devices ()
+    {
+      string[] r;
+      r = guestfs_list_md_devices (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string[] guestfs_list_partitions (IntPtr h);
 
     /// <summary>
@@ -3204,6 +3251,52 @@ namespace Guestfs
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_md_create (IntPtr h, [In] string name, [In] string[] devices);
+
+    /// <summary>
+    /// create a Linux md (RAID) device
+    /// </summary>
+    public void md_create (string name, string[] devices)
+    {
+      int r;
+      r = guestfs_md_create (_handle, name, devices);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_md_detail (IntPtr h, [In] string md);
+
+    /// <summary>
+    /// obtain metadata for an MD device
+    /// </summary>
+    public Hashtable md_detail (string md)
+    {
+      string[] r;
+      r = guestfs_md_detail (_handle, md);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      Hashtable rr = new Hashtable ();
+      for (size_t i = 0; i < r.Length; i += 2)
+        rr.Add (r[i], r[i+1]);
+      return rr;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_md_stop (IntPtr h, [In] string md);
+
+    /// <summary>
+    /// stop a Linux md (RAID) device
+    /// </summary>
+    public void md_stop (string md)
+    {
+      int r;
+      r = guestfs_md_stop (_handle, md);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -4996,6 +5089,36 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_test0rbufferout (IntPtr h, [In] string val);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public string test0rbufferout (string val)
+    {
+      string r;
+      r = guestfs_test0rbufferout (_handle, val);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_test0rbufferouterr (IntPtr h);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public string test0rbufferouterr ()
+    {
+      string r;
+      r = guestfs_test0rbufferouterr (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string guestfs_test0rconstoptstring (IntPtr h, [In] string val);
 
     /// <summary>
@@ -5337,6 +5460,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_truncate_size (_handle, path, size);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_tune2fs (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// adjust ext2/ext3/ext4 filesystem parameters
+    /// </summary>
+    public void tune2fs (string device)
+    {
+      int r;
+      r = guestfs_tune2fs (_handle, device);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }

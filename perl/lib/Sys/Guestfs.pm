@@ -85,7 +85,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.297';
+$VERSION = '0.304';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -691,6 +691,35 @@ to C<filename>.
 This command downloads the contents of C<filename>, writing
 it out to local file C<base64file> encoded as base64.
 
+=item %info = $h->blkid ($device);
+
+This command returns block device attributes for C<device>. The following fields are
+usually present in the returned hash. Other fields may also be present.
+
+=over
+
+=item C<UUID>
+
+The uuid of this device.
+
+=item C<LABEL>
+
+The label of this device.
+
+=item C<VERSION>
+
+The version of blkid command.
+
+=item C<TYPE>
+
+The filesystem type or RAID of this device.
+
+=item C<USAGE>
+
+The usage of this device, for example C<filesystem> or C<raid>.
+
+=back
+
 =item $h->blockdev_flushbufs ($device);
 
 This tells the kernel to flush internal buffers associated
@@ -1162,6 +1191,30 @@ subdirectories (recursively).
 
 The result is the estimated size in I<kilobytes>
 (ie. units of 1024 bytes).
+
+=item $h->e2fsck ($device [, correct => $correct] [, forceall => $forceall]);
+
+This runs the ext2/ext3 filesystem checker on C<device>.
+It can take the following optional arguments:
+
+=over 4
+
+=item C<correct>
+
+Automatically repair the file system. This option will cause e2fsck
+to automatically fix any filesystem problems that can be safely
+fixed without human intervention.
+
+This option may not be specified at the same time as the C<forceall> option.
+
+=item C<forceall>
+
+Assume an answer of 'yes' to all questions; allows e2fsck to be used
+non-interactively.
+
+This option may not be specified at the same time as the C<correct> option.
+
+=back
 
 =item $h->e2fsck_f ($device);
 
@@ -2290,6 +2343,10 @@ FreeBSD.
 
 NetBSD.
 
+=item "hurd"
+
+GNU/Hurd.
+
 =item "unknown"
 
 The operating system type could not be determined.
@@ -2673,6 +2730,10 @@ be mountable but require special options.  Filesystems may
 not all belong to a single logical operating system
 (use C<$h-E<gt>inspect_os> to look for OSes).
 
+=item @devices = $h->list_md_devices ();
+
+List all Linux md devices.
+
 =item @partitions = $h->list_partitions ();
 
 List all the partitions detected on all block devices.
@@ -2945,6 +3006,96 @@ for getting standard stats.  Very long directory listings
 might cause the protocol message size to be exceeded, causing
 this call to fail.  The caller must split up such requests
 into smaller groups of names.
+
+=item $h->md_create ($name, \@devices [, missingbitmap => $missingbitmap] [, nrdevices => $nrdevices] [, spare => $spare] [, chunk => $chunk] [, level => $level]);
+
+Create a Linux md (RAID) device named C<name> on the devices
+in the list C<devices>.
+
+The optional parameters are:
+
+=over 4
+
+=item C<missingbitmap>
+
+A bitmap of missing devices.  If a bit is set it means that a
+missing device is added to the array.  The least significant bit
+corresponds to the first device in the array.
+
+As examples:
+
+If C<devices = ["/dev/sda"]> and C<missingbitmap = 0x1> then
+the resulting array would be C<[E<lt>missingE<gt>, "/dev/sda"]>.
+
+If C<devices = ["/dev/sda"]> and C<missingbitmap = 0x2> then
+the resulting array would be C<["/dev/sda", E<lt>missingE<gt>]>.
+
+This defaults to C<0> (no missing devices).
+
+The length of C<devices> + the number of bits set in
+C<missingbitmap> must equal C<nrdevices> + C<spare>.
+
+=item C<nrdevices>
+
+The number of active RAID devices.
+
+If not set, this defaults to the length of C<devices> plus
+the number of bits set in C<missingbitmap>.
+
+=item C<spare>
+
+The number of spare devices.
+
+If not set, this defaults to C<0>.
+
+=item C<chunk>
+
+The chunk size in bytes.
+
+=item C<level>
+
+The RAID level, which can be one of:
+I<linear>, I<raid0>, I<0>, I<stripe>, I<raid1>, I<1>, I<mirror>,
+I<raid4>, I<4>, I<raid5>, I<5>, I<raid6>, I<6>, I<raid10>, I<10>.
+Some of these are synonymous, and more levels may be added in future.
+
+If not set, this defaults to C<raid1>.
+
+=back
+
+=item %info = $h->md_detail ($md);
+
+This command exposes the output of 'mdadm -DY <md>'. The following fields are
+usually present in the returned hash. Other fields may also be present.
+
+=over
+
+=item C<level>
+
+The raid level of the MD device.
+
+=item C<devices>
+
+The number of underlying devices in the MD device.
+
+=item C<metadata>
+
+The metadata version used.
+
+=item C<uuid>
+
+The UUID of the MD device.
+
+=item C<name>
+
+The name of the MD device.
+
+=back
+
+=item $h->md_stop ($md);
+
+This command deactivates the MD array named C<md>.  The
+device is stopped, but it is not destroyed or zeroed.
 
 =item $h->mkdir ($path);
 
@@ -4424,6 +4575,81 @@ This creates a sparse file (ie. disk blocks are not allocated
 for the file until you write to it).  To create a non-sparse
 file of zeroes, use C<$h-E<gt>fallocate64> instead.
 
+=item $h->tune2fs ($device [, force => $force] [, maxmountcount => $maxmountcount] [, mountcount => $mountcount] [, errorbehavior => $errorbehavior] [, group => $group] [, intervalbetweenchecks => $intervalbetweenchecks] [, reservedblockspercentage => $reservedblockspercentage] [, lastmounteddirectory => $lastmounteddirectory] [, reservedblockscount => $reservedblockscount] [, user => $user]);
+
+This call allows you to adjust various filesystem parameters of
+an ext2/ext3/ext4 filesystem called C<device>.
+
+The optional parameters are:
+
+=over 4
+
+=item C<force>
+
+Force tune2fs to complete the operation even in the face of errors.
+This is the same as the tune2fs C<-f> option.
+
+=item C<maxmountcount>
+
+Set the number of mounts after which the filesystem is checked
+by L<e2fsck(8)>.  If this is C<0> then the number of mounts is
+disregarded.  This is the same as the tune2fs C<-c> option.
+
+=item C<mountcount>
+
+Set the number of times the filesystem has been mounted.
+This is the same as the tune2fs C<-C> option.
+
+=item C<errorbehavior>
+
+Change the behavior of the kernel code when errors are detected.
+Possible values currently are: C<continue>, C<remount-ro>, C<panic>.
+In practice these options don't really make any difference,
+particularly for write errors.
+
+This is the same as the tune2fs C<-e> option.
+
+=item C<group>
+
+Set the group which can use reserved filesystem blocks.
+This is the same as the tune2fs C<-g> option except that it
+can only be specified as a number.
+
+=item C<intervalbetweenchecks>
+
+Adjust the maximal time between two filesystem checks
+(in seconds).  If the option is passed as C<0> then
+time-dependent checking is disabled.
+
+This is the same as the tune2fs C<-i> option.
+
+=item C<reservedblockspercentage>
+
+Set the percentage of the filesystem which may only be allocated
+by privileged processes.
+This is the same as the tune2fs C<-m> option.
+
+=item C<lastmounteddirectory>
+
+Set the last mounted directory.
+This is the same as the tune2fs C<-M> option.
+
+=item C<reservedblockscount>
+Set the number of reserved filesystem blocks.
+This is the same as the tune2fs C<-r> option.
+
+=item C<user>
+
+Set the user who can use the reserved filesystem blocks.
+This is the same as the tune2fs C<-u> option except that it
+can only be specified as a number.
+
+=back
+
+To get the current values of filesystem parameters, see
+C<$h-E<gt>tune2fs_l>.  For precise details of how tune2fs
+works, see the L<tune2fs(8)> man page.
+
 =item %superblock = $h->tune2fs_l ($device);
 
 This returns the contents of the ext2, ext3 or ext4 filesystem
@@ -5067,6 +5293,14 @@ use vars qw(%guestfs_introspection);
     name => "base64_out",
     description => "download file and encode as base64",
   },
+  "blkid" => {
+    ret => 'hash',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "blkid",
+    description => "print block device attributes",
+  },
   "blockdev_flushbufs" => {
     ret => 'void',
     args => [
@@ -5455,6 +5689,18 @@ use vars qw(%guestfs_introspection);
     ],
     name => "du",
     description => "estimate file space usage",
+  },
+  "e2fsck" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    optargs => {
+      correct => [ 'correct', 'bool', 0 ],
+      forceall => [ 'forceall', 'bool', 1 ],
+    },
+    name => "e2fsck",
+    description => "check an ext2/ext3 filesystem",
   },
   "e2fsck_f" => {
     ret => 'void',
@@ -6281,6 +6527,13 @@ use vars qw(%guestfs_introspection);
     name => "list_filesystems",
     description => "list filesystems",
   },
+  "list_md_devices" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "list_md_devices",
+    description => "list Linux md (RAID) devices",
+  },
   "list_partitions" => {
     ret => 'string list',
     args => [
@@ -6552,6 +6805,38 @@ use vars qw(%guestfs_introspection);
     ],
     name => "lxattrlist",
     description => "lgetxattr on multiple files",
+  },
+  "md_create" => {
+    ret => 'void',
+    args => [
+      [ 'name', 'string', 0 ],
+      [ 'devices', 'string(device) list', 1 ],
+    ],
+    optargs => {
+      missingbitmap => [ 'missingbitmap', 'int64', 0 ],
+      nrdevices => [ 'nrdevices', 'int', 1 ],
+      spare => [ 'spare', 'int', 2 ],
+      chunk => [ 'chunk', 'int64', 3 ],
+      level => [ 'level', 'string', 4 ],
+    },
+    name => "md_create",
+    description => "create a Linux md (RAID) device",
+  },
+  "md_detail" => {
+    ret => 'hash',
+    args => [
+      [ 'md', 'string(device)', 0 ],
+    ],
+    name => "md_detail",
+    description => "obtain metadata for an MD device",
+  },
+  "md_stop" => {
+    ret => 'void',
+    args => [
+      [ 'md', 'string(device)', 0 ],
+    ],
+    name => "md_stop",
+    description => "stop a Linux md (RAID) device",
   },
   "mkdir" => {
     ret => 'void',
@@ -7637,6 +7922,12 @@ use vars qw(%guestfs_introspection);
       [ 'fileout', 'string(filename)', 7 ],
       [ 'bufferin', 'buffer', 8 ],
     ],
+    optargs => {
+      obool => [ 'obool', 'bool', 0 ],
+      oint => [ 'oint', 'int', 1 ],
+      oint64 => [ 'oint64', 'int64', 2 ],
+      ostring => [ 'ostring', 'string', 3 ],
+    },
     name => "test0",
     description => "internal test function - do not use",
   },
@@ -7653,6 +7944,21 @@ use vars qw(%guestfs_introspection);
     args => [
     ],
     name => "test0rboolerr",
+    description => "internal test function - do not use",
+  },
+  "test0rbufferout" => {
+    ret => 'buffer',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "test0rbufferout",
+    description => "internal test function - do not use",
+  },
+  "test0rbufferouterr" => {
+    ret => 'buffer',
+    args => [
+    ],
+    name => "test0rbufferouterr",
     description => "internal test function - do not use",
   },
   "test0rconstoptstring" => {
@@ -7832,6 +8138,26 @@ use vars qw(%guestfs_introspection);
     ],
     name => "truncate_size",
     description => "truncate a file to a particular size",
+  },
+  "tune2fs" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    optargs => {
+      force => [ 'force', 'bool', 0 ],
+      maxmountcount => [ 'maxmountcount', 'int', 1 ],
+      mountcount => [ 'mountcount', 'int', 2 ],
+      errorbehavior => [ 'errorbehavior', 'string', 3 ],
+      group => [ 'group', 'int64', 4 ],
+      intervalbetweenchecks => [ 'intervalbetweenchecks', 'int', 5 ],
+      reservedblockspercentage => [ 'reservedblockspercentage', 'int', 6 ],
+      lastmounteddirectory => [ 'lastmounteddirectory', 'string', 7 ],
+      reservedblockscount => [ 'reservedblockscount', 'int64', 8 ],
+      user => [ 'user', 'int64', 9 ],
+    },
+    name => "tune2fs",
+    description => "adjust ext2/ext3/ext4 filesystem parameters",
   },
   "tune2fs_l" => {
     ret => 'hash',

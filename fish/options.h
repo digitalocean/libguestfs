@@ -1,5 +1,5 @@
 /* libguestfs - guestfish and guestmount shared option parsing
- * Copyright (C) 2010-2011 Red Hat Inc.
+ * Copyright (C) 2010-2012 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,7 +75,9 @@ extern int echo_keys;
 extern const char *libvirt_uri;
 extern const char *program_name;
 
-/* List of drives added via -a, -d or -N options. */
+/* List of drives added via -a, -d or -N options.  NB: Unused fields
+ * in this struct MUST be zeroed, ie. use calloc, not malloc.
+ */
 struct drv {
   struct drv *next;
 
@@ -139,13 +141,12 @@ extern int add_libvirt_drives (const char *guest);
     perror (optarg);                            \
     exit (EXIT_FAILURE);                        \
   }                                             \
-  drv = malloc (sizeof (struct drv));           \
+  drv = calloc (1, sizeof (struct drv));        \
   if (!drv) {                                   \
     perror ("malloc");                          \
     exit (EXIT_FAILURE);                        \
   }                                             \
   drv->type = drv_a;                            \
-  drv->device = NULL;                           \
   drv->nr_drives = -1;                          \
   drv->a.filename = optarg;                     \
   drv->a.format = format;                       \
@@ -156,13 +157,12 @@ extern int add_libvirt_drives (const char *guest);
   libvirt_uri = optarg
 
 #define OPTION_d                                \
-  drv = malloc (sizeof (struct drv));           \
+  drv = calloc (1, sizeof (struct drv));        \
   if (!drv) {                                   \
     perror ("malloc");                          \
     exit (EXIT_FAILURE);                        \
   }                                             \
   drv->type = drv_d;                            \
-  drv->device = NULL;                           \
   drv->nr_drives = -1;                          \
   drv->d.guest = optarg;                        \
   drv->next = drvs;                             \

@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2011 Red Hat Inc.
+# Copyright (C) 2009-2012 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -74,8 +74,10 @@ stamp-guestmount.pod: guestmount.pod
 
 # Tests.
 
+if ENABLE_APPLIANCE
 TESTS = test-fuse.sh
+endif ENABLE_APPLIANCE
 TESTS_ENVIRONMENT = \
 	top_builddir=..
 
-endif
+endif HAVE_FUSE

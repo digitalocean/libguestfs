@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2011 Red Hat Inc.
+ * Copyright (C) 2009-2012 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,13 @@ let test_all_args = [
   BufferIn "bufferin";
 ]
 
+let test_all_optargs = [
+  OBool   "obool";
+  OInt    "oint";
+  OInt64  "oint64";
+  OString "ostring"
+]
+
 let test_all_rets = [
   (* except for RErr, which is tested thoroughly elsewhere *)
   "test0rint",         RInt "valout";
@@ -55,10 +62,12 @@ let test_all_rets = [
   "test0rstruct",      RStruct ("valout", "lvm_pv");
   "test0rstructlist",  RStructList ("valout", "lvm_pv");
   "test0rhashtable",   RHashtable "valout";
+  "test0rbufferout",   RBufferOut "valout";
 ]
 
 let test_functions = [
-  ("test0", (RErr, test_all_args, []), -1, [NotInFish; NotInDocs],
+  ("test0", (RErr, test_all_args, test_all_optargs), -1,
+   [NotInFish; NotInDocs; Cancellable],
    [],
    "internal test function - do not use",
    "\
@@ -746,6 +755,10 @@ FreeBSD.
 =item \"netbsd\"
 
 NetBSD.
+
+=item \"hurd\"
+
+GNU/Hurd.
 
 =item \"unknown\"
 
@@ -2585,7 +2598,10 @@ C<path> should be a file or directory in the mounted file system
 This is the same as the C<statvfs(2)> system call.");
 
   ("tune2fs_l", (RHashtable "superblock", [Device "device"], []), 55, [],
-   [], (* XXX test *)
+   [InitScratchFS, Always, TestOutputHashtable (
+      [["tune2fs_l"; "/dev/sdb1"]],
+      ["Filesystem magic number", "0xEF53";
+       "Filesystem OS type", "Linux"])],
    "get ext2/ext3/ext4 superblock details",
    "\
 This returns the contents of the ext2, ext3 or ext4 filesystem
@@ -2707,11 +2723,12 @@ Reread the partition table on C<device>.
 
 This uses the L<blockdev(8)> command.");
 
-  ("upload", (RErr, [FileIn "filename"; Dev_or_Path "remotefilename"], []), 66, [Progress],
+  ("upload", (RErr, [FileIn "filename"; Dev_or_Path "remotefilename"], []), 66,
+   [Progress; Cancellable],
    [InitScratchFS, Always, TestOutput (
       (* Pick a file from cwd which isn't likely to change. *)
       [["mkdir"; "/upload"];
-       ["upload"; "../COPYING.LIB"; "/upload/COPYING.LIB"];
+       ["upload"; "../../COPYING.LIB"; "/upload/COPYING.LIB"];
        ["checksum"; "md5"; "/upload/COPYING.LIB"]],
       Digest.to_hex (Digest.file "COPYING.LIB"))],
    "upload a file from the local machine",
@@ -2723,11 +2740,12 @@ C<filename> can also be a named pipe.
 
 See also C<guestfs_download>.");
 
-  ("download", (RErr, [Dev_or_Path "remotefilename"; FileOut "filename"], []), 67, [Progress],
+  ("download", (RErr, [Dev_or_Path "remotefilename"; FileOut "filename"], []), 67,
+   [Progress; Cancellable],
    [InitScratchFS, Always, TestOutput (
       (* Pick a file from cwd which isn't likely to change. *)
       [["mkdir"; "/download"];
-       ["upload"; "../COPYING.LIB"; "/download/COPYING.LIB"];
+       ["upload"; "../../COPYING.LIB"; "/download/COPYING.LIB"];
        ["download"; "/download/COPYING.LIB"; "testdownload.tmp"];
        ["upload"; "testdownload.tmp"; "/download/upload"];
        ["checksum"; "md5"; "/download/upload"]],
@@ -2808,10 +2826,11 @@ To get the checksum for a device, use C<guestfs_checksum_device>.
 
 To get the checksums for many files, use C<guestfs_checksums_out>.");
 
-  ("tar_in", (RErr, [FileIn "tarfile"; Pathname "directory"], []), 69, [],
+  ("tar_in", (RErr, [FileIn "tarfile"; Pathname "directory"], []), 69,
+   [Cancellable],
    [InitScratchFS, Always, TestOutput (
       [["mkdir"; "/tar_in"];
-       ["tar_in"; "../images/helloworld.tar"; "/tar_in"];
+       ["tar_in"; "../data/helloworld.tar"; "/tar_in"];
        ["cat"; "/tar_in/hello"]], "hello\n")],
    "unpack tarfile to directory",
    "\
@@ -2821,7 +2840,8 @@ I<uncompressed> tar file) into C<directory>.
 To upload a compressed tarball, use C<guestfs_tgz_in>
 or C<guestfs_txz_in>.");
 
-  ("tar_out", (RErr, [String "directory"; FileOut "tarfile"], []), 70, [],
+  ("tar_out", (RErr, [String "directory"; FileOut "tarfile"], []), 70,
+   [Cancellable],
    [],
    "pack directory into tarfile",
    "\
@@ -2831,10 +2851,11 @@ it to local file C<tarfile>.
 To download a compressed tarball, use C<guestfs_tgz_out>
 or C<guestfs_txz_out>.");
 
-  ("tgz_in", (RErr, [FileIn "tarball"; Pathname "directory"], []), 71, [],
+  ("tgz_in", (RErr, [FileIn "tarball"; Pathname "directory"], []), 71,
+   [Cancellable],
    [InitScratchFS, Always, TestOutput (
       [["mkdir"; "/tgz_in"];
-       ["tgz_in"; "../images/helloworld.tar.gz"; "/tgz_in"];
+       ["tgz_in"; "../data/helloworld.tar.gz"; "/tgz_in"];
        ["cat"; "/tgz_in/hello"]], "hello\n")],
    "unpack compressed tarball to directory",
    "\
@@ -2843,7 +2864,8 @@ I<gzip compressed> tar file) into C<directory>.
 
 To upload an uncompressed tarball, use C<guestfs_tar_in>.");
 
-  ("tgz_out", (RErr, [Pathname "directory"; FileOut "tarball"], []), 72, [],
+  ("tgz_out", (RErr, [Pathname "directory"; FileOut "tarball"], []), 72,
+   [Cancellable],
    [],
    "pack directory into compressed tarball",
    "\
@@ -3447,6 +3469,8 @@ are activated or deactivated.");
        ["umount"; "/"];
        ["lvresize"; "/dev/VG/LV"; "20"];
        ["e2fsck_f"; "/dev/VG/LV"];
+       ["e2fsck"; "/dev/VG/LV"; "true"; "false"];
+       ["e2fsck"; "/dev/VG/LV"; "false"; "true"];
        ["resize2fs"; "/dev/VG/LV"];
        ["mount_options"; ""; "/dev/VG/LV"; "/"];
        ["cat"; "/new"]], "test content");
@@ -4681,7 +4705,8 @@ You can use this command to test the connection through to the daemon.
 
 See also C<guestfs_ping_daemon>.");
 
-  ("find0", (RErr, [Pathname "directory"; FileOut "files"], []), 196, [],
+  ("find0", (RErr, [Pathname "directory"; FileOut "files"], []), 196,
+   [Cancellable],
    [], (* There is a regression test for this. *)
    "find all files and directories, returning NUL-separated list",
    "\
@@ -5375,17 +5400,19 @@ If blocks are already zero, then this command avoids writing
 zeroes.  This prevents the underlying device from becoming non-sparse
 or growing unnecessarily.");
 
-  ("txz_in", (RErr, [FileIn "tarball"; Pathname "directory"], []), 229, [Optional "xz"],
+  ("txz_in", (RErr, [FileIn "tarball"; Pathname "directory"], []), 229,
+   [Optional "xz"; Cancellable],
    [InitScratchFS, Always, TestOutput (
       [["mkdir"; "/txz_in"];
-       ["txz_in"; "../images/helloworld.tar.xz"; "/txz_in"];
+       ["txz_in"; "../data/helloworld.tar.xz"; "/txz_in"];
        ["cat"; "/txz_in/hello"]], "hello\n")],
    "unpack compressed tarball to directory",
    "\
 This command uploads and unpacks local file C<tarball> (an
 I<xz compressed> tar file) into C<directory>.");
 
-  ("txz_out", (RErr, [Pathname "directory"; FileOut "tarball"], []), 230, [Optional "xz"],
+  ("txz_out", (RErr, [Pathname "directory"; FileOut "tarball"], []), 230,
+   [Optional "xz"; Cancellable],
    [],
    "pack directory into compressed tarball",
    "\
@@ -5475,7 +5502,7 @@ types (see C<guestfs_part_get_parttype>).");
   ("checksum_device", (RString "checksum", [String "csumtype"; Device "device"], []), 237, [],
    [InitISOFS, Always, TestOutputFileMD5 (
       [["checksum_device"; "md5"; "/dev/sdd"]],
-      "../images/test.iso")],
+      "../data/test.iso")],
    "compute MD5, SHAx or CRC checksum of the contents of a device",
    "\
 This call computes the MD5, SHAx or CRC checksum of the
@@ -5512,7 +5539,8 @@ is the same as the L<augtool(1)> C<clear> command.");
 Return the current umask.  By default the umask is C<022>
 unless it has been set by calling C<guestfs_umask>.");
 
-  ("debug_upload", (RErr, [FileIn "filename"; String "tmpname"; Int "mode"], []), 241, [NotInDocs],
+  ("debug_upload", (RErr, [FileIn "filename"; String "tmpname"; Int "mode"], []), 241,
+   [NotInDocs; Cancellable],
    [],
    "upload a file to the appliance (internal use only)",
    "\
@@ -5523,23 +5551,26 @@ There is no comprehensive help for this command.  You have
 to look at the file C<daemon/debug.c> in the libguestfs source
 to find out what it is for.");
 
-  ("base64_in", (RErr, [FileIn "base64file"; Pathname "filename"], []), 242, [],
+  ("base64_in", (RErr, [FileIn "base64file"; Pathname "filename"], []), 242,
+   [Cancellable],
    [InitScratchFS, Always, TestOutput (
-      [["base64_in"; "../images/hello.b64"; "/base64_in"];
+      [["base64_in"; "../data/hello.b64"; "/base64_in"];
        ["cat"; "/base64_in"]], "hello\n")],
    "upload base64-encoded data to file",
    "\
 This command uploads base64-encoded data from C<base64file>
 to C<filename>.");
 
-  ("base64_out", (RErr, [Pathname "filename"; FileOut "base64file"], []), 243, [],
+  ("base64_out", (RErr, [Pathname "filename"; FileOut "base64file"], []), 243,
+   [Cancellable],
    [],
    "download file and encode as base64",
    "\
 This command downloads the contents of C<filename>, writing
 it out to local file C<base64file> encoded as base64.");
 
-  ("checksums_out", (RErr, [String "csumtype"; Pathname "directory"; FileOut "sumsfile"], []), 244, [],
+  ("checksums_out", (RErr, [String "csumtype"; Pathname "directory"; FileOut "sumsfile"], []), 244,
+  [Cancellable],
    [],
    "compute MD5, SHAx or CRC checksum of files in a directory",
    "\
@@ -5926,10 +5957,11 @@ from C<guestfs_list_partitions>.
 
 See also C<guestfs_part_to_partnum>.");
 
-  ("upload_offset", (RErr, [FileIn "filename"; Dev_or_Path "remotefilename"; Int64 "offset"], []), 273, [Progress],
+  ("upload_offset", (RErr, [FileIn "filename"; Dev_or_Path "remotefilename"; Int64 "offset"], []), 273,
+   [Progress; Cancellable],
    (let md5 = Digest.to_hex (Digest.file "COPYING.LIB") in
     [InitScratchFS, Always, TestOutput (
-       [["upload_offset"; "../COPYING.LIB"; "/upload_offset"; "0"];
+       [["upload_offset"; "../../COPYING.LIB"; "/upload_offset"; "0"];
         ["checksum"; "md5"; "/upload_offset"]], md5)]),
    "upload a file from the local machine with offset",
    "\
@@ -5950,14 +5982,15 @@ error occurs.
 
 See also C<guestfs_upload>, C<guestfs_pwrite>.");
 
-  ("download_offset", (RErr, [Dev_or_Path "remotefilename"; FileOut "filename"; Int64 "offset"; Int64 "size"], []), 274, [Progress],
+  ("download_offset", (RErr, [Dev_or_Path "remotefilename"; FileOut "filename"; Int64 "offset"; Int64 "size"], []), 274,
+   [Progress; Cancellable],
    (let md5 = Digest.to_hex (Digest.file "COPYING.LIB") in
     let offset = string_of_int 100 in
     let size = string_of_int ((Unix.stat "COPYING.LIB").Unix.st_size - 100) in
     [InitScratchFS, Always, TestOutput (
        (* Pick a file from cwd which isn't likely to change. *)
        [["mkdir"; "/download_offset"];
-        ["upload"; "../COPYING.LIB"; "/download_offset/COPYING.LIB"];
+        ["upload"; "../../COPYING.LIB"; "/download_offset/COPYING.LIB"];
         ["download_offset"; "/download_offset/COPYING.LIB"; "testdownload.tmp"; offset; size];
         ["upload_offset"; "testdownload.tmp"; "/download_offset/COPYING.LIB"; offset];
         ["checksum"; "md5"; "/download_offset/COPYING.LIB"]], md5)]),
@@ -6165,7 +6198,7 @@ Note that for large devices this can take a long time to run.");
 List all 9p filesystems attached to the guest.  A list of
 mount tags is returned.");
 
-  ("mount_9p", (RErr, [String "mounttag"; String "mountpoint"], [OString "options"]), 286, [],
+  ("mount_9p", (RErr, [String "mounttag"; String "mountpoint"], [OString "options"]), 286, [CamelName "Mount9P"],
    [],
    "mount 9p filesystem",
    "\
@@ -6189,7 +6222,7 @@ Device mapper devices which correspond to logical volumes are I<not>
 returned in this list.  Call C<guestfs_lvs> if you want to list logical
 volumes.");
 
-  ("ntfsresize_opts", (RErr, [Device "device"], [OInt64 "size"; OBool "force"]), 288, [Optional "ntfsprogs"],
+  ("ntfsresize_opts", (RErr, [Device "device"], [OInt64 "size"; OBool "force"]), 288, [Optional "ntfsprogs"; CamelName "NTFSResizeOpts"],
    [],
    "resize an NTFS filesystem",
    "\
@@ -6221,7 +6254,7 @@ single filesystem without booting into Windows between each resize.
 
 See also L<ntfsresize(8)>.");
 
-  ("btrfs_filesystem_resize", (RErr, [Pathname "mountpoint"], [OInt64 "size"]), 289, [Optional "btrfs"],
+  ("btrfs_filesystem_resize", (RErr, [Pathname "mountpoint"], [OInt64 "size"]), 289, [Optional "btrfs"; CamelName "BTRFSFilesystemResize"],
    [],
    "resize a btrfs filesystem",
    "\
@@ -6258,7 +6291,8 @@ C<path> does not exist, then a new file is created.
 
 See also C<guestfs_write>.");
 
-  ("compress_out", (RErr, [String "ctype"; Pathname "file"; FileOut "zfile"], [OInt "level"]), 291, [],
+  ("compress_out", (RErr, [String "ctype"; Pathname "file"; FileOut "zfile"], [OInt "level"]), 291,
+   [Cancellable],
    [],
    "output compressed file",
    "\
@@ -6275,7 +6309,8 @@ The optional C<level> parameter controls compression level.  The
 meaning and default for this parameter depends on the compression
 program being used.");
 
-  ("compress_device_out", (RErr, [String "ctype"; Device "device"; FileOut "zdevice"], [OInt "level"]), 292, [],
+  ("compress_device_out", (RErr, [String "ctype"; Device "device"; FileOut "zdevice"], [OInt "level"]), 292,
+   [Cancellable],
    [],
    "output compressed device",
    "\
@@ -6352,6 +6387,269 @@ This is B<not> the function you want for copying files.  This
 is for copying blocks within existing files.  See C<guestfs_cp>,
 C<guestfs_cp_a> and C<guestfs_mv> for general file copying and
 moving functions.");
+
+  ("tune2fs", (RErr, [Device "device"], [OBool "force"; OInt "maxmountcount"; OInt "mountcount"; OString "errorbehavior"; OInt64 "group"; OInt "intervalbetweenchecks"; OInt "reservedblockspercentage"; OString "lastmounteddirectory"; OInt64 "reservedblockscount"; OInt64 "user"]), 298, [CamelName "Tune2FS"],
+   [InitScratchFS, Always, TestOutputHashtable (
+     [["tune2fs"; "/dev/sdb1"; "false"; "0"; ""; "NOARG"; ""; "0"; ""; "NOARG"; ""; ""];
+      ["tune2fs_l"; "/dev/sdb1"]],
+     ["Check interval", "0 (<none>)";
+      "Maximum mount count", "-1"]);
+    InitScratchFS, Always, TestOutputHashtable (
+      [["tune2fs"; "/dev/sdb1"; "false"; "0"; ""; "NOARG"; ""; "86400"; ""; "NOARG"; ""; ""];
+       ["tune2fs_l"; "/dev/sdb1"]],
+      ["Check interval", "86400 (1 day)";
+       "Maximum mount count", "-1"]);
+    InitScratchFS, Always, TestOutputHashtable (
+      [["tune2fs"; "/dev/sdb1"; "false"; ""; ""; "NOARG"; "1"; ""; ""; "NOARG"; ""; "1"];
+       ["tune2fs_l"; "/dev/sdb1"]],
+      ["Reserved blocks uid", "1 (user bin)";
+       "Reserved blocks gid", "1 (group bin)"]);
+    InitScratchFS, Always, TestOutputHashtable (
+      [["tune2fs"; "/dev/sdb1"; "false"; ""; ""; "NOARG"; "0"; ""; ""; "NOARG"; ""; "0"];
+       ["tune2fs_l"; "/dev/sdb1"]],
+      ["Reserved blocks uid", "0 (user root)";
+       "Reserved blocks gid", "0 (group root)"])
+   ],
+   "adjust ext2/ext3/ext4 filesystem parameters",
+   "\
+This call allows you to adjust various filesystem parameters of
+an ext2/ext3/ext4 filesystem called C<device>.
+
+The optional parameters are:
+
+=over 4
+
+=item C<force>
+
+Force tune2fs to complete the operation even in the face of errors.
+This is the same as the tune2fs C<-f> option.
+
+=item C<maxmountcount>
+
+Set the number of mounts after which the filesystem is checked
+by L<e2fsck(8)>.  If this is C<0> then the number of mounts is
+disregarded.  This is the same as the tune2fs C<-c> option.
+
+=item C<mountcount>
+
+Set the number of times the filesystem has been mounted.
+This is the same as the tune2fs C<-C> option.
+
+=item C<errorbehavior>
+
+Change the behavior of the kernel code when errors are detected.
+Possible values currently are: C<continue>, C<remount-ro>, C<panic>.
+In practice these options don't really make any difference,
+particularly for write errors.
+
+This is the same as the tune2fs C<-e> option.
+
+=item C<group>
+
+Set the group which can use reserved filesystem blocks.
+This is the same as the tune2fs C<-g> option except that it
+can only be specified as a number.
+
+=item C<intervalbetweenchecks>
+
+Adjust the maximal time between two filesystem checks
+(in seconds).  If the option is passed as C<0> then
+time-dependent checking is disabled.
+
+This is the same as the tune2fs C<-i> option.
+
+=item C<reservedblockspercentage>
+
+Set the percentage of the filesystem which may only be allocated
+by privileged processes.
+This is the same as the tune2fs C<-m> option.
+
+=item C<lastmounteddirectory>
+
+Set the last mounted directory.
+This is the same as the tune2fs C<-M> option.
+
+=item C<reservedblockscount>
+Set the number of reserved filesystem blocks.
+This is the same as the tune2fs C<-r> option.
+
+=item C<user>
+
+Set the user who can use the reserved filesystem blocks.
+This is the same as the tune2fs C<-u> option except that it
+can only be specified as a number.
+
+=back
+
+To get the current values of filesystem parameters, see
+C<guestfs_tune2fs_l>.  For precise details of how tune2fs
+works, see the L<tune2fs(8)> man page.");
+
+  ("md_create", (RErr, [String "name"; DeviceList "devices"], [OInt64 "missingbitmap"; OInt "nrdevices"; OInt "spare"; OInt64 "chunk"; OString "level"]), 299, [Optional "mdadm"; CamelName "MDCreate"],
+   [],
+   "create a Linux md (RAID) device",
+   "\
+Create a Linux md (RAID) device named C<name> on the devices
+in the list C<devices>.
+
+The optional parameters are:
+
+=over 4
+
+=item C<missingbitmap>
+
+A bitmap of missing devices.  If a bit is set it means that a
+missing device is added to the array.  The least significant bit
+corresponds to the first device in the array.
+
+As examples:
+
+If C<devices = [\"/dev/sda\"]> and C<missingbitmap = 0x1> then
+the resulting array would be C<[E<lt>missingE<gt>, \"/dev/sda\"]>.
+
+If C<devices = [\"/dev/sda\"]> and C<missingbitmap = 0x2> then
+the resulting array would be C<[\"/dev/sda\", E<lt>missingE<gt>]>.
+
+This defaults to C<0> (no missing devices).
+
+The length of C<devices> + the number of bits set in
+C<missingbitmap> must equal C<nrdevices> + C<spare>.
+
+=item C<nrdevices>
+
+The number of active RAID devices.
+
+If not set, this defaults to the length of C<devices> plus
+the number of bits set in C<missingbitmap>.
+
+=item C<spare>
+
+The number of spare devices.
+
+If not set, this defaults to C<0>.
+
+=item C<chunk>
+
+The chunk size in bytes.
+
+=item C<level>
+
+The RAID level, which can be one of:
+I<linear>, I<raid0>, I<0>, I<stripe>, I<raid1>, I<1>, I<mirror>,
+I<raid4>, I<4>, I<raid5>, I<5>, I<raid6>, I<6>, I<raid10>, I<10>.
+Some of these are synonymous, and more levels may be added in future.
+
+If not set, this defaults to C<raid1>.
+
+=back");
+
+  ("list_md_devices", (RStringList "devices", [], []), 300, [],
+   [],
+   "list Linux md (RAID) devices",
+   "\
+List all Linux md devices.");
+
+  ("md_detail", (RHashtable "info", [Device "md"], []), 301,  [Optional "mdadm"],
+   [],
+   "obtain metadata for an MD device",
+   "\
+This command exposes the output of 'mdadm -DY <md>'. The following fields are
+usually present in the returned hash. Other fields may also be present.
+
+=over
+
+=item C<level>
+
+The raid level of the MD device.
+
+=item C<devices>
+
+The number of underlying devices in the MD device.
+
+=item C<metadata>
+
+The metadata version used.
+
+=item C<uuid>
+
+The UUID of the MD device.
+
+=item C<name>
+
+The name of the MD device.
+
+=back");
+
+  ("md_stop", (RErr, [Device "md"], []), 302, [Optional "mdadm"],
+   [],
+   "stop a Linux md (RAID) device",
+   "\
+This command deactivates the MD array named C<md>.  The
+device is stopped, but it is not destroyed or zeroed.");
+
+  ("blkid", (RHashtable "info", [Device "device"], []), 303, [],
+   [InitScratchFS, Always, TestOutputHashtable (
+      [["blkid"; "/dev/sdb1"]],
+      ["TYPE", "ext2";
+       "USAGE", "filesystem";
+       "PART_ENTRY_NUMBER", "1";
+       "PART_ENTRY_TYPE", "0x83";
+       "PART_ENTRY_OFFSET", "128";
+       "PART_ENTRY_SIZE", "102145"])],
+   "print block device attributes",
+   "\
+This command returns block device attributes for C<device>. The following fields are
+usually present in the returned hash. Other fields may also be present.
+
+=over
+
+=item C<UUID>
+
+The uuid of this device.
+
+=item C<LABEL>
+
+The label of this device.
+
+=item C<VERSION>
+
+The version of blkid command.
+
+=item C<TYPE>
+
+The filesystem type or RAID of this device.
+
+=item C<USAGE>
+
+The usage of this device, for example C<filesystem> or C<raid>.
+
+=back");
+
+  ("e2fsck", (RErr, [Device "device"], [OBool "correct"; OBool "forceall"]), 304, [],
+   [], (* lvresize tests this *)
+   "check an ext2/ext3 filesystem",
+   "\
+This runs the ext2/ext3 filesystem checker on C<device>.
+It can take the following optional arguments:
+
+=over 4
+
+=item C<correct>
+
+Automatically repair the file system. This option will cause e2fsck
+to automatically fix any filesystem problems that can be safely
+fixed without human intervention.
+
+This option may not be specified at the same time as the C<forceall> option.
+
+=item C<forceall>
+
+Assume an answer of 'yes' to all questions; allows e2fsck to be used
+non-interactively.
+
+This option may not be specified at the same time as the C<correct> option.
+
+=back");
 
 ]
 
@@ -6431,6 +6729,16 @@ them with the help of L</glob> like this:
 
  glob copy-out /home/* .");
 
+  ("delete_event", (RErr,[], []), -1, [], [],
+   "delete a previously registered event handler",
+   " delete-event name
+
+Delete the event handler which was previously registered as C<name>.
+If multiple event handlers were registered with the same name, they
+are all deleted.
+
+See also the guestfish commands C<event> and C<list-events>.");
+
   ("display", (RErr,[], []), -1, [], [],
    "display an image",
    " display filename
@@ -6461,6 +6769,39 @@ locally using your editor, then uploads the result.
 The editor is C<$EDITOR>.  However if you use the alternate
 commands C<vi> or C<emacs> you will get those corresponding
 editors.");
+
+  ("event", (RErr,[], []), -1, [], [],
+   "register a handler for an event or events",
+   " event name eventset \"shell script ...\"
+
+Register a shell script fragment which is executed when an
+event is raised.  See L<guestfs(3)/guestfs_set_event_callback>
+for a discussion of the event API in libguestfs.
+
+The C<name> parameter is a name that you give to this event
+handler.  It can be any string (even the empty string) and is
+simply there so you can delete the handler using the guestfish
+C<delete-event> command.
+
+The C<eventset> parameter is a comma-separated list of one
+or more events, for example C<close> or C<close,trace>.  The
+special value C<*> means all events.
+
+The third and final parameter is the shell script fragment
+(or any external command) that is executed when any of the
+events in the eventset occurs.  It is executed using
+C<$SHELL -c>, or if C<$SHELL> is not set then C</bin/sh -c>.
+
+The shell script fragment receives callback parameters as
+arguments C<$1>, C<$2> etc.  The actual event that was
+called is available in the environment variable C<$EVENT>.
+
+ event \"\" close \"echo closed\"
+ event messages appliance,library,trace \"echo $@\"
+ event \"\" progress \"echo progress: $3/$4\"
+ event \"\" * \"echo $EVENT $@\"
+
+See also the guestfish commands C<delete-event> and C<list-events>.");
 
   ("glob", (RErr,[], []), -1, [], [],
    "expand wildcards in command",
@@ -6515,6 +6856,13 @@ Change the local directory, ie. the current directory of guestfish
 itself.
 
 Note that C<!cd> won't do what you might expect.");
+
+  ("list_events", (RErr,[], []), -1, [], [],
+   "list event handlers",
+   " list-events
+
+List the event handlers registered using the guestfish
+C<event> command.");
 
   ("man", (RErr,[], []), -1, [FishAlias "manual"], [],
    "open the manual",

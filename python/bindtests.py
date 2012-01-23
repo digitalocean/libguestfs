@@ -22,9 +22,9 @@
 import guestfs
 
 g = guestfs.GuestFS ()
-g.test0 ("abc", "def", [], 0, 0, 0, "123", "456", "abc\0abc")
-g.test0 ("abc", None, [], 0, 0, 0, "123", "456", "abc\0abc")
-g.test0 ("", "def", [], 0, 0, 0, "123", "456", "abc\0abc")
+g.test0 ("abc", "def", [], 0, 0, 0, "123", "456", "abc\0abc", obool=True, oint=1)
+g.test0 ("abc", None, [], 0, 0, 0, "123", "456", "abc\0abc", oint64=1, ostring="string")
+g.test0 ("", "def", [], 0, 0, 0, "123", "456", "abc\0abc", obool=False)
 g.test0 ("", "", [], 0, 0, 0, "123", "456", "abc\0abc")
 g.test0 ("abc", "def", ["1"], 0, 0, 0, "123", "456", "abc\0abc")
 g.test0 ("abc", "def", ["1","2"], 0, 0, 0, "123", "456", "abc\0abc")

@@ -1,5 +1,5 @@
 /* guestfish - the filesystem interactive shell
- * Copyright (C) 2009-2011 Red Hat Inc.
+ * Copyright (C) 2009-2012 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,7 +104,7 @@ usage (int status)
     fprintf (stdout,
            _("%s: guest filesystem shell\n"
              "%s lets you edit virtual machine filesystems\n"
-             "Copyright (C) 2009-2011 Red Hat Inc.\n"
+             "Copyright (C) 2009-2012 Red Hat Inc.\n"
              "Usage:\n"
              "  %s [--options] cmd [: cmd : cmd ...]\n"
              "Options:\n"
@@ -208,6 +208,7 @@ main (int argc, char *argv[])
   int next_prepared_drive = 1;
 
   initialize_readline ();
+  init_event_handlers ();
 
   memset (&sa, 0, sizeof sa);
   sa.sa_handler = SIG_IGN;
@@ -340,13 +341,12 @@ main (int argc, char *argv[])
         list_prepared_drives ();
         exit (EXIT_SUCCESS);
       }
-      drv = malloc (sizeof (struct drv));
+      drv = calloc (1, sizeof (struct drv));
       if (!drv) {
         perror ("malloc");
         exit (EXIT_FAILURE);
       }
       drv->type = drv_N;
-      drv->device = NULL;
       drv->nr_drives = -1;
       if (asprintf (&drv->N.filename, "test%d.img",
                     next_prepared_drive++) == -1) {
@@ -414,18 +414,17 @@ main (int argc, char *argv[])
     while (optind < argc) {
       if (strchr (argv[optind], '/') ||
           access (argv[optind], F_OK) == 0) { /* simulate -a option */
-        drv = malloc (sizeof (struct drv));
+        drv = calloc (1, sizeof (struct drv));
         if (!drv) {
           perror ("malloc");
           exit (EXIT_FAILURE);
         }
         drv->type = drv_a;
         drv->a.filename = argv[optind];
-        drv->a.format = NULL;
         drv->next = drvs;
         drvs = drv;
       } else {                  /* simulate -d option */
-        drv = malloc (sizeof (struct drv));
+        drv = calloc (1, sizeof (struct drv));
         if (!drv) {
           perror ("malloc");
           exit (EXIT_FAILURE);
@@ -549,6 +548,7 @@ main (int argc, char *argv[])
     progress_bar_free (bar);
 
   guestfs_close (g);
+  free_event_handlers ();
 
   exit (EXIT_SUCCESS);
 }

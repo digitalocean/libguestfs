@@ -1987,6 +1987,60 @@ struct guestfs_copy_file_to_file_args {
   hyper size;
 };
 
+struct guestfs_tune2fs_args {
+  string device<>;
+  bool force;
+  int maxmountcount;
+  int mountcount;
+  string errorbehavior<>;
+  hyper group;
+  int intervalbetweenchecks;
+  int reservedblockspercentage;
+  string lastmounteddirectory<>;
+  hyper reservedblockscount;
+  hyper user;
+};
+
+struct guestfs_md_create_args {
+  string name<>;
+  guestfs_str devices<>;
+  hyper missingbitmap;
+  int nrdevices;
+  int spare;
+  hyper chunk;
+  string level<>;
+};
+
+struct guestfs_list_md_devices_ret {
+  guestfs_str devices<>;
+};
+
+struct guestfs_md_detail_args {
+  string md<>;
+};
+
+struct guestfs_md_detail_ret {
+  guestfs_str info<>;
+};
+
+struct guestfs_md_stop_args {
+  string md<>;
+};
+
+struct guestfs_blkid_args {
+  string device<>;
+};
+
+struct guestfs_blkid_ret {
+  guestfs_str info<>;
+};
+
+struct guestfs_e2fsck_args {
+  string device<>;
+  bool correct;
+  bool forceall;
+};
+
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
   GUESTFS_PROC_SYNC = 2,
@@ -2285,6 +2339,13 @@ enum guestfs_procedure {
   GUESTFS_PROC_COPY_DEVICE_TO_FILE = 295,
   GUESTFS_PROC_COPY_FILE_TO_DEVICE = 296,
   GUESTFS_PROC_COPY_FILE_TO_FILE = 297,
+  GUESTFS_PROC_TUNE2FS = 298,
+  GUESTFS_PROC_MD_CREATE = 299,
+  GUESTFS_PROC_LIST_MD_DEVICES = 300,
+  GUESTFS_PROC_MD_DETAIL = 301,
+  GUESTFS_PROC_MD_STOP = 302,
+  GUESTFS_PROC_BLKID = 303,
+  GUESTFS_PROC_E2FSCK = 304,
   GUESTFS_PROC_NR_PROCS
 };
 

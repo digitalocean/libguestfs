@@ -16,7 +16,7 @@
 @SET_MAKE@
 
 # libguestfs
-# Copyright (C) 2009-2011 Red Hat Inc.
+# Copyright (C) 2009-2012 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -73,6 +73,15 @@ host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/subdir-rules.mk
 bin_PROGRAMS = guestfish$(EXEEXT)
+@ENABLE_APPLIANCE_TRUE@am__append_1 = \
+@ENABLE_APPLIANCE_TRUE@	test-copy.sh \
+@ENABLE_APPLIANCE_TRUE@	test-find0.sh \
+@ENABLE_APPLIANCE_TRUE@	test-read_file.sh \
+@ENABLE_APPLIANCE_TRUE@	test-remote.sh \
+@ENABLE_APPLIANCE_TRUE@	test-reopen.sh \
+@ENABLE_APPLIANCE_TRUE@	test-stringlist.sh \
+@ENABLE_APPLIANCE_TRUE@	test-upload-to-dir.sh
+
 subdir = fish
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -113,27 +122,27 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/include_next.m4 \
 	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
 	$(top_srcdir)/m4/inline.m4 $(top_srcdir)/m4/intlmacosx.m4 \
-	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/inttostr.m4 \
-	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
-	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/ioctl.m4 \
-	$(top_srcdir)/m4/largefile.m4 $(top_srcdir)/m4/lcmessage.m4 \
-	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
-	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/localcharset.m4 $(top_srcdir)/m4/locale-fr.m4 \
-	$(top_srcdir)/m4/locale-ja.m4 $(top_srcdir)/m4/locale-zh.m4 \
-	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localename.m4 \
-	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
-	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
-	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
-	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
-	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
-	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/mempcpy.m4 \
-	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
-	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
-	$(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/introspection.m4 \
+	$(top_srcdir)/m4/inttostr.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
+	$(top_srcdir)/m4/inttypes.m4 $(top_srcdir)/m4/inttypes_h.m4 \
+	$(top_srcdir)/m4/ioctl.m4 $(top_srcdir)/m4/largefile.m4 \
+	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
+	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
+	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
+	$(top_srcdir)/m4/locale-zh.m4 $(top_srcdir)/m4/locale_h.m4 \
+	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
+	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
+	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
+	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
+	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
+	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
+	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
+	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
+	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
+	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/nocrash.m4 \
@@ -216,7 +225,8 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" \
 	"$(DESTDIR)$(toolsconfdir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__objects_1 = guestfish-cmds.$(OBJEXT) \
-	guestfish-completion.$(OBJEXT) guestfish-prepopts.$(OBJEXT)
+	guestfish-completion.$(OBJEXT) guestfish-event-names.$(OBJEXT) \
+	guestfish-prepopts.$(OBJEXT)
 am__objects_2 = guestfish-config.$(OBJEXT) guestfish-inspect.$(OBJEXT) \
 	guestfish-keys.$(OBJEXT) guestfish-options.$(OBJEXT) \
 	guestfish-progress.$(OBJEXT) guestfish-virt.$(OBJEXT)
@@ -224,16 +234,16 @@ am_guestfish_OBJECTS = $(am__objects_1) $(am__objects_2) \
 	guestfish-alloc.$(OBJEXT) guestfish-copy.$(OBJEXT) \
 	guestfish-destpaths.$(OBJEXT) guestfish-display.$(OBJEXT) \
 	guestfish-echo.$(OBJEXT) guestfish-edit.$(OBJEXT) \
-	guestfish-fish.$(OBJEXT) guestfish-glob.$(OBJEXT) \
-	guestfish-help.$(OBJEXT) guestfish-hexedit.$(OBJEXT) \
-	guestfish-lcd.$(OBJEXT) guestfish-man.$(OBJEXT) \
-	guestfish-more.$(OBJEXT) guestfish-prep.$(OBJEXT) \
-	guestfish-prep_disk.$(OBJEXT) guestfish-prep_part.$(OBJEXT) \
-	guestfish-prep_fs.$(OBJEXT) guestfish-prep_lv.$(OBJEXT) \
-	guestfish-prep_boot.$(OBJEXT) guestfish-rc.$(OBJEXT) \
-	guestfish-reopen.$(OBJEXT) guestfish-setenv.$(OBJEXT) \
-	guestfish-supported.$(OBJEXT) guestfish-tilde.$(OBJEXT) \
-	guestfish-time.$(OBJEXT)
+	guestfish-events.$(OBJEXT) guestfish-fish.$(OBJEXT) \
+	guestfish-glob.$(OBJEXT) guestfish-help.$(OBJEXT) \
+	guestfish-hexedit.$(OBJEXT) guestfish-lcd.$(OBJEXT) \
+	guestfish-man.$(OBJEXT) guestfish-more.$(OBJEXT) \
+	guestfish-prep.$(OBJEXT) guestfish-prep_disk.$(OBJEXT) \
+	guestfish-prep_part.$(OBJEXT) guestfish-prep_fs.$(OBJEXT) \
+	guestfish-prep_lv.$(OBJEXT) guestfish-prep_boot.$(OBJEXT) \
+	guestfish-rc.$(OBJEXT) guestfish-reopen.$(OBJEXT) \
+	guestfish-setenv.$(OBJEXT) guestfish-supported.$(OBJEXT) \
+	guestfish-tilde.$(OBJEXT) guestfish-time.$(OBJEXT)
 guestfish_OBJECTS = $(am_guestfish_OBJECTS)
 am__DEPENDENCIES_1 =
 guestfish_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -300,6 +310,8 @@ MANS = $(man_MANS)
 DATA = $(bashcompletion_DATA) $(noinst_DATA) $(toolsconf_DATA)
 ETAGS = etags
 CTAGS = ctags
+am__tty_colors = \
+red=; grn=; lgn=; blu=; std=
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 pkglibexecdir = @pkglibexecdir@
 ACLOCAL = @ACLOCAL@
@@ -363,11 +375,13 @@ FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
 FUSE_CFLAGS = @FUSE_CFLAGS@
 FUSE_LIBS = @FUSE_LIBS@
+GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
 GENISOIMAGE = @GENISOIMAGE@
 GETADDRINFO_LIB = @GETADDRINFO_LIB@
 GETOPT_H = @GETOPT_H@
 GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GHC = @GHC@
+GJS = @GJS@
 GLIBC21 = @GLIBC21@
 GLOB_H = @GLOB_H@
 GMSGFMT = @GMSGFMT@
@@ -650,6 +664,8 @@ GNULIB_WMEMMOVE = @GNULIB_WMEMMOVE@
 GNULIB_WMEMSET = @GNULIB_WMEMSET@
 GNULIB_WRITE = @GNULIB_WRITE@
 GNULIB__EXIT = @GNULIB__EXIT@
+GOBJECT_CFLAGS = @GOBJECT_CFLAGS@
+GOBJECT_LIBS = @GOBJECT_LIBS@
 GPERF = @GPERF@
 GREP = @GREP@
 HAVE_ACCEPT4 = @HAVE_ACCEPT4@
@@ -903,6 +919,14 @@ INT32_MAX_LT_INTMAX_MAX = @INT32_MAX_LT_INTMAX_MAX@
 INT64_MAX_EQ_LONG_MAX = @INT64_MAX_EQ_LONG_MAX@
 INTLLIBS = @INTLLIBS@
 INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
+INTROSPECTION_CFLAGS = @INTROSPECTION_CFLAGS@
+INTROSPECTION_COMPILER = @INTROSPECTION_COMPILER@
+INTROSPECTION_GENERATE = @INTROSPECTION_GENERATE@
+INTROSPECTION_GIRDIR = @INTROSPECTION_GIRDIR@
+INTROSPECTION_LIBS = @INTROSPECTION_LIBS@
+INTROSPECTION_MAKEFILE = @INTROSPECTION_MAKEFILE@
+INTROSPECTION_SCANNER = @INTROSPECTION_SCANNER@
+INTROSPECTION_TYPELIBDIR = @INTROSPECTION_TYPELIBDIR@
 JAR = @JAR@
 JAR_INSTALL_DIR = @JAR_INSTALL_DIR@
 JAVA = @JAVA@
@@ -1315,6 +1339,7 @@ generator_built = \
 	cmds.c \
 	cmds_gperf.gperf \
 	completion.c \
+	event-names.c \
 	fish-cmds.h \
 	guestfish-actions.pod \
 	guestfish-commands.pod \
@@ -1329,6 +1354,7 @@ BUILT_SOURCES = \
 
 EXTRA_DIST = \
 	$(BUILT_SOURCES) \
+	$(TESTS) \
 	rc_protocol.x \
 	guestfish.pod \
 	guestfish-bash-completion.sh \
@@ -1367,6 +1393,7 @@ guestfish_SOURCES = \
 	display.c \
 	echo.c \
 	edit.c \
+	events.c \
 	fish.c \
 	fish.h \
 	glob.c \
@@ -1440,6 +1467,16 @@ toolsconf_DATA = libguestfs-tools.conf
 # Bash completion script.
 bashcompletiondir = $(sysconfdir)/bash_completion.d
 bashcompletion_DATA = guestfish-bash-completion.sh
+
+# Tests.
+random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
+TESTS_ENVIRONMENT = \
+	MALLOC_PERTURB_=$(random_val) \
+	$(top_builddir)/run
+
+TESTS = test-add-domain.sh test-guestfish-a.sh test-guestfish-d.sh \
+	test-guestfish-escapes.sh test-guestfish-events.sh \
+	test-guestfish-tilde.sh $(am__append_1)
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -1584,6 +1621,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-display.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-echo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-edit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-event-names.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-events.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-fish.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-glob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-help.Po@am__quote@
@@ -1683,6 +1722,22 @@ guestfish-completion.obj: completion.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='completion.c' object='guestfish-completion.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-completion.obj `if test -f 'completion.c'; then $(CYGPATH_W) 'completion.c'; else $(CYGPATH_W) '$(srcdir)/completion.c'; fi`
+
+guestfish-event-names.o: event-names.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-event-names.o -MD -MP -MF $(DEPDIR)/guestfish-event-names.Tpo -c -o guestfish-event-names.o `test -f 'event-names.c' || echo '$(srcdir)/'`event-names.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-event-names.Tpo $(DEPDIR)/guestfish-event-names.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='event-names.c' object='guestfish-event-names.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-event-names.o `test -f 'event-names.c' || echo '$(srcdir)/'`event-names.c
+
+guestfish-event-names.obj: event-names.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-event-names.obj -MD -MP -MF $(DEPDIR)/guestfish-event-names.Tpo -c -o guestfish-event-names.obj `if test -f 'event-names.c'; then $(CYGPATH_W) 'event-names.c'; else $(CYGPATH_W) '$(srcdir)/event-names.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-event-names.Tpo $(DEPDIR)/guestfish-event-names.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='event-names.c' object='guestfish-event-names.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-event-names.obj `if test -f 'event-names.c'; then $(CYGPATH_W) 'event-names.c'; else $(CYGPATH_W) '$(srcdir)/event-names.c'; fi`
 
 guestfish-prepopts.o: prepopts.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prepopts.o -MD -MP -MF $(DEPDIR)/guestfish-prepopts.Tpo -c -o guestfish-prepopts.o `test -f 'prepopts.c' || echo '$(srcdir)/'`prepopts.c
@@ -1891,6 +1946,22 @@ guestfish-edit.obj: edit.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='edit.c' object='guestfish-edit.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-edit.obj `if test -f 'edit.c'; then $(CYGPATH_W) 'edit.c'; else $(CYGPATH_W) '$(srcdir)/edit.c'; fi`
+
+guestfish-events.o: events.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-events.o -MD -MP -MF $(DEPDIR)/guestfish-events.Tpo -c -o guestfish-events.o `test -f 'events.c' || echo '$(srcdir)/'`events.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-events.Tpo $(DEPDIR)/guestfish-events.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='events.c' object='guestfish-events.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-events.o `test -f 'events.c' || echo '$(srcdir)/'`events.c
+
+guestfish-events.obj: events.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-events.obj -MD -MP -MF $(DEPDIR)/guestfish-events.Tpo -c -o guestfish-events.obj `if test -f 'events.c'; then $(CYGPATH_W) 'events.c'; else $(CYGPATH_W) '$(srcdir)/events.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-events.Tpo $(DEPDIR)/guestfish-events.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='events.c' object='guestfish-events.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-events.obj `if test -f 'events.c'; then $(CYGPATH_W) 'events.c'; else $(CYGPATH_W) '$(srcdir)/events.c'; fi`
 
 guestfish-fish.o: fish.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-fish.o -MD -MP -MF $(DEPDIR)/guestfish-fish.Tpo -c -o guestfish-fish.o `test -f 'fish.c' || echo '$(srcdir)/'`fish.c
@@ -2332,6 +2403,98 @@ GTAGS:
 distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
+check-TESTS: $(TESTS)
+	@failed=0; all=0; xfail=0; xpass=0; skip=0; \
+	srcdir=$(srcdir); export srcdir; \
+	list=' $(TESTS) '; \
+	$(am__tty_colors); \
+	if test -n "$$list"; then \
+	  for tst in $$list; do \
+	    if test -f ./$$tst; then dir=./; \
+	    elif test -f $$tst; then dir=; \
+	    else dir="$(srcdir)/"; fi; \
+	    if $(TESTS_ENVIRONMENT) $${dir}$$tst; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *[\ \	]$$tst[\ \	]*) \
+		xpass=`expr $$xpass + 1`; \
+		failed=`expr $$failed + 1`; \
+		col=$$red; res=XPASS; \
+	      ;; \
+	      *) \
+		col=$$grn; res=PASS; \
+	      ;; \
+	      esac; \
+	    elif test $$? -ne 77; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *[\ \	]$$tst[\ \	]*) \
+		xfail=`expr $$xfail + 1`; \
+		col=$$lgn; res=XFAIL; \
+	      ;; \
+	      *) \
+		failed=`expr $$failed + 1`; \
+		col=$$red; res=FAIL; \
+	      ;; \
+	      esac; \
+	    else \
+	      skip=`expr $$skip + 1`; \
+	      col=$$blu; res=SKIP; \
+	    fi; \
+	    echo "$${col}$$res$${std}: $$tst"; \
+	  done; \
+	  if test "$$all" -eq 1; then \
+	    tests="test"; \
+	    All=""; \
+	  else \
+	    tests="tests"; \
+	    All="All "; \
+	  fi; \
+	  if test "$$failed" -eq 0; then \
+	    if test "$$xfail" -eq 0; then \
+	      banner="$$All$$all $$tests passed"; \
+	    else \
+	      if test "$$xfail" -eq 1; then failures=failure; else failures=failures; fi; \
+	      banner="$$All$$all $$tests behaved as expected ($$xfail expected $$failures)"; \
+	    fi; \
+	  else \
+	    if test "$$xpass" -eq 0; then \
+	      banner="$$failed of $$all $$tests failed"; \
+	    else \
+	      if test "$$xpass" -eq 1; then passes=pass; else passes=passes; fi; \
+	      banner="$$failed of $$all $$tests did not behave as expected ($$xpass unexpected $$passes)"; \
+	    fi; \
+	  fi; \
+	  dashes="$$banner"; \
+	  skipped=""; \
+	  if test "$$skip" -ne 0; then \
+	    if test "$$skip" -eq 1; then \
+	      skipped="($$skip test was not run)"; \
+	    else \
+	      skipped="($$skip tests were not run)"; \
+	    fi; \
+	    test `echo "$$skipped" | wc -c` -le `echo "$$banner" | wc -c` || \
+	      dashes="$$skipped"; \
+	  fi; \
+	  report=""; \
+	  if test "$$failed" -ne 0 && test -n "$(PACKAGE_BUGREPORT)"; then \
+	    report="Please report to $(PACKAGE_BUGREPORT)"; \
+	    test `echo "$$report" | wc -c` -le `echo "$$banner" | wc -c` || \
+	      dashes="$$report"; \
+	  fi; \
+	  dashes=`echo "$$dashes" | sed s/./=/g`; \
+	  if test "$$failed" -eq 0; then \
+	    echo "$$grn$$dashes"; \
+	  else \
+	    echo "$$red$$dashes"; \
+	  fi; \
+	  echo "$$banner"; \
+	  test -z "$$skipped" || echo "$$skipped"; \
+	  test -z "$$report" || echo "$$report"; \
+	  echo "$$dashes$$std"; \
+	  test "$$failed" -eq 0; \
+	else :; fi
+
 distdir: $(DISTFILES)
 	@list='$(MANS)'; if test -n "$$list"; then \
 	  list=`for p in $$list; do \
@@ -2376,6 +2539,7 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(SCRIPTS) $(MANS) $(DATA)
@@ -2486,13 +2650,13 @@ uninstall-am: uninstall-bashcompletionDATA uninstall-binPROGRAMS \
 
 uninstall-man: uninstall-man1
 
-.MAKE: all check install install-am install-strip
+.MAKE: all check check-am install install-am install-strip
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic clean-libtool clean-noinstLTLIBRARIES ctags \
-	distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am \
+.PHONY: CTAGS GTAGS all all-am check check-TESTS check-am clean \
+	clean-binPROGRAMS clean-generic clean-libtool \
+	clean-noinstLTLIBRARIES ctags distclean distclean-compile \
+	distclean-generic distclean-libtool distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
 	install-bashcompletionDATA install-binPROGRAMS \
 	install-binSCRIPTS install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \

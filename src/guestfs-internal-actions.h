@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-extern int guestfs__test0 (guestfs_h *g, const char *str, const char *optstr, char *const *strlist, int b, int integer, int64_t integer64, const char *filein, const char *fileout, const char *bufferin, size_t bufferin_size);
+extern int guestfs__test0 (guestfs_h *g, const char *str, const char *optstr, char *const *strlist, int b, int integer, int64_t integer64, const char *filein, const char *fileout, const char *bufferin, size_t bufferin_size, const struct guestfs_test0_argv *optargs);
 extern int guestfs__test0rint (guestfs_h *g, const char *val);
 extern int guestfs__test0rinterr (guestfs_h *g);
 extern int64_t guestfs__test0rint64 (guestfs_h *g, const char *val);
@@ -41,6 +41,8 @@ extern struct guestfs_lvm_pv_list *guestfs__test0rstructlist (guestfs_h *g, cons
 extern struct guestfs_lvm_pv_list *guestfs__test0rstructlisterr (guestfs_h *g);
 extern char **guestfs__test0rhashtable (guestfs_h *g, const char *val);
 extern char **guestfs__test0rhashtableerr (guestfs_h *g);
+extern char *guestfs__test0rbufferout (guestfs_h *g, const char *val, size_t *size_r);
+extern char *guestfs__test0rbufferouterr (guestfs_h *g, size_t *size_r);
 extern int guestfs__launch (guestfs_h *g);
 extern int guestfs__wait_ready (guestfs_h *g);
 extern int guestfs__kill_subprocess (guestfs_h *g);

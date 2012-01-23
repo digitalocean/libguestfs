@@ -127,7 +127,7 @@ greatly differing numbers.
 
 =head2 Try importing virt-df CSV output into a spreadsheet or database.
 
-Run:
+Віддайте команду:
 
  virt-df --csv > /tmp/report.csv
 

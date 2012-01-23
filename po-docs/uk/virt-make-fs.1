@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-make-fs.pl 1"
-.TH virt-make-fs.pl 1 "2012-01-10" "libguestfs-1.14.9" "Virtualization Support"
+.TH virt-make-fs.pl 1 "2012-01-23" "libguestfs-1.16.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -87,6 +87,8 @@ archive or some files in a directory.  It is similar to tools like
 it can create common filesystem types like ext2/3 or \s-1NTFS\s0, which can be
 useful if you want to attach these filesystems to existing virtual machines
 (eg. to import large amounts of read-only data to a \s-1VM\s0).
+.PP
+To create blank disks, use \fIvirt\-format\fR\|(1).
 .PP
 Basic usage is:
 .PP
@@ -283,9 +285,10 @@ escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
 .SH "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 .IX Header "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
-\&\fIguestfish\fR\|(1), \fIvirt\-resize\fR\|(1), \fIvirt\-tar\-in\fR\|(1), \fImkisofs\fR\|(1),
-\&\fIgenisoimage\fR\|(1), \fImksquashfs\fR\|(1), \fImke2fs\fR\|(8), \fIresize2fs\fR\|(8),
-\&\fIguestfs\fR\|(3), \fISys::Guestfs\fR\|(3), <http://libguestfs.org/>.
+\&\fIguestfish\fR\|(1), \fIvirt\-format\fR\|(1), \fIvirt\-resize\fR\|(1), \fIvirt\-tar\-in\fR\|(1),
+\&\fImkisofs\fR\|(1), \fIgenisoimage\fR\|(1), \fImksquashfs\fR\|(1), \fImke2fs\fR\|(8),
+\&\fIresize2fs\fR\|(8), \fIguestfs\fR\|(3), \fISys::Guestfs\fR\|(3),
+<http://libguestfs.org/>.
 .SH "ВАДИ"
 .IX Header "ВАДИ"
 When reporting bugs, please enable debugging and capture the \fIcomplete\fR
@@ -303,7 +306,7 @@ Attach /tmp/virt\-make\-fs.log to a new bug report at
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "АВТОРСЬКІ ПРАВА"
 .IX Header "АВТОРСЬКІ ПРАВА"
-©Red Hat Inc., 2010–2011
+Copyright (C) 2010\-2012 Red Hat Inc.
 .PP
 This program is free software; you can redistribute it and/or modify it
 under the terms of the \s-1GNU\s0 General Public License as published by the Free
@@ -315,6 +318,6 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
-Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.
+You should have received a copy of the \s-1GNU\s0 General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.

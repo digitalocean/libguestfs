@@ -62,14 +62,14 @@
 .\" ========================================================================
 .\"
 .IX Title "libguestfs-test-tool 1"
-.TH libguestfs-test-tool 1 "2012-01-10" "libguestfs-1.14.9" "Virtualization Support"
+.TH libguestfs-test-tool 1 "2012-01-23" "libguestfs-1.16.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "НАЗВА"
 .IX Header "НАЗВА"
-libguestfs-test-tool \- Diagnostics for libguestfs
+libguestfs-test-tool — діагностика libguestfs
 .SH "КОРОТКИЙ ОПИС"
 .IX Header "КОРОТКИЙ ОПИС"
 .Vb 1
@@ -108,12 +108,12 @@ information about reporting bugs can be found on the
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
 Display short usage information and exit.
-.IP "\fB\-\-qemu qemu_binary\fR" 4
-.IX Item "--qemu qemu_binary"
+.IP "\fB\-\-qemu виконуваний_файл_qemu\fR" 4
+.IX Item "--qemu виконуваний_файл_qemu"
 If you have downloaded another qemu binary, point this option at the full
 path of the binary to try it.
-.IP "\fB\-\-qemudir qemu_source_dir\fR" 4
-.IX Item "--qemudir qemu_source_dir"
+.IP "\fB\-\-qemudir каталог_коду_qemu\fR" 4
+.IX Item "--qemudir каталог_коду_qemu"
 If you have compiled qemu from source, point this option at the source
 directory to try it.
 .IP "\fB\-t N\fR" 4
@@ -144,12 +144,12 @@ libguestfs tries.  You do this by setting the environment variables
 .PP
 Refer to \*(L"\s-1ENVIRONMENT\s0 \s-1VARIABLES\s0\*(R" in \fIfebootstrap\-supermin\-helper\fR\|(8) for further
 information.
-.SH "SELF-DIAGNOSIS"
-.IX Header "SELF-DIAGNOSIS"
+.SH "САМОДІАГНОСТИКА"
+.IX Header "САМОДІАГНОСТИКА"
 Refer to \*(L"\s-1APPLIANCE\s0 \s-1BOOT\s0 \s-1PROCESS\s0\*(R" in \fIguestfs\fR\|(3) to understand the messages
 produced by libguestfs-test-tool and/or possible errors.
-.SH "EXIT STATUS"
-.IX Header "EXIT STATUS"
+.SH "СТАН ВИХОДУ"
+.IX Header "СТАН ВИХОДУ"
 libguestfs-test-tool returns \fI0\fR if the tests completed without error, or
 \&\fI1\fR if there was an error.
 .SH "ЗМІННІ СЕРЕДОВИЩА"
@@ -164,7 +164,7 @@ please see the \fIguestfs\fR\|(3) manual page.
 Richard W.M. Jones (\f(CW\*(C`rjones at redhat dot com\*(C'\fR)
 .SH "АВТОРСЬКІ ПРАВА"
 .IX Header "АВТОРСЬКІ ПРАВА"
-Copyright (C) 2009\-2011 Red Hat Inc.  <http://libguestfs.org/>
+Copyright (C) 2009\-2012 Red Hat Inc.  <http://libguestfs.org/>
 .PP
 This program is free software; you can redistribute it and/or modify it
 under the terms of the \s-1GNU\s0 General Public License as published by the Free
@@ -176,6 +176,6 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
-Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.
+You should have received a copy of the \s-1GNU\s0 General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.

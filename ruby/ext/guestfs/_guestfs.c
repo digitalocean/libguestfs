@@ -326,7 +326,7 @@ ruby_user_cancel (VALUE gv)
 }
 
 static VALUE
-ruby_guestfs_test0 (VALUE gv, VALUE strv, VALUE optstrv, VALUE strlistv, VALUE bv, VALUE integerv, VALUE integer64v, VALUE fileinv, VALUE fileoutv, VALUE bufferinv)
+ruby_guestfs_test0 (VALUE gv, VALUE strv, VALUE optstrv, VALUE strlistv, VALUE bv, VALUE integerv, VALUE integer64v, VALUE fileinv, VALUE fileoutv, VALUE bufferinv, VALUE optargsv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -359,9 +359,34 @@ ruby_guestfs_test0 (VALUE gv, VALUE strv, VALUE optstrv, VALUE strlistv, VALUE b
               "bufferin", "test0");
   size_t bufferin_size = RSTRING_LEN (bufferinv);
 
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_test0_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_test0_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("obool")));
+  if (v != Qnil) {
+    optargs_s.obool = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_TEST0_OBOOL_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("oint")));
+  if (v != Qnil) {
+    optargs_s.oint = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_TEST0_OINT_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("oint64")));
+  if (v != Qnil) {
+    optargs_s.oint64 = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_TEST0_OINT64_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("ostring")));
+  if (v != Qnil) {
+    optargs_s.ostring = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_TEST0_OSTRING_BITMASK;
+  }
+
   int r;
 
-  r = guestfs_test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size);
+  r = guestfs_test0_argv (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size, optargs);
   free (strlist);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
@@ -847,6 +872,49 @@ ruby_guestfs_test0rhashtableerr (VALUE gv)
     free (r[i]);
     free (r[i+1]);
   }
+  free (r);
+  return rv;
+}
+
+static VALUE
+ruby_guestfs_test0rbufferout (VALUE gv, VALUE valv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rbufferout");
+
+  const char *val = StringValueCStr (valv);
+
+  char *r;
+  size_t size;
+
+  r = guestfs_test0rbufferout (g, val, &size);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  VALUE rv = rb_str_new (r, size);
+  free (r);
+  return rv;
+}
+
+static VALUE
+ruby_guestfs_test0rbufferouterr (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rbufferouterr");
+
+
+  char *r;
+  size_t size;
+
+  r = guestfs_test0rbufferouterr (g, &size);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  VALUE rv = rb_str_new (r, size);
   free (r);
   return rv;
 }
@@ -2402,6 +2470,9 @@ ruby_guestfs_inspect_os (VALUE gv)
  * 
  * "netbsd"
  * NetBSD.
+ * 
+ * "hurd"
+ * GNU/Hurd.
  * 
  * "unknown"
  * The operating system type could not be determined.
@@ -16707,6 +16778,533 @@ ruby_guestfs_copy_file_to_file (VALUE gv, VALUE srcv, VALUE destv, VALUE optargs
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.tune2fs(device, {optargs...}) -> nil
+ *
+ * adjust ext2/ext3/ext4 filesystem parameters
+ *
+ * This call allows you to adjust various filesystem
+ * parameters of an ext2/ext3/ext4 filesystem called
+ * "device".
+ * 
+ * The optional parameters are:
+ * 
+ * "force"
+ * Force tune2fs to complete the operation even in the
+ * face of errors. This is the same as the tune2fs "-f"
+ * option.
+ * 
+ * "maxmountcount"
+ * Set the number of mounts after which the filesystem
+ * is checked by e2fsck(8). If this is 0 then the
+ * number of mounts is disregarded. This is the same as
+ * the tune2fs "-c" option.
+ * 
+ * "mountcount"
+ * Set the number of times the filesystem has been
+ * mounted. This is the same as the tune2fs "-C"
+ * option.
+ * 
+ * "errorbehavior"
+ * Change the behavior of the kernel code when errors
+ * are detected. Possible values currently are:
+ * "continue", "remount-ro", "panic". In practice these
+ * options don't really make any difference,
+ * particularly for write errors.
+ * 
+ * This is the same as the tune2fs "-e" option.
+ * 
+ * "group"
+ * Set the group which can use reserved filesystem
+ * blocks. This is the same as the tune2fs "-g" option
+ * except that it can only be specified as a number.
+ * 
+ * "intervalbetweenchecks"
+ * Adjust the maximal time between two filesystem
+ * checks (in seconds). If the option is passed as 0
+ * then time-dependent checking is disabled.
+ * 
+ * This is the same as the tune2fs "-i" option.
+ * 
+ * "reservedblockspercentage"
+ * Set the percentage of the filesystem which may only
+ * be allocated by privileged processes. This is the
+ * same as the tune2fs "-m" option.
+ * 
+ * "lastmounteddirectory"
+ * Set the last mounted directory. This is the same as
+ * the tune2fs "-M" option.
+ * 
+ * "reservedblockscount" Set the number of reserved
+ * filesystem blocks. This is the same as the tune2fs "-r"
+ * option.
+ * "user"
+ * Set the user who can use the reserved filesystem
+ * blocks. This is the same as the tune2fs "-u" option
+ * except that it can only be specified as a number.
+ * 
+ * To get the current values of filesystem parameters, see
+ * "g.tune2fs_l". For precise details of how tune2fs works,
+ * see the tune2fs(8) man page.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_tune2fs+[http://libguestfs.org/guestfs.3.html#guestfs_tune2fs]).
+ */
+static VALUE
+ruby_guestfs_tune2fs (VALUE gv, VALUE devicev, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "tune2fs");
+
+  const char *device = StringValueCStr (devicev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_tune2fs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_tune2fs_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("force")));
+  if (v != Qnil) {
+    optargs_s.force = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_TUNE2FS_FORCE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("maxmountcount")));
+  if (v != Qnil) {
+    optargs_s.maxmountcount = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_TUNE2FS_MAXMOUNTCOUNT_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("mountcount")));
+  if (v != Qnil) {
+    optargs_s.mountcount = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_TUNE2FS_MOUNTCOUNT_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("errorbehavior")));
+  if (v != Qnil) {
+    optargs_s.errorbehavior = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_TUNE2FS_ERRORBEHAVIOR_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("group")));
+  if (v != Qnil) {
+    optargs_s.group = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_TUNE2FS_GROUP_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("intervalbetweenchecks")));
+  if (v != Qnil) {
+    optargs_s.intervalbetweenchecks = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_TUNE2FS_INTERVALBETWEENCHECKS_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("reservedblockspercentage")));
+  if (v != Qnil) {
+    optargs_s.reservedblockspercentage = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_TUNE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("lastmounteddirectory")));
+  if (v != Qnil) {
+    optargs_s.lastmounteddirectory = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("reservedblockscount")));
+  if (v != Qnil) {
+    optargs_s.reservedblockscount = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_TUNE2FS_RESERVEDBLOCKSCOUNT_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("user")));
+  if (v != Qnil) {
+    optargs_s.user = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_TUNE2FS_USER_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_tune2fs_argv (g, device, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.md_create(name, devices, {optargs...}) -> nil
+ *
+ * create a Linux md (RAID) device
+ *
+ * Create a Linux md (RAID) device named "name" on the
+ * devices in the list "devices".
+ * 
+ * The optional parameters are:
+ * 
+ * "missingbitmap"
+ * A bitmap of missing devices. If a bit is set it
+ * means that a missing device is added to the array.
+ * The least significant bit corresponds to the first
+ * device in the array.
+ * 
+ * As examples:
+ * 
+ * If "devices = ["/dev/sda"]" and "missingbitmap =
+ * 0x1" then the resulting array would be "[<missing>,
+ * "/dev/sda"]".
+ * 
+ * If "devices = ["/dev/sda"]" and "missingbitmap =
+ * 0x2" then the resulting array would be "["/dev/sda",
+ * <missing>]".
+ * 
+ * This defaults to 0 (no missing devices).
+ * 
+ * The length of "devices" + the number of bits set in
+ * "missingbitmap" must equal "nrdevices" + "spare".
+ * 
+ * "nrdevices"
+ * The number of active RAID devices.
+ * 
+ * If not set, this defaults to the length of "devices"
+ * plus the number of bits set in "missingbitmap".
+ * 
+ * "spare"
+ * The number of spare devices.
+ * 
+ * If not set, this defaults to 0.
+ * 
+ * "chunk"
+ * The chunk size in bytes.
+ * 
+ * "level"
+ * The RAID level, which can be one of: *linear*,
+ * *raid0*, *0*, *stripe*, *raid1*, *1*, *mirror*,
+ * *raid4*, *4*, *raid5*, *5*, *raid6*, *6*, *raid10*,
+ * *10*. Some of these are synonymous, and more levels
+ * may be added in future.
+ * 
+ * If not set, this defaults to "raid1".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_md_create+[http://libguestfs.org/guestfs.3.html#guestfs_md_create]).
+ */
+static VALUE
+ruby_guestfs_md_create (VALUE gv, VALUE namev, VALUE devicesv, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "md_create");
+
+  const char *name = StringValueCStr (namev);
+  char **devices;
+  Check_Type (devicesv, T_ARRAY);
+  {
+    size_t i, len;
+    len = RARRAY_LEN (devicesv);
+    devices = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      VALUE v = rb_ary_entry (devicesv, i);
+      devices[i] = StringValueCStr (v);
+    }
+    devices[len] = NULL;
+  }
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_md_create_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_md_create_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("missingbitmap")));
+  if (v != Qnil) {
+    optargs_s.missingbitmap = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_MD_CREATE_MISSINGBITMAP_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("nrdevices")));
+  if (v != Qnil) {
+    optargs_s.nrdevices = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_MD_CREATE_NRDEVICES_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("spare")));
+  if (v != Qnil) {
+    optargs_s.spare = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_MD_CREATE_SPARE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("chunk")));
+  if (v != Qnil) {
+    optargs_s.chunk = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_MD_CREATE_CHUNK_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("level")));
+  if (v != Qnil) {
+    optargs_s.level = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MD_CREATE_LEVEL_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_md_create_argv (g, name, devices, optargs);
+  free (devices);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.list_md_devices() -> list
+ *
+ * list Linux md (RAID) devices
+ *
+ * List all Linux md devices.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_list_md_devices+[http://libguestfs.org/guestfs.3.html#guestfs_list_md_devices]).
+ */
+static VALUE
+ruby_guestfs_list_md_devices (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "list_md_devices");
+
+
+  char **r;
+
+  r = guestfs_list_md_devices (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.md_detail(md) -> hash
+ *
+ * obtain metadata for an MD device
+ *
+ * This command exposes the output of 'mdadm -DY <md>'. The
+ * following fields are usually present in the returned
+ * hash. Other fields may also be present.
+ * 
+ * "level"
+ * The raid level of the MD device.
+ * 
+ * "devices"
+ * The number of underlying devices in the MD device.
+ * 
+ * "metadata"
+ * The metadata version used.
+ * 
+ * "uuid"
+ * The UUID of the MD device.
+ * 
+ * "name"
+ * The name of the MD device.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_md_detail+[http://libguestfs.org/guestfs.3.html#guestfs_md_detail]).
+ */
+static VALUE
+ruby_guestfs_md_detail (VALUE gv, VALUE mdv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "md_detail");
+
+  const char *md = StringValueCStr (mdv);
+
+  char **r;
+
+  r = guestfs_md_detail (g, md);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  VALUE rv = rb_hash_new ();
+  size_t i;
+  for (i = 0; r[i] != NULL; i+=2) {
+    rb_hash_aset (rv, rb_str_new2 (r[i]), rb_str_new2 (r[i+1]));
+    free (r[i]);
+    free (r[i+1]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.md_stop(md) -> nil
+ *
+ * stop a Linux md (RAID) device
+ *
+ * This command deactivates the MD array named "md". The
+ * device is stopped, but it is not destroyed or zeroed.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_md_stop+[http://libguestfs.org/guestfs.3.html#guestfs_md_stop]).
+ */
+static VALUE
+ruby_guestfs_md_stop (VALUE gv, VALUE mdv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "md_stop");
+
+  const char *md = StringValueCStr (mdv);
+
+  int r;
+
+  r = guestfs_md_stop (g, md);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.blkid(device) -> hash
+ *
+ * print block device attributes
+ *
+ * This command returns block device attributes for
+ * "device". The following fields are usually present in
+ * the returned hash. Other fields may also be present.
+ * 
+ * "UUID"
+ * The uuid of this device.
+ * 
+ * "LABEL"
+ * The label of this device.
+ * 
+ * "VERSION"
+ * The version of blkid command.
+ * 
+ * "TYPE"
+ * The filesystem type or RAID of this device.
+ * 
+ * "USAGE"
+ * The usage of this device, for example "filesystem"
+ * or "raid".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_blkid+[http://libguestfs.org/guestfs.3.html#guestfs_blkid]).
+ */
+static VALUE
+ruby_guestfs_blkid (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "blkid");
+
+  const char *device = StringValueCStr (devicev);
+
+  char **r;
+
+  r = guestfs_blkid (g, device);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  VALUE rv = rb_hash_new ();
+  size_t i;
+  for (i = 0; r[i] != NULL; i+=2) {
+    rb_hash_aset (rv, rb_str_new2 (r[i]), rb_str_new2 (r[i+1]));
+    free (r[i]);
+    free (r[i+1]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.e2fsck(device, {optargs...}) -> nil
+ *
+ * check an ext2/ext3 filesystem
+ *
+ * This runs the ext2/ext3 filesystem checker on "device".
+ * It can take the following optional arguments:
+ * 
+ * "correct"
+ * Automatically repair the file system. This option
+ * will cause e2fsck to automatically fix any
+ * filesystem problems that can be safely fixed without
+ * human intervention.
+ * 
+ * This option may not be specified at the same time as
+ * the "forceall" option.
+ * 
+ * "forceall"
+ * Assume an answer of 'yes' to all questions; allows
+ * e2fsck to be used non-interactively.
+ * 
+ * This option may not be specified at the same time as
+ * the "correct" option.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_e2fsck+[http://libguestfs.org/guestfs.3.html#guestfs_e2fsck]).
+ */
+static VALUE
+ruby_guestfs_e2fsck (VALUE gv, VALUE devicev, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "e2fsck");
+
+  const char *device = StringValueCStr (devicev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_e2fsck_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_e2fsck_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("correct")));
+  if (v != Qnil) {
+    optargs_s.correct = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_E2FSCK_CORRECT_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("forceall")));
+  if (v != Qnil) {
+    optargs_s.forceall = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_E2FSCK_FORCEALL_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_e2fsck_argv (g, device, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
 /* Initialize the module. */
 void Init__guestfs ()
 {
@@ -16745,7 +17343,7 @@ void Init__guestfs ()
                    ULL2NUM (UINT64_C (0x80)));
 
   rb_define_method (c_guestfs, "test0",
-        ruby_guestfs_test0, 9);
+        ruby_guestfs_test0, 10);
   rb_define_method (c_guestfs, "test0rint",
         ruby_guestfs_test0rint, 1);
   rb_define_method (c_guestfs, "test0rinterr",
@@ -16786,6 +17384,10 @@ void Init__guestfs ()
         ruby_guestfs_test0rhashtable, 1);
   rb_define_method (c_guestfs, "test0rhashtableerr",
         ruby_guestfs_test0rhashtableerr, 0);
+  rb_define_method (c_guestfs, "test0rbufferout",
+        ruby_guestfs_test0rbufferout, 1);
+  rb_define_method (c_guestfs, "test0rbufferouterr",
+        ruby_guestfs_test0rbufferouterr, 0);
   rb_define_method (c_guestfs, "launch",
         ruby_guestfs_launch, 0);
   rb_define_method (c_guestfs, "wait_ready",
@@ -17526,4 +18128,18 @@ void Init__guestfs ()
         ruby_guestfs_copy_file_to_device, 3);
   rb_define_method (c_guestfs, "copy_file_to_file",
         ruby_guestfs_copy_file_to_file, 3);
+  rb_define_method (c_guestfs, "tune2fs",
+        ruby_guestfs_tune2fs, 2);
+  rb_define_method (c_guestfs, "md_create",
+        ruby_guestfs_md_create, 3);
+  rb_define_method (c_guestfs, "list_md_devices",
+        ruby_guestfs_list_md_devices, 0);
+  rb_define_method (c_guestfs, "md_detail",
+        ruby_guestfs_md_detail, 1);
+  rb_define_method (c_guestfs, "md_stop",
+        ruby_guestfs_md_stop, 1);
+  rb_define_method (c_guestfs, "blkid",
+        ruby_guestfs_blkid, 1);
+  rb_define_method (c_guestfs, "e2fsck",
+        ruby_guestfs_e2fsck, 2);
 }

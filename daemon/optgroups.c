@@ -35,6 +35,7 @@ struct optgroup optgroups[] = {
   { "linuxxattrs", optgroup_linuxxattrs_available },
   { "luks", optgroup_luks_available },
   { "lvm2", optgroup_lvm2_available },
+  { "mdadm", optgroup_mdadm_available },
   { "mknod", optgroup_mknod_available },
   { "ntfs3g", optgroup_ntfs3g_available },
   { "ntfsprogs", optgroup_ntfsprogs_available },

@@ -136,7 +136,7 @@ L</SELINUX RELABELLING> below for more details.
 
 =item B<--verbose>
 
-Enable verbose messages for debugging.
+Увімкнути докладний показ повідомлень з метою діагностики.
 
 =item B<-V>
 
@@ -150,7 +150,7 @@ Enable tracing of libguestfs API calls.
 
 =back
 
-=head1 OPERATIONS
+=head1 ДІЇ
 
 If the I<--enable> option is I<not> given, then I<all sysprep operations are
 enabled>, although some are skipped depending on the type of guest.
@@ -242,7 +242,7 @@ Erasing the udev persistent net rules avoids this.
 
 =head2 utmp
 
-Remove the utmp file.
+Вилучити файл utmp.
 
 This records who is currently logged in on a machine.  In modern Linux
 distros it is stored in a ramdisk and hence not part of the virtual
@@ -250,7 +250,7 @@ machine's disk, but it was stored on disk in older distros.
 
 =head2 yum-uuid
 
-Remove the yum UUID.
+Вилучити UUID yum.
 
 Yum creates a fresh UUID the next time it runs when it notices that the
 original UUID has been erased.
@@ -266,7 +266,7 @@ A virtual machine (when switched off) consists of two parts:
 
 =over 4
 
-=item I<configuration>
+=item I<налаштування>
 
 The configuration or description of the guest.  eg. The libvirt XML (see
 C<virsh dumpxml>), the running configuration of the guest, or another
@@ -278,7 +278,7 @@ Some configuration items that might need to be changed:
 
 =item *
 
-name
+назва
 
 =item *
 
@@ -294,7 +294,7 @@ network card MAC address
 
 =back
 
-=item I<block device(s)>
+=item I<блокові пристрої>
 
 One or more hard disk images, themselves containing files, directories,
 applications, kernels, configuration, etc.
@@ -431,9 +431,9 @@ L<virt-sparsify(1)> as one way to remove this content.  See also the
 L<scrub(1)> command to get rid of deleted content in directory entries and
 inodes.
 
-=head2 RANDOM SEED
+=head2 БАЗА ВИПАДКОВОСТІ
 
-I<(This section applies to Linux guests only)>
+I<(Цей розділ стосується лише гостьових систем Linux)>
 
 The virt-sysprep C<random-seed> operation writes a few bytes of randomness
 from the host into the guest's random seed file.
@@ -449,7 +449,7 @@ operation:
  cp template.img newguest.img
  virt-sysprep --enable=random-seed -a newguest.img
 
-=head2 SELINUX RELABELLING
+=head2 ПОВТОРНЕ ВСТАНОВЛЕННЯ МІТОК SELINUX
 
 I<(This section applies to Linux guests using SELinux only)>
 
@@ -471,7 +471,7 @@ meaning to the shell such as C<#> and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 L<sh(1)> for details.
 
-=head1 EXIT STATUS
+=head1 СТАН ВИХОДУ
 
 This program returns 0 on success, or 1 if there was an error.
 
@@ -488,7 +488,7 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011 Red Hat Inc.
+© Red Hat Inc., 2011
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -500,7 +500,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-Ви маєте отримати копію GNU General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 

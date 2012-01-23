@@ -2625,6 +2625,81 @@ struct guestfs_copy_file_to_file_args {
 };
 typedef struct guestfs_copy_file_to_file_args guestfs_copy_file_to_file_args;
 
+struct guestfs_tune2fs_args {
+	char *device;
+	bool_t force;
+	int maxmountcount;
+	int mountcount;
+	char *errorbehavior;
+	quad_t group;
+	int intervalbetweenchecks;
+	int reservedblockspercentage;
+	char *lastmounteddirectory;
+	quad_t reservedblockscount;
+	quad_t user;
+};
+typedef struct guestfs_tune2fs_args guestfs_tune2fs_args;
+
+struct guestfs_md_create_args {
+	char *name;
+	struct {
+		u_int devices_len;
+		guestfs_str *devices_val;
+	} devices;
+	quad_t missingbitmap;
+	int nrdevices;
+	int spare;
+	quad_t chunk;
+	char *level;
+};
+typedef struct guestfs_md_create_args guestfs_md_create_args;
+
+struct guestfs_list_md_devices_ret {
+	struct {
+		u_int devices_len;
+		guestfs_str *devices_val;
+	} devices;
+};
+typedef struct guestfs_list_md_devices_ret guestfs_list_md_devices_ret;
+
+struct guestfs_md_detail_args {
+	char *md;
+};
+typedef struct guestfs_md_detail_args guestfs_md_detail_args;
+
+struct guestfs_md_detail_ret {
+	struct {
+		u_int info_len;
+		guestfs_str *info_val;
+	} info;
+};
+typedef struct guestfs_md_detail_ret guestfs_md_detail_ret;
+
+struct guestfs_md_stop_args {
+	char *md;
+};
+typedef struct guestfs_md_stop_args guestfs_md_stop_args;
+
+struct guestfs_blkid_args {
+	char *device;
+};
+typedef struct guestfs_blkid_args guestfs_blkid_args;
+
+struct guestfs_blkid_ret {
+	struct {
+		u_int info_len;
+		guestfs_str *info_val;
+	} info;
+};
+typedef struct guestfs_blkid_ret guestfs_blkid_ret;
+
+struct guestfs_e2fsck_args {
+	char *device;
+	bool_t correct;
+	bool_t forceall;
+};
+typedef struct guestfs_e2fsck_args guestfs_e2fsck_args;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -2923,7 +2998,14 @@ enum guestfs_procedure {
 	GUESTFS_PROC_COPY_DEVICE_TO_FILE = 295,
 	GUESTFS_PROC_COPY_FILE_TO_DEVICE = 296,
 	GUESTFS_PROC_COPY_FILE_TO_FILE = 297,
-	GUESTFS_PROC_NR_PROCS = 297 + 1,
+	GUESTFS_PROC_TUNE2FS = 298,
+	GUESTFS_PROC_MD_CREATE = 299,
+	GUESTFS_PROC_LIST_MD_DEVICES = 300,
+	GUESTFS_PROC_MD_DETAIL = 301,
+	GUESTFS_PROC_MD_STOP = 302,
+	GUESTFS_PROC_BLKID = 303,
+	GUESTFS_PROC_E2FSCK = 304,
+	GUESTFS_PROC_NR_PROCS = 304 + 1,
 };
 typedef enum guestfs_procedure guestfs_procedure;
 #define GUESTFS_MESSAGE_MAX 4194304
@@ -3408,6 +3490,15 @@ extern  bool_t xdr_guestfs_copy_device_to_device_args (XDR *, guestfs_copy_devic
 extern  bool_t xdr_guestfs_copy_device_to_file_args (XDR *, guestfs_copy_device_to_file_args*);
 extern  bool_t xdr_guestfs_copy_file_to_device_args (XDR *, guestfs_copy_file_to_device_args*);
 extern  bool_t xdr_guestfs_copy_file_to_file_args (XDR *, guestfs_copy_file_to_file_args*);
+extern  bool_t xdr_guestfs_tune2fs_args (XDR *, guestfs_tune2fs_args*);
+extern  bool_t xdr_guestfs_md_create_args (XDR *, guestfs_md_create_args*);
+extern  bool_t xdr_guestfs_list_md_devices_ret (XDR *, guestfs_list_md_devices_ret*);
+extern  bool_t xdr_guestfs_md_detail_args (XDR *, guestfs_md_detail_args*);
+extern  bool_t xdr_guestfs_md_detail_ret (XDR *, guestfs_md_detail_ret*);
+extern  bool_t xdr_guestfs_md_stop_args (XDR *, guestfs_md_stop_args*);
+extern  bool_t xdr_guestfs_blkid_args (XDR *, guestfs_blkid_args*);
+extern  bool_t xdr_guestfs_blkid_ret (XDR *, guestfs_blkid_ret*);
+extern  bool_t xdr_guestfs_e2fsck_args (XDR *, guestfs_e2fsck_args*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -3840,6 +3931,15 @@ extern bool_t xdr_guestfs_copy_device_to_device_args ();
 extern bool_t xdr_guestfs_copy_device_to_file_args ();
 extern bool_t xdr_guestfs_copy_file_to_device_args ();
 extern bool_t xdr_guestfs_copy_file_to_file_args ();
+extern bool_t xdr_guestfs_tune2fs_args ();
+extern bool_t xdr_guestfs_md_create_args ();
+extern bool_t xdr_guestfs_list_md_devices_ret ();
+extern bool_t xdr_guestfs_md_detail_args ();
+extern bool_t xdr_guestfs_md_detail_ret ();
+extern bool_t xdr_guestfs_md_stop_args ();
+extern bool_t xdr_guestfs_blkid_args ();
+extern bool_t xdr_guestfs_blkid_ret ();
+extern bool_t xdr_guestfs_e2fsck_args ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

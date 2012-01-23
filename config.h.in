@@ -689,6 +689,9 @@
 /* Define to 1 if you have the <glob.h> header file. */
 #undef HAVE_GLOB_H
 
+/* gobject library found at compile time. */
+#undef HAVE_GOBJECT
+
 /* hivex library found at compile time. */
 #undef HAVE_HIVEX
 

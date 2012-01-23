@@ -22,9 +22,9 @@
 
 let () =
   let g = Guestfs.create () in
-  Guestfs.test0 g "abc" (Some "def") [||] false 0 0L "123" "456" "abc\000abc";
-  Guestfs.test0 g "abc" None [||] false 0 0L "123" "456" "abc\000abc";
-  Guestfs.test0 g "" (Some "def") [||] false 0 0L "123" "456" "abc\000abc";
+  Guestfs.test0 g "abc" (Some "def") [||] false 0 0L "123" "456" "abc\000abc" ~obool:true ~oint:1;
+  Guestfs.test0 g "abc" None [||] false 0 0L "123" "456" "abc\000abc" ~oint64:1L ~ostring:"string";
+  Guestfs.test0 g "" (Some "def") [||] false 0 0L "123" "456" "abc\000abc" ~obool:false;
   Guestfs.test0 g "" (Some "") [||] false 0 0L "123" "456" "abc\000abc";
   Guestfs.test0 g "abc" (Some "def") [|"1"|] false 0 0L "123" "456" "abc\000abc";
   Guestfs.test0 g "abc" (Some "def") [|"1";"2"|] false 0 0L "123" "456" "abc\000abc";

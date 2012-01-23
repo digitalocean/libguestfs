@@ -1,5 +1,5 @@
 /* libguestfs - guestfish and guestmount shared option parsing
- * Copyright (C) 2010-2011 Red Hat Inc.
+ * Copyright (C) 2010-2012 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,9 @@ add_drives (struct drv *drv, char next_drive)
 
   if (drv) {
     next_drive = add_drives (drv->next, next_drive);
+
+    free (drv->device);
+    drv->device = NULL;
 
     if (asprintf (&drv->device, "/dev/sd%c", next_drive) == -1) {
       perror ("asprintf");

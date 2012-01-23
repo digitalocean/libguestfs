@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2011 Red Hat Inc.
+# Copyright (C) 2009-2012 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,8 +19,11 @@ include $(top_srcdir)/subdir-rules.mk
 
 ACLOCAL_AMFLAGS = -I m4
 
+# Gnulib - must be built and tested before the library.
+SUBDIRS = gnulib/lib gnulib/tests
+
 # Basic source for the library.
-SUBDIRS = gnulib/lib images generator src examples po
+SUBDIRS += tests/data generator src examples po
 
 if ENABLE_DAEMON
 SUBDIRS += daemon
@@ -29,14 +32,29 @@ if ENABLE_APPLIANCE
 SUBDIRS += appliance
 endif
 
-# Tests and the test-tool.
-SUBDIRS += gnulib/tests capitests caution regressions extratests test-tool
+# Tests - order is important.
+if ENABLE_APPLIANCE
+SUBDIRS += tests/qemu
+SUBDIRS += tests/guests
+SUBDIRS += tests/c-api
+SUBDIRS += tests/protocol
+SUBDIRS += tests/lvm
+SUBDIRS += tests/luks
+SUBDIRS += tests/md
+SUBDIRS += tests/regressions
+endif
+
+# Extra tests don't run by default.  You have to do 'make extra-tests'.
+SUBDIRS += tests/extra
+
+# libguestfs-test-tool
+SUBDIRS += test-tool
 
 # Guestfish.
 SUBDIRS += fish
 
 # virt-tools in C.
-SUBDIRS += align cat df edit inspector rescue
+SUBDIRS += align cat df edit format inspector rescue
 
 # Language bindings.
 if HAVE_PERL
@@ -62,6 +80,9 @@ SUBDIRS += php
 endif
 if HAVE_ERLANG
 SUBDIRS += erlang erlang/examples
+endif
+if HAVE_GOBJECT
+SUBDIRS += gobject
 endif
 
 # Unconditional because nothing is built yet.
@@ -99,7 +120,23 @@ EXTRA_DIST = \
 	bugs-in-changelog.sh \
 	autogen.sh \
 	bindtests \
+	contrib/autobuild/autobuild.sh \
+	contrib/guestfsd-in-wine.sh \
+	contrib/intro/libguestfs-intro.html \
+	contrib/intro/overview.svg \
+	contrib/intro/talk.txt \
+	contrib/intro/tools.svg \
 	contrib/README \
+	contrib/visualize-alignment/.gitignore \
+	contrib/visualize-alignment/guestfish-add-mount.qtr \
+	contrib/visualize-alignment/guestfish-lv-ext4-4k.qtr \
+	contrib/visualize-alignment/guestfish-lv-ext4-4k-write-hello.qtr \
+	contrib/visualize-alignment/guestfish-N-fs-10M-aligned-part-disk.qtr \
+	contrib/visualize-alignment/guestfish-N-fs-10M.qtr \
+	contrib/visualize-alignment/guestfish-write-hello.qtr \
+	contrib/visualize-alignment/qemu-0.13-trace-block-device-access.patch \
+	contrib/visualize-alignment/README \
+	contrib/visualize-alignment/tracetops.ml \
 	debian/.gitignore \
 	debian/changelog \
 	debian/compat \
@@ -135,6 +172,7 @@ EXTRA_DIST = \
 	run \
 	update-bugs.sh
 
+# The website.
 HTMLFILES = \
 	html/guestfs.3.html \
 	html/guestfs-examples.3.html \
@@ -155,6 +193,7 @@ HTMLFILES = \
 	html/virt-df.1.html \
 	html/virt-edit.1.html \
 	html/virt-filesystems.1.html \
+	html/virt-format.1.html \
 	html/virt-inspector.1.html \
 	html/virt-list-filesystems.1.html \
 	html/virt-list-partitions.1.html \
@@ -173,7 +212,11 @@ TEXTFILES = BUGS README RELEASE-NOTES ROADMAP TODO
 
 WEBSITEDIR = $(HOME)/d/redhat/websites/libguestfs
 
+# For reasons not fully understood, we need to rebuild all the
+# man pages and HTMLFILES from scratch here.
 website: $(HTMLFILES) $(TEXTFILES)
+	find -name 'stamp-*.pod' -delete
+	$(MAKE)
 	cp $(HTMLFILES) $(WEBSITEDIR)
 	for f in $(TEXTFILES); do cp $$f $(WEBSITEDIR)/$$f.txt; done
 	cd $(WEBSITEDIR) && \
@@ -202,7 +245,7 @@ all-local:
 	find $(DIST_SUBDIRS) \
 	    -name '*.c' -o -name '*.pl' -o -name '*.pm' | \
 	grep -v '^perl/blib/' | \
-	grep -v '^capitests/' | \
+	grep -v '^tests/' | \
 	grep -v '^daemon/lib/' | \
 	grep -v '^daemon/tests/' | \
 	grep -v '^examples/' | \
@@ -234,10 +277,10 @@ CLEANFILES = \
 quickcheck:
 	./run test-tool/libguestfs-test-tool $(QUICKCHECK_TEST_TOOL_ARGS)
 
-# Run extra-tests in extratests/ subdirectory.
+# Run extra-tests in tests/extra/ subdirectory.
 
 extra-tests:
-	make -C extratests $@
+	make -C tests/extra $@
 
 # Make binary distribution.
 

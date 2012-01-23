@@ -247,7 +247,7 @@ whether the partitions contain filesystems.
 
 =item B<--physical-volumes>
 
-Display LVM physical volumes.
+Показати фізичні томи LVM.
 
 =item B<--uuid>
 
@@ -259,7 +259,7 @@ In I<--long> mode, display UUIDs as well.
 
 =item B<--verbose>
 
-Enable verbose messages for debugging.
+Увімкнути докладний показ повідомлень з метою діагностики.
 
 =item B<-V>
 
@@ -273,7 +273,7 @@ Enable verbose messages for debugging.
 
 =item B<--volume-groups>
 
-Display LVM volume groups.
+Показати групи томів LVM.
 
 =item B<-x>
 
@@ -288,9 +288,9 @@ future versions of this tool.
 
 =over 4
 
-=item B<Name>
+=item B<Назва>
 
-The filesystem, partition, block device or LVM name.
+Назва файлової системи, розділу, блокового пристрою або LVM.
 
 For device and partition names these are displayed as canonical libguestfs
 names, so that for example C</dev/sda2> is the second partition on the first
@@ -299,7 +299,7 @@ device.
 If the I<--long> option is B<not> specified, then only the name column is
 shown in the output.
 
-=item B<Type>
+=item B<Тип>
 
 The object type, for example C<filesystem>, C<lv>, C<device> etc.
 
@@ -308,7 +308,7 @@ The object type, for example C<filesystem>, C<lv>, C<device> etc.
 If there is a filesystem, then this column displays the filesystem type if
 one could be detected, eg. C<ext4>.
 
-=item B<Label>
+=item B<Мітка>
 
 If the object has a label (used for identifying and mounting filesystems)
 then this column contains the label.
@@ -321,7 +321,7 @@ L<http://www.win.tue.nl/~aeb/partitions/partition_types-1.html>
 
 This is only applicable for DOS (MBR) partitions.
 
-=item B<Size>
+=item B<Розмір>
 
 The size of the object in bytes.  If the I<--human> option is used then the
 size is displayed in a human-readable form.
@@ -373,7 +373,7 @@ meaning to the shell such as C<#> and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 L<sh(1)> for details.
 
-=head1 EXIT STATUS
+=head1 СТАН ВИХОДУ
 
 This program returns 0 if successful, or non-zero if there was an error.
 
@@ -401,7 +401,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-Ви маєте отримати копію GNU General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 

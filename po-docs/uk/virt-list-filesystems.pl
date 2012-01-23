@@ -10,10 +10,12 @@ virt-list-filesystems - List filesystems in a virtual machine or disk image
 
  virt-list-filesystems [--options] disk.img [disk.img ...]
 
-=head1 ОПИС
+=head1 OBSOLETE
 
 This tool is obsolete.  Use L<virt-filesystems(1)> as a more flexible
 replacement.
+
+=head1 ОПИС
 
 C<virt-list-filesystems> is a command line tool to list the filesystems that
 are contained in a virtual machine or disk image.
@@ -103,7 +105,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-Ви маєте отримати копію GNU General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 

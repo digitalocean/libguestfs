@@ -42,12 +42,14 @@ daemon/hexdump.c
 daemon/htonl.c
 daemon/initrd.c
 daemon/inotify.c
+daemon/internal.c
 daemon/is.c
 daemon/link.c
 daemon/ls.c
 daemon/luks.c
 daemon/lvm-filter.c
 daemon/lvm.c
+daemon/md.c
 daemon/mkfs.c
 daemon/mknod.c
 daemon/modprobe.c
@@ -96,6 +98,8 @@ fish/destpaths.c
 fish/display.c
 fish/echo.c
 fish/edit.c
+fish/event-names.c
+fish/events.c
 fish/fish.c
 fish/glob.c
 fish/help.c
@@ -121,8 +125,10 @@ fish/supported.c
 fish/tilde.c
 fish/time.c
 fish/virt.c
+format/format.c
 fuse/dircache.c
 fuse/guestmount.c
+gobject/guestfs-gobject.c
 inspector/virt-inspector.c
 java/com_redhat_et_libguestfs_GuestFS.c
 ocaml/guestfs_c.c
@@ -134,10 +140,6 @@ perl/lib/Sys/Guestfs/Lib.pm
 php/extension/guestfs_php.c
 python/guestfs-py-byhand.c
 python/guestfs-py.c
-regressions/rhbz501893.c
-regressions/test-launch-race.pl
-regressions/test-lvm-mapping.pl
-regressions/test-noexec-stack.pl
 rescue/virt-rescue.c
 resize/progress_c.c
 ruby/ext/guestfs/_guestfs.c

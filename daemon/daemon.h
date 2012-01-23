@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2011 Red Hat Inc.
+ * Copyright (C) 2009-2012 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@ extern int xwrite (int sock, const void *buf, size_t len)
 extern int xread (int sock, void *buf, size_t len)
   __attribute__((__warn_unused_result__));
 
+extern int add_string_nodup (char ***argv, int *size, int *alloc, char *str);
 extern int add_string (char ***argv, int *size, int *alloc, const char *str);
 extern size_t count_strings (char *const *argv);
 extern void sort_strings (char **argv, int len);

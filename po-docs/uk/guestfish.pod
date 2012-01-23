@@ -487,7 +487,7 @@ write access.
 B<Note:> This does I<not> affect commands like L</add> and L</mount>, or any
 other libguestfs program apart from guestfish and guestmount.
 
-=head1 QUOTING
+=head1 ЛАПКИ
 
 You can quote ordinary parameters using either single or double quotes.  For
 example:
@@ -520,7 +520,7 @@ characters:
 
 =item C<\b>
 
-Backspace character.
+Символ «зворотній хід»
 
 =item C<\f>
 
@@ -1085,7 +1085,7 @@ This exits guestfish.  You can also use C<^D> key.
 
 @ACTIONS@
 
-=head1 EXIT STATUS
+=head1 СТАН ВИХОДУ
 
 guestfish returns 0 if the commands completed without error, or 1 if there
 was an error.
@@ -1251,7 +1251,7 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2011 Red Hat Inc.  L<http://libguestfs.org/>
+Copyright (C) 2009-2012 Red Hat Inc.  L<http://libguestfs.org/>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -1263,7 +1263,7 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-Ви маєте отримати копію GNU General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 

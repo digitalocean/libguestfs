@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2011 Red Hat Inc.
+# Copyright (C) 2009-2012 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ generator_built = \
 	cmds.c \
 	cmds_gperf.gperf \
 	completion.c \
+	event-names.c \
 	fish-cmds.h \
 	guestfish-actions.pod \
 	guestfish-commands.pod \
@@ -44,6 +45,7 @@ BUILT_SOURCES = \
 
 EXTRA_DIST = \
 	$(BUILT_SOURCES) \
+	$(TESTS) \
 	rc_protocol.x \
 	guestfish.pod \
 	guestfish-bash-completion.sh \
@@ -81,6 +83,7 @@ guestfish_SOURCES = \
 	display.c \
 	echo.c \
 	edit.c \
+	events.c \
 	fish.c \
 	fish.h \
 	glob.c \
@@ -224,3 +227,30 @@ toolsconf_DATA = libguestfs-tools.conf
 
 bashcompletiondir = $(sysconfdir)/bash_completion.d
 bashcompletion_DATA = guestfish-bash-completion.sh
+
+# Tests.
+
+random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
+
+TESTS_ENVIRONMENT = \
+	MALLOC_PERTURB_=$(random_val) \
+	$(top_builddir)/run
+
+TESTS = \
+	test-add-domain.sh \
+	test-guestfish-a.sh \
+	test-guestfish-d.sh \
+	test-guestfish-escapes.sh \
+	test-guestfish-events.sh \
+	test-guestfish-tilde.sh
+
+if ENABLE_APPLIANCE
+TESTS += \
+	test-copy.sh \
+	test-find0.sh \
+	test-read_file.sh \
+	test-remote.sh \
+	test-reopen.sh \
+	test-stringlist.sh \
+	test-upload-to-dir.sh
+endif

@@ -28,18 +28,20 @@ EXTRA_DIST = $(generator_built) *.hs run-bindtests
 if HAVE_HASKELL
 
 TESTS_ENVIRONMENT = \
-	LD_LIBRARY_PATH=$(top_builddir)/src/.libs \
-	LIBGUESTFS_PATH=$(top_builddir)/appliance \
-	TMPDIR=$(top_builddir) \
+	$(top_builddir)/run \
 	$(VG)
 
-TESTS = run-bindtests Guestfs005Load Guestfs010Basic
+# Don't run the bindtests: they don't build since the addition of optargs.
+# Haskell bindings are incomplete.
+if ENABLE_APPLIANCE
+TESTS = Guestfs005Load Guestfs010Basic
+endif ENABLE_APPLIANCE
 
-check_DATA = Bindtests
+#check_DATA = Bindtests
 
 GHCFLAGS = -I$(top_builddir)/src -L$(top_builddir)/src/.libs -i$(srcdir)
 
-all_targets = Bindtests Guestfs005Load Guestfs010Basic
+all_targets = Guestfs005Load Guestfs010Basic
 $(all_targets): $(top_builddir)/src/libguestfs.la
 
 all: $(all_targets)

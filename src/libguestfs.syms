@@ -51,6 +51,7 @@
         guestfs_available_all_groups;
         guestfs_base64_in;
         guestfs_base64_out;
+        guestfs_blkid;
         guestfs_blockdev_flushbufs;
         guestfs_blockdev_getbsz;
         guestfs_blockdev_getro;
@@ -110,7 +111,10 @@
         guestfs_download_offset;
         guestfs_drop_caches;
         guestfs_du;
+        guestfs_e2fsck;
+        guestfs_e2fsck_argv;
         guestfs_e2fsck_f;
+        guestfs_e2fsck_va;
         guestfs_echo_daemon;
         guestfs_egrep;
         guestfs_egrepi;
@@ -246,6 +250,7 @@
         guestfs_list_devices;
         guestfs_list_dm_devices;
         guestfs_list_filesystems;
+        guestfs_list_md_devices;
         guestfs_list_partitions;
         guestfs_ll;
         guestfs_ln;
@@ -277,6 +282,11 @@
         guestfs_lvs_full;
         guestfs_lvuuid;
         guestfs_lxattrlist;
+        guestfs_md_create;
+        guestfs_md_create_argv;
+        guestfs_md_create_va;
+        guestfs_md_detail;
+        guestfs_md_stop;
         guestfs_mkdir;
         guestfs_mkdir_mode;
         guestfs_mkdir_p;
@@ -420,8 +430,12 @@
         guestfs_tar_in;
         guestfs_tar_out;
         guestfs_test0;
+        guestfs_test0_argv;
+        guestfs_test0_va;
         guestfs_test0rbool;
         guestfs_test0rboolerr;
+        guestfs_test0rbufferout;
+        guestfs_test0rbufferouterr;
         guestfs_test0rconstoptstring;
         guestfs_test0rconstoptstringerr;
         guestfs_test0rconststring;
@@ -446,7 +460,10 @@
         guestfs_touch;
         guestfs_truncate;
         guestfs_truncate_size;
+        guestfs_tune2fs;
+        guestfs_tune2fs_argv;
         guestfs_tune2fs_l;
+        guestfs_tune2fs_va;
         guestfs_txz_in;
         guestfs_txz_out;
         guestfs_umask;

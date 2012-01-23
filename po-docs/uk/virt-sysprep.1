@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-sysprep 1"
-.TH virt-sysprep 1 "2012-01-10" "libguestfs-1.14.9" "Virtualization Support"
+.TH virt-sysprep 1 "2012-01-23" "libguestfs-1.16.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -209,7 +209,7 @@ The default is to try to detect if SELinux relabelling is required.  See
 .IP "\fB\-\-verbose\fR" 4
 .IX Item "--verbose"
 .PD
-Enable verbose messages for debugging.
+Увімкнути докладний показ повідомлень з метою діагностики.
 .IP "\fB\-V\fR" 4
 .IX Item "-V"
 .PD 0
@@ -220,8 +220,8 @@ Enable verbose messages for debugging.
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
 Enable tracing of libguestfs \s-1API\s0 calls.
-.SH "OPERATIONS"
-.IX Header "OPERATIONS"
+.SH "ДІЇ"
+.IX Header "ДІЇ"
 If the \fI\-\-enable\fR option is \fInot\fR given, then \fIall sysprep operations are
 enabled\fR, although some are skipped depending on the type of guest.
 .PP
@@ -303,14 +303,14 @@ is assigned to a new name (eg. eth1) and this is usually undesirable.
 Erasing the udev persistent net rules avoids this.
 .SS "utmp"
 .IX Subsection "utmp"
-Remove the utmp file.
+Вилучити файл utmp.
 .PP
 This records who is currently logged in on a machine.  In modern Linux
 distros it is stored in a ramdisk and hence not part of the virtual
 machine's disk, but it was stored on disk in older distros.
 .SS "yum-uuid"
 .IX Subsection "yum-uuid"
-Remove the yum \s-1UUID\s0.
+Вилучити \s-1UUID\s0 yum.
 .PP
 Yum creates a fresh \s-1UUID\s0 the next time it runs when it notices that the
 original \s-1UUID\s0 has been erased.
@@ -322,8 +322,8 @@ different ways to achieve this using the virt tools, and this section is
 just an introduction.
 .PP
 A virtual machine (when switched off) consists of two parts:
-.IP "\fIconfiguration\fR" 4
-.IX Item "configuration"
+.IP "\fIналаштування\fR" 4
+.IX Item "налаштування"
 The configuration or description of the guest.  eg. The libvirt \s-1XML\s0 (see
 \&\f(CW\*(C`virsh dumpxml\*(C'\fR), the running configuration of the guest, or another
 external format like \s-1OVF\s0.
@@ -331,7 +331,7 @@ external format like \s-1OVF\s0.
 Some configuration items that might need to be changed:
 .RS 4
 .IP "\(bu" 4
-name
+назва
 .IP "\(bu" 4
 \&\s-1UUID\s0
 .IP "\(bu" 4
@@ -341,8 +341,8 @@ network card \s-1MAC\s0 address
 .RE
 .RS 4
 .RE
-.IP "\fIblock device(s)\fR" 4
-.IX Item "block device(s)"
+.IP "\fIблокові пристрої\fR" 4
+.IX Item "блокові пристрої"
 One or more hard disk images, themselves containing files, directories,
 applications, kernels, configuration, etc.
 .Sp
@@ -462,9 +462,9 @@ on the disk, easily recovered with a hex editor or undelete tool.  Use
 \&\fIvirt\-sparsify\fR\|(1) as one way to remove this content.  See also the
 \&\fIscrub\fR\|(1) command to get rid of deleted content in directory entries and
 inodes.
-.SS "\s-1RANDOM\s0 \s-1SEED\s0"
-.IX Subsection "RANDOM SEED"
-\&\fI(This section applies to Linux guests only)\fR
+.SS "БАЗА ВИПАДКОВОСТІ"
+.IX Subsection "БАЗА ВИПАДКОВОСТІ"
+\&\fI(Цей розділ стосується лише гостьових систем Linux)\fR
 .PP
 The virt-sysprep \f(CW\*(C`random\-seed\*(C'\fR operation writes a few bytes of randomness
 from the host into the guest's random seed file.
@@ -481,8 +481,8 @@ operation:
 \& cp template.img newguest.img
 \& virt\-sysprep \-\-enable=random\-seed \-a newguest.img
 .Ve
-.SS "\s-1SELINUX\s0 \s-1RELABELLING\s0"
-.IX Subsection "SELINUX RELABELLING"
+.SS "ПОВТОРНЕ ВСТАНОВЛЕННЯ МІТОК \s-1SELINUX\s0"
+.IX Subsection "ПОВТОРНЕ ВСТАНОВЛЕННЯ МІТОК SELINUX"
 \&\fI(This section applies to Linux guests using SELinux only)\fR
 .PP
 If any new files are created by virt-sysprep, then virt-sysprep touches
@@ -501,8 +501,8 @@ Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
-.SH "EXIT STATUS"
-.IX Header "EXIT STATUS"
+.SH "СТАН ВИХОДУ"
+.IX Header "СТАН ВИХОДУ"
 This program returns 0 on success, or 1 if there was an error.
 .SH "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 .IX Header "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
@@ -515,7 +515,7 @@ This program returns 0 on success, or 1 if there was an error.
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "АВТОРСЬКІ ПРАВА"
 .IX Header "АВТОРСЬКІ ПРАВА"
-Copyright (C) 2011 Red Hat Inc.
+© Red Hat Inc., 2011
 .PP
 This program is free software; you can redistribute it and/or modify it
 under the terms of the \s-1GNU\s0 General Public License as published by the Free
@@ -527,6 +527,6 @@ any later version.
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
-Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.
+You should have received a copy of the \s-1GNU\s0 General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.

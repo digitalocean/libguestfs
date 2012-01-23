@@ -25,9 +25,9 @@ use strict;
 use Sys::Guestfs;
 
 my $g = Sys::Guestfs->new ();
-$g->test0 ("abc", "def", [], 0, 0, 0, "123", "456", "abc\0abc");
-$g->test0 ("abc", undef, [], 0, 0, 0, "123", "456", "abc\0abc");
-$g->test0 ("", "def", [], 0, 0, 0, "123", "456", "abc\0abc");
+$g->test0 ("abc", "def", [], 0, 0, 0, "123", "456", "abc\0abc", 'obool' => 1, 'oint' => 1);
+$g->test0 ("abc", undef, [], 0, 0, 0, "123", "456", "abc\0abc", 'oint64' => 1, 'ostring' => 'string');
+$g->test0 ("", "def", [], 0, 0, 0, "123", "456", "abc\0abc", 'obool' => 0);
 $g->test0 ("", "", [], 0, 0, 0, "123", "456", "abc\0abc");
 $g->test0 ("abc", "def", ["1"], 0, 0, 0, "123", "456", "abc\0abc");
 $g->test0 ("abc", "def", ["1","2"], 0, 0, 0, "123", "456", "abc\0abc");

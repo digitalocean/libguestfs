@@ -140,10 +140,10 @@ class GuestFS:
         self._check_not_closed ()
         libguestfsmod.delete_event_callback (self._o, event_handle)
 
-    def test0 (self, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin):
+    def test0 (self, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, obool=-1, oint=-1, oint64=-1, ostring=None):
         strlist = list (strlist)
         self._check_not_closed ()
-        return libguestfsmod.test0 (self._o, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin)
+        return libguestfsmod.test0 (self._o, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, obool, oint, oint64, ostring)
 
     def test0rint (self, val):
         self._check_not_closed ()
@@ -224,6 +224,14 @@ class GuestFS:
     def test0rhashtableerr (self):
         self._check_not_closed ()
         return libguestfsmod.test0rhashtableerr (self._o)
+
+    def test0rbufferout (self, val):
+        self._check_not_closed ()
+        return libguestfsmod.test0rbufferout (self._o, val)
+
+    def test0rbufferouterr (self):
+        self._check_not_closed ()
+        return libguestfsmod.test0rbufferouterr (self._o)
 
     def launch (self):
         """Internally libguestfs is implemented by running a
@@ -827,6 +835,9 @@ class GuestFS:
         
         "netbsd"
         NetBSD.
+        
+        "hurd"
+        GNU/Hurd.
         
         "unknown"
         The operating system type could not be determined.
@@ -5686,4 +5697,215 @@ class GuestFS:
         """
         self._check_not_closed ()
         return libguestfsmod.copy_file_to_file (self._o, src, dest, srcoffset, destoffset, size)
+
+    def tune2fs (self, device, force=-1, maxmountcount=-1, mountcount=-1, errorbehavior=None, group=-1, intervalbetweenchecks=-1, reservedblockspercentage=-1, lastmounteddirectory=None, reservedblockscount=-1, user=-1):
+        """This call allows you to adjust various filesystem
+        parameters of an ext2/ext3/ext4 filesystem called
+        "device".
+        
+        The optional parameters are:
+        
+        "force"
+        Force tune2fs to complete the operation even in the
+        face of errors. This is the same as the tune2fs "-f"
+        option.
+        
+        "maxmountcount"
+        Set the number of mounts after which the filesystem
+        is checked by e2fsck(8). If this is 0 then the
+        number of mounts is disregarded. This is the same as
+        the tune2fs "-c" option.
+        
+        "mountcount"
+        Set the number of times the filesystem has been
+        mounted. This is the same as the tune2fs "-C"
+        option.
+        
+        "errorbehavior"
+        Change the behavior of the kernel code when errors
+        are detected. Possible values currently are:
+        "continue", "remount-ro", "panic". In practice these
+        options don't really make any difference,
+        particularly for write errors.
+        
+        This is the same as the tune2fs "-e" option.
+        
+        "group"
+        Set the group which can use reserved filesystem
+        blocks. This is the same as the tune2fs "-g" option
+        except that it can only be specified as a number.
+        
+        "intervalbetweenchecks"
+        Adjust the maximal time between two filesystem
+        checks (in seconds). If the option is passed as 0
+        then time-dependent checking is disabled.
+        
+        This is the same as the tune2fs "-i" option.
+        
+        "reservedblockspercentage"
+        Set the percentage of the filesystem which may only
+        be allocated by privileged processes. This is the
+        same as the tune2fs "-m" option.
+        
+        "lastmounteddirectory"
+        Set the last mounted directory. This is the same as
+        the tune2fs "-M" option.
+        
+        "reservedblockscount" Set the number of reserved
+        filesystem blocks. This is the same as the tune2fs "-r"
+        option.
+        "user"
+        Set the user who can use the reserved filesystem
+        blocks. This is the same as the tune2fs "-u" option
+        except that it can only be specified as a number.
+        
+        To get the current values of filesystem parameters, see
+        "g.tune2fs_l". For precise details of how tune2fs works,
+        see the tune2fs(8) man page.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.tune2fs (self._o, device, force, maxmountcount, mountcount, errorbehavior, group, intervalbetweenchecks, reservedblockspercentage, lastmounteddirectory, reservedblockscount, user)
+
+    def md_create (self, name, devices, missingbitmap=-1, nrdevices=-1, spare=-1, chunk=-1, level=None):
+        """Create a Linux md (RAID) device named "name" on the
+        devices in the list "devices".
+        
+        The optional parameters are:
+        
+        "missingbitmap"
+        A bitmap of missing devices. If a bit is set it
+        means that a missing device is added to the array.
+        The least significant bit corresponds to the first
+        device in the array.
+        
+        As examples:
+        
+        If "devices = ["/dev/sda"]" and "missingbitmap =
+        0x1" then the resulting array would be "[<missing>,
+        "/dev/sda"]".
+        
+        If "devices = ["/dev/sda"]" and "missingbitmap =
+        0x2" then the resulting array would be "["/dev/sda",
+        <missing>]".
+        
+        This defaults to 0 (no missing devices).
+        
+        The length of "devices" + the number of bits set in
+        "missingbitmap" must equal "nrdevices" + "spare".
+        
+        "nrdevices"
+        The number of active RAID devices.
+        
+        If not set, this defaults to the length of "devices"
+        plus the number of bits set in "missingbitmap".
+        
+        "spare"
+        The number of spare devices.
+        
+        If not set, this defaults to 0.
+        
+        "chunk"
+        The chunk size in bytes.
+        
+        "level"
+        The RAID level, which can be one of: *linear*,
+        *raid0*, *0*, *stripe*, *raid1*, *1*, *mirror*,
+        *raid4*, *4*, *raid5*, *5*, *raid6*, *6*, *raid10*,
+        *10*. Some of these are synonymous, and more levels
+        may be added in future.
+        
+        If not set, this defaults to "raid1".
+        """
+        devices = list (devices)
+        self._check_not_closed ()
+        return libguestfsmod.md_create (self._o, name, devices, missingbitmap, nrdevices, spare, chunk, level)
+
+    def list_md_devices (self):
+        """List all Linux md devices.
+        
+        This function returns a list of strings.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.list_md_devices (self._o)
+
+    def md_detail (self, md):
+        """This command exposes the output of 'mdadm -DY <md>'. The
+        following fields are usually present in the returned
+        hash. Other fields may also be present.
+        
+        "level"
+        The raid level of the MD device.
+        
+        "devices"
+        The number of underlying devices in the MD device.
+        
+        "metadata"
+        The metadata version used.
+        
+        "uuid"
+        The UUID of the MD device.
+        
+        "name"
+        The name of the MD device.
+        
+        This function returns a dictionary.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.md_detail (self._o, md)
+
+    def md_stop (self, md):
+        """This command deactivates the MD array named "md". The
+        device is stopped, but it is not destroyed or zeroed.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.md_stop (self._o, md)
+
+    def blkid (self, device):
+        """This command returns block device attributes for
+        "device". The following fields are usually present in
+        the returned hash. Other fields may also be present.
+        
+        "UUID"
+        The uuid of this device.
+        
+        "LABEL"
+        The label of this device.
+        
+        "VERSION"
+        The version of blkid command.
+        
+        "TYPE"
+        The filesystem type or RAID of this device.
+        
+        "USAGE"
+        The usage of this device, for example "filesystem"
+        or "raid".
+        
+        This function returns a dictionary.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.blkid (self._o, device)
+
+    def e2fsck (self, device, correct=-1, forceall=-1):
+        """This runs the ext2/ext3 filesystem checker on "device".
+        It can take the following optional arguments:
+        
+        "correct"
+        Automatically repair the file system. This option
+        will cause e2fsck to automatically fix any
+        filesystem problems that can be safely fixed without
+        human intervention.
+        
+        This option may not be specified at the same time as
+        the "forceall" option.
+        
+        "forceall"
+        Assume an answer of 'yes' to all questions; allows
+        e2fsck to be used non-interactively.
+        
+        This option may not be specified at the same time as
+        the "correct" option.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.e2fsck (self._o, device, correct, forceall)
 

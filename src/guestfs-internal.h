@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2011 Red Hat Inc.
+ * Copyright (C) 2009-2012 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -256,6 +256,7 @@ enum inspect_fs_content {
   FS_CONTENT_FREEBSD_ROOT,
   FS_CONTENT_NETBSD_ROOT,
   FS_CONTENT_INSTALLER,
+  FS_CONTENT_HURD_ROOT,
 };
 
 enum inspect_os_format {
@@ -271,6 +272,7 @@ enum inspect_os_type {
   OS_TYPE_WINDOWS,
   OS_TYPE_FREEBSD,
   OS_TYPE_NETBSD,
+  OS_TYPE_HURD,
 };
 
 enum inspect_os_distro {
@@ -421,6 +423,7 @@ extern int guestfs___check_installer_root (guestfs_h *g, struct inspect_fs *fs);
 extern int guestfs___check_linux_root (guestfs_h *g, struct inspect_fs *fs);
 extern int guestfs___check_freebsd_root (guestfs_h *g, struct inspect_fs *fs);
 extern int guestfs___check_netbsd_root (guestfs_h *g, struct inspect_fs *fs);
+extern int guestfs___check_hurd_root (guestfs_h *g, struct inspect_fs *fs);
 extern int guestfs___has_windows_systemroot (guestfs_h *g);
 extern int guestfs___check_windows_root (guestfs_h *g, struct inspect_fs *fs);
 #endif
