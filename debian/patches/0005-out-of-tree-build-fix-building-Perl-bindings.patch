@@ -1,4 +1,4 @@
-From: Hilko Bengen <bengen@hilluzination.de>
+From: Hilko Bengen <bengen@debian.org>
 Date: Sat, 13 Aug 2011 22:11:10 +0200
 Subject: out-of-tree build: fix building Perl bindings
 
@@ -7,10 +7,10 @@ Subject: out-of-tree build: fix building Perl bindings
  1 files changed, 1 insertions(+), 0 deletions(-)
 
 diff --git a/perl/Makefile.am b/perl/Makefile.am
-index 6212915..24e54c2 100644
+index 404a4e9..253d990 100644
 --- a/perl/Makefile.am
 +++ b/perl/Makefile.am
-@@ -69,6 +69,7 @@ all: Makefile-pl src_deps
+@@ -65,6 +65,7 @@ all: Makefile-pl src_deps
  	$(MAKE) -f Makefile-pl
  
  Makefile-pl: Makefile.PL

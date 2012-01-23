@@ -1,4 +1,4 @@
-From: Hilko Bengen <bengen@hilluzination.de>
+From: Hilko Bengen <bengen@debian.org>
 Date: Mon, 15 Aug 2011 00:48:11 +0200
 Subject: out-of-tree build: daemon
 
@@ -7,7 +7,7 @@ Subject: out-of-tree build: daemon
  1 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/daemon/Makefile.am b/daemon/Makefile.am
-index f8e0ecb..87c92f2 100644
+index 3a698cc..0c905d0 100644
 --- a/daemon/Makefile.am
 +++ b/daemon/Makefile.am
 @@ -42,10 +42,10 @@ noinst_LIBRARIES = libprotocol.a

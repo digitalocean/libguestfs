@@ -7,7 +7,7 @@ Subject: Fix for systemd-based Debian systems
  1 files changed, 3 insertions(+), 0 deletions(-)
 
 diff --git a/appliance/make.sh.in b/appliance/make.sh.in
-index cb243b5..a3b23df 100755
+index 0335f6e..d541227 100755
 --- a/appliance/make.sh.in
 +++ b/appliance/make.sh.in
 @@ -63,4 +63,7 @@ if grep -q /usr/share/augeas/lenses supermin.d/hostfiles-t; then
