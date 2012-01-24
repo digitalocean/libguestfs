@@ -2122,6 +2122,12 @@
 /* Define if the native Windows multithreading API can be used. */
 #undef USE_WINDOWS_THREADS
 
+/* Define to 1 to run the daemon under valgrind */
+#undef VALGRIND_DAEMON
+
+/* Path to save valgrind log files */
+#undef VALGRIND_LOG_PATH
+
 /* Version number of package */
 #undef VERSION
 

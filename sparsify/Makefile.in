@@ -1264,7 +1264,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify test.img \
 
 # Note this list must be in dependency order.
 @HAVE_OCAML_TRUE@OBJECTS = \
-@HAVE_OCAML_TRUE@	../fish/guestfish-progress.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-progress.o \
 @HAVE_OCAML_TRUE@	progress_c.o \
 @HAVE_OCAML_TRUE@	utils.cmx \
 @HAVE_OCAML_TRUE@	progress.cmx \
@@ -1275,7 +1275,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify test.img \
 # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
-@HAVE_OCAML_TRUE@OCAMLPACKAGES = -package unix -I $(top_builddir)/src/.libs -I ../ocaml
+@HAVE_OCAML_TRUE@OCAMLPACKAGES = -package unix -I $(top_builddir)/src/.libs -I $(top_builddir)/ocaml
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 

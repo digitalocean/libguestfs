@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [16])
-m4_define([libguestfs_release], [0])
+m4_define([libguestfs_release], [1])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -263,9 +263,24 @@ if test "x$enable_daemon" = "xyes"; then
                   [enable installing the daemon under $sbindir @<:@default=no@:>@])],
                 [],
                 [enable_install_daemon=no])
-        AM_CONDITIONAL([INSTALL_DAEMON],[test "x$enable_install_daemon" = "xyes"])
         AC_MSG_RESULT([$enable_install_daemon])
+
+        dnl Enable valgrind in the daemon.
+        AC_MSG_CHECKING([if we should run the daemon under valgrind])
+        AC_ARG_ENABLE([valgrind-daemon],
+                [AS_HELP_STRING([--enable-valgrind-daemon],
+                  [run the daemon under valgrind (developers only) @<:@default=no@:>@])],
+                  [],
+                  [enable_valgrind_daemon=no])
+        AC_MSG_RESULT([$enable_valgrind_daemon])
+
+        if test "x$enable_valgrind_daemon" = "xyes"; then
+            AC_DEFINE([VALGRIND_DAEMON],[1],[Define to 1 to run the daemon under valgrind])
+            AC_DEFINE_UNQUOTED([VALGRIND_LOG_PATH],["$(pwd)"],[Path to save valgrind log files])
+        fi
 fi
+AM_CONDITIONAL([INSTALL_DAEMON],[test "x$enable_install_daemon" = "xyes"])
+AM_CONDITIONAL([VALGRIND_DAEMON],[test "x$enable_valgrind_daemon" = "xyes"])
 
 dnl Build the appliance?
 AC_MSG_CHECKING([if we should build the appliance])
