@@ -1,3 +1,17 @@
+libguestfs (1:1.16.0-1) unstable; urgency=low
+
+  * New upstream version
+  * [b4f8deb] Rebased patch queue
+  * [df8dd81] Updated watch file for 1.16.x
+  * [d766d82] Stripped redundant package descriptions
+  * [d044727] Added packages for GObject bindings and introspection
+  * [9c5fa98] Added configuration for git-buildpackage
+  * [12bedd8] Added workaround for
+    "{pre,post}inst-has-useless-call-to-ldconfig" Lintian warnings
+    (libguestfs-java)
+
+ -- Hilko Bengen <bengen@debian.org>  Tue, 24 Jan 2012 22:04:39 +0100
+
 libguestfs (1:1.14.9-2) unstable; urgency=low
 
   * [4bf0ed5] Added ruby-guestfs package
