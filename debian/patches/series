@@ -4,8 +4,6 @@
 0004-Fix-for-systemd-based-Debian-systems.patch
 0005-out-of-tree-build-fix-building-Perl-bindings.patch
 0006-out-of-tree-build-daemon.patch
-0007-Fix-en-dis-able-install-daemon.patch
-0008-virt-sparsify-virt-resize-Link-progress.o-from-build.patch
-0009-Install-Java-bindings-to-jni-subdirectory.patch
-0010-ruby-install-to-vendor_ruby.patch
-0011-autoreconf.patch
+0007-Install-Java-bindings-to-jni-subdirectory.patch
+0008-ruby-install-to-vendor_ruby.patch
+0009-autoreconf.patch

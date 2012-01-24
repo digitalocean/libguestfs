@@ -11,7 +11,7 @@ Subject: autoreconf
  build-aux/config.sub          |  159 ++++++---
  cat/Makefile.in               |  237 +++++-------
  clone/Makefile.in             |   46 ++-
- configure                     |   67 ++--
+ configure                     |   59 ++-
  csharp/Makefile.in            |   19 +-
  daemon/Makefile.in            |  838 +++++++++++++++++------------------------
  df/Makefile.in                |  147 ++++----
@@ -42,10 +42,10 @@ Subject: autoreconf
  python/Makefile.in            |   67 ++--
  python/examples/Makefile.in   |   29 +-
  rescue/Makefile.in            |  104 +++---
- resize/Makefile.in            |   48 ++-
+ resize/Makefile.in            |   46 ++-
  ruby/Makefile.in              |   44 ++-
  ruby/examples/Makefile.in     |   29 +-
- sparsify/Makefile.in          |   50 ++-
+ sparsify/Makefile.in          |   46 ++-
  src/Makefile.in               |  158 ++++-----
  test-tool/Makefile.in         |   54 ++--
  tests/c-api/Makefile.in       |  137 +++----
@@ -59,7 +59,7 @@ Subject: autoreconf
  tests/qemu/Makefile.in        |   32 +-
  tests/regressions/Makefile.in |   57 ++--
  tools/Makefile.in             |   46 ++-
- 56 files changed, 2337 insertions(+), 2346 deletions(-)
+ 56 files changed, 2330 insertions(+), 2339 deletions(-)
 
 diff --git a/Makefile.in b/Makefile.in
 index 0167712..b536ee2 100644
@@ -711,7 +711,7 @@ index 99c5490..3d97258 100644
  
  clean-generic:
 diff --git a/appliance/Makefile.in b/appliance/Makefile.in
-index a753f8c..ce19ceb 100644
+index 8dc90f1..09ccf0b 100644
 --- a/appliance/Makefile.in
 +++ b/appliance/Makefile.in
 @@ -1,9 +1,9 @@
@@ -727,7 +727,7 @@ index a753f8c..ce19ceb 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -219,6 +219,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -220,6 +220,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -740,7 +740,7 @@ index a753f8c..ce19ceb 100644
  am__installdirs = "$(DESTDIR)$(fsdir)" "$(DESTDIR)$(superminfsdir)"
  DATA = $(fs_DATA) $(superminfs_DATA)
  DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-@@ -1311,9 +1317,7 @@ uninstall-fsDATA:
+@@ -1313,9 +1319,7 @@ uninstall-fsDATA:
  	@$(NORMAL_UNINSTALL)
  	@list='$(fs_DATA)'; test -n "$(fsdir)" || list=; \
  	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
@@ -751,7 +751,7 @@ index a753f8c..ce19ceb 100644
  install-superminfsDATA: $(superminfs_DATA)
  	@$(NORMAL_INSTALL)
  	test -z "$(superminfsdir)" || $(MKDIR_P) "$(DESTDIR)$(superminfsdir)"
-@@ -1331,9 +1335,7 @@ uninstall-superminfsDATA:
+@@ -1333,9 +1337,7 @@ uninstall-superminfsDATA:
  	@$(NORMAL_UNINSTALL)
  	@list='$(superminfs_DATA)'; test -n "$(superminfsdir)" || list=; \
  	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
@@ -762,7 +762,7 @@ index a753f8c..ce19ceb 100644
  tags: TAGS
  TAGS:
  
-@@ -1388,10 +1390,15 @@ install-am: all-am
+@@ -1390,10 +1392,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -2222,10 +2222,10 @@ index 2ef5c65..76cb86b 100644
  
  clean-generic:
 diff --git a/configure b/configure
-index a5bee8e..2721d26 100755
+index ddaf69b..96554ac 100755
 --- a/configure
 +++ b/configure
-@@ -1627,6 +1627,7 @@ CPP
+@@ -1629,6 +1629,7 @@ CPP
  am__fastdepCC_FALSE
  am__fastdepCC_TRUE
  CCDEPMODE
@@ -2233,7 +2233,7 @@ index a5bee8e..2721d26 100755
  AMDEPBACKSLASH
  AMDEP_FALSE
  AMDEP_TRUE
-@@ -4375,6 +4376,7 @@ fi
+@@ -4381,6 +4382,7 @@ fi
  if test "x$enable_dependency_tracking" != xno; then
    am_depcomp="$ac_aux_dir/depcomp"
    AMDEPBACKSLASH='\'
@@ -2241,7 +2241,7 @@ index a5bee8e..2721d26 100755
  fi
   if test "x$enable_dependency_tracking" != xno; then
    AMDEP_TRUE=
-@@ -5188,6 +5190,7 @@ else
+@@ -5194,6 +5196,7 @@ else
    # instance it was reported that on HP-UX the gcc test will end up
    # making a dummy file named `D' -- because `-MD' means `put the output
    # in D'.
@@ -2249,7 +2249,7 @@ index a5bee8e..2721d26 100755
    mkdir conftest.dir
    # Copy depcomp to subdir because otherwise we won't find it if we're
    # using a relative directory.
-@@ -5247,7 +5250,7 @@ else
+@@ -5253,7 +5256,7 @@ else
  	break
        fi
        ;;
@@ -2258,29 +2258,7 @@ index a5bee8e..2721d26 100755
        # This compiler won't grok `-c -o', but also, the minuso test has
        # not run yet.  These depmodes are late enough in the game, and
        # so weak that their functioning should not be impacted.
-@@ -45261,7 +45264,10 @@ else
-   enable_install_daemon=no
- fi
- 
--         if test "x$enable_install_daemon" = "xyes"; then
-+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_install_daemon" >&5
-+$as_echo "$enable_install_daemon" >&6; }
-+fi
-+ if test "x$enable_install_daemon" = "xyes"; then
-   INSTALL_DAEMON_TRUE=
-   INSTALL_DAEMON_FALSE='#'
- else
-@@ -45269,9 +45275,6 @@ else
-   INSTALL_DAEMON_FALSE=
- fi
- 
--        { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_install_daemon" >&5
--$as_echo "$enable_install_daemon" >&6; }
--fi
- 
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking if we should build the appliance" >&5
- $as_echo_n "checking if we should build the appliance... " >&6; }
-@@ -45526,6 +45529,7 @@ fi
+@@ -45563,6 +45566,7 @@ fi
  
  
  
@@ -2288,7 +2266,7 @@ index a5bee8e..2721d26 100755
  if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
  	if test -n "$ac_tool_prefix"; then
    # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
-@@ -45654,6 +45658,7 @@ if test -n "$AUGEAS_CFLAGS"; then
+@@ -45691,6 +45695,7 @@ if test -n "$AUGEAS_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_AUGEAS_CFLAGS=`$PKG_CONFIG --cflags "augeas" 2>/dev/null`
@@ -2296,7 +2274,7 @@ index a5bee8e..2721d26 100755
  else
    pkg_failed=yes
  fi
-@@ -45670,6 +45675,7 @@ if test -n "$AUGEAS_LIBS"; then
+@@ -45707,6 +45712,7 @@ if test -n "$AUGEAS_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_AUGEAS_LIBS=`$PKG_CONFIG --libs "augeas" 2>/dev/null`
@@ -2304,7 +2282,7 @@ index a5bee8e..2721d26 100755
  else
    pkg_failed=yes
  fi
-@@ -45689,9 +45695,9 @@ else
+@@ -45726,9 +45732,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2316,7 +2294,7 @@ index a5bee8e..2721d26 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$AUGEAS_PKG_ERRORS" >&5
-@@ -48363,6 +48369,7 @@ if test -n "$PCRE_CFLAGS"; then
+@@ -48400,6 +48406,7 @@ if test -n "$PCRE_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_PCRE_CFLAGS=`$PKG_CONFIG --cflags "libpcre" 2>/dev/null`
@@ -2324,7 +2302,7 @@ index a5bee8e..2721d26 100755
  else
    pkg_failed=yes
  fi
-@@ -48379,6 +48386,7 @@ if test -n "$PCRE_LIBS"; then
+@@ -48416,6 +48423,7 @@ if test -n "$PCRE_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_PCRE_LIBS=`$PKG_CONFIG --libs "libpcre" 2>/dev/null`
@@ -2332,7 +2310,7 @@ index a5bee8e..2721d26 100755
  else
    pkg_failed=yes
  fi
-@@ -48398,9 +48406,9 @@ else
+@@ -48435,9 +48443,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2344,7 +2322,7 @@ index a5bee8e..2721d26 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$PCRE_PKG_ERRORS" >&5
-@@ -48415,7 +48423,6 @@ installed software in a non-standard prefix.
+@@ -48452,7 +48460,6 @@ installed software in a non-standard prefix.
  Alternatively, you may set the environment variables PCRE_CFLAGS
  and PCRE_LIBS to avoid the need to call pkg-config.
  See the pkg-config man page for more details." "$LINENO" 5
@@ -2352,7 +2330,7 @@ index a5bee8e..2721d26 100755
  elif test $pkg_failed = untried; then
       	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
  $as_echo "no" >&6; }
-@@ -48431,7 +48438,6 @@ See the pkg-config man page for more details.
+@@ -48468,7 +48475,6 @@ See the pkg-config man page for more details.
  
  To get pkg-config, see <http://pkg-config.freedesktop.org/>.
  See \`config.log' for more details" "$LINENO" 5; }
@@ -2360,7 +2338,7 @@ index a5bee8e..2721d26 100755
  else
  	PCRE_CFLAGS=$pkg_cv_PCRE_CFLAGS
  	PCRE_LIBS=$pkg_cv_PCRE_LIBS
-@@ -48510,6 +48516,7 @@ if test -n "$LIBVIRT_CFLAGS"; then
+@@ -48547,6 +48553,7 @@ if test -n "$LIBVIRT_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBVIRT_CFLAGS=`$PKG_CONFIG --cflags "libvirt" 2>/dev/null`
@@ -2368,7 +2346,7 @@ index a5bee8e..2721d26 100755
  else
    pkg_failed=yes
  fi
-@@ -48526,6 +48533,7 @@ if test -n "$LIBVIRT_LIBS"; then
+@@ -48563,6 +48570,7 @@ if test -n "$LIBVIRT_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBVIRT_LIBS=`$PKG_CONFIG --libs "libvirt" 2>/dev/null`
@@ -2376,7 +2354,7 @@ index a5bee8e..2721d26 100755
  else
    pkg_failed=yes
  fi
-@@ -48545,9 +48553,9 @@ else
+@@ -48582,9 +48590,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2388,7 +2366,7 @@ index a5bee8e..2721d26 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBVIRT_PKG_ERRORS" >&5
-@@ -48595,6 +48603,7 @@ if test -n "$LIBXML2_CFLAGS"; then
+@@ -48632,6 +48640,7 @@ if test -n "$LIBXML2_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBXML2_CFLAGS=`$PKG_CONFIG --cflags "libxml-2.0" 2>/dev/null`
@@ -2396,7 +2374,7 @@ index a5bee8e..2721d26 100755
  else
    pkg_failed=yes
  fi
-@@ -48611,6 +48620,7 @@ if test -n "$LIBXML2_LIBS"; then
+@@ -48648,6 +48657,7 @@ if test -n "$LIBXML2_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBXML2_LIBS=`$PKG_CONFIG --libs "libxml-2.0" 2>/dev/null`
@@ -2404,7 +2382,7 @@ index a5bee8e..2721d26 100755
  else
    pkg_failed=yes
  fi
-@@ -48630,9 +48640,9 @@ else
+@@ -48667,9 +48677,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2416,7 +2394,7 @@ index a5bee8e..2721d26 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBXML2_PKG_ERRORS" >&5
-@@ -48680,6 +48690,7 @@ if test -n "$LIBCONFIG_CFLAGS"; then
+@@ -48717,6 +48727,7 @@ if test -n "$LIBCONFIG_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBCONFIG_CFLAGS=`$PKG_CONFIG --cflags "libconfig" 2>/dev/null`
@@ -2424,7 +2402,7 @@ index a5bee8e..2721d26 100755
  else
    pkg_failed=yes
  fi
-@@ -48696,6 +48707,7 @@ if test -n "$LIBCONFIG_LIBS"; then
+@@ -48733,6 +48744,7 @@ if test -n "$LIBCONFIG_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBCONFIG_LIBS=`$PKG_CONFIG --libs "libconfig" 2>/dev/null`
@@ -2432,7 +2410,7 @@ index a5bee8e..2721d26 100755
  else
    pkg_failed=yes
  fi
-@@ -48715,9 +48727,9 @@ else
+@@ -48752,9 +48764,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2444,7 +2422,7 @@ index a5bee8e..2721d26 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBCONFIG_PKG_ERRORS" >&5
-@@ -48765,6 +48777,7 @@ if test -n "$HIVEX_CFLAGS"; then
+@@ -48802,6 +48814,7 @@ if test -n "$HIVEX_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_HIVEX_CFLAGS=`$PKG_CONFIG --cflags "hivex" 2>/dev/null`
@@ -2452,7 +2430,7 @@ index a5bee8e..2721d26 100755
  else
    pkg_failed=yes
  fi
-@@ -48781,6 +48794,7 @@ if test -n "$HIVEX_LIBS"; then
+@@ -48818,6 +48831,7 @@ if test -n "$HIVEX_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_HIVEX_LIBS=`$PKG_CONFIG --libs "hivex" 2>/dev/null`
@@ -2460,7 +2438,7 @@ index a5bee8e..2721d26 100755
  else
    pkg_failed=yes
  fi
-@@ -48800,9 +48814,9 @@ else
+@@ -48837,9 +48851,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2472,7 +2450,7 @@ index a5bee8e..2721d26 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$HIVEX_PKG_ERRORS" >&5
-@@ -48858,6 +48872,7 @@ if test -n "$FUSE_CFLAGS"; then
+@@ -48895,6 +48909,7 @@ if test -n "$FUSE_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_FUSE_CFLAGS=`$PKG_CONFIG --cflags "fuse" 2>/dev/null`
@@ -2480,7 +2458,7 @@ index a5bee8e..2721d26 100755
  else
    pkg_failed=yes
  fi
-@@ -48874,6 +48889,7 @@ if test -n "$FUSE_LIBS"; then
+@@ -48911,6 +48926,7 @@ if test -n "$FUSE_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_FUSE_LIBS=`$PKG_CONFIG --libs "fuse" 2>/dev/null`
@@ -2488,7 +2466,7 @@ index a5bee8e..2721d26 100755
  else
    pkg_failed=yes
  fi
-@@ -48893,9 +48909,9 @@ else
+@@ -48930,9 +48946,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2500,7 +2478,7 @@ index a5bee8e..2721d26 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$FUSE_PKG_ERRORS" >&5
-@@ -51343,6 +51359,7 @@ if test -n "$GOBJECT_CFLAGS"; then
+@@ -51380,6 +51396,7 @@ if test -n "$GOBJECT_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_GOBJECT_CFLAGS=`$PKG_CONFIG --cflags "gobject-2.0 >= 2.26.0" 2>/dev/null`
@@ -2508,7 +2486,7 @@ index a5bee8e..2721d26 100755
  else
    pkg_failed=yes
  fi
-@@ -51359,6 +51376,7 @@ if test -n "$GOBJECT_LIBS"; then
+@@ -51396,6 +51413,7 @@ if test -n "$GOBJECT_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_GOBJECT_LIBS=`$PKG_CONFIG --libs "gobject-2.0 >= 2.26.0" 2>/dev/null`
@@ -2516,7 +2494,7 @@ index a5bee8e..2721d26 100755
  else
    pkg_failed=yes
  fi
-@@ -51378,9 +51396,9 @@ else
+@@ -51415,9 +51433,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2528,7 +2506,7 @@ index a5bee8e..2721d26 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$GOBJECT_PKG_ERRORS" >&5
-@@ -51580,7 +51598,7 @@ ac_config_files="$ac_config_files podwrapper.sh"
+@@ -51617,7 +51635,7 @@ ac_config_files="$ac_config_files podwrapper.sh"
  
  ac_config_files="$ac_config_files run"
  
@@ -2537,7 +2515,7 @@ index a5bee8e..2721d26 100755
  
  cat >confcache <<\_ACEOF
  # This file is a shell script that caches the results of configure
-@@ -52804,7 +52822,6 @@ do
+@@ -52845,7 +52863,6 @@ do
      "clone/Makefile") CONFIG_FILES="$CONFIG_FILES clone/Makefile" ;;
      "csharp/Makefile") CONFIG_FILES="$CONFIG_FILES csharp/Makefile" ;;
      "daemon/Makefile") CONFIG_FILES="$CONFIG_FILES daemon/Makefile" ;;
@@ -8317,7 +8295,7 @@ index 491c207..249af64 100644
  
  clean-generic:
 diff --git a/resize/Makefile.in b/resize/Makefile.in
-index 42855b7..bcbc794 100644
+index 5a6bb0a..bcbc794 100644
 --- a/resize/Makefile.in
 +++ b/resize/Makefile.in
 @@ -1,9 +1,9 @@
@@ -8346,15 +8324,6 @@ index 42855b7..bcbc794 100644
  am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
  SCRIPTS = $(bin_SCRIPTS)
  AM_V_GEN = $(am__v_GEN_$(V))
-@@ -1266,7 +1272,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize test.img \
- 
- # Note this list must be in dependency order.
- @HAVE_OCAML_TRUE@OBJECTS = \
--@HAVE_OCAML_TRUE@	../fish/guestfish-progress.o \
-+@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-progress.o \
- @HAVE_OCAML_TRUE@	progress_c.o \
- @HAVE_OCAML_TRUE@	utils.cmx \
- @HAVE_OCAML_TRUE@	progress.cmx \
 @@ -1362,9 +1368,7 @@ uninstall-binSCRIPTS:
  	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
  	files=`for p in $$list; do echo "$$p"; done | \
@@ -8566,7 +8535,7 @@ index 27e1e54..0d8fd56 100644
  
  clean-generic:
 diff --git a/sparsify/Makefile.in b/sparsify/Makefile.in
-index 8477c0a..b2f8ae3 100644
+index ecbbd3e..b2f8ae3 100644
 --- a/sparsify/Makefile.in
 +++ b/sparsify/Makefile.in
 @@ -1,9 +1,9 @@
@@ -8595,24 +8564,6 @@ index 8477c0a..b2f8ae3 100644
  am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
  SCRIPTS = $(bin_SCRIPTS)
  AM_V_GEN = $(am__v_GEN_$(V))
-@@ -1264,7 +1270,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify test.img \
- 
- # Note this list must be in dependency order.
- @HAVE_OCAML_TRUE@OBJECTS = \
--@HAVE_OCAML_TRUE@	../fish/guestfish-progress.o \
-+@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-progress.o \
- @HAVE_OCAML_TRUE@	progress_c.o \
- @HAVE_OCAML_TRUE@	utils.cmx \
- @HAVE_OCAML_TRUE@	progress.cmx \
-@@ -1275,7 +1281,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify test.img \
- # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
- # option to be passed to gcc, so we don't try linking against an
- # installed copy of libguestfs.
--@HAVE_OCAML_TRUE@OCAMLPACKAGES = -package unix -I $(top_builddir)/src/.libs -I ../ocaml
-+@HAVE_OCAML_TRUE@OCAMLPACKAGES = -package unix -I $(top_builddir)/src/.libs -I $(top_builddir)/ocaml
- @HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
- @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
- 
 @@ -1359,9 +1365,7 @@ uninstall-binSCRIPTS:
  	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
  	files=`for p in $$list; do echo "$$p"; done | \
