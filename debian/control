@@ -291,7 +291,7 @@ Description: guest disk image management system - GObject development headers
 Package: gir1.2-guestfs-1.0
 Section: introspection
 Architecture: i386 amd64
-Depends: libguestfs-gobject-1.0-0 (= ${binary:Version}), ${misc:Depends}
+Depends: libguestfs-gobject-1.0-0 (= ${binary:Version}), ${gir:Depends}, ${misc:Depends}
 Conflicts: libguestfs0 (<< 1:1.14.9-1~)
 Description: guest disk image management system - GObject introspection files
  The libguestfs library allows accessing and modifying guest disk
