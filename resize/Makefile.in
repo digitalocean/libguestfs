@@ -1266,7 +1266,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize test.img \
 
 # Note this list must be in dependency order.
 @HAVE_OCAML_TRUE@OBJECTS = \
-@HAVE_OCAML_TRUE@	../fish/guestfish-progress.o \
+@HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-progress.o \
 @HAVE_OCAML_TRUE@	progress_c.o \
 @HAVE_OCAML_TRUE@	utils.cmx \
 @HAVE_OCAML_TRUE@	progress.cmx \

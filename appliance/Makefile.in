@@ -69,6 +69,7 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/subdir-rules.mk
+@VALGRIND_DAEMON_TRUE@am__append_1 = -DVALGRIND_DAEMON=1
 subdir = appliance
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -1252,6 +1253,7 @@ superminfs_DATA = \
 	supermin.d/init.img \
 	supermin.d/hostfiles
 
+PACKAGELIST_CPP_FLAGS = -D$(DISTRO)=1 $(am__append_1)
 
 # Make clean.
 CLEANFILES = packagelist excludelist
@@ -1518,12 +1520,12 @@ make.sh: make.sh.in
 	mv $@-t $@
 
 packagelist: packagelist.in
-	cpp -undef -D$(DISTRO)=1 < $< | \
+	cpp -undef $(PACKAGELIST_CPP_FLAGS) < $< | \
 	grep -v '^[[:space:]]*$$' | grep -v '^#' > $@-t
 	mv $@-t $@
 
 excludelist: excludelist.in
-	cpp -undef -D$(DISTRO)=1 < $< | \
+	cpp -undef $(PACKAGELIST_CPP_FLAGS) < $< | \
 	grep -v '^[[:space:]]*$$' | grep -v '^#' > $@-t
 	mv $@-t $@
 

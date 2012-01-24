@@ -263,6 +263,7 @@ send_error (int errnum, const char *msg)
 
   xdrmem_create (&xdr, buf, sizeof buf, XDR_ENCODE);
 
+  memset (&hdr, 0, sizeof hdr);
   hdr.prog = GUESTFS_PROGRAM;
   hdr.vers = GUESTFS_PROTOCOL_VERSION;
   hdr.direction = GUESTFS_DIRECTION_REPLY;
@@ -311,10 +312,11 @@ reply (xdrproc_t xdrp, char *ret)
   char buf[GUESTFS_MESSAGE_MAX];
   char lenbuf[4];
   struct guestfs_message_header hdr;
-  unsigned len;
+  uint32_t len;
 
   xdrmem_create (&xdr, buf, sizeof buf, XDR_ENCODE);
 
+  memset (&hdr, 0, sizeof hdr);
   hdr.prog = GUESTFS_PROGRAM;
   hdr.vers = GUESTFS_PROTOCOL_VERSION;
   hdr.direction = GUESTFS_DIRECTION_REPLY;
@@ -350,7 +352,7 @@ reply (xdrproc_t xdrp, char *ret)
     fprintf (stderr, "guestfsd: xwrite failed\n");
     exit (EXIT_FAILURE);
   }
-  if (xwrite (sock, buf, len) == -1) {
+  if (xwrite (sock, buf, (size_t) len) == -1) {
     fprintf (stderr, "guestfsd: xwrite failed\n");
     exit (EXIT_FAILURE);
   }

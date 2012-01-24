@@ -203,6 +203,8 @@ main (int argc, char *argv[])
       printf ("could not read linux command line\n");
   }
 
+  free (cmdline);
+
 #ifndef WIN32
   /* Make sure SIGPIPE doesn't kill us. */
   struct sigaction sa;
@@ -375,7 +377,7 @@ sysroot_path (const char *path)
 int
 xwrite (int sock, const void *v_buf, size_t len)
 {
-  int r;
+  ssize_t r;
   const char *buf = v_buf;
 
   while (len > 0) {

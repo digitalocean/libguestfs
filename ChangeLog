@@ -1,3 +1,80 @@
+2012-01-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Fix use-after-free in case-insensitive-path (found by valgrind).
+	This commit tidies up the code by splitting out the path
+	element-searching code into a separate function.
+
+	Valgrind found that 'closedir' frees the 'struct dirent *', which
+	wasn't immediately obvious.  So now we do the 'closedir' after all
+	operations which touch 'd->d_name'.
+	(cherry picked from commit a05ddcd2a719f97ba036e9d6ca4e6491ed8b1fd0)
+
+2012-01-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Fix leaking error message (found by valgrind). (cherry picked from commit 9700708a19a46a61ffe53c6e648206336781477e)
+
+	daemon: Close inotify handle on exit. (cherry picked from commit 86f64c37b914645afb345f96af13ad843ec641b1)
+
+	daemon: Close augeas handle on exit. (cherry picked from commit 94a7fb9fc5d04615f23f94c34eb90c35d20ba117)
+
+	daemon: Fix leak of strings in md-detail (found by valgrind). (cherry picked from commit ff2e685828ce6160de34756696069b80e35472e8)
+
+	daemon: md: Whitespace changes, and use size_t for i instead of pointer.
+	This is just a code clean-up with no functional change.
+	(cherry picked from commit 4c2101362edf5f2df5d018c3674b423de2a3538a)
+
+	daemon: Fix leak of strings in blkid (found by valgrind). (cherry picked from commit aa978b75ae1df0d3111953114fafe0854c3f222e)
+
+	daemon: blkid: Whitespace changes, and use size_t for i instead of pointer.
+	This is just a code clean-up with no functional change.
+	(cherry picked from commit 43a6974cb35759d4772f610f3c92b0d31f0503ac)
+
+	daemon: Return value from write syscall is ssize_t, not int. (cherry picked from commit f86c3a45ae19f5bb558ab9ead255ecaf004b24b0)
+
+	daemon: Don't leak 'cmdline' (found by valgrind). (cherry picked from commit 9f8f1fd8560f2c3e7b625cf6d65a052cd061fd2e)
+
+	daemon: Length of message is a 32 bit unsigned quantity. (cherry picked from commit f65f653ab1541400afe2f796ab1b20cd721e769d)
+
+	daemon: Fix use of uninitialized stack data (found by valgrind).
+	This uninitialized data was also sent over the protocol,
+	potentially being a serious information leak.
+	(cherry picked from commit 9cf7ecbe4fea5162b86e2c78c1a40cca737bc1da)
+
+	daemon: Fix memory leak in 'initrd-cat' (found by valgrind). (cherry picked from commit 84242a8d0bf9c37e700cd8a3436607dbc7908f1e)
+
+2012-01-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	Enable running the daemon under valgrind.
+	This commit allows you to run the daemon under valgrind.  You have to
+	enable it at configure time:
+
+	  ./configure --enable-valgrind-daemon
+
+	This should *not* be done for production builds.
+
+	When this feature is enabled, valgrind is added to the appliance and
+	the daemon is run under valgrind.  Log messages from valgrind are
+	passed back over a virtio-serial channel into a file called
+	'valgrind.log.$PID' in the top build directory.
+
+	Running 'make check', 'make extra-tests' etc causes many
+	valgrind.log.* files to be created which must be examined by hand.
+	(cherry picked from commit d08806adfc5d111b4b6c761540ff508d3f25b66e)
+
+2012-01-24  Hilko Bengen  <bengen@hilluzination.de>
+
+	resize, sparsify: find progress mini-library in out-of-tree builds (2) (cherry picked from commit b7122eaa58ccd153a8c39bc3b6f890755c5df089)
+
+2012-01-24  Hilko Bengen  <bengen@hilluzination.de>
+
+	Fix --{en,dis}able-install-daemon
+	This fixes...
+
+	    configure: error: conditional "INSTALL_DAEMON" was never defined.
+
+	... when specifying --disable-daemon
+	(cherry picked from commit 22224254fa4676735985818d2ff3c8feafe4457c)
+
 2012-01-23  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.0.
