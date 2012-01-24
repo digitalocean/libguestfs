@@ -128,6 +128,11 @@ override_dh_python3:
 override_dh_python2:
 	dh_python2 -p python-libguestfs -V 2.6-
 
+# Workaround for Lintian warning
+# "{pre,post}inst-has-useless-call-to-ldconfig"
+override_dh_makeshlibs:
+	dh_makeshlibs -X/usr/lib/jni
+
 %:
 	dh --without=python-support \
 	   --with=autotools-dev,ocaml,python2,python3,bash-completion,ruby,gir \
