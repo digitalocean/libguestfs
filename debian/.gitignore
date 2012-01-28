@@ -14,10 +14,13 @@
 /libguestfs-perl
 /libguestfs-java
 /erlang-guestfs
-/guestfs-ruby
+/ruby-guestfs
 /libguestfs-tools
 /libguestfs0-dbg
 /libguestfs0
 /libguestfs-ocaml-dev
 /libguestfs-ocaml
 /python-guestfs
+/gir1.2-guestfs-1.0
+/libguestfs-gobject-1.0-0
+/libguestfs-gobject-dev
