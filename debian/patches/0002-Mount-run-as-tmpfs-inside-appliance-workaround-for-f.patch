@@ -8,7 +8,7 @@ Subject: Mount /run as tmpfs inside appliance (workaround for febootstrap's
  1 files changed, 3 insertions(+), 0 deletions(-)
 
 diff --git a/appliance/init b/appliance/init
-index d207b8e..e60fa06 100755
+index 77d0281..a29353d 100755
 --- a/appliance/init
 +++ b/appliance/init
 @@ -16,6 +16,9 @@ rm -f /proc; mkdir /proc
@@ -20,5 +20,5 @@ index d207b8e..e60fa06 100755
 +mount -t tmpfs -o "nosuid,size=20%,mode=0755" tmpfs /run
  mkdir -p /run/lock
  
- if [ ! -L /etc/init.d/udev -a -x /etc/init.d/udev ]; then
+ # devtmpfs is required since udev 176
 -- 

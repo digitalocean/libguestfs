@@ -62,7 +62,7 @@ Subject: autoreconf
  56 files changed, 2330 insertions(+), 2339 deletions(-)
 
 diff --git a/Makefile.in b/Makefile.in
-index 0167712..b536ee2 100644
+index 72a0c2d..55c4562 100644
 --- a/Makefile.in
 +++ b/Makefile.in
 @@ -1,9 +1,9 @@
@@ -86,7 +86,7 @@ index 0167712..b536ee2 100644
  	$(top_srcdir)/subdir-rules.mk ABOUT-NLS AUTHORS COPYING \
  	COPYING.LIB ChangeLog TODO build-aux/compile \
  	build-aux/config.guess build-aux/config.rpath \
-@@ -230,7 +229,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
+@@ -231,7 +230,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
   configure.lineno config.status.lineno
  mkinstalldirs = $(install_sh) -d
  CONFIG_HEADER = config.h
@@ -95,7 +95,7 @@ index 0167712..b536ee2 100644
  CONFIG_CLEAN_VPATH_FILES =
  AM_V_GEN = $(am__v_GEN_$(V))
  am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
-@@ -268,6 +267,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -269,6 +268,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -108,7 +108,7 @@ index 0167712..b536ee2 100644
  am__installdirs = "$(DESTDIR)$(pkgconfigdir)"
  DATA = $(pkgconfig_DATA)
  RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
-@@ -320,6 +325,8 @@ am__relativize = \
+@@ -321,6 +326,8 @@ am__relativize = \
  DIST_ARCHIVES = $(distdir).tar.gz
  GZIP_ENV = --best
  distuninstallcheck_listfiles = find . -type f -print
@@ -117,7 +117,7 @@ index 0167712..b536ee2 100644
  distcleancheck_listfiles = find . -type f -print
  pkglibexecdir = @pkglibexecdir@
  ACLOCAL = @ACLOCAL@
-@@ -1473,7 +1480,7 @@ all: config.h
+@@ -1479,7 +1486,7 @@ all: config.h
  	$(MAKE) $(AM_MAKEFLAGS) all-recursive
  
  .SUFFIXES:
@@ -126,7 +126,7 @@ index 0167712..b536ee2 100644
  	@:
  $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(am__configure_deps)
  	@for dep in $?; do \
-@@ -1509,10 +1516,8 @@ $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+@@ -1515,10 +1522,8 @@ $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
  $(am__aclocal_m4_deps):
  
  config.h: stamp-h1
@@ -139,7 +139,7 @@ index 0167712..b536ee2 100644
  
  stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
  	@rm -f stamp-h1
-@@ -1528,8 +1533,6 @@ podwrapper.sh: $(top_builddir)/config.status $(srcdir)/podwrapper.sh.in
+@@ -1534,8 +1539,6 @@ podwrapper.sh: $(top_builddir)/config.status $(srcdir)/podwrapper.sh.in
  	cd $(top_builddir) && $(SHELL) ./config.status $@
  run: $(top_builddir)/config.status $(srcdir)/run.in
  	cd $(top_builddir) && $(SHELL) ./config.status $@
@@ -148,7 +148,7 @@ index 0167712..b536ee2 100644
  libguestfs.pc: $(top_builddir)/config.status $(srcdir)/libguestfs.pc.in
  	cd $(top_builddir) && $(SHELL) ./config.status $@
  
-@@ -1558,9 +1561,7 @@ uninstall-pkgconfigDATA:
+@@ -1564,9 +1567,7 @@ uninstall-pkgconfigDATA:
  	@$(NORMAL_UNINSTALL)
  	@list='$(pkgconfig_DATA)'; test -n "$(pkgconfigdir)" || list=; \
  	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
@@ -159,7 +159,7 @@ index 0167712..b536ee2 100644
  
  # This directory's subdirectories are mostly independent; you can cd
  # into them and run `make' without going through this Makefile.
-@@ -1772,7 +1773,7 @@ dist-gzip: distdir
+@@ -1778,7 +1779,7 @@ dist-gzip: distdir
  	$(am__remove_distdir)
  
  dist-bzip2: distdir
@@ -168,7 +168,7 @@ index 0167712..b536ee2 100644
  	$(am__remove_distdir)
  
  dist-lzma: distdir
-@@ -1780,7 +1781,7 @@ dist-lzma: distdir
+@@ -1786,7 +1787,7 @@ dist-lzma: distdir
  	$(am__remove_distdir)
  
  dist-xz: distdir
@@ -177,7 +177,7 @@ index 0167712..b536ee2 100644
  	$(am__remove_distdir)
  
  dist-tarZ: distdir
-@@ -1830,6 +1831,7 @@ distcheck: dist
+@@ -1836,6 +1837,7 @@ distcheck: dist
  	  && am__cwd=`pwd` \
  	  && $(am__cd) $(distdir)/_build \
  	  && ../configure --srcdir=.. --prefix="$$dc_install_base" \
@@ -185,7 +185,7 @@ index 0167712..b536ee2 100644
  	    $(DISTCHECK_CONFIGURE_FLAGS) \
  	  && $(MAKE) $(AM_MAKEFLAGS) \
  	  && $(MAKE) $(AM_MAKEFLAGS) dvi \
-@@ -1858,8 +1860,16 @@ distcheck: dist
+@@ -1864,8 +1866,16 @@ distcheck: dist
  	  list='$(DIST_ARCHIVES)'; for i in $$list; do echo $$i; done) | \
  	  sed -e 1h -e 1s/./=/g -e 1p -e 1x -e '$$p' -e '$$x'
  distuninstallcheck:
@@ -204,7 +204,7 @@ index 0167712..b536ee2 100644
  	   || { echo "ERROR: files left after uninstall:" ; \
  	        if test -n "$(DESTDIR)"; then \
  	          echo "  (check DESTDIR support)"; \
-@@ -1893,10 +1903,15 @@ install-am: all-am
+@@ -1899,10 +1909,15 @@ install-am: all-am
  
  installcheck: installcheck-recursive
  install-strip:
@@ -225,7 +225,7 @@ index 0167712..b536ee2 100644
  
  clean-generic:
 diff --git a/aclocal.m4 b/aclocal.m4
-index a77cebf..820d60d 100644
+index 0a3e2df..d065353 100644
 --- a/aclocal.m4
 +++ b/aclocal.m4
 @@ -1,7 +1,8 @@
@@ -497,7 +497,7 @@ index a77cebf..820d60d 100644
  AC_DEFUN([AM_SUBST_NOTMAKE], [_AM_SUBST_NOTMAKE($@)])
  
 diff --git a/align/Makefile.in b/align/Makefile.in
-index 99c5490..3d97258 100644
+index a97e79a..2510f6c 100644
 --- a/align/Makefile.in
 +++ b/align/Makefile.in
 @@ -1,9 +1,9 @@
@@ -513,7 +513,7 @@ index 99c5490..3d97258 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -262,6 +262,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -263,6 +263,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -526,7 +526,7 @@ index 99c5490..3d97258 100644
  man1dir = $(mandir)/man1
  NROFF = nroff
  MANS = $(man_MANS)
-@@ -1418,122 +1424,107 @@ distclean-compile:
+@@ -1423,122 +1429,107 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -679,7 +679,7 @@ index 99c5490..3d97258 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1575,9 +1566,7 @@ uninstall-man1:
+@@ -1580,9 +1571,7 @@ uninstall-man1:
  	  sed -n '/\.1[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -690,7 +690,7 @@ index 99c5490..3d97258 100644
  
  ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
  	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-@@ -1691,10 +1680,15 @@ install-am: all-am
+@@ -1696,10 +1685,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -711,7 +711,7 @@ index 99c5490..3d97258 100644
  
  clean-generic:
 diff --git a/appliance/Makefile.in b/appliance/Makefile.in
-index 8dc90f1..09ccf0b 100644
+index 5e23a0b..f2a5aae 100644
 --- a/appliance/Makefile.in
 +++ b/appliance/Makefile.in
 @@ -1,9 +1,9 @@
@@ -727,7 +727,7 @@ index 8dc90f1..09ccf0b 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -220,6 +220,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -221,6 +221,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -740,7 +740,7 @@ index 8dc90f1..09ccf0b 100644
  am__installdirs = "$(DESTDIR)$(fsdir)" "$(DESTDIR)$(superminfsdir)"
  DATA = $(fs_DATA) $(superminfs_DATA)
  DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-@@ -1313,9 +1319,7 @@ uninstall-fsDATA:
+@@ -1318,9 +1324,7 @@ uninstall-fsDATA:
  	@$(NORMAL_UNINSTALL)
  	@list='$(fs_DATA)'; test -n "$(fsdir)" || list=; \
  	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
@@ -751,7 +751,7 @@ index 8dc90f1..09ccf0b 100644
  install-superminfsDATA: $(superminfs_DATA)
  	@$(NORMAL_INSTALL)
  	test -z "$(superminfsdir)" || $(MKDIR_P) "$(DESTDIR)$(superminfsdir)"
-@@ -1333,9 +1337,7 @@ uninstall-superminfsDATA:
+@@ -1338,9 +1342,7 @@ uninstall-superminfsDATA:
  	@$(NORMAL_UNINSTALL)
  	@list='$(superminfs_DATA)'; test -n "$(superminfsdir)" || list=; \
  	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
@@ -762,7 +762,7 @@ index 8dc90f1..09ccf0b 100644
  tags: TAGS
  TAGS:
  
-@@ -1390,10 +1392,15 @@ install-am: all-am
+@@ -1395,10 +1397,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -1652,7 +1652,7 @@ index 2a55a50..30fdca8 100755
  		;;
  	*-wec)
 diff --git a/cat/Makefile.in b/cat/Makefile.in
-index ce612f7..8703406 100644
+index 3ad6cf3..915776b 100644
 --- a/cat/Makefile.in
 +++ b/cat/Makefile.in
 @@ -1,9 +1,9 @@
@@ -1668,7 +1668,7 @@ index ce612f7..8703406 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -284,6 +284,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -285,6 +285,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -1681,7 +1681,7 @@ index ce612f7..8703406 100644
  man1dir = $(mandir)/man1
  NROFF = nroff
  MANS = $(man_MANS)
-@@ -1510,314 +1516,275 @@ distclean-compile:
+@@ -1515,314 +1521,275 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -2074,7 +2074,7 @@ index ce612f7..8703406 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1859,9 +1826,7 @@ uninstall-man1:
+@@ -1864,9 +1831,7 @@ uninstall-man1:
  	  sed -n '/\.1[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -2085,7 +2085,7 @@ index ce612f7..8703406 100644
  
  ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
  	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-@@ -1996,14 +1961,15 @@ check-TESTS: $(TESTS)
+@@ -2001,14 +1966,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -2107,7 +2107,7 @@ index ce612f7..8703406 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -2068,10 +2034,15 @@ install-am: all-am
+@@ -2073,10 +2039,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -2128,7 +2128,7 @@ index ce612f7..8703406 100644
  
  clean-generic:
 diff --git a/clone/Makefile.in b/clone/Makefile.in
-index 2ef5c65..76cb86b 100644
+index 9db6f6a..ded5c0c 100644
 --- a/clone/Makefile.in
 +++ b/clone/Makefile.in
 @@ -1,9 +1,9 @@
@@ -2144,7 +2144,7 @@ index 2ef5c65..76cb86b 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -212,6 +212,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -213,6 +213,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -2157,7 +2157,7 @@ index 2ef5c65..76cb86b 100644
  am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
  SCRIPTS = $(bin_SCRIPTS)
  AM_V_GEN = $(am__v_GEN_$(V))
-@@ -1328,9 +1334,7 @@ uninstall-binSCRIPTS:
+@@ -1333,9 +1339,7 @@ uninstall-binSCRIPTS:
  	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
  	files=`for p in $$list; do echo "$$p"; done | \
  	       sed -e 's,.*/,,;$(transform)'`; \
@@ -2168,7 +2168,7 @@ index 2ef5c65..76cb86b 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1372,9 +1376,7 @@ uninstall-man1:
+@@ -1377,9 +1381,7 @@ uninstall-man1:
  	  sed -n '/\.1[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -2179,7 +2179,7 @@ index 2ef5c65..76cb86b 100644
  tags: TAGS
  TAGS:
  
-@@ -1463,14 +1465,15 @@ check-TESTS: $(TESTS)
+@@ -1468,14 +1470,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -2201,7 +2201,7 @@ index 2ef5c65..76cb86b 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1535,10 +1538,15 @@ install-am: all-am
+@@ -1540,10 +1543,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -2222,10 +2222,10 @@ index 2ef5c65..76cb86b 100644
  
  clean-generic:
 diff --git a/configure b/configure
-index ddaf69b..96554ac 100755
+index 023b878..2c49707 100755
 --- a/configure
 +++ b/configure
-@@ -1629,6 +1629,7 @@ CPP
+@@ -1633,6 +1633,7 @@ CPP
  am__fastdepCC_FALSE
  am__fastdepCC_TRUE
  CCDEPMODE
@@ -2233,7 +2233,7 @@ index ddaf69b..96554ac 100755
  AMDEPBACKSLASH
  AMDEP_FALSE
  AMDEP_TRUE
-@@ -4381,6 +4382,7 @@ fi
+@@ -4385,6 +4386,7 @@ fi
  if test "x$enable_dependency_tracking" != xno; then
    am_depcomp="$ac_aux_dir/depcomp"
    AMDEPBACKSLASH='\'
@@ -2241,7 +2241,7 @@ index ddaf69b..96554ac 100755
  fi
   if test "x$enable_dependency_tracking" != xno; then
    AMDEP_TRUE=
-@@ -5194,6 +5196,7 @@ else
+@@ -5198,6 +5200,7 @@ else
    # instance it was reported that on HP-UX the gcc test will end up
    # making a dummy file named `D' -- because `-MD' means `put the output
    # in D'.
@@ -2249,7 +2249,7 @@ index ddaf69b..96554ac 100755
    mkdir conftest.dir
    # Copy depcomp to subdir because otherwise we won't find it if we're
    # using a relative directory.
-@@ -5253,7 +5256,7 @@ else
+@@ -5257,7 +5260,7 @@ else
  	break
        fi
        ;;
@@ -2258,7 +2258,7 @@ index ddaf69b..96554ac 100755
        # This compiler won't grok `-c -o', but also, the minuso test has
        # not run yet.  These depmodes are late enough in the game, and
        # so weak that their functioning should not be impacted.
-@@ -45563,6 +45566,7 @@ fi
+@@ -45877,6 +45880,7 @@ fi
  
  
  
@@ -2266,7 +2266,7 @@ index ddaf69b..96554ac 100755
  if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
  	if test -n "$ac_tool_prefix"; then
    # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
-@@ -45691,6 +45695,7 @@ if test -n "$AUGEAS_CFLAGS"; then
+@@ -46005,6 +46009,7 @@ if test -n "$AUGEAS_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_AUGEAS_CFLAGS=`$PKG_CONFIG --cflags "augeas" 2>/dev/null`
@@ -2274,7 +2274,7 @@ index ddaf69b..96554ac 100755
  else
    pkg_failed=yes
  fi
-@@ -45707,6 +45712,7 @@ if test -n "$AUGEAS_LIBS"; then
+@@ -46021,6 +46026,7 @@ if test -n "$AUGEAS_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_AUGEAS_LIBS=`$PKG_CONFIG --libs "augeas" 2>/dev/null`
@@ -2282,7 +2282,7 @@ index ddaf69b..96554ac 100755
  else
    pkg_failed=yes
  fi
-@@ -45726,9 +45732,9 @@ else
+@@ -46040,9 +46046,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2294,7 +2294,7 @@ index ddaf69b..96554ac 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$AUGEAS_PKG_ERRORS" >&5
-@@ -48400,6 +48406,7 @@ if test -n "$PCRE_CFLAGS"; then
+@@ -48714,6 +48720,7 @@ if test -n "$PCRE_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_PCRE_CFLAGS=`$PKG_CONFIG --cflags "libpcre" 2>/dev/null`
@@ -2302,7 +2302,7 @@ index ddaf69b..96554ac 100755
  else
    pkg_failed=yes
  fi
-@@ -48416,6 +48423,7 @@ if test -n "$PCRE_LIBS"; then
+@@ -48730,6 +48737,7 @@ if test -n "$PCRE_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_PCRE_LIBS=`$PKG_CONFIG --libs "libpcre" 2>/dev/null`
@@ -2310,7 +2310,7 @@ index ddaf69b..96554ac 100755
  else
    pkg_failed=yes
  fi
-@@ -48435,9 +48443,9 @@ else
+@@ -48749,9 +48757,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2322,7 +2322,7 @@ index ddaf69b..96554ac 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$PCRE_PKG_ERRORS" >&5
-@@ -48452,7 +48460,6 @@ installed software in a non-standard prefix.
+@@ -48766,7 +48774,6 @@ installed software in a non-standard prefix.
  Alternatively, you may set the environment variables PCRE_CFLAGS
  and PCRE_LIBS to avoid the need to call pkg-config.
  See the pkg-config man page for more details." "$LINENO" 5
@@ -2330,7 +2330,7 @@ index ddaf69b..96554ac 100755
  elif test $pkg_failed = untried; then
       	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
  $as_echo "no" >&6; }
-@@ -48468,7 +48475,6 @@ See the pkg-config man page for more details.
+@@ -48782,7 +48789,6 @@ See the pkg-config man page for more details.
  
  To get pkg-config, see <http://pkg-config.freedesktop.org/>.
  See \`config.log' for more details" "$LINENO" 5; }
@@ -2338,7 +2338,7 @@ index ddaf69b..96554ac 100755
  else
  	PCRE_CFLAGS=$pkg_cv_PCRE_CFLAGS
  	PCRE_LIBS=$pkg_cv_PCRE_LIBS
-@@ -48547,6 +48553,7 @@ if test -n "$LIBVIRT_CFLAGS"; then
+@@ -48861,6 +48867,7 @@ if test -n "$LIBVIRT_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBVIRT_CFLAGS=`$PKG_CONFIG --cflags "libvirt" 2>/dev/null`
@@ -2346,7 +2346,7 @@ index ddaf69b..96554ac 100755
  else
    pkg_failed=yes
  fi
-@@ -48563,6 +48570,7 @@ if test -n "$LIBVIRT_LIBS"; then
+@@ -48877,6 +48884,7 @@ if test -n "$LIBVIRT_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBVIRT_LIBS=`$PKG_CONFIG --libs "libvirt" 2>/dev/null`
@@ -2354,7 +2354,7 @@ index ddaf69b..96554ac 100755
  else
    pkg_failed=yes
  fi
-@@ -48582,9 +48590,9 @@ else
+@@ -48896,9 +48904,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2366,7 +2366,7 @@ index ddaf69b..96554ac 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBVIRT_PKG_ERRORS" >&5
-@@ -48632,6 +48640,7 @@ if test -n "$LIBXML2_CFLAGS"; then
+@@ -48946,6 +48954,7 @@ if test -n "$LIBXML2_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBXML2_CFLAGS=`$PKG_CONFIG --cflags "libxml-2.0" 2>/dev/null`
@@ -2374,7 +2374,7 @@ index ddaf69b..96554ac 100755
  else
    pkg_failed=yes
  fi
-@@ -48648,6 +48657,7 @@ if test -n "$LIBXML2_LIBS"; then
+@@ -48962,6 +48971,7 @@ if test -n "$LIBXML2_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBXML2_LIBS=`$PKG_CONFIG --libs "libxml-2.0" 2>/dev/null`
@@ -2382,7 +2382,7 @@ index ddaf69b..96554ac 100755
  else
    pkg_failed=yes
  fi
-@@ -48667,9 +48677,9 @@ else
+@@ -48981,9 +48991,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2394,7 +2394,7 @@ index ddaf69b..96554ac 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBXML2_PKG_ERRORS" >&5
-@@ -48717,6 +48727,7 @@ if test -n "$LIBCONFIG_CFLAGS"; then
+@@ -49031,6 +49041,7 @@ if test -n "$LIBCONFIG_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBCONFIG_CFLAGS=`$PKG_CONFIG --cflags "libconfig" 2>/dev/null`
@@ -2402,7 +2402,7 @@ index ddaf69b..96554ac 100755
  else
    pkg_failed=yes
  fi
-@@ -48733,6 +48744,7 @@ if test -n "$LIBCONFIG_LIBS"; then
+@@ -49047,6 +49058,7 @@ if test -n "$LIBCONFIG_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBCONFIG_LIBS=`$PKG_CONFIG --libs "libconfig" 2>/dev/null`
@@ -2410,7 +2410,7 @@ index ddaf69b..96554ac 100755
  else
    pkg_failed=yes
  fi
-@@ -48752,9 +48764,9 @@ else
+@@ -49066,9 +49078,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2422,7 +2422,7 @@ index ddaf69b..96554ac 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBCONFIG_PKG_ERRORS" >&5
-@@ -48802,6 +48814,7 @@ if test -n "$HIVEX_CFLAGS"; then
+@@ -49116,6 +49128,7 @@ if test -n "$HIVEX_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_HIVEX_CFLAGS=`$PKG_CONFIG --cflags "hivex" 2>/dev/null`
@@ -2430,7 +2430,7 @@ index ddaf69b..96554ac 100755
  else
    pkg_failed=yes
  fi
-@@ -48818,6 +48831,7 @@ if test -n "$HIVEX_LIBS"; then
+@@ -49132,6 +49145,7 @@ if test -n "$HIVEX_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_HIVEX_LIBS=`$PKG_CONFIG --libs "hivex" 2>/dev/null`
@@ -2438,7 +2438,7 @@ index ddaf69b..96554ac 100755
  else
    pkg_failed=yes
  fi
-@@ -48837,9 +48851,9 @@ else
+@@ -49151,9 +49165,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2450,7 +2450,7 @@ index ddaf69b..96554ac 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$HIVEX_PKG_ERRORS" >&5
-@@ -48895,6 +48909,7 @@ if test -n "$FUSE_CFLAGS"; then
+@@ -49209,6 +49223,7 @@ if test -n "$FUSE_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_FUSE_CFLAGS=`$PKG_CONFIG --cflags "fuse" 2>/dev/null`
@@ -2458,7 +2458,7 @@ index ddaf69b..96554ac 100755
  else
    pkg_failed=yes
  fi
-@@ -48911,6 +48926,7 @@ if test -n "$FUSE_LIBS"; then
+@@ -49225,6 +49240,7 @@ if test -n "$FUSE_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_FUSE_LIBS=`$PKG_CONFIG --libs "fuse" 2>/dev/null`
@@ -2466,7 +2466,7 @@ index ddaf69b..96554ac 100755
  else
    pkg_failed=yes
  fi
-@@ -48930,9 +48946,9 @@ else
+@@ -49244,9 +49260,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2478,7 +2478,7 @@ index ddaf69b..96554ac 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$FUSE_PKG_ERRORS" >&5
-@@ -51380,6 +51396,7 @@ if test -n "$GOBJECT_CFLAGS"; then
+@@ -51694,6 +51710,7 @@ if test -n "$GOBJECT_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_GOBJECT_CFLAGS=`$PKG_CONFIG --cflags "gobject-2.0 >= 2.26.0" 2>/dev/null`
@@ -2486,7 +2486,7 @@ index ddaf69b..96554ac 100755
  else
    pkg_failed=yes
  fi
-@@ -51396,6 +51413,7 @@ if test -n "$GOBJECT_LIBS"; then
+@@ -51710,6 +51727,7 @@ if test -n "$GOBJECT_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_GOBJECT_LIBS=`$PKG_CONFIG --libs "gobject-2.0 >= 2.26.0" 2>/dev/null`
@@ -2494,7 +2494,7 @@ index ddaf69b..96554ac 100755
  else
    pkg_failed=yes
  fi
-@@ -51415,9 +51433,9 @@ else
+@@ -51729,9 +51747,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2506,7 +2506,7 @@ index ddaf69b..96554ac 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$GOBJECT_PKG_ERRORS" >&5
-@@ -51617,7 +51635,7 @@ ac_config_files="$ac_config_files podwrapper.sh"
+@@ -51931,7 +51949,7 @@ ac_config_files="$ac_config_files podwrapper.sh"
  
  ac_config_files="$ac_config_files run"
  
@@ -2515,7 +2515,7 @@ index ddaf69b..96554ac 100755
  
  cat >confcache <<\_ACEOF
  # This file is a shell script that caches the results of configure
-@@ -52845,7 +52863,6 @@ do
+@@ -53159,7 +53177,6 @@ do
      "clone/Makefile") CONFIG_FILES="$CONFIG_FILES clone/Makefile" ;;
      "csharp/Makefile") CONFIG_FILES="$CONFIG_FILES csharp/Makefile" ;;
      "daemon/Makefile") CONFIG_FILES="$CONFIG_FILES daemon/Makefile" ;;
@@ -2524,7 +2524,7 @@ index ddaf69b..96554ac 100755
      "edit/Makefile") CONFIG_FILES="$CONFIG_FILES edit/Makefile" ;;
      "erlang/Makefile") CONFIG_FILES="$CONFIG_FILES erlang/Makefile" ;;
 diff --git a/csharp/Makefile.in b/csharp/Makefile.in
-index 73f6655..2b6c014 100644
+index df8de89..8a2fcf9 100644
 --- a/csharp/Makefile.in
 +++ b/csharp/Makefile.in
 @@ -1,9 +1,9 @@
@@ -2540,7 +2540,7 @@ index 73f6655..2b6c014 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -1309,10 +1309,15 @@ install-am: all-am
+@@ -1314,10 +1314,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -2561,7 +2561,7 @@ index 73f6655..2b6c014 100644
  
  clean-generic:
 diff --git a/daemon/Makefile.in b/daemon/Makefile.in
-index d2758ef..2c33242 100644
+index da1a902..86adc30 100644
 --- a/daemon/Makefile.in
 +++ b/daemon/Makefile.in
 @@ -1,9 +1,9 @@
@@ -2577,7 +2577,7 @@ index d2758ef..2c33242 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -1632,1306 +1632,1143 @@ distclean-compile:
+@@ -1637,1306 +1637,1143 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -4210,7 +4210,7 @@ index d2758ef..2c33242 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -3040,10 +2877,15 @@ install-am: all-am
+@@ -3045,10 +2882,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -4230,7 +4230,7 @@ index d2758ef..2c33242 100644
  mostlyclean-generic:
  
  clean-generic:
-@@ -3167,10 +3009,10 @@ $(top_builddir)/daemon/guestfsd: force
+@@ -3172,10 +3014,10 @@ $(top_builddir)/daemon/guestfsd: force
  appliance: force
  	$(MAKE) -C $(top_builddir)/appliance
  
@@ -4244,7 +4244,7 @@ index d2758ef..2c33242 100644
  	ln $< $@
  $(libsrcdir)/guestfs_protocol.c: force
 diff --git a/df/Makefile.in b/df/Makefile.in
-index 93297e0..4947654 100644
+index 789a6e1..cd051e1 100644
 --- a/df/Makefile.in
 +++ b/df/Makefile.in
 @@ -1,9 +1,9 @@
@@ -4260,7 +4260,7 @@ index 93297e0..4947654 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -260,6 +260,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -261,6 +261,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -4273,7 +4273,7 @@ index 93297e0..4947654 100644
  man1dir = $(mandir)/man1
  NROFF = nroff
  MANS = $(man_MANS)
-@@ -1435,170 +1441,149 @@ distclean-compile:
+@@ -1440,170 +1446,149 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -4486,7 +4486,7 @@ index 93297e0..4947654 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1640,9 +1625,7 @@ uninstall-man1:
+@@ -1645,9 +1630,7 @@ uninstall-man1:
  	  sed -n '/\.1[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -4497,7 +4497,7 @@ index 93297e0..4947654 100644
  
  ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
  	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-@@ -1777,14 +1760,15 @@ check-TESTS: $(TESTS)
+@@ -1782,14 +1765,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -4519,7 +4519,7 @@ index 93297e0..4947654 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1849,10 +1833,15 @@ install-am: all-am
+@@ -1854,10 +1838,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -4540,7 +4540,7 @@ index 93297e0..4947654 100644
  
  clean-generic:
 diff --git a/edit/Makefile.in b/edit/Makefile.in
-index 21c3647..2ff5ceb 100644
+index f874afc..16799e4 100644
 --- a/edit/Makefile.in
 +++ b/edit/Makefile.in
 @@ -1,9 +1,9 @@
@@ -4556,7 +4556,7 @@ index 21c3647..2ff5ceb 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -257,6 +257,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -258,6 +258,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -4569,7 +4569,7 @@ index 21c3647..2ff5ceb 100644
  man1dir = $(mandir)/man1
  NROFF = nroff
  MANS = $(man_MANS)
-@@ -1421,122 +1427,107 @@ distclean-compile:
+@@ -1426,122 +1432,107 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -4722,7 +4722,7 @@ index 21c3647..2ff5ceb 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1578,9 +1569,7 @@ uninstall-man1:
+@@ -1583,9 +1574,7 @@ uninstall-man1:
  	  sed -n '/\.1[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -4733,7 +4733,7 @@ index 21c3647..2ff5ceb 100644
  
  ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
  	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-@@ -1715,14 +1704,15 @@ check-TESTS: $(TESTS)
+@@ -1720,14 +1709,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -4755,7 +4755,7 @@ index 21c3647..2ff5ceb 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1787,10 +1777,15 @@ install-am: all-am
+@@ -1792,10 +1782,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -4776,7 +4776,7 @@ index 21c3647..2ff5ceb 100644
  
  clean-generic:
 diff --git a/erlang/Makefile.in b/erlang/Makefile.in
-index b3ab382..684d9f6 100644
+index 35bca91..3bd0868 100644
 --- a/erlang/Makefile.in
 +++ b/erlang/Makefile.in
 @@ -1,9 +1,9 @@
@@ -4792,7 +4792,7 @@ index b3ab382..684d9f6 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -258,6 +258,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -259,6 +259,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -4805,7 +4805,7 @@ index b3ab382..684d9f6 100644
  DATA = $(erlang_bin_DATA)
  ETAGS = etags
  CTAGS = ctags
-@@ -1394,58 +1400,51 @@ distclean-compile:
+@@ -1399,58 +1405,51 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -4878,7 +4878,7 @@ index b3ab382..684d9f6 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1469,9 +1468,7 @@ uninstall-erlang_binDATA:
+@@ -1474,9 +1473,7 @@ uninstall-erlang_binDATA:
  	@$(NORMAL_UNINSTALL)
  	@list='$(erlang_bin_DATA)'; test -n "$(erlang_bindir)" || list=; \
  	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
@@ -4889,7 +4889,7 @@ index b3ab382..684d9f6 100644
  
  ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
  	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-@@ -1572,10 +1569,15 @@ install-am: all-am
+@@ -1577,10 +1574,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -4910,7 +4910,7 @@ index b3ab382..684d9f6 100644
  
  clean-generic:
 diff --git a/erlang/examples/Makefile.in b/erlang/examples/Makefile.in
-index 1def806..c9203a3 100644
+index 3efbc43..41ad05f 100644
 --- a/erlang/examples/Makefile.in
 +++ b/erlang/examples/Makefile.in
 @@ -1,9 +1,9 @@
@@ -4926,7 +4926,7 @@ index 1def806..c9203a3 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -201,6 +201,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -202,6 +202,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -4939,7 +4939,7 @@ index 1def806..c9203a3 100644
  man3dir = $(mandir)/man3
  am__installdirs = "$(DESTDIR)$(man3dir)"
  NROFF = nroff
-@@ -1305,9 +1311,7 @@ uninstall-man3:
+@@ -1310,9 +1316,7 @@ uninstall-man3:
  	  sed -n '/\.3[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^3][0-9a-z]*$$,3,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -4950,7 +4950,7 @@ index 1def806..c9203a3 100644
  tags: TAGS
  TAGS:
  
-@@ -1375,10 +1379,15 @@ install-am: all-am
+@@ -1380,10 +1384,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -4971,7 +4971,7 @@ index 1def806..c9203a3 100644
  
  clean-generic:
 diff --git a/examples/Makefile.in b/examples/Makefile.in
-index bba5f09..c36de93 100644
+index 6f591a9..9dac366 100644
 --- a/examples/Makefile.in
 +++ b/examples/Makefile.in
 @@ -1,9 +1,9 @@
@@ -4987,7 +4987,7 @@ index bba5f09..c36de93 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -254,6 +254,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -255,6 +255,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -5000,7 +5000,7 @@ index bba5f09..c36de93 100644
  man1dir = $(mandir)/man1
  am__installdirs = "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(man3dir)"
  man3dir = $(mandir)/man3
-@@ -1394,74 +1400,65 @@ distclean-compile:
+@@ -1399,74 +1405,65 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -5093,7 +5093,7 @@ index bba5f09..c36de93 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1503,9 +1500,7 @@ uninstall-man1:
+@@ -1508,9 +1505,7 @@ uninstall-man1:
  	  sed -n '/\.1[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -5104,7 +5104,7 @@ index bba5f09..c36de93 100644
  install-man3: $(man_MANS)
  	@$(NORMAL_INSTALL)
  	test -z "$(man3dir)" || $(MKDIR_P) "$(DESTDIR)$(man3dir)"
-@@ -1541,9 +1536,7 @@ uninstall-man3:
+@@ -1546,9 +1541,7 @@ uninstall-man3:
  	  sed -n '/\.3[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^3][0-9a-z]*$$,3,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -5115,7 +5115,7 @@ index bba5f09..c36de93 100644
  
  ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
  	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-@@ -1657,10 +1650,15 @@ install-am: all-am
+@@ -1662,10 +1655,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -5136,7 +5136,7 @@ index bba5f09..c36de93 100644
  
  clean-generic:
 diff --git a/fish/Makefile.in b/fish/Makefile.in
-index 8a5844a..9c06a68 100644
+index 6277d37..3088763 100644
 --- a/fish/Makefile.in
 +++ b/fish/Makefile.in
 @@ -1,9 +1,9 @@
@@ -5152,7 +5152,7 @@ index 8a5844a..9c06a68 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -273,6 +273,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -274,6 +274,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -5165,7 +5165,7 @@ index 8a5844a..9c06a68 100644
  SCRIPTS = $(bin_SCRIPTS)
  DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
  depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
-@@ -1602,9 +1608,7 @@ uninstall-binSCRIPTS:
+@@ -1607,9 +1613,7 @@ uninstall-binSCRIPTS:
  	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
  	files=`for p in $$list; do echo "$$p"; done | \
  	       sed -e 's,.*/,,;$(transform)'`; \
@@ -5176,7 +5176,7 @@ index 8a5844a..9c06a68 100644
  
  mostlyclean-compile:
  	-rm -f *.$(OBJEXT)
-@@ -1654,618 +1658,541 @@ distclean-compile:
+@@ -1659,618 +1663,541 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -5949,7 +5949,7 @@ index 8a5844a..9c06a68 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -2307,9 +2234,7 @@ uninstall-man1:
+@@ -2312,9 +2239,7 @@ uninstall-man1:
  	  sed -n '/\.1[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -5960,7 +5960,7 @@ index 8a5844a..9c06a68 100644
  install-bashcompletionDATA: $(bashcompletion_DATA)
  	@$(NORMAL_INSTALL)
  	test -z "$(bashcompletiondir)" || $(MKDIR_P) "$(DESTDIR)$(bashcompletiondir)"
-@@ -2327,9 +2252,7 @@ uninstall-bashcompletionDATA:
+@@ -2332,9 +2257,7 @@ uninstall-bashcompletionDATA:
  	@$(NORMAL_UNINSTALL)
  	@list='$(bashcompletion_DATA)'; test -n "$(bashcompletiondir)" || list=; \
  	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
@@ -5971,7 +5971,7 @@ index 8a5844a..9c06a68 100644
  install-toolsconfDATA: $(toolsconf_DATA)
  	@$(NORMAL_INSTALL)
  	test -z "$(toolsconfdir)" || $(MKDIR_P) "$(DESTDIR)$(toolsconfdir)"
-@@ -2347,9 +2270,7 @@ uninstall-toolsconfDATA:
+@@ -2352,9 +2275,7 @@ uninstall-toolsconfDATA:
  	@$(NORMAL_UNINSTALL)
  	@list='$(toolsconf_DATA)'; test -n "$(toolsconfdir)" || list=; \
  	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
@@ -5982,7 +5982,7 @@ index 8a5844a..9c06a68 100644
  
  ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
  	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-@@ -2484,14 +2405,15 @@ check-TESTS: $(TESTS)
+@@ -2489,14 +2410,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -6004,7 +6004,7 @@ index 8a5844a..9c06a68 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -2558,10 +2480,15 @@ install-am: all-am
+@@ -2563,10 +2485,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -6025,7 +6025,7 @@ index 8a5844a..9c06a68 100644
  
  clean-generic:
 diff --git a/format/Makefile.in b/format/Makefile.in
-index 32bf0e7..b3bc5ca 100644
+index 4cb30f8..d6c3b20 100644
 --- a/format/Makefile.in
 +++ b/format/Makefile.in
 @@ -1,9 +1,9 @@
@@ -6041,7 +6041,7 @@ index 32bf0e7..b3bc5ca 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -258,6 +258,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -259,6 +259,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -6054,7 +6054,7 @@ index 32bf0e7..b3bc5ca 100644
  man1dir = $(mandir)/man1
  NROFF = nroff
  MANS = $(man_MANS)
-@@ -1413,122 +1419,107 @@ distclean-compile:
+@@ -1418,122 +1424,107 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -6207,7 +6207,7 @@ index 32bf0e7..b3bc5ca 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1570,9 +1561,7 @@ uninstall-man1:
+@@ -1575,9 +1566,7 @@ uninstall-man1:
  	  sed -n '/\.1[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -6218,7 +6218,7 @@ index 32bf0e7..b3bc5ca 100644
  
  ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
  	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-@@ -1686,10 +1675,15 @@ install-am: all-am
+@@ -1691,10 +1680,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -6239,7 +6239,7 @@ index 32bf0e7..b3bc5ca 100644
  
  clean-generic:
 diff --git a/fuse/Makefile.in b/fuse/Makefile.in
-index 8546393..6819c14 100644
+index 37ab065..60ef09f 100644
 --- a/fuse/Makefile.in
 +++ b/fuse/Makefile.in
 @@ -1,9 +1,9 @@
@@ -6255,7 +6255,7 @@ index 8546393..6819c14 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -266,6 +266,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -267,6 +267,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -6268,7 +6268,7 @@ index 8546393..6819c14 100644
  man1dir = $(mandir)/man1
  NROFF = nroff
  MANS = $(man_MANS)
-@@ -1434,138 +1440,121 @@ distclean-compile:
+@@ -1439,138 +1445,121 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -6441,7 +6441,7 @@ index 8546393..6819c14 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1607,9 +1596,7 @@ uninstall-man1:
+@@ -1612,9 +1601,7 @@ uninstall-man1:
  	  sed -n '/\.1[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -6452,7 +6452,7 @@ index 8546393..6819c14 100644
  
  ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
  	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-@@ -1744,14 +1731,15 @@ check-TESTS: $(TESTS)
+@@ -1749,14 +1736,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -6474,7 +6474,7 @@ index 8546393..6819c14 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1816,10 +1804,15 @@ install-am: all-am
+@@ -1821,10 +1809,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -6495,7 +6495,7 @@ index 8546393..6819c14 100644
  
  clean-generic:
 diff --git a/generator/Makefile.in b/generator/Makefile.in
-index e1cc6f8..9c31fa2 100644
+index 3d99e83..d096db1 100644
 --- a/generator/Makefile.in
 +++ b/generator/Makefile.in
 @@ -1,9 +1,9 @@
@@ -6511,7 +6511,7 @@ index e1cc6f8..9c31fa2 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -1333,10 +1333,15 @@ install-am: all-am
+@@ -1338,10 +1338,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -6532,7 +6532,7 @@ index e1cc6f8..9c31fa2 100644
  
  clean-generic:
 diff --git a/gnulib/lib/Makefile.in b/gnulib/lib/Makefile.in
-index 1c34663..afde165 100644
+index 17afac1..9353b33 100644
 --- a/gnulib/lib/Makefile.in
 +++ b/gnulib/lib/Makefile.in
 @@ -1,9 +1,9 @@
@@ -6548,7 +6548,7 @@ index 1c34663..afde165 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -1653,28 +1653,25 @@ distclean-compile:
+@@ -1662,28 +1662,25 @@ distclean-compile:
  @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
  @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
  @am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
@@ -6583,7 +6583,7 @@ index 1c34663..afde165 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1893,10 +1890,15 @@ install-am: all-am
+@@ -1902,10 +1899,15 @@ install-am: all-am
  
  installcheck: installcheck-recursive
  install-strip:
@@ -6604,7 +6604,7 @@ index 1c34663..afde165 100644
  	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
  
 diff --git a/gnulib/tests/Makefile.in b/gnulib/tests/Makefile.in
-index 9617056..fbd0654 100644
+index 0fea27d..90af16e 100644
 --- a/gnulib/tests/Makefile.in
 +++ b/gnulib/tests/Makefile.in
 @@ -1,9 +1,9 @@
@@ -6620,7 +6620,7 @@ index 9617056..fbd0654 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -3099,28 +3099,25 @@ distclean-compile:
+@@ -3127,28 +3127,25 @@ distclean-compile:
  @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
  @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
  @am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
@@ -6655,7 +6655,7 @@ index 9617056..fbd0654 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -3344,14 +3341,15 @@ check-TESTS: $(TESTS)
+@@ -3372,14 +3369,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -6677,7 +6677,7 @@ index 9617056..fbd0654 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -3432,10 +3430,15 @@ install-am: all-am
+@@ -3460,10 +3458,15 @@ install-am: all-am
  
  installcheck: installcheck-recursive
  install-strip:
@@ -6698,7 +6698,7 @@ index 9617056..fbd0654 100644
  	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
  
 diff --git a/gobject/Makefile.in b/gobject/Makefile.in
-index 1d2da0b..ef2fca2 100644
+index 45389fd..bbe960e 100644
 --- a/gobject/Makefile.in
 +++ b/gobject/Makefile.in
 @@ -1,9 +1,9 @@
@@ -6714,7 +6714,7 @@ index 1d2da0b..ef2fca2 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -197,6 +197,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -198,6 +198,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -6727,7 +6727,7 @@ index 1d2da0b..ef2fca2 100644
  am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(girdir)" \
  	"$(DESTDIR)$(typelibdir)" \
  	"$(DESTDIR)$(libguestfs_gobject_1_0_ladir)"
-@@ -1380,34 +1386,30 @@ distclean-compile:
+@@ -1387,34 +1393,30 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -6770,7 +6770,7 @@ index 1d2da0b..ef2fca2 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1431,9 +1433,7 @@ uninstall-girDATA:
+@@ -1438,9 +1440,7 @@ uninstall-girDATA:
  	@$(NORMAL_UNINSTALL)
  	@list='$(gir_DATA)'; test -n "$(girdir)" || list=; \
  	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
@@ -6781,7 +6781,7 @@ index 1d2da0b..ef2fca2 100644
  install-typelibDATA: $(typelib_DATA)
  	@$(NORMAL_INSTALL)
  	test -z "$(typelibdir)" || $(MKDIR_P) "$(DESTDIR)$(typelibdir)"
-@@ -1451,9 +1451,7 @@ uninstall-typelibDATA:
+@@ -1458,9 +1458,7 @@ uninstall-typelibDATA:
  	@$(NORMAL_UNINSTALL)
  	@list='$(typelib_DATA)'; test -n "$(typelibdir)" || list=; \
  	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
@@ -6792,7 +6792,7 @@ index 1d2da0b..ef2fca2 100644
  install-libguestfs_gobject_1_0_laHEADERS: $(libguestfs_gobject_1_0_la_HEADERS)
  	@$(NORMAL_INSTALL)
  	test -z "$(libguestfs_gobject_1_0_ladir)" || $(MKDIR_P) "$(DESTDIR)$(libguestfs_gobject_1_0_ladir)"
-@@ -1471,9 +1469,7 @@ uninstall-libguestfs_gobject_1_0_laHEADERS:
+@@ -1478,9 +1476,7 @@ uninstall-libguestfs_gobject_1_0_laHEADERS:
  	@$(NORMAL_UNINSTALL)
  	@list='$(libguestfs_gobject_1_0_la_HEADERS)'; test -n "$(libguestfs_gobject_1_0_ladir)" || list=; \
  	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
@@ -6803,7 +6803,7 @@ index 1d2da0b..ef2fca2 100644
  
  ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
  	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-@@ -1608,14 +1604,15 @@ check-TESTS: $(TESTS)
+@@ -1615,14 +1611,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -6825,7 +6825,7 @@ index 1d2da0b..ef2fca2 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1669,10 +1666,15 @@ install-am: all-am
+@@ -1676,10 +1673,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -6846,7 +6846,7 @@ index 1d2da0b..ef2fca2 100644
  
  clean-generic:
 diff --git a/haskell/Makefile.in b/haskell/Makefile.in
-index 5db261c..0fec76e 100644
+index 48f3512..83425b2 100644
 --- a/haskell/Makefile.in
 +++ b/haskell/Makefile.in
 @@ -1,9 +1,9 @@
@@ -6862,7 +6862,7 @@ index 5db261c..0fec76e 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -1363,14 +1363,15 @@ check-TESTS: $(TESTS)
+@@ -1368,14 +1368,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -6884,7 +6884,7 @@ index 5db261c..0fec76e 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1419,10 +1420,15 @@ install-am: all-am
+@@ -1424,10 +1425,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -6905,7 +6905,7 @@ index 5db261c..0fec76e 100644
  
  clean-generic:
 diff --git a/inspector/Makefile.in b/inspector/Makefile.in
-index 77e9bd1..ae6e331 100644
+index e5b2e38..810b9fa 100644
 --- a/inspector/Makefile.in
 +++ b/inspector/Makefile.in
 @@ -1,9 +1,9 @@
@@ -6921,7 +6921,7 @@ index 77e9bd1..ae6e331 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -268,6 +268,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -269,6 +269,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -6934,7 +6934,7 @@ index 77e9bd1..ae6e331 100644
  man1dir = $(mandir)/man1
  NROFF = nroff
  MANS = $(man_MANS)
-@@ -1446,122 +1452,107 @@ distclean-compile:
+@@ -1451,122 +1457,107 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -7087,7 +7087,7 @@ index 77e9bd1..ae6e331 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1603,9 +1594,7 @@ uninstall-man1:
+@@ -1608,9 +1599,7 @@ uninstall-man1:
  	  sed -n '/\.1[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -7098,7 +7098,7 @@ index 77e9bd1..ae6e331 100644
  install-dist_docDATA: $(dist_doc_DATA)
  	@$(NORMAL_INSTALL)
  	test -z "$(docdir)" || $(MKDIR_P) "$(DESTDIR)$(docdir)"
-@@ -1623,9 +1612,7 @@ uninstall-dist_docDATA:
+@@ -1628,9 +1617,7 @@ uninstall-dist_docDATA:
  	@$(NORMAL_UNINSTALL)
  	@list='$(dist_doc_DATA)'; test -n "$(docdir)" || list=; \
  	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
@@ -7109,7 +7109,7 @@ index 77e9bd1..ae6e331 100644
  
  ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
  	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-@@ -1760,14 +1747,15 @@ check-TESTS: $(TESTS)
+@@ -1765,14 +1752,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -7131,7 +7131,7 @@ index 77e9bd1..ae6e331 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1832,10 +1820,15 @@ install-am: all-am
+@@ -1837,10 +1825,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -7152,7 +7152,7 @@ index 77e9bd1..ae6e331 100644
  
  clean-generic:
 diff --git a/java/Makefile.in b/java/Makefile.in
-index 758a55d..e81f501 100644
+index d9f814d..24a1362 100644
 --- a/java/Makefile.in
 +++ b/java/Makefile.in
 @@ -1,9 +1,9 @@
@@ -7168,7 +7168,7 @@ index 758a55d..e81f501 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -235,6 +235,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -236,6 +236,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -7181,7 +7181,7 @@ index 758a55d..e81f501 100644
  am__installdirs = "$(DESTDIR)$(libdir)" \
  	"$(DESTDIR)$(libguestfs_jardir)"
  LTLIBRARIES = $(lib_LTLIBRARIES)
-@@ -1283,7 +1289,7 @@ htmldir = @htmldir@
+@@ -1288,7 +1294,7 @@ htmldir = @htmldir@
  includedir = @includedir@
  infodir = @infodir@
  install_sh = @install_sh@
@@ -7190,7 +7190,7 @@ index 758a55d..e81f501 100644
  libexecdir = @libexecdir@
  lispdir = @lispdir@
  localedir = @localedir@
-@@ -1460,34 +1466,30 @@ distclean-compile:
+@@ -1465,34 +1471,30 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -7233,7 +7233,7 @@ index 758a55d..e81f501 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1511,9 +1513,7 @@ uninstall-libguestfs_jarDATA:
+@@ -1516,9 +1518,7 @@ uninstall-libguestfs_jarDATA:
  	@$(NORMAL_UNINSTALL)
  	@list='$(libguestfs_jar_DATA)'; test -n "$(libguestfs_jardir)" || list=; \
  	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
@@ -7244,7 +7244,7 @@ index 758a55d..e81f501 100644
  
  ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
  	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-@@ -1648,14 +1648,15 @@ check-TESTS: $(TESTS)
+@@ -1653,14 +1653,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -7266,7 +7266,7 @@ index 758a55d..e81f501 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1709,10 +1710,15 @@ install-am: all-am
+@@ -1714,10 +1715,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -7287,7 +7287,7 @@ index 758a55d..e81f501 100644
  
  clean-generic:
 diff --git a/java/examples/Makefile.in b/java/examples/Makefile.in
-index 830f65f..452280b 100644
+index cfb18dd..99ad6e9 100644
 --- a/java/examples/Makefile.in
 +++ b/java/examples/Makefile.in
 @@ -1,9 +1,9 @@
@@ -7303,7 +7303,7 @@ index 830f65f..452280b 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -203,6 +203,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -204,6 +204,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -7316,7 +7316,7 @@ index 830f65f..452280b 100644
  man3dir = $(mandir)/man3
  am__installdirs = "$(DESTDIR)$(man3dir)"
  NROFF = nroff
-@@ -1311,9 +1317,7 @@ uninstall-man3:
+@@ -1316,9 +1322,7 @@ uninstall-man3:
  	  sed -n '/\.3[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^3][0-9a-z]*$$,3,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -7327,7 +7327,7 @@ index 830f65f..452280b 100644
  tags: TAGS
  TAGS:
  
-@@ -1381,10 +1385,15 @@ install-am: all-am
+@@ -1386,10 +1390,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -7348,7 +7348,7 @@ index 830f65f..452280b 100644
  
  clean-generic:
 diff --git a/ocaml/Makefile.in b/ocaml/Makefile.in
-index f3bb162..1d0c462 100644
+index f224f17..a8ad8a9 100644
 --- a/ocaml/Makefile.in
 +++ b/ocaml/Makefile.in
 @@ -1,9 +1,9 @@
@@ -7364,7 +7364,7 @@ index f3bb162..1d0c462 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -1360,58 +1360,51 @@ distclean-compile:
+@@ -1369,58 +1369,51 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -7437,7 +7437,7 @@ index f3bb162..1d0c462 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1552,14 +1545,15 @@ check-TESTS: $(TESTS)
+@@ -1561,14 +1554,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -7459,7 +7459,7 @@ index f3bb162..1d0c462 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1608,10 +1602,15 @@ install-am: all-am
+@@ -1617,10 +1611,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -7480,7 +7480,7 @@ index f3bb162..1d0c462 100644
  
  clean-generic:
 diff --git a/ocaml/examples/Makefile.in b/ocaml/examples/Makefile.in
-index 97f8e8a..8a6dda2 100644
+index 73fd622..1a57ef4 100644
 --- a/ocaml/examples/Makefile.in
 +++ b/ocaml/examples/Makefile.in
 @@ -1,9 +1,9 @@
@@ -7496,7 +7496,7 @@ index 97f8e8a..8a6dda2 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -203,6 +203,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -204,6 +204,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -7509,7 +7509,7 @@ index 97f8e8a..8a6dda2 100644
  man3dir = $(mandir)/man3
  am__installdirs = "$(DESTDIR)$(man3dir)"
  NROFF = nroff
-@@ -1312,9 +1318,7 @@ uninstall-man3:
+@@ -1317,9 +1323,7 @@ uninstall-man3:
  	  sed -n '/\.3[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^3][0-9a-z]*$$,3,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -7520,7 +7520,7 @@ index 97f8e8a..8a6dda2 100644
  tags: TAGS
  TAGS:
  
-@@ -1382,10 +1386,15 @@ install-am: all-am
+@@ -1387,10 +1391,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -7541,7 +7541,7 @@ index 97f8e8a..8a6dda2 100644
  
  clean-generic:
 diff --git a/perl/Makefile.in b/perl/Makefile.in
-index 9f05744..daa7d3f 100644
+index af3814a..0455b12 100644
 --- a/perl/Makefile.in
 +++ b/perl/Makefile.in
 @@ -1,9 +1,9 @@
@@ -7557,7 +7557,7 @@ index 9f05744..daa7d3f 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -1369,14 +1369,15 @@ check-TESTS: $(TESTS)
+@@ -1374,14 +1374,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -7579,7 +7579,7 @@ index 9f05744..daa7d3f 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1425,10 +1426,15 @@ install-am: all-am
+@@ -1430,10 +1431,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -7599,7 +7599,7 @@ index 9f05744..daa7d3f 100644
  mostlyclean-generic:
  
  clean-generic:
-@@ -1562,6 +1568,7 @@ appliance: force
+@@ -1567,6 +1573,7 @@ appliance: force
  @HAVE_PERL_TRUE@	$(MAKE) -f Makefile-pl
  
  @HAVE_PERL_TRUE@Makefile-pl: Makefile.PL
@@ -7608,7 +7608,7 @@ index 9f05744..daa7d3f 100644
  
  # No!  Otherwise it is deleted before the clean-local rule runs.
 diff --git a/perl/examples/Makefile.in b/perl/examples/Makefile.in
-index 25f1253..02e7d0e 100644
+index 69f732a..45aef68 100644
 --- a/perl/examples/Makefile.in
 +++ b/perl/examples/Makefile.in
 @@ -1,9 +1,9 @@
@@ -7624,7 +7624,7 @@ index 25f1253..02e7d0e 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -201,6 +201,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -202,6 +202,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -7637,7 +7637,7 @@ index 25f1253..02e7d0e 100644
  man3dir = $(mandir)/man3
  am__installdirs = "$(DESTDIR)$(man3dir)"
  NROFF = nroff
-@@ -1305,9 +1311,7 @@ uninstall-man3:
+@@ -1310,9 +1316,7 @@ uninstall-man3:
  	  sed -n '/\.3[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^3][0-9a-z]*$$,3,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -7648,7 +7648,7 @@ index 25f1253..02e7d0e 100644
  tags: TAGS
  TAGS:
  
-@@ -1375,10 +1379,15 @@ install-am: all-am
+@@ -1380,10 +1384,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -7669,7 +7669,7 @@ index 25f1253..02e7d0e 100644
  
  clean-generic:
 diff --git a/php/Makefile.in b/php/Makefile.in
-index 58dc5cc..5cc9382 100644
+index 8ee2213..f92cd91 100644
 --- a/php/Makefile.in
 +++ b/php/Makefile.in
 @@ -1,9 +1,9 @@
@@ -7685,7 +7685,7 @@ index 58dc5cc..5cc9382 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -219,6 +219,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -220,6 +220,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -7698,7 +7698,7 @@ index 58dc5cc..5cc9382 100644
  am__installdirs = "$(DESTDIR)$(phpdir)"
  DATA = $(php_DATA)
  am__tty_colors = \
-@@ -1310,9 +1316,7 @@ uninstall-phpDATA:
+@@ -1315,9 +1321,7 @@ uninstall-phpDATA:
  	@$(NORMAL_UNINSTALL)
  	@list='$(php_DATA)'; test -n "$(phpdir)" || list=; \
  	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
@@ -7709,7 +7709,7 @@ index 58dc5cc..5cc9382 100644
  tags: TAGS
  TAGS:
  
-@@ -1401,14 +1405,15 @@ check-TESTS: $(TESTS)
+@@ -1406,14 +1410,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -7731,7 +7731,7 @@ index 58dc5cc..5cc9382 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1460,10 +1465,15 @@ install-am: all-am
+@@ -1465,10 +1470,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -7752,7 +7752,7 @@ index 58dc5cc..5cc9382 100644
  
  clean-generic:
 diff --git a/po-docs/Makefile.in b/po-docs/Makefile.in
-index bd37132..b39a395 100644
+index c8e3987..0a2d23a 100644
 --- a/po-docs/Makefile.in
 +++ b/po-docs/Makefile.in
 @@ -1,9 +1,9 @@
@@ -7768,7 +7768,7 @@ index bd37132..b39a395 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -1501,10 +1501,15 @@ install-am: all-am
+@@ -1506,10 +1506,15 @@ install-am: all-am
  
  installcheck: installcheck-recursive
  install-strip:
@@ -7789,7 +7789,7 @@ index bd37132..b39a395 100644
  
  clean-generic:
 diff --git a/po-docs/ja/Makefile.in b/po-docs/ja/Makefile.in
-index 4f5461e..0763bbc 100644
+index d95f37e..3a770ce 100644
 --- a/po-docs/ja/Makefile.in
 +++ b/po-docs/ja/Makefile.in
 @@ -1,9 +1,9 @@
@@ -7805,7 +7805,7 @@ index 4f5461e..0763bbc 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -1321,10 +1321,15 @@ install-am: all-am
+@@ -1326,10 +1326,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -7826,7 +7826,7 @@ index 4f5461e..0763bbc 100644
  
  clean-generic:
 diff --git a/po-docs/uk/Makefile.in b/po-docs/uk/Makefile.in
-index c1f96af..6ceb42e 100644
+index 1d3a67f..0d76764 100644
 --- a/po-docs/uk/Makefile.in
 +++ b/po-docs/uk/Makefile.in
 @@ -1,9 +1,9 @@
@@ -7842,7 +7842,7 @@ index c1f96af..6ceb42e 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -1321,10 +1321,15 @@ install-am: all-am
+@@ -1326,10 +1326,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -7884,7 +7884,7 @@ index 3a43d17..aff8e8d 100644
 -tools/virt-tar.pl
 -tools/virt-win-reg.pl
 diff --git a/python/Makefile.in b/python/Makefile.in
-index fda5547..fb20a96 100644
+index 0f0826c..05aac38 100644
 --- a/python/Makefile.in
 +++ b/python/Makefile.in
 @@ -1,9 +1,9 @@
@@ -7900,7 +7900,7 @@ index fda5547..fb20a96 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -213,6 +213,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -214,6 +214,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -7913,7 +7913,7 @@ index fda5547..fb20a96 100644
  am__installdirs = "$(DESTDIR)$(pythondir)" "$(DESTDIR)$(pythondir)"
  LTLIBRARIES = $(python_LTLIBRARIES)
  @HAVE_PYTHON_TRUE@libguestfsmod_la_DEPENDENCIES =  \
-@@ -1387,42 +1393,37 @@ distclean-compile:
+@@ -1392,42 +1398,37 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -7966,7 +7966,7 @@ index fda5547..fb20a96 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1446,9 +1447,7 @@ uninstall-pythonDATA:
+@@ -1451,9 +1452,7 @@ uninstall-pythonDATA:
  	@$(NORMAL_UNINSTALL)
  	@list='$(python_DATA)'; test -n "$(pythondir)" || list=; \
  	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
@@ -7977,7 +7977,7 @@ index fda5547..fb20a96 100644
  
  ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
  	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-@@ -1583,14 +1582,15 @@ check-TESTS: $(TESTS)
+@@ -1588,14 +1587,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -7999,7 +7999,7 @@ index fda5547..fb20a96 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1642,10 +1642,15 @@ install-am: all-am
+@@ -1647,10 +1647,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -8020,7 +8020,7 @@ index fda5547..fb20a96 100644
  
  clean-generic:
 diff --git a/python/examples/Makefile.in b/python/examples/Makefile.in
-index 6d5e734..cb740db 100644
+index 4c18e5e..dd192bd 100644
 --- a/python/examples/Makefile.in
 +++ b/python/examples/Makefile.in
 @@ -1,9 +1,9 @@
@@ -8036,7 +8036,7 @@ index 6d5e734..cb740db 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -201,6 +201,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -202,6 +202,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -8049,7 +8049,7 @@ index 6d5e734..cb740db 100644
  man3dir = $(mandir)/man3
  am__installdirs = "$(DESTDIR)$(man3dir)"
  NROFF = nroff
-@@ -1305,9 +1311,7 @@ uninstall-man3:
+@@ -1310,9 +1316,7 @@ uninstall-man3:
  	  sed -n '/\.3[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^3][0-9a-z]*$$,3,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -8060,7 +8060,7 @@ index 6d5e734..cb740db 100644
  tags: TAGS
  TAGS:
  
-@@ -1375,10 +1379,15 @@ install-am: all-am
+@@ -1380,10 +1384,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -8081,7 +8081,7 @@ index 6d5e734..cb740db 100644
  
  clean-generic:
 diff --git a/rescue/Makefile.in b/rescue/Makefile.in
-index 491c207..249af64 100644
+index 026b62a..1659114 100644
 --- a/rescue/Makefile.in
 +++ b/rescue/Makefile.in
 @@ -1,9 +1,9 @@
@@ -8097,7 +8097,7 @@ index 491c207..249af64 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -258,6 +258,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -259,6 +259,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -8110,7 +8110,7 @@ index 491c207..249af64 100644
  man1dir = $(mandir)/man1
  NROFF = nroff
  MANS = $(man_MANS)
-@@ -1411,122 +1417,107 @@ distclean-compile:
+@@ -1416,122 +1422,107 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -8263,7 +8263,7 @@ index 491c207..249af64 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1568,9 +1559,7 @@ uninstall-man1:
+@@ -1573,9 +1564,7 @@ uninstall-man1:
  	  sed -n '/\.1[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -8274,7 +8274,7 @@ index 491c207..249af64 100644
  
  ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
  	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-@@ -1684,10 +1673,15 @@ install-am: all-am
+@@ -1689,10 +1678,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -8295,7 +8295,7 @@ index 491c207..249af64 100644
  
  clean-generic:
 diff --git a/resize/Makefile.in b/resize/Makefile.in
-index 5a6bb0a..bcbc794 100644
+index 7683df4..a891396 100644
 --- a/resize/Makefile.in
 +++ b/resize/Makefile.in
 @@ -1,9 +1,9 @@
@@ -8311,7 +8311,7 @@ index 5a6bb0a..bcbc794 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -224,6 +224,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -225,6 +225,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -8324,7 +8324,7 @@ index 5a6bb0a..bcbc794 100644
  am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
  SCRIPTS = $(bin_SCRIPTS)
  AM_V_GEN = $(am__v_GEN_$(V))
-@@ -1362,9 +1368,7 @@ uninstall-binSCRIPTS:
+@@ -1367,9 +1373,7 @@ uninstall-binSCRIPTS:
  	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
  	files=`for p in $$list; do echo "$$p"; done | \
  	       sed -e 's,.*/,,;$(transform)'`; \
@@ -8335,7 +8335,7 @@ index 5a6bb0a..bcbc794 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1406,9 +1410,7 @@ uninstall-man1:
+@@ -1411,9 +1415,7 @@ uninstall-man1:
  	  sed -n '/\.1[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -8346,7 +8346,7 @@ index 5a6bb0a..bcbc794 100644
  tags: TAGS
  TAGS:
  
-@@ -1497,14 +1499,15 @@ check-TESTS: $(TESTS)
+@@ -1502,14 +1504,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -8368,7 +8368,7 @@ index 5a6bb0a..bcbc794 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1570,10 +1573,15 @@ install-am: all-am
+@@ -1575,10 +1578,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -8389,7 +8389,7 @@ index 5a6bb0a..bcbc794 100644
  
  clean-generic:
 diff --git a/ruby/Makefile.in b/ruby/Makefile.in
-index 668a0ad..53fbd06 100644
+index dc7963a..429cda8 100644
 --- a/ruby/Makefile.in
 +++ b/ruby/Makefile.in
 @@ -1,9 +1,9 @@
@@ -8405,7 +8405,7 @@ index 668a0ad..53fbd06 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -1245,8 +1245,8 @@ CLEANFILES = \
+@@ -1250,8 +1250,8 @@ CLEANFILES = \
  @HAVE_RUBY_TRUE@	RUBY=$(RUBY) \
  @HAVE_RUBY_TRUE@	$(top_builddir)/run
  
@@ -8416,7 +8416,7 @@ index 668a0ad..53fbd06 100644
  all: all-am
  
  .SUFFIXES:
-@@ -1376,14 +1376,15 @@ check-TESTS: $(TESTS)
+@@ -1381,14 +1381,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -8438,7 +8438,7 @@ index 668a0ad..53fbd06 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1432,10 +1433,15 @@ install-am: all-am
+@@ -1437,10 +1438,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -8458,7 +8458,7 @@ index 668a0ad..53fbd06 100644
  mostlyclean-generic:
  
  clean-generic:
-@@ -1556,10 +1562,10 @@ appliance: force
+@@ -1561,10 +1567,10 @@ appliance: force
  @HAVE_RUBY_TRUE@	$(RAKE) rdoc
  
  @HAVE_RUBY_TRUE@install:
@@ -8474,7 +8474,7 @@ index 668a0ad..53fbd06 100644
  # Tell versions [3.59,3.63) of GNU make to not export all variables.
  # Otherwise a system limit (for SysV at least) may be exceeded.
 diff --git a/ruby/examples/Makefile.in b/ruby/examples/Makefile.in
-index 27e1e54..0d8fd56 100644
+index c32b434..45e44a0 100644
 --- a/ruby/examples/Makefile.in
 +++ b/ruby/examples/Makefile.in
 @@ -1,9 +1,9 @@
@@ -8490,7 +8490,7 @@ index 27e1e54..0d8fd56 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -201,6 +201,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -202,6 +202,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -8503,7 +8503,7 @@ index 27e1e54..0d8fd56 100644
  man3dir = $(mandir)/man3
  am__installdirs = "$(DESTDIR)$(man3dir)"
  NROFF = nroff
-@@ -1305,9 +1311,7 @@ uninstall-man3:
+@@ -1310,9 +1316,7 @@ uninstall-man3:
  	  sed -n '/\.3[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^3][0-9a-z]*$$,3,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -8514,7 +8514,7 @@ index 27e1e54..0d8fd56 100644
  tags: TAGS
  TAGS:
  
-@@ -1375,10 +1379,15 @@ install-am: all-am
+@@ -1380,10 +1384,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -8535,7 +8535,7 @@ index 27e1e54..0d8fd56 100644
  
  clean-generic:
 diff --git a/sparsify/Makefile.in b/sparsify/Makefile.in
-index ecbbd3e..b2f8ae3 100644
+index 0736991..1730d41 100644
 --- a/sparsify/Makefile.in
 +++ b/sparsify/Makefile.in
 @@ -1,9 +1,9 @@
@@ -8551,7 +8551,7 @@ index ecbbd3e..b2f8ae3 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -222,6 +222,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -223,6 +223,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -8564,7 +8564,7 @@ index ecbbd3e..b2f8ae3 100644
  am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
  SCRIPTS = $(bin_SCRIPTS)
  AM_V_GEN = $(am__v_GEN_$(V))
-@@ -1359,9 +1365,7 @@ uninstall-binSCRIPTS:
+@@ -1364,9 +1370,7 @@ uninstall-binSCRIPTS:
  	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
  	files=`for p in $$list; do echo "$$p"; done | \
  	       sed -e 's,.*/,,;$(transform)'`; \
@@ -8575,7 +8575,7 @@ index ecbbd3e..b2f8ae3 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1403,9 +1407,7 @@ uninstall-man1:
+@@ -1408,9 +1412,7 @@ uninstall-man1:
  	  sed -n '/\.1[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -8586,7 +8586,7 @@ index ecbbd3e..b2f8ae3 100644
  tags: TAGS
  TAGS:
  
-@@ -1494,14 +1496,15 @@ check-TESTS: $(TESTS)
+@@ -1499,14 +1501,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -8608,7 +8608,7 @@ index ecbbd3e..b2f8ae3 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1566,10 +1569,15 @@ install-am: all-am
+@@ -1571,10 +1574,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -8629,7 +8629,7 @@ index ecbbd3e..b2f8ae3 100644
  
  clean-generic:
 diff --git a/src/Makefile.in b/src/Makefile.in
-index 36ebf8b..9ee7422 100644
+index 34f8637..3644b87 100644
 --- a/src/Makefile.in
 +++ b/src/Makefile.in
 @@ -1,9 +1,9 @@
@@ -8645,7 +8645,7 @@ index 36ebf8b..9ee7422 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -213,6 +213,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -214,6 +214,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -8658,7 +8658,7 @@ index 36ebf8b..9ee7422 100644
  am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(man3dir)" \
  	"$(DESTDIR)$(includedir)"
  LTLIBRARIES = $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
-@@ -1565,202 +1571,177 @@ distclean-compile:
+@@ -1570,202 +1576,177 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -8911,7 +8911,7 @@ index 36ebf8b..9ee7422 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1802,9 +1783,7 @@ uninstall-man3:
+@@ -1807,9 +1788,7 @@ uninstall-man3:
  	  sed -n '/\.3[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^3][0-9a-z]*$$,3,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -8922,7 +8922,7 @@ index 36ebf8b..9ee7422 100644
  install-includeHEADERS: $(include_HEADERS)
  	@$(NORMAL_INSTALL)
  	test -z "$(includedir)" || $(MKDIR_P) "$(DESTDIR)$(includedir)"
-@@ -1822,9 +1801,7 @@ uninstall-includeHEADERS:
+@@ -1827,9 +1806,7 @@ uninstall-includeHEADERS:
  	@$(NORMAL_UNINSTALL)
  	@list='$(include_HEADERS)'; test -n "$(includedir)" || list=; \
  	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
@@ -8933,7 +8933,7 @@ index 36ebf8b..9ee7422 100644
  
  ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
  	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-@@ -1940,10 +1917,15 @@ install-am: all-am
+@@ -1945,10 +1922,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -8954,7 +8954,7 @@ index 36ebf8b..9ee7422 100644
  
  clean-generic:
 diff --git a/test-tool/Makefile.in b/test-tool/Makefile.in
-index 59bad5f..1d919aa 100644
+index f0959de..d44fa6c 100644
 --- a/test-tool/Makefile.in
 +++ b/test-tool/Makefile.in
 @@ -1,9 +1,9 @@
@@ -8970,7 +8970,7 @@ index 59bad5f..1d919aa 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -253,6 +253,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -254,6 +254,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -8983,7 +8983,7 @@ index 59bad5f..1d919aa 100644
  man1dir = $(mandir)/man1
  NROFF = nroff
  MANS = $(man_MANS)
-@@ -1379,42 +1385,37 @@ distclean-compile:
+@@ -1384,42 +1390,37 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -9036,7 +9036,7 @@ index 59bad5f..1d919aa 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1456,9 +1457,7 @@ uninstall-man1:
+@@ -1461,9 +1462,7 @@ uninstall-man1:
  	  sed -n '/\.1[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -9047,7 +9047,7 @@ index 59bad5f..1d919aa 100644
  
  ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
  	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-@@ -1572,10 +1571,15 @@ install-am: all-am
+@@ -1577,10 +1576,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -9068,7 +9068,7 @@ index 59bad5f..1d919aa 100644
  
  clean-generic:
 diff --git a/tests/c-api/Makefile.in b/tests/c-api/Makefile.in
-index 1165c66..73e77bd 100644
+index 9655c3d..dedcc7d 100644
 --- a/tests/c-api/Makefile.in
 +++ b/tests/c-api/Makefile.in
 @@ -1,9 +1,9 @@
@@ -9084,7 +9084,7 @@ index 1165c66..73e77bd 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -1526,170 +1526,149 @@ distclean-compile:
+@@ -1531,170 +1531,149 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -9297,7 +9297,7 @@ index 1165c66..73e77bd 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1830,14 +1809,15 @@ check-TESTS: $(TESTS)
+@@ -1835,14 +1814,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -9319,7 +9319,7 @@ index 1165c66..73e77bd 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1889,10 +1869,15 @@ install-am: all-am
+@@ -1894,10 +1874,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -9340,7 +9340,7 @@ index 1165c66..73e77bd 100644
  
  clean-generic:
 diff --git a/tests/data/Makefile.in b/tests/data/Makefile.in
-index d8f8bb1..6f434e7 100644
+index d55ee89..ee19dd4 100644
 --- a/tests/data/Makefile.in
 +++ b/tests/data/Makefile.in
 @@ -1,9 +1,9 @@
@@ -9356,7 +9356,7 @@ index d8f8bb1..6f434e7 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -1365,10 +1365,15 @@ install-am: all-am
+@@ -1370,10 +1370,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -9377,7 +9377,7 @@ index d8f8bb1..6f434e7 100644
  
  clean-generic:
 diff --git a/tests/extra/Makefile.in b/tests/extra/Makefile.in
-index f61702d..3123530 100644
+index db3dd87..47f5171 100644
 --- a/tests/extra/Makefile.in
 +++ b/tests/extra/Makefile.in
 @@ -1,9 +1,9 @@
@@ -9393,7 +9393,7 @@ index f61702d..3123530 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -1339,10 +1339,15 @@ install-am: all-am
+@@ -1344,10 +1344,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -9414,7 +9414,7 @@ index f61702d..3123530 100644
  
  clean-generic:
 diff --git a/tests/guests/Makefile.in b/tests/guests/Makefile.in
-index bb292af..5938ce5 100644
+index 1bed434..65798a9 100644
 --- a/tests/guests/Makefile.in
 +++ b/tests/guests/Makefile.in
 @@ -1,9 +1,9 @@
@@ -9430,7 +9430,7 @@ index bb292af..5938ce5 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -1325,10 +1325,15 @@ install-am: all-am
+@@ -1330,10 +1330,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -9451,186 +9451,9 @@ index bb292af..5938ce5 100644
  
  clean-generic:
 diff --git a/tests/luks/Makefile.in b/tests/luks/Makefile.in
-index f3f6f2f..c7907e4 100644
+index 4eb09e8..5e9747e 100644
 --- a/tests/luks/Makefile.in
 +++ b/tests/luks/Makefile.in
-@@ -1,9 +1,9 @@
--# Makefile.in generated by automake 1.11.1 from Makefile.am.
-+# Makefile.in generated by automake 1.11.2 from Makefile.am.
- # @configure_input@
- 
- # Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002,
--# 2003, 2004, 2005, 2006, 2007, 2008, 2009  Free Software Foundation,
--# Inc.
-+# 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software
-+# Foundation, Inc.
- # This Makefile.in is free software; the Free Software Foundation
- # gives unlimited permission to copy and/or distribute it,
- # with or without modifications, as long as this notice is preserved.
-@@ -1354,14 +1354,15 @@ check-TESTS: $(TESTS)
- 	  fi; \
- 	  dashes=`echo "$$dashes" | sed s/./=/g`; \
- 	  if test "$$failed" -eq 0; then \
--	    echo "$$grn$$dashes"; \
-+	    col="$$grn"; \
- 	  else \
--	    echo "$$red$$dashes"; \
-+	    col="$$red"; \
- 	  fi; \
--	  echo "$$banner"; \
--	  test -z "$$skipped" || echo "$$skipped"; \
--	  test -z "$$report" || echo "$$report"; \
--	  echo "$$dashes$$std"; \
-+	  echo "$${col}$$dashes$${std}"; \
-+	  echo "$${col}$$banner$${std}"; \
-+	  test -z "$$skipped" || echo "$${col}$$skipped$${std}"; \
-+	  test -z "$$report" || echo "$${col}$$report$${std}"; \
-+	  echo "$${col}$$dashes$${std}"; \
- 	  test "$$failed" -eq 0; \
- 	else :; fi
- 
-@@ -1410,10 +1411,15 @@ install-am: all-am
- 
- installcheck: installcheck-am
- install-strip:
--	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
--	  install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
--	  `test -z '$(STRIP)' || \
--	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install
-+	if test -z '$(STRIP)'; then \
-+	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
-+	    install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
-+	      install; \
-+	else \
-+	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
-+	    install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
-+	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
-+	fi
- mostlyclean-generic:
- 
- clean-generic:
-diff --git a/tests/lvm/Makefile.in b/tests/lvm/Makefile.in
-index 7e32cdc..09b2f79 100644
---- a/tests/lvm/Makefile.in
-+++ b/tests/lvm/Makefile.in
-@@ -1,9 +1,9 @@
--# Makefile.in generated by automake 1.11.1 from Makefile.am.
-+# Makefile.in generated by automake 1.11.2 from Makefile.am.
- # @configure_input@
- 
- # Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002,
--# 2003, 2004, 2005, 2006, 2007, 2008, 2009  Free Software Foundation,
--# Inc.
-+# 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software
-+# Foundation, Inc.
- # This Makefile.in is free software; the Free Software Foundation
- # gives unlimited permission to copy and/or distribute it,
- # with or without modifications, as long as this notice is preserved.
-@@ -1354,14 +1354,15 @@ check-TESTS: $(TESTS)
- 	  fi; \
- 	  dashes=`echo "$$dashes" | sed s/./=/g`; \
- 	  if test "$$failed" -eq 0; then \
--	    echo "$$grn$$dashes"; \
-+	    col="$$grn"; \
- 	  else \
--	    echo "$$red$$dashes"; \
-+	    col="$$red"; \
- 	  fi; \
--	  echo "$$banner"; \
--	  test -z "$$skipped" || echo "$$skipped"; \
--	  test -z "$$report" || echo "$$report"; \
--	  echo "$$dashes$$std"; \
-+	  echo "$${col}$$dashes$${std}"; \
-+	  echo "$${col}$$banner$${std}"; \
-+	  test -z "$$skipped" || echo "$${col}$$skipped$${std}"; \
-+	  test -z "$$report" || echo "$${col}$$report$${std}"; \
-+	  echo "$${col}$$dashes$${std}"; \
- 	  test "$$failed" -eq 0; \
- 	else :; fi
- 
-@@ -1410,10 +1411,15 @@ install-am: all-am
- 
- installcheck: installcheck-am
- install-strip:
--	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
--	  install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
--	  `test -z '$(STRIP)' || \
--	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install
-+	if test -z '$(STRIP)'; then \
-+	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
-+	    install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
-+	      install; \
-+	else \
-+	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
-+	    install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
-+	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
-+	fi
- mostlyclean-generic:
- 
- clean-generic:
-diff --git a/tests/md/Makefile.in b/tests/md/Makefile.in
-index 8a83cca..b3dcf52 100644
---- a/tests/md/Makefile.in
-+++ b/tests/md/Makefile.in
-@@ -1,9 +1,9 @@
--# Makefile.in generated by automake 1.11.1 from Makefile.am.
-+# Makefile.in generated by automake 1.11.2 from Makefile.am.
- # @configure_input@
- 
- # Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002,
--# 2003, 2004, 2005, 2006, 2007, 2008, 2009  Free Software Foundation,
--# Inc.
-+# 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software
-+# Foundation, Inc.
- # This Makefile.in is free software; the Free Software Foundation
- # gives unlimited permission to copy and/or distribute it,
- # with or without modifications, as long as this notice is preserved.
-@@ -1357,14 +1357,15 @@ check-TESTS: $(TESTS)
- 	  fi; \
- 	  dashes=`echo "$$dashes" | sed s/./=/g`; \
- 	  if test "$$failed" -eq 0; then \
--	    echo "$$grn$$dashes"; \
-+	    col="$$grn"; \
- 	  else \
--	    echo "$$red$$dashes"; \
-+	    col="$$red"; \
- 	  fi; \
--	  echo "$$banner"; \
--	  test -z "$$skipped" || echo "$$skipped"; \
--	  test -z "$$report" || echo "$$report"; \
--	  echo "$$dashes$$std"; \
-+	  echo "$${col}$$dashes$${std}"; \
-+	  echo "$${col}$$banner$${std}"; \
-+	  test -z "$$skipped" || echo "$${col}$$skipped$${std}"; \
-+	  test -z "$$report" || echo "$${col}$$report$${std}"; \
-+	  echo "$${col}$$dashes$${std}"; \
- 	  test "$$failed" -eq 0; \
- 	else :; fi
- 
-@@ -1413,10 +1414,15 @@ install-am: all-am
- 
- installcheck: installcheck-am
- install-strip:
--	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
--	  install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
--	  `test -z '$(STRIP)' || \
--	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install
-+	if test -z '$(STRIP)'; then \
-+	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
-+	    install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
-+	      install; \
-+	else \
-+	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
-+	    install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
-+	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
-+	fi
- mostlyclean-generic:
- 
- clean-generic:
-diff --git a/tests/protocol/Makefile.in b/tests/protocol/Makefile.in
-index baa8ab4..f17ebc7 100644
---- a/tests/protocol/Makefile.in
-+++ b/tests/protocol/Makefile.in
 @@ -1,9 +1,9 @@
 -# Makefile.in generated by automake 1.11.1 from Makefile.am.
 +# Makefile.in generated by automake 1.11.2 from Makefile.am.
@@ -9686,10 +9509,10 @@ index baa8ab4..f17ebc7 100644
  mostlyclean-generic:
  
  clean-generic:
-diff --git a/tests/qemu/Makefile.in b/tests/qemu/Makefile.in
-index fa3d0e1..e966789 100644
---- a/tests/qemu/Makefile.in
-+++ b/tests/qemu/Makefile.in
+diff --git a/tests/lvm/Makefile.in b/tests/lvm/Makefile.in
+index e0f163e..dd820a5 100644
+--- a/tests/lvm/Makefile.in
++++ b/tests/lvm/Makefile.in
 @@ -1,9 +1,9 @@
 -# Makefile.in generated by automake 1.11.1 from Makefile.am.
 +# Makefile.in generated by automake 1.11.2 from Makefile.am.
@@ -9703,7 +9526,7 @@ index fa3d0e1..e966789 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -1358,14 +1358,15 @@ check-TESTS: $(TESTS)
+@@ -1359,14 +1359,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -9725,7 +9548,184 @@ index fa3d0e1..e966789 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1414,10 +1415,15 @@ install-am: all-am
+@@ -1415,10 +1416,15 @@ install-am: all-am
+ 
+ installcheck: installcheck-am
+ install-strip:
+-	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
+-	  install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
+-	  `test -z '$(STRIP)' || \
+-	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install
++	if test -z '$(STRIP)'; then \
++	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
++	    install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
++	      install; \
++	else \
++	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
++	    install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
++	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
++	fi
+ mostlyclean-generic:
+ 
+ clean-generic:
+diff --git a/tests/md/Makefile.in b/tests/md/Makefile.in
+index 4df3139..267efb6 100644
+--- a/tests/md/Makefile.in
++++ b/tests/md/Makefile.in
+@@ -1,9 +1,9 @@
+-# Makefile.in generated by automake 1.11.1 from Makefile.am.
++# Makefile.in generated by automake 1.11.2 from Makefile.am.
+ # @configure_input@
+ 
+ # Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002,
+-# 2003, 2004, 2005, 2006, 2007, 2008, 2009  Free Software Foundation,
+-# Inc.
++# 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software
++# Foundation, Inc.
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+ # with or without modifications, as long as this notice is preserved.
+@@ -1362,14 +1362,15 @@ check-TESTS: $(TESTS)
+ 	  fi; \
+ 	  dashes=`echo "$$dashes" | sed s/./=/g`; \
+ 	  if test "$$failed" -eq 0; then \
+-	    echo "$$grn$$dashes"; \
++	    col="$$grn"; \
+ 	  else \
+-	    echo "$$red$$dashes"; \
++	    col="$$red"; \
+ 	  fi; \
+-	  echo "$$banner"; \
+-	  test -z "$$skipped" || echo "$$skipped"; \
+-	  test -z "$$report" || echo "$$report"; \
+-	  echo "$$dashes$$std"; \
++	  echo "$${col}$$dashes$${std}"; \
++	  echo "$${col}$$banner$${std}"; \
++	  test -z "$$skipped" || echo "$${col}$$skipped$${std}"; \
++	  test -z "$$report" || echo "$${col}$$report$${std}"; \
++	  echo "$${col}$$dashes$${std}"; \
+ 	  test "$$failed" -eq 0; \
+ 	else :; fi
+ 
+@@ -1418,10 +1419,15 @@ install-am: all-am
+ 
+ installcheck: installcheck-am
+ install-strip:
+-	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
+-	  install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
+-	  `test -z '$(STRIP)' || \
+-	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install
++	if test -z '$(STRIP)'; then \
++	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
++	    install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
++	      install; \
++	else \
++	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
++	    install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
++	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
++	fi
+ mostlyclean-generic:
+ 
+ clean-generic:
+diff --git a/tests/protocol/Makefile.in b/tests/protocol/Makefile.in
+index 791fdf8..abef4b5 100644
+--- a/tests/protocol/Makefile.in
++++ b/tests/protocol/Makefile.in
+@@ -1,9 +1,9 @@
+-# Makefile.in generated by automake 1.11.1 from Makefile.am.
++# Makefile.in generated by automake 1.11.2 from Makefile.am.
+ # @configure_input@
+ 
+ # Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002,
+-# 2003, 2004, 2005, 2006, 2007, 2008, 2009  Free Software Foundation,
+-# Inc.
++# 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software
++# Foundation, Inc.
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+ # with or without modifications, as long as this notice is preserved.
+@@ -1364,14 +1364,15 @@ check-TESTS: $(TESTS)
+ 	  fi; \
+ 	  dashes=`echo "$$dashes" | sed s/./=/g`; \
+ 	  if test "$$failed" -eq 0; then \
+-	    echo "$$grn$$dashes"; \
++	    col="$$grn"; \
+ 	  else \
+-	    echo "$$red$$dashes"; \
++	    col="$$red"; \
+ 	  fi; \
+-	  echo "$$banner"; \
+-	  test -z "$$skipped" || echo "$$skipped"; \
+-	  test -z "$$report" || echo "$$report"; \
+-	  echo "$$dashes$$std"; \
++	  echo "$${col}$$dashes$${std}"; \
++	  echo "$${col}$$banner$${std}"; \
++	  test -z "$$skipped" || echo "$${col}$$skipped$${std}"; \
++	  test -z "$$report" || echo "$${col}$$report$${std}"; \
++	  echo "$${col}$$dashes$${std}"; \
+ 	  test "$$failed" -eq 0; \
+ 	else :; fi
+ 
+@@ -1420,10 +1421,15 @@ install-am: all-am
+ 
+ installcheck: installcheck-am
+ install-strip:
+-	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
+-	  install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
+-	  `test -z '$(STRIP)' || \
+-	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install
++	if test -z '$(STRIP)'; then \
++	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
++	    install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
++	      install; \
++	else \
++	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
++	    install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
++	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
++	fi
+ mostlyclean-generic:
+ 
+ clean-generic:
+diff --git a/tests/qemu/Makefile.in b/tests/qemu/Makefile.in
+index 68aae8c..6bd8af5 100644
+--- a/tests/qemu/Makefile.in
++++ b/tests/qemu/Makefile.in
+@@ -1,9 +1,9 @@
+-# Makefile.in generated by automake 1.11.1 from Makefile.am.
++# Makefile.in generated by automake 1.11.2 from Makefile.am.
+ # @configure_input@
+ 
+ # Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002,
+-# 2003, 2004, 2005, 2006, 2007, 2008, 2009  Free Software Foundation,
+-# Inc.
++# 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software
++# Foundation, Inc.
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+ # with or without modifications, as long as this notice is preserved.
+@@ -1363,14 +1363,15 @@ check-TESTS: $(TESTS)
+ 	  fi; \
+ 	  dashes=`echo "$$dashes" | sed s/./=/g`; \
+ 	  if test "$$failed" -eq 0; then \
+-	    echo "$$grn$$dashes"; \
++	    col="$$grn"; \
+ 	  else \
+-	    echo "$$red$$dashes"; \
++	    col="$$red"; \
+ 	  fi; \
+-	  echo "$$banner"; \
+-	  test -z "$$skipped" || echo "$$skipped"; \
+-	  test -z "$$report" || echo "$$report"; \
+-	  echo "$$dashes$$std"; \
++	  echo "$${col}$$dashes$${std}"; \
++	  echo "$${col}$$banner$${std}"; \
++	  test -z "$$skipped" || echo "$${col}$$skipped$${std}"; \
++	  test -z "$$report" || echo "$${col}$$report$${std}"; \
++	  echo "$${col}$$dashes$${std}"; \
+ 	  test "$$failed" -eq 0; \
+ 	else :; fi
+ 
+@@ -1419,10 +1420,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -9746,7 +9746,7 @@ index fa3d0e1..e966789 100644
  
  clean-generic:
 diff --git a/tests/regressions/Makefile.in b/tests/regressions/Makefile.in
-index cefd4ee..5102acb 100644
+index 4da7376..7fbd66f 100644
 --- a/tests/regressions/Makefile.in
 +++ b/tests/regressions/Makefile.in
 @@ -1,9 +1,9 @@
@@ -9762,7 +9762,7 @@ index cefd4ee..5102acb 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -1327,42 +1327,37 @@ distclean-compile:
+@@ -1332,42 +1332,37 @@ distclean-compile:
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -9815,7 +9815,7 @@ index cefd4ee..5102acb 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1503,14 +1498,15 @@ check-TESTS: $(TESTS)
+@@ -1508,14 +1503,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -9837,7 +9837,7 @@ index cefd4ee..5102acb 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1560,10 +1556,15 @@ install-am: all-am
+@@ -1565,10 +1561,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
@@ -9858,7 +9858,7 @@ index cefd4ee..5102acb 100644
  
  clean-generic:
 diff --git a/tools/Makefile.in b/tools/Makefile.in
-index af6e51e..9d7763d 100644
+index c0b66bc..a0b1bbb 100644
 --- a/tools/Makefile.in
 +++ b/tools/Makefile.in
 @@ -1,9 +1,9 @@
@@ -9874,7 +9874,7 @@ index af6e51e..9d7763d 100644
  # This Makefile.in is free software; the Free Software Foundation
  # gives unlimited permission to copy and/or distribute it,
  # with or without modifications, as long as this notice is preserved.
-@@ -212,6 +212,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
+@@ -213,6 +213,12 @@ am__nobase_list = $(am__nobase_strip_setup); \
  am__base_list = \
    sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
    sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
@@ -9887,7 +9887,7 @@ index af6e51e..9d7763d 100644
  am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
  SCRIPTS = $(bin_SCRIPTS)
  AM_V_GEN = $(am__v_GEN_$(V))
-@@ -1340,9 +1346,7 @@ uninstall-binSCRIPTS:
+@@ -1345,9 +1351,7 @@ uninstall-binSCRIPTS:
  	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
  	files=`for p in $$list; do echo "$$p"; done | \
  	       sed -e 's,.*/,,;$(transform)'`; \
@@ -9898,7 +9898,7 @@ index af6e51e..9d7763d 100644
  
  mostlyclean-libtool:
  	-rm -f *.lo
-@@ -1384,9 +1388,7 @@ uninstall-man1:
+@@ -1389,9 +1393,7 @@ uninstall-man1:
  	  sed -n '/\.1[a-z]*$$/p'; \
  	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
  	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
@@ -9909,7 +9909,7 @@ index af6e51e..9d7763d 100644
  tags: TAGS
  TAGS:
  
-@@ -1475,14 +1477,15 @@ check-TESTS: $(TESTS)
+@@ -1480,14 +1482,15 @@ check-TESTS: $(TESTS)
  	  fi; \
  	  dashes=`echo "$$dashes" | sed s/./=/g`; \
  	  if test "$$failed" -eq 0; then \
@@ -9931,7 +9931,7 @@ index af6e51e..9d7763d 100644
  	  test "$$failed" -eq 0; \
  	else :; fi
  
-@@ -1547,10 +1550,15 @@ install-am: all-am
+@@ -1552,10 +1555,15 @@ install-am: all-am
  
  installcheck: installcheck-am
  install-strip:
