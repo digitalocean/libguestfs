@@ -21,8 +21,10 @@ BUILT_SOURCES = \
 	bindtests.js
 EXTRA_DIST = \
 	$(BUILT_SOURCES) \
+	TODO.txt \
 	bindtests-manual.js \
-	run-bindtests
+	tests-misc.js \
+	run-tests
 
 libname = libguestfs-gobject-1.0.la
 
@@ -60,7 +62,7 @@ gir_DATA = $(INTROSPECTION_GIRS)
 typelibdir = $(libdir)/girepository-1.0
 typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
-TESTS = run-bindtests
+TESTS = run-tests
 TESTS_ENVIRONMENT = GJS=$(GJS)
 
 $(TESTS): $(typelib_DATA)

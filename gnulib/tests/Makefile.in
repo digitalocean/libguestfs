@@ -61,7 +61,7 @@ TESTS = test-accept$(EXEEXT) test-alloca-opt$(EXEEXT) \
 	test-argmatch$(EXEEXT) test-arpa_inet$(EXEEXT) \
 	test-binary-io.sh test-bind$(EXEEXT) test-bitrotate$(EXEEXT) \
 	test-btowc1.sh test-btowc2.sh test-byteswap$(EXEEXT) \
-	test-c-ctype$(EXEEXT) test-chdir$(EXEEXT) \
+	test-c-ctype$(EXEEXT) test-c-strcase.sh test-chdir$(EXEEXT) \
 	test-cloexec$(EXEEXT) test-close$(EXEEXT) \
 	test-connect$(EXEEXT) test-dirent-safer$(EXEEXT) \
 	test-dirent$(EXEEXT) test-dup$(EXEEXT) test-dup2$(EXEEXT) \
@@ -134,6 +134,7 @@ check_PROGRAMS = test-accept$(EXEEXT) test-alloca-opt$(EXEEXT) \
 	test-binary-io$(EXEEXT) test-bind$(EXEEXT) \
 	test-bitrotate$(EXEEXT) test-btowc$(EXEEXT) \
 	test-byteswap$(EXEEXT) test-c-ctype$(EXEEXT) \
+	test-c-strcasecmp$(EXEEXT) test-c-strncasecmp$(EXEEXT) \
 	test-chdir$(EXEEXT) test-cloexec$(EXEEXT) test-close$(EXEEXT) \
 	test-connect$(EXEEXT) test-dirent-safer$(EXEEXT) \
 	test-dirent$(EXEEXT) test-dup$(EXEEXT) test-dup2$(EXEEXT) \
@@ -247,19 +248,20 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
 	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
-	$(top_srcdir)/m4/locale-zh.m4 $(top_srcdir)/m4/locale_h.m4 \
-	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
-	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
-	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
-	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
-	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
-	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
-	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
-	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
-	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
-	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/locale-tr.m4 $(top_srcdir)/m4/locale-zh.m4 \
+	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localename.m4 \
+	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
+	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
+	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
+	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
+	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
+	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/mempcpy.m4 \
+	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
+	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
+	$(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/nocrash.m4 \
@@ -386,6 +388,16 @@ test_c_ctype_OBJECTS = test-c-ctype.$(OBJEXT)
 test_c_ctype_LDADD = $(LDADD)
 test_c_ctype_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
 	libtests.a $(am__DEPENDENCIES_1)
+test_c_strcasecmp_SOURCES = test-c-strcasecmp.c
+test_c_strcasecmp_OBJECTS = test-c-strcasecmp.$(OBJEXT)
+test_c_strcasecmp_LDADD = $(LDADD)
+test_c_strcasecmp_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
+	libtests.a $(am__DEPENDENCIES_1)
+test_c_strncasecmp_SOURCES = test-c-strncasecmp.c
+test_c_strncasecmp_OBJECTS = test-c-strncasecmp.$(OBJEXT)
+test_c_strncasecmp_LDADD = $(LDADD)
+test_c_strncasecmp_DEPENDENCIES = libtests.a \
+	../../gnulib/lib/libgnu.la libtests.a $(am__DEPENDENCIES_1)
 test_chdir_SOURCES = test-chdir.c
 test_chdir_OBJECTS = test-chdir.$(OBJEXT)
 test_chdir_LDADD = $(LDADD)
@@ -1046,7 +1058,8 @@ am__v_GEN_0 = @echo "  GEN   " $@;
 SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-accept.c test-alloca-opt.c test-argmatch.c \
 	test-arpa_inet.c test-binary-io.c test-bind.c test-bitrotate.c \
-	test-btowc.c test-byteswap.c test-c-ctype.c test-chdir.c \
+	test-btowc.c test-byteswap.c test-c-ctype.c \
+	test-c-strcasecmp.c test-c-strncasecmp.c test-chdir.c \
 	test-cloexec.c test-close.c test-connect.c test-dirent.c \
 	test-dirent-safer.c test-dup.c test-dup-safer.c test-dup2.c \
 	test-environ.c test-errno.c test-fchdir.c test-fcntl.c \
@@ -1089,7 +1102,8 @@ SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 DIST_SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-accept.c test-alloca-opt.c test-argmatch.c \
 	test-arpa_inet.c test-binary-io.c test-bind.c test-bitrotate.c \
-	test-btowc.c test-byteswap.c test-c-ctype.c test-chdir.c \
+	test-btowc.c test-byteswap.c test-c-ctype.c \
+	test-c-strcasecmp.c test-c-strncasecmp.c test-chdir.c \
 	test-cloexec.c test-close.c test-connect.c test-dirent.c \
 	test-dirent-safer.c test-dup.c test-dup-safer.c test-dup2.c \
 	test-environ.c test-errno.c test-fchdir.c test-fcntl.c \
@@ -1401,6 +1415,7 @@ GNULIB_PUTENV = @GNULIB_PUTENV@
 GNULIB_PUTS = @GNULIB_PUTS@
 GNULIB_PWRITE = @GNULIB_PWRITE@
 GNULIB_RAISE = @GNULIB_RAISE@
+GNULIB_RANDOM = @GNULIB_RANDOM@
 GNULIB_RANDOM_R = @GNULIB_RANDOM_R@
 GNULIB_RAWMEMCHR = @GNULIB_RAWMEMCHR@
 GNULIB_READ = @GNULIB_READ@
@@ -1658,6 +1673,7 @@ HAVE_PTSNAME = @HAVE_PTSNAME@
 HAVE_PTSNAME_R = @HAVE_PTSNAME_R@
 HAVE_PWRITE = @HAVE_PWRITE@
 HAVE_RAISE = @HAVE_RAISE@
+HAVE_RANDOM = @HAVE_RANDOM@
 HAVE_RANDOM_H = @HAVE_RANDOM_H@
 HAVE_RANDOM_R = @HAVE_RANDOM_R@
 HAVE_RAWMEMCHR = @HAVE_RAWMEMCHR@
@@ -1826,6 +1842,7 @@ LOCALCHARSET_TESTS_ENVIRONMENT = @LOCALCHARSET_TESTS_ENVIRONMENT@
 LOCALE_FR = @LOCALE_FR@
 LOCALE_FR_UTF8 = @LOCALE_FR_UTF8@
 LOCALE_JA = @LOCALE_JA@
+LOCALE_TR_UTF8 = @LOCALE_TR_UTF8@
 LOCALE_ZH_CN = @LOCALE_ZH_CN@
 LTALLOCA = @LTALLOCA@
 LTLIBICONV = @LTLIBICONV@
@@ -2038,6 +2055,7 @@ REPLACE_PTSNAME_R = @REPLACE_PTSNAME_R@
 REPLACE_PUTENV = @REPLACE_PUTENV@
 REPLACE_PWRITE = @REPLACE_PWRITE@
 REPLACE_RAISE = @REPLACE_RAISE@
+REPLACE_RANDOM_R = @REPLACE_RANDOM_R@
 REPLACE_READ = @REPLACE_READ@
 REPLACE_READLINK = @REPLACE_READLINK@
 REPLACE_REALLOC = @REPLACE_REALLOC@
@@ -2192,6 +2210,7 @@ AUTOMAKE_OPTIONS = 1.5 foreign subdir-objects
 SUBDIRS = .
 TESTS_ENVIRONMENT = EXEEXT='@EXEEXT@' srcdir='$(srcdir)' \
 	LOCALE_FR='@LOCALE_FR@' LOCALE_FR_UTF8='@LOCALE_FR_UTF8@' \
+	LOCALE_FR='@LOCALE_FR@' LOCALE_TR_UTF8='@LOCALE_TR_UTF8@' \
 	LOCALE_FR='@LOCALE_FR@' LOCALE_FR_UTF8='@LOCALE_FR_UTF8@' \
 	LOCALE_JA='@LOCALE_JA@' LOCALE_ZH_CN='@LOCALE_ZH_CN@' \
 	LOCALE_FR_UTF8='@LOCALE_FR_UTF8@' LOCALE_FR='@LOCALE_FR@' \
@@ -2211,16 +2230,17 @@ EXTRA_DIST = accept.c w32sock.h test-accept.c signature.h macros.h \
 	test-bind.c signature.h macros.h test-bitrotate.c macros.h \
 	btowc.c test-btowc1.sh test-btowc2.sh test-btowc.c signature.h \
 	macros.h test-byteswap.c macros.h test-c-ctype.c macros.h \
-	test-chdir.c signature.h macros.h test-cloexec.c macros.h \
-	test-close.c signature.h macros.h test-connect.c signature.h \
-	macros.h test-dirent-safer.c macros.h test-dirent.c test-dup.c \
-	signature.h macros.h test-dup2.c signature.h macros.h \
-	test-environ.c test-errno.c test-fchdir.c signature.h macros.h \
-	test-fcntl-h.c test-open.h test-fcntl-safer.c macros.h \
-	test-fcntl.c signature.h macros.h fdopen.c test-fdopen.c \
-	signature.h macros.h test-fgetc.c signature.h macros.h \
-	test-filevercmp.c macros.h test-float.c macros.h \
-	test-fnmatch.c signature.h macros.h test-fpending.c \
+	test-c-strcase.sh test-c-strcasecmp.c test-c-strncasecmp.c \
+	macros.h test-chdir.c signature.h macros.h test-cloexec.c \
+	macros.h test-close.c signature.h macros.h test-connect.c \
+	signature.h macros.h test-dirent-safer.c macros.h \
+	test-dirent.c test-dup.c signature.h macros.h test-dup2.c \
+	signature.h macros.h test-environ.c test-errno.c test-fchdir.c \
+	signature.h macros.h test-fcntl-h.c test-open.h \
+	test-fcntl-safer.c macros.h test-fcntl.c signature.h macros.h \
+	fdopen.c test-fdopen.c signature.h macros.h test-fgetc.c \
+	signature.h macros.h test-filevercmp.c macros.h test-float.c \
+	macros.h test-fnmatch.c signature.h macros.h test-fpending.c \
 	test-fpending.sh macros.h fpucw.h test-fputc.c signature.h \
 	macros.h test-fread.c signature.h macros.h test-fstat.c \
 	signature.h macros.h test-ftell.c test-ftell.sh test-ftell2.sh \
@@ -2494,6 +2514,12 @@ test-byteswap$(EXEEXT): $(test_byteswap_OBJECTS) $(test_byteswap_DEPENDENCIES)
 test-c-ctype$(EXEEXT): $(test_c_ctype_OBJECTS) $(test_c_ctype_DEPENDENCIES) 
 	@rm -f test-c-ctype$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_c_ctype_OBJECTS) $(test_c_ctype_LDADD) $(LIBS)
+test-c-strcasecmp$(EXEEXT): $(test_c_strcasecmp_OBJECTS) $(test_c_strcasecmp_DEPENDENCIES) 
+	@rm -f test-c-strcasecmp$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_c_strcasecmp_OBJECTS) $(test_c_strcasecmp_LDADD) $(LIBS)
+test-c-strncasecmp$(EXEEXT): $(test_c_strncasecmp_OBJECTS) $(test_c_strncasecmp_DEPENDENCIES) 
+	@rm -f test-c-strncasecmp$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_c_strncasecmp_OBJECTS) $(test_c_strncasecmp_LDADD) $(LIBS)
 test-chdir$(EXEEXT): $(test_chdir_OBJECTS) $(test_chdir_DEPENDENCIES) 
 	@rm -f test-chdir$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_chdir_OBJECTS) $(test_chdir_LDADD) $(LIBS)
@@ -2947,6 +2973,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-btowc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-byteswap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-c-ctype.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-c-strcasecmp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-c-strncasecmp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-chdir.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-cloexec.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-close.Po@am__quote@

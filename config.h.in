@@ -1094,6 +1094,9 @@
 /* Define to 1 if inet_pton is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_INET_PTON
 
+/* Define to 1 if initstate is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_INITSTATE
+
 /* Define to 1 if initstate_r is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_INITSTATE_R
 
@@ -1220,6 +1223,9 @@
 /* Define to 1 if pwrite is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_PWRITE
 
+/* Define to 1 if random is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_RANDOM
+
 /* Define to 1 if random_r is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_RANDOM_R
 
@@ -1280,6 +1286,9 @@
 /* Define to 1 if setsockopt is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_SETSOCKOPT
 
+/* Define to 1 if setstate is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_SETSTATE
+
 /* Define to 1 if setstate_r is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_SETSTATE_R
 
@@ -1321,6 +1330,9 @@
 
 /* Define to 1 if socket is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_SOCKET
+
+/* Define to 1 if srandom is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_SRANDOM
 
 /* Define to 1 if srandom_r is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_SRANDOM_R
