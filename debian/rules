@@ -134,6 +134,6 @@ override_dh_makeshlibs:
 	dh_makeshlibs -X/usr/lib/jni
 
 %:
-	dh --without=python-support \
-	   --with=autotools-dev,ocaml,python2,python3,bash-completion,ruby,gir \
-	   $@
+	dh $@ \
+	   --without=python-support \
+	   --with=autotools-dev,ocaml,python2,python3,bash-completion,ruby,gir
