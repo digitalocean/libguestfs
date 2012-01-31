@@ -108,19 +108,20 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
 	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
-	$(top_srcdir)/m4/locale-zh.m4 $(top_srcdir)/m4/locale_h.m4 \
-	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
-	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
-	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
-	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
-	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
-	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
-	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
-	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
-	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
-	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/locale-tr.m4 $(top_srcdir)/m4/locale-zh.m4 \
+	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localename.m4 \
+	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
+	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
+	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
+	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
+	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
+	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/mempcpy.m4 \
+	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
+	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
+	$(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/nocrash.m4 \
@@ -185,18 +186,19 @@ LIBRARIES = $(noinst_LIBRARIES)
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 am__dirstamp = $(am__leading_dot)dirstamp
-am_libgnu_la_OBJECTS = argmatch.lo c-ctype.lo cloexec.lo \
-	close-stream.lo closeout.lo cycle-check.lo opendir-safer.lo \
-	dirname-lgpl.lo basename-lgpl.lo stripslash.lo exitfail.lo \
-	creat-safer.lo open-safer.lo fd-hook.lo filenamecat-lgpl.lo \
-	filevercmp.lo full-read.lo full-write.lo gettime.lo hash.lo \
-	hash-pjw.lo human.lo i-ring.lo localcharset.lo \
-	glthread/lock.lo malloca.lo openat-die.lo openat-safer.lo \
-	progname.lo quote.lo quotearg.lo read-file.lo safe-read.lo \
-	safe-write.lo save-cwd.lo sockets.lo strnlen1.lo tempname.lo \
-	glthread/threadlib.lo dup-safer.lo fd-safer.lo pipe-safer.lo \
-	utimens.lo xmalloc.lo xalloc-die.lo xstrtol.lo xstrtoul.lo \
-	xstrtol-error.lo xstrtoumax.lo xvasprintf.lo xasprintf.lo
+am_libgnu_la_OBJECTS = argmatch.lo c-ctype.lo c-strcasecmp.lo \
+	c-strncasecmp.lo cloexec.lo close-stream.lo closeout.lo \
+	cycle-check.lo opendir-safer.lo dirname-lgpl.lo \
+	basename-lgpl.lo stripslash.lo exitfail.lo creat-safer.lo \
+	open-safer.lo fd-hook.lo filenamecat-lgpl.lo filevercmp.lo \
+	full-read.lo full-write.lo gettime.lo hash.lo hash-pjw.lo \
+	human.lo i-ring.lo localcharset.lo glthread/lock.lo malloca.lo \
+	openat-die.lo openat-safer.lo progname.lo quote.lo quotearg.lo \
+	read-file.lo safe-read.lo safe-write.lo save-cwd.lo sockets.lo \
+	strnlen1.lo tempname.lo glthread/threadlib.lo dup-safer.lo \
+	fd-safer.lo pipe-safer.lo utimens.lo xmalloc.lo xalloc-die.lo \
+	xstrtol.lo xstrtoul.lo xstrtol-error.lo xstrtoumax.lo \
+	xvasprintf.lo xasprintf.lo
 libgnu_la_OBJECTS = $(am_libgnu_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -502,6 +504,7 @@ GNULIB_PUTENV = @GNULIB_PUTENV@
 GNULIB_PUTS = @GNULIB_PUTS@
 GNULIB_PWRITE = @GNULIB_PWRITE@
 GNULIB_RAISE = @GNULIB_RAISE@
+GNULIB_RANDOM = @GNULIB_RANDOM@
 GNULIB_RANDOM_R = @GNULIB_RANDOM_R@
 GNULIB_RAWMEMCHR = @GNULIB_RAWMEMCHR@
 GNULIB_READ = @GNULIB_READ@
@@ -759,6 +762,7 @@ HAVE_PTSNAME = @HAVE_PTSNAME@
 HAVE_PTSNAME_R = @HAVE_PTSNAME_R@
 HAVE_PWRITE = @HAVE_PWRITE@
 HAVE_RAISE = @HAVE_RAISE@
+HAVE_RANDOM = @HAVE_RANDOM@
 HAVE_RANDOM_H = @HAVE_RANDOM_H@
 HAVE_RANDOM_R = @HAVE_RANDOM_R@
 HAVE_RAWMEMCHR = @HAVE_RAWMEMCHR@
@@ -927,6 +931,7 @@ LOCALCHARSET_TESTS_ENVIRONMENT = @LOCALCHARSET_TESTS_ENVIRONMENT@
 LOCALE_FR = @LOCALE_FR@
 LOCALE_FR_UTF8 = @LOCALE_FR_UTF8@
 LOCALE_JA = @LOCALE_JA@
+LOCALE_TR_UTF8 = @LOCALE_TR_UTF8@
 LOCALE_ZH_CN = @LOCALE_ZH_CN@
 LTALLOCA = @LTALLOCA@
 LTLIBICONV = @LTLIBICONV@
@@ -1139,6 +1144,7 @@ REPLACE_PTSNAME_R = @REPLACE_PTSNAME_R@
 REPLACE_PUTENV = @REPLACE_PUTENV@
 REPLACE_PWRITE = @REPLACE_PWRITE@
 REPLACE_RAISE = @REPLACE_RAISE@
+REPLACE_RANDOM_R = @REPLACE_RANDOM_R@
 REPLACE_READ = @REPLACE_READ@
 REPLACE_READLINK = @REPLACE_READLINK@
 REPLACE_REALLOC = @REPLACE_REALLOC@
@@ -1295,21 +1301,21 @@ noinst_HEADERS =
 noinst_LIBRARIES = 
 noinst_LTLIBRARIES = libgnu.la
 EXTRA_DIST = alloca.c alloca.in.h argmatch.h arpa_inet.in.h \
-	openat-priv.h openat-proc.c byteswap.in.h chdir-long.c \
-	chdir-long.h cloexec.h close.c close-stream.h closedir.c \
-	dirent-private.h closeout.h connect.c w32sock.h cycle-check.h \
-	dev-ino.h dirent.in.h dirent--.h dirent-safer.h dirfd.c \
-	dirname.h dosname.h dup.c dup2.c errno.in.h error.c error.h \
-	exitfail.h fchdir.c fcntl.c fcntl.in.h fcntl--.h fcntl-safer.h \
-	fd-hook.h filename.h filenamecat.h filevercmp.h float.c \
-	float.in.h itold.c fnmatch.c fnmatch.in.h fnmatch_loop.c \
-	fpending.c fpending.h fstat.c fsusage.c fsusage.h ftell.c \
-	ftello.c stdio-impl.h fts-cycle.c fts.c fts_.h full-write.c \
-	futimens.c gai_strerror.c getaddrinfo.c getcwd-lgpl.c \
-	getdelim.c getdtablesize.c getline.c getlogin_r.c getopt.c \
-	getopt.in.h getopt1.c getopt_int.h gettimeofday.c \
-	$(top_srcdir)/build-aux/gitlog-to-changelog glob-libc.h glob.c \
-	glob.in.h $(top_srcdir)/GNUmakefile hash.h \
+	openat-priv.h openat-proc.c byteswap.in.h c-strcaseeq.h \
+	chdir-long.c chdir-long.h cloexec.h close.c close-stream.h \
+	closedir.c dirent-private.h closeout.h connect.c w32sock.h \
+	cycle-check.h dev-ino.h dirent.in.h dirent--.h dirent-safer.h \
+	dirfd.c dirname.h dosname.h dup.c dup2.c errno.in.h error.c \
+	error.h exitfail.h fchdir.c fcntl.c fcntl.in.h fcntl--.h \
+	fcntl-safer.h fd-hook.h filename.h filenamecat.h filevercmp.h \
+	float.c float.in.h itold.c fnmatch.c fnmatch.in.h \
+	fnmatch_loop.c fpending.c fpending.h fstat.c fsusage.c \
+	fsusage.h ftell.c ftello.c stdio-impl.h fts-cycle.c fts.c \
+	fts_.h full-write.c futimens.c gai_strerror.c getaddrinfo.c \
+	getcwd-lgpl.c getdelim.c getdtablesize.c getline.c \
+	getlogin_r.c getopt.c getopt.in.h getopt1.c getopt_int.h \
+	gettimeofday.c $(top_srcdir)/build-aux/gitlog-to-changelog \
+	glob-libc.h glob.c glob.in.h $(top_srcdir)/GNUmakefile hash.h \
 	$(top_srcdir)/build-aux/config.rpath human.h i-ring.h \
 	ignore-value.h inet_ntop.c intprops.h inttypes.in.h \
 	config.charset ref-add.sin ref-del.sin lseek.c lstat.c \
@@ -1387,20 +1393,21 @@ MAINTAINERCLEANFILES =
 AM_CPPFLAGS = 
 AM_CFLAGS = 
 libgnu_la_SOURCES = argmatch.c bitrotate.h c-ctype.h c-ctype.c \
-	cloexec.c close-stream.c closeout.c cycle-check.c \
-	opendir-safer.c dirname-lgpl.c basename-lgpl.c stripslash.c \
-	exitfail.c creat-safer.c open-safer.c fd-hook.c \
-	filenamecat-lgpl.c filevercmp.c full-read.h full-read.c \
-	full-write.h full-write.c gettext.h gettime.c hash.c \
-	hash-pjw.h hash-pjw.c human.c i-ring.c localcharset.h \
-	localcharset.c glthread/lock.h glthread/lock.c malloca.c \
-	openat-die.c openat-safer.c progname.h progname.c quote.c \
-	quotearg.c read-file.c safe-read.c safe-write.c save-cwd.c \
-	size_max.h sockets.h sockets.c strnlen1.h strnlen1.c \
-	tempname.c glthread/threadlib.c dup-safer.c fd-safer.c \
-	pipe-safer.c utimens.c xmalloc.c xalloc-die.c xsize.h \
-	xstrtol.c xstrtoul.c xstrtol-error.c xstrtoumax.c xvasprintf.h \
-	xvasprintf.c xasprintf.c
+	c-strcase.h c-strcasecmp.c c-strncasecmp.c cloexec.c \
+	close-stream.c closeout.c cycle-check.c opendir-safer.c \
+	dirname-lgpl.c basename-lgpl.c stripslash.c exitfail.c \
+	creat-safer.c open-safer.c fd-hook.c filenamecat-lgpl.c \
+	filevercmp.c full-read.h full-read.c full-write.h full-write.c \
+	gettext.h gettime.c hash.c hash-pjw.h hash-pjw.c human.c \
+	i-ring.c localcharset.h localcharset.c glthread/lock.h \
+	glthread/lock.c malloca.c openat-die.c openat-safer.c \
+	progname.h progname.c quote.c quotearg.c read-file.c \
+	safe-read.c safe-write.c save-cwd.c size_max.h sockets.h \
+	sockets.c strnlen1.h strnlen1.c tempname.c \
+	glthread/threadlib.c dup-safer.c fd-safer.c pipe-safer.c \
+	utimens.c xmalloc.c xalloc-die.c xsize.h xstrtol.c xstrtoul.c \
+	xstrtol-error.c xstrtoumax.c xvasprintf.h xvasprintf.c \
+	xasprintf.c
 libgnu_la_LIBADD = $(gl_LTLIBOBJS) @LTALLOCA@
 libgnu_la_DEPENDENCIES = $(gl_LTLIBOBJS) @LTALLOCA@
 EXTRA_libgnu_la_SOURCES = alloca.c openat-proc.c chdir-long.c close.c \
@@ -1513,6 +1520,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/at-func.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basename-lgpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/c-ctype.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/c-strcasecmp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/c-strncasecmp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/chdir-long.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cloexec.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/close-stream.Plo@am__quote@
@@ -2691,6 +2700,7 @@ stdlib.h: stdlib.in.h $(top_builddir)/config.status $(CXXDEFS_H) \
 	      -e 's/@''GNULIB_PTSNAME''@/$(GNULIB_PTSNAME)/g' \
 	      -e 's/@''GNULIB_PTSNAME_R''@/$(GNULIB_PTSNAME_R)/g' \
 	      -e 's/@''GNULIB_PUTENV''@/$(GNULIB_PUTENV)/g' \
+	      -e 's/@''GNULIB_RANDOM''@/$(GNULIB_RANDOM)/g' \
 	      -e 's/@''GNULIB_RANDOM_R''@/$(GNULIB_RANDOM_R)/g' \
 	      -e 's/@''GNULIB_REALLOC_POSIX''@/$(GNULIB_REALLOC_POSIX)/g' \
 	      -e 's/@''GNULIB_REALPATH''@/$(GNULIB_REALPATH)/g' \
@@ -2718,6 +2728,7 @@ stdlib.h: stdlib.in.h $(top_builddir)/config.status $(CXXDEFS_H) \
 	      -e 's|@''HAVE_POSIX_OPENPT''@|$(HAVE_POSIX_OPENPT)|g' \
 	      -e 's|@''HAVE_PTSNAME''@|$(HAVE_PTSNAME)|g' \
 	      -e 's|@''HAVE_PTSNAME_R''@|$(HAVE_PTSNAME_R)|g' \
+	      -e 's|@''HAVE_RANDOM''@|$(HAVE_RANDOM)|g' \
 	      -e 's|@''HAVE_RANDOM_H''@|$(HAVE_RANDOM_H)|g' \
 	      -e 's|@''HAVE_RANDOM_R''@|$(HAVE_RANDOM_R)|g' \
 	      -e 's|@''HAVE_REALPATH''@|$(HAVE_REALPATH)|g' \
@@ -2737,6 +2748,7 @@ stdlib.h: stdlib.in.h $(top_builddir)/config.status $(CXXDEFS_H) \
 	      -e 's|@''REPLACE_MKSTEMP''@|$(REPLACE_MKSTEMP)|g' \
 	      -e 's|@''REPLACE_PTSNAME_R''@|$(REPLACE_PTSNAME_R)|g' \
 	      -e 's|@''REPLACE_PUTENV''@|$(REPLACE_PUTENV)|g' \
+	      -e 's|@''REPLACE_RANDOM_R''@|$(REPLACE_RANDOM_R)|g' \
 	      -e 's|@''REPLACE_REALLOC''@|$(REPLACE_REALLOC)|g' \
 	      -e 's|@''REPLACE_REALPATH''@|$(REPLACE_REALPATH)|g' \
 	      -e 's|@''REPLACE_SETENV''@|$(REPLACE_SETENV)|g' \

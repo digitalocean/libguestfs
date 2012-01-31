@@ -54,6 +54,7 @@ struct _GuestfsSessionClass
 
 GType guestfs_session_get_type(void);
 GuestfsSession *guestfs_session_new(void);
+gboolean guestfs_session_close(GuestfsSession *session, GError **err);
 
 /* Guestfs::Tristate */
 typedef enum
@@ -656,8 +657,8 @@ gint8 guestfs_session_test0rbool(GuestfsSession *session, const gchar *val, GErr
 gint8 guestfs_session_test0rboolerr(GuestfsSession *session, GError **err);
 const gchar *guestfs_session_test0rconststring(GuestfsSession *session, const gchar *val, GError **err);
 const gchar *guestfs_session_test0rconststringerr(GuestfsSession *session, GError **err);
-const gchar *guestfs_session_test0rconstoptstring(GuestfsSession *session, const gchar *val);
-const gchar *guestfs_session_test0rconstoptstringerr(GuestfsSession *session);
+const gchar *guestfs_session_test0rconstoptstring(GuestfsSession *session, const gchar *val, GError **err);
+const gchar *guestfs_session_test0rconstoptstringerr(GuestfsSession *session, GError **err);
 gchar *guestfs_session_test0rstring(GuestfsSession *session, const gchar *val, GError **err);
 gchar *guestfs_session_test0rstringerr(GuestfsSession *session, GError **err);
 gchar **guestfs_session_test0rstringlist(GuestfsSession *session, const gchar *val, GError **err);
@@ -682,7 +683,7 @@ const gchar *guestfs_session_get_qemu(GuestfsSession *session, GError **err);
 gboolean guestfs_session_set_path(GuestfsSession *session, const gchar *searchpath, GError **err);
 const gchar *guestfs_session_get_path(GuestfsSession *session, GError **err);
 gboolean guestfs_session_set_append(GuestfsSession *session, const gchar *append, GError **err);
-const gchar *guestfs_session_get_append(GuestfsSession *session);
+const gchar *guestfs_session_get_append(GuestfsSession *session, GError **err);
 gboolean guestfs_session_set_autosync(GuestfsSession *session, gboolean autosync, GError **err);
 gint8 guestfs_session_get_autosync(GuestfsSession *session, GError **err);
 gboolean guestfs_session_set_verbose(GuestfsSession *session, gboolean verbose, GError **err);

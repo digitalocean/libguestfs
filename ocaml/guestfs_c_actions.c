@@ -677,7 +677,7 @@ CAMLprim value ocaml_guestfs_add_domain_byte (value *argv, int argn);
 CAMLprim value
 ocaml_guestfs_add_domain_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_add_domain (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
+  return ocaml_guestfs_add_domain (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7]);
 }
 
 /* Automatically generated wrapper for function
@@ -772,7 +772,7 @@ CAMLprim value ocaml_guestfs_add_drive_opts_byte (value *argv, int argn);
 CAMLprim value
 ocaml_guestfs_add_drive_opts_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_add_drive_opts (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4]);
+  return ocaml_guestfs_add_drive_opts (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
 }
 
 /* Automatically generated wrapper for function
@@ -2303,7 +2303,7 @@ CAMLprim value ocaml_guestfs_copy_device_to_device_byte (value *argv, int argn);
 CAMLprim value
 ocaml_guestfs_copy_device_to_device_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_copy_device_to_device (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4]);
+  return ocaml_guestfs_copy_device_to_device (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
 }
 
 /* Automatically generated wrapper for function
@@ -2359,7 +2359,7 @@ CAMLprim value ocaml_guestfs_copy_device_to_file_byte (value *argv, int argn);
 CAMLprim value
 ocaml_guestfs_copy_device_to_file_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_copy_device_to_file (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4]);
+  return ocaml_guestfs_copy_device_to_file (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
 }
 
 /* Automatically generated wrapper for function
@@ -2415,7 +2415,7 @@ CAMLprim value ocaml_guestfs_copy_file_to_device_byte (value *argv, int argn);
 CAMLprim value
 ocaml_guestfs_copy_file_to_device_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_copy_file_to_device (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4]);
+  return ocaml_guestfs_copy_file_to_device (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
 }
 
 /* Automatically generated wrapper for function
@@ -2471,7 +2471,7 @@ CAMLprim value ocaml_guestfs_copy_file_to_file_byte (value *argv, int argn);
 CAMLprim value
 ocaml_guestfs_copy_file_to_file_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_copy_file_to_file (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4]);
+  return ocaml_guestfs_copy_file_to_file (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
 }
 
 /* Automatically generated wrapper for function
@@ -7415,7 +7415,7 @@ CAMLprim value ocaml_guestfs_md_create_byte (value *argv, int argn);
 CAMLprim value
 ocaml_guestfs_md_create_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_md_create (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
+  return ocaml_guestfs_md_create (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7]);
 }
 
 /* Automatically generated wrapper for function
@@ -7975,7 +7975,7 @@ CAMLprim value ocaml_guestfs_mkfs_opts_byte (value *argv, int argn);
 CAMLprim value
 ocaml_guestfs_mkfs_opts_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_mkfs_opts (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
+  return ocaml_guestfs_mkfs_opts (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
 }
 
 /* Automatically generated wrapper for function
@@ -10678,7 +10678,7 @@ CAMLprim value ocaml_guestfs_sfdisk_byte (value *argv, int argn);
 CAMLprim value
 ocaml_guestfs_sfdisk_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_sfdisk (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4]);
+  return ocaml_guestfs_sfdisk (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
 }
 
 /* Automatically generated wrapper for function
@@ -10757,7 +10757,7 @@ CAMLprim value ocaml_guestfs_sfdisk_N_byte (value *argv, int argn);
 CAMLprim value
 ocaml_guestfs_sfdisk_N_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_sfdisk_N (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
+  return ocaml_guestfs_sfdisk_N (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
 }
 
 /* Automatically generated wrapper for function
@@ -11572,7 +11572,7 @@ CAMLprim value ocaml_guestfs_test0_byte (value *argv, int argn);
 CAMLprim value
 ocaml_guestfs_test0_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_test0 (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9], argv[10], argv[11], argv[12]);
+  return ocaml_guestfs_test0 (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9], argv[10], argv[11], argv[12], argv[13]);
 }
 
 /* Automatically generated wrapper for function
@@ -12509,7 +12509,7 @@ CAMLprim value ocaml_guestfs_tune2fs_byte (value *argv, int argn);
 CAMLprim value
 ocaml_guestfs_tune2fs_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_tune2fs (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9], argv[10]);
+  return ocaml_guestfs_tune2fs (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9], argv[10], argv[11]);
 }
 
 /* Automatically generated wrapper for function
@@ -12810,7 +12810,7 @@ CAMLprim value ocaml_guestfs_utimens_byte (value *argv, int argn);
 CAMLprim value
 ocaml_guestfs_utimens_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_utimens (argv[0], argv[0], argv[1], argv[2], argv[3], argv[4]);
+  return ocaml_guestfs_utimens (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
 }
 
 /* Automatically generated wrapper for function

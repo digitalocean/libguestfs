@@ -71,7 +71,8 @@ host_triplet = @host@
 DIST_COMMON = $(srcdir)/META.in $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/subdir-rules.mk
 @HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@am__append_1 = html/index.html
-@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_2 = t/guestfs_010_basic \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@am__append_2 = \
+@ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	t/guestfs_010_basic \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	t/guestfs_070_threads \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	t/guestfs_400_progress
 
@@ -124,19 +125,20 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
 	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
-	$(top_srcdir)/m4/locale-zh.m4 $(top_srcdir)/m4/locale_h.m4 \
-	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
-	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
-	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
-	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
-	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
-	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
-	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
-	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
-	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
-	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/locale-tr.m4 $(top_srcdir)/m4/locale-zh.m4 \
+	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localename.m4 \
+	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
+	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
+	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
+	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
+	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
+	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/mempcpy.m4 \
+	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
+	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
+	$(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/nocrash.m4 \
@@ -473,6 +475,7 @@ GNULIB_PUTENV = @GNULIB_PUTENV@
 GNULIB_PUTS = @GNULIB_PUTS@
 GNULIB_PWRITE = @GNULIB_PWRITE@
 GNULIB_RAISE = @GNULIB_RAISE@
+GNULIB_RANDOM = @GNULIB_RANDOM@
 GNULIB_RANDOM_R = @GNULIB_RANDOM_R@
 GNULIB_RAWMEMCHR = @GNULIB_RAWMEMCHR@
 GNULIB_READ = @GNULIB_READ@
@@ -730,6 +733,7 @@ HAVE_PTSNAME = @HAVE_PTSNAME@
 HAVE_PTSNAME_R = @HAVE_PTSNAME_R@
 HAVE_PWRITE = @HAVE_PWRITE@
 HAVE_RAISE = @HAVE_RAISE@
+HAVE_RANDOM = @HAVE_RANDOM@
 HAVE_RANDOM_H = @HAVE_RANDOM_H@
 HAVE_RANDOM_R = @HAVE_RANDOM_R@
 HAVE_RAWMEMCHR = @HAVE_RAWMEMCHR@
@@ -898,6 +902,7 @@ LOCALCHARSET_TESTS_ENVIRONMENT = @LOCALCHARSET_TESTS_ENVIRONMENT@
 LOCALE_FR = @LOCALE_FR@
 LOCALE_FR_UTF8 = @LOCALE_FR_UTF8@
 LOCALE_JA = @LOCALE_JA@
+LOCALE_TR_UTF8 = @LOCALE_TR_UTF8@
 LOCALE_ZH_CN = @LOCALE_ZH_CN@
 LTALLOCA = @LTALLOCA@
 LTLIBICONV = @LTLIBICONV@
@@ -1110,6 +1115,7 @@ REPLACE_PTSNAME_R = @REPLACE_PTSNAME_R@
 REPLACE_PUTENV = @REPLACE_PUTENV@
 REPLACE_PWRITE = @REPLACE_PWRITE@
 REPLACE_RAISE = @REPLACE_RAISE@
+REPLACE_RANDOM_R = @REPLACE_RANDOM_R@
 REPLACE_READ = @REPLACE_READ@
 REPLACE_READLINK = @REPLACE_READLINK@
 REPLACE_REALLOC = @REPLACE_REALLOC@
@@ -1280,10 +1286,8 @@ CLEANFILES = *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so t/*.cmi \
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@noinst_DATA = mlguestfs.cma mlguestfs.cmxa META \
-@HAVE_OCAML_TRUE@	$(am__append_1) bindtests t/guestfs_005_load \
-@HAVE_OCAML_TRUE@	t/guestfs_010_basic t/guestfs_070_threads \
-@HAVE_OCAML_TRUE@	t/guestfs_080_optargs t/guestfs_400_events \
-@HAVE_OCAML_TRUE@	t/guestfs_400_progress
+@HAVE_OCAML_TRUE@	$(am__append_1) bindtests.bc bindtests.opt \
+@HAVE_OCAML_TRUE@	$(test_progs:%=%.bc) $(test_progs:%=%.opt)
 
 # Build the C part into a library, so that automake handles the C
 # compilation step for us.  Note that we don't directly use this
@@ -1297,12 +1301,17 @@ CLEANFILES = *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so t/*.cmi \
 
 @HAVE_OCAML_TRUE@libguestfsocaml_a_SOURCES = guestfs_c.c guestfs_c_actions.c
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = \
+@HAVE_OCAML_TRUE@	CAML_LD_LIBRARY_PATH=. \
 @HAVE_OCAML_TRUE@	$(top_builddir)/run \
 @HAVE_OCAML_TRUE@	$(VG)
 
-@HAVE_OCAML_TRUE@TESTS = run-bindtests t/guestfs_005_load \
-@HAVE_OCAML_TRUE@	t/guestfs_080_optargs t/guestfs_400_events \
-@HAVE_OCAML_TRUE@	$(am__append_2)
+@HAVE_OCAML_TRUE@test_progs = t/guestfs_005_load t/guestfs_080_optargs \
+@HAVE_OCAML_TRUE@	t/guestfs_400_events $(am__append_2)
+@HAVE_OCAML_TRUE@TESTS = run-bindtests \
+@HAVE_OCAML_TRUE@	$(sort \
+@HAVE_OCAML_TRUE@		$(patsubst %,%.bc,$(test_progs)) \
+@HAVE_OCAML_TRUE@		$(patsubst %,%.opt,$(test_progs)))
+
 @HAVE_OCAML_TRUE@SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly
 all: all-am
 
@@ -1750,36 +1759,74 @@ appliance: force
 @HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@	mkdir -p html
 @HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@	-$(OCAMLDOC) -d html -html $^
 
-@HAVE_OCAML_TRUE@bindtests: bindtests.cmx mlguestfs.cmxa
+@HAVE_OCAML_TRUE@bindtests.bc: bindtests.cmo mlguestfs.cma
+@HAVE_OCAML_TRUE@	mkdir -p t
+@HAVE_OCAML_TRUE@	LD_LIBRARY_PATH=../src/.libs \
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -I . -package unix -linkpkg mlguestfs.cma $< -o $@
+
+@HAVE_OCAML_TRUE@bindtests.opt: bindtests.cmx mlguestfs.cmxa
 @HAVE_OCAML_TRUE@	mkdir -p t
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
-@HAVE_OCAML_TRUE@t/guestfs_005_load: t/guestfs_005_load.cmx mlguestfs.cmxa
+@HAVE_OCAML_TRUE@t/guestfs_005_load.bc: t/guestfs_005_load.cmo mlguestfs.cma
+@HAVE_OCAML_TRUE@	mkdir -p t
+@HAVE_OCAML_TRUE@	LD_LIBRARY_PATH=../src/.libs \
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -I . -package unix -linkpkg mlguestfs.cma $< -o $@
+
+@HAVE_OCAML_TRUE@t/guestfs_005_load.opt: t/guestfs_005_load.cmx mlguestfs.cmxa
 @HAVE_OCAML_TRUE@	mkdir -p t
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
-@HAVE_OCAML_TRUE@t/guestfs_010_basic: t/guestfs_010_basic.cmx mlguestfs.cmxa
+@HAVE_OCAML_TRUE@t/guestfs_010_basic.bc: t/guestfs_010_basic.cmo mlguestfs.cma
+@HAVE_OCAML_TRUE@	mkdir -p t
+@HAVE_OCAML_TRUE@	LD_LIBRARY_PATH=../src/.libs \
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -I . -package unix -linkpkg mlguestfs.cma $< -o $@
+
+@HAVE_OCAML_TRUE@t/guestfs_010_basic.opt: t/guestfs_010_basic.cmx mlguestfs.cmxa
 @HAVE_OCAML_TRUE@	mkdir -p t
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
-@HAVE_OCAML_TRUE@t/guestfs_070_threads: t/guestfs_070_threads.cmx mlguestfs.cmxa
+@HAVE_OCAML_TRUE@t/guestfs_070_threads.bc: t/guestfs_070_threads.cmo mlguestfs.cma
+@HAVE_OCAML_TRUE@	mkdir -p t
+@HAVE_OCAML_TRUE@	LD_LIBRARY_PATH=../src/.libs \
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -I . -package unix,threads -thread -linkpkg mlguestfs.cma $< -o $@
+
+@HAVE_OCAML_TRUE@t/guestfs_070_threads.opt: t/guestfs_070_threads.cmx mlguestfs.cmxa
 @HAVE_OCAML_TRUE@	mkdir -p t
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix,threads -thread -linkpkg mlguestfs.cmxa $< -o $@
 
-@HAVE_OCAML_TRUE@t/guestfs_080_optargs: t/guestfs_080_optargs.cmx mlguestfs.cmxa
+@HAVE_OCAML_TRUE@t/guestfs_080_optargs.bc: t/guestfs_080_optargs.cmo mlguestfs.cma
+@HAVE_OCAML_TRUE@	mkdir -p t
+@HAVE_OCAML_TRUE@	LD_LIBRARY_PATH=../src/.libs \
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -I . -package unix -linkpkg mlguestfs.cma $< -o $@
+
+@HAVE_OCAML_TRUE@t/guestfs_080_optargs.opt: t/guestfs_080_optargs.cmx mlguestfs.cmxa
 @HAVE_OCAML_TRUE@	mkdir -p t
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
-@HAVE_OCAML_TRUE@t/guestfs_400_events: t/guestfs_400_events.cmx mlguestfs.cmxa
+@HAVE_OCAML_TRUE@t/guestfs_400_events.bc: t/guestfs_400_events.cmo mlguestfs.cma
+@HAVE_OCAML_TRUE@	mkdir -p t
+@HAVE_OCAML_TRUE@	LD_LIBRARY_PATH=../src/.libs \
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -I . -package unix -linkpkg mlguestfs.cma $< -o $@
+
+@HAVE_OCAML_TRUE@t/guestfs_400_events.opt: t/guestfs_400_events.cmx mlguestfs.cmxa
 @HAVE_OCAML_TRUE@	mkdir -p t
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
-@HAVE_OCAML_TRUE@t/guestfs_400_progress: t/guestfs_400_progress.cmx mlguestfs.cmxa
+@HAVE_OCAML_TRUE@t/guestfs_400_progress.bc: t/guestfs_400_progress.cmo mlguestfs.cma
+@HAVE_OCAML_TRUE@	mkdir -p t
+@HAVE_OCAML_TRUE@	LD_LIBRARY_PATH=../src/.libs \
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -I . -package unix -linkpkg mlguestfs.cma $< -o $@
+
+@HAVE_OCAML_TRUE@t/guestfs_400_progress.opt: t/guestfs_400_progress.cmx mlguestfs.cmxa
 @HAVE_OCAML_TRUE@	mkdir -p t
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
 # Need to rebuild the tests from source if the main library has
 # changed at all, otherwise we get inconsistent assumptions.
+@HAVE_OCAML_TRUE@t/guestfs_070_threads.cmo: t/guestfs_070_threads.ml mlguestfs.cma
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -package unix,threads -thread -linkpkg -c $< -o $@
+
 @HAVE_OCAML_TRUE@t/guestfs_070_threads.cmx: t/guestfs_070_threads.ml mlguestfs.cmxa
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -package unix,threads -thread -linkpkg -c $< -o $@
 
@@ -1814,6 +1861,8 @@ appliance: force
 @HAVE_OCAML_TRUE@	  -ldconf ignore -destdir $(DESTDIR)$(OCAMLLIB) \
 @HAVE_OCAML_TRUE@	  guestfs \
 @HAVE_OCAML_TRUE@	  META *.so *.a *.cma *.cmx *.cmxa *.cmi $(srcdir)/*.mli
+@HAVE_OCAML_TRUE@	rm $(DESTDIR)$(OCAMLLIB)/guestfs/bindtests.*
+@HAVE_OCAML_TRUE@	rm $(DESTDIR)$(OCAMLLIB)/guestfs/libguestfsocaml.a
 
 # Tell version 3.79 and up of GNU make to not build goals in this
 # directory in parallel.  (Possible solution for RHBZ#502309).

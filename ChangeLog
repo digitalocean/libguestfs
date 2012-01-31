@@ -1,3 +1,128 @@
+2012-01-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.2.
+
+2012-01-30  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	guestmount: use O_ACCMODE instead of hard coding
+	Change hard code 3 to O_ACCMODE.
+	it'll be more sensible.
+
+	(cherry picked from commit d60d5c091f46dda8399ce2af1b6e5920bd5fb819)
+
+2012-01-30  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	guestmount: remove tailing spaces
+	just do a cleanup.
+	remove the tailing spaces.
+
+	(cherry picked from commit 0042898880167f93c5e64d76008ab07bd0aa9485)
+
+2012-01-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Fix crash in aug-defnode (RHBZ#785668). (cherry picked from commit e3f15780c8197a66bfb620b802ba18d0ba0dd2ce)
+
+2012-01-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-alignment-scan: Fix typo in man page (thanks yurchor). (cherry picked from commit 6e703c1316548e42b5133ba508fe0e7d090ac3d0)
+
+2012-01-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Various fixes for bytecode compilation.
+	Set LD_LIBRARY_PATH so we link against the just-built library, not
+	the installed library.
+
+	Use OCAMLCFLAGS instead of OCAMLOPTFLAGS where appropriate.
+
+	Remove unnecessary -cclib option for bytecode linking (gcc is not used
+	in this case).
+
+	This fixes commit eb68a314133c88260cdf4547d7d338446488e698.
+	(cherry picked from commit 03684e7a616eab56a81665c8c8859426e50ae429)
+
+2012-01-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Sort the tests. (cherry picked from commit d33c70fd6417c71b8965a088355dcc9e2ade51f7)
+
+	extra-tests: ocaml: Additional suppressions so we can test bytecode. (cherry picked from commit 8fd5a377b8521d53f56b66136d686a31c7e302b6)
+
+	ocaml: Test bytecode and native code bindings.
+	Compile each test twice, as bytecode and native code, and
+	test both.
+	(cherry picked from commit eb68a314133c88260cdf4547d7d338446488e698)
+
+	ocaml: Fix bytecode bindings for functions with >= 6 args. (cherry picked from commit 799852e64691068f3256c27d18870bdb2537c2be)
+
+2012-01-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	Update to latest gnulib.
+	This contains a workaround for stdalign bug:
+	http://lists.gnu.org/archive/html/bug-gnulib/2012-01/msg00340.html
+	http://gcc.gnu.org/bugzilla/show_bug.cgi?id=52023
+
+	(Thanks Paul Eggert).
+	(cherry picked from commit 7972b1da8121e3f9c98865f00fc6115d9aff2754)
+
+2012-01-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: udev >= 176 now requires /dev to be a devtmpfs.
+	See this udev commit:
+	https://git.kernel.org/?p=linux/hotplug/udev.git;a=commitdiff;h=220893b3cbdbf8932f95c44811b169a8f0d33939
+	(cherry picked from commit 8f564ae7a2fb0f170308bd103a6be0a981583b1c)
+
+	build: Add gobject/TODO.txt to EXTRA_DIST.
+	This updates commit dd25638fc14ea63cf8e8eb0940173f1c6952447f.
+	(cherry picked from commit 93e443ccad74305c41c925f64063ef451db8fa08)
+
+	build: Add contrib/make-check-on-installed.pl to EXTRA_DIST.
+	This updates commit 3d0c9f3fc63395083fef798ee31058a0bea8432e.
+	(cherry picked from commit de00aa84afcdb72ac096d17a290d6f46fc217e4f)
+
+	contrib: Add a script for running test suite on installed packages. (cherry picked from commit 3d0c9f3fc63395083fef798ee31058a0bea8432e)
+
+2012-01-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Fix 'test-guestfish-escapes.sh' when running an alternate guestfish binary.
+	The error messages would be prefixed by the path to the
+	alternate binary, eg:
+
+	../fish/guestfish: invalid escape sequence in string (starting at offset 0)
+
+	Fix this by normalizing the messages further.
+	(cherry picked from commit 09227c9d664ca21b47b65c2fcd8fa2ddc485b554)
+
+2012-01-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Don't install bindtests.*. (cherry picked from commit 9f8e9dcc703759ff1f7413ebf75b90ca20e3acb4)
+
+	ocaml: Don't install libguestfsocaml.a. (cherry picked from commit b1ace6738177481276dce05bf1d2597bb67f2a80)
+
+2012-01-29  Matthew Booth  <mbooth@redhat.com>
+
+	gobject: Add a TODO list (cherry picked from commit dd25638fc14ea63cf8e8eb0940173f1c6952447f)
+
+	gobject: Add an explicit close call
+	This change binds guestfs_close(). It consequently results in RConstOptString
+	being able to throw an error.
+	(cherry picked from commit 8bad4d1c4765fd997511a505cdb2a860148ae16d)
+
+2012-01-29  Matthew Booth  <mbooth@redhat.com>
+
+	gobject: Allow RConstOptString to return an error
+	RConstOptString cannot return an error in the C api. This makes it a special
+	case for the GObject api, as all other return types have a corresponding GError
+	**err argument to return an error. This change removes this special case, and
+	includes the possibility of an error return in the API. An error is indicated by
+	setting *err to a non-NULL value.
+
+	This change is in preparation for adding a close api. An attempt to call any
+	api, even RConstOptString, on a closed handle must return an error.
+	(cherry picked from commit 6568dd85f4aef705e7cf5c4301bc3b8f7119efd2)
+
+2012-01-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.1.
+
 2012-01-24  Richard W.M. Jones  <rjones@redhat.com>
 
 	daemon: Fix use-after-free in case-insensitive-path (found by valgrind).

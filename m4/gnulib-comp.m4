@@ -61,6 +61,9 @@ AC_DEFUN([gl_EARLY],
   # Code from module byteswap-tests:
   # Code from module c-ctype:
   # Code from module c-ctype-tests:
+  # Code from module c-strcase:
+  # Code from module c-strcase-tests:
+  # Code from module c-strcaseeq:
   # Code from module chdir:
   # Code from module chdir-long:
   # Code from module chdir-tests:
@@ -1046,6 +1049,8 @@ fi
 gl_WCHAR_MODULE_INDICATOR([btowc])
 gt_LOCALE_FR
 gt_LOCALE_FR_UTF8
+gt_LOCALE_FR
+gt_LOCALE_TR_UTF8
 gl_MODULE_INDICATOR([fd-safer-flag])
 gl_FUNC_FDOPEN
 if test $REPLACE_FDOPEN = 1; then
@@ -1305,6 +1310,10 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/byteswap.in.h
   lib/c-ctype.c
   lib/c-ctype.h
+  lib/c-strcase.h
+  lib/c-strcasecmp.c
+  lib/c-strcaseeq.h
+  lib/c-strncasecmp.c
   lib/chdir-long.c
   lib/chdir-long.h
   lib/cloexec.c
@@ -1634,6 +1643,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/localcharset.m4
   m4/locale-fr.m4
   m4/locale-ja.m4
+  m4/locale-tr.m4
   m4/locale-zh.m4
   m4/locale_h.m4
   m4/localename.m4
@@ -1774,6 +1784,9 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-btowc2.sh
   tests/test-byteswap.c
   tests/test-c-ctype.c
+  tests/test-c-strcase.sh
+  tests/test-c-strcasecmp.c
+  tests/test-c-strncasecmp.c
   tests/test-chdir.c
   tests/test-cloexec.c
   tests/test-close.c

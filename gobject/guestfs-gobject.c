@@ -39,6 +39,16 @@
  * images.
  */
 
+/* Error quark */
+
+#define GUESTFS_ERROR guestfs_error_quark()
+
+static GQuark
+guestfs_error_quark(void)
+{
+  return g_quark_from_static_string("guestfs");
+}
+
 #define GUESTFS_SESSION_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ( (obj), GUESTFS_TYPE_SESSION, GuestfsSessionPrivate))
 
 struct _GuestfsSessionPrivate
@@ -89,6 +99,29 @@ guestfs_session_new(void)
   return GUESTFS_SESSION(g_object_new(GUESTFS_TYPE_SESSION, NULL));
 }
 
+/**
+ * guestfs_session_close:
+ *
+ * Close a libguestfs session.
+ *
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_close(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+
+  if (g == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, "session is already closed");
+    return FALSE;
+  }
+
+  guestfs_close(g);
+  session->priv->g = NULL;
+
+  return TRUE;
+}
+
 /* Guestfs::Tristate */
 GType
 guestfs_tristate_get_type(void)
@@ -104,16 +137,6 @@ guestfs_tristate_get_type(void)
     etype = g_enum_register_static("GuestfsTristate", values);
   }
   return etype;
-}
-
-/* Error quark */
-
-#define GUESTFS_ERROR guestfs_error_quark()
-
-static GQuark
-guestfs_error_quark(void)
-{
-  return g_quark_from_static_string("guestfs");
 }
 
 /* Cancellation handler */
@@ -2476,6 +2499,13 @@ guestfs_session_test0(GuestfsSession *session, const gchar *str, const gchar *op
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0");
+    return FALSE;
+  }
+
   struct guestfs_test0_argv argv;
   struct guestfs_test0_argv *argvp = NULL;
 
@@ -2553,6 +2583,13 @@ gint32
 guestfs_session_test0rint(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rint");
+    return -1;
+  }
+
   int ret = guestfs_test0rint(g, val);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -2581,6 +2618,13 @@ gint32
 guestfs_session_test0rinterr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rinterr");
+    return -1;
+  }
+
   int ret = guestfs_test0rinterr(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -2610,6 +2654,13 @@ gint64
 guestfs_session_test0rint64(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rint64");
+    return -1;
+  }
+
   int64_t ret = guestfs_test0rint64(g, val);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -2638,6 +2689,13 @@ gint64
 guestfs_session_test0rint64err(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rint64err");
+    return -1;
+  }
+
   int64_t ret = guestfs_test0rint64err(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -2667,6 +2725,13 @@ gint8
 guestfs_session_test0rbool(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rbool");
+    return -1;
+  }
+
   int ret = guestfs_test0rbool(g, val);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -2695,6 +2760,13 @@ gint8
 guestfs_session_test0rboolerr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rboolerr");
+    return -1;
+  }
+
   int ret = guestfs_test0rboolerr(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -2724,6 +2796,13 @@ const gchar *
 guestfs_session_test0rconststring(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rconststring");
+    return NULL;
+  }
+
   const char *ret = guestfs_test0rconststring(g, val);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -2752,6 +2831,13 @@ const gchar *
 guestfs_session_test0rconststringerr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rconststringerr");
+    return NULL;
+  }
+
   const char *ret = guestfs_test0rconststringerr(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -2778,9 +2864,16 @@ guestfs_session_test0rconststringerr(GuestfsSession *session, GError **err)
  * Returns: (transfer none): the returned string. Note that NULL does not indicate error
  */
 const gchar *
-guestfs_session_test0rconstoptstring(GuestfsSession *session, const gchar *val)
+guestfs_session_test0rconstoptstring(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rconstoptstring");
+    return NULL;
+  }
+
   const char *ret = guestfs_test0rconstoptstring(g, val);
 
   return ret;
@@ -2802,9 +2895,16 @@ guestfs_session_test0rconstoptstring(GuestfsSession *session, const gchar *val)
  * Returns: (transfer none): the returned string. Note that NULL does not indicate error
  */
 const gchar *
-guestfs_session_test0rconstoptstringerr(GuestfsSession *session)
+guestfs_session_test0rconstoptstringerr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rconstoptstringerr");
+    return NULL;
+  }
+
   const char *ret = guestfs_test0rconstoptstringerr(g);
 
   return ret;
@@ -2830,6 +2930,13 @@ gchar *
 guestfs_session_test0rstring(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rstring");
+    return NULL;
+  }
+
   char *ret = guestfs_test0rstring(g, val);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -2858,6 +2965,13 @@ gchar *
 guestfs_session_test0rstringerr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rstringerr");
+    return NULL;
+  }
+
   char *ret = guestfs_test0rstringerr(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -2887,6 +3001,13 @@ gchar **
 guestfs_session_test0rstringlist(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rstringlist");
+    return NULL;
+  }
+
   char **ret = guestfs_test0rstringlist(g, val);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -2915,6 +3036,13 @@ gchar **
 guestfs_session_test0rstringlisterr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rstringlisterr");
+    return NULL;
+  }
+
   char **ret = guestfs_test0rstringlisterr(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -2944,6 +3072,13 @@ GuestfsPV *
 guestfs_session_test0rstruct(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rstruct");
+    return NULL;
+  }
+
   struct guestfs_lvm_pv *ret = guestfs_test0rstruct(g, val);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -2988,6 +3123,13 @@ GuestfsPV *
 guestfs_session_test0rstructerr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rstructerr");
+    return NULL;
+  }
+
   struct guestfs_lvm_pv *ret = guestfs_test0rstructerr(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3033,6 +3175,13 @@ GuestfsPV **
 guestfs_session_test0rstructlist(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rstructlist");
+    return NULL;
+  }
+
   struct guestfs_lvm_pv_list *ret = guestfs_test0rstructlist(g, val);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3082,6 +3231,13 @@ GuestfsPV **
 guestfs_session_test0rstructlisterr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rstructlisterr");
+    return NULL;
+  }
+
   struct guestfs_lvm_pv_list *ret = guestfs_test0rstructlisterr(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3132,6 +3288,13 @@ GHashTable *
 guestfs_session_test0rhashtable(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rhashtable");
+    return NULL;
+  }
+
   char **ret = guestfs_test0rhashtable(g, val);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3168,6 +3331,13 @@ GHashTable *
 guestfs_session_test0rhashtableerr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rhashtableerr");
+    return NULL;
+  }
+
   char **ret = guestfs_test0rhashtableerr(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3205,6 +3375,13 @@ guint8 *
 guestfs_session_test0rbufferout(GuestfsSession *session, const gchar *val, gsize *size_r, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rbufferout");
+    return NULL;
+  }
+
   char *ret = guestfs_test0rbufferout(g, val, size_r);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3233,6 +3410,13 @@ guint8 *
 guestfs_session_test0rbufferouterr(GuestfsSession *session, gsize *size_r, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "test0rbufferouterr");
+    return NULL;
+  }
+
   char *ret = guestfs_test0rbufferouterr(g, size_r);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3259,6 +3443,13 @@ gboolean
 guestfs_session_launch(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "launch");
+    return FALSE;
+  }
+
   int ret = guestfs_launch(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3290,6 +3481,13 @@ gboolean
 guestfs_session_wait_ready(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "wait_ready");
+    return FALSE;
+  }
+
   int ret = guestfs_wait_ready(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3313,6 +3511,13 @@ gboolean
 guestfs_session_kill_subprocess(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "kill_subprocess");
+    return FALSE;
+  }
+
   int ret = guestfs_kill_subprocess(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3347,6 +3552,13 @@ gboolean
 guestfs_session_add_drive(GuestfsSession *session, const gchar *filename, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "add_drive");
+    return FALSE;
+  }
+
   int ret = guestfs_add_drive(g, filename);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3387,6 +3599,13 @@ gboolean
 guestfs_session_add_cdrom(GuestfsSession *session, const gchar *filename, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "add_cdrom");
+    return FALSE;
+  }
+
   int ret = guestfs_add_cdrom(g, filename);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3414,6 +3633,13 @@ gboolean
 guestfs_session_add_drive_ro(GuestfsSession *session, const gchar *filename, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "add_drive_ro");
+    return FALSE;
+  }
+
   int ret = guestfs_add_drive_ro(g, filename);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3447,6 +3673,13 @@ gboolean
 guestfs_session_config(GuestfsSession *session, const gchar *qemuparam, const gchar *qemuvalue, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "config");
+    return FALSE;
+  }
+
   int ret = guestfs_config(g, qemuparam, qemuvalue);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3488,6 +3721,13 @@ gboolean
 guestfs_session_set_qemu(GuestfsSession *session, const gchar *qemu, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_qemu");
+    return FALSE;
+  }
+
   int ret = guestfs_set_qemu(g, qemu);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3513,6 +3753,13 @@ const gchar *
 guestfs_session_get_qemu(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_qemu");
+    return NULL;
+  }
+
   const char *ret = guestfs_get_qemu(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3542,6 +3789,13 @@ gboolean
 guestfs_session_set_path(GuestfsSession *session, const gchar *searchpath, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_path");
+    return FALSE;
+  }
+
   int ret = guestfs_set_path(g, searchpath);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3567,6 +3821,13 @@ const gchar *
 guestfs_session_get_path(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_path");
+    return NULL;
+  }
+
   const char *ret = guestfs_get_path(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3597,6 +3858,13 @@ gboolean
 guestfs_session_set_append(GuestfsSession *session, const gchar *append, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_append");
+    return FALSE;
+  }
+
   int ret = guestfs_set_append(g, append);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3619,9 +3887,16 @@ guestfs_session_set_append(GuestfsSession *session, const gchar *append, GError 
  * Returns: (transfer none): the returned string. Note that NULL does not indicate error
  */
 const gchar *
-guestfs_session_get_append(GuestfsSession *session)
+guestfs_session_get_append(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_append");
+    return NULL;
+  }
+
   const char *ret = guestfs_get_append(g);
 
   return ret;
@@ -3647,6 +3922,13 @@ gboolean
 guestfs_session_set_autosync(GuestfsSession *session, gboolean autosync, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_autosync");
+    return FALSE;
+  }
+
   int ret = guestfs_set_autosync(g, autosync);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3669,6 +3951,13 @@ gint8
 guestfs_session_get_autosync(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_autosync");
+    return -1;
+  }
+
   int ret = guestfs_get_autosync(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3699,6 +3988,13 @@ gboolean
 guestfs_session_set_verbose(GuestfsSession *session, gboolean verbose, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_verbose");
+    return FALSE;
+  }
+
   int ret = guestfs_set_verbose(g, verbose);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3721,6 +4017,13 @@ gint8
 guestfs_session_get_verbose(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_verbose");
+    return -1;
+  }
+
   int ret = guestfs_get_verbose(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3746,6 +4049,13 @@ gint8
 guestfs_session_is_ready(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "is_ready");
+    return -1;
+  }
+
   int ret = guestfs_is_ready(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3771,6 +4081,13 @@ gint8
 guestfs_session_is_config(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "is_config");
+    return -1;
+  }
+
   int ret = guestfs_is_config(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3796,6 +4113,13 @@ gint8
 guestfs_session_is_launching(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "is_launching");
+    return -1;
+  }
+
   int ret = guestfs_is_launching(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3821,6 +4145,13 @@ gint8
 guestfs_session_is_busy(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "is_busy");
+    return -1;
+  }
+
   int ret = guestfs_is_busy(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3847,6 +4178,13 @@ gint32
 guestfs_session_get_state(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_state");
+    return -1;
+  }
+
   int ret = guestfs_get_state(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3879,6 +4217,13 @@ gboolean
 guestfs_session_set_memsize(GuestfsSession *session, gint32 memsize, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_memsize");
+    return FALSE;
+  }
+
   int ret = guestfs_set_memsize(g, memsize);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3909,6 +4254,13 @@ gint32
 guestfs_session_get_memsize(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_memsize");
+    return -1;
+  }
+
   int ret = guestfs_get_memsize(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3934,6 +4286,13 @@ gint32
 guestfs_session_get_pid(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_pid");
+    return -1;
+  }
+
   int ret = guestfs_get_pid(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -3986,6 +4345,13 @@ GuestfsVersion *
 guestfs_session_version(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "version");
+    return NULL;
+  }
+
   struct guestfs_version *ret = guestfs_version(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4023,6 +4389,13 @@ gboolean
 guestfs_session_set_selinux(GuestfsSession *session, gboolean selinux, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_selinux");
+    return FALSE;
+  }
+
   int ret = guestfs_set_selinux(g, selinux);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4050,6 +4423,13 @@ gint8
 guestfs_session_get_selinux(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_selinux");
+    return -1;
+  }
+
   int ret = guestfs_get_selinux(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4085,6 +4465,13 @@ gboolean
 guestfs_session_set_trace(GuestfsSession *session, gboolean trace, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_trace");
+    return FALSE;
+  }
+
   int ret = guestfs_set_trace(g, trace);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4107,6 +4494,13 @@ gint8
 guestfs_session_get_trace(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_trace");
+    return -1;
+  }
+
   int ret = guestfs_get_trace(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4142,6 +4536,13 @@ gboolean
 guestfs_session_set_direct(GuestfsSession *session, gboolean direct, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_direct");
+    return FALSE;
+  }
+
   int ret = guestfs_set_direct(g, direct);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4164,6 +4565,13 @@ gint8
 guestfs_session_get_direct(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_direct");
+    return -1;
+  }
+
   int ret = guestfs_get_direct(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4201,6 +4609,13 @@ gboolean
 guestfs_session_set_recovery_proc(GuestfsSession *session, gboolean recoveryproc, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_recovery_proc");
+    return FALSE;
+  }
+
   int ret = guestfs_set_recovery_proc(g, recoveryproc);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4223,6 +4638,13 @@ gint8
 guestfs_session_get_recovery_proc(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_recovery_proc");
+    return -1;
+  }
+
   int ret = guestfs_get_recovery_proc(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4249,6 +4671,13 @@ gboolean
 guestfs_session_add_drive_with_if(GuestfsSession *session, const gchar *filename, const gchar *iface, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "add_drive_with_if");
+    return FALSE;
+  }
+
   int ret = guestfs_add_drive_with_if(g, filename, iface);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4275,6 +4704,13 @@ gboolean
 guestfs_session_add_drive_ro_with_if(GuestfsSession *session, const gchar *filename, const gchar *iface, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "add_drive_ro_with_if");
+    return FALSE;
+  }
+
   int ret = guestfs_add_drive_ro_with_if(g, filename, iface);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4363,6 +4799,13 @@ gchar *
 guestfs_session_file_architecture(GuestfsSession *session, const gchar *filename, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "file_architecture");
+    return NULL;
+  }
+
   char *ret = guestfs_file_architecture(g, filename);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4419,6 +4862,13 @@ gchar **
 guestfs_session_inspect_os(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_os");
+    return NULL;
+  }
+
   char **ret = guestfs_inspect_os(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4467,6 +4917,13 @@ gchar *
 guestfs_session_inspect_get_type(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_type");
+    return NULL;
+  }
+
   char *ret = guestfs_inspect_get_type(g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4497,6 +4954,13 @@ gchar *
 guestfs_session_inspect_get_arch(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_arch");
+    return NULL;
+  }
+
   char *ret = guestfs_inspect_get_arch(g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4587,6 +5051,13 @@ gchar *
 guestfs_session_inspect_get_distro(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_distro");
+    return NULL;
+  }
+
   char *ret = guestfs_inspect_get_distro(g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4623,6 +5094,13 @@ gint32
 guestfs_session_inspect_get_major_version(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_major_version");
+    return -1;
+  }
+
   int ret = guestfs_inspect_get_major_version(g, root);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4653,6 +5131,13 @@ gint32
 guestfs_session_inspect_get_minor_version(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_minor_version");
+    return -1;
+  }
+
   int ret = guestfs_inspect_get_minor_version(g, root);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4684,6 +5169,13 @@ gchar *
 guestfs_session_inspect_get_product_name(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_product_name");
+    return NULL;
+  }
+
   char *ret = guestfs_inspect_get_product_name(g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4731,6 +5223,13 @@ GHashTable *
 guestfs_session_inspect_get_mountpoints(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_mountpoints");
+    return NULL;
+  }
+
   char **ret = guestfs_inspect_get_mountpoints(g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4772,6 +5271,13 @@ gchar **
 guestfs_session_inspect_get_filesystems(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_filesystems");
+    return NULL;
+  }
+
   char **ret = guestfs_inspect_get_filesystems(g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4802,6 +5308,13 @@ gboolean
 guestfs_session_set_network(GuestfsSession *session, gboolean network, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_network");
+    return FALSE;
+  }
+
   int ret = guestfs_set_network(g, network);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4824,6 +5337,13 @@ gint8
 guestfs_session_get_network(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_network");
+    return -1;
+  }
+
   int ret = guestfs_get_network(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4874,6 +5394,13 @@ GHashTable *
 guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "list_filesystems");
+    return NULL;
+  }
+
   char **ret = guestfs_list_filesystems(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4948,6 +5475,13 @@ gboolean
 guestfs_session_add_drive_opts(GuestfsSession *session, const gchar *filename, GuestfsAddDriveOpts *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "add_drive_opts");
+    return FALSE;
+  }
+
   struct guestfs_add_drive_opts_argv argv;
   struct guestfs_add_drive_opts_argv *argvp = NULL;
 
@@ -5019,6 +5553,13 @@ gchar *
 guestfs_session_inspect_get_windows_systemroot(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_windows_systemroot");
+    return NULL;
+  }
+
   char *ret = guestfs_inspect_get_windows_systemroot(g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5050,6 +5591,13 @@ gchar **
 guestfs_session_inspect_get_roots(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_roots");
+    return NULL;
+  }
+
   char **ret = guestfs_inspect_get_roots(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5074,6 +5622,13 @@ gchar **
 guestfs_session_debug_cmdline(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "debug_cmdline");
+    return NULL;
+  }
+
   char **ret = guestfs_debug_cmdline(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5098,6 +5653,13 @@ gchar **
 guestfs_session_debug_drives(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "debug_drives");
+    return NULL;
+  }
+
   char **ret = guestfs_debug_drives(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5202,6 +5764,13 @@ gint32
 guestfs_session_add_domain(GuestfsSession *session, const gchar *dom, GuestfsAddDomain *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "add_domain");
+    return -1;
+  }
+
   struct guestfs_add_domain_argv argv;
   struct guestfs_add_domain_argv *argvp = NULL;
 
@@ -5297,6 +5866,13 @@ gchar *
 guestfs_session_inspect_get_package_format(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_package_format");
+    return NULL;
+  }
+
   char *ret = guestfs_inspect_get_package_format(g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5336,6 +5912,13 @@ gchar *
 guestfs_session_inspect_get_package_management(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_package_management");
+    return NULL;
+  }
+
   char *ret = guestfs_inspect_get_package_management(g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5446,6 +6029,13 @@ GuestfsApplication **
 guestfs_session_inspect_list_applications(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_list_applications");
+    return NULL;
+  }
+
   struct guestfs_application_list *ret = guestfs_inspect_list_applications(g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5495,6 +6085,13 @@ gchar *
 guestfs_session_inspect_get_hostname(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_hostname");
+    return NULL;
+  }
+
   char *ret = guestfs_inspect_get_hostname(g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5539,6 +6136,13 @@ gchar *
 guestfs_session_inspect_get_format(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_format");
+    return NULL;
+  }
+
   char *ret = guestfs_inspect_get_format(g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5566,6 +6170,13 @@ gint8
 guestfs_session_inspect_is_live(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_is_live");
+    return -1;
+  }
+
   int ret = guestfs_inspect_is_live(g, root);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5595,6 +6206,13 @@ gint8
 guestfs_session_inspect_is_netinst(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_is_netinst");
+    return -1;
+  }
+
   int ret = guestfs_inspect_is_netinst(g, root);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5622,6 +6240,13 @@ gint8
 guestfs_session_inspect_is_multipart(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_is_multipart");
+    return -1;
+  }
+
   int ret = guestfs_inspect_is_multipart(g, root);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5658,6 +6283,13 @@ gboolean
 guestfs_session_set_attach_method(GuestfsSession *session, const gchar *attachmethod, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_attach_method");
+    return FALSE;
+  }
+
   int ret = guestfs_set_attach_method(g, attachmethod);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5681,6 +6313,13 @@ gchar *
 guestfs_session_get_attach_method(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_attach_method");
+    return NULL;
+  }
+
   char *ret = guestfs_get_attach_method(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5726,6 +6365,13 @@ gchar *
 guestfs_session_inspect_get_product_variant(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_product_variant");
+    return NULL;
+  }
+
   char *ret = guestfs_inspect_get_product_variant(g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5757,6 +6403,13 @@ gchar *
 guestfs_session_inspect_get_windows_current_control_set(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_windows_current_control_set");
+    return NULL;
+  }
+
   char *ret = guestfs_inspect_get_windows_current_control_set(g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5811,6 +6464,13 @@ GHashTable *
 guestfs_session_inspect_get_drive_mappings(GuestfsSession *session, const gchar *root, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_drive_mappings");
+    return NULL;
+  }
+
   char **ret = guestfs_inspect_get_drive_mappings(g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5893,6 +6553,13 @@ guint8 *
 guestfs_session_inspect_get_icon(GuestfsSession *session, const gchar *root, GuestfsInspectGetIcon *optargs, gsize *size_r, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_get_icon");
+    return NULL;
+  }
+
   struct guestfs_inspect_get_icon_argv argv;
   struct guestfs_inspect_get_icon_argv *argvp = NULL;
 
@@ -5948,6 +6615,13 @@ gboolean
 guestfs_session_set_pgroup(GuestfsSession *session, gboolean pgroup, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_pgroup");
+    return FALSE;
+  }
+
   int ret = guestfs_set_pgroup(g, pgroup);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5970,6 +6644,13 @@ gint8
 guestfs_session_get_pgroup(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_pgroup");
+    return -1;
+  }
+
   int ret = guestfs_get_pgroup(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -5997,6 +6678,13 @@ gboolean
 guestfs_session_set_smp(GuestfsSession *session, gint32 smp, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_smp");
+    return FALSE;
+  }
+
   int ret = guestfs_set_smp(g, smp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6020,6 +6708,13 @@ gint32
 guestfs_session_get_smp(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_smp");
+    return -1;
+  }
+
   int ret = guestfs_get_smp(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6065,6 +6760,13 @@ gboolean
 guestfs_session_mount(GuestfsSession *session, const gchar *device, const gchar *mountpoint, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mount");
+    return FALSE;
+  }
+
   int ret = guestfs_mount(g, device, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6091,6 +6793,13 @@ gboolean
 guestfs_session_sync(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "sync");
+    return FALSE;
+  }
+
   int ret = guestfs_sync(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6120,6 +6829,13 @@ gboolean
 guestfs_session_touch(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "touch");
+    return FALSE;
+  }
+
   int ret = guestfs_touch(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6149,6 +6865,13 @@ gchar *
 guestfs_session_cat(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "cat");
+    return NULL;
+  }
+
   char *ret = guestfs_cat(g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6177,6 +6900,13 @@ gchar *
 guestfs_session_ll(GuestfsSession *session, const gchar *directory, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ll");
+    return NULL;
+  }
+
   char *ret = guestfs_ll(g, directory);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6205,6 +6935,13 @@ gchar **
 guestfs_session_ls(GuestfsSession *session, const gchar *directory, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ls");
+    return NULL;
+  }
+
   char **ret = guestfs_ls(g, directory);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6232,6 +6969,13 @@ gchar **
 guestfs_session_list_devices(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "list_devices");
+    return NULL;
+  }
+
   char **ret = guestfs_list_devices(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6262,6 +7006,13 @@ gchar **
 guestfs_session_list_partitions(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "list_partitions");
+    return NULL;
+  }
+
   char **ret = guestfs_list_partitions(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6290,6 +7041,13 @@ gchar **
 guestfs_session_pvs(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "pvs");
+    return NULL;
+  }
+
   char **ret = guestfs_pvs(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6318,6 +7076,13 @@ gchar **
 guestfs_session_vgs(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "vgs");
+    return NULL;
+  }
+
   char **ret = guestfs_vgs(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6346,6 +7111,13 @@ gchar **
 guestfs_session_lvs(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lvs");
+    return NULL;
+  }
+
   char **ret = guestfs_lvs(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6370,6 +7142,13 @@ GuestfsPV **
 guestfs_session_pvs_full(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "pvs_full");
+    return NULL;
+  }
+
   struct guestfs_lvm_pv_list *ret = guestfs_pvs_full(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6415,6 +7194,13 @@ GuestfsVG **
 guestfs_session_vgs_full(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "vgs_full");
+    return NULL;
+  }
+
   struct guestfs_lvm_vg_list *ret = guestfs_vgs_full(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6465,6 +7251,13 @@ GuestfsLV **
 guestfs_session_lvs_full(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lvs_full");
+    return NULL;
+  }
+
   struct guestfs_lvm_lv_list *ret = guestfs_lvs_full(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6521,6 +7314,13 @@ gchar **
 guestfs_session_read_lines(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "read_lines");
+    return NULL;
+  }
+
   char **ret = guestfs_read_lines(g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6587,6 +7387,13 @@ gboolean
 guestfs_session_aug_init(GuestfsSession *session, const gchar *root, gint32 flags, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "aug_init");
+    return FALSE;
+  }
+
   int ret = guestfs_aug_init(g, root, flags);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6612,6 +7419,13 @@ gboolean
 guestfs_session_aug_close(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "aug_close");
+    return FALSE;
+  }
+
   int ret = guestfs_aug_close(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6642,6 +7456,13 @@ gint32
 guestfs_session_aug_defvar(GuestfsSession *session, const gchar *name, const gchar *expr, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "aug_defvar");
+    return -1;
+  }
+
   int ret = guestfs_aug_defvar(g, name, expr);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6677,6 +7498,13 @@ GuestfsIntBool *
 guestfs_session_aug_defnode(GuestfsSession *session, const gchar *name, const gchar *expr, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "aug_defnode");
+    return NULL;
+  }
+
   struct guestfs_int_bool *ret = guestfs_aug_defnode(g, name, expr, val);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6705,6 +7533,13 @@ gchar *
 guestfs_session_aug_get(GuestfsSession *session, const gchar *augpath, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "aug_get");
+    return NULL;
+  }
+
   char *ret = guestfs_aug_get(g, augpath);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6734,6 +7569,13 @@ gboolean
 guestfs_session_aug_set(GuestfsSession *session, const gchar *augpath, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "aug_set");
+    return FALSE;
+  }
+
   int ret = guestfs_aug_set(g, augpath, val);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6765,6 +7607,13 @@ gboolean
 guestfs_session_aug_insert(GuestfsSession *session, const gchar *augpath, const gchar *label, gboolean before, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "aug_insert");
+    return FALSE;
+  }
+
   int ret = guestfs_aug_insert(g, augpath, label, before);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6791,6 +7640,13 @@ gint32
 guestfs_session_aug_rm(GuestfsSession *session, const gchar *augpath, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "aug_rm");
+    return -1;
+  }
+
   int ret = guestfs_aug_rm(g, augpath);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6816,6 +7672,13 @@ gboolean
 guestfs_session_aug_mv(GuestfsSession *session, const gchar *src, const gchar *dest, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "aug_mv");
+    return FALSE;
+  }
+
   int ret = guestfs_aug_mv(g, src, dest);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6841,6 +7704,13 @@ gchar **
 guestfs_session_aug_match(GuestfsSession *session, const gchar *augpath, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "aug_match");
+    return NULL;
+  }
+
   char **ret = guestfs_aug_match(g, augpath);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6866,6 +7736,13 @@ gboolean
 guestfs_session_aug_save(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "aug_save");
+    return FALSE;
+  }
+
   int ret = guestfs_aug_save(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6891,6 +7768,13 @@ gboolean
 guestfs_session_aug_load(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "aug_load");
+    return FALSE;
+  }
+
   int ret = guestfs_aug_load(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6916,6 +7800,13 @@ gchar **
 guestfs_session_aug_ls(GuestfsSession *session, const gchar *augpath, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "aug_ls");
+    return NULL;
+  }
+
   char **ret = guestfs_aug_ls(g, augpath);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6939,6 +7830,13 @@ gboolean
 guestfs_session_rm(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "rm");
+    return FALSE;
+  }
+
   int ret = guestfs_rm(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6962,6 +7860,13 @@ gboolean
 guestfs_session_rmdir(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "rmdir");
+    return FALSE;
+  }
+
   int ret = guestfs_rmdir(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -6987,6 +7892,13 @@ gboolean
 guestfs_session_rm_rf(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "rm_rf");
+    return FALSE;
+  }
+
   int ret = guestfs_rm_rf(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7010,6 +7922,13 @@ gboolean
 guestfs_session_mkdir(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mkdir");
+    return FALSE;
+  }
+
   int ret = guestfs_mkdir(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7035,6 +7954,13 @@ gboolean
 guestfs_session_mkdir_p(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mkdir_p");
+    return FALSE;
+  }
+
   int ret = guestfs_mkdir_p(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7066,6 +7992,13 @@ gboolean
 guestfs_session_chmod(GuestfsSession *session, gint32 mode, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "chmod");
+    return FALSE;
+  }
+
   int ret = guestfs_chmod(g, mode, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7096,6 +8029,13 @@ gboolean
 guestfs_session_chown(GuestfsSession *session, gint32 owner, gint32 group, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "chown");
+    return FALSE;
+  }
+
   int ret = guestfs_chown(g, owner, group, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7123,6 +8063,13 @@ gint8
 guestfs_session_exists(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "exists");
+    return -1;
+  }
+
   int ret = guestfs_exists(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7150,6 +8097,13 @@ gint8
 guestfs_session_is_file(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "is_file");
+    return -1;
+  }
+
   int ret = guestfs_is_file(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7177,6 +8131,13 @@ gint8
 guestfs_session_is_dir(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "is_dir");
+    return -1;
+  }
+
   int ret = guestfs_is_dir(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7202,6 +8163,13 @@ gboolean
 guestfs_session_pvcreate(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "pvcreate");
+    return FALSE;
+  }
+
   int ret = guestfs_pvcreate(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7227,6 +8195,13 @@ gboolean
 guestfs_session_vgcreate(GuestfsSession *session, const gchar *volgroup, gchar *const *physvols, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "vgcreate");
+    return FALSE;
+  }
+
   int ret = guestfs_vgcreate(g, volgroup, physvols);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7253,6 +8228,13 @@ gboolean
 guestfs_session_lvcreate(GuestfsSession *session, const gchar *logvol, const gchar *volgroup, gint32 mbytes, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lvcreate");
+    return FALSE;
+  }
+
   int ret = guestfs_lvcreate(g, logvol, volgroup, mbytes);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7279,6 +8261,13 @@ gboolean
 guestfs_session_mkfs(GuestfsSession *session, const gchar *fstype, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mkfs");
+    return FALSE;
+  }
+
   int ret = guestfs_mkfs(g, fstype, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7330,6 +8319,13 @@ gboolean
 guestfs_session_sfdisk(GuestfsSession *session, const gchar *device, gint32 cyls, gint32 heads, gint32 sectors, gchar *const *lines, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "sfdisk");
+    return FALSE;
+  }
+
   int ret = guestfs_sfdisk(g, device, cyls, heads, sectors, lines);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7365,6 +8361,13 @@ gboolean
 guestfs_session_write_file(GuestfsSession *session, const gchar *path, const gchar *content, gint32 size, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "write_file");
+    return FALSE;
+  }
+
   int ret = guestfs_write_file(g, path, content, size);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7390,6 +8393,13 @@ gboolean
 guestfs_session_umount(GuestfsSession *session, const gchar *pathordevice, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "umount");
+    return FALSE;
+  }
+
   int ret = guestfs_umount(g, pathordevice);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7418,6 +8428,13 @@ gchar **
 guestfs_session_mounts(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mounts");
+    return NULL;
+  }
+
   char **ret = guestfs_mounts(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7442,6 +8459,13 @@ gboolean
 guestfs_session_umount_all(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "umount_all");
+    return FALSE;
+  }
+
   int ret = guestfs_umount_all(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7465,6 +8489,13 @@ gboolean
 guestfs_session_lvm_remove_all(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lvm_remove_all");
+    return FALSE;
+  }
+
   int ret = guestfs_lvm_remove_all(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7505,6 +8536,13 @@ gchar *
 guestfs_session_file(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "file");
+    return NULL;
+  }
+
   char *ret = guestfs_file(g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7556,6 +8594,13 @@ gchar *
 guestfs_session_command(GuestfsSession *session, gchar *const *arguments, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "command");
+    return NULL;
+  }
+
   char *ret = guestfs_command(g, arguments);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7582,6 +8627,13 @@ gchar **
 guestfs_session_command_lines(GuestfsSession *session, gchar *const *arguments, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "command_lines");
+    return NULL;
+  }
+
   char **ret = guestfs_command_lines(g, arguments);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7607,6 +8659,13 @@ GuestfsStat *
 guestfs_session_stat(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "stat");
+    return NULL;
+  }
+
   struct guestfs_stat *ret = guestfs_stat(g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7651,6 +8710,13 @@ GuestfsStat *
 guestfs_session_lstat(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lstat");
+    return NULL;
+  }
+
   struct guestfs_stat *ret = guestfs_lstat(g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7694,6 +8760,13 @@ GuestfsStatVFS *
 guestfs_session_statvfs(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "statvfs");
+    return NULL;
+  }
+
   struct guestfs_statvfs *ret = guestfs_statvfs(g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7737,6 +8810,13 @@ GHashTable *
 guestfs_session_tune2fs_l(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "tune2fs_l");
+    return NULL;
+  }
+
   char **ret = guestfs_tune2fs_l(g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7770,6 +8850,13 @@ gboolean
 guestfs_session_blockdev_setro(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "blockdev_setro");
+    return FALSE;
+  }
+
   int ret = guestfs_blockdev_setro(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7795,6 +8882,13 @@ gboolean
 guestfs_session_blockdev_setrw(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "blockdev_setrw");
+    return FALSE;
+  }
+
   int ret = guestfs_blockdev_setrw(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7821,6 +8915,13 @@ gint8
 guestfs_session_blockdev_getro(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "blockdev_getro");
+    return -1;
+  }
+
   int ret = guestfs_blockdev_getro(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7850,6 +8951,13 @@ gint32
 guestfs_session_blockdev_getss(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "blockdev_getss");
+    return -1;
+  }
+
   int ret = guestfs_blockdev_getss(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7878,6 +8986,13 @@ gint32
 guestfs_session_blockdev_getbsz(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "blockdev_getbsz");
+    return -1;
+  }
+
   int ret = guestfs_blockdev_getbsz(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7907,6 +9022,13 @@ gboolean
 guestfs_session_blockdev_setbsz(GuestfsSession *session, const gchar *device, gint32 blocksize, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "blockdev_setbsz");
+    return FALSE;
+  }
+
   int ret = guestfs_blockdev_setbsz(g, device, blocksize);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7938,6 +9060,13 @@ gint64
 guestfs_session_blockdev_getsz(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "blockdev_getsz");
+    return -1;
+  }
+
   int64_t ret = guestfs_blockdev_getsz(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7965,6 +9094,13 @@ gint64
 guestfs_session_blockdev_getsize64(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "blockdev_getsize64");
+    return -1;
+  }
+
   int64_t ret = guestfs_blockdev_getsize64(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7991,6 +9127,13 @@ gboolean
 guestfs_session_blockdev_flushbufs(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "blockdev_flushbufs");
+    return FALSE;
+  }
+
   int ret = guestfs_blockdev_flushbufs(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8016,6 +9159,13 @@ gboolean
 guestfs_session_blockdev_rereadpt(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "blockdev_rereadpt");
+    return FALSE;
+  }
+
   int ret = guestfs_blockdev_rereadpt(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8049,6 +9199,13 @@ guestfs_session_upload(GuestfsSession *session, const gchar *filename, const gch
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "upload");
+    return FALSE;
+  }
+
   gulong id = 0;
   if (cancellable) {
     id = g_cancellable_connect(cancellable,
@@ -8090,6 +9247,13 @@ guestfs_session_download(GuestfsSession *session, const gchar *remotefilename, c
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "download");
+    return FALSE;
+  }
+
   gulong id = 0;
   if (cancellable) {
     id = g_cancellable_connect(cancellable,
@@ -8161,6 +9325,13 @@ gchar *
 guestfs_session_checksum(GuestfsSession *session, const gchar *csumtype, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "checksum");
+    return NULL;
+  }
+
   char *ret = guestfs_checksum(g, csumtype, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8193,6 +9364,13 @@ guestfs_session_tar_in(GuestfsSession *session, const gchar *tarfile, const gcha
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "tar_in");
+    return FALSE;
+  }
+
   gulong id = 0;
   if (cancellable) {
     id = g_cancellable_connect(cancellable,
@@ -8233,6 +9411,13 @@ guestfs_session_tar_out(GuestfsSession *session, const gchar *directory, const g
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "tar_out");
+    return FALSE;
+  }
+
   gulong id = 0;
   if (cancellable) {
     id = g_cancellable_connect(cancellable,
@@ -8272,6 +9457,13 @@ guestfs_session_tgz_in(GuestfsSession *session, const gchar *tarball, const gcha
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "tgz_in");
+    return FALSE;
+  }
+
   gulong id = 0;
   if (cancellable) {
     id = g_cancellable_connect(cancellable,
@@ -8312,6 +9504,13 @@ guestfs_session_tgz_out(GuestfsSession *session, const gchar *directory, const g
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "tgz_out");
+    return FALSE;
+  }
+
   gulong id = 0;
   if (cancellable) {
     id = g_cancellable_connect(cancellable,
@@ -8345,6 +9544,13 @@ gboolean
 guestfs_session_mount_ro(GuestfsSession *session, const gchar *device, const gchar *mountpoint, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mount_ro");
+    return FALSE;
+  }
+
   int ret = guestfs_mount_ro(g, device, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8376,6 +9582,13 @@ gboolean
 guestfs_session_mount_options(GuestfsSession *session, const gchar *options, const gchar *device, const gchar *mountpoint, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mount_options");
+    return FALSE;
+  }
+
   int ret = guestfs_mount_options(g, options, device, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8404,6 +9617,13 @@ gboolean
 guestfs_session_mount_vfs(GuestfsSession *session, const gchar *options, const gchar *vfstype, const gchar *device, const gchar *mountpoint, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mount_vfs");
+    return FALSE;
+  }
+
   int ret = guestfs_mount_vfs(g, options, vfstype, device, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8434,6 +9654,13 @@ gchar *
 guestfs_session_debug(GuestfsSession *session, const gchar *subcmd, gchar *const *extraargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "debug");
+    return NULL;
+  }
+
   char *ret = guestfs_debug(g, subcmd, extraargs);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8461,6 +9688,13 @@ gboolean
 guestfs_session_lvremove(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lvremove");
+    return FALSE;
+  }
+
   int ret = guestfs_lvremove(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8487,6 +9721,13 @@ gboolean
 guestfs_session_vgremove(GuestfsSession *session, const gchar *vgname, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "vgremove");
+    return FALSE;
+  }
+
   int ret = guestfs_vgremove(g, vgname);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8515,6 +9756,13 @@ gboolean
 guestfs_session_pvremove(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "pvremove");
+    return FALSE;
+  }
+
   int ret = guestfs_pvremove(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8545,6 +9793,13 @@ gboolean
 guestfs_session_set_e2label(GuestfsSession *session, const gchar *device, const gchar *label, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_e2label");
+    return FALSE;
+  }
+
   int ret = guestfs_set_e2label(g, device, label);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8569,6 +9824,13 @@ gchar *
 guestfs_session_get_e2label(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_e2label");
+    return NULL;
+  }
+
   char *ret = guestfs_get_e2label(g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8600,6 +9862,13 @@ gboolean
 guestfs_session_set_e2uuid(GuestfsSession *session, const gchar *device, const gchar *uuid, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_e2uuid");
+    return FALSE;
+  }
+
   int ret = guestfs_set_e2uuid(g, device, uuid);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8624,6 +9893,13 @@ gchar *
 guestfs_session_get_e2uuid(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_e2uuid");
+    return NULL;
+  }
+
   char *ret = guestfs_get_e2uuid(g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8666,6 +9942,13 @@ gint32
 guestfs_session_fsck(GuestfsSession *session, const gchar *fstype, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "fsck");
+    return -1;
+  }
+
   int ret = guestfs_fsck(g, fstype, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8702,6 +9985,13 @@ gboolean
 guestfs_session_zero(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "zero");
+    return FALSE;
+  }
+
   int ret = guestfs_zero(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8754,6 +10044,13 @@ gboolean
 guestfs_session_grub_install(GuestfsSession *session, const gchar *root, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "grub_install");
+    return FALSE;
+  }
+
   int ret = guestfs_grub_install(g, root, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8779,6 +10076,13 @@ gboolean
 guestfs_session_cp(GuestfsSession *session, const gchar *src, const gchar *dest, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "cp");
+    return FALSE;
+  }
+
   int ret = guestfs_cp(g, src, dest);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8804,6 +10108,13 @@ gboolean
 guestfs_session_cp_a(GuestfsSession *session, const gchar *src, const gchar *dest, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "cp_a");
+    return FALSE;
+  }
+
   int ret = guestfs_cp_a(g, src, dest);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8829,6 +10140,13 @@ gboolean
 guestfs_session_mv(GuestfsSession *session, const gchar *src, const gchar *dest, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mv");
+    return FALSE;
+  }
+
   int ret = guestfs_mv(g, src, dest);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8860,6 +10178,13 @@ gboolean
 guestfs_session_drop_caches(GuestfsSession *session, gint32 whattodrop, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "drop_caches");
+    return FALSE;
+  }
+
   int ret = guestfs_drop_caches(g, whattodrop);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8889,6 +10214,13 @@ gchar *
 guestfs_session_dmesg(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "dmesg");
+    return NULL;
+  }
+
   char *ret = guestfs_dmesg(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8915,6 +10247,13 @@ gboolean
 guestfs_session_ping_daemon(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ping_daemon");
+    return FALSE;
+  }
+
   int ret = guestfs_ping_daemon(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8943,6 +10282,13 @@ gint8
 guestfs_session_equal(GuestfsSession *session, const gchar *file1, const gchar *file2, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "equal");
+    return -1;
+  }
+
   int ret = guestfs_equal(g, file1, file2);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -8967,6 +10313,13 @@ gchar **
 guestfs_session_strings(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "strings");
+    return NULL;
+  }
+
   char **ret = guestfs_strings(g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9015,6 +10368,13 @@ gchar **
 guestfs_session_strings_e(GuestfsSession *session, const gchar *encoding, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "strings_e");
+    return NULL;
+  }
+
   char **ret = guestfs_strings_e(g, encoding, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9039,6 +10399,13 @@ gchar *
 guestfs_session_hexdump(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hexdump");
+    return NULL;
+  }
+
   char *ret = guestfs_hexdump(g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9071,6 +10438,13 @@ gboolean
 guestfs_session_zerofree(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "zerofree");
+    return FALSE;
+  }
+
   int ret = guestfs_zerofree(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9096,6 +10470,13 @@ gboolean
 guestfs_session_pvresize(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "pvresize");
+    return FALSE;
+  }
+
   int ret = guestfs_pvresize(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9130,6 +10511,13 @@ gboolean
 guestfs_session_sfdisk_N(GuestfsSession *session, const gchar *device, gint32 partnum, gint32 cyls, gint32 heads, gint32 sectors, const gchar *line, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "sfdisk_N");
+    return FALSE;
+  }
+
   int ret = guestfs_sfdisk_N(g, device, partnum, cyls, heads, sectors, line);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9157,6 +10545,13 @@ gchar *
 guestfs_session_sfdisk_l(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "sfdisk_l");
+    return NULL;
+  }
+
   char *ret = guestfs_sfdisk_l(g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9184,6 +10579,13 @@ gchar *
 guestfs_session_sfdisk_kernel_geometry(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "sfdisk_kernel_geometry");
+    return NULL;
+  }
+
   char *ret = guestfs_sfdisk_kernel_geometry(g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9214,6 +10616,13 @@ gchar *
 guestfs_session_sfdisk_disk_geometry(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "sfdisk_disk_geometry");
+    return NULL;
+  }
+
   char *ret = guestfs_sfdisk_disk_geometry(g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9240,6 +10649,13 @@ gboolean
 guestfs_session_vg_activate_all(GuestfsSession *session, gboolean activate, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "vg_activate_all");
+    return FALSE;
+  }
+
   int ret = guestfs_vg_activate_all(g, activate);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9272,6 +10688,13 @@ gboolean
 guestfs_session_vg_activate(GuestfsSession *session, gboolean activate, gchar *const *volgroups, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "vg_activate");
+    return FALSE;
+  }
+
   int ret = guestfs_vg_activate(g, activate, volgroups);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9298,6 +10721,13 @@ gboolean
 guestfs_session_lvresize(GuestfsSession *session, const gchar *device, gint32 mbytes, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lvresize");
+    return FALSE;
+  }
+
   int ret = guestfs_lvresize(g, device, mbytes);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9329,6 +10759,13 @@ gboolean
 guestfs_session_resize2fs(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "resize2fs");
+    return FALSE;
+  }
+
   int ret = guestfs_resize2fs(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9378,6 +10815,13 @@ gchar **
 guestfs_session_find(GuestfsSession *session, const gchar *directory, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "find");
+    return NULL;
+  }
+
   char **ret = guestfs_find(g, directory);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9407,6 +10851,13 @@ gboolean
 guestfs_session_e2fsck_f(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "e2fsck_f");
+    return FALSE;
+  }
+
   int ret = guestfs_e2fsck_f(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9430,6 +10881,13 @@ gboolean
 guestfs_session_sleep(GuestfsSession *session, gint32 secs, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "sleep");
+    return FALSE;
+  }
+
   int ret = guestfs_sleep(g, secs);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9466,6 +10924,13 @@ gint32
 guestfs_session_ntfs_3g_probe(GuestfsSession *session, gboolean rw, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ntfs_3g_probe");
+    return -1;
+  }
+
   int ret = guestfs_ntfs_3g_probe(g, rw, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9502,6 +10967,13 @@ gchar *
 guestfs_session_sh(GuestfsSession *session, const gchar *command, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "sh");
+    return NULL;
+  }
+
   char *ret = guestfs_sh(g, command);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9528,6 +11000,13 @@ gchar **
 guestfs_session_sh_lines(GuestfsSession *session, const gchar *command, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "sh_lines");
+    return NULL;
+  }
+
   char **ret = guestfs_sh_lines(g, command);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9560,6 +11039,13 @@ gchar **
 guestfs_session_glob_expand(GuestfsSession *session, const gchar *pattern, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "glob_expand");
+    return NULL;
+  }
+
   char **ret = guestfs_glob_expand(g, pattern);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9587,6 +11073,13 @@ gboolean
 guestfs_session_scrub_device(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "scrub_device");
+    return FALSE;
+  }
+
   int ret = guestfs_scrub_device(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9616,6 +11109,13 @@ gboolean
 guestfs_session_scrub_file(GuestfsSession *session, const gchar *file, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "scrub_file");
+    return FALSE;
+  }
+
   int ret = guestfs_scrub_file(g, file);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9646,6 +11146,13 @@ gboolean
 guestfs_session_scrub_freespace(GuestfsSession *session, const gchar *dir, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "scrub_freespace");
+    return FALSE;
+  }
+
   int ret = guestfs_scrub_freespace(g, dir);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9687,6 +11194,13 @@ gchar *
 guestfs_session_mkdtemp(GuestfsSession *session, const gchar *template, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mkdtemp");
+    return NULL;
+  }
+
   char *ret = guestfs_mkdtemp(g, template);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9711,6 +11225,13 @@ gint32
 guestfs_session_wc_l(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "wc_l");
+    return -1;
+  }
+
   int ret = guestfs_wc_l(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9735,6 +11256,13 @@ gint32
 guestfs_session_wc_w(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "wc_w");
+    return -1;
+  }
+
   int ret = guestfs_wc_w(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9759,6 +11287,13 @@ gint32
 guestfs_session_wc_c(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "wc_c");
+    return -1;
+  }
+
   int ret = guestfs_wc_c(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9783,6 +11318,13 @@ gchar **
 guestfs_session_head(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "head");
+    return NULL;
+  }
+
   char **ret = guestfs_head(g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9815,6 +11357,13 @@ gchar **
 guestfs_session_head_n(GuestfsSession *session, gint32 nrlines, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "head_n");
+    return NULL;
+  }
+
   char **ret = guestfs_head_n(g, nrlines, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9839,6 +11388,13 @@ gchar **
 guestfs_session_tail(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "tail");
+    return NULL;
+  }
+
   char **ret = guestfs_tail(g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9871,6 +11427,13 @@ gchar **
 guestfs_session_tail_n(GuestfsSession *session, gint32 nrlines, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "tail_n");
+    return NULL;
+  }
+
   char **ret = guestfs_tail_n(g, nrlines, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9898,6 +11461,13 @@ gchar *
 guestfs_session_df(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "df");
+    return NULL;
+  }
+
   char *ret = guestfs_df(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9925,6 +11495,13 @@ gchar *
 guestfs_session_df_h(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "df_h");
+    return NULL;
+  }
+
   char *ret = guestfs_df_h(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9956,6 +11533,13 @@ gint64
 guestfs_session_du(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "du");
+    return -1;
+  }
+
   int64_t ret = guestfs_du(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -9988,6 +11572,13 @@ gchar **
 guestfs_session_initrd_list(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "initrd_list");
+    return NULL;
+  }
+
   char **ret = guestfs_initrd_list(g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10014,6 +11605,13 @@ gboolean
 guestfs_session_mount_loop(GuestfsSession *session, const gchar *file, const gchar *mountpoint, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mount_loop");
+    return FALSE;
+  }
+
   int ret = guestfs_mount_loop(g, file, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10037,6 +11635,13 @@ gboolean
 guestfs_session_mkswap(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mkswap");
+    return FALSE;
+  }
+
   int ret = guestfs_mkswap(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10065,6 +11670,13 @@ gboolean
 guestfs_session_mkswap_L(GuestfsSession *session, const gchar *label, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mkswap_L");
+    return FALSE;
+  }
+
   int ret = guestfs_mkswap_L(g, label, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10089,6 +11701,13 @@ gboolean
 guestfs_session_mkswap_U(GuestfsSession *session, const gchar *uuid, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mkswap_U");
+    return FALSE;
+  }
+
   int ret = guestfs_mkswap_U(g, uuid, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10132,6 +11751,13 @@ gboolean
 guestfs_session_mknod(GuestfsSession *session, gint32 mode, gint32 devmajor, gint32 devminor, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mknod");
+    return FALSE;
+  }
+
   int ret = guestfs_mknod(g, mode, devmajor, devminor, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10160,6 +11786,13 @@ gboolean
 guestfs_session_mkfifo(GuestfsSession *session, gint32 mode, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mkfifo");
+    return FALSE;
+  }
+
   int ret = guestfs_mkfifo(g, mode, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10191,6 +11824,13 @@ gboolean
 guestfs_session_mknod_b(GuestfsSession *session, gint32 mode, gint32 devmajor, gint32 devminor, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mknod_b");
+    return FALSE;
+  }
+
   int ret = guestfs_mknod_b(g, mode, devmajor, devminor, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10222,6 +11862,13 @@ gboolean
 guestfs_session_mknod_c(GuestfsSession *session, gint32 mode, gint32 devmajor, gint32 devminor, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mknod_c");
+    return FALSE;
+  }
+
   int ret = guestfs_mknod_c(g, mode, devmajor, devminor, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10260,6 +11907,13 @@ gint32
 guestfs_session_umask(GuestfsSession *session, gint32 mask, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "umask");
+    return -1;
+  }
+
   int ret = guestfs_umask(g, mask);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10316,6 +11970,13 @@ GuestfsDirent **
 guestfs_session_readdir(GuestfsSession *session, const gchar *dir, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "readdir");
+    return NULL;
+  }
+
   struct guestfs_dirent_list *ret = guestfs_readdir(g, dir);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10357,6 +12018,13 @@ gboolean
 guestfs_session_sfdiskM(GuestfsSession *session, const gchar *device, gchar *const *lines, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "sfdiskM");
+    return FALSE;
+  }
+
   int ret = guestfs_sfdiskM(g, device, lines);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10387,6 +12055,13 @@ gchar *
 guestfs_session_zfile(GuestfsSession *session, const gchar *meth, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "zfile");
+    return NULL;
+  }
+
   char *ret = guestfs_zfile(g, meth, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10416,6 +12091,13 @@ GuestfsXAttr **
 guestfs_session_getxattrs(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "getxattrs");
+    return NULL;
+  }
+
   struct guestfs_xattr_list *ret = guestfs_getxattrs(g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10453,6 +12135,13 @@ GuestfsXAttr **
 guestfs_session_lgetxattrs(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lgetxattrs");
+    return NULL;
+  }
+
   struct guestfs_xattr_list *ret = guestfs_lgetxattrs(g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10495,6 +12184,13 @@ gboolean
 guestfs_session_setxattr(GuestfsSession *session, const gchar *xattr, const gchar *val, gint32 vallen, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "setxattr");
+    return FALSE;
+  }
+
   int ret = guestfs_setxattr(g, xattr, val, vallen, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10523,6 +12219,13 @@ gboolean
 guestfs_session_lsetxattr(GuestfsSession *session, const gchar *xattr, const gchar *val, gint32 vallen, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lsetxattr");
+    return FALSE;
+  }
+
   int ret = guestfs_lsetxattr(g, xattr, val, vallen, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10550,6 +12253,13 @@ gboolean
 guestfs_session_removexattr(GuestfsSession *session, const gchar *xattr, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "removexattr");
+    return FALSE;
+  }
+
   int ret = guestfs_removexattr(g, xattr, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10576,6 +12286,13 @@ gboolean
 guestfs_session_lremovexattr(GuestfsSession *session, const gchar *xattr, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lremovexattr");
+    return FALSE;
+  }
+
   int ret = guestfs_lremovexattr(g, xattr, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10601,6 +12318,13 @@ GHashTable *
 guestfs_session_mountpoints(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mountpoints");
+    return NULL;
+  }
+
   char **ret = guestfs_mountpoints(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10674,6 +12398,13 @@ gboolean
 guestfs_session_mkmountpoint(GuestfsSession *session, const gchar *exemptpath, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mkmountpoint");
+    return FALSE;
+  }
+
   int ret = guestfs_mkmountpoint(g, exemptpath);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10699,6 +12430,13 @@ gboolean
 guestfs_session_rmmountpoint(GuestfsSession *session, const gchar *exemptpath, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "rmmountpoint");
+    return FALSE;
+  }
+
   int ret = guestfs_rmmountpoint(g, exemptpath);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10728,6 +12466,13 @@ guint8 *
 guestfs_session_read_file(GuestfsSession *session, const gchar *path, gsize *size_r, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "read_file");
+    return NULL;
+  }
+
   char *ret = guestfs_read_file(g, path, size_r);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10753,6 +12498,13 @@ gchar **
 guestfs_session_grep(GuestfsSession *session, const gchar *regex, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "grep");
+    return NULL;
+  }
+
   char **ret = guestfs_grep(g, regex, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10778,6 +12530,13 @@ gchar **
 guestfs_session_egrep(GuestfsSession *session, const gchar *regex, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "egrep");
+    return NULL;
+  }
+
   char **ret = guestfs_egrep(g, regex, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10803,6 +12562,13 @@ gchar **
 guestfs_session_fgrep(GuestfsSession *session, const gchar *pattern, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "fgrep");
+    return NULL;
+  }
+
   char **ret = guestfs_fgrep(g, pattern, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10828,6 +12594,13 @@ gchar **
 guestfs_session_grepi(GuestfsSession *session, const gchar *regex, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "grepi");
+    return NULL;
+  }
+
   char **ret = guestfs_grepi(g, regex, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10853,6 +12626,13 @@ gchar **
 guestfs_session_egrepi(GuestfsSession *session, const gchar *regex, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "egrepi");
+    return NULL;
+  }
+
   char **ret = guestfs_egrepi(g, regex, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10878,6 +12658,13 @@ gchar **
 guestfs_session_fgrepi(GuestfsSession *session, const gchar *pattern, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "fgrepi");
+    return NULL;
+  }
+
   char **ret = guestfs_fgrepi(g, pattern, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10903,6 +12690,13 @@ gchar **
 guestfs_session_zgrep(GuestfsSession *session, const gchar *regex, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "zgrep");
+    return NULL;
+  }
+
   char **ret = guestfs_zgrep(g, regex, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10928,6 +12722,13 @@ gchar **
 guestfs_session_zegrep(GuestfsSession *session, const gchar *regex, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "zegrep");
+    return NULL;
+  }
+
   char **ret = guestfs_zegrep(g, regex, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10953,6 +12754,13 @@ gchar **
 guestfs_session_zfgrep(GuestfsSession *session, const gchar *pattern, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "zfgrep");
+    return NULL;
+  }
+
   char **ret = guestfs_zfgrep(g, pattern, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -10978,6 +12786,13 @@ gchar **
 guestfs_session_zgrepi(GuestfsSession *session, const gchar *regex, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "zgrepi");
+    return NULL;
+  }
+
   char **ret = guestfs_zgrepi(g, regex, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11003,6 +12818,13 @@ gchar **
 guestfs_session_zegrepi(GuestfsSession *session, const gchar *regex, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "zegrepi");
+    return NULL;
+  }
+
   char **ret = guestfs_zegrepi(g, regex, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11028,6 +12850,13 @@ gchar **
 guestfs_session_zfgrepi(GuestfsSession *session, const gchar *pattern, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "zfgrepi");
+    return NULL;
+  }
+
   char **ret = guestfs_zfgrepi(g, pattern, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11053,6 +12882,13 @@ gchar *
 guestfs_session_realpath(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "realpath");
+    return NULL;
+  }
+
   char *ret = guestfs_realpath(g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11077,6 +12913,13 @@ gboolean
 guestfs_session_ln(GuestfsSession *session, const gchar *target, const gchar *linkname, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ln");
+    return FALSE;
+  }
+
   int ret = guestfs_ln(g, target, linkname);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11103,6 +12946,13 @@ gboolean
 guestfs_session_ln_f(GuestfsSession *session, const gchar *target, const gchar *linkname, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ln_f");
+    return FALSE;
+  }
+
   int ret = guestfs_ln_f(g, target, linkname);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11128,6 +12978,13 @@ gboolean
 guestfs_session_ln_s(GuestfsSession *session, const gchar *target, const gchar *linkname, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ln_s");
+    return FALSE;
+  }
+
   int ret = guestfs_ln_s(g, target, linkname);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11154,6 +13011,13 @@ gboolean
 guestfs_session_ln_sf(GuestfsSession *session, const gchar *target, const gchar *linkname, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ln_sf");
+    return FALSE;
+  }
+
   int ret = guestfs_ln_sf(g, target, linkname);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11177,6 +13041,13 @@ gchar *
 guestfs_session_readlink(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "readlink");
+    return NULL;
+  }
+
   char *ret = guestfs_readlink(g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11207,6 +13078,13 @@ gboolean
 guestfs_session_fallocate(GuestfsSession *session, const gchar *path, gint32 len, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "fallocate");
+    return FALSE;
+  }
+
   int ret = guestfs_fallocate(g, path, len);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11241,6 +13119,13 @@ gboolean
 guestfs_session_swapon_device(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "swapon_device");
+    return FALSE;
+  }
+
   int ret = guestfs_swapon_device(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11266,6 +13151,13 @@ gboolean
 guestfs_session_swapoff_device(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "swapoff_device");
+    return FALSE;
+  }
+
   int ret = guestfs_swapoff_device(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11290,6 +13182,13 @@ gboolean
 guestfs_session_swapon_file(GuestfsSession *session, const gchar *file, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "swapon_file");
+    return FALSE;
+  }
+
   int ret = guestfs_swapon_file(g, file);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11314,6 +13213,13 @@ gboolean
 guestfs_session_swapoff_file(GuestfsSession *session, const gchar *file, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "swapoff_file");
+    return FALSE;
+  }
+
   int ret = guestfs_swapoff_file(g, file);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11338,6 +13244,13 @@ gboolean
 guestfs_session_swapon_label(GuestfsSession *session, const gchar *label, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "swapon_label");
+    return FALSE;
+  }
+
   int ret = guestfs_swapon_label(g, label);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11362,6 +13275,13 @@ gboolean
 guestfs_session_swapoff_label(GuestfsSession *session, const gchar *label, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "swapoff_label");
+    return FALSE;
+  }
+
   int ret = guestfs_swapoff_label(g, label);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11386,6 +13306,13 @@ gboolean
 guestfs_session_swapon_uuid(GuestfsSession *session, const gchar *uuid, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "swapon_uuid");
+    return FALSE;
+  }
+
   int ret = guestfs_swapon_uuid(g, uuid);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11410,6 +13337,13 @@ gboolean
 guestfs_session_swapoff_uuid(GuestfsSession *session, const gchar *uuid, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "swapoff_uuid");
+    return FALSE;
+  }
+
   int ret = guestfs_swapoff_uuid(g, uuid);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11437,6 +13371,13 @@ gboolean
 guestfs_session_mkswap_file(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mkswap_file");
+    return FALSE;
+  }
+
   int ret = guestfs_mkswap_file(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11493,6 +13434,13 @@ gboolean
 guestfs_session_inotify_init(GuestfsSession *session, gint32 maxevents, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inotify_init");
+    return FALSE;
+  }
+
   int ret = guestfs_inotify_init(g, maxevents);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11525,6 +13473,13 @@ gint64
 guestfs_session_inotify_add_watch(GuestfsSession *session, const gchar *path, gint32 mask, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inotify_add_watch");
+    return -1;
+  }
+
   int64_t ret = guestfs_inotify_add_watch(g, path, mask);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11549,6 +13504,13 @@ gboolean
 guestfs_session_inotify_rm_watch(GuestfsSession *session, gint32 wd, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inotify_rm_watch");
+    return FALSE;
+  }
+
   int ret = guestfs_inotify_rm_watch(g, wd);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11580,6 +13542,13 @@ GuestfsINotifyEvent **
 guestfs_session_inotify_read(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inotify_read");
+    return NULL;
+  }
+
   struct guestfs_inotify_event_list *ret = guestfs_inotify_read(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11616,6 +13585,13 @@ gchar **
 guestfs_session_inotify_files(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inotify_files");
+    return NULL;
+  }
+
   char **ret = guestfs_inotify_files(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11640,6 +13616,13 @@ gboolean
 guestfs_session_inotify_close(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inotify_close");
+    return FALSE;
+  }
+
   int ret = guestfs_inotify_close(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11666,6 +13649,13 @@ gboolean
 guestfs_session_setcon(GuestfsSession *session, const gchar *context, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "setcon");
+    return FALSE;
+  }
+
   int ret = guestfs_setcon(g, context);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11691,6 +13681,13 @@ gchar *
 guestfs_session_getcon(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "getcon");
+    return NULL;
+  }
+
   char *ret = guestfs_getcon(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11723,6 +13720,13 @@ gboolean
 guestfs_session_mkfs_b(GuestfsSession *session, const gchar *fstype, gint32 blocksize, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mkfs_b");
+    return FALSE;
+  }
+
   int ret = guestfs_mkfs_b(g, fstype, blocksize, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11750,6 +13754,13 @@ gboolean
 guestfs_session_mke2journal(GuestfsSession *session, gint32 blocksize, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mke2journal");
+    return FALSE;
+  }
+
   int ret = guestfs_mke2journal(g, blocksize, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11776,6 +13787,13 @@ gboolean
 guestfs_session_mke2journal_L(GuestfsSession *session, gint32 blocksize, const gchar *label, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mke2journal_L");
+    return FALSE;
+  }
+
   int ret = guestfs_mke2journal_L(g, blocksize, label, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11802,6 +13820,13 @@ gboolean
 guestfs_session_mke2journal_U(GuestfsSession *session, gint32 blocksize, const gchar *uuid, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mke2journal_U");
+    return FALSE;
+  }
+
   int ret = guestfs_mke2journal_U(g, blocksize, uuid, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11834,6 +13859,13 @@ gboolean
 guestfs_session_mke2fs_J(GuestfsSession *session, const gchar *fstype, gint32 blocksize, const gchar *device, const gchar *journal, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mke2fs_J");
+    return FALSE;
+  }
+
   int ret = guestfs_mke2fs_J(g, fstype, blocksize, device, journal);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11863,6 +13895,13 @@ gboolean
 guestfs_session_mke2fs_JL(GuestfsSession *session, const gchar *fstype, gint32 blocksize, const gchar *device, const gchar *label, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mke2fs_JL");
+    return FALSE;
+  }
+
   int ret = guestfs_mke2fs_JL(g, fstype, blocksize, device, label);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11892,6 +13931,13 @@ gboolean
 guestfs_session_mke2fs_JU(GuestfsSession *session, const gchar *fstype, gint32 blocksize, const gchar *device, const gchar *uuid, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mke2fs_JU");
+    return FALSE;
+  }
+
   int ret = guestfs_mke2fs_JU(g, fstype, blocksize, device, uuid);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11919,6 +13965,13 @@ gboolean
 guestfs_session_modprobe(GuestfsSession *session, const gchar *modulename, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "modprobe");
+    return FALSE;
+  }
+
   int ret = guestfs_modprobe(g, modulename);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11949,6 +14002,13 @@ gchar *
 guestfs_session_echo_daemon(GuestfsSession *session, gchar *const *words, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "echo_daemon");
+    return NULL;
+  }
+
   char *ret = guestfs_echo_daemon(g, words);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -11992,6 +14052,13 @@ guestfs_session_find0(GuestfsSession *session, const gchar *directory, const gch
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "find0");
+    return FALSE;
+  }
+
   gulong id = 0;
   if (cancellable) {
     id = g_cancellable_connect(cancellable,
@@ -12056,6 +14123,13 @@ gchar *
 guestfs_session_case_sensitive_path(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "case_sensitive_path");
+    return NULL;
+  }
+
   char *ret = guestfs_case_sensitive_path(g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12086,6 +14160,13 @@ gchar *
 guestfs_session_vfs_type(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "vfs_type");
+    return NULL;
+  }
+
   char *ret = guestfs_vfs_type(g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12110,6 +14191,13 @@ gboolean
 guestfs_session_truncate(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "truncate");
+    return FALSE;
+  }
+
   int ret = guestfs_truncate(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12142,6 +14230,13 @@ gboolean
 guestfs_session_truncate_size(GuestfsSession *session, const gchar *path, gint64 size, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "truncate_size");
+    return FALSE;
+  }
+
   int ret = guestfs_truncate_size(g, path, size);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12184,6 +14279,13 @@ gboolean
 guestfs_session_utimens(GuestfsSession *session, const gchar *path, gint64 atsecs, gint64 atnsecs, gint64 mtsecs, gint64 mtnsecs, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "utimens");
+    return FALSE;
+  }
+
   int ret = guestfs_utimens(g, path, atsecs, atnsecs, mtsecs, mtnsecs);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12215,6 +14317,13 @@ gboolean
 guestfs_session_mkdir_mode(GuestfsSession *session, const gchar *path, gint32 mode, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mkdir_mode");
+    return FALSE;
+  }
+
   int ret = guestfs_mkdir_mode(g, path, mode);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12247,6 +14356,13 @@ gboolean
 guestfs_session_lchown(GuestfsSession *session, gint32 owner, gint32 group, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lchown");
+    return FALSE;
+  }
+
   int ret = guestfs_lchown(g, owner, group, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12288,6 +14404,13 @@ GuestfsStat **
 guestfs_session_lstatlist(GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lstatlist");
+    return NULL;
+  }
+
   struct guestfs_stat_list *ret = guestfs_lstatlist(g, path, names);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12355,6 +14478,13 @@ GuestfsXAttr **
 guestfs_session_lxattrlist(GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lxattrlist");
+    return NULL;
+  }
+
   struct guestfs_xattr_list *ret = guestfs_lxattrlist(g, path, names);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12412,6 +14542,13 @@ gchar **
 guestfs_session_readlinklist(GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "readlinklist");
+    return NULL;
+  }
+
   char **ret = guestfs_readlinklist(g, path, names);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12444,6 +14581,13 @@ guint8 *
 guestfs_session_pread(GuestfsSession *session, const gchar *path, gint32 count, gint64 offset, gsize *size_r, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "pread");
+    return NULL;
+  }
+
   char *ret = guestfs_pread(g, path, count, offset, size_r);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12513,6 +14657,13 @@ gboolean
 guestfs_session_part_init(GuestfsSession *session, const gchar *device, const gchar *parttype, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_init");
+    return FALSE;
+  }
+
   int ret = guestfs_part_init(g, device, parttype);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12554,6 +14705,13 @@ gboolean
 guestfs_session_part_add(GuestfsSession *session, const gchar *device, const gchar *prlogex, gint64 startsect, gint64 endsect, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_add");
+    return FALSE;
+  }
+
   int ret = guestfs_part_add(g, device, prlogex, startsect, endsect);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12585,6 +14743,13 @@ gboolean
 guestfs_session_part_disk(GuestfsSession *session, const gchar *device, const gchar *parttype, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_disk");
+    return FALSE;
+  }
+
   int ret = guestfs_part_disk(g, device, parttype);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12616,6 +14781,13 @@ gboolean
 guestfs_session_part_set_bootable(GuestfsSession *session, const gchar *device, gint32 partnum, gboolean bootable, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_set_bootable");
+    return FALSE;
+  }
+
   int ret = guestfs_part_set_bootable(g, device, partnum, bootable);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12647,6 +14819,13 @@ gboolean
 guestfs_session_part_set_name(GuestfsSession *session, const gchar *device, gint32 partnum, const gchar *name, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_set_name");
+    return FALSE;
+  }
+
   int ret = guestfs_part_set_name(g, device, partnum, name);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12687,6 +14866,13 @@ GuestfsPartition **
 guestfs_session_part_list(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_list");
+    return NULL;
+  }
+
   struct guestfs_partition_list *ret = guestfs_part_list(g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12728,6 +14914,13 @@ gchar *
 guestfs_session_part_get_parttype(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_get_parttype");
+    return NULL;
+  }
+
   char *ret = guestfs_part_get_parttype(g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12760,6 +14953,13 @@ gboolean
 guestfs_session_fill(GuestfsSession *session, gint32 c, gint32 len, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "fill");
+    return FALSE;
+  }
+
   int ret = guestfs_fill(g, c, len, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12830,6 +15030,13 @@ gboolean
 guestfs_session_available(GuestfsSession *session, gchar *const *groups, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "available");
+    return FALSE;
+  }
+
   int ret = guestfs_available(g, groups);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12862,6 +15069,13 @@ gboolean
 guestfs_session_dd(GuestfsSession *session, const gchar *src, const gchar *dest, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "dd");
+    return FALSE;
+  }
+
   int ret = guestfs_dd(g, src, dest);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12890,6 +15104,13 @@ gint64
 guestfs_session_filesize(GuestfsSession *session, const gchar *file, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "filesize");
+    return -1;
+  }
+
   int64_t ret = guestfs_filesize(g, file);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12915,6 +15136,13 @@ gboolean
 guestfs_session_lvrename(GuestfsSession *session, const gchar *logvol, const gchar *newlogvol, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lvrename");
+    return FALSE;
+  }
+
   int ret = guestfs_lvrename(g, logvol, newlogvol);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12940,6 +15168,13 @@ gboolean
 guestfs_session_vgrename(GuestfsSession *session, const gchar *volgroup, const gchar *newvolgroup, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "vgrename");
+    return FALSE;
+  }
+
   int ret = guestfs_vgrename(g, volgroup, newvolgroup);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12974,6 +15209,13 @@ guint8 *
 guestfs_session_initrd_cat(GuestfsSession *session, const gchar *initrdpath, const gchar *filename, gsize *size_r, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "initrd_cat");
+    return NULL;
+  }
+
   char *ret = guestfs_initrd_cat(g, initrdpath, filename, size_r);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12997,6 +15239,13 @@ gchar *
 guestfs_session_pvuuid(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "pvuuid");
+    return NULL;
+  }
+
   char *ret = guestfs_pvuuid(g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13021,6 +15270,13 @@ gchar *
 guestfs_session_vguuid(GuestfsSession *session, const gchar *vgname, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "vguuid");
+    return NULL;
+  }
+
   char *ret = guestfs_vguuid(g, vgname);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13044,6 +15300,13 @@ gchar *
 guestfs_session_lvuuid(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lvuuid");
+    return NULL;
+  }
+
   char *ret = guestfs_lvuuid(g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13075,6 +15338,13 @@ gchar **
 guestfs_session_vgpvuuids(GuestfsSession *session, const gchar *vgname, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "vgpvuuids");
+    return NULL;
+  }
+
   char **ret = guestfs_vgpvuuids(g, vgname);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13105,6 +15375,13 @@ gchar **
 guestfs_session_vglvuuids(GuestfsSession *session, const gchar *vgname, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "vglvuuids");
+    return NULL;
+  }
+
   char **ret = guestfs_vglvuuids(g, vgname);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13135,6 +15412,13 @@ gboolean
 guestfs_session_copy_size(GuestfsSession *session, const gchar *src, const gchar *dest, gint64 size, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "copy_size");
+    return FALSE;
+  }
+
   int ret = guestfs_copy_size(g, src, dest, size);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13164,6 +15448,13 @@ gboolean
 guestfs_session_zero_device(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "zero_device");
+    return FALSE;
+  }
+
   int ret = guestfs_zero_device(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13193,6 +15484,13 @@ guestfs_session_txz_in(GuestfsSession *session, const gchar *tarball, const gcha
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "txz_in");
+    return FALSE;
+  }
+
   gulong id = 0;
   if (cancellable) {
     id = g_cancellable_connect(cancellable,
@@ -13231,6 +15529,13 @@ guestfs_session_txz_out(GuestfsSession *session, const gchar *directory, const g
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "txz_out");
+    return FALSE;
+  }
+
   gulong id = 0;
   if (cancellable) {
     id = g_cancellable_connect(cancellable,
@@ -13274,6 +15579,13 @@ gboolean
 guestfs_session_ntfsresize(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ntfsresize");
+    return FALSE;
+  }
+
   int ret = guestfs_ntfsresize(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13297,6 +15609,13 @@ gboolean
 guestfs_session_vgscan(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "vgscan");
+    return FALSE;
+  }
+
   int ret = guestfs_vgscan(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13326,6 +15645,13 @@ gboolean
 guestfs_session_part_del(GuestfsSession *session, const gchar *device, gint32 partnum, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_del");
+    return FALSE;
+  }
+
   int ret = guestfs_part_del(g, device, partnum);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13353,6 +15679,13 @@ gint8
 guestfs_session_part_get_bootable(GuestfsSession *session, const gchar *device, gint32 partnum, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_get_bootable");
+    return -1;
+  }
+
   int ret = guestfs_part_get_bootable(g, device, partnum);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13382,6 +15715,13 @@ gint32
 guestfs_session_part_get_mbr_id(GuestfsSession *session, const gchar *device, gint32 partnum, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_get_mbr_id");
+    return -1;
+  }
+
   int ret = guestfs_part_get_mbr_id(g, device, partnum);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13415,6 +15755,13 @@ gboolean
 guestfs_session_part_set_mbr_id(GuestfsSession *session, const gchar *device, gint32 partnum, gint32 idbyte, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_set_mbr_id");
+    return FALSE;
+  }
+
   int ret = guestfs_part_set_mbr_id(g, device, partnum, idbyte);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13441,6 +15788,13 @@ gchar *
 guestfs_session_checksum_device(GuestfsSession *session, const gchar *csumtype, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "checksum_device");
+    return NULL;
+  }
+
   char *ret = guestfs_checksum_device(g, csumtype, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13469,6 +15823,13 @@ gboolean
 guestfs_session_lvresize_free(GuestfsSession *session, const gchar *lv, gint32 percent, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lvresize_free");
+    return FALSE;
+  }
+
   int ret = guestfs_lvresize_free(g, lv, percent);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13493,6 +15854,13 @@ gboolean
 guestfs_session_aug_clear(GuestfsSession *session, const gchar *augpath, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "aug_clear");
+    return FALSE;
+  }
+
   int ret = guestfs_aug_clear(g, augpath);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13516,6 +15884,13 @@ gint32
 guestfs_session_get_umask(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_umask");
+    return -1;
+  }
+
   int ret = guestfs_get_umask(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13550,6 +15925,13 @@ guestfs_session_debug_upload(GuestfsSession *session, const gchar *filename, con
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "debug_upload");
+    return FALSE;
+  }
+
   gulong id = 0;
   if (cancellable) {
     id = g_cancellable_connect(cancellable,
@@ -13587,6 +15969,13 @@ guestfs_session_base64_in(GuestfsSession *session, const gchar *base64file, cons
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "base64_in");
+    return FALSE;
+  }
+
   gulong id = 0;
   if (cancellable) {
     id = g_cancellable_connect(cancellable,
@@ -13625,6 +16014,13 @@ guestfs_session_base64_out(GuestfsSession *session, const gchar *filename, const
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "base64_out");
+    return FALSE;
+  }
+
   gulong id = 0;
   if (cancellable) {
     id = g_cancellable_connect(cancellable,
@@ -13672,6 +16068,13 @@ guestfs_session_checksums_out(GuestfsSession *session, const gchar *csumtype, co
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "checksums_out");
+    return FALSE;
+  }
+
   gulong id = 0;
   if (cancellable) {
     id = g_cancellable_connect(cancellable,
@@ -13709,6 +16112,13 @@ gboolean
 guestfs_session_fill_pattern(GuestfsSession *session, const gchar *pattern, gint32 len, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "fill_pattern");
+    return FALSE;
+  }
+
   int ret = guestfs_fill_pattern(g, pattern, len, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13737,6 +16147,13 @@ gboolean
 guestfs_session_write(GuestfsSession *session, const gchar *path, const guint8 *content, gsize content_size, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "write");
+    return FALSE;
+  }
+
   int ret = guestfs_write(g, path, content, content_size);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13773,6 +16190,13 @@ gint32
 guestfs_session_pwrite(GuestfsSession *session, const gchar *path, const guint8 *content, gsize content_size, gint64 offset, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "pwrite");
+    return -1;
+  }
+
   int ret = guestfs_pwrite(g, path, content, content_size, offset);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13799,6 +16223,13 @@ gboolean
 guestfs_session_resize2fs_size(GuestfsSession *session, const gchar *device, gint64 size, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "resize2fs_size");
+    return FALSE;
+  }
+
   int ret = guestfs_resize2fs_size(g, device, size);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13825,6 +16256,13 @@ gboolean
 guestfs_session_pvresize_size(GuestfsSession *session, const gchar *device, gint64 size, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "pvresize_size");
+    return FALSE;
+  }
+
   int ret = guestfs_pvresize_size(g, device, size);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13851,6 +16289,13 @@ gboolean
 guestfs_session_ntfsresize_size(GuestfsSession *session, const gchar *device, gint64 size, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ntfsresize_size");
+    return FALSE;
+  }
+
   int ret = guestfs_ntfsresize_size(g, device, size);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13880,6 +16325,13 @@ gchar **
 guestfs_session_available_all_groups(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "available_all_groups");
+    return NULL;
+  }
+
   char **ret = guestfs_available_all_groups(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13919,6 +16371,13 @@ gboolean
 guestfs_session_fallocate64(GuestfsSession *session, const gchar *path, gint64 len, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "fallocate64");
+    return FALSE;
+  }
+
   int ret = guestfs_fallocate64(g, path, len);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13949,6 +16408,13 @@ gchar *
 guestfs_session_vfs_label(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "vfs_label");
+    return NULL;
+  }
+
   char *ret = guestfs_vfs_label(g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -13979,6 +16445,13 @@ gchar *
 guestfs_session_vfs_uuid(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "vfs_uuid");
+    return NULL;
+  }
+
   char *ret = guestfs_vfs_uuid(g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14024,6 +16497,13 @@ gboolean
 guestfs_session_lvm_set_filter(GuestfsSession *session, gchar *const *devices, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lvm_set_filter");
+    return FALSE;
+  }
+
   int ret = guestfs_lvm_set_filter(g, devices);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14050,6 +16530,13 @@ gboolean
 guestfs_session_lvm_clear_filter(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lvm_clear_filter");
+    return FALSE;
+  }
+
   int ret = guestfs_lvm_clear_filter(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14094,6 +16581,13 @@ gboolean
 guestfs_session_luks_open(GuestfsSession *session, const gchar *device, const gchar *key, const gchar *mapname, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "luks_open");
+    return FALSE;
+  }
+
   int ret = guestfs_luks_open(g, device, key, mapname);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14120,6 +16614,13 @@ gboolean
 guestfs_session_luks_open_ro(GuestfsSession *session, const gchar *device, const gchar *key, const gchar *mapname, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "luks_open_ro");
+    return FALSE;
+  }
+
   int ret = guestfs_luks_open_ro(g, device, key, mapname);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14147,6 +16648,13 @@ gboolean
 guestfs_session_luks_close(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "luks_close");
+    return FALSE;
+  }
+
   int ret = guestfs_luks_close(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14175,6 +16683,13 @@ gboolean
 guestfs_session_luks_format(GuestfsSession *session, const gchar *device, const gchar *key, gint32 keyslot, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "luks_format");
+    return FALSE;
+  }
+
   int ret = guestfs_luks_format(g, device, key, keyslot);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14202,6 +16717,13 @@ gboolean
 guestfs_session_luks_format_cipher(GuestfsSession *session, const gchar *device, const gchar *key, gint32 keyslot, const gchar *cipher, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "luks_format_cipher");
+    return FALSE;
+  }
+
   int ret = guestfs_luks_format_cipher(g, device, key, keyslot, cipher);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14235,6 +16757,13 @@ gboolean
 guestfs_session_luks_add_key(GuestfsSession *session, const gchar *device, const gchar *key, const gchar *newkey, gint32 keyslot, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "luks_add_key");
+    return FALSE;
+  }
+
   int ret = guestfs_luks_add_key(g, device, key, newkey, keyslot);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14262,6 +16791,13 @@ gboolean
 guestfs_session_luks_kill_slot(GuestfsSession *session, const gchar *device, const gchar *key, gint32 keyslot, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "luks_kill_slot");
+    return FALSE;
+  }
+
   int ret = guestfs_luks_kill_slot(g, device, key, keyslot);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14286,6 +16822,13 @@ gint8
 guestfs_session_is_lv(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "is_lv");
+    return -1;
+  }
+
   int ret = guestfs_is_lv(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14314,6 +16857,13 @@ gchar *
 guestfs_session_findfs_uuid(GuestfsSession *session, const gchar *uuid, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "findfs_uuid");
+    return NULL;
+  }
+
   char *ret = guestfs_findfs_uuid(g, uuid);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14342,6 +16892,13 @@ gchar *
 guestfs_session_findfs_label(GuestfsSession *session, const gchar *label, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "findfs_label");
+    return NULL;
+  }
+
   char *ret = guestfs_findfs_label(g, label);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14368,6 +16925,13 @@ gint8
 guestfs_session_is_chardev(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "is_chardev");
+    return -1;
+  }
+
   int ret = guestfs_is_chardev(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14394,6 +16958,13 @@ gint8
 guestfs_session_is_blockdev(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "is_blockdev");
+    return -1;
+  }
+
   int ret = guestfs_is_blockdev(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14420,6 +16991,13 @@ gint8
 guestfs_session_is_fifo(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "is_fifo");
+    return -1;
+  }
+
   int ret = guestfs_is_fifo(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14446,6 +17024,13 @@ gint8
 guestfs_session_is_symlink(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "is_symlink");
+    return -1;
+  }
+
   int ret = guestfs_is_symlink(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14472,6 +17057,13 @@ gint8
 guestfs_session_is_socket(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "is_socket");
+    return -1;
+  }
+
   int ret = guestfs_is_socket(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14502,6 +17094,13 @@ gchar *
 guestfs_session_part_to_dev(GuestfsSession *session, const gchar *partition, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_to_dev");
+    return NULL;
+  }
+
   char *ret = guestfs_part_to_dev(g, partition);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14546,6 +17145,13 @@ guestfs_session_upload_offset(GuestfsSession *session, const gchar *filename, co
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "upload_offset");
+    return FALSE;
+  }
+
   gulong id = 0;
   if (cancellable) {
     id = g_cancellable_connect(cancellable,
@@ -14596,6 +17202,13 @@ guestfs_session_download_offset(GuestfsSession *session, const gchar *remotefile
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "download_offset");
+    return FALSE;
+  }
+
   gulong id = 0;
   if (cancellable) {
     id = g_cancellable_connect(cancellable,
@@ -14639,6 +17252,13 @@ gint32
 guestfs_session_pwrite_device(GuestfsSession *session, const gchar *device, const guint8 *content, gsize content_size, gint64 offset, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "pwrite_device");
+    return -1;
+  }
+
   int ret = guestfs_pwrite_device(g, device, content, content_size, offset);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14670,6 +17290,13 @@ guint8 *
 guestfs_session_pread_device(GuestfsSession *session, const gchar *device, gint32 count, gint64 offset, gsize *size_r, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "pread_device");
+    return NULL;
+  }
+
   char *ret = guestfs_pread_device(g, device, count, offset, size_r);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14700,6 +17327,13 @@ gchar *
 guestfs_session_lvm_canonical_lv_name(GuestfsSession *session, const gchar *lvname, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lvm_canonical_lv_name");
+    return NULL;
+  }
+
   char *ret = guestfs_lvm_canonical_lv_name(g, lvname);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14759,6 +17393,13 @@ gboolean
 guestfs_session_mkfs_opts(GuestfsSession *session, const gchar *fstype, const gchar *device, GuestfsMkfsOpts *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mkfs_opts");
+    return FALSE;
+  }
+
   struct guestfs_mkfs_opts_argv argv;
   struct guestfs_mkfs_opts_argv *argvp = NULL;
 
@@ -14841,6 +17482,13 @@ guint8 *
 guestfs_session_getxattr(GuestfsSession *session, const gchar *path, const gchar *name, gsize *size_r, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "getxattr");
+    return NULL;
+  }
+
   char *ret = guestfs_getxattr(g, path, name, size_r);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14882,6 +17530,13 @@ guint8 *
 guestfs_session_lgetxattr(GuestfsSession *session, const gchar *path, const gchar *name, gsize *size_r, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lgetxattr");
+    return NULL;
+  }
+
   char *ret = guestfs_lgetxattr(g, path, name, size_r);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14913,6 +17568,13 @@ gboolean
 guestfs_session_resize2fs_M(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "resize2fs_M");
+    return FALSE;
+  }
+
   int ret = guestfs_resize2fs_M(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14939,6 +17601,13 @@ gboolean
 guestfs_session_internal_autosync(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "internal_autosync");
+    return FALSE;
+  }
+
   int ret = guestfs_internal_autosync(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14963,6 +17632,13 @@ gint8
 guestfs_session_is_zero(GuestfsSession *session, const gchar *path, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "is_zero");
+    return -1;
+  }
+
   int ret = guestfs_is_zero(g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14990,6 +17666,13 @@ gint8
 guestfs_session_is_zero_device(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "is_zero_device");
+    return -1;
+  }
+
   int ret = guestfs_is_zero_device(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -15013,6 +17696,13 @@ gchar **
 guestfs_session_list_9p(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "list_9p");
+    return NULL;
+  }
+
   char **ret = guestfs_list_9p(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -15043,6 +17733,13 @@ gboolean
 guestfs_session_mount_9p(GuestfsSession *session, const gchar *mounttag, const gchar *mountpoint, GuestfsMount9P *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mount_9p");
+    return FALSE;
+  }
+
   struct guestfs_mount_9p_argv argv;
   struct guestfs_mount_9p_argv *argvp = NULL;
 
@@ -15088,6 +17785,13 @@ gchar **
 guestfs_session_list_dm_devices(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "list_dm_devices");
+    return NULL;
+  }
+
   char **ret = guestfs_list_dm_devices(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -15136,6 +17840,13 @@ gboolean
 guestfs_session_ntfsresize_opts(GuestfsSession *session, const gchar *device, GuestfsNTFSResizeOpts *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ntfsresize_opts");
+    return FALSE;
+  }
+
   struct guestfs_ntfsresize_opts_argv argv;
   struct guestfs_ntfsresize_opts_argv *argvp = NULL;
 
@@ -15197,6 +17908,13 @@ gboolean
 guestfs_session_btrfs_filesystem_resize(GuestfsSession *session, const gchar *mountpoint, GuestfsBTRFSFilesystemResize *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "btrfs_filesystem_resize");
+    return FALSE;
+  }
+
   struct guestfs_btrfs_filesystem_resize_argv argv;
   struct guestfs_btrfs_filesystem_resize_argv *argvp = NULL;
 
@@ -15240,6 +17958,13 @@ gboolean
 guestfs_session_write_append(GuestfsSession *session, const gchar *path, const guint8 *content, gsize content_size, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "write_append");
+    return FALSE;
+  }
+
   int ret = guestfs_write_append(g, path, content, content_size);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -15282,6 +18007,13 @@ guestfs_session_compress_out(GuestfsSession *session, const gchar *ctype, const 
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "compress_out");
+    return FALSE;
+  }
+
   struct guestfs_compress_out_argv argv;
   struct guestfs_compress_out_argv *argvp = NULL;
 
@@ -15340,6 +18072,13 @@ guestfs_session_compress_device_out(GuestfsSession *session, const gchar *ctype,
     return FALSE;
 
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "compress_device_out");
+    return FALSE;
+  }
+
   struct guestfs_compress_device_out_argv argv;
   struct guestfs_compress_device_out_argv *argvp = NULL;
 
@@ -15393,6 +18132,13 @@ gint32
 guestfs_session_part_to_partnum(GuestfsSession *session, const gchar *partition, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_to_partnum");
+    return -1;
+  }
+
   int ret = guestfs_part_to_partnum(g, partition);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -15436,6 +18182,13 @@ gboolean
 guestfs_session_copy_device_to_device(GuestfsSession *session, const gchar *src, const gchar *dest, GuestfsCopyDeviceToDevice *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "copy_device_to_device");
+    return FALSE;
+  }
+
   struct guestfs_copy_device_to_device_argv argv;
   struct guestfs_copy_device_to_device_argv *argvp = NULL;
 
@@ -15494,6 +18247,13 @@ gboolean
 guestfs_session_copy_device_to_file(GuestfsSession *session, const gchar *src, const gchar *dest, GuestfsCopyDeviceToFile *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "copy_device_to_file");
+    return FALSE;
+  }
+
   struct guestfs_copy_device_to_file_argv argv;
   struct guestfs_copy_device_to_file_argv *argvp = NULL;
 
@@ -15552,6 +18312,13 @@ gboolean
 guestfs_session_copy_file_to_device(GuestfsSession *session, const gchar *src, const gchar *dest, GuestfsCopyFileToDevice *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "copy_file_to_device");
+    return FALSE;
+  }
+
   struct guestfs_copy_file_to_device_argv argv;
   struct guestfs_copy_file_to_device_argv *argvp = NULL;
 
@@ -15615,6 +18382,13 @@ gboolean
 guestfs_session_copy_file_to_file(GuestfsSession *session, const gchar *src, const gchar *dest, GuestfsCopyFileToFile *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "copy_file_to_file");
+    return FALSE;
+  }
+
   struct guestfs_copy_file_to_file_argv argv;
   struct guestfs_copy_file_to_file_argv *argvp = NULL;
 
@@ -15733,6 +18507,13 @@ gboolean
 guestfs_session_tune2fs(GuestfsSession *session, const gchar *device, GuestfsTune2FS *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "tune2fs");
+    return FALSE;
+  }
+
   struct guestfs_tune2fs_argv argv;
   struct guestfs_tune2fs_argv *argvp = NULL;
 
@@ -15893,6 +18674,13 @@ gboolean
 guestfs_session_md_create(GuestfsSession *session, const gchar *name, gchar *const *devices, GuestfsMDCreate *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "md_create");
+    return FALSE;
+  }
+
   struct guestfs_md_create_argv argv;
   struct guestfs_md_create_argv *argvp = NULL;
 
@@ -15963,6 +18751,13 @@ gchar **
 guestfs_session_list_md_devices(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "list_md_devices");
+    return NULL;
+  }
+
   char **ret = guestfs_list_md_devices(g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -16003,6 +18798,13 @@ GHashTable *
 guestfs_session_md_detail(GuestfsSession *session, const gchar *md, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "md_detail");
+    return NULL;
+  }
+
   char **ret = guestfs_md_detail(g, md);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -16035,6 +18837,13 @@ gboolean
 guestfs_session_md_stop(GuestfsSession *session, const gchar *md, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "md_stop");
+    return FALSE;
+  }
+
   int ret = guestfs_md_stop(g, md);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -16076,6 +18885,13 @@ GHashTable *
 guestfs_session_blkid(GuestfsSession *session, const gchar *device, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "blkid");
+    return NULL;
+  }
+
   char **ret = guestfs_blkid(g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -16125,6 +18941,13 @@ gboolean
 guestfs_session_e2fsck(GuestfsSession *session, const gchar *device, GuestfsE2fsck *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "e2fsck");
+    return FALSE;
+  }
+
   struct guestfs_e2fsck_argv argv;
   struct guestfs_e2fsck_argv *argvp = NULL;
 

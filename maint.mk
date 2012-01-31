@@ -502,7 +502,7 @@ sc_prohibit_same_without_use:
 
 sc_prohibit_hash_pjw_without_use:
 	@h='hash-pjw.h' \
-	re='\<hash_pjw *\(' \
+	re='\<hash_pjw\>' \
 	  $(_sc_header_without_use)
 
 sc_prohibit_safe_read_without_use:
@@ -838,7 +838,7 @@ sc_prohibit_cvs_keyword:
 #
 # This is a perl script that is expected to be the single-quoted argument
 # to a command-line "-le".  The remaining arguments are file names.
-# Print the name of each file that ends in exactly one newline byte.
+# Print the name of each file that does not end in exactly one newline byte.
 # I.e., warn if there are blank lines (2 or more newlines), or if the
 # last byte is not a newline.  However, currently we don't complain
 # about any file that contains exactly one byte.
