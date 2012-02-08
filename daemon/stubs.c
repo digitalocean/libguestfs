@@ -33,8 +33,10 @@
 #include "c-ctype.h"
 #include "guestfs_protocol.h"
 #include "actions.h"
+#include "optgroups.h"
 
-static void mount_stub (XDR *xdr_in)
+static void
+mount_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mount_args args;
@@ -65,7 +67,8 @@ done:
   return;
 }
 
-static void sync_stub (XDR *xdr_in)
+static void
+sync_stub (XDR *xdr_in)
 {
   int r;
 
@@ -84,7 +87,8 @@ done:
   return;
 }
 
-static void touch_stub (XDR *xdr_in)
+static void
+touch_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_touch_args args;
@@ -115,7 +119,8 @@ done:
   return;
 }
 
-static void cat_stub (XDR *xdr_in)
+static void
+cat_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_cat_args args;
@@ -149,7 +154,8 @@ done:
   return;
 }
 
-static void ll_stub (XDR *xdr_in)
+static void
+ll_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_ll_args args;
@@ -183,7 +189,8 @@ done:
   return;
 }
 
-static void ls_stub (XDR *xdr_in)
+static void
+ls_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_ls_args args;
@@ -218,7 +225,8 @@ done:
   return;
 }
 
-static void list_devices_stub (XDR *xdr_in)
+static void
+list_devices_stub (XDR *xdr_in)
 {
   char **r;
 
@@ -241,7 +249,8 @@ done:
   return;
 }
 
-static void list_partitions_stub (XDR *xdr_in)
+static void
+list_partitions_stub (XDR *xdr_in)
 {
   char **r;
 
@@ -264,9 +273,19 @@ done:
   return;
 }
 
-static void pvs_stub (XDR *xdr_in)
+static void
+pvs_stub (XDR *xdr_in)
 {
   char **r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -287,9 +306,19 @@ done:
   return;
 }
 
-static void vgs_stub (XDR *xdr_in)
+static void
+vgs_stub (XDR *xdr_in)
 {
   char **r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -310,9 +339,19 @@ done:
   return;
 }
 
-static void lvs_stub (XDR *xdr_in)
+static void
+lvs_stub (XDR *xdr_in)
 {
   char **r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -333,9 +372,19 @@ done:
   return;
 }
 
-static void pvs_full_stub (XDR *xdr_in)
+static void
+pvs_full_stub (XDR *xdr_in)
 {
   guestfs_int_lvm_pv_list *r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -356,9 +405,19 @@ done:
   return;
 }
 
-static void vgs_full_stub (XDR *xdr_in)
+static void
+vgs_full_stub (XDR *xdr_in)
 {
   guestfs_int_lvm_vg_list *r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -379,9 +438,19 @@ done:
   return;
 }
 
-static void lvs_full_stub (XDR *xdr_in)
+static void
+lvs_full_stub (XDR *xdr_in)
 {
   guestfs_int_lvm_lv_list *r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -402,7 +471,8 @@ done:
   return;
 }
 
-static void read_lines_stub (XDR *xdr_in)
+static void
+read_lines_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_read_lines_args args;
@@ -437,11 +507,21 @@ done:
   return;
 }
 
-static void aug_init_stub (XDR *xdr_in)
+static void
+aug_init_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_aug_init_args args;
   int flags;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_augeas_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "augeas");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -470,9 +550,19 @@ done:
   return;
 }
 
-static void aug_close_stub (XDR *xdr_in)
+static void
+aug_close_stub (XDR *xdr_in)
 {
   int r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_augeas_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "augeas");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -489,11 +579,21 @@ done:
   return;
 }
 
-static void aug_defvar_stub (XDR *xdr_in)
+static void
+aug_defvar_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_aug_defvar_args args;
   char *expr;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_augeas_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "augeas");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -522,10 +622,20 @@ done:
   return;
 }
 
-static void aug_defnode_stub (XDR *xdr_in)
+static void
+aug_defnode_stub (XDR *xdr_in)
 {
   guestfs_int_int_bool *r;
   struct guestfs_aug_defnode_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_augeas_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "augeas");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -557,10 +667,20 @@ done:
   return;
 }
 
-static void aug_get_stub (XDR *xdr_in)
+static void
+aug_get_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_aug_get_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_augeas_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "augeas");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -589,10 +709,20 @@ done:
   return;
 }
 
-static void aug_set_stub (XDR *xdr_in)
+static void
+aug_set_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_aug_set_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_augeas_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "augeas");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -619,11 +749,21 @@ done:
   return;
 }
 
-static void aug_insert_stub (XDR *xdr_in)
+static void
+aug_insert_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_aug_insert_args args;
   int before;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_augeas_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "augeas");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -651,10 +791,20 @@ done:
   return;
 }
 
-static void aug_rm_stub (XDR *xdr_in)
+static void
+aug_rm_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_aug_rm_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_augeas_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "augeas");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -682,10 +832,20 @@ done:
   return;
 }
 
-static void aug_mv_stub (XDR *xdr_in)
+static void
+aug_mv_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_aug_mv_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_augeas_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "augeas");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -712,10 +872,20 @@ done:
   return;
 }
 
-static void aug_match_stub (XDR *xdr_in)
+static void
+aug_match_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_aug_match_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_augeas_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "augeas");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -745,9 +915,19 @@ done:
   return;
 }
 
-static void aug_save_stub (XDR *xdr_in)
+static void
+aug_save_stub (XDR *xdr_in)
 {
   int r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_augeas_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "augeas");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -764,9 +944,19 @@ done:
   return;
 }
 
-static void aug_load_stub (XDR *xdr_in)
+static void
+aug_load_stub (XDR *xdr_in)
 {
   int r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_augeas_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "augeas");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -783,10 +973,20 @@ done:
   return;
 }
 
-static void aug_ls_stub (XDR *xdr_in)
+static void
+aug_ls_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_aug_ls_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_augeas_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "augeas");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -816,7 +1016,8 @@ done:
   return;
 }
 
-static void rm_stub (XDR *xdr_in)
+static void
+rm_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_rm_args args;
@@ -847,7 +1048,8 @@ done:
   return;
 }
 
-static void rmdir_stub (XDR *xdr_in)
+static void
+rmdir_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_rmdir_args args;
@@ -878,7 +1080,8 @@ done:
   return;
 }
 
-static void rm_rf_stub (XDR *xdr_in)
+static void
+rm_rf_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_rm_rf_args args;
@@ -909,7 +1112,8 @@ done:
   return;
 }
 
-static void mkdir_stub (XDR *xdr_in)
+static void
+mkdir_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkdir_args args;
@@ -940,7 +1144,8 @@ done:
   return;
 }
 
-static void mkdir_p_stub (XDR *xdr_in)
+static void
+mkdir_p_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkdir_p_args args;
@@ -971,7 +1176,8 @@ done:
   return;
 }
 
-static void chmod_stub (XDR *xdr_in)
+static void
+chmod_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_chmod_args args;
@@ -1004,7 +1210,8 @@ done:
   return;
 }
 
-static void chown_stub (XDR *xdr_in)
+static void
+chown_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_chown_args args;
@@ -1039,7 +1246,8 @@ done:
   return;
 }
 
-static void exists_stub (XDR *xdr_in)
+static void
+exists_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_exists_args args;
@@ -1072,7 +1280,8 @@ done:
   return;
 }
 
-static void is_file_stub (XDR *xdr_in)
+static void
+is_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_file_args args;
@@ -1105,7 +1314,8 @@ done:
   return;
 }
 
-static void is_dir_stub (XDR *xdr_in)
+static void
+is_dir_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_dir_args args;
@@ -1138,10 +1348,20 @@ done:
   return;
 }
 
-static void pvcreate_stub (XDR *xdr_in)
+static void
+pvcreate_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_pvcreate_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1168,11 +1388,21 @@ done:
   return;
 }
 
-static void vgcreate_stub (XDR *xdr_in)
+static void
+vgcreate_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_vgcreate_args args;
   char **physvols;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1214,11 +1444,21 @@ done:
   return;
 }
 
-static void lvcreate_stub (XDR *xdr_in)
+static void
+lvcreate_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_lvcreate_args args;
   int mbytes;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1246,7 +1486,8 @@ done:
   return;
 }
 
-static void mkfs_stub (XDR *xdr_in)
+static void
+mkfs_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkfs_args args;
@@ -1277,7 +1518,8 @@ done:
   return;
 }
 
-static void sfdisk_stub (XDR *xdr_in)
+static void
+sfdisk_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_sfdisk_args args;
@@ -1322,7 +1564,8 @@ done:
   return;
 }
 
-static void write_file_stub (XDR *xdr_in)
+static void
+write_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_write_file_args args;
@@ -1356,7 +1599,8 @@ done:
   return;
 }
 
-static void umount_stub (XDR *xdr_in)
+static void
+umount_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_umount_args args;
@@ -1385,7 +1629,8 @@ done:
   return;
 }
 
-static void mounts_stub (XDR *xdr_in)
+static void
+mounts_stub (XDR *xdr_in)
 {
   char **r;
 
@@ -1408,7 +1653,8 @@ done:
   return;
 }
 
-static void umount_all_stub (XDR *xdr_in)
+static void
+umount_all_stub (XDR *xdr_in)
 {
   int r;
 
@@ -1427,9 +1673,19 @@ done:
   return;
 }
 
-static void lvm_remove_all_stub (XDR *xdr_in)
+static void
+lvm_remove_all_stub (XDR *xdr_in)
 {
   int r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1446,7 +1702,8 @@ done:
   return;
 }
 
-static void file_stub (XDR *xdr_in)
+static void
+file_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_file_args args;
@@ -1479,7 +1736,8 @@ done:
   return;
 }
 
-static void command_stub (XDR *xdr_in)
+static void
+command_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_command_args args;
@@ -1519,7 +1777,8 @@ done:
   return;
 }
 
-static void command_lines_stub (XDR *xdr_in)
+static void
+command_lines_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_command_lines_args args;
@@ -1560,7 +1819,8 @@ done:
   return;
 }
 
-static void stat_stub (XDR *xdr_in)
+static void
+stat_stub (XDR *xdr_in)
 {
   guestfs_int_stat *r;
   struct guestfs_stat_args args;
@@ -1595,7 +1855,8 @@ done:
   return;
 }
 
-static void lstat_stub (XDR *xdr_in)
+static void
+lstat_stub (XDR *xdr_in)
 {
   guestfs_int_stat *r;
   struct guestfs_lstat_args args;
@@ -1630,7 +1891,8 @@ done:
   return;
 }
 
-static void statvfs_stub (XDR *xdr_in)
+static void
+statvfs_stub (XDR *xdr_in)
 {
   guestfs_int_statvfs *r;
   struct guestfs_statvfs_args args;
@@ -1665,7 +1927,8 @@ done:
   return;
 }
 
-static void tune2fs_l_stub (XDR *xdr_in)
+static void
+tune2fs_l_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_tune2fs_l_args args;
@@ -1699,7 +1962,8 @@ done:
   return;
 }
 
-static void blockdev_setro_stub (XDR *xdr_in)
+static void
+blockdev_setro_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_setro_args args;
@@ -1729,7 +1993,8 @@ done:
   return;
 }
 
-static void blockdev_setrw_stub (XDR *xdr_in)
+static void
+blockdev_setrw_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_setrw_args args;
@@ -1759,7 +2024,8 @@ done:
   return;
 }
 
-static void blockdev_getro_stub (XDR *xdr_in)
+static void
+blockdev_getro_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_getro_args args;
@@ -1791,7 +2057,8 @@ done:
   return;
 }
 
-static void blockdev_getss_stub (XDR *xdr_in)
+static void
+blockdev_getss_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_getss_args args;
@@ -1823,7 +2090,8 @@ done:
   return;
 }
 
-static void blockdev_getbsz_stub (XDR *xdr_in)
+static void
+blockdev_getbsz_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_getbsz_args args;
@@ -1855,7 +2123,8 @@ done:
   return;
 }
 
-static void blockdev_setbsz_stub (XDR *xdr_in)
+static void
+blockdev_setbsz_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_setbsz_args args;
@@ -1887,7 +2156,8 @@ done:
   return;
 }
 
-static void blockdev_getsz_stub (XDR *xdr_in)
+static void
+blockdev_getsz_stub (XDR *xdr_in)
 {
   int64_t r;
   struct guestfs_blockdev_getsz_args args;
@@ -1919,7 +2189,8 @@ done:
   return;
 }
 
-static void blockdev_getsize64_stub (XDR *xdr_in)
+static void
+blockdev_getsize64_stub (XDR *xdr_in)
 {
   int64_t r;
   struct guestfs_blockdev_getsize64_args args;
@@ -1951,7 +2222,8 @@ done:
   return;
 }
 
-static void blockdev_flushbufs_stub (XDR *xdr_in)
+static void
+blockdev_flushbufs_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_flushbufs_args args;
@@ -1981,7 +2253,8 @@ done:
   return;
 }
 
-static void blockdev_rereadpt_stub (XDR *xdr_in)
+static void
+blockdev_rereadpt_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_rereadpt_args args;
@@ -2011,7 +2284,8 @@ done:
   return;
 }
 
-static void upload_stub (XDR *xdr_in)
+static void
+upload_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_upload_args args;
@@ -2043,7 +2317,8 @@ done:
   return;
 }
 
-static void download_stub (XDR *xdr_in)
+static void
+download_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_download_args args;
@@ -2073,7 +2348,8 @@ done:
   return;
 }
 
-static void checksum_stub (XDR *xdr_in)
+static void
+checksum_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_checksum_args args;
@@ -2108,7 +2384,8 @@ done:
   return;
 }
 
-static void tar_in_stub (XDR *xdr_in)
+static void
+tar_in_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_tar_in_args args;
@@ -2141,7 +2418,8 @@ done:
   return;
 }
 
-static void tar_out_stub (XDR *xdr_in)
+static void
+tar_out_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_tar_out_args args;
@@ -2170,7 +2448,8 @@ done:
   return;
 }
 
-static void tgz_in_stub (XDR *xdr_in)
+static void
+tgz_in_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_tgz_in_args args;
@@ -2203,7 +2482,8 @@ done:
   return;
 }
 
-static void tgz_out_stub (XDR *xdr_in)
+static void
+tgz_out_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_tgz_out_args args;
@@ -2234,7 +2514,8 @@ done:
   return;
 }
 
-static void mount_ro_stub (XDR *xdr_in)
+static void
+mount_ro_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mount_ro_args args;
@@ -2265,7 +2546,8 @@ done:
   return;
 }
 
-static void mount_options_stub (XDR *xdr_in)
+static void
+mount_options_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mount_options_args args;
@@ -2297,7 +2579,8 @@ done:
   return;
 }
 
-static void mount_vfs_stub (XDR *xdr_in)
+static void
+mount_vfs_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mount_vfs_args args;
@@ -2330,7 +2613,8 @@ done:
   return;
 }
 
-static void debug_stub (XDR *xdr_in)
+static void
+debug_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_debug_args args;
@@ -2371,10 +2655,20 @@ done:
   return;
 }
 
-static void lvremove_stub (XDR *xdr_in)
+static void
+lvremove_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_lvremove_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2401,10 +2695,20 @@ done:
   return;
 }
 
-static void vgremove_stub (XDR *xdr_in)
+static void
+vgremove_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_vgremove_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2430,10 +2734,20 @@ done:
   return;
 }
 
-static void pvremove_stub (XDR *xdr_in)
+static void
+pvremove_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_pvremove_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2460,7 +2774,8 @@ done:
   return;
 }
 
-static void set_e2label_stub (XDR *xdr_in)
+static void
+set_e2label_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_set_e2label_args args;
@@ -2491,7 +2806,8 @@ done:
   return;
 }
 
-static void get_e2label_stub (XDR *xdr_in)
+static void
+get_e2label_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_get_e2label_args args;
@@ -2524,7 +2840,8 @@ done:
   return;
 }
 
-static void set_e2uuid_stub (XDR *xdr_in)
+static void
+set_e2uuid_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_set_e2uuid_args args;
@@ -2555,7 +2872,8 @@ done:
   return;
 }
 
-static void get_e2uuid_stub (XDR *xdr_in)
+static void
+get_e2uuid_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_get_e2uuid_args args;
@@ -2588,7 +2906,8 @@ done:
   return;
 }
 
-static void fsck_stub (XDR *xdr_in)
+static void
+fsck_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_fsck_args args;
@@ -2621,7 +2940,8 @@ done:
   return;
 }
 
-static void zero_stub (XDR *xdr_in)
+static void
+zero_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_zero_args args;
@@ -2651,10 +2971,20 @@ done:
   return;
 }
 
-static void grub_install_stub (XDR *xdr_in)
+static void
+grub_install_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_grub_install_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_grub_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "grub");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2684,7 +3014,8 @@ done:
   return;
 }
 
-static void cp_stub (XDR *xdr_in)
+static void
+cp_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_cp_args args;
@@ -2717,7 +3048,8 @@ done:
   return;
 }
 
-static void cp_a_stub (XDR *xdr_in)
+static void
+cp_a_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_cp_a_args args;
@@ -2750,7 +3082,8 @@ done:
   return;
 }
 
-static void mv_stub (XDR *xdr_in)
+static void
+mv_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mv_args args;
@@ -2783,7 +3116,8 @@ done:
   return;
 }
 
-static void drop_caches_stub (XDR *xdr_in)
+static void
+drop_caches_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_drop_caches_args args;
@@ -2813,7 +3147,8 @@ done:
   return;
 }
 
-static void dmesg_stub (XDR *xdr_in)
+static void
+dmesg_stub (XDR *xdr_in)
 {
   char *r;
 
@@ -2835,7 +3170,8 @@ done:
   return;
 }
 
-static void ping_daemon_stub (XDR *xdr_in)
+static void
+ping_daemon_stub (XDR *xdr_in)
 {
   int r;
 
@@ -2854,7 +3190,8 @@ done:
   return;
 }
 
-static void equal_stub (XDR *xdr_in)
+static void
+equal_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_equal_args args;
@@ -2889,7 +3226,8 @@ done:
   return;
 }
 
-static void strings_stub (XDR *xdr_in)
+static void
+strings_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_strings_args args;
@@ -2924,7 +3262,8 @@ done:
   return;
 }
 
-static void strings_e_stub (XDR *xdr_in)
+static void
+strings_e_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_strings_e_args args;
@@ -2960,7 +3299,8 @@ done:
   return;
 }
 
-static void hexdump_stub (XDR *xdr_in)
+static void
+hexdump_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_hexdump_args args;
@@ -2994,10 +3334,20 @@ done:
   return;
 }
 
-static void zerofree_stub (XDR *xdr_in)
+static void
+zerofree_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_zerofree_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_zerofree_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "zerofree");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3024,10 +3374,20 @@ done:
   return;
 }
 
-static void pvresize_stub (XDR *xdr_in)
+static void
+pvresize_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_pvresize_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3054,7 +3414,8 @@ done:
   return;
 }
 
-static void sfdisk_N_stub (XDR *xdr_in)
+static void
+sfdisk_N_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_sfdisk_N_args args;
@@ -3093,7 +3454,8 @@ done:
   return;
 }
 
-static void sfdisk_l_stub (XDR *xdr_in)
+static void
+sfdisk_l_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_sfdisk_l_args args;
@@ -3126,7 +3488,8 @@ done:
   return;
 }
 
-static void sfdisk_kernel_geometry_stub (XDR *xdr_in)
+static void
+sfdisk_kernel_geometry_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_sfdisk_kernel_geometry_args args;
@@ -3159,7 +3522,8 @@ done:
   return;
 }
 
-static void sfdisk_disk_geometry_stub (XDR *xdr_in)
+static void
+sfdisk_disk_geometry_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_sfdisk_disk_geometry_args args;
@@ -3192,11 +3556,21 @@ done:
   return;
 }
 
-static void vg_activate_all_stub (XDR *xdr_in)
+static void
+vg_activate_all_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_vg_activate_all_args args;
   int activate;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3222,12 +3596,22 @@ done:
   return;
 }
 
-static void vg_activate_stub (XDR *xdr_in)
+static void
+vg_activate_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_vg_activate_args args;
   int activate;
   char **volgroups;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3261,11 +3645,21 @@ done:
   return;
 }
 
-static void lvresize_stub (XDR *xdr_in)
+static void
+lvresize_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_lvresize_args args;
   int mbytes;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3293,7 +3687,8 @@ done:
   return;
 }
 
-static void resize2fs_stub (XDR *xdr_in)
+static void
+resize2fs_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_resize2fs_args args;
@@ -3323,7 +3718,8 @@ done:
   return;
 }
 
-static void find_stub (XDR *xdr_in)
+static void
+find_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_find_args args;
@@ -3358,7 +3754,8 @@ done:
   return;
 }
 
-static void e2fsck_f_stub (XDR *xdr_in)
+static void
+e2fsck_f_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_e2fsck_f_args args;
@@ -3388,7 +3785,8 @@ done:
   return;
 }
 
-static void sleep_stub (XDR *xdr_in)
+static void
+sleep_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_sleep_args args;
@@ -3418,11 +3816,21 @@ done:
   return;
 }
 
-static void ntfs_3g_probe_stub (XDR *xdr_in)
+static void
+ntfs_3g_probe_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ntfs_3g_probe_args args;
   int rw;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_ntfs3g_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "ntfs3g");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3452,7 +3860,8 @@ done:
   return;
 }
 
-static void sh_stub (XDR *xdr_in)
+static void
+sh_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_sh_args args;
@@ -3484,7 +3893,8 @@ done:
   return;
 }
 
-static void sh_lines_stub (XDR *xdr_in)
+static void
+sh_lines_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_sh_lines_args args;
@@ -3517,7 +3927,8 @@ done:
   return;
 }
 
-static void glob_expand_stub (XDR *xdr_in)
+static void
+glob_expand_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_glob_expand_args args;
@@ -3552,10 +3963,20 @@ done:
   return;
 }
 
-static void scrub_device_stub (XDR *xdr_in)
+static void
+scrub_device_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_scrub_device_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_scrub_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "scrub");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3582,10 +4003,20 @@ done:
   return;
 }
 
-static void scrub_file_stub (XDR *xdr_in)
+static void
+scrub_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_scrub_file_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_scrub_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "scrub");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3613,10 +4044,20 @@ done:
   return;
 }
 
-static void scrub_freespace_stub (XDR *xdr_in)
+static void
+scrub_freespace_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_scrub_freespace_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_scrub_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "scrub");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3644,7 +4085,8 @@ done:
   return;
 }
 
-static void mkdtemp_stub (XDR *xdr_in)
+static void
+mkdtemp_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_mkdtemp_args args;
@@ -3678,7 +4120,8 @@ done:
   return;
 }
 
-static void wc_l_stub (XDR *xdr_in)
+static void
+wc_l_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_wc_l_args args;
@@ -3711,7 +4154,8 @@ done:
   return;
 }
 
-static void wc_w_stub (XDR *xdr_in)
+static void
+wc_w_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_wc_w_args args;
@@ -3744,7 +4188,8 @@ done:
   return;
 }
 
-static void wc_c_stub (XDR *xdr_in)
+static void
+wc_c_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_wc_c_args args;
@@ -3777,7 +4222,8 @@ done:
   return;
 }
 
-static void head_stub (XDR *xdr_in)
+static void
+head_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_head_args args;
@@ -3812,7 +4258,8 @@ done:
   return;
 }
 
-static void head_n_stub (XDR *xdr_in)
+static void
+head_n_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_head_n_args args;
@@ -3849,7 +4296,8 @@ done:
   return;
 }
 
-static void tail_stub (XDR *xdr_in)
+static void
+tail_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_tail_args args;
@@ -3884,7 +4332,8 @@ done:
   return;
 }
 
-static void tail_n_stub (XDR *xdr_in)
+static void
+tail_n_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_tail_n_args args;
@@ -3921,7 +4370,8 @@ done:
   return;
 }
 
-static void df_stub (XDR *xdr_in)
+static void
+df_stub (XDR *xdr_in)
 {
   char *r;
 
@@ -3943,7 +4393,8 @@ done:
   return;
 }
 
-static void df_h_stub (XDR *xdr_in)
+static void
+df_h_stub (XDR *xdr_in)
 {
   char *r;
 
@@ -3965,7 +4416,8 @@ done:
   return;
 }
 
-static void du_stub (XDR *xdr_in)
+static void
+du_stub (XDR *xdr_in)
 {
   int64_t r;
   struct guestfs_du_args args;
@@ -3998,7 +4450,8 @@ done:
   return;
 }
 
-static void initrd_list_stub (XDR *xdr_in)
+static void
+initrd_list_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_initrd_list_args args;
@@ -4033,7 +4486,8 @@ done:
   return;
 }
 
-static void mount_loop_stub (XDR *xdr_in)
+static void
+mount_loop_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mount_loop_args args;
@@ -4066,7 +4520,8 @@ done:
   return;
 }
 
-static void mkswap_stub (XDR *xdr_in)
+static void
+mkswap_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkswap_args args;
@@ -4096,7 +4551,8 @@ done:
   return;
 }
 
-static void mkswap_L_stub (XDR *xdr_in)
+static void
+mkswap_L_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkswap_L_args args;
@@ -4127,10 +4583,20 @@ done:
   return;
 }
 
-static void mkswap_U_stub (XDR *xdr_in)
+static void
+mkswap_U_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkswap_U_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_linuxfsuuid_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "linuxfsuuid");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4158,13 +4624,23 @@ done:
   return;
 }
 
-static void mknod_stub (XDR *xdr_in)
+static void
+mknod_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mknod_args args;
   int mode;
   int devmajor;
   int devminor;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_mknod_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "mknod");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4195,11 +4671,21 @@ done:
   return;
 }
 
-static void mkfifo_stub (XDR *xdr_in)
+static void
+mkfifo_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkfifo_args args;
   int mode;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_mknod_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "mknod");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4228,13 +4714,23 @@ done:
   return;
 }
 
-static void mknod_b_stub (XDR *xdr_in)
+static void
+mknod_b_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mknod_b_args args;
   int mode;
   int devmajor;
   int devminor;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_mknod_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "mknod");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4265,13 +4761,23 @@ done:
   return;
 }
 
-static void mknod_c_stub (XDR *xdr_in)
+static void
+mknod_c_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mknod_c_args args;
   int mode;
   int devmajor;
   int devminor;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_mknod_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "mknod");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4302,7 +4808,8 @@ done:
   return;
 }
 
-static void umask_stub (XDR *xdr_in)
+static void
+umask_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_umask_args args;
@@ -4334,7 +4841,8 @@ done:
   return;
 }
 
-static void readdir_stub (XDR *xdr_in)
+static void
+readdir_stub (XDR *xdr_in)
 {
   guestfs_int_dirent_list *r;
   struct guestfs_readdir_args args;
@@ -4369,7 +4877,8 @@ done:
   return;
 }
 
-static void sfdiskM_stub (XDR *xdr_in)
+static void
+sfdiskM_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_sfdiskM_args args;
@@ -4408,7 +4917,8 @@ done:
   return;
 }
 
-static void zfile_stub (XDR *xdr_in)
+static void
+zfile_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_zfile_args args;
@@ -4443,10 +4953,20 @@ done:
   return;
 }
 
-static void getxattrs_stub (XDR *xdr_in)
+static void
+getxattrs_stub (XDR *xdr_in)
 {
   guestfs_int_xattr_list *r;
   struct guestfs_getxattrs_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_linuxxattrs_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "linuxxattrs");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4478,10 +4998,20 @@ done:
   return;
 }
 
-static void lgetxattrs_stub (XDR *xdr_in)
+static void
+lgetxattrs_stub (XDR *xdr_in)
 {
   guestfs_int_xattr_list *r;
   struct guestfs_lgetxattrs_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_linuxxattrs_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "linuxxattrs");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4513,11 +5043,21 @@ done:
   return;
 }
 
-static void setxattr_stub (XDR *xdr_in)
+static void
+setxattr_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_setxattr_args args;
   int vallen;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_linuxxattrs_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "linuxxattrs");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4548,11 +5088,21 @@ done:
   return;
 }
 
-static void lsetxattr_stub (XDR *xdr_in)
+static void
+lsetxattr_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_lsetxattr_args args;
   int vallen;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_linuxxattrs_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "linuxxattrs");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4583,10 +5133,20 @@ done:
   return;
 }
 
-static void removexattr_stub (XDR *xdr_in)
+static void
+removexattr_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_removexattr_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_linuxxattrs_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "linuxxattrs");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4615,10 +5175,20 @@ done:
   return;
 }
 
-static void lremovexattr_stub (XDR *xdr_in)
+static void
+lremovexattr_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_lremovexattr_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_linuxxattrs_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "linuxxattrs");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4647,7 +5217,8 @@ done:
   return;
 }
 
-static void mountpoints_stub (XDR *xdr_in)
+static void
+mountpoints_stub (XDR *xdr_in)
 {
   char **r;
 
@@ -4670,7 +5241,8 @@ done:
   return;
 }
 
-static void mkmountpoint_stub (XDR *xdr_in)
+static void
+mkmountpoint_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkmountpoint_args args;
@@ -4699,7 +5271,8 @@ done:
   return;
 }
 
-static void rmmountpoint_stub (XDR *xdr_in)
+static void
+rmmountpoint_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_rmmountpoint_args args;
@@ -4728,7 +5301,8 @@ done:
   return;
 }
 
-static void read_file_stub (XDR *xdr_in)
+static void
+read_file_stub (XDR *xdr_in)
 {
   size_t size = 1;
   char *r;
@@ -4767,7 +5341,8 @@ done:
   return;
 }
 
-static void grep_stub (XDR *xdr_in)
+static void
+grep_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_grep_args args;
@@ -4803,7 +5378,8 @@ done:
   return;
 }
 
-static void egrep_stub (XDR *xdr_in)
+static void
+egrep_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_egrep_args args;
@@ -4839,7 +5415,8 @@ done:
   return;
 }
 
-static void fgrep_stub (XDR *xdr_in)
+static void
+fgrep_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_fgrep_args args;
@@ -4875,7 +5452,8 @@ done:
   return;
 }
 
-static void grepi_stub (XDR *xdr_in)
+static void
+grepi_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_grepi_args args;
@@ -4911,7 +5489,8 @@ done:
   return;
 }
 
-static void egrepi_stub (XDR *xdr_in)
+static void
+egrepi_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_egrepi_args args;
@@ -4947,7 +5526,8 @@ done:
   return;
 }
 
-static void fgrepi_stub (XDR *xdr_in)
+static void
+fgrepi_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_fgrepi_args args;
@@ -4983,7 +5563,8 @@ done:
   return;
 }
 
-static void zgrep_stub (XDR *xdr_in)
+static void
+zgrep_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_zgrep_args args;
@@ -5019,7 +5600,8 @@ done:
   return;
 }
 
-static void zegrep_stub (XDR *xdr_in)
+static void
+zegrep_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_zegrep_args args;
@@ -5055,7 +5637,8 @@ done:
   return;
 }
 
-static void zfgrep_stub (XDR *xdr_in)
+static void
+zfgrep_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_zfgrep_args args;
@@ -5091,7 +5674,8 @@ done:
   return;
 }
 
-static void zgrepi_stub (XDR *xdr_in)
+static void
+zgrepi_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_zgrepi_args args;
@@ -5127,7 +5711,8 @@ done:
   return;
 }
 
-static void zegrepi_stub (XDR *xdr_in)
+static void
+zegrepi_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_zegrepi_args args;
@@ -5163,7 +5748,8 @@ done:
   return;
 }
 
-static void zfgrepi_stub (XDR *xdr_in)
+static void
+zfgrepi_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_zfgrepi_args args;
@@ -5199,10 +5785,20 @@ done:
   return;
 }
 
-static void realpath_stub (XDR *xdr_in)
+static void
+realpath_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_realpath_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_realpath_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "realpath");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5233,7 +5829,8 @@ done:
   return;
 }
 
-static void ln_stub (XDR *xdr_in)
+static void
+ln_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ln_args args;
@@ -5265,7 +5862,8 @@ done:
   return;
 }
 
-static void ln_f_stub (XDR *xdr_in)
+static void
+ln_f_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ln_f_args args;
@@ -5297,7 +5895,8 @@ done:
   return;
 }
 
-static void ln_s_stub (XDR *xdr_in)
+static void
+ln_s_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ln_s_args args;
@@ -5329,7 +5928,8 @@ done:
   return;
 }
 
-static void ln_sf_stub (XDR *xdr_in)
+static void
+ln_sf_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ln_sf_args args;
@@ -5361,7 +5961,8 @@ done:
   return;
 }
 
-static void readlink_stub (XDR *xdr_in)
+static void
+readlink_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_readlink_args args;
@@ -5395,7 +5996,8 @@ done:
   return;
 }
 
-static void fallocate_stub (XDR *xdr_in)
+static void
+fallocate_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_fallocate_args args;
@@ -5428,7 +6030,8 @@ done:
   return;
 }
 
-static void swapon_device_stub (XDR *xdr_in)
+static void
+swapon_device_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapon_device_args args;
@@ -5458,7 +6061,8 @@ done:
   return;
 }
 
-static void swapoff_device_stub (XDR *xdr_in)
+static void
+swapoff_device_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapoff_device_args args;
@@ -5488,7 +6092,8 @@ done:
   return;
 }
 
-static void swapon_file_stub (XDR *xdr_in)
+static void
+swapon_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapon_file_args args;
@@ -5519,7 +6124,8 @@ done:
   return;
 }
 
-static void swapoff_file_stub (XDR *xdr_in)
+static void
+swapoff_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapoff_file_args args;
@@ -5550,7 +6156,8 @@ done:
   return;
 }
 
-static void swapon_label_stub (XDR *xdr_in)
+static void
+swapon_label_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapon_label_args args;
@@ -5579,7 +6186,8 @@ done:
   return;
 }
 
-static void swapoff_label_stub (XDR *xdr_in)
+static void
+swapoff_label_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapoff_label_args args;
@@ -5608,10 +6216,20 @@ done:
   return;
 }
 
-static void swapon_uuid_stub (XDR *xdr_in)
+static void
+swapon_uuid_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapon_uuid_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_linuxfsuuid_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "linuxfsuuid");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5637,10 +6255,20 @@ done:
   return;
 }
 
-static void swapoff_uuid_stub (XDR *xdr_in)
+static void
+swapoff_uuid_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapoff_uuid_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_linuxfsuuid_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "linuxfsuuid");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5666,7 +6294,8 @@ done:
   return;
 }
 
-static void mkswap_file_stub (XDR *xdr_in)
+static void
+mkswap_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkswap_file_args args;
@@ -5697,11 +6326,21 @@ done:
   return;
 }
 
-static void inotify_init_stub (XDR *xdr_in)
+static void
+inotify_init_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_inotify_init_args args;
   int maxevents;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_inotify_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "inotify");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5727,11 +6366,21 @@ done:
   return;
 }
 
-static void inotify_add_watch_stub (XDR *xdr_in)
+static void
+inotify_add_watch_stub (XDR *xdr_in)
 {
   int64_t r;
   struct guestfs_inotify_add_watch_args args;
   int mask;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_inotify_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "inotify");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5762,11 +6411,21 @@ done:
   return;
 }
 
-static void inotify_rm_watch_stub (XDR *xdr_in)
+static void
+inotify_rm_watch_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_inotify_rm_watch_args args;
   int wd;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_inotify_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "inotify");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5792,9 +6451,19 @@ done:
   return;
 }
 
-static void inotify_read_stub (XDR *xdr_in)
+static void
+inotify_read_stub (XDR *xdr_in)
 {
   guestfs_int_inotify_event_list *r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_inotify_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "inotify");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5815,9 +6484,19 @@ done:
   return;
 }
 
-static void inotify_files_stub (XDR *xdr_in)
+static void
+inotify_files_stub (XDR *xdr_in)
 {
   char **r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_inotify_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "inotify");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5838,9 +6517,19 @@ done:
   return;
 }
 
-static void inotify_close_stub (XDR *xdr_in)
+static void
+inotify_close_stub (XDR *xdr_in)
 {
   int r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_inotify_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "inotify");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5857,10 +6546,20 @@ done:
   return;
 }
 
-static void setcon_stub (XDR *xdr_in)
+static void
+setcon_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_setcon_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_selinux_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "selinux");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5886,9 +6585,19 @@ done:
   return;
 }
 
-static void getcon_stub (XDR *xdr_in)
+static void
+getcon_stub (XDR *xdr_in)
 {
   char *r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_selinux_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "selinux");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5908,7 +6617,8 @@ done:
   return;
 }
 
-static void mkfs_b_stub (XDR *xdr_in)
+static void
+mkfs_b_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkfs_b_args args;
@@ -5941,7 +6651,8 @@ done:
   return;
 }
 
-static void mke2journal_stub (XDR *xdr_in)
+static void
+mke2journal_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mke2journal_args args;
@@ -5973,7 +6684,8 @@ done:
   return;
 }
 
-static void mke2journal_L_stub (XDR *xdr_in)
+static void
+mke2journal_L_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mke2journal_L_args args;
@@ -6006,11 +6718,21 @@ done:
   return;
 }
 
-static void mke2journal_U_stub (XDR *xdr_in)
+static void
+mke2journal_U_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mke2journal_U_args args;
   int blocksize;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_linuxfsuuid_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "linuxfsuuid");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6039,7 +6761,8 @@ done:
   return;
 }
 
-static void mke2fs_J_stub (XDR *xdr_in)
+static void
+mke2fs_J_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mke2fs_J_args args;
@@ -6074,7 +6797,8 @@ done:
   return;
 }
 
-static void mke2fs_JL_stub (XDR *xdr_in)
+static void
+mke2fs_JL_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mke2fs_JL_args args;
@@ -6108,11 +6832,21 @@ done:
   return;
 }
 
-static void mke2fs_JU_stub (XDR *xdr_in)
+static void
+mke2fs_JU_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mke2fs_JU_args args;
   int blocksize;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_linuxfsuuid_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "linuxfsuuid");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6142,10 +6876,20 @@ done:
   return;
 }
 
-static void modprobe_stub (XDR *xdr_in)
+static void
+modprobe_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_modprobe_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_linuxmodules_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "linuxmodules");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6171,7 +6915,8 @@ done:
   return;
 }
 
-static void echo_daemon_stub (XDR *xdr_in)
+static void
+echo_daemon_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_echo_daemon_args args;
@@ -6211,7 +6956,8 @@ done:
   return;
 }
 
-static void find0_stub (XDR *xdr_in)
+static void
+find0_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_find0_args args;
@@ -6242,7 +6988,8 @@ done:
   return;
 }
 
-static void case_sensitive_path_stub (XDR *xdr_in)
+static void
+case_sensitive_path_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_case_sensitive_path_args args;
@@ -6276,7 +7023,8 @@ done:
   return;
 }
 
-static void vfs_type_stub (XDR *xdr_in)
+static void
+vfs_type_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_vfs_type_args args;
@@ -6309,7 +7057,8 @@ done:
   return;
 }
 
-static void truncate_stub (XDR *xdr_in)
+static void
+truncate_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_truncate_args args;
@@ -6340,7 +7089,8 @@ done:
   return;
 }
 
-static void truncate_size_stub (XDR *xdr_in)
+static void
+truncate_size_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_truncate_size_args args;
@@ -6373,7 +7123,8 @@ done:
   return;
 }
 
-static void utimens_stub (XDR *xdr_in)
+static void
+utimens_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_utimens_args args;
@@ -6412,7 +7163,8 @@ done:
   return;
 }
 
-static void mkdir_mode_stub (XDR *xdr_in)
+static void
+mkdir_mode_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkdir_mode_args args;
@@ -6445,7 +7197,8 @@ done:
   return;
 }
 
-static void lchown_stub (XDR *xdr_in)
+static void
+lchown_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_lchown_args args;
@@ -6480,7 +7233,8 @@ done:
   return;
 }
 
-static void lstatlist_stub (XDR *xdr_in)
+static void
+lstatlist_stub (XDR *xdr_in)
 {
   guestfs_int_stat_list *r;
   struct guestfs_lstatlist_args args;
@@ -6524,11 +7278,21 @@ done:
   return;
 }
 
-static void lxattrlist_stub (XDR *xdr_in)
+static void
+lxattrlist_stub (XDR *xdr_in)
 {
   guestfs_int_xattr_list *r;
   struct guestfs_lxattrlist_args args;
   char **names;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_linuxxattrs_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "linuxxattrs");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6568,7 +7332,8 @@ done:
   return;
 }
 
-static void readlinklist_stub (XDR *xdr_in)
+static void
+readlinklist_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_readlinklist_args args;
@@ -6612,7 +7377,8 @@ done:
   return;
 }
 
-static void pread_stub (XDR *xdr_in)
+static void
+pread_stub (XDR *xdr_in)
 {
   size_t size = 1;
   char *r;
@@ -6655,7 +7421,8 @@ done:
   return;
 }
 
-static void part_init_stub (XDR *xdr_in)
+static void
+part_init_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_init_args args;
@@ -6686,7 +7453,8 @@ done:
   return;
 }
 
-static void part_add_stub (XDR *xdr_in)
+static void
+part_add_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_add_args args;
@@ -6721,7 +7489,8 @@ done:
   return;
 }
 
-static void part_disk_stub (XDR *xdr_in)
+static void
+part_disk_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_disk_args args;
@@ -6752,7 +7521,8 @@ done:
   return;
 }
 
-static void part_set_bootable_stub (XDR *xdr_in)
+static void
+part_set_bootable_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_set_bootable_args args;
@@ -6786,7 +7556,8 @@ done:
   return;
 }
 
-static void part_set_name_stub (XDR *xdr_in)
+static void
+part_set_name_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_set_name_args args;
@@ -6819,7 +7590,8 @@ done:
   return;
 }
 
-static void part_list_stub (XDR *xdr_in)
+static void
+part_list_stub (XDR *xdr_in)
 {
   guestfs_int_partition_list *r;
   struct guestfs_part_list_args args;
@@ -6853,7 +7625,8 @@ done:
   return;
 }
 
-static void part_get_parttype_stub (XDR *xdr_in)
+static void
+part_get_parttype_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_part_get_parttype_args args;
@@ -6886,7 +7659,8 @@ done:
   return;
 }
 
-static void fill_stub (XDR *xdr_in)
+static void
+fill_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_fill_args args;
@@ -6921,7 +7695,8 @@ done:
   return;
 }
 
-static void available_stub (XDR *xdr_in)
+static void
+available_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_available_args args;
@@ -6958,7 +7733,8 @@ done:
   return;
 }
 
-static void dd_stub (XDR *xdr_in)
+static void
+dd_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_dd_args args;
@@ -6990,7 +7766,8 @@ done:
   return;
 }
 
-static void filesize_stub (XDR *xdr_in)
+static void
+filesize_stub (XDR *xdr_in)
 {
   int64_t r;
   struct guestfs_filesize_args args;
@@ -7023,7 +7800,8 @@ done:
   return;
 }
 
-static void lvrename_stub (XDR *xdr_in)
+static void
+lvrename_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_lvrename_args args;
@@ -7053,7 +7831,8 @@ done:
   return;
 }
 
-static void vgrename_stub (XDR *xdr_in)
+static void
+vgrename_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_vgrename_args args;
@@ -7083,7 +7862,8 @@ done:
   return;
 }
 
-static void initrd_cat_stub (XDR *xdr_in)
+static void
+initrd_cat_stub (XDR *xdr_in)
 {
   size_t size = 1;
   char *r;
@@ -7123,7 +7903,8 @@ done:
   return;
 }
 
-static void pvuuid_stub (XDR *xdr_in)
+static void
+pvuuid_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_pvuuid_args args;
@@ -7156,7 +7937,8 @@ done:
   return;
 }
 
-static void vguuid_stub (XDR *xdr_in)
+static void
+vguuid_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_vguuid_args args;
@@ -7188,7 +7970,8 @@ done:
   return;
 }
 
-static void lvuuid_stub (XDR *xdr_in)
+static void
+lvuuid_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_lvuuid_args args;
@@ -7221,7 +8004,8 @@ done:
   return;
 }
 
-static void vgpvuuids_stub (XDR *xdr_in)
+static void
+vgpvuuids_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_vgpvuuids_args args;
@@ -7254,7 +8038,8 @@ done:
   return;
 }
 
-static void vglvuuids_stub (XDR *xdr_in)
+static void
+vglvuuids_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_vglvuuids_args args;
@@ -7287,7 +8072,8 @@ done:
   return;
 }
 
-static void copy_size_stub (XDR *xdr_in)
+static void
+copy_size_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_copy_size_args args;
@@ -7321,7 +8107,8 @@ done:
   return;
 }
 
-static void zero_device_stub (XDR *xdr_in)
+static void
+zero_device_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_zero_device_args args;
@@ -7351,10 +8138,21 @@ done:
   return;
 }
 
-static void txz_in_stub (XDR *xdr_in)
+static void
+txz_in_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_txz_in_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_xz_available ()) {
+    cancel_receive ();
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "xz");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     cancel_receive ();
@@ -7384,10 +8182,20 @@ done:
   return;
 }
 
-static void txz_out_stub (XDR *xdr_in)
+static void
+txz_out_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_txz_out_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_xz_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "xz");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7415,10 +8223,20 @@ done:
   return;
 }
 
-static void ntfsresize_stub (XDR *xdr_in)
+static void
+ntfsresize_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ntfsresize_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_ntfsprogs_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "ntfsprogs");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7445,7 +8263,8 @@ done:
   return;
 }
 
-static void vgscan_stub (XDR *xdr_in)
+static void
+vgscan_stub (XDR *xdr_in)
 {
   int r;
 
@@ -7464,7 +8283,8 @@ done:
   return;
 }
 
-static void part_del_stub (XDR *xdr_in)
+static void
+part_del_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_del_args args;
@@ -7496,7 +8316,8 @@ done:
   return;
 }
 
-static void part_get_bootable_stub (XDR *xdr_in)
+static void
+part_get_bootable_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_get_bootable_args args;
@@ -7530,7 +8351,8 @@ done:
   return;
 }
 
-static void part_get_mbr_id_stub (XDR *xdr_in)
+static void
+part_get_mbr_id_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_get_mbr_id_args args;
@@ -7564,7 +8386,8 @@ done:
   return;
 }
 
-static void part_set_mbr_id_stub (XDR *xdr_in)
+static void
+part_set_mbr_id_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_set_mbr_id_args args;
@@ -7598,7 +8421,8 @@ done:
   return;
 }
 
-static void checksum_device_stub (XDR *xdr_in)
+static void
+checksum_device_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_checksum_device_args args;
@@ -7632,11 +8456,21 @@ done:
   return;
 }
 
-static void lvresize_free_stub (XDR *xdr_in)
+static void
+lvresize_free_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_lvresize_free_args args;
   int percent;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7664,10 +8498,20 @@ done:
   return;
 }
 
-static void aug_clear_stub (XDR *xdr_in)
+static void
+aug_clear_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_aug_clear_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_augeas_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "augeas");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7693,7 +8537,8 @@ done:
   return;
 }
 
-static void get_umask_stub (XDR *xdr_in)
+static void
+get_umask_stub (XDR *xdr_in)
 {
   int r;
 
@@ -7714,7 +8559,8 @@ done:
   return;
 }
 
-static void debug_upload_stub (XDR *xdr_in)
+static void
+debug_upload_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_debug_upload_args args;
@@ -7747,7 +8593,8 @@ done:
   return;
 }
 
-static void base64_in_stub (XDR *xdr_in)
+static void
+base64_in_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_base64_in_args args;
@@ -7780,7 +8627,8 @@ done:
   return;
 }
 
-static void base64_out_stub (XDR *xdr_in)
+static void
+base64_out_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_base64_out_args args;
@@ -7811,7 +8659,8 @@ done:
   return;
 }
 
-static void checksums_out_stub (XDR *xdr_in)
+static void
+checksums_out_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_checksums_out_args args;
@@ -7843,7 +8692,8 @@ done:
   return;
 }
 
-static void fill_pattern_stub (XDR *xdr_in)
+static void
+fill_pattern_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_fill_pattern_args args;
@@ -7877,7 +8727,8 @@ done:
   return;
 }
 
-static void write_stub (XDR *xdr_in)
+static void
+write_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_write_args args;
@@ -7912,7 +8763,8 @@ done:
   return;
 }
 
-static void pwrite_stub (XDR *xdr_in)
+static void
+pwrite_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_pwrite_args args;
@@ -7951,7 +8803,8 @@ done:
   return;
 }
 
-static void resize2fs_size_stub (XDR *xdr_in)
+static void
+resize2fs_size_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_resize2fs_size_args args;
@@ -7983,11 +8836,21 @@ done:
   return;
 }
 
-static void pvresize_size_stub (XDR *xdr_in)
+static void
+pvresize_size_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_pvresize_size_args args;
   int64_t size;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8015,11 +8878,21 @@ done:
   return;
 }
 
-static void ntfsresize_size_stub (XDR *xdr_in)
+static void
+ntfsresize_size_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ntfsresize_size_args args;
   int64_t size;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_ntfsprogs_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "ntfsprogs");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8047,7 +8920,8 @@ done:
   return;
 }
 
-static void available_all_groups_stub (XDR *xdr_in)
+static void
+available_all_groups_stub (XDR *xdr_in)
 {
   char **r;
 
@@ -8070,7 +8944,8 @@ done:
   return;
 }
 
-static void fallocate64_stub (XDR *xdr_in)
+static void
+fallocate64_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_fallocate64_args args;
@@ -8103,7 +8978,8 @@ done:
   return;
 }
 
-static void vfs_label_stub (XDR *xdr_in)
+static void
+vfs_label_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_vfs_label_args args;
@@ -8136,7 +9012,8 @@ done:
   return;
 }
 
-static void vfs_uuid_stub (XDR *xdr_in)
+static void
+vfs_uuid_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_vfs_uuid_args args;
@@ -8169,11 +9046,21 @@ done:
   return;
 }
 
-static void lvm_set_filter_stub (XDR *xdr_in)
+static void
+lvm_set_filter_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_lvm_set_filter_args args;
   char **devices;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8214,7 +9101,8 @@ done:
   return;
 }
 
-static void lvm_clear_filter_stub (XDR *xdr_in)
+static void
+lvm_clear_filter_stub (XDR *xdr_in)
 {
   int r;
 
@@ -8233,10 +9121,20 @@ done:
   return;
 }
 
-static void luks_open_stub (XDR *xdr_in)
+static void
+luks_open_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_luks_open_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_luks_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "luks");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8265,10 +9163,20 @@ done:
   return;
 }
 
-static void luks_open_ro_stub (XDR *xdr_in)
+static void
+luks_open_ro_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_luks_open_ro_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_luks_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "luks");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8297,10 +9205,20 @@ done:
   return;
 }
 
-static void luks_close_stub (XDR *xdr_in)
+static void
+luks_close_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_luks_close_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_luks_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "luks");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8327,11 +9245,21 @@ done:
   return;
 }
 
-static void luks_format_stub (XDR *xdr_in)
+static void
+luks_format_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_luks_format_args args;
   int keyslot;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_luks_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "luks");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8360,11 +9288,21 @@ done:
   return;
 }
 
-static void luks_format_cipher_stub (XDR *xdr_in)
+static void
+luks_format_cipher_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_luks_format_cipher_args args;
   int keyslot;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_luks_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "luks");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8394,11 +9332,21 @@ done:
   return;
 }
 
-static void luks_add_key_stub (XDR *xdr_in)
+static void
+luks_add_key_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_luks_add_key_args args;
   int keyslot;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_luks_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "luks");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8428,11 +9376,21 @@ done:
   return;
 }
 
-static void luks_kill_slot_stub (XDR *xdr_in)
+static void
+luks_kill_slot_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_luks_kill_slot_args args;
   int keyslot;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_luks_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "luks");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8461,10 +9419,20 @@ done:
   return;
 }
 
-static void is_lv_stub (XDR *xdr_in)
+static void
+is_lv_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_lv_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "lvm2");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8493,7 +9461,8 @@ done:
   return;
 }
 
-static void findfs_uuid_stub (XDR *xdr_in)
+static void
+findfs_uuid_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_findfs_uuid_args args;
@@ -8525,7 +9494,8 @@ done:
   return;
 }
 
-static void findfs_label_stub (XDR *xdr_in)
+static void
+findfs_label_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_findfs_label_args args;
@@ -8557,7 +9527,8 @@ done:
   return;
 }
 
-static void is_chardev_stub (XDR *xdr_in)
+static void
+is_chardev_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_chardev_args args;
@@ -8590,7 +9561,8 @@ done:
   return;
 }
 
-static void is_blockdev_stub (XDR *xdr_in)
+static void
+is_blockdev_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_blockdev_args args;
@@ -8623,7 +9595,8 @@ done:
   return;
 }
 
-static void is_fifo_stub (XDR *xdr_in)
+static void
+is_fifo_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_fifo_args args;
@@ -8656,7 +9629,8 @@ done:
   return;
 }
 
-static void is_symlink_stub (XDR *xdr_in)
+static void
+is_symlink_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_symlink_args args;
@@ -8689,7 +9663,8 @@ done:
   return;
 }
 
-static void is_socket_stub (XDR *xdr_in)
+static void
+is_socket_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_socket_args args;
@@ -8722,7 +9697,8 @@ done:
   return;
 }
 
-static void part_to_dev_stub (XDR *xdr_in)
+static void
+part_to_dev_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_part_to_dev_args args;
@@ -8755,7 +9731,8 @@ done:
   return;
 }
 
-static void upload_offset_stub (XDR *xdr_in)
+static void
+upload_offset_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_upload_offset_args args;
@@ -8789,7 +9766,8 @@ done:
   return;
 }
 
-static void download_offset_stub (XDR *xdr_in)
+static void
+download_offset_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_download_offset_args args;
@@ -8823,7 +9801,8 @@ done:
   return;
 }
 
-static void pwrite_device_stub (XDR *xdr_in)
+static void
+pwrite_device_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_pwrite_device_args args;
@@ -8861,7 +9840,8 @@ done:
   return;
 }
 
-static void pread_device_stub (XDR *xdr_in)
+static void
+pread_device_stub (XDR *xdr_in)
 {
   size_t size = 1;
   char *r;
@@ -8903,7 +9883,8 @@ done:
   return;
 }
 
-static void lvm_canonical_lv_name_stub (XDR *xdr_in)
+static void
+lvm_canonical_lv_name_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_lvm_canonical_lv_name_args args;
@@ -8936,7 +9917,8 @@ done:
   return;
 }
 
-static void mkfs_opts_stub (XDR *xdr_in)
+static void
+mkfs_opts_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkfs_opts_args args;
@@ -8974,11 +9956,21 @@ done:
   return;
 }
 
-static void getxattr_stub (XDR *xdr_in)
+static void
+getxattr_stub (XDR *xdr_in)
 {
   size_t size = 1;
   char *r;
   struct guestfs_getxattr_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_linuxxattrs_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "linuxxattrs");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -9014,11 +10006,21 @@ done:
   return;
 }
 
-static void lgetxattr_stub (XDR *xdr_in)
+static void
+lgetxattr_stub (XDR *xdr_in)
 {
   size_t size = 1;
   char *r;
   struct guestfs_lgetxattr_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_linuxxattrs_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "linuxxattrs");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -9054,7 +10056,8 @@ done:
   return;
 }
 
-static void resize2fs_M_stub (XDR *xdr_in)
+static void
+resize2fs_M_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_resize2fs_M_args args;
@@ -9084,7 +10087,8 @@ done:
   return;
 }
 
-static void internal_autosync_stub (XDR *xdr_in)
+static void
+internal_autosync_stub (XDR *xdr_in)
 {
   int r;
 
@@ -9103,7 +10107,8 @@ done:
   return;
 }
 
-static void is_zero_stub (XDR *xdr_in)
+static void
+is_zero_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_zero_args args;
@@ -9136,7 +10141,8 @@ done:
   return;
 }
 
-static void is_zero_device_stub (XDR *xdr_in)
+static void
+is_zero_device_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_zero_device_args args;
@@ -9168,7 +10174,8 @@ done:
   return;
 }
 
-static void list_9p_stub (XDR *xdr_in)
+static void
+list_9p_stub (XDR *xdr_in)
 {
   char **r;
 
@@ -9191,7 +10198,8 @@ done:
   return;
 }
 
-static void mount_9p_stub (XDR *xdr_in)
+static void
+mount_9p_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mount_9p_args args;
@@ -9222,7 +10230,8 @@ done:
   return;
 }
 
-static void list_dm_devices_stub (XDR *xdr_in)
+static void
+list_dm_devices_stub (XDR *xdr_in)
 {
   char **r;
 
@@ -9245,12 +10254,22 @@ done:
   return;
 }
 
-static void ntfsresize_opts_stub (XDR *xdr_in)
+static void
+ntfsresize_opts_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ntfsresize_opts_args args;
   int64_t size;
   int force;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_ntfsprogs_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "ntfsprogs");
+    goto done;
+  }
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffffc)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
@@ -9279,11 +10298,21 @@ done:
   return;
 }
 
-static void btrfs_filesystem_resize_stub (XDR *xdr_in)
+static void
+btrfs_filesystem_resize_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_btrfs_filesystem_resize_args args;
   int64_t size;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_btrfs_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "btrfs");
+    goto done;
+  }
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
@@ -9312,7 +10341,8 @@ done:
   return;
 }
 
-static void write_append_stub (XDR *xdr_in)
+static void
+write_append_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_write_append_args args;
@@ -9347,7 +10377,8 @@ done:
   return;
 }
 
-static void compress_out_stub (XDR *xdr_in)
+static void
+compress_out_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_compress_out_args args;
@@ -9381,7 +10412,8 @@ done:
   return;
 }
 
-static void compress_device_out_stub (XDR *xdr_in)
+static void
+compress_device_out_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_compress_device_out_args args;
@@ -9414,7 +10446,8 @@ done:
   return;
 }
 
-static void part_to_partnum_stub (XDR *xdr_in)
+static void
+part_to_partnum_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_to_partnum_args args;
@@ -9446,7 +10479,8 @@ done:
   return;
 }
 
-static void copy_device_to_device_stub (XDR *xdr_in)
+static void
+copy_device_to_device_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_copy_device_to_device_args args;
@@ -9484,7 +10518,8 @@ done:
   return;
 }
 
-static void copy_device_to_file_stub (XDR *xdr_in)
+static void
+copy_device_to_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_copy_device_to_file_args args;
@@ -9523,7 +10558,8 @@ done:
   return;
 }
 
-static void copy_file_to_device_stub (XDR *xdr_in)
+static void
+copy_file_to_device_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_copy_file_to_device_args args;
@@ -9562,7 +10598,8 @@ done:
   return;
 }
 
-static void copy_file_to_file_stub (XDR *xdr_in)
+static void
+copy_file_to_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_copy_file_to_file_args args;
@@ -9601,7 +10638,8 @@ done:
   return;
 }
 
-static void tune2fs_stub (XDR *xdr_in)
+static void
+tune2fs_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_tune2fs_args args;
@@ -9649,7 +10687,8 @@ done:
   return;
 }
 
-static void md_create_stub (XDR *xdr_in)
+static void
+md_create_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_md_create_args args;
@@ -9658,6 +10697,15 @@ static void md_create_stub (XDR *xdr_in)
   int nrdevices;
   int spare;
   int64_t chunk;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_mdadm_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "mdadm");
+    goto done;
+  }
 
   if (optargs_bitmask & UINT64_C(0xffffffffffffffe0)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
@@ -9704,7 +10752,8 @@ done:
   return;
 }
 
-static void list_md_devices_stub (XDR *xdr_in)
+static void
+list_md_devices_stub (XDR *xdr_in)
 {
   char **r;
 
@@ -9727,10 +10776,20 @@ done:
   return;
 }
 
-static void md_detail_stub (XDR *xdr_in)
+static void
+md_detail_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_md_detail_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_mdadm_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "mdadm");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -9761,10 +10820,20 @@ done:
   return;
 }
 
-static void md_stop_stub (XDR *xdr_in)
+static void
+md_stop_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_md_stop_args args;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_mdadm_available ()) {
+    reply_with_error ("feature '%s' is not available in this\n"
+                      "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+                      "how to check for the availability of features.",
+                      "mdadm");
+    goto done;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -9791,7 +10860,8 @@ done:
   return;
 }
 
-static void blkid_stub (XDR *xdr_in)
+static void
+blkid_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_blkid_args args;
@@ -9825,7 +10895,8 @@ done:
   return;
 }
 
-static void e2fsck_stub (XDR *xdr_in)
+static void
+e2fsck_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_e2fsck_args args;

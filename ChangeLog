@@ -1,3 +1,93 @@
+2012-02-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.3.
+
+	findfs: Remove /run/blkid/blkid.tab.
+	See this util-linux commit:
+	https://github.com/karelzak/util-linux/commit/b82590ad46acf9fe8d332b53875e24c3c31e2482
+	(cherry picked from commit f504cb02e1e8ef394287ddbaaad2fb1ec04bc33f)
+
+	extra-tests: Add suppression for uninitialized memory bug in latest glibc. (cherry picked from commit 518edc506fbdd66dcdd5a558cd086cfa296585a2)
+
+	extra-tests: libnl moved from /lib64 to /usr/lib64 on Fedora.
+	Update suppressions file to match.
+	(cherry picked from commit 0559f038ada850f627529ece97f5a4e8721a7ecd)
+
+	perl: Ignore perl/MYMETA.json (cherry picked from commit 825b5e65c094396154594fcb31db59fe51867a33)
+
+2012-02-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	blockdev, parted: Call udev_settle before and after commands. (RHBZ#769304)
+	See comments in the code for details.
+
+	This is an alternate fix to
+	commit a9c8123c72db47bcab8dd738e8d5256a9ae87f11.
+	(cherry picked from commit 21a9efcad5379cbfcc2404142472ec5efda4aaa0)
+
+2012-02-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	Revert "daemon: Run udev_settle after pwrite-device finishes."
+	This reverts commit a9c8123c72db47bcab8dd738e8d5256a9ae87f11.
+	(cherry picked from commit a98170e0e255021481cd428ee12d0858a59a875b)
+
+2012-02-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Choose a virtual directory for the daemon which is not a symlink.
+	Check /sbin, /usr/sbin, /bin and /usr/bin to ensure that neither the
+	directory nor the parent (eg. /usr) is a symlink, and use this
+	directory for the virtual directory used to store guestfsd in the
+	appliance.
+	(cherry picked from commit 3c9ef0e9780443d28a078c49bab80cb13e5608ae)
+
+	build: Remove 'run' from EXTRA_DIST.
+	This file shouldn't be included in the tarball as it contains
+	hard-coded paths from the maintainer's machine which cannot be
+	relevant to the target machine.
+	(cherry picked from commit 590d8c3c3732c603cfb1d2180190a02df528e5ed)
+
+2012-02-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	Clarify the error message when unavailable functions are called (RHBZ#679737).
+	Callers are supposed to use the availability API to check for
+	functions that may not be available in particular builds of
+	libguestfs.  If they don't do this, currently they tend to get obscure
+	error messages, eg:
+
+	  libguestfs: error: zerofree: /dev/vda1: zerofree: No such file or directory
+
+	This commit changes the error message to explain what callers ought to
+	be doing instead:
+
+	  libguestfs: error: zerofree: feature 'zerofree' is not available in this
+	  build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for
+	  how to check for the availability of features.
+
+	This patch makes the stubs check for availability.  The stub code
+	changes to:
+
+	  static void
+	  zerofree_stub (XDR *xdr_in)
+	  {
+	  [...]
+
+	    /* The caller should have checked before calling this. */
+	    if (! optgroup_zerofree_available ()) {
+	      reply_with_error ("feature '%s' is not available in this\n"
+	                        "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+	                        "how to check for the availability of features.",
+	                        "zerofree");
+	      goto done;
+	    }
+	  [...]
+	(cherry picked from commit 330fbea5b2d6bd7db84f7ea7afe87cf1bcd438e0)
+
+2012-02-02  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	examples: code cleanups
+	do a code cleanup by removing the tailing spaces
+
+	(cherry picked from commit 90d6386c13edcb479113889bbd3cedf83c2e6277)
+
 2012-01-30  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.2.
