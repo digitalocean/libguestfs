@@ -747,6 +747,8 @@ The PHP binding only works correctly on 64 bit machines.
 
 Див. L<guestfs-ruby(3)>.
 
+For JRuby, use the Java bindings.
+
 =item B<скрипти оболонки>
 
 Див. L<guestfish(1)>.

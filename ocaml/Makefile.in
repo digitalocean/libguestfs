@@ -1823,22 +1823,18 @@ appliance: force
 @HAVE_OCAML_TRUE@	mkdir -p t
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -cclib -L$(top_builddir)/src/.libs -I . -package unix -linkpkg mlguestfs.cmxa $< -o $@
 
-# Need to rebuild the tests from source if the main library has
-# changed at all, otherwise we get inconsistent assumptions.
+# Explicit rules for this test which requires 'threads' package.
 @HAVE_OCAML_TRUE@t/guestfs_070_threads.cmo: t/guestfs_070_threads.ml mlguestfs.cma
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -package unix,threads -thread -linkpkg -c $< -o $@
 
 @HAVE_OCAML_TRUE@t/guestfs_070_threads.cmx: t/guestfs_070_threads.ml mlguestfs.cmxa
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -package unix,threads -thread -linkpkg -c $< -o $@
 
-@HAVE_OCAML_TRUE@t/%.cmx: t/%.ml mlguestfs.cmxa
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -package unix -linkpkg -c $< -o $(builddir)/$@
-
 @HAVE_OCAML_TRUE@%.cmi: %.mli
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -package unix -c $< -o $(builddir)/$@
-@HAVE_OCAML_TRUE@%.cmo: %.ml
+@HAVE_OCAML_TRUE@%.cmo: %.ml mlguestfs.cma
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -package unix -c $< -o $(builddir)/$@
-@HAVE_OCAML_TRUE@%.cmx: %.ml
+@HAVE_OCAML_TRUE@%.cmx: %.ml mlguestfs.cmxa
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -package unix -c $< -o $(builddir)/$@
 
 @HAVE_OCAML_TRUE@depend: .depend
