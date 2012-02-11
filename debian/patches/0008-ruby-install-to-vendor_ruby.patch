@@ -30,4 +30,3 @@ index 361277e..4c5b5e6 100644
 +	$(INSTALL) -p -m 0755 $(builddir)/ext/guestfs/_guestfs.so $(DESTDIR)$(RUBY_VENDORARCH)
  
  endif
--- 

@@ -23,4 +23,3 @@ index 3a698cc..0c905d0 100644
  	rm -f $@
  	ln $< $@
  $(libsrcdir)/guestfs_protocol.c: force
--- 

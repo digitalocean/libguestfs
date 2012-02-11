@@ -23,4 +23,3 @@ index 517222a..431ac28 100755
  # Ensure everything is cleaned up on exit.
  rm -f "$image"
  mkdir -p "$mp"
--- 

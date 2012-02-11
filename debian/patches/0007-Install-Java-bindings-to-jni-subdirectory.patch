@@ -7,7 +7,7 @@ Subject: Install Java bindings to jni subdirectory
  1 files changed, 2 insertions(+), 0 deletions(-)
 
 diff --git a/java/Makefile.am b/java/Makefile.am
-index ef78773..b76e65c 100644
+index d9db6f4..a13ffa9 100644
 --- a/java/Makefile.am
 +++ b/java/Makefile.am
 @@ -17,6 +17,8 @@
@@ -19,4 +19,3 @@ index ef78773..b76e65c 100644
  # Old RHEL 5 autoconf doesn't have builddir.
  builddir ?= $(top_builddir)/java
  
--- 

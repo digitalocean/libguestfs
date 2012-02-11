@@ -9,11 +9,12 @@ Subject: autoreconf
  build-aux/config.sub   |  159 +++++++++++++++++++++++-----------
  configure              |   54 ++++++++-----
  daemon/Makefile.in     |    4 +-
+ format/Makefile.in     |    2 +-
  java/Makefile.in       |    2 +-
  perl/Makefile.in       |    1 +
  po/POTFILES.in         |    6 --
  ruby/Makefile.in       |   12 ++--
- 10 files changed, 279 insertions(+), 200 deletions(-)
+ 11 files changed, 280 insertions(+), 201 deletions(-)
 
 diff --git a/Makefile.in b/Makefile.in
 index 67ccba1..8bba69c 100644
@@ -969,7 +970,7 @@ index 2a55a50..30fdca8 100755
  		;;
  	*-wec)
 diff --git a/configure b/configure
-index b4fb261..810bc14 100755
+index deb9d6d..2eeba1d 100755
 --- a/configure
 +++ b/configure
 @@ -45929,6 +45929,7 @@ fi
@@ -1192,7 +1193,7 @@ index b4fb261..810bc14 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$FUSE_PKG_ERRORS" >&5
-@@ -51746,6 +51759,7 @@ if test -n "$GOBJECT_CFLAGS"; then
+@@ -51750,6 +51763,7 @@ if test -n "$GOBJECT_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_GOBJECT_CFLAGS=`$PKG_CONFIG --cflags "gobject-2.0 >= 2.26.0" 2>/dev/null`
@@ -1200,7 +1201,7 @@ index b4fb261..810bc14 100755
  else
    pkg_failed=yes
  fi
-@@ -51762,6 +51776,7 @@ if test -n "$GOBJECT_LIBS"; then
+@@ -51766,6 +51780,7 @@ if test -n "$GOBJECT_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_GOBJECT_LIBS=`$PKG_CONFIG --libs "gobject-2.0 >= 2.26.0" 2>/dev/null`
@@ -1208,7 +1209,7 @@ index b4fb261..810bc14 100755
  else
    pkg_failed=yes
  fi
-@@ -51781,9 +51796,9 @@ else
+@@ -51785,9 +51800,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -1220,7 +1221,7 @@ index b4fb261..810bc14 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$GOBJECT_PKG_ERRORS" >&5
-@@ -51983,7 +51998,7 @@ ac_config_files="$ac_config_files podwrapper.sh"
+@@ -51987,7 +52002,7 @@ ac_config_files="$ac_config_files podwrapper.sh"
  
  ac_config_files="$ac_config_files run"
  
@@ -1229,7 +1230,7 @@ index b4fb261..810bc14 100755
  
  cat >confcache <<\_ACEOF
  # This file is a shell script that caches the results of configure
-@@ -53211,7 +53226,6 @@ do
+@@ -53215,7 +53230,6 @@ do
      "clone/Makefile") CONFIG_FILES="$CONFIG_FILES clone/Makefile" ;;
      "csharp/Makefile") CONFIG_FILES="$CONFIG_FILES csharp/Makefile" ;;
      "daemon/Makefile") CONFIG_FILES="$CONFIG_FILES daemon/Makefile" ;;
@@ -1254,8 +1255,21 @@ index 81737b1..2f84f4b 100644
  	rm -f $@
  	ln $< $@
  $(libsrcdir)/guestfs_protocol.c: force
+diff --git a/format/Makefile.in b/format/Makefile.in
+index 43a112c..4ca2c69 100644
+--- a/format/Makefile.in
++++ b/format/Makefile.in
+@@ -1338,7 +1338,7 @@ TESTS_ENVIRONMENT = \
+ 	MALLOC_PERTURB_=$(random_val) \
+ 	$(top_builddir)/run
+ 
+-TESTS = test-virt-format.sh
++@ENABLE_APPLIANCE_TRUE@TESTS = test-virt-format.sh
+ all: all-am
+ 
+ .SUFFIXES:
 diff --git a/java/Makefile.in b/java/Makefile.in
-index 5f587d5..11248f5 100644
+index 028c908..3d6f109 100644
 --- a/java/Makefile.in
 +++ b/java/Makefile.in
 @@ -1295,7 +1295,7 @@ htmldir = @htmldir@
@@ -1330,4 +1344,3 @@ index bdfc6f4..b2f39fd 100644
  
  # Tell versions [3.59,3.63) of GNU make to not export all variables.
  # Otherwise a system limit (for SysV at least) may be exceeded.
--- 

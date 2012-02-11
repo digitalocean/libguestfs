@@ -18,4 +18,3 @@ index 0335f6e..d541227 100755
 +echo '/lib/lsb/*' >> supermin.d/hostfiles-t
 +
  mv supermin.d/hostfiles-t supermin.d/hostfiles
--- 

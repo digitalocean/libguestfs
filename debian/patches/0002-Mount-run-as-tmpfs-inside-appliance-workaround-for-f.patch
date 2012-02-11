@@ -21,4 +21,3 @@ index 77d0281..a29353d 100755
  mkdir -p /run/lock
  
  # devtmpfs is required since udev 176
--- 

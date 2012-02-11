@@ -7,10 +7,10 @@ Subject: configure.ac: do not generate debian/changelog
  1 files changed, 0 insertions(+), 1 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index ada1db6..fed6ed0 100644
+index 962f774..98e62b6 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1097,7 +1097,6 @@ AC_CONFIG_FILES([Makefile
+@@ -1100,7 +1100,6 @@ AC_CONFIG_FILES([Makefile
                   clone/Makefile
                   csharp/Makefile
                   daemon/Makefile
@@ -18,4 +18,3 @@ index ada1db6..fed6ed0 100644
                   df/Makefile
                   edit/Makefile
                   erlang/Makefile
--- 

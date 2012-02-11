@@ -18,4 +18,3 @@ index 404a4e9..253d990 100644
  	perl Makefile.PL INSTALLDIRS=$(INSTALLDIRS) PREFIX=$(prefix)
  
  # No!  Otherwise it is deleted before the clean-local rule runs.
--- 
