@@ -1,3 +1,36 @@
+2012-02-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.4.
+
+	virt-format: Add a test. (cherry picked from commit badf2d6c4d2c2a3e12bad4dcbd5854401156bb5f)
+
+	fish: edit: Preserve permissions, UID, GID, SELinux context when editing files (RHBZ#788641). (cherry picked from commit 7c21e49c2c83092e9fd5f40c43a03c764a6d3663)
+
+2012-02-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: In edit command, upload to a new file.
+	If the upload fails, this means we don't leave a partially
+	written file.
+
+	Also add a test for the edit command.
+	(cherry picked from commit ddae5abf80f65fc149eec253f14f073d397b49c2)
+
+2012-02-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Refactor error handling in the 'edit' command.
+	This is just code motion.
+	(cherry picked from commit ca80e4490463d646de4504fc2bcb4e4a722bedb8)
+
+	ocaml: Ensure bindings are recompiled whenever there is an API change. (cherry picked from commit 39625b59ee5aeecfb855575abb939934216eeff2)
+
+	docs: Note that JRuby should use the Java bindings. (cherry picked from commit 6ca8a2db6d6f1028a35ece616af44538074483fc)
+
+	edit: Preserve file permissions, UID, GID, SELinux context on edited files. (RHBZ#788641) (cherry picked from commit 24d7889eba3eb6ee2f37ed9d384aa8734ebad7b7)
+
+2012-02-10  Hilko Bengen  <bengen@hilluzination.de>
+
+	java: Make use of JAR_INSTALL_DIR, JNI_INSTALL_DIR (cherry picked from commit 016ae77e6c2331560a3716ea1ebae82f122b4909)
+
 2012-02-08  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.3.

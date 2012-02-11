@@ -75,6 +75,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 bin_PROGRAMS = guestfish$(EXEEXT)
 @ENABLE_APPLIANCE_TRUE@am__append_1 = \
 @ENABLE_APPLIANCE_TRUE@	test-copy.sh \
+@ENABLE_APPLIANCE_TRUE@	test-edit.sh \
 @ENABLE_APPLIANCE_TRUE@	test-find0.sh \
 @ENABLE_APPLIANCE_TRUE@	test-read_file.sh \
 @ENABLE_APPLIANCE_TRUE@	test-remote.sh \

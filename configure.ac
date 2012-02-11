@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [16])
-m4_define([libguestfs_release], [3])
+m4_define([libguestfs_release], [4])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -939,10 +939,13 @@ if test "x$with_java_home" != "xno"; then
         esac
         AC_MSG_RESULT([$JAVAC_FLAGS])
 
-        dnl Where to install jarfiles.
-        dnl XXX How to make it configurable?
-        JAR_INSTALL_DIR=\${prefix}/share/java
-        JNI_INSTALL_DIR=\${libdir}
+        dnl Where to install jarfiles, jnifiles
+        if test -z $JAR_INSTALL_DIR; then
+            JAR_INSTALL_DIR=\${prefix}/share/java
+        fi
+        if test -z $JNI_INSTALL_DIR; then
+            JNI_INSTALL_DIR=\${libdir}
+        fi
 
         dnl JNI version.
         jni_major_version=`echo "$VERSION" | awk -F. '{print $1}'`
