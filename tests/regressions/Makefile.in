@@ -70,7 +70,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/subdir-rules.mk
 TESTS = rhbz501893$(EXEEXT) rhbz503169c13.sh rhbz557655.sh \
 	rhbz576879.sh rhbz578407.sh rhbz580246.sh rhbz602997.sh \
-	rhbz690819.sh test-noexec-stack.pl
+	rhbz690819.sh rhbz789960.sh test-noexec-stack.pl
 check_PROGRAMS = rhbz501893$(EXEEXT)
 subdir = tests/regressions
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -1256,6 +1256,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+tests_not_run = \
+	rhbz727178.sh
+
 random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
 TESTS_ENVIRONMENT = \
 	MALLOC_PERTURB_=$(random_val) \
@@ -1272,6 +1275,7 @@ rhbz501893_LDADD = \
 
 EXTRA_DIST = \
 	$(TESTS) \
+	$(tests_not_run) \
 	rhbz557655-expected.stdout \
 	rhbz557655-expected.stderr
 
