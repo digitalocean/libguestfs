@@ -1,3 +1,94 @@
+2012-02-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add a regression test for RHBZ#789960.
+	Test all the ways that the 'mount' command can fail.  Ensure that none
+	of them result in failures or desynchronization.
+	(cherry picked from commit cd06ddf4422a31528f4a268dad813938947e1a0d)
+
+2012-02-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	regressions: One test is not being run.
+	rhbz727178.sh exists, but historically was never added to the list of
+	tests, so it doesn't run.  Create a special variable for this test and
+	ensure it is added to EXTRA_DIST.
+
+	Test was originally added in
+	commit d7356a2801130907997acd5c7502e8417566e782.
+	(cherry picked from commit 1b15e543a8efee027451dcfb68743d35eda95dfc)
+
+2012-02-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Return error properly when user tries to mount appliance root (RHBZ#789960).
+	In the case where the caller attempts to mount the "hidden"
+	appliance root device (eg. /dev/vdb if /dev/vda is the only
+	normal block device added), we were calling reply_with_error
+	but not actually returning immediately, resulting in protocol
+	desynchronization.
+
+	This commit fixes this obvious mistake.
+	(cherry picked from commit 07081591cf9928454148db84828da8a7f39b6c6f)
+
+2012-02-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Don't xdr_free uninitialized args struct on error paths.
+	For stubs of functions that had arguments, code did this:
+
+	static void
+	mount_stub (XDR *xdr_in)
+	{
+	  int r;
+	  struct guestfs_mount_args args;
+
+	  if (optargs_bitmask != 0) {
+	    //...
+	    goto done;
+	  }
+	  // possibly other tests here
+
+	  memset (&args, 0, sizeof args);
+
+	  [...]
+
+	done:
+	  xdr_free ((xdrproc_t) xdr_guestfs_mount_args, (char *) &args);
+	  return;
+	}
+
+	This caused xdr_free to be called on uninitialized 'args' struct,
+	causing a segfault.
+
+	The fix is to add another label, so the code looks like:
+
+	static void
+	mount_stub (XDR *xdr_in)
+	{
+	  int r;
+	  struct guestfs_mount_args args;
+
+	  if (optargs_bitmask != 0) {
+	    //...
+	    goto done_no_free;
+	  }
+	  // possibly other tests here
+
+	  memset (&args, 0, sizeof args);
+
+	  [...]
+
+	done:
+	  xdr_free ((xdrproc_t) xdr_guestfs_mount_args, (char *) &args);
+	done_no_free:
+	  return;
+	}
+
+	This fixes commit 330fbea5b2d6bd7db84f7ea7afe87cf1bcd438e0
+	and commit 0344248af55802bbbd816b349ec1ba9305996f6e.
+	(cherry picked from commit ba443ae0486ae30ea597c4e126de63371f8fa7a8)
+
+2012-02-13  Hilko Bengen  <bengen@hilluzination.de>
+
+	Do not run test-virt-format.sh if appliance has not been built (cherry picked from commit c8a11468c4dc761acdcb9b184d345bafe1b5114d)
+
 2012-02-10  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.4.

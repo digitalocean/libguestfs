@@ -4,7 +4,7 @@ libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 
 Name: libguestfs
-Version: 1.16.4
+Version: 1.16.5
 Description: libguestfs library for accessing and modifying VM images
 Requires:
 Cflags:

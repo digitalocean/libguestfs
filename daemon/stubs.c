@@ -43,7 +43,7 @@ mount_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -64,6 +64,7 @@ mount_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mount_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -74,7 +75,7 @@ sync_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_sync ();
@@ -84,6 +85,7 @@ sync_stub (XDR *xdr_in)
 
   reply (NULL, NULL);
 done:
+done_no_free:
   return;
 }
 
@@ -95,7 +97,7 @@ touch_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -116,6 +118,7 @@ touch_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_touch_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -127,7 +130,7 @@ cat_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -151,6 +154,7 @@ cat_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_cat_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -162,7 +166,7 @@ ll_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -186,6 +190,7 @@ ll_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ll_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -197,7 +202,7 @@ ls_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -222,6 +227,7 @@ ls_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ls_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -232,7 +238,7 @@ list_devices_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_list_devices ();
@@ -246,6 +252,7 @@ list_devices_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_list_devices_ret, (char *) &ret);
   free_strings (r);
 done:
+done_no_free:
   return;
 }
 
@@ -256,7 +263,7 @@ list_partitions_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_list_partitions ();
@@ -270,6 +277,7 @@ list_partitions_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_list_partitions_ret, (char *) &ret);
   free_strings (r);
 done:
+done_no_free:
   return;
 }
 
@@ -284,12 +292,12 @@ pvs_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_pvs ();
@@ -303,6 +311,7 @@ pvs_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_pvs_ret, (char *) &ret);
   free_strings (r);
 done:
+done_no_free:
   return;
 }
 
@@ -317,12 +326,12 @@ vgs_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_vgs ();
@@ -336,6 +345,7 @@ vgs_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_vgs_ret, (char *) &ret);
   free_strings (r);
 done:
+done_no_free:
   return;
 }
 
@@ -350,12 +360,12 @@ lvs_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_lvs ();
@@ -369,6 +379,7 @@ lvs_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_lvs_ret, (char *) &ret);
   free_strings (r);
 done:
+done_no_free:
   return;
 }
 
@@ -383,12 +394,12 @@ pvs_full_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_pvs_full ();
@@ -402,6 +413,7 @@ pvs_full_stub (XDR *xdr_in)
   reply ((xdrproc_t) xdr_guestfs_pvs_full_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_pvs_full_ret, (char *) &ret);
 done:
+done_no_free:
   return;
 }
 
@@ -416,12 +428,12 @@ vgs_full_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_vgs_full ();
@@ -435,6 +447,7 @@ vgs_full_stub (XDR *xdr_in)
   reply ((xdrproc_t) xdr_guestfs_vgs_full_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_vgs_full_ret, (char *) &ret);
 done:
+done_no_free:
   return;
 }
 
@@ -449,12 +462,12 @@ lvs_full_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_lvs_full ();
@@ -468,6 +481,7 @@ lvs_full_stub (XDR *xdr_in)
   reply ((xdrproc_t) xdr_guestfs_lvs_full_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_lvs_full_ret, (char *) &ret);
 done:
+done_no_free:
   return;
 }
 
@@ -479,7 +493,7 @@ read_lines_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -504,6 +518,7 @@ read_lines_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_read_lines_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -520,12 +535,12 @@ aug_init_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "augeas");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -547,6 +562,7 @@ aug_init_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_init_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -561,12 +577,12 @@ aug_close_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "augeas");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_aug_close ();
@@ -576,6 +592,7 @@ aug_close_stub (XDR *xdr_in)
 
   reply (NULL, NULL);
 done:
+done_no_free:
   return;
 }
 
@@ -592,12 +609,12 @@ aug_defvar_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "augeas");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -619,6 +636,7 @@ aug_defvar_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_aug_defvar_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_defvar_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -634,12 +652,12 @@ aug_defnode_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "augeas");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -664,6 +682,7 @@ aug_defnode_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_aug_defnode_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_defnode_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -679,12 +698,12 @@ aug_get_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "augeas");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -706,6 +725,7 @@ aug_get_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_get_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -721,12 +741,12 @@ aug_set_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "augeas");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -746,6 +766,7 @@ aug_set_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_set_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -762,12 +783,12 @@ aug_insert_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "augeas");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -788,6 +809,7 @@ aug_insert_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_insert_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -803,12 +825,12 @@ aug_rm_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "augeas");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -829,6 +851,7 @@ aug_rm_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_aug_rm_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_rm_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -844,12 +867,12 @@ aug_mv_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "augeas");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -869,6 +892,7 @@ aug_mv_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_mv_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -884,12 +908,12 @@ aug_match_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "augeas");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -912,6 +936,7 @@ aug_match_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_match_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -926,12 +951,12 @@ aug_save_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "augeas");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_aug_save ();
@@ -941,6 +966,7 @@ aug_save_stub (XDR *xdr_in)
 
   reply (NULL, NULL);
 done:
+done_no_free:
   return;
 }
 
@@ -955,12 +981,12 @@ aug_load_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "augeas");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_aug_load ();
@@ -970,6 +996,7 @@ aug_load_stub (XDR *xdr_in)
 
   reply (NULL, NULL);
 done:
+done_no_free:
   return;
 }
 
@@ -985,12 +1012,12 @@ aug_ls_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "augeas");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1013,6 +1040,7 @@ aug_ls_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_ls_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1024,7 +1052,7 @@ rm_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1045,6 +1073,7 @@ rm_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_rm_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1056,7 +1085,7 @@ rmdir_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1077,6 +1106,7 @@ rmdir_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_rmdir_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1088,7 +1118,7 @@ rm_rf_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1109,6 +1139,7 @@ rm_rf_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_rm_rf_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1120,7 +1151,7 @@ mkdir_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1141,6 +1172,7 @@ mkdir_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkdir_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1152,7 +1184,7 @@ mkdir_p_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1173,6 +1205,7 @@ mkdir_p_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkdir_p_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1185,7 +1218,7 @@ chmod_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1207,6 +1240,7 @@ chmod_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_chmod_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1220,7 +1254,7 @@ chown_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1243,6 +1277,7 @@ chown_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_chown_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1254,7 +1289,7 @@ exists_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1277,6 +1312,7 @@ exists_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_exists_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_exists_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1288,7 +1324,7 @@ is_file_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1311,6 +1347,7 @@ is_file_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_is_file_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_is_file_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1322,7 +1359,7 @@ is_dir_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1345,6 +1382,7 @@ is_dir_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_is_dir_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_is_dir_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1360,12 +1398,12 @@ pvcreate_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1385,6 +1423,7 @@ pvcreate_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_pvcreate_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1401,12 +1440,12 @@ vgcreate_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1441,6 +1480,7 @@ vgcreate_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_vgcreate_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1457,12 +1497,12 @@ lvcreate_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1483,6 +1523,7 @@ lvcreate_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lvcreate_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1494,7 +1535,7 @@ mkfs_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1515,6 +1556,7 @@ mkfs_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkfs_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1530,7 +1572,7 @@ sfdisk_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1561,6 +1603,7 @@ sfdisk_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sfdisk_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1573,7 +1616,7 @@ write_file_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1596,6 +1639,7 @@ write_file_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_write_file_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1607,7 +1651,7 @@ umount_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1626,6 +1670,7 @@ umount_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_umount_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1636,7 +1681,7 @@ mounts_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_mounts ();
@@ -1650,6 +1695,7 @@ mounts_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_mounts_ret, (char *) &ret);
   free_strings (r);
 done:
+done_no_free:
   return;
 }
 
@@ -1660,7 +1706,7 @@ umount_all_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_umount_all ();
@@ -1670,6 +1716,7 @@ umount_all_stub (XDR *xdr_in)
 
   reply (NULL, NULL);
 done:
+done_no_free:
   return;
 }
 
@@ -1684,12 +1731,12 @@ lvm_remove_all_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_lvm_remove_all ();
@@ -1699,6 +1746,7 @@ lvm_remove_all_stub (XDR *xdr_in)
 
   reply (NULL, NULL);
 done:
+done_no_free:
   return;
 }
 
@@ -1710,7 +1758,7 @@ file_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1733,6 +1781,7 @@ file_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_file_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1745,7 +1794,7 @@ command_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1774,6 +1823,7 @@ command_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_command_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1786,7 +1836,7 @@ command_lines_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1816,6 +1866,7 @@ command_lines_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_command_lines_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1827,7 +1878,7 @@ stat_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1852,6 +1903,7 @@ stat_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_stat_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_stat_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1863,7 +1915,7 @@ lstat_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1888,6 +1940,7 @@ lstat_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_lstat_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lstat_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1899,7 +1952,7 @@ statvfs_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1924,6 +1977,7 @@ statvfs_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_statvfs_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_statvfs_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1935,7 +1989,7 @@ tune2fs_l_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1959,6 +2013,7 @@ tune2fs_l_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_tune2fs_l_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -1970,7 +2025,7 @@ blockdev_setro_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -1990,6 +2045,7 @@ blockdev_setro_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_setro_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2001,7 +2057,7 @@ blockdev_setrw_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2021,6 +2077,7 @@ blockdev_setrw_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_setrw_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2032,7 +2089,7 @@ blockdev_getro_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2054,6 +2111,7 @@ blockdev_getro_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_blockdev_getro_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_getro_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2065,7 +2123,7 @@ blockdev_getss_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2087,6 +2145,7 @@ blockdev_getss_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_blockdev_getss_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_getss_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2098,7 +2157,7 @@ blockdev_getbsz_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2120,6 +2179,7 @@ blockdev_getbsz_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_blockdev_getbsz_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_getbsz_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2132,7 +2192,7 @@ blockdev_setbsz_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2153,6 +2213,7 @@ blockdev_setbsz_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_setbsz_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2164,7 +2225,7 @@ blockdev_getsz_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2186,6 +2247,7 @@ blockdev_getsz_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_blockdev_getsz_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_getsz_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2197,7 +2259,7 @@ blockdev_getsize64_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2219,6 +2281,7 @@ blockdev_getsize64_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_blockdev_getsize64_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_getsize64_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2230,7 +2293,7 @@ blockdev_flushbufs_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2250,6 +2313,7 @@ blockdev_flushbufs_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_flushbufs_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2261,7 +2325,7 @@ blockdev_rereadpt_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2281,6 +2345,7 @@ blockdev_rereadpt_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blockdev_rereadpt_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2293,7 +2358,7 @@ upload_stub (XDR *xdr_in)
   if (optargs_bitmask != 0) {
     cancel_receive ();
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2314,6 +2379,7 @@ upload_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_upload_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2325,7 +2391,7 @@ download_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2345,6 +2411,7 @@ download_stub (XDR *xdr_in)
   /* do_download has already sent a reply */
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_download_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2356,7 +2423,7 @@ checksum_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2381,6 +2448,7 @@ checksum_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_checksum_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2393,7 +2461,7 @@ tar_in_stub (XDR *xdr_in)
   if (optargs_bitmask != 0) {
     cancel_receive ();
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2415,6 +2483,7 @@ tar_in_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_tar_in_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2426,7 +2495,7 @@ tar_out_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2445,6 +2514,7 @@ tar_out_stub (XDR *xdr_in)
   /* do_tar_out has already sent a reply */
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_tar_out_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2457,7 +2527,7 @@ tgz_in_stub (XDR *xdr_in)
   if (optargs_bitmask != 0) {
     cancel_receive ();
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2479,6 +2549,7 @@ tgz_in_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_tgz_in_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2490,7 +2561,7 @@ tgz_out_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2511,6 +2582,7 @@ tgz_out_stub (XDR *xdr_in)
   /* do_tgz_out has already sent a reply */
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_tgz_out_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2522,7 +2594,7 @@ mount_ro_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2543,6 +2615,7 @@ mount_ro_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mount_ro_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2554,7 +2627,7 @@ mount_options_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2576,6 +2649,7 @@ mount_options_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mount_options_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2587,7 +2661,7 @@ mount_vfs_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2610,6 +2684,7 @@ mount_vfs_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mount_vfs_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2622,7 +2697,7 @@ debug_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2652,6 +2727,7 @@ debug_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_debug_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2667,12 +2743,12 @@ lvremove_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2692,6 +2768,7 @@ lvremove_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lvremove_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2707,12 +2784,12 @@ vgremove_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2731,6 +2808,7 @@ vgremove_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_vgremove_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2746,12 +2824,12 @@ pvremove_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2771,6 +2849,7 @@ pvremove_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_pvremove_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2782,7 +2861,7 @@ set_e2label_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2803,6 +2882,7 @@ set_e2label_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_set_e2label_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2814,7 +2894,7 @@ get_e2label_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2837,6 +2917,7 @@ get_e2label_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_get_e2label_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2848,7 +2929,7 @@ set_e2uuid_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2869,6 +2950,7 @@ set_e2uuid_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_set_e2uuid_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2880,7 +2962,7 @@ get_e2uuid_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2903,6 +2985,7 @@ get_e2uuid_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_get_e2uuid_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2914,7 +2997,7 @@ fsck_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2937,6 +3020,7 @@ fsck_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_fsck_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_fsck_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2948,7 +3032,7 @@ zero_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -2968,6 +3052,7 @@ zero_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zero_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -2983,12 +3068,12 @@ grub_install_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "grub");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3011,6 +3096,7 @@ grub_install_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_grub_install_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3022,7 +3108,7 @@ cp_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3045,6 +3131,7 @@ cp_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_cp_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3056,7 +3143,7 @@ cp_a_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3079,6 +3166,7 @@ cp_a_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_cp_a_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3090,7 +3178,7 @@ mv_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3113,6 +3201,7 @@ mv_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mv_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3125,7 +3214,7 @@ drop_caches_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3144,6 +3233,7 @@ drop_caches_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_drop_caches_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3154,7 +3244,7 @@ dmesg_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_dmesg ();
@@ -3167,6 +3257,7 @@ dmesg_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_dmesg_ret, (char *) &ret);
   free (r);
 done:
+done_no_free:
   return;
 }
 
@@ -3177,7 +3268,7 @@ ping_daemon_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_ping_daemon ();
@@ -3187,6 +3278,7 @@ ping_daemon_stub (XDR *xdr_in)
 
   reply (NULL, NULL);
 done:
+done_no_free:
   return;
 }
 
@@ -3198,7 +3290,7 @@ equal_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3223,6 +3315,7 @@ equal_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_equal_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_equal_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3234,7 +3327,7 @@ strings_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3259,6 +3352,7 @@ strings_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_strings_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3270,7 +3364,7 @@ strings_e_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3296,6 +3390,7 @@ strings_e_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_strings_e_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3307,7 +3402,7 @@ hexdump_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3331,6 +3426,7 @@ hexdump_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_hexdump_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3346,12 +3442,12 @@ zerofree_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "zerofree");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3371,6 +3467,7 @@ zerofree_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zerofree_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3386,12 +3483,12 @@ pvresize_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3411,6 +3508,7 @@ pvresize_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_pvresize_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3426,7 +3524,7 @@ sfdisk_N_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3451,6 +3549,7 @@ sfdisk_N_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sfdisk_N_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3462,7 +3561,7 @@ sfdisk_l_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3485,6 +3584,7 @@ sfdisk_l_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sfdisk_l_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3496,7 +3596,7 @@ sfdisk_kernel_geometry_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3519,6 +3619,7 @@ sfdisk_kernel_geometry_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sfdisk_kernel_geometry_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3530,7 +3631,7 @@ sfdisk_disk_geometry_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3553,6 +3654,7 @@ sfdisk_disk_geometry_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sfdisk_disk_geometry_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3569,12 +3671,12 @@ vg_activate_all_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3593,6 +3695,7 @@ vg_activate_all_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_vg_activate_all_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3610,12 +3713,12 @@ vg_activate_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3642,6 +3745,7 @@ vg_activate_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_vg_activate_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3658,12 +3762,12 @@ lvresize_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3684,6 +3788,7 @@ lvresize_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lvresize_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3695,7 +3800,7 @@ resize2fs_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3715,6 +3820,7 @@ resize2fs_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_resize2fs_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3726,7 +3832,7 @@ find_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3751,6 +3857,7 @@ find_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_find_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3762,7 +3869,7 @@ e2fsck_f_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3782,6 +3889,7 @@ e2fsck_f_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_e2fsck_f_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3794,7 +3902,7 @@ sleep_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3813,6 +3921,7 @@ sleep_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sleep_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3829,12 +3938,12 @@ ntfs_3g_probe_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "ntfs3g");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3857,6 +3966,7 @@ ntfs_3g_probe_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_ntfs_3g_probe_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ntfs_3g_probe_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3868,7 +3978,7 @@ sh_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3890,6 +4000,7 @@ sh_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sh_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3901,7 +4012,7 @@ sh_lines_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3924,6 +4035,7 @@ sh_lines_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sh_lines_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3935,7 +4047,7 @@ glob_expand_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -3960,6 +4072,7 @@ glob_expand_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_glob_expand_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -3975,12 +4088,12 @@ scrub_device_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "scrub");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4000,6 +4113,7 @@ scrub_device_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_scrub_device_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4015,12 +4129,12 @@ scrub_file_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "scrub");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4041,6 +4155,7 @@ scrub_file_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_scrub_file_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4056,12 +4171,12 @@ scrub_freespace_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "scrub");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4082,6 +4197,7 @@ scrub_freespace_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_scrub_freespace_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4093,7 +4209,7 @@ mkdtemp_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4117,6 +4233,7 @@ mkdtemp_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkdtemp_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4128,7 +4245,7 @@ wc_l_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4151,6 +4268,7 @@ wc_l_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_wc_l_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_wc_l_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4162,7 +4280,7 @@ wc_w_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4185,6 +4303,7 @@ wc_w_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_wc_w_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_wc_w_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4196,7 +4315,7 @@ wc_c_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4219,6 +4338,7 @@ wc_c_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_wc_c_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_wc_c_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4230,7 +4350,7 @@ head_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4255,6 +4375,7 @@ head_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_head_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4267,7 +4388,7 @@ head_n_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4293,6 +4414,7 @@ head_n_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_head_n_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4304,7 +4426,7 @@ tail_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4329,6 +4451,7 @@ tail_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_tail_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4341,7 +4464,7 @@ tail_n_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4367,6 +4490,7 @@ tail_n_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_tail_n_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4377,7 +4501,7 @@ df_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_df ();
@@ -4390,6 +4514,7 @@ df_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_df_ret, (char *) &ret);
   free (r);
 done:
+done_no_free:
   return;
 }
 
@@ -4400,7 +4525,7 @@ df_h_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_df_h ();
@@ -4413,6 +4538,7 @@ df_h_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_df_h_ret, (char *) &ret);
   free (r);
 done:
+done_no_free:
   return;
 }
 
@@ -4424,7 +4550,7 @@ du_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4447,6 +4573,7 @@ du_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_du_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_du_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4458,7 +4585,7 @@ initrd_list_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4483,6 +4610,7 @@ initrd_list_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_initrd_list_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4494,7 +4622,7 @@ mount_loop_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4517,6 +4645,7 @@ mount_loop_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mount_loop_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4528,7 +4657,7 @@ mkswap_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4548,6 +4677,7 @@ mkswap_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkswap_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4559,7 +4689,7 @@ mkswap_L_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4580,6 +4710,7 @@ mkswap_L_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkswap_L_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4595,12 +4726,12 @@ mkswap_U_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "linuxfsuuid");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4621,6 +4752,7 @@ mkswap_U_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkswap_U_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4639,12 +4771,12 @@ mknod_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "mknod");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4668,6 +4800,7 @@ mknod_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mknod_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4684,12 +4817,12 @@ mkfifo_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "mknod");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4711,6 +4844,7 @@ mkfifo_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkfifo_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4729,12 +4863,12 @@ mknod_b_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "mknod");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4758,6 +4892,7 @@ mknod_b_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mknod_b_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4776,12 +4911,12 @@ mknod_c_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "mknod");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4805,6 +4940,7 @@ mknod_c_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mknod_c_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4817,7 +4953,7 @@ umask_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4838,6 +4974,7 @@ umask_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_umask_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_umask_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4849,7 +4986,7 @@ readdir_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4874,6 +5011,7 @@ readdir_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_readdir_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_readdir_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4886,7 +5024,7 @@ sfdiskM_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4914,6 +5052,7 @@ sfdiskM_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_sfdiskM_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4925,7 +5064,7 @@ zfile_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4950,6 +5089,7 @@ zfile_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zfile_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -4965,12 +5105,12 @@ getxattrs_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "linuxxattrs");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -4995,6 +5135,7 @@ getxattrs_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_getxattrs_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_getxattrs_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5010,12 +5151,12 @@ lgetxattrs_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "linuxxattrs");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5040,6 +5181,7 @@ lgetxattrs_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_lgetxattrs_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lgetxattrs_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5056,12 +5198,12 @@ setxattr_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "linuxxattrs");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5085,6 +5227,7 @@ setxattr_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_setxattr_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5101,12 +5244,12 @@ lsetxattr_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "linuxxattrs");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5130,6 +5273,7 @@ lsetxattr_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lsetxattr_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5145,12 +5289,12 @@ removexattr_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "linuxxattrs");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5172,6 +5316,7 @@ removexattr_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_removexattr_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5187,12 +5332,12 @@ lremovexattr_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "linuxxattrs");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5214,6 +5359,7 @@ lremovexattr_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lremovexattr_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5224,7 +5370,7 @@ mountpoints_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_mountpoints ();
@@ -5238,6 +5384,7 @@ mountpoints_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_mountpoints_ret, (char *) &ret);
   free_strings (r);
 done:
+done_no_free:
   return;
 }
 
@@ -5249,7 +5396,7 @@ mkmountpoint_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5268,6 +5415,7 @@ mkmountpoint_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkmountpoint_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5279,7 +5427,7 @@ rmmountpoint_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5298,6 +5446,7 @@ rmmountpoint_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_rmmountpoint_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5310,7 +5459,7 @@ read_file_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5338,6 +5487,7 @@ read_file_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_read_file_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5349,7 +5499,7 @@ grep_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5375,6 +5525,7 @@ grep_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_grep_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5386,7 +5537,7 @@ egrep_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5412,6 +5563,7 @@ egrep_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_egrep_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5423,7 +5575,7 @@ fgrep_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5449,6 +5601,7 @@ fgrep_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_fgrep_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5460,7 +5613,7 @@ grepi_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5486,6 +5639,7 @@ grepi_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_grepi_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5497,7 +5651,7 @@ egrepi_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5523,6 +5677,7 @@ egrepi_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_egrepi_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5534,7 +5689,7 @@ fgrepi_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5560,6 +5715,7 @@ fgrepi_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_fgrepi_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5571,7 +5727,7 @@ zgrep_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5597,6 +5753,7 @@ zgrep_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zgrep_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5608,7 +5765,7 @@ zegrep_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5634,6 +5791,7 @@ zegrep_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zegrep_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5645,7 +5803,7 @@ zfgrep_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5671,6 +5829,7 @@ zfgrep_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zfgrep_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5682,7 +5841,7 @@ zgrepi_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5708,6 +5867,7 @@ zgrepi_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zgrepi_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5719,7 +5879,7 @@ zegrepi_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5745,6 +5905,7 @@ zegrepi_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zegrepi_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5756,7 +5917,7 @@ zfgrepi_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5782,6 +5943,7 @@ zfgrepi_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zfgrepi_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5797,12 +5959,12 @@ realpath_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "realpath");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5826,6 +5988,7 @@ realpath_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_realpath_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5837,7 +6000,7 @@ ln_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5859,6 +6022,7 @@ ln_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ln_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5870,7 +6034,7 @@ ln_f_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5892,6 +6056,7 @@ ln_f_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ln_f_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5903,7 +6068,7 @@ ln_s_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5925,6 +6090,7 @@ ln_s_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ln_s_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5936,7 +6102,7 @@ ln_sf_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5958,6 +6124,7 @@ ln_sf_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ln_sf_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -5969,7 +6136,7 @@ readlink_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -5993,6 +6160,7 @@ readlink_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_readlink_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6005,7 +6173,7 @@ fallocate_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6027,6 +6195,7 @@ fallocate_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_fallocate_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6038,7 +6207,7 @@ swapon_device_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6058,6 +6227,7 @@ swapon_device_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_swapon_device_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6069,7 +6239,7 @@ swapoff_device_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6089,6 +6259,7 @@ swapoff_device_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_swapoff_device_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6100,7 +6271,7 @@ swapon_file_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6121,6 +6292,7 @@ swapon_file_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_swapon_file_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6132,7 +6304,7 @@ swapoff_file_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6153,6 +6325,7 @@ swapoff_file_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_swapoff_file_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6164,7 +6337,7 @@ swapon_label_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6183,6 +6356,7 @@ swapon_label_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_swapon_label_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6194,7 +6368,7 @@ swapoff_label_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6213,6 +6387,7 @@ swapoff_label_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_swapoff_label_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6228,12 +6403,12 @@ swapon_uuid_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "linuxfsuuid");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6252,6 +6427,7 @@ swapon_uuid_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_swapon_uuid_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6267,12 +6443,12 @@ swapoff_uuid_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "linuxfsuuid");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6291,6 +6467,7 @@ swapoff_uuid_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_swapoff_uuid_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6302,7 +6479,7 @@ mkswap_file_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6323,6 +6500,7 @@ mkswap_file_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkswap_file_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6339,12 +6517,12 @@ inotify_init_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "inotify");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6363,6 +6541,7 @@ inotify_init_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_inotify_init_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6379,12 +6558,12 @@ inotify_add_watch_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "inotify");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6408,6 +6587,7 @@ inotify_add_watch_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_inotify_add_watch_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_inotify_add_watch_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6424,12 +6604,12 @@ inotify_rm_watch_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "inotify");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6448,6 +6628,7 @@ inotify_rm_watch_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_inotify_rm_watch_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6462,12 +6643,12 @@ inotify_read_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "inotify");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_inotify_read ();
@@ -6481,6 +6662,7 @@ inotify_read_stub (XDR *xdr_in)
   reply ((xdrproc_t) xdr_guestfs_inotify_read_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_inotify_read_ret, (char *) &ret);
 done:
+done_no_free:
   return;
 }
 
@@ -6495,12 +6677,12 @@ inotify_files_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "inotify");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_inotify_files ();
@@ -6514,6 +6696,7 @@ inotify_files_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_inotify_files_ret, (char *) &ret);
   free_strings (r);
 done:
+done_no_free:
   return;
 }
 
@@ -6528,12 +6711,12 @@ inotify_close_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "inotify");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_inotify_close ();
@@ -6543,6 +6726,7 @@ inotify_close_stub (XDR *xdr_in)
 
   reply (NULL, NULL);
 done:
+done_no_free:
   return;
 }
 
@@ -6558,12 +6742,12 @@ setcon_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "selinux");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6582,6 +6766,7 @@ setcon_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_setcon_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6596,12 +6781,12 @@ getcon_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "selinux");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_getcon ();
@@ -6614,6 +6799,7 @@ getcon_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_getcon_ret, (char *) &ret);
   free (r);
 done:
+done_no_free:
   return;
 }
 
@@ -6626,7 +6812,7 @@ mkfs_b_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6648,6 +6834,7 @@ mkfs_b_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkfs_b_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6660,7 +6847,7 @@ mke2journal_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6681,6 +6868,7 @@ mke2journal_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mke2journal_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6693,7 +6881,7 @@ mke2journal_L_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6715,6 +6903,7 @@ mke2journal_L_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mke2journal_L_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6731,12 +6920,12 @@ mke2journal_U_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "linuxfsuuid");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6758,6 +6947,7 @@ mke2journal_U_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mke2journal_U_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6770,7 +6960,7 @@ mke2fs_J_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6794,6 +6984,7 @@ mke2fs_J_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mke2fs_J_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6806,7 +6997,7 @@ mke2fs_JL_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6829,6 +7020,7 @@ mke2fs_JL_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mke2fs_JL_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6845,12 +7037,12 @@ mke2fs_JU_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "linuxfsuuid");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6873,6 +7065,7 @@ mke2fs_JU_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mke2fs_JU_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6888,12 +7081,12 @@ modprobe_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "linuxmodules");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6912,6 +7105,7 @@ modprobe_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_modprobe_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6924,7 +7118,7 @@ echo_daemon_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6953,6 +7147,7 @@ echo_daemon_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_echo_daemon_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6964,7 +7159,7 @@ find0_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -6985,6 +7180,7 @@ find0_stub (XDR *xdr_in)
   /* do_find0 has already sent a reply */
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_find0_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -6996,7 +7192,7 @@ case_sensitive_path_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7020,6 +7216,7 @@ case_sensitive_path_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_case_sensitive_path_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7031,7 +7228,7 @@ vfs_type_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7054,6 +7251,7 @@ vfs_type_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_vfs_type_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7065,7 +7263,7 @@ truncate_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7086,6 +7284,7 @@ truncate_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_truncate_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7098,7 +7297,7 @@ truncate_size_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7120,6 +7319,7 @@ truncate_size_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_truncate_size_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7135,7 +7335,7 @@ utimens_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7160,6 +7360,7 @@ utimens_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_utimens_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7172,7 +7373,7 @@ mkdir_mode_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7194,6 +7395,7 @@ mkdir_mode_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkdir_mode_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7207,7 +7409,7 @@ lchown_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7230,6 +7432,7 @@ lchown_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lchown_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7242,7 +7445,7 @@ lstatlist_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7275,6 +7478,7 @@ lstatlist_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_lstatlist_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lstatlist_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7291,12 +7495,12 @@ lxattrlist_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "linuxxattrs");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7329,6 +7533,7 @@ lxattrlist_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_lxattrlist_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lxattrlist_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7341,7 +7546,7 @@ readlinklist_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7374,6 +7579,7 @@ readlinklist_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_readlinklist_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7388,7 +7594,7 @@ pread_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7418,6 +7624,7 @@ pread_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_pread_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7429,7 +7636,7 @@ part_init_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7450,6 +7657,7 @@ part_init_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_init_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7463,7 +7671,7 @@ part_add_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7486,6 +7694,7 @@ part_add_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_add_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7497,7 +7706,7 @@ part_disk_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7518,6 +7727,7 @@ part_disk_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_disk_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7531,7 +7741,7 @@ part_set_bootable_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7553,6 +7763,7 @@ part_set_bootable_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_set_bootable_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7565,7 +7776,7 @@ part_set_name_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7587,6 +7798,7 @@ part_set_name_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_set_name_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7598,7 +7810,7 @@ part_list_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7622,6 +7834,7 @@ part_list_stub (XDR *xdr_in)
   xdr_free ((xdrproc_t) xdr_guestfs_part_list_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_list_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7633,7 +7846,7 @@ part_get_parttype_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7656,6 +7869,7 @@ part_get_parttype_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_get_parttype_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7669,7 +7883,7 @@ fill_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7692,6 +7906,7 @@ fill_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_fill_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7704,7 +7919,7 @@ available_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7730,6 +7945,7 @@ available_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_available_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7741,7 +7957,7 @@ dd_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7763,6 +7979,7 @@ dd_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_dd_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7774,7 +7991,7 @@ filesize_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7797,6 +8014,7 @@ filesize_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_filesize_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_filesize_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7808,7 +8026,7 @@ lvrename_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7828,6 +8046,7 @@ lvrename_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lvrename_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7839,7 +8058,7 @@ vgrename_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7859,6 +8078,7 @@ vgrename_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_vgrename_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7871,7 +8091,7 @@ initrd_cat_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7900,6 +8120,7 @@ initrd_cat_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_initrd_cat_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7911,7 +8132,7 @@ pvuuid_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7934,6 +8155,7 @@ pvuuid_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_pvuuid_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7945,7 +8167,7 @@ vguuid_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -7967,6 +8189,7 @@ vguuid_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_vguuid_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -7978,7 +8201,7 @@ lvuuid_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8001,6 +8224,7 @@ lvuuid_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lvuuid_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8012,7 +8236,7 @@ vgpvuuids_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8035,6 +8259,7 @@ vgpvuuids_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_vgpvuuids_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8046,7 +8271,7 @@ vglvuuids_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8069,6 +8294,7 @@ vglvuuids_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_vglvuuids_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8081,7 +8307,7 @@ copy_size_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8104,6 +8330,7 @@ copy_size_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_copy_size_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8115,7 +8342,7 @@ zero_device_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8135,6 +8362,7 @@ zero_device_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_zero_device_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8151,13 +8379,13 @@ txz_in_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "xz");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     cancel_receive ();
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8179,6 +8407,7 @@ txz_in_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_txz_in_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8194,12 +8423,12 @@ txz_out_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "xz");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8220,6 +8449,7 @@ txz_out_stub (XDR *xdr_in)
   /* do_txz_out has already sent a reply */
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_txz_out_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8235,12 +8465,12 @@ ntfsresize_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "ntfsprogs");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8260,6 +8490,7 @@ ntfsresize_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ntfsresize_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8270,7 +8501,7 @@ vgscan_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_vgscan ();
@@ -8280,6 +8511,7 @@ vgscan_stub (XDR *xdr_in)
 
   reply (NULL, NULL);
 done:
+done_no_free:
   return;
 }
 
@@ -8292,7 +8524,7 @@ part_del_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8313,6 +8545,7 @@ part_del_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_del_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8325,7 +8558,7 @@ part_get_bootable_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8348,6 +8581,7 @@ part_get_bootable_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_part_get_bootable_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_get_bootable_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8360,7 +8594,7 @@ part_get_mbr_id_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8383,6 +8617,7 @@ part_get_mbr_id_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_part_get_mbr_id_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_get_mbr_id_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8396,7 +8631,7 @@ part_set_mbr_id_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8418,6 +8653,7 @@ part_set_mbr_id_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_set_mbr_id_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8429,7 +8665,7 @@ checksum_device_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8453,6 +8689,7 @@ checksum_device_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_checksum_device_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8469,12 +8706,12 @@ lvresize_free_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8495,6 +8732,7 @@ lvresize_free_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lvresize_free_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8510,12 +8748,12 @@ aug_clear_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "augeas");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8534,6 +8772,7 @@ aug_clear_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_aug_clear_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8544,7 +8783,7 @@ get_umask_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_get_umask ();
@@ -8556,6 +8795,7 @@ get_umask_stub (XDR *xdr_in)
   ret.mask = r;
   reply ((xdrproc_t) &xdr_guestfs_get_umask_ret, (char *) &ret);
 done:
+done_no_free:
   return;
 }
 
@@ -8569,7 +8809,7 @@ debug_upload_stub (XDR *xdr_in)
   if (optargs_bitmask != 0) {
     cancel_receive ();
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8590,6 +8830,7 @@ debug_upload_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_debug_upload_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8602,7 +8843,7 @@ base64_in_stub (XDR *xdr_in)
   if (optargs_bitmask != 0) {
     cancel_receive ();
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8624,6 +8865,7 @@ base64_in_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_base64_in_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8635,7 +8877,7 @@ base64_out_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8656,6 +8898,7 @@ base64_out_stub (XDR *xdr_in)
   /* do_base64_out has already sent a reply */
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_base64_out_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8667,7 +8910,7 @@ checksums_out_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8689,6 +8932,7 @@ checksums_out_stub (XDR *xdr_in)
   /* do_checksums_out has already sent a reply */
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_checksums_out_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8701,7 +8945,7 @@ fill_pattern_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8724,6 +8968,7 @@ fill_pattern_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_fill_pattern_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8737,7 +8982,7 @@ write_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8760,6 +9005,7 @@ write_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_write_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8774,7 +9020,7 @@ pwrite_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8800,6 +9046,7 @@ pwrite_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_pwrite_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_pwrite_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8812,7 +9059,7 @@ resize2fs_size_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8833,6 +9080,7 @@ resize2fs_size_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_resize2fs_size_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8849,12 +9097,12 @@ pvresize_size_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8875,6 +9123,7 @@ pvresize_size_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_pvresize_size_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8891,12 +9140,12 @@ ntfsresize_size_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "ntfsprogs");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8917,6 +9166,7 @@ ntfsresize_size_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ntfsresize_size_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8927,7 +9177,7 @@ available_all_groups_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_available_all_groups ();
@@ -8941,6 +9191,7 @@ available_all_groups_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_available_all_groups_ret, (char *) &ret);
   free_strings (r);
 done:
+done_no_free:
   return;
 }
 
@@ -8953,7 +9204,7 @@ fallocate64_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -8975,6 +9226,7 @@ fallocate64_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_fallocate64_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -8986,7 +9238,7 @@ vfs_label_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9009,6 +9261,7 @@ vfs_label_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_vfs_label_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9020,7 +9273,7 @@ vfs_uuid_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9043,6 +9296,7 @@ vfs_uuid_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_vfs_uuid_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9059,12 +9313,12 @@ lvm_set_filter_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9098,6 +9352,7 @@ lvm_set_filter_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lvm_set_filter_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9108,7 +9363,7 @@ lvm_clear_filter_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_lvm_clear_filter ();
@@ -9118,6 +9373,7 @@ lvm_clear_filter_stub (XDR *xdr_in)
 
   reply (NULL, NULL);
 done:
+done_no_free:
   return;
 }
 
@@ -9133,12 +9389,12 @@ luks_open_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "luks");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9160,6 +9416,7 @@ luks_open_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_luks_open_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9175,12 +9432,12 @@ luks_open_ro_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "luks");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9202,6 +9459,7 @@ luks_open_ro_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_luks_open_ro_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9217,12 +9475,12 @@ luks_close_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "luks");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9242,6 +9500,7 @@ luks_close_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_luks_close_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9258,12 +9517,12 @@ luks_format_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "luks");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9285,6 +9544,7 @@ luks_format_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_luks_format_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9301,12 +9561,12 @@ luks_format_cipher_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "luks");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9329,6 +9589,7 @@ luks_format_cipher_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_luks_format_cipher_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9345,12 +9606,12 @@ luks_add_key_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "luks");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9373,6 +9634,7 @@ luks_add_key_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_luks_add_key_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9389,12 +9651,12 @@ luks_kill_slot_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "luks");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9416,6 +9678,7 @@ luks_kill_slot_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_luks_kill_slot_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9431,12 +9694,12 @@ is_lv_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "lvm2");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9458,6 +9721,7 @@ is_lv_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_is_lv_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_is_lv_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9469,7 +9733,7 @@ findfs_uuid_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9491,6 +9755,7 @@ findfs_uuid_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_findfs_uuid_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9502,7 +9767,7 @@ findfs_label_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9524,6 +9789,7 @@ findfs_label_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_findfs_label_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9535,7 +9801,7 @@ is_chardev_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9558,6 +9824,7 @@ is_chardev_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_is_chardev_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_is_chardev_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9569,7 +9836,7 @@ is_blockdev_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9592,6 +9859,7 @@ is_blockdev_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_is_blockdev_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_is_blockdev_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9603,7 +9871,7 @@ is_fifo_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9626,6 +9894,7 @@ is_fifo_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_is_fifo_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_is_fifo_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9637,7 +9906,7 @@ is_symlink_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9660,6 +9929,7 @@ is_symlink_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_is_symlink_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_is_symlink_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9671,7 +9941,7 @@ is_socket_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9694,6 +9964,7 @@ is_socket_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_is_socket_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_is_socket_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9705,7 +9976,7 @@ part_to_dev_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9728,6 +9999,7 @@ part_to_dev_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_to_dev_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9741,7 +10013,7 @@ upload_offset_stub (XDR *xdr_in)
   if (optargs_bitmask != 0) {
     cancel_receive ();
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9763,6 +10035,7 @@ upload_offset_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_upload_offset_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9776,7 +10049,7 @@ download_offset_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9798,6 +10071,7 @@ download_offset_stub (XDR *xdr_in)
   /* do_download_offset has already sent a reply */
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_download_offset_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9812,7 +10086,7 @@ pwrite_device_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9837,6 +10111,7 @@ pwrite_device_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_pwrite_device_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_pwrite_device_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9851,7 +10126,7 @@ pread_device_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9880,6 +10155,7 @@ pread_device_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_pread_device_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9891,7 +10167,7 @@ lvm_canonical_lv_name_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9914,6 +10190,7 @@ lvm_canonical_lv_name_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lvm_canonical_lv_name_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9928,7 +10205,7 @@ mkfs_opts_stub (XDR *xdr_in)
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffff0)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -9953,6 +10230,7 @@ mkfs_opts_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mkfs_opts_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -9969,12 +10247,12 @@ getxattr_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "linuxxattrs");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10003,6 +10281,7 @@ getxattr_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_getxattr_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10019,12 +10298,12 @@ lgetxattr_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "linuxxattrs");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10053,6 +10332,7 @@ lgetxattr_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_lgetxattr_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10064,7 +10344,7 @@ resize2fs_M_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10084,6 +10364,7 @@ resize2fs_M_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_resize2fs_M_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10094,7 +10375,7 @@ internal_autosync_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_internal_autosync ();
@@ -10104,6 +10385,7 @@ internal_autosync_stub (XDR *xdr_in)
 
   reply (NULL, NULL);
 done:
+done_no_free:
   return;
 }
 
@@ -10115,7 +10397,7 @@ is_zero_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10138,6 +10420,7 @@ is_zero_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_is_zero_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_is_zero_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10149,7 +10432,7 @@ is_zero_device_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10171,6 +10454,7 @@ is_zero_device_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_is_zero_device_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_is_zero_device_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10181,7 +10465,7 @@ list_9p_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_list_9p ();
@@ -10195,6 +10479,7 @@ list_9p_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_list_9p_ret, (char *) &ret);
   free_strings (r);
 done:
+done_no_free:
   return;
 }
 
@@ -10206,7 +10491,7 @@ mount_9p_stub (XDR *xdr_in)
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10227,6 +10512,7 @@ mount_9p_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_mount_9p_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10237,7 +10523,7 @@ list_dm_devices_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_list_dm_devices ();
@@ -10251,6 +10537,7 @@ list_dm_devices_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_list_dm_devices_ret, (char *) &ret);
   free_strings (r);
 done:
+done_no_free:
   return;
 }
 
@@ -10268,12 +10555,12 @@ ntfsresize_opts_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "ntfsprogs");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffffc)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10295,6 +10582,7 @@ ntfsresize_opts_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ntfsresize_opts_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10311,12 +10599,12 @@ btrfs_filesystem_resize_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "btrfs");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10338,6 +10626,7 @@ btrfs_filesystem_resize_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_btrfs_filesystem_resize_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10351,7 +10640,7 @@ write_append_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10374,6 +10663,7 @@ write_append_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_write_append_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10386,7 +10676,7 @@ compress_out_stub (XDR *xdr_in)
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10409,6 +10699,7 @@ compress_out_stub (XDR *xdr_in)
   /* do_compress_out has already sent a reply */
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_compress_out_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10421,7 +10712,7 @@ compress_device_out_stub (XDR *xdr_in)
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10443,6 +10734,7 @@ compress_device_out_stub (XDR *xdr_in)
   /* do_compress_device_out has already sent a reply */
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_compress_device_out_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10454,7 +10746,7 @@ part_to_partnum_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10476,6 +10768,7 @@ part_to_partnum_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_part_to_partnum_ret, (char *) &ret);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_part_to_partnum_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10490,7 +10783,7 @@ copy_device_to_device_stub (XDR *xdr_in)
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffff8)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10515,6 +10808,7 @@ copy_device_to_device_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_copy_device_to_device_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10529,7 +10823,7 @@ copy_device_to_file_stub (XDR *xdr_in)
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffff8)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10555,6 +10849,7 @@ copy_device_to_file_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_copy_device_to_file_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10569,7 +10864,7 @@ copy_file_to_device_stub (XDR *xdr_in)
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffff8)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10595,6 +10890,7 @@ copy_file_to_device_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_copy_file_to_device_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10609,7 +10905,7 @@ copy_file_to_file_stub (XDR *xdr_in)
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffff8)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10635,6 +10931,7 @@ copy_file_to_file_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_copy_file_to_file_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10654,7 +10951,7 @@ tune2fs_stub (XDR *xdr_in)
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffc00)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10684,6 +10981,7 @@ tune2fs_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_tune2fs_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10704,12 +11002,12 @@ md_create_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "mdadm");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask & UINT64_C(0xffffffffffffffe0)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10749,6 +11047,7 @@ md_create_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_md_create_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10759,7 +11058,7 @@ list_md_devices_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   r = do_list_md_devices ();
@@ -10773,6 +11072,7 @@ list_md_devices_stub (XDR *xdr_in)
   reply ((xdrproc_t) &xdr_guestfs_list_md_devices_ret, (char *) &ret);
   free_strings (r);
 done:
+done_no_free:
   return;
 }
 
@@ -10788,12 +11088,12 @@ md_detail_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "mdadm");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10817,6 +11117,7 @@ md_detail_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_md_detail_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10832,12 +11133,12 @@ md_stop_stub (XDR *xdr_in)
                       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
                       "how to check for the availability of features.",
                       "mdadm");
-    goto done;
+    goto done_no_free;
   }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10857,6 +11158,7 @@ md_stop_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_md_stop_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10868,7 +11170,7 @@ blkid_stub (XDR *xdr_in)
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10892,6 +11194,7 @@ blkid_stub (XDR *xdr_in)
   free_strings (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_blkid_args, (char *) &args);
+done_no_free:
   return;
 }
 
@@ -10905,7 +11208,7 @@ e2fsck_stub (XDR *xdr_in)
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffffc)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
-    goto done;
+    goto done_no_free;
   }
 
   memset (&args, 0, sizeof args);
@@ -10927,6 +11230,7 @@ e2fsck_stub (XDR *xdr_in)
   reply (NULL, NULL);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_e2fsck_args, (char *) &args);
+done_no_free:
   return;
 }
 
