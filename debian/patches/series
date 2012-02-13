@@ -6,5 +6,4 @@
 0006-out-of-tree-build-daemon.patch
 0007-Install-Java-bindings-to-jni-subdirectory.patch
 0008-ruby-install-to-vendor_ruby.patch
-0009-Do-not-run-test-virt-format.sh-if-appliance-has-not-.patch
-0010-autoreconf.patch
+0009-autoreconf.patch
