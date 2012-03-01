@@ -24,7 +24,7 @@ Build-Depends: debhelper (>= 7.0.50~), autotools-dev, aptitude,
   libfuse-dev, fuse-utils,
   libglib2.0-dev, gjs, gobject-introspection, libgirepository1.0-dev
 Homepage: http://libguestfs.org
-Standards-Version: 3.9.2
+Standards-Version: 3.9.3
 Vcs-Git: git://git.debian.org/git/pkg-libvirt/libguestfs.git
 Vcs-Browser: http://git.debian.org/?p=pkg-libvirt/libguestfs.git
 XS-Ruby-Versions: all
