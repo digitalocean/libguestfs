@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-resize 1"
-.TH virt-resize 1 "2012-02-13" "libguestfs-1.16.5" "Virtualization Support"
+.TH virt-resize 1 "2012-03-01" "libguestfs-1.16.6" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -690,6 +690,12 @@ printing \f(CW\*(C`GRUB\*(C'\fR on the console, try reinstalling grub.
 .PP
 For more flexible guest reconfiguration, including if you need to specify
 other parameters to grub-install, use \fIvirt\-rescue\fR\|(1).
+.SS "\s-1WINDOWS\s0 \s-1UNMOUNTABLE_BOOT_VOLUME\s0 \s-1BSOD\s0"
+.IX Subsection "WINDOWS UNMOUNTABLE_BOOT_VOLUME BSOD"
+After sysprepping a Windows guest and then resizing it with virt-resize, you
+may see the guest fail to boot with an \f(CW\*(C`UNMOUNTABLE_BOOT_VOLUME\*(C'\fR \s-1BSOD\s0.
+This error is caused by having \f(CW\*(C`ExtendOemPartition=1\*(C'\fR in the sysprep.inf
+file.  Removing this line before sysprepping should fix the problem.
 .SH "ALTERNATIVE TOOLS"
 .IX Header "ALTERNATIVE TOOLS"
 There are several proprietary tools for resizing partitions.  We won't

@@ -1,4 +1,46 @@
+2012-03-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.6.
+
+	resize: Fix --output-format flag (RHBZ#798196).
+	Update the test to use the --format and --output-format flags.
+	(cherry picked from commit 88ba4da4d6c07762fc95c96ea67019f0ebf4677c)
+
+	resize: Document steps to avoid UNMOUNTABLE_BOOT_VOLUME BSOD (RHBZ#797986).
+	(Thanks Grant Williamson for finding and fixing this problem)
+	(cherry picked from commit a93d4a9dc1aea6940886c85d4b09f21cbfc80969)
+
+	sysprep: Try unmounting the filesystem a few times when busy.
+	tracker-miner-fs jumps into newly mounted filesystems.  This prevents
+	the filesystem from being unmounted, so retry a few times.
+	(cherry picked from commit 5fa7aace200a49961173de6316a81e239987c179)
+
+2012-03-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Make appliance building thread-safe (RHBZ#790721).
+	Appliance building can be called from multiple processes, but this is
+	only safe if each process holds a lock on the 'checksum' file.
+	However threads within a process are not excluded by a file lock, and
+	so this strategy completely failed for a multithreaded program calling
+	guestfs_launch in parallel.
+
+	Since it makes no sense for threads in a single program to race each
+	other to try to create the appliance, add a lock around appliance
+	building.
+
+	This serialises building the appliance, but the rest of guestfs_launch
+	(eg. starting up qemu) can run in parallel.
+	(cherry picked from commit afed7e493dcd594620f19b93e9fb73e58553f60a)
+
+2012-03-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Test parallel launch from multiple threads. (cherry picked from commit c9ea94810e2f7a5fcce2a7136eb07ce795f49c53)
+
+	test-user-cancel: Add \n to fprintf error messages. (cherry picked from commit 6a70cb337cff736831b51bbc9c4331785d756c20)
+
 2012-02-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.5.
 
 	tests: Add a regression test for RHBZ#789960.
 	Test all the ways that the 'mount' command can fail.  Ensure that none
