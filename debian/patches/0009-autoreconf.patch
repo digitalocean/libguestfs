@@ -969,7 +969,7 @@ index 2a55a50..30fdca8 100755
  		;;
  	*-wec)
 diff --git a/configure b/configure
-index 956ef10..7ad60c5 100755
+index 39e091c..e620fdb 100755
 --- a/configure
 +++ b/configure
 @@ -45929,6 +45929,7 @@ fi
@@ -1301,17 +1301,17 @@ index 3a43d17..aff8e8d 100644
 -tools/virt-tar.pl
 -tools/virt-win-reg.pl
 diff --git a/ruby/Makefile.in b/ruby/Makefile.in
-index bdfc6f4..b2f39fd 100644
+index 97073ff..c4ac6b4 100644
 --- a/ruby/Makefile.in
 +++ b/ruby/Makefile.in
 @@ -1251,8 +1251,8 @@ CLEANFILES = \
  @HAVE_RUBY_TRUE@	RUBY=$(RUBY) \
  @HAVE_RUBY_TRUE@	$(top_builddir)/run
  
--@HAVE_RUBY_TRUE@RUBY_SITELIB := $(shell $(RUBY) -rrbconfig -e "puts Config::CONFIG['sitelibdir']")
--@HAVE_RUBY_TRUE@RUBY_SITEARCH := $(shell $(RUBY) -rrbconfig -e "puts Config::CONFIG['sitearchdir']")
-+@HAVE_RUBY_TRUE@RUBY_VENDORLIB := $(shell $(RUBY) -rrbconfig -e "puts Config::CONFIG['vendorlibdir']")
-+@HAVE_RUBY_TRUE@RUBY_VENDORARCH := $(shell $(RUBY) -rrbconfig -e "puts Config::CONFIG['vendorarchdir']")
+-@HAVE_RUBY_TRUE@RUBY_SITELIB := $(shell $(RUBY) -rrbconfig -e "puts RbConfig::CONFIG['sitelibdir']")
+-@HAVE_RUBY_TRUE@RUBY_SITEARCH := $(shell $(RUBY) -rrbconfig -e "puts RbConfig::CONFIG['sitearchdir']")
++@HAVE_RUBY_TRUE@RUBY_VENDORLIB := $(shell $(RUBY) -rrbconfig -e "puts RbConfig::CONFIG['vendorlibdir']")
++@HAVE_RUBY_TRUE@RUBY_VENDORARCH := $(shell $(RUBY) -rrbconfig -e "puts RbConfig::CONFIG['vendorarchdir']")
  all: all-am
  
  .SUFFIXES:
