@@ -1,3 +1,137 @@
+2012-03-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.7.
+
+	ruby: Use RbConfig instead of Config.
+	I have checked, and this works with Ruby 1.8 as well.
+	(cherry picked from commit 3b78b3a8496cdd66567b6f433206273966858e74)
+
+2012-03-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	Add a 'fixed' style of appliance.
+	This is just the 'kernel', 'initrd' and 'root' files, copied from one
+	machine to another, along with a 'README.fixed' file which is also
+	used for identification.
+
+	This allows the appliance to be copied from one machine to another,
+	making it easier for us to distribute a starter appliance for people
+	who cannot get febootstrap or appliance-building working.
+	(cherry picked from commit 5e8a4627d9f0d313485f186a63dc2250f6fd5c01)
+
+2012-03-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	Rebrand 'ordinary appliance' as 'old-style appliance'.
+	This is just code motion.
+	(cherry picked from commit 49726b9269490e331e740d55952da87552ca2500)
+
+2012-03-03  Nikos Skalkotos  <skalkoto@gmail.com>
+
+	Test fails in arch linux
+	--20cf303ea4a84a7a7c04ba331375
+	Content-Type: text/plain; charset=ISO-8859-1
+
+	Hello Richard,
+
+	I found what the problem was and the udev symlinks where not created. The
+	init script in the appliance uses a full paths for udevadm (/sbin/udevadm)
+	which in my case was wrong. In Arch Linux udevadm is hosted under /usr/bin,
+	not /sbin. When I fixed this, libguestfs was able to communicate with the
+	appliance VM.
+
+	Since PATH variable is defined and exported in init, there is no need in
+	using full paths for external programs. As far as I've seen this affects
+	all the git branches in libguestfs's repository. Please find attached a
+	patch for the master branch.
+
+	Nikos Skalkotos,
+	Athens, Greece
+
+	On 24 February 2012 10:25, Richard W.M. Jones <rjones@redhat.com> wrote:
+
+	> On Thu, Feb 23, 2012 at 08:50:12PM +0200, Nikos Skalkotos wrote:
+	> [...]
+	>
+	> I don't know specifically why it fails with ArchLinux, but the problem
+	> is caused by the /dev/virtio-ports/* symlinks not getting created by
+	> udev.
+	>
+	> /dev/vport0p1 exists:
+	>
+	> > crw------- 1 root root 252,   1 Feb 23 18:17 vport0p1
+	>
+	> but udev doesn't make the corresponding /dev/virtio-ports symlink:
+	>
+	> > /dev/virtio-ports/org.libguestfs.channel.0: No such file or directory
+	>
+	> The symlink is supposed to be created by this udev rule:
+	>
+	> /lib/udev/rules.d/50-udev-default.rules:KERNEL=="vport*",
+	> ATTR{name}=="?*", SYMLINK+="virtio-ports/$attr{name}"
+	>
+	> So I'd start by looking to see if that rule exists in the udev rules
+	> that Arch is using.  Secondly if it does exist, is the corresponding
+	> *.rules being copied into the appliance?  (Check appliance/supermin.d/
+	> hostfiles)
+	>
+	> In an old Ubuntu that has udev that predates having this rule, we add
+	> the following patch:
+	>
+	>
+	> http://libguestfs.org/download/binaries/ubuntu1004-packages/0002-ubuntu-10.04-Use-dev-vport0p1.patch
+	>
+	> Rich.
+	>
+	> --
+	> Richard Jones, Virtualization Group, Red Hat
+	> http://people.redhat.com/~rjones
+	> virt-p2v converts physical machines to virtual machines.  Boot with a
+	> live CD or over the network (PXE) and turn machines into Xen guests.
+	> http://et.redhat.com/~rjones/virt-p2v
+	>
+
+	Hello Richard,<br><br>I found what the problem was and the udev symlinks where not created. The init script in the appliance uses a full paths for udevadm (/sbin/udevadm) which in my case was wrong. In Arch Linux udevadm is hosted under /usr/bin, not /sbin. When I fixed this, libguestfs was able to communicate with the appliance VM.<br>
+	<br>Since PATH variable is defined and exported in init, there is no need in using full paths for external programs. As far as I&#39;ve seen this affects all the git branches in libguestfs&#39;s repository. Please find attached a patch for the master branch.<br>
+	<br>Nikos Skalkotos,<br>Athens, Greece<br><br><div class="gmail_quote">On 24 February 2012 10:25, Richard W.M. Jones <span dir="ltr">&lt;<a href="mailto:rjones@redhat.com">rjones@redhat.com</a>&gt;</span> wrote:<br><blockquote class="gmail_quote" style="margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
+	On Thu, Feb 23, 2012 at 08:50:12PM +0200, Nikos Skalkotos wrote:<br>
+	[...]<br>
+	<br>
+	I don&#39;t know specifically why it fails with ArchLinux, but the problem<br>
+	is caused by the /dev/virtio-ports/* symlinks not getting created by<br>
+	udev.<br>
+	<br>
+	/dev/vport0p1 exists:<br>
+	<div class="im"><br>
+	&gt; crw------- 1 root root 252,   1 Feb 23 18:17 vport0p1<br>
+	<br>
+	</div>but udev doesn&#39;t make the corresponding /dev/virtio-ports symlink:<br>
+	<div class="im"><br>
+	&gt; /dev/virtio-ports/org.libguestfs.channel.0: No such file or directory<br>
+	<br>
+	</div>The symlink is supposed to be created by this udev rule:<br>
+	<br>
+	/lib/udev/rules.d/50-udev-default.rules:KERNEL==&quot;vport*&quot;, ATTR{name}==&quot;?*&quot;, SYMLINK+=&quot;virtio-ports/$attr{name}&quot;<br>
+	<br>
+	So I&#39;d start by looking to see if that rule exists in the udev rules<br>
+	that Arch is using.  Secondly if it does exist, is the corresponding<br>
+	*.rules being copied into the appliance?  (Check appliance/supermin.d/<br>
+	hostfiles)<br>
+	<br>
+	In an old Ubuntu that has udev that predates having this rule, we add<br>
+	the following patch:<br>
+	<br>
+	<a href="http://libguestfs.org/download/binaries/ubuntu1004-packages/0002-ubuntu-10.04-Use-dev-vport0p1.patch" target="_blank">http://libguestfs.org/download/binaries/ubuntu1004-packages/0002-ubuntu-10.04-Use-dev-vport0p1.patch</a><br>
+
+	<br>
+	Rich.<br>
+	<span class="HOEnZb"><font color="#888888"><br>
+	--<br>
+	Richard Jones, Virtualization Group, Red Hat <a href="http://people.redhat.com/%7Erjones%0Avirt-p2v" target="_blank">http://people.redhat.com/~rjones<br>
+	virt-p2v</a> converts physical machines to virtual machines.  Boot with a<br>
+	live CD or over the network (PXE) and turn machines into Xen guests.<br>
+	<a href="http://et.redhat.com/%7Erjones/virt-p2v" target="_blank">http://et.redhat.com/~rjones/virt-p2v</a><br>
+	</font></span></blockquote></div><br>
+	(cherry picked from commit ba468e9c5ecb32046299dd69a6e045f2aa7ba982)
+
 2012-03-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.6.
