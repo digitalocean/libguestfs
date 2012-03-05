@@ -5889,10 +5889,10 @@ public class GuestFS {
   /**
    * create a temporary directory
    * <p>
-   * This command creates a temporary directory. The
-   * "template" parameter should be a full pathname for the
-   * temporary directory name with the final six characters
-   * being "XXXXXX".
+   * This command creates a temporary directory. The "tmpl"
+   * parameter should be a full pathname for the temporary
+   * directory name with the final six characters being
+   * "XXXXXX".
    * <p>
    * For example: "/tmp/myprogXXXXXX" or
    * "/Temp/myprogXXXXXX", the second one being suitable for
@@ -5911,16 +5911,16 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public String mkdtemp (String template)
+  public String mkdtemp (String tmpl)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("mkdtemp: handle is closed");
 
-    return _mkdtemp (g, template);
+    return _mkdtemp (g, tmpl);
   }
 
-  private native String _mkdtemp (long g, String template)
+  private native String _mkdtemp (long g, String tmpl)
     throws LibGuestFSException;
 
   /**

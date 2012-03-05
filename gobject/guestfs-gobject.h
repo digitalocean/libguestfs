@@ -860,7 +860,7 @@ gchar **guestfs_session_glob_expand(GuestfsSession *session, const gchar *patter
 gboolean guestfs_session_scrub_device(GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_scrub_file(GuestfsSession *session, const gchar *file, GError **err);
 gboolean guestfs_session_scrub_freespace(GuestfsSession *session, const gchar *dir, GError **err);
-gchar *guestfs_session_mkdtemp(GuestfsSession *session, const gchar *template, GError **err);
+gchar *guestfs_session_mkdtemp(GuestfsSession *session, const gchar *tmpl, GError **err);
 gint32 guestfs_session_wc_l(GuestfsSession *session, const gchar *path, GError **err);
 gint32 guestfs_session_wc_w(GuestfsSession *session, const gchar *path, GError **err);
 gint32 guestfs_session_wc_c(GuestfsSession *session, const gchar *path, GError **err);

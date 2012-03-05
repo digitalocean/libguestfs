@@ -839,7 +839,7 @@ struct guestfs_scrub_freespace_args {
 };
 
 struct guestfs_mkdtemp_args {
-  string template<>;
+  string tmpl<>;
 };
 
 struct guestfs_mkdtemp_ret {

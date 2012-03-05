@@ -3966,11 +3966,11 @@ run_mkdir_p (ETERM *message)
 static ETERM *
 run_mkdtemp (ETERM *message)
 {
-  char *template = erl_iolist_to_string (ARG (0));
+  char *tmpl = erl_iolist_to_string (ARG (0));
   char *r;
 
-  r = guestfs_mkdtemp (g, template);
-  free (template);
+  r = guestfs_mkdtemp (g, tmpl);
+  free (tmpl);
   if (r == NULL)
     return make_error ("mkdtemp");
 

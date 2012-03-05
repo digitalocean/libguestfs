@@ -7964,17 +7964,17 @@ py_guestfs_mkdtemp (PyObject *self, PyObject *args)
   guestfs_h *g;
   PyObject *py_r;
   char *r;
-  const char *template;
+  const char *tmpl;
 
   if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_mkdtemp",
-                         &py_g, &template))
+                         &py_g, &tmpl))
     return NULL;
   g = get_handle (py_g);
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
 
-  r = guestfs_mkdtemp (g, template);
+  r = guestfs_mkdtemp (g, tmpl);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);

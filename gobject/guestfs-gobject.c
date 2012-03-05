@@ -11164,14 +11164,14 @@ guestfs_session_scrub_freespace(GuestfsSession *session, const gchar *dir, GErro
 
 /**
  * guestfs_session_mkdtemp:
- * @template: (transfer none) (type filename):
+ * @tmpl: (transfer none) (type filename):
  *
  * create a temporary directory
  *
- * This command creates a temporary directory. The
- * "template" parameter should be a full pathname for the
- * temporary directory name with the final six characters
- * being "XXXXXX".
+ * This command creates a temporary directory. The "tmpl"
+ * parameter should be a full pathname for the temporary
+ * directory name with the final six characters being
+ * "XXXXXX".
  * 
  * For example: "/tmp/myprogXXXXXX" or
  * "/Temp/myprogXXXXXX", the second one being suitable for
@@ -11191,7 +11191,7 @@ guestfs_session_scrub_freespace(GuestfsSession *session, const gchar *dir, GErro
  * Returns: (transfer full): the returned string, or NULL on error
  */
 gchar *
-guestfs_session_mkdtemp(GuestfsSession *session, const gchar *template, GError **err)
+guestfs_session_mkdtemp(GuestfsSession *session, const gchar *tmpl, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -11201,7 +11201,7 @@ guestfs_session_mkdtemp(GuestfsSession *session, const gchar *template, GError *
     return NULL;
   }
 
-  char *ret = guestfs_mkdtemp(g, template);
+  char *ret = guestfs_mkdtemp(g, tmpl);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;

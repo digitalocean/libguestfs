@@ -1398,7 +1398,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_mkdir_mode (guestfs_h *g, const char *path
 extern GUESTFS_DLL_PUBLIC int guestfs_mkdir_p (guestfs_h *g, const char *path);
 
 #define LIBGUESTFS_HAVE_MKDTEMP 1
-extern GUESTFS_DLL_PUBLIC char *guestfs_mkdtemp (guestfs_h *g, const char *template);
+extern GUESTFS_DLL_PUBLIC char *guestfs_mkdtemp (guestfs_h *g, const char *tmpl);
 
 #define LIBGUESTFS_HAVE_MKE2FS_J 1
 extern GUESTFS_DLL_PUBLIC int guestfs_mke2fs_J (guestfs_h *g, const char *fstype, int blocksize, const char *device, const char *journal);

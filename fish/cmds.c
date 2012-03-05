@@ -1669,7 +1669,7 @@ struct command_entry scrub_freespace_cmd_entry = {
 
 struct command_entry mkdtemp_cmd_entry = {
   .name = "mkdtemp",
-  .help = "NAME\n    mkdtemp - create a temporary directory\n\nSYNOPSIS\n     mkdtemp template\n\nDESCRIPTION\n    This command creates a temporary directory. The \"template\" parameter\n    should be a full pathname for the temporary directory name with the\n    final six characters being \"XXXXXX\".\n\n    For example: \"/tmp/myprogXXXXXX\" or \"/Temp/myprogXXXXXX\", the second one\n    being suitable for Windows filesystems.\n\n    The name of the temporary directory that was created is returned.\n\n    The temporary directory is created with mode 0700 and is owned by root.\n\n    The caller is responsible for deleting the temporary directory and its\n    contents after use.\n\n    See also: mkdtemp(3)\n\n",
+  .help = "NAME\n    mkdtemp - create a temporary directory\n\nSYNOPSIS\n     mkdtemp tmpl\n\nDESCRIPTION\n    This command creates a temporary directory. The \"tmpl\" parameter should\n    be a full pathname for the temporary directory name with the final six\n    characters being \"XXXXXX\".\n\n    For example: \"/tmp/myprogXXXXXX\" or \"/Temp/myprogXXXXXX\", the second one\n    being suitable for Windows filesystems.\n\n    The name of the temporary directory that was created is returned.\n\n    The temporary directory is created with mode 0700 and is owned by root.\n\n    The caller is responsible for deleting the temporary directory and its\n    contents after use.\n\n    See also: mkdtemp(3)\n\n",
   .run = run_mkdtemp
 };
 
@@ -7561,7 +7561,7 @@ static int
 run_mkdtemp (const char *cmd, size_t argc, char *argv[])
 {
   char *r;
-  char *template;
+  char *tmpl;
   size_t i = 0;
 
   if (argc != 1) {
@@ -7569,10 +7569,10 @@ run_mkdtemp (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     return -1;
   }
-  template = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (template == NULL) return -1;
-  r = guestfs_mkdtemp (g, template);
-  free (template);
+  tmpl = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (tmpl == NULL) return -1;
+  r = guestfs_mkdtemp (g, tmpl);
+  free (tmpl);
   if (r == NULL) return -1;
   printf ("%s\n", r);
   free (r);

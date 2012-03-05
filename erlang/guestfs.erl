@@ -1119,8 +1119,8 @@ mkdir_mode(G, Path, Mode) ->
 mkdir_p(G, Path) ->
   call_port(G, {mkdir_p, Path}).
 
-mkdtemp(G, Template) ->
-  call_port(G, {mkdtemp, Template}).
+mkdtemp(G, Tmpl) ->
+  call_port(G, {mkdtemp, Tmpl}).
 
 mke2fs_J(G, Fstype, Blocksize, Device, Journal) ->
   call_port(G, {mke2fs_J, Fstype, Blocksize, Device, Journal}).

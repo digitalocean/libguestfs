@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libguestfs\n"
 "Report-Msgid-Bugs-To: libguestfs@redhat.com\n"
-"POT-Creation-Date: 2012-03-03 23:43+0000\n"
+"POT-Creation-Date: 2012-03-05 10:09+0000\n"
 "PO-Revision-Date: 2012-01-23 13:10+0000\n"
 "Last-Translator: rjones <rjones@redhat.com>\n"
 "Language-Team: Japanese <trans-ja@lists.fedoraproject.org>\n"
@@ -13675,16 +13675,16 @@ msgstr ""
 #: ../fish/guestfish-actions.pod:3346
 #, no-wrap
 msgid ""
-" mkdtemp template\n"
+" mkdtemp tmpl\n"
 "\n"
 msgstr ""
 
 #. type: textblock
 #: ../fish/guestfish-actions.pod:3348 ../src/guestfs-actions.pod:5184
 msgid ""
-"This command creates a temporary directory.  The C<template> parameter "
-"should be a full pathname for the temporary directory name with the final "
-"six characters being \"XXXXXX\"."
+"This command creates a temporary directory.  The C<tmpl> parameter should be "
+"a full pathname for the temporary directory name with the final six "
+"characters being \"XXXXXX\"."
 msgstr ""
 
 #. type: textblock
@@ -32003,7 +32003,7 @@ msgstr ""
 msgid ""
 " char *\n"
 " guestfs_mkdtemp (guestfs_h *g,\n"
-"                  const char *template);\n"
+"                  const char *tmpl);\n"
 "\n"
 msgstr ""
 

@@ -8467,11 +8467,11 @@ PHP_FUNCTION (guestfs_mkdtemp)
 {
   zval *z_g;
   guestfs_h *g;
-  char *template;
-  int template_size;
+  char *tmpl;
+  int tmpl_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
-        &z_g, &template, &template_size) == FAILURE) {
+        &z_g, &tmpl, &tmpl_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -8481,13 +8481,13 @@ PHP_FUNCTION (guestfs_mkdtemp)
     RETURN_FALSE;
   }
 
-  if (strlen (template) != template_size) {
-    fprintf (stderr, "libguestfs: mkdtemp: parameter 'template' contains embedded ASCII NUL.\n");
+  if (strlen (tmpl) != tmpl_size) {
+    fprintf (stderr, "libguestfs: mkdtemp: parameter 'tmpl' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
 
   char *r;
-  r = guestfs_mkdtemp (g, template);
+  r = guestfs_mkdtemp (g, tmpl);
 
   if (r == NULL) {
     RETURN_FALSE;

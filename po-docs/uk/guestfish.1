@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfish 1"
-.TH guestfish 1 "2012-03-03" "libguestfs-1.16.7" "Virtualization Support"
+.TH guestfish 1 "2012-03-05" "libguestfs-1.16.8" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -4732,12 +4732,12 @@ necessary.  This is like the \f(CW\*(C`mkdir \-p\*(C'\fR shell command.
 .SS "mkdtemp"
 .IX Subsection "mkdtemp"
 .Vb 1
-\& mkdtemp шаблон
+\& mkdtemp tmpl
 .Ve
 .PP
-This command creates a temporary directory.  The \f(CW\*(C`template\*(C'\fR parameter
-should be a full pathname for the temporary directory name with the final
-six characters being \*(L"\s-1XXXXXX\s0\*(R".
+This command creates a temporary directory.  The \f(CW\*(C`tmpl\*(C'\fR parameter should be
+a full pathname for the temporary directory name with the final six
+characters being \*(L"\s-1XXXXXX\s0\*(R".
 .PP
 For example: \*(L"/tmp/myprogXXXXXX\*(R" or \*(L"/Temp/myprogXXXXXX\*(R", the second one
 being suitable for Windows filesystems.
