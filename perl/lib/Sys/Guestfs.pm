@@ -3117,10 +3117,10 @@ See also C<$h-E<gt>mkdir>, C<$h-E<gt>umask>
 Create a directory named C<path>, creating any parent directories
 as necessary.  This is like the C<mkdir -p> shell command.
 
-=item $dir = $h->mkdtemp ($template);
+=item $dir = $h->mkdtemp ($tmpl);
 
 This command creates a temporary directory.  The
-C<template> parameter should be a full pathname for the
+C<tmpl> parameter should be a full pathname for the
 temporary directory name with the final six characters being
 "XXXXXX".
 
@@ -6866,7 +6866,7 @@ use vars qw(%guestfs_introspection);
   "mkdtemp" => {
     ret => 'string',
     args => [
-      [ 'template', 'string(path)', 0 ],
+      [ 'tmpl', 'string(path)', 0 ],
     ],
     name => "mkdtemp",
     description => "create a temporary directory",

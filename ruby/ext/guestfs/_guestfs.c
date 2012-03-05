@@ -9083,14 +9083,14 @@ ruby_guestfs_scrub_freespace (VALUE gv, VALUE dirv)
 
 /*
  * call-seq:
- *   g.mkdtemp(template) -> string
+ *   g.mkdtemp(tmpl) -> string
  *
  * create a temporary directory
  *
- * This command creates a temporary directory. The
- * "template" parameter should be a full pathname for the
- * temporary directory name with the final six characters
- * being "XXXXXX".
+ * This command creates a temporary directory. The "tmpl"
+ * parameter should be a full pathname for the temporary
+ * directory name with the final six characters being
+ * "XXXXXX".
  * 
  * For example: "/tmp/myprogXXXXXX" or
  * "/Temp/myprogXXXXXX", the second one being suitable for
@@ -9112,18 +9112,18 @@ ruby_guestfs_scrub_freespace (VALUE gv, VALUE dirv)
  * +guestfs_mkdtemp+[http://libguestfs.org/guestfs.3.html#guestfs_mkdtemp]).
  */
 static VALUE
-ruby_guestfs_mkdtemp (VALUE gv, VALUE templatev)
+ruby_guestfs_mkdtemp (VALUE gv, VALUE tmplv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "mkdtemp");
 
-  const char *template = StringValueCStr (templatev);
+  const char *tmpl = StringValueCStr (tmplv);
 
   char *r;
 
-  r = guestfs_mkdtemp (g, template);
+  r = guestfs_mkdtemp (g, tmpl);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 

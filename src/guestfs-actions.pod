@@ -5179,10 +5179,10 @@ This function returns 0 on success or -1 on error.
 
  char *
  guestfs_mkdtemp (guestfs_h *g,
-                  const char *template);
+                  const char *tmpl);
 
 This command creates a temporary directory.  The
-C<template> parameter should be a full pathname for the
+C<tmpl> parameter should be a full pathname for the
 temporary directory name with the final six characters being
 "XXXXXX".
 

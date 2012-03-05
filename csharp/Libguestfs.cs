@@ -3342,15 +3342,15 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern string guestfs_mkdtemp (IntPtr h, [In] string template);
+    static extern string guestfs_mkdtemp (IntPtr h, [In] string tmpl);
 
     /// <summary>
     /// create a temporary directory
     /// </summary>
-    public string mkdtemp (string template)
+    public string mkdtemp (string tmpl)
     {
       string r;
-      r = guestfs_mkdtemp (_handle, template);
+      r = guestfs_mkdtemp (_handle, tmpl);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;

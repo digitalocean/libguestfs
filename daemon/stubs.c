@@ -4218,11 +4218,11 @@ mkdtemp_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *template = args.template;
-  ABS_PATH (template, , goto done);
+  char *tmpl = args.tmpl;
+  ABS_PATH (tmpl, , goto done);
 
   NEED_ROOT (, goto done);
-  r = do_mkdtemp (template);
+  r = do_mkdtemp (tmpl);
   if (r == NULL)
     /* do_mkdtemp has already called reply_with_error */
     goto done;

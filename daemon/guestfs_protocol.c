@@ -2182,7 +2182,7 @@ xdr_guestfs_mkdtemp_args (XDR *xdrs, guestfs_mkdtemp_args *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_string (xdrs, &objp->template, ~0))
+	 if (!xdr_string (xdrs, &objp->tmpl, ~0))
 		 return FALSE;
 	return TRUE;
 }

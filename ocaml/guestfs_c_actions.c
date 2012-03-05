@@ -7582,25 +7582,25 @@ ocaml_guestfs_mkdir_p (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mkdtemp (value gv, value templatev);
+CAMLprim value ocaml_guestfs_mkdtemp (value gv, value tmplv);
 
 CAMLprim value
-ocaml_guestfs_mkdtemp (value gv, value templatev)
+ocaml_guestfs_mkdtemp (value gv, value tmplv)
 {
-  CAMLparam2 (gv, templatev);
+  CAMLparam2 (gv, tmplv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
     ocaml_guestfs_raise_closed ("mkdtemp");
 
-  char *template = guestfs_safe_strdup (g, String_val (templatev));
+  char *tmpl = guestfs_safe_strdup (g, String_val (tmplv));
   char *r;
 
   caml_enter_blocking_section ();
-  r = guestfs_mkdtemp (g, template);
+  r = guestfs_mkdtemp (g, tmpl);
   caml_leave_blocking_section ();
-  free (template);
+  free (tmpl);
   if (r == NULL)
     ocaml_guestfs_raise_error (g, "mkdtemp");
 

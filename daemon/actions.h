@@ -177,7 +177,7 @@ extern char **do_glob_expand (const char *pattern);
 extern int do_scrub_device (const char *device);
 extern int do_scrub_file (const char *file);
 extern int do_scrub_freespace (const char *dir);
-extern char *do_mkdtemp (const char *template);
+extern char *do_mkdtemp (const char *tmpl);
 extern int do_wc_l (const char *path);
 extern int do_wc_w (const char *path);
 extern int do_wc_c (const char *path);

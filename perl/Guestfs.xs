@@ -3557,13 +3557,13 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 SV *
-mkdtemp (g, template)
+mkdtemp (g, tmpl)
       guestfs_h *g;
-      char *template;
+      char *tmpl;
 PREINIT:
       char *r;
    CODE:
-      r = guestfs_mkdtemp (g, template);
+      r = guestfs_mkdtemp (g, tmpl);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpv (r, 0);

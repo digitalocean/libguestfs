@@ -1,3 +1,15 @@
+2012-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.8.
+
+2012-03-05  Marcin Gibula  <m.gibula@e24cloud.com>
+
+	Make "template" a reserved word.
+	Function guestfs_mkdtemp uses c++ keyword "template" as a parameter
+	name. In result, attempt to use guestfs.h header in c++ program
+	results in compile error.
+	(cherry picked from commit 49611f121fa10d1497e46ab9aa6a7448cb89cd86)
+
 2012-03-03  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.7.

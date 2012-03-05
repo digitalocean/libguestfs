@@ -3177,11 +3177,11 @@ necessary.  This is like the C<mkdir -p> shell command.
 
 =head2 mkdtemp
 
- mkdtemp template
+ mkdtemp tmpl
 
-This command creates a temporary directory.  The C<template> parameter
-should be a full pathname for the temporary directory name with the final
-six characters being "XXXXXX".
+This command creates a temporary directory.  The C<tmpl> parameter should be
+a full pathname for the temporary directory name with the final six
+characters being "XXXXXX".
 
 For example: "/tmp/myprogXXXXXX" or "/Temp/myprogXXXXXX", the second one
 being suitable for Windows filesystems.

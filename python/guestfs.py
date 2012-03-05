@@ -3207,11 +3207,11 @@ class GuestFS:
         self._check_not_closed ()
         return libguestfsmod.scrub_freespace (self._o, dir)
 
-    def mkdtemp (self, template):
-        """This command creates a temporary directory. The
-        "template" parameter should be a full pathname for the
-        temporary directory name with the final six characters
-        being "XXXXXX".
+    def mkdtemp (self, tmpl):
+        """This command creates a temporary directory. The "tmpl"
+        parameter should be a full pathname for the temporary
+        directory name with the final six characters being
+        "XXXXXX".
         
         For example: "/tmp/myprogXXXXXX" or
         "/Temp/myprogXXXXXX", the second one being suitable for
@@ -3229,7 +3229,7 @@ class GuestFS:
         See also: mkdtemp(3)
         """
         self._check_not_closed ()
-        return libguestfsmod.mkdtemp (self._o, template)
+        return libguestfsmod.mkdtemp (self._o, tmpl)
 
     def wc_l (self, path):
         """This command counts the lines in a file, using the "wc

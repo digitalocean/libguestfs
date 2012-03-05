@@ -16253,7 +16253,7 @@ guestfs_scrub_freespace (guestfs_h *g,
 
 char *
 guestfs_mkdtemp (guestfs_h *g,
-                 const char *template)
+                 const char *tmpl)
 {
   struct guestfs_mkdtemp_args args;
   guestfs_message_header hdr;
@@ -16268,16 +16268,16 @@ guestfs_mkdtemp (guestfs_h *g,
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "mkdtemp", 7);
-  if (template == NULL) {
+  if (tmpl == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "mkdtemp", "template");
+           "mkdtemp", "tmpl");
     return NULL;
   }
 
   if (trace_flag) {
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s", "mkdtemp");
-    fprintf (trace_fp, " \"%s\"", template);
+    fprintf (trace_fp, " \"%s\"", tmpl);
     trace_send_line (g);
   }
 
@@ -16289,7 +16289,7 @@ guestfs_mkdtemp (guestfs_h *g,
   }
   guestfs___set_busy (g);
 
-  args.template = (char *) template;
+  args.tmpl = (char *) tmpl;
   serial = guestfs___send (g, GUESTFS_PROC_MKDTEMP,
                            progress_hint, 0,
                            (xdrproc_t) xdr_guestfs_mkdtemp_args, (char *) &args);

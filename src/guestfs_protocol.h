@@ -1104,7 +1104,7 @@ struct guestfs_scrub_freespace_args {
 typedef struct guestfs_scrub_freespace_args guestfs_scrub_freespace_args;
 
 struct guestfs_mkdtemp_args {
-	char *template;
+	char *tmpl;
 };
 typedef struct guestfs_mkdtemp_args guestfs_mkdtemp_args;
 
