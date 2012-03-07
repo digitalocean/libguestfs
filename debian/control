@@ -22,7 +22,8 @@ Build-Depends: debhelper (>= 7.0.50~), autotools-dev, aptitude,
   libstring-shellquote-perl,
   libsys-virt-perl, libwin-hivex-perl,
   libfuse-dev, fuse-utils,
-  libglib2.0-dev, gjs, gobject-introspection, libgirepository1.0-dev
+  libglib2.0-dev, gjs, gobject-introspection, libgirepository1.0-dev,
+  netpbm, icoutils
 Homepage: http://libguestfs.org
 Standards-Version: 3.9.3
 Vcs-Git: git://git.debian.org/git/pkg-libvirt/libguestfs.git
@@ -119,7 +120,8 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
   scrub,
   strace,
   xfsprogs,
-  zerofree
+  zerofree,
+  netpbm, icoutils
 Description: guest disk image management system - shared library
  The libguestfs library allows accessing and modifying guest disk
  images. It offers the following features, among many others:
