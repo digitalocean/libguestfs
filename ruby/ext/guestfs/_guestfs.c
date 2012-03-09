@@ -4201,7 +4201,10 @@ ruby_guestfs_inspect_get_icon (VALUE gv, VALUE rootv, VALUE optargsv)
  * the child process.
  * 
  * The default for this flag is false, because usually you
- * want "^C" to kill the subprocess.
+ * want "^C" to kill the subprocess. Guestfish sets this
+ * flag to true when used interactively, so that "^C" can
+ * cancel long-running commands gracefully (see
+ * "g.user_cancel").
  *
  *
  * (For the C API documentation for this function, see

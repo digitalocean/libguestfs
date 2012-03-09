@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [16])
-m4_define([libguestfs_release], [8])
+m4_define([libguestfs_release], [9])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -464,6 +464,30 @@ if test "x$DB_DUMP" != "xno"; then
 fi
 if test "x$DB_LOAD" != "xno"; then
     AC_DEFINE_UNQUOTED([DB_LOAD],["$DB_LOAD"],[Name of db_load program.])
+fi
+
+dnl Check for netpbm programs (optional).
+AC_CHECK_PROGS([PBMTEXT],[pbmtext],[no])
+AC_CHECK_PROGS([PNMTOPNG],[pnmtopng],[no])
+AC_CHECK_PROGS([BMPTOPNM],[bmptopnm],[no])
+AC_CHECK_PROGS([PAMCUT],[pamcut],[no])
+if test "x$PBMTEXT" != "xno"; then
+    AC_DEFINE_UNQUOTED([PBMTEXT],["$PBMTEXT"],[Name of pbmtext program.])
+fi
+if test "x$PNMTOPNG" != "xno"; then
+    AC_DEFINE_UNQUOTED([PNMTOPNG],["$PNMTOPNG"],[Name of pnmtopng program.])
+fi
+if test "x$BMPTOPNM" != "xno"; then
+    AC_DEFINE_UNQUOTED([BMPTOPNM],["$BMPTOPNM"],[Name of bmptopnm program.])
+fi
+if test "x$PAMCUT" != "xno"; then
+    AC_DEFINE_UNQUOTED([PAMCUT],["$PAMCUT"],[Name of pamcut program.])
+fi
+
+dnl Check for icoutils (optional).
+AC_CHECK_PROGS([WRESTOOL],[wrestool],[no])
+if test "x$WRESTOOL" != "xno"; then
+    AC_DEFINE_UNQUOTED([WRESTOOL],["$WRESTOOL"],[Name of wrestool program.])
 fi
 
 dnl Check for QEMU for running binaries on this $host_cpu, fall

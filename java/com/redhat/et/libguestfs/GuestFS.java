@@ -2823,7 +2823,10 @@ public class GuestFS {
    * the child process.
    * <p>
    * The default for this flag is false, because usually you
-   * want "^C" to kill the subprocess.
+   * want "^C" to kill the subprocess. Guestfish sets this
+   * flag to true when used interactively, so that "^C" can
+   * cancel long-running commands gracefully (see
+   * "g.user_cancel").
    * <p>
    * @throws LibGuestFSException
    */

@@ -341,6 +341,7 @@ BITSIZEOF_SIG_ATOMIC_T = @BITSIZEOF_SIG_ATOMIC_T@
 BITSIZEOF_SIZE_T = @BITSIZEOF_SIZE_T@
 BITSIZEOF_WCHAR_T = @BITSIZEOF_WCHAR_T@
 BITSIZEOF_WINT_T = @BITSIZEOF_WINT_T@
+BMPTOPNM = @BMPTOPNM@
 BYTESWAP_H = @BYTESWAP_H@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
@@ -1079,7 +1080,9 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
+PAMCUT = @PAMCUT@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PBMTEXT = @PBMTEXT@
 PCRE_CFLAGS = @PCRE_CFLAGS@
 PCRE_LIBS = @PCRE_LIBS@
 PERL = @PERL@
@@ -1088,6 +1091,7 @@ PHPIZE = @PHPIZE@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
+PNMTOPNG = @PNMTOPNG@
 PO4A = @PO4A@
 POD2HTML = @POD2HTML@
 POD2MAN = @POD2MAN@
@@ -1277,6 +1281,7 @@ WARN_CFLAGS = @WARN_CFLAGS@
 WCHAR_T_SUFFIX = @WCHAR_T_SUFFIX@
 WERROR_CFLAGS = @WERROR_CFLAGS@
 WINT_T_SUFFIX = @WINT_T_SUFFIX@
+WRESTOOL = @WRESTOOL@
 XGETTEXT = @XGETTEXT@
 XGETTEXT_015 = @XGETTEXT_015@
 XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
@@ -1365,22 +1370,15 @@ BUILT_SOURCES = \
 	rc_protocol.h \
 	rc_protocol.c
 
-EXTRA_DIST = \
-	$(BUILT_SOURCES) \
-	$(TESTS) \
-	rc_protocol.x \
-	guestfish.pod \
-	guestfish-bash-completion.sh \
-	libguestfs-tools.conf \
-	virt-copy-in \
-	virt-copy-out \
-	virt-tar-in \
-	virt-tar-out \
-	virt-copy-in.pod \
-	virt-copy-out.pod \
-	virt-tar-in.pod \
-	virt-tar-out.pod
-
+EXTRA_DIST = $(BUILT_SOURCES) rc_protocol.x guestfish.pod \
+	guestfish-bash-completion.sh libguestfs-tools.conf \
+	virt-copy-in virt-copy-out virt-tar-in virt-tar-out \
+	virt-copy-in.pod virt-copy-out.pod virt-tar-in.pod \
+	virt-tar-out.pod test-add-domain.sh test-copy.sh test-edit.sh \
+	test-find0.sh test-guestfish-a.sh test-guestfish-d.sh \
+	test-guestfish-escapes.sh test-guestfish-events.sh \
+	test-guestfish-tilde.sh test-read_file.sh test-remote.sh \
+	test-reopen.sh test-stringlist.sh test-upload-to-dir.sh
 
 # These source files (mostly related to option parsing) are shared
 # between guestfish, guestmount and some other virt tools.  Keep a
