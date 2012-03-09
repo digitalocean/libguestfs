@@ -949,7 +949,7 @@ struct command_entry inspect_get_icon_cmd_entry = {
 
 struct command_entry set_pgroup_cmd_entry = {
   .name = "set-pgroup",
-  .help = "NAME\n    set-pgroup - set process group flag\n\nSYNOPSIS\n     set-pgroup pgroup\n\nDESCRIPTION\n    If \"pgroup\" is true, child processes are placed into their own process\n    group.\n\n    The practical upshot of this is that signals like \"SIGINT\" (from users\n    pressing \"^C\") won't be received by the child process.\n\n    The default for this flag is false, because usually you want \"^C\" to\n    kill the subprocess.\n\n    You can use 'pgroup' as an alias for this command.\n\n",
+  .help = "NAME\n    set-pgroup - set process group flag\n\nSYNOPSIS\n     set-pgroup pgroup\n\nDESCRIPTION\n    If \"pgroup\" is true, child processes are placed into their own process\n    group.\n\n    The practical upshot of this is that signals like \"SIGINT\" (from users\n    pressing \"^C\") won't be received by the child process.\n\n    The default for this flag is false, because usually you want \"^C\" to\n    kill the subprocess. Guestfish sets this flag to true when used\n    interactively, so that \"^C\" can cancel long-running commands gracefully\n    (see \"user_cancel\").\n\n    You can use 'pgroup' as an alias for this command.\n\n",
   .run = run_set_pgroup
 };
 
@@ -3534,34 +3534,45 @@ print_int_bool (struct guestfs_int_bool *int_bool)
 static int
 run_launch (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_launch (g);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_kill_subprocess (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_kill_subprocess (g);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_add_drive (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *filename;
   size_t i = 0;
@@ -3569,16 +3580,21 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   filename = argv[i++];
   r = guestfs_add_drive (g, filename);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_add_cdrom (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *filename;
   size_t i = 0;
@@ -3586,16 +3602,21 @@ run_add_cdrom (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   filename = argv[i++];
   r = guestfs_add_cdrom (g, filename);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_add_drive_ro (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *filename;
   size_t i = 0;
@@ -3603,16 +3624,21 @@ run_add_drive_ro (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   filename = argv[i++];
   r = guestfs_add_drive_ro (g, filename);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_config (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *qemuparam;
   const char *qemuvalue;
@@ -3621,18 +3647,23 @@ run_config (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   qemuparam = argv[i++];
   qemuvalue = STRNEQ (argv[i], "") ? argv[i] : NULL;
   i++;
   r = guestfs_config (g, qemuparam, qemuvalue);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_set_qemu (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *qemu;
   size_t i = 0;
@@ -3640,33 +3671,42 @@ run_set_qemu (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   qemu = STRNEQ (argv[i], "") ? argv[i] : NULL;
   i++;
   r = guestfs_set_qemu (g, qemu);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_qemu (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   const char *r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_get_qemu (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_set_path (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *searchpath;
   size_t i = 0;
@@ -3674,33 +3714,42 @@ run_set_path (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   searchpath = STRNEQ (argv[i], "") ? argv[i] : NULL;
   i++;
   r = guestfs_set_path (g, searchpath);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_path (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   const char *r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_get_path (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_set_append (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *append;
   size_t i = 0;
@@ -3708,32 +3757,40 @@ run_set_append (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   append = STRNEQ (argv[i], "") ? argv[i] : NULL;
   i++;
   r = guestfs_set_append (g, append);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_append (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   const char *r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_get_append (g);
+  ret = 0;
   printf ("%s\n", r ? : "(null)");
-  return 0;
+ out_noargs:
+  return ret;
 }
 
 static int
 run_set_autosync (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int autosync;
   size_t i = 0;
@@ -3741,32 +3798,41 @@ run_set_autosync (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   autosync = is_true (argv[i++]) ? 1 : 0;
   r = guestfs_set_autosync (g, autosync);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_autosync (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_get_autosync (g);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_set_verbose (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int verbose;
   size_t i = 0;
@@ -3774,112 +3840,141 @@ run_set_verbose (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   verbose = is_true (argv[i++]) ? 1 : 0;
   r = guestfs_set_verbose (g, verbose);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_verbose (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_get_verbose (g);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_is_ready (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_is_ready (g);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_is_config (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_is_config (g);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_is_launching (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_is_launching (g);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_is_busy (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_is_busy (g);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_state (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_get_state (g);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_set_memsize (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int memsize;
   size_t i = 0;
@@ -3887,7 +3982,7 @@ run_set_memsize (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -3898,72 +3993,90 @@ run_set_memsize (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "memsize", "xstrtoll", xerr);
-      return -1;
+      goto out_memsize;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "memsize");
-      return -1;
+      goto out_memsize;
     }
     /* The check above should ensure this assignment does not overflow. */
     memsize = r;
   }
   r = guestfs_set_memsize (g, memsize);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_memsize:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_memsize (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_get_memsize (g);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_pid (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_get_pid (g);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_version (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   struct guestfs_version *r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_version (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_version (r);
   guestfs_free_version (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_set_selinux (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int selinux;
   size_t i = 0;
@@ -3971,32 +4084,41 @@ run_set_selinux (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   selinux = is_true (argv[i++]) ? 1 : 0;
   r = guestfs_set_selinux (g, selinux);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_selinux (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_get_selinux (g);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_set_trace (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int trace;
   size_t i = 0;
@@ -4004,32 +4126,41 @@ run_set_trace (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   trace = is_true (argv[i++]) ? 1 : 0;
   r = guestfs_set_trace (g, trace);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_trace (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_get_trace (g);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_set_direct (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int direct;
   size_t i = 0;
@@ -4037,32 +4168,41 @@ run_set_direct (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   direct = is_true (argv[i++]) ? 1 : 0;
   r = guestfs_set_direct (g, direct);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_direct (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_get_direct (g);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_set_recovery_proc (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int recoveryproc;
   size_t i = 0;
@@ -4070,32 +4210,41 @@ run_set_recovery_proc (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   recoveryproc = is_true (argv[i++]) ? 1 : 0;
   r = guestfs_set_recovery_proc (g, recoveryproc);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_recovery_proc (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_get_recovery_proc (g);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_add_drive_with_if (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *filename;
   const char *iface;
@@ -4104,17 +4253,22 @@ run_add_drive_with_if (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   filename = argv[i++];
   iface = argv[i++];
   r = guestfs_add_drive_with_if (g, filename, iface);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_add_drive_ro_with_if (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *filename;
   const char *iface;
@@ -4123,17 +4277,22 @@ run_add_drive_ro_with_if (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   filename = argv[i++];
   iface = argv[i++];
   r = guestfs_add_drive_ro_with_if (g, filename, iface);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_file_architecture (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   char *filename;
   size_t i = 0;
@@ -4141,38 +4300,47 @@ run_file_architecture (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   filename = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (filename == NULL) return -1;
+  if (filename == NULL) goto out_filename;
   r = guestfs_file_architecture (g, filename);
-  free (filename);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+  free (filename);
+ out_filename:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_os (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_inspect_os (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_type (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *root;
   size_t i = 0;
@@ -4180,19 +4348,23 @@ run_inspect_get_type (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_get_type (g, root);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_arch (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *root;
   size_t i = 0;
@@ -4200,19 +4372,23 @@ run_inspect_get_arch (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_get_arch (g, root);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_distro (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *root;
   size_t i = 0;
@@ -4220,19 +4396,23 @@ run_inspect_get_distro (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_get_distro (g, root);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_major_version (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *root;
   size_t i = 0;
@@ -4240,18 +4420,22 @@ run_inspect_get_major_version (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_get_major_version (g, root);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_minor_version (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *root;
   size_t i = 0;
@@ -4259,18 +4443,22 @@ run_inspect_get_minor_version (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_get_minor_version (g, root);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_product_name (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *root;
   size_t i = 0;
@@ -4278,19 +4466,23 @@ run_inspect_get_product_name (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_get_product_name (g, root);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_mountpoints (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *root;
   size_t i = 0;
@@ -4298,19 +4490,23 @@ run_inspect_get_mountpoints (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_get_mountpoints (g, root);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_table (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_filesystems (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *root;
   size_t i = 0;
@@ -4318,19 +4514,23 @@ run_inspect_get_filesystems (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_get_filesystems (g, root);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_set_network (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int network;
   size_t i = 0;
@@ -4338,49 +4538,62 @@ run_set_network (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   network = is_true (argv[i++]) ? 1 : 0;
   r = guestfs_set_network (g, network);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_network (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_get_network (g);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_list_filesystems (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_list_filesystems (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_table (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_add_drive_opts (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *filename;
   struct guestfs_add_drive_opts_argv optargs_s = { .bitmask = 0 };
@@ -4390,7 +4603,7 @@ run_add_drive_opts (const char *cmd, size_t argc, char *argv[])
   if (argc < 1 || argc > 5) {
     fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 5);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   filename = argv[i++];
 
@@ -4421,24 +4634,29 @@ run_add_drive_opts (const char *cmd, size_t argc, char *argv[])
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
-      return -1;
+      goto out;
     }
 
     if (optargs_s.bitmask & this_mask) {
       fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
                cmd, this_arg);
-      return -1;
+      goto out;
     }
     optargs_s.bitmask |= this_mask;
   }
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_windows_systemroot (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *root;
   size_t i = 0;
@@ -4446,70 +4664,86 @@ run_inspect_get_windows_systemroot (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_get_windows_systemroot (g, root);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_roots (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_inspect_get_roots (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_debug_cmdline (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_debug_cmdline (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_debug_drives (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_debug_drives (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_add_domain (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *dom;
   struct guestfs_add_domain_argv optargs_s = { .bitmask = 0 };
@@ -4519,7 +4753,7 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
   if (argc < 1 || argc > 7) {
     fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 7);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   dom = argv[i++];
 
@@ -4560,26 +4794,30 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
-      return -1;
+      goto out;
     }
 
     if (optargs_s.bitmask & this_mask) {
       fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
                cmd, this_arg);
-      return -1;
+      goto out;
     }
     optargs_s.bitmask |= this_mask;
   }
 
   r = guestfs_add_domain_argv (g, dom, optargs);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_package_format (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *root;
   size_t i = 0;
@@ -4587,19 +4825,23 @@ run_inspect_get_package_format (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_get_package_format (g, root);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_package_management (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *root;
   size_t i = 0;
@@ -4607,19 +4849,23 @@ run_inspect_get_package_management (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_get_package_management (g, root);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_list_applications (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   struct guestfs_application_list *r;
   const char *root;
   size_t i = 0;
@@ -4627,19 +4873,23 @@ run_inspect_list_applications (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_list_applications (g, root);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_application_list (r);
   guestfs_free_application_list (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_hostname (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *root;
   size_t i = 0;
@@ -4647,19 +4897,23 @@ run_inspect_get_hostname (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_get_hostname (g, root);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_format (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *root;
   size_t i = 0;
@@ -4667,19 +4921,23 @@ run_inspect_get_format (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_get_format (g, root);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_is_live (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *root;
   size_t i = 0;
@@ -4687,18 +4945,22 @@ run_inspect_is_live (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_is_live (g, root);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_is_netinst (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *root;
   size_t i = 0;
@@ -4706,18 +4968,22 @@ run_inspect_is_netinst (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_is_netinst (g, root);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_is_multipart (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *root;
   size_t i = 0;
@@ -4725,18 +4991,22 @@ run_inspect_is_multipart (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_is_multipart (g, root);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_set_attach_method (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *attachmethod;
   size_t i = 0;
@@ -4744,33 +5014,42 @@ run_set_attach_method (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   attachmethod = argv[i++];
   r = guestfs_set_attach_method (g, attachmethod);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_attach_method (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_get_attach_method (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_product_variant (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *root;
   size_t i = 0;
@@ -4778,19 +5057,23 @@ run_inspect_get_product_variant (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_get_product_variant (g, root);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_windows_current_control_set (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *root;
   size_t i = 0;
@@ -4798,19 +5081,23 @@ run_inspect_get_windows_current_control_set (const char *cmd, size_t argc, char 
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_get_windows_current_control_set (g, root);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_drive_mappings (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *root;
   size_t i = 0;
@@ -4818,19 +5105,23 @@ run_inspect_get_drive_mappings (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
   r = guestfs_inspect_get_drive_mappings (g, root);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_table (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inspect_get_icon (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   size_t size;
   const char *root;
@@ -4841,7 +5132,7 @@ run_inspect_get_icon (const char *cmd, size_t argc, char *argv[])
   if (argc < 1 || argc > 3) {
     fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = argv[i++];
 
@@ -4862,31 +5153,35 @@ run_inspect_get_icon (const char *cmd, size_t argc, char *argv[])
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
-      return -1;
+      goto out;
     }
 
     if (optargs_s.bitmask & this_mask) {
       fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
                cmd, this_arg);
-      return -1;
+      goto out;
     }
     optargs_s.bitmask |= this_mask;
   }
 
   r = guestfs_inspect_get_icon_argv (g, root, &size, optargs);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
   if (full_write (1, r, size) != size) {
     perror ("write");
     free (r);
-    return -1;
+    goto out;
   }
+  ret = 0;
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_set_pgroup (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int pgroup;
   size_t i = 0;
@@ -4894,32 +5189,41 @@ run_set_pgroup (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   pgroup = is_true (argv[i++]) ? 1 : 0;
   r = guestfs_set_pgroup (g, pgroup);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_pgroup (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_get_pgroup (g);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_set_smp (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int smp;
   size_t i = 0;
@@ -4927,7 +5231,7 @@ run_set_smp (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -4938,39 +5242,49 @@ run_set_smp (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "smp", "xstrtoll", xerr);
-      return -1;
+      goto out_smp;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "smp");
-      return -1;
+      goto out_smp;
     }
     /* The check above should ensure this assignment does not overflow. */
     smp = r;
   }
   r = guestfs_set_smp (g, smp);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_smp:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_smp (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_get_smp (g);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mount (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   const char *mountpoint;
@@ -4979,31 +5293,41 @@ run_mount (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   mountpoint = argv[i++];
   r = guestfs_mount (g, device, mountpoint);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_sync (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_sync (g);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_touch (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -5011,18 +5335,24 @@ run_touch (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_touch (g, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_cat (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   char *path;
   size_t i = 0;
@@ -5030,21 +5360,26 @@ run_cat (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_cat (g, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_ll (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   char *directory;
   size_t i = 0;
@@ -5052,21 +5387,26 @@ run_ll (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   directory = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (directory == NULL) return -1;
+  if (directory == NULL) goto out_directory;
   r = guestfs_ll (g, directory);
-  free (directory);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+  free (directory);
+ out_directory:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_ls (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   char *directory;
   size_t i = 0;
@@ -5074,157 +5414,194 @@ run_ls (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   directory = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (directory == NULL) return -1;
+  if (directory == NULL) goto out_directory;
   r = guestfs_ls (g, directory);
-  free (directory);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (directory);
+ out_directory:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_list_devices (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_list_devices (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_list_partitions (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_list_partitions (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_pvs (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_pvs (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_vgs (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_vgs (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lvs (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_lvs (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_pvs_full (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   struct guestfs_lvm_pv_list *r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_pvs_full (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_lvm_pv_list (r);
   guestfs_free_lvm_pv_list (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_vgs_full (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   struct guestfs_lvm_vg_list *r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_vgs_full (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_lvm_vg_list (r);
   guestfs_free_lvm_vg_list (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lvs_full (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   struct guestfs_lvm_lv_list *r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_lvs_full (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_lvm_lv_list (r);
   guestfs_free_lvm_lv_list (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_read_lines (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   char *path;
   size_t i = 0;
@@ -5232,21 +5609,26 @@ run_read_lines (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_read_lines (g, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_aug_init (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *root;
   int flags;
@@ -5255,10 +5637,10 @@ run_aug_init (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (root == NULL) return -1;
+  if (root == NULL) goto out_root;
   {
     strtol_error xerr;
     long long r;
@@ -5268,38 +5650,50 @@ run_aug_init (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "flags", "xstrtoll", xerr);
-      return -1;
+      goto out_flags;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "flags");
-      return -1;
+      goto out_flags;
     }
     /* The check above should ensure this assignment does not overflow. */
     flags = r;
   }
   r = guestfs_aug_init (g, root, flags);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_flags:
   free (root);
-  return r;
+ out_root:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_aug_close (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_aug_close (g);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_aug_defvar (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *name;
   const char *expr;
@@ -5308,20 +5702,24 @@ run_aug_defvar (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   name = argv[i++];
   expr = STRNEQ (argv[i], "") ? argv[i] : NULL;
   i++;
   r = guestfs_aug_defvar (g, name, expr);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_aug_defnode (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   struct guestfs_int_bool *r;
   const char *name;
   const char *expr;
@@ -5331,21 +5729,25 @@ run_aug_defnode (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   name = argv[i++];
   expr = argv[i++];
   val = argv[i++];
   r = guestfs_aug_defnode (g, name, expr, val);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_int_bool (r);
   guestfs_free_int_bool (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_aug_get (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *augpath;
   size_t i = 0;
@@ -5353,19 +5755,23 @@ run_aug_get (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   augpath = argv[i++];
   r = guestfs_aug_get (g, augpath);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_aug_set (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *augpath;
   const char *val;
@@ -5374,17 +5780,22 @@ run_aug_set (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   augpath = argv[i++];
   val = argv[i++];
   r = guestfs_aug_set (g, augpath, val);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_aug_insert (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *augpath;
   const char *label;
@@ -5394,18 +5805,23 @@ run_aug_insert (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   augpath = argv[i++];
   label = argv[i++];
   before = is_true (argv[i++]) ? 1 : 0;
   r = guestfs_aug_insert (g, augpath, label, before);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_aug_rm (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *augpath;
   size_t i = 0;
@@ -5413,18 +5829,22 @@ run_aug_rm (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   augpath = argv[i++];
   r = guestfs_aug_rm (g, augpath);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_aug_mv (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *src;
   const char *dest;
@@ -5433,17 +5853,22 @@ run_aug_mv (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   src = argv[i++];
   dest = argv[i++];
   r = guestfs_aug_mv (g, src, dest);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_aug_match (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *augpath;
   size_t i = 0;
@@ -5451,47 +5876,61 @@ run_aug_match (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   augpath = argv[i++];
   r = guestfs_aug_match (g, augpath);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_aug_save (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_aug_save (g);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_aug_load (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_aug_load (g);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_aug_ls (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *augpath;
   size_t i = 0;
@@ -5499,19 +5938,23 @@ run_aug_ls (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   augpath = argv[i++];
   r = guestfs_aug_ls (g, augpath);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_rm (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -5519,18 +5962,24 @@ run_rm (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_rm (g, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_rmdir (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -5538,18 +5987,24 @@ run_rmdir (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_rmdir (g, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_rm_rf (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -5557,18 +6012,24 @@ run_rm_rf (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_rm_rf (g, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mkdir (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -5576,18 +6037,24 @@ run_mkdir (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_mkdir (g, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mkdir_p (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -5595,18 +6062,24 @@ run_mkdir_p (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_mkdir_p (g, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_chmod (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int mode;
   char *path;
@@ -5615,7 +6088,7 @@ run_chmod (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -5626,26 +6099,33 @@ run_chmod (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "mode", "xstrtoll", xerr);
-      return -1;
+      goto out_mode;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "mode");
-      return -1;
+      goto out_mode;
     }
     /* The check above should ensure this assignment does not overflow. */
     mode = r;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_chmod (g, mode, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_mode:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_chown (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int owner;
   int group;
@@ -5655,7 +6135,7 @@ run_chown (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -5666,12 +6146,12 @@ run_chown (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "owner", "xstrtoll", xerr);
-      return -1;
+      goto out_owner;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "owner");
-      return -1;
+      goto out_owner;
     }
     /* The check above should ensure this assignment does not overflow. */
     owner = r;
@@ -5685,26 +6165,34 @@ run_chown (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "group", "xstrtoll", xerr);
-      return -1;
+      goto out_group;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "group");
-      return -1;
+      goto out_group;
     }
     /* The check above should ensure this assignment does not overflow. */
     group = r;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_chown (g, owner, group, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_group:
+ out_owner:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_exists (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -5712,20 +6200,25 @@ run_exists (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_exists (g, path);
-  free (path);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_is_file (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -5733,20 +6226,25 @@ run_is_file (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_is_file (g, path);
-  free (path);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_is_dir (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -5754,20 +6252,25 @@ run_is_dir (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_is_dir (g, path);
-  free (path);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_pvcreate (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -5775,16 +6278,21 @@ run_pvcreate (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_pvcreate (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_vgcreate (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *volgroup;
   char **physvols;
@@ -5793,19 +6301,25 @@ run_vgcreate (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   volgroup = argv[i++];
   physvols = parse_string_list (argv[i++]);
-  if (physvols == NULL) return -1;
+  if (physvols == NULL) goto out_physvols;
   r = guestfs_vgcreate (g, volgroup, physvols);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free_strings (physvols);
-  return r;
+ out_physvols:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lvcreate (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *logvol;
   const char *volgroup;
@@ -5815,7 +6329,7 @@ run_lvcreate (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   logvol = argv[i++];
   volgroup = argv[i++];
@@ -5828,23 +6342,29 @@ run_lvcreate (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "mbytes", "xstrtoll", xerr);
-      return -1;
+      goto out_mbytes;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "mbytes");
-      return -1;
+      goto out_mbytes;
     }
     /* The check above should ensure this assignment does not overflow. */
     mbytes = r;
   }
   r = guestfs_lvcreate (g, logvol, volgroup, mbytes);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_mbytes:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mkfs (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *fstype;
   const char *device;
@@ -5853,17 +6373,22 @@ run_mkfs (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   fstype = argv[i++];
   device = argv[i++];
   r = guestfs_mkfs (g, fstype, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_sfdisk (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   int cyls;
@@ -5875,7 +6400,7 @@ run_sfdisk (const char *cmd, size_t argc, char *argv[])
   if (argc != 5) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 5);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   {
@@ -5887,12 +6412,12 @@ run_sfdisk (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "cyls", "xstrtoll", xerr);
-      return -1;
+      goto out_cyls;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "cyls");
-      return -1;
+      goto out_cyls;
     }
     /* The check above should ensure this assignment does not overflow. */
     cyls = r;
@@ -5906,12 +6431,12 @@ run_sfdisk (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "heads", "xstrtoll", xerr);
-      return -1;
+      goto out_heads;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "heads");
-      return -1;
+      goto out_heads;
     }
     /* The check above should ensure this assignment does not overflow. */
     heads = r;
@@ -5925,26 +6450,35 @@ run_sfdisk (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "sectors", "xstrtoll", xerr);
-      return -1;
+      goto out_sectors;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "sectors");
-      return -1;
+      goto out_sectors;
     }
     /* The check above should ensure this assignment does not overflow. */
     sectors = r;
   }
   lines = parse_string_list (argv[i++]);
-  if (lines == NULL) return -1;
+  if (lines == NULL) goto out_lines;
   r = guestfs_sfdisk (g, device, cyls, heads, sectors, lines);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free_strings (lines);
-  return r;
+ out_lines:
+ out_sectors:
+ out_heads:
+ out_cyls:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_write_file (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   const char *content;
@@ -5954,10 +6488,10 @@ run_write_file (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   content = argv[i++];
   {
     strtol_error xerr;
@@ -5968,24 +6502,31 @@ run_write_file (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "size", "xstrtoll", xerr);
-      return -1;
+      goto out_size;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "size");
-      return -1;
+      goto out_size;
     }
     /* The check above should ensure this assignment does not overflow. */
     size = r;
   }
   r = guestfs_write_file (g, path, content, size);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_size:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_umount (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *pathordevice;
   size_t i = 0;
@@ -5993,61 +6534,80 @@ run_umount (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   pathordevice = argv[i++];
   r = guestfs_umount (g, pathordevice);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mounts (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_mounts (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_umount_all (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_umount_all (g);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lvm_remove_all (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_lvm_remove_all (g);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_file (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   char *path;
   size_t i = 0;
@@ -6055,21 +6615,26 @@ run_file (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_file (g, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_command (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   char **arguments;
   size_t i = 0;
@@ -6077,21 +6642,26 @@ run_command (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   arguments = parse_string_list (argv[i++]);
-  if (arguments == NULL) return -1;
+  if (arguments == NULL) goto out_arguments;
   r = guestfs_command (g, arguments);
-  free_strings (arguments);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+  free_strings (arguments);
+ out_arguments:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_command_lines (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   char **arguments;
   size_t i = 0;
@@ -6099,21 +6669,26 @@ run_command_lines (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   arguments = parse_string_list (argv[i++]);
-  if (arguments == NULL) return -1;
+  if (arguments == NULL) goto out_arguments;
   r = guestfs_command_lines (g, arguments);
-  free_strings (arguments);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free_strings (arguments);
+ out_arguments:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_stat (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   struct guestfs_stat *r;
   char *path;
   size_t i = 0;
@@ -6121,21 +6696,26 @@ run_stat (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_stat (g, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_stat (r);
   guestfs_free_stat (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lstat (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   struct guestfs_stat *r;
   char *path;
   size_t i = 0;
@@ -6143,21 +6723,26 @@ run_lstat (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_lstat (g, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_stat (r);
   guestfs_free_stat (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_statvfs (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   struct guestfs_statvfs *r;
   char *path;
   size_t i = 0;
@@ -6165,21 +6750,26 @@ run_statvfs (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_statvfs (g, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_statvfs (r);
   guestfs_free_statvfs (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_tune2fs_l (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *device;
   size_t i = 0;
@@ -6187,19 +6777,23 @@ run_tune2fs_l (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_tune2fs_l (g, device);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_table (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_blockdev_setro (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -6207,16 +6801,21 @@ run_blockdev_setro (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_blockdev_setro (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_blockdev_setrw (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -6224,16 +6823,21 @@ run_blockdev_setrw (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_blockdev_setrw (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_blockdev_getro (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -6241,18 +6845,22 @@ run_blockdev_getro (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_blockdev_getro (g, device);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_blockdev_getss (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -6260,18 +6868,22 @@ run_blockdev_getss (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_blockdev_getss (g, device);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_blockdev_getbsz (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -6279,18 +6891,22 @@ run_blockdev_getbsz (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_blockdev_getbsz (g, device);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_blockdev_setbsz (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   int blocksize;
@@ -6299,7 +6915,7 @@ run_blockdev_setbsz (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   {
@@ -6311,23 +6927,29 @@ run_blockdev_setbsz (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "blocksize", "xstrtoll", xerr);
-      return -1;
+      goto out_blocksize;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "blocksize");
-      return -1;
+      goto out_blocksize;
     }
     /* The check above should ensure this assignment does not overflow. */
     blocksize = r;
   }
   r = guestfs_blockdev_setbsz (g, device, blocksize);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_blocksize:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_blockdev_getsz (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int64_t r;
   const char *device;
   size_t i = 0;
@@ -6335,18 +6957,22 @@ run_blockdev_getsz (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_blockdev_getsz (g, device);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%" PRIi64 "\n", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_blockdev_getsize64 (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int64_t r;
   const char *device;
   size_t i = 0;
@@ -6354,18 +6980,22 @@ run_blockdev_getsize64 (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_blockdev_getsize64 (g, device);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%" PRIi64 "\n", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_blockdev_flushbufs (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -6373,16 +7003,21 @@ run_blockdev_flushbufs (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_blockdev_flushbufs (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_blockdev_rereadpt (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -6390,16 +7025,21 @@ run_blockdev_rereadpt (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_blockdev_rereadpt (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_upload (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *filename;
   char *remotefilename;
@@ -6408,21 +7048,28 @@ run_upload (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   filename = file_in (argv[i++]);
-  if (filename == NULL) return -1;
+  if (filename == NULL) goto out_filename;
   remotefilename = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (remotefilename == NULL) return -1;
+  if (remotefilename == NULL) goto out_remotefilename;
   r = guestfs_upload (g, filename, remotefilename);
-  free_file_in (filename);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (remotefilename);
-  return r;
+ out_remotefilename:
+  free_file_in (filename);
+ out_filename:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_download (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *remotefilename;
   char *filename;
@@ -6431,21 +7078,28 @@ run_download (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   remotefilename = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (remotefilename == NULL) return -1;
+  if (remotefilename == NULL) goto out_remotefilename;
   filename = file_out (argv[i++]);
-  if (filename == NULL) return -1;
+  if (filename == NULL) goto out_filename;
   r = guestfs_download (g, remotefilename, filename);
-  free (remotefilename);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (filename);
-  return r;
+ out_filename:
+  free (remotefilename);
+ out_remotefilename:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_checksum (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *csumtype;
   char *path;
@@ -6454,22 +7108,27 @@ run_checksum (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   csumtype = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_checksum (g, csumtype, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_tar_in (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *tarfile;
   char *directory;
@@ -6478,21 +7137,28 @@ run_tar_in (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   tarfile = file_in (argv[i++]);
-  if (tarfile == NULL) return -1;
+  if (tarfile == NULL) goto out_tarfile;
   directory = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (directory == NULL) return -1;
+  if (directory == NULL) goto out_directory;
   r = guestfs_tar_in (g, tarfile, directory);
-  free_file_in (tarfile);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (directory);
-  return r;
+ out_directory:
+  free_file_in (tarfile);
+ out_tarfile:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_tar_out (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *directory;
   char *tarfile;
@@ -6501,19 +7167,25 @@ run_tar_out (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   directory = argv[i++];
   tarfile = file_out (argv[i++]);
-  if (tarfile == NULL) return -1;
+  if (tarfile == NULL) goto out_tarfile;
   r = guestfs_tar_out (g, directory, tarfile);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (tarfile);
-  return r;
+ out_tarfile:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_tgz_in (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *tarball;
   char *directory;
@@ -6522,21 +7194,28 @@ run_tgz_in (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   tarball = file_in (argv[i++]);
-  if (tarball == NULL) return -1;
+  if (tarball == NULL) goto out_tarball;
   directory = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (directory == NULL) return -1;
+  if (directory == NULL) goto out_directory;
   r = guestfs_tgz_in (g, tarball, directory);
-  free_file_in (tarball);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (directory);
-  return r;
+ out_directory:
+  free_file_in (tarball);
+ out_tarball:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_tgz_out (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *directory;
   char *tarball;
@@ -6545,21 +7224,28 @@ run_tgz_out (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   directory = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (directory == NULL) return -1;
+  if (directory == NULL) goto out_directory;
   tarball = file_out (argv[i++]);
-  if (tarball == NULL) return -1;
+  if (tarball == NULL) goto out_tarball;
   r = guestfs_tgz_out (g, directory, tarball);
-  free (directory);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (tarball);
-  return r;
+ out_tarball:
+  free (directory);
+ out_directory:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mount_ro (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   const char *mountpoint;
@@ -6568,17 +7254,22 @@ run_mount_ro (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   mountpoint = argv[i++];
   r = guestfs_mount_ro (g, device, mountpoint);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mount_options (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *options;
   const char *device;
@@ -6588,18 +7279,23 @@ run_mount_options (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   options = argv[i++];
   device = argv[i++];
   mountpoint = argv[i++];
   r = guestfs_mount_options (g, options, device, mountpoint);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mount_vfs (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *options;
   const char *vfstype;
@@ -6610,19 +7306,24 @@ run_mount_vfs (const char *cmd, size_t argc, char *argv[])
   if (argc != 4) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   options = argv[i++];
   vfstype = argv[i++];
   device = argv[i++];
   mountpoint = argv[i++];
   r = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_debug (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *subcmd;
   char **extraargs;
@@ -6631,22 +7332,27 @@ run_debug (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   subcmd = argv[i++];
   extraargs = parse_string_list (argv[i++]);
-  if (extraargs == NULL) return -1;
+  if (extraargs == NULL) goto out_extraargs;
   r = guestfs_debug (g, subcmd, extraargs);
-  free_strings (extraargs);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+  free_strings (extraargs);
+ out_extraargs:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lvremove (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -6654,16 +7360,21 @@ run_lvremove (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_lvremove (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_vgremove (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *vgname;
   size_t i = 0;
@@ -6671,16 +7382,21 @@ run_vgremove (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   vgname = argv[i++];
   r = guestfs_vgremove (g, vgname);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_pvremove (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -6688,16 +7404,21 @@ run_pvremove (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_pvremove (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_set_e2label (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   const char *label;
@@ -6706,17 +7427,22 @@ run_set_e2label (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   label = argv[i++];
   r = guestfs_set_e2label (g, device, label);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_e2label (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *device;
   size_t i = 0;
@@ -6724,19 +7450,23 @@ run_get_e2label (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_get_e2label (g, device);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_set_e2uuid (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   const char *uuid;
@@ -6745,17 +7475,22 @@ run_set_e2uuid (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   uuid = argv[i++];
   r = guestfs_set_e2uuid (g, device, uuid);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_e2uuid (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *device;
   size_t i = 0;
@@ -6763,19 +7498,23 @@ run_get_e2uuid (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_get_e2uuid (g, device);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_fsck (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *fstype;
   const char *device;
@@ -6784,19 +7523,23 @@ run_fsck (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   fstype = argv[i++];
   device = argv[i++];
   r = guestfs_fsck (g, fstype, device);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%s%x\n", r != 0 ? "0x" : "", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_zero (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -6804,16 +7547,21 @@ run_zero (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_zero (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_grub_install (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *root;
   const char *device;
@@ -6822,19 +7570,25 @@ run_grub_install (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   root = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (root == NULL) return -1;
+  if (root == NULL) goto out_root;
   device = argv[i++];
   r = guestfs_grub_install (g, root, device);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (root);
-  return r;
+ out_root:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_cp (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *src;
   char *dest;
@@ -6843,21 +7597,28 @@ run_cp (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   src = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (src == NULL) return -1;
+  if (src == NULL) goto out_src;
   dest = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (dest == NULL) return -1;
+  if (dest == NULL) goto out_dest;
   r = guestfs_cp (g, src, dest);
-  free (src);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (dest);
-  return r;
+ out_dest:
+  free (src);
+ out_src:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_cp_a (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *src;
   char *dest;
@@ -6866,21 +7627,28 @@ run_cp_a (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   src = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (src == NULL) return -1;
+  if (src == NULL) goto out_src;
   dest = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (dest == NULL) return -1;
+  if (dest == NULL) goto out_dest;
   r = guestfs_cp_a (g, src, dest);
-  free (src);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (dest);
-  return r;
+ out_dest:
+  free (src);
+ out_src:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mv (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *src;
   char *dest;
@@ -6889,21 +7657,28 @@ run_mv (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   src = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (src == NULL) return -1;
+  if (src == NULL) goto out_src;
   dest = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (dest == NULL) return -1;
+  if (dest == NULL) goto out_dest;
   r = guestfs_mv (g, src, dest);
-  free (src);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (dest);
-  return r;
+ out_dest:
+  free (src);
+ out_src:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_drop_caches (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int whattodrop;
   size_t i = 0;
@@ -6911,7 +7686,7 @@ run_drop_caches (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -6922,54 +7697,69 @@ run_drop_caches (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "whattodrop", "xstrtoll", xerr);
-      return -1;
+      goto out_whattodrop;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "whattodrop");
-      return -1;
+      goto out_whattodrop;
     }
     /* The check above should ensure this assignment does not overflow. */
     whattodrop = r;
   }
   r = guestfs_drop_caches (g, whattodrop);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_whattodrop:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_dmesg (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_dmesg (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_ping_daemon (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_ping_daemon (g);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_equal (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *file1;
   char *file2;
@@ -6978,23 +7768,29 @@ run_equal (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   file1 = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (file1 == NULL) return -1;
+  if (file1 == NULL) goto out_file1;
   file2 = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (file2 == NULL) return -1;
+  if (file2 == NULL) goto out_file2;
   r = guestfs_equal (g, file1, file2);
-  free (file1);
-  free (file2);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+  free (file2);
+ out_file2:
+  free (file1);
+ out_file1:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_strings (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   char *path;
   size_t i = 0;
@@ -7002,21 +7798,26 @@ run_strings (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_strings (g, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_strings_e (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *encoding;
   char *path;
@@ -7025,22 +7826,27 @@ run_strings_e (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   encoding = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_strings_e (g, encoding, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_hexdump (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   char *path;
   size_t i = 0;
@@ -7048,21 +7854,26 @@ run_hexdump (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_hexdump (g, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_zerofree (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -7070,16 +7881,21 @@ run_zerofree (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_zerofree (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_pvresize (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -7087,16 +7903,21 @@ run_pvresize (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_pvresize (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_sfdisk_N (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   int partnum;
@@ -7109,7 +7930,7 @@ run_sfdisk_N (const char *cmd, size_t argc, char *argv[])
   if (argc != 6) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 6);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   {
@@ -7121,12 +7942,12 @@ run_sfdisk_N (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "partnum", "xstrtoll", xerr);
-      return -1;
+      goto out_partnum;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "partnum");
-      return -1;
+      goto out_partnum;
     }
     /* The check above should ensure this assignment does not overflow. */
     partnum = r;
@@ -7140,12 +7961,12 @@ run_sfdisk_N (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "cyls", "xstrtoll", xerr);
-      return -1;
+      goto out_cyls;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "cyls");
-      return -1;
+      goto out_cyls;
     }
     /* The check above should ensure this assignment does not overflow. */
     cyls = r;
@@ -7159,12 +7980,12 @@ run_sfdisk_N (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "heads", "xstrtoll", xerr);
-      return -1;
+      goto out_heads;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "heads");
-      return -1;
+      goto out_heads;
     }
     /* The check above should ensure this assignment does not overflow. */
     heads = r;
@@ -7178,24 +7999,33 @@ run_sfdisk_N (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "sectors", "xstrtoll", xerr);
-      return -1;
+      goto out_sectors;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "sectors");
-      return -1;
+      goto out_sectors;
     }
     /* The check above should ensure this assignment does not overflow. */
     sectors = r;
   }
   line = argv[i++];
   r = guestfs_sfdisk_N (g, device, partnum, cyls, heads, sectors, line);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_sectors:
+ out_heads:
+ out_cyls:
+ out_partnum:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_sfdisk_l (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *device;
   size_t i = 0;
@@ -7203,19 +8033,23 @@ run_sfdisk_l (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_sfdisk_l (g, device);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_sfdisk_kernel_geometry (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *device;
   size_t i = 0;
@@ -7223,19 +8057,23 @@ run_sfdisk_kernel_geometry (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_sfdisk_kernel_geometry (g, device);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_sfdisk_disk_geometry (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *device;
   size_t i = 0;
@@ -7243,19 +8081,23 @@ run_sfdisk_disk_geometry (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_sfdisk_disk_geometry (g, device);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_vg_activate_all (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int activate;
   size_t i = 0;
@@ -7263,16 +8105,21 @@ run_vg_activate_all (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   activate = is_true (argv[i++]) ? 1 : 0;
   r = guestfs_vg_activate_all (g, activate);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_vg_activate (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int activate;
   char **volgroups;
@@ -7281,19 +8128,25 @@ run_vg_activate (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   activate = is_true (argv[i++]) ? 1 : 0;
   volgroups = parse_string_list (argv[i++]);
-  if (volgroups == NULL) return -1;
+  if (volgroups == NULL) goto out_volgroups;
   r = guestfs_vg_activate (g, activate, volgroups);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free_strings (volgroups);
-  return r;
+ out_volgroups:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lvresize (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   int mbytes;
@@ -7302,7 +8155,7 @@ run_lvresize (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   {
@@ -7314,23 +8167,29 @@ run_lvresize (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "mbytes", "xstrtoll", xerr);
-      return -1;
+      goto out_mbytes;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "mbytes");
-      return -1;
+      goto out_mbytes;
     }
     /* The check above should ensure this assignment does not overflow. */
     mbytes = r;
   }
   r = guestfs_lvresize (g, device, mbytes);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_mbytes:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_resize2fs (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -7338,16 +8197,21 @@ run_resize2fs (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_resize2fs (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_find (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   char *directory;
   size_t i = 0;
@@ -7355,21 +8219,26 @@ run_find (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   directory = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (directory == NULL) return -1;
+  if (directory == NULL) goto out_directory;
   r = guestfs_find (g, directory);
-  free (directory);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (directory);
+ out_directory:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_e2fsck_f (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -7377,16 +8246,21 @@ run_e2fsck_f (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_e2fsck_f (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_sleep (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int secs;
   size_t i = 0;
@@ -7394,7 +8268,7 @@ run_sleep (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -7405,23 +8279,29 @@ run_sleep (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "secs", "xstrtoll", xerr);
-      return -1;
+      goto out_secs;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "secs");
-      return -1;
+      goto out_secs;
     }
     /* The check above should ensure this assignment does not overflow. */
     secs = r;
   }
   r = guestfs_sleep (g, secs);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_secs:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_ntfs_3g_probe (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int rw;
   const char *device;
@@ -7430,19 +8310,23 @@ run_ntfs_3g_probe (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   rw = is_true (argv[i++]) ? 1 : 0;
   device = argv[i++];
   r = guestfs_ntfs_3g_probe (g, rw, device);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_sh (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *command;
   size_t i = 0;
@@ -7450,19 +8334,23 @@ run_sh (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   command = argv[i++];
   r = guestfs_sh (g, command);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_sh_lines (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *command;
   size_t i = 0;
@@ -7470,19 +8358,23 @@ run_sh_lines (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   command = argv[i++];
   r = guestfs_sh_lines (g, command);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_glob_expand (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   char *pattern;
   size_t i = 0;
@@ -7490,21 +8382,26 @@ run_glob_expand (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   pattern = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (pattern == NULL) return -1;
+  if (pattern == NULL) goto out_pattern;
   r = guestfs_glob_expand (g, pattern);
-  free (pattern);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (pattern);
+ out_pattern:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_scrub_device (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -7512,16 +8409,21 @@ run_scrub_device (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_scrub_device (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_scrub_file (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *file;
   size_t i = 0;
@@ -7529,18 +8431,24 @@ run_scrub_file (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   file = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (file == NULL) return -1;
+  if (file == NULL) goto out_file;
   r = guestfs_scrub_file (g, file);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (file);
-  return r;
+ out_file:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_scrub_freespace (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *dir;
   size_t i = 0;
@@ -7548,18 +8456,24 @@ run_scrub_freespace (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   dir = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (dir == NULL) return -1;
+  if (dir == NULL) goto out_dir;
   r = guestfs_scrub_freespace (g, dir);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (dir);
-  return r;
+ out_dir:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mkdtemp (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   char *tmpl;
   size_t i = 0;
@@ -7567,21 +8481,26 @@ run_mkdtemp (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   tmpl = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (tmpl == NULL) return -1;
+  if (tmpl == NULL) goto out_tmpl;
   r = guestfs_mkdtemp (g, tmpl);
-  free (tmpl);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+  free (tmpl);
+ out_tmpl:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_wc_l (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -7589,20 +8508,25 @@ run_wc_l (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_wc_l (g, path);
-  free (path);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_wc_w (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -7610,20 +8534,25 @@ run_wc_w (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_wc_w (g, path);
-  free (path);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_wc_c (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -7631,20 +8560,25 @@ run_wc_c (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_wc_c (g, path);
-  free (path);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_head (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   char *path;
   size_t i = 0;
@@ -7652,21 +8586,26 @@ run_head (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_head (g, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_head_n (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   int nrlines;
   char *path;
@@ -7675,7 +8614,7 @@ run_head_n (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -7686,29 +8625,35 @@ run_head_n (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "nrlines", "xstrtoll", xerr);
-      return -1;
+      goto out_nrlines;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "nrlines");
-      return -1;
+      goto out_nrlines;
     }
     /* The check above should ensure this assignment does not overflow. */
     nrlines = r;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_head_n (g, nrlines, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_nrlines:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_tail (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   char *path;
   size_t i = 0;
@@ -7716,21 +8661,26 @@ run_tail (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_tail (g, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_tail_n (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   int nrlines;
   char *path;
@@ -7739,7 +8689,7 @@ run_tail_n (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -7750,63 +8700,77 @@ run_tail_n (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "nrlines", "xstrtoll", xerr);
-      return -1;
+      goto out_nrlines;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "nrlines");
-      return -1;
+      goto out_nrlines;
     }
     /* The check above should ensure this assignment does not overflow. */
     nrlines = r;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_tail_n (g, nrlines, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_nrlines:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_df (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_df (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_df_h (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_df_h (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_du (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int64_t r;
   char *path;
   size_t i = 0;
@@ -7814,20 +8778,25 @@ run_du (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_du (g, path);
-  free (path);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%" PRIi64 "\n", r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_initrd_list (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   char *path;
   size_t i = 0;
@@ -7835,21 +8804,26 @@ run_initrd_list (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_initrd_list (g, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mount_loop (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *file;
   char *mountpoint;
@@ -7858,21 +8832,28 @@ run_mount_loop (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   file = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (file == NULL) return -1;
+  if (file == NULL) goto out_file;
   mountpoint = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (mountpoint == NULL) return -1;
+  if (mountpoint == NULL) goto out_mountpoint;
   r = guestfs_mount_loop (g, file, mountpoint);
-  free (file);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (mountpoint);
-  return r;
+ out_mountpoint:
+  free (file);
+ out_file:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mkswap (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -7880,16 +8861,21 @@ run_mkswap (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_mkswap (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mkswap_L (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *label;
   const char *device;
@@ -7898,17 +8884,22 @@ run_mkswap_L (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   label = argv[i++];
   device = argv[i++];
   r = guestfs_mkswap_L (g, label, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mkswap_U (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *uuid;
   const char *device;
@@ -7917,17 +8908,22 @@ run_mkswap_U (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   uuid = argv[i++];
   device = argv[i++];
   r = guestfs_mkswap_U (g, uuid, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mknod (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int mode;
   int devmajor;
@@ -7938,7 +8934,7 @@ run_mknod (const char *cmd, size_t argc, char *argv[])
   if (argc != 4) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -7949,12 +8945,12 @@ run_mknod (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "mode", "xstrtoll", xerr);
-      return -1;
+      goto out_mode;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "mode");
-      return -1;
+      goto out_mode;
     }
     /* The check above should ensure this assignment does not overflow. */
     mode = r;
@@ -7968,12 +8964,12 @@ run_mknod (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "devmajor", "xstrtoll", xerr);
-      return -1;
+      goto out_devmajor;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "devmajor");
-      return -1;
+      goto out_devmajor;
     }
     /* The check above should ensure this assignment does not overflow. */
     devmajor = r;
@@ -7987,26 +8983,35 @@ run_mknod (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "devminor", "xstrtoll", xerr);
-      return -1;
+      goto out_devminor;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "devminor");
-      return -1;
+      goto out_devminor;
     }
     /* The check above should ensure this assignment does not overflow. */
     devminor = r;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_mknod (g, mode, devmajor, devminor, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_devminor:
+ out_devmajor:
+ out_mode:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mkfifo (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int mode;
   char *path;
@@ -8015,7 +9020,7 @@ run_mkfifo (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -8026,26 +9031,33 @@ run_mkfifo (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "mode", "xstrtoll", xerr);
-      return -1;
+      goto out_mode;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "mode");
-      return -1;
+      goto out_mode;
     }
     /* The check above should ensure this assignment does not overflow. */
     mode = r;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_mkfifo (g, mode, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_mode:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mknod_b (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int mode;
   int devmajor;
@@ -8056,7 +9068,7 @@ run_mknod_b (const char *cmd, size_t argc, char *argv[])
   if (argc != 4) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -8067,12 +9079,12 @@ run_mknod_b (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "mode", "xstrtoll", xerr);
-      return -1;
+      goto out_mode;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "mode");
-      return -1;
+      goto out_mode;
     }
     /* The check above should ensure this assignment does not overflow. */
     mode = r;
@@ -8086,12 +9098,12 @@ run_mknod_b (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "devmajor", "xstrtoll", xerr);
-      return -1;
+      goto out_devmajor;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "devmajor");
-      return -1;
+      goto out_devmajor;
     }
     /* The check above should ensure this assignment does not overflow. */
     devmajor = r;
@@ -8105,26 +9117,35 @@ run_mknod_b (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "devminor", "xstrtoll", xerr);
-      return -1;
+      goto out_devminor;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "devminor");
-      return -1;
+      goto out_devminor;
     }
     /* The check above should ensure this assignment does not overflow. */
     devminor = r;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_mknod_b (g, mode, devmajor, devminor, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_devminor:
+ out_devmajor:
+ out_mode:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mknod_c (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int mode;
   int devmajor;
@@ -8135,7 +9156,7 @@ run_mknod_c (const char *cmd, size_t argc, char *argv[])
   if (argc != 4) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -8146,12 +9167,12 @@ run_mknod_c (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "mode", "xstrtoll", xerr);
-      return -1;
+      goto out_mode;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "mode");
-      return -1;
+      goto out_mode;
     }
     /* The check above should ensure this assignment does not overflow. */
     mode = r;
@@ -8165,12 +9186,12 @@ run_mknod_c (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "devmajor", "xstrtoll", xerr);
-      return -1;
+      goto out_devmajor;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "devmajor");
-      return -1;
+      goto out_devmajor;
     }
     /* The check above should ensure this assignment does not overflow. */
     devmajor = r;
@@ -8184,26 +9205,35 @@ run_mknod_c (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "devminor", "xstrtoll", xerr);
-      return -1;
+      goto out_devminor;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "devminor");
-      return -1;
+      goto out_devminor;
     }
     /* The check above should ensure this assignment does not overflow. */
     devminor = r;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_mknod_c (g, mode, devmajor, devminor, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_devminor:
+ out_devmajor:
+ out_mode:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_umask (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int mask;
   size_t i = 0;
@@ -8211,7 +9241,7 @@ run_umask (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -8222,25 +9252,30 @@ run_umask (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "mask", "xstrtoll", xerr);
-      return -1;
+      goto out_mask;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "mask");
-      return -1;
+      goto out_mask;
     }
     /* The check above should ensure this assignment does not overflow. */
     mask = r;
   }
   r = guestfs_umask (g, mask);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%s%o\n", r != 0 ? "0" : "", r);
-  return 0;
+ out:
+ out_mask:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_readdir (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   struct guestfs_dirent_list *r;
   char *dir;
   size_t i = 0;
@@ -8248,21 +9283,26 @@ run_readdir (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   dir = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (dir == NULL) return -1;
+  if (dir == NULL) goto out_dir;
   r = guestfs_readdir (g, dir);
-  free (dir);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_dirent_list (r);
   guestfs_free_dirent_list (r);
-  return 0;
+ out:
+  free (dir);
+ out_dir:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_sfdiskM (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   char **lines;
@@ -8271,19 +9311,25 @@ run_sfdiskM (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   lines = parse_string_list (argv[i++]);
-  if (lines == NULL) return -1;
+  if (lines == NULL) goto out_lines;
   r = guestfs_sfdiskM (g, device, lines);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free_strings (lines);
-  return r;
+ out_lines:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_zfile (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *meth;
   char *path;
@@ -8292,22 +9338,27 @@ run_zfile (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   meth = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_zfile (g, meth, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_getxattrs (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   struct guestfs_xattr_list *r;
   char *path;
   size_t i = 0;
@@ -8315,21 +9366,26 @@ run_getxattrs (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_getxattrs (g, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_xattr_list (r);
   guestfs_free_xattr_list (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lgetxattrs (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   struct guestfs_xattr_list *r;
   char *path;
   size_t i = 0;
@@ -8337,21 +9393,26 @@ run_lgetxattrs (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_lgetxattrs (g, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_xattr_list (r);
   guestfs_free_xattr_list (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_setxattr (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *xattr;
   const char *val;
@@ -8362,7 +9423,7 @@ run_setxattr (const char *cmd, size_t argc, char *argv[])
   if (argc != 4) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   xattr = argv[i++];
   val = argv[i++];
@@ -8375,26 +9436,33 @@ run_setxattr (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "vallen", "xstrtoll", xerr);
-      return -1;
+      goto out_vallen;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "vallen");
-      return -1;
+      goto out_vallen;
     }
     /* The check above should ensure this assignment does not overflow. */
     vallen = r;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_setxattr (g, xattr, val, vallen, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_vallen:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lsetxattr (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *xattr;
   const char *val;
@@ -8405,7 +9473,7 @@ run_lsetxattr (const char *cmd, size_t argc, char *argv[])
   if (argc != 4) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   xattr = argv[i++];
   val = argv[i++];
@@ -8418,26 +9486,33 @@ run_lsetxattr (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "vallen", "xstrtoll", xerr);
-      return -1;
+      goto out_vallen;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "vallen");
-      return -1;
+      goto out_vallen;
     }
     /* The check above should ensure this assignment does not overflow. */
     vallen = r;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_lsetxattr (g, xattr, val, vallen, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_vallen:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_removexattr (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *xattr;
   char *path;
@@ -8446,19 +9521,25 @@ run_removexattr (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   xattr = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_removexattr (g, xattr, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lremovexattr (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *xattr;
   char *path;
@@ -8467,36 +9548,46 @@ run_lremovexattr (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   xattr = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_lremovexattr (g, xattr, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mountpoints (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_mountpoints (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_table (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mkmountpoint (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *exemptpath;
   size_t i = 0;
@@ -8504,16 +9595,21 @@ run_mkmountpoint (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   exemptpath = argv[i++];
   r = guestfs_mkmountpoint (g, exemptpath);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_rmmountpoint (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *exemptpath;
   size_t i = 0;
@@ -8521,16 +9617,21 @@ run_rmmountpoint (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   exemptpath = argv[i++];
   r = guestfs_rmmountpoint (g, exemptpath);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_read_file (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   size_t size;
   char *path;
@@ -8539,25 +9640,30 @@ run_read_file (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_read_file (g, path, &size);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
   if (full_write (1, r, size) != size) {
     perror ("write");
     free (r);
-    return -1;
+    goto out;
   }
+  ret = 0;
   free (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_grep (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *regex;
   char *path;
@@ -8566,22 +9672,27 @@ run_grep (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   regex = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_grep (g, regex, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_egrep (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *regex;
   char *path;
@@ -8590,22 +9701,27 @@ run_egrep (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   regex = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_egrep (g, regex, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_fgrep (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *pattern;
   char *path;
@@ -8614,22 +9730,27 @@ run_fgrep (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   pattern = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_fgrep (g, pattern, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_grepi (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *regex;
   char *path;
@@ -8638,22 +9759,27 @@ run_grepi (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   regex = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_grepi (g, regex, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_egrepi (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *regex;
   char *path;
@@ -8662,22 +9788,27 @@ run_egrepi (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   regex = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_egrepi (g, regex, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_fgrepi (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *pattern;
   char *path;
@@ -8686,22 +9817,27 @@ run_fgrepi (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   pattern = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_fgrepi (g, pattern, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_zgrep (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *regex;
   char *path;
@@ -8710,22 +9846,27 @@ run_zgrep (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   regex = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_zgrep (g, regex, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_zegrep (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *regex;
   char *path;
@@ -8734,22 +9875,27 @@ run_zegrep (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   regex = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_zegrep (g, regex, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_zfgrep (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *pattern;
   char *path;
@@ -8758,22 +9904,27 @@ run_zfgrep (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   pattern = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_zfgrep (g, pattern, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_zgrepi (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *regex;
   char *path;
@@ -8782,22 +9933,27 @@ run_zgrepi (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   regex = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_zgrepi (g, regex, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_zegrepi (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *regex;
   char *path;
@@ -8806,22 +9962,27 @@ run_zegrepi (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   regex = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_zegrepi (g, regex, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_zfgrepi (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *pattern;
   char *path;
@@ -8830,22 +9991,27 @@ run_zfgrepi (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   pattern = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_zfgrepi (g, pattern, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_realpath (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   char *path;
   size_t i = 0;
@@ -8853,21 +10019,26 @@ run_realpath (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_realpath (g, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_ln (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *target;
   char *linkname;
@@ -8876,19 +10047,25 @@ run_ln (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   target = argv[i++];
   linkname = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (linkname == NULL) return -1;
+  if (linkname == NULL) goto out_linkname;
   r = guestfs_ln (g, target, linkname);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (linkname);
-  return r;
+ out_linkname:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_ln_f (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *target;
   char *linkname;
@@ -8897,19 +10074,25 @@ run_ln_f (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   target = argv[i++];
   linkname = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (linkname == NULL) return -1;
+  if (linkname == NULL) goto out_linkname;
   r = guestfs_ln_f (g, target, linkname);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (linkname);
-  return r;
+ out_linkname:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_ln_s (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *target;
   char *linkname;
@@ -8918,19 +10101,25 @@ run_ln_s (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   target = argv[i++];
   linkname = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (linkname == NULL) return -1;
+  if (linkname == NULL) goto out_linkname;
   r = guestfs_ln_s (g, target, linkname);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (linkname);
-  return r;
+ out_linkname:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_ln_sf (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *target;
   char *linkname;
@@ -8939,19 +10128,25 @@ run_ln_sf (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   target = argv[i++];
   linkname = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (linkname == NULL) return -1;
+  if (linkname == NULL) goto out_linkname;
   r = guestfs_ln_sf (g, target, linkname);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (linkname);
-  return r;
+ out_linkname:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_readlink (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   char *path;
   size_t i = 0;
@@ -8959,21 +10154,26 @@ run_readlink (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_readlink (g, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_fallocate (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   int len;
@@ -8982,10 +10182,10 @@ run_fallocate (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   {
     strtol_error xerr;
     long long r;
@@ -8995,24 +10195,31 @@ run_fallocate (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "len", "xstrtoll", xerr);
-      return -1;
+      goto out_len;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "len");
-      return -1;
+      goto out_len;
     }
     /* The check above should ensure this assignment does not overflow. */
     len = r;
   }
   r = guestfs_fallocate (g, path, len);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_len:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_swapon_device (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -9020,16 +10227,21 @@ run_swapon_device (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_swapon_device (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_swapoff_device (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -9037,16 +10249,21 @@ run_swapoff_device (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_swapoff_device (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_swapon_file (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *file;
   size_t i = 0;
@@ -9054,18 +10271,24 @@ run_swapon_file (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   file = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (file == NULL) return -1;
+  if (file == NULL) goto out_file;
   r = guestfs_swapon_file (g, file);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (file);
-  return r;
+ out_file:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_swapoff_file (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *file;
   size_t i = 0;
@@ -9073,18 +10296,24 @@ run_swapoff_file (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   file = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (file == NULL) return -1;
+  if (file == NULL) goto out_file;
   r = guestfs_swapoff_file (g, file);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (file);
-  return r;
+ out_file:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_swapon_label (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *label;
   size_t i = 0;
@@ -9092,16 +10321,21 @@ run_swapon_label (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   label = argv[i++];
   r = guestfs_swapon_label (g, label);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_swapoff_label (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *label;
   size_t i = 0;
@@ -9109,16 +10343,21 @@ run_swapoff_label (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   label = argv[i++];
   r = guestfs_swapoff_label (g, label);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_swapon_uuid (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *uuid;
   size_t i = 0;
@@ -9126,16 +10365,21 @@ run_swapon_uuid (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   uuid = argv[i++];
   r = guestfs_swapon_uuid (g, uuid);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_swapoff_uuid (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *uuid;
   size_t i = 0;
@@ -9143,16 +10387,21 @@ run_swapoff_uuid (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   uuid = argv[i++];
   r = guestfs_swapoff_uuid (g, uuid);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mkswap_file (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -9160,18 +10409,24 @@ run_mkswap_file (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_mkswap_file (g, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inotify_init (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int maxevents;
   size_t i = 0;
@@ -9179,7 +10434,7 @@ run_inotify_init (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -9190,23 +10445,29 @@ run_inotify_init (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "maxevents", "xstrtoll", xerr);
-      return -1;
+      goto out_maxevents;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "maxevents");
-      return -1;
+      goto out_maxevents;
     }
     /* The check above should ensure this assignment does not overflow. */
     maxevents = r;
   }
   r = guestfs_inotify_init (g, maxevents);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_maxevents:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inotify_add_watch (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int64_t r;
   char *path;
   int mask;
@@ -9215,10 +10476,10 @@ run_inotify_add_watch (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   {
     strtol_error xerr;
     long long r;
@@ -9228,26 +10489,32 @@ run_inotify_add_watch (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "mask", "xstrtoll", xerr);
-      return -1;
+      goto out_mask;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "mask");
-      return -1;
+      goto out_mask;
     }
     /* The check above should ensure this assignment does not overflow. */
     mask = r;
   }
   r = guestfs_inotify_add_watch (g, path, mask);
-  free (path);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%" PRIi64 "\n", r);
-  return 0;
+ out:
+ out_mask:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inotify_rm_watch (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int wd;
   size_t i = 0;
@@ -9255,7 +10522,7 @@ run_inotify_rm_watch (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -9266,71 +10533,90 @@ run_inotify_rm_watch (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "wd", "xstrtoll", xerr);
-      return -1;
+      goto out_wd;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "wd");
-      return -1;
+      goto out_wd;
     }
     /* The check above should ensure this assignment does not overflow. */
     wd = r;
   }
   r = guestfs_inotify_rm_watch (g, wd);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_wd:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inotify_read (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   struct guestfs_inotify_event_list *r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_inotify_read (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_inotify_event_list (r);
   guestfs_free_inotify_event_list (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inotify_files (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_inotify_files (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_inotify_close (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_inotify_close (g);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_setcon (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *context;
   size_t i = 0;
@@ -9338,33 +10624,42 @@ run_setcon (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   context = argv[i++];
   r = guestfs_setcon (g, context);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_getcon (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_getcon (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mkfs_b (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *fstype;
   int blocksize;
@@ -9374,7 +10669,7 @@ run_mkfs_b (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   fstype = argv[i++];
   {
@@ -9386,24 +10681,30 @@ run_mkfs_b (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "blocksize", "xstrtoll", xerr);
-      return -1;
+      goto out_blocksize;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "blocksize");
-      return -1;
+      goto out_blocksize;
     }
     /* The check above should ensure this assignment does not overflow. */
     blocksize = r;
   }
   device = argv[i++];
   r = guestfs_mkfs_b (g, fstype, blocksize, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_blocksize:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mke2journal (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int blocksize;
   const char *device;
@@ -9412,7 +10713,7 @@ run_mke2journal (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -9423,24 +10724,30 @@ run_mke2journal (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "blocksize", "xstrtoll", xerr);
-      return -1;
+      goto out_blocksize;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "blocksize");
-      return -1;
+      goto out_blocksize;
     }
     /* The check above should ensure this assignment does not overflow. */
     blocksize = r;
   }
   device = argv[i++];
   r = guestfs_mke2journal (g, blocksize, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_blocksize:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mke2journal_L (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int blocksize;
   const char *label;
@@ -9450,7 +10757,7 @@ run_mke2journal_L (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -9461,12 +10768,12 @@ run_mke2journal_L (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "blocksize", "xstrtoll", xerr);
-      return -1;
+      goto out_blocksize;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "blocksize");
-      return -1;
+      goto out_blocksize;
     }
     /* The check above should ensure this assignment does not overflow. */
     blocksize = r;
@@ -9474,12 +10781,18 @@ run_mke2journal_L (const char *cmd, size_t argc, char *argv[])
   label = argv[i++];
   device = argv[i++];
   r = guestfs_mke2journal_L (g, blocksize, label, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_blocksize:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mke2journal_U (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int blocksize;
   const char *uuid;
@@ -9489,7 +10802,7 @@ run_mke2journal_U (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -9500,12 +10813,12 @@ run_mke2journal_U (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "blocksize", "xstrtoll", xerr);
-      return -1;
+      goto out_blocksize;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "blocksize");
-      return -1;
+      goto out_blocksize;
     }
     /* The check above should ensure this assignment does not overflow. */
     blocksize = r;
@@ -9513,12 +10826,18 @@ run_mke2journal_U (const char *cmd, size_t argc, char *argv[])
   uuid = argv[i++];
   device = argv[i++];
   r = guestfs_mke2journal_U (g, blocksize, uuid, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_blocksize:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mke2fs_J (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *fstype;
   int blocksize;
@@ -9529,7 +10848,7 @@ run_mke2fs_J (const char *cmd, size_t argc, char *argv[])
   if (argc != 4) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   fstype = argv[i++];
   {
@@ -9541,12 +10860,12 @@ run_mke2fs_J (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "blocksize", "xstrtoll", xerr);
-      return -1;
+      goto out_blocksize;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "blocksize");
-      return -1;
+      goto out_blocksize;
     }
     /* The check above should ensure this assignment does not overflow. */
     blocksize = r;
@@ -9554,12 +10873,18 @@ run_mke2fs_J (const char *cmd, size_t argc, char *argv[])
   device = argv[i++];
   journal = argv[i++];
   r = guestfs_mke2fs_J (g, fstype, blocksize, device, journal);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_blocksize:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mke2fs_JL (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *fstype;
   int blocksize;
@@ -9570,7 +10895,7 @@ run_mke2fs_JL (const char *cmd, size_t argc, char *argv[])
   if (argc != 4) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   fstype = argv[i++];
   {
@@ -9582,12 +10907,12 @@ run_mke2fs_JL (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "blocksize", "xstrtoll", xerr);
-      return -1;
+      goto out_blocksize;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "blocksize");
-      return -1;
+      goto out_blocksize;
     }
     /* The check above should ensure this assignment does not overflow. */
     blocksize = r;
@@ -9595,12 +10920,18 @@ run_mke2fs_JL (const char *cmd, size_t argc, char *argv[])
   device = argv[i++];
   label = argv[i++];
   r = guestfs_mke2fs_JL (g, fstype, blocksize, device, label);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_blocksize:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mke2fs_JU (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *fstype;
   int blocksize;
@@ -9611,7 +10942,7 @@ run_mke2fs_JU (const char *cmd, size_t argc, char *argv[])
   if (argc != 4) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   fstype = argv[i++];
   {
@@ -9623,12 +10954,12 @@ run_mke2fs_JU (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "blocksize", "xstrtoll", xerr);
-      return -1;
+      goto out_blocksize;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "blocksize");
-      return -1;
+      goto out_blocksize;
     }
     /* The check above should ensure this assignment does not overflow. */
     blocksize = r;
@@ -9636,12 +10967,18 @@ run_mke2fs_JU (const char *cmd, size_t argc, char *argv[])
   device = argv[i++];
   uuid = argv[i++];
   r = guestfs_mke2fs_JU (g, fstype, blocksize, device, uuid);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_blocksize:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_modprobe (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *modulename;
   size_t i = 0;
@@ -9649,16 +10986,21 @@ run_modprobe (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   modulename = argv[i++];
   r = guestfs_modprobe (g, modulename);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_echo_daemon (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   char **words;
   size_t i = 0;
@@ -9666,21 +11008,26 @@ run_echo_daemon (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   words = parse_string_list (argv[i++]);
-  if (words == NULL) return -1;
+  if (words == NULL) goto out_words;
   r = guestfs_echo_daemon (g, words);
-  free_strings (words);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+  free_strings (words);
+ out_words:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_find0 (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *directory;
   char *files;
@@ -9689,21 +11036,28 @@ run_find0 (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   directory = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (directory == NULL) return -1;
+  if (directory == NULL) goto out_directory;
   files = file_out (argv[i++]);
-  if (files == NULL) return -1;
+  if (files == NULL) goto out_files;
   r = guestfs_find0 (g, directory, files);
-  free (directory);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (files);
-  return r;
+ out_files:
+  free (directory);
+ out_directory:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_case_sensitive_path (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   char *path;
   size_t i = 0;
@@ -9711,21 +11065,26 @@ run_case_sensitive_path (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_case_sensitive_path (g, path);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_vfs_type (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *device;
   size_t i = 0;
@@ -9733,19 +11092,23 @@ run_vfs_type (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_vfs_type (g, device);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_truncate (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -9753,18 +11116,24 @@ run_truncate (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_truncate (g, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_truncate_size (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   int64_t size;
@@ -9773,10 +11142,10 @@ run_truncate_size (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   {
     strtol_error xerr;
     long long r;
@@ -9786,18 +11155,25 @@ run_truncate_size (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "size", "xstrtoll", xerr);
-      return -1;
+      goto out_size;
     }
     size = r;
   }
   r = guestfs_truncate_size (g, path, size);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_size:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_utimens (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   int64_t atsecs;
@@ -9809,10 +11185,10 @@ run_utimens (const char *cmd, size_t argc, char *argv[])
   if (argc != 5) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 5);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   {
     strtol_error xerr;
     long long r;
@@ -9822,7 +11198,7 @@ run_utimens (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "atsecs", "xstrtoll", xerr);
-      return -1;
+      goto out_atsecs;
     }
     atsecs = r;
   }
@@ -9835,7 +11211,7 @@ run_utimens (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "atnsecs", "xstrtoll", xerr);
-      return -1;
+      goto out_atnsecs;
     }
     atnsecs = r;
   }
@@ -9848,7 +11224,7 @@ run_utimens (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "mtsecs", "xstrtoll", xerr);
-      return -1;
+      goto out_mtsecs;
     }
     mtsecs = r;
   }
@@ -9861,18 +11237,28 @@ run_utimens (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "mtnsecs", "xstrtoll", xerr);
-      return -1;
+      goto out_mtnsecs;
     }
     mtnsecs = r;
   }
   r = guestfs_utimens (g, path, atsecs, atnsecs, mtsecs, mtnsecs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_mtnsecs:
+ out_mtsecs:
+ out_atnsecs:
+ out_atsecs:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mkdir_mode (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   int mode;
@@ -9881,10 +11267,10 @@ run_mkdir_mode (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   {
     strtol_error xerr;
     long long r;
@@ -9894,24 +11280,31 @@ run_mkdir_mode (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "mode", "xstrtoll", xerr);
-      return -1;
+      goto out_mode;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "mode");
-      return -1;
+      goto out_mode;
     }
     /* The check above should ensure this assignment does not overflow. */
     mode = r;
   }
   r = guestfs_mkdir_mode (g, path, mode);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_mode:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lchown (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int owner;
   int group;
@@ -9921,7 +11314,7 @@ run_lchown (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -9932,12 +11325,12 @@ run_lchown (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "owner", "xstrtoll", xerr);
-      return -1;
+      goto out_owner;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "owner");
-      return -1;
+      goto out_owner;
     }
     /* The check above should ensure this assignment does not overflow. */
     owner = r;
@@ -9951,26 +11344,34 @@ run_lchown (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "group", "xstrtoll", xerr);
-      return -1;
+      goto out_group;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "group");
-      return -1;
+      goto out_group;
     }
     /* The check above should ensure this assignment does not overflow. */
     group = r;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_lchown (g, owner, group, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_group:
+ out_owner:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lstatlist (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   struct guestfs_stat_list *r;
   char *path;
   char **names;
@@ -9979,24 +11380,30 @@ run_lstatlist (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   names = parse_string_list (argv[i++]);
-  if (names == NULL) return -1;
+  if (names == NULL) goto out_names;
   r = guestfs_lstatlist (g, path, names);
-  free (path);
-  free_strings (names);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_stat_list (r);
   guestfs_free_stat_list (r);
-  return 0;
+ out:
+  free_strings (names);
+ out_names:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lxattrlist (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   struct guestfs_xattr_list *r;
   char *path;
   char **names;
@@ -10005,24 +11412,30 @@ run_lxattrlist (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   names = parse_string_list (argv[i++]);
-  if (names == NULL) return -1;
+  if (names == NULL) goto out_names;
   r = guestfs_lxattrlist (g, path, names);
-  free (path);
-  free_strings (names);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_xattr_list (r);
   guestfs_free_xattr_list (r);
-  return 0;
+ out:
+  free_strings (names);
+ out_names:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_readlinklist (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   char *path;
   char **names;
@@ -10031,24 +11444,30 @@ run_readlinklist (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   names = parse_string_list (argv[i++]);
-  if (names == NULL) return -1;
+  if (names == NULL) goto out_names;
   r = guestfs_readlinklist (g, path, names);
-  free (path);
-  free_strings (names);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+  free_strings (names);
+ out_names:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_pread (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   size_t size;
   char *path;
@@ -10059,10 +11478,10 @@ run_pread (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   {
     strtol_error xerr;
     long long r;
@@ -10072,12 +11491,12 @@ run_pread (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "count", "xstrtoll", xerr);
-      return -1;
+      goto out_count;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "count");
-      return -1;
+      goto out_count;
     }
     /* The check above should ensure this assignment does not overflow. */
     count = r;
@@ -10091,25 +11510,32 @@ run_pread (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "offset", "xstrtoll", xerr);
-      return -1;
+      goto out_offset;
     }
     offset = r;
   }
   r = guestfs_pread (g, path, count, offset, &size);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
   if (full_write (1, r, size) != size) {
     perror ("write");
     free (r);
-    return -1;
+    goto out;
   }
+  ret = 0;
   free (r);
-  return 0;
+ out:
+ out_offset:
+ out_count:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_part_init (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   const char *parttype;
@@ -10118,17 +11544,22 @@ run_part_init (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   parttype = argv[i++];
   r = guestfs_part_init (g, device, parttype);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_part_add (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   const char *prlogex;
@@ -10139,7 +11570,7 @@ run_part_add (const char *cmd, size_t argc, char *argv[])
   if (argc != 4) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   prlogex = argv[i++];
@@ -10152,7 +11583,7 @@ run_part_add (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "startsect", "xstrtoll", xerr);
-      return -1;
+      goto out_startsect;
     }
     startsect = r;
   }
@@ -10165,17 +11596,24 @@ run_part_add (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "endsect", "xstrtoll", xerr);
-      return -1;
+      goto out_endsect;
     }
     endsect = r;
   }
   r = guestfs_part_add (g, device, prlogex, startsect, endsect);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_endsect:
+ out_startsect:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_part_disk (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   const char *parttype;
@@ -10184,17 +11622,22 @@ run_part_disk (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   parttype = argv[i++];
   r = guestfs_part_disk (g, device, parttype);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_part_set_bootable (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   int partnum;
@@ -10204,7 +11647,7 @@ run_part_set_bootable (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   {
@@ -10216,24 +11659,30 @@ run_part_set_bootable (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "partnum", "xstrtoll", xerr);
-      return -1;
+      goto out_partnum;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "partnum");
-      return -1;
+      goto out_partnum;
     }
     /* The check above should ensure this assignment does not overflow. */
     partnum = r;
   }
   bootable = is_true (argv[i++]) ? 1 : 0;
   r = guestfs_part_set_bootable (g, device, partnum, bootable);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_partnum:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_part_set_name (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   int partnum;
@@ -10243,7 +11692,7 @@ run_part_set_name (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   {
@@ -10255,24 +11704,30 @@ run_part_set_name (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "partnum", "xstrtoll", xerr);
-      return -1;
+      goto out_partnum;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "partnum");
-      return -1;
+      goto out_partnum;
     }
     /* The check above should ensure this assignment does not overflow. */
     partnum = r;
   }
   name = argv[i++];
   r = guestfs_part_set_name (g, device, partnum, name);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_partnum:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_part_list (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   struct guestfs_partition_list *r;
   const char *device;
   size_t i = 0;
@@ -10280,19 +11735,23 @@ run_part_list (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_part_list (g, device);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_partition_list (r);
   guestfs_free_partition_list (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_part_get_parttype (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *device;
   size_t i = 0;
@@ -10300,19 +11759,23 @@ run_part_get_parttype (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_part_get_parttype (g, device);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_fill (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   int c;
   int len;
@@ -10322,7 +11785,7 @@ run_fill (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   {
     strtol_error xerr;
@@ -10333,12 +11796,12 @@ run_fill (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "c", "xstrtoll", xerr);
-      return -1;
+      goto out_c;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "c");
-      return -1;
+      goto out_c;
     }
     /* The check above should ensure this assignment does not overflow. */
     c = r;
@@ -10352,26 +11815,34 @@ run_fill (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "len", "xstrtoll", xerr);
-      return -1;
+      goto out_len;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "len");
-      return -1;
+      goto out_len;
     }
     /* The check above should ensure this assignment does not overflow. */
     len = r;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_fill (g, c, len, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_len:
+ out_c:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_available (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char **groups;
   size_t i = 0;
@@ -10379,18 +11850,24 @@ run_available (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   groups = parse_string_list (argv[i++]);
-  if (groups == NULL) return -1;
+  if (groups == NULL) goto out_groups;
   r = guestfs_available (g, groups);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free_strings (groups);
-  return r;
+ out_groups:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_dd (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *src;
   char *dest;
@@ -10399,21 +11876,28 @@ run_dd (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   src = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (src == NULL) return -1;
+  if (src == NULL) goto out_src;
   dest = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (dest == NULL) return -1;
+  if (dest == NULL) goto out_dest;
   r = guestfs_dd (g, src, dest);
-  free (src);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (dest);
-  return r;
+ out_dest:
+  free (src);
+ out_src:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_filesize (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int64_t r;
   char *file;
   size_t i = 0;
@@ -10421,20 +11905,25 @@ run_filesize (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   file = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (file == NULL) return -1;
+  if (file == NULL) goto out_file;
   r = guestfs_filesize (g, file);
-  free (file);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%" PRIi64 "\n", r);
-  return 0;
+ out:
+  free (file);
+ out_file:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lvrename (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *logvol;
   const char *newlogvol;
@@ -10443,17 +11932,22 @@ run_lvrename (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   logvol = argv[i++];
   newlogvol = argv[i++];
   r = guestfs_lvrename (g, logvol, newlogvol);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_vgrename (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *volgroup;
   const char *newvolgroup;
@@ -10462,17 +11956,22 @@ run_vgrename (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   volgroup = argv[i++];
   newvolgroup = argv[i++];
   r = guestfs_vgrename (g, volgroup, newvolgroup);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_initrd_cat (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   size_t size;
   char *initrdpath;
@@ -10482,26 +11981,31 @@ run_initrd_cat (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   initrdpath = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (initrdpath == NULL) return -1;
+  if (initrdpath == NULL) goto out_initrdpath;
   filename = argv[i++];
   r = guestfs_initrd_cat (g, initrdpath, filename, &size);
-  free (initrdpath);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
   if (full_write (1, r, size) != size) {
     perror ("write");
     free (r);
-    return -1;
+    goto out;
   }
+  ret = 0;
   free (r);
-  return 0;
+ out:
+  free (initrdpath);
+ out_initrdpath:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_pvuuid (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *device;
   size_t i = 0;
@@ -10509,19 +12013,23 @@ run_pvuuid (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_pvuuid (g, device);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_vguuid (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *vgname;
   size_t i = 0;
@@ -10529,19 +12037,23 @@ run_vguuid (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   vgname = argv[i++];
   r = guestfs_vguuid (g, vgname);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lvuuid (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *device;
   size_t i = 0;
@@ -10549,19 +12061,23 @@ run_lvuuid (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_lvuuid (g, device);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_vgpvuuids (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *vgname;
   size_t i = 0;
@@ -10569,19 +12085,23 @@ run_vgpvuuids (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   vgname = argv[i++];
   r = guestfs_vgpvuuids (g, vgname);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_vglvuuids (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *vgname;
   size_t i = 0;
@@ -10589,19 +12109,23 @@ run_vglvuuids (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   vgname = argv[i++];
   r = guestfs_vglvuuids (g, vgname);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_copy_size (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *src;
   char *dest;
@@ -10611,12 +12135,12 @@ run_copy_size (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   src = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (src == NULL) return -1;
+  if (src == NULL) goto out_src;
   dest = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (dest == NULL) return -1;
+  if (dest == NULL) goto out_dest;
   {
     strtol_error xerr;
     long long r;
@@ -10626,19 +12150,27 @@ run_copy_size (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "size", "xstrtoll", xerr);
-      return -1;
+      goto out_size;
     }
     size = r;
   }
   r = guestfs_copy_size (g, src, dest, size);
-  free (src);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_size:
   free (dest);
-  return r;
+ out_dest:
+  free (src);
+ out_src:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_zero_device (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -10646,16 +12178,21 @@ run_zero_device (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_zero_device (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_txz_in (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *tarball;
   char *directory;
@@ -10664,21 +12201,28 @@ run_txz_in (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   tarball = file_in (argv[i++]);
-  if (tarball == NULL) return -1;
+  if (tarball == NULL) goto out_tarball;
   directory = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (directory == NULL) return -1;
+  if (directory == NULL) goto out_directory;
   r = guestfs_txz_in (g, tarball, directory);
-  free_file_in (tarball);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (directory);
-  return r;
+ out_directory:
+  free_file_in (tarball);
+ out_tarball:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_txz_out (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *directory;
   char *tarball;
@@ -10687,21 +12231,28 @@ run_txz_out (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   directory = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (directory == NULL) return -1;
+  if (directory == NULL) goto out_directory;
   tarball = file_out (argv[i++]);
-  if (tarball == NULL) return -1;
+  if (tarball == NULL) goto out_tarball;
   r = guestfs_txz_out (g, directory, tarball);
-  free (directory);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (tarball);
-  return r;
+ out_tarball:
+  free (directory);
+ out_directory:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_ntfsresize (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -10709,30 +12260,40 @@ run_ntfsresize (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_ntfsresize (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_vgscan (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_vgscan (g);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_part_del (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   int partnum;
@@ -10741,7 +12302,7 @@ run_part_del (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   {
@@ -10753,23 +12314,29 @@ run_part_del (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "partnum", "xstrtoll", xerr);
-      return -1;
+      goto out_partnum;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "partnum");
-      return -1;
+      goto out_partnum;
     }
     /* The check above should ensure this assignment does not overflow. */
     partnum = r;
   }
   r = guestfs_part_del (g, device, partnum);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_partnum:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_part_get_bootable (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   int partnum;
@@ -10778,7 +12345,7 @@ run_part_get_bootable (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   {
@@ -10790,25 +12357,30 @@ run_part_get_bootable (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "partnum", "xstrtoll", xerr);
-      return -1;
+      goto out_partnum;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "partnum");
-      return -1;
+      goto out_partnum;
     }
     /* The check above should ensure this assignment does not overflow. */
     partnum = r;
   }
   r = guestfs_part_get_bootable (g, device, partnum);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_partnum:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_part_get_mbr_id (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   int partnum;
@@ -10817,7 +12389,7 @@ run_part_get_mbr_id (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   {
@@ -10829,25 +12401,30 @@ run_part_get_mbr_id (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "partnum", "xstrtoll", xerr);
-      return -1;
+      goto out_partnum;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "partnum");
-      return -1;
+      goto out_partnum;
     }
     /* The check above should ensure this assignment does not overflow. */
     partnum = r;
   }
   r = guestfs_part_get_mbr_id (g, device, partnum);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%s%x\n", r != 0 ? "0x" : "", r);
-  return 0;
+ out:
+ out_partnum:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_part_set_mbr_id (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   int partnum;
@@ -10857,7 +12434,7 @@ run_part_set_mbr_id (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   {
@@ -10869,12 +12446,12 @@ run_part_set_mbr_id (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "partnum", "xstrtoll", xerr);
-      return -1;
+      goto out_partnum;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "partnum");
-      return -1;
+      goto out_partnum;
     }
     /* The check above should ensure this assignment does not overflow. */
     partnum = r;
@@ -10888,23 +12465,30 @@ run_part_set_mbr_id (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "idbyte", "xstrtoll", xerr);
-      return -1;
+      goto out_idbyte;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "idbyte");
-      return -1;
+      goto out_idbyte;
     }
     /* The check above should ensure this assignment does not overflow. */
     idbyte = r;
   }
   r = guestfs_part_set_mbr_id (g, device, partnum, idbyte);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_idbyte:
+ out_partnum:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_checksum_device (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *csumtype;
   const char *device;
@@ -10913,20 +12497,24 @@ run_checksum_device (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   csumtype = argv[i++];
   device = argv[i++];
   r = guestfs_checksum_device (g, csumtype, device);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lvresize_free (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *lv;
   int percent;
@@ -10935,7 +12523,7 @@ run_lvresize_free (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   lv = argv[i++];
   {
@@ -10947,23 +12535,29 @@ run_lvresize_free (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "percent", "xstrtoll", xerr);
-      return -1;
+      goto out_percent;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "percent");
-      return -1;
+      goto out_percent;
     }
     /* The check above should ensure this assignment does not overflow. */
     percent = r;
   }
   r = guestfs_lvresize_free (g, lv, percent);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_percent:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_aug_clear (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *augpath;
   size_t i = 0;
@@ -10971,32 +12565,41 @@ run_aug_clear (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   augpath = argv[i++];
   r = guestfs_aug_clear (g, augpath);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_get_umask (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_get_umask (g);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%s%o\n", r != 0 ? "0" : "", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_debug_upload (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *filename;
   const char *tmpname;
@@ -11006,10 +12609,10 @@ run_debug_upload (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   filename = file_in (argv[i++]);
-  if (filename == NULL) return -1;
+  if (filename == NULL) goto out_filename;
   tmpname = argv[i++];
   {
     strtol_error xerr;
@@ -11020,24 +12623,31 @@ run_debug_upload (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "mode", "xstrtoll", xerr);
-      return -1;
+      goto out_mode;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "mode");
-      return -1;
+      goto out_mode;
     }
     /* The check above should ensure this assignment does not overflow. */
     mode = r;
   }
   r = guestfs_debug_upload (g, filename, tmpname, mode);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_mode:
   free_file_in (filename);
-  return r;
+ out_filename:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_base64_in (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *base64file;
   char *filename;
@@ -11046,21 +12656,28 @@ run_base64_in (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   base64file = file_in (argv[i++]);
-  if (base64file == NULL) return -1;
+  if (base64file == NULL) goto out_base64file;
   filename = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (filename == NULL) return -1;
+  if (filename == NULL) goto out_filename;
   r = guestfs_base64_in (g, base64file, filename);
-  free_file_in (base64file);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (filename);
-  return r;
+ out_filename:
+  free_file_in (base64file);
+ out_base64file:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_base64_out (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *filename;
   char *base64file;
@@ -11069,21 +12686,28 @@ run_base64_out (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   filename = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (filename == NULL) return -1;
+  if (filename == NULL) goto out_filename;
   base64file = file_out (argv[i++]);
-  if (base64file == NULL) return -1;
+  if (base64file == NULL) goto out_base64file;
   r = guestfs_base64_out (g, filename, base64file);
-  free (filename);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (base64file);
-  return r;
+ out_base64file:
+  free (filename);
+ out_filename:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_checksums_out (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *csumtype;
   char *directory;
@@ -11093,22 +12717,29 @@ run_checksums_out (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   csumtype = argv[i++];
   directory = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (directory == NULL) return -1;
+  if (directory == NULL) goto out_directory;
   sumsfile = file_out (argv[i++]);
-  if (sumsfile == NULL) return -1;
+  if (sumsfile == NULL) goto out_sumsfile;
   r = guestfs_checksums_out (g, csumtype, directory, sumsfile);
-  free (directory);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (sumsfile);
-  return r;
+ out_sumsfile:
+  free (directory);
+ out_directory:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_fill_pattern (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *pattern;
   int len;
@@ -11118,7 +12749,7 @@ run_fill_pattern (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   pattern = argv[i++];
   {
@@ -11130,26 +12761,33 @@ run_fill_pattern (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "len", "xstrtoll", xerr);
-      return -1;
+      goto out_len;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "len");
-      return -1;
+      goto out_len;
     }
     /* The check above should ensure this assignment does not overflow. */
     len = r;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_fill_pattern (g, pattern, len, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_len:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_write (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   const char *content;
@@ -11159,21 +12797,27 @@ run_write (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   content = argv[i];
   content_size = strlen (argv[i]);
   i++;
   r = guestfs_write (g, path, content, content_size);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_pwrite (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   const char *content;
@@ -11184,10 +12828,10 @@ run_pwrite (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   content = argv[i];
   content_size = strlen (argv[i]);
   i++;
@@ -11200,20 +12844,26 @@ run_pwrite (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "offset", "xstrtoll", xerr);
-      return -1;
+      goto out_offset;
     }
     offset = r;
   }
   r = guestfs_pwrite (g, path, content, content_size, offset);
-  free (path);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+ out_offset:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_resize2fs_size (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   int64_t size;
@@ -11222,7 +12872,7 @@ run_resize2fs_size (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   {
@@ -11234,17 +12884,23 @@ run_resize2fs_size (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "size", "xstrtoll", xerr);
-      return -1;
+      goto out_size;
     }
     size = r;
   }
   r = guestfs_resize2fs_size (g, device, size);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_size:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_pvresize_size (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   int64_t size;
@@ -11253,7 +12909,7 @@ run_pvresize_size (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   {
@@ -11265,17 +12921,23 @@ run_pvresize_size (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "size", "xstrtoll", xerr);
-      return -1;
+      goto out_size;
     }
     size = r;
   }
   r = guestfs_pvresize_size (g, device, size);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_size:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_ntfsresize_size (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   int64_t size;
@@ -11284,7 +12946,7 @@ run_ntfsresize_size (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   {
@@ -11296,34 +12958,44 @@ run_ntfsresize_size (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "size", "xstrtoll", xerr);
-      return -1;
+      goto out_size;
     }
     size = r;
   }
   r = guestfs_ntfsresize_size (g, device, size);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_size:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_available_all_groups (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_available_all_groups (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_fallocate64 (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   int64_t len;
@@ -11332,10 +13004,10 @@ run_fallocate64 (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   {
     strtol_error xerr;
     long long r;
@@ -11345,18 +13017,25 @@ run_fallocate64 (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "len", "xstrtoll", xerr);
-      return -1;
+      goto out_len;
     }
     len = r;
   }
   r = guestfs_fallocate64 (g, path, len);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_len:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_vfs_label (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *device;
   size_t i = 0;
@@ -11364,19 +13043,23 @@ run_vfs_label (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_vfs_label (g, device);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_vfs_uuid (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *device;
   size_t i = 0;
@@ -11384,19 +13067,23 @@ run_vfs_uuid (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_vfs_uuid (g, device);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lvm_set_filter (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char **devices;
   size_t i = 0;
@@ -11404,32 +13091,43 @@ run_lvm_set_filter (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   devices = parse_string_list (argv[i++]);
-  if (devices == NULL) return -1;
+  if (devices == NULL) goto out_devices;
   r = guestfs_lvm_set_filter (g, devices);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free_strings (devices);
-  return r;
+ out_devices:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lvm_clear_filter (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_lvm_clear_filter (g);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_luks_open (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   char *key;
@@ -11439,22 +13137,28 @@ run_luks_open (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   key = read_key ("key");
   if (keys_from_stdin)
     input_lineno++;
-  if (key == NULL) return -1;
+  if (key == NULL) goto out_key;
   mapname = argv[i++];
   r = guestfs_luks_open (g, device, key, mapname);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (key);
-  return r;
+ out_key:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_luks_open_ro (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   char *key;
@@ -11464,22 +13168,28 @@ run_luks_open_ro (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   key = read_key ("key");
   if (keys_from_stdin)
     input_lineno++;
-  if (key == NULL) return -1;
+  if (key == NULL) goto out_key;
   mapname = argv[i++];
   r = guestfs_luks_open_ro (g, device, key, mapname);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (key);
-  return r;
+ out_key:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_luks_close (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -11487,16 +13197,21 @@ run_luks_close (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_luks_close (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_luks_format (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   char *key;
@@ -11506,13 +13221,13 @@ run_luks_format (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   key = read_key ("key");
   if (keys_from_stdin)
     input_lineno++;
-  if (key == NULL) return -1;
+  if (key == NULL) goto out_key;
   {
     strtol_error xerr;
     long long r;
@@ -11522,24 +13237,31 @@ run_luks_format (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "keyslot", "xstrtoll", xerr);
-      return -1;
+      goto out_keyslot;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "keyslot");
-      return -1;
+      goto out_keyslot;
     }
     /* The check above should ensure this assignment does not overflow. */
     keyslot = r;
   }
   r = guestfs_luks_format (g, device, key, keyslot);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_keyslot:
   free (key);
-  return r;
+ out_key:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_luks_format_cipher (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   char *key;
@@ -11550,13 +13272,13 @@ run_luks_format_cipher (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   key = read_key ("key");
   if (keys_from_stdin)
     input_lineno++;
-  if (key == NULL) return -1;
+  if (key == NULL) goto out_key;
   {
     strtol_error xerr;
     long long r;
@@ -11566,25 +13288,32 @@ run_luks_format_cipher (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "keyslot", "xstrtoll", xerr);
-      return -1;
+      goto out_keyslot;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "keyslot");
-      return -1;
+      goto out_keyslot;
     }
     /* The check above should ensure this assignment does not overflow. */
     keyslot = r;
   }
   cipher = argv[i++];
   r = guestfs_luks_format_cipher (g, device, key, keyslot, cipher);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_keyslot:
   free (key);
-  return r;
+ out_key:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_luks_add_key (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   char *key;
@@ -11595,17 +13324,17 @@ run_luks_add_key (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   key = read_key ("key");
   if (keys_from_stdin)
     input_lineno++;
-  if (key == NULL) return -1;
+  if (key == NULL) goto out_key;
   newkey = read_key ("newkey");
   if (keys_from_stdin)
     input_lineno++;
-  if (newkey == NULL) return -1;
+  if (newkey == NULL) goto out_newkey;
   {
     strtol_error xerr;
     long long r;
@@ -11615,25 +13344,33 @@ run_luks_add_key (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "keyslot", "xstrtoll", xerr);
-      return -1;
+      goto out_keyslot;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "keyslot");
-      return -1;
+      goto out_keyslot;
     }
     /* The check above should ensure this assignment does not overflow. */
     keyslot = r;
   }
   r = guestfs_luks_add_key (g, device, key, newkey, keyslot);
-  free (key);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_keyslot:
   free (newkey);
-  return r;
+ out_newkey:
+  free (key);
+ out_key:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_luks_kill_slot (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   char *key;
@@ -11643,13 +13380,13 @@ run_luks_kill_slot (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   key = read_key ("key");
   if (keys_from_stdin)
     input_lineno++;
-  if (key == NULL) return -1;
+  if (key == NULL) goto out_key;
   {
     strtol_error xerr;
     long long r;
@@ -11659,24 +13396,31 @@ run_luks_kill_slot (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "keyslot", "xstrtoll", xerr);
-      return -1;
+      goto out_keyslot;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "keyslot");
-      return -1;
+      goto out_keyslot;
     }
     /* The check above should ensure this assignment does not overflow. */
     keyslot = r;
   }
   r = guestfs_luks_kill_slot (g, device, key, keyslot);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_keyslot:
   free (key);
-  return r;
+ out_key:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_is_lv (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -11684,18 +13428,22 @@ run_is_lv (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_is_lv (g, device);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_findfs_uuid (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *uuid;
   size_t i = 0;
@@ -11703,19 +13451,23 @@ run_findfs_uuid (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   uuid = argv[i++];
   r = guestfs_findfs_uuid (g, uuid);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_findfs_label (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *label;
   size_t i = 0;
@@ -11723,19 +13475,23 @@ run_findfs_label (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   label = argv[i++];
   r = guestfs_findfs_label (g, label);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_is_chardev (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -11743,20 +13499,25 @@ run_is_chardev (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_is_chardev (g, path);
-  free (path);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_is_blockdev (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -11764,20 +13525,25 @@ run_is_blockdev (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_is_blockdev (g, path);
-  free (path);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_is_fifo (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -11785,20 +13551,25 @@ run_is_fifo (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_is_fifo (g, path);
-  free (path);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_is_symlink (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -11806,20 +13577,25 @@ run_is_symlink (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_is_symlink (g, path);
-  free (path);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_is_socket (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -11827,20 +13603,25 @@ run_is_socket (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_is_socket (g, path);
-  free (path);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_part_to_dev (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *partition;
   size_t i = 0;
@@ -11848,19 +13629,23 @@ run_part_to_dev (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   partition = argv[i++];
   r = guestfs_part_to_dev (g, partition);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_upload_offset (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *filename;
   char *remotefilename;
@@ -11870,12 +13655,12 @@ run_upload_offset (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   filename = file_in (argv[i++]);
-  if (filename == NULL) return -1;
+  if (filename == NULL) goto out_filename;
   remotefilename = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (remotefilename == NULL) return -1;
+  if (remotefilename == NULL) goto out_remotefilename;
   {
     strtol_error xerr;
     long long r;
@@ -11885,19 +13670,27 @@ run_upload_offset (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "offset", "xstrtoll", xerr);
-      return -1;
+      goto out_offset;
     }
     offset = r;
   }
   r = guestfs_upload_offset (g, filename, remotefilename, offset);
-  free_file_in (filename);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_offset:
   free (remotefilename);
-  return r;
+ out_remotefilename:
+  free_file_in (filename);
+ out_filename:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_download_offset (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *remotefilename;
   char *filename;
@@ -11908,12 +13701,12 @@ run_download_offset (const char *cmd, size_t argc, char *argv[])
   if (argc != 4) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   remotefilename = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (remotefilename == NULL) return -1;
+  if (remotefilename == NULL) goto out_remotefilename;
   filename = file_out (argv[i++]);
-  if (filename == NULL) return -1;
+  if (filename == NULL) goto out_filename;
   {
     strtol_error xerr;
     long long r;
@@ -11923,7 +13716,7 @@ run_download_offset (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "offset", "xstrtoll", xerr);
-      return -1;
+      goto out_offset;
     }
     offset = r;
   }
@@ -11936,19 +13729,28 @@ run_download_offset (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "size", "xstrtoll", xerr);
-      return -1;
+      goto out_size;
     }
     size = r;
   }
   r = guestfs_download_offset (g, remotefilename, filename, offset, size);
-  free (remotefilename);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_size:
+ out_offset:
   free (filename);
-  return r;
+ out_filename:
+  free (remotefilename);
+ out_remotefilename:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_pwrite_device (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   const char *content;
@@ -11959,7 +13761,7 @@ run_pwrite_device (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   content = argv[i];
@@ -11974,19 +13776,24 @@ run_pwrite_device (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "offset", "xstrtoll", xerr);
-      return -1;
+      goto out_offset;
     }
     offset = r;
   }
   r = guestfs_pwrite_device (g, device, content, content_size, offset);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+ out_offset:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_pread_device (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   size_t size;
   const char *device;
@@ -11997,7 +13804,7 @@ run_pread_device (const char *cmd, size_t argc, char *argv[])
   if (argc != 3) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   {
@@ -12009,12 +13816,12 @@ run_pread_device (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "count", "xstrtoll", xerr);
-      return -1;
+      goto out_count;
     }
     /* The Int type in the generator is a signed 31 bit int. */
     if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
       fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "count");
-      return -1;
+      goto out_count;
     }
     /* The check above should ensure this assignment does not overflow. */
     count = r;
@@ -12028,24 +13835,30 @@ run_pread_device (const char *cmd, size_t argc, char *argv[])
       fprintf (stderr,
                _("%s: %s: invalid integer parameter (%s returned %d)\n"),
                cmd, "offset", "xstrtoll", xerr);
-      return -1;
+      goto out_offset;
     }
     offset = r;
   }
   r = guestfs_pread_device (g, device, count, offset, &size);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
   if (full_write (1, r, size) != size) {
     perror ("write");
     free (r);
-    return -1;
+    goto out;
   }
+  ret = 0;
   free (r);
-  return 0;
+ out:
+ out_offset:
+ out_count:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lvm_canonical_lv_name (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   const char *lvname;
   size_t i = 0;
@@ -12053,19 +13866,23 @@ run_lvm_canonical_lv_name (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   lvname = argv[i++];
   r = guestfs_lvm_canonical_lv_name (g, lvname);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   printf ("%s\n", r);
   free (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mkfs_opts (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *fstype;
   const char *device;
@@ -12076,7 +13893,7 @@ run_mkfs_opts (const char *cmd, size_t argc, char *argv[])
   if (argc < 2 || argc > 6) {
     fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 6);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   fstype = argv[i++];
   device = argv[i++];
@@ -12086,25 +13903,25 @@ run_mkfs_opts (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "blocksize:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.blocksize", "xstrtoll", xerr);
-      return -1;
-    }
-    /* The Int type in the generator is a signed 31 bit int. */
-    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
-      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.blocksize");
-      return -1;
-    }
-    /* The check above should ensure this assignment does not overflow. */
-    optargs_s.blocksize = r;
-  }
+        xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.blocksize", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.blocksize");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.blocksize = r;
+      }
       this_mask = GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK;
       this_arg = "blocksize";
     }
@@ -12114,72 +13931,77 @@ run_mkfs_opts (const char *cmd, size_t argc, char *argv[])
       this_arg = "features";
     }
     else if (STRPREFIX (argv[i], "inode:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.inode", "xstrtoll", xerr);
-      return -1;
-    }
-    /* The Int type in the generator is a signed 31 bit int. */
-    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
-      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.inode");
-      return -1;
-    }
-    /* The check above should ensure this assignment does not overflow. */
-    optargs_s.inode = r;
-  }
+        xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.inode", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.inode");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.inode = r;
+      }
       this_mask = GUESTFS_MKFS_OPTS_INODE_BITMASK;
       this_arg = "inode";
     }
     else if (STRPREFIX (argv[i], "sectorsize:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.sectorsize", "xstrtoll", xerr);
-      return -1;
-    }
-    /* The Int type in the generator is a signed 31 bit int. */
-    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
-      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.sectorsize");
-      return -1;
-    }
-    /* The check above should ensure this assignment does not overflow. */
-    optargs_s.sectorsize = r;
-  }
+        xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.sectorsize", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.sectorsize");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.sectorsize = r;
+      }
       this_mask = GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK;
       this_arg = "sectorsize";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
-      return -1;
+      goto out;
     }
 
     if (optargs_s.bitmask & this_mask) {
       fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
                cmd, this_arg);
-      return -1;
+      goto out;
     }
     optargs_s.bitmask |= this_mask;
   }
 
   r = guestfs_mkfs_opts_argv (g, fstype, device, optargs);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_getxattr (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   size_t size;
   char *path;
@@ -12189,26 +14011,31 @@ run_getxattr (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   name = argv[i++];
   r = guestfs_getxattr (g, path, name, &size);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
   if (full_write (1, r, size) != size) {
     perror ("write");
     free (r);
-    return -1;
+    goto out;
   }
+  ret = 0;
   free (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_lgetxattr (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char *r;
   size_t size;
   char *path;
@@ -12218,26 +14045,31 @@ run_lgetxattr (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   name = argv[i++];
   r = guestfs_lgetxattr (g, path, name, &size);
-  free (path);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
   if (full_write (1, r, size) != size) {
     perror ("write");
     free (r);
-    return -1;
+    goto out;
   }
+  ret = 0;
   free (r);
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_resize2fs_M (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -12245,16 +14077,21 @@ run_resize2fs_M (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_resize2fs_M (g, device);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_is_zero (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   size_t i = 0;
@@ -12262,20 +14099,25 @@ run_is_zero (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   r = guestfs_is_zero (g, path);
-  free (path);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_is_zero_device (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   size_t i = 0;
@@ -12283,35 +14125,43 @@ run_is_zero_device (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_is_zero_device (g, device);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_list_9p (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_list_9p (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_mount_9p (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *mounttag;
   const char *mountpoint;
@@ -12322,7 +14172,7 @@ run_mount_9p (const char *cmd, size_t argc, char *argv[])
   if (argc < 2 || argc > 3) {
     fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   mounttag = argv[i++];
   mountpoint = argv[i++];
@@ -12339,41 +14189,50 @@ run_mount_9p (const char *cmd, size_t argc, char *argv[])
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
-      return -1;
+      goto out;
     }
 
     if (optargs_s.bitmask & this_mask) {
       fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
                cmd, this_arg);
-      return -1;
+      goto out;
     }
     optargs_s.bitmask |= this_mask;
   }
 
   r = guestfs_mount_9p_argv (g, mounttag, mountpoint, optargs);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_list_dm_devices (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_list_dm_devices (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_ntfsresize_opts (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   struct guestfs_ntfsresize_opts_argv optargs_s = { .bitmask = 0 };
@@ -12383,7 +14242,7 @@ run_ntfsresize_opts (const char *cmd, size_t argc, char *argv[])
   if (argc < 1 || argc > 3) {
     fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
 
@@ -12392,19 +14251,19 @@ run_ntfsresize_opts (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "size:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.size", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.size = r;
-  }
+        xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.size", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.size = r;
+      }
       this_mask = GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK;
       this_arg = "size";
     }
@@ -12416,24 +14275,29 @@ run_ntfsresize_opts (const char *cmd, size_t argc, char *argv[])
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
-      return -1;
+      goto out;
     }
 
     if (optargs_s.bitmask & this_mask) {
       fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
                cmd, this_arg);
-      return -1;
+      goto out;
     }
     optargs_s.bitmask |= this_mask;
   }
 
   r = guestfs_ntfsresize_opts_argv (g, device, optargs);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_btrfs_filesystem_resize (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *mountpoint;
   struct guestfs_btrfs_filesystem_resize_argv optargs_s = { .bitmask = 0 };
@@ -12443,54 +14307,60 @@ run_btrfs_filesystem_resize (const char *cmd, size_t argc, char *argv[])
   if (argc < 1 || argc > 2) {
     fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   mountpoint = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (mountpoint == NULL) return -1;
+  if (mountpoint == NULL) goto out_mountpoint;
 
   for (; i < argc; ++i) {
     uint64_t this_mask;
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "size:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.size", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.size = r;
-  }
+        xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.size", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.size = r;
+      }
       this_mask = GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK;
       this_arg = "size";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
-      return -1;
+      goto out;
     }
 
     if (optargs_s.bitmask & this_mask) {
       fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
                cmd, this_arg);
-      return -1;
+      goto out;
     }
     optargs_s.bitmask |= this_mask;
   }
 
   r = guestfs_btrfs_filesystem_resize_argv (g, mountpoint, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (mountpoint);
-  return r;
+ out_mountpoint:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_write_append (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *path;
   const char *content;
@@ -12500,21 +14370,27 @@ run_write_append (const char *cmd, size_t argc, char *argv[])
   if (argc != 2) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) return -1;
+  if (path == NULL) goto out_path;
   content = argv[i];
   content_size = strlen (argv[i]);
   i++;
   r = guestfs_write_append (g, path, content, content_size);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (path);
-  return r;
+ out_path:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_compress_out (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *ctype;
   char *file;
@@ -12526,64 +14402,71 @@ run_compress_out (const char *cmd, size_t argc, char *argv[])
   if (argc < 3 || argc > 4) {
     fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 3, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   ctype = argv[i++];
   file = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (file == NULL) return -1;
+  if (file == NULL) goto out_file;
   zfile = file_out (argv[i++]);
-  if (zfile == NULL) return -1;
+  if (zfile == NULL) goto out_zfile;
 
   for (; i < argc; ++i) {
     uint64_t this_mask;
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "level:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.level", "xstrtoll", xerr);
-      return -1;
-    }
-    /* The Int type in the generator is a signed 31 bit int. */
-    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
-      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.level");
-      return -1;
-    }
-    /* The check above should ensure this assignment does not overflow. */
-    optargs_s.level = r;
-  }
+        xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.level", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.level");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.level = r;
+      }
       this_mask = GUESTFS_COMPRESS_OUT_LEVEL_BITMASK;
       this_arg = "level";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
-      return -1;
+      goto out;
     }
 
     if (optargs_s.bitmask & this_mask) {
       fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
                cmd, this_arg);
-      return -1;
+      goto out;
     }
     optargs_s.bitmask |= this_mask;
   }
 
   r = guestfs_compress_out_argv (g, ctype, file, zfile, optargs);
-  free (file);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (zfile);
-  return r;
+ out_zfile:
+  free (file);
+ out_file:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_compress_device_out (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *ctype;
   const char *device;
@@ -12595,62 +14478,68 @@ run_compress_device_out (const char *cmd, size_t argc, char *argv[])
   if (argc < 3 || argc > 4) {
     fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 3, 4);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   ctype = argv[i++];
   device = argv[i++];
   zdevice = file_out (argv[i++]);
-  if (zdevice == NULL) return -1;
+  if (zdevice == NULL) goto out_zdevice;
 
   for (; i < argc; ++i) {
     uint64_t this_mask;
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "level:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.level", "xstrtoll", xerr);
-      return -1;
-    }
-    /* The Int type in the generator is a signed 31 bit int. */
-    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
-      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.level");
-      return -1;
-    }
-    /* The check above should ensure this assignment does not overflow. */
-    optargs_s.level = r;
-  }
+        xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.level", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.level");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.level = r;
+      }
       this_mask = GUESTFS_COMPRESS_DEVICE_OUT_LEVEL_BITMASK;
       this_arg = "level";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
-      return -1;
+      goto out;
     }
 
     if (optargs_s.bitmask & this_mask) {
       fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
                cmd, this_arg);
-      return -1;
+      goto out;
     }
     optargs_s.bitmask |= this_mask;
   }
 
   r = guestfs_compress_device_out_argv (g, ctype, device, zdevice, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (zdevice);
-  return r;
+ out_zdevice:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_part_to_partnum (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *partition;
   size_t i = 0;
@@ -12658,18 +14547,22 @@ run_part_to_partnum (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   partition = argv[i++];
   r = guestfs_part_to_partnum (g, partition);
-  if (r == -1) return -1;
+  if (r == -1) goto out;
+  ret = 0;
   printf ("%d\n", r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_copy_device_to_device (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *src;
   const char *dest;
@@ -12680,7 +14573,7 @@ run_copy_device_to_device (const char *cmd, size_t argc, char *argv[])
   if (argc < 2 || argc > 5) {
     fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 5);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   src = argv[i++];
   dest = argv[i++];
@@ -12690,77 +14583,82 @@ run_copy_device_to_device (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "srcoffset:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.srcoffset", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.srcoffset = r;
-  }
+        xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.srcoffset", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.srcoffset = r;
+      }
       this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET_BITMASK;
       this_arg = "srcoffset";
     }
     else if (STRPREFIX (argv[i], "destoffset:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.destoffset", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.destoffset = r;
-  }
+        xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.destoffset", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.destoffset = r;
+      }
       this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET_BITMASK;
       this_arg = "destoffset";
     }
     else if (STRPREFIX (argv[i], "size:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.size", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.size = r;
-  }
+        xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.size", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.size = r;
+      }
       this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
       this_arg = "size";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
-      return -1;
+      goto out;
     }
 
     if (optargs_s.bitmask & this_mask) {
       fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
                cmd, this_arg);
-      return -1;
+      goto out;
     }
     optargs_s.bitmask |= this_mask;
   }
 
   r = guestfs_copy_device_to_device_argv (g, src, dest, optargs);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_copy_device_to_file (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *src;
   char *dest;
@@ -12771,89 +14669,95 @@ run_copy_device_to_file (const char *cmd, size_t argc, char *argv[])
   if (argc < 2 || argc > 5) {
     fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 5);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   src = argv[i++];
   dest = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (dest == NULL) return -1;
+  if (dest == NULL) goto out_dest;
 
   for (; i < argc; ++i) {
     uint64_t this_mask;
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "srcoffset:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.srcoffset", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.srcoffset = r;
-  }
+        xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.srcoffset", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.srcoffset = r;
+      }
       this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET_BITMASK;
       this_arg = "srcoffset";
     }
     else if (STRPREFIX (argv[i], "destoffset:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.destoffset", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.destoffset = r;
-  }
+        xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.destoffset", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.destoffset = r;
+      }
       this_mask = GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET_BITMASK;
       this_arg = "destoffset";
     }
     else if (STRPREFIX (argv[i], "size:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.size", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.size = r;
-  }
+        xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.size", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.size = r;
+      }
       this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
       this_arg = "size";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
-      return -1;
+      goto out;
     }
 
     if (optargs_s.bitmask & this_mask) {
       fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
                cmd, this_arg);
-      return -1;
+      goto out;
     }
     optargs_s.bitmask |= this_mask;
   }
 
   r = guestfs_copy_device_to_file_argv (g, src, dest, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (dest);
-  return r;
+ out_dest:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_copy_file_to_device (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *src;
   const char *dest;
@@ -12864,10 +14768,10 @@ run_copy_file_to_device (const char *cmd, size_t argc, char *argv[])
   if (argc < 2 || argc > 5) {
     fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 5);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   src = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (src == NULL) return -1;
+  if (src == NULL) goto out_src;
   dest = argv[i++];
 
   for (; i < argc; ++i) {
@@ -12875,78 +14779,84 @@ run_copy_file_to_device (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "srcoffset:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.srcoffset", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.srcoffset = r;
-  }
+        xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.srcoffset", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.srcoffset = r;
+      }
       this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET_BITMASK;
       this_arg = "srcoffset";
     }
     else if (STRPREFIX (argv[i], "destoffset:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.destoffset", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.destoffset = r;
-  }
+        xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.destoffset", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.destoffset = r;
+      }
       this_mask = GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET_BITMASK;
       this_arg = "destoffset";
     }
     else if (STRPREFIX (argv[i], "size:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.size", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.size = r;
-  }
+        xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.size", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.size = r;
+      }
       this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
       this_arg = "size";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
-      return -1;
+      goto out;
     }
 
     if (optargs_s.bitmask & this_mask) {
       fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
                cmd, this_arg);
-      return -1;
+      goto out;
     }
     optargs_s.bitmask |= this_mask;
   }
 
   r = guestfs_copy_file_to_device_argv (g, src, dest, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (src);
-  return r;
+ out_src:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_copy_file_to_file (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   char *src;
   char *dest;
@@ -12957,91 +14867,98 @@ run_copy_file_to_file (const char *cmd, size_t argc, char *argv[])
   if (argc < 2 || argc > 5) {
     fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 5);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   src = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (src == NULL) return -1;
+  if (src == NULL) goto out_src;
   dest = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (dest == NULL) return -1;
+  if (dest == NULL) goto out_dest;
 
   for (; i < argc; ++i) {
     uint64_t this_mask;
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "srcoffset:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.srcoffset", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.srcoffset = r;
-  }
+        xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.srcoffset", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.srcoffset = r;
+      }
       this_mask = GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET_BITMASK;
       this_arg = "srcoffset";
     }
     else if (STRPREFIX (argv[i], "destoffset:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.destoffset", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.destoffset = r;
-  }
+        xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.destoffset", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.destoffset = r;
+      }
       this_mask = GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET_BITMASK;
       this_arg = "destoffset";
     }
     else if (STRPREFIX (argv[i], "size:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.size", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.size = r;
-  }
+        xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.size", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.size = r;
+      }
       this_mask = GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
       this_arg = "size";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
-      return -1;
+      goto out;
     }
 
     if (optargs_s.bitmask & this_mask) {
       fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
                cmd, this_arg);
-      return -1;
+      goto out;
     }
     optargs_s.bitmask |= this_mask;
   }
 
   r = guestfs_copy_file_to_file_argv (g, src, dest, optargs);
-  free (src);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free (dest);
-  return r;
+ out_dest:
+  free (src);
+ out_src:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_tune2fs (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   struct guestfs_tune2fs_argv optargs_s = { .bitmask = 0 };
@@ -13051,7 +14968,7 @@ run_tune2fs (const char *cmd, size_t argc, char *argv[])
   if (argc < 1 || argc > 11) {
     fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 11);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
 
@@ -13065,48 +14982,48 @@ run_tune2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "force";
     }
     else if (STRPREFIX (argv[i], "maxmountcount:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][14], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.maxmountcount", "xstrtoll", xerr);
-      return -1;
-    }
-    /* The Int type in the generator is a signed 31 bit int. */
-    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
-      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.maxmountcount");
-      return -1;
-    }
-    /* The check above should ensure this assignment does not overflow. */
-    optargs_s.maxmountcount = r;
-  }
+        xerr = xstrtoll (&argv[i][14], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.maxmountcount", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.maxmountcount");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.maxmountcount = r;
+      }
       this_mask = GUESTFS_TUNE2FS_MAXMOUNTCOUNT_BITMASK;
       this_arg = "maxmountcount";
     }
     else if (STRPREFIX (argv[i], "mountcount:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.mountcount", "xstrtoll", xerr);
-      return -1;
-    }
-    /* The Int type in the generator is a signed 31 bit int. */
-    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
-      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.mountcount");
-      return -1;
-    }
-    /* The check above should ensure this assignment does not overflow. */
-    optargs_s.mountcount = r;
-  }
+        xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.mountcount", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.mountcount");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.mountcount = r;
+      }
       this_mask = GUESTFS_TUNE2FS_MOUNTCOUNT_BITMASK;
       this_arg = "mountcount";
     }
@@ -13116,65 +15033,65 @@ run_tune2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "errorbehavior";
     }
     else if (STRPREFIX (argv[i], "group:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.group", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.group = r;
-  }
+        xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.group", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.group = r;
+      }
       this_mask = GUESTFS_TUNE2FS_GROUP_BITMASK;
       this_arg = "group";
     }
     else if (STRPREFIX (argv[i], "intervalbetweenchecks:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][22], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.intervalbetweenchecks", "xstrtoll", xerr);
-      return -1;
-    }
-    /* The Int type in the generator is a signed 31 bit int. */
-    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
-      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.intervalbetweenchecks");
-      return -1;
-    }
-    /* The check above should ensure this assignment does not overflow. */
-    optargs_s.intervalbetweenchecks = r;
-  }
+        xerr = xstrtoll (&argv[i][22], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.intervalbetweenchecks", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.intervalbetweenchecks");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.intervalbetweenchecks = r;
+      }
       this_mask = GUESTFS_TUNE2FS_INTERVALBETWEENCHECKS_BITMASK;
       this_arg = "intervalbetweenchecks";
     }
     else if (STRPREFIX (argv[i], "reservedblockspercentage:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][25], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.reservedblockspercentage", "xstrtoll", xerr);
-      return -1;
-    }
-    /* The Int type in the generator is a signed 31 bit int. */
-    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
-      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.reservedblockspercentage");
-      return -1;
-    }
-    /* The check above should ensure this assignment does not overflow. */
-    optargs_s.reservedblockspercentage = r;
-  }
+        xerr = xstrtoll (&argv[i][25], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.reservedblockspercentage", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.reservedblockspercentage");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.reservedblockspercentage = r;
+      }
       this_mask = GUESTFS_TUNE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK;
       this_arg = "reservedblockspercentage";
     }
@@ -13184,60 +15101,65 @@ run_tune2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "lastmounteddirectory";
     }
     else if (STRPREFIX (argv[i], "reservedblockscount:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][20], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.reservedblockscount", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.reservedblockscount = r;
-  }
+        xerr = xstrtoll (&argv[i][20], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.reservedblockscount", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.reservedblockscount = r;
+      }
       this_mask = GUESTFS_TUNE2FS_RESERVEDBLOCKSCOUNT_BITMASK;
       this_arg = "reservedblockscount";
     }
     else if (STRPREFIX (argv[i], "user:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.user", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.user = r;
-  }
+        xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.user", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.user = r;
+      }
       this_mask = GUESTFS_TUNE2FS_USER_BITMASK;
       this_arg = "user";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
-      return -1;
+      goto out;
     }
 
     if (optargs_s.bitmask & this_mask) {
       fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
                cmd, this_arg);
-      return -1;
+      goto out;
     }
     optargs_s.bitmask |= this_mask;
   }
 
   r = guestfs_tune2fs_argv (g, device, optargs);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_md_create (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *name;
   char **devices;
@@ -13248,93 +15170,93 @@ run_md_create (const char *cmd, size_t argc, char *argv[])
   if (argc < 2 || argc > 7) {
     fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 7);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   name = argv[i++];
   devices = parse_string_list (argv[i++]);
-  if (devices == NULL) return -1;
+  if (devices == NULL) goto out_devices;
 
   for (; i < argc; ++i) {
     uint64_t this_mask;
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "missingbitmap:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][14], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.missingbitmap", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.missingbitmap = r;
-  }
+        xerr = xstrtoll (&argv[i][14], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.missingbitmap", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.missingbitmap = r;
+      }
       this_mask = GUESTFS_MD_CREATE_MISSINGBITMAP_BITMASK;
       this_arg = "missingbitmap";
     }
     else if (STRPREFIX (argv[i], "nrdevices:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.nrdevices", "xstrtoll", xerr);
-      return -1;
-    }
-    /* The Int type in the generator is a signed 31 bit int. */
-    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
-      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.nrdevices");
-      return -1;
-    }
-    /* The check above should ensure this assignment does not overflow. */
-    optargs_s.nrdevices = r;
-  }
+        xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.nrdevices", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.nrdevices");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.nrdevices = r;
+      }
       this_mask = GUESTFS_MD_CREATE_NRDEVICES_BITMASK;
       this_arg = "nrdevices";
     }
     else if (STRPREFIX (argv[i], "spare:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.spare", "xstrtoll", xerr);
-      return -1;
-    }
-    /* The Int type in the generator is a signed 31 bit int. */
-    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
-      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.spare");
-      return -1;
-    }
-    /* The check above should ensure this assignment does not overflow. */
-    optargs_s.spare = r;
-  }
+        xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.spare", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.spare");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.spare = r;
+      }
       this_mask = GUESTFS_MD_CREATE_SPARE_BITMASK;
       this_arg = "spare";
     }
     else if (STRPREFIX (argv[i], "chunk:")) {
-  {
-    strtol_error xerr;
-    long long r;
+      {
+        strtol_error xerr;
+        long long r;
 
-    xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
-    if (xerr != LONGINT_OK) {
-      fprintf (stderr,
-               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
-               cmd, "optargs_s.chunk", "xstrtoll", xerr);
-      return -1;
-    }
-    optargs_s.chunk = r;
-  }
+        xerr = xstrtoll (&argv[i][6], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.chunk", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.chunk = r;
+      }
       this_mask = GUESTFS_MD_CREATE_CHUNK_BITMASK;
       this_arg = "chunk";
     }
@@ -13346,42 +15268,52 @@ run_md_create (const char *cmd, size_t argc, char *argv[])
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
-      return -1;
+      goto out;
     }
 
     if (optargs_s.bitmask & this_mask) {
       fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
                cmd, this_arg);
-      return -1;
+      goto out;
     }
     optargs_s.bitmask |= this_mask;
   }
 
   r = guestfs_md_create_argv (g, name, devices, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
   free_strings (devices);
-  return r;
+ out_devices:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_list_md_devices (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
 
   if (argc != 0) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   r = guestfs_list_md_devices (g);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_strings (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_md_detail (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *md;
   size_t i = 0;
@@ -13389,19 +15321,23 @@ run_md_detail (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   md = argv[i++];
   r = guestfs_md_detail (g, md);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_table (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_md_stop (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *md;
   size_t i = 0;
@@ -13409,16 +15345,21 @@ run_md_stop (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   md = argv[i++];
   r = guestfs_md_stop (g, md);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_blkid (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   char **r;
   const char *device;
   size_t i = 0;
@@ -13426,19 +15367,23 @@ run_blkid (const char *cmd, size_t argc, char *argv[])
   if (argc != 1) {
     fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
   r = guestfs_blkid (g, device);
-  if (r == NULL) return -1;
+  if (r == NULL) goto out;
+  ret = 0;
   print_table (r);
   free_strings (r);
-  return 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 static int
 run_e2fsck (const char *cmd, size_t argc, char *argv[])
 {
+  int ret = -1;
   int r;
   const char *device;
   struct guestfs_e2fsck_argv optargs_s = { .bitmask = 0 };
@@ -13448,7 +15393,7 @@ run_e2fsck (const char *cmd, size_t argc, char *argv[])
   if (argc < 1 || argc > 3) {
     fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    return -1;
+    goto out_noargs;
   }
   device = argv[i++];
 
@@ -13469,19 +15414,23 @@ run_e2fsck (const char *cmd, size_t argc, char *argv[])
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
-      return -1;
+      goto out;
     }
 
     if (optargs_s.bitmask & this_mask) {
       fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
                cmd, this_arg);
-      return -1;
+      goto out;
     }
     optargs_s.bitmask |= this_mask;
   }
 
   r = guestfs_e2fsck_argv (g, device, optargs);
-  return r;
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
 }
 
 int

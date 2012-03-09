@@ -1,3 +1,202 @@
+2012-03-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.9.
+
+	fish: Document that guestfish sets pgroup to true (RHBZ#801273). (cherry picked from commit 0721464b83915fbfae6d6a9da787f5069b2c6d6a)
+
+	inspect_apps: Avoid double-close on error path (found by Coverity) (RHBZ#801298).
+	Error: USE_AFTER_FREE:
+	/builddir/build/BUILD/libguestfs-1.16.5/src/inspect_apps.c:392: freed_arg: "fclose" frees "fp".
+	/builddir/build/BUILD/libguestfs-1.16.5/src/inspect_apps.c:404: deref_arg: Calling "fclose" dereferences freed pointer "fp".
+	(cherry picked from commit 270daae52b6a96b4d05cbe03e0b31a0b2e4ac1ae)
+
+	dbdump: Avoid double-close on error path (found by Coverity).
+	Error: USE_AFTER_FREE:
+	/builddir/build/BUILD/libguestfs-1.16.5/src/dbdump.c:132: freed_arg: "pclose" frees "pp".
+	/builddir/build/BUILD/libguestfs-1.16.5/src/dbdump.c:142: deref_arg: Calling "pclose" dereferences freed pointer "pp".
+	(cherry picked from commit 3f3b08a6bc610ca0886e02972257dfcb633a9d40)
+
+	daemon: glob: Initialize glob buffer (quiet Coverity warning).
+	Error: UNINIT:
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/glob.c:32: var_decl: Declaring variable "buf" without initializer.
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/glob.c:36: uninit_use_in_call: Using uninitialized value "buf.gl_offs" when calling "rpl_glob".
+	/builddir/build/BUILD/libguestfs-1.16.5/gnulib/lib/glob.c:557: read_parm_fld: Reading a parameter field.
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/glob.c:36: uninit_use_in_call: Using uninitialized value "buf.gl_pathc" when calling "rpl_glob".
+	/builddir/build/BUILD/libguestfs-1.16.5/gnulib/lib/glob.c:557: read_parm_fld: Reading a parameter field.
+	(cherry picked from commit b2c1d8be39d4689267ef7e4188e2cf936b30628f)
+
+	comment: Note time-of-check to time-of-use race found by Coverity. (cherry picked from commit 3345444cccfe2e2fb07d4769d1e764eca59dd6f9)
+
+2012-03-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: inotify: Check event->len in inotify struct is reasonable.
+	The Coverity error is this (which I think is wrong):
+
+	Error: TAINTED_SCALAR:
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/inotify.c:211: tainted_data_argument: Calling function "read" taints argument "inotify_buf".
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/inotify.c:232: var_assign_var: Assigning: "event" = "(struct inotify_event *)&inotify_buf[n]". Both are now tainted.
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/inotify.c:258: lower_bounds: Checking lower bounds of unsigned scalar "event->len" by "event->len > 0U".
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/inotify.c:272: var_assign_var: Compound assignment involving tainted variable "16UL + event->len" to variable "n" taints "n".
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/inotify.c:228: lower_bounds: Checking lower bounds of unsigned scalar "n" by "n < inotify_posn".
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/inotify.c:281: tainted_data: Using tainted variable "n" as an index into an array "inotify_buf".
+
+	Adding a sanity check of event->len is prudent.
+	(cherry picked from commit ae0f9f149b2b527b924d4532aa38302056d8a6b0)
+
+2012-03-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: debug: Close fd along error path (found by Coverity).
+	Error: RESOURCE_LEAK:
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/debug.c:469: open_fn: Calling opening function "open".
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/debug.c:469: var_assign: Assigning: "fd" =  handle returned from "open("/proc/sys/kernel/core_pattern", 1)".
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/debug.c:474: noescape: Variable "fd" is not closed or saved in function "write".
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/debug.c:476: leaked_handle: Handle variable "fd" going out of scope leaks the handle.
+	(cherry picked from commit 3b3d9ca4e1fa0a4f566cb2a8008540ee640b738b)
+
+2012-03-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Properly free up strings, lists along all error paths (found by Coverity).
+	This also includes some tidying up of the generated code.
+
+	Error: RESOURCE_LEAK:
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/cmds.c:13254: alloc_fn: Calling allocation function "parse_string_list".
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/fish.c:1386: alloc_fn: Storage is returned from allocation function "realloc".
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/fish.c:1386: var_assign: Assigning: "argv_new" = "realloc(argv, 8UL * argv_len)".
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/fish.c:1392: var_assign: Assigning: "argv" = "argv_new".
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/fish.c:1396: return_alloc: Returning allocated memory "argv".
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/cmds.c:13254: var_assign: Assigning: "devices" =  storage returned from "parse_string_list(argv[i++])".
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/cmds.c:13271: leaked_storage: Variable "devices" going out of scope leaks the storage it points to.
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/cmds.c:13288: leaked_storage: Variable "devices" going out of scope leaks the storage it points to.
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/cmds.c:13293: leaked_storage: Variable "devices" going out of scope leaks the storage it points to.
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/cmds.c:13311: leaked_storage: Variable "devices" going out of scope leaks the storage it points to.
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/cmds.c:13316: leaked_storage: Variable "devices" going out of scope leaks the storage it points to.
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/cmds.c:13334: leaked_storage: Variable "devices" going out of scope leaks the storage it points to.
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/cmds.c:13349: leaked_storage: Variable "devices" going out of scope leaks the storage it points to.
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/cmds.c:13355: leaked_storage: Variable "devices" going out of scope leaks the storage it points to.
+	(cherry picked from commit 4dd26c28a3786f756c20f204488bfbcfc5e75309)
+
+2012-03-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: proto: Close fd along error paths (found by Coverity).
+	Error: RESOURCE_LEAK:
+	/builddir/build/BUILD/libguestfs-1.16.5/src/proto.c:894: open_fn: Calling opening function "open".
+	/builddir/build/BUILD/libguestfs-1.16.5/src/proto.c:894: var_assign: Assigning: "fd" =  handle returned from "open(filename, 0)".
+	/builddir/build/BUILD/libguestfs-1.16.5/src/proto.c:903: noescape: Variable "fd" is not closed or saved in function "read".
+	/builddir/build/BUILD/libguestfs-1.16.5/src/proto.c:911: leaked_handle: Handle variable "fd" going out of scope leaks the handle.
+	/builddir/build/BUILD/libguestfs-1.16.5/src/proto.c:918: leaked_handle: Handle variable "fd" going out of scope leaks the handle.
+	(cherry picked from commit d0453c02545c825810fec6e5874c55d7ac5ec678)
+
+	daemon: upload: Close fd along error path (found by Coverity).
+	Error: RESOURCE_LEAK:
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/upload.c:225: open_fn: Calling opening function "open".
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/upload.c:225: var_assign: Assigning: "fd" =  handle returned from "open(filename, 0)".
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/upload.c:233: noescape: Variable "fd" is not closed or saved in function "lseek".
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/upload.c:235: leaked_handle: Handle variable "fd" going out of scope leaks the handle.
+	(cherry picked from commit fbf10d7f682178a6a71cfa8dbac2acd23f869597)
+
+	daemon: 9p: Close fd along error paths (found by Coverity).
+	Error: RESOURCE_LEAK:
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/9p.c:130: open_fn: Calling opening function "open".
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/9p.c:130: var_assign: Assigning: "fd" =  handle returned from "open(filename, 0)".
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/9p.c:142: leaked_handle: Handle variable "fd" going out of scope leaks the handle.
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/9p.c:149: noescape: Variable "fd" is not closed or saved in function "read".
+	/builddir/build/BUILD/libguestfs-1.16.5/daemon/9p.c:153: leaked_handle: Handle variable "fd" going out of scope leaks the handle.
+	(cherry picked from commit cba36e730524525b5fc1c0df2ec3dd878d55ff15)
+
+	proto: Close file along error and cancel paths (found by Coverity).
+	Error: RESOURCE_LEAK:
+	/builddir/build/BUILD/libguestfs-1.16.5/src/proto.c:1125: open_fn: Calling opening function "open".
+	/builddir/build/BUILD/libguestfs-1.16.5/src/proto.c:1125: var_assign: Assigning: "fd" =  handle returned from "open(filename, 833, 438)".
+	/builddir/build/BUILD/libguestfs-1.16.5/src/proto.c:1133: noescape: Variable "fd" is not closed or saved in function "xwrite".
+	/builddir/build/BUILD/libguestfs-1.16.5/src/proto.c:1146: leaked_handle: Handle variable "fd" going out of scope leaks the handle.
+	/builddir/build/BUILD/libguestfs-1.16.5/src/proto.c:1173: leaked_handle: Handle variable "fd" going out of scope leaks the handle.
+	(cherry picked from commit 855aaf414af3b8c8ca1f722a589fd251cc8317ee)
+
+	Check return values of guestfs_inspect_get_{type,distro} (found by Coverity).
+	Error: NULL_RETURNS:
+	/builddir/build/BUILD/libguestfs-1.16.5/examples/virt-dhcp-address.c:129: var_assigned: Assigning: "guest_distro" = null return value from "guestfs_inspect_get_distro".
+	/builddir/build/BUILD/libguestfs-1.16.5/examples/virt-dhcp-address.c:131: dereference: Dereferencing a pointer that might be null "guest_distro" when calling "__coverity_strcmp".
+	[...]
+	/builddir/build/BUILD/libguestfs-1.16.5/examples/virt-dhcp-address.c:126: var_assigned: Assigning: "guest_type" = null return value from "guestfs_inspect_get_type".
+	/builddir/build/BUILD/libguestfs-1.16.5/examples/virt-dhcp-address.c:128: dereference: Dereferencing a pointer that might be null "guest_type" when calling "__coverity_strcmp".
+	(cherry picked from commit 618954a6b0adc3e0eacda799b88f020c801a0106)
+
+	Check return values from calloc (found by Coverity).
+	Error: NULL_RETURNS:
+	/builddir/build/BUILD/libguestfs-1.16.5/src/inspect.c:417: returned_null: Function "calloc" returns null (checked 67 out of 81 times).
+	/builddir/build/BUILD/libguestfs-1.16.5/src/inspect.c:417: var_assigned: Assigning: "ret" = null return value from "calloc".
+	/builddir/build/BUILD/libguestfs-1.16.5/src/inspect.c:418: dereference: Dereferencing a null pointer "ret".
+	[...]
+	/builddir/build/BUILD/libguestfs-1.16.5/src/inspect.c:374: returned_null: Function "calloc" returns null (checked 67 out of 81 times).
+	/builddir/build/BUILD/libguestfs-1.16.5/src/inspect.c:374: var_assigned: Assigning: "ret" = null return value from "calloc".
+	/builddir/build/BUILD/libguestfs-1.16.5/src/inspect.c:375: dereference: Dereferencing a null pointer "ret".
+	(cherry picked from commit 35d5be22b1c09c3a99b445f65453601ec25b9f60)
+
+	Dead code: Remove comma-check in first if-clause (found by Coverity).
+	Error: DEADCODE:
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/event-names.c:65: dead_error_condition: On this path, the condition "comma" cannot be true.
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/event-names.c:57: const: After this line, the value of "comma" is equal to 0.
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/event-names.c:57: assignment: Assigning: "comma" = "0".
+	/builddir/build/BUILD/libguestfs-1.16.5/fish/event-names.c:65: dead_error_line: Execution cannot reach this statement "fputc(44, fp);".
+	(cherry picked from commit 0ffa223a75fe4b5b077e4ec68534155039772c3a)
+
+2012-03-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	Dead code: 'lvs' cannot be true here (found by Coverity).
+	Remove dead code; however only comment it out since if we change the
+	preceeding code we may need this line again.
+
+	Error: DEADCODE:
+	/builddir/build/BUILD/libguestfs-1.16.5/src/listfs.c:107: dead_error_condition: On this path, the condition "lvs" cannot be true.
+	/builddir/build/BUILD/libguestfs-1.16.5/src/listfs.c:54: const: After this line, the value of "lvs" is equal to 0.
+	/builddir/build/BUILD/libguestfs-1.16.5/src/listfs.c:91: const: After this line, the value of "lvs" is equal to 0.
+	/builddir/build/BUILD/libguestfs-1.16.5/src/listfs.c:54: assignment: Assigning: "lvs" = "NULL".
+	/builddir/build/BUILD/libguestfs-1.16.5/src/listfs.c:91: new_values: Noticing condition "lvs == NULL".
+	/builddir/build/BUILD/libguestfs-1.16.5/src/listfs.c:107: dead_error_line: Execution cannot reach this statement "guestfs___free_string_list(...".
+	(cherry picked from commit 109d3ad34aac8d50a1c02437928a64d9bad9f1a6)
+
+2012-03-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	Ignore return values from some functions in guestfs_close (Coverity warning).
+	Error: CHECKED_RETURN:
+	/builddir/build/BUILD/libguestfs-1.16.5/java/com_redhat_et_libguestfs_GuestFS.c:9552: example_assign: Assigning: "r" = return value from "guestfs_internal_autosync(g)".
+	/builddir/build/BUILD/libguestfs-1.16.5/java/com_redhat_et_libguestfs_GuestFS.c:9555: example_checked: "r" has its value checked in "r == -1".
+	/builddir/build/BUILD/libguestfs-1.16.5/ocaml/guestfs_c_actions.c:5584: example_assign: Assigning: "r" = return value from "guestfs_internal_autosync(g)".
+	/builddir/build/BUILD/libguestfs-1.16.5/ocaml/guestfs_c_actions.c:5586: example_checked: "r" has its value checked in "r == -1".
+	/builddir/build/BUILD/libguestfs-1.16.5/perl/Guestfs.xs:5990: example_assign: Assigning: "r" = return value from "guestfs_internal_autosync(g)".
+	/builddir/build/BUILD/libguestfs-1.16.5/perl/Guestfs.xs:5991: example_checked: "r" has its value checked in "r == -1".
+	/builddir/build/BUILD/libguestfs-1.16.5/python/guestfs-py.c:13702: example_assign: Assigning: "r" = return value from "guestfs_internal_autosync(g)".
+	/builddir/build/BUILD/libguestfs-1.16.5/python/guestfs-py.c:13707: example_checked: "r" has its value checked in "r == -1".
+	/builddir/build/BUILD/libguestfs-1.16.5/ruby/ext/guestfs/_guestfs.c:16000: example_assign: Assigning: "r" = return value from "guestfs_internal_autosync(g)".
+	/builddir/build/BUILD/libguestfs-1.16.5/ruby/ext/guestfs/_guestfs.c:16001: example_checked: "r" has its value checked in "r == -1".
+	/builddir/build/BUILD/libguestfs-1.16.5/src/guestfs.c:191: check_return: Calling function "guestfs_internal_autosync" without checking return value (as is done elsewhere 5 out of 6 times).
+	/builddir/build/BUILD/libguestfs-1.16.5/src/guestfs.c:191: unchecked_value: No check of the return value of "guestfs_internal_autosync(g)".
+	(cherry picked from commit 07a8c3c0c25974e0b9496966a7a1354be9ee844f)
+
+	tests/md: Number the errors so we can easily see which test fails. (cherry picked from commit 10f240a07f156493eb0540a95f9a3deba36c6862)
+
+	dist: Distribute all tests, even when configured with --disable-appliance. (cherry picked from commit 4504f424f5589f81086f5250674b55708e162e5f)
+
+	Comment change. (cherry picked from commit 4d8ae8f5a2e309a6a518fdb0b6f65685aa9137e0)
+
+	Hide stderr of bmptopng.
+	This program is noisy on stderr.  Send that to /dev/null.
+	(cherry picked from commit e40f408faeea204417bc46024590a07272eeda92)
+
+2012-03-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Make netpbm and icoutils into proper optional dependencies.
+	Netpbm and icoutils (wrestool) have always been dependencies.  Since
+	they are not always present, make these into optional dependencies
+	(which they were, sort of, before).
+
+	Also document these dependencies in the README file.
+	(cherry picked from commit 2c9c0525ebda105f37e6a6eea2307db4cb2f0a73)
+
+2012-03-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	Whitespace change. (cherry picked from commit b106dda97c9e18563bb27a44a025016fef6dec97)
+
 2012-03-05  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.8.

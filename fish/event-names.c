@@ -62,7 +62,6 @@ print_event_set (uint64_t event_bitmask, FILE *fp)
   }
 
   if (event_bitmask & GUESTFS_EVENT_CLOSE) {
-    if (comma) fputc (',', fp);
     comma = 1;
     fputs ("close", fp);
   }

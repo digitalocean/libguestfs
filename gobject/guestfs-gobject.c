@@ -6607,7 +6607,10 @@ guestfs_session_inspect_get_icon(GuestfsSession *session, const gchar *root, Gue
  * the child process.
  * 
  * The default for this flag is false, because usually you
- * want "^C" to kill the subprocess.
+ * want "^C" to kill the subprocess. Guestfish sets this
+ * flag to true when used interactively, so that "^C" can
+ * cancel long-running commands gracefully (see
+ * "guestfs_user_cancel").
  * 
  * Returns: true on success, false on error
  */

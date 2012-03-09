@@ -6845,7 +6845,9 @@ The practical upshot of this is that signals like C<SIGINT> (from users
 pressing C<^C>) won't be received by the child process.
 
 The default for this flag is false, because usually you want C<^C> to kill
-the subprocess.
+the subprocess.  Guestfish sets this flag to true when used interactively,
+so that C<^C> can cancel long-running commands gracefully (see
+C<guestfs_user_cancel>).
 
 This function returns 0 on success or -1 on error.
 

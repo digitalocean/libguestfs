@@ -4152,7 +4152,9 @@ The practical upshot of this is that signals like C<SIGINT> (from
 users pressing C<^C>) won't be received by the child process.
 
 The default for this flag is false, because usually you want
-C<^C> to kill the subprocess.
+C<^C> to kill the subprocess.  Guestfish sets this flag to
+true when used interactively, so that C<^C> can cancel
+long-running commands gracefully (see C<$h-E<gt>user_cancel>).
 
 =item $h->set_qemu ($qemu);
 
