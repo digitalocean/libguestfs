@@ -213,15 +213,15 @@ guestfs__test0rstringlist (guestfs_h *g,
                            const char *val)
 {
   char **strs;
-  int n, i;
-  if (sscanf (val, "%d", &n) != 1) {
+  size_t n, i;
+  if (sscanf (val, "%zu", &n) != 1) {
     error (g, "%s: expecting int argument", "test0rstringlist");
     return NULL;
   }
   strs = safe_malloc (g, (n+1) * sizeof (char *));
   for (i = 0; i < n; ++i) {
     strs[i] = safe_malloc (g, 16);
-    snprintf (strs[i], 16, "%d", i);
+    snprintf (strs[i], 16, "%zu", i);
   }
   strs[n] = NULL;
   return strs;
@@ -287,8 +287,8 @@ guestfs__test0rhashtable (guestfs_h *g,
                           const char *val)
 {
   char **strs;
-  int n, i;
-  if (sscanf (val, "%d", &n) != 1) {
+  size_t n, i;
+  if (sscanf (val, "%zu", &n) != 1) {
     error (g, "%s: expecting int argument", "test0rhashtable");
     return NULL;
   }
@@ -296,8 +296,8 @@ guestfs__test0rhashtable (guestfs_h *g,
   for (i = 0; i < n; ++i) {
     strs[i*2] = safe_malloc (g, 16);
     strs[i*2+1] = safe_malloc (g, 16);
-    snprintf (strs[i*2], 16, "%d", i);
-    snprintf (strs[i*2+1], 16, "%d", i);
+    snprintf (strs[i*2], 16, "%zu", i);
+    snprintf (strs[i*2+1], 16, "%zu", i);
   }
   strs[n*2] = NULL;
   return strs;

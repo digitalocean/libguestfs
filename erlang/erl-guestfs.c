@@ -692,7 +692,6 @@ static ETERM *
 run_aug_ls (ETERM *message)
 {
   char *augpath = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_aug_ls (g, augpath);
@@ -710,7 +709,6 @@ static ETERM *
 run_aug_match (ETERM *message)
 {
   char *augpath = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_aug_match (g, augpath);
@@ -799,7 +797,6 @@ run_available (ETERM *message)
 static ETERM *
 run_available_all_groups (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_available_all_groups (g);
@@ -848,7 +845,6 @@ static ETERM *
 run_blkid (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_blkid (g, device);
@@ -1171,7 +1167,6 @@ static ETERM *
 run_command_lines (ETERM *message)
 {
   char **arguments = get_string_list (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_command_lines (g, arguments);
@@ -1539,7 +1534,6 @@ run_debug (ETERM *message)
 static ETERM *
 run_debug_cmdline (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_debug_cmdline (g);
@@ -1555,7 +1549,6 @@ run_debug_cmdline (ETERM *message)
 static ETERM *
 run_debug_drives (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_debug_drives (g);
@@ -1760,7 +1753,6 @@ run_egrep (ETERM *message)
 {
   char *regex = erl_iolist_to_string (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
-  size_t i;
   char **r;
 
   r = guestfs_egrep (g, regex, path);
@@ -1780,7 +1772,6 @@ run_egrepi (ETERM *message)
 {
   char *regex = erl_iolist_to_string (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
-  size_t i;
   char **r;
 
   r = guestfs_egrepi (g, regex, path);
@@ -1860,7 +1851,6 @@ run_fgrep (ETERM *message)
 {
   char *pattern = erl_iolist_to_string (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
-  size_t i;
   char **r;
 
   r = guestfs_fgrep (g, pattern, path);
@@ -1880,7 +1870,6 @@ run_fgrepi (ETERM *message)
 {
   char *pattern = erl_iolist_to_string (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
-  size_t i;
   char **r;
 
   r = guestfs_fgrepi (g, pattern, path);
@@ -1978,7 +1967,6 @@ static ETERM *
 run_find (ETERM *message)
 {
   char *directory = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_find (g, directory);
@@ -2350,7 +2338,6 @@ static ETERM *
 run_glob_expand (ETERM *message)
 {
   char *pattern = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_glob_expand (g, pattern);
@@ -2369,7 +2356,6 @@ run_grep (ETERM *message)
 {
   char *regex = erl_iolist_to_string (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
-  size_t i;
   char **r;
 
   r = guestfs_grep (g, regex, path);
@@ -2389,7 +2375,6 @@ run_grepi (ETERM *message)
 {
   char *regex = erl_iolist_to_string (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
-  size_t i;
   char **r;
 
   r = guestfs_grepi (g, regex, path);
@@ -2424,7 +2409,6 @@ static ETERM *
 run_head (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_head (g, path);
@@ -2443,7 +2427,6 @@ run_head_n (ETERM *message)
 {
   int nrlines = ERL_INT_VALUE (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
-  size_t i;
   char **r;
 
   r = guestfs_head_n (g, nrlines, path);
@@ -2496,7 +2479,6 @@ static ETERM *
 run_initrd_list (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_initrd_list (g, path);
@@ -2540,7 +2522,6 @@ run_inotify_close (ETERM *message)
 static ETERM *
 run_inotify_files (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_inotify_files (g);
@@ -2629,7 +2610,6 @@ static ETERM *
 run_inspect_get_drive_mappings (ETERM *message)
 {
   char *root = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_inspect_get_drive_mappings (g, root);
@@ -2646,7 +2626,6 @@ static ETERM *
 run_inspect_get_filesystems (ETERM *message)
 {
   char *root = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_inspect_get_filesystems (g, root);
@@ -2764,7 +2743,6 @@ static ETERM *
 run_inspect_get_mountpoints (ETERM *message)
 {
   char *root = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_inspect_get_mountpoints (g, root);
@@ -2844,7 +2822,6 @@ run_inspect_get_product_variant (ETERM *message)
 static ETERM *
 run_inspect_get_roots (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_inspect_get_roots (g);
@@ -2966,7 +2943,6 @@ run_inspect_list_applications (ETERM *message)
 static ETERM *
 run_inspect_os (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_inspect_os (g);
@@ -3257,7 +3233,6 @@ run_lgetxattrs (ETERM *message)
 static ETERM *
 run_list_9p (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_list_9p (g);
@@ -3273,7 +3248,6 @@ run_list_9p (ETERM *message)
 static ETERM *
 run_list_devices (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_list_devices (g);
@@ -3289,7 +3263,6 @@ run_list_devices (ETERM *message)
 static ETERM *
 run_list_dm_devices (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_list_dm_devices (g);
@@ -3305,7 +3278,6 @@ run_list_dm_devices (ETERM *message)
 static ETERM *
 run_list_filesystems (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_list_filesystems (g);
@@ -3320,7 +3292,6 @@ run_list_filesystems (ETERM *message)
 static ETERM *
 run_list_md_devices (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_list_md_devices (g);
@@ -3336,7 +3307,6 @@ run_list_md_devices (ETERM *message)
 static ETERM *
 run_list_partitions (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_list_partitions (g);
@@ -3449,7 +3419,6 @@ static ETERM *
 run_ls (ETERM *message)
 {
   char *directory = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_ls (g, directory);
@@ -3772,7 +3741,6 @@ run_lvresize_free (ETERM *message)
 static ETERM *
 run_lvs (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_lvs (g);
@@ -3893,7 +3861,6 @@ static ETERM *
 run_md_detail (ETERM *message)
 {
   char *md = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_md_detail (g, md);
@@ -4448,7 +4415,6 @@ run_mount_vfs (ETERM *message)
 static ETERM *
 run_mountpoints (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_mountpoints (g);
@@ -4463,7 +4429,6 @@ run_mountpoints (ETERM *message)
 static ETERM *
 run_mounts (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_mounts (g);
@@ -4889,7 +4854,6 @@ run_pvresize_size (ETERM *message)
 static ETERM *
 run_pvs (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_pvs (g);
@@ -4989,7 +4953,6 @@ static ETERM *
 run_read_lines (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_read_lines (g, path);
@@ -5040,7 +5003,6 @@ run_readlinklist (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
   char **names = get_string_list (ARG (1));
-  size_t i;
   char **r;
 
   r = guestfs_readlinklist (g, path, names);
@@ -5614,7 +5576,6 @@ static ETERM *
 run_sh_lines (ETERM *message)
 {
   char *command = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_sh_lines (g, command);
@@ -5677,7 +5638,6 @@ static ETERM *
 run_strings (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_strings (g, path);
@@ -5696,7 +5656,6 @@ run_strings_e (ETERM *message)
 {
   char *encoding = erl_iolist_to_string (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
-  size_t i;
   char **r;
 
   r = guestfs_strings_e (g, encoding, path);
@@ -5839,7 +5798,6 @@ static ETERM *
 run_tail (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_tail (g, path);
@@ -5858,7 +5816,6 @@ run_tail_n (ETERM *message)
 {
   int nrlines = ERL_INT_VALUE (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
-  size_t i;
   char **r;
 
   r = guestfs_tail_n (g, nrlines, path);
@@ -6091,7 +6048,6 @@ static ETERM *
 run_test0rhashtable (ETERM *message)
 {
   char *val = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_test0rhashtable (g, val);
@@ -6107,7 +6063,6 @@ run_test0rhashtable (ETERM *message)
 static ETERM *
 run_test0rhashtableerr (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_test0rhashtableerr (g);
@@ -6205,7 +6160,6 @@ static ETERM *
 run_test0rstringlist (ETERM *message)
 {
   char *val = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_test0rstringlist (g, val);
@@ -6222,7 +6176,6 @@ run_test0rstringlist (ETERM *message)
 static ETERM *
 run_test0rstringlisterr (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_test0rstringlisterr (g);
@@ -6455,7 +6408,6 @@ static ETERM *
 run_tune2fs_l (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_tune2fs_l (g, device);
@@ -6700,7 +6652,6 @@ static ETERM *
 run_vglvuuids (ETERM *message)
 {
   char *vgname = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_vglvuuids (g, vgname);
@@ -6718,7 +6669,6 @@ static ETERM *
 run_vgpvuuids (ETERM *message)
 {
   char *vgname = erl_iolist_to_string (ARG (0));
-  size_t i;
   char **r;
 
   r = guestfs_vgpvuuids (g, vgname);
@@ -6765,7 +6715,6 @@ run_vgrename (ETERM *message)
 static ETERM *
 run_vgs (ETERM *message)
 {
-  size_t i;
   char **r;
 
   r = guestfs_vgs (g);
@@ -6930,7 +6879,6 @@ run_zegrep (ETERM *message)
 {
   char *regex = erl_iolist_to_string (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
-  size_t i;
   char **r;
 
   r = guestfs_zegrep (g, regex, path);
@@ -6950,7 +6898,6 @@ run_zegrepi (ETERM *message)
 {
   char *regex = erl_iolist_to_string (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
-  size_t i;
   char **r;
 
   r = guestfs_zegrepi (g, regex, path);
@@ -7012,7 +6959,6 @@ run_zfgrep (ETERM *message)
 {
   char *pattern = erl_iolist_to_string (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
-  size_t i;
   char **r;
 
   r = guestfs_zfgrep (g, pattern, path);
@@ -7032,7 +6978,6 @@ run_zfgrepi (ETERM *message)
 {
   char *pattern = erl_iolist_to_string (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
-  size_t i;
   char **r;
 
   r = guestfs_zfgrepi (g, pattern, path);
@@ -7070,7 +7015,6 @@ run_zgrep (ETERM *message)
 {
   char *regex = erl_iolist_to_string (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
-  size_t i;
   char **r;
 
   r = guestfs_zgrep (g, regex, path);
@@ -7090,7 +7034,6 @@ run_zgrepi (ETERM *message)
 {
   char *regex = erl_iolist_to_string (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
-  size_t i;
   char **r;
 
   r = guestfs_zgrepi (g, regex, path);
