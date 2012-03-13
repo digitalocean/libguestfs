@@ -64,11 +64,9 @@ static pcre *re_scientific_linux_old;
 static pcre *re_scientific_linux;
 static pcre *re_scientific_linux_no_minor;
 static pcre *re_major_minor;
-static pcre *re_aug_seq;
 static pcre *re_xdev;
 static pcre *re_cciss;
 static pcre *re_mdN;
-static pcre *re_first_partition;
 static pcre *re_freebsd;
 static pcre *re_netbsd;
 
@@ -172,7 +170,7 @@ static size_t mdadm_app_hash(const void *x, size_t table_size);
 static bool mdadm_app_cmp(const void *x, const void *y);
 static void mdadm_app_free(void *x);
 
-static int map_app_md_devices (guestfs_h *g, Hash_table **map);
+static ssize_t map_app_md_devices (guestfs_h *g, Hash_table **map);
 static int map_md_devices(guestfs_h *g, Hash_table **map);
 
 /* Set fs->product_name to the first line of the release file. */
@@ -569,8 +567,6 @@ guestfs___check_netbsd_root (guestfs_h *g, struct inspect_fs *fs)
 int
 guestfs___check_hurd_root (guestfs_h *g, struct inspect_fs *fs)
 {
-  int r;
-
   fs->type = OS_TYPE_HURD;
 
   if (guestfs_exists (g, "/etc/debian_version") > 0) {
@@ -947,11 +943,11 @@ parse_uuid(const char *str, uint32_t *uuid)
 }
 
 /* Create a mapping of uuids to appliance md device names */
-static int
+static ssize_t
 map_app_md_devices (guestfs_h *g, Hash_table **map)
 {
   char **mds = NULL;
-  int n = 0;
+  ssize_t n = 0;
 
   /* A hash mapping uuids to md device names */
   *map = hash_initialize(16, NULL, uuid_hash, uuid_cmp, md_uuid_free);
@@ -1050,10 +1046,12 @@ map_md_devices(guestfs_h *g, Hash_table **map)
 {
   Hash_table *app_map = NULL;
   char **matches = NULL;
+  int n_app_md_devices;
+
   *map = NULL;
 
   /* Get a map of md device uuids to their device names in the appliance */
-  int n_app_md_devices = map_app_md_devices(g, &app_map);
+  n_app_md_devices = map_app_md_devices (g, &app_map);
   if (n_app_md_devices == -1) goto error;
 
   /* Nothing to do if there are no md devices */

@@ -1,3 +1,76 @@
+2012-03-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.10.
+
+2012-03-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	Fix strict-overflow bugs and reenable this warning.
+	In two places, we were counting things in an array using an 'int'.  In
+	theory, the int could overflow, so gcc determines this to be undefined
+	behaviour.
+
+	The fix is to use size_t or ssize_t instead.
+	(cherry picked from commit d66dd2260c724bdfe57a8595aac37c8e9173cee5)
+
+2012-03-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Rename tests and make test paths relative.
+	When these tests were originally in the old regressions/ directory,
+	they used to refer to guestfish via the path '../fish/guestfish'.
+	Some of the tests were also called 'test-guestfish-*'.
+
+	Now that the tests have been moved into the fish/ directory, neither
+	of these things make sense.  So change the relative path to
+	'./guestfish' and rename all 'test-guestfish-*' as 'test-*'.
+	(cherry picked from commit 1f603bfd6d7cd17e88f737a496b7e5ee053750c2)
+
+2012-03-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Remove/fix unused variables warnings. (cherry picked from commit 2c8ead5aa0e6b821bf2d21a89e437e9a6c0ed1ca)
+
+	tests: Remove unused variable. (cherry picked from commit 099e3dd9f129e05bff5512855ea89530a7999004)
+
+	erlang: Remove unused variables. (cherry picked from commit 6292e630da080eb5d3427af6190eb68fe4eb1415)
+
+	format: Remove unused variables. (cherry picked from commit e9e0920c00c55894358559bcdbd89d55cbb66d2a)
+
+	daemon: Remove unused variables. (cherry picked from commit 13c2db39abff3c0050eade5bcce997afdf04d721)
+
+	inspect: Move variable decl to top of function. (cherry picked from commit 46d1280100b025de2a448331306e794d688748bd)
+
+	lib: Remove some unused variables. (cherry picked from commit cd3f2986eee8dbadc8253d4c3462f7e214f1236d)
+
+	lib: Use size_t for allocation size in safe realloc function. (cherry picked from commit b8cdf6c2b9d12df6acbe295fd75c8c59c8b7eec1)
+
+	bindtests: Use size_t instead of int for array iterators. (cherry picked from commit 24413ac4d8c8d64b3339f9e61886db8f7fbfed4f)
+
+	e2fsck: Comment, whitespace, error message cleanups. (cherry picked from commit 4c9218658e4d4b769acaa41d999b4bce437fbc37)
+
+2012-03-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	Close all file descriptors and remove all signal handlers in the recovery process.
+	If the parent process uses a pipe (or any fd, but pipes are a
+	particular problem), then the recovery process would hold open the
+	file descriptor(s) of the pipe, meaning that it could not be fully
+	closed in the parent.  Because the recovery process doesn't use
+	exec(2), this wasn't avoidable even using FD_CLOEXEC.
+
+	Avoid this by closing all file descriptors when starting the recovery
+	process.
+
+	After discussion with Dan Berrange, he points out that it's also a
+	good idea to set signal handlers to the default after forking, so that
+	any signal handlers set up in the parent don't affect the child.
+	(cherry picked from commit f1f045adf8d00549dd3efa3619e1162f9004b61e)
+
+2012-03-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	extra-tests: Export LIBVIRT_DEFAULT_URI to pick-guests.pl.
+	This fixes commit 2912e4e1173226f461517a0008664e01b5d3066d.
+	(cherry picked from commit 99702fe443383707b9d9c1b84570baf3bebf9253)
+
+	extra-tests: Check that guests are accessible before picking them. (cherry picked from commit 2912e4e1173226f461517a0008664e01b5d3066d)
+
 2012-03-08  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.9.

@@ -31426,7 +31426,6 @@ static int test_get_qemu_0 (void)
 
 int main (int argc, char *argv[])
 {
-  char c = 0;
   unsigned long int n_failed = 0;
   const char *filename;
   int fd;

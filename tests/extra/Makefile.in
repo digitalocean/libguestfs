@@ -1242,7 +1242,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-EXTRA_DIST = suppressions
+EXTRA_DIST = pick-guests.pl suppressions
 VG = valgrind \
 	--log-file=$(abs_builddir)/valgrind.log \
 	--leak-check=full \
@@ -1251,14 +1251,14 @@ VG = valgrind \
 
 RUN_VG = $(abs_top_builddir)/run $(VG)
 
-# Choose 5 guests at random on each run.
-RANDOM_GUESTS = $(shell virsh -c $(LIBVIRT_DEFAULT_URI) list --all | \
-			head -n -1 | \
-			tail -n +3 | \
-			awk '{print $$2}' | \
-			sort -R | \
-			head -5 | \
-			sort)
+# Choose guests at random on each run.
+#
+# 'export LIBVIRT_DEFAULT_URI' above doesn't appear to have an effect
+# for $(shell ...) commands, so we have to redefine LIBVIRT_DEFAULT_URI here.
+random_guests := \
+	$(shell \
+	  LIBVIRT_DEFAULT_URI='qemu+unix:///system?socket=/var/run/libvirt/libvirt-sock-ro' \
+	    $(abs_top_builddir)/run $(srcdir)/pick-guests.pl 5)
 
 all: all-am
 
@@ -1517,7 +1517,7 @@ test-df-real:
 	$(RUN_VG) ../../df/virt-df -h >/dev/null
 
 test-filesystems-real:
-	@for g in $(RANDOM_GUESTS); do \
+	@for g in $(random_guests); do \
 	  echo $(RUN_VG) ../../cat/virt-filesystems -d $$g --all --long -h --uuid; \
 	  $(RUN_VG) ../../cat/virt-filesystems -d $$g --all --long -h --uuid > /dev/null; \
 	  r=$$?; \
@@ -1525,7 +1525,7 @@ test-filesystems-real:
 	done
 
 test-inspector-real:
-	@for g in $(RANDOM_GUESTS); do \
+	@for g in $(random_guests); do \
 	  echo $(RUN_VG) ../../inspector/virt-inspector -d $$g; \
 	  $(RUN_VG) ../../inspector/virt-inspector -d $$g > /dev/null; \
 	  r=$$?; \
