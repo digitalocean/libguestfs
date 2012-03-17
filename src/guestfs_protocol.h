@@ -186,8 +186,8 @@ typedef struct {
 
 struct guestfs_int_inotify_event {
 	quad_t in_wd;
-	int in_mask;
-	int in_cookie;
+	u_int in_mask;
+	u_int in_cookie;
 	char *in_name;
 };
 typedef struct guestfs_int_inotify_event guestfs_int_inotify_event;

@@ -18,10 +18,11 @@
 include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
-	packagelist.in \
 	excludelist.in \
+	guestfsd.suppressions \
 	init \
-	make.sh.in
+	make.sh.in \
+	packagelist.in
 
 fsdir = $(libdir)/guestfs
 superminfsdir = $(libdir)/guestfs/supermin.d
@@ -64,12 +65,13 @@ stamp-supermin: make.sh packagelist excludelist
 	./make.sh
 	touch $@
 
-supermin.d/daemon.img: ../daemon/guestfsd
+supermin.d/daemon.img: ../daemon/guestfsd guestfsd.suppressions
 	mkdir -p supermin.d
 	rm -f $@ $@-t
 	rm -rf tmp
-	mkdir -p tmp$(DAEMON_SUPERMIN_DIR)
+	mkdir -p tmp$(DAEMON_SUPERMIN_DIR) tmp/etc
 	ln ../daemon/guestfsd tmp$(DAEMON_SUPERMIN_DIR)/guestfsd
+	ln guestfsd.suppressions tmp/etc/guestfsd.suppressions
 	( cd tmp && find | cpio --quiet -o -H newc ) > $@-t
 	rm -rf tmp
 	mv $@-t $@

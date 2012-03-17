@@ -153,8 +153,8 @@ typedef struct guestfs_int_xattr guestfs_int_xattr_list<>;
 
 struct guestfs_int_inotify_event {
   hyper in_wd;
-  int in_mask;
-  int in_cookie;
+  unsigned int in_mask;
+  unsigned int in_cookie;
   string in_name<>;
 };
 
