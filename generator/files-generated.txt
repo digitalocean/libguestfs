@@ -22,6 +22,7 @@ haskell/Bindtests.hs
 haskell/Guestfs.hs
 java/Bindtests.java
 java/Makefile.inc
+java/com/redhat/et/libguestfs/.gitignore
 java/com/redhat/et/libguestfs/Application.java
 java/com/redhat/et/libguestfs/Dirent.java
 java/com/redhat/et/libguestfs/GuestFS.java

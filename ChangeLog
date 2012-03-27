@@ -1,3 +1,44 @@
+2012-03-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.12.
+
+	Remove references to obsolete directory appliance/debian.
+	This directory has not existed for a long time.
+	(cherry picked from commit fc198a3b9aeaa76ee7d6ffc27402d25a4379dbbd)
+
+2012-03-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Generate a .gitignore file specifically for java structs. (cherry picked from commit 65ebec4a7a70cd179e4c39d72f539e500931c267)
+
+	daemon: Set last errno to ENOTSUP when APIs are not available. (cherry picked from commit f62db21d8babc14d580f754b0bf4d0cbe3c5bc9d)
+
+	daemon: Add reply_with_error_errno function.
+	This function allows you to pass an explicit errno back to the
+	library.  reply_with_error is redefined as a macro that calls
+	reply_with_error_errno with errno == 0.
+	(cherry picked from commit 7526df547c5bea9a0cb4370ca022e413388dce2e)
+
+2012-03-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Set last errno to ENOTSUP when inspection APIs are not available.
+	Previously there was no programmatic way to tell if inspection APIs
+	were unavailable because they are not compiled in (because hivex isn't
+	around).  This contrasts with daemon APIs where the availability is
+	covered by the guestfs_available API.
+
+	Change the inspection APIs so that when they are not available, the
+	last errno is set to ENOTSUP.  (Note that ENOTSUP must be defined on
+	all POSIX platforms).
+
+	This allows programs to detect if they are using a version of
+	libguestfs that was compiled without support for inspection, without
+	having to parse error messages.
+	(cherry picked from commit c7dff02ccbb6bbe505c73df5d83bea8afdc188c3)
+
+2012-03-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	po-docs: Rename LINGUAS -> linguas (RHBZ#804464). (cherry picked from commit e1ffb1011566ec68246df33ca42774b44ad5006c)
+
 2012-03-16  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.11.
