@@ -1,3 +1,106 @@
+2012-03-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.12.
+
+	Remove references to obsolete directory appliance/debian.
+	This directory has not existed for a long time.
+	(cherry picked from commit fc198a3b9aeaa76ee7d6ffc27402d25a4379dbbd)
+
+2012-03-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Generate a .gitignore file specifically for java structs. (cherry picked from commit 65ebec4a7a70cd179e4c39d72f539e500931c267)
+
+	daemon: Set last errno to ENOTSUP when APIs are not available. (cherry picked from commit f62db21d8babc14d580f754b0bf4d0cbe3c5bc9d)
+
+	daemon: Add reply_with_error_errno function.
+	This function allows you to pass an explicit errno back to the
+	library.  reply_with_error is redefined as a macro that calls
+	reply_with_error_errno with errno == 0.
+	(cherry picked from commit 7526df547c5bea9a0cb4370ca022e413388dce2e)
+
+2012-03-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Set last errno to ENOTSUP when inspection APIs are not available.
+	Previously there was no programmatic way to tell if inspection APIs
+	were unavailable because they are not compiled in (because hivex isn't
+	around).  This contrasts with daemon APIs where the availability is
+	covered by the guestfs_available API.
+
+	Change the inspection APIs so that when they are not available, the
+	last errno is set to ENOTSUP.  (Note that ENOTSUP must be defined on
+	all POSIX platforms).
+
+	This allows programs to detect if they are using a version of
+	libguestfs that was compiled without support for inspection, without
+	having to parse error messages.
+	(cherry picked from commit c7dff02ccbb6bbe505c73df5d83bea8afdc188c3)
+
+2012-03-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	po-docs: Rename LINGUAS -> linguas (RHBZ#804464). (cherry picked from commit e1ffb1011566ec68246df33ca42774b44ad5006c)
+
+2012-03-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.11.
+
+	generator: Sort camel-case structs. (cherry picked from commit 14938b46a74467d0e4b1cd076ffd7fcbf06c26eb)
+
+	generator: Fix CompareWithString test.
+	This type of test was not used, and in fact the generated test
+	simply didn't work.
+	(cherry picked from commit 6bee63beb45678ff937593af59748dfceacdc608)
+
+	generator: Fix FUInt{32,64} struct field types.
+	We were not using an unsigned type in the XDR.  This doesn't
+	affect data integrity or the protocol, but it makes it more
+	complicated for the daemon to set these fields.
+	(cherry picked from commit c8630300b8ab46c668da1c8d5c1cdb9d1e3a4552)
+
+	daemon: Don't call reply_with_* after split_lines fails.
+	split_lines already sets reply_with_*, so calling it again would lose
+	protocol synchronization.
+	(cherry picked from commit 710ec49bac8bce10bfc0b9ba4b34d877c22f7287)
+
+	inspect: Fedora/RHEL CDs are multipart if totaldiscs > 1, not > 0. (cherry picked from commit 974dffc6769b732befe85bcd8f614b9600927631)
+
+	inspect: Add comment documenting findings of RHEL 5, 6 install CDs. (cherry picked from commit 5749de39c2b44644662fb176784731bce851b828)
+
+	sparsify: Add a note about encrypted disks to the man page. (cherry picked from commit 1c1ecb2c419382f1677501b22cb98a06c7abe9a9)
+
+	sparsify: Unlink temporary overlay file if user presses ^C.
+	Add a signal handler so this potentially large temporary file
+	is removed when the user hits ^C.
+	(cherry picked from commit 7283a5a2765c0670e9dceec70e626a49a30d269c)
+
+	sparsify: Use zero-device instead of dd if=/dev/zero to zero device.
+	zero-device is more efficient in general, and avoids writing to blocks
+	which are already zero.
+	(cherry picked from commit 8c9f6a64be9840a955e481e932f13d005c0de0de)
+
+	sparsify: Only print qemu-img command if verbose. (cherry picked from commit 7934ea2395d2a417fbc20efc22573113f7ae9d7a)
+
+	inspect: Ignore missing HKLM\SYSTEM\MountedDevices (RHBZ#803664).
+	When a Windows guest doesn't have a HKLM\SYSTEM\MountedDevices node,
+	inspection fails.  However inspection should not completely fail just
+	because we cannot get the drive letter mapping from a guest.
+	(cherry picked from commit 91cede3465cd2496a01a89d5c8815df7c326c2ec)
+
+	inspector: Update man page to describe how to access inspection info from other languages and guestfish. (cherry picked from commit 2bc922dd8e12bcf05e0aeef8a8b60b6aab9ee915)
+
+2012-03-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Add guestfsd.suppressions file to EXTRA_DIST. (cherry picked from commit c23f3b8e527bde9a83dd7ae24273db6da87a7268)
+
+	java: Make sure generator is rerun when necessary to rebuild generated files. (cherry picked from commit 13e7a1b400b7e2a5e9335d25205b09e74c89d858)
+
+	appliance: Enhance --enable-valgrind-daemon with a suppressions file.
+	This lets us suppress errors in system libraries.
+	(cherry picked from commit 302309921a8cde83eb19a7c25b7ee43932b91a05)
+
+	daemon: When copy subprocess fails, print return code.
+	Useful for debugging.
+	(cherry picked from commit 5da61d30520315a7d5060137a6c109f2109a7631)
+
 2012-03-13  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.10.

@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-sparsify 1"
-.TH virt-sparsify 1 "2012-03-13" "libguestfs-1.16.10" "Virtualization Support"
+.TH virt-sparsify 1 "2012-03-23" "libguestfs-1.16.12" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -105,7 +105,8 @@ usually much less space is required.
 .IP "\(bu" 4
 Virt-sparsify cannot resize disk images.  To do that, use \fIvirt\-resize\fR\|(1).
 .IP "\(bu" 4
-Virt-sparsify cannot handle encrypted disks.
+Virt-sparsify cannot handle encrypted disks.  Libguestfs supports encrypted
+disks, but encrypted disks themselves cannot be sparsified.
 .IP "\(bu" 4
 Virt-sparsify cannot yet sparsify the space between partitions.  Note that
 this space is often used for critical items like bootloaders so it's not

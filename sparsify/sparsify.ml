@@ -143,9 +143,13 @@ let () =
 (* Create the temporary overlay file. *)
 let overlaydisk =
   let tmp = Filename.temp_file "sparsify" ".qcow2" in
+  let unlink_tmp () = try unlink tmp with _ -> () in
 
   (* Unlink on exit. *)
-  at_exit (fun () -> try unlink tmp with _ -> ());
+  at_exit unlink_tmp;
+
+  (* Unlink on sigint. *)
+  Sys.set_signal Sys.sigint (Sys.Signal_handle (fun _ -> unlink_tmp ()));
 
   (* Create it with the indisk as the backing file. *)
   let cmd =
@@ -246,11 +250,9 @@ let () =
           (* XXX Don't have lvcreate -l 100%FREE.  Fake it. *)
           g#lvresize_free lvdev 100;
 
-          (* This command is expected to fail. *)
-          (try g#dd "/dev/zero" lvdev with _ -> ());
-
-           g#sync ();
-           g#lvremove lvdev
+          g#zero_device lvdev;
+          g#sync ();
+          g#lvremove lvdev
         )
       )
   ) vgs
@@ -305,7 +307,7 @@ let () =
       | None -> ""
       | Some option -> " -o " ^ Filename.quote option)
       (Filename.quote overlaydisk) (Filename.quote outdisk) in
-(*  if verbose then*)
+  if verbose then
     printf "%s\n%!" cmd;
   if Sys.command cmd <> 0 then
     error "external command failed: %s" cmd

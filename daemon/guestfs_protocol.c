@@ -364,9 +364,9 @@ xdr_guestfs_int_inotify_event (XDR *xdrs, guestfs_int_inotify_event *objp)
 
 	 if (!xdr_quad_t (xdrs, &objp->in_wd))
 		 return FALSE;
-	 if (!xdr_int (xdrs, &objp->in_mask))
+	 if (!xdr_u_int (xdrs, &objp->in_mask))
 		 return FALSE;
-	 if (!xdr_int (xdrs, &objp->in_cookie))
+	 if (!xdr_u_int (xdrs, &objp->in_cookie))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->in_name, ~0))
 		 return FALSE;
