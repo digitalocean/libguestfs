@@ -1,0 +1,21 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Tue, 27 Mar 2012 13:32:27 +0200
+Subject: Fix out-of-tree build for Java bindings
+
+---
+ java/Makefile.am |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/java/Makefile.am b/java/Makefile.am
+index c753672..a01f100 100644
+--- a/java/Makefile.am
++++ b/java/Makefile.am
+@@ -58,7 +58,7 @@ libguestfs_jardir = $(JAR_INSTALL_DIR)
+ libguestfs_jar_DATA = libguestfs-${VERSION}.jar
+ libguestfs_jar_class_files = $(java_sources:.java=.class)
+ $(libguestfs_jar_class_files): %.class: %.java
+-	$(JAVAC) $(JAVAC_FLAGS) -d $(builddir) -classpath @srcdir@:$(builddir) -sourcepath @srcdir@:$(builddir) $<
++	$(JAVAC) $(JAVAC_FLAGS) -d @builddir@ -classpath @srcdir@:@builddir@ @srcdir@/$<
+ 
+ libguestfs-${VERSION}.jar: $(libguestfs_jar_class_files)
+ 	$(JAR) cf $@ $^
