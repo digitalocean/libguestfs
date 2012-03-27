@@ -36,7 +36,8 @@ override_dh_auto_configure:
 		--enable-install-daemon \
 		--with-java-home=/usr/lib/jvm/default-java \
 		RAKE=rake \
-		PYTHON=$(PYTHON_DEFAULT)
+		PYTHON=$(PYTHON_DEFAULT) \
+		JNI_INSTALL_DIR=/usr/lib/jni
 
 	set -e; for v in $(patsubst ruby%,%,$(filter-out $(RUBY_DEFAULT), $(RUBIES))) \
 	; do \
