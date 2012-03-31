@@ -4,7 +4,7 @@ Subject: ruby: install to vendor_ruby.
 
 ---
  ruby/Makefile.am |   12 ++++++------
- 1 files changed, 6 insertions(+), 6 deletions(-)
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/ruby/Makefile.am b/ruby/Makefile.am
 index c4b680f..db6ec9e 100644

@@ -5,10 +5,10 @@ Subject: Mount /run as tmpfs inside appliance (workaround for febootstrap's
 
 ---
  appliance/init |    3 +++
- 1 files changed, 3 insertions(+), 0 deletions(-)
+ 1 file changed, 3 insertions(+)
 
 diff --git a/appliance/init b/appliance/init
-index 77d0281..a29353d 100755
+index f44ad7b..0c0ad76 100755
 --- a/appliance/init
 +++ b/appliance/init
 @@ -16,6 +16,9 @@ rm -f /proc; mkdir /proc

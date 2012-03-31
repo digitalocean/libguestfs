@@ -5,7 +5,7 @@ Subject: Disable fuse tests if /dev/fuse doesn't exist
 e.g. when running in a chroot.
 ---
  fuse/test-fuse.sh |    5 +++++
- 1 files changed, 5 insertions(+), 0 deletions(-)
+ 1 file changed, 5 insertions(+)
 
 diff --git a/fuse/test-fuse.sh b/fuse/test-fuse.sh
 index 517222a..431ac28 100755

@@ -4,7 +4,7 @@ Subject: out-of-tree build: fix building Perl bindings
 
 ---
  perl/Makefile.am |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
+ 1 file changed, 1 insertion(+)
 
 diff --git a/perl/Makefile.am b/perl/Makefile.am
 index 404a4e9..253d990 100644
