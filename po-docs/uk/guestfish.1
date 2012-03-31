@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfish 1"
-.TH guestfish 1 "2012-03-23" "libguestfs-1.16.12" "Virtualization Support"
+.TH guestfish 1 "2012-03-30" "libguestfs-1.16.13" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -3332,8 +3332,7 @@ but records the fact that it threw them away by setting a flag
 \&\f(CW\*(C`IN_Q_OVERFLOW\*(C'\fR in the returned structure list (see \*(L"inotify-read\*(R").
 .PP
 Before any events are generated, you have to add some watches to the
-internal watch list.  See: \*(L"inotify-add-watch\*(R", \*(L"inotify-rm-watch\*(R" and
-\&\*(L"inotify-watch-all\*(R".
+internal watch list.  See: \*(L"inotify-add-watch\*(R" and \*(L"inotify-rm-watch\*(R".
 .PP
 Queued up events should be read periodically by calling \*(L"inotify-read\*(R" (or
 \&\*(L"inotify-files\*(R" which is just a helpful wrapper around \*(L"inotify-read\*(R").
@@ -4670,8 +4669,9 @@ This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 \& md\-detail md
 .Ve
 .PP
-This command exposes the output of 'mdadm \-DY <md>'. The following fields
-are usually present in the returned hash. Other fields may also be present.
+This command exposes the output of 'mdadm \-DY <md>'.  The following
+fields are usually present in the returned hash.  Other fields may also be
+present.
 .ie n .IP """level""" 4
 .el .IP "\f(CWlevel\fR" 4
 .IX Item "level"

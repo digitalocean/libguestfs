@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfs 3"
-.TH guestfs 3 "2012-03-23" "libguestfs-1.16.12" "Virtualization Support"
+.TH guestfs 3 "2012-03-30" "libguestfs-1.16.13" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -4472,8 +4472,8 @@ a flag \f(CW\*(C`IN_Q_OVERFLOW\*(C'\fR in the returned structure list (see
 \&\f(CW\*(C`guestfs_inotify_read\*(C'\fR).
 .PP
 Before any events are generated, you have to add some watches to the
-internal watch list.  See: \f(CW\*(C`guestfs_inotify_add_watch\*(C'\fR,
-\&\f(CW\*(C`guestfs_inotify_rm_watch\*(C'\fR and \f(CW\*(C`guestfs_inotify_watch_all\*(C'\fR.
+internal watch list.  See: \f(CW\*(C`guestfs_inotify_add_watch\*(C'\fR and
+\&\f(CW\*(C`guestfs_inotify_rm_watch\*(C'\fR.
 .PP
 Queued up events should be read periodically by calling
 \&\f(CW\*(C`guestfs_inotify_read\*(C'\fR (or \f(CW\*(C`guestfs_inotify_files\*(C'\fR which is just a helpful
@@ -6458,8 +6458,9 @@ See \*(L"\s-1CALLS\s0 \s-1WITH\s0 \s-1OPTIONAL\s0 \s-1ARGUMENTS\s0\*(R".
 \&                    const char *md);
 .Ve
 .PP
-This command exposes the output of 'mdadm \-DY <md>'. The following fields
-are usually present in the returned hash. Other fields may also be present.
+This command exposes the output of 'mdadm \-DY <md>'.  The following
+fields are usually present in the returned hash.  Other fields may also be
+present.
 .ie n .IP """level""" 4
 .el .IP "\f(CWlevel\fR" 4
 .IX Item "level"

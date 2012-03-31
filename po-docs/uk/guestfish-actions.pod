@@ -1829,8 +1829,7 @@ but records the fact that it threw them away by setting a flag
 C<IN_Q_OVERFLOW> in the returned structure list (see L</inotify-read>).
 
 Before any events are generated, you have to add some watches to the
-internal watch list.  See: L</inotify-add-watch>, L</inotify-rm-watch> and
-L</inotify-watch-all>.
+internal watch list.  See: L</inotify-add-watch> and L</inotify-rm-watch>.
 
 Queued up events should be read periodically by calling L</inotify-read> (or
 L</inotify-files> which is just a helpful wrapper around L</inotify-read>).
@@ -3115,8 +3114,9 @@ ARGUMENTS>.
 
  md-detail md
 
-This command exposes the output of 'mdadm -DY <md>'. The following fields
-are usually present in the returned hash. Other fields may also be present.
+This command exposes the output of 'mdadm -DY E<lt>mdE<gt>'.  The following
+fields are usually present in the returned hash.  Other fields may also be
+present.
 
 =over 
 

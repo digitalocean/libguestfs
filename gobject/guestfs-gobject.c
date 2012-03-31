@@ -13412,8 +13412,8 @@ guestfs_session_mkswap_file(GuestfsSession *session, const gchar *path, GError *
  * 
  * Before any events are generated, you have to add some
  * watches to the internal watch list. See:
- * "guestfs_inotify_add_watch", "guestfs_inotify_rm_watch"
- * and "guestfs_inotify_watch_all".
+ * "guestfs_inotify_add_watch" and
+ * "guestfs_inotify_rm_watch".
  * 
  * Queued up events should be read periodically by calling
  * "guestfs_inotify_read" (or "guestfs_inotify_files" which
