@@ -1861,13 +1861,14 @@ appliance: force
 # Old RHEL 5 autoconf doesn't have builddir.
 builddir ?= $(top_builddir)/java
 @HAVE_JAVA_TRUE@$(libguestfs_jar_class_files): %.class: %.java
-@HAVE_JAVA_TRUE@	$(JAVAC) $(JAVAC_FLAGS) -d $(builddir) -classpath @srcdir@:$(builddir) -sourcepath @srcdir@:$(builddir) $<
+@HAVE_JAVA_TRUE@	$(JAVAC) $(JAVAC_FLAGS) -d $(builddir) -classpath $(srcdir):$(builddir) $(srcdir)/$<
 
 @HAVE_JAVA_TRUE@libguestfs-${VERSION}.jar: $(libguestfs_jar_class_files)
 @HAVE_JAVA_TRUE@	$(JAR) cf $@ $^
 
 @HAVE_JAVA_TRUE@com_redhat_et_libguestfs_GuestFS.h: $(java_prefix)/GuestFS.class
-@HAVE_JAVA_TRUE@	$(JAVAH) -classpath @srcdir@:$(builddir) com.redhat.et.libguestfs.GuestFS
+@HAVE_JAVA_TRUE@	rm -f $@
+@HAVE_JAVA_TRUE@	$(JAVAH) -classpath $(srcdir):$(builddir) com.redhat.et.libguestfs.GuestFS
 
 @HAVE_JAVA_TRUE@doc-stamp: $(java_sources)
 @HAVE_JAVA_TRUE@	$(JAVADOC) $(JAVADOC_FLAGS) -d api \

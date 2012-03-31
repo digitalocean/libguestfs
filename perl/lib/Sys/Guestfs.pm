@@ -1893,10 +1893,8 @@ C<IN_Q_OVERFLOW> in the returned structure list (see
 C<$h-E<gt>inotify_read>).
 
 Before any events are generated, you have to add some
-watches to the internal watch list.  See:
-C<$h-E<gt>inotify_add_watch>,
-C<$h-E<gt>inotify_rm_watch> and
-C<$h-E<gt>inotify_watch_all>.
+watches to the internal watch list.  See: C<$h-E<gt>inotify_add_watch> and
+C<$h-E<gt>inotify_rm_watch>.
 
 Queued up events should be read periodically by calling
 C<$h-E<gt>inotify_read>
@@ -3065,8 +3063,9 @@ If not set, this defaults to C<raid1>.
 
 =item %info = $h->md_detail ($md);
 
-This command exposes the output of 'mdadm -DY <md>'. The following fields are
-usually present in the returned hash. Other fields may also be present.
+This command exposes the output of 'mdadm -DY E<lt>mdE<gt>'.
+The following fields are usually present in the returned hash.
+Other fields may also be present.
 
 =over
 

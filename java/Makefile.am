@@ -58,7 +58,7 @@ libguestfs_jardir = $(JAR_INSTALL_DIR)
 libguestfs_jar_DATA = libguestfs-${VERSION}.jar
 libguestfs_jar_class_files = $(java_sources:.java=.class)
 $(libguestfs_jar_class_files): %.class: %.java
-	$(JAVAC) $(JAVAC_FLAGS) -d $(builddir) -classpath @srcdir@:$(builddir) -sourcepath @srcdir@:$(builddir) $<
+	$(JAVAC) $(JAVAC_FLAGS) -d $(builddir) -classpath $(srcdir):$(builddir) $(srcdir)/$<
 
 libguestfs-${VERSION}.jar: $(libguestfs_jar_class_files)
 	$(JAR) cf $@ $^
@@ -81,7 +81,8 @@ libguestfs_jni_la_CFLAGS = \
 BUILT_SOURCES = com_redhat_et_libguestfs_GuestFS.h
 
 com_redhat_et_libguestfs_GuestFS.h: $(java_prefix)/GuestFS.class
-	$(JAVAH) -classpath @srcdir@:$(builddir) com.redhat.et.libguestfs.GuestFS
+	rm -f $@
+	$(JAVAH) -classpath $(srcdir):$(builddir) com.redhat.et.libguestfs.GuestFS
 
 # Documentation.
 

@@ -1,3 +1,97 @@
+2012-03-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.13.
+
+2012-03-30  Richard Jones  <rjones@redhat.com>
+
+	test: Thread function is a candidate for attribute noreturn.
+	The start_test_thread function never returns, it is always
+	cancelled by the main thread.
+	(cherry picked from commit b9cb387a109f4d09cdef84a62194201e78f97cb7)
+
+2012-03-30  Richard Jones  <rjones@redhat.com>
+
+	Partially revert "generator: Fix unescaped '<' and '>' in api descriptions"
+	Don't escape < and > in verbatim sections.
+
+	This partially reverts commit 09a4e7664b59789f90b6674f640f9d688e4f8b43.
+	(cherry picked from commit d67da6419ac025db7c48f82054d7153b2c71481d)
+
+2012-03-30  Hilko Bengen  <bengen@hilluzination.de>
+
+	Fix out-of-tree build for GObject bindings
+	guestfs-gobject.h (in the source directory) was not found.
+
+	In file included from <stdin>:4:0:
+	/path/to/libguestfs/gobject/guestfs-gobject.h:23:37: fatal error: guestfs-gobject-session.h: No such file or directory
+	compilation terminated.
+	Error while processing the source.
+	make[2]: *** [Guestfs-1.0.gir] Error 1
+	(cherry picked from commit 0c9361a3568c23581ab43cb926fe138669c4b168)
+
+2012-03-30  Hilko Bengen  <bengen@hilluzination.de>
+
+	Fix out-of-tree build for Java bindings (cherry picked from commit 4db251048bd0aca2b98247109f00e68c2080a71c)
+
+	Fix out-of-tree build for appliance (cherry picked from commit 17c828d99550da31c33cc8a7e0f874dd651ded19)
+
+2012-03-30  Richard Jones  <rjones@redhat.com>
+
+	java: Delete target file before running javah.
+	javah from old GNU classpath won't overwrite the target *.h file,
+	instead leaving the old one which results in a predictable build
+	failure.  Delete the target so this won't happen.
+	(cherry picked from commit 4d0aa08b000743cb523792d0824f2514e2e45ffa)
+
+	fish: Fix compilation when libconfig is not available. (cherry picked from commit 5ea27d740eb9a7a2fe666dd9ffa70114c0c42756)
+
+	Don't provoke -Wstrict-overflow warning from map_app_md_devices function.
+	Unclear if this is a real bug or not.
+	(cherry picked from commit 3d174b39bff6118bca3068c20ff874924cbfa1fd)
+
+	Work around -Wstrict-overflow warning on gcc 4.5.1. (cherry picked from commit f2fae5151f33e933f4d574dc4324b7a8a2ee393c)
+
+	m4: Update .gitignore for old Fedora. (cherry picked from commit b169b03dd42b82218c7241f33425c27660e4bdae)
+
+	configure: Don't fail if GOBJECT_INTROSPECTION_CHECK is not defined. (cherry picked from commit 8111b108d224dda868f257ac0ef23838991b3594)
+
+2012-03-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Don't include internal guestfs header in tests. (cherry picked from commit f35aadcd86a081756b35c1eb4326a9d23e82f21e)
+
+	Ignore guestfs.pyo.
+	This fixes commit e8ef35df267de6fd6308d0c49a6bdef41113cf19.
+	(cherry picked from commit a138063acb32f6fccfef24381a9c61f08d68ea74)
+
+2012-03-30  Matthew Booth  <mbooth@redhat.com>
+
+	Only ignore guestfs.* at the top level
+	The guestfs.* rule appears to be for temporary appliance directories, which are
+	only at the top level. It was matching more than that.
+	(cherry picked from commit e8ef35df267de6fd6308d0c49a6bdef41113cf19)
+
+	generator: Remove doc reference to non-existent guestfs_inotify_watch_all (cherry picked from commit 13e5f1a3b1f6493ea5e576bdd607aedc2c7ddc82)
+
+	generator: Fix unescaped '<' and '>' in api descriptions (cherry picked from commit 09a4e7664b59789f90b6674f640f9d688e4f8b43)
+
+2012-03-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	fuse: Fix documentation for call to virt-filesystems.
+	virt-filesystems requires -a/-d option.
+	(cherry picked from commit f5c31db5ed4225c263e6f508a85f38aa80411c0e)
+
+2012-03-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	df: Avoid a compilation error if libxml2 is not available.
+	virt_df-domains.o: In function `add_domain':
+	/home/feeliwood/Downloads/libguestfs-1.17.21/df/domains.c:274: undefined reference to `guestfs___for_each_disk'
+
+	guestfs___for_each_disk is only available when libvirt _and_ libxml2
+	dependencies are available at compile time.
+
+	Thanks Tho Huynh.
+	(cherry picked from commit f1d10672c7da94f8983b3b5d434e64b127da1242)
+
 2012-03-23  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.12.

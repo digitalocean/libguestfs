@@ -11634,8 +11634,7 @@ ruby_guestfs_mkswap_file (VALUE gv, VALUE pathv)
  * 
  * Before any events are generated, you have to add some
  * watches to the internal watch list. See:
- * "g.inotify_add_watch", "g.inotify_rm_watch" and
- * "g.inotify_watch_all".
+ * "g.inotify_add_watch" and "g.inotify_rm_watch".
  * 
  * Queued up events should be read periodically by calling
  * "g.inotify_read" (or "g.inotify_files" which is just a
