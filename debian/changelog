@@ -1,6 +1,6 @@
-libguestfs (1.16.14-1) unstable; urgency=low
+libguestfs (1.16.15-1) unstable; urgency=low
 
-  * release: New upstream version 1.16.14.
+  * release: New upstream version 1.16.15.
 
  -- Richard W.M. Jones <rjones@redhat.com>  Thu,  9 Dec 2010 12:00:00 +0000
 
