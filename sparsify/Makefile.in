@@ -70,16 +70,7 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/subdir-rules.mk
-
-# Alphabetical order.
-@HAVE_OCAML_TRUE@am__append_1 = \
-@HAVE_OCAML_TRUE@	progress_c.c \
-@HAVE_OCAML_TRUE@	progress.mli \
-@HAVE_OCAML_TRUE@	progress.ml \
-@HAVE_OCAML_TRUE@	sparsify.ml \
-@HAVE_OCAML_TRUE@	utils.ml
-
-@HAVE_OCAML_TRUE@am__append_2 = stamp-virt-sparsify.pod
+@HAVE_OCAML_TRUE@am__append_1 = stamp-virt-sparsify.pod
 subdir = sparsify
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -1270,14 +1261,22 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SOURCES = $(am__append_1)
 EXTRA_DIST = \
 	$(SOURCES) \
 	virt-sparsify.pod \
 	test-virt-sparsify.sh
 
 CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify test.img \
-	$(am__append_2)
+	$(am__append_1)
+
+# Alphabetical order.
+SOURCES = \
+	progress_c.c \
+	progress.mli \
+	progress.ml \
+	sparsify.ml \
+	utils.ml
+
 
 # Note this list must be in dependency order.
 @HAVE_OCAML_TRUE@OBJECTS = \
