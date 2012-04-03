@@ -1,3 +1,24 @@
+2012-04-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.15.
+
+	inspection: Support Fedora 17+ (RHBZ#809361).
+	Recognize grub2 as a bootloader, and /bin being a symlink to
+	/usr/bin (ie. UsrMove feature added in Fedora 17+).
+	(cherry picked from commit 5c8a241e5cd119f436a050ddbbf7ea73f83ff8e4)
+
+2012-04-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.14.
+
+	mkfs: Don't allow blocksize to be set on btrfs (RHBZ#807905). (cherry picked from commit 77ac6b73cde017452d48d53aaf6fa755502b05d5)
+
+	Add po/remove-potcdate.sin to git and EXTRA_DIST.
+	This file is produced by gettextize and required by 'make dist'.
+	(cherry picked from commit 3a58a00483df9ce02d8814981e4381a5f73c9a8b)
+
+	Ensure that SOURCES are always in EXTRA_DIST, even if OCaml not available. (cherry picked from commit 6e3de762782b050fe7ad675297089a42026f05c4)
+
 2012-03-30  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.13.
