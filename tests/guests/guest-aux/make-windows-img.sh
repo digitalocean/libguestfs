@@ -37,7 +37,7 @@ fi
 
 # Create a disk image.
 ../../run ../../fish/guestfish <<EOF
-sparse windows.img.tmp 512M
+sparse windows.img.tmp.$$ 512M
 run
 
 # Format the disk.
@@ -46,7 +46,7 @@ part-add /dev/sda p 64     524287
 part-add /dev/sda p 524288    -64
 
 # Disk ID.
-pwrite-device /dev/sda "1234" 0x01b8
+pwrite-device /dev/sda "1234" 0x01b8 | cat >/dev/null
 
 # Phony boot loader filesystem.
 mkfs ntfs /dev/sda1
@@ -68,4 +68,4 @@ touch /autoexec.bat
 
 EOF
 
-mv windows.img.tmp windows.img
+mv windows.img.tmp.$$ windows.img
