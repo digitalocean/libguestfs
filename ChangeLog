@@ -1,3 +1,43 @@
+2012-04-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.16.
+
+2012-04-10  Qin Guan  <qguan@redhat.com>
+
+	sysprep: Allow hwaddr to be removed on other Red Hat derivatives (RHBZ#811117). Allow hostname to be set on other Red Hat derivatives (RHBZ#811112).
+	Since virt-sysprep has been rewritten on the development branch, this
+	is a new patch based on
+	commit 5e054f873198b83947de328777d9ced3bfa39ad5
+	and commit 60b87d0a5c97a458cefb6c5d31eeede7709f5a3d.
+
+2012-04-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Fix guest building so parallel 'make -jN check' works.
+	This means renaming various temporary files (eg. fstab.tmp) that
+	several of the scripts were using so they don't conflict
+	(eg. fstab.tmp.$$).
+
+	Also the rule:
+
+	  fedora-md1.img fedora-md2.img: guest-aux/make-fedora-img.pl
+
+	causes the script to run twice in parallel when using 'make -jN'.
+	Replace this with a stamp file so it runs once:
+
+	  fedora-md1.img fedora-md2.img: stamp-fedora-md.img
+	  stamp-fedora-md.img: guest-aux/make-fedora-img.pl
+
+	(cherry picked from commit f2ac7c18a775dc10c3fa502f3de5ad01faa0efea)
+
+2012-04-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Don't print "4" when running make-windows-img.sh
+	The return value of the pwrite-device command -- 4 (bytes) -- is
+	printed out.  Hide it instead.
+	(cherry picked from commit 418a048215b17dcf1f0c74693831306cbcf0f194)
+
+	debian: Suggest 'apt-get build-dep' to install dependencies. (cherry picked from commit 4b86f1ad03f617e60f68be6153ca75baaaedf754)
+
 2012-04-03  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.15.
