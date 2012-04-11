@@ -1,3 +1,10 @@
+libguestfs (1:1.16.16-1) unstable; urgency=low
+
+  * New upstream version
+  * [9e988bc] rebased patch queue
+
+ -- Hilko Bengen <bengen@debian.org>  Wed, 11 Apr 2012 21:36:46 +0200
+
 libguestfs (1:1.16.15-1) unstable; urgency=low
 
   * New upstream version
