@@ -1,3 +1,49 @@
+2012-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.17.
+
+	docs: Add libguestfs-test-tool(1) to guestfs(3) man page.
+	Cherry picked from commit 307e8bc51a7416fa62ec43568cb8ba1876490a62
+	and modified to make it appropriate for the stable-1.16 branch.
+
+2012-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	po-docs: Allow parallel builds in po-docs directory.
+	The first time the directory is checked out from git, there are no
+	*.pod files.  In a parallel build, the first thread notices this and
+	runs the 'make -C .. update-po' rule, but the other threads also try
+	to run at the same time and fail.
+
+	(cherry picked from commit 3e164f15b77230b0961048893d03ec588fc8ab0e)
+
+2012-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	extra-tests: Add suppression for libvirt/gnutls leak.
+	https://www.redhat.com/archives/libvir-list/2012-April/msg00322.html
+	(cherry picked from commit de2dc9f71dd284e033e999a4d0541848a7201b02)
+
+	python: Add a regression test for RHBZ#811650. (cherry picked from commit b6dd7e72500cbfa4e13379b9f2b1d0ccfa7ebec3)
+
+	launch: Set error when qemu fails early during launch (RHBZ#811650).
+	This caused the Python bindings (and probably others) to
+	segfault because guestfs_last_error(g) would return NULL.
+	(cherry picked from commit 0f7de2279a4af0bb259c9e36fca5e5c3aa835301)
+
+2012-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	python: Add PYTHONPATH to './run' script.
+	Also:
+
+	 - tidy up the script
+	 - use the ./run script when running Python tests
+	(cherry picked from commit f237ae2ad61ad583e5eacf5759b25c32bb7538a1)
+
+2012-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	extra-tests: Disable valgrind vgdb.
+	This leaves files called 'vgdb-pipe-*' in .
+	(cherry picked from commit b10a3d718e4ff8957e8af4afafcd1680c386ad33)
+
 2012-04-10  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.16.

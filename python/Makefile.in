@@ -1314,10 +1314,8 @@ EXTRA_DIST = \
 @HAVE_PYTHON_TRUE@libguestfsmod_la_LIBADD = $(top_builddir)/src/libguestfs.la
 @HAVE_PYTHON_TRUE@libguestfsmod_la_LDFLAGS = -avoid-version -shared
 @HAVE_PYTHON_TRUE@TESTS_ENVIRONMENT = \
-@HAVE_PYTHON_TRUE@	LIBGUESTFS_PATH=$(top_builddir)/appliance \
-@HAVE_PYTHON_TRUE@	PYTHONPATH=$(builddir):$(builddir)/.libs \
-@HAVE_PYTHON_TRUE@	TMPDIR=$(top_builddir) \
-@HAVE_PYTHON_TRUE@	PYTHON=$(PYTHON)
+@HAVE_PYTHON_TRUE@	PYTHON=$(PYTHON) \
+@HAVE_PYTHON_TRUE@	$(top_builddir)/run
 
 @HAVE_PYTHON_TRUE@TESTS = run-bindtests $(am__append_1)
 all: all-am
