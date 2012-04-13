@@ -1,3 +1,21 @@
+2012-04-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.18.
+
+	extra-tests: ocaml: Use a short delay instead of Thread.yield.
+	On the new faster computer, Thread.yield wasn't yielding, so the
+	second thread would block the main test from proceeding (only when run
+	under valgrind however).
+	(cherry picked from commit 5b414f581f1e40f91e44914776b119ce3ef6594c)
+
+	extra-tests: Add suppression for memory leak in FUSE. (cherry picked from commit a97e9429ea888b4732bbbcfdd85b9368dd6ef96c)
+
+	inspector: Update example XML. (cherry picked from commit 681377f1b274cba0a4881ad18ccf200b9a014e94)
+
+	inspection: Remove spurious warning for Ubuntu 10.04 with encrypted swap (RHBZ#811872). (cherry picked from commit 96b6504b09461aeb6850bb2e7b870a0a4c2f5edf)
+
+	inspector: Fix incorrect arch in example-ubuntu.xml. (cherry picked from commit a996f0d370d883374dbe2448f57b72966d20514e)
+
 2012-04-11  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.17.
