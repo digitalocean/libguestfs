@@ -1303,8 +1303,8 @@ INTROSPECTION_GIRS = $(am__append_1)
 INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all
 INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
 @HAVE_INTROSPECTION_TRUE@introspection_sources = \
-@HAVE_INTROSPECTION_TRUE@  $(libguestfs_gobject_1_0_la_HEADERS) \
-@HAVE_INTROSPECTION_TRUE@  $(libguestfs_gobject_1_0_la_SOURCES)
+@HAVE_INTROSPECTION_TRUE@	$(libguestfs_gobject_1_0_la_HEADERS) \
+@HAVE_INTROSPECTION_TRUE@	$(libguestfs_gobject_1_0_la_SOURCES)
 
 @HAVE_INTROSPECTION_TRUE@Guestfs_1_0_gir_INCLUDES = GObject-2.0 Gio-2.0
 @HAVE_INTROSPECTION_TRUE@Guestfs_1_0_gir_CFLAGS = $(INCLUDES) -I$(srcdir)
