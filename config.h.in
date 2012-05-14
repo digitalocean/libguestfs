@@ -68,6 +68,9 @@
 /* Enable packet dumps in verbose mode. */
 #undef ENABLE_PACKET_DUMP
 
+/* enable systemtap/DTrace userspace probes */
+#undef ENABLE_PROBES
+
 /* Define this to 1 if F_DUPFD behavior does not match POSIX */
 #undef FCNTL_DUPFD_BUGGY
 
