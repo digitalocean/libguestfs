@@ -1,3 +1,22 @@
+2012-05-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.23.
+
+	virt-ls: Don't initialize path = NULL. (cherry picked from commit 88a854cf7fd80ce4a6c6c3ded3aaaa3c135a1964)
+
+	virt-ls: Fix --checksum option (RHBZ#822490). (cherry picked from commit 32765e440cee03bb7b89d1aa58c7dea4f55458c8)
+
+2012-05-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	doc: Add notes on how GPT works on 4k sector disks.
+	I used scsi_debug to create a 4k sector virtual disk:
+
+	  modprobe scsi_debug dev_size_mb=128 sector_size=4096
+
+	I then used 'gdisk' to create lots of partitions, and used 'hexdump'
+	to examine what was written to disk.
+	(cherry picked from commit 2fd2c85f6a42575749b9d38bd2f1512ae25db760)
+
 2012-05-14  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.22.
