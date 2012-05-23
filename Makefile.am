@@ -41,6 +41,9 @@ SUBDIRS += tests/protocol
 SUBDIRS += tests/lvm
 SUBDIRS += tests/luks
 SUBDIRS += tests/md
+SUBDIRS += tests/ntfsclone
+SUBDIRS += tests/btrfs
+SUBDIRS += tests/xml
 SUBDIRS += tests/regressions
 endif
 
@@ -90,7 +93,7 @@ SUBDIRS += csharp
 
 # OCaml tools.
 if HAVE_OCAML
-SUBDIRS += resize sparsify
+SUBDIRS += resize sparsify sysprep
 endif
 
 # Perl tools.
@@ -101,11 +104,6 @@ endif
 # guestmount
 if HAVE_FUSE
 SUBDIRS += fuse
-endif
-
-# virt-tools in shell.  This uses guestmount and virt-inspector.
-if HAVE_FUSE
-SUBDIRS += clone
 endif
 
 # po-docs must come after tools, inspector.
@@ -138,38 +136,10 @@ EXTRA_DIST = \
 	contrib/visualize-alignment/qemu-0.13-trace-block-device-access.patch \
 	contrib/visualize-alignment/README \
 	contrib/visualize-alignment/tracetops.ml \
-	debian/.gitignore \
-	debian/changelog \
-	debian/compat \
-	debian/control \
-	debian/copyright \
-	debian/docs \
-	debian/guestfish.dirs \
-	debian/guestfish.install \
-	debian/guestfsd.dirs \
-	debian/guestfsd.install \
-	debian/guestmount.dirs \
-	debian/guestmount.install \
-	debian/libguestfs-dev.dirs \
-	debian/libguestfs-dev.install \
-	debian/libguestfs-doc.docs \
-	debian/libguestfs-perl.examples \
-	debian/libguestfs-perl.install \
-	debian/libguestfs-tools.dirs \
-	debian/libguestfs-tools.install \
-	debian/libguestfs0.dirs \
-	debian/libguestfs0.install \
-	debian/patches/series \
-	debian/python-guestfs.install \
-	debian/pyversions \
-	debian/rules \
-	debian/shlibs.local \
-	debian/watch \
 	html/pod.css \
 	libtool-kill-dependency_libs.sh \
 	logo/fish.svg logo/fish.png \
 	m4/.gitignore \
-	po/remove-potcdate.sin \
 	update-bugs.sh
 
 # The website.
@@ -177,8 +147,10 @@ HTMLFILES = \
 	html/guestfs.3.html \
 	html/guestfs-examples.3.html \
 	html/guestfs-erlang.3.html \
+	html/guestfs-faq.1.html \
 	html/guestfs-java.3.html \
 	html/guestfs-ocaml.3.html \
+	html/guestfs-performance.1.html \
 	html/guestfs-perl.3.html \
 	html/guestfs-python.3.html \
 	html/guestfs-recipes.1.html \
@@ -186,6 +158,8 @@ HTMLFILES = \
 	html/guestfs-testing.1.html \
 	html/guestfish.1.html \
 	html/guestmount.1.html \
+	html/libguestfs-make-fixed-appliance.1.html \
+	html/libguestfs-test-tool.1.html \
 	html/virt-alignment-scan.1.html \
 	html/virt-cat.1.html \
 	html/virt-copy-in.1.html \
@@ -229,8 +203,8 @@ website: $(HTMLFILES) $(TEXTFILES)
 dist-hook:
 	$(top_srcdir)/build-aux/gitlog-to-changelog > ChangeLog
 	cp ChangeLog $(distdir)/ChangeLog
-	$(top_srcdir)/update-bugs.sh > BUGS-t
-	mv BUGS-t BUGS
+#	$(top_srcdir)/update-bugs.sh > BUGS-t
+#	mv BUGS-t BUGS
 	cp BUGS $(distdir)/BUGS
 	git log --pretty="format:%an <%ae>" | sort -u | uniq -w 10 | \
 		grep -v rjones | \
@@ -239,7 +213,9 @@ dist-hook:
 	mv AUTHORS-t AUTHORS
 	cp AUTHORS $(distdir)/AUTHORS
 
-# Update the list of translatable files in po/POTFILES.in.
+# Update the list of translatable files (po/POTFILES po/POTFILES-ml).
+# This has to be in the top-level Makefile.am so that we have access
+# to DIST_SUBDIRS.
 all-local:
 	cd $(srcdir); \
 	find $(DIST_SUBDIRS) \
@@ -256,7 +232,10 @@ all-local:
 	grep -v '^po-docs/' | \
 	grep -v '^images/' | \
 	LC_ALL=C sort | \
-	sed 's,^\./,,' > po/POTFILES.in
+	sed 's,^\./,,' > po/POTFILES
+	cd $(srcdir); \
+	find resize sparsify sysprep -name '*.ml' | \
+	LC_ALL=C sort > po/POTFILES-ml
 
 # Make clean.
 

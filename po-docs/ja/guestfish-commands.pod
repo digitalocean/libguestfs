@@ -13,8 +13,8 @@ For more advanced image creation, see L<qemu-img(1)> utility.
 
 Size can be specified using standard suffixes, eg. C<1M>.
 
-To create a sparse file, use L</sparse> instead.  To create a prepared disk
-image, see L</PREPARED DISK IMAGES>.
+スパースなファイルを作成するには、代わりに L</sparse> を使用します。非スパースなディスクイメージを作成するには、
+L</準備済みディスクイメージ> を参照してください。
 
 =head2 copy-in
 
@@ -56,7 +56,7 @@ Delete the event handler which was previously registered as C<name>.  If
 multiple event handlers were registered with the same name, they are all
 deleted.
 
-See also the guestfish commands C<event> and C<list-events>.
+guestfish コマンドの C<event> および C<list-events> 参照。
 
 =head2 display
 
@@ -70,13 +70,13 @@ environment variable.  For example to use the GNOME display program:
 
  export GUESTFISH_DISPLAY_IMAGE=eog
 
-See also L<display(1)>.
+L<display(1)> 参照。
 
 =head2 echo
 
  echo [params ...]
 
-This echos the parameters to the terminal.
+パラメーターを端末に返します。
 
 =head2 edit
 
@@ -122,7 +122,7 @@ variable C<$EVENT>.
  event "" progress "echo progress: $3/$4"
  event "" * "echo $EVENT $@"
 
-See also the guestfish commands C<delete-event> and C<list-events>.
+guestfish コマンドの C<delete-event> および C<list-events> 参照。
 
 =head2 glob
 
@@ -131,7 +131,7 @@ See also the guestfish commands C<delete-event> and C<list-events>.
 Expand wildcards in any paths in the args list, and run C<command>
 repeatedly on each matching path.
 
-See L</WILDCARDS AND GLOBBING>.
+L</WILDCARDS AND GLOBBING> 参照。
 
 =head2 hexedit
 
@@ -155,7 +155,7 @@ For example to edit the first few sectors of a disk you might do:
 which would allow you to edit anywhere within the first megabyte of the
 disk.
 
-To edit the superblock of an ext2 filesystem on C</dev/sda1>, do:
+C</dev/sda1> にある ext2 ファイルシステムのスーパーブロックを編集するには、次のようにします:
 
  hexedit /dev/sda1 0x400 0x400
 
@@ -164,7 +164,7 @@ To edit the superblock of an ext2 filesystem on C</dev/sda1>, do:
 This command requires the external L<hexedit(1)> program.  You can specify
 another program to use by setting the C<HEXEDITOR> environment variable.
 
-See also L</hexdump>.
+L</hexdump> 参照。
 
 =head2 lcd
 
@@ -186,7 +186,7 @@ List the event handlers registered using the guestfish C<event> command.
 
   man
 
-Opens the manual page for guestfish.
+guestfish のマニュアルページを開きます。
 
 =head2 more
 
@@ -196,10 +196,10 @@ Opens the manual page for guestfish.
 
  less filename
 
-This is used to view a file.
+ファイルを表示するために使用します。
 
-The default viewer is C<$PAGER>.  However if you use the alternate command
-C<less> you will get the C<less> command specifically.
+デフォルトのビューアーは C<$PAGER> です。  しかし代替のコマンド C<less> を使用すると、明示的に C<less>
+コマンドが使えます。
 
 =head2 reopen
 
@@ -213,9 +213,9 @@ However this is occasionally useful for testing.
 
   setenv VAR value
 
-Set the environment variable C<VAR> to the string C<value>.
+環境変数 C<VAR> を文字列 C<value> に設定します。
 
-To print the value of an environment variable use a shell command such as:
+環境変数の値を表示するには、次のようにシェルコマンドを使用します:
 
  !echo $VAR
 
@@ -244,7 +244,7 @@ This command returns a list of the optional groups known to the daemon, and
 indicates which ones are supported by this build of the libguestfs
 appliance.
 
-See also L<guestfs(3)/AVAILABILITY>.
+L<guestfs(3)/AVAILABILITY> 参照。
 
 =head2 time
 
@@ -257,5 +257,5 @@ be useful for benchmarking operations.
 
   unsetenv VAR
 
-Remove C<VAR> from the environment.
+環境から C<VAR> を削除します。
 

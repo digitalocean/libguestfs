@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfish 1"
-.TH guestfish 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH guestfish 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -446,6 +446,18 @@ Prepare a fresh disk image formatted as \*(L"type\*(R".  This is an alternative 
 the \fI\-a\fR option: whereas \fI\-a\fR adds an existing disk, \fI\-N\fR creates a
 preformatted disk with a filesystem and adds it.  See \*(L"\s-1PREPARED\s0 \s-1DISK\s0
 \&\s-1IMAGES\s0\*(R" below.
+.IP "\fB\-\-pipe\-error\fR" 4
+.IX Item "--pipe-error"
+If writes fail to pipe commands (see \*(L"\s-1PIPES\s0\*(R" below), then the command
+returns an error.
+.Sp
+The default (also for historical reasons) is to ignore such errors so that:
+.Sp
+.Vb 1
+\& ><fs> command_with_lots_of_output | head
+.Ve
+.Sp
+doesn't give an error.
 .IP "\fB\-\-progress\-bars\fR" 4
 .IX Item "--progress-bars"
 Enable progress bars, even when guestfish is used non-interactively.
@@ -952,8 +964,8 @@ then the parameter might be rewritten like this:
 .Ve
 .PP
 This only works in argument positions that expect a path.
-.SH "UPLOADING AND DOWNLOADING FILES"
-.IX Header "UPLOADING AND DOWNLOADING FILES"
+.SH "ВИВАНТАЖЕННЯ ТА ОТРИМАННЯ ФАЙЛІВ"
+.IX Header "ВИВАНТАЖЕННЯ ТА ОТРИМАННЯ ФАЙЛІВ"
 For commands such as \f(CW\*(C`upload\*(C'\fR, \f(CW\*(C`download\*(C'\fR, \f(CW\*(C`tar\-in\*(C'\fR, \f(CW\*(C`tar\-out\*(C'\fR and
 others which upload from or download to a local file, you can use the
 special filename \f(CW\*(C`\-\*(C'\fR to mean \*(L"from stdin\*(R" or \*(L"to stdout\*(R".  For example:
@@ -1249,7 +1261,7 @@ the help of \*(L"glob\*(R" like this:
 .SS "delete-event"
 .IX Subsection "delete-event"
 .Vb 1
-\& delete\-event name
+\& delete\-event назва
 .Ve
 .PP
 Delete the event handler which was previously registered as \f(CW\*(C`name\*(C'\fR.  If
@@ -1654,9 +1666,9 @@ RHBZ#642934.  Specifying the format closes this security hole.
 .IX Item "iface"
 This rarely-used option lets you emulate the behaviour of the deprecated
 \&\*(L"add-drive-with-if\*(R" call (q.v.)
-.ie n .IP """name""" 4
-.el .IP "\f(CWname\fR" 4
-.IX Item "name"
+.ie n .IP """назва""" 4
+.el .IP "\f(CWназва\fR" 4
+.IX Item "назва"
 The name the drive had in the original guest, e.g. /dev/sdb. This is used as
 a hint to the guest inspection process if it is available.
 .PP
@@ -1965,26 +1977,26 @@ present.
 .el .IP "\f(CWUUID\fR" 4
 .IX Item "UUID"
 The uuid of this device.
-.ie n .IP """LABEL""" 4
-.el .IP "\f(CWLABEL\fR" 4
-.IX Item "LABEL"
-The label of this device.
-.ie n .IP """VERSION""" 4
-.el .IP "\f(CWVERSION\fR" 4
-.IX Item "VERSION"
-The version of blkid command.
-.ie n .IP """TYPE""" 4
-.el .IP "\f(CWTYPE\fR" 4
-.IX Item "TYPE"
-The filesystem type or \s-1RAID\s0 of this device.
-.ie n .IP """USAGE""" 4
-.el .IP "\f(CWUSAGE\fR" 4
-.IX Item "USAGE"
+.ie n .IP """МІТКА""" 4
+.el .IP "\f(CWМІТКА\fR" 4
+.IX Item "МІТКА"
+Мітка пристрою.
+.ie n .IP """ВЕРСІЯ""" 4
+.el .IP "\f(CWВЕРСІЯ\fR" 4
+.IX Item "ВЕРСІЯ"
+Версія програми blkid.
+.ie n .IP """ТИП""" 4
+.el .IP "\f(CWТИП\fR" 4
+.IX Item "ТИП"
+Тип файлової системи або \s-1RAID\s0 для цього пристрою.
+.ie n .IP """ВИКОРИСТАННЯ""" 4
+.el .IP "\f(CWВИКОРИСТАННЯ\fR" 4
+.IX Item "ВИКОРИСТАННЯ"
 The usage of this device, for example \f(CW\*(C`filesystem\*(C'\fR or \f(CW\*(C`raid\*(C'\fR.
 .SS "blockdev-flushbufs"
 .IX Subsection "blockdev-flushbufs"
 .Vb 1
-\& blockdev\-flushbufs device
+\& blockdev\-flushbufs пристрій
 .Ve
 .PP
 This tells the kernel to flush internal buffers associated with \f(CW\*(C`device\*(C'\fR.
@@ -1993,10 +2005,10 @@ This uses the \fIblockdev\fR\|(8) command.
 .SS "blockdev-getbsz"
 .IX Subsection "blockdev-getbsz"
 .Vb 1
-\& blockdev\-getbsz device
+\& blockdev\-getbsz пристрій
 .Ve
 .PP
-This returns the block size of a device.
+Повертає розмір блоку для пристрою.
 .PP
 (Note this is different from both \fIsize in blocks\fR and \fIfilesystem block
 size\fR).
@@ -2005,7 +2017,7 @@ This uses the \fIblockdev\fR\|(8) command.
 .SS "blockdev-getro"
 .IX Subsection "blockdev-getro"
 .Vb 1
-\& blockdev\-getro device
+\& blockdev\-getro пристрій
 .Ve
 .PP
 Returns a boolean indicating if the block device is read-only (true if
@@ -2015,10 +2027,10 @@ This uses the \fIblockdev\fR\|(8) command.
 .SS "blockdev\-getsize64"
 .IX Subsection "blockdev-getsize64"
 .Vb 1
-\& blockdev\-getsize64 device
+\& blockdev\-getsize64 пристрій
 .Ve
 .PP
-This returns the size of the device in bytes.
+Повертає розмір пристрою у байтах.
 .PP
 Див. також \*(L"blockdev-getsz\*(R".
 .PP
@@ -2026,7 +2038,7 @@ This uses the \fIblockdev\fR\|(8) command.
 .SS "blockdev-getss"
 .IX Subsection "blockdev-getss"
 .Vb 1
-\& blockdev\-getss device
+\& blockdev\-getss пристрій
 .Ve
 .PP
 This returns the size of sectors on a block device.  Usually 512, but can be
@@ -2038,7 +2050,7 @@ This uses the \fIblockdev\fR\|(8) command.
 .SS "blockdev-getsz"
 .IX Subsection "blockdev-getsz"
 .Vb 1
-\& blockdev\-getsz device
+\& blockdev\-getsz пристрій
 .Ve
 .PP
 This returns the size of the device in units of 512\-byte sectors (even if
@@ -2051,19 +2063,19 @@ This uses the \fIblockdev\fR\|(8) command.
 .SS "blockdev-rereadpt"
 .IX Subsection "blockdev-rereadpt"
 .Vb 1
-\& blockdev\-rereadpt device
+\& blockdev\-rereadpt пристрій
 .Ve
 .PP
-Reread the partition table on \f(CW\*(C`device\*(C'\fR.
+Повторно прочитати таблицю розділів з пристрою \f(CW\*(C`пристрій\*(C'\fR.
 .PP
 This uses the \fIblockdev\fR\|(8) command.
 .SS "blockdev-setbsz"
 .IX Subsection "blockdev-setbsz"
 .Vb 1
-\& blockdev\-setbsz device blocksize
+\& blockdev\-setbsz пристрій розмір_блоку
 .Ve
 .PP
-This sets the block size of a device.
+Встановлює розмір блоку на пристрої.
 .PP
 (Note this is different from both \fIsize in blocks\fR and \fIfilesystem block
 size\fR).
@@ -2072,7 +2084,7 @@ This uses the \fIblockdev\fR\|(8) command.
 .SS "blockdev-setro"
 .IX Subsection "blockdev-setro"
 .Vb 1
-\& blockdev\-setro device
+\& blockdev\-setro пристрій
 .Ve
 .PP
 Sets the block device named \f(CW\*(C`device\*(C'\fR to read-only.
@@ -2081,25 +2093,49 @@ This uses the \fIblockdev\fR\|(8) command.
 .SS "blockdev-setrw"
 .IX Subsection "blockdev-setrw"
 .Vb 1
-\& blockdev\-setrw device
+\& blockdev\-setrw пристрій
 .Ve
 .PP
 Sets the block device named \f(CW\*(C`device\*(C'\fR to read-write.
 .PP
 This uses the \fIblockdev\fR\|(8) command.
+.SS "btrfs-device-add"
+.IX Subsection "btrfs-device-add"
+.Vb 1
+\& btrfs\-device\-add \*(Aqdevices ...\*(Aq fs
+.Ve
+.PP
+Add the list of device(s) in \f(CW\*(C`devices\*(C'\fR to the btrfs filesystem mounted at
+\&\f(CW\*(C`fs\*(C'\fR.  If \f(CW\*(C`devices\*(C'\fR is an empty list, this does nothing.
+.SS "btrfs-device-delete"
+.IX Subsection "btrfs-device-delete"
+.Vb 1
+\& btrfs\-device\-delete \*(Aqdevices ...\*(Aq fs
+.Ve
+.PP
+Remove the \f(CW\*(C`devices\*(C'\fR from the btrfs filesystem mounted at \f(CW\*(C`fs\*(C'\fR.  If
+\&\f(CW\*(C`devices\*(C'\fR is an empty list, this does nothing.
+.SS "btrfs-filesystem-balance"
+.IX Subsection "btrfs-filesystem-balance"
+.Vb 1
+\& btrfs\-filesystem\-balance fs
+.Ve
+.PP
+Balance the chunks in the btrfs filesystem mounted at \f(CW\*(C`fs\*(C'\fR across the
+underlying devices.
 .SS "btrfs-filesystem-resize"
 .IX Subsection "btrfs-filesystem-resize"
 .Vb 1
-\& btrfs\-filesystem\-resize mountpoint [size:N]
+\& btrfs\-filesystem\-resize точка_монтування [size:N]
 .Ve
 .PP
-This command resizes a btrfs filesystem.
+Ця команда змінює розмір файлової системи btrfs.
 .PP
 Note that unlike other resize calls, the filesystem has to be mounted and
 the parameter is the mountpoint not the device (this is a requirement of
 btrfs itself).
 .PP
-The optional parameters are:
+Додатковими параметрами є:
 .ie n .IP """розмір""" 4
 .el .IP "\f(CWрозмір\fR" 4
 .IX Item "розмір"
@@ -2110,6 +2146,72 @@ resized to the maximum size.
 .PP
 This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 \&\s-1ARGUMENTS\s0\*(R".
+.SS "btrfs-filesystem-sync"
+.IX Subsection "btrfs-filesystem-sync"
+.Vb 1
+\& btrfs\-filesystem\-sync fs
+.Ve
+.PP
+Force sync on the btrfs filesystem mounted at \f(CW\*(C`fs\*(C'\fR.
+.SS "btrfs-fsck"
+.IX Subsection "btrfs-fsck"
+.Vb 1
+\& btrfs\-fsck device [superblock:N] [repair:true|false]
+.Ve
+.PP
+Used to check a btrfs filesystem, \f(CW\*(C`device\*(C'\fR is the device file where the
+filesystem is stored.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
+.SS "btrfs-set-seeding"
+.IX Subsection "btrfs-set-seeding"
+.Vb 1
+\& btrfs\-set\-seeding device true|false
+.Ve
+.PP
+Enable or disable the seeding feature of a device that contains a btrfs
+filesystem.
+.SS "btrfs-subvolume-create"
+.IX Subsection "btrfs-subvolume-create"
+.Vb 1
+\& btrfs\-subvolume\-create dest
+.Ve
+.PP
+Create a btrfs subvolume.  The \f(CW\*(C`dest\*(C'\fR argument is the destination directory
+and the name of the snapshot, in the form \f(CW\*(C`/path/to/dest/name\*(C'\fR.
+.SS "btrfs-subvolume-delete"
+.IX Subsection "btrfs-subvolume-delete"
+.Vb 1
+\& btrfs\-subvolume\-delete subvolume
+.Ve
+.PP
+Delete the named btrfs subvolume.
+.SS "btrfs-subvolume-list"
+.IX Subsection "btrfs-subvolume-list"
+.Vb 1
+\& btrfs\-subvolume\-list fs
+.Ve
+.PP
+List the btrfs snapshots and subvolumes of the btrfs filesystem which is
+mounted at \f(CW\*(C`fs\*(C'\fR.
+.SS "btrfs-subvolume-set-default"
+.IX Subsection "btrfs-subvolume-set-default"
+.Vb 1
+\& btrfs\-subvolume\-set\-default id fs
+.Ve
+.PP
+Set the subvolume of the btrfs filesystem \f(CW\*(C`fs\*(C'\fR which will be mounted by
+default.  See \*(L"btrfs-subvolume-list\*(R" to get a list of subvolumes.
+.SS "btrfs-subvolume-snapshot"
+.IX Subsection "btrfs-subvolume-snapshot"
+.Vb 1
+\& btrfs\-subvolume\-snapshot source dest
+.Ve
+.PP
+Create a writable snapshot of the btrfs subvolume \f(CW\*(C`source\*(C'\fR.  The \f(CW\*(C`dest\*(C'\fR
+argument is the destination directory and the name of the snapshot, in the
+form \f(CW\*(C`/path/to/dest/name\*(C'\fR.
 .SS "case-sensitive-path"
 .IX Subsection "case-sensitive-path"
 .Vb 1
@@ -2426,7 +2528,7 @@ these functions.
 .SS "cp"
 .IX Subsection "cp"
 .Vb 1
-\& cp src dest
+\& cp джерело призначення
 .Ve
 .PP
 This copies a file from \f(CW\*(C`src\*(C'\fR to \f(CW\*(C`dest\*(C'\fR where \f(CW\*(C`dest\*(C'\fR is either a
@@ -2434,7 +2536,7 @@ destination filename or destination directory.
 .SS "cp-a"
 .IX Subsection "cp-a"
 .Vb 1
-\& cp\-a src dest
+\& cp\-a джерело призначення
 .Ve
 .PP
 This copies a file or directory from \f(CW\*(C`src\*(C'\fR to \f(CW\*(C`dest\*(C'\fR recursively using the
@@ -2442,7 +2544,7 @@ This copies a file or directory from \f(CW\*(C`src\*(C'\fR to \f(CW\*(C`dest\*(C
 .SS "dd"
 .IX Subsection "dd"
 .Vb 1
-\& dd src dest
+\& dd джерело призначення
 .Ve
 .PP
 This command copies from one source device or file \f(CW\*(C`src\*(C'\fR to another
@@ -2591,8 +2693,12 @@ This runs \f(CW\*(C`e2fsck \-p \-f device\*(C'\fR, ie. runs the ext2/ext3 filesy
 on \f(CW\*(C`device\*(C'\fR, noninteractively (\fI\-p\fR), even if the filesystem appears to be
 clean (\fI\-f\fR).
 .PP
-This command is only needed because of \*(L"resize2fs\*(R" (q.v.).  Normally you
-should use \*(L"fsck\*(R".
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"e2fsck\*(R" call
+instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 .SS "echo-daemon"
 .IX Subsection "echo-daemon"
 .Vb 1
@@ -2962,6 +3068,109 @@ Get the autosync flag.
 .Ve
 .PP
 Return the direct appliance mode flag.
+.SS "get\-e2attrs"
+.IX Subsection "get-e2attrs"
+.Vb 1
+\& get\-e2attrs file
+.Ve
+.PP
+This returns the file attributes associated with \f(CW\*(C`file\*(C'\fR.
+.PP
+The attributes are a set of bits associated with each inode which affect the
+behaviour of the file.  The attributes are returned as a string of letters
+(described below).  The string may be empty, indicating that no file
+attributes are set for this file.
+.PP
+These attributes are only present when the file is located on an ext2/3/4
+filesystem.  Using this call on other filesystem types will result in an
+error.
+.PP
+The characters (file attributes) in the returned string are currently:
+.IP "'A'" 4
+.IX Item "'A'"
+When the file is accessed, its atime is not modified.
+.IP "'a'" 4
+.IX Item "'a'"
+The file is append-only.
+.IP "'c'" 4
+.IX Item "'c'"
+Файл стиснено на диску.
+.IP "'D'" 4
+.IX Item "'D'"
+(Directories only.)  Changes to this directory are written synchronously to
+disk.
+.IP "'d'" 4
+.IX Item "'d'"
+The file is not a candidate for backup (see \fIdump\fR\|(8)).
+.IP "'E'" 4
+.IX Item "'E'"
+The file has compression errors.
+.IP "'e'" 4
+.IX Item "'e'"
+The file is using extents.
+.IP "'h'" 4
+.IX Item "'h'"
+The file is storing its blocks in units of the filesystem blocksize instead
+of sectors.
+.IP "'I'" 4
+.IX Item "'I'"
+(Directories only.)  The directory is using hashed trees.
+.IP "'i'" 4
+.IX Item "'i'"
+The file is immutable.  It cannot be modified, deleted or renamed.  No link
+can be created to this file.
+.IP "'j'" 4
+.IX Item "'j'"
+The file is data-journaled.
+.IP "'s'" 4
+.IX Item "'s'"
+When the file is deleted, all its blocks will be zeroed.
+.IP "'S'" 4
+.IX Item "'S'"
+Changes to this file are written synchronously to disk.
+.IP "'T'" 4
+.IX Item "'T'"
+(Directories only.)  This is a hint to the block allocator that
+subdirectories contained in this directory should be spread across blocks.
+If not present, the block allocator will try to group subdirectories
+together.
+.IP "'t'" 4
+.IX Item "'t'"
+For a file, this disables tail-merging.  (Not used by upstream
+implementations of ext2.)
+.IP "'u'" 4
+.IX Item "'u'"
+When the file is deleted, its blocks will be saved, allowing the file to be
+undeleted.
+.IP "'X'" 4
+.IX Item "'X'"
+The raw contents of the compressed file may be accessed.
+.IP "'Z'" 4
+.IX Item "'Z'"
+The compressed file is dirty.
+.PP
+More file attributes may be added to this list later.  Not all file
+attributes may be set for all kinds of files.  For detailed information,
+consult the \fIchattr\fR\|(1) man page.
+.PP
+Див. також \*(L"set\-e2attrs\*(R".
+.PP
+Don't confuse these attributes with extended attributes (see \*(L"getxattr\*(R").
+.SS "get\-e2generation"
+.IX Subsection "get-e2generation"
+.Vb 1
+\& get\-e2generation file
+.Ve
+.PP
+This returns the ext2 file generation of a file.  The generation (which used
+to be called the \*(L"version\*(R") is a number associated with an inode.  This is
+most commonly used by \s-1NFS\s0 servers.
+.PP
+The generation is only present when the file is located on an ext2/3/4
+filesystem.  Using this call on other filesystem types will result in an
+error.
+.PP
+Див. \*(L"set\-e2generation\*(R".
 .SS "get\-e2label"
 .IX Subsection "get-e2label"
 .Vb 1
@@ -3159,6 +3368,10 @@ If no paths match, then this returns an empty list (note: not an error).
 .PP
 It is just a wrapper around the C \fIglob\fR\|(3) function with flags
 \&\f(CW\*(C`GLOB_MARK|GLOB_BRACE\*(C'\fR.  See that manual page for more details.
+.PP
+Notice that there is no equivalent command for expanding a device name
+(eg. \f(CW\*(C`/dev/sd*\*(C'\fR).  Use \*(L"list-devices\*(R", \*(L"list-partitions\*(R" etc functions
+instead.
 .SS "grep"
 .IX Subsection "grep"
 .Vb 1
@@ -3393,10 +3606,18 @@ This returns the distro (distribution) of the inspected operating system.
 .el .IP "``archlinux''" 4
 .IX Item "archlinux"
 Arch Linux.
+.ie n .IP """buildroot""" 4
+.el .IP "``buildroot''" 4
+.IX Item "buildroot"
+Buildroot-derived distro, but not one we specifically recognize.
 .ie n .IP """centos""" 4
 .el .IP "``centos''" 4
 .IX Item "centos"
 CentOS.
+.ie n .IP """cirros""" 4
+.el .IP "``cirros''" 4
+.IX Item "cirros"
+Cirros.
 .ie n .IP """debian""" 4
 .el .IP "``debian''" 4
 .IX Item "debian"
@@ -3405,6 +3626,10 @@ Debian.
 .el .IP "``fedora''" 4
 .IX Item "fedora"
 Fedora.
+.ie n .IP """freedos""" 4
+.el .IP "``freedos''" 4
+.IX Item "freedos"
+FreeDOS.
 .ie n .IP """gentoo""" 4
 .el .IP "``gentoo''" 4
 .IX Item "gentoo"
@@ -3770,11 +3995,11 @@ types are:
 .ie n .IP """linux""" 4
 .el .IP "``linux''" 4
 .IX Item "linux"
-Any Linux-based operating system.
+Будь\-яка заснована на Linux операційна система.
 .ie n .IP """windows""" 4
 .el .IP "``windows''" 4
 .IX Item "windows"
-Any Microsoft Windows operating system.
+Будь\-яка операційна система Microsoft Windows.
 .ie n .IP """freebsd""" 4
 .el .IP "``freebsd''" 4
 .IX Item "freebsd"
@@ -3787,6 +4012,10 @@ NetBSD.
 .el .IP "``hurd''" 4
 .IX Item "hurd"
 GNU/Hurd.
+.ie n .IP """dos""" 4
+.el .IP "``dos''" 4
+.IX Item "dos"
+MS-DOS, FreeDOS та інші.
 .ie n .IP """unknown""" 4
 .el .IP "``unknown''" 4
 .IX Item "unknown"
@@ -3986,16 +4215,6 @@ This returns \f(CW\*(C`true\*(C'\fR if and only if there is a block device with 
 \&\f(CW\*(C`path\*(C'\fR name.
 .PP
 Див. також \*(L"stat\*(R".
-.SS "is-busy"
-.IX Subsection "is-busy"
-.Vb 1
-\& is\-busy
-.Ve
-.PP
-This returns true iff this handle is busy processing a command (in the
-\&\f(CW\*(C`BUSY\*(C'\fR state).
-.PP
-For more information on states, see \fIguestfs\fR\|(3).
 .SS "is-chardev"
 .IX Subsection "is-chardev"
 .Vb 1
@@ -4112,6 +4331,32 @@ all zero bytes.
 This returns true iff the device exists and contains all zero bytes.
 .PP
 Note that for large devices this can take a long time to run.
+.SS "isoinfo"
+.IX Subsection "isoinfo"
+.Vb 1
+\& isoinfo isofile
+.Ve
+.PP
+This is the same as \*(L"isoinfo-device\*(R" except that it works for an \s-1ISO\s0 file
+located inside some other mounted filesystem.  Note that in the common case
+where you have added an \s-1ISO\s0 file as a libguestfs device, you would \fInot\fR
+call this.  Instead you would call \*(L"isoinfo-device\*(R".
+.SS "isoinfo-device"
+.IX Subsection "isoinfo-device"
+.Vb 1
+\& isoinfo\-device device
+.Ve
+.PP
+\&\f(CW\*(C`device\*(C'\fR is an \s-1ISO\s0 device.  This returns a struct of information read from
+the primary volume descriptor (the \s-1ISO\s0 equivalent of the superblock) of the
+device.
+.PP
+Usually it is more efficient to use the \fIisoinfo\fR\|(1) command with the \fI\-d\fR
+option on the host to analyze \s-1ISO\s0 files, instead of going through
+libguestfs.
+.PP
+For information on the primary volume descriptor fields, see
+<http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor>
 .SS "kill-subprocess"
 .IX Subsection "kill-subprocess"
 .Vb 1
@@ -4265,6 +4510,16 @@ This does not return logical volumes.  For that you will need to call
 .PP
 List the files in \f(CW\*(C`directory\*(C'\fR (relative to the root directory, there is no
 cwd) in the format of 'ls \-la'.
+.PP
+This command is mostly useful for interactive sessions.  It is \fInot\fR
+intended that you try to parse the output string.
+.SS "llz"
+.IX Subsection "llz"
+.Vb 1
+\& llz directory
+.Ve
+.PP
+List the files in \f(CW\*(C`directory\*(C'\fR in the format of 'ls \-laZ'.
 .PP
 This command is mostly useful for interactive sessions.  It is \fInot\fR
 intended that you try to parse the output string.
@@ -4461,6 +4716,16 @@ prompt for these separately.
 .PP
 This creates an \s-1LVM\s0 logical volume called \f(CW\*(C`logvol\*(C'\fR on the volume group
 \&\f(CW\*(C`volgroup\*(C'\fR, with \f(CW\*(C`size\*(C'\fR megabytes.
+.SS "lvcreate-free"
+.IX Subsection "lvcreate-free"
+.Vb 1
+\& lvcreate\-free logvol volgroup percent
+.Ve
+.PP
+Create an \s-1LVM\s0 logical volume called \f(CW\*(C`/dev/volgroup/logvol\*(C'\fR, using
+approximately \f(CW\*(C`percent\*(C'\fR % of the free space remaining in the volume group.
+Most usefully, when \f(CW\*(C`percent\*(C'\fR is \f(CW100\fR this will create the largest
+possible \s-1LV\s0.
 .SS "lvm-canonical-lv-name"
 .IX Subsection "lvm-canonical-lv-name"
 .Vb 1
@@ -4614,7 +4879,7 @@ names.
 Create a Linux md (\s-1RAID\s0) device named \f(CW\*(C`name\*(C'\fR on the devices in the list
 \&\f(CW\*(C`devices\*(C'\fR.
 .PP
-The optional parameters are:
+Додатковими параметрами є:
 .ie n .IP """missingbitmap""" 4
 .el .IP "\f(CWmissingbitmap\fR" 4
 .IX Item "missingbitmap"
@@ -4688,10 +4953,56 @@ The metadata version used.
 .el .IP "\f(CWuuid\fR" 4
 .IX Item "uuid"
 The \s-1UUID\s0 of the \s-1MD\s0 device.
-.ie n .IP """name""" 4
-.el .IP "\f(CWname\fR" 4
-.IX Item "name"
+.ie n .IP """назва""" 4
+.el .IP "\f(CWназва\fR" 4
+.IX Item "назва"
 The name of the \s-1MD\s0 device.
+.SS "md-stat"
+.IX Subsection "md-stat"
+.Vb 1
+\& md\-stat md
+.Ve
+.PP
+This call returns a list of the underlying devices which make up the single
+software \s-1RAID\s0 array device \f(CW\*(C`md\*(C'\fR.
+.PP
+To get a list of software \s-1RAID\s0 devices, call \*(L"list-md-devices\*(R".
+.PP
+Each structure returned corresponds to one device along with additional
+status information:
+.ie n .IP """mdstat_device""" 4
+.el .IP "\f(CWmdstat_device\fR" 4
+.IX Item "mdstat_device"
+The name of the underlying device.
+.ie n .IP """mdstat_index""" 4
+.el .IP "\f(CWmdstat_index\fR" 4
+.IX Item "mdstat_index"
+The index of this device within the array.
+.ie n .IP """mdstat_flags""" 4
+.el .IP "\f(CWmdstat_flags\fR" 4
+.IX Item "mdstat_flags"
+Flags associated with this device.  This is a string containing (in no
+specific order) zero or more of the following flags:
+.RS 4
+.ie n .IP """W""" 4
+.el .IP "\f(CWW\fR" 4
+.IX Item "W"
+write-mostly
+.ie n .IP """F""" 4
+.el .IP "\f(CWF\fR" 4
+.IX Item "F"
+пристрій працює з помилками
+.ie n .IP """S""" 4
+.el .IP "\f(CWS\fR" 4
+.IX Item "S"
+пристрій є запасною частиною \s-1RAID\s0
+.ie n .IP """R""" 4
+.el .IP "\f(CWR\fR" 4
+.IX Item "R"
+заміна
+.RE
+.RS 4
+.RE
 .SS "md-stop"
 .IX Subsection "md-stop"
 .Vb 1
@@ -4847,6 +5158,22 @@ instead.
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+.SS "mkfs-btrfs"
+.IX Subsection "mkfs-btrfs"
+.Vb 1
+\& mkfs\-btrfs \*(Aqdevices ...\*(Aq [allocstart:N] [bytecount:N] [datatype:..] [leafsize:N] [label:..] [metadata:..] [nodesize:N] [sectorsize:N]
+.Ve
+.PP
+Create a btrfs filesystem, allowing all configurables to be set.  For more
+information on the optional arguments, see \fImkfs.btrfs\fR\|(8).
+.PP
+Since btrfs filesystems can span multiple devices, this takes a non-empty
+list of devices.
+.PP
+To create general filesystems, use \*(L"mkfs-opts\*(R".
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
 .SS "mkfs-opts"
 .IX Subsection "mkfs-opts"
 .Vb 1
@@ -5060,6 +5387,55 @@ parameter.
 .PP
 This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 \&\s-1ARGUMENTS\s0\*(R".
+.SS "mount-local"
+.IX Subsection "mount-local"
+.Vb 1
+\& mount\-local localmountpoint [readonly:true|false] [options:..] [cachetimeout:N] [debugcalls:true|false]
+.Ve
+.PP
+This call exports the libguestfs-accessible filesystem to a local mountpoint
+(directory) called \f(CW\*(C`localmountpoint\*(C'\fR.  Ordinary reads and writes to files
+and directories under \f(CW\*(C`localmountpoint\*(C'\fR are redirected through libguestfs.
+.PP
+If the optional \f(CW\*(C`readonly\*(C'\fR flag is set to true, then writes to the
+filesystem return error \f(CW\*(C`EROFS\*(C'\fR.
+.PP
+\&\f(CW\*(C`options\*(C'\fR is a comma-separated list of mount options.  See \fIguestmount\fR\|(1)
+for some useful options.
+.PP
+\&\f(CW\*(C`cachetimeout\*(C'\fR sets the timeout (in seconds) for cached directory entries.
+The default is 60 seconds.  See \fIguestmount\fR\|(1) for further information.
+.PP
+If \f(CW\*(C`debugcalls\*(C'\fR is set to true, then additional debugging information is
+generated for every \s-1FUSE\s0 call.
+.PP
+When \*(L"mount-local\*(R" returns, the filesystem is ready, but is not processing
+requests (access to it will block).  You have to call \*(L"mount-local-run\*(R" to
+run the main loop.
+.PP
+See \*(L"\s-1MOUNT\s0 \s-1LOCAL\s0\*(R" in \fIguestfs\fR\|(3) for full documentation.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
+.SS "mount-local-run"
+.IX Subsection "mount-local-run"
+.Vb 1
+\& mount\-local\-run
+.Ve
+.PP
+Run the main loop which translates kernel calls to libguestfs calls.
+.PP
+This should only be called after \*(L"mount-local\*(R" returns successfully.  The
+call will not return until the filesystem is unmounted.
+.PP
+\&\fBNote\fR you must \fInot\fR make concurrent libguestfs calls on the same handle
+from another thread, with the exception of \*(L"umount-local\*(R".
+.PP
+You may call this from a different thread than the one which called
+\&\*(L"mount-local\*(R", subject to the usual rules for threads and libguestfs (see
+\&\*(L"\s-1MULTIPLE\s0 \s-1HANDLES\s0 \s-1AND\s0 \s-1MULTIPLE\s0 \s-1THREADS\s0\*(R" in \fIguestfs\fR\|(3)).
+.PP
+See \*(L"\s-1MOUNT\s0 \s-1LOCAL\s0\*(R" in \fIguestfs\fR\|(3) for full documentation.
 .SS "mount-loop"
 .IX Subsection "mount-loop"
 .Vb 1
@@ -5141,6 +5517,57 @@ volume can be mounted read-only.
 .PP
 The return value is an integer which \f(CW0\fR if the operation would succeed, or
 some non-zero value documented in the \fIntfs\-3g.probe\fR\|(8) manual page.
+.SS "ntfsclone-in"
+.IX Subsection "ntfsclone-in"
+.Vb 1
+\& ntfsclone\-in (backupfile|\-) device
+.Ve
+.PP
+Restore the \f(CW\*(C`backupfile\*(C'\fR (from a previous call to \*(L"ntfsclone-out\*(R") to
+\&\f(CW\*(C`device\*(C'\fR, overwriting any existing contents of this device.
+.PP
+Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
+.SS "ntfsclone-out"
+.IX Subsection "ntfsclone-out"
+.Vb 1
+\& ntfsclone\-out device (backupfile|\-) [metadataonly:true|false] [rescue:true|false] [ignorefscheck:true|false] [preservetimestamps:true|false] [force:true|false]
+.Ve
+.PP
+Stream the \s-1NTFS\s0 filesystem \f(CW\*(C`device\*(C'\fR to the local file \f(CW\*(C`backupfile\*(C'\fR.  The
+format used for the backup file is a special format used by the
+\&\fIntfsclone\fR\|(8) tool.
+.PP
+If the optional \f(CW\*(C`metadataonly\*(C'\fR flag is true, then \fIonly\fR the metadata is
+saved, losing all the user data (this is useful for diagnosing some
+filesystem problems).
+.PP
+The optional \f(CW\*(C`rescue\*(C'\fR, \f(CW\*(C`ignorefscheck\*(C'\fR, \f(CW\*(C`preservetimestamps\*(C'\fR and \f(CW\*(C`force\*(C'\fR
+flags have precise meanings detailed in the \fIntfsclone\fR\|(8) man page.
+.PP
+Use \*(L"ntfsclone-in\*(R" to restore the file back to a libguestfs device.
+.PP
+Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
+.SS "ntfsfix"
+.IX Subsection "ntfsfix"
+.Vb 1
+\& ntfsfix device [clearbadsectors:true|false]
+.Ve
+.PP
+This command repairs some fundamental \s-1NTFS\s0 inconsistencies, resets the \s-1NTFS\s0
+journal file, and schedules an \s-1NTFS\s0 consistency check for the first boot
+into Windows.
+.PP
+This is \fInot\fR an equivalent of Windows \f(CW\*(C`chkdsk\*(C'\fR.  It does \fInot\fR scan the
+filesystem for inconsistencies.
+.PP
+The optional \f(CW\*(C`clearbadsectors\*(C'\fR flag clears the list of bad sectors.  This
+is useful after cloning a disk with bad sectors to a new disk.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
 .SS "ntfsresize"
 .IX Subsection "ntfsresize"
 .Vb 1
@@ -5174,7 +5601,7 @@ these functions.
 This command resizes an \s-1NTFS\s0 filesystem, expanding or shrinking it to the
 size of the underlying device.
 .PP
-The optional parameters are:
+Додатковими параметрами є:
 .ie n .IP """розмір""" 4
 .el .IP "\f(CWрозмір\fR" 4
 .IX Item "розмір"
@@ -5706,10 +6133,7 @@ This call removes the extended attribute named \f(CW\*(C`xattr\*(C'\fR of the fi
 This resizes an ext2, ext3 or ext4 filesystem to match the size of the
 underlying device.
 .PP
-\&\fINote:\fR It is sometimes required that you run \*(L"e2fsck\-f\*(R" on the \f(CW\*(C`device\*(C'\fR
-before calling this command.  For unknown reasons \f(CW\*(C`resize2fs\*(C'\fR sometimes
-gives an error about this and sometimes not.  In any case, it is always safe
-to call \*(L"e2fsck\-f\*(R" before calling this function.
+Див. також \*(L"\s-1RESIZE2FS\s0 \s-1ERRORS\s0\*(R" in \fIguestfs\fR\|(3).
 .SS "resize2fs\-M"
 .IX Subsection "resize2fs-M"
 .Vb 1
@@ -5724,6 +6148,8 @@ To get the resulting size of the filesystem you should call \*(L"tune2fs\-l\*(R"
 and read the \f(CW\*(C`Block size\*(C'\fR and \f(CW\*(C`Block count\*(C'\fR values.  These two numbers,
 multiplied together, give the resulting size of the minimal filesystem in
 bytes.
+.PP
+Див. також \*(L"\s-1RESIZE2FS\s0 \s-1ERRORS\s0\*(R" in \fIguestfs\fR\|(3).
 .SS "resize2fs\-size"
 .IX Subsection "resize2fs-size"
 .Vb 1
@@ -5732,6 +6158,8 @@ bytes.
 .PP
 This command is the same as \*(L"resize2fs\*(R" except that it allows you to
 specify the new size (in bytes) explicitly.
+.PP
+Див. також \*(L"\s-1RESIZE2FS\s0 \s-1ERRORS\s0\*(R" in \fIguestfs\fR\|(3).
 .SS "rm"
 .IX Subsection "rm"
 .Vb 1
@@ -5869,6 +6297,42 @@ and handled by \*(L"set-log-message-callback\*(R", but go straight to stdout.
 You probably don't want to use this unless you know what you are doing.
 .PP
 The default is disabled.
+.SS "set\-e2attrs"
+.IX Subsection "set-e2attrs"
+.Vb 1
+\& set\-e2attrs file attrs [clear:true|false]
+.Ve
+.PP
+This sets or clears the file attributes \f(CW\*(C`attrs\*(C'\fR associated with the inode
+\&\f(CW\*(C`file\*(C'\fR.
+.PP
+\&\f(CW\*(C`attrs\*(C'\fR is a string of characters representing file attributes.  See
+\&\*(L"get\-e2attrs\*(R" for a list of possible attributes.  Not all attributes can
+be changed.
+.PP
+If optional boolean \f(CW\*(C`clear\*(C'\fR is not present or false, then the \f(CW\*(C`attrs\*(C'\fR
+listed are set in the inode.
+.PP
+If \f(CW\*(C`clear\*(C'\fR is true, then the \f(CW\*(C`attrs\*(C'\fR listed are cleared in the inode.
+.PP
+In both cases, other attributes not present in the \f(CW\*(C`attrs\*(C'\fR string are left
+unchanged.
+.PP
+These attributes are only present when the file is located on an ext2/3/4
+filesystem.  Using this call on other filesystem types will result in an
+error.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
+.SS "set\-e2generation"
+.IX Subsection "set-e2generation"
+.Vb 1
+\& set\-e2generation file generation
+.Ve
+.PP
+This sets the ext2 file generation of a file.
+.PP
+Див. \*(L"get\-e2generation\*(R".
 .SS "set\-e2label"
 .IX Subsection "set-e2label"
 .Vb 1
@@ -5880,6 +6344,13 @@ This sets the ext2/3/4 filesystem label of the filesystem on \f(CW\*(C`device\*(
 .PP
 You can use either \*(L"tune2fs\-l\*(R" or \*(L"get\-e2label\*(R" to return the existing
 label on a filesystem.
+.PP
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"set_label\*(R" call
+instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 .SS "set\-e2uuid"
 .IX Subsection "set-e2uuid"
 .Vb 1
@@ -5892,6 +6363,22 @@ This sets the ext2/3/4 filesystem \s-1UUID\s0 of the filesystem on \f(CW\*(C`dev
 .PP
 You can use either \*(L"tune2fs\-l\*(R" or \*(L"get\-e2uuid\*(R" to return the existing
 \&\s-1UUID\s0 of a filesystem.
+.SS "set-label"
+.IX Subsection "set-label"
+.Vb 1
+\& set\-label device label
+.Ve
+.PP
+Set the filesystem label on \f(CW\*(C`device\*(C'\fR to \f(CW\*(C`label\*(C'\fR.
+.PP
+Only some filesystem types support labels, and libguestfs supports setting
+labels on only a subset of these.
+.PP
+On ext2/3/4 filesystems, labels are limited to 16 bytes.
+.PP
+On \s-1NTFS\s0 filesystems, labels are limited to 128 unicode characters.
+.PP
+To read the label on a filesystem, call \*(L"vfs-label\*(R".
 .SS "set-memsize"
 .IX Subsection "set-memsize"
 .SS "memsize"
@@ -6485,7 +6972,7 @@ non-sparse file of zeroes, use \*(L"fallocate64\*(R" instead.
 This call allows you to adjust various filesystem parameters of an
 ext2/ext3/ext4 filesystem called \f(CW\*(C`device\*(C'\fR.
 .PP
-The optional parameters are:
+Додатковими параметрами є:
 .ie n .IP """force""" 4
 .el .IP "\f(CWforce\fR" 4
 .IX Item "force"
@@ -6624,6 +7111,19 @@ by its mountpoint (path) or the device which contains the filesystem.
 This unmounts all mounted filesystems.
 .PP
 Some internal mounts are not unmounted by this call.
+.SS "umount-local"
+.IX Subsection "umount-local"
+.Vb 1
+\& umount\-local [retry:true|false]
+.Ve
+.PP
+If libguestfs is exporting the filesystem on a local mountpoint, then this
+unmounts it.
+.PP
+See \*(L"\s-1MOUNT\s0 \s-1LOCAL\s0\*(R" in \fIguestfs\fR\|(3) for full documentation.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
 .SS "upload"
 .IX Subsection "upload"
 .Vb 1
@@ -6788,6 +7288,17 @@ You can use this along with \*(L"lvs\*(R" and \*(L"lvuuid\*(R" calls to associat
 logical volumes and volume groups.
 .PP
 Див. також \*(L"vgpvuuids\*(R".
+.SS "vgmeta"
+.IX Subsection "vgmeta"
+.Vb 1
+\& vgmeta vgname
+.Ve
+.PP
+\&\f(CW\*(C`vgname\*(C'\fR is an \s-1LVM\s0 volume group.  This command examines the volume group
+and returns its metadata.
+.PP
+Note that the metadata is an internal structure used by \s-1LVM\s0, subject to
+change at any time, and is provided for information only.
 .SS "vgpvuuids"
 .IX Subsection "vgpvuuids"
 .Vb 1
@@ -6877,6 +7388,19 @@ command.
 .PP
 This command counts the words in a file, using the \f(CW\*(C`wc \-w\*(C'\fR external
 command.
+.SS "wipefs"
+.IX Subsection "wipefs"
+.Vb 1
+\& wipefs device
+.Ve
+.PP
+This command erases filesystem or \s-1RAID\s0 signatures from the specified
+\&\f(CW\*(C`device\*(C'\fR to make the filesystem invisible to libblkid.
+.PP
+This does not erase the filesystem itself nor any other data from the
+\&\f(CW\*(C`device\*(C'\fR.
+.PP
+Compare with \*(L"zero\*(R" which zeroes the first few blocks of a device.
 .SS "write"
 .IX Subsection "write"
 .Vb 1
@@ -6975,6 +7499,20 @@ which just zeroes the first few blocks of a device.
 If blocks are already zero, then this command avoids writing zeroes.  This
 prevents the underlying device from becoming non-sparse or growing
 unnecessarily.
+.SS "zero-free-space"
+.IX Subsection "zero-free-space"
+.Vb 1
+\& zero\-free\-space directory
+.Ve
+.PP
+Zero the free space in the filesystem mounted on \f(CW\*(C`directory\*(C'\fR.  The
+filesystem must be mounted read-write.
+.PP
+The filesystem contents are not affected, but any free space in the
+filesystem is freed.
+.PP
+In future (but not currently) these zeroed blocks will be \*(L"sparsified\*(R" \-
+that is, given back to the host.
 .SS "zerofree"
 .IX Subsection "zerofree"
 .Vb 1
@@ -7199,18 +7737,18 @@ the same name will be overwritten.
 Richard W.M. Jones (\f(CW\*(C`rjones at redhat dot com\*(C'\fR)
 .SH "АВТОРСЬКІ ПРАВА"
 .IX Header "АВТОРСЬКІ ПРАВА"
-Copyright (C) 2009\-2012 Red Hat Inc.  <http://libguestfs.org/>
+© Red Hat Inc., 2009–2012 <http://libguestfs.org/>
 .PP
-This program is free software; you can redistribute it and/or modify it
-under the terms of the \s-1GNU\s0 General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option)
-any later version.
+Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
+змінювати її за умов дотримання \s-1GNU\s0 General Public License  утому вигляді,
+що оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
+забажаєте) будь\-якої випущеної пізніше.
 .PP
 Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
 БУДЬ\-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
-You should have received a copy of the \s-1GNU\s0 General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 51
-Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.
+Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301, \s-1USA\s0.

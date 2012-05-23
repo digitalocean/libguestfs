@@ -188,6 +188,7 @@ guestfs__inspect_get_type (guestfs_h *g, const char *root)
 
   char *ret;
   switch (fs->type) {
+  case OS_TYPE_DOS: ret = safe_strdup (g, "dos"); break;
   case OS_TYPE_FREEBSD: ret = safe_strdup (g, "freebsd"); break;
   case OS_TYPE_HURD: ret = safe_strdup (g, "hurd"); break;
   case OS_TYPE_LINUX: ret = safe_strdup (g, "linux"); break;
@@ -219,9 +220,12 @@ guestfs__inspect_get_distro (guestfs_h *g, const char *root)
   char *ret;
   switch (fs->distro) {
   case OS_DISTRO_ARCHLINUX: ret = safe_strdup (g, "archlinux"); break;
+  case OS_DISTRO_BUILDROOT: ret = safe_strdup (g, "buildroot"); break;
   case OS_DISTRO_CENTOS: ret = safe_strdup (g, "centos"); break;
+  case OS_DISTRO_CIRROS: ret = safe_strdup (g, "cirros"); break;
   case OS_DISTRO_DEBIAN: ret = safe_strdup (g, "debian"); break;
   case OS_DISTRO_FEDORA: ret = safe_strdup (g, "fedora"); break;
+  case OS_DISTRO_FREEDOS: ret = safe_strdup (g, "freedos"); break;
   case OS_DISTRO_GENTOO: ret = safe_strdup (g, "gentoo"); break;
   case OS_DISTRO_LINUX_MINT: ret = safe_strdup (g, "linuxmint"); break;
   case OS_DISTRO_MAGEIA: ret = safe_strdup (g, "mageia"); break;
@@ -730,7 +734,7 @@ guestfs___feature_available (guestfs_h *g, const char *feature)
 char *
 guestfs___download_to_tmp (guestfs_h *g, struct inspect_fs *fs,
                            const char *filename,
-                           const char *basename, int64_t max_size)
+                           const char *basename, uint64_t max_size)
 {
   char *r;
   int fd;
@@ -752,13 +756,13 @@ guestfs___download_to_tmp (guestfs_h *g, struct inspect_fs *fs,
   if (size == -1)
     /* guestfs_filesize failed and has already set error in handle */
     goto error;
-  if (size > max_size) {
+  if ((uint64_t) size > max_size) {
     error (g, _("size of %s is unreasonably large (%" PRIi64 " bytes)"),
            filename, size);
     goto error;
   }
 
-  fd = open (r, O_WRONLY|O_CREAT|O_TRUNC|O_NOCTTY, 0600);
+  fd = open (r, O_WRONLY|O_CREAT|O_TRUNC|O_NOCTTY|O_CLOEXEC, 0600);
   if (fd == -1) {
     perrorf (g, "open: %s", r);
     goto error;

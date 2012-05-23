@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsTest0</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsBTRFSSubvolume.html" title="GuestfsBTRFSSubvolume">
+<link rel="next" href="GuestfsAddDriveOpts.html" title="GuestfsAddDriveOpts">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsBTRFSSubvolume.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsAddDriveOpts.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsTest0.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsTest0.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsTest0.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsTest0.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsTest0"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsTest0.top_of_page"></a>GuestfsTest0</span></h2>
+<p>GuestfsTest0 — An object encapsulating optional arguments for guestfs_session_test0</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsTest0.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsTest0.html#GuestfsTest0-struct" title="struct GuestfsTest0">GuestfsTest0</a>;
+struct              <a class="link" href="GuestfsTest0.html#GuestfsTest0Class" title="struct GuestfsTest0Class">GuestfsTest0Class</a>;
+<a class="link" href="GuestfsTest0.html" title="GuestfsTest0"><span class="returnvalue">GuestfsTest0</span></a> *      <a class="link" href="GuestfsTest0.html#guestfs-test0-new" title="guestfs_test0_new ()">guestfs_test0_new</a>                   (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsTest0.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----GuestfsTest0
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsTest0.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsTest0.html#GuestfsTest0--obool" title='The "obool" property'>obool</a>"                    <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsTest0.html#GuestfsTest0--oint" title='The "oint" property'>oint</a>"                     <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct
+  "<a class="link" href="GuestfsTest0.html#GuestfsTest0--oint64" title='The "oint64" property'>oint64</a>"                   <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct
+  "<a class="link" href="GuestfsTest0.html#GuestfsTest0--ostring" title='The "ostring" property'>ostring</a>"                  <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsTest0.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_test0
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsTest0.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsTest0-struct"></a><h3>struct GuestfsTest0</h3>
+<pre class="programlisting">struct GuestfsTest0;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_test0.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTest0Class"></a><h3>struct GuestfsTest0Class</h3>
+<pre class="programlisting">struct GuestfsTest0Class {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsTest0.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="GuestfsTest0Class.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsTest0Class</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-test0-new"></a><h3>guestfs_test0_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsTest0.html" title="GuestfsTest0"><span class="returnvalue">GuestfsTest0</span></a> *      guestfs_test0_new                   (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsTest0 object
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsTest0 object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsTest0.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsTest0--obool"></a><h3>The <code class="literal">"obool"</code> property</h3>
+<pre class="programlisting">  "obool"                    <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTest0--oint"></a><h3>The <code class="literal">"oint"</code> property</h3>
+<pre class="programlisting">  "oint"                     <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct</pre>
+<p>
+A 32-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTest0--oint64"></a><h3>The <code class="literal">"oint64"</code> property</h3>
+<pre class="programlisting">  "oint64"                   <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct</pre>
+<p>
+A 64-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTest0--ostring"></a><h3>The <code class="literal">"ostring"</code> property</h3>
+<pre class="programlisting">  "ostring"                  <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsMount9P
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsMount9P ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsMount9P:options ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsMount9PClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_mount_9p_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

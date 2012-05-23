@@ -8,15 +8,15 @@ virt-df - Display free space on virtual filesystems
 
  virt-df [--параметри]
 
- virt-df [--options] -d domname
+ virt-df [--параметри] -d назва_домену
 
- virt-df [--options] -a disk.img [-a disk.img ...]
+ virt-df [--параметри] -a диск.img [-a диск.img ...]
 
 Старий стиль:
 
- virt-df [--options] domname
+ virt-df [--параметри] назва_домену
 
- virt-df [--options] disk.img [disk.img ...]
+ virt-df [--параметри] диск.img [диск.img ...]
 
 =head1 ОПИС
 
@@ -182,7 +182,7 @@ specified.
 
 =item B<-x>
 
-Enable tracing of libguestfs API calls.
+Увімкнути трасування викликів програмного інтерфейсу libguestfs.
 
 =back
 
@@ -194,17 +194,17 @@ call.  You can get the same information directly, either from the host
 
 =over 4
 
-=item From the host
+=item З основної системи
 
-Run this command:
+Віддайте таку команду:
 
- guestfish --ro -d GuestName -i statvfs /
+ guestfish --ro -d НАЗВА_ГОСТЬОВОЇ_СИСТЕМИ -i statvfs /
 
 (change C</> to see stats for other filesystems).
 
-=item From inside the guest
+=item З гостьової системи
 
-Run this command:
+Віддайте таку команду:
 
  python -c 'import os; s = os.statvfs ("/"); print s'
 
@@ -212,7 +212,7 @@ Run this command:
 
 =back
 
-=head1 NOTE ABOUT CSV FORMAT
+=head1 ЗАУВАЖЕННЯ ЩОДО ФОРМАТУ CSV
 
 Comma-separated values (CSV) is a deceptive format.  It I<seems> like it
 should be easy to parse, but it is definitely not easy to parse.
@@ -236,7 +236,7 @@ or Python's built-in csv library).
 
 Most spreadsheets and databases can import CSV directly.
 
-=head1 SHELL QUOTING
+=head1 ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ
 
 Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as C<#> and space.  You may need to quote or
@@ -245,7 +245,8 @@ L<sh(1)> for details.
 
 =head1 СТАН ВИХОДУ
 
-This program returns 0 if successful, or non-zero if there was an error.
+Ця програма повертає значення 0 у разі успішного завершення і ненульове
+значення, якщо сталася помилка.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
@@ -258,19 +259,19 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2012 Red Hat Inc.
+© Red Hat Inc., 2009–2012
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option)
-any later version.
+Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
+змінювати її за умов дотримання GNU General Public License  утому вигляді,
+що оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
+забажаєте) будь-якої випущеної пізніше.
 
 Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
 БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 51
-Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 

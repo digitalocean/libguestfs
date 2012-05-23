@@ -6,7 +6,7 @@ virt-sysprep - Reset or unconfigure a virtual machine so clones can be made
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-sysprep [--options] -d domname
+ virt-sysprep [--параметри] -d назва_домену
 
  virt-sysprep [--options] -a disk.img [-a disk.img ...]
 
@@ -16,9 +16,6 @@ Virt-sysprep "resets" or "unconfigures" a virtual machine so that clones can
 be made from it.  Steps in this process include removing SSH host keys,
 removing persistent network MAC configuration, and removing user accounts.
 Each step can be enabled or disabled as required.
-
-Virt-sysprep is a simple shell script, allowing easy inspection or
-customization by the system administrator.
 
 Virt-sysprep modifies the guest or disk image I<in place>.  The guest must
 be shut down.  If you want to preserve the existing contents of the guest,
@@ -49,10 +46,10 @@ Windows sysprepping in a future version, and we already have code to do it.
 
 =item B<--add> файл
 
-Add I<file> which should be a disk image from a virtual machine.
+Додати I<файл>, який має бути образом диска з віртуальної машини.
 
 The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+particular format use the I<--format> option.
 
 =item B<-c> адреса
 
@@ -71,17 +68,26 @@ used at all.
 Add all the disks from the named libvirt guest.  Domain UUIDs can be used
 instead of names.
 
-=item B<--enable=...>
+=item B<-n>
+
+=item B<--dry-run>
+
+Perform a read-only "dry run" on the guest.  This runs the sysprep
+operation, but throws away any changes to the disk at the end.
+
+=item B<--enable> operations
 
 Choose which sysprep operations to perform.  Give a comma-separated list of
 operations, for example:
 
- --enable=ssh-hostkeys,udev-persistent-net
+ --enable ssh-hostkeys,udev-persistent-net
 
 would enable ONLY C<ssh-hostkeys> and C<udev-persistent-net> operations.
 
-If the I<--enable> option is not given, then we default to trying all
-possible sysprep operations.  But some sysprep operations are skipped for
+If the I<--enable> option is not given, then we default to trying most
+sysprep operations (see I<--list-operations> to show which are enabled).
+
+Regardless of the I<--enable> option, sysprep operations are skipped for
 some guest types.
 
 Use I<--list-operations> to list operations supported by a particular
@@ -89,22 +95,22 @@ version of virt-sysprep.
 
 See L</OPERATIONS> below for a list and an explanation of each operation.
 
-=item B<--format=raw|qcow2|..>
+=item B<--format> raw|qcow2|..
 
-=item B<--format>
+=item B<--format> auto
 
 The default for the I<-a> option is to auto-detect the format of the disk
 image.  Using this forces the disk format for I<-a> options which follow on
-the command line.  Using I<--format> with no argument switches back to
-auto-detection for subsequent I<-a> options.
+the command line.  Using I<--format auto> switches back to auto-detection
+for subsequent I<-a> options.
 
 Приклад:
 
- virt-sysprep --format=raw -a disk.img
+ virt-sysprep --format raw -a disk.img
 
 forces raw format (no auto-detection) for C<disk.img>.
 
- virt-sysprep --format=raw -a disk.img --format -a another.img
+ virt-sysprep --format raw -a disk.img --format auto -a another.img
 
 forces raw format (no auto-detection) for C<disk.img> and reverts to
 auto-detection for C<another.img>.
@@ -113,14 +119,35 @@ If you have untrusted raw-format guest disk images, you should use this
 option to specify the disk format.  This avoids a possible security problem
 with malicious guests (CVE-2010-3851).
 
-=item B<--hostname> newhostname
-
-Change the hostname.  See the L</hostname> operation below.  If not given,
-defaults to C<localhost.localdomain>.
-
 =item B<--list-operations>
 
 List the operations supported by the virt-sysprep program.
+
+These are listed one per line, with one or more single-space-separated
+fields, eg:
+
+ $ virt-sysprep --list-operations
+ bash-history * Remove the bash history in the guest
+ cron-spool * Remove user at-jobs and cron-jobs
+ dhcp-client-state * Remove DHCP client leases
+ dhcp-server-state * Remove DHCP server leases
+ [etc]
+
+The first field is the operation name, which can be supplied to
+I<--enable>.  The second field is a C<*> character if the operation is
+enabled by default or blank if not.  Subsequent fields on the same line are
+the description of the operation.
+
+Before libguestfs 1.17.33 only the first (operation name) field was shown
+and all operations were enabled by default.
+
+=item B<-q>
+
+=item B<--quiet>
+
+Не виводити повідомлень до журналу.
+
+To enable detailed logging of individual file operations, use I<-x>.
 
 =item B<--selinux-relabel>
 
@@ -146,116 +173,36 @@ L</SELINUX RELABELLING> below for more details.
 
 =item B<-x>
 
-Enable tracing of libguestfs API calls.
+Увімкнути трасування викликів програмного інтерфейсу libguestfs.
+
+@EXTRA_OPTIONS@
 
 =back
 
 =head1 ДІЇ
 
-If the I<--enable> option is I<not> given, then I<all sysprep operations are
-enabled>, although some are skipped depending on the type of guest.
+If the I<--enable> option is I<not> given, then most sysprep operations are
+enabled.
+
+Use C<virt-sysprep --list-operations> to list all operations for your
+virt-sysprep binary.  The ones which are enabled by default are marked with
+a C<*> character.  Regardless of the I<--enable> option, sysprep operations
+are skipped for some guest types.
 
 Operations can be individually enabled using the I<--enable> option.  Use a
 comma-separated list, for example:
 
- virt-sysprep --enable=ssh-hostkeys,udev-persistent-net [etc..]
-
-To list the operations supported by the current version of virt-sysprep, use
-I<--list-operations>.
+ virt-sysprep --enable=ssh-hostkeys,udev-persistent-net [тощо]
 
 Future versions of virt-sysprep may add more operations.  If you are using
 virt-sysprep and want predictable behaviour, specify only the operations
 that you want to have enabled.
 
-=head2 cron-spool
+C<*> = enabled by default when no I<--enable> option is given.
 
-Remove user at-jobs and cron-jobs.
+@OPERATIONS@
 
-=head2 dhcp-client-state
-
-Remove DHCP client leases.
-
-=head2 dhcp-server-state
-
-Remove DHCP server leases.
-
-=head2 hostname
-
-Changes the hostname of the guest to the value given in the I<--hostname>
-parameter.
-
-If the I<--hostname> parameter is not given, then the hostname is changed to
-C<localhost.localdomain>.
-
-=head2 logfiles
-
-Remove many log files.
-
-=head2 mail-spool
-
-Remove email from the local mail spool directory.
-
-=head2 net-hwaddr
-
-Remove HWADDR (hard-coded MAC address) configuration.  For Fedora and Red
-Hat Enterprise Linux, this is removed from C<ifcfg-*> files.
-
-=head2 random-seed
-
-Write some random bytes from the host into the random seed file of the
-guest.
-
-See L</RANDOM SEED> below.
-
-=head2 rhn-systemid
-
-Remove the RHN system ID.
-
-=head2 smolt-uuid
-
-Remove the Smolt hardware UUID.
-
-=head2 ssh-hostkeys
-
-Remove the SSH host keys in the guest.
-
-The SSH host keys are regenerated (differently) next time the guest is
-booted.
-
-If, after cloning, the guest gets the same IP address, ssh will give you a
-stark warning about the host key changing:
-
- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
- @    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
- IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
-
-=head2 udev-persistent-net
-
-Remove udev persistent net rules which map the guest's existing MAC address
-to a fixed ethernet device (eg. eth0).
-
-After a guest is cloned, the MAC address usually changes.  Since the old MAC
-address occupies the old name (eg. eth0), this means the fresh MAC address
-is assigned to a new name (eg. eth1) and this is usually undesirable.
-Erasing the udev persistent net rules avoids this.
-
-=head2 utmp
-
-Вилучити файл utmp.
-
-This records who is currently logged in on a machine.  In modern Linux
-distros it is stored in a ramdisk and hence not part of the virtual
-machine's disk, but it was stored on disk in older distros.
-
-=head2 yum-uuid
-
-Вилучити UUID yum.
-
-Yum creates a fresh UUID the next time it runs when it notices that the
-original UUID has been erased.
-
-=head1 COPYING AND CLONING
+=head1 КОПІЮВАННЯ ТА КЛОНУВАННЯ
 
 Virt-sysprep can be used as part of a process of cloning guests, or to
 prepare a template from which guests can be cloned.  There are many
@@ -286,11 +233,11 @@ UUID
 
 =item *
 
-path to block device(s)
+шлях до блокових пристроїв
 
 =item *
 
-network card MAC address
+MAC-адреса мережевої картки
 
 =back
 
@@ -327,7 +274,7 @@ Puppet registration
 
 =back
 
-=head2 COPYING THE BLOCK DEVICE
+=head2 КОПІЮВАННЯ БЛОКОВОГО ПРИСТРОЮ
 
 Starting with an original guest, you probably wish to copy the guest block
 device and its configuration to make a template.  Then once you are happy
@@ -404,7 +351,7 @@ it easier to compress and/or faster to copy.
 Notice that since virt-sparsify also copies the image, you can use it to
 make the initial copy (instead of C<dd>).
 
-=head2 RESIZE
+=head2 ЗМІНА РОЗМІРІВ
 
                          virt-resize
                 template ---------->
@@ -422,8 +369,7 @@ ideal for cloning guests from a template.
 
 Although virt-sysprep removes some sensitive information from the guest, it
 does not pretend to remove all of it.  You should examine the L</OPERATIONS>
-above, and the implementation of the operations in the shell script.  You
-should also examine the guest afterwards.
+above and the guest afterwards.
 
 Sensitive files are simply removed.  The data they contained may still exist
 on the disk, easily recovered with a hex editor or undelete tool.  Use
@@ -447,11 +393,12 @@ template too, which can be done by just enabling the C<random-seed>
 operation:
 
  cp template.img newguest.img
- virt-sysprep --enable=random-seed -a newguest.img
+ virt-sysprep --enable random-seed -a newguest.img
 
 =head2 ПОВТОРНЕ ВСТАНОВЛЕННЯ МІТОК SELINUX
 
-I<(This section applies to Linux guests using SELinux only)>
+I<(Цей розділ стосується лише гостьових систем Linux, у яких
+використовується лише SELinux)>
 
 If any new files are created by virt-sysprep, then virt-sysprep touches
 C</.autorelabel> so that these will be correctly labelled by SELinux the
@@ -464,7 +411,7 @@ I<--selinux-relabel> option.
 You can disable relabelling entirely by supplying the
 I<--no-selinux-relabel> option.
 
-=head1 SHELL QUOTING
+=head1 ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ
 
 Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as C<#> and space.  You may need to quote or
@@ -482,25 +429,29 @@ L<virt-resize(1)>, L<virt-sparsify(1)>, L<virsh(1)>, L<lvcreate(8)>,
 L<qemu-img(1)>, L<scrub(1)>, L<http://libguestfs.org/>,
 L<http://libvirt.org/>.
 
-=head1 АВТОР
+=head1 АВТОРИ
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
+Wanlong Gao, Fujitsu Ltd.
+
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2011
+Copyright (C) 2011-2012 Red Hat Inc.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option)
-any later version.
+Copyright (C) 2012 Fujitsu Ltd.
+
+Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
+змінювати її за умов дотримання GNU General Public License  утому вигляді,
+що оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
+забажаєте) будь-якої випущеної пізніше.
 
 Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
 БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 51
-Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 

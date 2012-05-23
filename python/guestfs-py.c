@@ -74,7 +74,7 @@ static PyObject *
 put_string_list (char * const * const argv)
 {
   PyObject *list;
-  int argc, i;
+  size_t argc, i;
 
   for (argc = 0; argv[argc] != NULL; ++argc)
     ;
@@ -95,7 +95,7 @@ static PyObject *
 put_table (char * const * const argv)
 {
   PyObject *list, *item;
-  int argc, i;
+  size_t argc, i;
 
   for (argc = 0; argv[argc] != NULL; ++argc)
     ;
@@ -119,7 +119,7 @@ put_table (char * const * const argv)
 static void
 free_strings (char **argv)
 {
-  int argc;
+  size_t argc;
 
   for (argc = 0; argv[argc] != NULL; ++argc)
     free (argv[argc]);
@@ -598,6 +598,127 @@ put_application (struct guestfs_application *application)
 };
 
 static PyObject *
+put_isoinfo (struct guestfs_isoinfo *isoinfo)
+{
+  PyObject *dict;
+
+  dict = PyDict_New ();
+  PyDict_SetItemString (dict, "iso_system_id",
+#ifdef HAVE_PYSTRING_ASSTRING
+                        PyString_FromString (isoinfo->iso_system_id));
+#else
+                        PyUnicode_FromString (isoinfo->iso_system_id));
+#endif
+  PyDict_SetItemString (dict, "iso_volume_id",
+#ifdef HAVE_PYSTRING_ASSTRING
+                        PyString_FromString (isoinfo->iso_volume_id));
+#else
+                        PyUnicode_FromString (isoinfo->iso_volume_id));
+#endif
+  PyDict_SetItemString (dict, "iso_volume_space_size",
+                        PyLong_FromUnsignedLong (isoinfo->iso_volume_space_size));
+  PyDict_SetItemString (dict, "iso_volume_set_size",
+                        PyLong_FromUnsignedLong (isoinfo->iso_volume_set_size));
+  PyDict_SetItemString (dict, "iso_volume_sequence_number",
+                        PyLong_FromUnsignedLong (isoinfo->iso_volume_sequence_number));
+  PyDict_SetItemString (dict, "iso_logical_block_size",
+                        PyLong_FromUnsignedLong (isoinfo->iso_logical_block_size));
+  PyDict_SetItemString (dict, "iso_volume_set_id",
+#ifdef HAVE_PYSTRING_ASSTRING
+                        PyString_FromString (isoinfo->iso_volume_set_id));
+#else
+                        PyUnicode_FromString (isoinfo->iso_volume_set_id));
+#endif
+  PyDict_SetItemString (dict, "iso_publisher_id",
+#ifdef HAVE_PYSTRING_ASSTRING
+                        PyString_FromString (isoinfo->iso_publisher_id));
+#else
+                        PyUnicode_FromString (isoinfo->iso_publisher_id));
+#endif
+  PyDict_SetItemString (dict, "iso_data_preparer_id",
+#ifdef HAVE_PYSTRING_ASSTRING
+                        PyString_FromString (isoinfo->iso_data_preparer_id));
+#else
+                        PyUnicode_FromString (isoinfo->iso_data_preparer_id));
+#endif
+  PyDict_SetItemString (dict, "iso_application_id",
+#ifdef HAVE_PYSTRING_ASSTRING
+                        PyString_FromString (isoinfo->iso_application_id));
+#else
+                        PyUnicode_FromString (isoinfo->iso_application_id));
+#endif
+  PyDict_SetItemString (dict, "iso_copyright_file_id",
+#ifdef HAVE_PYSTRING_ASSTRING
+                        PyString_FromString (isoinfo->iso_copyright_file_id));
+#else
+                        PyUnicode_FromString (isoinfo->iso_copyright_file_id));
+#endif
+  PyDict_SetItemString (dict, "iso_abstract_file_id",
+#ifdef HAVE_PYSTRING_ASSTRING
+                        PyString_FromString (isoinfo->iso_abstract_file_id));
+#else
+                        PyUnicode_FromString (isoinfo->iso_abstract_file_id));
+#endif
+  PyDict_SetItemString (dict, "iso_bibliographic_file_id",
+#ifdef HAVE_PYSTRING_ASSTRING
+                        PyString_FromString (isoinfo->iso_bibliographic_file_id));
+#else
+                        PyUnicode_FromString (isoinfo->iso_bibliographic_file_id));
+#endif
+  PyDict_SetItemString (dict, "iso_volume_creation_t",
+                        PyLong_FromLongLong (isoinfo->iso_volume_creation_t));
+  PyDict_SetItemString (dict, "iso_volume_modification_t",
+                        PyLong_FromLongLong (isoinfo->iso_volume_modification_t));
+  PyDict_SetItemString (dict, "iso_volume_expiration_t",
+                        PyLong_FromLongLong (isoinfo->iso_volume_expiration_t));
+  PyDict_SetItemString (dict, "iso_volume_effective_t",
+                        PyLong_FromLongLong (isoinfo->iso_volume_effective_t));
+  return dict;
+};
+
+static PyObject *
+put_mdstat (struct guestfs_mdstat *mdstat)
+{
+  PyObject *dict;
+
+  dict = PyDict_New ();
+  PyDict_SetItemString (dict, "mdstat_device",
+#ifdef HAVE_PYSTRING_ASSTRING
+                        PyString_FromString (mdstat->mdstat_device));
+#else
+                        PyUnicode_FromString (mdstat->mdstat_device));
+#endif
+  PyDict_SetItemString (dict, "mdstat_index",
+                        PyLong_FromLong (mdstat->mdstat_index));
+  PyDict_SetItemString (dict, "mdstat_flags",
+#ifdef HAVE_PYSTRING_ASSTRING
+                        PyString_FromString (mdstat->mdstat_flags));
+#else
+                        PyUnicode_FromString (mdstat->mdstat_flags));
+#endif
+  return dict;
+};
+
+static PyObject *
+put_btrfssubvolume (struct guestfs_btrfssubvolume *btrfssubvolume)
+{
+  PyObject *dict;
+
+  dict = PyDict_New ();
+  PyDict_SetItemString (dict, "btrfssubvolume_id",
+                        PyLong_FromUnsignedLongLong (btrfssubvolume->btrfssubvolume_id));
+  PyDict_SetItemString (dict, "btrfssubvolume_top_level_id",
+                        PyLong_FromUnsignedLongLong (btrfssubvolume->btrfssubvolume_top_level_id));
+  PyDict_SetItemString (dict, "btrfssubvolume_path",
+#ifdef HAVE_PYSTRING_ASSTRING
+                        PyString_FromString (btrfssubvolume->btrfssubvolume_path));
+#else
+                        PyUnicode_FromString (btrfssubvolume->btrfssubvolume_path));
+#endif
+  return dict;
+};
+
+static PyObject *
 put_lvm_vg_list (struct guestfs_lvm_vg_list *lvm_vgs)
 {
   PyObject *list;
@@ -618,6 +739,30 @@ put_stat_list (struct guestfs_stat_list *stats)
   list = PyList_New (stats->len);
   for (i = 0; i < stats->len; ++i)
     PyList_SetItem (list, i, put_stat (&stats->val[i]));
+  return list;
+};
+
+static PyObject *
+put_mdstat_list (struct guestfs_mdstat_list *mdstats)
+{
+  PyObject *list;
+  size_t i;
+
+  list = PyList_New (mdstats->len);
+  for (i = 0; i < mdstats->len; ++i)
+    PyList_SetItem (list, i, put_mdstat (&mdstats->val[i]));
+  return list;
+};
+
+static PyObject *
+put_btrfssubvolume_list (struct guestfs_btrfssubvolume_list *btrfssubvolumes)
+{
+  PyObject *list;
+  size_t i;
+
+  list = PyList_New (btrfssubvolumes->len);
+  for (i = 0; i < btrfssubvolumes->len; ++i)
+    PyList_SetItem (list, i, put_btrfssubvolume (&btrfssubvolumes->val[i]));
   return list;
 };
 
@@ -4017,6 +4162,138 @@ py_guestfs_get_smp (PyObject *self, PyObject *args)
   }
 
   py_r = PyLong_FromLong ((long) r);
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_mount_local (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  struct guestfs_mount_local_argv optargs_s;
+  struct guestfs_mount_local_argv *optargs = &optargs_s;
+  int r;
+  const char *localmountpoint;
+  int optargs_t_readonly = -1;
+  const char *optargs_t_options = NULL;
+  int optargs_t_cachetimeout = -1;
+  int optargs_t_debugcalls = -1;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "Osizii:guestfs_mount_local",
+                         &py_g, &localmountpoint, &optargs_t_readonly, &optargs_t_options, &optargs_t_cachetimeout, &optargs_t_debugcalls))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (optargs_t_readonly != -1) {
+    optargs_s.readonly = optargs_t_readonly;
+    optargs_s.bitmask |= GUESTFS_MOUNT_LOCAL_READONLY_BITMASK;
+  }
+  if (optargs_t_options != NULL) {
+    optargs_s.options = optargs_t_options;
+    optargs_s.bitmask |= GUESTFS_MOUNT_LOCAL_OPTIONS_BITMASK;
+  }
+  if (optargs_t_cachetimeout != -1) {
+    optargs_s.cachetimeout = optargs_t_cachetimeout;
+    optargs_s.bitmask |= GUESTFS_MOUNT_LOCAL_CACHETIMEOUT_BITMASK;
+  }
+  if (optargs_t_debugcalls != -1) {
+    optargs_s.debugcalls = optargs_t_debugcalls;
+    optargs_s.bitmask |= GUESTFS_MOUNT_LOCAL_DEBUGCALLS_BITMASK;
+  }
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_mount_local_argv (g, localmountpoint, optargs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_mount_local_run (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+
+  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_mount_local_run",
+                         &py_g))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_mount_local_run (g);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_umount_local (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  struct guestfs_umount_local_argv optargs_s;
+  struct guestfs_umount_local_argv *optargs = &optargs_s;
+  int r;
+  int optargs_t_retry = -1;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oi:guestfs_umount_local",
+                         &py_g, &optargs_t_retry))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (optargs_t_retry != -1) {
+    optargs_s.retry = optargs_t_retry;
+    optargs_s.bitmask |= GUESTFS_UMOUNT_LOCAL_RETRY_BITMASK;
+  }
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_umount_local_argv (g, optargs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
   return py_r;
 }
 
@@ -14685,6 +14962,1076 @@ py_guestfs_e2fsck (PyObject *self, PyObject *args)
   return py_r;
 }
 
+static PyObject *
+py_guestfs_llz (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  char *r;
+  const char *directory;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_llz",
+                         &py_g, &directory))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_llz (g, directory);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+#ifdef HAVE_PYSTRING_ASSTRING
+  py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
+  free (r);
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_wipefs (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  const char *device;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_wipefs",
+                         &py_g, &device))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_wipefs (g, device);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_ntfsfix (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  struct guestfs_ntfsfix_argv optargs_s;
+  struct guestfs_ntfsfix_argv *optargs = &optargs_s;
+  int r;
+  const char *device;
+  int optargs_t_clearbadsectors = -1;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "Osi:guestfs_ntfsfix",
+                         &py_g, &device, &optargs_t_clearbadsectors))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (optargs_t_clearbadsectors != -1) {
+    optargs_s.clearbadsectors = optargs_t_clearbadsectors;
+    optargs_s.bitmask |= GUESTFS_NTFSFIX_CLEARBADSECTORS_BITMASK;
+  }
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_ntfsfix_argv (g, device, optargs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_ntfsclone_out (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  struct guestfs_ntfsclone_out_argv optargs_s;
+  struct guestfs_ntfsclone_out_argv *optargs = &optargs_s;
+  int r;
+  const char *device;
+  const char *backupfile;
+  int optargs_t_metadataonly = -1;
+  int optargs_t_rescue = -1;
+  int optargs_t_ignorefscheck = -1;
+  int optargs_t_preservetimestamps = -1;
+  int optargs_t_force = -1;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "Ossiiiii:guestfs_ntfsclone_out",
+                         &py_g, &device, &backupfile, &optargs_t_metadataonly, &optargs_t_rescue, &optargs_t_ignorefscheck, &optargs_t_preservetimestamps, &optargs_t_force))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (optargs_t_metadataonly != -1) {
+    optargs_s.metadataonly = optargs_t_metadataonly;
+    optargs_s.bitmask |= GUESTFS_NTFSCLONE_OUT_METADATAONLY_BITMASK;
+  }
+  if (optargs_t_rescue != -1) {
+    optargs_s.rescue = optargs_t_rescue;
+    optargs_s.bitmask |= GUESTFS_NTFSCLONE_OUT_RESCUE_BITMASK;
+  }
+  if (optargs_t_ignorefscheck != -1) {
+    optargs_s.ignorefscheck = optargs_t_ignorefscheck;
+    optargs_s.bitmask |= GUESTFS_NTFSCLONE_OUT_IGNOREFSCHECK_BITMASK;
+  }
+  if (optargs_t_preservetimestamps != -1) {
+    optargs_s.preservetimestamps = optargs_t_preservetimestamps;
+    optargs_s.bitmask |= GUESTFS_NTFSCLONE_OUT_PRESERVETIMESTAMPS_BITMASK;
+  }
+  if (optargs_t_force != -1) {
+    optargs_s.force = optargs_t_force;
+    optargs_s.bitmask |= GUESTFS_NTFSCLONE_OUT_FORCE_BITMASK;
+  }
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_ntfsclone_out_argv (g, device, backupfile, optargs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_ntfsclone_in (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  const char *backupfile;
+  const char *device;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_ntfsclone_in",
+                         &py_g, &backupfile, &device))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_ntfsclone_in (g, backupfile, device);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_set_label (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  const char *device;
+  const char *label;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_set_label",
+                         &py_g, &device, &label))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_set_label (g, device, label);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_zero_free_space (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  const char *directory;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_zero_free_space",
+                         &py_g, &directory))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_zero_free_space (g, directory);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_lvcreate_free (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  const char *logvol;
+  const char *volgroup;
+  int percent;
+
+  if (!PyArg_ParseTuple (args, (char *) "Ossi:guestfs_lvcreate_free",
+                         &py_g, &logvol, &volgroup, &percent))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_lvcreate_free (g, logvol, volgroup, percent);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_isoinfo_device (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  struct guestfs_isoinfo *r;
+  const char *device;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_isoinfo_device",
+                         &py_g, &device))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_isoinfo_device (g, device);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  py_r = put_isoinfo (r);
+  guestfs_free_isoinfo (r);
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_isoinfo (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  struct guestfs_isoinfo *r;
+  const char *isofile;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_isoinfo",
+                         &py_g, &isofile))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_isoinfo (g, isofile);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  py_r = put_isoinfo (r);
+  guestfs_free_isoinfo (r);
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_vgmeta (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  char *r;
+  size_t size;
+  const char *vgname;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_vgmeta",
+                         &py_g, &vgname))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_vgmeta (g, vgname, &size);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+#ifdef HAVE_PYSTRING_ASSTRING
+  py_r = PyString_FromStringAndSize (r, size);
+#else
+  py_r = PyBytes_FromStringAndSize (r, size);
+#endif
+  free (r);
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_md_stat (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  struct guestfs_mdstat_list *r;
+  const char *md;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_md_stat",
+                         &py_g, &md))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_md_stat (g, md);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  py_r = put_mdstat_list (r);
+  guestfs_free_mdstat_list (r);
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_mkfs_btrfs (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  struct guestfs_mkfs_btrfs_argv optargs_s;
+  struct guestfs_mkfs_btrfs_argv *optargs = &optargs_s;
+  int r;
+  PyObject *py_devices;
+  char **devices;
+  long long optargs_t_allocstart = -1;
+  long long optargs_t_bytecount = -1;
+  const char *optargs_t_datatype = NULL;
+  int optargs_t_leafsize = -1;
+  const char *optargs_t_label = NULL;
+  const char *optargs_t_metadata = NULL;
+  int optargs_t_nodesize = -1;
+  int optargs_t_sectorsize = -1;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OOLLzizzii:guestfs_mkfs_btrfs",
+                         &py_g, &py_devices, &optargs_t_allocstart, &optargs_t_bytecount, &optargs_t_datatype, &optargs_t_leafsize, &optargs_t_label, &optargs_t_metadata, &optargs_t_nodesize, &optargs_t_sectorsize))
+    return NULL;
+  g = get_handle (py_g);
+  devices = get_string_list (py_devices);
+  if (!devices) return NULL;
+
+  if (optargs_t_allocstart != -1) {
+    optargs_s.allocstart = optargs_t_allocstart;
+    optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_ALLOCSTART_BITMASK;
+  }
+  if (optargs_t_bytecount != -1) {
+    optargs_s.bytecount = optargs_t_bytecount;
+    optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_BYTECOUNT_BITMASK;
+  }
+  if (optargs_t_datatype != NULL) {
+    optargs_s.datatype = optargs_t_datatype;
+    optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_DATATYPE_BITMASK;
+  }
+  if (optargs_t_leafsize != -1) {
+    optargs_s.leafsize = optargs_t_leafsize;
+    optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_LEAFSIZE_BITMASK;
+  }
+  if (optargs_t_label != NULL) {
+    optargs_s.label = optargs_t_label;
+    optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_LABEL_BITMASK;
+  }
+  if (optargs_t_metadata != NULL) {
+    optargs_s.metadata = optargs_t_metadata;
+    optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_METADATA_BITMASK;
+  }
+  if (optargs_t_nodesize != -1) {
+    optargs_s.nodesize = optargs_t_nodesize;
+    optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_NODESIZE_BITMASK;
+  }
+  if (optargs_t_sectorsize != -1) {
+    optargs_s.sectorsize = optargs_t_sectorsize;
+    optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_SECTORSIZE_BITMASK;
+  }
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_mkfs_btrfs_argv (g, devices, optargs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  free (devices);
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_get_e2attrs (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  char *r;
+  const char *file;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_get_e2attrs",
+                         &py_g, &file))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_get_e2attrs (g, file);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+#ifdef HAVE_PYSTRING_ASSTRING
+  py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
+  free (r);
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_set_e2attrs (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  struct guestfs_set_e2attrs_argv optargs_s;
+  struct guestfs_set_e2attrs_argv *optargs = &optargs_s;
+  int r;
+  const char *file;
+  const char *attrs;
+  int optargs_t_clear = -1;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "Ossi:guestfs_set_e2attrs",
+                         &py_g, &file, &attrs, &optargs_t_clear))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (optargs_t_clear != -1) {
+    optargs_s.clear = optargs_t_clear;
+    optargs_s.bitmask |= GUESTFS_SET_E2ATTRS_CLEAR_BITMASK;
+  }
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_set_e2attrs_argv (g, file, attrs, optargs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_get_e2generation (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int64_t r;
+  const char *file;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_get_e2generation",
+                         &py_g, &file))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_get_e2generation (g, file);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  py_r = PyLong_FromLongLong (r);
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_set_e2generation (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  const char *file;
+  long long generation;
+
+  if (!PyArg_ParseTuple (args, (char *) "OsL:guestfs_set_e2generation",
+                         &py_g, &file, &generation))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_set_e2generation (g, file, generation);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_subvolume_snapshot (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  const char *source;
+  const char *dest;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_btrfs_subvolume_snapshot",
+                         &py_g, &source, &dest))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_subvolume_snapshot (g, source, dest);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_subvolume_delete (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  const char *subvolume;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_subvolume_delete",
+                         &py_g, &subvolume))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_subvolume_delete (g, subvolume);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_subvolume_create (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  const char *dest;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_subvolume_create",
+                         &py_g, &dest))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_subvolume_create (g, dest);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_subvolume_list (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  struct guestfs_btrfssubvolume_list *r;
+  const char *fs;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_subvolume_list",
+                         &py_g, &fs))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_subvolume_list (g, fs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  py_r = put_btrfssubvolume_list (r);
+  guestfs_free_btrfssubvolume_list (r);
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_subvolume_set_default (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  long long id;
+  const char *fs;
+
+  if (!PyArg_ParseTuple (args, (char *) "OLs:guestfs_btrfs_subvolume_set_default",
+                         &py_g, &id, &fs))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_subvolume_set_default (g, id, fs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_filesystem_sync (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  const char *fs;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_filesystem_sync",
+                         &py_g, &fs))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_filesystem_sync (g, fs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_filesystem_balance (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  const char *fs;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_btrfs_filesystem_balance",
+                         &py_g, &fs))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_filesystem_balance (g, fs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_device_add (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  PyObject *py_devices;
+  char **devices;
+  const char *fs;
+
+  if (!PyArg_ParseTuple (args, (char *) "OOs:guestfs_btrfs_device_add",
+                         &py_g, &py_devices, &fs))
+    return NULL;
+  g = get_handle (py_g);
+  devices = get_string_list (py_devices);
+  if (!devices) return NULL;
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_device_add (g, devices, fs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  free (devices);
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_device_delete (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  PyObject *py_devices;
+  char **devices;
+  const char *fs;
+
+  if (!PyArg_ParseTuple (args, (char *) "OOs:guestfs_btrfs_device_delete",
+                         &py_g, &py_devices, &fs))
+    return NULL;
+  g = get_handle (py_g);
+  devices = get_string_list (py_devices);
+  if (!devices) return NULL;
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_device_delete (g, devices, fs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  free (devices);
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_set_seeding (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  int r;
+  const char *device;
+  int seeding;
+
+  if (!PyArg_ParseTuple (args, (char *) "Osi:guestfs_btrfs_set_seeding",
+                         &py_g, &device, &seeding))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_set_seeding (g, device, seeding);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_btrfs_fsck (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r;
+  struct guestfs_btrfs_fsck_argv optargs_s;
+  struct guestfs_btrfs_fsck_argv *optargs = &optargs_s;
+  int r;
+  const char *device;
+  long long optargs_t_superblock = -1;
+  int optargs_t_repair = -1;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OsLi:guestfs_btrfs_fsck",
+                         &py_g, &device, &optargs_t_superblock, &optargs_t_repair))
+    return NULL;
+  g = get_handle (py_g);
+
+  if (optargs_t_superblock != -1) {
+    optargs_s.superblock = optargs_t_superblock;
+    optargs_s.bitmask |= GUESTFS_BTRFS_FSCK_SUPERBLOCK_BITMASK;
+  }
+  if (optargs_t_repair != -1) {
+    optargs_s.repair = optargs_t_repair;
+    optargs_s.bitmask |= GUESTFS_BTRFS_FSCK_REPAIR_BITMASK;
+  }
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_btrfs_fsck_argv (g, device, optargs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    return NULL;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+  return py_r;
+}
+
 static PyMethodDef methods[] = {
   { (char *) "create", py_guestfs_create, METH_VARARGS, NULL },
   { (char *) "close", py_guestfs_close, METH_VARARGS, NULL },
@@ -14788,6 +16135,9 @@ static PyMethodDef methods[] = {
   { (char *) "get_pgroup", py_guestfs_get_pgroup, METH_VARARGS, NULL },
   { (char *) "set_smp", py_guestfs_set_smp, METH_VARARGS, NULL },
   { (char *) "get_smp", py_guestfs_get_smp, METH_VARARGS, NULL },
+  { (char *) "mount_local", py_guestfs_mount_local, METH_VARARGS, NULL },
+  { (char *) "mount_local_run", py_guestfs_mount_local_run, METH_VARARGS, NULL },
+  { (char *) "umount_local", py_guestfs_umount_local, METH_VARARGS, NULL },
   { (char *) "mount", py_guestfs_mount, METH_VARARGS, NULL },
   { (char *) "sync", py_guestfs_sync, METH_VARARGS, NULL },
   { (char *) "touch", py_guestfs_touch, METH_VARARGS, NULL },
@@ -15092,6 +16442,34 @@ static PyMethodDef methods[] = {
   { (char *) "md_stop", py_guestfs_md_stop, METH_VARARGS, NULL },
   { (char *) "blkid", py_guestfs_blkid, METH_VARARGS, NULL },
   { (char *) "e2fsck", py_guestfs_e2fsck, METH_VARARGS, NULL },
+  { (char *) "llz", py_guestfs_llz, METH_VARARGS, NULL },
+  { (char *) "wipefs", py_guestfs_wipefs, METH_VARARGS, NULL },
+  { (char *) "ntfsfix", py_guestfs_ntfsfix, METH_VARARGS, NULL },
+  { (char *) "ntfsclone_out", py_guestfs_ntfsclone_out, METH_VARARGS, NULL },
+  { (char *) "ntfsclone_in", py_guestfs_ntfsclone_in, METH_VARARGS, NULL },
+  { (char *) "set_label", py_guestfs_set_label, METH_VARARGS, NULL },
+  { (char *) "zero_free_space", py_guestfs_zero_free_space, METH_VARARGS, NULL },
+  { (char *) "lvcreate_free", py_guestfs_lvcreate_free, METH_VARARGS, NULL },
+  { (char *) "isoinfo_device", py_guestfs_isoinfo_device, METH_VARARGS, NULL },
+  { (char *) "isoinfo", py_guestfs_isoinfo, METH_VARARGS, NULL },
+  { (char *) "vgmeta", py_guestfs_vgmeta, METH_VARARGS, NULL },
+  { (char *) "md_stat", py_guestfs_md_stat, METH_VARARGS, NULL },
+  { (char *) "mkfs_btrfs", py_guestfs_mkfs_btrfs, METH_VARARGS, NULL },
+  { (char *) "get_e2attrs", py_guestfs_get_e2attrs, METH_VARARGS, NULL },
+  { (char *) "set_e2attrs", py_guestfs_set_e2attrs, METH_VARARGS, NULL },
+  { (char *) "get_e2generation", py_guestfs_get_e2generation, METH_VARARGS, NULL },
+  { (char *) "set_e2generation", py_guestfs_set_e2generation, METH_VARARGS, NULL },
+  { (char *) "btrfs_subvolume_snapshot", py_guestfs_btrfs_subvolume_snapshot, METH_VARARGS, NULL },
+  { (char *) "btrfs_subvolume_delete", py_guestfs_btrfs_subvolume_delete, METH_VARARGS, NULL },
+  { (char *) "btrfs_subvolume_create", py_guestfs_btrfs_subvolume_create, METH_VARARGS, NULL },
+  { (char *) "btrfs_subvolume_list", py_guestfs_btrfs_subvolume_list, METH_VARARGS, NULL },
+  { (char *) "btrfs_subvolume_set_default", py_guestfs_btrfs_subvolume_set_default, METH_VARARGS, NULL },
+  { (char *) "btrfs_filesystem_sync", py_guestfs_btrfs_filesystem_sync, METH_VARARGS, NULL },
+  { (char *) "btrfs_filesystem_balance", py_guestfs_btrfs_filesystem_balance, METH_VARARGS, NULL },
+  { (char *) "btrfs_device_add", py_guestfs_btrfs_device_add, METH_VARARGS, NULL },
+  { (char *) "btrfs_device_delete", py_guestfs_btrfs_device_delete, METH_VARARGS, NULL },
+  { (char *) "btrfs_set_seeding", py_guestfs_btrfs_set_seeding, METH_VARARGS, NULL },
+  { (char *) "btrfs_fsck", py_guestfs_btrfs_fsck, METH_VARARGS, NULL },
   { NULL, NULL, 0, NULL }
 };
 

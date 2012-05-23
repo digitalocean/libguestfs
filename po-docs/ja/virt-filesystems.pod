@@ -2,16 +2,15 @@
 
 =head1 名前
 
-virt-filesystems - List filesystems, partitions, block devices, LVM in a
-virtual machine or disk image
+virt-filesystems - 仮想マシンまたはディスクイメージにあるファイルシステム、パーティション、ブロックデバイスおよび LVM の一覧表示
 
-=head1 SYNOPSIS
+=head1 書式
 
  virt-filesystems [--options] -d domname
 
  virt-filesystems [--options] -a disk.img [-a disk.img ...]
 
-=head1 DESCRIPTION
+=head1 説明
 
 This tool allows you to discover filesystems, partitions, logical volumes,
 and their sizes in a disk image or virtual machine.  It is a replacement for
@@ -24,14 +23,13 @@ from a disk image:
    # ...
  done
 
-Another use is to list partitions before using another tool to modify those
-partitions (such as L<virt-resize(1)>).  If you are curious about what an
-unknown disk image contains, use this tool along with L<virt-inspector(1)>.
+他の使用方法は、これらのパーティションを変更するために (L<virt-resize(1)> のような)
+他のツールを使用する前に、パーティションを一覧表示することです。未知のディスクイメージが含んでいるものについてわからなければ、L<virt-inspector(1)>
+とともにこのツールを使用します。
 
-Various command line options control what this program displays.  You need
-to give either I<-a> or I<-d> options to specify the disk image or libvirt
-guest respectively.  If you just specify that then the program shows
-filesystems found, one per line, like this:
+さまざまなコマンドラインオプションがこのプログラムが表示するものを制御します。それぞれディスクイメージまたは libvirt 仮想マシンを指定するには
+I<-a> または I<-d> オプションを与える必要があります。単にそれを指定すると、見つけたファイルシステムを 1 行ごとに 1
+つずつこのように表示します:
 
  $ virt-filesystems -a disk.img
  /dev/sda1
@@ -40,12 +38,11 @@ filesystems found, one per line, like this:
 If you add I<-l> or I<--long> then the output includes extra information:
 
  $ virt-filesystems -a disk.img -l
- Name                   Type         VFS   Label  Size
+ 名前                   種類         VFS   ラベル 容量
  /dev/sda1              filesystem   ext4  boot   524288000
  /dev/vg_guest/lv_root  filesystem   ext4  root   10212081664
 
-If you add I<--extra> then non-mountable (swap, unknown) filesystems are
-shown as well:
+I<--extra> を追加すると、マウント不可能な（swap や未知の）ファイルシステムも同様に表示されます:
 
  $ virt-filesystems -a disk.img --extra
  /dev/sda1
@@ -53,14 +50,14 @@ shown as well:
  /dev/vg_guest/lv_swap
  /dev/vg_guest/lv_data
 
-If you add I<--partitions> then partitions are shown instead of filesystems:
+I<--partitions> を追加すると、ファイルシステムの代わりにパーティションが表示されます:
 
  $ virt-filesystems -a disk.img --partitions
  /dev/sda1
  /dev/sda2
 
-Similarly you can use I<--logical-volumes>, I<--volume-groups>,
-I<--physical-volumes>, I<--block-devices> to list those items.
+同様に、それらの項目を一覧表示するには I<--logical-volumes>, I<--volume-groups>,
+I<--physical-volumes>, I<--block-devices> を使用できます。
 
 You can use these options in combination as well (if you want a combination
 including filesystems, you have to add I<--filesystems>).  Notice that some
@@ -83,15 +80,15 @@ information about everything.
  /dev/sda2 partition  -    -               20G  /dev/sda -
  /dev/sda  device     -    -               20G  -        -
 
-For machine-readable output, use I<--csv> to get Comma-Separated Values.
+マシン読み込み可能な出力のために、カンマ区切り値を取得するために I<--csv> を使用します。
 
-=head1 OPTIONS
+=head1 オプション
 
 =over 4
 
 =item B<--help>
 
-Display brief help.
+簡単なヘルプを表示します。
 
 =item B<-a> file
 
@@ -101,33 +98,29 @@ Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate I<-a> options.
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、I<--format=..> オプションを使用します。
 
 =item B<--all>
 
-Display everything.  This is currently the same as specifying these options:
-I<--filesystems>, I<--extra>, I<--partitions>, I<--block-devices>,
-I<--logical-volumes>, I<--volume-groups>, I<--physical-volumes>.  (More may
-be added to this list in future).
+すべてを表示します。これは現在これらのオプションを指定するのと同じです: I<--filesystems>, I<--extra>,
+I<--partitions>, I<--block-devices>, I<--logical-volumes>,
+I<--volume-groups>, I<--physical-volumes>。（将来この一覧にさらに追加されるかもしれません。）
 
-See also I<--long>.
+I<--long> 参照。
 
 =item B<--blkdevs>
 
 =item B<--block-devices>
 
-Display block devices.
+ブロックデバイスを表示します。
 
 =item B<-c> URI
 
 =item B<--connect> URI
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された I<URI> に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 
-If you specify guest block devices directly (I<-a>), then libvirt is not
-used at all.
+ゲストのブロックデバイスを直接指定していると（(I<-a>)）、libvirt は何も使用されません。
 
 =item B<--csv>
 
@@ -139,8 +132,7 @@ ABOUT CSV FORMAT> below.
 
 =item B<--domain> guest
 
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  ドメインの UUID が名前の代わりに使用されます。
 
 =item B<--echo-keys>
 
@@ -155,44 +147,41 @@ This causes filesystems that are not ordinary, mountable filesystems to be
 displayed.  This category includes swapspace, and filesystems that are empty
 or contain unknown data.
 
-This option implies I<--filesystems>.
+このオプションは I<--filesystems> を意味します。
 
 =item B<--filesystems>
 
 Display mountable filesystems.  If no display option was selected then this
 option is implied.
 
-With I<--extra>, non-mountable filesystems are shown too.
+I<--extra> を用いると、マウントできないファイルシステムも表示されます。
 
 =item B<--format=raw|qcow2|..>
 
 =item B<--format>
 
-The default for the I<-a> option is to auto-detect the format of the disk
-image.  Using this forces the disk format for I<-a> options which follow on
-the command line.  Using I<--format> with no argument switches back to
-auto-detection for subsequent I<-a> options.
+I<-a> オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、I<-a>
+オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで I<--format> を使用することにより、後続の I<-a>
+オプションに対して自動検知に戻せます。
 
-For example:
+例:
 
  virt-filesystems --format=raw -a disk.img
 
-forces raw format (no auto-detection) for C<disk.img>.
+C<disk.img> に対してローイメージを強制します（自動検出しません）。
 
  virt-filesystems --format=raw -a disk.img --format -a another.img
 
-forces raw format (no auto-detection) for C<disk.img> and reverts to
-auto-detection for C<another.img>.
+C<disk.img> に対してロー形式（自動検知なし）を強制し、C<another.img> に対して自動検知に戻します。
 
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (CVE-2010-3851).
+仮想マシンのディスクイメージが信頼できないロー形式であるならば、ディスク形式を指定するためにこのオプションを使用すべきです。これにより、悪意のある仮想マシンにより起こり得るセキュリティ問題を回避できます
+(CVE-2010-3851)。
 
 =item B<-h>
 
 =item B<--human-readable>
 
-In I<--long> mode, display sizes in human-readable format.
+I<--long> モードでは、読みやすい形式で容量を表示します。
 
 =item B<--keys-from-stdin>
 
@@ -215,7 +204,7 @@ programs.
 Use I<-h> if you want sizes to be displayed in human-readable format.  The
 default is to show raw numbers of I<bytes>.
 
-Use I<--uuid> to display UUIDs too.
+UUID も表示するには I<--uuid> を使用します。
 
 =item B<--lvs>
 
@@ -223,12 +212,11 @@ Use I<--uuid> to display UUIDs too.
 
 =item B<--logical-volumes>
 
-Display LVM logical volumes.  In this mode, these are displayed irrespective
-of whether the LVs contain filesystems.
+LVM 論理ボリュームを表示します。  このモードでは、論理ボリュームが含むファイルシステムにかかわりなく表示します。
 
 =item B<--no-title>
 
-In I<--long> mode, don't add a title row.
+I<--long> モードでは、見出し行を追加しません。
 
 Note that the order of the columns is not fixed, and may change in future
 versions of virt-filesystems, so using this option may give you unexpected
@@ -238,8 +226,7 @@ surprises.
 
 =item B<--partitions>
 
-Display partitions.  In this mode, these are displayed irrespective of
-whether the partitions contain filesystems.
+パーティションを表示します。  このモードでは、パーティションが含むファイルシステムにかかわりなく表示します。
 
 =item B<--pvs>
 
@@ -247,25 +234,25 @@ whether the partitions contain filesystems.
 
 =item B<--physical-volumes>
 
-Display LVM physical volumes.
+LVM 物理ボリュームを表示します。
 
 =item B<--uuid>
 
 =item B<--uuids>
 
-In I<--long> mode, display UUIDs as well.
+I<--long> モードでは UUID も表示されます。
 
 =item B<-v>
 
 =item B<--verbose>
 
-Enable verbose messages for debugging.
+デバッグ用の冗長なメッセージを有効にします。
 
 =item B<-V>
 
 =item B<--version>
 
-Display version number and exit.
+バージョン番号を表示して終了します。
 
 =item B<--vgs>
 
@@ -273,42 +260,40 @@ Display version number and exit.
 
 =item B<--volume-groups>
 
-Display LVM volume groups.
+LVM ボリュームグループを表示します。
 
 =item B<-x>
 
-Enable tracing of libguestfs API calls.
+libguestfs API 呼び出しのトレースを有効にします。
 
 =back
 
-=head1 COLUMNS
+=head1 列
 
-Note that columns in the output are subject to reordering and change in
-future versions of this tool.
+出力にある列はこのツールの将来のバージョンにおいて並び替えられる場合や変更される場合があることに注意してください。
 
 =over 4
 
-=item B<Name>
+=item B<名前>
 
-The filesystem, partition, block device or LVM name.
+ファイルシステム、パーティション、ブロックデバイスまたは LVM の名前。
 
 For device and partition names these are displayed as canonical libguestfs
 names, so that for example C</dev/sda2> is the second partition on the first
 device.
 
-If the I<--long> option is B<not> specified, then only the name column is
-shown in the output.
+I<--long> オプションが指定されてB<いない>と、名前の列のみが出力に表示されます。
 
-=item B<Type>
+=item B<種類>
 
-The object type, for example C<filesystem>, C<lv>, C<device> etc.
+対象の形式。たとえば、C<filesystem>, C<lv>, C<device> など。
 
 =item B<VFS>
 
 If there is a filesystem, then this column displays the filesystem type if
 one could be detected, eg. C<ext4>.
 
-=item B<Label>
+=item B<ラベル>
 
 If the object has a label (used for identifying and mounting filesystems)
 then this column contains the label.
@@ -319,30 +304,32 @@ The partition type byte, displayed as a two digit hexadecimal number.  A
 comprehensive list of partition types can be found here:
 L<http://www.win.tue.nl/~aeb/partitions/partition_types-1.html>
 
-This is only applicable for DOS (MBR) partitions.
+これは DOS (MBR) パーティションに対してのみ適用できます。
 
-=item B<Size>
+=item B<容量>
 
 The size of the object in bytes.  If the I<--human> option is used then the
 size is displayed in a human-readable form.
 
 =item B<Parent>
 
-The parent column records the parent relationship between objects.  For
-example, if the object is a partition, then this column contains the name of
-the containing device.  If the object is a logical volume, then this column
-is the name of the volume group.
+親カラムはオブジェクト間の親子関係を記録します。
+
+たとえば、オブジェクトがパーティションならば、このカラムは含んでいるデバイスの名前が含まれます。オブジェクトが論理ボリュームならば、このカラムはボリュームグループの名前です。
+
+If there is more than one parent, then this column is (internal to the
+column) a comma-separated list, eg. C</dev/sda,/dev/sdb>.
 
 =item B<UUID>
 
 If the object has a UUID (used for identifying and mounting filesystems and
 block devices) then this column contains the UUID as a string.
 
-The UUID is only displayed if the I<--uuid> option is given.
+I<--uuid> オプションが指定されると、 UUID のみが表示されます。
 
 =back
 
-=head1 NOTE ABOUT CSV FORMAT
+=head1 CSV 形式に関する注意
 
 Comma-separated values (CSV) is a deceptive format.  It I<seems> like it
 should be easy to parse, but it is definitely not easy to parse.
@@ -373,17 +360,17 @@ meaning to the shell such as C<#> and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 L<sh(1)> for details.
 
-=head1 EXIT STATUS
+=head1 終了ステータス
 
-This program returns 0 if successful, or non-zero if there was an error.
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-cat(1)>, L<virt-df(1)>,
 L<virt-list-filesystems(1)>, L<virt-list-partitions(1)>, L<csvtool(1)>,
 L<http://libguestfs.org/>.
 
-=head1 AUTHOR
+=head1 著者
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 

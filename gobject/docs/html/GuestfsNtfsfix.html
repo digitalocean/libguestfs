@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsNtfsfix</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsE2fsck.html" title="GuestfsE2fsck">
+<link rel="next" href="GuestfsNtfscloneOut.html" title="GuestfsNtfscloneOut">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsE2fsck.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsNtfscloneOut.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsNtfsfix.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsNtfsfix.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsNtfsfix.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsNtfsfix.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsNtfsfix"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsNtfsfix.top_of_page"></a>GuestfsNtfsfix</span></h2>
+<p>GuestfsNtfsfix — An object encapsulating optional arguments for guestfs_session_ntfsfix</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsNtfsfix.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsNtfsfix.html#GuestfsNtfsfix-struct" title="struct GuestfsNtfsfix">GuestfsNtfsfix</a>;
+struct              <a class="link" href="GuestfsNtfsfix.html#GuestfsNtfsfixClass" title="struct GuestfsNtfsfixClass">GuestfsNtfsfixClass</a>;
+<a class="link" href="GuestfsNtfsfix.html" title="GuestfsNtfsfix"><span class="returnvalue">GuestfsNtfsfix</span></a> *    <a class="link" href="GuestfsNtfsfix.html#guestfs-ntfsfix-new" title="guestfs_ntfsfix_new ()">guestfs_ntfsfix_new</a>                 (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsNtfsfix.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----GuestfsNtfsfix
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsNtfsfix.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsNtfsfix.html#GuestfsNtfsfix--clearbadsectors" title='The "clearbadsectors" property'>clearbadsectors</a>"          <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsNtfsfix.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_ntfsfix
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsNtfsfix.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsNtfsfix-struct"></a><h3>struct GuestfsNtfsfix</h3>
+<pre class="programlisting">struct GuestfsNtfsfix;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_ntfsfix.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsNtfsfixClass"></a><h3>struct GuestfsNtfsfixClass</h3>
+<pre class="programlisting">struct GuestfsNtfsfixClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsNtfsfix.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="GuestfsNtfsfixClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsNtfsfixClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-ntfsfix-new"></a><h3>guestfs_ntfsfix_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsNtfsfix.html" title="GuestfsNtfsfix"><span class="returnvalue">GuestfsNtfsfix</span></a> *    guestfs_ntfsfix_new                 (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsNtfsfix object
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsNtfsfix object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsNtfsfix.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsNtfsfix--clearbadsectors"></a><h3>The <code class="literal">"clearbadsectors"</code> property</h3>
+<pre class="programlisting">  "clearbadsectors"          <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

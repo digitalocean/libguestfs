@@ -2,16 +2,15 @@
 
 =head1 名前
 
-virt-copy-out - Copy files and directories out of a virtual machine disk
-image.
+virt-copy-out - ファイルとディレクトリの仮想マシンのディスクイメージ外へのコピー
 
-=head1 SYNOPSIS
+=head1 書式
 
  virt-copy-out -a disk.img /file|dir [/file|dir ...] localdir
 
  virt-copy-out -d domain /file|dir [/file|dir ...] localdir
 
-=head1 DESCRIPTION
+=head1 説明
 
 C<virt-copy-out> copies files and directories out of a virtual machine disk
 image or named libvirt domain.
@@ -19,9 +18,9 @@ image or named libvirt domain.
 You can give one of more filenames and directories on the command line.
 Directories are copied out recursively.
 
-=head1 EXAMPLES
+=head1 例
 
-Download the home directories from a virtual machine:
+仮想マシンからホームディレクトリをダウンロードします:
 
  mkdir homes
  virt-copy-out -d MyGuest /home homes
@@ -32,17 +31,17 @@ This command is just a simple shell script wrapper around the
 L<guestfish(1)> C<copy-out> command.  For anything more complex than a
 trivial copy, you are probably better off using guestfish directly.
 
-=head1 OPTIONS
+=head1 オプション
 
 Since the shell script just passes options straight to guestfish, read
 L<guestfish(1)> to see the full list of options.
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfish(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-edit(1)>,
 L<virt-tar-in(1)>, L<virt-tar-out(1)>, L<http://libguestfs.org/>.
 
-=head1 AUTHORS
+=head1 著者
 
 Richard W.M. Jones (C<rjones at redhat dot com>)
 

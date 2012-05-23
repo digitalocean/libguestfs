@@ -1,0 +1,66 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsAddDriveOpts
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsAddDriveOpts ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsAddDriveOpts:format ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsAddDriveOpts:iface ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsAddDriveOpts:name ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsAddDriveOpts:readonly ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsAddDriveOptsClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_add_drive_opts_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

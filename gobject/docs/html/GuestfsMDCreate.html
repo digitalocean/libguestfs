@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsMDCreate</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsTune2FS.html" title="GuestfsTune2FS">
+<link rel="next" href="GuestfsE2fsck.html" title="GuestfsE2fsck">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsTune2FS.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsE2fsck.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsMDCreate.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsMDCreate.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsMDCreate.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsMDCreate.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsMDCreate"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsMDCreate.top_of_page"></a>GuestfsMDCreate</span></h2>
+<p>GuestfsMDCreate — An object encapsulating optional arguments for guestfs_session_md_create</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsMDCreate.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate-struct" title="struct GuestfsMDCreate">GuestfsMDCreate</a>;
+struct              <a class="link" href="GuestfsMDCreate.html#GuestfsMDCreateClass" title="struct GuestfsMDCreateClass">GuestfsMDCreateClass</a>;
+<a class="link" href="GuestfsMDCreate.html" title="GuestfsMDCreate"><span class="returnvalue">GuestfsMDCreate</span></a> *   <a class="link" href="GuestfsMDCreate.html#guestfs-md-create-new" title="guestfs_md_create_new ()">guestfs_md_create_new</a>               (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsMDCreate.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----GuestfsMDCreate
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsMDCreate.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--chunk" title='The "chunk" property'>chunk</a>"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct
+  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--level" title='The "level" property'>level</a>"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--missingbitmap" title='The "missingbitmap" property'>missingbitmap</a>"            <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct
+  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--nrdevices" title='The "nrdevices" property'>nrdevices</a>"                <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct
+  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--spare" title='The "spare" property'>spare</a>"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsMDCreate.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_md_create
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsMDCreate.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsMDCreate-struct"></a><h3>struct GuestfsMDCreate</h3>
+<pre class="programlisting">struct GuestfsMDCreate;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_md_create.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMDCreateClass"></a><h3>struct GuestfsMDCreateClass</h3>
+<pre class="programlisting">struct GuestfsMDCreateClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsMDCreate.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="GuestfsMDCreateClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsMDCreateClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-md-create-new"></a><h3>guestfs_md_create_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsMDCreate.html" title="GuestfsMDCreate"><span class="returnvalue">GuestfsMDCreate</span></a> *   guestfs_md_create_new               (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsMDCreate object
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsMDCreate object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsMDCreate.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsMDCreate--chunk"></a><h3>The <code class="literal">"chunk"</code> property</h3>
+<pre class="programlisting">  "chunk"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct</pre>
+<p>
+A 64-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMDCreate--level"></a><h3>The <code class="literal">"level"</code> property</h3>
+<pre class="programlisting">  "level"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMDCreate--missingbitmap"></a><h3>The <code class="literal">"missingbitmap"</code> property</h3>
+<pre class="programlisting">  "missingbitmap"            <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct</pre>
+<p>
+A 64-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMDCreate--nrdevices"></a><h3>The <code class="literal">"nrdevices"</code> property</h3>
+<pre class="programlisting">  "nrdevices"                <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct</pre>
+<p>
+A 32-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMDCreate--spare"></a><h3>The <code class="literal">"spare"</code> property</h3>
+<pre class="programlisting">  "spare"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct</pre>
+<p>
+A 32-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

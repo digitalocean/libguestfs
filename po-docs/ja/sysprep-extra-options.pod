@@ -1,0 +1,26 @@
+=encoding utf8
+
+=item B<--hostname> hostname (see C<hostname> below)
+
+Change the hostname.  If not given, defaults to C<localhost.localdomain>.
+
+=item B<--script> script (see C<script> below)
+
+Run the named C<script> (a shell script or program) against the guest.  The
+script can be any program on the host.  The script's current directory will
+be the guest's root directory.
+
+B<Note:> If the script is not on the $PATH, then you must give the full
+absolute path to the script.
+
+=item B<--scriptdir> scriptdir (see C<script> below)
+
+The mount point (an empty directory on the host) used when the C<script>
+operation is enabled and one or more scripts are specified using I<--script>
+parameter(s).
+
+B<Note:> C<scriptdir> B<must> be an absolute path.
+
+If I<--scriptdir> is not specified then a temporary mountpoint will be
+created.
+

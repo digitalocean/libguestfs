@@ -59,7 +59,18 @@
 -export([blockdev_setbsz/3]).
 -export([blockdev_setro/2]).
 -export([blockdev_setrw/2]).
+-export([btrfs_device_add/3]).
+-export([btrfs_device_delete/3]).
+-export([btrfs_filesystem_balance/2]).
 -export([btrfs_filesystem_resize/2, btrfs_filesystem_resize/3]).
+-export([btrfs_filesystem_sync/2]).
+-export([btrfs_fsck/2, btrfs_fsck/3]).
+-export([btrfs_set_seeding/3]).
+-export([btrfs_subvolume_create/2]).
+-export([btrfs_subvolume_delete/2]).
+-export([btrfs_subvolume_list/2]).
+-export([btrfs_subvolume_set_default/3]).
+-export([btrfs_subvolume_snapshot/3]).
 -export([case_sensitive_path/2]).
 -export([cat/2]).
 -export([checksum/3]).
@@ -116,6 +127,8 @@
 -export([get_attach_method/1]).
 -export([get_autosync/1]).
 -export([get_direct/1]).
+-export([get_e2attrs/2]).
+-export([get_e2generation/2]).
 -export([get_e2label/2]).
 -export([get_e2uuid/2]).
 -export([get_memsize/1]).
@@ -187,6 +200,8 @@
 -export([is_symlink/2]).
 -export([is_zero/2]).
 -export([is_zero_device/2]).
+-export([isoinfo/2]).
+-export([isoinfo_device/2]).
 -export([kill_subprocess/1]).
 -export([launch/1]).
 -export([lchown/4]).
@@ -199,6 +214,7 @@
 -export([list_md_devices/1]).
 -export([list_partitions/1]).
 -export([ll/2]).
+-export([llz/2]).
 -export([ln/3]).
 -export([ln_f/3]).
 -export([ln_s/3]).
@@ -216,6 +232,7 @@
 -export([luks_open/4]).
 -export([luks_open_ro/4]).
 -export([lvcreate/4]).
+-export([lvcreate_free/4]).
 -export([lvm_canonical_lv_name/2]).
 -export([lvm_clear_filter/1]).
 -export([lvm_remove_all/1]).
@@ -230,6 +247,7 @@
 -export([lxattrlist/3]).
 -export([md_create/3, md_create/4]).
 -export([md_detail/2]).
+-export([md_stat/2]).
 -export([md_stop/2]).
 -export([mkdir/2]).
 -export([mkdir_mode/3]).
@@ -244,6 +262,7 @@
 -export([mkfifo/3]).
 -export([mkfs/3]).
 -export([mkfs_b/4]).
+-export([mkfs_btrfs/2, mkfs_btrfs/3]).
 -export([mkfs_opts/3, mkfs_opts/4]).
 -export([mkmountpoint/2]).
 -export([mknod/5]).
@@ -256,6 +275,8 @@
 -export([modprobe/2]).
 -export([mount/3]).
 -export([mount_9p/3, mount_9p/4]).
+-export([mount_local/2, mount_local/3]).
+-export([mount_local_run/1]).
 -export([mount_loop/3]).
 -export([mount_options/4]).
 -export([mount_ro/3]).
@@ -264,6 +285,9 @@
 -export([mounts/1]).
 -export([mv/3]).
 -export([ntfs_3g_probe/3]).
+-export([ntfsclone_in/3]).
+-export([ntfsclone_out/3, ntfsclone_out/4]).
+-export([ntfsfix/2, ntfsfix/3]).
 -export([ntfsresize/2]).
 -export([ntfsresize_opts/2, ntfsresize_opts/3]).
 -export([ntfsresize_size/3]).
@@ -313,8 +337,11 @@
 -export([set_attach_method/2]).
 -export([set_autosync/2]).
 -export([set_direct/2]).
+-export([set_e2attrs/3, set_e2attrs/4]).
+-export([set_e2generation/3]).
 -export([set_e2label/3]).
 -export([set_e2uuid/3]).
+-export([set_label/3]).
 -export([set_memsize/2]).
 -export([set_network/2]).
 -export([set_path/2]).
@@ -388,6 +415,7 @@
 -export([umask/2]).
 -export([umount/2]).
 -export([umount_all/1]).
+-export([umount_local/1, umount_local/2]).
 -export([upload/3]).
 -export([upload_offset/4]).
 -export([utimens/6]).
@@ -399,6 +427,7 @@
 -export([vg_activate_all/2]).
 -export([vgcreate/3]).
 -export([vglvuuids/2]).
+-export([vgmeta/2]).
 -export([vgpvuuids/2]).
 -export([vgremove/2]).
 -export([vgrename/3]).
@@ -410,6 +439,7 @@
 -export([wc_c/2]).
 -export([wc_l/2]).
 -export([wc_w/2]).
+-export([wipefs/2]).
 -export([write/3]).
 -export([write_append/3]).
 -export([write_file/4]).
@@ -417,6 +447,7 @@
 -export([zegrepi/3]).
 -export([zero/2]).
 -export([zero_device/2]).
+-export([zero_free_space/2]).
 -export([zerofree/2]).
 -export([zfgrep/3]).
 -export([zfgrepi/3]).
@@ -574,10 +605,45 @@ blockdev_setro(G, Device) ->
 blockdev_setrw(G, Device) ->
   call_port(G, {blockdev_setrw, Device}).
 
+btrfs_device_add(G, Devices, Fs) ->
+  call_port(G, {btrfs_device_add, Devices, Fs}).
+
+btrfs_device_delete(G, Devices, Fs) ->
+  call_port(G, {btrfs_device_delete, Devices, Fs}).
+
+btrfs_filesystem_balance(G, Fs) ->
+  call_port(G, {btrfs_filesystem_balance, Fs}).
+
 btrfs_filesystem_resize(G, Mountpoint, Optargs) ->
   call_port(G, {btrfs_filesystem_resize, Mountpoint, Optargs}).
 btrfs_filesystem_resize(G, Mountpoint) ->
   btrfs_filesystem_resize(G, Mountpoint, []).
+
+btrfs_filesystem_sync(G, Fs) ->
+  call_port(G, {btrfs_filesystem_sync, Fs}).
+
+btrfs_fsck(G, Device, Optargs) ->
+  call_port(G, {btrfs_fsck, Device, Optargs}).
+btrfs_fsck(G, Device) ->
+  btrfs_fsck(G, Device, []).
+
+btrfs_set_seeding(G, Device, Seeding) ->
+  call_port(G, {btrfs_set_seeding, Device, Seeding}).
+
+btrfs_subvolume_create(G, Dest) ->
+  call_port(G, {btrfs_subvolume_create, Dest}).
+
+btrfs_subvolume_delete(G, Subvolume) ->
+  call_port(G, {btrfs_subvolume_delete, Subvolume}).
+
+btrfs_subvolume_list(G, Fs) ->
+  call_port(G, {btrfs_subvolume_list, Fs}).
+
+btrfs_subvolume_set_default(G, Id, Fs) ->
+  call_port(G, {btrfs_subvolume_set_default, Id, Fs}).
+
+btrfs_subvolume_snapshot(G, Source, Dest) ->
+  call_port(G, {btrfs_subvolume_snapshot, Source, Dest}).
 
 case_sensitive_path(G, Path) ->
   call_port(G, {case_sensitive_path, Path}).
@@ -760,6 +826,12 @@ get_autosync(G) ->
 
 get_direct(G) ->
   call_port(G, {get_direct}).
+
+get_e2attrs(G, File) ->
+  call_port(G, {get_e2attrs, File}).
+
+get_e2generation(G, File) ->
+  call_port(G, {get_e2generation, File}).
 
 get_e2label(G, Device) ->
   call_port(G, {get_e2label, Device}).
@@ -976,6 +1048,12 @@ is_zero(G, Path) ->
 is_zero_device(G, Device) ->
   call_port(G, {is_zero_device, Device}).
 
+isoinfo(G, Isofile) ->
+  call_port(G, {isoinfo, Isofile}).
+
+isoinfo_device(G, Device) ->
+  call_port(G, {isoinfo_device, Device}).
+
 kill_subprocess(G) ->
   call_port(G, {kill_subprocess}).
 
@@ -1011,6 +1089,9 @@ list_partitions(G) ->
 
 ll(G, Directory) ->
   call_port(G, {ll, Directory}).
+
+llz(G, Directory) ->
+  call_port(G, {llz, Directory}).
 
 ln(G, Target, Linkname) ->
   call_port(G, {ln, Target, Linkname}).
@@ -1063,6 +1144,9 @@ luks_open_ro(G, Device, Key, Mapname) ->
 lvcreate(G, Logvol, Volgroup, Mbytes) ->
   call_port(G, {lvcreate, Logvol, Volgroup, Mbytes}).
 
+lvcreate_free(G, Logvol, Volgroup, Percent) ->
+  call_port(G, {lvcreate_free, Logvol, Volgroup, Percent}).
+
 lvm_canonical_lv_name(G, Lvname) ->
   call_port(G, {lvm_canonical_lv_name, Lvname}).
 
@@ -1107,6 +1191,9 @@ md_create(G, Name, Devices) ->
 md_detail(G, Md) ->
   call_port(G, {md_detail, Md}).
 
+md_stat(G, Md) ->
+  call_port(G, {md_stat, Md}).
+
 md_stop(G, Md) ->
   call_port(G, {md_stop, Md}).
 
@@ -1149,6 +1236,11 @@ mkfs(G, Fstype, Device) ->
 mkfs_b(G, Fstype, Blocksize, Device) ->
   call_port(G, {mkfs_b, Fstype, Blocksize, Device}).
 
+mkfs_btrfs(G, Devices, Optargs) ->
+  call_port(G, {mkfs_btrfs, Devices, Optargs}).
+mkfs_btrfs(G, Devices) ->
+  mkfs_btrfs(G, Devices, []).
+
 mkfs_opts(G, Fstype, Device, Optargs) ->
   call_port(G, {mkfs_opts, Fstype, Device, Optargs}).
 mkfs_opts(G, Fstype, Device) ->
@@ -1189,6 +1281,14 @@ mount_9p(G, Mounttag, Mountpoint, Optargs) ->
 mount_9p(G, Mounttag, Mountpoint) ->
   mount_9p(G, Mounttag, Mountpoint, []).
 
+mount_local(G, Localmountpoint, Optargs) ->
+  call_port(G, {mount_local, Localmountpoint, Optargs}).
+mount_local(G, Localmountpoint) ->
+  mount_local(G, Localmountpoint, []).
+
+mount_local_run(G) ->
+  call_port(G, {mount_local_run}).
+
 mount_loop(G, File, Mountpoint) ->
   call_port(G, {mount_loop, File, Mountpoint}).
 
@@ -1212,6 +1312,19 @@ mv(G, Src, Dest) ->
 
 ntfs_3g_probe(G, Rw, Device) ->
   call_port(G, {ntfs_3g_probe, Rw, Device}).
+
+ntfsclone_in(G, Backupfile, Device) ->
+  call_port(G, {ntfsclone_in, Backupfile, Device}).
+
+ntfsclone_out(G, Device, Backupfile, Optargs) ->
+  call_port(G, {ntfsclone_out, Device, Backupfile, Optargs}).
+ntfsclone_out(G, Device, Backupfile) ->
+  ntfsclone_out(G, Device, Backupfile, []).
+
+ntfsfix(G, Device, Optargs) ->
+  call_port(G, {ntfsfix, Device, Optargs}).
+ntfsfix(G, Device) ->
+  ntfsfix(G, Device, []).
 
 ntfsresize(G, Device) ->
   call_port(G, {ntfsresize, Device}).
@@ -1362,11 +1475,22 @@ set_autosync(G, Autosync) ->
 set_direct(G, Direct) ->
   call_port(G, {set_direct, Direct}).
 
+set_e2attrs(G, File, Attrs, Optargs) ->
+  call_port(G, {set_e2attrs, File, Attrs, Optargs}).
+set_e2attrs(G, File, Attrs) ->
+  set_e2attrs(G, File, Attrs, []).
+
+set_e2generation(G, File, Generation) ->
+  call_port(G, {set_e2generation, File, Generation}).
+
 set_e2label(G, Device, Label) ->
   call_port(G, {set_e2label, Device, Label}).
 
 set_e2uuid(G, Device, Uuid) ->
   call_port(G, {set_e2uuid, Device, Uuid}).
+
+set_label(G, Device, Label) ->
+  call_port(G, {set_label, Device, Label}).
 
 set_memsize(G, Memsize) ->
   call_port(G, {set_memsize, Memsize}).
@@ -1591,6 +1715,11 @@ umount(G, Pathordevice) ->
 umount_all(G) ->
   call_port(G, {umount_all}).
 
+umount_local(G, Optargs) ->
+  call_port(G, {umount_local, Optargs}).
+umount_local(G) ->
+  umount_local(G, []).
+
 upload(G, Filename, Remotefilename) ->
   call_port(G, {upload, Filename, Remotefilename}).
 
@@ -1623,6 +1752,9 @@ vgcreate(G, Volgroup, Physvols) ->
 
 vglvuuids(G, Vgname) ->
   call_port(G, {vglvuuids, Vgname}).
+
+vgmeta(G, Vgname) ->
+  call_port(G, {vgmeta, Vgname}).
 
 vgpvuuids(G, Vgname) ->
   call_port(G, {vgpvuuids, Vgname}).
@@ -1657,6 +1789,9 @@ wc_l(G, Path) ->
 wc_w(G, Path) ->
   call_port(G, {wc_w, Path}).
 
+wipefs(G, Device) ->
+  call_port(G, {wipefs, Device}).
+
 write(G, Path, Content) ->
   call_port(G, {write, Path, Content}).
 
@@ -1677,6 +1812,9 @@ zero(G, Device) ->
 
 zero_device(G, Device) ->
   call_port(G, {zero_device, Device}).
+
+zero_free_space(G, Directory) ->
+  call_port(G, {zero_free_space, Directory}).
 
 zerofree(G, Device) ->
   call_port(G, {zerofree, Device}).

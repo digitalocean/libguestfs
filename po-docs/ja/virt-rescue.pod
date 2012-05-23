@@ -2,9 +2,9 @@
 
 =head1 名前
 
-virt-rescue - Run a rescue shell on a virtual machine
+virt-rescue - 仮想マシンにおいてレスキューシェルを実行します
 
-=head1 SYNOPSIS
+=head1 書式
 
  virt-rescue [--options] -d domname
 
@@ -12,13 +12,13 @@ virt-rescue - Run a rescue shell on a virtual machine
 
  virt-rescue --suggest (-d domname | -a disk.img ...)
 
-Old style:
+古い形式:
 
  virt-rescue [--options] domname
 
  virt-rescue [--options] disk.img [disk.img ...]
 
-=head1 WARNING
+=head1 警告
 
 You must I<not> use C<virt-rescue> on live virtual machines.  Doing so will
 probably result in disk corruption in the VM.  C<virt-rescue> tries to stop
@@ -28,7 +28,7 @@ However if you use the I<--ro> (read only) option, then you can attach a
 shell to a live virtual machine.  The results might be strange or
 inconsistent at times but you won't get disk corruption.
 
-=head1 DESCRIPTION
+=head1 説明
 
 virt-rescue is like a Rescue CD, but for virtual machines, and without the
 need for a CD.  virt-rescue gives you a rescue shell and some simple
@@ -44,7 +44,7 @@ on disk image(s):
 
  virt-rescue -a /dev/sdc
 
-For live VMs you I<must> use the --ro option.
+動作中の仮想マシンには --ro オプションを使用 I<しなければいけません> 。
 
 When you run virt-rescue on a virtual machine or disk image, you are placed
 in an interactive bash shell where you can use many ordinary Linux
@@ -56,14 +56,14 @@ You can get virt-rescue to suggest mount commands for you by using the
 I<--suggest> option (in another terminal):
 
  $ virt-rescue --suggest -d Fedora15
- Inspecting the virtual machine or disk image ...
+仮想マシンまたはディスクイメージの検査中 ...
  
  This disk contains one or more operating systems.  You can use these
  mount commands in virt-rescue (at the ><rescue> prompt) to mount the
  filesystems.
  
- # /dev/vg_f15x32/lv_root is the root of a linux operating system
- # type: linux, distro: fedora, version: 15.0
+ # /dev/vg_f15x32/lv_root は linux オペレーティングシステムのルートです
+ # 種別: linux, ディストリビューション: fedora, バージョン: 15.0
  # Fedora release 15 (Lovelock)
  
  mount /dev/vg_f15x32/lv_root /sysroot/
@@ -84,20 +84,23 @@ Another way is to list the logical volumes (with L<lvs(8)>) and partitions
  ><rescue> mount /dev/vda1 /sysroot/boot
  ><rescue> ls /sysroot
 
-Another command to list available filesystems is L<virt-filesystems(1)>.
+利用可能なファイルシステムを一覧表示するためのもう 1 つのコマンドは L<virt-filesystems(1)> です。
 
-To run commands in a Linux guest (for example, grub), you should chroot into
-the /sysroot directory first:
+Linux 仮想マシンにおいてコマンド（たとえば、grub）を実行するには、まず /sysroot ディレクトリーの中に chroot
+する必要があります:
 
  ><rescue> chroot /sysroot
 
-=head2 NOTES
+=head2 注記
 
 Virt-rescue can be used on I<any> disk image file or device, not just a
 virtual machine.  For example you can use it on a blank file if you want to
 partition that file (although we would recommend using L<guestfish(1)>
 instead as it is more suitable for this purpose).  You can even use
 virt-rescue on things like SD cards.
+
+You can get virt-rescue to give you scratch disk(s) to play with.  This is
+useful for testing out Linux utilities (see I<--scratch>).
 
 Virt-rescue does not require root.  You only need to run it as root if you
 need root to open the disk image.
@@ -107,13 +110,13 @@ machine.  For more structured access to a virtual machine disk image, you
 should use L<guestfs(3)>.  To get a structured shell that you can use to
 make scripted changes to guests, use L<guestfish(1)>.
 
-=head1 OPTIONS
+=head1 オプション
 
 =over 4
 
 =item B<--help>
 
-Display brief help.
+簡単なヘルプを表示します。
 
 =item B<-a> file
 
@@ -123,53 +126,46 @@ Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate I<-a> options.
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、I<--format=..> オプションを使用します。
 
 =item B<--append kernelopts>
 
-Pass additional options to the rescue kernel.
+レスキューカーネルに追加オプションを渡します。
 
 =item B<-c> URI
 
 =item B<--connect> URI
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された I<URI> に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 
-If you specify guest block devices directly (I<-a>), then libvirt is not
-used at all.
+ゲストのブロックデバイスを直接指定していると（(I<-a>)）、libvirt は何も使用されません。
 
 =item B<-d> guest
 
 =item B<--domain> guest
 
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  ドメインの UUID が名前の代わりに使用されます。
 
 =item B<--format=raw|qcow2|..>
 
 =item B<--format>
 
-The default for the I<-a> option is to auto-detect the format of the disk
-image.  Using this forces the disk format for I<-a> options which follow on
-the command line.  Using I<--format> with no argument switches back to
-auto-detection for subsequent I<-a> options.
+I<-a> オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、I<-a>
+オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで I<--format> を使用することにより、後続の I<-a>
+オプションに対して自動検知に戻せます。
 
-For example:
+例:
 
  virt-rescue --format=raw -a disk.img
 
-forces raw format (no auto-detection) for C<disk.img>.
+C<disk.img> に対してローイメージを強制します（自動検出しません）。
 
  virt-rescue --format=raw -a disk.img --format -a another.img
 
-forces raw format (no auto-detection) for C<disk.img> and reverts to
-auto-detection for C<another.img>.
+C<disk.img> に対してロー形式（自動検知なし）を強制し、C<another.img> に対して自動検知に戻します。
 
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (CVE-2010-3851).
+仮想マシンのディスクイメージが信頼できないロー形式であるならば、ディスク形式を指定するためにこのオプションを使用すべきです。これにより、悪意のある仮想マシンにより起こり得るセキュリティ問題を回避できます
+(CVE-2010-3851)。
 
 =item B<-m MB>
 
@@ -182,28 +178,39 @@ megabytes.
 
 =item B<--network>
 
-Enable QEMU user networking in the guest.  See L</NETWORK>.
+仮想マシンにおいて QEMU ユーザーネットワークを有効にします。 L</NETWORK> 参照。
 
 =item B<-r>
 
 =item B<--ro>
 
-Open the image read-only.
+イメージを読み込み専用で開きます。
 
 The option must always be used if the disk image or virtual machine might be
 running, and is generally recommended in cases where you don't need write
 access to the disk.
 
-See also L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+L<guestfish(1)/OPENING DISKS FOR READ AND WRITE> 参照。
+
+=item B<--scratch>
+
+=item B<--scratch=N>
+
+The I<--scratch> option adds a large scratch disk to the rescue appliance.
+I<--scratch=N> adds C<N> scratch disks.  The scratch disk(s) are deleted
+automatically when virt-rescue exits.
+
+You can also mix I<-a>, I<-d> and I<--scratch> options.  The scratch disk(s)
+are added to the appliance in the order they appear on the command line.
 
 =item B<--selinux>
 
-Enable SELinux in the rescue appliance.  You should read
-L<guestfs(3)/SELINUX> before using this option.
+レスキューアプライアンスにおいて SELinux を有効にします。このオプションを使用する前に L<guestfs(3)/SELINUX>
+を読むべきです。
 
 =item B<--smp> N
 
-Enable N E<ge> 2 virtual CPUs in the rescue appliance.
+レスキューアプライアンスにおいて N E<ge> 2 仮想 CPU を有効にします。
 
 =item B<--suggest>
 
@@ -211,20 +218,19 @@ Inspect the disk image and suggest what mount commands should be used to
 mount the disks.  You should use the I<--suggest> option in a second
 terminal, then paste the commands into another virt-rescue.
 
-This option implies I<--ro> and is safe to use even if the guest is up or if
-another virt-rescue is running.
+このオプションは I<--ro> を意味します。仮想マシンが起動していたり、他の virt-rescue を実行しているときでも安全です。
 
 =item B<-v>
 
 =item B<--verbose>
 
-Enable verbose messages for debugging.
+デバッグ用の冗長なメッセージを有効にします。
 
 =item B<-V>
 
 =item B<--version>
 
-Display version number and exit.
+バージョン番号を表示して終了します。
 
 =item B<-w>
 
@@ -233,30 +239,30 @@ Display version number and exit.
 This changes the I<-a> and I<-d> options so that disks are added and mounts
 are done read-write.
 
-See L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+L<guestfish(1)/OPENING DISKS FOR READ AND WRITE> 参照。
 
 =item B<-x>
 
-Enable tracing of libguestfs API calls.
+libguestfs API 呼び出しのトレースを有効にします。
 
 =back
 
-=head1 OLD-STYLE COMMAND LINE ARGUMENTS
+=head1 旧形式のコマンドライン引数
 
 Previous versions of virt-rescue allowed you to write either:
 
  virt-rescue disk.img [disk.img ...]
 
-or
+または
 
  virt-rescue guestname
 
 whereas in this version you should use I<-a> or I<-d> respectively to avoid
 the confusing case where a disk image might have the same name as a guest.
 
-For compatibility the old style is still supported.
+互換性のため古い形式がまだサポートされています。
 
-=head1 NETWORK
+=head1 ネットワーク
 
 Adding the I<--network> option enables QEMU user networking in the rescue
 appliance.  There are some differences between user networking and ordinary
@@ -277,7 +283,7 @@ not working.
 
 QEMU user networking cannot receive incoming connections.
 
-=item making TCP connections
+=item TCP 接続の作成法
 
 The virt-rescue appliance needs to be small and so does not include many
 network tools.  In particular there is no L<telnet(1)> command.  You can
@@ -288,11 +294,11 @@ C</dev/tcp/E<lt>hostnameE<gt>/E<lt>portE<gt>> syntax:
  echo "GET /" >&3
  cat <&3
 
-See L<bash(1)> for more details.
+詳細は L<bash(1)> 参照。
 
 =back
 
-=head1 ENVIRONMENT VARIABLES
+=head1 環境変数
 
 Several environment variables affect virt-rescue.  See
 L<guestfs(3)/ENVIRONMENT VARIABLES> for the complete list.
@@ -304,7 +310,7 @@ meaning to the shell such as C<#> and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 L<sh(1)> for details.
 
-=head1 FILES
+=head1 ファイル
 
 =over 4
 
@@ -315,16 +321,16 @@ L<sh(1)> for details.
 This configuration file controls the default read-only or read-write mode
 (I<--ro> or I<--rw>).
 
-See L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+L<guestfish(1)/OPENING DISKS FOR READ AND WRITE> 参照。
 
 =back
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-cat(1)>, L<virt-edit(1)>,
 L<virt-filesystems(1)>, L<http://libguestfs.org/>.
 
-=head1 AUTHOR
+=head1 著者
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 

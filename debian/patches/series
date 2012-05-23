@@ -1,8 +1,11 @@
 0001-Disable-fuse-tests-if-dev-fuse-doesn-t-exist.patch
 0002-Mount-run-as-tmpfs-inside-appliance-workaround-for-f.patch
-0003-configure.ac-do-not-generate-debian-changelog.patch
-0004-Fix-for-systemd-based-Debian-systems.patch
-0005-out-of-tree-build-fix-building-Perl-bindings.patch
-0006-out-of-tree-build-daemon.patch
-0007-ruby-install-to-vendor_ruby.patch
-0008-autoreconf.patch
+0003-Fix-for-systemd-based-Debian-systems.patch
+0004-out-of-tree-build-fix-building-Perl-bindings.patch
+0005-out-of-tree-build-daemon.patch
+0006-ruby-install-to-vendor_ruby.patch
+0007-Fix-out-of-tree-build-for-GObject-bindings.patch
+0008-Split-off-GObject-tests-that-require-an-appliance.patch
+0009-Fix-generation-of-gettext-stubs-for-out-of-tree-buil.patch
+0010-Fix-out-of-tree-build-install-target-for-translation.patch
+0011-autoreconf.patch

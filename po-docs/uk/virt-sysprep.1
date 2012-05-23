@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-sysprep 1"
-.TH virt-sysprep 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-sysprep 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -73,7 +73,7 @@ virt-sysprep \- Reset or unconfigure a virtual machine so clones can be made
 .SH "КОРОТКИЙ ОПИС"
 .IX Header "КОРОТКИЙ ОПИС"
 .Vb 1
-\& virt\-sysprep [\-\-options] \-d domname
+\& virt\-sysprep [\-\-параметри] \-d назва_домену
 \&
 \& virt\-sysprep [\-\-options] \-a disk.img [\-a disk.img ...]
 .Ve
@@ -83,9 +83,6 @@ Virt-sysprep \*(L"resets\*(R" or \*(L"unconfigures\*(R" a virtual machine so tha
 be made from it.  Steps in this process include removing \s-1SSH\s0 host keys,
 removing persistent network \s-1MAC\s0 configuration, and removing user accounts.
 Each step can be enabled or disabled as required.
-.PP
-Virt-sysprep is a simple shell script, allowing easy inspection or
-customization by the system administrator.
 .PP
 Virt-sysprep modifies the guest or disk image \fIin place\fR.  The guest must
 be shut down.  If you want to preserve the existing contents of the guest,
@@ -114,10 +111,10 @@ Windows sysprepping in a future version, and we already have code to do it.
 .IP "\fB\-\-add\fR файл" 4
 .IX Item "--add файл"
 .PD
-Add \fIfile\fR which should be a disk image from a virtual machine.
+Додати \fIфайл\fR, який має бути образом диска з віртуальної машини.
 .Sp
 The format of the disk image is auto-detected.  To override this and force a
-particular format use the \fI\-\-format=..\fR option.
+particular format use the \fI\-\-format\fR option.
 .IP "\fB\-c\fR адреса" 4
 .IX Item "-c адреса"
 .PD 0
@@ -137,46 +134,56 @@ used at all.
 .PD
 Add all the disks from the named libvirt guest.  Domain UUIDs can be used
 instead of names.
-.IP "\fB\-\-enable=...\fR" 4
-.IX Item "--enable=..."
+.IP "\fB\-n\fR" 4
+.IX Item "-n"
+.PD 0
+.IP "\fB\-\-dry\-run\fR" 4
+.IX Item "--dry-run"
+.PD
+Perform a read-only \*(L"dry run\*(R" on the guest.  This runs the sysprep
+operation, but throws away any changes to the disk at the end.
+.IP "\fB\-\-enable\fR operations" 4
+.IX Item "--enable operations"
 Choose which sysprep operations to perform.  Give a comma-separated list of
 operations, for example:
 .Sp
 .Vb 1
-\& \-\-enable=ssh\-hostkeys,udev\-persistent\-net
+\& \-\-enable ssh\-hostkeys,udev\-persistent\-net
 .Ve
 .Sp
 would enable \s-1ONLY\s0 \f(CW\*(C`ssh\-hostkeys\*(C'\fR and \f(CW\*(C`udev\-persistent\-net\*(C'\fR operations.
 .Sp
-If the \fI\-\-enable\fR option is not given, then we default to trying all
-possible sysprep operations.  But some sysprep operations are skipped for
+If the \fI\-\-enable\fR option is not given, then we default to trying most
+sysprep operations (see \fI\-\-list\-operations\fR to show which are enabled).
+.Sp
+Regardless of the \fI\-\-enable\fR option, sysprep operations are skipped for
 some guest types.
 .Sp
 Use \fI\-\-list\-operations\fR to list operations supported by a particular
 version of virt-sysprep.
 .Sp
 See \*(L"\s-1OPERATIONS\s0\*(R" below for a list and an explanation of each operation.
-.IP "\fB\-\-format=raw|qcow2|..\fR" 4
-.IX Item "--format=raw|qcow2|.."
+.IP "\fB\-\-format\fR raw|qcow2|.." 4
+.IX Item "--format raw|qcow2|.."
 .PD 0
-.IP "\fB\-\-format\fR" 4
-.IX Item "--format"
+.IP "\fB\-\-format\fR auto" 4
+.IX Item "--format auto"
 .PD
 The default for the \fI\-a\fR option is to auto-detect the format of the disk
 image.  Using this forces the disk format for \fI\-a\fR options which follow on
-the command line.  Using \fI\-\-format\fR with no argument switches back to
-auto-detection for subsequent \fI\-a\fR options.
+the command line.  Using \fI\-\-format auto\fR switches back to auto-detection
+for subsequent \fI\-a\fR options.
 .Sp
 Приклад:
 .Sp
 .Vb 1
-\& virt\-sysprep \-\-format=raw \-a disk.img
+\& virt\-sysprep \-\-format raw \-a disk.img
 .Ve
 .Sp
 forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR.
 .Sp
 .Vb 1
-\& virt\-sysprep \-\-format=raw \-a disk.img \-\-format \-a another.img
+\& virt\-sysprep \-\-format raw \-a disk.img \-\-format auto \-a another.img
 .Ve
 .Sp
 forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR and reverts to
@@ -185,13 +192,38 @@ auto-detection for \f(CW\*(C`another.img\*(C'\fR.
 If you have untrusted raw-format guest disk images, you should use this
 option to specify the disk format.  This avoids a possible security problem
 with malicious guests (\s-1CVE\-2010\-3851\s0).
-.IP "\fB\-\-hostname\fR newhostname" 4
-.IX Item "--hostname newhostname"
-Change the hostname.  See the \*(L"hostname\*(R" operation below.  If not given,
-defaults to \f(CW\*(C`localhost.localdomain\*(C'\fR.
 .IP "\fB\-\-list\-operations\fR" 4
 .IX Item "--list-operations"
 List the operations supported by the virt-sysprep program.
+.Sp
+These are listed one per line, with one or more single-space-separated
+fields, eg:
+.Sp
+.Vb 6
+\& $ virt\-sysprep \-\-list\-operations
+\& bash\-history * Remove the bash history in the guest
+\& cron\-spool * Remove user at\-jobs and cron\-jobs
+\& dhcp\-client\-state * Remove DHCP client leases
+\& dhcp\-server\-state * Remove DHCP server leases
+\& [etc]
+.Ve
+.Sp
+The first field is the operation name, which can be supplied to
+\&\fI\-\-enable\fR.  The second field is a \f(CW\*(C`*\*(C'\fR character if the operation is
+enabled by default or blank if not.  Subsequent fields on the same line are
+the description of the operation.
+.Sp
+Before libguestfs 1.17.33 only the first (operation name) field was shown
+and all operations were enabled by default.
+.IP "\fB\-q\fR" 4
+.IX Item "-q"
+.PD 0
+.IP "\fB\-\-quiet\fR" 4
+.IX Item "--quiet"
+.PD
+Не виводити повідомлень до журналу.
+.Sp
+To enable detailed logging of individual file operations, use \fI\-x\fR.
 .IP "\fB\-\-selinux\-relabel\fR" 4
 .IX Item "--selinux-relabel"
 .PD 0
@@ -219,72 +251,203 @@ The default is to try to detect if SELinux relabelling is required.  See
 Показати дані щодо версії і завершити роботу.
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
-Enable tracing of libguestfs \s-1API\s0 calls.
+Увімкнути трасування викликів програмного інтерфейсу libguestfs.
+.ie n .IP "\fB\-\-hostname\fR hostname (see ""hostname"" below)" 4
+.el .IP "\fB\-\-hostname\fR hostname (see \f(CWhostname\fR below)" 4
+.IX Item "--hostname hostname (see hostname below)"
+Змінити назву вузла. Якщо не вказано, використовувати типове
+\&\f(CW\*(C`localhost.localdomain\*(C'\fR.
+.ie n .IP "\fB\-\-script\fR script (see ""script"" below)" 4
+.el .IP "\fB\-\-script\fR script (see \f(CWscript\fR below)" 4
+.IX Item "--script script (see script below)"
+Run the named \f(CW\*(C`script\*(C'\fR (a shell script or program) against the guest.  The
+script can be any program on the host.  The script's current directory will
+be the guest's root directory.
+.Sp
+\&\fBNote:\fR If the script is not on the \f(CW$PATH\fR, then you must give the full
+absolute path to the script.
+.ie n .IP "\fB\-\-scriptdir\fR scriptdir (see ""script"" below)" 4
+.el .IP "\fB\-\-scriptdir\fR scriptdir (see \f(CWscript\fR below)" 4
+.IX Item "--scriptdir scriptdir (see script below)"
+The mount point (an empty directory on the host) used when the \f(CW\*(C`script\*(C'\fR
+operation is enabled and one or more scripts are specified using \fI\-\-script\fR
+parameter(s).
+.Sp
+\&\fBNote:\fR \f(CW\*(C`scriptdir\*(C'\fR \fBmust\fR be an absolute path.
+.Sp
+If \fI\-\-scriptdir\fR is not specified then a temporary mountpoint will be
+created.
 .SH "ДІЇ"
 .IX Header "ДІЇ"
-If the \fI\-\-enable\fR option is \fInot\fR given, then \fIall sysprep operations are
-enabled\fR, although some are skipped depending on the type of guest.
+If the \fI\-\-enable\fR option is \fInot\fR given, then most sysprep operations are
+enabled.
+.PP
+Use \f(CW\*(C`virt\-sysprep \-\-list\-operations\*(C'\fR to list all operations for your
+virt-sysprep binary.  The ones which are enabled by default are marked with
+a \f(CW\*(C`*\*(C'\fR character.  Regardless of the \fI\-\-enable\fR option, sysprep operations
+are skipped for some guest types.
 .PP
 Operations can be individually enabled using the \fI\-\-enable\fR option.  Use a
 comma-separated list, for example:
 .PP
 .Vb 1
-\& virt\-sysprep \-\-enable=ssh\-hostkeys,udev\-persistent\-net [etc..]
+\& virt\-sysprep \-\-enable=ssh\-hostkeys,udev\-persistent\-net [тощо]
 .Ve
-.PP
-To list the operations supported by the current version of virt-sysprep, use
-\&\fI\-\-list\-operations\fR.
 .PP
 Future versions of virt-sysprep may add more operations.  If you are using
 virt-sysprep and want predictable behaviour, specify only the operations
 that you want to have enabled.
-.SS "cron-spool"
-.IX Subsection "cron-spool"
-Remove user at-jobs and cron-jobs.
-.SS "dhcp-client-state"
-.IX Subsection "dhcp-client-state"
-Remove \s-1DHCP\s0 client leases.
-.SS "dhcp-server-state"
-.IX Subsection "dhcp-server-state"
-Remove \s-1DHCP\s0 server leases.
-.SS "hostname"
-.IX Subsection "hostname"
-Changes the hostname of the guest to the value given in the \fI\-\-hostname\fR
-parameter.
 .PP
-If the \fI\-\-hostname\fR parameter is not given, then the hostname is changed to
+\&\f(CW\*(C`*\*(C'\fR = enabled by default when no \fI\-\-enable\fR option is given.
+.SS "\fBbash-history\fP *"
+.IX Subsection "bash-history *"
+Вилучити журнал команд bash у гостьовій системі.
+.PP
+Remove the bash history of user \*(L"root\*(R" and any other users who have a
+\&\f(CW\*(C`.bash_history\*(C'\fR file in their home directory.
+.SS "\fBblkid-tab\fP *"
+.IX Subsection "blkid-tab *"
+Remove blkid tab in the guest.
+.SS "\fBca-certificates\fP"
+.IX Subsection "ca-certificates"
+Remove \s-1CA\s0 certificates in the guest.
+.SS "\fBcron-spool\fP *"
+.IX Subsection "cron-spool *"
+Вилучити завдання at та cron користувачів.
+.SS "\fBdhcp-client-state\fP *"
+.IX Subsection "dhcp-client-state *"
+Вилучити надані клієнтські адреси \s-1DHCP\s0.
+.SS "\fBdhcp-server-state\fP *"
+.IX Subsection "dhcp-server-state *"
+Вилучити надані серверні адреси \s-1DHCP\s0.
+.SS "\fBdovecot-data\fP *"
+.IX Subsection "dovecot-data *"
+Вилучити дані Dovecot (поштового сервера).
+.SS "\fBflag-reconfiguration\fP"
+.IX Subsection "flag-reconfiguration"
+Позначити систему для зміни налаштувань.
+.PP
+Зауважте, що це може потребувати втручання користувача під час завантаження
+гостьової системи.
+.SS "\fBhostname\fP *"
+.IX Subsection "hostname *"
+Змінити назву вузла гостьової системи.
+.PP
+Ця дія змінює назву вузла гостьової системи на значення, вказане
+за допомогою параметра \fI\-\-hostname\fR.
+.PP
+Якщо параметр \fI\-\-hostname\fR не буде вказано, назву вузла буде змінено на
 \&\f(CW\*(C`localhost.localdomain\*(C'\fR.
-.SS "logfiles"
-.IX Subsection "logfiles"
-Remove many log files.
-.SS "mail-spool"
-.IX Subsection "mail-spool"
-Remove email from the local mail spool directory.
-.SS "net-hwaddr"
-.IX Subsection "net-hwaddr"
-Remove \s-1HWADDR\s0 (hard-coded \s-1MAC\s0 address) configuration.  For Fedora and Red
-Hat Enterprise Linux, this is removed from \f(CW\*(C`ifcfg\-*\*(C'\fR files.
-.SS "random-seed"
-.IX Subsection "random-seed"
-Write some random bytes from the host into the random seed file of the
-guest.
+.SS "\fBkerberos-data\fP"
+.IX Subsection "kerberos-data"
+Remove Kerberos data in the guest.
+.SS "\fBlogfiles\fP *"
+.IX Subsection "logfiles *"
+Вилучити з гостьової системи багато файлів журналів.
 .PP
-See \*(L"\s-1RANDOM\s0 \s-1SEED\s0\*(R" below.
-.SS "rhn-systemid"
-.IX Subsection "rhn-systemid"
-Remove the \s-1RHN\s0 system \s-1ID\s0.
-.SS "smolt-uuid"
-.IX Subsection "smolt-uuid"
-Remove the Smolt hardware \s-1UUID\s0.
-.SS "ssh-hostkeys"
-.IX Subsection "ssh-hostkeys"
-Remove the \s-1SSH\s0 host keys in the guest.
+У Linux вилучено такі файли:
 .PP
-The \s-1SSH\s0 host keys are regenerated (differently) next time the guest is
-booted.
+.Vb 10
+\& /root/anaconda\-ks.cfg
+\& /root/install.log
+\& /root/install.log.syslog
+\& /var/account/pacct
+\& /var/cache/gdm/*
+\& /var/lib/AccountService/users/*
+\& /var/lib/fprint/*
+\& /var/lib/logrotate.status
+\& /var/log/*.log*
+\& /var/log/BackupPC/LOG
+\& /var/log/audit/*
+\& /var/log/btmp*
+\& /var/log/ceph/*.log
+\& /var/log/chrony/*.log
+\& /var/log/cron*
+\& /var/log/cups/*_log
+\& /var/log/dmesg*
+\& /var/log/glusterfs/*glusterd.vol.log
+\& /var/log/glusterfs/glusterfs.log
+\& /var/log/httpd/*log
+\& /var/log/jetty/jetty\-console.log
+\& /var/log/lastlog*
+\& /var/log/libvirt/libvirtd.log
+\& /var/log/libvirt/lxc/*.log
+\& /var/log/libvirt/qemu/*.log
+\& /var/log/libvirt/uml/*.log
+\& /var/log/mail/*
+\& /var/log/maillog*
+\& /var/log/messages*
+\& /var/log/ppp/connect\-errors
+\& /var/log/secure*
+\& /var/log/setroubleshoot/*.log
+\& /var/log/spooler*
+\& /var/log/squid/*.log
+\& /var/log/tallylog*
+\& /var/log/wtmp*
+\& /var/named/data/named.run
+.Ve
+.SS "\fBmail-spool\fP *"
+.IX Subsection "mail-spool *"
+Вилучити поштове повідомлення з локального каталогу поштового буфера.
+.SS "\fBnet-hwaddr\fP *"
+.IX Subsection "net-hwaddr *"
+Вилучити налаштування \s-1HWADDR\s0 (апаратної адреси \s-1MAC\s0).
 .PP
-If, after cloning, the guest gets the same \s-1IP\s0 address, ssh will give you a
-stark warning about the host key changing:
+Для Fedora і Red Hat Enterprise Linux це вилучається з файлів \f(CW\*(C`ifcfg\-*\*(C'\fR.
+.SS "\fBpackage-manager-cache\fP *"
+.IX Subsection "package-manager-cache *"
+Вилучити кеш керування пакунками.
+.SS "\fBpam-data\fP *"
+.IX Subsection "pam-data *"
+Remove the \s-1PAM\s0 data in the guest.
+.SS "\fBrandom-seed\fP *"
+.IX Subsection "random-seed *"
+Створити породжувач випадкових чисел для гостьової системи.
+.PP
+Записати випадкові байти з основної системи до файла породжувача
+псевдовипадкових чисел у гостьовій системі.
+.PP
+Див. \*(L"\s-1RANDOM\s0 \s-1SEED\s0\*(R" нижче.
+.SS "\fBrhn-systemid\fP *"
+.IX Subsection "rhn-systemid *"
+Вилучити ідентифікатор системи у \s-1RHN\s0.
+.SS "\fBsamba-db-log\fP *"
+.IX Subsection "samba-db-log *"
+Вилучити бази даних та файли журналів Samba.
+.SS "\fBscript\fP *"
+.IX Subsection "script *"
+Запустити довільні скрипти дій над гостьовою системою.
+.PP
+The \f(CW\*(C`script\*(C'\fR module lets you run arbitrary shell scripts or programs
+against the guest.
+.PP
+Note this feature requires \s-1FUSE\s0 support.  You may have to enable this in
+your host, for example by adding the current user to the \f(CW\*(C`fuse\*(C'\fR group, or
+by loading a kernel module.
+.PP
+Use one or more \fI\-\-script\fR parameters to specify scripts or programs that
+will be run against the guest.
+.PP
+The script or program is run with its current directory being the guest's
+root directory, so relative paths should be used.  For example: \f(CW\*(C`rm
+etc/resolv.conf\*(C'\fR in the script would remove a Linux guest's \s-1DNS\s0
+configuration file, but \f(CW\*(C`rm /etc/resolv.conf\*(C'\fR would (try to) remove the
+host's file.
+.PP
+Normally a temporary mount point for the guest is used, but you can choose a
+specific one by using the \fI\-\-scriptdir\fR parameter.
+.SS "\fBsmolt-uuid\fP *"
+.IX Subsection "smolt-uuid *"
+Вилучити \s-1UUID\s0 обладнання Smolt.
+.SS "\fBssh-hostkeys\fP *"
+.IX Subsection "ssh-hostkeys *"
+Вилучити ключі вузла \s-1SSH\s0 у гостьовій системі.
+.PP
+Ключі вузла \s-1SSH\s0 повторно створюються (незалежно) під час наступного
+завантаження гостьової системи.
+.PP
+Якщо після клонування гостьова система отримати ту саму IP\-адресу, ssh
+надасть вам додаткове попередження щодо зміни ключа вузла:
 .PP
 .Vb 4
 \& @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -292,30 +455,50 @@ stark warning about the host key changing:
 \& @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 \& IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
 .Ve
-.SS "udev-persistent-net"
-.IX Subsection "udev-persistent-net"
-Remove udev persistent net rules which map the guest's existing \s-1MAC\s0 address
-to a fixed ethernet device (eg. eth0).
+.SS "\fBssh-userdir\fP *"
+.IX Subsection "ssh-userdir *"
+Вилучити каталоги «.ssh» у гостьовій системі.
 .PP
-After a guest is cloned, the \s-1MAC\s0 address usually changes.  Since the old \s-1MAC\s0
-address occupies the old name (eg. eth0), this means the fresh \s-1MAC\s0 address
-is assigned to a new name (eg. eth1) and this is usually undesirable.
-Erasing the udev persistent net rules avoids this.
-.SS "utmp"
-.IX Subsection "utmp"
+Вилучити каталог \f(CW\*(C`.ssh\*(C'\fR користувача «root» та всіх інших користувачів,
+домашні каталоги яких містять каталог \f(CW\*(C`.ssh\*(C'\fR.
+.SS "\fBsssd-db-log\fP *"
+.IX Subsection "sssd-db-log *"
+Вилучити бази даних і файли журналів sssd.
+.SS "\fBudev-persistent-net\fP *"
+.IX Subsection "udev-persistent-net *"
+Вилучити постійні правила мережі udev.
+.PP
+Вилучити постійні правила мережі udev, які відображають вже створену
+MAC\-адресу гостьової системи на фіксований пристрій ethernet (наприклад
+eth0).
+.PP
+Після клонування гостьової системи MAC\-адреса зазвичай змінюється. Оскільки
+стару MAC\-адресу вже пов’язано зі старою назвою (наприклад eth0), це
+означає, що нову MAC\-адресу буде пов’язано з новою назвою (наприклад eth1),
+а це зазвичай є небажаним. За допомогою вилучення постійних правил мережі
+udev цьому можна запобігти.
+.SS "\fBuser-account\fP"
+.IX Subsection "user-account"
+Вилучити облікові записи користувачів у гостьовій системі.
+.PP
+Вилучити всі облікові записи користувачів та відповідні домашні
+каталоги. Обліковий запис «root» вилучено не буде.
+.SS "\fButmp\fP *"
+.IX Subsection "utmp *"
 Вилучити файл utmp.
 .PP
-This records who is currently logged in on a machine.  In modern Linux
-distros it is stored in a ramdisk and hence not part of the virtual
-machine's disk, but it was stored on disk in older distros.
-.SS "yum-uuid"
-.IX Subsection "yum-uuid"
+У цьому файлі зберігаються записи щодо входу користувачів до машини. У
+сучасних дистрибутивах Linux ці записи зберігаються на диску у пам’яті, тому
+не є частиною віртуальної машини на диску, але ці дані зберігаються на диску
+у старіших версіях дистрибутивів.
+.SS "\fByum-uuid\fP *"
+.IX Subsection "yum-uuid *"
 Вилучити \s-1UUID\s0 yum.
 .PP
-Yum creates a fresh \s-1UUID\s0 the next time it runs when it notices that the
-original \s-1UUID\s0 has been erased.
-.SH "COPYING AND CLONING"
-.IX Header "COPYING AND CLONING"
+Yum створить новий \s-1UUID\s0 під час наступного запуску, коли виявить, що
+початковий \s-1UUID\s0 було вилучено.
+.SH "КОПІЮВАННЯ ТА КЛОНУВАННЯ"
+.IX Header "КОПІЮВАННЯ ТА КЛОНУВАННЯ"
 Virt-sysprep can be used as part of a process of cloning guests, or to
 prepare a template from which guests can be cloned.  There are many
 different ways to achieve this using the virt tools, and this section is
@@ -335,9 +518,9 @@ Some configuration items that might need to be changed:
 .IP "\(bu" 4
 \&\s-1UUID\s0
 .IP "\(bu" 4
-path to block device(s)
+шлях до блокових пристроїв
 .IP "\(bu" 4
-network card \s-1MAC\s0 address
+MAC\-адреса мережевої картки
 .RE
 .RS 4
 .RE
@@ -361,8 +544,8 @@ Puppet registration
 .RE
 .RS 4
 .RE
-.SS "\s-1COPYING\s0 \s-1THE\s0 \s-1BLOCK\s0 \s-1DEVICE\s0"
-.IX Subsection "COPYING THE BLOCK DEVICE"
+.SS "КОПІЮВАННЯ БЛОКОВОГО ПРИСТРОЮ"
+.IX Subsection "КОПІЮВАННЯ БЛОКОВОГО ПРИСТРОЮ"
 Starting with an original guest, you probably wish to copy the guest block
 device and its configuration to make a template.  Then once you are happy
 with the template, you will want to make many clones from it.
@@ -435,8 +618,8 @@ it easier to compress and/or faster to copy.
 .PP
 Notice that since virt-sparsify also copies the image, you can use it to
 make the initial copy (instead of \f(CW\*(C`dd\*(C'\fR).
-.SS "\s-1RESIZE\s0"
-.IX Subsection "RESIZE"
+.SS "ЗМІНА РОЗМІРІВ"
+.IX Subsection "ЗМІНА РОЗМІРІВ"
 .Vb 5
 \&                         virt\-resize
 \&                template \-\-\-\-\-\-\-\-\-\->
@@ -454,8 +637,7 @@ ideal for cloning guests from a template.
 .IX Header "БЕЗПЕКА"
 Although virt-sysprep removes some sensitive information from the guest, it
 does not pretend to remove all of it.  You should examine the \*(L"\s-1OPERATIONS\s0\*(R"
-above, and the implementation of the operations in the shell script.  You
-should also examine the guest afterwards.
+above and the guest afterwards.
 .PP
 Sensitive files are simply removed.  The data they contained may still exist
 on the disk, easily recovered with a hex editor or undelete tool.  Use
@@ -479,11 +661,12 @@ operation:
 .PP
 .Vb 2
 \& cp template.img newguest.img
-\& virt\-sysprep \-\-enable=random\-seed \-a newguest.img
+\& virt\-sysprep \-\-enable random\-seed \-a newguest.img
 .Ve
 .SS "ПОВТОРНЕ ВСТАНОВЛЕННЯ МІТОК \s-1SELINUX\s0"
 .IX Subsection "ПОВТОРНЕ ВСТАНОВЛЕННЯ МІТОК SELINUX"
-\&\fI(This section applies to Linux guests using SELinux only)\fR
+\&\fI(Цей розділ стосується лише гостьових систем Linux, у яких
+використовується лише SELinux)\fR
 .PP
 If any new files are created by virt-sysprep, then virt-sysprep touches
 \&\f(CW\*(C`/.autorelabel\*(C'\fR so that these will be correctly labelled by SELinux the
@@ -495,8 +678,8 @@ You can force relabelling for all guests by supplying the
 .PP
 You can disable relabelling entirely by supplying the
 \&\fI\-\-no\-selinux\-relabel\fR option.
-.SH "SHELL QUOTING"
-.IX Header "SHELL QUOTING"
+.SH "ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ"
+.IX Header "ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ"
 Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
@@ -510,23 +693,27 @@ This program returns 0 on success, or 1 if there was an error.
 \&\fIvirt\-resize\fR\|(1), \fIvirt\-sparsify\fR\|(1), \fIvirsh\fR\|(1), \fIlvcreate\fR\|(8),
 \&\fIqemu\-img\fR\|(1), \fIscrub\fR\|(1), <http://libguestfs.org/>,
 <http://libvirt.org/>.
-.SH "АВТОР"
-.IX Header "АВТОР"
+.SH "АВТОРИ"
+.IX Header "АВТОРИ"
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
+.PP
+Wanlong Gao, Fujitsu Ltd.
 .SH "АВТОРСЬКІ ПРАВА"
 .IX Header "АВТОРСЬКІ ПРАВА"
-© Red Hat Inc., 2011
+Copyright (C) 2011\-2012 Red Hat Inc.
 .PP
-This program is free software; you can redistribute it and/or modify it
-under the terms of the \s-1GNU\s0 General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option)
-any later version.
+Copyright (C) 2012 Fujitsu Ltd.
+.PP
+Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
+змінювати її за умов дотримання \s-1GNU\s0 General Public License  утому вигляді,
+що оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
+забажаєте) будь\-якої випущеної пізніше.
 .PP
 Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
 БУДЬ\-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
-You should have received a copy of the \s-1GNU\s0 General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 51
-Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.
+Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301, \s-1USA\s0.

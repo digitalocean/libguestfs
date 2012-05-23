@@ -116,3 +116,6 @@ extern int guestfs__set_pgroup (guestfs_h *g, int pgroup);
 extern int guestfs__get_pgroup (guestfs_h *g);
 extern int guestfs__set_smp (guestfs_h *g, int smp);
 extern int guestfs__get_smp (guestfs_h *g);
+extern int guestfs__mount_local (guestfs_h *g, const char *localmountpoint, const struct guestfs_mount_local_argv *optargs);
+extern int guestfs__mount_local_run (guestfs_h *g);
+extern int guestfs__umount_local (guestfs_h *g, const struct guestfs_umount_local_argv *optargs);

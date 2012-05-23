@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsMkfsBtrfs</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsNtfscloneOut.html" title="GuestfsNtfscloneOut">
+<link rel="next" href="GuestfsSetE2attrs.html" title="GuestfsSetE2attrs">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsNtfscloneOut.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsSetE2attrs.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsMkfsBtrfs.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsMkfsBtrfs.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsMkfsBtrfs.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsMkfsBtrfs.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsMkfsBtrfs"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsMkfsBtrfs.top_of_page"></a>GuestfsMkfsBtrfs</span></h2>
+<p>GuestfsMkfsBtrfs — An object encapsulating optional arguments for guestfs_session_mkfs_btrfs</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsMkfsBtrfs.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs-struct" title="struct GuestfsMkfsBtrfs">GuestfsMkfsBtrfs</a>;
+struct              <a class="link" href="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfsClass" title="struct GuestfsMkfsBtrfsClass">GuestfsMkfsBtrfsClass</a>;
+<a class="link" href="GuestfsMkfsBtrfs.html" title="GuestfsMkfsBtrfs"><span class="returnvalue">GuestfsMkfsBtrfs</span></a> *  <a class="link" href="GuestfsMkfsBtrfs.html#guestfs-mkfs-btrfs-new" title="guestfs_mkfs_btrfs_new ()">guestfs_mkfs_btrfs_new</a>              (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsMkfsBtrfs.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----GuestfsMkfsBtrfs
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsMkfsBtrfs.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--allocstart" title='The "allocstart" property'>allocstart</a>"               <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct
+  "<a class="link" href="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--bytecount" title='The "bytecount" property'>bytecount</a>"                <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct
+  "<a class="link" href="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--datatype" title='The "datatype" property'>datatype</a>"                 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--label" title='The "label" property'>label</a>"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--leafsize" title='The "leafsize" property'>leafsize</a>"                 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct
+  "<a class="link" href="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--metadata" title='The "metadata" property'>metadata</a>"                 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--nodesize" title='The "nodesize" property'>nodesize</a>"                 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct
+  "<a class="link" href="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--sectorsize" title='The "sectorsize" property'>sectorsize</a>"               <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsMkfsBtrfs.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_mkfs_btrfs
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsMkfsBtrfs.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsMkfsBtrfs-struct"></a><h3>struct GuestfsMkfsBtrfs</h3>
+<pre class="programlisting">struct GuestfsMkfsBtrfs;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_mkfs_btrfs.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMkfsBtrfsClass"></a><h3>struct GuestfsMkfsBtrfsClass</h3>
+<pre class="programlisting">struct GuestfsMkfsBtrfsClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsMkfsBtrfs.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="GuestfsMkfsBtrfsClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsMkfsBtrfsClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-mkfs-btrfs-new"></a><h3>guestfs_mkfs_btrfs_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsMkfsBtrfs.html" title="GuestfsMkfsBtrfs"><span class="returnvalue">GuestfsMkfsBtrfs</span></a> *  guestfs_mkfs_btrfs_new              (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsMkfsBtrfs object
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsMkfsBtrfs object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsMkfsBtrfs.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsMkfsBtrfs--allocstart"></a><h3>The <code class="literal">"allocstart"</code> property</h3>
+<pre class="programlisting">  "allocstart"               <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct</pre>
+<p>
+A 64-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMkfsBtrfs--bytecount"></a><h3>The <code class="literal">"bytecount"</code> property</h3>
+<pre class="programlisting">  "bytecount"                <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct</pre>
+<p>
+A 64-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMkfsBtrfs--datatype"></a><h3>The <code class="literal">"datatype"</code> property</h3>
+<pre class="programlisting">  "datatype"                 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMkfsBtrfs--label"></a><h3>The <code class="literal">"label"</code> property</h3>
+<pre class="programlisting">  "label"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMkfsBtrfs--leafsize"></a><h3>The <code class="literal">"leafsize"</code> property</h3>
+<pre class="programlisting">  "leafsize"                 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct</pre>
+<p>
+A 32-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMkfsBtrfs--metadata"></a><h3>The <code class="literal">"metadata"</code> property</h3>
+<pre class="programlisting">  "metadata"                 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMkfsBtrfs--nodesize"></a><h3>The <code class="literal">"nodesize"</code> property</h3>
+<pre class="programlisting">  "nodesize"                 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct</pre>
+<p>
+A 32-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMkfsBtrfs--sectorsize"></a><h3>The <code class="literal">"sectorsize"</code> property</h3>
+<pre class="programlisting">  "sectorsize"               <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct</pre>
+<p>
+A 32-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

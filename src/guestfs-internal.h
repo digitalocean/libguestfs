@@ -19,10 +19,22 @@
 #ifndef GUESTFS_INTERNAL_H_
 #define GUESTFS_INTERNAL_H_
 
+#include <libintl.h>
+
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 
 #include <pcre.h>
+
+#include "hash.h"
+
+#ifndef O_CLOEXEC
+#define O_CLOEXEC 0
+#endif
+
+#ifndef SOCK_CLOEXEC
+#define SOCK_CLOEXEC 0
+#endif
 
 #define STREQ(a,b) (strcmp((a),(b)) == 0)
 #define STRCASEEQ(a,b) (strcasecmp((a),(b)) == 0)
@@ -34,14 +46,8 @@
 #define STRCASENEQLEN(a,b,n) (strncasecmp((a),(b),(n)) != 0)
 #define STRPREFIX(a,b) (strncmp((a),(b),strlen((b))) == 0)
 
-#ifdef HAVE_GETTEXT
-#include "gettext.h"
 #define _(str) dgettext(PACKAGE, (str))
 #define N_(str) dgettext(PACKAGE, (str))
-#else
-#define _(str) str
-#define N_(str) str
-#endif
 
 #if ENABLE_PROBES
 #include <sys/sdt.h>
@@ -132,7 +138,7 @@
 #define ROUTER "169.254.2.2"
 
 /* GuestFS handle and connection. */
-enum state { CONFIG, LAUNCHING, READY, BUSY, NO_HANDLE };
+enum state { CONFIG, LAUNCHING, READY, NO_HANDLE };
 
 /* Attach method. */
 enum attach_method { ATTACH_METHOD_APPLIANCE = 0, ATTACH_METHOD_UNIX };
@@ -240,6 +246,16 @@ struct guestfs_h
    * matter for this case because we only care if it is != 0.
    */
   int user_cancel;
+
+#if HAVE_FUSE
+  /* These fields are used by guestfs_mount_local. */
+  const char *localmountpoint;
+  struct fuse *fuse;                    /* FUSE handle. */
+  int ml_dir_cache_timeout;             /* Directory cache timeout. */
+  Hash_table *lsc_ht, *xac_ht, *rlc_ht; /* Directory cache. */
+  int ml_read_only;                     /* If mounted read-only. */
+  int ml_debug_calls;        /* Extra debug info on each FUSE call. */
+#endif
 };
 
 /* Per-filesystem data stored for inspect_os. */
@@ -257,6 +273,7 @@ enum inspect_fs_content {
   FS_CONTENT_NETBSD_ROOT,
   FS_CONTENT_INSTALLER,
   FS_CONTENT_HURD_ROOT,
+  FS_CONTENT_FREEDOS_ROOT,
 };
 
 enum inspect_os_format {
@@ -273,6 +290,7 @@ enum inspect_os_type {
   OS_TYPE_FREEBSD,
   OS_TYPE_NETBSD,
   OS_TYPE_HURD,
+  OS_TYPE_DOS,
 };
 
 enum inspect_os_distro {
@@ -295,6 +313,9 @@ enum inspect_os_distro {
   OS_DISTRO_TTYLINUX,
   OS_DISTRO_MAGEIA,
   OS_DISTRO_OPENSUSE,
+  OS_DISTRO_BUILDROOT,
+  OS_DISTRO_CIRROS,
+  OS_DISTRO_FREEDOS,
 };
 
 enum inspect_os_package_format {
@@ -376,10 +397,11 @@ extern void guestfs___trace (guestfs_h *g, const char *fs, ...)
 extern const char *guestfs___persistent_tmpdir (void);
 extern void guestfs___remove_tmpdir (const char *dir);
 extern void guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...);
+#if HAVE_FUSE
+extern void guestfs___free_fuse (guestfs_h *g);
+#endif
 extern void guestfs___free_inspect_info (guestfs_h *g);
 extern void guestfs___free_drives (struct drive **drives);
-extern int guestfs___set_busy (guestfs_h *g);
-extern int guestfs___end_busy (guestfs_h *g);
 extern int guestfs___send (guestfs_h *g, int proc_nr, uint64_t progress_hint, uint64_t optargs_bitmask, xdrproc_t xdrp, char *args);
 extern int guestfs___recv (guestfs_h *g, const char *fn, struct guestfs_message_header *hdr, struct guestfs_message_error *err, xdrproc_t xdrp, char *ret);
 extern int guestfs___recv_discard (guestfs_h *g, const char *fn);
@@ -406,7 +428,7 @@ extern void guestfs___call_callbacks_message (guestfs_h *g, uint64_t event, cons
 extern void guestfs___call_callbacks_array (guestfs_h *g, uint64_t event, const uint64_t *array, size_t array_len);
 extern int guestfs___is_file_nocase (guestfs_h *g, const char *);
 extern int guestfs___is_dir_nocase (guestfs_h *g, const char *);
-extern char *guestfs___download_to_tmp (guestfs_h *g, struct inspect_fs *fs, const char *filename, const char *basename, int64_t max_size);
+extern char *guestfs___download_to_tmp (guestfs_h *g, struct inspect_fs *fs, const char *filename, const char *basename, uint64_t max_size);
 extern char *guestfs___case_sensitive_path_silently (guestfs_h *g, const char *);
 extern struct inspect_fs *guestfs___search_for_root (guestfs_h *g, const char *root);
 

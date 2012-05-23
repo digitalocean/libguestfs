@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsISOInfo</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsApplication.html" title="GuestfsApplication">
+<link rel="next" href="GuestfsMDStat.html" title="GuestfsMDStat">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsApplication.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsMDStat.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsISOInfo.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsISOInfo.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsISOInfo.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsISOInfo"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsISOInfo.top_of_page"></a>GuestfsISOInfo</span></h2>
+<p>GuestfsISOInfo</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsISOInfo.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsISOInfo.html#GuestfsISOInfo-struct" title="struct GuestfsISOInfo">GuestfsISOInfo</a>;
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsISOInfo.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GBoxed
+   +----GuestfsISOInfo
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsISOInfo.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="GuestfsISOInfo.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsISOInfo-struct"></a><h3>struct GuestfsISOInfo</h3>
+<pre class="programlisting">struct GuestfsISOInfo {
+  gchar *iso_system_id;
+  gchar *iso_volume_id;
+  guint32 iso_volume_space_size;
+  guint32 iso_volume_set_size;
+  guint32 iso_volume_sequence_number;
+  guint32 iso_logical_block_size;
+  gchar *iso_volume_set_id;
+  gchar *iso_publisher_id;
+  gchar *iso_data_preparer_id;
+  gchar *iso_application_id;
+  gchar *iso_copyright_file_id;
+  gchar *iso_abstract_file_id;
+  gchar *iso_bibliographic_file_id;
+  gint64 iso_volume_creation_t;
+  gint64 iso_volume_modification_t;
+  gint64 iso_volume_expiration_t;
+  gint64 iso_volume_effective_t;
+};
+</pre>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsISOInfo-struct.iso-system-id"></a>iso_system_id</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsISOInfo-struct.iso-volume-id"></a>iso_volume_id</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint32"><span class="type">guint32</span></a> <em class="structfield"><code><a name="GuestfsISOInfo-struct.iso-volume-space-size"></a>iso_volume_space_size</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint32"><span class="type">guint32</span></a> <em class="structfield"><code><a name="GuestfsISOInfo-struct.iso-volume-set-size"></a>iso_volume_set_size</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint32"><span class="type">guint32</span></a> <em class="structfield"><code><a name="GuestfsISOInfo-struct.iso-volume-sequence-number"></a>iso_volume_sequence_number</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint32"><span class="type">guint32</span></a> <em class="structfield"><code><a name="GuestfsISOInfo-struct.iso-logical-block-size"></a>iso_logical_block_size</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsISOInfo-struct.iso-volume-set-id"></a>iso_volume_set_id</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsISOInfo-struct.iso-publisher-id"></a>iso_publisher_id</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsISOInfo-struct.iso-data-preparer-id"></a>iso_data_preparer_id</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsISOInfo-struct.iso-application-id"></a>iso_application_id</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsISOInfo-struct.iso-copyright-file-id"></a>iso_copyright_file_id</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsISOInfo-struct.iso-abstract-file-id"></a>iso_abstract_file_id</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsISOInfo-struct.iso-bibliographic-file-id"></a>iso_bibliographic_file_id</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> <em class="structfield"><code><a name="GuestfsISOInfo-struct.iso-volume-creation-t"></a>iso_volume_creation_t</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> <em class="structfield"><code><a name="GuestfsISOInfo-struct.iso-volume-modification-t"></a>iso_volume_modification_t</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> <em class="structfield"><code><a name="GuestfsISOInfo-struct.iso-volume-expiration-t"></a>iso_volume_expiration_t</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> <em class="structfield"><code><a name="GuestfsISOInfo-struct.iso-volume-effective-t"></a>iso_volume_effective_t</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

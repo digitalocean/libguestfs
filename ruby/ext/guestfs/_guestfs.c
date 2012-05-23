@@ -1661,21 +1661,6 @@ ruby_guestfs_is_launching (VALUE gv)
   return INT2NUM (r);
 }
 
-/*
- * call-seq:
- *   g.is_busy() -> [True|False]
- *
- * is busy processing a command
- *
- * This returns true iff this handle is busy processing a
- * command (in the "BUSY" state).
- * 
- * For more information on states, see guestfs(3).
- *
- *
- * (For the C API documentation for this function, see
- * +guestfs_is_busy+[http://libguestfs.org/guestfs.3.html#guestfs_is_busy]).
- */
 static VALUE
 ruby_guestfs_is_busy (VALUE gv)
 {
@@ -2474,6 +2459,9 @@ ruby_guestfs_inspect_os (VALUE gv)
  * "hurd"
  * GNU/Hurd.
  * 
+ * "dos"
+ * MS-DOS, FreeDOS and others.
+ * 
  * "unknown"
  * The operating system type could not be determined.
  * 
@@ -2562,14 +2550,24 @@ ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
  * "archlinux"
  * Arch Linux.
  * 
+ * "buildroot"
+ * Buildroot-derived distro, but not one we
+ * specifically recognize.
+ * 
  * "centos"
  * CentOS.
+ * 
+ * "cirros"
+ * Cirros.
  * 
  * "debian"
  * Debian.
  * 
  * "fedora"
  * Fedora.
+ * 
+ * "freedos"
+ * FreeDOS.
  * 
  * "gentoo"
  * Gentoo.
@@ -4323,6 +4321,183 @@ ruby_guestfs_get_smp (VALUE gv)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.mount_local(localmountpoint, {optargs...}) -> nil
+ *
+ * mount on the local filesystem
+ *
+ * This call exports the libguestfs-accessible filesystem
+ * to a local mountpoint (directory) called
+ * "localmountpoint". Ordinary reads and writes to files
+ * and directories under "localmountpoint" are redirected
+ * through libguestfs.
+ * 
+ * If the optional "readonly" flag is set to true, then
+ * writes to the filesystem return error "EROFS".
+ * 
+ * "options" is a comma-separated list of mount options.
+ * See guestmount(1) for some useful options.
+ * 
+ * "cachetimeout" sets the timeout (in seconds) for cached
+ * directory entries. The default is 60 seconds. See
+ * guestmount(1) for further information.
+ * 
+ * If "debugcalls" is set to true, then additional
+ * debugging information is generated for every FUSE call.
+ * 
+ * When "g.mount_local" returns, the filesystem is ready,
+ * but is not processing requests (access to it will
+ * block). You have to call "g.mount_local_run" to run the
+ * main loop.
+ * 
+ * See "MOUNT LOCAL" in guestfs(3) for full documentation.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_mount_local+[http://libguestfs.org/guestfs.3.html#guestfs_mount_local]).
+ */
+static VALUE
+ruby_guestfs_mount_local (VALUE gv, VALUE localmountpointv, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "mount_local");
+
+  const char *localmountpoint = StringValueCStr (localmountpointv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_mount_local_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mount_local_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("readonly")));
+  if (v != Qnil) {
+    optargs_s.readonly = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MOUNT_LOCAL_READONLY_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("options")));
+  if (v != Qnil) {
+    optargs_s.options = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MOUNT_LOCAL_OPTIONS_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("cachetimeout")));
+  if (v != Qnil) {
+    optargs_s.cachetimeout = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_MOUNT_LOCAL_CACHETIMEOUT_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("debugcalls")));
+  if (v != Qnil) {
+    optargs_s.debugcalls = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MOUNT_LOCAL_DEBUGCALLS_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_mount_local_argv (g, localmountpoint, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.mount_local_run() -> nil
+ *
+ * run main loop of mount on the local filesystem
+ *
+ * Run the main loop which translates kernel calls to
+ * libguestfs calls.
+ * 
+ * This should only be called after "g.mount_local" returns
+ * successfully. The call will not return until the
+ * filesystem is unmounted.
+ * 
+ * Note you must *not* make concurrent libguestfs calls on
+ * the same handle from another thread, with the exception
+ * of "g.umount_local".
+ * 
+ * You may call this from a different thread than the one
+ * which called "g.mount_local", subject to the usual rules
+ * for threads and libguestfs (see "MULTIPLE HANDLES AND
+ * MULTIPLE THREADS" in guestfs(3)).
+ * 
+ * See "MOUNT LOCAL" in guestfs(3) for full documentation.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_mount_local_run+[http://libguestfs.org/guestfs.3.html#guestfs_mount_local_run]).
+ */
+static VALUE
+ruby_guestfs_mount_local_run (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "mount_local_run");
+
+
+  int r;
+
+  r = guestfs_mount_local_run (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.umount_local({optargs...}) -> nil
+ *
+ * unmount a locally mounted filesystem
+ *
+ * If libguestfs is exporting the filesystem on a local
+ * mountpoint, then this unmounts it.
+ * 
+ * See "MOUNT LOCAL" in guestfs(3) for full documentation.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_umount_local+[http://libguestfs.org/guestfs.3.html#guestfs_umount_local]).
+ */
+static VALUE
+ruby_guestfs_umount_local (VALUE gv, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "umount_local");
+
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_umount_local_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_umount_local_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("retry")));
+  if (v != Qnil) {
+    optargs_s.retry = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_UMOUNT_LOCAL_RETRY_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_umount_local_argv (g, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
 }
 
 /*
@@ -7562,6 +7737,13 @@ ruby_guestfs_pvremove (VALUE gv, VALUE devicev)
  * 
  * You can use either "g.tune2fs_l" or "g.get_e2label" to
  * return the existing label on a filesystem.
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "set_label" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -8630,12 +8812,7 @@ ruby_guestfs_lvresize (VALUE gv, VALUE devicev, VALUE mbytesv)
  * This resizes an ext2, ext3 or ext4 filesystem to match
  * the size of the underlying device.
  * 
- * *Note:* It is sometimes required that you run
- * "g.e2fsck_f" on the "device" before calling this
- * command. For unknown reasons "resize2fs" sometimes gives
- * an error about this and sometimes not. In any case, it
- * is always safe to call "g.e2fsck_f" before calling this
- * function.
+ * See also "RESIZE2FS ERRORS" in guestfs(3).
  *
  *
  * (For the C API documentation for this function, see
@@ -8739,8 +8916,12 @@ ruby_guestfs_find (VALUE gv, VALUE directoryv)
  * filesystem checker on "device", noninteractively (*-p*),
  * even if the filesystem appears to be clean (*-f*).
  * 
- * This command is only needed because of "g.resize2fs"
- * (q.v.). Normally you should use "g.fsck".
+ * *This function is deprecated.* In new code, use the
+ * "e2fsck" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -8942,6 +9123,10 @@ ruby_guestfs_sh_lines (VALUE gv, VALUE commandv)
  * It is just a wrapper around the C glob(3) function with
  * flags "GLOB_MARK|GLOB_BRACE". See that manual page for
  * more details.
+ * 
+ * Notice that there is no equivalent command for expanding
+ * a device name (eg. "/dev/sd*"). Use "g.list_devices",
+ * "g.list_partitions" etc functions instead.
  *
  *
  * (For the C API documentation for this function, see
@@ -14567,6 +14752,8 @@ ruby_guestfs_pwrite (VALUE gv, VALUE pathv, VALUE contentv, VALUE offsetv)
  * This command is the same as "g.resize2fs" except that it
  * allows you to specify the new size (in bytes)
  * explicitly.
+ * 
+ * See also "RESIZE2FS ERRORS" in guestfs(3).
  *
  *
  * (For the C API documentation for this function, see
@@ -15964,6 +16151,8 @@ ruby_guestfs_lgetxattr (VALUE gv, VALUE pathv, VALUE namev)
  * count" values. These two numbers, multiplied together,
  * give the resulting size of the minimal filesystem in
  * bytes.
+ * 
+ * See also "RESIZE2FS ERRORS" in guestfs(3).
  *
  *
  * (For the C API documentation for this function, see
@@ -17307,6 +17496,1350 @@ ruby_guestfs_e2fsck (VALUE gv, VALUE devicev, VALUE optargsv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.llz(directory) -> string
+ *
+ * list the files in a directory (long format with SELinux contexts)
+ *
+ * List the files in "directory" in the format of 'ls
+ * -laZ'.
+ * 
+ * This command is mostly useful for interactive sessions.
+ * It is *not* intended that you try to parse the output
+ * string.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_llz+[http://libguestfs.org/guestfs.3.html#guestfs_llz]).
+ */
+static VALUE
+ruby_guestfs_llz (VALUE gv, VALUE directoryv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "llz");
+
+  const char *directory = StringValueCStr (directoryv);
+
+  char *r;
+
+  r = guestfs_llz (g, directory);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.wipefs(device) -> nil
+ *
+ * wipe a filesystem signature from a device
+ *
+ * This command erases filesystem or RAID signatures from
+ * the specified "device" to make the filesystem invisible
+ * to libblkid.
+ * 
+ * This does not erase the filesystem itself nor any other
+ * data from the "device".
+ * 
+ * Compare with "g.zero" which zeroes the first few blocks
+ * of a device.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_wipefs+[http://libguestfs.org/guestfs.3.html#guestfs_wipefs]).
+ */
+static VALUE
+ruby_guestfs_wipefs (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "wipefs");
+
+  const char *device = StringValueCStr (devicev);
+
+  int r;
+
+  r = guestfs_wipefs (g, device);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.ntfsfix(device, {optargs...}) -> nil
+ *
+ * fix common errors and force Windows to check NTFS
+ *
+ * This command repairs some fundamental NTFS
+ * inconsistencies, resets the NTFS journal file, and
+ * schedules an NTFS consistency check for the first boot
+ * into Windows.
+ * 
+ * This is *not* an equivalent of Windows "chkdsk". It does
+ * *not* scan the filesystem for inconsistencies.
+ * 
+ * The optional "clearbadsectors" flag clears the list of
+ * bad sectors. This is useful after cloning a disk with
+ * bad sectors to a new disk.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_ntfsfix+[http://libguestfs.org/guestfs.3.html#guestfs_ntfsfix]).
+ */
+static VALUE
+ruby_guestfs_ntfsfix (VALUE gv, VALUE devicev, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ntfsfix");
+
+  const char *device = StringValueCStr (devicev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_ntfsfix_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_ntfsfix_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("clearbadsectors")));
+  if (v != Qnil) {
+    optargs_s.clearbadsectors = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_NTFSFIX_CLEARBADSECTORS_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_ntfsfix_argv (g, device, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.ntfsclone_out(device, backupfile, {optargs...}) -> nil
+ *
+ * save NTFS to backup file
+ *
+ * Stream the NTFS filesystem "device" to the local file
+ * "backupfile". The format used for the backup file is a
+ * special format used by the ntfsclone(8) tool.
+ * 
+ * If the optional "metadataonly" flag is true, then *only*
+ * the metadata is saved, losing all the user data (this is
+ * useful for diagnosing some filesystem problems).
+ * 
+ * The optional "rescue", "ignorefscheck",
+ * "preservetimestamps" and "force" flags have precise
+ * meanings detailed in the ntfsclone(8) man page.
+ * 
+ * Use "g.ntfsclone_in" to restore the file back to a
+ * libguestfs device.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_ntfsclone_out+[http://libguestfs.org/guestfs.3.html#guestfs_ntfsclone_out]).
+ */
+static VALUE
+ruby_guestfs_ntfsclone_out (VALUE gv, VALUE devicev, VALUE backupfilev, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ntfsclone_out");
+
+  const char *device = StringValueCStr (devicev);
+  const char *backupfile = StringValueCStr (backupfilev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_ntfsclone_out_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_ntfsclone_out_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("metadataonly")));
+  if (v != Qnil) {
+    optargs_s.metadataonly = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_NTFSCLONE_OUT_METADATAONLY_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("rescue")));
+  if (v != Qnil) {
+    optargs_s.rescue = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_NTFSCLONE_OUT_RESCUE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("ignorefscheck")));
+  if (v != Qnil) {
+    optargs_s.ignorefscheck = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_NTFSCLONE_OUT_IGNOREFSCHECK_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("preservetimestamps")));
+  if (v != Qnil) {
+    optargs_s.preservetimestamps = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_NTFSCLONE_OUT_PRESERVETIMESTAMPS_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("force")));
+  if (v != Qnil) {
+    optargs_s.force = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_NTFSCLONE_OUT_FORCE_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_ntfsclone_out_argv (g, device, backupfile, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.ntfsclone_in(backupfile, device) -> nil
+ *
+ * restore NTFS from backup file
+ *
+ * Restore the "backupfile" (from a previous call to
+ * "g.ntfsclone_out") to "device", overwriting any existing
+ * contents of this device.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_ntfsclone_in+[http://libguestfs.org/guestfs.3.html#guestfs_ntfsclone_in]).
+ */
+static VALUE
+ruby_guestfs_ntfsclone_in (VALUE gv, VALUE backupfilev, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ntfsclone_in");
+
+  const char *backupfile = StringValueCStr (backupfilev);
+  const char *device = StringValueCStr (devicev);
+
+  int r;
+
+  r = guestfs_ntfsclone_in (g, backupfile, device);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.set_label(device, label) -> nil
+ *
+ * set filesystem label
+ *
+ * Set the filesystem label on "device" to "label".
+ * 
+ * Only some filesystem types support labels, and
+ * libguestfs supports setting labels on only a subset of
+ * these.
+ * 
+ * On ext2/3/4 filesystems, labels are limited to 16 bytes.
+ * 
+ * On NTFS filesystems, labels are limited to 128 unicode
+ * characters.
+ * 
+ * To read the label on a filesystem, call "g.vfs_label".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_label+[http://libguestfs.org/guestfs.3.html#guestfs_set_label]).
+ */
+static VALUE
+ruby_guestfs_set_label (VALUE gv, VALUE devicev, VALUE labelv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_label");
+
+  const char *device = StringValueCStr (devicev);
+  const char *label = StringValueCStr (labelv);
+
+  int r;
+
+  r = guestfs_set_label (g, device, label);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.zero_free_space(directory) -> nil
+ *
+ * zero free space in a filesystem
+ *
+ * Zero the free space in the filesystem mounted on
+ * "directory". The filesystem must be mounted read-write.
+ * 
+ * The filesystem contents are not affected, but any free
+ * space in the filesystem is freed.
+ * 
+ * In future (but not currently) these zeroed blocks will
+ * be "sparsified" - that is, given back to the host.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_zero_free_space+[http://libguestfs.org/guestfs.3.html#guestfs_zero_free_space]).
+ */
+static VALUE
+ruby_guestfs_zero_free_space (VALUE gv, VALUE directoryv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "zero_free_space");
+
+  const char *directory = StringValueCStr (directoryv);
+
+  int r;
+
+  r = guestfs_zero_free_space (g, directory);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.lvcreate_free(logvol, volgroup, percent) -> nil
+ *
+ * create an LVM logical volume in % remaining free space
+ *
+ * Create an LVM logical volume called
+ * "/dev/volgroup/logvol", using approximately "percent" %
+ * of the free space remaining in the volume group. Most
+ * usefully, when "percent" is 100 this will create the
+ * largest possible LV.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_lvcreate_free+[http://libguestfs.org/guestfs.3.html#guestfs_lvcreate_free]).
+ */
+static VALUE
+ruby_guestfs_lvcreate_free (VALUE gv, VALUE logvolv, VALUE volgroupv, VALUE percentv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "lvcreate_free");
+
+  const char *logvol = StringValueCStr (logvolv);
+  const char *volgroup = StringValueCStr (volgroupv);
+  int percent = NUM2INT (percentv);
+
+  int r;
+
+  r = guestfs_lvcreate_free (g, logvol, volgroup, percent);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.isoinfo_device(device) -> hash
+ *
+ * get ISO information from primary volume descriptor of device
+ *
+ * "device" is an ISO device. This returns a struct of
+ * information read from the primary volume descriptor (the
+ * ISO equivalent of the superblock) of the device.
+ * 
+ * Usually it is more efficient to use the isoinfo(1)
+ * command with the *-d* option on the host to analyze ISO
+ * files, instead of going through libguestfs.
+ * 
+ * For information on the primary volume descriptor fields,
+ * see
+ * <http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descr
+ * iptor>
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_isoinfo_device+[http://libguestfs.org/guestfs.3.html#guestfs_isoinfo_device]).
+ */
+static VALUE
+ruby_guestfs_isoinfo_device (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "isoinfo_device");
+
+  const char *device = StringValueCStr (devicev);
+
+  struct guestfs_isoinfo *r;
+
+  r = guestfs_isoinfo_device (g, device);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  VALUE rv = rb_hash_new ();
+  rb_hash_aset (rv, rb_str_new2 ("iso_system_id"), rb_str_new2 (r->iso_system_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_id"), rb_str_new2 (r->iso_volume_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_space_size"), UINT2NUM (r->iso_volume_space_size));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_set_size"), UINT2NUM (r->iso_volume_set_size));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_sequence_number"), UINT2NUM (r->iso_volume_sequence_number));
+  rb_hash_aset (rv, rb_str_new2 ("iso_logical_block_size"), UINT2NUM (r->iso_logical_block_size));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_set_id"), rb_str_new2 (r->iso_volume_set_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_publisher_id"), rb_str_new2 (r->iso_publisher_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_data_preparer_id"), rb_str_new2 (r->iso_data_preparer_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_application_id"), rb_str_new2 (r->iso_application_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_copyright_file_id"), rb_str_new2 (r->iso_copyright_file_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_abstract_file_id"), rb_str_new2 (r->iso_abstract_file_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_bibliographic_file_id"), rb_str_new2 (r->iso_bibliographic_file_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_creation_t"), LL2NUM (r->iso_volume_creation_t));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_modification_t"), LL2NUM (r->iso_volume_modification_t));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_expiration_t"), LL2NUM (r->iso_volume_expiration_t));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_effective_t"), LL2NUM (r->iso_volume_effective_t));
+  guestfs_free_isoinfo (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.isoinfo(isofile) -> hash
+ *
+ * get ISO information from primary volume descriptor of ISO file
+ *
+ * This is the same as "g.isoinfo_device" except that it
+ * works for an ISO file located inside some other mounted
+ * filesystem. Note that in the common case where you have
+ * added an ISO file as a libguestfs device, you would
+ * *not* call this. Instead you would call
+ * "g.isoinfo_device".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_isoinfo+[http://libguestfs.org/guestfs.3.html#guestfs_isoinfo]).
+ */
+static VALUE
+ruby_guestfs_isoinfo (VALUE gv, VALUE isofilev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "isoinfo");
+
+  const char *isofile = StringValueCStr (isofilev);
+
+  struct guestfs_isoinfo *r;
+
+  r = guestfs_isoinfo (g, isofile);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  VALUE rv = rb_hash_new ();
+  rb_hash_aset (rv, rb_str_new2 ("iso_system_id"), rb_str_new2 (r->iso_system_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_id"), rb_str_new2 (r->iso_volume_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_space_size"), UINT2NUM (r->iso_volume_space_size));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_set_size"), UINT2NUM (r->iso_volume_set_size));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_sequence_number"), UINT2NUM (r->iso_volume_sequence_number));
+  rb_hash_aset (rv, rb_str_new2 ("iso_logical_block_size"), UINT2NUM (r->iso_logical_block_size));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_set_id"), rb_str_new2 (r->iso_volume_set_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_publisher_id"), rb_str_new2 (r->iso_publisher_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_data_preparer_id"), rb_str_new2 (r->iso_data_preparer_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_application_id"), rb_str_new2 (r->iso_application_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_copyright_file_id"), rb_str_new2 (r->iso_copyright_file_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_abstract_file_id"), rb_str_new2 (r->iso_abstract_file_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_bibliographic_file_id"), rb_str_new2 (r->iso_bibliographic_file_id));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_creation_t"), LL2NUM (r->iso_volume_creation_t));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_modification_t"), LL2NUM (r->iso_volume_modification_t));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_expiration_t"), LL2NUM (r->iso_volume_expiration_t));
+  rb_hash_aset (rv, rb_str_new2 ("iso_volume_effective_t"), LL2NUM (r->iso_volume_effective_t));
+  guestfs_free_isoinfo (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.vgmeta(vgname) -> string
+ *
+ * get volume group metadata
+ *
+ * "vgname" is an LVM volume group. This command examines
+ * the volume group and returns its metadata.
+ * 
+ * Note that the metadata is an internal structure used by
+ * LVM, subject to change at any time, and is provided for
+ * information only.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_vgmeta+[http://libguestfs.org/guestfs.3.html#guestfs_vgmeta]).
+ */
+static VALUE
+ruby_guestfs_vgmeta (VALUE gv, VALUE vgnamev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "vgmeta");
+
+  const char *vgname = StringValueCStr (vgnamev);
+
+  char *r;
+  size_t size;
+
+  r = guestfs_vgmeta (g, vgname, &size);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  VALUE rv = rb_str_new (r, size);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.md_stat(md) -> list
+ *
+ * get underlying devices from an MD device
+ *
+ * This call returns a list of the underlying devices which
+ * make up the single software RAID array device "md".
+ * 
+ * To get a list of software RAID devices, call
+ * "g.list_md_devices".
+ * 
+ * Each structure returned corresponds to one device along
+ * with additional status information:
+ * 
+ * "mdstat_device"
+ * The name of the underlying device.
+ * 
+ * "mdstat_index"
+ * The index of this device within the array.
+ * 
+ * "mdstat_flags"
+ * Flags associated with this device. This is a string
+ * containing (in no specific order) zero or more of
+ * the following flags:
+ * 
+ * "W" write-mostly
+ * 
+ * "F" device is faulty
+ * 
+ * "S" device is a RAID spare
+ * 
+ * "R" replacement
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_md_stat+[http://libguestfs.org/guestfs.3.html#guestfs_md_stat]).
+ */
+static VALUE
+ruby_guestfs_md_stat (VALUE gv, VALUE mdv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "md_stat");
+
+  const char *md = StringValueCStr (mdv);
+
+  struct guestfs_mdstat_list *r;
+
+  r = guestfs_md_stat (g, md);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  VALUE rv = rb_ary_new2 (r->len);
+  size_t i;
+  for (i = 0; i < r->len; ++i) {
+    VALUE hv = rb_hash_new ();
+    rb_hash_aset (hv, rb_str_new2 ("mdstat_device"), rb_str_new2 (r->val[i].mdstat_device));
+    rb_hash_aset (hv, rb_str_new2 ("mdstat_index"), INT2NUM (r->val[i].mdstat_index));
+    rb_hash_aset (hv, rb_str_new2 ("mdstat_flags"), rb_str_new2 (r->val[i].mdstat_flags));
+    rb_ary_push (rv, hv);
+  }
+  guestfs_free_mdstat_list (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.mkfs_btrfs(devices, {optargs...}) -> nil
+ *
+ * create a btrfs filesystem
+ *
+ * Create a btrfs filesystem, allowing all configurables to
+ * be set. For more information on the optional arguments,
+ * see mkfs.btrfs(8).
+ * 
+ * Since btrfs filesystems can span multiple devices, this
+ * takes a non-empty list of devices.
+ * 
+ * To create general filesystems, use "g.mkfs_opts".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_mkfs_btrfs+[http://libguestfs.org/guestfs.3.html#guestfs_mkfs_btrfs]).
+ */
+static VALUE
+ruby_guestfs_mkfs_btrfs (VALUE gv, VALUE devicesv, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "mkfs_btrfs");
+
+  char **devices;
+  Check_Type (devicesv, T_ARRAY);
+  {
+    size_t i, len;
+    len = RARRAY_LEN (devicesv);
+    devices = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      VALUE v = rb_ary_entry (devicesv, i);
+      devices[i] = StringValueCStr (v);
+    }
+    devices[len] = NULL;
+  }
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_mkfs_btrfs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mkfs_btrfs_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("allocstart")));
+  if (v != Qnil) {
+    optargs_s.allocstart = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_ALLOCSTART_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("bytecount")));
+  if (v != Qnil) {
+    optargs_s.bytecount = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_BYTECOUNT_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("datatype")));
+  if (v != Qnil) {
+    optargs_s.datatype = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_DATATYPE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("leafsize")));
+  if (v != Qnil) {
+    optargs_s.leafsize = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_LEAFSIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("label")));
+  if (v != Qnil) {
+    optargs_s.label = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_LABEL_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("metadata")));
+  if (v != Qnil) {
+    optargs_s.metadata = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_METADATA_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("nodesize")));
+  if (v != Qnil) {
+    optargs_s.nodesize = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_NODESIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("sectorsize")));
+  if (v != Qnil) {
+    optargs_s.sectorsize = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_SECTORSIZE_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_mkfs_btrfs_argv (g, devices, optargs);
+  free (devices);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.get_e2attrs(file) -> string
+ *
+ * get ext2 file attributes of a file
+ *
+ * This returns the file attributes associated with "file".
+ * 
+ * The attributes are a set of bits associated with each
+ * inode which affect the behaviour of the file. The
+ * attributes are returned as a string of letters
+ * (described below). The string may be empty, indicating
+ * that no file attributes are set for this file.
+ * 
+ * These attributes are only present when the file is
+ * located on an ext2/3/4 filesystem. Using this call on
+ * other filesystem types will result in an error.
+ * 
+ * The characters (file attributes) in the returned string
+ * are currently:
+ * 
+ * 'A' When the file is accessed, its atime is not
+ * modified.
+ * 
+ * 'a' The file is append-only.
+ * 
+ * 'c' The file is compressed on-disk.
+ * 
+ * 'D' (Directories only.) Changes to this directory are
+ * written synchronously to disk.
+ * 
+ * 'd' The file is not a candidate for backup (see
+ * dump(8)).
+ * 
+ * 'E' The file has compression errors.
+ * 
+ * 'e' The file is using extents.
+ * 
+ * 'h' The file is storing its blocks in units of the
+ * filesystem blocksize instead of sectors.
+ * 
+ * 'I' (Directories only.) The directory is using hashed
+ * trees.
+ * 
+ * 'i' The file is immutable. It cannot be modified,
+ * deleted or renamed. No link can be created to this
+ * file.
+ * 
+ * 'j' The file is data-journaled.
+ * 
+ * 's' When the file is deleted, all its blocks will be
+ * zeroed.
+ * 
+ * 'S' Changes to this file are written synchronously to
+ * disk.
+ * 
+ * 'T' (Directories only.) This is a hint to the block
+ * allocator that subdirectories contained in this
+ * directory should be spread across blocks. If not
+ * present, the block allocator will try to group
+ * subdirectories together.
+ * 
+ * 't' For a file, this disables tail-merging. (Not used by
+ * upstream implementations of ext2.)
+ * 
+ * 'u' When the file is deleted, its blocks will be saved,
+ * allowing the file to be undeleted.
+ * 
+ * 'X' The raw contents of the compressed file may be
+ * accessed.
+ * 
+ * 'Z' The compressed file is dirty.
+ * 
+ * More file attributes may be added to this list later.
+ * Not all file attributes may be set for all kinds of
+ * files. For detailed information, consult the chattr(1)
+ * man page.
+ * 
+ * See also "g.set_e2attrs".
+ * 
+ * Don't confuse these attributes with extended attributes
+ * (see "g.getxattr").
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_e2attrs+[http://libguestfs.org/guestfs.3.html#guestfs_get_e2attrs]).
+ */
+static VALUE
+ruby_guestfs_get_e2attrs (VALUE gv, VALUE filev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_e2attrs");
+
+  const char *file = StringValueCStr (filev);
+
+  char *r;
+
+  r = guestfs_get_e2attrs (g, file);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.set_e2attrs(file, attrs, {optargs...}) -> nil
+ *
+ * set ext2 file attributes of a file
+ *
+ * This sets or clears the file attributes "attrs"
+ * associated with the inode "file".
+ * 
+ * "attrs" is a string of characters representing file
+ * attributes. See "g.get_e2attrs" for a list of possible
+ * attributes. Not all attributes can be changed.
+ * 
+ * If optional boolean "clear" is not present or false,
+ * then the "attrs" listed are set in the inode.
+ * 
+ * If "clear" is true, then the "attrs" listed are cleared
+ * in the inode.
+ * 
+ * In both cases, other attributes not present in the
+ * "attrs" string are left unchanged.
+ * 
+ * These attributes are only present when the file is
+ * located on an ext2/3/4 filesystem. Using this call on
+ * other filesystem types will result in an error.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_e2attrs+[http://libguestfs.org/guestfs.3.html#guestfs_set_e2attrs]).
+ */
+static VALUE
+ruby_guestfs_set_e2attrs (VALUE gv, VALUE filev, VALUE attrsv, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_e2attrs");
+
+  const char *file = StringValueCStr (filev);
+  const char *attrs = StringValueCStr (attrsv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_set_e2attrs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_set_e2attrs_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("clear")));
+  if (v != Qnil) {
+    optargs_s.clear = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_SET_E2ATTRS_CLEAR_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_set_e2attrs_argv (g, file, attrs, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.get_e2generation(file) -> fixnum
+ *
+ * get ext2 file generation of a file
+ *
+ * This returns the ext2 file generation of a file. The
+ * generation (which used to be called the "version") is a
+ * number associated with an inode. This is most commonly
+ * used by NFS servers.
+ * 
+ * The generation is only present when the file is located
+ * on an ext2/3/4 filesystem. Using this call on other
+ * filesystem types will result in an error.
+ * 
+ * See "g.set_e2generation".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_e2generation+[http://libguestfs.org/guestfs.3.html#guestfs_get_e2generation]).
+ */
+static VALUE
+ruby_guestfs_get_e2generation (VALUE gv, VALUE filev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_e2generation");
+
+  const char *file = StringValueCStr (filev);
+
+  int64_t r;
+
+  r = guestfs_get_e2generation (g, file);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.set_e2generation(file, generation) -> nil
+ *
+ * set ext2 file generation of a file
+ *
+ * This sets the ext2 file generation of a file.
+ * 
+ * See "g.get_e2generation".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_e2generation+[http://libguestfs.org/guestfs.3.html#guestfs_set_e2generation]).
+ */
+static VALUE
+ruby_guestfs_set_e2generation (VALUE gv, VALUE filev, VALUE generationv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_e2generation");
+
+  const char *file = StringValueCStr (filev);
+  long long generation = NUM2LL (generationv);
+
+  int r;
+
+  r = guestfs_set_e2generation (g, file, generation);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_subvolume_snapshot(source, dest) -> nil
+ *
+ * create a writable btrfs snapshot
+ *
+ * Create a writable snapshot of the btrfs subvolume
+ * "source". The "dest" argument is the destination
+ * directory and the name of the snapshot, in the form
+ * "/path/to/dest/name".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_subvolume_snapshot+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_snapshot]).
+ */
+static VALUE
+ruby_guestfs_btrfs_subvolume_snapshot (VALUE gv, VALUE sourcev, VALUE destv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_subvolume_snapshot");
+
+  const char *source = StringValueCStr (sourcev);
+  const char *dest = StringValueCStr (destv);
+
+  int r;
+
+  r = guestfs_btrfs_subvolume_snapshot (g, source, dest);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_subvolume_delete(subvolume) -> nil
+ *
+ * delete a btrfs snapshot
+ *
+ * Delete the named btrfs subvolume.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_subvolume_delete+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_delete]).
+ */
+static VALUE
+ruby_guestfs_btrfs_subvolume_delete (VALUE gv, VALUE subvolumev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_subvolume_delete");
+
+  const char *subvolume = StringValueCStr (subvolumev);
+
+  int r;
+
+  r = guestfs_btrfs_subvolume_delete (g, subvolume);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_subvolume_create(dest) -> nil
+ *
+ * create a btrfs snapshot
+ *
+ * Create a btrfs subvolume. The "dest" argument is the
+ * destination directory and the name of the snapshot, in
+ * the form "/path/to/dest/name".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_subvolume_create+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_create]).
+ */
+static VALUE
+ruby_guestfs_btrfs_subvolume_create (VALUE gv, VALUE destv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_subvolume_create");
+
+  const char *dest = StringValueCStr (destv);
+
+  int r;
+
+  r = guestfs_btrfs_subvolume_create (g, dest);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_subvolume_list(fs) -> list
+ *
+ * list btrfs snapshots and subvolumes
+ *
+ * List the btrfs snapshots and subvolumes of the btrfs
+ * filesystem which is mounted at "fs".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_subvolume_list+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_list]).
+ */
+static VALUE
+ruby_guestfs_btrfs_subvolume_list (VALUE gv, VALUE fsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_subvolume_list");
+
+  const char *fs = StringValueCStr (fsv);
+
+  struct guestfs_btrfssubvolume_list *r;
+
+  r = guestfs_btrfs_subvolume_list (g, fs);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  VALUE rv = rb_ary_new2 (r->len);
+  size_t i;
+  for (i = 0; i < r->len; ++i) {
+    VALUE hv = rb_hash_new ();
+    rb_hash_aset (hv, rb_str_new2 ("btrfssubvolume_id"), ULL2NUM (r->val[i].btrfssubvolume_id));
+    rb_hash_aset (hv, rb_str_new2 ("btrfssubvolume_top_level_id"), ULL2NUM (r->val[i].btrfssubvolume_top_level_id));
+    rb_hash_aset (hv, rb_str_new2 ("btrfssubvolume_path"), rb_str_new2 (r->val[i].btrfssubvolume_path));
+    rb_ary_push (rv, hv);
+  }
+  guestfs_free_btrfssubvolume_list (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_subvolume_set_default(id, fs) -> nil
+ *
+ * set default btrfs subvolume
+ *
+ * Set the subvolume of the btrfs filesystem "fs" which
+ * will be mounted by default. See "g.btrfs_subvolume_list"
+ * to get a list of subvolumes.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_subvolume_set_default+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_subvolume_set_default]).
+ */
+static VALUE
+ruby_guestfs_btrfs_subvolume_set_default (VALUE gv, VALUE idv, VALUE fsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_subvolume_set_default");
+
+  long long id = NUM2LL (idv);
+  const char *fs = StringValueCStr (fsv);
+
+  int r;
+
+  r = guestfs_btrfs_subvolume_set_default (g, id, fs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_filesystem_sync(fs) -> nil
+ *
+ * sync a btrfs filesystem
+ *
+ * Force sync on the btrfs filesystem mounted at "fs".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_filesystem_sync+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_sync]).
+ */
+static VALUE
+ruby_guestfs_btrfs_filesystem_sync (VALUE gv, VALUE fsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_filesystem_sync");
+
+  const char *fs = StringValueCStr (fsv);
+
+  int r;
+
+  r = guestfs_btrfs_filesystem_sync (g, fs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_filesystem_balance(fs) -> nil
+ *
+ * balance a btrfs filesystem
+ *
+ * Balance the chunks in the btrfs filesystem mounted at
+ * "fs" across the underlying devices.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_filesystem_balance+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_balance]).
+ */
+static VALUE
+ruby_guestfs_btrfs_filesystem_balance (VALUE gv, VALUE fsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_filesystem_balance");
+
+  const char *fs = StringValueCStr (fsv);
+
+  int r;
+
+  r = guestfs_btrfs_filesystem_balance (g, fs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_device_add(devices, fs) -> nil
+ *
+ * add devices to a btrfs filesystem
+ *
+ * Add the list of device(s) in "devices" to the btrfs
+ * filesystem mounted at "fs". If "devices" is an empty
+ * list, this does nothing.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_device_add+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_device_add]).
+ */
+static VALUE
+ruby_guestfs_btrfs_device_add (VALUE gv, VALUE devicesv, VALUE fsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_device_add");
+
+  char **devices;
+  Check_Type (devicesv, T_ARRAY);
+  {
+    size_t i, len;
+    len = RARRAY_LEN (devicesv);
+    devices = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      VALUE v = rb_ary_entry (devicesv, i);
+      devices[i] = StringValueCStr (v);
+    }
+    devices[len] = NULL;
+  }
+  const char *fs = StringValueCStr (fsv);
+
+  int r;
+
+  r = guestfs_btrfs_device_add (g, devices, fs);
+  free (devices);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_device_delete(devices, fs) -> nil
+ *
+ * remove devices from a btrfs filesystem
+ *
+ * Remove the "devices" from the btrfs filesystem mounted
+ * at "fs". If "devices" is an empty list, this does
+ * nothing.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_device_delete+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_device_delete]).
+ */
+static VALUE
+ruby_guestfs_btrfs_device_delete (VALUE gv, VALUE devicesv, VALUE fsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_device_delete");
+
+  char **devices;
+  Check_Type (devicesv, T_ARRAY);
+  {
+    size_t i, len;
+    len = RARRAY_LEN (devicesv);
+    devices = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      VALUE v = rb_ary_entry (devicesv, i);
+      devices[i] = StringValueCStr (v);
+    }
+    devices[len] = NULL;
+  }
+  const char *fs = StringValueCStr (fsv);
+
+  int r;
+
+  r = guestfs_btrfs_device_delete (g, devices, fs);
+  free (devices);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_set_seeding(device, seeding) -> nil
+ *
+ * enable or disable the seeding feature of device
+ *
+ * Enable or disable the seeding feature of a device that
+ * contains a btrfs filesystem.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_set_seeding+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_set_seeding]).
+ */
+static VALUE
+ruby_guestfs_btrfs_set_seeding (VALUE gv, VALUE devicev, VALUE seedingv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_set_seeding");
+
+  const char *device = StringValueCStr (devicev);
+  int seeding = RTEST (seedingv);
+
+  int r;
+
+  r = guestfs_btrfs_set_seeding (g, device, seeding);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.btrfs_fsck(device, {optargs...}) -> nil
+ *
+ * check a btrfs filesystem
+ *
+ * Used to check a btrfs filesystem, "device" is the device
+ * file where the filesystem is stored.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_btrfs_fsck+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_fsck]).
+ */
+static VALUE
+ruby_guestfs_btrfs_fsck (VALUE gv, VALUE devicev, VALUE optargsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_fsck");
+
+  const char *device = StringValueCStr (devicev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_btrfs_fsck_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_fsck_argv *optargs = &optargs_s;
+  VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("superblock")));
+  if (v != Qnil) {
+    optargs_s.superblock = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_BTRFS_FSCK_SUPERBLOCK_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("repair")));
+  if (v != Qnil) {
+    optargs_s.repair = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_BTRFS_FSCK_REPAIR_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_btrfs_fsck_argv (g, device, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
 /* Initialize the module. */
 void Init__guestfs ()
 {
@@ -17536,6 +19069,12 @@ void Init__guestfs ()
         ruby_guestfs_set_smp, 1);
   rb_define_method (c_guestfs, "get_smp",
         ruby_guestfs_get_smp, 0);
+  rb_define_method (c_guestfs, "mount_local",
+        ruby_guestfs_mount_local, 2);
+  rb_define_method (c_guestfs, "mount_local_run",
+        ruby_guestfs_mount_local_run, 0);
+  rb_define_method (c_guestfs, "umount_local",
+        ruby_guestfs_umount_local, 1);
   rb_define_method (c_guestfs, "mount",
         ruby_guestfs_mount, 2);
   rb_define_method (c_guestfs, "sync",
@@ -18144,4 +19683,60 @@ void Init__guestfs ()
         ruby_guestfs_blkid, 1);
   rb_define_method (c_guestfs, "e2fsck",
         ruby_guestfs_e2fsck, 2);
+  rb_define_method (c_guestfs, "llz",
+        ruby_guestfs_llz, 1);
+  rb_define_method (c_guestfs, "wipefs",
+        ruby_guestfs_wipefs, 1);
+  rb_define_method (c_guestfs, "ntfsfix",
+        ruby_guestfs_ntfsfix, 2);
+  rb_define_method (c_guestfs, "ntfsclone_out",
+        ruby_guestfs_ntfsclone_out, 3);
+  rb_define_method (c_guestfs, "ntfsclone_in",
+        ruby_guestfs_ntfsclone_in, 2);
+  rb_define_method (c_guestfs, "set_label",
+        ruby_guestfs_set_label, 2);
+  rb_define_method (c_guestfs, "zero_free_space",
+        ruby_guestfs_zero_free_space, 1);
+  rb_define_method (c_guestfs, "lvcreate_free",
+        ruby_guestfs_lvcreate_free, 3);
+  rb_define_method (c_guestfs, "isoinfo_device",
+        ruby_guestfs_isoinfo_device, 1);
+  rb_define_method (c_guestfs, "isoinfo",
+        ruby_guestfs_isoinfo, 1);
+  rb_define_method (c_guestfs, "vgmeta",
+        ruby_guestfs_vgmeta, 1);
+  rb_define_method (c_guestfs, "md_stat",
+        ruby_guestfs_md_stat, 1);
+  rb_define_method (c_guestfs, "mkfs_btrfs",
+        ruby_guestfs_mkfs_btrfs, 2);
+  rb_define_method (c_guestfs, "get_e2attrs",
+        ruby_guestfs_get_e2attrs, 1);
+  rb_define_method (c_guestfs, "set_e2attrs",
+        ruby_guestfs_set_e2attrs, 3);
+  rb_define_method (c_guestfs, "get_e2generation",
+        ruby_guestfs_get_e2generation, 1);
+  rb_define_method (c_guestfs, "set_e2generation",
+        ruby_guestfs_set_e2generation, 2);
+  rb_define_method (c_guestfs, "btrfs_subvolume_snapshot",
+        ruby_guestfs_btrfs_subvolume_snapshot, 2);
+  rb_define_method (c_guestfs, "btrfs_subvolume_delete",
+        ruby_guestfs_btrfs_subvolume_delete, 1);
+  rb_define_method (c_guestfs, "btrfs_subvolume_create",
+        ruby_guestfs_btrfs_subvolume_create, 1);
+  rb_define_method (c_guestfs, "btrfs_subvolume_list",
+        ruby_guestfs_btrfs_subvolume_list, 1);
+  rb_define_method (c_guestfs, "btrfs_subvolume_set_default",
+        ruby_guestfs_btrfs_subvolume_set_default, 2);
+  rb_define_method (c_guestfs, "btrfs_filesystem_sync",
+        ruby_guestfs_btrfs_filesystem_sync, 1);
+  rb_define_method (c_guestfs, "btrfs_filesystem_balance",
+        ruby_guestfs_btrfs_filesystem_balance, 1);
+  rb_define_method (c_guestfs, "btrfs_device_add",
+        ruby_guestfs_btrfs_device_add, 2);
+  rb_define_method (c_guestfs, "btrfs_device_delete",
+        ruby_guestfs_btrfs_device_delete, 2);
+  rb_define_method (c_guestfs, "btrfs_set_seeding",
+        ruby_guestfs_btrfs_set_seeding, 2);
+  rb_define_method (c_guestfs, "btrfs_fsck",
+        ruby_guestfs_btrfs_fsck, 2);
 }

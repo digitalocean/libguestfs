@@ -4,7 +4,7 @@
 
 guestmount - Mount a guest filesystem on the host using FUSE and libguestfs
 
-=head1 SYNOPSIS
+=head1 書式
 
  guestmount [--options] -a disk.img -m device [--ro] mountpoint
 
@@ -12,12 +12,12 @@ guestmount - Mount a guest filesystem on the host using FUSE and libguestfs
 
  guestmount [--options] -d Guest -i [--ro] mountpoint
 
-=head1 WARNING
+=head1 警告
 
 You must I<not> use C<guestmount> in read-write mode on live virtual
 machines.  If you do this, you risk disk corruption in the VM.
 
-=head1 DESCRIPTION
+=head1 説明
 
 The guestmount program can be used to mount virtual machine filesystems and
 other disk images on the host.  It uses libguestfs for access to the guest
@@ -35,7 +35,7 @@ by you, and the filesystem will not be visible to any other users unless you
 make certain global configuration changes to C</etc/fuse.conf>.  To unmount
 the filesystem, use the C<fusermount -u> command.
 
-=head1 EXAMPLES
+=head1 例
 
 For a typical Windows guest which has its main filesystem on the first
 partition:
@@ -69,7 +69,7 @@ If you want to debug the program, we recommend:
 
  guestmount [...] --trace --verbose /mnt
 
-=head1 NOTES
+=head1 注記
 
 =head2 Other users cannot see the filesystem by default
 
@@ -88,7 +88,7 @@ Debian and derivatives.
 On other distros, no special group is required.  It is not necessary on
 Fedora or Red Hat Enterprise Linux.
 
-=head1 OPTIONS
+=head1 オプション
 
 =over 4
 
@@ -96,10 +96,9 @@ Fedora or Red Hat Enterprise Linux.
 
 =item B<--add image>
 
-Add a block device or virtual machine image.
+ブロックデバイスまたは仮想マシンイメージを追加します。
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、I<--format=..> オプションを使用します。
 
 =item B<-c URI>
 
@@ -141,10 +140,9 @@ flag to see what you are typing.
 
 =item B<--format>
 
-The default for the I<-a> option is to auto-detect the format of the disk
-image.  Using this forces the disk format for I<-a> options which follow on
-the command line.  Using I<--format> with no argument switches back to
-auto-detection for subsequent I<-a> options.
+I<-a> オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、I<-a>
+オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで I<--format> を使用することにより、後続の I<-a>
+オプションに対して自動検知に戻せます。
 
 If you have untrusted raw-format guest disk images, you should use this
 option to specify the disk format.  This avoids a possible security problem
@@ -157,7 +155,7 @@ Display help on special FUSE options (see I<-o> below).
 
 =item B<--help>
 
-Display brief help and exit.
+簡単なヘルプを表示して終了します。
 
 =item B<-i>
 
@@ -208,7 +206,7 @@ disk.  See the discussion of autosync in the L<guestfs(3)> manpage.
 
 =item B<--option option>
 
-Pass extra options to FUSE.
+追加オプションを FUSE に渡します。
 
 To get a list of all the extra options supported by FUSE, use the command
 below.  Note that only the FUSE I<-o> options can be passed, and only some
@@ -253,23 +251,23 @@ the guest is running and this option is I<not> supplied, then there is a
 strong risk of disk corruption in the guest.  We try to prevent this from
 happening, but it is not always possible.
 
-See also L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+L<guestfish(1)/OPENING DISKS FOR READ AND WRITE> 参照。
 
 =item B<--selinux>
 
-Enable SELinux support for the guest.
+仮想マシンの SELinux サポートを有効にします。
 
 =item B<-v>
 
 =item B<--verbose>
 
-Enable verbose messages from underlying libguestfs.
+libguestfs からの冗長なメッセージを有効にします。
 
 =item B<-V>
 
 =item B<--version>
 
-Display the program version and exit.
+プログラムのバージョンを表示して、終了します。
 
 =item B<-w>
 
@@ -278,7 +276,7 @@ Display the program version and exit.
 This changes the I<-a>, I<-d> and I<-m> options so that disks are added and
 mounts are done read-write.
 
-See L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+L<guestfish(1)/OPENING DISKS FOR READ AND WRITE> 参照。
 
 =item B<-x>
 
@@ -290,7 +288,7 @@ This also stops the daemon from forking into the background.
 
 =back
 
-=head1 FILES
+=head1 ファイル
 
 =over 4
 
@@ -301,21 +299,21 @@ This also stops the daemon from forking into the background.
 This configuration file controls the default read-only or read-write mode
 (I<--ro> or I<--rw>).
 
-See L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+L<guestfish(1)/OPENING DISKS FOR READ AND WRITE> 参照。
 
 =back
 
-=head1 EXIT STATUS
+=head1 終了ステータス
 
-This program returns 0 if successful, or non-zero if there was an error.
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfish(1)>, L<virt-inspector(1)>, L<virt-cat(1)>, L<virt-edit(1)>,
 L<virt-tar(1)>, L<guestfs(3)>, L<http://libguestfs.org/>,
 L<http://fuse.sf.net/>.
 
-=head1 AUTHORS
+=head1 著者
 
 Richard W.M. Jones (C<rjones at redhat dot com>)
 

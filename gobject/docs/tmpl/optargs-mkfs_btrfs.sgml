@@ -1,0 +1,86 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsMkfsBtrfs
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsMkfsBtrfs ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsMkfsBtrfs:allocstart ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMkfsBtrfs:bytecount ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMkfsBtrfs:datatype ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMkfsBtrfs:label ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMkfsBtrfs:leafsize ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMkfsBtrfs:metadata ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMkfsBtrfs:nodesize ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMkfsBtrfs:sectorsize ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsMkfsBtrfsClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_mkfs_btrfs_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

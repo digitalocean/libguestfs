@@ -2,13 +2,13 @@
 
 =head1 名前
 
-virt-sparsify - Make a virtual machine disk sparse
+virt-sparsify - 仮想マシンのディスクをスパースにします
 
-=head1 SYNOPSIS
+=head1 書式
 
  virt-sparsify [--options] indisk outdisk
 
-=head1 DESCRIPTION
+=head1 説明
 
 Virt-sparsify is a tool which can make a virtual machine disk (or any disk
 image) sparse a.k.a. thin-provisioned.  This means that free space within
@@ -17,8 +17,8 @@ the disk image can be converted back to free space on the host.
 Virt-sparsify can locate and sparsify free space in most filesystems
 (eg. ext2/3/4, btrfs, NTFS, etc.), and also in LVM physical volumes.
 
-Virt-sparsify can also convert between some disk formats, for example
-converting a raw disk image to a thin-provisioned qcow2 image.
+Virt-sparsify はさまざまなディスクフォーマットを変換することができます。例えば、raw ディスクイメージをシンプロビジョニングされた
+qcow2 イメージに変換することができます。
 
 Virt-sparsify can operate on any disk image, not just ones from virtual
 machines.  If a virtual machine has more than one attached disk, you must
@@ -50,8 +50,8 @@ Virt-sparsify cannot resize disk images.  To do that, use L<virt-resize(1)>.
 
 =item *
 
-Virt-sparsify cannot handle encrypted disks.  Libguestfs supports encrypted
-disks, but encrypted disks themselves cannot be sparsified.
+virt-sparsify は暗号化されたディスクを処理できません。 libguestfs
+は暗号化されたディスクをサポートしますが、暗号化されたディスク自体はスパース化できません。
 
 =item *
 
@@ -59,20 +59,14 @@ Virt-sparsify cannot yet sparsify the space between partitions.  Note that
 this space is often used for critical items like bootloaders so it's not
 really unused.
 
-=item *
-
-Virt-sparsify does not yet know how to sparsify swapspace.  It is not safe
-to do this unless we can be sure there is no hibernation data, so at the
-moment swap partitions are ignored.
-
 =back
 
 You may also want to read the manual pages for the associated tools
 L<virt-filesystems(1)> and L<virt-df(1)> before starting.
 
-=head1 EXAMPLES
+=head1 例
 
-Typical usage is:
+一般的な使用法は次のとおりです:
 
  virt-sparsify indisk outdisk
 
@@ -81,7 +75,7 @@ is created, or overwritten if it already exists.  The format of the input
 disk is detected (eg. qcow2) and the same format is used for the output
 disk.
 
-To convert between formats, use the I<--convert> option:
+形式を変換するには I<--convert> オプションを使用します:
 
  virt-sparsify disk.raw --convert qcow2 disk.qcow2
 
@@ -91,20 +85,19 @@ free space on) certain filesystems by doing:
 
  virt-sparsify --ignore /dev/sda1 indisk outdisk
 
-See L<virt-filesystems(1)> to get a list of filesystems within a disk image.
+ディスクイメージにあるファイルシステムの一覧を取得するには L<virt-filesystems(1)> を参照してください。
 
-=head1 OPTIONS
+=head1 オプション
 
 =over 4
 
 =item B<--help>
 
-Display help.
+ヘルプを表示します。
 
 =item B<--compress>
 
-Compress the output file.  This I<only> works if the output format is
-C<qcow2>.
+出力ファイルを圧縮します。これは 出力形式が C<qcow2> の場合 I<のみ> 機能します。
 
 =item B<--convert> raw
 
@@ -115,20 +108,20 @@ C<qcow2>.
 Use C<output-format> as the format for the destination image.  If this is
 not specified, then the input format is used.
 
-Supported and known-working output formats are: C<raw>, C<qcow2>, C<vdi>.
+サポートされる既知の動作済み出力形式は次のとおりです: C<raw>, C<qcow2>, C<vdi>。
 
-You can also use any format supported by the L<qemu-img(1)> program,
-eg. C<vmdk>, but support for other formats is reliant on qemu.
+L<qemu-img(1)> プログラムによりサポートされるすべての形式を使用できます。たとえば、C<vmdk> ですが、他の形式のサポートは QEMU
+に依存します。
 
 Specifying the I<--convert> option is usually a good idea, because then
 virt-sparsify doesn't need to try to guess the input format.
 
-For fine-tuning the output format, see: I<--compress>, I<-o>.
+出力形式を詳細に調整します。関連項目: I<--compress>, I<-o>.
 
 =item B<--debug-gc>
 
-Debug garbage collection and memory allocation.  This is only useful when
-debugging memory problems in virt-sparsify or the OCaml libguestfs bindings.
+ガベージコレクションおよびメモリー割り当てをデバッグします。これは virt-sparsify におけるメモリー問題または OCaml
+libguestfs バインドをデバッグするときのみ有用です。
 
 =item B<--format> raw
 
@@ -150,12 +143,11 @@ zeroed, but existing blocks of zeroes will still be sparsified.
 In the second form, this ignores the named volume group.  Use the volume
 group name without the C</dev/> prefix, eg. I<--ignore vg_foo>
 
-You can give this option multiple times.
+このオプションは複数回指定できます。
 
 =item B<--machine-readable>
 
-This option is used to make the output more machine friendly when being
-parsed by other programs.  See L</MACHINE READABLE OUTPUT> below.
+このオプションは、他のプログラムにより解析されるときに、よりマシンに易しい出力を作成するために使用されます。以下の L</マシン可読な出力> 参照。
 
 =item B<-o> option[,option,...]
 
@@ -179,27 +171,33 @@ This disables progress bars and other unnecessary output.
 
 =item B<--verbose>
 
-Enable verbose messages for debugging.
+デバッグ用の冗長なメッセージを有効にします。
 
 =item B<-V>
 
 =item B<--version>
 
-Display version number and exit.
+バージョン番号を表示して終了します。
 
 =item B<-x>
 
-Enable tracing of libguestfs API calls.
+libguestfs API 呼び出しのトレースを有効にします。
+
+=item B<--zero> パーティション
+
+=item B<--zero> 論理ボリューム
+
+仮想マシンにある名前付きパーティションまたは論理ボリュームの内容をゼロ上書きします。デバイスにあるすべてのデータは失われます。しかし、スパース化は素晴らしいことです！このオプションを複数回指定できます。
 
 =back
 
-=head1 MACHINE READABLE OUTPUT
+=head1 マシン可読な出力
 
 The I<--machine-readable> option can be used to make the output more machine
 friendly, which is useful when calling virt-sparsify from other programs,
 GUIs etc.
 
-There are two ways to use this option.
+このオプションを使用するには 2 通りの方法があります。
 
 Firstly use the option on its own to query the capabilities of the
 virt-sparsify binary.  Typical output looks like this:
@@ -243,11 +241,11 @@ fatal error.
 All versions of virt-sparsify have supported the I<--machine-readable>
 option.
 
-=head1 EXIT STATUS
+=head1 終了ステータス
 
-This program returns 0 if successful, or non-zero if there was an error.
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
 
-=head1 ENVIRONMENT VARIABLES
+=head1 環境変数
 
 =over 4
 
@@ -260,7 +258,7 @@ You should ensure there is enough free space in the worst case for a full
 copy of the source disk (I<virtual> size), or else set C<$TMPDIR> to point
 to another directory that has enough space.
 
-This defaults to C</tmp>.
+この初期値は C</tmp> です。
 
 Note that if C<$TMPDIR> is a tmpfs (eg. if C</tmp> is on tmpfs, or if you
 use C<TMPDIR=/dev/shm>), tmpfs defaults to a maximum size of I<half> of
@@ -272,15 +270,15 @@ mountpoint, eg:
 
 =back
 
-For other environment variables, see L<guestfs(3)/ENVIRONMENT VARIABLES>.
+他の環境変数は L<guestfs(3)/環境変数> を参照してください。
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<virt-filesystems(1)>, L<virt-df(1)>, L<virt-resize(1)>, L<virt-rescue(1)>,
 L<guestfs(3)>, L<guestfish(1)>, L<truncate(1)>, L<fallocate(1)>,
 L<qemu-img(1)>, L<http://libguestfs.org/>.
 
-=head1 AUTHOR
+=head1 著者
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 

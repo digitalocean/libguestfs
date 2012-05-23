@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009 Red Hat Inc.
+ * Copyright (C) 2009-2012 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,6 @@
 #include "daemon.h"
 #include "c-ctype.h"
 #include "actions.h"
-
-/* Confirmed this is true up to ext4 from the Linux sources. */
-#define EXT2_LABEL_MAX 16
 
 #define MAX_ARGS 64
 
@@ -66,8 +63,7 @@ do_tune2fs_l (const char *device)
   int r;
   char *out, *err;
   char *p, *pend, *colon;
-  char **ret = NULL;
-  int size = 0, alloc = 0;
+  DECLARE_STRINGSBUF (ret);
 
   char prog[] = "tune2fs";
   if (e2prog (prog) == -1)
@@ -111,30 +107,30 @@ do_tune2fs_l (const char *device)
 
       do { colon++; } while (*colon && c_isspace (*colon));
 
-      if (add_string (&ret, &size, &alloc, p) == -1) {
+      if (add_string (&ret, p) == -1) {
         free (out);
         return NULL;
       }
       if (STREQ (colon, "<none>") ||
           STREQ (colon, "<not available>") ||
           STREQ (colon, "(none)")) {
-        if (add_string (&ret, &size, &alloc, "") == -1) {
+        if (add_string (&ret, "") == -1) {
           free (out);
           return NULL;
         }
       } else {
-        if (add_string (&ret, &size, &alloc, colon) == -1) {
+        if (add_string (&ret, colon) == -1) {
           free (out);
           return NULL;
         }
       }
     }
     else {
-      if (add_string (&ret, &size, &alloc, p) == -1) {
+      if (add_string (&ret, p) == -1) {
         free (out);
         return NULL;
       }
-      if (add_string (&ret, &size, &alloc, "") == -1) {
+      if (add_string (&ret, "") == -1) {
         free (out);
         return NULL;
       }
@@ -145,37 +141,16 @@ do_tune2fs_l (const char *device)
 
   free (out);
 
-  if (add_string (&ret, &size, &alloc, NULL) == -1)
+  if (end_stringsbuf (&ret) == -1)
     return NULL;
 
-  return ret;
+  return ret.argv;
 }
 
 int
 do_set_e2label (const char *device, const char *label)
 {
-  int r;
-  char *err;
-
-  char prog[] = "e2label";
-  if (e2prog (prog) == -1)
-    return -1;
-
-  if (strlen (label) > EXT2_LABEL_MAX) {
-    reply_with_error ("%s: ext2 labels are limited to %d bytes",
-                      label, EXT2_LABEL_MAX);
-    return -1;
-  }
-
-  r = command (NULL, &err, prog, device, label, NULL);
-  if (r == -1) {
-    reply_with_error ("%s", err);
-    free (err);
-    return -1;
-  }
-
-  free (err);
-  return 0;
+  return do_set_label (device, label);
 }
 
 char *
@@ -211,6 +186,34 @@ do_get_e2uuid (const char *device)
   return do_vfs_uuid (device);
 }
 
+/* If the filesystem is not mounted, run e2fsck -f on it unconditionally. */
+static int
+if_not_mounted_run_e2fsck (const char *device)
+{
+  char *err;
+  int r, mounted;
+  char prog[] = "e2fsck";
+
+  if (e2prog (prog) == -1)
+    return -1;
+
+  mounted = is_device_mounted (device);
+  if (mounted == -1)
+    return -1;
+
+  if (!mounted) {
+    r = command (NULL, &err, prog, "-fy", device, NULL);
+    if (r == -1) {
+      reply_with_error ("%s", err);
+      free (err);
+      return -1;
+    }
+    free (err);
+  }
+
+  return 0;
+}
+
 int
 do_resize2fs (const char *device)
 {
@@ -219,6 +222,9 @@ do_resize2fs (const char *device)
 
   char prog[] = "resize2fs";
   if (e2prog (prog) == -1)
+    return -1;
+
+  if (if_not_mounted_run_e2fsck (device) == -1)
     return -1;
 
   r = command (NULL, &err, prog, device, NULL);
@@ -253,6 +259,9 @@ do_resize2fs_size (const char *device, int64_t size)
   }
   size /= 1024;
 
+  if (if_not_mounted_run_e2fsck (device) == -1)
+    return -1;
+
   char buf[32];
   snprintf (buf, sizeof buf, "%" PRIi64 "K", size);
 
@@ -277,12 +286,12 @@ do_resize2fs_M (const char *device)
   if (e2prog (prog) == -1)
     return -1;
 
+  if (if_not_mounted_run_e2fsck (device) == -1)
+    return -1;
+
   r = command (NULL, &err, prog, "-M", device, NULL);
   if (r == -1) {
-    if (strstr (err, "e2fsck -f"))
-      reply_with_error ("you need to run e2fsck with the correct and/or forceall options first");
-    else
-      reply_with_error ("%s", err);
+    reply_with_error ("%s", err);
     free (err);
     return -1;
   }
@@ -454,7 +463,7 @@ do_mke2fs_J (const char *fstype, int blocksize, const char *device,
   char blocksize_s[32];
   snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
 
-  int len = strlen (journal);
+  size_t len = strlen (journal);
   char jdev[len+32];
   snprintf (jdev, len+32, "device=%s", journal);
 
@@ -491,7 +500,7 @@ do_mke2fs_JL (const char *fstype, int blocksize, const char *device,
   char blocksize_s[32];
   snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
 
-  int len = strlen (label);
+  size_t len = strlen (label);
   char jdev[len+32];
   snprintf (jdev, len+32, "device=LABEL=%s", label);
 
@@ -522,7 +531,7 @@ do_mke2fs_JU (const char *fstype, int blocksize, const char *device,
   char blocksize_s[32];
   snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
 
-  int len = strlen (uuid);
+  size_t len = strlen (uuid);
   char jdev[len+32];
   snprintf (jdev, len+32, "device=UUID=%s", uuid);
 
@@ -683,5 +692,197 @@ do_tune2fs (const char *device, /* only required parameter */
   }
 
   free (err);
+  return 0;
+}
+
+static int
+compare_chars (const void *vc1, const void *vc2)
+{
+  char c1 = * (char *) vc1;
+  char c2 = * (char *) vc2;
+  return c1 - c2;
+}
+
+char *
+do_get_e2attrs (const char *filename)
+{
+  int r;
+  char *buf;
+  char *out, *err;
+  size_t i, j;
+
+  buf = sysroot_path (filename);
+  if (!buf) {
+    reply_with_perror ("malloc");
+    return NULL;
+  }
+
+  r = command (&out, &err, "lsattr", "-d", "--", buf, NULL);
+  free (buf);
+  if (r == -1) {
+    reply_with_error ("%s: %s: %s", "lsattr", filename, err);
+    free (err);
+    free (out);
+    return NULL;
+  }
+  free (err);
+
+  /* Output looks like:
+   * -------------e- filename
+   * Remove the dashes and return everything up to the space.
+   */
+  for (i = j = 0; out[j] != ' '; j++) {
+    if (out[j] != '-')
+      out[i++] = out[j];
+  }
+
+  out[i] = '\0';
+
+  /* Sort the output, mainly to make testing simpler. */
+  qsort (out, i, sizeof (char), compare_chars);
+
+  return out;
+}
+
+/* Takes optional arguments, consult optargs_bitmask. */
+int
+do_set_e2attrs (const char *filename, const char *attrs, int clear)
+{
+  int r;
+  char *buf;
+  char *err;
+  size_t i, j;
+  int lowers[26], uppers[26];
+  char attr_arg[26*2+1+1]; /* '+'/'-' + attrs + trailing '\0' */
+
+  if (!(optargs_bitmask & GUESTFS_SET_E2ATTRS_CLEAR_BITMASK))
+    attr_arg[0] = '+';
+  else if (!clear)
+    attr_arg[0] = '+';
+  else
+    attr_arg[0] = '-';
+  j = 1;
+
+  /* You can't write "chattr - file", so we have to just return if
+   * the string is empty.
+   */
+  if (STREQ (attrs, ""))
+    return 0;
+
+  /* Valid attrs are all lower or upper case ASCII letters.  Check
+   * this and that there are no duplicates.
+   */
+  memset (lowers, 0, sizeof lowers);
+  memset (uppers, 0, sizeof uppers);
+  for (; *attrs; attrs++) {
+    /* These are reserved by the chattr program for command line flags. */
+    if (*attrs == 'R' || *attrs == 'V' || *attrs == 'f' || *attrs == 'v') {
+      reply_with_error ("bad file attribute '%c'", *attrs);
+      return -1;
+    }
+    else if (*attrs >= 'a' && *attrs <= 'z') {
+      i = *attrs - 'a';
+      if (lowers[i] > 0)
+        goto error_duplicate;
+      lowers[i]++;
+      attr_arg[j++] = *attrs;
+    }
+    else if (*attrs >= 'A' && *attrs <= 'Z') {
+      i = *attrs - 'A';
+      if (uppers[i] > 0) {
+      error_duplicate:
+        reply_with_error ("duplicate file attribute '%c'", *attrs);
+        return -1;
+      }
+      uppers[i]++;
+      attr_arg[j++] = *attrs;
+    }
+    else {
+      reply_with_error ("unknown file attribute '%c'", *attrs);
+      return -1;
+    }
+  }
+
+  attr_arg[j] = '\0';
+
+  buf = sysroot_path (filename);
+  if (!buf) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  r = command (NULL, &err, "chattr", attr_arg, "--", buf, NULL);
+  free (buf);
+  if (r == -1) {
+    reply_with_error ("%s: %s: %s", "chattr", filename, err);
+    free (err);
+    return -1;
+  }
+  free (err);
+
+  return 0;
+}
+
+int64_t
+do_get_e2generation (const char *filename)
+{
+  int r;
+  char *buf;
+  char *out, *err;
+  int64_t ret;
+
+  buf = sysroot_path (filename);
+  if (!buf) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  r = command (&out, &err, "lsattr", "-dv", "--", buf, NULL);
+  free (buf);
+  if (r == -1) {
+    reply_with_error ("%s: %s: %s", "lsattr", filename, err);
+    free (err);
+    free (out);
+    return -1;
+  }
+  free (err);
+
+  if (sscanf (out, "%" SCNu64, &ret) != 1) {
+    reply_with_error ("cannot parse output from '%s' command: %s",
+                      "lsattr", out);
+    free (out);
+    return -1;
+  }
+  free (out);
+
+  return ret;
+}
+
+int
+do_set_e2generation (const char *filename, int64_t generation)
+{
+  int r;
+  char *buf;
+  char *err;
+  char generation_str[64];
+
+  buf = sysroot_path (filename);
+  if (!buf) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  snprintf (generation_str, sizeof generation_str,
+            "%" PRIu64, (uint64_t) generation);
+
+  r = command (NULL, &err, "chattr", "-v", generation_str, "--", buf, NULL);
+  free (buf);
+  if (r == -1) {
+    reply_with_error ("%s: %s: %s", "chattr", filename, err);
+    free (err);
+    return -1;
+  }
+  free (err);
+
   return 0;
 }

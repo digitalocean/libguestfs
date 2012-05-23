@@ -2,9 +2,9 @@
 
 =head1 名前
 
-virt-tar-in - Unpack a tarball into a virtual machine disk image.
+virt-tar-in - tar ファイルを仮想マシンのディスクイメージに展開します。
 
-=head1 SYNOPSIS
+=head1 書式
 
  virt-tar-in -a disk.img data.tar /destination
 
@@ -12,13 +12,13 @@ virt-tar-in - Unpack a tarball into a virtual machine disk image.
 
  zcat data.tar.gz | virt-tar-in -d domain - /destination
 
-=head1 WARNING
+=head1 警告
 
 Using C<virt-tar-in> on live virtual machines can be dangerous, potentially
 causing disk corruption.  The virtual machine must be shut down before you
 use this command.
 
-=head1 DESCRIPTION
+=head1 説明
 
 C<virt-tar-in> unpacks an uncompressed tarball into a virtual machine disk
 image or named libvirt domain.
@@ -27,9 +27,9 @@ The first parameter is the tar file.  Use C<-> to read the tar file from
 standard input.  The second parameter is the absolute target directory to
 unpack into.
 
-=head1 EXAMPLES
+=head1 例
 
-Upload a home directory to a guest:
+ホームディレクトリを仮想マシンにアップロードします:
 
  virt-tar-in -d MyGuest homes.tar /home
 
@@ -39,18 +39,18 @@ This command is just a simple shell script wrapper around the
 L<guestfish(1)> C<tar-in> command.  For anything more complex than a trivial
 copy, you are probably better off using guestfish directly.
 
-=head1 OPTIONS
+=head1 オプション
 
 Since the shell script just passes options straight to guestfish, read
 L<guestfish(1)> to see the full list of options.
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfish(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>,
 L<virt-edit(1)>, L<virt-make-fs(1)>, L<virt-tar-out(1)>,
 L<http://libguestfs.org/>.
 
-=head1 AUTHORS
+=head1 著者
 
 Richard W.M. Jones (C<rjones at redhat dot com>)
 

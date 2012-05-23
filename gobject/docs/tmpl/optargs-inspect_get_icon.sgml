@@ -1,0 +1,56 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsInspectGetIcon
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsInspectGetIcon ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsInspectGetIcon:favicon ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInspectGetIcon:highquality ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsInspectGetIconClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_inspect_get_icon_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

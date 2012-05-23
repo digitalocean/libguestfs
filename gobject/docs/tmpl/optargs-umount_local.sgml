@@ -1,0 +1,51 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsUmountLocal
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsUmountLocal ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsUmountLocal:retry ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsUmountLocalClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_umount_local_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

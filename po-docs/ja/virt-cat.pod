@@ -2,21 +2,21 @@
 
 =head1 名前
 
-virt-cat - Display files in a virtual machine
+virt-cat - 仮想マシンにあるファイルの表示
 
-=head1 SYNOPSIS
+=head1 書式
 
  virt-cat [--options] -d domname file [file ...]
 
  virt-cat [--options] -a disk.img [-a disk.img ...] file [file ...]
 
-Old-style:
+古い形式:
 
  virt-cat domname file
 
  virt-cat disk.img file
 
-=head1 DESCRIPTION
+=head1 説明
 
 C<virt-cat> is a command line tool to display the contents of C<file> where
 C<file> exists in the named virtual machine (or disk image).
@@ -29,13 +29,13 @@ C<virt-cat> can be used to quickly view a file.  To edit a file, use
 C<virt-edit>.  For more complex cases you should look at the L<guestfish(1)>
 tool (see L</USING GUESTFISH> below).
 
-=head1 EXAMPLES
+=head1 例
 
 Display C</etc/fstab> file from inside the libvirt VM called C<mydomain>:
 
  virt-cat -d mydomain /etc/fstab
 
-List syslog messages from a VM disk image file:
+仮想マシンのディスクイメージファイルから syslog メッセージを一覧表示するには:
 
  virt-cat -a disk.img /var/log/messages | tail
 
@@ -44,27 +44,27 @@ Find out what DHCP IP address a VM acquired:
  virt-cat -d mydomain /var/log/messages | \
    grep 'dhclient: bound to' | tail
 
-Find out what packages were recently installed:
+どのパッケージが最新インストールされたかを見つけるには:
 
  virt-cat -d mydomain /var/log/yum.log | tail
 
-Find out who is logged on inside a virtual machine:
+どのユーザーが仮想マシンにログインしているかを見つけるには:
 
  virt-cat -d mydomain /var/run/utmp > /tmp/utmp
  who /tmp/utmp
 
-or who was logged on:
+または、だれがログオンしたかを見つけるには:
 
  virt-cat -d mydomain /var/log/wtmp > /tmp/wtmp
  last -f /tmp/wtmp
 
-=head1 OPTIONS
+=head1 オプション
 
 =over 4
 
 =item B<--help>
 
-Display brief help.
+簡単なヘルプを表示します。
 
 =item B<-a> file
 
@@ -74,25 +74,21 @@ Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate I<-a> options.
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、I<--format=..> オプションを使用します。
 
 =item B<-c> URI
 
 =item B<--connect> URI
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された I<URI> に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 
-If you specify guest block devices directly (I<-a>), then libvirt is not
-used at all.
+ゲストのブロックデバイスを直接指定していると（(I<-a>)）、libvirt は何も使用されません。
 
 =item B<-d> guest
 
 =item B<--domain> guest
 
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  ドメインの UUID が名前の代わりに使用されます。
 
 =item B<--echo-keys>
 
@@ -105,25 +101,22 @@ see what you are typing.
 
 =item B<--format>
 
-The default for the I<-a> option is to auto-detect the format of the disk
-image.  Using this forces the disk format for I<-a> options which follow on
-the command line.  Using I<--format> with no argument switches back to
-auto-detection for subsequent I<-a> options.
+I<-a> オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、I<-a>
+オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで I<--format> を使用することにより、後続の I<-a>
+オプションに対して自動検知に戻せます。
 
-For example:
+例:
 
  virt-cat --format=raw -a disk.img file
 
-forces raw format (no auto-detection) for C<disk.img>.
+C<disk.img> に対してローイメージを強制します（自動検出しません）。
 
  virt-cat --format=raw -a disk.img --format -a another.img file
 
-forces raw format (no auto-detection) for C<disk.img> and reverts to
-auto-detection for C<another.img>.
+C<disk.img> に対してロー形式（自動検知なし）を強制し、C<another.img> に対して自動検知に戻します。
 
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (CVE-2010-3851).
+仮想マシンのディスクイメージが信頼できないロー形式であるならば、ディスク形式を指定するためにこのオプションを使用すべきです。これにより、悪意のある仮想マシンにより起こり得るセキュリティ問題を回避できます
+(CVE-2010-3851)。
 
 =item B<--keys-from-stdin>
 
@@ -134,41 +127,40 @@ passphrases from the user by opening C</dev/tty>.
 
 =item B<--verbose>
 
-Enable verbose messages for debugging.
+デバッグ用の冗長なメッセージを有効にします。
 
 =item B<-V>
 
 =item B<--version>
 
-Display version number and exit.
+バージョン番号を表示して終了します。
 
 =item B<-x>
 
-Enable tracing of libguestfs API calls.
+libguestfs API 呼び出しのトレースを有効にします。
 
 =back
 
-=head1 OLD-STYLE COMMAND LINE ARGUMENTS
+=head1 旧形式のコマンドライン引数
 
-Previous versions of virt-cat allowed you to write either:
+以前のバージョンの virt-cat はどちらの書き込みもできます:
 
  virt-cat disk.img [disk.img ...] file
 
-or
+または
 
  virt-cat guestname file
 
 whereas in this version you should use I<-a> or I<-d> respectively to avoid
 the confusing case where a disk image might have the same name as a guest.
 
-For compatibility the old style is still supported.
+互換性のため古い形式がまだサポートされています。
 
-=head1 WINDOWS PATHS
+=head1 Windows のパス
 
-C<virt-cat> has a limited ability to understand Windows drive letters and
-paths (eg. C<E:\foo\bar.txt>).
+C<virt-cat> は Windows のドライブレターとパスの解釈能力に制限があります（例: C<E:\foo\bar.txt>）。
 
-If and only if the guest is running Windows then:
+仮想マシンが Windows を実行している場合に限り:
 
 =over 4
 
@@ -203,27 +195,24 @@ NTFS junction points that cross filesystems are not followed.
 
 =back
 
-=head1 USING GUESTFISH
+=head1 guestfish の使用法
 
-L<guestfish(1)> is a more powerful, lower level tool which you can use when
-C<virt-cat> doesn't work.
+L<guestfish(1)> は C<virt-cat> がうまく機能しないときに使用できる、より強力な、より低レベルなツールです。
 
-Using C<virt-cat> is approximately equivalent to doing:
+C<virt-cat> を使用することは、次のこととほぼ同等です:
 
  guestfish --ro -i -d domname download file -
 
-where C<domname> is the name of the libvirt guest, and C<file> is the full
-path to the file.  Note the final C<-> (meaning "output to stdout").
+ここで C<domname> は libvirt 仮想マシンの名前です。また、C<file> はファイルの完全パスです。最後の C<->
+("標準出力に出力" を意味します) に注意してください。
 
-The command above uses libguestfs's guest inspection feature and so does not
-work on guests that libguestfs cannot inspect, or on things like arbitrary
-disk images that don't contain guests.  To display a file from a disk image
-directly, use:
+上のコマンドは libguestfs の仮想マシン検査機能を使用します。そのため、libguestfs
+が検査できない仮想マシンにおいて、または仮想マシンを含んでいない任意のディスクイメージのようなものにおいて、うまく動作しません。ディスクイメージから直接ファイルを表示するには、次を使用します:
 
  guestfish --ro -a disk.img -m /dev/sda1 download file -
 
-where C<disk.img> is the disk image, C</dev/sda1> is the filesystem within
-the disk image, and C<file> is the full path to the file.
+ここで、C<disk.img> はディスクイメージ、C</dev/sda1> はディスクイメージにあるファイルシステム、そして C<file>
+はファイルの完全パスです。
 
 =head1 SHELL QUOTING
 
@@ -232,16 +221,16 @@ meaning to the shell such as C<#> and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 L<sh(1)> for details.
 
-=head1 EXIT STATUS
+=head1 終了ステータス
 
-This program returns 0 if successful, or non-zero if there was an error.
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-copy-out(1)>, L<virt-edit(1)>,
 L<virt-tar-out(1)>, L<http://libguestfs.org/>.
 
-=head1 AUTHOR
+=head1 著者
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 

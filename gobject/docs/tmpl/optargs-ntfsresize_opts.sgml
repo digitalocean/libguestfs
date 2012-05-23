@@ -1,0 +1,56 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsNTFSResizeOpts
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsNTFSResizeOpts ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsNTFSResizeOpts:force ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsNTFSResizeOpts:size ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsNTFSResizeOptsClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_ntfsresize_opts_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

@@ -85,7 +85,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.304';
+$VERSION = '0.332';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -799,6 +799,21 @@ Sets the block device named C<device> to read-write.
 
 This uses the L<blockdev(8)> command.
 
+=item $h->btrfs_device_add (\@devices, $fs);
+
+Add the list of device(s) in C<devices> to the btrfs filesystem
+mounted at C<fs>.  If C<devices> is an empty list, this does nothing.
+
+=item $h->btrfs_device_delete (\@devices, $fs);
+
+Remove the C<devices> from the btrfs filesystem mounted at C<fs>.
+If C<devices> is an empty list, this does nothing.
+
+=item $h->btrfs_filesystem_balance ($fs);
+
+Balance the chunks in the btrfs filesystem mounted at C<fs>
+across the underlying devices.
+
 =item $h->btrfs_filesystem_resize ($mountpoint [, size => $size]);
 
 This command resizes a btrfs filesystem.
@@ -819,6 +834,46 @@ is resized to the maximum size.
 =back
 
 See also L<btrfs(8)>.
+
+=item $h->btrfs_filesystem_sync ($fs);
+
+Force sync on the btrfs filesystem mounted at C<fs>.
+
+=item $h->btrfs_fsck ($device [, superblock => $superblock] [, repair => $repair]);
+
+Used to check a btrfs filesystem, C<device> is the device file where the
+filesystem is stored.
+
+=item $h->btrfs_set_seeding ($device, $seeding);
+
+Enable or disable the seeding feature of a device that contains
+a btrfs filesystem.
+
+=item $h->btrfs_subvolume_create ($dest);
+
+Create a btrfs subvolume.  The C<dest> argument is the destination
+directory and the name of the snapshot, in the form C</path/to/dest/name>.
+
+=item $h->btrfs_subvolume_delete ($subvolume);
+
+Delete the named btrfs subvolume.
+
+=item @subvolumes = $h->btrfs_subvolume_list ($fs);
+
+List the btrfs snapshots and subvolumes of the btrfs filesystem
+which is mounted at C<fs>.
+
+=item $h->btrfs_subvolume_set_default ($id, $fs);
+
+Set the subvolume of the btrfs filesystem C<fs> which will
+be mounted by default.  See C<$h-E<gt>btrfs_subvolume_list> to
+get a list of subvolumes.
+
+=item $h->btrfs_subvolume_snapshot ($source, $dest);
+
+Create a writable snapshot of the btrfs subvolume C<source>.
+The C<dest> argument is the destination directory and the name
+of the snapshot, in the form C</path/to/dest/name>.
 
 =item $rpath = $h->case_sensitive_path ($path);
 
@@ -1222,8 +1277,12 @@ This runs C<e2fsck -p -f device>, ie. runs the ext2/ext3
 filesystem checker on C<device>, noninteractively (I<-p>),
 even if the filesystem appears to be clean (I<-f>).
 
-This command is only needed because of C<$h-E<gt>resize2fs>
-(q.v.).  Normally you should use C<$h-E<gt>fsck>.
+I<This function is deprecated.>
+In new code, use the L</e2fsck> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $output = $h->echo_daemon (\@words);
 
@@ -1591,6 +1650,128 @@ Get the autosync flag.
 
 Return the direct appliance mode flag.
 
+=item $attrs = $h->get_e2attrs ($file);
+
+This returns the file attributes associated with C<file>.
+
+The attributes are a set of bits associated with each
+inode which affect the behaviour of the file.  The attributes
+are returned as a string of letters (described below).  The
+string may be empty, indicating that no file attributes are
+set for this file.
+
+These attributes are only present when the file is located on
+an ext2/3/4 filesystem.  Using this call on other filesystem
+types will result in an error.
+
+The characters (file attributes) in the returned string are
+currently:
+
+=over 4
+
+=item 'A'
+
+When the file is accessed, its atime is not modified.
+
+=item 'a'
+
+The file is append-only.
+
+=item 'c'
+
+The file is compressed on-disk.
+
+=item 'D'
+
+(Directories only.)  Changes to this directory are written
+synchronously to disk.
+
+=item 'd'
+
+The file is not a candidate for backup (see L<dump(8)>).
+
+=item 'E'
+
+The file has compression errors.
+
+=item 'e'
+
+The file is using extents.
+
+=item 'h'
+
+The file is storing its blocks in units of the filesystem blocksize
+instead of sectors.
+
+=item 'I'
+
+(Directories only.)  The directory is using hashed trees.
+
+=item 'i'
+
+The file is immutable.  It cannot be modified, deleted or renamed.
+No link can be created to this file.
+
+=item 'j'
+
+The file is data-journaled.
+
+=item 's'
+
+When the file is deleted, all its blocks will be zeroed.
+
+=item 'S'
+
+Changes to this file are written synchronously to disk.
+
+=item 'T'
+
+(Directories only.)  This is a hint to the block allocator
+that subdirectories contained in this directory should be
+spread across blocks.  If not present, the block allocator
+will try to group subdirectories together.
+
+=item 't'
+
+For a file, this disables tail-merging.
+(Not used by upstream implementations of ext2.)
+
+=item 'u'
+
+When the file is deleted, its blocks will be saved, allowing
+the file to be undeleted.
+
+=item 'X'
+
+The raw contents of the compressed file may be accessed.
+
+=item 'Z'
+
+The compressed file is dirty.
+
+=back
+
+More file attributes may be added to this list later.  Not all
+file attributes may be set for all kinds of files.  For
+detailed information, consult the L<chattr(1)> man page.
+
+See also C<$h-E<gt>set_e2attrs>.
+
+Don't confuse these attributes with extended attributes
+(see C<$h-E<gt>getxattr>).
+
+=item $generation = $h->get_e2generation ($file);
+
+This returns the ext2 file generation of a file.  The generation
+(which used to be called the "version") is a number associated
+with an inode.  This is most commonly used by NFS servers.
+
+The generation is only present when the file is located on
+an ext2/3/4 filesystem.  Using this call on other filesystem
+types will result in an error.
+
+See C<$h-E<gt>set_e2generation>.
+
 =item $label = $h->get_e2label ($device);
 
 This returns the ext2/3/4 filesystem label of the filesystem on
@@ -1739,6 +1920,10 @@ If no paths match, then this returns an empty list
 It is just a wrapper around the C L<glob(3)> function
 with flags C<GLOB_MARK|GLOB_BRACE>.
 See that manual page for more details.
+
+Notice that there is no equivalent command for expanding a device
+name (eg. C</dev/sd*>).  Use C<$h-E<gt>list_devices>,
+C<$h-E<gt>list_partitions> etc functions instead.
 
 =item @lines = $h->grep ($regex, $path);
 
@@ -1954,9 +2139,17 @@ Currently defined distros are:
 
 Arch Linux.
 
+=item "buildroot"
+
+Buildroot-derived distro, but not one we specifically recognize.
+
 =item "centos"
 
 CentOS.
+
+=item "cirros"
+
+Cirros.
 
 =item "debian"
 
@@ -1965,6 +2158,10 @@ Debian.
 =item "fedora"
 
 Fedora.
+
+=item "freedos"
+
+FreeDOS.
 
 =item "gentoo"
 
@@ -2345,6 +2542,10 @@ NetBSD.
 
 GNU/Hurd.
 
+=item "dos"
+
+MS-DOS, FreeDOS and others.
+
 =item "unknown"
 
 The operating system type could not be determined.
@@ -2539,13 +2740,6 @@ with the given C<path> name.
 
 See also C<$h-E<gt>stat>.
 
-=item $busy = $h->is_busy ();
-
-This returns true iff this handle is busy processing a command
-(in the C<BUSY> state).
-
-For more information on states, see L<guestfs(3)>.
-
 =item $flag = $h->is_chardev ($path);
 
 This returns C<true> if and only if there is a character device
@@ -2626,6 +2820,27 @@ it contains all zero bytes.
 This returns true iff the device exists and contains all zero bytes.
 
 Note that for large devices this can take a long time to run.
+
+=item %isodata = $h->isoinfo ($isofile);
+
+This is the same as C<$h-E<gt>isoinfo_device> except that it
+works for an ISO file located inside some other mounted filesystem.
+Note that in the common case where you have added an ISO file
+as a libguestfs device, you would I<not> call this.  Instead
+you would call C<$h-E<gt>isoinfo_device>.
+
+=item %isodata = $h->isoinfo_device ($device);
+
+C<device> is an ISO device.  This returns a struct of information
+read from the primary volume descriptor (the ISO equivalent of the
+superblock) of the device.
+
+Usually it is more efficient to use the L<isoinfo(1)> command
+with the I<-d> option on the host to analyze ISO files,
+instead of going through libguestfs.
+
+For information on the primary volume descriptor fields, see
+L<http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor>
 
 =item $h->kill_subprocess ();
 
@@ -2747,6 +2962,13 @@ See also C<$h-E<gt>list_filesystems>.
 
 List the files in C<directory> (relative to the root directory,
 there is no cwd) in the format of 'ls -la'.
+
+This command is mostly useful for interactive sessions.  It
+is I<not> intended that you try to parse the output string.
+
+=item $listing = $h->llz ($directory);
+
+List the files in C<directory> in the format of 'ls -laZ'.
 
 This command is mostly useful for interactive sessions.  It
 is I<not> intended that you try to parse the output string.
@@ -2886,6 +3108,13 @@ mapping is created.
 
 This creates an LVM logical volume called C<logvol>
 on the volume group C<volgroup>, with C<size> megabytes.
+
+=item $h->lvcreate_free ($logvol, $volgroup, $percent);
+
+Create an LVM logical volume called C</dev/volgroup/logvol>,
+using approximately C<percent> % of the free space remaining
+in the volume group.  Most usefully, when C<percent> is C<100>
+this will create the largest possible LV.
 
 =item $lv = $h->lvm_canonical_lv_name ($lvname);
 
@@ -3091,6 +3320,53 @@ The name of the MD device.
 
 =back
 
+=item @devices = $h->md_stat ($md);
+
+This call returns a list of the underlying devices which make
+up the single software RAID array device C<md>.
+
+To get a list of software RAID devices, call C<$h-E<gt>list_md_devices>.
+
+Each structure returned corresponds to one device along with
+additional status information:
+
+=over 4
+
+=item C<mdstat_device>
+
+The name of the underlying device.
+
+=item C<mdstat_index>
+
+The index of this device within the array.
+
+=item C<mdstat_flags>
+
+Flags associated with this device.  This is a string containing
+(in no specific order) zero or more of the following flags:
+
+=over 4
+
+=item C<W>
+
+write-mostly
+
+=item C<F>
+
+device is faulty
+
+=item C<S>
+
+device is a RAID spare
+
+=item C<R>
+
+replacement
+
+=back
+
+=back
+
 =item $h->md_stop ($md);
 
 This command deactivates the MD array named C<md>.  The
@@ -3206,6 +3482,16 @@ In new code, use the L</mkfs_opts> call instead.
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
+
+=item $h->mkfs_btrfs (\@devices [, allocstart => $allocstart] [, bytecount => $bytecount] [, datatype => $datatype] [, leafsize => $leafsize] [, label => $label] [, metadata => $metadata] [, nodesize => $nodesize] [, sectorsize => $sectorsize]);
+
+Create a btrfs filesystem, allowing all configurables to be set.
+For more information on the optional arguments, see L<mkfs.btrfs(8)>.
+
+Since btrfs filesystems can span multiple devices, this takes a
+non-empty list of devices.
+
+To create general filesystems, use C<$h-E<gt>mkfs_opts>.
 
 =item $h->mkfs_opts ($fstype, $device [, blocksize => $blocksize] [, features => $features] [, inode => $inode] [, sectorsize => $sectorsize]);
 
@@ -3389,6 +3675,52 @@ If required, C<trans=virtio> will be automatically added to the options.
 Any other options required can be passed in the optional C<options>
 parameter.
 
+=item $h->mount_local ($localmountpoint [, readonly => $readonly] [, options => $options] [, cachetimeout => $cachetimeout] [, debugcalls => $debugcalls]);
+
+This call exports the libguestfs-accessible filesystem to
+a local mountpoint (directory) called C<localmountpoint>.
+Ordinary reads and writes to files and directories under
+C<localmountpoint> are redirected through libguestfs.
+
+If the optional C<readonly> flag is set to true, then
+writes to the filesystem return error C<EROFS>.
+
+C<options> is a comma-separated list of mount options.
+See L<guestmount(1)> for some useful options.
+
+C<cachetimeout> sets the timeout (in seconds) for cached directory
+entries.  The default is 60 seconds.  See L<guestmount(1)>
+for further information.
+
+If C<debugcalls> is set to true, then additional debugging
+information is generated for every FUSE call.
+
+When C<$h-E<gt>mount_local> returns, the filesystem is ready,
+but is not processing requests (access to it will block).  You
+have to call C<$h-E<gt>mount_local_run> to run the main loop.
+
+See L<guestfs(3)/MOUNT LOCAL> for full documentation.
+
+=item $h->mount_local_run ();
+
+Run the main loop which translates kernel calls to libguestfs
+calls.
+
+This should only be called after C<$h-E<gt>mount_local>
+returns successfully.  The call will not return until the
+filesystem is unmounted.
+
+B<Note> you must I<not> make concurrent libguestfs calls
+on the same handle from another thread,
+with the exception of C<$h-E<gt>umount_local>.
+
+You may call this from a different thread than the one which
+called C<$h-E<gt>mount_local>, subject to the usual rules
+for threads and libguestfs (see
+L<guestfs(3)/MULTIPLE HANDLES AND MULTIPLE THREADS>).
+
+See L<guestfs(3)/MOUNT LOCAL> for full documentation.
+
 =item $h->mount_loop ($file, $mountpoint);
 
 This command lets you mount C<file> (a filesystem image
@@ -3449,6 +3781,41 @@ you want to test if the volume can be mounted read-only.
 The return value is an integer which C<0> if the operation
 would succeed, or some non-zero value documented in the
 L<ntfs-3g.probe(8)> manual page.
+
+=item $h->ntfsclone_in ($backupfile, $device);
+
+Restore the C<backupfile> (from a previous call to
+C<$h-E<gt>ntfsclone_out>) to C<device>, overwriting
+any existing contents of this device.
+
+=item $h->ntfsclone_out ($device, $backupfile [, metadataonly => $metadataonly] [, rescue => $rescue] [, ignorefscheck => $ignorefscheck] [, preservetimestamps => $preservetimestamps] [, force => $force]);
+
+Stream the NTFS filesystem C<device> to the local file
+C<backupfile>.  The format used for the backup file is a
+special format used by the L<ntfsclone(8)> tool.
+
+If the optional C<metadataonly> flag is true, then I<only> the
+metadata is saved, losing all the user data (this is useful
+for diagnosing some filesystem problems).
+
+The optional C<rescue>, C<ignorefscheck>, C<preservetimestamps>
+and C<force> flags have precise meanings detailed in the
+L<ntfsclone(8)> man page.
+
+Use C<$h-E<gt>ntfsclone_in> to restore the file back to a
+libguestfs device.
+
+=item $h->ntfsfix ($device [, clearbadsectors => $clearbadsectors]);
+
+This command repairs some fundamental NTFS inconsistencies,
+resets the NTFS journal file, and schedules an NTFS consistency
+check for the first boot into Windows.
+
+This is I<not> an equivalent of Windows C<chkdsk>.  It does I<not>
+scan the filesystem for inconsistencies.
+
+The optional C<clearbadsectors> flag clears the list of bad sectors.
+This is useful after cloning a disk with bad sectors to a new disk.
 
 =item $h->ntfsresize ($device);
 
@@ -3961,11 +4328,7 @@ See also: C<$h-E<gt>lremovexattr>, L<attr(5)>.
 This resizes an ext2, ext3 or ext4 filesystem to match the size of
 the underlying device.
 
-I<Note:> It is sometimes required that you run C<$h-E<gt>e2fsck_f>
-on the C<device> before calling this command.  For unknown reasons
-C<resize2fs> sometimes gives an error about this and sometimes not.
-In any case, it is always safe to call C<$h-E<gt>e2fsck_f> before
-calling this function.
+See also L<guestfs(3)/RESIZE2FS ERRORS>.
 
 =item $h->resize2fs_M ($device);
 
@@ -3978,10 +4341,14 @@ C<$h-E<gt>tune2fs_l> and read the C<Block size> and C<Block count>
 values.  These two numbers, multiplied together, give the
 resulting size of the minimal filesystem in bytes.
 
+See also L<guestfs(3)/RESIZE2FS ERRORS>.
+
 =item $h->resize2fs_size ($device, $size);
 
 This command is the same as C<$h-E<gt>resize2fs> except that it
 allows you to specify the new size (in bytes) explicitly.
+
+See also L<guestfs(3)/RESIZE2FS ERRORS>.
 
 =item $h->rm ($path);
 
@@ -4090,6 +4457,34 @@ are doing.
 
 The default is disabled.
 
+=item $h->set_e2attrs ($file, $attrs [, clear => $clear]);
+
+This sets or clears the file attributes C<attrs>
+associated with the inode C<file>.
+
+C<attrs> is a string of characters representing
+file attributes.  See C<$h-E<gt>get_e2attrs> for a list of
+possible attributes.  Not all attributes can be changed.
+
+If optional boolean C<clear> is not present or false, then
+the C<attrs> listed are set in the inode.
+
+If C<clear> is true, then the C<attrs> listed are cleared
+in the inode.
+
+In both cases, other attributes not present in the C<attrs>
+string are left unchanged.
+
+These attributes are only present when the file is located on
+an ext2/3/4 filesystem.  Using this call on other filesystem
+types will result in an error.
+
+=item $h->set_e2generation ($file, $generation);
+
+This sets the ext2 file generation of a file.
+
+See C<$h-E<gt>get_e2generation>.
+
 =item $h->set_e2label ($device, $label);
 
 This sets the ext2/3/4 filesystem label of the filesystem on
@@ -4098,6 +4493,13 @@ C<device> to C<label>.  Filesystem labels are limited to
 
 You can use either C<$h-E<gt>tune2fs_l> or C<$h-E<gt>get_e2label>
 to return the existing label on a filesystem.
+
+I<This function is deprecated.>
+In new code, use the L</set_label> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $h->set_e2uuid ($device, $uuid);
 
@@ -4108,6 +4510,19 @@ L<tune2fs(8)> manpage.
 
 You can use either C<$h-E<gt>tune2fs_l> or C<$h-E<gt>get_e2uuid>
 to return the existing UUID of a filesystem.
+
+=item $h->set_label ($device, $label);
+
+Set the filesystem label on C<device> to C<label>.
+
+Only some filesystem types support labels, and libguestfs supports
+setting labels on only a subset of these.
+
+On ext2/3/4 filesystems, labels are limited to 16 bytes.
+
+On NTFS filesystems, labels are limited to 128 unicode characters.
+
+To read the label on a filesystem, call C<$h-E<gt>vfs_label>.
 
 =item $h->set_memsize ($memsize);
 
@@ -4702,6 +5117,13 @@ This unmounts all mounted filesystems.
 
 Some internal mounts are not unmounted by this call.
 
+=item $h->umount_local ([retry => $retry]);
+
+If libguestfs is exporting the filesystem on a local
+mountpoint, then this unmounts it.
+
+See L<guestfs(3)/MOUNT LOCAL> for full documentation.
+
 =item $h->upload ($filename, $remotefilename);
 
 Upload local file C<filename> to C<remotefilename> on the
@@ -4842,6 +5264,14 @@ calls to associate logical volumes and volume groups.
 
 See also C<$h-E<gt>vgpvuuids>.
 
+=item $metadata = $h->vgmeta ($vgname);
+
+C<vgname> is an LVM volume group.  This command examines the
+volume group and returns its metadata.
+
+Note that the metadata is an internal structure used by LVM,
+subject to change at any time, and is provided for information only.
+
 =item @uuids = $h->vgpvuuids ($vgname);
 
 Given a VG called C<vgname>, this returns the UUIDs of all
@@ -4921,6 +5351,17 @@ C<wc -l> external command.
 
 This command counts the words in a file, using the
 C<wc -w> external command.
+
+=item $h->wipefs ($device);
+
+This command erases filesystem or RAID signatures from
+the specified C<device> to make the filesystem invisible to libblkid.
+
+This does not erase the filesystem itself nor any other data from the
+C<device>.
+
+Compare with C<$h-E<gt>zero> which zeroes the first few blocks of a
+device.
 
 =item $h->write ($path, $content);
 
@@ -5005,6 +5446,17 @@ a device.
 If blocks are already zero, then this command avoids writing
 zeroes.  This prevents the underlying device from becoming non-sparse
 or growing unnecessarily.
+
+=item $h->zero_free_space ($directory);
+
+Zero the free space in the filesystem mounted on C<directory>.
+The filesystem must be mounted read-write.
+
+The filesystem contents are not affected, but any free space
+in the filesystem is freed.
+
+In future (but not currently) these zeroed blocks will be
+"sparsified" - that is, given back to the host.
 
 =item $h->zerofree ($device);
 
@@ -5383,6 +5835,32 @@ use vars qw(%guestfs_introspection);
     name => "blockdev_setrw",
     description => "set block device to read-write",
   },
+  "btrfs_device_add" => {
+    ret => 'void',
+    args => [
+      [ 'devices', 'string(device) list', 0 ],
+      [ 'fs', 'string(path)', 1 ],
+    ],
+    name => "btrfs_device_add",
+    description => "add devices to a btrfs filesystem",
+  },
+  "btrfs_device_delete" => {
+    ret => 'void',
+    args => [
+      [ 'devices', 'string(device) list', 0 ],
+      [ 'fs', 'string(path)', 1 ],
+    ],
+    name => "btrfs_device_delete",
+    description => "remove devices from a btrfs filesystem",
+  },
+  "btrfs_filesystem_balance" => {
+    ret => 'void',
+    args => [
+      [ 'fs', 'string(path)', 0 ],
+    ],
+    name => "btrfs_filesystem_balance",
+    description => "balance a btrfs filesystem",
+  },
   "btrfs_filesystem_resize" => {
     ret => 'void',
     args => [
@@ -5393,6 +5871,77 @@ use vars qw(%guestfs_introspection);
     },
     name => "btrfs_filesystem_resize",
     description => "resize a btrfs filesystem",
+  },
+  "btrfs_filesystem_sync" => {
+    ret => 'void',
+    args => [
+      [ 'fs', 'string(path)', 0 ],
+    ],
+    name => "btrfs_filesystem_sync",
+    description => "sync a btrfs filesystem",
+  },
+  "btrfs_fsck" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    optargs => {
+      superblock => [ 'superblock', 'int64', 0 ],
+      repair => [ 'repair', 'bool', 1 ],
+    },
+    name => "btrfs_fsck",
+    description => "check a btrfs filesystem",
+  },
+  "btrfs_set_seeding" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'seeding', 'bool', 1 ],
+    ],
+    name => "btrfs_set_seeding",
+    description => "enable or disable the seeding feature of device",
+  },
+  "btrfs_subvolume_create" => {
+    ret => 'void',
+    args => [
+      [ 'dest', 'string(path)', 0 ],
+    ],
+    name => "btrfs_subvolume_create",
+    description => "create a btrfs snapshot",
+  },
+  "btrfs_subvolume_delete" => {
+    ret => 'void',
+    args => [
+      [ 'subvolume', 'string(path)', 0 ],
+    ],
+    name => "btrfs_subvolume_delete",
+    description => "delete a btrfs snapshot",
+  },
+  "btrfs_subvolume_list" => {
+    ret => 'struct btrfssubvolume list',
+    args => [
+      [ 'fs', 'string(path)', 0 ],
+    ],
+    name => "btrfs_subvolume_list",
+    description => "list btrfs snapshots and subvolumes",
+  },
+  "btrfs_subvolume_set_default" => {
+    ret => 'void',
+    args => [
+      [ 'id', 'int64', 0 ],
+      [ 'fs', 'string(path)', 1 ],
+    ],
+    name => "btrfs_subvolume_set_default",
+    description => "set default btrfs subvolume",
+  },
+  "btrfs_subvolume_snapshot" => {
+    ret => 'void',
+    args => [
+      [ 'source', 'string(path)', 0 ],
+      [ 'dest', 'string(path)', 1 ],
+    ],
+    name => "btrfs_subvolume_snapshot",
+    description => "create a writable btrfs snapshot",
   },
   "case_sensitive_path" => {
     ret => 'string',
@@ -5903,6 +6452,22 @@ use vars qw(%guestfs_introspection);
     ],
     name => "get_direct",
     description => "get direct appliance mode flag",
+  },
+  "get_e2attrs" => {
+    ret => 'string',
+    args => [
+      [ 'file', 'string(path)', 0 ],
+    ],
+    name => "get_e2attrs",
+    description => "get ext2 file attributes of a file",
+  },
+  "get_e2generation" => {
+    ret => 'int64',
+    args => [
+      [ 'file', 'string(path)', 0 ],
+    ],
+    name => "get_e2generation",
+    description => "get ext2 file generation of a file",
   },
   "get_e2label" => {
     ret => 'string',
@@ -6459,6 +7024,22 @@ use vars qw(%guestfs_introspection);
     name => "is_zero_device",
     description => "test if a device contains all zero bytes",
   },
+  "isoinfo" => {
+    ret => 'struct isoinfo',
+    args => [
+      [ 'isofile', 'string(path)', 0 ],
+    ],
+    name => "isoinfo",
+    description => "get ISO information from primary volume descriptor of ISO file",
+  },
+  "isoinfo_device" => {
+    ret => 'struct isoinfo',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "isoinfo_device",
+    description => "get ISO information from primary volume descriptor of device",
+  },
   "kill_subprocess" => {
     ret => 'void',
     args => [
@@ -6549,6 +7130,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "ll",
     description => "list the files in a directory (long format)",
+  },
+  "llz" => {
+    ret => 'string',
+    args => [
+      [ 'directory', 'string(path)', 0 ],
+    ],
+    name => "llz",
+    description => "list the files in a directory (long format with SELinux contexts)",
   },
   "ln" => {
     ret => 'void',
@@ -6711,6 +7300,16 @@ use vars qw(%guestfs_introspection);
     name => "lvcreate",
     description => "create an LVM logical volume",
   },
+  "lvcreate_free" => {
+    ret => 'void',
+    args => [
+      [ 'logvol', 'string', 0 ],
+      [ 'volgroup', 'string', 1 ],
+      [ 'percent', 'int', 2 ],
+    ],
+    name => "lvcreate_free",
+    description => "create an LVM logical volume in % remaining free space",
+  },
   "lvm_canonical_lv_name" => {
     ret => 'string',
     args => [
@@ -6830,6 +7429,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "md_detail",
     description => "obtain metadata for an MD device",
+  },
+  "md_stat" => {
+    ret => 'struct mdstat list',
+    args => [
+      [ 'md', 'string(device)', 0 ],
+    ],
+    name => "md_stat",
+    description => "get underlying devices from an MD device",
   },
   "md_stop" => {
     ret => 'void',
@@ -6962,6 +7569,24 @@ use vars qw(%guestfs_introspection);
     name => "mkfs_b",
     description => "make a filesystem with block size",
   },
+  "mkfs_btrfs" => {
+    ret => 'void',
+    args => [
+      [ 'devices', 'string(device) list', 0 ],
+    ],
+    optargs => {
+      allocstart => [ 'allocstart', 'int64', 0 ],
+      bytecount => [ 'bytecount', 'int64', 1 ],
+      datatype => [ 'datatype', 'string', 2 ],
+      leafsize => [ 'leafsize', 'int', 3 ],
+      label => [ 'label', 'string', 4 ],
+      metadata => [ 'metadata', 'string', 5 ],
+      nodesize => [ 'nodesize', 'int', 6 ],
+      sectorsize => [ 'sectorsize', 'int', 7 ],
+    },
+    name => "mkfs_btrfs",
+    description => "create a btrfs filesystem",
+  },
   "mkfs_opts" => {
     ret => 'void',
     args => [
@@ -7081,6 +7706,27 @@ use vars qw(%guestfs_introspection);
     name => "mount_9p",
     description => "mount 9p filesystem",
   },
+  "mount_local" => {
+    ret => 'void',
+    args => [
+      [ 'localmountpoint', 'string', 0 ],
+    ],
+    optargs => {
+      readonly => [ 'readonly', 'bool', 0 ],
+      options => [ 'options', 'string', 1 ],
+      cachetimeout => [ 'cachetimeout', 'int', 2 ],
+      debugcalls => [ 'debugcalls', 'bool', 3 ],
+    },
+    name => "mount_local",
+    description => "mount on the local filesystem",
+  },
+  "mount_local_run" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "mount_local_run",
+    description => "run main loop of mount on the local filesystem",
+  },
   "mount_loop" => {
     ret => 'void',
     args => [
@@ -7151,6 +7797,42 @@ use vars qw(%guestfs_introspection);
     ],
     name => "ntfs_3g_probe",
     description => "probe NTFS volume",
+  },
+  "ntfsclone_in" => {
+    ret => 'void',
+    args => [
+      [ 'backupfile', 'string(filename)', 0 ],
+      [ 'device', 'string(device)', 1 ],
+    ],
+    name => "ntfsclone_in",
+    description => "restore NTFS from backup file",
+  },
+  "ntfsclone_out" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'backupfile', 'string(filename)', 1 ],
+    ],
+    optargs => {
+      metadataonly => [ 'metadataonly', 'bool', 0 ],
+      rescue => [ 'rescue', 'bool', 1 ],
+      ignorefscheck => [ 'ignorefscheck', 'bool', 2 ],
+      preservetimestamps => [ 'preservetimestamps', 'bool', 3 ],
+      force => [ 'force', 'bool', 4 ],
+    },
+    name => "ntfsclone_out",
+    description => "save NTFS to backup file",
+  },
+  "ntfsfix" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    optargs => {
+      clearbadsectors => [ 'clearbadsectors', 'bool', 0 ],
+    },
+    name => "ntfsfix",
+    description => "fix common errors and force Windows to check NTFS",
   },
   "ntfsresize" => {
     ret => 'void',
@@ -7572,6 +8254,27 @@ use vars qw(%guestfs_introspection);
     name => "set_direct",
     description => "enable or disable direct appliance mode",
   },
+  "set_e2attrs" => {
+    ret => 'void',
+    args => [
+      [ 'file', 'string(path)', 0 ],
+      [ 'attrs', 'string', 1 ],
+    ],
+    optargs => {
+      clear => [ 'clear', 'bool', 0 ],
+    },
+    name => "set_e2attrs",
+    description => "set ext2 file attributes of a file",
+  },
+  "set_e2generation" => {
+    ret => 'void',
+    args => [
+      [ 'file', 'string(path)', 0 ],
+      [ 'generation', 'int64', 1 ],
+    ],
+    name => "set_e2generation",
+    description => "set ext2 file generation of a file",
+  },
   "set_e2label" => {
     ret => 'void',
     args => [
@@ -7589,6 +8292,15 @@ use vars qw(%guestfs_introspection);
     ],
     name => "set_e2uuid",
     description => "set the ext2/3/4 filesystem UUID",
+  },
+  "set_label" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'label', 'string', 1 ],
+    ],
+    name => "set_label",
+    description => "set filesystem label",
   },
   "set_memsize" => {
     ret => 'void',
@@ -8209,6 +8921,16 @@ use vars qw(%guestfs_introspection);
     name => "umount_all",
     description => "unmount all filesystems",
   },
+  "umount_local" => {
+    ret => 'void',
+    args => [
+    ],
+    optargs => {
+      retry => [ 'retry', 'bool', 0 ],
+    },
+    name => "umount_local",
+    description => "unmount a locally mounted filesystem",
+  },
   "upload" => {
     ret => 'void',
     args => [
@@ -8305,6 +9027,14 @@ use vars qw(%guestfs_introspection);
     name => "vglvuuids",
     description => "get the LV UUIDs of all LVs in the volume group",
   },
+  "vgmeta" => {
+    ret => 'buffer',
+    args => [
+      [ 'vgname', 'string', 0 ],
+    ],
+    name => "vgmeta",
+    description => "get volume group metadata",
+  },
   "vgpvuuids" => {
     ret => 'string list',
     args => [
@@ -8390,6 +9120,14 @@ use vars qw(%guestfs_introspection);
     name => "wc_w",
     description => "count words in a file",
   },
+  "wipefs" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "wipefs",
+    description => "wipe a filesystem signature from a device",
+  },
   "write" => {
     ret => 'void',
     args => [
@@ -8451,6 +9189,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "zero_device",
     description => "write zeroes to an entire device",
+  },
+  "zero_free_space" => {
+    ret => 'void',
+    args => [
+      [ 'directory', 'string(path)', 0 ],
+    ],
+    name => "zero_free_space",
+    description => "zero free space in a filesystem",
   },
   "zerofree" => {
     ret => 'void',

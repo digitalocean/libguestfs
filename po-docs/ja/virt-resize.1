@@ -62,23 +62,23 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-resize 1"
-.TH virt-resize 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-resize 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "名前"
 .IX Header "名前"
-virt-resize \- Resize a virtual machine disk
-.SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
+virt-resize \- 仮想マシンのディスクの容量変更
+.SH "書式"
+.IX Header "書式"
 .Vb 3
 \& virt\-resize [\-\-resize /dev/sdaN=[+/\-]<size>[%]]
 \&   [\-\-expand /dev/sdaN] [\-\-shrink /dev/sdaN]
 \&   [\-\-ignore /dev/sdaN] [\-\-delete /dev/sdaN] [...] indisk outdisk
 .Ve
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
+.SH "説明"
+.IX Header "説明"
 Virt-resize is a tool which can resize a virtual machine disk, making it
 larger or smaller overall, and resizing or deleting any partitions contained
 within.
@@ -89,8 +89,8 @@ virtual machine down before resizing it.
 .PP
 If you are not familiar with the associated tools: \fIvirt\-filesystems\fR\|(1)
 and \fIvirt\-df\fR\|(1), we recommend you go and read those manual pages first.
-.SH "EXAMPLES"
-.IX Header "EXAMPLES"
+.SH "例"
+.IX Header "例"
 .IP "1." 4
 Copy \f(CW\*(C`olddisk\*(C'\fR to \f(CW\*(C`newdisk\*(C'\fR, extending one of the guest's partitions to
 fill the extra 5GB of space.
@@ -101,7 +101,7 @@ fill the extra 5GB of space.
 \& truncate \-r olddisk newdisk
 \& truncate \-s +5G newdisk
 \& 
-\& # Note "/dev/sda2" is a partition inside the "olddisk" file.
+\& # "/dev/sda2" は "olddisk" ファイルの中にあるパーティションであることに注意してください。
 \& virt\-resize \-\-expand /dev/sda2 olddisk newdisk
 .Ve
 .IP "2." 4
@@ -128,15 +128,15 @@ raw disk:
 \& qemu\-img create \-f qcow2 newdisk.qcow2 15G
 \& virt\-resize \-\-expand /dev/sda2 olddisk newdisk.qcow2
 .Ve
-.SH "DETAILED USAGE"
-.IX Header "DETAILED USAGE"
-.SS "\s-1EXPANDING\s0 A \s-1VIRTUAL\s0 \s-1MACHINE\s0 \s-1DISK\s0"
-.IX Subsection "EXPANDING A VIRTUAL MACHINE DISK"
-.IP "1. Shut down the virtual machine" 4
-.IX Item "1. Shut down the virtual machine"
+.SH "詳細な使用法"
+.IX Header "詳細な使用法"
+.SS "仮想マシンのディスクの拡張方法"
+.IX Subsection "仮想マシンのディスクの拡張方法"
+.IP "1. 仮想マシンをシャットダウンします" 4
+.IX Item "1. 仮想マシンをシャットダウンします"
 .PD 0
-.IP "2. Locate input disk image" 4
-.IX Item "2. Locate input disk image"
+.IP "2. 入力ディスクイメージの位置を探します" 4
+.IX Item "2. 入力ディスクイメージの位置を探します"
 .PD
 Locate the input disk image (ie. the file or device on the host containing
 the guest's disk).  If the guest is managed by libvirt, you can use \f(CW\*(C`virsh
@@ -148,8 +148,8 @@ dumpxml\*(C'\fR like this to find the disk image name:
 \& \-\- NODE \-\-
 \& <source dev="/dev/vg/lv_guest" />
 .Ve
-.IP "3. Look at current sizing" 4
-.IX Item "3. Look at current sizing"
+.IP "3. 現在の容量を確認します" 4
+.IX Item "3. 現在の容量を確認します"
 Use \fIvirt\-filesystems\fR\|(1) to display the current partitions and sizes:
 .Sp
 .Vb 5
@@ -162,8 +162,8 @@ Use \fIvirt\-filesystems\fR\|(1) to display the current partitions and sizes:
 .Sp
 (This example is a virtual machine with an 8 \s-1GB\s0 disk which we would like to
 expand up to 10 \s-1GB\s0).
-.IP "4. Create output disk" 4
-.IX Item "4. Create output disk"
+.IP "4. 出力ディスクを作成します" 4
+.IX Item "4. 出力ディスクを作成します"
 Virt-resize cannot do in-place disk modifications.  You have to have space
 to store the resized output disk.
 .Sp
@@ -186,8 +186,8 @@ Or use \fIvirsh\fR\|(1) vol-create-as to create a libvirt storage volume:
 \& # virsh pool\-list
 \& # virsh vol\-create\-as poolname newvol 10G
 .Ve
-.IP "5. Resize" 4
-.IX Item "5. Resize"
+.IP "5. 容量を変更します" 4
+.IX Item "5. 容量を変更します"
 virt-resize takes two mandatory parameters, the input disk (eg. device or
 file) and the output disk.  The output disk is the one created in the
 previous step.
@@ -233,8 +233,8 @@ filesystems, so you would have to online resize them after booting the
 guest.
 .Sp
 Other options are covered below.
-.IP "6. Test" 4
-.IX Item "6. Test"
+.IP "6. テストします" 4
+.IX Item "6. テストします"
 Thoroughly test the new disk image \fIbefore\fR discarding the old one.
 .Sp
 If you are using libvirt, edit the \s-1XML\s0 to point at the new disk:
@@ -262,10 +262,9 @@ Once the guest has booted you should see the new space available, at least
 for filesystems that virt-resize knows how to resize, and for PVs.  The user
 may need to resize LVs inside PVs, and also resize filesystem types that
 virt-resize does not know how to expand.
-.SS "\s-1SHRINKING\s0 A \s-1VIRTUAL\s0 \s-1MACHINE\s0 \s-1DISK\s0"
-.IX Subsection "SHRINKING A VIRTUAL MACHINE DISK"
-Shrinking is somewhat more complex than expanding, and only an overview is
-given here.
+.SS "仮想マシンのディスクの縮小"
+.IX Subsection "仮想マシンのディスクの縮小"
+縮小は拡張よりもいくらか複雑です。ここでは概要のみを示します。
 .PP
 Firstly virt-resize will not attempt to shrink any partition content (PVs,
 filesystems).  The user has to shrink content before passing the disk image
@@ -307,10 +306,9 @@ Similarly, to get non-sparse raw output use:
 .PP
 (on older systems that don't have the \fIfallocate\fR\|(1) command use \f(CW\*(C`dd
 if=/dev/zero of=outdisk bs=1M count=..\*(C'\fR)
-.SS "\s-1LOGICAL\s0 \s-1PARTITIONS\s0"
-.IX Subsection "LOGICAL PARTITIONS"
-Logical partitions (a.k.a. \f(CW\*(C`/dev/sda5+\*(C'\fR on disks using \s-1DOS\s0 partition
-tables) cannot be resized.
+.SS "論理パーティション"
+.IX Subsection "論理パーティション"
+論理パーティション（DOS パーティションテーブルを使用しているディスクにおいて \f(CW\*(C`/dev/sda5+\*(C'\fR とも言う）は容量変更できません。
 .PP
 To understand what is going on, firstly one of the four partitions
 \&\f(CW\*(C`/dev/sda1\-4\*(C'\fR will have \s-1MBR\s0 partition type \f(CW05\fR or \f(CW\*(C`0f\*(C'\fR.  This is called
@@ -327,11 +325,11 @@ logical partitions blindly.
 .PP
 You cannot specify a logical partition (\f(CW\*(C`/dev/sda5+\*(C'\fR) at all on the command
 line.  Doing so will give an error.
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+.SH "オプション"
+.IX Header "オプション"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
-Display help.
+ヘルプを表示します。
 .IP "\fB\-\-align\-first auto\fR" 4
 .IX Item "--align-first auto"
 .PD 0
@@ -362,8 +360,8 @@ Set the alignment of partitions to \f(CW\*(C`N\*(C'\fR sectors.  The default in 
 Assuming 512 byte sector size inside the guest, here are some suitable
 values for this:
 .RS 4
-.IP "\fI\-\-alignment 1\fR (512 bytes)" 4
-.IX Item "--alignment 1 (512 bytes)"
+.IP "\fI\-\-alignment 1\fR (512 バイト)" 4
+.IX Item "--alignment 1 (512 バイト)"
 The partitions would be packed together as closely as possible, but would be
 completely unaligned.  In some cases this can cause very poor performance.
 See \fIvirt\-alignment\-scan\fR\|(1) for further details.
@@ -388,7 +386,7 @@ around 2008.
 .IP "\fB\-\-debug\fR" 4
 .IX Item "--debug"
 .PD
-Enable debugging messages.
+デバッグメッセージを有効にします。
 .IP "\fB\-\-debug\-gc\fR" 4
 .IX Item "--debug-gc"
 Debug garbage collection and memory allocation.  This is only useful when
@@ -403,7 +401,7 @@ Note that when you delete a partition, then anything contained in the
 partition is also deleted.  Furthermore, this causes any partitions that
 come after to be \fIrenumbered\fR, which can easily make your guest unbootable.
 .Sp
-You can give this option multiple times.
+このオプションは複数回指定できます。
 .IP "\fB\-\-expand part\fR" 4
 .IX Item "--expand part"
 Expand the named partition so it uses up all extra space (space left over
@@ -417,7 +415,7 @@ content it doesn't know about alone.
 Currently virt-resize can resize:
 .RS 4
 .IP "\(bu" 4
-ext2, ext3 and ext4 filesystems.
+ext2, ext3, ext4 ファイルシステム。
 .IP "\(bu" 4
 \&\s-1NTFS\s0 filesystems, if libguestfs was compiled with support for \s-1NTFS\s0.
 .Sp
@@ -453,7 +451,7 @@ allocated on the destination disk, but the content is not copied across from
 the source disk.  The content of the partition will be blank (all zero
 bytes).
 .Sp
-You can give this option multiple times.
+このオプションは複数回指定できます。
 .IP "\fB\-\-LV\-expand logvol\fR" 4
 .IX Item "--LV-expand logvol"
 This takes the logical volume and, as a final step, expands it to fill all
@@ -473,15 +471,14 @@ The contents of the \s-1LV\s0 are also resized if virt-resize knows how to do
 that.  You can stop virt-resize from trying to expand the content by using
 the option \fI\-\-no\-expand\-content\fR.
 .Sp
-Use \fIvirt\-filesystems\fR\|(1) to list the filesystems in the guest.
+仮想マシンにあるファイルシステムを一覧表示するには \fIvirt\-filesystems\fR\|(1) を使用します。
 .Sp
 You can give this option multiple times, \fIbut\fR it doesn't make sense to do
 this unless the logical volumes you specify are all in different volume
 groups.
 .IP "\fB\-\-machine\-readable\fR" 4
 .IX Item "--machine-readable"
-This option is used to make the output more machine friendly when being
-parsed by other programs.  See \*(L"\s-1MACHINE\s0 \s-1READABLE\s0 \s-1OUTPUT\s0\*(R" below.
+このオプションは、他のプログラムにより解析されるときに、よりマシンに易しい出力を作成するために使用されます。以下の \*(L"マシン可読な出力\*(R" 参照。
 .IP "\fB\-n\fR" 4
 .IX Item "-n"
 .PD 0
@@ -513,14 +510,12 @@ will be created.
 By default, virt-resize will try to expand the direct contents of
 partitions, if it knows how (see \fI\-\-expand\fR option above).
 .Sp
-If you give the \fI\-\-no\-expand\-content\fR option then virt-resize will not
-attempt this.
+\&\fI\-\-no\-expand\-content\fR オプションを指定すると、virt\-resize はこれを試行しません。
 .IP "\fB\-\-ntfsresize\-force\fR" 4
 .IX Item "--ntfsresize-force"
-Pass the \fI\-\-force\fR option to \fIntfsresize\fR\|(8), allowing resizing even if
-the \s-1NTFS\s0 disk is marked as needing a consistency check.  You have to use
-this option if you want to resize a Windows guest multiple times without
-booting into Windows between each resize.
+\&\fIntfsresize\fR\|(8) に \fI\-\-force\fR オプションを渡します。これにより、NTFS
+ディスクが整合性の確認が必要であるという印をつけたときでも、容量の変更を許可します。Windows
+仮想マシンを各容量において起動することなく、何回も容量変更したいならば、このオプションを使用する必要があります。
 .IP "\fB\-\-output\-format\fR raw" 4
 .IX Item "--output-format raw"
 Specify the format of the output disk image.  If this flag is not given then
@@ -539,15 +534,14 @@ NON-SPARSE \s-1RAW\s0 \s-1FORMATS\s0\*(R".
 .IP "\fB\-\-quiet\fR" 4
 .IX Item "--quiet"
 .PD
-Don't print the summary.
+概要を表示しません。
 .IP "\fB\-\-resize part=size\fR" 4
 .IX Item "--resize part=size"
 Resize the named partition (expanding or shrinking it) so that it has the
 given size.
 .Sp
-\&\f(CW\*(C`size\*(C'\fR can be expressed as an absolute number followed by b/K/M/G to mean
-bytes, Kilobytes, Megabytes, or Gigabytes; or as a percentage of the current
-size; or as a relative number or percentage.  For example:
+\&\f(CW\*(C`size\*(C'\fR は b/K/M/G
+が後につく絶対値として表現されます。それぞれ、バイト、キロバイト、メガバイト、ギガバイトを意味します。または、現在の容量に対する割合、相対的な数値、パーセントとして表現されます。たとえば:
 .Sp
 .Vb 1
 \& \-\-resize /dev/sda2=10G
@@ -565,15 +559,15 @@ size; or as a relative number or percentage.  For example:
 \& \-\-resize /dev/sda1=\-10%
 .Ve
 .Sp
-You can increase the size of any partition.  Virt-resize will expand the
-direct content of the partition if it knows how (see \fI\-\-expand\fR below).
+あらゆるパーティションの容量を拡大できます。virt\-resize は、どのように拡大するかわかれば（以下の \fI\-\-expand\fR
+参照）、パーティションの内容を直接拡大します。
 .Sp
 You can only \fIdecrease\fR the size of partitions that contain filesystems or
 PVs which have already been shrunk.  Virt-resize will check this has been
 done before proceeding, or else will print an error (see also
 \&\fI\-\-resize\-force\fR).
 .Sp
-You can give this option multiple times.
+このオプションは複数回指定できます。
 .IP "\fB\-\-resize\-force part=size\fR" 4
 .IX Item "--resize-force part=size"
 This is the same as \fI\-\-resize\fR except that it will let you decrease the
@@ -582,7 +576,7 @@ was at the end of the partition you shrink, but you may not care about that
 (eg. if shrinking an unused partition, or if you can easily recreate it such
 as a swap partition).
 .Sp
-See also the \fI\-\-ignore\fR option.
+\&\fI\-\-ignore\fR オプション参照。
 .IP "\fB\-\-shrink part\fR" 4
 .IX Item "--shrink part"
 Shrink the named partition until the overall disk image fits in the
@@ -605,14 +599,13 @@ Note that you cannot use \fI\-\-expand\fR and \fI\-\-shrink\fR together.
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
 .PD
-Display version number and exit.
-.SH "MACHINE READABLE OUTPUT"
-.IX Header "MACHINE READABLE OUTPUT"
-The \fI\-\-machine\-readable\fR option can be used to make the output more machine
-friendly, which is useful when calling virt-resize from other programs, GUIs
-etc.
+バージョン番号を表示して終了します。
+.SH "マシン可読な出力"
+.IX Header "マシン可読な出力"
+\&\fI\-\-machine\-readable\fR オプションはよりマシンに易しい出力を作成するために使用できます。これは他のプログラムや \s-1GUI\s0 などから
+virt-resize を呼び出すときに有用です。
 .PP
-There are two ways to use this option.
+このオプションを使用するには 2 通りの方法があります。
 .PP
 Firstly use the option on its own to query the capabilities of the
 virt-resize binary.  Typical output looks like this:
@@ -651,8 +644,8 @@ fatal error.
 .PP
 Versions of the program prior to 1.13.9 did not support the
 \&\fI\-\-machine\-readable\fR option and will return an error.
-.SH "NOTES"
-.IX Header "NOTES"
+.SH "注記"
+.IX Header "注記"
 .ie n .SS """Partition 1 does not end on cylinder boundary."""
 .el .SS "``Partition 1 does not end on cylinder boundary.''"
 .IX Subsection "Partition 1 does not end on cylinder boundary."
@@ -690,14 +683,14 @@ printing \f(CW\*(C`GRUB\*(C'\fR on the console, try reinstalling grub.
 .PP
 For more flexible guest reconfiguration, including if you need to specify
 other parameters to grub-install, use \fIvirt\-rescue\fR\|(1).
-.SS "\s-1WINDOWS\s0 \s-1UNMOUNTABLE_BOOT_VOLUME\s0 \s-1BSOD\s0"
-.IX Subsection "WINDOWS UNMOUNTABLE_BOOT_VOLUME BSOD"
-After sysprepping a Windows guest and then resizing it with virt-resize, you
-may see the guest fail to boot with an \f(CW\*(C`UNMOUNTABLE_BOOT_VOLUME\*(C'\fR \s-1BSOD\s0.
-This error is caused by having \f(CW\*(C`ExtendOemPartition=1\*(C'\fR in the sysprep.inf
-file.  Removing this line before sysprepping should fix the problem.
-.SH "ALTERNATIVE TOOLS"
-.IX Header "ALTERNATIVE TOOLS"
+.SS "Windows \s-1UNMOUNTABLE_BOOT_VOLUME\s0 \s-1BSOD\s0"
+.IX Subsection "Windows UNMOUNTABLE_BOOT_VOLUME BSOD"
+Windows 仮想マシンを sysprep して、virt\-resize を用いて容量を変更した後、仮想マシンが
+\&\f(CW\*(C`UNMOUNTABLE_BOOT_VOLUME\*(C'\fR \s-1BSOD\s0 で起動に失敗するかもしれません。このエラーは sysprep.inf ファイルに
+\&\f(CW\*(C`ExtendOemPartition=1\*(C'\fR があることにより引き起こされます。sysprep
+する前にこの行を削除することにより、この問題を解決できます。
+.SH "代替ツール"
+.IX Header "代替ツール"
 There are several proprietary tools for resizing partitions.  We won't
 mention any here.
 .PP
@@ -717,18 +710,18 @@ Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
-.SH "EXIT STATUS"
-.IX Header "EXIT STATUS"
-This program returns 0 if successful, or non-zero if there was an error.
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
+.SH "終了ステータス"
+.IX Header "終了ステータス"
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
+.SH "関連項目"
+.IX Header "関連項目"
 \&\fIvirt\-filesystems\fR\|(1), \fIvirt\-df\fR\|(1), \fIguestfs\fR\|(3), \fIguestfish\fR\|(1),
 \&\fIlvm\fR\|(8), \fIpvresize\fR\|(8), \fIlvresize\fR\|(8), \fIresize2fs\fR\|(8),
 \&\fIntfsresize\fR\|(8), \fIbtrfs\fR\|(8), \fIvirsh\fR\|(1), \fIparted\fR\|(8), \fItruncate\fR\|(1),
 \&\fIfallocate\fR\|(1), \fIgrub\fR\|(8), \fIgrub\-install\fR\|(8), \fIvirt\-rescue\fR\|(1),
 \&\fIvirt\-sparsify\fR\|(1), \fIvirt\-alignment\-scan\fR\|(1), <http://libguestfs.org/>.
-.SH "AUTHOR"
-.IX Header "AUTHOR"
+.SH "著者"
+.IX Header "著者"
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"

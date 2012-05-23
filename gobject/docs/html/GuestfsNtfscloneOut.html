@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsNtfscloneOut</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsNtfsfix.html" title="GuestfsNtfsfix">
+<link rel="next" href="GuestfsMkfsBtrfs.html" title="GuestfsMkfsBtrfs">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsNtfsfix.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsMkfsBtrfs.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsNtfscloneOut.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsNtfscloneOut.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsNtfscloneOut.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsNtfscloneOut.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsNtfscloneOut"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsNtfscloneOut.top_of_page"></a>GuestfsNtfscloneOut</span></h2>
+<p>GuestfsNtfscloneOut — An object encapsulating optional arguments for guestfs_session_ntfsclone_out</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsNtfscloneOut.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsNtfscloneOut.html#GuestfsNtfscloneOut-struct" title="struct GuestfsNtfscloneOut">GuestfsNtfscloneOut</a>;
+struct              <a class="link" href="GuestfsNtfscloneOut.html#GuestfsNtfscloneOutClass" title="struct GuestfsNtfscloneOutClass">GuestfsNtfscloneOutClass</a>;
+<a class="link" href="GuestfsNtfscloneOut.html" title="GuestfsNtfscloneOut"><span class="returnvalue">GuestfsNtfscloneOut</span></a> * <a class="link" href="GuestfsNtfscloneOut.html#guestfs-ntfsclone-out-new" title="guestfs_ntfsclone_out_new ()">guestfs_ntfsclone_out_new</a>         (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsNtfscloneOut.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----GuestfsNtfscloneOut
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsNtfscloneOut.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsNtfscloneOut.html#GuestfsNtfscloneOut--force" title='The "force" property'>force</a>"                    <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsNtfscloneOut.html#GuestfsNtfscloneOut--ignorefscheck" title='The "ignorefscheck" property'>ignorefscheck</a>"            <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsNtfscloneOut.html#GuestfsNtfscloneOut--metadataonly" title='The "metadataonly" property'>metadataonly</a>"             <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsNtfscloneOut.html#GuestfsNtfscloneOut--preservetimestamps" title='The "preservetimestamps" property'>preservetimestamps</a>"       <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsNtfscloneOut.html#GuestfsNtfscloneOut--rescue" title='The "rescue" property'>rescue</a>"                   <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsNtfscloneOut.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_ntfsclone_out
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsNtfscloneOut.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsNtfscloneOut-struct"></a><h3>struct GuestfsNtfscloneOut</h3>
+<pre class="programlisting">struct GuestfsNtfscloneOut;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_ntfsclone_out.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsNtfscloneOutClass"></a><h3>struct GuestfsNtfscloneOutClass</h3>
+<pre class="programlisting">struct GuestfsNtfscloneOutClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsNtfscloneOut.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="GuestfsNtfscloneOutClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsNtfscloneOutClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-ntfsclone-out-new"></a><h3>guestfs_ntfsclone_out_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsNtfscloneOut.html" title="GuestfsNtfscloneOut"><span class="returnvalue">GuestfsNtfscloneOut</span></a> * guestfs_ntfsclone_out_new         (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsNtfscloneOut object
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsNtfscloneOut object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsNtfscloneOut.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsNtfscloneOut--force"></a><h3>The <code class="literal">"force"</code> property</h3>
+<pre class="programlisting">  "force"                    <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsNtfscloneOut--ignorefscheck"></a><h3>The <code class="literal">"ignorefscheck"</code> property</h3>
+<pre class="programlisting">  "ignorefscheck"            <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsNtfscloneOut--metadataonly"></a><h3>The <code class="literal">"metadataonly"</code> property</h3>
+<pre class="programlisting">  "metadataonly"             <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsNtfscloneOut--preservetimestamps"></a><h3>The <code class="literal">"preservetimestamps"</code> property</h3>
+<pre class="programlisting">  "preservetimestamps"       <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsNtfscloneOut--rescue"></a><h3>The <code class="literal">"rescue"</code> property</h3>
+<pre class="programlisting">  "rescue"                   <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

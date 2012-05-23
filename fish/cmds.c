@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
+#include <libintl.h>
 
 #include "c-ctype.h"
 #include "full-write.h"
@@ -115,6 +116,9 @@ static int run_set_pgroup (const char *cmd, size_t argc, char *argv[]);
 static int run_get_pgroup (const char *cmd, size_t argc, char *argv[]);
 static int run_set_smp (const char *cmd, size_t argc, char *argv[]);
 static int run_get_smp (const char *cmd, size_t argc, char *argv[]);
+static int run_mount_local (const char *cmd, size_t argc, char *argv[]);
+static int run_mount_local_run (const char *cmd, size_t argc, char *argv[]);
+static int run_umount_local (const char *cmd, size_t argc, char *argv[]);
 static int run_mount (const char *cmd, size_t argc, char *argv[]);
 static int run_sync (const char *cmd, size_t argc, char *argv[]);
 static int run_touch (const char *cmd, size_t argc, char *argv[]);
@@ -418,6 +422,34 @@ static int run_md_detail (const char *cmd, size_t argc, char *argv[]);
 static int run_md_stop (const char *cmd, size_t argc, char *argv[]);
 static int run_blkid (const char *cmd, size_t argc, char *argv[]);
 static int run_e2fsck (const char *cmd, size_t argc, char *argv[]);
+static int run_llz (const char *cmd, size_t argc, char *argv[]);
+static int run_wipefs (const char *cmd, size_t argc, char *argv[]);
+static int run_ntfsfix (const char *cmd, size_t argc, char *argv[]);
+static int run_ntfsclone_out (const char *cmd, size_t argc, char *argv[]);
+static int run_ntfsclone_in (const char *cmd, size_t argc, char *argv[]);
+static int run_set_label (const char *cmd, size_t argc, char *argv[]);
+static int run_zero_free_space (const char *cmd, size_t argc, char *argv[]);
+static int run_lvcreate_free (const char *cmd, size_t argc, char *argv[]);
+static int run_isoinfo_device (const char *cmd, size_t argc, char *argv[]);
+static int run_isoinfo (const char *cmd, size_t argc, char *argv[]);
+static int run_vgmeta (const char *cmd, size_t argc, char *argv[]);
+static int run_md_stat (const char *cmd, size_t argc, char *argv[]);
+static int run_mkfs_btrfs (const char *cmd, size_t argc, char *argv[]);
+static int run_get_e2attrs (const char *cmd, size_t argc, char *argv[]);
+static int run_set_e2attrs (const char *cmd, size_t argc, char *argv[]);
+static int run_get_e2generation (const char *cmd, size_t argc, char *argv[]);
+static int run_set_e2generation (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_subvolume_snapshot (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_subvolume_delete (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_subvolume_create (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_subvolume_list (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_subvolume_set_default (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_filesystem_sync (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_filesystem_balance (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_device_add (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_device_delete (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_set_seeding (const char *cmd, size_t argc, char *argv[]);
+static int run_btrfs_fsck (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -655,7 +687,7 @@ struct command_entry is_launching_cmd_entry = {
 
 struct command_entry is_busy_cmd_entry = {
   .name = "is-busy",
-  .help = "NAME\n    is-busy - is busy processing a command\n\nSYNOPSIS\n     is-busy\n\nDESCRIPTION\n    This returns true iff this handle is busy processing a command (in the\n    \"BUSY\" state).\n\n    For more information on states, see guestfs(3).\n\n",
+  .help = "NAME\n    is-busy - is busy processing a command\n\nSYNOPSIS\n     is-busy\n\nDESCRIPTION\n    This always returns false. Do not use this function.\n\n    For more information on states, see guestfs(3).\n\n",
   .run = run_is_busy
 };
 
@@ -763,7 +795,7 @@ struct command_entry inspect_os_cmd_entry = {
 
 struct command_entry inspect_get_type_cmd_entry = {
   .name = "inspect-get-type",
-  .help = "NAME\n    inspect-get-type - get type of inspected operating system\n\nSYNOPSIS\n     inspect-get-type root\n\nDESCRIPTION\n    This returns the type of the inspected operating system. Currently\n    defined types are:\n\n    \"linux\"\n        Any Linux-based operating system.\n\n    \"windows\"\n        Any Microsoft Windows operating system.\n\n    \"freebsd\"\n        FreeBSD.\n\n    \"netbsd\"\n        NetBSD.\n\n    \"hurd\"\n        GNU/Hurd.\n\n    \"unknown\"\n        The operating system type could not be determined.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-type - get type of inspected operating system\n\nSYNOPSIS\n     inspect-get-type root\n\nDESCRIPTION\n    This returns the type of the inspected operating system. Currently\n    defined types are:\n\n    \"linux\"\n        Any Linux-based operating system.\n\n    \"windows\"\n        Any Microsoft Windows operating system.\n\n    \"freebsd\"\n        FreeBSD.\n\n    \"netbsd\"\n        NetBSD.\n\n    \"hurd\"\n        GNU/Hurd.\n\n    \"dos\"\n        MS-DOS, FreeDOS and others.\n\n    \"unknown\"\n        The operating system type could not be determined.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_type
 };
 
@@ -775,7 +807,7 @@ struct command_entry inspect_get_arch_cmd_entry = {
 
 struct command_entry inspect_get_distro_cmd_entry = {
   .name = "inspect-get-distro",
-  .help = "NAME\n    inspect-get-distro - get distro of inspected operating system\n\nSYNOPSIS\n     inspect-get-distro root\n\nDESCRIPTION\n    This returns the distro (distribution) of the inspected operating\n    system.\n\n    Currently defined distros are:\n\n    \"archlinux\"\n        Arch Linux.\n\n    \"centos\"\n        CentOS.\n\n    \"debian\"\n        Debian.\n\n    \"fedora\"\n        Fedora.\n\n    \"gentoo\"\n        Gentoo.\n\n    \"linuxmint\"\n        Linux Mint.\n\n    \"mageia\"\n        Mageia.\n\n    \"mandriva\"\n        Mandriva.\n\n    \"meego\"\n        MeeGo.\n\n    \"opensuse\"\n        OpenSUSE.\n\n    \"pardus\"\n        Pardus.\n\n    \"redhat-based\"\n        Some Red Hat-derived distro.\n\n    \"rhel\"\n        Red Hat Enterprise Linux.\n\n    \"scientificlinux\"\n        Scientific Linux.\n\n    \"slackware\"\n        Slackware.\n\n    \"ttylinux\"\n        ttylinux.\n\n    \"ubuntu\"\n        Ubuntu.\n\n    \"unknown\"\n        The distro could not be determined.\n\n    \"windows\"\n        Windows does not have distributions. This string is returned if the\n        OS type is Windows.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-distro - get distro of inspected operating system\n\nSYNOPSIS\n     inspect-get-distro root\n\nDESCRIPTION\n    This returns the distro (distribution) of the inspected operating\n    system.\n\n    Currently defined distros are:\n\n    \"archlinux\"\n        Arch Linux.\n\n    \"buildroot\"\n        Buildroot-derived distro, but not one we specifically recognize.\n\n    \"centos\"\n        CentOS.\n\n    \"cirros\"\n        Cirros.\n\n    \"debian\"\n        Debian.\n\n    \"fedora\"\n        Fedora.\n\n    \"freedos\"\n        FreeDOS.\n\n    \"gentoo\"\n        Gentoo.\n\n    \"linuxmint\"\n        Linux Mint.\n\n    \"mageia\"\n        Mageia.\n\n    \"mandriva\"\n        Mandriva.\n\n    \"meego\"\n        MeeGo.\n\n    \"opensuse\"\n        OpenSUSE.\n\n    \"pardus\"\n        Pardus.\n\n    \"redhat-based\"\n        Some Red Hat-derived distro.\n\n    \"rhel\"\n        Red Hat Enterprise Linux.\n\n    \"scientificlinux\"\n        Scientific Linux.\n\n    \"slackware\"\n        Slackware.\n\n    \"ttylinux\"\n        ttylinux.\n\n    \"ubuntu\"\n        Ubuntu.\n\n    \"unknown\"\n        The distro could not be determined.\n\n    \"windows\"\n        Windows does not have distributions. This string is returned if the\n        OS type is Windows.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_distro
 };
 
@@ -969,6 +1001,24 @@ struct command_entry get_smp_cmd_entry = {
   .name = "get-smp",
   .help = "NAME\n    get-smp - get number of virtual CPUs in appliance\n\nSYNOPSIS\n     get-smp\n\nDESCRIPTION\n    This returns the number of virtual CPUs assigned to the appliance.\n\n",
   .run = run_get_smp
+};
+
+struct command_entry mount_local_cmd_entry = {
+  .name = "mount-local",
+  .help = "NAME\n    mount-local - mount on the local filesystem\n\nSYNOPSIS\n     mount-local localmountpoint [readonly:true|false] [options:..] [cachetimeout:N] [debugcalls:true|false]\n\nDESCRIPTION\n    This call exports the libguestfs-accessible filesystem to a local\n    mountpoint (directory) called \"localmountpoint\". Ordinary reads and\n    writes to files and directories under \"localmountpoint\" are redirected\n    through libguestfs.\n\n    If the optional \"readonly\" flag is set to true, then writes to the\n    filesystem return error \"EROFS\".\n\n    \"options\" is a comma-separated list of mount options. See guestmount(1)\n    for some useful options.\n\n    \"cachetimeout\" sets the timeout (in seconds) for cached directory\n    entries. The default is 60 seconds. See guestmount(1) for further\n    information.\n\n    If \"debugcalls\" is set to true, then additional debugging information is\n    generated for every FUSE call.\n\n    When \"mount_local\" returns, the filesystem is ready, but is not\n    processing requests (access to it will block). You have to call\n    \"mount_local_run\" to run the main loop.\n\n    See \"MOUNT LOCAL\" in guestfs(3) for full documentation.\n\n",
+  .run = run_mount_local
+};
+
+struct command_entry mount_local_run_cmd_entry = {
+  .name = "mount-local-run",
+  .help = "NAME\n    mount-local-run - run main loop of mount on the local filesystem\n\nSYNOPSIS\n     mount-local-run\n\nDESCRIPTION\n    Run the main loop which translates kernel calls to libguestfs calls.\n\n    This should only be called after \"mount_local\" returns successfully. The\n    call will not return until the filesystem is unmounted.\n\n    Note you must *not* make concurrent libguestfs calls on the same handle\n    from another thread, with the exception of \"umount_local\".\n\n    You may call this from a different thread than the one which called\n    \"mount_local\", subject to the usual rules for threads and libguestfs\n    (see \"MULTIPLE HANDLES AND MULTIPLE THREADS\" in guestfs(3)).\n\n    See \"MOUNT LOCAL\" in guestfs(3) for full documentation.\n\n",
+  .run = run_mount_local_run
+};
+
+struct command_entry umount_local_cmd_entry = {
+  .name = "umount-local",
+  .help = "NAME\n    umount-local - unmount a locally mounted filesystem\n\nSYNOPSIS\n     umount-local\n\nDESCRIPTION\n    If libguestfs is exporting the filesystem on a local mountpoint, then\n    this unmounts it.\n\n    See \"MOUNT LOCAL\" in guestfs(3) for full documentation.\n\n",
+  .run = run_umount_local
 };
 
 struct command_entry mount_cmd_entry = {
@@ -1447,7 +1497,7 @@ struct command_entry pvremove_cmd_entry = {
 
 struct command_entry set_e2label_cmd_entry = {
   .name = "set-e2label",
-  .help = "NAME\n    set-e2label - set the ext2/3/4 filesystem label\n\nSYNOPSIS\n     set-e2label device label\n\nDESCRIPTION\n    This sets the ext2/3/4 filesystem label of the filesystem on \"device\" to\n    \"label\". Filesystem labels are limited to 16 characters.\n\n    You can use either \"tune2fs_l\" or \"get_e2label\" to return the existing\n    label on a filesystem.\n\n",
+  .help = "NAME\n    set-e2label - set the ext2/3/4 filesystem label\n\nSYNOPSIS\n     set-e2label device label\n\nDESCRIPTION\n    This sets the ext2/3/4 filesystem label of the filesystem on \"device\" to\n    \"label\". Filesystem labels are limited to 16 characters.\n\n    You can use either \"tune2fs_l\" or \"get_e2label\" to return the existing\n    label on a filesystem.\n\n    *This function is deprecated.* In new code, use the \"set_label\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_set_e2label
 };
 
@@ -1603,7 +1653,7 @@ struct command_entry lvresize_cmd_entry = {
 
 struct command_entry resize2fs_cmd_entry = {
   .name = "resize2fs",
-  .help = "NAME\n    resize2fs - resize an ext2, ext3 or ext4 filesystem\n\nSYNOPSIS\n     resize2fs device\n\nDESCRIPTION\n    This resizes an ext2, ext3 or ext4 filesystem to match the size of the\n    underlying device.\n\n    *Note:* It is sometimes required that you run \"e2fsck_f\" on the \"device\"\n    before calling this command. For unknown reasons \"resize2fs\" sometimes\n    gives an error about this and sometimes not. In any case, it is always\n    safe to call \"e2fsck_f\" before calling this function.\n\n",
+  .help = "NAME\n    resize2fs - resize an ext2, ext3 or ext4 filesystem\n\nSYNOPSIS\n     resize2fs device\n\nDESCRIPTION\n    This resizes an ext2, ext3 or ext4 filesystem to match the size of the\n    underlying device.\n\n    See also \"RESIZE2FS ERRORS\" in guestfs(3).\n\n",
   .run = run_resize2fs
 };
 
@@ -1615,7 +1665,7 @@ struct command_entry find_cmd_entry = {
 
 struct command_entry e2fsck_f_cmd_entry = {
   .name = "e2fsck-f",
-  .help = "NAME\n    e2fsck-f - check an ext2/ext3 filesystem\n\nSYNOPSIS\n     e2fsck-f device\n\nDESCRIPTION\n    This runs \"e2fsck -p -f device\", ie. runs the ext2/ext3 filesystem\n    checker on \"device\", noninteractively (*-p*), even if the filesystem\n    appears to be clean (*-f*).\n\n    This command is only needed because of \"resize2fs\" (q.v.). Normally you\n    should use \"fsck\".\n\n",
+  .help = "NAME\n    e2fsck-f - check an ext2/ext3 filesystem\n\nSYNOPSIS\n     e2fsck-f device\n\nDESCRIPTION\n    This runs \"e2fsck -p -f device\", ie. runs the ext2/ext3 filesystem\n    checker on \"device\", noninteractively (*-p*), even if the filesystem\n    appears to be clean (*-f*).\n\n    *This function is deprecated.* In new code, use the \"e2fsck\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_e2fsck_f
 };
 
@@ -1645,7 +1695,7 @@ struct command_entry sh_lines_cmd_entry = {
 
 struct command_entry glob_expand_cmd_entry = {
   .name = "glob-expand",
-  .help = "NAME\n    glob-expand - expand a wildcard path\n\nSYNOPSIS\n     glob-expand pattern\n\nDESCRIPTION\n    This command searches for all the pathnames matching \"pattern\" according\n    to the wildcard expansion rules used by the shell.\n\n    If no paths match, then this returns an empty list (note: not an error).\n\n    It is just a wrapper around the C glob(3) function with flags\n    \"GLOB_MARK|GLOB_BRACE\". See that manual page for more details.\n\n",
+  .help = "NAME\n    glob-expand - expand a wildcard path\n\nSYNOPSIS\n     glob-expand pattern\n\nDESCRIPTION\n    This command searches for all the pathnames matching \"pattern\" according\n    to the wildcard expansion rules used by the shell.\n\n    If no paths match, then this returns an empty list (note: not an error).\n\n    It is just a wrapper around the C glob(3) function with flags\n    \"GLOB_MARK|GLOB_BRACE\". See that manual page for more details.\n\n    Notice that there is no equivalent command for expanding a device name\n    (eg. \"/dev/sd*\"). Use \"list_devices\", \"list_partitions\" etc functions\n    instead.\n\n",
   .run = run_glob_expand
 };
 
@@ -2455,7 +2505,7 @@ struct command_entry pwrite_cmd_entry = {
 
 struct command_entry resize2fs_size_cmd_entry = {
   .name = "resize2fs-size",
-  .help = "NAME\n    resize2fs-size - resize an ext2, ext3 or ext4 filesystem (with size)\n\nSYNOPSIS\n     resize2fs-size device size\n\nDESCRIPTION\n    This command is the same as \"resize2fs\" except that it allows you to\n    specify the new size (in bytes) explicitly.\n\n",
+  .help = "NAME\n    resize2fs-size - resize an ext2, ext3 or ext4 filesystem (with size)\n\nSYNOPSIS\n     resize2fs-size device size\n\nDESCRIPTION\n    This command is the same as \"resize2fs\" except that it allows you to\n    specify the new size (in bytes) explicitly.\n\n    See also \"RESIZE2FS ERRORS\" in guestfs(3).\n\n",
   .run = run_resize2fs_size
 };
 
@@ -2653,7 +2703,7 @@ struct command_entry lgetxattr_cmd_entry = {
 
 struct command_entry resize2fs_M_cmd_entry = {
   .name = "resize2fs-M",
-  .help = "NAME\n    resize2fs-M - resize an ext2, ext3 or ext4 filesystem to the minimum\n    size\n\nSYNOPSIS\n     resize2fs-M device\n\nDESCRIPTION\n    This command is the same as \"resize2fs\", but the filesystem is resized\n    to its minimum size. This works like the *-M* option to the \"resize2fs\"\n    command.\n\n    To get the resulting size of the filesystem you should call \"tune2fs_l\"\n    and read the \"Block size\" and \"Block count\" values. These two numbers,\n    multiplied together, give the resulting size of the minimal filesystem\n    in bytes.\n\n",
+  .help = "NAME\n    resize2fs-M - resize an ext2, ext3 or ext4 filesystem to the minimum\n    size\n\nSYNOPSIS\n     resize2fs-M device\n\nDESCRIPTION\n    This command is the same as \"resize2fs\", but the filesystem is resized\n    to its minimum size. This works like the *-M* option to the \"resize2fs\"\n    command.\n\n    To get the resulting size of the filesystem you should call \"tune2fs_l\"\n    and read the \"Block size\" and \"Block count\" values. These two numbers,\n    multiplied together, give the resulting size of the minimal filesystem\n    in bytes.\n\n    See also \"RESIZE2FS ERRORS\" in guestfs(3).\n\n",
   .run = run_resize2fs_M
 };
 
@@ -2789,6 +2839,174 @@ struct command_entry e2fsck_cmd_entry = {
   .run = run_e2fsck
 };
 
+struct command_entry llz_cmd_entry = {
+  .name = "llz",
+  .help = "NAME\n    llz - list the files in a directory (long format with SELinux contexts)\n\nSYNOPSIS\n     llz directory\n\nDESCRIPTION\n    List the files in \"directory\" in the format of 'ls -laZ'.\n\n    This command is mostly useful for interactive sessions. It is *not*\n    intended that you try to parse the output string.\n\n",
+  .run = run_llz
+};
+
+struct command_entry wipefs_cmd_entry = {
+  .name = "wipefs",
+  .help = "NAME\n    wipefs - wipe a filesystem signature from a device\n\nSYNOPSIS\n     wipefs device\n\nDESCRIPTION\n    This command erases filesystem or RAID signatures from the specified\n    \"device\" to make the filesystem invisible to libblkid.\n\n    This does not erase the filesystem itself nor any other data from the\n    \"device\".\n\n    Compare with \"zero\" which zeroes the first few blocks of a device.\n\n",
+  .run = run_wipefs
+};
+
+struct command_entry ntfsfix_cmd_entry = {
+  .name = "ntfsfix",
+  .help = "NAME\n    ntfsfix - fix common errors and force Windows to check NTFS\n\nSYNOPSIS\n     ntfsfix device [clearbadsectors:true|false]\n\nDESCRIPTION\n    This command repairs some fundamental NTFS inconsistencies, resets the\n    NTFS journal file, and schedules an NTFS consistency check for the first\n    boot into Windows.\n\n    This is *not* an equivalent of Windows \"chkdsk\". It does *not* scan the\n    filesystem for inconsistencies.\n\n    The optional \"clearbadsectors\" flag clears the list of bad sectors. This\n    is useful after cloning a disk with bad sectors to a new disk.\n\n",
+  .run = run_ntfsfix
+};
+
+struct command_entry ntfsclone_out_cmd_entry = {
+  .name = "ntfsclone-out",
+  .help = "NAME\n    ntfsclone-out - save NTFS to backup file\n\nSYNOPSIS\n     ntfsclone-out device backupfile [metadataonly:true|false] [rescue:true|false] [ignorefscheck:true|false] [preservetimestamps:true|false] [force:true|false]\n\nDESCRIPTION\n    Stream the NTFS filesystem \"device\" to the local file \"backupfile\". The\n    format used for the backup file is a special format used by the\n    ntfsclone(8) tool.\n\n    If the optional \"metadataonly\" flag is true, then *only* the metadata is\n    saved, losing all the user data (this is useful for diagnosing some\n    filesystem problems).\n\n    The optional \"rescue\", \"ignorefscheck\", \"preservetimestamps\" and \"force\"\n    flags have precise meanings detailed in the ntfsclone(8) man page.\n\n    Use \"ntfsclone_in\" to restore the file back to a libguestfs device.\n\n",
+  .run = run_ntfsclone_out
+};
+
+struct command_entry ntfsclone_in_cmd_entry = {
+  .name = "ntfsclone-in",
+  .help = "NAME\n    ntfsclone-in - restore NTFS from backup file\n\nSYNOPSIS\n     ntfsclone-in backupfile device\n\nDESCRIPTION\n    Restore the \"backupfile\" (from a previous call to \"ntfsclone_out\") to\n    \"device\", overwriting any existing contents of this device.\n\n",
+  .run = run_ntfsclone_in
+};
+
+struct command_entry set_label_cmd_entry = {
+  .name = "set-label",
+  .help = "NAME\n    set-label - set filesystem label\n\nSYNOPSIS\n     set-label device label\n\nDESCRIPTION\n    Set the filesystem label on \"device\" to \"label\".\n\n    Only some filesystem types support labels, and libguestfs supports\n    setting labels on only a subset of these.\n\n    On ext2/3/4 filesystems, labels are limited to 16 bytes.\n\n    On NTFS filesystems, labels are limited to 128 unicode characters.\n\n    To read the label on a filesystem, call \"vfs_label\".\n\n",
+  .run = run_set_label
+};
+
+struct command_entry zero_free_space_cmd_entry = {
+  .name = "zero-free-space",
+  .help = "NAME\n    zero-free-space - zero free space in a filesystem\n\nSYNOPSIS\n     zero-free-space directory\n\nDESCRIPTION\n    Zero the free space in the filesystem mounted on \"directory\". The\n    filesystem must be mounted read-write.\n\n    The filesystem contents are not affected, but any free space in the\n    filesystem is freed.\n\n    In future (but not currently) these zeroed blocks will be \"sparsified\" -\n    that is, given back to the host.\n\n",
+  .run = run_zero_free_space
+};
+
+struct command_entry lvcreate_free_cmd_entry = {
+  .name = "lvcreate-free",
+  .help = "NAME\n    lvcreate-free - create an LVM logical volume in % remaining free space\n\nSYNOPSIS\n     lvcreate-free logvol volgroup percent\n\nDESCRIPTION\n    Create an LVM logical volume called \"/dev/volgroup/logvol\", using\n    approximately \"percent\" % of the free space remaining in the volume\n    group. Most usefully, when \"percent\" is 100 this will create the largest\n    possible LV.\n\n",
+  .run = run_lvcreate_free
+};
+
+struct command_entry isoinfo_device_cmd_entry = {
+  .name = "isoinfo-device",
+  .help = "NAME\n    isoinfo-device - get ISO information from primary volume descriptor of\n    device\n\nSYNOPSIS\n     isoinfo-device device\n\nDESCRIPTION\n    \"device\" is an ISO device. This returns a struct of information read\n    from the primary volume descriptor (the ISO equivalent of the\n    superblock) of the device.\n\n    Usually it is more efficient to use the isoinfo(1) command with the *-d*\n    option on the host to analyze ISO files, instead of going through\n    libguestfs.\n\n    For information on the primary volume descriptor fields, see\n    <http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor>\n\n",
+  .run = run_isoinfo_device
+};
+
+struct command_entry isoinfo_cmd_entry = {
+  .name = "isoinfo",
+  .help = "NAME\n    isoinfo - get ISO information from primary volume descriptor of ISO file\n\nSYNOPSIS\n     isoinfo isofile\n\nDESCRIPTION\n    This is the same as \"isoinfo_device\" except that it works for an ISO\n    file located inside some other mounted filesystem. Note that in the\n    common case where you have added an ISO file as a libguestfs device, you\n    would *not* call this. Instead you would call \"isoinfo_device\".\n\n",
+  .run = run_isoinfo
+};
+
+struct command_entry vgmeta_cmd_entry = {
+  .name = "vgmeta",
+  .help = "NAME\n    vgmeta - get volume group metadata\n\nSYNOPSIS\n     vgmeta vgname\n\nDESCRIPTION\n    \"vgname\" is an LVM volume group. This command examines the volume group\n    and returns its metadata.\n\n    Note that the metadata is an internal structure used by LVM, subject to\n    change at any time, and is provided for information only.\n\n",
+  .run = run_vgmeta
+};
+
+struct command_entry md_stat_cmd_entry = {
+  .name = "md-stat",
+  .help = "NAME\n    md-stat - get underlying devices from an MD device\n\nSYNOPSIS\n     md-stat md\n\nDESCRIPTION\n    This call returns a list of the underlying devices which make up the\n    single software RAID array device \"md\".\n\n    To get a list of software RAID devices, call \"list_md_devices\".\n\n    Each structure returned corresponds to one device along with additional\n    status information:\n\n    \"mdstat_device\"\n        The name of the underlying device.\n\n    \"mdstat_index\"\n        The index of this device within the array.\n\n    \"mdstat_flags\"\n        Flags associated with this device. This is a string containing (in\n        no specific order) zero or more of the following flags:\n\n        \"W\" write-mostly\n\n        \"F\" device is faulty\n\n        \"S\" device is a RAID spare\n\n        \"R\" replacement\n\n",
+  .run = run_md_stat
+};
+
+struct command_entry mkfs_btrfs_cmd_entry = {
+  .name = "mkfs-btrfs",
+  .help = "NAME\n    mkfs-btrfs - create a btrfs filesystem\n\nSYNOPSIS\n     mkfs-btrfs devices [allocstart:N] [bytecount:N] [datatype:..] [leafsize:N] [label:..] [metadata:..] [nodesize:N] [sectorsize:N]\n\nDESCRIPTION\n    Create a btrfs filesystem, allowing all configurables to be set. For\n    more information on the optional arguments, see mkfs.btrfs(8).\n\n    Since btrfs filesystems can span multiple devices, this takes a\n    non-empty list of devices.\n\n    To create general filesystems, use \"mkfs_opts\".\n\n",
+  .run = run_mkfs_btrfs
+};
+
+struct command_entry get_e2attrs_cmd_entry = {
+  .name = "get-e2attrs",
+  .help = "NAME\n    get-e2attrs - get ext2 file attributes of a file\n\nSYNOPSIS\n     get-e2attrs file\n\nDESCRIPTION\n    This returns the file attributes associated with \"file\".\n\n    The attributes are a set of bits associated with each inode which affect\n    the behaviour of the file. The attributes are returned as a string of\n    letters (described below). The string may be empty, indicating that no\n    file attributes are set for this file.\n\n    These attributes are only present when the file is located on an\n    ext2/3/4 filesystem. Using this call on other filesystem types will\n    result in an error.\n\n    The characters (file attributes) in the returned string are currently:\n\n    'A' When the file is accessed, its atime is not modified.\n\n    'a' The file is append-only.\n\n    'c' The file is compressed on-disk.\n\n    'D' (Directories only.) Changes to this directory are written\n        synchronously to disk.\n\n    'd' The file is not a candidate for backup (see dump(8)).\n\n    'E' The file has compression errors.\n\n    'e' The file is using extents.\n\n    'h' The file is storing its blocks in units of the filesystem blocksize\n        instead of sectors.\n\n    'I' (Directories only.) The directory is using hashed trees.\n\n    'i' The file is immutable. It cannot be modified, deleted or renamed. No\n        link can be created to this file.\n\n    'j' The file is data-journaled.\n\n    's' When the file is deleted, all its blocks will be zeroed.\n\n    'S' Changes to this file are written synchronously to disk.\n\n    'T' (Directories only.) This is a hint to the block allocator that\n        subdirectories contained in this directory should be spread across\n        blocks. If not present, the block allocator will try to group\n        subdirectories together.\n\n    't' For a file, this disables tail-merging. (Not used by upstream\n        implementations of ext2.)\n\n    'u' When the file is deleted, its blocks will be saved, allowing the\n        file to be undeleted.\n\n    'X' The raw contents of the compressed file may be accessed.\n\n    'Z' The compressed file is dirty.\n\n    More file attributes may be added to this list later. Not all file\n    attributes may be set for all kinds of files. For detailed information,\n    consult the chattr(1) man page.\n\n    See also \"set_e2attrs\".\n\n    Don't confuse these attributes with extended attributes (see\n    \"getxattr\").\n\n",
+  .run = run_get_e2attrs
+};
+
+struct command_entry set_e2attrs_cmd_entry = {
+  .name = "set-e2attrs",
+  .help = "NAME\n    set-e2attrs - set ext2 file attributes of a file\n\nSYNOPSIS\n     set-e2attrs file attrs [clear:true|false]\n\nDESCRIPTION\n    This sets or clears the file attributes \"attrs\" associated with the\n    inode \"file\".\n\n    \"attrs\" is a string of characters representing file attributes. See\n    \"get_e2attrs\" for a list of possible attributes. Not all attributes can\n    be changed.\n\n    If optional boolean \"clear\" is not present or false, then the \"attrs\"\n    listed are set in the inode.\n\n    If \"clear\" is true, then the \"attrs\" listed are cleared in the inode.\n\n    In both cases, other attributes not present in the \"attrs\" string are\n    left unchanged.\n\n    These attributes are only present when the file is located on an\n    ext2/3/4 filesystem. Using this call on other filesystem types will\n    result in an error.\n\n",
+  .run = run_set_e2attrs
+};
+
+struct command_entry get_e2generation_cmd_entry = {
+  .name = "get-e2generation",
+  .help = "NAME\n    get-e2generation - get ext2 file generation of a file\n\nSYNOPSIS\n     get-e2generation file\n\nDESCRIPTION\n    This returns the ext2 file generation of a file. The generation (which\n    used to be called the \"version\") is a number associated with an inode.\n    This is most commonly used by NFS servers.\n\n    The generation is only present when the file is located on an ext2/3/4\n    filesystem. Using this call on other filesystem types will result in an\n    error.\n\n    See \"set_e2generation\".\n\n",
+  .run = run_get_e2generation
+};
+
+struct command_entry set_e2generation_cmd_entry = {
+  .name = "set-e2generation",
+  .help = "NAME\n    set-e2generation - set ext2 file generation of a file\n\nSYNOPSIS\n     set-e2generation file generation\n\nDESCRIPTION\n    This sets the ext2 file generation of a file.\n\n    See \"get_e2generation\".\n\n",
+  .run = run_set_e2generation
+};
+
+struct command_entry btrfs_subvolume_snapshot_cmd_entry = {
+  .name = "btrfs-subvolume-snapshot",
+  .help = "NAME\n    btrfs-subvolume-snapshot - create a writable btrfs snapshot\n\nSYNOPSIS\n     btrfs-subvolume-snapshot source dest\n\nDESCRIPTION\n    Create a writable snapshot of the btrfs subvolume \"source\". The \"dest\"\n    argument is the destination directory and the name of the snapshot, in\n    the form \"/path/to/dest/name\".\n\n",
+  .run = run_btrfs_subvolume_snapshot
+};
+
+struct command_entry btrfs_subvolume_delete_cmd_entry = {
+  .name = "btrfs-subvolume-delete",
+  .help = "NAME\n    btrfs-subvolume-delete - delete a btrfs snapshot\n\nSYNOPSIS\n     btrfs-subvolume-delete subvolume\n\nDESCRIPTION\n    Delete the named btrfs subvolume.\n\n",
+  .run = run_btrfs_subvolume_delete
+};
+
+struct command_entry btrfs_subvolume_create_cmd_entry = {
+  .name = "btrfs-subvolume-create",
+  .help = "NAME\n    btrfs-subvolume-create - create a btrfs snapshot\n\nSYNOPSIS\n     btrfs-subvolume-create dest\n\nDESCRIPTION\n    Create a btrfs subvolume. The \"dest\" argument is the destination\n    directory and the name of the snapshot, in the form\n    \"/path/to/dest/name\".\n\n",
+  .run = run_btrfs_subvolume_create
+};
+
+struct command_entry btrfs_subvolume_list_cmd_entry = {
+  .name = "btrfs-subvolume-list",
+  .help = "NAME\n    btrfs-subvolume-list - list btrfs snapshots and subvolumes\n\nSYNOPSIS\n     btrfs-subvolume-list fs\n\nDESCRIPTION\n    List the btrfs snapshots and subvolumes of the btrfs filesystem which is\n    mounted at \"fs\".\n\n",
+  .run = run_btrfs_subvolume_list
+};
+
+struct command_entry btrfs_subvolume_set_default_cmd_entry = {
+  .name = "btrfs-subvolume-set-default",
+  .help = "NAME\n    btrfs-subvolume-set-default - set default btrfs subvolume\n\nSYNOPSIS\n     btrfs-subvolume-set-default id fs\n\nDESCRIPTION\n    Set the subvolume of the btrfs filesystem \"fs\" which will be mounted by\n    default. See \"btrfs_subvolume_list\" to get a list of subvolumes.\n\n",
+  .run = run_btrfs_subvolume_set_default
+};
+
+struct command_entry btrfs_filesystem_sync_cmd_entry = {
+  .name = "btrfs-filesystem-sync",
+  .help = "NAME\n    btrfs-filesystem-sync - sync a btrfs filesystem\n\nSYNOPSIS\n     btrfs-filesystem-sync fs\n\nDESCRIPTION\n    Force sync on the btrfs filesystem mounted at \"fs\".\n\n",
+  .run = run_btrfs_filesystem_sync
+};
+
+struct command_entry btrfs_filesystem_balance_cmd_entry = {
+  .name = "btrfs-filesystem-balance",
+  .help = "NAME\n    btrfs-filesystem-balance - balance a btrfs filesystem\n\nSYNOPSIS\n     btrfs-filesystem-balance fs\n\nDESCRIPTION\n    Balance the chunks in the btrfs filesystem mounted at \"fs\" across the\n    underlying devices.\n\n",
+  .run = run_btrfs_filesystem_balance
+};
+
+struct command_entry btrfs_device_add_cmd_entry = {
+  .name = "btrfs-device-add",
+  .help = "NAME\n    btrfs-device-add - add devices to a btrfs filesystem\n\nSYNOPSIS\n     btrfs-device-add devices fs\n\nDESCRIPTION\n    Add the list of device(s) in \"devices\" to the btrfs filesystem mounted\n    at \"fs\". If \"devices\" is an empty list, this does nothing.\n\n",
+  .run = run_btrfs_device_add
+};
+
+struct command_entry btrfs_device_delete_cmd_entry = {
+  .name = "btrfs-device-delete",
+  .help = "NAME\n    btrfs-device-delete - remove devices from a btrfs filesystem\n\nSYNOPSIS\n     btrfs-device-delete devices fs\n\nDESCRIPTION\n    Remove the \"devices\" from the btrfs filesystem mounted at \"fs\". If\n    \"devices\" is an empty list, this does nothing.\n\n",
+  .run = run_btrfs_device_delete
+};
+
+struct command_entry btrfs_set_seeding_cmd_entry = {
+  .name = "btrfs-set-seeding",
+  .help = "NAME\n    btrfs-set-seeding - enable or disable the seeding feature of device\n\nSYNOPSIS\n     btrfs-set-seeding device seeding\n\nDESCRIPTION\n    Enable or disable the seeding feature of a device that contains a btrfs\n    filesystem.\n\n",
+  .run = run_btrfs_set_seeding
+};
+
+struct command_entry btrfs_fsck_cmd_entry = {
+  .name = "btrfs-fsck",
+  .help = "NAME\n    btrfs-fsck - check a btrfs filesystem\n\nSYNOPSIS\n     btrfs-fsck device [superblock:N] [repair:true|false]\n\nDESCRIPTION\n    Used to check a btrfs filesystem, \"device\" is the device file where the\n    filesystem is stored.\n\n",
+  .run = run_btrfs_fsck
+};
+
 void
 list_commands (void)
 {
@@ -2831,7 +3049,18 @@ list_commands (void)
   printf ("%-20s %s\n", "blockdev-setbsz", _("set blocksize of block device"));
   printf ("%-20s %s\n", "blockdev-setro", _("set block device to read-only"));
   printf ("%-20s %s\n", "blockdev-setrw", _("set block device to read-write"));
+  printf ("%-20s %s\n", "btrfs-device-add", _("add devices to a btrfs filesystem"));
+  printf ("%-20s %s\n", "btrfs-device-delete", _("remove devices from a btrfs filesystem"));
+  printf ("%-20s %s\n", "btrfs-filesystem-balance", _("balance a btrfs filesystem"));
   printf ("%-20s %s\n", "btrfs-filesystem-resize", _("resize a btrfs filesystem"));
+  printf ("%-20s %s\n", "btrfs-filesystem-sync", _("sync a btrfs filesystem"));
+  printf ("%-20s %s\n", "btrfs-fsck", _("check a btrfs filesystem"));
+  printf ("%-20s %s\n", "btrfs-set-seeding", _("enable or disable the seeding feature of device"));
+  printf ("%-20s %s\n", "btrfs-subvolume-create", _("create a btrfs snapshot"));
+  printf ("%-20s %s\n", "btrfs-subvolume-delete", _("delete a btrfs snapshot"));
+  printf ("%-20s %s\n", "btrfs-subvolume-list", _("list btrfs snapshots and subvolumes"));
+  printf ("%-20s %s\n", "btrfs-subvolume-set-default", _("set default btrfs subvolume"));
+  printf ("%-20s %s\n", "btrfs-subvolume-snapshot", _("create a writable btrfs snapshot"));
   printf ("%-20s %s\n", "case-sensitive-path", _("return true path on case-insensitive filesystem"));
   printf ("%-20s %s\n", "cat", _("list the contents of a file"));
   printf ("%-20s %s\n", "checksum", _("compute MD5, SHAx or CRC checksum of file"));
@@ -2895,6 +3124,8 @@ list_commands (void)
   printf ("%-20s %s\n", "get-attach-method", _("get the attach method"));
   printf ("%-20s %s\n", "get-autosync", _("get autosync mode"));
   printf ("%-20s %s\n", "get-direct", _("get direct appliance mode flag"));
+  printf ("%-20s %s\n", "get-e2attrs", _("get ext2 file attributes of a file"));
+  printf ("%-20s %s\n", "get-e2generation", _("get ext2 file generation of a file"));
   printf ("%-20s %s\n", "get-e2label", _("get the ext2/3/4 filesystem label"));
   printf ("%-20s %s\n", "get-e2uuid", _("get the ext2/3/4 filesystem UUID"));
   printf ("%-20s %s\n", "get-memsize", _("get memory allocated to the qemu subprocess"));
@@ -2967,6 +3198,8 @@ list_commands (void)
   printf ("%-20s %s\n", "is-symlink", _("test if symbolic link"));
   printf ("%-20s %s\n", "is-zero", _("test if a file contains all zero bytes"));
   printf ("%-20s %s\n", "is-zero-device", _("test if a device contains all zero bytes"));
+  printf ("%-20s %s\n", "isoinfo", _("get ISO information from primary volume descriptor of ISO file"));
+  printf ("%-20s %s\n", "isoinfo-device", _("get ISO information from primary volume descriptor of device"));
   printf ("%-20s %s\n", "kill-subprocess", _("kill the qemu subprocess"));
   printf ("%-20s %s\n", "launch", _("launch the qemu subprocess"));
   printf ("%-20s %s\n", "lcd", _("change working directory"));
@@ -2981,6 +3214,7 @@ list_commands (void)
   printf ("%-20s %s\n", "list-md-devices", _("list Linux md (RAID) devices"));
   printf ("%-20s %s\n", "list-partitions", _("list the partitions"));
   printf ("%-20s %s\n", "ll", _("list the files in a directory (long format)"));
+  printf ("%-20s %s\n", "llz", _("list the files in a directory (long format with SELinux contexts)"));
   printf ("%-20s %s\n", "ln", _("create a hard link"));
   printf ("%-20s %s\n", "ln-f", _("create a hard link"));
   printf ("%-20s %s\n", "ln-s", _("create a symbolic link"));
@@ -2998,6 +3232,7 @@ list_commands (void)
   printf ("%-20s %s\n", "luks-open", _("open a LUKS-encrypted block device"));
   printf ("%-20s %s\n", "luks-open-ro", _("open a LUKS-encrypted block device read-only"));
   printf ("%-20s %s\n", "lvcreate", _("create an LVM logical volume"));
+  printf ("%-20s %s\n", "lvcreate-free", _("create an LVM logical volume in % remaining free space"));
   printf ("%-20s %s\n", "lvm-canonical-lv-name", _("get canonical name of an LV"));
   printf ("%-20s %s\n", "lvm-clear-filter", _("clear LVM device filter"));
   printf ("%-20s %s\n", "lvm-remove-all", _("remove all LVM LVs, VGs and PVs"));
@@ -3013,6 +3248,7 @@ list_commands (void)
   printf ("%-20s %s\n", "man", _("open the manual"));
   printf ("%-20s %s\n", "md-create", _("create a Linux md (RAID) device"));
   printf ("%-20s %s\n", "md-detail", _("obtain metadata for an MD device"));
+  printf ("%-20s %s\n", "md-stat", _("get underlying devices from an MD device"));
   printf ("%-20s %s\n", "md-stop", _("stop a Linux md (RAID) device"));
   printf ("%-20s %s\n", "mkdir", _("create a directory"));
   printf ("%-20s %s\n", "mkdir-mode", _("create a directory with a particular mode"));
@@ -3027,6 +3263,7 @@ list_commands (void)
   printf ("%-20s %s\n", "mkfifo", _("make FIFO (named pipe)"));
   printf ("%-20s %s\n", "mkfs", _("make a filesystem"));
   printf ("%-20s %s\n", "mkfs-b", _("make a filesystem with block size"));
+  printf ("%-20s %s\n", "mkfs-btrfs", _("create a btrfs filesystem"));
   printf ("%-20s %s\n", "mkfs-opts", _("make a filesystem"));
   printf ("%-20s %s\n", "mkmountpoint", _("create a mountpoint"));
   printf ("%-20s %s\n", "mknod", _("make block, character or FIFO devices"));
@@ -3040,6 +3277,8 @@ list_commands (void)
   printf ("%-20s %s\n", "more", _("view a file"));
   printf ("%-20s %s\n", "mount", _("mount a guest disk at a position in the filesystem"));
   printf ("%-20s %s\n", "mount-9p", _("mount 9p filesystem"));
+  printf ("%-20s %s\n", "mount-local", _("mount on the local filesystem"));
+  printf ("%-20s %s\n", "mount-local-run", _("run main loop of mount on the local filesystem"));
   printf ("%-20s %s\n", "mount-loop", _("mount a file using the loop device"));
   printf ("%-20s %s\n", "mount-options", _("mount a guest disk with mount options"));
   printf ("%-20s %s\n", "mount-ro", _("mount a guest disk, read-only"));
@@ -3048,6 +3287,9 @@ list_commands (void)
   printf ("%-20s %s\n", "mounts", _("show mounted filesystems"));
   printf ("%-20s %s\n", "mv", _("move a file"));
   printf ("%-20s %s\n", "ntfs-3g-probe", _("probe NTFS volume"));
+  printf ("%-20s %s\n", "ntfsclone-in", _("restore NTFS from backup file"));
+  printf ("%-20s %s\n", "ntfsclone-out", _("save NTFS to backup file"));
+  printf ("%-20s %s\n", "ntfsfix", _("fix common errors and force Windows to check NTFS"));
   printf ("%-20s %s\n", "ntfsresize", _("resize an NTFS filesystem"));
   printf ("%-20s %s\n", "ntfsresize-opts", _("resize an NTFS filesystem"));
   printf ("%-20s %s\n", "ntfsresize-size", _("resize an NTFS filesystem (with size)"));
@@ -3098,8 +3340,11 @@ list_commands (void)
   printf ("%-20s %s\n", "set-attach-method", _("set the attach method"));
   printf ("%-20s %s\n", "set-autosync", _("set autosync mode"));
   printf ("%-20s %s\n", "set-direct", _("enable or disable direct appliance mode"));
+  printf ("%-20s %s\n", "set-e2attrs", _("set ext2 file attributes of a file"));
+  printf ("%-20s %s\n", "set-e2generation", _("set ext2 file generation of a file"));
   printf ("%-20s %s\n", "set-e2label", _("set the ext2/3/4 filesystem label"));
   printf ("%-20s %s\n", "set-e2uuid", _("set the ext2/3/4 filesystem UUID"));
+  printf ("%-20s %s\n", "set-label", _("set filesystem label"));
   printf ("%-20s %s\n", "set-memsize", _("set memory allocated to the qemu subprocess"));
   printf ("%-20s %s\n", "set-network", _("set enable network flag"));
   printf ("%-20s %s\n", "set-path", _("set the search path"));
@@ -3154,6 +3399,7 @@ list_commands (void)
   printf ("%-20s %s\n", "umask", _("set file mode creation mask (umask)"));
   printf ("%-20s %s\n", "umount", _("unmount a filesystem"));
   printf ("%-20s %s\n", "umount-all", _("unmount all filesystems"));
+  printf ("%-20s %s\n", "umount-local", _("unmount a locally mounted filesystem"));
   printf ("%-20s %s\n", "unsetenv", _("unset an environment variable"));
   printf ("%-20s %s\n", "upload", _("upload a file from the local machine"));
   printf ("%-20s %s\n", "upload-offset", _("upload a file from the local machine with offset"));
@@ -3166,6 +3412,7 @@ list_commands (void)
   printf ("%-20s %s\n", "vg-activate-all", _("activate or deactivate all volume groups"));
   printf ("%-20s %s\n", "vgcreate", _("create an LVM volume group"));
   printf ("%-20s %s\n", "vglvuuids", _("get the LV UUIDs of all LVs in the volume group"));
+  printf ("%-20s %s\n", "vgmeta", _("get volume group metadata"));
   printf ("%-20s %s\n", "vgpvuuids", _("get the PV UUIDs containing the volume group"));
   printf ("%-20s %s\n", "vgremove", _("remove an LVM volume group"));
   printf ("%-20s %s\n", "vgrename", _("rename an LVM volume group"));
@@ -3176,6 +3423,7 @@ list_commands (void)
   printf ("%-20s %s\n", "wc-c", _("count characters in a file"));
   printf ("%-20s %s\n", "wc-l", _("count lines in a file"));
   printf ("%-20s %s\n", "wc-w", _("count words in a file"));
+  printf ("%-20s %s\n", "wipefs", _("wipe a filesystem signature from a device"));
   printf ("%-20s %s\n", "write", _("create a new file"));
   printf ("%-20s %s\n", "write-append", _("append content to end of file"));
   printf ("%-20s %s\n", "write-file", _("create a file"));
@@ -3183,6 +3431,7 @@ list_commands (void)
   printf ("%-20s %s\n", "zegrepi", _("return lines matching a pattern"));
   printf ("%-20s %s\n", "zero", _("write zeroes to the device"));
   printf ("%-20s %s\n", "zero-device", _("write zeroes to an entire device"));
+  printf ("%-20s %s\n", "zero-free-space", _("zero free space in a filesystem"));
   printf ("%-20s %s\n", "zerofree", _("zero unused inodes and disk blocks on ext2/3 filesystem"));
   printf ("%-20s %s\n", "zfgrep", _("return lines matching a pattern"));
   printf ("%-20s %s\n", "zfgrepi", _("return lines matching a pattern"));
@@ -3400,6 +3649,44 @@ print_application_indent (struct guestfs_application *application, const char *i
 }
 
 static void
+print_isoinfo_indent (struct guestfs_isoinfo *isoinfo, const char *indent)
+{
+  printf ("%siso_system_id: %s\n", indent, isoinfo->iso_system_id);
+  printf ("%siso_volume_id: %s\n", indent, isoinfo->iso_volume_id);
+  printf ("%siso_volume_space_size: %" PRIu32 "\n", indent, isoinfo->iso_volume_space_size);
+  printf ("%siso_volume_set_size: %" PRIu32 "\n", indent, isoinfo->iso_volume_set_size);
+  printf ("%siso_volume_sequence_number: %" PRIu32 "\n", indent, isoinfo->iso_volume_sequence_number);
+  printf ("%siso_logical_block_size: %" PRIu32 "\n", indent, isoinfo->iso_logical_block_size);
+  printf ("%siso_volume_set_id: %s\n", indent, isoinfo->iso_volume_set_id);
+  printf ("%siso_publisher_id: %s\n", indent, isoinfo->iso_publisher_id);
+  printf ("%siso_data_preparer_id: %s\n", indent, isoinfo->iso_data_preparer_id);
+  printf ("%siso_application_id: %s\n", indent, isoinfo->iso_application_id);
+  printf ("%siso_copyright_file_id: %s\n", indent, isoinfo->iso_copyright_file_id);
+  printf ("%siso_abstract_file_id: %s\n", indent, isoinfo->iso_abstract_file_id);
+  printf ("%siso_bibliographic_file_id: %s\n", indent, isoinfo->iso_bibliographic_file_id);
+  printf ("%siso_volume_creation_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_creation_t);
+  printf ("%siso_volume_modification_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_modification_t);
+  printf ("%siso_volume_expiration_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_expiration_t);
+  printf ("%siso_volume_effective_t: %" PRIi64 "\n", indent, isoinfo->iso_volume_effective_t);
+}
+
+static void
+print_mdstat_indent (struct guestfs_mdstat *mdstat, const char *indent)
+{
+  printf ("%smdstat_device: %s\n", indent, mdstat->mdstat_device);
+  printf ("%smdstat_index: %" PRIi32 "\n", indent, mdstat->mdstat_index);
+  printf ("%smdstat_flags: %s\n", indent, mdstat->mdstat_flags);
+}
+
+static void
+print_btrfssubvolume_indent (struct guestfs_btrfssubvolume *btrfssubvolume, const char *indent)
+{
+  printf ("%sbtrfssubvolume_id: %" PRIu64 "\n", indent, btrfssubvolume->btrfssubvolume_id);
+  printf ("%sbtrfssubvolume_top_level_id: %" PRIu64 "\n", indent, btrfssubvolume->btrfssubvolume_top_level_id);
+  printf ("%sbtrfssubvolume_path: %s\n", indent, btrfssubvolume->btrfssubvolume_path);
+}
+
+static void
 print_lvm_vg_list (struct guestfs_lvm_vg_list *lvm_vgs)
 {
   unsigned int i;
@@ -3419,6 +3706,30 @@ print_stat_list (struct guestfs_stat_list *stats)
   for (i = 0; i < stats->len; ++i) {
     printf ("[%d] = {\n", i);
     print_stat_indent (&stats->val[i], "  ");
+    printf ("}\n");
+  }
+}
+
+static void
+print_mdstat_list (struct guestfs_mdstat_list *mdstats)
+{
+  unsigned int i;
+
+  for (i = 0; i < mdstats->len; ++i) {
+    printf ("[%d] = {\n", i);
+    print_mdstat_indent (&mdstats->val[i], "  ");
+    printf ("}\n");
+  }
+}
+
+static void
+print_btrfssubvolume_list (struct guestfs_btrfssubvolume_list *btrfssubvolumes)
+{
+  unsigned int i;
+
+  for (i = 0; i < btrfssubvolumes->len; ++i) {
+    printf ("[%d] = {\n", i);
+    print_btrfssubvolume_indent (&btrfssubvolumes->val[i], "  ");
     printf ("}\n");
   }
 }
@@ -3517,6 +3828,12 @@ static void
 print_statvfs (struct guestfs_statvfs *statvfs)
 {
   print_statvfs_indent (statvfs, "");
+}
+
+static void
+print_isoinfo (struct guestfs_isoinfo *isoinfo)
+{
+  print_isoinfo_indent (isoinfo, "");
 }
 
 static void
@@ -5276,6 +5593,152 @@ run_get_smp (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
   printf ("%d\n", r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_mount_local (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *localmountpoint;
+  struct guestfs_mount_local_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mount_local_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 5) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 5);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  localmountpoint = argv[i++];
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "readonly:")) {
+      optargs_s.readonly = is_true (&argv[i][9]) ? 1 : 0;
+      this_mask = GUESTFS_MOUNT_LOCAL_READONLY_BITMASK;
+      this_arg = "readonly";
+    }
+    else if (STRPREFIX (argv[i], "options:")) {
+      optargs_s.options = &argv[i][8];
+      this_mask = GUESTFS_MOUNT_LOCAL_OPTIONS_BITMASK;
+      this_arg = "options";
+    }
+    else if (STRPREFIX (argv[i], "cachetimeout:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][13], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.cachetimeout", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.cachetimeout");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.cachetimeout = r;
+      }
+      this_mask = GUESTFS_MOUNT_LOCAL_CACHETIMEOUT_BITMASK;
+      this_arg = "cachetimeout";
+    }
+    else if (STRPREFIX (argv[i], "debugcalls:")) {
+      optargs_s.debugcalls = is_true (&argv[i][11]) ? 1 : 0;
+      this_mask = GUESTFS_MOUNT_LOCAL_DEBUGCALLS_BITMASK;
+      this_arg = "debugcalls";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_mount_local_argv (g, localmountpoint, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_mount_local_run (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_mount_local_run (g);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_umount_local (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  struct guestfs_umount_local_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_umount_local_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc > 1) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 0, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "retry:")) {
+      optargs_s.retry = is_true (&argv[i][6]) ? 1 : 0;
+      this_mask = GUESTFS_UMOUNT_LOCAL_RETRY_BITMASK;
+      this_arg = "retry";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_umount_local_argv (g, optargs);
+  if (r == -1) goto out;
+  ret = 0;
  out:
  out_noargs:
   return ret;
@@ -15426,6 +15889,1057 @@ run_e2fsck (const char *cmd, size_t argc, char *argv[])
   }
 
   r = guestfs_e2fsck_argv (g, device, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_llz (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  char *directory;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  directory = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (directory == NULL) goto out_directory;
+  r = guestfs_llz (g, directory);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+  free (directory);
+ out_directory:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_wipefs (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_wipefs (g, device);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_ntfsfix (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  struct guestfs_ntfsfix_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_ntfsfix_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 2) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "clearbadsectors:")) {
+      optargs_s.clearbadsectors = is_true (&argv[i][16]) ? 1 : 0;
+      this_mask = GUESTFS_NTFSFIX_CLEARBADSECTORS_BITMASK;
+      this_arg = "clearbadsectors";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_ntfsfix_argv (g, device, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_ntfsclone_out (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  char *backupfile;
+  struct guestfs_ntfsclone_out_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_ntfsclone_out_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 2 || argc > 7) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 7);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  backupfile = file_out (argv[i++]);
+  if (backupfile == NULL) goto out_backupfile;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "metadataonly:")) {
+      optargs_s.metadataonly = is_true (&argv[i][13]) ? 1 : 0;
+      this_mask = GUESTFS_NTFSCLONE_OUT_METADATAONLY_BITMASK;
+      this_arg = "metadataonly";
+    }
+    else if (STRPREFIX (argv[i], "rescue:")) {
+      optargs_s.rescue = is_true (&argv[i][7]) ? 1 : 0;
+      this_mask = GUESTFS_NTFSCLONE_OUT_RESCUE_BITMASK;
+      this_arg = "rescue";
+    }
+    else if (STRPREFIX (argv[i], "ignorefscheck:")) {
+      optargs_s.ignorefscheck = is_true (&argv[i][14]) ? 1 : 0;
+      this_mask = GUESTFS_NTFSCLONE_OUT_IGNOREFSCHECK_BITMASK;
+      this_arg = "ignorefscheck";
+    }
+    else if (STRPREFIX (argv[i], "preservetimestamps:")) {
+      optargs_s.preservetimestamps = is_true (&argv[i][19]) ? 1 : 0;
+      this_mask = GUESTFS_NTFSCLONE_OUT_PRESERVETIMESTAMPS_BITMASK;
+      this_arg = "preservetimestamps";
+    }
+    else if (STRPREFIX (argv[i], "force:")) {
+      optargs_s.force = is_true (&argv[i][6]) ? 1 : 0;
+      this_mask = GUESTFS_NTFSCLONE_OUT_FORCE_BITMASK;
+      this_arg = "force";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_ntfsclone_out_argv (g, device, backupfile, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (backupfile);
+ out_backupfile:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_ntfsclone_in (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *backupfile;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  backupfile = file_in (argv[i++]);
+  if (backupfile == NULL) goto out_backupfile;
+  device = argv[i++];
+  r = guestfs_ntfsclone_in (g, backupfile, device);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free_file_in (backupfile);
+ out_backupfile:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_set_label (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  const char *label;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  label = argv[i++];
+  r = guestfs_set_label (g, device, label);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_zero_free_space (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *directory;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  directory = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (directory == NULL) goto out_directory;
+  r = guestfs_zero_free_space (g, directory);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (directory);
+ out_directory:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_lvcreate_free (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *logvol;
+  const char *volgroup;
+  int percent;
+  size_t i = 0;
+
+  if (argc != 3) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  logvol = argv[i++];
+  volgroup = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "percent", "xstrtoll", xerr);
+      goto out_percent;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "percent");
+      goto out_percent;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    percent = r;
+  }
+  r = guestfs_lvcreate_free (g, logvol, volgroup, percent);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_percent:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_isoinfo_device (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  struct guestfs_isoinfo *r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_isoinfo_device (g, device);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_isoinfo (r);
+  guestfs_free_isoinfo (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_isoinfo (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  struct guestfs_isoinfo *r;
+  char *isofile;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  isofile = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (isofile == NULL) goto out_isofile;
+  r = guestfs_isoinfo (g, isofile);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_isoinfo (r);
+  guestfs_free_isoinfo (r);
+ out:
+  free (isofile);
+ out_isofile:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_vgmeta (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  size_t size;
+  const char *vgname;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  vgname = argv[i++];
+  r = guestfs_vgmeta (g, vgname, &size);
+  if (r == NULL) goto out;
+  if (full_write (1, r, size) != size) {
+    perror ("write");
+    free (r);
+    goto out;
+  }
+  ret = 0;
+  free (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_md_stat (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  struct guestfs_mdstat_list *r;
+  const char *md;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  md = argv[i++];
+  r = guestfs_md_stat (g, md);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_mdstat_list (r);
+  guestfs_free_mdstat_list (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_mkfs_btrfs (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char **devices;
+  struct guestfs_mkfs_btrfs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mkfs_btrfs_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 9) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 9);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  devices = parse_string_list (argv[i++]);
+  if (devices == NULL) goto out_devices;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "allocstart:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.allocstart", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.allocstart = r;
+      }
+      this_mask = GUESTFS_MKFS_BTRFS_ALLOCSTART_BITMASK;
+      this_arg = "allocstart";
+    }
+    else if (STRPREFIX (argv[i], "bytecount:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.bytecount", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.bytecount = r;
+      }
+      this_mask = GUESTFS_MKFS_BTRFS_BYTECOUNT_BITMASK;
+      this_arg = "bytecount";
+    }
+    else if (STRPREFIX (argv[i], "datatype:")) {
+      optargs_s.datatype = &argv[i][9];
+      this_mask = GUESTFS_MKFS_BTRFS_DATATYPE_BITMASK;
+      this_arg = "datatype";
+    }
+    else if (STRPREFIX (argv[i], "leafsize:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][9], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.leafsize", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.leafsize");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.leafsize = r;
+      }
+      this_mask = GUESTFS_MKFS_BTRFS_LEAFSIZE_BITMASK;
+      this_arg = "leafsize";
+    }
+    else if (STRPREFIX (argv[i], "label:")) {
+      optargs_s.label = &argv[i][6];
+      this_mask = GUESTFS_MKFS_BTRFS_LABEL_BITMASK;
+      this_arg = "label";
+    }
+    else if (STRPREFIX (argv[i], "metadata:")) {
+      optargs_s.metadata = &argv[i][9];
+      this_mask = GUESTFS_MKFS_BTRFS_METADATA_BITMASK;
+      this_arg = "metadata";
+    }
+    else if (STRPREFIX (argv[i], "nodesize:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][9], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.nodesize", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.nodesize");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.nodesize = r;
+      }
+      this_mask = GUESTFS_MKFS_BTRFS_NODESIZE_BITMASK;
+      this_arg = "nodesize";
+    }
+    else if (STRPREFIX (argv[i], "sectorsize:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.sectorsize", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.sectorsize");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.sectorsize = r;
+      }
+      this_mask = GUESTFS_MKFS_BTRFS_SECTORSIZE_BITMASK;
+      this_arg = "sectorsize";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_mkfs_btrfs_argv (g, devices, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free_strings (devices);
+ out_devices:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_get_e2attrs (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  char *file;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  file = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (file == NULL) goto out_file;
+  r = guestfs_get_e2attrs (g, file);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+  free (file);
+ out_file:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_set_e2attrs (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *file;
+  const char *attrs;
+  struct guestfs_set_e2attrs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_set_e2attrs_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 2 || argc > 3) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 3);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  file = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (file == NULL) goto out_file;
+  attrs = argv[i++];
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "clear:")) {
+      optargs_s.clear = is_true (&argv[i][6]) ? 1 : 0;
+      this_mask = GUESTFS_SET_E2ATTRS_CLEAR_BITMASK;
+      this_arg = "clear";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_set_e2attrs_argv (g, file, attrs, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (file);
+ out_file:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_get_e2generation (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int64_t r;
+  char *file;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  file = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (file == NULL) goto out_file;
+  r = guestfs_get_e2generation (g, file);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
+ out:
+  free (file);
+ out_file:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_set_e2generation (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *file;
+  int64_t generation;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  file = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (file == NULL) goto out_file;
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "generation", "xstrtoll", xerr);
+      goto out_generation;
+    }
+    generation = r;
+  }
+  r = guestfs_set_e2generation (g, file, generation);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_generation:
+  free (file);
+ out_file:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_subvolume_snapshot (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *source;
+  char *dest;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  source = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (source == NULL) goto out_source;
+  dest = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (dest == NULL) goto out_dest;
+  r = guestfs_btrfs_subvolume_snapshot (g, source, dest);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (dest);
+ out_dest:
+  free (source);
+ out_source:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_subvolume_delete (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *subvolume;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  subvolume = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (subvolume == NULL) goto out_subvolume;
+  r = guestfs_btrfs_subvolume_delete (g, subvolume);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (subvolume);
+ out_subvolume:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_subvolume_create (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *dest;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  dest = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (dest == NULL) goto out_dest;
+  r = guestfs_btrfs_subvolume_create (g, dest);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (dest);
+ out_dest:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_subvolume_list (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  struct guestfs_btrfssubvolume_list *r;
+  char *fs;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  fs = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (fs == NULL) goto out_fs;
+  r = guestfs_btrfs_subvolume_list (g, fs);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_btrfssubvolume_list (r);
+  guestfs_free_btrfssubvolume_list (r);
+ out:
+  free (fs);
+ out_fs:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_subvolume_set_default (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  int64_t id;
+  char *fs;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "id", "xstrtoll", xerr);
+      goto out_id;
+    }
+    id = r;
+  }
+  fs = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (fs == NULL) goto out_fs;
+  r = guestfs_btrfs_subvolume_set_default (g, id, fs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (fs);
+ out_fs:
+ out_id:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_filesystem_sync (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *fs;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  fs = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (fs == NULL) goto out_fs;
+  r = guestfs_btrfs_filesystem_sync (g, fs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (fs);
+ out_fs:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_filesystem_balance (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *fs;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  fs = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (fs == NULL) goto out_fs;
+  r = guestfs_btrfs_filesystem_balance (g, fs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (fs);
+ out_fs:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_device_add (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char **devices;
+  char *fs;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  devices = parse_string_list (argv[i++]);
+  if (devices == NULL) goto out_devices;
+  fs = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (fs == NULL) goto out_fs;
+  r = guestfs_btrfs_device_add (g, devices, fs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (fs);
+ out_fs:
+  free_strings (devices);
+ out_devices:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_device_delete (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char **devices;
+  char *fs;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  devices = parse_string_list (argv[i++]);
+  if (devices == NULL) goto out_devices;
+  fs = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (fs == NULL) goto out_fs;
+  r = guestfs_btrfs_device_delete (g, devices, fs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (fs);
+ out_fs:
+  free_strings (devices);
+ out_devices:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_set_seeding (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  int seeding;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  seeding = is_true (argv[i++]) ? 1 : 0;
+  r = guestfs_btrfs_set_seeding (g, device, seeding);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_btrfs_fsck (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  struct guestfs_btrfs_fsck_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_btrfs_fsck_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 3) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 3);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "superblock:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.superblock", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.superblock = r;
+      }
+      this_mask = GUESTFS_BTRFS_FSCK_SUPERBLOCK_BITMASK;
+      this_arg = "superblock";
+    }
+    else if (STRPREFIX (argv[i], "repair:")) {
+      optargs_s.repair = is_true (&argv[i][7]) ? 1 : 0;
+      this_mask = GUESTFS_BTRFS_FSCK_REPAIR_BITMASK;
+      this_arg = "repair";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_btrfs_fsck_argv (g, device, optargs);
   if (r == -1) goto out;
   ret = 0;
  out:

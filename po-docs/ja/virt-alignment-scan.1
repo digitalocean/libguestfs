@@ -62,39 +62,39 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-alignment-scan 1"
-.TH virt-alignment-scan 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-alignment-scan 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "名前"
 .IX Header "名前"
-virt-alignment-scan \- Check alignment of virtual machine partitions
-.SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
+virt-alignment-scan \- 仮想マシンのパーティション配置の確認
+.SH "書式"
+.IX Header "書式"
 .Vb 1
 \& virt\-alignment\-scan [\-\-options] \-d domname
 \&
 \& virt\-alignment\-scan [\-\-options] \-a disk.img [\-a disk.img ...]
+\&
+\& virt\-alignment\-scan [\-\-options]
 .Ve
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
+.SH "説明"
+.IX Header "説明"
 When older operating systems install themselves, the partitioning tools
 place partitions at a sector misaligned with the underlying storage
 (commonly the first partition starts on sector \f(CW63\fR).  Misaligned
 partitions can result in an operating system issuing more I/O than should be
 necessary.
 .PP
-The virt-alignment-scan tool checks the alignment of partitions in virtual
-machines and disk images and warns you if there are alignment problems.
+virt-alignment-scan ツールは、仮想マシンおよびディスクイメージにあるパーティションの配置を確認します。配置に問題があれば警告します。
 .PP
-Currently there is no virt tool for fixing alignment problems.  You can only
-reinstall the guest operating system.  The following NetApp document
-summarises the problem and possible solutions:
+現在、配置の問題を修正するための仮想化ツールはありません。ゲストオペレーティングシステムを再インストールすることだけができます。以下の NetApp
+のドキュメントが、問題と取り得る解決策をまとめています:
 http://media.netapp.com/documents/tr\-3747.pdf <http://media.netapp.com/documents/tr-3747.pdf>
-.SH "OUTPUT"
-.IX Header "OUTPUT"
-To run this tool on a disk image directly, use the \fI\-a\fR option:
+.SH "出力"
+.IX Header "出力"
+このツールをディスクイメージにおいて直接実行するには、\fI\-a\fR オプションを使用します:
 .PP
 .Vb 2
 \& $ virt\-alignment\-scan \-a winxp.img
@@ -106,8 +106,7 @@ To run this tool on a disk image directly, use the \fI\-a\fR option:
 \& /dev/sda3    526385152         2048K   ok
 .Ve
 .PP
-To run the tool on a guest known to libvirt, use the \fI\-d\fR option and
-possibly the \fI\-c\fR option:
+libvirt が把握している仮想マシンにおいてツールを実行するには、\fI\-d\fR オプションおよびおそらく \fI\-c\fR オプションを使用します:
 .PP
 .Vb 3
 \& # virt\-alignment\-scan \-d RHEL5
@@ -120,176 +119,181 @@ possibly the \fI\-c\fR option:
 \& /dev/sdb1        65536           64K   ok
 .Ve
 .PP
+Run virt-alignment-scan without any \fI\-a\fR or \fI\-d\fR options to scan all
+libvirt domains.
+.PP
+.Vb 4
+\& # virt\-alignment\-scan
+\& F16x64:/dev/sda1      1048576         1024K   ok
+\& F16x64:/dev/sda2      2097152         2048K   ok
+\& F16x64:/dev/sda3    526385152         2048K   ok
+.Ve
+.PP
 The output consists of 4 or more whitespace-separated columns.  Only the
 first 4 columns are significant if you want to parse this from a program.
 The columns are:
-.IP "col 1" 4
-.IX Item "col 1"
-the device and partition name (eg. \f(CW\*(C`/dev/sda1\*(C'\fR meaning the first partition
-on the first block device)
-.IP "col 2" 4
-.IX Item "col 2"
-the start of the partition in bytes
-.IP "col 3" 4
-.IX Item "col 3"
-the alignment in bytes or Kbytes (eg. \f(CW512\fR or \f(CW\*(C`4K\*(C'\fR)
-.IP "col 4" 4
-.IX Item "col 4"
+.IP "1 列目" 4
+.IX Item "1 列目"
+The device and partition name (eg. \f(CW\*(C`/dev/sda1\*(C'\fR meaning the first partition
+on the first block device).
+.Sp
+When listing all libvirt domains (no \fI\-a\fR or \fI\-d\fR option given) this
+column is prefixed by the libvirt name or \s-1UUID\s0 (if \fI\-\-uuid\fR is given).  eg:
+\&\f(CW\*(C`WinXP:/dev/sda1\*(C'\fR
+.IP "2 列目" 4
+.IX Item "2 列目"
+パーティションの開始位置（バイト単位）
+.IP "3 列目" 4
+.IX Item "3 列目"
+バイトまたはキロバイト単位のアライメント（例: \f(CW512\fR, \f(CW\*(C`4K\*(C'\fR）
+.IP "4 列目" 4
+.IX Item "4 列目"
 \&\f(CW\*(C`ok\*(C'\fR if the alignment is best for performance, or \f(CW\*(C`bad\*(C'\fR if the alignment
 can cause performance problems
-.IP "cols 5+" 4
-.IX Item "cols 5+"
-optional free-text explanation.
+.IP "5 列目以降" 4
+.IX Item "5 列目以降"
+オプションの自由なテキスト説明。
 .PP
 The exit code from the program changes depending on whether poorly aligned
 partitions were found.  See \*(L"\s-1EXIT\s0 \s-1STATUS\s0\*(R" below.
 .PP
 If you just want the exit code with no output, use the \fI\-q\fR option.
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+.SH "オプション"
+.IX Header "オプション"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
-Display brief help.
+簡単なヘルプを表示します。
 .IP "\fB\-a\fR file" 4
 .IX Item "-a file"
 .PD 0
 .IP "\fB\-\-add\fR file" 4
 .IX Item "--add file"
 .PD
-Add \fIfile\fR which should be a disk image from a virtual machine.
+仮想マシンからディスクイメージの \fIfile\fR を追加します。
 .Sp
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the \fI\-\-format=..\fR option.
+ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、\fI\-\-format=..\fR オプションを使用します。
 .IP "\fB\-c\fR \s-1URI\s0" 4
 .IX Item "-c URI"
 .PD 0
 .IP "\fB\-\-connect\fR \s-1URI\s0" 4
 .IX Item "--connect URI"
 .PD
-If using libvirt, connect to the given \fI\s-1URI\s0\fR.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された \fI\s-1URI\s0\fR に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 .Sp
-If you specify guest block devices directly (\fI\-a\fR), then libvirt is not
-used at all.
+ゲストのブロックデバイスを直接指定していると（(\fI\-a\fR)）、libvirt は何も使用されません。
 .IP "\fB\-d\fR guest" 4
 .IX Item "-d guest"
 .PD 0
 .IP "\fB\-\-domain\fR guest" 4
 .IX Item "--domain guest"
 .PD
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  ドメインの \s-1UUID\s0 が名前の代わりに使用されます。
 .IP "\fB\-\-format=raw|qcow2|..\fR" 4
 .IX Item "--format=raw|qcow2|.."
 .PD 0
 .IP "\fB\-\-format\fR" 4
 .IX Item "--format"
 .PD
-The default for the \fI\-a\fR option is to auto-detect the format of the disk
-image.  Using this forces the disk format for \fI\-a\fR options which follow on
-the command line.  Using \fI\-\-format\fR with no argument switches back to
-auto-detection for subsequent \fI\-a\fR options.
+\&\fI\-a\fR オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、\fI\-a\fR
+オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで \fI\-\-format\fR を使用することにより、後続の \fI\-a\fR
+オプションに対して自動検知に戻せます。
 .Sp
-For example:
+例:
 .Sp
 .Vb 1
 \& virt\-alignment\-scan \-\-format=raw \-a disk.img
 .Ve
 .Sp
-forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR.
+\&\f(CW\*(C`disk.img\*(C'\fR に対してローイメージを強制します（自動検出しません）。
 .Sp
 .Vb 1
 \& virt\-alignment\-scan \-\-format=raw \-a disk.img \-\-format \-a another.img
 .Ve
 .Sp
-forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR and reverts to
-auto-detection for \f(CW\*(C`another.img\*(C'\fR.
+\&\f(CW\*(C`disk.img\*(C'\fR に対してロー形式（自動検知なし）を強制し、\f(CW\*(C`another.img\*(C'\fR に対して自動検知に戻します。
 .Sp
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (\s-1CVE\-2010\-3851\s0).
+仮想マシンのディスクイメージが信頼できないロー形式であるならば、ディスク形式を指定するためにこのオプションを使用すべきです。これにより、悪意のある仮想マシンにより起こり得るセキュリティ問題を回避できます
+(\s-1CVE\-2010\-3851\s0)。
 .IP "\fB\-q\fR" 4
 .IX Item "-q"
 .PD 0
 .IP "\fB\-\-quiet\fR" 4
 .IX Item "--quiet"
 .PD
-Don't produce any output.  Just set the exit code (see \*(L"\s-1EXIT\s0 \s-1STATUS\s0\*(R"
-below).
+何も出力しません。  終了コードを設定するのみです（以下の \*(L"終了ステータス\*(R" 参照）。
+.IP "\fB\-\-uuid\fR" 4
+.IX Item "--uuid"
+Print UUIDs instead of names.  This is useful for following a guest even
+when the guest is migrated or renamed, or when two guests happen to have the
+same name.
+.Sp
+This option only applies when listing all libvirt domains (when no \fI\-a\fR or
+\&\fI\-d\fR options are specified).
 .IP "\fB\-v\fR" 4
 .IX Item "-v"
 .PD 0
 .IP "\fB\-\-verbose\fR" 4
 .IX Item "--verbose"
 .PD
-Enable verbose messages for debugging.
+デバッグ用の冗長なメッセージを有効にします。
 .IP "\fB\-V\fR" 4
 .IX Item "-V"
 .PD 0
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
 .PD
-Display version number and exit.
+バージョン番号を表示して終了します。
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
-Enable tracing of libguestfs \s-1API\s0 calls.
-.SH "RECOMMENDED ALIGNMENT"
-.IX Header "RECOMMENDED ALIGNMENT"
-Operating systems older than Windows 2008 and Linux before ca.2010 place the
-first sector of the first partition at sector 63, with a 512 byte sector
-size.  This happens because of a historical accident.  Drives have to report
-a cylinder / head / sector (\s-1CHS\s0) geometry to the \s-1BIOS\s0.  The geometry is
-completely meaningless on modern drives, but it happens that the geometry
-reported always has 63 sectors per track.  The operating system therefore
-places the first partition at the start of the second \*(L"track\*(R", at sector 63.
+libguestfs \s-1API\s0 呼び出しのトレースを有効にします。
+.SH "推奨されるアライメント"
+.IX Header "推奨されるアライメント"
+Windows 2008 および ca.2010 以前のLinux よりも古いオペレーティングシステムは、512 バイトのセクター容量でセクター 63
+に、第 1 パーティションの第1セクターを配置しなければいけません。これは古くからの障害によるものです。ドライブは \s-1BIOS\s0
+にシリンダー/ヘッド/セクター (\s-1CHS\s0) の配置を通知する必要があります。配置は最近のドライブにおいては意味がありませんが、必ずトラックあたり 63
+セクターを持つことをときどき通知します。そのため、オペレーティングシステムはセクター 63 にある、第 2 \*(L"トラック\*(R" の先頭にある第 1
+パーティションに置かれます。
 .PP
-When the guest \s-1OS\s0 is virtualized, the host operating system and hypervisor
-may prefer accesses aligned to one of:
+ゲスト \s-1OS\s0 が仮想化されているとき、ホストオペレーティングシステムおよびハイパーバイザーは以下のどれかにアライメントされていることが好ましいでしょう。
 .IP "\(bu" 4
-512 bytes
+512 バイト
 .Sp
-if the host \s-1OS\s0 uses local storage directly on hard drive partitions, and the
-hard drive has 512 byte physical sectors.
+ホスト \s-1OS\s0 がハードディスクのパーティションに直接ローカルストレージを使用して、ハードディスクが 512 バイトの物理セクターを持っている場合。
 .IP "\(bu" 4
-4 Kbytes
+4 K バイト
 .Sp
-for local storage on new hard drives with 4Kbyte physical sectors; for
-file-backed storage on filesystems with 4Kbyte block size; or for some types
-of network-attached storage.
+4K バイトの物理セクターを持つ新規ハードディスクにおけるローカルストレージ向け。 4K
+バイトのブロック容量を持つファイルシステムにおけるファイル形式のストレージ向け。もしくは、何種類かのネットワークストレージ（NAS）向け。
 .IP "\(bu" 4
-64 Kbytes
+64 K バイト
 .Sp
-for high-end network-attached storage.  This is the optimal block size for
-some NetApp hardware.
+ハイエンドの \s-1NAS\s0 向け。いくつかの NetApp ハードウェアに最適なブロックサイズです。
 .IP "\(bu" 4
-1 Mbyte
+1 M バイト
 .Sp
-see \*(L"1 \s-1MB\s0 \s-1PARTITION\s0 \s-1ALIGNMENT\s0\*(R" below.
+以下の \*(L"1 \s-1MB\s0 パーティションアライメント\*(R" 参照。
 .PP
-Partitions which are not aligned correctly to the underlying storage cause
-extra I/O.  For example:
+基礎となるストレージに正しくアライメントされていないパーティションは余計な I/O を引き起こします。たとえば:
 .PP
 .Vb 8
-\&                       sect#63
+\&                       セクター#63
 \&                       +\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-+\-\-\-\-\-\-
-\&                       |         guest            |
-\&                       |    filesystem block      |
+\&                       |         ゲスト           |
+\&                       | ファイルシステムブロック |
 \& \-\-\-+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-+\-\-\-\-\-\-+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-+\-\-\-\-\-+\-\-\-
-\&    |  host block             |  host block             |
+\&    |  ホストブロック         |  ホストブロック         |
 \&    |                         |                         |
 \& \-\-\-+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-+\-\-\-
 .Ve
 .PP
-In this example, each time a 4K guest block is read, two blocks on the host
-must be accessed (so twice as much I/O is done).  When a 4K guest block is
-written, two host blocks must first be read, the old and new data combined,
-and the two blocks written back (4x I/O).
-.SS "\s-1LINUX\s0 \s-1HOST\s0 \s-1BLOCK\s0 \s-1AND\s0 I/O \s-1SIZE\s0"
-.IX Subsection "LINUX HOST BLOCK AND I/O SIZE"
-New versions of the Linux kernel expose the physical and logical block size,
-and minimum and recommended I/O size.
+この例では、4K ブロックが読み込まれるたびに、ホストにある 2 つのブロックにアクセスする必要があります（そのため I/O が 2
+倍になります）。仮想マシンの 4K ブロックが書き込まれるとき、まず 2 つのホストブロックを読み込む必要があり、古いデータと新しいデータが結合され、2
+つのブロックが書き込まれます（4 倍の I/O）。
+.SS "Linux ホストブロック"
+.IX Subsection "Linux ホストブロック"
+新しいバージョンの Linux カーネルは、物理ブロック容量、論理ブロック容量および最小かつ推奨の I/O サイズを明らかにします。
 .PP
-For a typical consumer hard drive with 512 byte sectors:
+一般的な 512 バイトセクターのハードディスク向け:
 .PP
 .Vb 10
 \& $ cat /sys/block/sda/queue/hw_sector_size
@@ -304,7 +308,7 @@ For a typical consumer hard drive with 512 byte sectors:
 \& 0
 .Ve
 .PP
-For a new consumer hard drive with 4Kbyte sectors:
+新しい 4K バイトセクターのハードディスク向け:
 .PP
 .Vb 10
 \& $ cat /sys/block/sda/queue/hw_sector_size
@@ -319,7 +323,7 @@ For a new consumer hard drive with 4Kbyte sectors:
 \& 0
 .Ve
 .PP
-For a NetApp \s-1LUN:\s0
+NetApp \s-1LUN\s0 向け:
 .PP
 .Vb 8
 \& $ cat /sys/block/sdc/queue/logical_block_size
@@ -332,18 +336,19 @@ For a NetApp \s-1LUN:\s0
 \& 65536
 .Ve
 .PP
-The NetApp allows 512 byte accesses (but they will be very inefficient),
-prefers a minimum 4K I/O size, but the optimal I/O size is 64K.
+NetApp は、最小の 4K I/O サイズより好ましい 512 バイトアクセスが可能です（しかし、非常に効率が悪いです）、しかし最適な I/O
+サイズは 64K です。
 .PP
-For detailed information about what these numbers mean, see
+これらの数字の意味に関する詳細は
 http://docs.redhat.com/docs/en\-US/Red_Hat_Enterprise_Linux/6/html/Storage_Administration_Guide/newstorage\-iolimits.html <http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Storage_Administration_Guide/newstorage-iolimits.html>
+を参照してください。
 .PP
-[Thanks to Matt Booth for providing 4K drive data.  Thanks to Mike Snitzer
-for providing NetApp data and additional information.]
-.SS "1 \s-1MB\s0 \s-1PARTITION\s0 \s-1ALIGNMENT\s0"
-.IX Subsection "1 MB PARTITION ALIGNMENT"
-Microsoft picked 1 \s-1MB\s0 as the default alignment for all partitions starting
-with Windows 2008 Server, and Linux has followed this.
+[4K ドライブデータを提供してくれた Matt Booth に感謝します。NetApp のデータと追加情報を提供してくれた Mike Snitzer
+に感謝します。]
+.SS "1 \s-1MB\s0 パーティションアライメント"
+.IX Subsection "1 MB パーティションアライメント"
+Microsoft は Windows Server 2008 以降、すべてのパーティションに対してデフォルトのアライメントとして 1 \s-1MB\s0
+を選択しました。 Linux はこれに従ってきました。
 .PP
 Assuming 512 byte sectors in the guest, you will now see the first partition
 starting at sector 2048, and subsequent partitions (if any)  will start at a
@@ -351,8 +356,8 @@ multiple of 2048 sectors.
 .PP
 1 \s-1MB\s0 alignment is compatible with all current alignment requirements (4K,
 64K) and provides room for future growth in physical block sizes.
-.SS "\s-1SETTING\s0 \s-1ALIGNMENT\s0"
-.IX Subsection "SETTING ALIGNMENT"
+.SS "アライメントの設定法"
+.IX Subsection "アライメントの設定法"
 \&\fIvirt\-resize\fR\|(1) can change the alignment of the partitions of some
 guests.  Currently it can fully align all the partitions of all Windows
 guests, and it will fix the bootloader where necessary.  For Linux guests,
@@ -363,8 +368,8 @@ Another way to correct partition alignment problems is to reinstall your
 guest operating systems.  If you install operating systems from templates,
 ensure these have correct partition alignment too.
 .PP
-For older versions of Windows, the following NetApp document contains useful
-information: http://media.netapp.com/documents/tr\-3747.pdf <http://media.netapp.com/documents/tr-3747.pdf>
+古いバージョンの Windows は、次の NetApp ドキュメントに有用な情報があります:
+http://media.netapp.com/documents/tr\-3747.pdf <http://media.netapp.com/documents/tr-3747.pdf>
 .PP
 For Red Hat Enterprise Linux ≤ 5, use a Kickstart script that contains
 an explicit \f(CW%pre\fR section that creates aligned partitions using
@@ -376,33 +381,31 @@ Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
-.SH "EXIT STATUS"
-.IX Header "EXIT STATUS"
-This program returns:
+.SH "終了ステータス"
+.IX Header "終了ステータス"
+このプログラムは以下を返します:
 .IP "\(bu" 4
 0
 .Sp
-successful exit, all partitions are aligned ≥ 64K for best performance
+正常終了、すべてのパーティションが最高のパフォーマンスのために ≥ 64K に配置されています
 .IP "\(bu" 4
 1
 .Sp
-an error scanning the disk image or guest
+ディスクイメージまたは仮想マシンのスキャン中にエラーが発生しました
 .IP "\(bu" 4
 2
 .Sp
-successful exit, some partitions have alignment < 64K which can result
-in poor performance on high end network storage
+正常終了、いくつかのパーティションがハイエンドのネットワークストレージにおいてパフォーマンスの悪い < 64K のアライメントを持ちます
 .IP "\(bu" 4
 3
 .Sp
-successful exit, some partitions have alignment < 4K which can result in
-poor performance on most hypervisors
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
+正常終了、いくつかのパーティションが多くのハイパーバイザーにおいてパフォーマンスの悪い < 4K のアライメントを持ちます
+.SH "関連項目"
+.IX Header "関連項目"
 \&\fIguestfs\fR\|(3), \fIguestfish\fR\|(1), \fIvirt\-filesystems\fR\|(1), \fIvirt\-rescue\fR\|(1),
 \&\fIvirt\-resize\fR\|(1), <http://libguestfs.org/>.
-.SH "AUTHOR"
-.IX Header "AUTHOR"
+.SH "著者"
+.IX Header "著者"
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"

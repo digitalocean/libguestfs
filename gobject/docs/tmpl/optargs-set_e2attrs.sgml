@@ -1,0 +1,51 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsSetE2attrs
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsSetE2attrs ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsSetE2attrs:clear ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsSetE2attrsClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_set_e2attrs_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

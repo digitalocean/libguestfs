@@ -62,16 +62,16 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-df 1"
-.TH virt-df 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-df 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "名前"
 .IX Header "名前"
-virt-df \- Display free space on virtual filesystems
-.SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
+virt-df \- 仮想ファイルシステムの使用状況の表示
+.SH "書式"
+.IX Header "書式"
 .Vb 1
 \& virt\-df [\-\-options]
 \&
@@ -80,15 +80,15 @@ virt-df \- Display free space on virtual filesystems
 \& virt\-df [\-\-options] \-a disk.img [\-a disk.img ...]
 .Ve
 .PP
-Old style:
+古い形式:
 .PP
 .Vb 1
 \& virt\-df [\-\-options] domname
 \&
 \& virt\-df [\-\-options] disk.img [disk.img ...]
 .Ve
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
+.SH "説明"
+.IX Header "説明"
 \&\f(CW\*(C`virt\-df\*(C'\fR is a command line tool to display free space on virtual machine
 filesystems.  Unlike other tools, it doesn't just display the size of disk
 allocated to a virtual machine, but can look inside disk images to see how
@@ -107,8 +107,8 @@ invoke \f(CW\*(C`virt\-df\*(C'\fR multiple times.
 .PP
 Use the \fI\-\-csv\fR option to get a format which can be easily parsed by other
 programs.  Other options are similar to the standard \fIdf\fR\|(1) command.
-.SH "EXAMPLES"
-.IX Header "EXAMPLES"
+.SH "例"
+.IX Header "例"
 Show disk usage for a single libvirt guest called \f(CW\*(C`F14x64\*(C'\fR.  Make the
 output human-readable:
 .PP
@@ -119,18 +119,18 @@ output human-readable:
 \& F14x64:/dev/vg_f13x64/lv_root    7.4G     3.4G       4.0G   46%
 .Ve
 .PP
-Show disk usage for a disk image file called \f(CW\*(C`test.img\*(C'\fR:
+\&\f(CW\*(C`test.img\*(C'\fR というディスクイメージファイルのディスク使用量を表示します:
 .PP
 .Vb 3
 \& $ virt\-df \-a test1.img
 \& Filesystem                  1K\-blocks     Used  Available  Use%
 \& test1.img:/dev/sda1             99099     1551      92432    2%
 .Ve
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+.SH "オプション"
+.IX Header "オプション"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
-Display brief help.
+簡単なヘルプを表示します。
 .IP "\fB\-a\fR file" 4
 .IX Item "-a file"
 .PD 0
@@ -141,19 +141,16 @@ Add \fIfile\fR which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate \fI\-a\fR options.
 .Sp
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the \fI\-\-format=..\fR option.
+ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、\fI\-\-format=..\fR オプションを使用します。
 .IP "\fB\-c\fR \s-1URI\s0" 4
 .IX Item "-c URI"
 .PD 0
 .IP "\fB\-\-connect\fR \s-1URI\s0" 4
 .IX Item "--connect URI"
 .PD
-If using libvirt, connect to the given \fI\s-1URI\s0\fR.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された \fI\s-1URI\s0\fR に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 .Sp
-If you specify guest block devices directly (\fI\-a\fR), then libvirt is not
-used at all.
+ゲストのブロックデバイスを直接指定していると（(\fI\-a\fR)）、libvirt は何も使用されません。
 .IP "\fB\-\-csv\fR" 4
 .IX Item "--csv"
 Write out the results in \s-1CSV\s0 format (comma-separated values).  This format
@@ -165,53 +162,49 @@ can be imported easily into databases and spreadsheets, but read \*(L"\s-1NOTE\s
 .IP "\fB\-\-domain\fR guest" 4
 .IX Item "--domain guest"
 .PD
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  ドメインの \s-1UUID\s0 が名前の代わりに使用されます。
 .IP "\fB\-\-format=raw|qcow2|..\fR" 4
 .IX Item "--format=raw|qcow2|.."
 .PD 0
 .IP "\fB\-\-format\fR" 4
 .IX Item "--format"
 .PD
-The default for the \fI\-a\fR option is to auto-detect the format of the disk
-image.  Using this forces the disk format for \fI\-a\fR options which follow on
-the command line.  Using \fI\-\-format\fR with no argument switches back to
-auto-detection for subsequent \fI\-a\fR options.
+\&\fI\-a\fR オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、\fI\-a\fR
+オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで \fI\-\-format\fR を使用することにより、後続の \fI\-a\fR
+オプションに対して自動検知に戻せます。
 .Sp
-For example:
+例:
 .Sp
 .Vb 1
 \& virt\-df \-\-format=raw \-a disk.img
 .Ve
 .Sp
-forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR.
+\&\f(CW\*(C`disk.img\*(C'\fR に対してローイメージを強制します（自動検出しません）。
 .Sp
 .Vb 1
 \& virt\-df \-\-format=raw \-a disk.img \-\-format \-a another.img
 .Ve
 .Sp
-forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR and reverts to
-auto-detection for \f(CW\*(C`another.img\*(C'\fR.
+\&\f(CW\*(C`disk.img\*(C'\fR に対してロー形式（自動検知なし）を強制し、\f(CW\*(C`another.img\*(C'\fR に対して自動検知に戻します。
 .Sp
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (\s-1CVE\-2010\-3851\s0).
+仮想マシンのディスクイメージが信頼できないロー形式であるならば、ディスク形式を指定するためにこのオプションを使用すべきです。これにより、悪意のある仮想マシンにより起こり得るセキュリティ問題を回避できます
+(\s-1CVE\-2010\-3851\s0)。
 .IP "\fB\-h\fR" 4
 .IX Item "-h"
 .PD 0
 .IP "\fB\-\-human\-readable\fR" 4
 .IX Item "--human-readable"
 .PD
-Print sizes in human-readable format.
+読みやすい形式で容量を表示します。
 .Sp
-You are not allowed to use \fI\-h\fR and \fI\-\-csv\fR at the same time.
+\&\fI\-h\fR と \fI\-\-csv\fR を同時に使用することはできません。
 .IP "\fB\-i\fR" 4
 .IX Item "-i"
 .PD 0
 .IP "\fB\-\-inodes\fR" 4
 .IX Item "--inodes"
 .PD
-Print inodes instead of blocks.
+ブロックの代わりに inode を表示します。
 .IP "\fB\-\-one\-per\-guest\fR" 4
 .IX Item "--one-per-guest"
 Run one libguestfs appliance per guest.  Normally \f(CW\*(C`virt\-df\*(C'\fR will add the
@@ -245,42 +238,42 @@ specified.
 .IP "\fB\-\-verbose\fR" 4
 .IX Item "--verbose"
 .PD
-Enable verbose messages for debugging.
+デバッグ用の冗長なメッセージを有効にします。
 .IP "\fB\-V\fR" 4
 .IX Item "-V"
 .PD 0
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
 .PD
-Display version number and exit.
+バージョン番号を表示して終了します。
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
-Enable tracing of libguestfs \s-1API\s0 calls.
+libguestfs \s-1API\s0 呼び出しのトレースを有効にします。
 .SH "STATVFS NUMBERS"
 .IX Header "STATVFS NUMBERS"
 \&\f(CW\*(C`virt\-df\*(C'\fR (and \fIdf\fR\|(1)) get information by issuing a \fIstatvfs\fR\|(3) system
 call.  You can get the same information directly, either from the host
 (using libguestfs) or inside the guest:
-.IP "From the host" 4
-.IX Item "From the host"
-Run this command:
+.IP "ホストから" 4
+.IX Item "ホストから"
+このコマンドを実行してください:
 .Sp
 .Vb 1
 \& guestfish \-\-ro \-d GuestName \-i statvfs /
 .Ve
 .Sp
 (change \f(CW\*(C`/\*(C'\fR to see stats for other filesystems).
-.IP "From inside the guest" 4
-.IX Item "From inside the guest"
-Run this command:
+.IP "仮想マシンの中から" 4
+.IX Item "仮想マシンの中から"
+このコマンドを実行してください:
 .Sp
 .Vb 1
 \& python \-c \*(Aqimport os; s = os.statvfs ("/"); print s\*(Aq
 .Ve
 .Sp
 (change \f(CW\*(C`/\*(C'\fR to see stats for other filesystems).
-.SH "NOTE ABOUT CSV FORMAT"
-.IX Header "NOTE ABOUT CSV FORMAT"
+.SH "CSV 形式に関する注意"
+.IX Header "CSV 形式に関する注意"
 Comma-separated values (\s-1CSV\s0) is a deceptive format.  It \fIseems\fR like it
 should be easy to parse, but it is definitely not easy to parse.
 .PP
@@ -312,15 +305,15 @@ Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
-.SH "EXIT STATUS"
-.IX Header "EXIT STATUS"
-This program returns 0 if successful, or non-zero if there was an error.
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
+.SH "終了ステータス"
+.IX Header "終了ステータス"
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
+.SH "関連項目"
+.IX Header "関連項目"
 \&\fIdf\fR\|(1), \fIguestfs\fR\|(3), \fIguestfish\fR\|(1), \fIvirt\-filesystems\fR\|(1),
 <http://libguestfs.org/>.
-.SH "AUTHOR"
-.IX Header "AUTHOR"
+.SH "著者"
+.IX Header "著者"
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"

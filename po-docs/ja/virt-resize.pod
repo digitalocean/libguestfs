@@ -2,15 +2,15 @@
 
 =head1 名前
 
-virt-resize - Resize a virtual machine disk
+virt-resize - 仮想マシンのディスクの容量変更
 
-=head1 SYNOPSIS
+=head1 書式
 
  virt-resize [--resize /dev/sdaN=[+/-]<size>[%]]
    [--expand /dev/sdaN] [--shrink /dev/sdaN]
    [--ignore /dev/sdaN] [--delete /dev/sdaN] [...] indisk outdisk
 
-=head1 DESCRIPTION
+=head1 説明
 
 Virt-resize is a tool which can resize a virtual machine disk, making it
 larger or smaller overall, and resizing or deleting any partitions contained
@@ -23,7 +23,7 @@ virtual machine down before resizing it.
 If you are not familiar with the associated tools: L<virt-filesystems(1)>
 and L<virt-df(1)>, we recommend you go and read those manual pages first.
 
-=head1 EXAMPLES
+=head1 例
 
 =over 4
 
@@ -37,7 +37,7 @@ fill the extra 5GB of space.
  truncate -r olddisk newdisk
  truncate -s +5G newdisk
  
- # Note "/dev/sda2" is a partition inside the "olddisk" file.
+ # "/dev/sda2" は "olddisk" ファイルの中にあるパーティションであることに注意してください。
  virt-resize --expand /dev/sda2 olddisk newdisk
 
 =item 2.
@@ -66,15 +66,15 @@ raw disk:
 
 =back
 
-=head1 DETAILED USAGE
+=head1 詳細な使用法
 
-=head2 EXPANDING A VIRTUAL MACHINE DISK
+=head2 仮想マシンのディスクの拡張方法
 
 =over 4
 
-=item 1. Shut down the virtual machine
+=item 1. 仮想マシンをシャットダウンします
 
-=item 2. Locate input disk image
+=item 2. 入力ディスクイメージの位置を探します
 
 Locate the input disk image (ie. the file or device on the host containing
 the guest's disk).  If the guest is managed by libvirt, you can use C<virsh
@@ -85,7 +85,7 @@ dumpxml> like this to find the disk image name:
  -- NODE --
  <source dev="/dev/vg/lv_guest" />
 
-=item 3. Look at current sizing
+=item 3. 現在の容量を確認します
 
 Use L<virt-filesystems(1)> to display the current partitions and sizes:
 
@@ -98,7 +98,7 @@ Use L<virt-filesystems(1)> to display the current partitions and sizes:
 (This example is a virtual machine with an 8 GB disk which we would like to
 expand up to 10 GB).
 
-=item 4. Create output disk
+=item 4. 出力ディスクを作成します
 
 Virt-resize cannot do in-place disk modifications.  You have to have space
 to store the resized output disk.
@@ -117,7 +117,7 @@ Or use L<virsh(1)> vol-create-as to create a libvirt storage volume:
  # virsh pool-list
  # virsh vol-create-as poolname newvol 10G
 
-=item 5. Resize
+=item 5. 容量を変更します
 
 virt-resize takes two mandatory parameters, the input disk (eg. device or
 file) and the output disk.  The output disk is the one created in the
@@ -159,7 +159,7 @@ guest.
 
 Other options are covered below.
 
-=item 6. Test
+=item 6. テストします
 
 Thoroughly test the new disk image I<before> discarding the old one.
 
@@ -188,10 +188,9 @@ virt-resize does not know how to expand.
 
 =back
 
-=head2 SHRINKING A VIRTUAL MACHINE DISK
+=head2 仮想マシンのディスクの縮小
 
-Shrinking is somewhat more complex than expanding, and only an overview is
-given here.
+縮小は拡張よりもいくらか複雑です。ここでは概要のみを示します。
 
 Firstly virt-resize will not attempt to shrink any partition content (PVs,
 filesystems).  The user has to shrink content before passing the disk image
@@ -232,10 +231,9 @@ Similarly, to get non-sparse raw output use:
 (on older systems that don't have the L<fallocate(1)> command use C<dd
 if=/dev/zero of=outdisk bs=1M count=..>)
 
-=head2 LOGICAL PARTITIONS
+=head2 論理パーティション
 
-Logical partitions (a.k.a. C</dev/sda5+> on disks using DOS partition
-tables) cannot be resized.
+論理パーティション（DOS パーティションテーブルを使用しているディスクにおいて C</dev/sda5+> とも言う）は容量変更できません。
 
 To understand what is going on, firstly one of the four partitions
 C</dev/sda1-4> will have MBR partition type C<05> or C<0f>.  This is called
@@ -253,13 +251,13 @@ logical partitions blindly.
 You cannot specify a logical partition (C</dev/sda5+>) at all on the command
 line.  Doing so will give an error.
 
-=head1 OPTIONS
+=head1 オプション
 
 =over 4
 
 =item B<--help>
 
-Display help.
+ヘルプを表示します。
 
 =item B<--align-first auto>
 
@@ -292,7 +290,7 @@ values for this:
 
 =over 4
 
-=item I<--alignment 1> (512 bytes)
+=item I<--alignment 1> (512 バイト)
 
 The partitions would be packed together as closely as possible, but would be
 completely unaligned.  In some cases this can cause very poor performance.
@@ -319,7 +317,7 @@ around 2008.
 
 =item B<--debug>
 
-Enable debugging messages.
+デバッグメッセージを有効にします。
 
 =item B<--debug-gc>
 
@@ -336,7 +334,7 @@ Note that when you delete a partition, then anything contained in the
 partition is also deleted.  Furthermore, this causes any partitions that
 come after to be I<renumbered>, which can easily make your guest unbootable.
 
-You can give this option multiple times.
+このオプションは複数回指定できます。
 
 =item B<--expand part>
 
@@ -354,7 +352,7 @@ Currently virt-resize can resize:
 
 =item *
 
-ext2, ext3 and ext4 filesystems.
+ext2, ext3, ext4 ファイルシステム。
 
 =item *
 
@@ -397,7 +395,7 @@ allocated on the destination disk, but the content is not copied across from
 the source disk.  The content of the partition will be blank (all zero
 bytes).
 
-You can give this option multiple times.
+このオプションは複数回指定できます。
 
 =item B<--LV-expand logvol>
 
@@ -416,7 +414,7 @@ The contents of the LV are also resized if virt-resize knows how to do
 that.  You can stop virt-resize from trying to expand the content by using
 the option I<--no-expand-content>.
 
-Use L<virt-filesystems(1)> to list the filesystems in the guest.
+仮想マシンにあるファイルシステムを一覧表示するには L<virt-filesystems(1)> を使用します。
 
 You can give this option multiple times, I<but> it doesn't make sense to do
 this unless the logical volumes you specify are all in different volume
@@ -424,8 +422,7 @@ groups.
 
 =item B<--machine-readable>
 
-This option is used to make the output more machine friendly when being
-parsed by other programs.  See L</MACHINE READABLE OUTPUT> below.
+このオプションは、他のプログラムにより解析されるときに、よりマシンに易しい出力を作成するために使用されます。以下の L</マシン可読な出力> 参照。
 
 =item B<-n>
 
@@ -459,15 +456,13 @@ will be created.
 By default, virt-resize will try to expand the direct contents of
 partitions, if it knows how (see I<--expand> option above).
 
-If you give the I<--no-expand-content> option then virt-resize will not
-attempt this.
+I<--no-expand-content> オプションを指定すると、virt-resize はこれを試行しません。
 
 =item B<--ntfsresize-force>
 
-Pass the I<--force> option to L<ntfsresize(8)>, allowing resizing even if
-the NTFS disk is marked as needing a consistency check.  You have to use
-this option if you want to resize a Windows guest multiple times without
-booting into Windows between each resize.
+L<ntfsresize(8)> に I<--force> オプションを渡します。これにより、NTFS
+ディスクが整合性の確認が必要であるという印をつけたときでも、容量の変更を許可します。Windows
+仮想マシンを各容量において起動することなく、何回も容量変更したいならば、このオプションを使用する必要があります。
 
 =item B<--output-format> raw
 
@@ -486,16 +481,15 @@ NON-SPARSE RAW FORMATS>.
 
 =item B<--quiet>
 
-Don't print the summary.
+概要を表示しません。
 
 =item B<--resize part=size>
 
 Resize the named partition (expanding or shrinking it) so that it has the
 given size.
 
-C<size> can be expressed as an absolute number followed by b/K/M/G to mean
-bytes, Kilobytes, Megabytes, or Gigabytes; or as a percentage of the current
-size; or as a relative number or percentage.  For example:
+C<size> は b/K/M/G
+が後につく絶対値として表現されます。それぞれ、バイト、キロバイト、メガバイト、ギガバイトを意味します。または、現在の容量に対する割合、相対的な数値、パーセントとして表現されます。たとえば:
 
  --resize /dev/sda2=10G
 
@@ -511,15 +505,15 @@ size; or as a relative number or percentage.  For example:
 
  --resize /dev/sda1=-10%
 
-You can increase the size of any partition.  Virt-resize will expand the
-direct content of the partition if it knows how (see I<--expand> below).
+あらゆるパーティションの容量を拡大できます。virt-resize は、どのように拡大するかわかれば（以下の I<--expand>
+参照）、パーティションの内容を直接拡大します。
 
 You can only I<decrease> the size of partitions that contain filesystems or
 PVs which have already been shrunk.  Virt-resize will check this has been
 done before proceeding, or else will print an error (see also
 I<--resize-force>).
 
-You can give this option multiple times.
+このオプションは複数回指定できます。
 
 =item B<--resize-force part=size>
 
@@ -529,7 +523,7 @@ was at the end of the partition you shrink, but you may not care about that
 (eg. if shrinking an unused partition, or if you can easily recreate it such
 as a swap partition).
 
-See also the I<--ignore> option.
+I<--ignore> オプション参照。
 
 =item B<--shrink part>
 
@@ -552,17 +546,16 @@ Note that you cannot use I<--expand> and I<--shrink> together.
 
 =item B<--version>
 
-Display version number and exit.
+バージョン番号を表示して終了します。
 
 =back
 
-=head1 MACHINE READABLE OUTPUT
+=head1 マシン可読な出力
 
-The I<--machine-readable> option can be used to make the output more machine
-friendly, which is useful when calling virt-resize from other programs, GUIs
-etc.
+I<--machine-readable> オプションはよりマシンに易しい出力を作成するために使用できます。これは他のプログラムや GUI などから
+virt-resize を呼び出すときに有用です。
 
-There are two ways to use this option.
+このオプションを使用するには 2 通りの方法があります。
 
 Firstly use the option on its own to query the capabilities of the
 virt-resize binary.  Typical output looks like this:
@@ -608,7 +601,7 @@ fatal error.
 Versions of the program prior to 1.13.9 did not support the
 I<--machine-readable> option and will return an error.
 
-=head1 NOTES
+=head1 注記
 
 =head2 "Partition 1 does not end on cylinder boundary."
 
@@ -646,14 +639,14 @@ printing C<GRUB> on the console, try reinstalling grub.
 For more flexible guest reconfiguration, including if you need to specify
 other parameters to grub-install, use L<virt-rescue(1)>.
 
-=head2 WINDOWS UNMOUNTABLE_BOOT_VOLUME BSOD
+=head2 Windows UNMOUNTABLE_BOOT_VOLUME BSOD
 
-After sysprepping a Windows guest and then resizing it with virt-resize, you
-may see the guest fail to boot with an C<UNMOUNTABLE_BOOT_VOLUME> BSOD.
-This error is caused by having C<ExtendOemPartition=1> in the sysprep.inf
-file.  Removing this line before sysprepping should fix the problem.
+Windows 仮想マシンを sysprep して、virt-resize を用いて容量を変更した後、仮想マシンが
+C<UNMOUNTABLE_BOOT_VOLUME> BSOD で起動に失敗するかもしれません。このエラーは sysprep.inf ファイルに
+C<ExtendOemPartition=1> があることにより引き起こされます。sysprep
+する前にこの行を削除することにより、この問題を解決できます。
 
-=head1 ALTERNATIVE TOOLS
+=head1 代替ツール
 
 There are several proprietary tools for resizing partitions.  We won't
 mention any here.
@@ -676,11 +669,11 @@ meaning to the shell such as C<#> and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 L<sh(1)> for details.
 
-=head1 EXIT STATUS
+=head1 終了ステータス
 
-This program returns 0 if successful, or non-zero if there was an error.
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<virt-filesystems(1)>, L<virt-df(1)>, L<guestfs(3)>, L<guestfish(1)>,
 L<lvm(8)>, L<pvresize(8)>, L<lvresize(8)>, L<resize2fs(8)>,
@@ -688,7 +681,7 @@ L<ntfsresize(8)>, L<btrfs(8)>, L<virsh(1)>, L<parted(8)>, L<truncate(1)>,
 L<fallocate(1)>, L<grub(8)>, L<grub-install(8)>, L<virt-rescue(1)>,
 L<virt-sparsify(1)>, L<virt-alignment-scan(1)>, L<http://libguestfs.org/>.
 
-=head1 AUTHOR
+=head1 著者
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 

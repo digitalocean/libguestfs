@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsMkfsOpts</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsUmountLocal.html" title="GuestfsUmountLocal">
+<link rel="next" href="GuestfsMount9P.html" title="GuestfsMount9P">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsUmountLocal.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsMount9P.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsMkfsOpts.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsMkfsOpts.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsMkfsOpts.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsMkfsOpts.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsMkfsOpts"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsMkfsOpts.top_of_page"></a>GuestfsMkfsOpts</span></h2>
+<p>GuestfsMkfsOpts — An object encapsulating optional arguments for guestfs_session_mkfs_opts</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsMkfsOpts.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsMkfsOpts.html#GuestfsMkfsOpts-struct" title="struct GuestfsMkfsOpts">GuestfsMkfsOpts</a>;
+struct              <a class="link" href="GuestfsMkfsOpts.html#GuestfsMkfsOptsClass" title="struct GuestfsMkfsOptsClass">GuestfsMkfsOptsClass</a>;
+<a class="link" href="GuestfsMkfsOpts.html" title="GuestfsMkfsOpts"><span class="returnvalue">GuestfsMkfsOpts</span></a> *   <a class="link" href="GuestfsMkfsOpts.html#guestfs-mkfs-opts-new" title="guestfs_mkfs_opts_new ()">guestfs_mkfs_opts_new</a>               (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsMkfsOpts.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----GuestfsMkfsOpts
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsMkfsOpts.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsMkfsOpts.html#GuestfsMkfsOpts--blocksize" title='The "blocksize" property'>blocksize</a>"                <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct
+  "<a class="link" href="GuestfsMkfsOpts.html#GuestfsMkfsOpts--features" title='The "features" property'>features</a>"                 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsMkfsOpts.html#GuestfsMkfsOpts--inode" title='The "inode" property'>inode</a>"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct
+  "<a class="link" href="GuestfsMkfsOpts.html#GuestfsMkfsOpts--sectorsize" title='The "sectorsize" property'>sectorsize</a>"               <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsMkfsOpts.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_mkfs_opts
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsMkfsOpts.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsMkfsOpts-struct"></a><h3>struct GuestfsMkfsOpts</h3>
+<pre class="programlisting">struct GuestfsMkfsOpts;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_mkfs_opts.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMkfsOptsClass"></a><h3>struct GuestfsMkfsOptsClass</h3>
+<pre class="programlisting">struct GuestfsMkfsOptsClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsMkfsOpts.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="GuestfsMkfsOptsClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsMkfsOptsClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-mkfs-opts-new"></a><h3>guestfs_mkfs_opts_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsMkfsOpts.html" title="GuestfsMkfsOpts"><span class="returnvalue">GuestfsMkfsOpts</span></a> *   guestfs_mkfs_opts_new               (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsMkfsOpts object
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsMkfsOpts object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsMkfsOpts.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsMkfsOpts--blocksize"></a><h3>The <code class="literal">"blocksize"</code> property</h3>
+<pre class="programlisting">  "blocksize"                <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct</pre>
+<p>
+A 32-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMkfsOpts--features"></a><h3>The <code class="literal">"features"</code> property</h3>
+<pre class="programlisting">  "features"                 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMkfsOpts--inode"></a><h3>The <code class="literal">"inode"</code> property</h3>
+<pre class="programlisting">  "inode"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct</pre>
+<p>
+A 32-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsMkfsOpts--sectorsize"></a><h3>The <code class="literal">"sectorsize"</code> property</h3>
+<pre class="programlisting">  "sectorsize"               <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct</pre>
+<p>
+A 32-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

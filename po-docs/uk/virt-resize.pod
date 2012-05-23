@@ -2,7 +2,7 @@
 
 =head1 НАЗВА
 
-virt-resize - Resize a virtual machine disk
+virt-resize — програма для зміни розмірів дисків віртуальної машини
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -205,7 +205,7 @@ steps 3 and 4 above to allocate a new disk image.
 
 Then run virt-resize with any of the I<--shrink> and/or I<--resize> options.
 
-=head2 IGNORING OR DELETING PARTITIONS
+=head2 ІГНОРУВАННЯ І ВИЛУЧЕННЯ РОЗДІЛІВ
 
 virt-resize also gives a convenient way to ignore or delete partitions when
 copying from the input disk to the output disk.  Ignoring a partition speeds
@@ -232,7 +232,7 @@ Similarly, to get non-sparse raw output use:
 (on older systems that don't have the L<fallocate(1)> command use C<dd
 if=/dev/zero of=outdisk bs=1M count=..>)
 
-=head2 LOGICAL PARTITIONS
+=head2 ЛОГІЧНІ РОЗДІЛИ
 
 Logical partitions (a.k.a. C</dev/sda5+> on disks using DOS partition
 tables) cannot be resized.
@@ -259,7 +259,7 @@ line.  Doing so will give an error.
 
 =item B<--help>
 
-Display help.
+Показати довідкове повідомлення.
 
 =item B<--align-first auto>
 
@@ -292,7 +292,7 @@ values for this:
 
 =over 4
 
-=item I<--alignment 1> (512 bytes)
+=item I<--alignment 1> (512 байтів)
 
 The partitions would be packed together as closely as possible, but would be
 completely unaligned.  In some cases this can cause very poor performance.
@@ -319,7 +319,7 @@ around 2008.
 
 =item B<--debug>
 
-Enable debugging messages.
+Увімкнути показ діагностичних повідомлень.
 
 =item B<--debug-gc>
 
@@ -336,7 +336,7 @@ Note that when you delete a partition, then anything contained in the
 partition is also deleted.  Furthermore, this causes any partitions that
 come after to be I<renumbered>, which can easily make your guest unbootable.
 
-You can give this option multiple times.
+Цей параметр можна вказувати декілька разів.
 
 =item B<--expand розділ>
 
@@ -348,17 +348,17 @@ partition.  For example, if the partition is an LVM PV, it will expand the
 PV to fit (like calling L<pvresize(8)>).  Virt-resize leaves any other
 content it doesn't know about alone.
 
-Currently virt-resize can resize:
+У поточній версії virt-resize може змінювати розміри таких файлових систем:
 
 =over 4
 
 =item *
 
-ext2, ext3 and ext4 filesystems.
+Файлових систем ext2, ext3 і ext4.
 
 =item *
 
-NTFS filesystems, if libguestfs was compiled with support for NTFS.
+Файлових систем NTFS, якщо libguestfs було зібрано з підтримкою NTFS.
 
 The filesystem must have been shut down consistently last time it was used.
 Additionally, L<ntfsresize(8)> marks the resized filesystem as requiring a
@@ -397,7 +397,7 @@ allocated on the destination disk, but the content is not copied across from
 the source disk.  The content of the partition will be blank (all zero
 bytes).
 
-You can give this option multiple times.
+Цей параметр можна вказувати декілька разів.
 
 =item B<--LV-expand логічний_том>
 
@@ -486,7 +486,7 @@ NON-SPARSE RAW FORMATS>.
 
 =item B<--quiet>
 
-Don't print the summary.
+Не виводити даних резюме.
 
 =item B<--resize розділ=розмір>
 
@@ -519,7 +519,7 @@ PVs which have already been shrunk.  Virt-resize will check this has been
 done before proceeding, or else will print an error (see also
 I<--resize-force>).
 
-You can give this option multiple times.
+Цей параметр можна вказувати декілька разів.
 
 =item B<--resize-force розділ=розмір>
 
@@ -529,7 +529,7 @@ was at the end of the partition you shrink, but you may not care about that
 (eg. if shrinking an unused partition, or if you can easily recreate it such
 as a swap partition).
 
-See also the I<--ignore> option.
+Див. також опис параметра I<--ignore>.
 
 =item B<--shrink розділ>
 
@@ -562,7 +562,7 @@ The I<--machine-readable> option can be used to make the output more machine
 friendly, which is useful when calling virt-resize from other programs, GUIs
 etc.
 
-There are two ways to use this option.
+Існує два способи використання цього параметра.
 
 Firstly use the option on its own to query the capabilities of the
 virt-resize binary.  Typical output looks like this:
@@ -580,7 +580,7 @@ status 0.
 Secondly use the option in conjunction with other options to make the
 regular program output more machine friendly.
 
-At the moment this means:
+У поточній версії це означає таке:
 
 =over 4
 
@@ -610,7 +610,7 @@ I<--machine-readable> option and will return an error.
 
 =head1 ПРИМІТКИ
 
-=head2 "Partition 1 does not end on cylinder boundary."
+=head2 «Розділ 1 не закінчується на межі циліндра.»
 
 Virt-resize aligns partitions to multiples of 128 sectors (see the
 I<--alignment> parameter).  Usually this means the partitions will not be
@@ -619,7 +619,7 @@ for disks manufactured since the early 1990s, and doubly so for virtual hard
 drives.  Alignment of partitions to cylinders is not required by any modern
 operating system.
 
-=head2 RESIZING WINDOWS VIRTUAL MACHINES
+=head2 ЗМІНА РОЗМІРІВ ВІРТУАЛЬНИХ МАШИН WINDOWS
 
 In Windows Vista and later versions, Microsoft switched to using a separate
 boot partition.  In these VMs, typically C</dev/sda1> is the boot partition
@@ -631,7 +631,7 @@ Windows may initiate a lengthy "chkdsk" on first boot after a resize, if
 NTFS partitions have been expanded.  This is just a safety check and (unless
 it find errors) is nothing to worry about.
 
-=head2 GUEST BOOT STUCK AT "GRUB"
+=head2 ЗАВАНТАЖЕННЯ ГОСТЬОВОЇ СИСТЕМИ ЗУПИНЯЄТЬСЯ НА «GRUB»
 
 If a Linux guest does not boot after resizing, and the boot is stuck after
 printing C<GRUB> on the console, try reinstalling grub.
@@ -653,7 +653,7 @@ may see the guest fail to boot with an C<UNMOUNTABLE_BOOT_VOLUME> BSOD.
 This error is caused by having C<ExtendOemPartition=1> in the sysprep.inf
 file.  Removing this line before sysprepping should fix the problem.
 
-=head1 ALTERNATIVE TOOLS
+=head1 АЛЬТЕРНАТИВНІ ІНСТРУМЕНТИ
 
 There are several proprietary tools for resizing partitions.  We won't
 mention any here.
@@ -669,7 +669,7 @@ offsets, which is something that virt-resize was designed to avoid.  If you
 want to see the guestfish-equivalent commands that virt-resize runs, use the
 I<--debug> flag.
 
-=head1 SHELL QUOTING
+=head1 ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ
 
 Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as C<#> and space.  You may need to quote or
@@ -678,7 +678,8 @@ L<sh(1)> for details.
 
 =head1 СТАН ВИХОДУ
 
-This program returns 0 if successful, or non-zero if there was an error.
+Ця програма повертає значення 0 у разі успішного завершення і ненульове
+значення, якщо сталася помилка.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
@@ -694,19 +695,19 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2010-2012 Red Hat Inc.
+© Red Hat Inc., 2010–2012
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option)
-any later version.
+Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
+змінювати її за умов дотримання GNU General Public License  утому вигляді,
+що оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
+забажаєте) будь-якої випущеної пізніше.
 
 Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
 БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 51
-Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 

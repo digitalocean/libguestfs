@@ -25,7 +25,7 @@ your message):
 
 https://www.redhat.com/mailman/listinfo/libguestfs
 
-=head1 TESTS
+=head1 ТЕСТИ
 
 =head2 Check KVM acceleration is being used.
 
@@ -48,7 +48,7 @@ If the command above does not work at all, use L<libguestfs-test-tool(1)>.
 
 Run L<virt-alignment-scan(1)> on guests or disk images:
 
- virt-alignment-scan -a /path/to/disk.img
+ virt-alignment-scan -a /шлях/до/образу
 
 або:
 
@@ -95,9 +95,9 @@ Note the final space and period in the command is not a typo.
 
 This should copy C</home> from the guest into the current directory.
 
-=head2 Run virt-df.
+=head2 Виконайте virt-df.
 
-L<virt-df(1)> lists disk space.  Run:
+L<virt-df(1)> показує список даних щодо простору на диску. Віддайте команду:
 
  virt-df
 
@@ -155,7 +155,7 @@ Are the changes seen inside the guest when it is booted?
 L<virt-filesystems(1)> can be used to display filesystems in a guest.  Try
 this command on any disk image or guest:
 
- virt-filesystems -a /path/to/disk.img --all --long -h
+ virt-filesystems -a /шлях/до/образу --all --long -h
 
 або:
 
@@ -163,12 +163,12 @@ this command on any disk image or guest:
 
 Do the results match what is seen in the guest?
 
-=head2 Run virt-inspector on all your guests.
+=head2 Запустіть virt-inspector для всіх ваших гостьових систем.
 
 Use L<virt-inspector(1)> to get a report on all of your guests or disk
 images:
 
- virt-inspector -a /path/to/disk.img | less
+ virt-inspector -a /шлях/до/образу | less
 
 або:
 
@@ -213,7 +213,7 @@ Do the results match what is in the guest?
 Use L<virt-make-fs(1)> to create a disk image from any tarball that you
 happen to have:
 
- virt-make-fs --partition=mbr --type=vfat /any/tarball.tar.gz output.img
+ virt-make-fs --partition=mbr --type=vfat /десь/якийсь.tar.gz образ_результат.img
 
 Add 'output.img' as a raw disk to an existing guest.  Check the guest can
 see the files.  This test is particularly useful if you try it with a
@@ -228,7 +228,7 @@ Try other filesystem formats, eg. I<--type=ntfs>, I<--type=ext2>.
 Use L<virt-rescue(1)> to examine, rescue or repair a B<shut off> guest or
 disk image:
 
- virt-rescue -a /path/to/disk.img
+ virt-rescue -a /шлях/до/образу.img
 
 або:
 
@@ -297,19 +297,20 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011 Red Hat Inc. L<http://libguestfs.org/>
+© Red Hat Inc. L<http://libguestfs.org/>, 2011
 
 This library is free software; you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published by the
 Free Software Foundation; either version 2 of the License, or (at your
 option) any later version.
 
-This library is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
-for more details.
+Ця бібліотека поширюється у сподіванні, що вона буде корисною, але БЕЗ
+БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
+ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
+про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU Lesser General Public License
-along with this library; if not, write to the Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+Ви маєте отримати копію GNU Lesser General Public License разом з цією
+бібліотекою; якщо це не так, повідомте про факт за адресою Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
+USA
 

@@ -62,31 +62,31 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-ls 1"
-.TH virt-ls 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-ls 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "名前"
 .IX Header "名前"
-virt-ls \- List files in a virtual machine
-.SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
+virt-ls \- 仮想マシンのファイルの一覧表示
+.SH "書式"
+.IX Header "書式"
 .Vb 1
 \& virt\-ls [\-\-options] \-d domname directory [directory ...]
 \&
 \& virt\-ls [\-\-options] \-a disk.img [\-a disk.img ...] directory [directory ...]
 .Ve
 .PP
-Old style:
+古い形式:
 .PP
 .Vb 1
 \& virt\-ls [\-\-options] domname directory
 \&
 \& virt\-ls [\-\-options] disk.img [disk.img ...] directory
 .Ve
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
+.SH "説明"
+.IX Header "説明"
 \&\f(CW\*(C`virt\-ls\*(C'\fR lists filenames, file sizes, checksums, extended attributes and
 more from a virtual machine or disk image.
 .PP
@@ -99,8 +99,8 @@ name of the guest.  For a disk image, use the \fI\-a\fR option.
 \&\f(CW\*(C`virt\-ls\*(C'\fR can do many simple file listings.  For more complicated cases you
 may need to use \fIguestfish\fR\|(1), or write a program directly to the
 \&\fIguestfs\fR\|(3) \s-1API\s0.
-.SH "EXAMPLES"
-.IX Header "EXAMPLES"
+.SH "例"
+.IX Header "例"
 Get a list of all files and directories in a virtual machine:
 .PP
 .Vb 1
@@ -113,37 +113,37 @@ List all setuid or setgid programs in a Linux virtual machine:
 \& virt\-ls \-lR \-d guest / | grep \*(Aq^\- [42]\*(Aq
 .Ve
 .PP
-List all public-writable directories in a Linux virtual machine:
+Linux 仮想マシンにあるすべての全体書き込み可能なディレクトリーを一覧表示します:
 .PP
 .Vb 1
 \& virt\-ls \-lR \-d guest / | grep \*(Aq^d ...7\*(Aq
 .Ve
 .PP
-List all Unix domain sockets in a Linux virtual machine:
+Linux 仮想マシンにあるすべての Unix ドメインソケットを一覧表示します:
 .PP
 .Vb 1
 \& virt\-ls \-lR \-d guest / | grep \*(Aq^s\*(Aq
 .Ve
 .PP
-List all regular files with filenames ending in '.png':
+\&'.png' で終わるファイル名を持つすべての通常ファイルを表示するには:
 .PP
 .Vb 1
 \& virt\-ls \-lR \-d guest / | grep \-i \*(Aq^\-.*\e.png$\*(Aq
 .Ve
 .PP
-To display files larger than 10MB in home directories:
+ホームディレクトリにある 10MB より大きなファイルを表示するには:
 .PP
 .Vb 1
 \& virt\-ls \-lR \-d guest /home | awk \*(Aq$3 > 10*1024*1024\*(Aq
 .Ve
 .PP
-Find everything modified in the last 7 days:
+7日以内に変更されたものをすべて検索します:
 .PP
 .Vb 1
 \& virt\-ls \-lR \-d guest \-\-time\-days / | awk \*(Aq$6 <= 7\*(Aq
 .Ve
 .PP
-Find regular files modified in the last 24 hours:
+24時間以内に変更された通常のファイルを検索します:
 .PP
 .Vb 1
 \& virt\-ls \-lR \-d guest \-\-time\-days / | grep \*(Aq^\-\*(Aq | awk \*(Aq$6 < 1\*(Aq
@@ -164,13 +164,12 @@ metadata (eg. file size and modification date) is the same.  To do that, you
 need to add the \fI\-\-checksum\fR parameter to both \f(CW\*(C`virt\-ls\*(C'\fR commands.
 \&\fI\-\-checksum\fR can be quite slow since it has to read and compute a checksum
 of every regular file in the virtual machine.
-.SH "OUTPUT MODES"
-.IX Header "OUTPUT MODES"
-\&\f(CW\*(C`virt\-ls\*(C'\fR has four output modes, controlled by different combinations of
-the \fI\-l\fR and \fI\-R\fR options.
-.SS "\s-1SIMPLE\s0 \s-1LISTING\s0"
-.IX Subsection "SIMPLE LISTING"
-A simple listing is like the ordinary \fIls\fR\|(1) command:
+.SH "出力モード"
+.IX Header "出力モード"
+\&\f(CW\*(C`virt\-ls\*(C'\fR は 4 つの出力モードがあります。\fI\-l\fR および \fI\-R\fR オプションの異なる組み合わせにより制御されます。
+.SS "簡単な一覧方法"
+.IX Subsection "簡単な一覧方法"
+簡単な一覧方法は通常の \fIls\fR\|(1) コマンドと似ています:
 .PP
 .Vb 4
 \& $ virt\-ls \-d guest /
@@ -178,10 +177,10 @@ A simple listing is like the ordinary \fIls\fR\|(1) command:
 \& boot
 \& [etc.]
 .Ve
-.SS "\s-1LONG\s0 \s-1LISTING\s0"
-.IX Subsection "LONG LISTING"
-With the \fI\-l\fR (\fI\-\-long\fR) option, the output is like the \f(CW\*(C`ls \-l\*(C'\fR command
-(more specifically, like the \f(CW\*(C`guestfs_ll\*(C'\fR function).
+.SS "ロング形式の一覧方法"
+.IX Subsection "ロング形式の一覧方法"
+\&\fI\-l\fR (\fI\-\-long\fR) オプションを用いると、出力は \f(CW\*(C`ls \-l\*(C'\fR コマンドのようになります（より具体的には \f(CW\*(C`guestfs_ll\*(C'\fR
+関数と似ています）。
 .PP
 .Vb 5
 \& $ virt\-ls \-l \-d guest /
@@ -191,13 +190,11 @@ With the \fI\-l\fR (\fI\-\-long\fR) option, the output is like the \f(CW\*(C`ls 
 \& [etc.]
 .Ve
 .PP
-Note that while this is useful for displaying a directory, do not try
-parsing this output in another program.  Use \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0 \s-1LISTING\s0\*(R"
-instead.
-.SS "\s-1RECURSIVE\s0 \s-1LISTING\s0"
-.IX Subsection "RECURSIVE LISTING"
-With the \fI\-R\fR (\fI\-\-recursive\fR) option, \f(CW\*(C`virt\-ls\*(C'\fR lists the names of files
-and directories recursively:
+これはディレクトリーを表示するために有用ですが、他のプログラムにおいてこの出力を解析しないよう注意してください。代わりに
+\&\*(L"再帰的なロング形式の一覧方法\*(R" を使用してください。
+.SS "再帰的な一覧方法"
+.IX Subsection "再帰的な一覧方法"
+\&\fI\-R\fR (\fI\-\-recursive\fR) オプションを用いると、\f(CW\*(C`virt\-ls\*(C'\fR はファイルおよびディレクトリーを再帰的に一覧表示します:
 .PP
 .Vb 4
 \& $ virt\-ls \-R \-d guest /tmp
@@ -206,10 +203,9 @@ and directories recursively:
 \& [etc.]
 .Ve
 .PP
-To generate this output, \f(CW\*(C`virt\-ls\*(C'\fR runs the \f(CW\*(C`guestfs_find0\*(C'\fR function and
-converts \f(CW\*(C`\e0\*(C'\fR characters to \f(CW\*(C`\en\*(C'\fR.
-.SS "\s-1RECURSIVE\s0 \s-1LONG\s0 \s-1LISTING\s0"
-.IX Subsection "RECURSIVE LONG LISTING"
+この出力を生成するには、\f(CW\*(C`virt\-ls\*(C'\fR が \f(CW\*(C`guestfs_find0\*(C'\fR 関数を実行して、\f(CW\*(C`\e0\*(C'\fR 文字を \f(CW\*(C`\en\*(C'\fR に変換します。
+.SS "再帰的なロング形式の一覧方法"
+.IX Subsection "再帰的なロング形式の一覧方法"
 Using \fI\-lR\fR options together changes the output to display directories
 recursively, with file stats, and optionally other features such as
 checksums and extended attributes.
@@ -242,78 +238,73 @@ command.
 These basic fields are always shown:
 .IP "type" 4
 .IX Item "type"
-The file type, one of: \f(CW\*(C`\-\*(C'\fR (regular file), \f(CW\*(C`d\*(C'\fR (directory), \f(CW\*(C`c\*(C'\fR
-(character device), \f(CW\*(C`b\*(C'\fR (block device), \f(CW\*(C`p\*(C'\fR (named pipe), \f(CW\*(C`l\*(C'\fR (symbolic
-link), \f(CW\*(C`s\*(C'\fR (socket) or \f(CW\*(C`u\*(C'\fR (unknown).
-.IP "permissions" 4
-.IX Item "permissions"
-The Unix permissions, displayed as a 4 digit octal number.
-.IP "size" 4
-.IX Item "size"
-The size of the file.  This is shown in bytes unless \fI\-h\fR or
-\&\fI\-\-human\-readable\fR option is given, in which case this is shown as a
-human-readable number.
-.IP "path" 4
-.IX Item "path"
-The full path of the file or directory.
-.IP "link" 4
-.IX Item "link"
-For symbolic links only, the link target.
+ファイル形式。次のどれかです: \f(CW\*(C`\-\*(C'\fR (通常のファイル), \f(CW\*(C`d\*(C'\fR (ディレクトリー), \f(CW\*(C`c\*(C'\fR (キャラクターデバイス), \f(CW\*(C`b\*(C'\fR
+(ブロックデバイス), \f(CW\*(C`p\*(C'\fR (名前付きパイプ), \f(CW\*(C`l\*(C'\fR (シンボリックリンク), \f(CW\*(C`s\*(C'\fR (ソケット) or \f(CW\*(C`u\*(C'\fR (不明)。
+.IP "パーミッション" 4
+.IX Item "パーミッション"
+Unix パーティション。4 桁の8進数として表示されます。
+.IP "容量" 4
+.IX Item "容量"
+ファイルの容量。  読みやすい形式の数値として表示する \fI\-h\fR または \fI\-\-human\-readable\fR
+オプションが指定されていなければ、バイト単位で表示されます。
+.IP "パス" 4
+.IX Item "パス"
+ファイルまたはディレクトリの完全パス。
+.IP "リンク" 4
+.IX Item "リンク"
+シンボリックリンクのみに対して、リンク先。
 .PP
-In \fI\-lR\fR mode, additional command line options enable the display of more
-fields.
+\&\fI\-lR\fR モードでは、追加のコマンドラインオプションにより、さらなる項目の表示を有効にします。
 .PP
-With the \fI\-\-uids\fR flag, these additional fields are displayed before the
-path:
+\&\fI\-\-uids\fR フラグを用いると、これらの追加項目がパスの前に表示されます:
 .IP "uid" 4
 .IX Item "uid"
 .PD 0
 .IP "gid" 4
 .IX Item "gid"
 .PD
-The \s-1UID\s0 and \s-1GID\s0 of the owner of the file (displayed numerically).  Note
-these only make sense in the context of a Unix-like guest.
+ファイルの所有者の \s-1UID\s0 および \s-1GID\s0 (数値表記)。  これらは Unix 系の仮想マシンにおいてのみ意味があることに注意してください。
 .PP
-With the \fI\-\-times\fR flag, these additional fields are displayed:
+\&\fI\-\-times\fR フラグがあると、これらの追加項目が表示されます:
 .IP "atime" 4
 .IX Item "atime"
-The time of last access.
+アクセス日時。
 .IP "mtime" 4
 .IX Item "mtime"
-The time of last modification.
+最終変更日時。
 .IP "ctime" 4
 .IX Item "ctime"
-The time of last status change.
+最終属性変更日時。
 .PP
-The time fields are displayed as string dates and times, unless one of the
-\&\fI\-\-time\-t\fR, \fI\-\-time\-relative\fR or \fI\-\-time\-days\fR flags is given.
+\&\fI\-\-time\-t\fR, \fI\-\-time\-relative\fR または \fI\-\-time\-days\fR
+フラグのどれかが指定されていなければ、日付と時間の文字列として time 項目が表示されます。
 .PP
-With the \fI\-\-extra\-stats\fR flag, these additional fields are displayed:
+\&\fI\-\-extra\-stats\fR フラグを用いると、これらの追加項目が表示されます:
 .IP "device" 4
 .IX Item "device"
 The device containing the file (displayed as major:minor).  This may not
 match devices as known to the guest.
 .IP "inode" 4
 .IX Item "inode"
-The inode number.
+inode 番号。
 .IP "nlink" 4
 .IX Item "nlink"
-The number of hard links.
+ハードリンク数。
 .IP "rdev" 4
 .IX Item "rdev"
 For block and char special files, the device (displayed as major:minor).
-.IP "blocks" 4
-.IX Item "blocks"
-The number of 512 byte blocks allocated to the file.
+.IP "ブロック" 4
+.IX Item "ブロック"
+ファイルに割り当てられた 512 バイトブロック数。
 .PP
 With the \fI\-\-checksum\fR flag, the checksum of the file contents is shown
 (only for regular files).  Computing file checksums can take a considerable
 amount of time.
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+.SH "オプション"
+.IX Header "オプション"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
-Display brief help.
+簡単なヘルプを表示します。
 .IP "\fB\-a\fR file" 4
 .IX Item "-a file"
 .PD 0
@@ -324,8 +315,7 @@ Add \fIfile\fR which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate \fI\-a\fR options.
 .Sp
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the \fI\-\-format=..\fR option.
+ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、\fI\-\-format=..\fR オプションを使用します。
 .IP "\fB\-\-checksum\fR" 4
 .IX Item "--checksum"
 .PD 0
@@ -336,19 +326,16 @@ Display checksum over file contents for regular files.  With no argument,
 this defaults to using \fImd5\fR.  Using an argument, you can select the
 checksum type to use.
 .Sp
-This option only has effect in \fI\-lR\fR output mode.  See \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0
-\&\s-1LISTING\s0\*(R" above.
+このオプションは \fI\-lR\fR 出力モードにおいてのみ効果があります。  上の \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0 \s-1LISTING\s0\*(R" 参照。
 .IP "\fB\-c\fR \s-1URI\s0" 4
 .IX Item "-c URI"
 .PD 0
 .IP "\fB\-\-connect\fR \s-1URI\s0" 4
 .IX Item "--connect URI"
 .PD
-If using libvirt, connect to the given \fI\s-1URI\s0\fR.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された \fI\s-1URI\s0\fR に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 .Sp
-If you specify guest block devices directly (\fI\-a\fR), then libvirt is not
-used at all.
+ゲストのブロックデバイスを直接指定していると（(\fI\-a\fR)）、libvirt は何も使用されません。
 .IP "\fB\-\-csv\fR" 4
 .IX Item "--csv"
 Write out the results in \s-1CSV\s0 format (comma-separated values).  This format
@@ -360,8 +347,7 @@ can be imported easily into databases and spreadsheets, but read \*(L"\s-1NOTE\s
 .IP "\fB\-\-domain\fR guest" 4
 .IX Item "--domain guest"
 .PD
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  ドメインの \s-1UUID\s0 が名前の代わりに使用されます。
 .IP "\fB\-\-echo\-keys\fR" 4
 .IX Item "--echo-keys"
 When prompting for keys and passphrases, virt-ls normally turns echoing off
@@ -372,47 +358,42 @@ see what you are typing.
 .IX Item "--extra-stats"
 Display extra stats.
 .Sp
-This option only has effect in \fI\-lR\fR output mode.  See \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0
-\&\s-1LISTING\s0\*(R" above.
+このオプションは \fI\-lR\fR 出力モードにおいてのみ効果があります。  上の \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0 \s-1LISTING\s0\*(R" 参照。
 .IP "\fB\-\-format=raw|qcow2|..\fR" 4
 .IX Item "--format=raw|qcow2|.."
 .PD 0
 .IP "\fB\-\-format\fR" 4
 .IX Item "--format"
 .PD
-The default for the \fI\-a\fR option is to auto-detect the format of the disk
-image.  Using this forces the disk format for \fI\-a\fR options which follow on
-the command line.  Using \fI\-\-format\fR with no argument switches back to
-auto-detection for subsequent \fI\-a\fR options.
+\&\fI\-a\fR オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、\fI\-a\fR
+オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで \fI\-\-format\fR を使用することにより、後続の \fI\-a\fR
+オプションに対して自動検知に戻せます。
 .Sp
-For example:
+例:
 .Sp
 .Vb 1
 \& virt\-ls \-\-format=raw \-a disk.img /dir
 .Ve
 .Sp
-forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR.
+\&\f(CW\*(C`disk.img\*(C'\fR に対してローイメージを強制します（自動検出しません）。
 .Sp
 .Vb 1
 \& virt\-ls \-\-format=raw \-a disk.img \-\-format \-a another.img /dir
 .Ve
 .Sp
-forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR and reverts to
-auto-detection for \f(CW\*(C`another.img\*(C'\fR.
+\&\f(CW\*(C`disk.img\*(C'\fR に対してロー形式（自動検知なし）を強制し、\f(CW\*(C`another.img\*(C'\fR に対して自動検知に戻します。
 .Sp
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (\s-1CVE\-2010\-3851\s0).
+仮想マシンのディスクイメージが信頼できないロー形式であるならば、ディスク形式を指定するためにこのオプションを使用すべきです。これにより、悪意のある仮想マシンにより起こり得るセキュリティ問題を回避できます
+(\s-1CVE\-2010\-3851\s0)。
 .IP "\fB\-h\fR" 4
 .IX Item "-h"
 .PD 0
 .IP "\fB\-\-human\-readable\fR" 4
 .IX Item "--human-readable"
 .PD
-Display file sizes in human-readable format.
+読みやすい形式でファイル容量を表示します。
 .Sp
-This option only has effect in \fI\-lR\fR output mode.  See \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0
-\&\s-1LISTING\s0\*(R" above.
+このオプションは \fI\-lR\fR 出力モードにおいてのみ効果があります。  上の \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0 \s-1LISTING\s0\*(R" 参照。
 .IP "\fB\-\-keys\-from\-stdin\fR" 4
 .IX Item "--keys-from-stdin"
 Read key or passphrase parameters from stdin.  The default is to try to read
@@ -443,8 +424,7 @@ parsed.  See \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0 \s-1LISTING\s0\*(R".
 .IX Item "--times"
 Display time fields.
 .Sp
-This option only has effect in \fI\-lR\fR output mode.  See \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0
-\&\s-1LISTING\s0\*(R" above.
+このオプションは \fI\-lR\fR 出力モードにおいてのみ効果があります。  上の \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0 \s-1LISTING\s0\*(R" 参照。
 .IP "\fB\-\-time\-days\fR" 4
 .IX Item "--time-days"
 Display time fields as days before now (negative if in the future).
@@ -452,52 +432,48 @@ Display time fields as days before now (negative if in the future).
 Note that \f(CW0\fR in output means \*(L"up to 1 day before now\*(R", or that the age of
 the file is between 0 and 86399 seconds.
 .Sp
-This option only has effect in \fI\-lR\fR output mode.  See \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0
-\&\s-1LISTING\s0\*(R" above.
+このオプションは \fI\-lR\fR 出力モードにおいてのみ効果があります。  上の \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0 \s-1LISTING\s0\*(R" 参照。
 .IP "\fB\-\-time\-relative\fR" 4
 .IX Item "--time-relative"
 Display time fields as seconds before now (negative if in the future).
 .Sp
-This option only has effect in \fI\-lR\fR output mode.  See \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0
-\&\s-1LISTING\s0\*(R" above.
+このオプションは \fI\-lR\fR 出力モードにおいてのみ効果があります。  上の \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0 \s-1LISTING\s0\*(R" 参照。
 .IP "\fB\-\-time\-t\fR" 4
 .IX Item "--time-t"
 Display time fields as seconds since the Unix epoch.
 .Sp
-This option only has effect in \fI\-lR\fR output mode.  See \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0
-\&\s-1LISTING\s0\*(R" above.
+このオプションは \fI\-lR\fR 出力モードにおいてのみ効果があります。  上の \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0 \s-1LISTING\s0\*(R" 参照。
 .IP "\fB\-\-uids\fR" 4
 .IX Item "--uids"
-Display \s-1UID\s0 and \s-1GID\s0 fields.
+\&\s-1UID\s0 と \s-1GID\s0 の項目を表示します。
 .Sp
-This option only has effect in \fI\-lR\fR output mode.  See \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0
-\&\s-1LISTING\s0\*(R" above.
+このオプションは \fI\-lR\fR 出力モードにおいてのみ効果があります。  上の \*(L"\s-1RECURSIVE\s0 \s-1LONG\s0 \s-1LISTING\s0\*(R" 参照。
 .IP "\fB\-v\fR" 4
 .IX Item "-v"
 .PD 0
 .IP "\fB\-\-verbose\fR" 4
 .IX Item "--verbose"
 .PD
-Enable verbose messages for debugging.
+デバッグ用の冗長なメッセージを有効にします。
 .IP "\fB\-V\fR" 4
 .IX Item "-V"
 .PD 0
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
 .PD
-Display version number and exit.
+バージョン番号を表示して終了します。
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
-Enable tracing of libguestfs \s-1API\s0 calls.
-.SH "OLD-STYLE COMMAND LINE ARGUMENTS"
-.IX Header "OLD-STYLE COMMAND LINE ARGUMENTS"
+libguestfs \s-1API\s0 呼び出しのトレースを有効にします。
+.SH "旧形式のコマンドライン引数"
+.IX Header "旧形式のコマンドライン引数"
 Previous versions of virt-ls allowed you to write either:
 .PP
 .Vb 1
 \& virt\-ls disk.img [disk.img ...] /dir
 .Ve
 .PP
-or
+または
 .PP
 .Vb 1
 \& virt\-ls guestname /dir
@@ -506,9 +482,9 @@ or
 whereas in this version you should use \fI\-a\fR or \fI\-d\fR respectively to avoid
 the confusing case where a disk image might have the same name as a guest.
 .PP
-For compatibility the old style is still supported.
-.SH "NOTE ABOUT CSV FORMAT"
-.IX Header "NOTE ABOUT CSV FORMAT"
+互換性のため古い形式がまだサポートされています。
+.SH "CSV 形式に関する注意"
+.IX Header "CSV 形式に関する注意"
 Comma-separated values (\s-1CSV\s0) is a deceptive format.  It \fIseems\fR like it
 should be easy to parse, but it is definitely not easy to parse.
 .PP
@@ -540,16 +516,16 @@ Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
-.SH "EXIT STATUS"
-.IX Header "EXIT STATUS"
-This program returns 0 if successful, or non-zero if there was an error.
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
+.SH "終了ステータス"
+.IX Header "終了ステータス"
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
+.SH "関連項目"
+.IX Header "関連項目"
 \&\fIguestfs\fR\|(3), \fIguestfish\fR\|(1), \fIvirt\-cat\fR\|(1), \fIvirt\-copy\-out\fR\|(1),
 \&\fIvirt\-tar\-out\fR\|(1), \fISys::Guestfs\fR\|(3), \fISys::Guestfs::Lib\fR\|(3),
 \&\fISys::Virt\fR\|(3), <http://libguestfs.org/>.
-.SH "AUTHOR"
-.IX Header "AUTHOR"
+.SH "著者"
+.IX Header "著者"
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"

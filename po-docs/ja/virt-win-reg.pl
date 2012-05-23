@@ -2,10 +2,9 @@
 
 =head1 名前
 
-virt-win-reg - Export and merge Windows Registry entries from a Windows
-guest
+virt-win-reg - Windows 仮想マシンからの Windows レジストリエントリーのエクスポートおよびマージ
 
-=head1 SYNOPSIS
+=head1 書式
 
  virt-win-reg domname 'HKLM\Path\To\Subkey'
 
@@ -15,9 +14,9 @@ guest
 
  virt-win-reg --merge domname [input.reg ...]
 
- virt-win-reg [--options] disk.img ... # instead of domname
+ virt-win-reg [--options] disk.img ... # 仮想マシン名の代わり
 
-=head1 WARNING
+=head1 警告
 
 You must I<not> use C<virt-win-reg> with the I<--merge> option on live
 virtual machines.  If you do this, you I<will> get irreversible disk
@@ -29,13 +28,11 @@ is deliberately obscure and undocumented, and Registry changes can leave the
 system unbootable.  Therefore when using the I<--merge> option, make sure
 you have a reliable backup first.
 
-=head1 DESCRIPTION
+=head1 説明
 
-This program can export and merge Windows Registry entries from a Windows
-guest.
+このプログラムは Windows 仮想マシンから Windows レジストリのエントリーをエクスポートおよびマージできます。
 
-The first parameter is the libvirt guest name or the raw disk image of a
-Windows guest.
+第一パラメーターは Windows 仮想マシンの libvirt 仮想マシン名または生のディスクイメージです。
 
 If I<--merge> is I<not> specified, then the chosen registry key is
 displayed/exported (recursively).  For example:
@@ -48,12 +45,11 @@ You can also display single values from within registry keys, for example:
  $ virt-win-reg Windows7 $cvkey ProductName
  Windows 7 Enterprise
 
-With I<--merge>, you can merge a textual regedit file into the Windows
-Registry:
+I<--merge> を用いると、テキストの regedit ファイルを Windows レジストリーの中に結合できます:
 
  $ virt-win-reg --merge Windows7 changes.reg
 
-=head2 NOTE
+=head2 注記
 
 This program is only meant for simple access to the registry.  If you want
 to do complicated things with the registry, we suggest you download the
@@ -61,31 +57,29 @@ Registry hive files from the guest using L<libguestfs(3)> or L<guestfish(1)>
 and access them locally, eg. using L<hivex(3)>, L<hivexsh(1)> or
 L<hivexregedit(1)>.
 
-=head1 OPTIONS
+=head1 オプション
 
 =over 4
 
 =item B<--help>
 
-Display brief help.
+簡単なヘルプを表示します。
 
 =item B<--version>
 
-Display version number and exit.
+バージョン番号を表示して終了します。
 
 =item B<--debug>
 
-Enable debugging messages.
+デバッグメッセージを有効にします。
 
 =item B<-c URI>
 
 =item B<--connect URI>
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された I<URI> に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 
-If you specify guest block devices directly, then libvirt is not used at
-all.
+仮想マシンのブロックデバイスを直接指定すると、libvirt はまったく使用されません。
 
 =item B<--format> raw
 
@@ -156,12 +150,12 @@ into another program or stored in another Registry.
 
 =back
 
-=head1 SUPPORTED SYSTEMS
+=head1 サポートされるシステム
 
 The program currently supports Windows NT-derived guests starting with
 Windows XP through to at least Windows 7.
 
-The following Registry keys are supported:
+以下のレジストリキーがサポートされます:
 
 =over 4
 
@@ -177,11 +171,11 @@ The following Registry keys are supported:
 
 =item C<HKEY_USERS\I<SID>>
 
-where I<SID> is a Windows User SID (eg. C<S-1-5-18>).
+ここで I<SID> は Windows User SID です (例: C<S-1-5-18>)。
 
 =item C<HKEY_USERS\I<username>>
 
-where I<username> is a local user name (this is a libguestfs extension).
+ここで I<username> はローカルユーザー名です (これは libguestfs の拡張です)。
 
 =back
 
@@ -191,7 +185,7 @@ C<HKEY_USERS>.
 The literal keys C<HKEY_USERS\$SID> and C<HKEY_CURRENT_USER> are not
 supported (there is no "current user").
 
-=head1 ENCODING
+=head1 エンコーディング
 
 C<virt-win-reg> expects that regedit files have already been reencoded in
 the local encoding.  Usually on Linux hosts, this means UTF-8 with
@@ -209,7 +203,7 @@ to a Windows user, do something like this:
 
  unix2dos linux.reg | iconv -f utf-8 -t utf-16le > win.reg
 
-For more information about encoding, see L<Win::Hivex::Regedit(3)>.
+エンコーディングの詳細は L<Win::Hivex::Regedit(3)> を参照してください。
 
 If you are unsure about the current encoding, use the L<file(1)> command.
 Recent versions of Windows regedit.exe produce a UTF-16LE file with
@@ -244,16 +238,16 @@ Similarly, other C<Current...> keys in the path may need to be replaced.
 
 =head1 DELETING REGISTRY KEYS AND VALUES
 
-To delete a whole registry key, use the syntax:
+レジストリキー全体を削除するには、この構文を使用します:
 
  [-HKEY_LOCAL_MACHINE\Foo]
 
-To delete a single value within a key, use the syntax:
+キーにある単一の値を削除するには、この構文を使用します:
 
  [HKEY_LOCAL_MACHINE\Foo]
  "Value"=-
 
-=head1 WINDOWS TIPS
+=head1 Windows のヒント
 
 Note that some of these tips modify the guest disk image.  The guest I<must>
 be shut off, else you will get disk corruption.
@@ -281,7 +275,7 @@ Now update the registry:
 
  virt-win-reg --merge WindowsGuest test.reg
 
-=head2 INSTALLING A SERVICE
+=head2 サービスのインストール方法
 
 This section assumes you are familiar with Windows services, and you either
 have a program which handles the Windows Service Control Protocol directly
@@ -316,7 +310,7 @@ using the RHSrvAny service wrapper.
  "PWD"="c:\\Temp"
  EOF
 
-Notes:
+注:
 
 =over 4
 
@@ -339,7 +333,7 @@ L<http://support.microsoft.com/kb/103000>.
 
 =back
 
-Update the registry:
+レジストリを更新します:
 
  virt-win-reg --merge WindowsGuest service.reg
 
@@ -349,32 +343,30 @@ Be careful when passing parameters containing C<\> (backslash) in the
 shell.  Usually you will have to use 'single quotes' or double backslashes
 (but not both) to protect them from the shell.
 
-Paths and value names are case-insensitive.
+パスおよび値の名前は大文字小文字を区別します。
 
 Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as C<#> and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 L<sh(1)> for details.
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<hivex(3)>, L<hivexsh(1)>, L<hivexregedit(1)>, L<guestfs(3)>,
 L<guestfish(1)>, L<virt-cat(1)>, L<Sys::Guestfs(3)>,
 L<Sys::Guestfs::Lib(3)>, L<Win::Hivex(3)>, L<Win::Hivex::Regedit(3)>,
 L<Sys::Virt(3)>, L<http://libguestfs.org/>.
 
-=head1 BUGS
+=head1 バグ
 
-When reporting bugs, please enable debugging and capture the I<complete>
-output:
+バグを報告するとき、デバッグを有効にして、I<完全な> 出力を記録してください:
 
  export LIBGUESTFS_DEBUG=1
  virt-win-reg --debug [... rest ...] > /tmp/virt-win-reg.log 2>&1
 
-Attach /tmp/virt-win-reg.log to a new bug report at
-L<https://bugzilla.redhat.com/>
+L<https://bugzilla.redhat.com/> の新規バグ報告に /tmp/virt-win-reg.log を添付してください
 
-=head1 AUTHOR
+=head1 著者
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 

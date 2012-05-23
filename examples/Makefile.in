@@ -51,16 +51,20 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = create_disk$(EXEEXT) inspect_vm$(EXEEXT) \
-	$(am__EXEEXT_1)
-@HAVE_HIVEX_TRUE@am__append_1 = virt-dhcp-address
+noinst_PROGRAMS = create_disk$(EXEEXT) display_icon$(EXEEXT) \
+	inspect_vm$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2) \
+	$(am__EXEEXT_3)
+@HAVE_LIBVIRT_TRUE@am__append_1 = copy_over
+@HAVE_HIVEX_TRUE@am__append_2 = virt-dhcp-address
+@HAVE_FUSE_TRUE@am__append_3 = mount_local
 subdir = examples
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
-	$(top_srcdir)/m4/alloca.m4 $(top_srcdir)/m4/arpa_inet_h.m4 \
-	$(top_srcdir)/m4/btowc.m4 $(top_srcdir)/m4/byteswap.m4 \
-	$(top_srcdir)/m4/chdir-long.m4 $(top_srcdir)/m4/clock_time.m4 \
+	$(top_srcdir)/m4/accept4.m4 $(top_srcdir)/m4/alloca.m4 \
+	$(top_srcdir)/m4/arpa_inet_h.m4 $(top_srcdir)/m4/btowc.m4 \
+	$(top_srcdir)/m4/byteswap.m4 $(top_srcdir)/m4/chdir-long.m4 \
+	$(top_srcdir)/m4/clock_time.m4 \
 	$(top_srcdir)/m4/close-stream.m4 $(top_srcdir)/m4/close.m4 \
 	$(top_srcdir)/m4/closedir.m4 $(top_srcdir)/m4/closeout.m4 \
 	$(top_srcdir)/m4/codeset.m4 $(top_srcdir)/m4/configmake.m4 \
@@ -69,52 +73,54 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/dirent_h.m4 $(top_srcdir)/m4/dirfd.m4 \
 	$(top_srcdir)/m4/dirname.m4 \
 	$(top_srcdir)/m4/double-slash-root.m4 $(top_srcdir)/m4/dup.m4 \
-	$(top_srcdir)/m4/dup2.m4 $(top_srcdir)/m4/eealloc.m4 \
-	$(top_srcdir)/m4/environ.m4 $(top_srcdir)/m4/errno_h.m4 \
-	$(top_srcdir)/m4/error.m4 $(top_srcdir)/m4/exponentd.m4 \
-	$(top_srcdir)/m4/extensions.m4 $(top_srcdir)/m4/fchdir.m4 \
-	$(top_srcdir)/m4/fcntl-o.m4 $(top_srcdir)/m4/fcntl-safer.m4 \
-	$(top_srcdir)/m4/fcntl.m4 $(top_srcdir)/m4/fcntl_h.m4 \
-	$(top_srcdir)/m4/fdopen.m4 $(top_srcdir)/m4/filenamecat.m4 \
-	$(top_srcdir)/m4/float_h.m4 $(top_srcdir)/m4/fnmatch.m4 \
-	$(top_srcdir)/m4/fpending.m4 $(top_srcdir)/m4/fpieee.m4 \
-	$(top_srcdir)/m4/fseeko.m4 $(top_srcdir)/m4/fstat.m4 \
-	$(top_srcdir)/m4/fsusage.m4 $(top_srcdir)/m4/ftell.m4 \
-	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
-	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
-	$(top_srcdir)/m4/getaddrinfo.m4 $(top_srcdir)/m4/getcwd.m4 \
-	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
-	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
-	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
-	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/hostent.m4 \
-	$(top_srcdir)/m4/human.m4 $(top_srcdir)/m4/i-ring.m4 \
-	$(top_srcdir)/m4/include_next.m4 $(top_srcdir)/m4/inet_ntop.m4 \
-	$(top_srcdir)/m4/inet_pton.m4 $(top_srcdir)/m4/inline.m4 \
-	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/intmax_t.m4 \
-	$(top_srcdir)/m4/introspection.m4 $(top_srcdir)/m4/inttostr.m4 \
-	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
-	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/ioctl.m4 \
-	$(top_srcdir)/m4/largefile.m4 $(top_srcdir)/m4/lcmessage.m4 \
-	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
-	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/localcharset.m4 $(top_srcdir)/m4/locale-fr.m4 \
-	$(top_srcdir)/m4/locale-ja.m4 $(top_srcdir)/m4/locale-tr.m4 \
-	$(top_srcdir)/m4/locale-zh.m4 $(top_srcdir)/m4/locale_h.m4 \
-	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
-	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
-	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
-	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
-	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
-	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
-	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
-	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
-	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
-	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/dup2.m4 $(top_srcdir)/m4/dup3.m4 \
+	$(top_srcdir)/m4/eealloc.m4 $(top_srcdir)/m4/environ.m4 \
+	$(top_srcdir)/m4/errno_h.m4 $(top_srcdir)/m4/error.m4 \
+	$(top_srcdir)/m4/exponentd.m4 $(top_srcdir)/m4/extensions.m4 \
+	$(top_srcdir)/m4/fchdir.m4 $(top_srcdir)/m4/fcntl-o.m4 \
+	$(top_srcdir)/m4/fcntl-safer.m4 $(top_srcdir)/m4/fcntl.m4 \
+	$(top_srcdir)/m4/fcntl_h.m4 $(top_srcdir)/m4/fdopen.m4 \
+	$(top_srcdir)/m4/filenamecat.m4 $(top_srcdir)/m4/float_h.m4 \
+	$(top_srcdir)/m4/fnmatch.m4 $(top_srcdir)/m4/fpending.m4 \
+	$(top_srcdir)/m4/fpieee.m4 $(top_srcdir)/m4/fseeko.m4 \
+	$(top_srcdir)/m4/fstat.m4 $(top_srcdir)/m4/fsusage.m4 \
+	$(top_srcdir)/m4/ftell.m4 $(top_srcdir)/m4/ftello.m4 \
+	$(top_srcdir)/m4/ftruncate.m4 $(top_srcdir)/m4/fts.m4 \
+	$(top_srcdir)/m4/futimens.m4 $(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/getcwd.m4 $(top_srcdir)/m4/getdelim.m4 \
+	$(top_srcdir)/m4/getdtablesize.m4 $(top_srcdir)/m4/getline.m4 \
+	$(top_srcdir)/m4/getlogin_r.m4 $(top_srcdir)/m4/getopt.m4 \
+	$(top_srcdir)/m4/getpagesize.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
+	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
+	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/include_next.m4 \
+	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
+	$(top_srcdir)/m4/inline.m4 $(top_srcdir)/m4/intlmacosx.m4 \
+	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/introspection.m4 \
+	$(top_srcdir)/m4/inttostr.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
+	$(top_srcdir)/m4/inttypes.m4 $(top_srcdir)/m4/inttypes_h.m4 \
+	$(top_srcdir)/m4/ioctl.m4 $(top_srcdir)/m4/largefile.m4 \
+	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
+	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
+	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
+	$(top_srcdir)/m4/locale-tr.m4 $(top_srcdir)/m4/locale-zh.m4 \
+	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localename.m4 \
+	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
+	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
+	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
+	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
+	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
+	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/mempcpy.m4 \
+	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
+	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
+	$(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
@@ -173,16 +179,35 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@HAVE_HIVEX_TRUE@am__EXEEXT_1 = virt-dhcp-address$(EXEEXT)
+@HAVE_LIBVIRT_TRUE@am__EXEEXT_1 = copy_over$(EXEEXT)
+@HAVE_HIVEX_TRUE@am__EXEEXT_2 = virt-dhcp-address$(EXEEXT)
+@HAVE_FUSE_TRUE@am__EXEEXT_3 = mount_local$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
-am_create_disk_OBJECTS = create_disk-create_disk.$(OBJEXT)
-create_disk_OBJECTS = $(am_create_disk_OBJECTS)
-create_disk_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
+am__copy_over_SOURCES_DIST = copy_over.c
+@HAVE_LIBVIRT_TRUE@am_copy_over_OBJECTS =  \
+@HAVE_LIBVIRT_TRUE@	copy_over-copy_over.$(OBJEXT)
+copy_over_OBJECTS = $(am_copy_over_OBJECTS)
+am__DEPENDENCIES_1 =
+@HAVE_LIBVIRT_TRUE@copy_over_DEPENDENCIES =  \
+@HAVE_LIBVIRT_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_LIBVIRT_TRUE@	$(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
+copy_over_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(copy_over_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_create_disk_OBJECTS = create_disk-create_disk.$(OBJEXT)
+create_disk_OBJECTS = $(am_create_disk_OBJECTS)
+create_disk_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
 create_disk_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(create_disk_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_display_icon_OBJECTS = display_icon-display_icon.$(OBJEXT)
+display_icon_OBJECTS = $(am_display_icon_OBJECTS)
+display_icon_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
+display_icon_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(display_icon_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_inspect_vm_OBJECTS = inspect_vm-inspect_vm.$(OBJEXT)
 inspect_vm_OBJECTS = $(am_inspect_vm_OBJECTS)
@@ -190,10 +215,18 @@ inspect_vm_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
 inspect_vm_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(inspect_vm_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am__mount_local_SOURCES_DIST = mount_local.c
+@HAVE_FUSE_TRUE@am_mount_local_OBJECTS =  \
+@HAVE_FUSE_TRUE@	mount_local-mount_local.$(OBJEXT)
+mount_local_OBJECTS = $(am_mount_local_OBJECTS)
+@HAVE_FUSE_TRUE@mount_local_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la
+mount_local_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(mount_local_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 am__virt_dhcp_address_SOURCES_DIST = virt-dhcp-address.c
 @HAVE_HIVEX_TRUE@am_virt_dhcp_address_OBJECTS = virt_dhcp_address-virt-dhcp-address.$(OBJEXT)
 virt_dhcp_address_OBJECTS = $(am_virt_dhcp_address_OBJECTS)
-am__DEPENDENCIES_1 =
 @HAVE_HIVEX_TRUE@virt_dhcp_address_DEPENDENCIES =  \
 @HAVE_HIVEX_TRUE@	$(am__DEPENDENCIES_1) \
 @HAVE_HIVEX_TRUE@	$(top_builddir)/src/libguestfs.la
@@ -227,9 +260,12 @@ am__v_CCLD_0 = @echo "  CCLD  " $@;
 AM_V_GEN = $(am__v_GEN_@AM_V@)
 am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
 am__v_GEN_0 = @echo "  GEN   " $@;
-SOURCES = $(create_disk_SOURCES) $(inspect_vm_SOURCES) \
-	$(virt_dhcp_address_SOURCES)
-DIST_SOURCES = $(create_disk_SOURCES) $(inspect_vm_SOURCES) \
+SOURCES = $(copy_over_SOURCES) $(create_disk_SOURCES) \
+	$(display_icon_SOURCES) $(inspect_vm_SOURCES) \
+	$(mount_local_SOURCES) $(virt_dhcp_address_SOURCES)
+DIST_SOURCES = $(am__copy_over_SOURCES_DIST) $(create_disk_SOURCES) \
+	$(display_icon_SOURCES) $(inspect_vm_SOURCES) \
+	$(am__mount_local_SOURCES_DIST) \
 	$(am__virt_dhcp_address_SOURCES_DIST)
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -296,6 +332,10 @@ CONFIG_INCLUDE = @CONFIG_INCLUDE@
 CPIO = @CPIO@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CXX = @CXX@
+CXXCPP = @CXXCPP@
+CXXDEPMODE = @CXXDEPMODE@
+CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DAEMON_SUPERMIN_DIR = @DAEMON_SUPERMIN_DIR@
 DB_DUMP = @DB_DUMP@
@@ -335,13 +375,12 @@ GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
 GENISOIMAGE = @GENISOIMAGE@
 GETADDRINFO_LIB = @GETADDRINFO_LIB@
 GETOPT_H = @GETOPT_H@
-GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GHC = @GHC@
+GIO_CFLAGS = @GIO_CFLAGS@
+GIO_LIBS = @GIO_LIBS@
 GJS = @GJS@
 GLIBC21 = @GLIBC21@
 GLOB_H = @GLOB_H@
-GMSGFMT = @GMSGFMT@
-GMSGFMT_015 = @GMSGFMT_015@
 GNULIB_ACCEPT = @GNULIB_ACCEPT@
 GNULIB_ACCEPT4 = @GNULIB_ACCEPT4@
 GNULIB_ALPHASORT = @GNULIB_ALPHASORT@
@@ -625,6 +664,11 @@ GOBJECT_CFLAGS = @GOBJECT_CFLAGS@
 GOBJECT_LIBS = @GOBJECT_LIBS@
 GPERF = @GPERF@
 GREP = @GREP@
+GTKDOC_CHECK = @GTKDOC_CHECK@
+GTKDOC_DEPS_CFLAGS = @GTKDOC_DEPS_CFLAGS@
+GTKDOC_DEPS_LIBS = @GTKDOC_DEPS_LIBS@
+GTKDOC_MKPDF = @GTKDOC_MKPDF@
+GTKDOC_REBASE = @GTKDOC_REBASE@
 HAVE_ACCEPT4 = @HAVE_ACCEPT4@
 HAVE_ALPHASORT = @HAVE_ALPHASORT@
 HAVE_ARPA_INET_H = @HAVE_ARPA_INET_H@
@@ -864,6 +908,7 @@ HAVE__EXIT = @HAVE__EXIT@
 HIVEX_CFLAGS = @HIVEX_CFLAGS@
 HIVEX_LIBS = @HIVEX_LIBS@
 HOSTENT_LIB = @HOSTENT_LIB@
+HTML_DIR = @HTML_DIR@
 INCLUDE_NEXT = @INCLUDE_NEXT@
 INCLUDE_NEXT_AS_FIRST_DIRECTIVE = @INCLUDE_NEXT_AS_FIRST_DIRECTIVE@
 INET_NTOP_LIB = @INET_NTOP_LIB@
@@ -875,7 +920,6 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INT32_MAX_LT_INTMAX_MAX = @INT32_MAX_LT_INTMAX_MAX@
 INT64_MAX_EQ_LONG_MAX = @INT64_MAX_EQ_LONG_MAX@
-INTLLIBS = @INTLLIBS@
 INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
 INTROSPECTION_CFLAGS = @INTROSPECTION_CFLAGS@
 INTROSPECTION_COMPILER = @INTROSPECTION_COMPILER@
@@ -900,7 +944,6 @@ LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBCONFIG_CFLAGS = @LIBCONFIG_CFLAGS@
 LIBCONFIG_LIBS = @LIBCONFIG_LIBS@
-LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
 LIBMULTITHREAD = @LIBMULTITHREAD@
 LIBOBJS = @LIBOBJS@
@@ -927,7 +970,6 @@ LOCALE_JA = @LOCALE_JA@
 LOCALE_TR_UTF8 = @LOCALE_TR_UTF8@
 LOCALE_ZH_CN = @LOCALE_ZH_CN@
 LTALLOCA = @LTALLOCA@
-LTLIBICONV = @LTLIBICONV@
 LTLIBINTL = @LTLIBINTL@
 LTLIBMULTITHREAD = @LTLIBMULTITHREAD@
 LTLIBOBJS = @LTLIBOBJS@
@@ -938,8 +980,8 @@ MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
 MAX_PROC_NR = @MAX_PROC_NR@
 MKDIR_P = @MKDIR_P@
+MSGCAT = @MSGCAT@
 MSGFMT = @MSGFMT@
-MSGFMT_015 = @MSGFMT_015@
 MSGMERGE = @MSGMERGE@
 NETINET_IN_H = @NETINET_IN_H@
 NEXT_ARPA_INET_H = @NEXT_ARPA_INET_H@
@@ -1017,6 +1059,8 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLOPTDOTOPT = @OCAMLOPTDOTOPT@
 OCAMLVERSION = @OCAMLVERSION@
+OCAML_GETTEXT = @OCAML_GETTEXT@
+OCAML_PKG_gettext = @OCAML_PKG_gettext@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -1044,7 +1088,6 @@ POD2MAN = @POD2MAN@
 POD2TEXT = @POD2TEXT@
 POD2_STDERR_OPTION = @POD2_STDERR_OPTION@
 POD2_UTF8_OPTION = @POD2_UTF8_OPTION@
-POSUB = @POSUB@
 PRAGMA_COLUMNS = @PRAGMA_COLUMNS@
 PRAGMA_SYSTEM_HEADER = @PRAGMA_SYSTEM_HEADER@
 PRIPTR_PREFIX = @PRIPTR_PREFIX@
@@ -1220,7 +1263,6 @@ UINT64_MAX_EQ_ULONG_MAX = @UINT64_MAX_EQ_ULONG_MAX@
 UNDEFINE_STRTOK_R = @UNDEFINE_STRTOK_R@
 UNISTD_H_HAVE_WINSOCK2_H = @UNISTD_H_HAVE_WINSOCK2_H@
 UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
-USE_NLS = @USE_NLS@
 VALGRIND = @VALGRIND@
 VALGRIND_NO_VGDB = @VALGRIND_NO_VGDB@
 VERSION = @VERSION@
@@ -1231,8 +1273,6 @@ WERROR_CFLAGS = @WERROR_CFLAGS@
 WINT_T_SUFFIX = @WINT_T_SUFFIX@
 WRESTOOL = @WRESTOOL@
 XGETTEXT = @XGETTEXT@
-XGETTEXT_015 = @XGETTEXT_015@
-XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 XMLLINT = @XMLLINT@
 YIELD_LIB = @YIELD_LIB@
 abs_aux_dir = @abs_aux_dir@
@@ -1242,6 +1282,7 @@ abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
+ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
@@ -1297,13 +1338,29 @@ top_srcdir = @top_srcdir@
 EXTRA_DIST = \
 	LICENSE \
 	guestfs-examples.pod \
+	guestfs-faq.pod \
+	guestfs-performance.pod \
 	guestfs-recipes.pod \
 	guestfs-testing.pod
 
 CLEANFILES = \
 	stamp-guestfs-examples.pod \
+	stamp-guestfs-faq.pod \
+	stamp-guestfs-performance.pod \
 	stamp-guestfs-recipes.pod \
 	stamp-guestfs-testing.pod
+
+@HAVE_LIBVIRT_TRUE@copy_over_SOURCES = copy_over.c
+@HAVE_LIBVIRT_TRUE@copy_over_CFLAGS = \
+@HAVE_LIBVIRT_TRUE@	-DGUESTFS_WARN_DEPRECATED=1 \
+@HAVE_LIBVIRT_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_LIBVIRT_TRUE@	$(LIBVIRT_CFLAGS) \
+@HAVE_LIBVIRT_TRUE@	-pthread \
+@HAVE_LIBVIRT_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+
+@HAVE_LIBVIRT_TRUE@copy_over_LDADD = \
+@HAVE_LIBVIRT_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_LIBVIRT_TRUE@	$(LIBVIRT_LIBS)
 
 create_disk_SOURCES = create_disk.c
 create_disk_CFLAGS = \
@@ -1314,6 +1371,15 @@ create_disk_CFLAGS = \
 create_disk_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
+display_icon_SOURCES = display_icon.c
+display_icon_CFLAGS = \
+	-DGUESTFS_WARN_DEPRECATED=1 \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+
+display_icon_LDADD = \
+	$(top_builddir)/src/libguestfs.la
+
 inspect_vm_SOURCES = inspect_vm.c
 inspect_vm_CFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
@@ -1322,6 +1388,17 @@ inspect_vm_CFLAGS = \
 
 inspect_vm_LDADD = \
 	$(top_builddir)/src/libguestfs.la
+
+@HAVE_FUSE_TRUE@mount_local_SOURCES = mount_local.c
+@HAVE_FUSE_TRUE@mount_local_CFLAGS = \
+@HAVE_FUSE_TRUE@	-DGUESTFS_WARN_DEPRECATED=1 \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_FUSE_TRUE@	$(FUSE_CFLAGS) \
+@HAVE_FUSE_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+
+@HAVE_FUSE_TRUE@mount_local_LDADD = \
+@HAVE_FUSE_TRUE@	$(FUSE_LIBS) -lulockmgr \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la
 
 @HAVE_HIVEX_TRUE@virt_dhcp_address_SOURCES = virt-dhcp-address.c
 @HAVE_HIVEX_TRUE@virt_dhcp_address_CFLAGS = \
@@ -1336,11 +1413,15 @@ inspect_vm_LDADD = \
 
 man_MANS = \
 	guestfs-examples.3 \
+	guestfs-faq.1 \
+	guestfs-performance.1 \
 	guestfs-recipes.1 \
 	guestfs-testing.1
 
 noinst_DATA = \
 	$(top_builddir)/html/guestfs-examples.3.html \
+	$(top_builddir)/html/guestfs-faq.1.html \
+	$(top_builddir)/html/guestfs-performance.1.html \
 	$(top_builddir)/html/guestfs-recipes.1.html \
 	$(top_builddir)/html/guestfs-testing.1.html
 
@@ -1387,12 +1468,21 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+copy_over$(EXEEXT): $(copy_over_OBJECTS) $(copy_over_DEPENDENCIES) $(EXTRA_copy_over_DEPENDENCIES) 
+	@rm -f copy_over$(EXEEXT)
+	$(AM_V_CCLD)$(copy_over_LINK) $(copy_over_OBJECTS) $(copy_over_LDADD) $(LIBS)
 create_disk$(EXEEXT): $(create_disk_OBJECTS) $(create_disk_DEPENDENCIES) $(EXTRA_create_disk_DEPENDENCIES) 
 	@rm -f create_disk$(EXEEXT)
 	$(AM_V_CCLD)$(create_disk_LINK) $(create_disk_OBJECTS) $(create_disk_LDADD) $(LIBS)
+display_icon$(EXEEXT): $(display_icon_OBJECTS) $(display_icon_DEPENDENCIES) $(EXTRA_display_icon_DEPENDENCIES) 
+	@rm -f display_icon$(EXEEXT)
+	$(AM_V_CCLD)$(display_icon_LINK) $(display_icon_OBJECTS) $(display_icon_LDADD) $(LIBS)
 inspect_vm$(EXEEXT): $(inspect_vm_OBJECTS) $(inspect_vm_DEPENDENCIES) $(EXTRA_inspect_vm_DEPENDENCIES) 
 	@rm -f inspect_vm$(EXEEXT)
 	$(AM_V_CCLD)$(inspect_vm_LINK) $(inspect_vm_OBJECTS) $(inspect_vm_LDADD) $(LIBS)
+mount_local$(EXEEXT): $(mount_local_OBJECTS) $(mount_local_DEPENDENCIES) $(EXTRA_mount_local_DEPENDENCIES) 
+	@rm -f mount_local$(EXEEXT)
+	$(AM_V_CCLD)$(mount_local_LINK) $(mount_local_OBJECTS) $(mount_local_LDADD) $(LIBS)
 virt-dhcp-address$(EXEEXT): $(virt_dhcp_address_OBJECTS) $(virt_dhcp_address_DEPENDENCIES) $(EXTRA_virt_dhcp_address_DEPENDENCIES) 
 	@rm -f virt-dhcp-address$(EXEEXT)
 	$(AM_V_CCLD)$(virt_dhcp_address_LINK) $(virt_dhcp_address_OBJECTS) $(virt_dhcp_address_LDADD) $(LIBS)
@@ -1403,8 +1493,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/copy_over-copy_over.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/create_disk-create_disk.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/display_icon-display_icon.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inspect_vm-inspect_vm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mount_local-mount_local.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_dhcp_address-virt-dhcp-address.Po@am__quote@
 
 .c.o:
@@ -1428,6 +1521,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
+copy_over-copy_over.o: copy_over.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(copy_over_CFLAGS) $(CFLAGS) -MT copy_over-copy_over.o -MD -MP -MF $(DEPDIR)/copy_over-copy_over.Tpo -c -o copy_over-copy_over.o `test -f 'copy_over.c' || echo '$(srcdir)/'`copy_over.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/copy_over-copy_over.Tpo $(DEPDIR)/copy_over-copy_over.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='copy_over.c' object='copy_over-copy_over.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(copy_over_CFLAGS) $(CFLAGS) -c -o copy_over-copy_over.o `test -f 'copy_over.c' || echo '$(srcdir)/'`copy_over.c
+
+copy_over-copy_over.obj: copy_over.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(copy_over_CFLAGS) $(CFLAGS) -MT copy_over-copy_over.obj -MD -MP -MF $(DEPDIR)/copy_over-copy_over.Tpo -c -o copy_over-copy_over.obj `if test -f 'copy_over.c'; then $(CYGPATH_W) 'copy_over.c'; else $(CYGPATH_W) '$(srcdir)/copy_over.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/copy_over-copy_over.Tpo $(DEPDIR)/copy_over-copy_over.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='copy_over.c' object='copy_over-copy_over.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(copy_over_CFLAGS) $(CFLAGS) -c -o copy_over-copy_over.obj `if test -f 'copy_over.c'; then $(CYGPATH_W) 'copy_over.c'; else $(CYGPATH_W) '$(srcdir)/copy_over.c'; fi`
+
 create_disk-create_disk.o: create_disk.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(create_disk_CFLAGS) $(CFLAGS) -MT create_disk-create_disk.o -MD -MP -MF $(DEPDIR)/create_disk-create_disk.Tpo -c -o create_disk-create_disk.o `test -f 'create_disk.c' || echo '$(srcdir)/'`create_disk.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/create_disk-create_disk.Tpo $(DEPDIR)/create_disk-create_disk.Po
@@ -1442,6 +1549,20 @@ create_disk-create_disk.obj: create_disk.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(create_disk_CFLAGS) $(CFLAGS) -c -o create_disk-create_disk.obj `if test -f 'create_disk.c'; then $(CYGPATH_W) 'create_disk.c'; else $(CYGPATH_W) '$(srcdir)/create_disk.c'; fi`
 
+display_icon-display_icon.o: display_icon.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(display_icon_CFLAGS) $(CFLAGS) -MT display_icon-display_icon.o -MD -MP -MF $(DEPDIR)/display_icon-display_icon.Tpo -c -o display_icon-display_icon.o `test -f 'display_icon.c' || echo '$(srcdir)/'`display_icon.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/display_icon-display_icon.Tpo $(DEPDIR)/display_icon-display_icon.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='display_icon.c' object='display_icon-display_icon.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(display_icon_CFLAGS) $(CFLAGS) -c -o display_icon-display_icon.o `test -f 'display_icon.c' || echo '$(srcdir)/'`display_icon.c
+
+display_icon-display_icon.obj: display_icon.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(display_icon_CFLAGS) $(CFLAGS) -MT display_icon-display_icon.obj -MD -MP -MF $(DEPDIR)/display_icon-display_icon.Tpo -c -o display_icon-display_icon.obj `if test -f 'display_icon.c'; then $(CYGPATH_W) 'display_icon.c'; else $(CYGPATH_W) '$(srcdir)/display_icon.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/display_icon-display_icon.Tpo $(DEPDIR)/display_icon-display_icon.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='display_icon.c' object='display_icon-display_icon.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(display_icon_CFLAGS) $(CFLAGS) -c -o display_icon-display_icon.obj `if test -f 'display_icon.c'; then $(CYGPATH_W) 'display_icon.c'; else $(CYGPATH_W) '$(srcdir)/display_icon.c'; fi`
+
 inspect_vm-inspect_vm.o: inspect_vm.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(inspect_vm_CFLAGS) $(CFLAGS) -MT inspect_vm-inspect_vm.o -MD -MP -MF $(DEPDIR)/inspect_vm-inspect_vm.Tpo -c -o inspect_vm-inspect_vm.o `test -f 'inspect_vm.c' || echo '$(srcdir)/'`inspect_vm.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/inspect_vm-inspect_vm.Tpo $(DEPDIR)/inspect_vm-inspect_vm.Po
@@ -1455,6 +1576,20 @@ inspect_vm-inspect_vm.obj: inspect_vm.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='inspect_vm.c' object='inspect_vm-inspect_vm.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(inspect_vm_CFLAGS) $(CFLAGS) -c -o inspect_vm-inspect_vm.obj `if test -f 'inspect_vm.c'; then $(CYGPATH_W) 'inspect_vm.c'; else $(CYGPATH_W) '$(srcdir)/inspect_vm.c'; fi`
+
+mount_local-mount_local.o: mount_local.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mount_local_CFLAGS) $(CFLAGS) -MT mount_local-mount_local.o -MD -MP -MF $(DEPDIR)/mount_local-mount_local.Tpo -c -o mount_local-mount_local.o `test -f 'mount_local.c' || echo '$(srcdir)/'`mount_local.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/mount_local-mount_local.Tpo $(DEPDIR)/mount_local-mount_local.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mount_local.c' object='mount_local-mount_local.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mount_local_CFLAGS) $(CFLAGS) -c -o mount_local-mount_local.o `test -f 'mount_local.c' || echo '$(srcdir)/'`mount_local.c
+
+mount_local-mount_local.obj: mount_local.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mount_local_CFLAGS) $(CFLAGS) -MT mount_local-mount_local.obj -MD -MP -MF $(DEPDIR)/mount_local-mount_local.Tpo -c -o mount_local-mount_local.obj `if test -f 'mount_local.c'; then $(CYGPATH_W) 'mount_local.c'; else $(CYGPATH_W) '$(srcdir)/mount_local.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/mount_local-mount_local.Tpo $(DEPDIR)/mount_local-mount_local.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mount_local.c' object='mount_local-mount_local.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mount_local_CFLAGS) $(CFLAGS) -c -o mount_local-mount_local.obj `if test -f 'mount_local.c'; then $(CYGPATH_W) 'mount_local.c'; else $(CYGPATH_W) '$(srcdir)/mount_local.c'; fi`
 
 virt_dhcp_address-virt-dhcp-address.o: virt-dhcp-address.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_dhcp_address_CFLAGS) $(CFLAGS) -MT virt_dhcp_address-virt-dhcp-address.o -MD -MP -MF $(DEPDIR)/virt_dhcp_address-virt-dhcp-address.Tpo -c -o virt_dhcp_address-virt-dhcp-address.o `test -f 'virt-dhcp-address.c' || echo '$(srcdir)/'`virt-dhcp-address.c
@@ -1781,6 +1916,26 @@ stamp-guestfs-examples.pod: guestfs-examples.pod create_disk.c inspect_vm.c
 	  --html $(top_builddir)/html/guestfs-examples.3.html \
 	  --verbatim $(srcdir)/create_disk.c:@EXAMPLE1@ \
 	  --verbatim $(srcdir)/inspect_vm.c:@EXAMPLE2@ \
+	  $<
+	touch $@
+
+guestfs-faq.1 $(top_builddir)/html/guestfs-faq.1.html: stamp-guestfs-faq.pod
+
+stamp-guestfs-faq.pod: guestfs-faq.pod
+	$(top_builddir)/podwrapper.sh \
+	  --section 1 \
+	  --man guestfs-faq.1 \
+	  --html $(top_builddir)/html/guestfs-faq.1.html \
+	  $<
+	touch $@
+
+guestfs-performance.1 $(top_builddir)/html/guestfs-performance.1.html: stamp-guestfs-performance.pod
+
+stamp-guestfs-performance.pod: guestfs-performance.pod
+	$(top_builddir)/podwrapper.sh \
+	  --section 1 \
+	  --man guestfs-performance.1 \
+	  --html $(top_builddir)/html/guestfs-performance.1.html \
 	  $<
 	touch $@
 

@@ -1,0 +1,21 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Wed, 23 May 2012 22:30:43 +0200
+Subject: Fix out-of-tree build (install target) for translations
+
+---
+ po/Makefile.am |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/po/Makefile.am b/po/Makefile.am
+index 90b23c1..c620d57 100644
+--- a/po/Makefile.am
++++ b/po/Makefile.am
+@@ -96,7 +96,7 @@ install-data-hook:
+ 	for lang in $(linguas); do \
+ 	  d=$(DESTDIR)$(langinstdir)/$$lang/LC_MESSAGES; \
+ 	  mkdir -p $$d; \
+-	  install -m 0755 $$lang.gmo $$d/$(DOMAIN).mo; \
++	  install -m 0755 $(srcdir)/$$lang.gmo $$d/$(DOMAIN).mo; \
+ 	done
+ 
+ .PRECIOUS: $(DOMAIN).pot $(POFILES)

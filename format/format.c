@@ -323,22 +323,11 @@ do_format (void)
 
   /* Erase the disks. */
   if (!wipe) {
-    char **parts;
-
-    /* No wipe, but get rid of LVM metadata by erasing each partition. */
-    parts = guestfs_list_partitions (g);
-    if (parts == NULL)
-      exit (EXIT_FAILURE);
-
-    for (i = 0; parts[i] != NULL; ++i) {
-      if (guestfs_zero (g, parts[i]) == -1)
-        exit (EXIT_FAILURE);
-      free (parts[i]);
-    }
-    free (parts);
-
-    /* Then erase the partition table on each device. */
     for (i = 0; devices[i] != NULL; ++i) {
+      /* erase the filesystem signatures on each device */
+      if (guestfs_wipefs (g, devices[i]) == -1)
+        exit (EXIT_FAILURE);
+      /* Then erase the partition table on each device. */
       if (guestfs_zero (g, devices[i]) == -1)
         exit (EXIT_FAILURE);
     }
@@ -390,7 +379,7 @@ do_format (void)
       if (guestfs_vgcreate (g, vg, devs) == -1)
         exit (EXIT_FAILURE);
 
-      if (guestfs_lvcreate (g, lv, vg, 32) == -1) /* 32 MB is smallest LV */
+      if (guestfs_lvcreate_free (g, lv, vg, 100) == -1)
         exit (EXIT_FAILURE);
 
       if (free_dev)
@@ -400,9 +389,6 @@ do_format (void)
         exit (EXIT_FAILURE);
       }
       free_dev = 1;
-
-      if (guestfs_lvresize_free (g, dev, 100) == -1)
-        exit (EXIT_FAILURE);
     }
 
     if (filesystem) {

@@ -1,0 +1,56 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsE2fsck
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsE2fsck ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsE2fsck:correct ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsE2fsck:forceall ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsE2fsckClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_e2fsck_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

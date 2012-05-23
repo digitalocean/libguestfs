@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsBTRFSFilesystemResize</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsNTFSResizeOpts.html" title="GuestfsNTFSResizeOpts">
+<link rel="next" href="GuestfsCompressOut.html" title="GuestfsCompressOut">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsNTFSResizeOpts.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsCompressOut.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsBTRFSFilesystemResize.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsBTRFSFilesystemResize.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsBTRFSFilesystemResize.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsBTRFSFilesystemResize.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsBTRFSFilesystemResize"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsBTRFSFilesystemResize.top_of_page"></a>GuestfsBTRFSFilesystemResize</span></h2>
+<p>GuestfsBTRFSFilesystemResize — An object encapsulating optional arguments for guestfs_session_btrfs_filesystem_resize</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsBTRFSFilesystemResize.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsBTRFSFilesystemResize.html#GuestfsBTRFSFilesystemResize-struct" title="struct GuestfsBTRFSFilesystemResize">GuestfsBTRFSFilesystemResize</a>;
+struct              <a class="link" href="GuestfsBTRFSFilesystemResize.html#GuestfsBTRFSFilesystemResizeClass" title="struct GuestfsBTRFSFilesystemResizeClass">GuestfsBTRFSFilesystemResizeClass</a>;
+<a class="link" href="GuestfsBTRFSFilesystemResize.html" title="GuestfsBTRFSFilesystemResize"><span class="returnvalue">GuestfsBTRFSFilesystemResize</span></a> * <a class="link" href="GuestfsBTRFSFilesystemResize.html#guestfs-btrfs-filesystem-resize-new" title="guestfs_btrfs_filesystem_resize_new ()">guestfs_btrfs_filesystem_resize_new</a>
+                                                        (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsBTRFSFilesystemResize.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----GuestfsBTRFSFilesystemResize
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsBTRFSFilesystemResize.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsBTRFSFilesystemResize.html#GuestfsBTRFSFilesystemResize--size" title='The "size" property'>size</a>"                     <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsBTRFSFilesystemResize.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_btrfs_filesystem_resize
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsBTRFSFilesystemResize.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsBTRFSFilesystemResize-struct"></a><h3>struct GuestfsBTRFSFilesystemResize</h3>
+<pre class="programlisting">struct GuestfsBTRFSFilesystemResize;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_btrfs_filesystem_resize.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsBTRFSFilesystemResizeClass"></a><h3>struct GuestfsBTRFSFilesystemResizeClass</h3>
+<pre class="programlisting">struct GuestfsBTRFSFilesystemResizeClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsBTRFSFilesystemResize.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="GuestfsBTRFSFilesystemResizeClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsBTRFSFilesystemResizeClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-btrfs-filesystem-resize-new"></a><h3>guestfs_btrfs_filesystem_resize_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsBTRFSFilesystemResize.html" title="GuestfsBTRFSFilesystemResize"><span class="returnvalue">GuestfsBTRFSFilesystemResize</span></a> * guestfs_btrfs_filesystem_resize_new
+                                                        (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsBTRFSFilesystemResize object
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsBTRFSFilesystemResize object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsBTRFSFilesystemResize.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsBTRFSFilesystemResize--size"></a><h3>The <code class="literal">"size"</code> property</h3>
+<pre class="programlisting">  "size"                     <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct</pre>
+<p>
+A 64-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

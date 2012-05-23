@@ -2,13 +2,13 @@
 
 =head1 名前
 
-libguestfs-test-tool - Diagnostics for libguestfs
+libguestfs-test-tool - libguestfs の診断
 
-=head1 SYNOPSIS
+=head1 書式
 
  libguestfs-test-tool [--options]
 
-=head1 DESCRIPTION
+=head1 説明
 
 libguestfs-test-tool is a test program shipped with libguestfs to allow you
 to check basic libguestfs functionality is working.  This is needed because
@@ -33,7 +33,7 @@ I<complete, unedited> output of the test tool into a bug report.  More
 information about reporting bugs can be found on the
 L<http://libguestfs.org/> website.
 
-=head1 OPTIONS
+=head1 オプション
 
 =over 4
 
@@ -88,26 +88,26 @@ C<FEBOOTSTRAP_KERNEL> and/or C<FEBOOTSTRAP_MODULES>.
 Refer to L<febootstrap-supermin-helper(8)/ENVIRONMENT VARIABLES> for further
 information.
 
-=head1 SELF-DIAGNOSIS
+=head1 自己診断
 
-Refer to L<guestfs(3)/APPLIANCE BOOT PROCESS> to understand the messages
-produced by libguestfs-test-tool and/or possible errors.
+libguestfs-test-tool および/または起こりうるエラーにより生成されるメッセージを理解するには
+L<guestfs(3)/アプライアンス起動プロセス> を参照してください。
 
-=head1 EXIT STATUS
+=head1 終了ステータス
 
 libguestfs-test-tool returns I<0> if the tests completed without error, or
 I<1> if there was an error.
 
-=head1 ENVIRONMENT VARIABLES
+=head1 環境変数
 
 For the full list of environment variables which may affect libguestfs,
 please see the L<guestfs(3)> manual page.
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfs(3)>, L<http://libguestfs.org/>, L<http://qemu.org/>.
 
-=head1 AUTHORS
+=head1 著者
 
 Richard W.M. Jones (C<rjones at redhat dot com>)
 

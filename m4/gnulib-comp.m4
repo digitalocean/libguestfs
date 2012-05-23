@@ -41,6 +41,8 @@ AC_DEFUN([gl_EARLY],
   AC_REQUIRE([AM_PROG_CC_C_O])
   # Code from module accept:
   # Code from module accept-tests:
+  # Code from module accept4:
+  # Code from module accept4-tests:
   # Code from module alloca:
   # Code from module alloca-opt:
   # Code from module alloca-opt-tests:
@@ -94,6 +96,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module dup-tests:
   # Code from module dup2:
   # Code from module dup2-tests:
+  # Code from module dup3:
+  # Code from module dup3-tests:
   # Code from module environ:
   # Code from module environ-tests:
   # Code from module errno:
@@ -436,6 +440,13 @@ AC_DEFUN([gl_INIT],
   m4_pushdef([gl_LIBSOURCES_DIR], [])
   gl_COMMON
   gl_source_base='gnulib/lib'
+AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+if test "$ac_cv_header_winsock2_h" = yes; then
+  AC_LIBOBJ([accept])
+fi
+gl_SYS_SOCKET_MODULE_INDICATOR([accept])
+gl_FUNC_ACCEPT4
+gl_SYS_SOCKET_MODULE_INDICATOR([accept4])
 changequote(,)dnl
 LTALLOCA=`echo "$ALLOCA" | sed -e 's/\.[^.]* /.lo /g;s/\.[^.]*$/.lo/'`
 changequote([, ])dnl
@@ -499,6 +510,8 @@ if test $HAVE_DUP2 = 0 || test $REPLACE_DUP2 = 1; then
   gl_PREREQ_DUP2
 fi
 gl_UNISTD_MODULE_INDICATOR([dup2])
+gl_FUNC_DUP3
+gl_UNISTD_MODULE_INDICATOR([dup3])
 gl_ENVIRON
 gl_UNISTD_MODULE_INDICATOR([environ])
 gl_HEADER_ERRNO_H
@@ -1033,11 +1046,6 @@ changequote([, ])dnl
   m4_pushdef([gl_MODULE_INDICATOR_CONDITION], [$gl_module_indicator_condition])
 AC_REQUIRE([gl_HEADER_SYS_SOCKET])
 if test "$ac_cv_header_winsock2_h" = yes; then
-  AC_LIBOBJ([accept])
-fi
-gl_SYS_SOCKET_MODULE_INDICATOR([accept])
-AC_REQUIRE([gl_HEADER_SYS_SOCKET])
-if test "$ac_cv_header_winsock2_h" = yes; then
   AC_LIBOBJ([bind])
 fi
 gl_SYS_SOCKET_MODULE_INDICATOR([bind])
@@ -1297,6 +1305,8 @@ AC_DEFUN([gl_FILE_LIST], [
   build-aux/snippet/warn-on-use.h
   build-aux/useless-if-before-free
   build-aux/vc-list-files
+  lib/accept.c
+  lib/accept4.c
   lib/alloca.c
   lib/alloca.in.h
   lib/argmatch.c
@@ -1306,6 +1316,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/asprintf.c
   lib/at-func.c
   lib/basename-lgpl.c
+  lib/binary-io.h
   lib/bitrotate.h
   lib/byteswap.in.h
   lib/c-ctype.c
@@ -1341,6 +1352,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/dup-safer.c
   lib/dup.c
   lib/dup2.c
+  lib/dup3.c
   lib/errno.in.h
   lib/error.c
   lib/error.h
@@ -1560,6 +1572,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/xvasprintf.c
   lib/xvasprintf.h
   m4/00gnulib.m4
+  m4/accept4.m4
   m4/alloca.m4
   m4/arpa_inet_h.m4
   m4/btowc.m4
@@ -1582,6 +1595,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/double-slash-root.m4
   m4/dup.m4
   m4/dup2.m4
+  m4/dup3.m4
   m4/eealloc.m4
   m4/environ.m4
   m4/errno_h.m4
@@ -1772,6 +1786,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/nap.h
   tests/signature.h
   tests/test-accept.c
+  tests/test-accept4.c
   tests/test-alloca-opt.c
   tests/test-argmatch.c
   tests/test-arpa_inet.c
@@ -1796,6 +1811,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-dup-safer.c
   tests/test-dup.c
   tests/test-dup2.c
+  tests/test-dup3.c
   tests/test-environ.c
   tests/test-errno.c
   tests/test-fchdir.c
@@ -1982,9 +1998,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-xstrtoumax.sh
   tests/test-xvasprintf.c
   tests/zerosize-ptr.h
-  tests=lib/accept.c
   tests=lib/anytostr.c
-  tests=lib/binary-io.h
   tests=lib/bind.c
   tests=lib/btowc.c
   tests=lib/dup-safer-flag.c

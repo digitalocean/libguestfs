@@ -314,6 +314,21 @@ check_isolinux_installer_root (guestfs_h *g, struct inspect_fs *fs)
       return -1;
   }
 
+  /* XXX parse major.minor */
+  r = guestfs___first_egrep_of_file (g, "/isolinux/isolinux.cfg",
+                                     "^menu title Welcome to RHEL[[:digit:]]+",
+                           0, &str);
+  if (r == -1)
+    return -1;
+  if (r > 0) {
+    fs->distro = OS_DISTRO_RHEL;
+    fs->major_version =
+      guestfs___parse_unsigned_int_ignore_trailing (g, &str[26]);
+    free (str);
+    if (fs->major_version == -1)
+      return -1;
+  }
+
   return 0;
 }
 
@@ -434,7 +449,17 @@ guestfs___check_installer_root (guestfs_h *g, struct inspect_fs *fs)
       return -1;
   }
 
-  /* Linux with /isolinux/isolinux.cfg. */
+  /* FreeDOS install CD. */
+  else if (guestfs_is_file (g, "/freedos/freedos.ico") > 0 &&
+           guestfs_is_file (g, "/setup.bat") > 0) {
+    fs->type = OS_TYPE_DOS;
+    fs->distro = OS_DISTRO_FREEDOS;
+    fs->arch = safe_strdup (g, "i386");
+  }
+
+  /* Linux with /isolinux/isolinux.cfg (note that non-Linux can use
+   * ISOLINUX too, eg. FreeDOS).
+   */
   else if (guestfs_is_file (g, "/isolinux/isolinux.cfg") > 0) {
     if (check_isolinux_installer_root (g, fs) == -1)
       return -1;

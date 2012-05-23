@@ -2,23 +2,23 @@
 
 =head1 名前
 
-guestfs-python - How to use libguestfs from Python
+guestfs-python - Python から libguestfs を使用する方法
 
-=head1 SYNOPSIS
+=head1 書式
 
  import guestfs
  g = guestfs.GuestFS ()
  g.add_drive_opts ("disk.img", format="raw", readonly=1)
  g.launch ()
 
-=head1 DESCRIPTION
+=head1 説明
 
 This manual page documents how to call libguestfs from the Python
 programming language.  This page just documents the differences from the C
 API and gives some examples.  If you are not familiar with using libguestfs,
 you also need to read L<guestfs(3)>.
 
-=head2 EXCEPTIONS
+=head2 例外
 
 Errors from libguestfs functions are mapped into C<RuntimeException> with a
 single string argument which is the error message.
@@ -31,21 +31,21 @@ Type:
  >>> import guestfs
  >>> help (guestfs)
 
-=head1 EXAMPLE 1: CREATE A DISK IMAGE
+=head1 例 1: ディスクイメージの作成
 
 @EXAMPLE1@
 
-=head1 EXAMPLE 2: INSPECT A VIRTUAL MACHINE DISK IMAGE
+=head1 例 2: 仮想マシンのディスクイメージの検査
 
 @EXAMPLE2@
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfs(3)>, L<guestfs-examples(3)>, L<guestfs-erlang(3)>,
 L<guestfs-java(3)>, L<guestfs-ocaml(3)>, L<guestfs-perl(3)>,
-L<guestfs-recipes(1)>, L<guestfs-ruby(3)>, L<http://libguestfs.org/>.
+L<guestfs-recipes(1)>, L<guestfs-ruby(3)>, L<http://libguestfs.org/>。
 
-=head1 AUTHORS
+=head1 著者
 
 Richard W.M. Jones (C<rjones at redhat dot com>)
 
@@ -53,8 +53,7 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 Copyright (C) 2010 Red Hat Inc. L<http://libguestfs.org/>
 
-The examples in this manual page may be freely copied, modified and
-distributed without any restrictions.
+このマニュアルページにある例は、なんら制限なく自由にコピー、修正、配布できます。
 
 This library is free software; you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published by the

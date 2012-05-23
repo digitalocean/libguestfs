@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Libguestfs GObject Bindings</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="prev" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="next" href="GuestfsSession.html" title="GuestfsSession">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="index.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td> </td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsSession.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="chapter">
+<div class="titlepage"><div><div><h2 class="title">
+<a name="id401264"></a>Libguestfs GObject Bindings</h2></div></div></div>
+<div class="toc"><dl>
+<dt>
+<span class="refentrytitle"><a href="GuestfsSession.html">GuestfsSession</a></span><span class="refpurpose"> — A libguestfs session</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsTristate.html">GuestfsTristate</a></span><span class="refpurpose"> — An object representing a tristate value</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsIntBool.html">GuestfsIntBool</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsPV.html">GuestfsPV</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsVG.html">GuestfsVG</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsLV.html">GuestfsLV</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsStat.html">GuestfsStat</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsStatVFS.html">GuestfsStatVFS</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsDirent.html">GuestfsDirent</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsVersion.html">GuestfsVersion</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsXAttr.html">GuestfsXAttr</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsINotifyEvent.html">GuestfsINotifyEvent</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsPartition.html">GuestfsPartition</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsApplication.html">GuestfsApplication</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsISOInfo.html">GuestfsISOInfo</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsMDStat.html">GuestfsMDStat</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsBTRFSSubvolume.html">GuestfsBTRFSSubvolume</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsTest0.html">GuestfsTest0</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_test0</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsAddDriveOpts.html">GuestfsAddDriveOpts</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_add_drive_opts</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsAddDomain.html">GuestfsAddDomain</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_add_domain</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsInspectGetIcon.html">GuestfsInspectGetIcon</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_inspect_get_icon</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsMountLocal.html">GuestfsMountLocal</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_mount_local</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsUmountLocal.html">GuestfsUmountLocal</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_umount_local</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsMkfsOpts.html">GuestfsMkfsOpts</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_mkfs_opts</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsMount9P.html">GuestfsMount9P</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_mount_9p</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsNTFSResizeOpts.html">GuestfsNTFSResizeOpts</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_ntfsresize_opts</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsBTRFSFilesystemResize.html">GuestfsBTRFSFilesystemResize</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_btrfs_filesystem_resize</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsCompressOut.html">GuestfsCompressOut</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_compress_out</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsCompressDeviceOut.html">GuestfsCompressDeviceOut</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_compress_device_out</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsCopyDeviceToDevice.html">GuestfsCopyDeviceToDevice</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_copy_device_to_device</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsCopyDeviceToFile.html">GuestfsCopyDeviceToFile</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_copy_device_to_file</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsCopyFileToDevice.html">GuestfsCopyFileToDevice</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_copy_file_to_device</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsCopyFileToFile.html">GuestfsCopyFileToFile</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_copy_file_to_file</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsTune2FS.html">GuestfsTune2FS</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_tune2fs</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsMDCreate.html">GuestfsMDCreate</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_md_create</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsE2fsck.html">GuestfsE2fsck</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_e2fsck</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsNtfsfix.html">GuestfsNtfsfix</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_ntfsfix</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsNtfscloneOut.html">GuestfsNtfscloneOut</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_ntfsclone_out</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsMkfsBtrfs.html">GuestfsMkfsBtrfs</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_mkfs_btrfs</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsSetE2attrs.html">GuestfsSetE2attrs</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_set_e2attrs</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GuestfsBtrfsFsck.html">GuestfsBtrfsFsck</a></span><span class="refpurpose"> — An object encapsulating optional arguments for guestfs_session_btrfs_fsck</span>
+</dt>
+</dl></div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

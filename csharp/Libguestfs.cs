@@ -243,6 +243,41 @@ namespace Guestfs
       string app_description;
     }
 
+    [StructLayout (LayoutKind.Sequential)]
+    public class _isoinfo {
+      string iso_system_id;
+      string iso_volume_id;
+      uint iso_volume_space_size;
+      uint iso_volume_set_size;
+      uint iso_volume_sequence_number;
+      uint iso_logical_block_size;
+      string iso_volume_set_id;
+      string iso_publisher_id;
+      string iso_data_preparer_id;
+      string iso_application_id;
+      string iso_copyright_file_id;
+      string iso_abstract_file_id;
+      string iso_bibliographic_file_id;
+      long iso_volume_creation_t;
+      long iso_volume_modification_t;
+      long iso_volume_expiration_t;
+      long iso_volume_effective_t;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    public class _mdstat {
+      string mdstat_device;
+      int mdstat_index;
+      string mdstat_flags;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    public class _btrfssubvolume {
+      ulong btrfssubvolume_id;
+      ulong btrfssubvolume_top_level_id;
+      string btrfssubvolume_path;
+    }
+
     [DllImport ("libguestfs.so.0")]
     static extern int guestfs_add_cdrom (IntPtr h, [In] string filename);
 
@@ -765,6 +800,48 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_device_add (IntPtr h, [In] string[] devices, [In] string fs);
+
+    /// <summary>
+    /// add devices to a btrfs filesystem
+    /// </summary>
+    public void btrfs_device_add (string[] devices, string fs)
+    {
+      int r;
+      r = guestfs_btrfs_device_add (_handle, devices, fs);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_device_delete (IntPtr h, [In] string[] devices, [In] string fs);
+
+    /// <summary>
+    /// remove devices from a btrfs filesystem
+    /// </summary>
+    public void btrfs_device_delete (string[] devices, string fs)
+    {
+      int r;
+      r = guestfs_btrfs_device_delete (_handle, devices, fs);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_filesystem_balance (IntPtr h, [In] string fs);
+
+    /// <summary>
+    /// balance a btrfs filesystem
+    /// </summary>
+    public void btrfs_filesystem_balance (string fs)
+    {
+      int r;
+      r = guestfs_btrfs_filesystem_balance (_handle, fs);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_btrfs_filesystem_resize (IntPtr h, [In] string mountpoint);
 
     /// <summary>
@@ -774,6 +851,119 @@ namespace Guestfs
     {
       int r;
       r = guestfs_btrfs_filesystem_resize (_handle, mountpoint);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_filesystem_sync (IntPtr h, [In] string fs);
+
+    /// <summary>
+    /// sync a btrfs filesystem
+    /// </summary>
+    public void btrfs_filesystem_sync (string fs)
+    {
+      int r;
+      r = guestfs_btrfs_filesystem_sync (_handle, fs);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_fsck (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// check a btrfs filesystem
+    /// </summary>
+    public void btrfs_fsck (string device)
+    {
+      int r;
+      r = guestfs_btrfs_fsck (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_set_seeding (IntPtr h, [In] string device, bool seeding);
+
+    /// <summary>
+    /// enable or disable the seeding feature of device
+    /// </summary>
+    public void btrfs_set_seeding (string device, bool seeding)
+    {
+      int r;
+      r = guestfs_btrfs_set_seeding (_handle, device, seeding);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_subvolume_create (IntPtr h, [In] string dest);
+
+    /// <summary>
+    /// create a btrfs snapshot
+    /// </summary>
+    public void btrfs_subvolume_create (string dest)
+    {
+      int r;
+      r = guestfs_btrfs_subvolume_create (_handle, dest);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_subvolume_delete (IntPtr h, [In] string subvolume);
+
+    /// <summary>
+    /// delete a btrfs snapshot
+    /// </summary>
+    public void btrfs_subvolume_delete (string subvolume)
+    {
+      int r;
+      r = guestfs_btrfs_subvolume_delete (_handle, subvolume);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _btrfssubvolume[] guestfs_btrfs_subvolume_list (IntPtr h, [In] string fs);
+
+    /// <summary>
+    /// list btrfs snapshots and subvolumes
+    /// </summary>
+    public _btrfssubvolume[] btrfs_subvolume_list (string fs)
+    {
+      _btrfssubvolume[] r;
+      r = guestfs_btrfs_subvolume_list (_handle, fs);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_subvolume_set_default (IntPtr h, long id, [In] string fs);
+
+    /// <summary>
+    /// set default btrfs subvolume
+    /// </summary>
+    public void btrfs_subvolume_set_default (long id, string fs)
+    {
+      int r;
+      r = guestfs_btrfs_subvolume_set_default (_handle, id, fs);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_btrfs_subvolume_snapshot (IntPtr h, [In] string source, [In] string dest);
+
+    /// <summary>
+    /// create a writable btrfs snapshot
+    /// </summary>
+    public void btrfs_subvolume_snapshot (string source, string dest)
+    {
+      int r;
+      r = guestfs_btrfs_subvolume_snapshot (_handle, source, dest);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -1591,6 +1781,36 @@ namespace Guestfs
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_get_e2attrs (IntPtr h, [In] string file);
+
+    /// <summary>
+    /// get ext2 file attributes of a file
+    /// </summary>
+    public string get_e2attrs (string file)
+    {
+      string r;
+      r = guestfs_get_e2attrs (_handle, file);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_get_e2generation (IntPtr h, [In] string file);
+
+    /// <summary>
+    /// get ext2 file generation of a file
+    /// </summary>
+    public long get_e2generation (string file)
+    {
+      long r;
+      r = guestfs_get_e2generation (_handle, file);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -2660,6 +2880,36 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern _isoinfo guestfs_isoinfo (IntPtr h, [In] string isofile);
+
+    /// <summary>
+    /// get ISO information from primary volume descriptor of ISO file
+    /// </summary>
+    public _isoinfo isoinfo (string isofile)
+    {
+      _isoinfo r;
+      r = guestfs_isoinfo (_handle, isofile);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _isoinfo guestfs_isoinfo_device (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// get ISO information from primary volume descriptor of device
+    /// </summary>
+    public _isoinfo isoinfo_device (string device)
+    {
+      _isoinfo r;
+      r = guestfs_isoinfo_device (_handle, device);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_kill_subprocess (IntPtr h);
 
     /// <summary>
@@ -2834,6 +3084,21 @@ namespace Guestfs
     {
       string r;
       r = guestfs_ll (_handle, directory);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_llz (IntPtr h, [In] string directory);
+
+    /// <summary>
+    /// list the files in a directory (long format with SELinux contexts)
+    /// </summary>
+    public string llz (string directory)
+    {
+      string r;
+      r = guestfs_llz (_handle, directory);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
@@ -3081,6 +3346,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_lvcreate_free (IntPtr h, [In] string logvol, [In] string volgroup, int percent);
+
+    /// <summary>
+    /// create an LVM logical volume in % remaining free space
+    /// </summary>
+    public void lvcreate_free (string logvol, string volgroup, int percent)
+    {
+      int r;
+      r = guestfs_lvcreate_free (_handle, logvol, volgroup, percent);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string guestfs_lvm_canonical_lv_name (IntPtr h, [In] string lvname);
 
     /// <summary>
@@ -3286,6 +3565,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern _mdstat[] guestfs_md_stat (IntPtr h, [In] string md);
+
+    /// <summary>
+    /// get underlying devices from an MD device
+    /// </summary>
+    public _mdstat[] md_stat (string md)
+    {
+      _mdstat[] r;
+      r = guestfs_md_stat (_handle, md);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_md_stop (IntPtr h, [In] string md);
 
     /// <summary>
@@ -3483,6 +3777,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_mkfs_btrfs (IntPtr h, [In] string[] devices);
+
+    /// <summary>
+    /// create a btrfs filesystem
+    /// </summary>
+    public void mkfs_btrfs (string[] devices)
+    {
+      int r;
+      r = guestfs_mkfs_btrfs (_handle, devices);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_mkfs_opts (IntPtr h, [In] string fstype, [In] string device);
 
     /// <summary>
@@ -3651,6 +3959,34 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_mount_local (IntPtr h, [In] string localmountpoint);
+
+    /// <summary>
+    /// mount on the local filesystem
+    /// </summary>
+    public void mount_local (string localmountpoint)
+    {
+      int r;
+      r = guestfs_mount_local (_handle, localmountpoint);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_mount_local_run (IntPtr h);
+
+    /// <summary>
+    /// run main loop of mount on the local filesystem
+    /// </summary>
+    public void mount_local_run ()
+    {
+      int r;
+      r = guestfs_mount_local_run (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_mount_loop (IntPtr h, [In] string file, [In] string mountpoint);
 
     /// <summary>
@@ -3766,6 +4102,48 @@ namespace Guestfs
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_ntfsclone_in (IntPtr h, [In] string backupfile, [In] string device);
+
+    /// <summary>
+    /// restore NTFS from backup file
+    /// </summary>
+    public void ntfsclone_in (string backupfile, string device)
+    {
+      int r;
+      r = guestfs_ntfsclone_in (_handle, backupfile, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_ntfsclone_out (IntPtr h, [In] string device, [In] string backupfile);
+
+    /// <summary>
+    /// save NTFS to backup file
+    /// </summary>
+    public void ntfsclone_out (string device, string backupfile)
+    {
+      int r;
+      r = guestfs_ntfsclone_out (_handle, device, backupfile);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_ntfsfix (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// fix common errors and force Windows to check NTFS
+    /// </summary>
+    public void ntfsfix (string device)
+    {
+      int r;
+      r = guestfs_ntfsfix (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -4474,6 +4852,34 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_e2attrs (IntPtr h, [In] string file, [In] string attrs);
+
+    /// <summary>
+    /// set ext2 file attributes of a file
+    /// </summary>
+    public void set_e2attrs (string file, string attrs)
+    {
+      int r;
+      r = guestfs_set_e2attrs (_handle, file, attrs);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_e2generation (IntPtr h, [In] string file, long generation);
+
+    /// <summary>
+    /// set ext2 file generation of a file
+    /// </summary>
+    public void set_e2generation (string file, long generation)
+    {
+      int r;
+      r = guestfs_set_e2generation (_handle, file, generation);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_set_e2label (IntPtr h, [In] string device, [In] string label);
 
     /// <summary>
@@ -4497,6 +4903,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_set_e2uuid (_handle, device, uuid);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_label (IntPtr h, [In] string device, [In] string label);
+
+    /// <summary>
+    /// set filesystem label
+    /// </summary>
+    public void set_label (string device, string label)
+    {
+      int r;
+      r = guestfs_set_label (_handle, device, label);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -5568,6 +5988,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_umount_local (IntPtr h);
+
+    /// <summary>
+    /// unmount a locally mounted filesystem
+    /// </summary>
+    public void umount_local ()
+    {
+      int r;
+      r = guestfs_umount_local (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_upload (IntPtr h, [In] string filename, [In] string remotefilename);
 
     /// <summary>
@@ -5721,6 +6155,21 @@ namespace Guestfs
     {
       string[] r;
       r = guestfs_vglvuuids (_handle, vgname);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_vgmeta (IntPtr h, [In] string vgname);
+
+    /// <summary>
+    /// get volume group metadata
+    /// </summary>
+    public string vgmeta (string vgname)
+    {
+      string r;
+      r = guestfs_vgmeta (_handle, vgname);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
@@ -5888,6 +6337,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_wipefs (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// wipe a filesystem signature from a device
+    /// </summary>
+    public void wipefs (string device)
+    {
+      int r;
+      r = guestfs_wipefs (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_write (IntPtr h, [In] string path, [In] string content);
 
     /// <summary>
@@ -5983,6 +6446,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_zero_device (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_zero_free_space (IntPtr h, [In] string directory);
+
+    /// <summary>
+    /// zero free space in a filesystem
+    /// </summary>
+    public void zero_free_space (string directory)
+    {
+      int r;
+      r = guestfs_zero_free_space (_handle, directory);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }

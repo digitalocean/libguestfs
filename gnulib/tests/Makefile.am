@@ -58,15 +58,6 @@ AM_LIBTOOLFLAGS = --preserve-dup-deps
 
 TESTS_ENVIRONMENT += EXEEXT='@EXEEXT@' srcdir='$(srcdir)'
 
-## begin gnulib module accept
-
-
-EXTRA_DIST += accept.c w32sock.h
-
-EXTRA_libtests_a_SOURCES += accept.c
-
-## end   gnulib module accept
-
 ## begin gnulib module accept-tests
 
 TESTS += test-accept
@@ -75,6 +66,15 @@ test_accept_LDADD = $(LDADD) @LIBSOCKET@
 EXTRA_DIST += test-accept.c signature.h macros.h
 
 ## end   gnulib module accept-tests
+
+## begin gnulib module accept4-tests
+
+TESTS += test-accept4
+check_PROGRAMS += test-accept4
+test_accept4_LDADD = $(LDADD) @LIBSOCKET@
+EXTRA_DIST += test-accept4.c signature.h macros.h
+
+## end   gnulib module accept4-tests
 
 ## begin gnulib module alloca-opt-tests
 
@@ -102,12 +102,6 @@ check_PROGRAMS += test-arpa_inet
 EXTRA_DIST += test-arpa_inet.c
 
 ## end   gnulib module arpa_inet-tests
-
-## begin gnulib module binary-io
-
-libtests_a_SOURCES += binary-io.h
-
-## end   gnulib module binary-io
 
 ## begin gnulib module binary-io-tests
 
@@ -256,6 +250,14 @@ check_PROGRAMS += test-dup2
 EXTRA_DIST += test-dup2.c signature.h macros.h
 
 ## end   gnulib module dup2-tests
+
+## begin gnulib module dup3-tests
+
+TESTS += test-dup3
+check_PROGRAMS += test-dup3
+EXTRA_DIST += test-dup3.c signature.h macros.h
+
+## end   gnulib module dup3-tests
 
 ## begin gnulib module environ-tests
 

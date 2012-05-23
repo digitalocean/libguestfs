@@ -58,7 +58,7 @@ checksum (const char *csumtype, int fd)
   const char *program;
   char *out, *err;
   int flags, r;
-  int len;
+  size_t len;
 
   program = program_of_csum (csumtype);
   if (program == NULL) {
@@ -95,7 +95,7 @@ do_checksum (const char *csumtype, const char *path)
   int fd;
 
   CHROOT_IN;
-  fd = open (path, O_RDONLY);
+  fd = open (path, O_RDONLY|O_CLOEXEC);
   CHROOT_OUT;
 
   if (fd == -1) {
@@ -111,7 +111,7 @@ do_checksum_device (const char *csumtype, const char *device)
 {
   int fd;
 
-  fd = open (device, O_RDONLY);
+  fd = open (device, O_RDONLY|O_CLOEXEC);
   if (fd == -1) {
     reply_with_perror ("%s", device);
     return NULL;

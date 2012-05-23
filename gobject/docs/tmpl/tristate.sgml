@@ -1,0 +1,33 @@
+<!-- ##### SECTION Title ##### -->
+tristate
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### ENUM GuestfsTristate ##### -->
+<para>
+
+</para>
+
+@GUESTFS_TRISTATE_FALSE: 
+@GUESTFS_TRISTATE_TRUE: 
+@GUESTFS_TRISTATE_NONE: 
+

@@ -1,0 +1,61 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsCopyDeviceToFile
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsCopyDeviceToFile ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsCopyDeviceToFile:destoffset ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsCopyDeviceToFile:size ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsCopyDeviceToFile:srcoffset ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsCopyDeviceToFileClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_copy_device_to_file_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

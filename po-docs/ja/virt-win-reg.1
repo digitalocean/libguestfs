@@ -62,17 +62,16 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-win-reg.pl 1"
-.TH virt-win-reg.pl 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-win-reg.pl 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "名前"
 .IX Header "名前"
-virt-win-reg \- Export and merge Windows Registry entries from a Windows
-guest
-.SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
+virt-win-reg \- Windows 仮想マシンからの Windows レジストリエントリーのエクスポートおよびマージ
+.SH "書式"
+.IX Header "書式"
 .Vb 1
 \& virt\-win\-reg domname \*(AqHKLM\ePath\eTo\eSubkey\*(Aq
 \&
@@ -82,10 +81,10 @@ guest
 \&
 \& virt\-win\-reg \-\-merge domname [input.reg ...]
 \&
-\& virt\-win\-reg [\-\-options] disk.img ... # instead of domname
+\& virt\-win\-reg [\-\-options] disk.img ... # 仮想マシン名の代わり
 .Ve
-.SH "WARNING"
-.IX Header "WARNING"
+.SH "警告"
+.IX Header "警告"
 You must \fInot\fR use \f(CW\*(C`virt\-win\-reg\*(C'\fR with the \fI\-\-merge\fR option on live
 virtual machines.  If you do this, you \fIwill\fR get irreversible disk
 corruption in the \s-1VM\s0.  \f(CW\*(C`virt\-win\-reg\*(C'\fR tries to stop you from doing this,
@@ -95,13 +94,11 @@ Modifying the Windows Registry is an inherently risky operation.  The format
 is deliberately obscure and undocumented, and Registry changes can leave the
 system unbootable.  Therefore when using the \fI\-\-merge\fR option, make sure
 you have a reliable backup first.
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
-This program can export and merge Windows Registry entries from a Windows
-guest.
+.SH "説明"
+.IX Header "説明"
+このプログラムは Windows 仮想マシンから Windows レジストリのエントリーをエクスポートおよびマージできます。
 .PP
-The first parameter is the libvirt guest name or the raw disk image of a
-Windows guest.
+第一パラメーターは Windows 仮想マシンの libvirt 仮想マシン名または生のディスクイメージです。
 .PP
 If \fI\-\-merge\fR is \fInot\fR specified, then the chosen registry key is
 displayed/exported (recursively).  For example:
@@ -118,41 +115,38 @@ You can also display single values from within registry keys, for example:
 \& Windows 7 Enterprise
 .Ve
 .PP
-With \fI\-\-merge\fR, you can merge a textual regedit file into the Windows
-Registry:
+\&\fI\-\-merge\fR を用いると、テキストの regedit ファイルを Windows レジストリーの中に結合できます:
 .PP
 .Vb 1
 \& $ virt\-win\-reg \-\-merge Windows7 changes.reg
 .Ve
-.SS "\s-1NOTE\s0"
-.IX Subsection "NOTE"
+.SS "注記"
+.IX Subsection "注記"
 This program is only meant for simple access to the registry.  If you want
 to do complicated things with the registry, we suggest you download the
 Registry hive files from the guest using \fIlibguestfs\fR\|(3) or \fIguestfish\fR\|(1)
 and access them locally, eg. using \fIhivex\fR\|(3), \fIhivexsh\fR\|(1) or
 \&\fIhivexregedit\fR\|(1).
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+.SH "オプション"
+.IX Header "オプション"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
-Display brief help.
+簡単なヘルプを表示します。
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
-Display version number and exit.
+バージョン番号を表示して終了します。
 .IP "\fB\-\-debug\fR" 4
 .IX Item "--debug"
-Enable debugging messages.
+デバッグメッセージを有効にします。
 .IP "\fB\-c \s-1URI\s0\fR" 4
 .IX Item "-c URI"
 .PD 0
 .IP "\fB\-\-connect \s-1URI\s0\fR" 4
 .IX Item "--connect URI"
 .PD
-If using libvirt, connect to the given \fI\s-1URI\s0\fR.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された \fI\s-1URI\s0\fR に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 .Sp
-If you specify guest block devices directly, then libvirt is not used at
-all.
+仮想マシンのブロックデバイスを直接指定すると、libvirt はまったく使用されません。
 .IP "\fB\-\-format\fR raw" 4
 .IX Item "--format raw"
 Specify the format of disk images given on the command line.  If this is
@@ -210,12 +204,12 @@ You should only use this option for quick hacking and debugging of the
 Registry contents, and \fInever\fR use it if the output is going to be passed
 into another program or stored in another Registry.
 .RE
-.SH "SUPPORTED SYSTEMS"
-.IX Header "SUPPORTED SYSTEMS"
+.SH "サポートされるシステム"
+.IX Header "サポートされるシステム"
 The program currently supports Windows NT-derived guests starting with
 Windows \s-1XP\s0 through to at least Windows 7.
 .PP
-The following Registry keys are supported:
+以下のレジストリキーがサポートされます:
 .ie n .IP """HKEY_LOCAL_MACHINE\eSAM""" 4
 .el .IP "\f(CWHKEY_LOCAL_MACHINE\eSAM\fR" 4
 .IX Item "HKEY_LOCAL_MACHINESAM"
@@ -236,19 +230,19 @@ The following Registry keys are supported:
 .el .IP "\f(CWHKEY_USERS\e\f(CISID\f(CW\fR" 4
 .IX Item "HKEY_USERSSID"
 .PD
-where \fI\s-1SID\s0\fR is a Windows User \s-1SID\s0 (eg. \f(CW\*(C`S\-1\-5\-18\*(C'\fR).
+ここで \fI\s-1SID\s0\fR は Windows User \s-1SID\s0 です (例: \f(CW\*(C`S\-1\-5\-18\*(C'\fR)。
 .ie n .IP """HKEY_USERS\e\f(CIusername\f(CW""" 4
 .el .IP "\f(CWHKEY_USERS\e\f(CIusername\f(CW\fR" 4
 .IX Item "HKEY_USERSusername"
-where \fIusername\fR is a local user name (this is a libguestfs extension).
+ここで \fIusername\fR はローカルユーザー名です (これは libguestfs の拡張です)。
 .PP
 You can use \f(CW\*(C`HKLM\*(C'\fR as a shorthand for \f(CW\*(C`HKEY_LOCAL_MACHINE\*(C'\fR, and \f(CW\*(C`HKU\*(C'\fR for
 \&\f(CW\*(C`HKEY_USERS\*(C'\fR.
 .PP
 The literal keys \f(CW\*(C`HKEY_USERS\e$SID\*(C'\fR and \f(CW\*(C`HKEY_CURRENT_USER\*(C'\fR are not
 supported (there is no \*(L"current user\*(R").
-.SH "ENCODING"
-.IX Header "ENCODING"
+.SH "エンコーディング"
+.IX Header "エンコーディング"
 \&\f(CW\*(C`virt\-win\-reg\*(C'\fR expects that regedit files have already been reencoded in
 the local encoding.  Usually on Linux hosts, this means \s-1UTF\-8\s0 with
 Unix-style line endings.  Since Windows regedit files are often in \s-1UTF\-16LE\s0
@@ -269,7 +263,7 @@ to a Windows user, do something like this:
 \& unix2dos linux.reg | iconv \-f utf\-8 \-t utf\-16le > win.reg
 .Ve
 .PP
-For more information about encoding, see \fIWin::Hivex::Regedit\fR\|(3).
+エンコーディングの詳細は \fIWin::Hivex::Regedit\fR\|(3) を参照してください。
 .PP
 If you are unsure about the current encoding, use the \fIfile\fR\|(1) command.
 Recent versions of Windows regedit.exe produce a \s-1UTF\-16LE\s0 file with
@@ -306,20 +300,20 @@ to look at the \f(CW\*(C`HKLM\eSYSTEM\eSelect\*(C'\fR key:
 Similarly, other \f(CW\*(C`Current...\*(C'\fR keys in the path may need to be replaced.
 .SH "DELETING REGISTRY KEYS AND VALUES"
 .IX Header "DELETING REGISTRY KEYS AND VALUES"
-To delete a whole registry key, use the syntax:
+レジストリキー全体を削除するには、この構文を使用します:
 .PP
 .Vb 1
 \& [\-HKEY_LOCAL_MACHINE\eFoo]
 .Ve
 .PP
-To delete a single value within a key, use the syntax:
+キーにある単一の値を削除するには、この構文を使用します:
 .PP
 .Vb 2
 \& [HKEY_LOCAL_MACHINE\eFoo]
 \& "Value"=\-
 .Ve
-.SH "WINDOWS TIPS"
-.IX Header "WINDOWS TIPS"
+.SH "Windows のヒント"
+.IX Header "Windows のヒント"
 Note that some of these tips modify the guest disk image.  The guest \fImust\fR
 be shut off, else you will get disk corruption.
 .SS "\s-1RUNNING\s0 A \s-1BATCH\s0 \s-1SCRIPT\s0 \s-1WHEN\s0 A \s-1USER\s0 \s-1LOGS\s0 \s-1IN\s0"
@@ -350,8 +344,8 @@ Now update the registry:
 .Vb 1
 \& virt\-win\-reg \-\-merge WindowsGuest test.reg
 .Ve
-.SS "\s-1INSTALLING\s0 A \s-1SERVICE\s0"
-.IX Subsection "INSTALLING A SERVICE"
+.SS "サービスのインストール方法"
+.IX Subsection "サービスのインストール方法"
 This section assumes you are familiar with Windows services, and you either
 have a program which handles the Windows Service Control Protocol directly
 or you want to run any program using a service wrapper like SrvAny or the
@@ -389,7 +383,7 @@ using the RHSrvAny service wrapper.
 \& EOF
 .Ve
 .PP
-Notes:
+注:
 .IP "\(bu" 4
 For use of \f(CW\*(C`ControlSet001\*(C'\fR see the section above in this manual page.  You
 may need to adjust this according to the control set that is in use by the
@@ -402,7 +396,7 @@ privileged account.
 For the meaning of the magic numbers, see this Microsoft \s-1KB\s0 article:
 <http://support.microsoft.com/kb/103000>.
 .PP
-Update the registry:
+レジストリを更新します:
 .PP
 .Vb 1
 \& virt\-win\-reg \-\-merge WindowsGuest service.reg
@@ -413,32 +407,30 @@ Be careful when passing parameters containing \f(CW\*(C`\e\*(C'\fR (backslash) i
 shell.  Usually you will have to use 'single quotes' or double backslashes
 (but not both) to protect them from the shell.
 .PP
-Paths and value names are case-insensitive.
+パスおよび値の名前は大文字小文字を区別します。
 .PP
 Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
+.SH "関連項目"
+.IX Header "関連項目"
 \&\fIhivex\fR\|(3), \fIhivexsh\fR\|(1), \fIhivexregedit\fR\|(1), \fIguestfs\fR\|(3),
 \&\fIguestfish\fR\|(1), \fIvirt\-cat\fR\|(1), \fISys::Guestfs\fR\|(3),
 \&\fISys::Guestfs::Lib\fR\|(3), \fIWin::Hivex\fR\|(3), \fIWin::Hivex::Regedit\fR\|(3),
 \&\fISys::Virt\fR\|(3), <http://libguestfs.org/>.
-.SH "BUGS"
-.IX Header "BUGS"
-When reporting bugs, please enable debugging and capture the \fIcomplete\fR
-output:
+.SH "バグ"
+.IX Header "バグ"
+バグを報告するとき、デバッグを有効にして、\fI完全な\fR 出力を記録してください:
 .PP
 .Vb 2
 \& export LIBGUESTFS_DEBUG=1
 \& virt\-win\-reg \-\-debug [... rest ...] > /tmp/virt\-win\-reg.log 2>&1
 .Ve
 .PP
-Attach /tmp/virt\-win\-reg.log to a new bug report at
-<https://bugzilla.redhat.com/>
-.SH "AUTHOR"
-.IX Header "AUTHOR"
+<https://bugzilla.redhat.com/> の新規バグ報告に /tmp/virt\-win\-reg.log を添付してください
+.SH "著者"
+.IX Header "著者"
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"

@@ -125,6 +125,8 @@ guestfsd_SOURCES = \
 	inotify.c \
 	internal.c \
 	is.c \
+	isoinfo.c \
+	labels.c \
 	link.c \
 	ls.c \
 	luks.c \
@@ -137,6 +139,7 @@ guestfsd_SOURCES = \
 	mount.c \
 	names.c \
 	ntfs.c \
+	ntfsclone.c \
 	optgroups.c \
 	optgroups.h \
 	parted.c \

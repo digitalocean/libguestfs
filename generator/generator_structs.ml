@@ -191,6 +191,41 @@ let structs = [
     "app_summary", FString;
     "app_description", FString;
   ];
+
+  (* ISO primary volume descriptor. *)
+  "isoinfo", [
+    "iso_system_id", FString;
+    "iso_volume_id", FString;
+    "iso_volume_space_size", FUInt32;
+    "iso_volume_set_size", FUInt32;
+    "iso_volume_sequence_number", FUInt32;
+    "iso_logical_block_size", FUInt32;
+    "iso_volume_set_id", FString;
+    "iso_publisher_id", FString;
+    "iso_data_preparer_id", FString;
+    "iso_application_id", FString;
+    "iso_copyright_file_id", FString;
+    "iso_abstract_file_id", FString;
+    "iso_bibliographic_file_id", FString;
+    "iso_volume_creation_t", FInt64;
+    "iso_volume_modification_t", FInt64;
+    "iso_volume_expiration_t", FInt64;
+    "iso_volume_effective_t", FInt64;
+  ];
+
+  (* /proc/mdstat information.  See linux.git/drivers/md/md.c *)
+  "mdstat", [
+    "mdstat_device", FString;
+    "mdstat_index", FInt32;
+    "mdstat_flags", FString;
+  ];
+
+  (* btrfs subvolume list output *)
+  "btrfssubvolume", [
+    "btrfssubvolume_id", FUInt64;
+    "btrfssubvolume_top_level_id", FUInt64;
+    "btrfssubvolume_path", FString;
+  ];
 ] (* end of structs *)
 
 (* For bindings which want camel case *)
@@ -207,6 +242,9 @@ let camel_structs = [
   "inotify_event", "INotifyEvent";
   "partition", "Partition";
   "application", "Application";
+  "isoinfo", "ISOInfo";
+  "mdstat", "MDStat";
+  "btrfssubvolume", "BTRFSSubvolume";
 ]
 let camel_structs = List.sort (fun (_,a) (_,b) -> compare a b) camel_structs
 

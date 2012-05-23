@@ -1,0 +1,51 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsCompressOut
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsCompressOut ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsCompressOut:level ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsCompressOutClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_compress_out_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

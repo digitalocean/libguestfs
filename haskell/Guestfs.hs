@@ -58,6 +58,7 @@ module Guestfs (
   set_pgroup,
   set_smp,
   get_smp,
+  mount_local_run,
   mount,
   sync,
   touch,
@@ -233,7 +234,23 @@ module Guestfs (
   internal_autosync,
   write_append,
   part_to_partnum,
-  md_stop
+  md_stop,
+  wipefs,
+  ntfsclone_in,
+  set_label,
+  zero_free_space,
+  lvcreate_free,
+  get_e2generation,
+  set_e2generation,
+  btrfs_subvolume_snapshot,
+  btrfs_subvolume_delete,
+  btrfs_subvolume_create,
+  btrfs_subvolume_set_default,
+  btrfs_filesystem_sync,
+  btrfs_filesystem_balance,
+  btrfs_device_add,
+  btrfs_device_delete,
+  btrfs_set_seeding
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -685,6 +702,18 @@ get_smp h = do
       err <- last_error h
       fail err
     else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs_mount_local_run" c_mount_local_run
+  :: GuestfsP -> IO (CInt)
+
+mount_local_run :: GuestfsH -> IO ()
+mount_local_run h = do
+  r <- withForeignPtr h (\p -> c_mount_local_run p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
 
 foreign import ccall unsafe "guestfs_mount" c_mount
   :: GuestfsP -> CString -> CString -> IO (CInt)
@@ -2792,6 +2821,198 @@ foreign import ccall unsafe "guestfs_md_stop" c_md_stop
 md_stop :: GuestfsH -> String -> IO ()
 md_stop h md = do
   r <- withCString md $ \md -> withForeignPtr h (\p -> c_md_stop p md)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_wipefs" c_wipefs
+  :: GuestfsP -> CString -> IO (CInt)
+
+wipefs :: GuestfsH -> String -> IO ()
+wipefs h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_wipefs p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_ntfsclone_in" c_ntfsclone_in
+  :: GuestfsP -> CString -> CString -> IO (CInt)
+
+ntfsclone_in :: GuestfsH -> String -> String -> IO ()
+ntfsclone_in h backupfile device = do
+  r <- withCString backupfile $ \backupfile -> withCString device $ \device -> withForeignPtr h (\p -> c_ntfsclone_in p backupfile device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_set_label" c_set_label
+  :: GuestfsP -> CString -> CString -> IO (CInt)
+
+set_label :: GuestfsH -> String -> String -> IO ()
+set_label h device label = do
+  r <- withCString device $ \device -> withCString label $ \label -> withForeignPtr h (\p -> c_set_label p device label)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_zero_free_space" c_zero_free_space
+  :: GuestfsP -> CString -> IO (CInt)
+
+zero_free_space :: GuestfsH -> String -> IO ()
+zero_free_space h directory = do
+  r <- withCString directory $ \directory -> withForeignPtr h (\p -> c_zero_free_space p directory)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_lvcreate_free" c_lvcreate_free
+  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+
+lvcreate_free :: GuestfsH -> String -> String -> Int -> IO ()
+lvcreate_free h logvol volgroup percent = do
+  r <- withCString logvol $ \logvol -> withCString volgroup $ \volgroup -> withForeignPtr h (\p -> c_lvcreate_free p logvol volgroup (fromIntegral percent))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_get_e2generation" c_get_e2generation
+  :: GuestfsP -> CString -> IO (Int64)
+
+get_e2generation :: GuestfsH -> String -> IO (Integer)
+get_e2generation h file = do
+  r <- withCString file $ \file -> withForeignPtr h (\p -> c_get_e2generation p file)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs_set_e2generation" c_set_e2generation
+  :: GuestfsP -> CString -> CInt -> IO (CInt)
+
+set_e2generation :: GuestfsH -> String -> Int -> IO ()
+set_e2generation h file generation = do
+  r <- withCString file $ \file -> withForeignPtr h (\p -> c_set_e2generation p file (fromIntegral generation))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_btrfs_subvolume_snapshot" c_btrfs_subvolume_snapshot
+  :: GuestfsP -> CString -> CString -> IO (CInt)
+
+btrfs_subvolume_snapshot :: GuestfsH -> String -> String -> IO ()
+btrfs_subvolume_snapshot h source dest = do
+  r <- withCString source $ \source -> withCString dest $ \dest -> withForeignPtr h (\p -> c_btrfs_subvolume_snapshot p source dest)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_btrfs_subvolume_delete" c_btrfs_subvolume_delete
+  :: GuestfsP -> CString -> IO (CInt)
+
+btrfs_subvolume_delete :: GuestfsH -> String -> IO ()
+btrfs_subvolume_delete h subvolume = do
+  r <- withCString subvolume $ \subvolume -> withForeignPtr h (\p -> c_btrfs_subvolume_delete p subvolume)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_btrfs_subvolume_create" c_btrfs_subvolume_create
+  :: GuestfsP -> CString -> IO (CInt)
+
+btrfs_subvolume_create :: GuestfsH -> String -> IO ()
+btrfs_subvolume_create h dest = do
+  r <- withCString dest $ \dest -> withForeignPtr h (\p -> c_btrfs_subvolume_create p dest)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_btrfs_subvolume_set_default" c_btrfs_subvolume_set_default
+  :: GuestfsP -> CInt -> CString -> IO (CInt)
+
+btrfs_subvolume_set_default :: GuestfsH -> Int -> String -> IO ()
+btrfs_subvolume_set_default h id fs = do
+  r <- withCString fs $ \fs -> withForeignPtr h (\p -> c_btrfs_subvolume_set_default p (fromIntegral id) fs)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_btrfs_filesystem_sync" c_btrfs_filesystem_sync
+  :: GuestfsP -> CString -> IO (CInt)
+
+btrfs_filesystem_sync :: GuestfsH -> String -> IO ()
+btrfs_filesystem_sync h fs = do
+  r <- withCString fs $ \fs -> withForeignPtr h (\p -> c_btrfs_filesystem_sync p fs)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_btrfs_filesystem_balance" c_btrfs_filesystem_balance
+  :: GuestfsP -> CString -> IO (CInt)
+
+btrfs_filesystem_balance :: GuestfsH -> String -> IO ()
+btrfs_filesystem_balance h fs = do
+  r <- withCString fs $ \fs -> withForeignPtr h (\p -> c_btrfs_filesystem_balance p fs)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_btrfs_device_add" c_btrfs_device_add
+  :: GuestfsP -> Ptr CString -> CString -> IO (CInt)
+
+btrfs_device_add :: GuestfsH -> [String] -> String -> IO ()
+btrfs_device_add h devices fs = do
+  r <- withMany withCString devices $ \devices -> withArray0 nullPtr devices $ \devices -> withCString fs $ \fs -> withForeignPtr h (\p -> c_btrfs_device_add p devices fs)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_btrfs_device_delete" c_btrfs_device_delete
+  :: GuestfsP -> Ptr CString -> CString -> IO (CInt)
+
+btrfs_device_delete :: GuestfsH -> [String] -> String -> IO ()
+btrfs_device_delete h devices fs = do
+  r <- withMany withCString devices $ \devices -> withArray0 nullPtr devices $ \devices -> withCString fs $ \fs -> withForeignPtr h (\p -> c_btrfs_device_delete p devices fs)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_btrfs_set_seeding" c_btrfs_set_seeding
+  :: GuestfsP -> CString -> CInt -> IO (CInt)
+
+btrfs_set_seeding :: GuestfsH -> String -> Bool -> IO ()
+btrfs_set_seeding h device seeding = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_btrfs_set_seeding p device (fromBool seeding))
   if (r == -1)
     then do
       err <- last_error h

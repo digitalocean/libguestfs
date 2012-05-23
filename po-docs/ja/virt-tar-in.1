@@ -62,16 +62,16 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-tar-in 1"
-.TH virt-tar-in 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-tar-in 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "名前"
 .IX Header "名前"
-virt-tar-in \- Unpack a tarball into a virtual machine disk image.
-.SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
+virt-tar-in \- tar ファイルを仮想マシンのディスクイメージに展開します。
+.SH "書式"
+.IX Header "書式"
 .Vb 1
 \& virt\-tar\-in \-a disk.img data.tar /destination
 \&
@@ -79,22 +79,22 @@ virt-tar-in \- Unpack a tarball into a virtual machine disk image.
 \&
 \& zcat data.tar.gz | virt\-tar\-in \-d domain \- /destination
 .Ve
-.SH "WARNING"
-.IX Header "WARNING"
+.SH "警告"
+.IX Header "警告"
 Using \f(CW\*(C`virt\-tar\-in\*(C'\fR on live virtual machines can be dangerous, potentially
 causing disk corruption.  The virtual machine must be shut down before you
 use this command.
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
+.SH "説明"
+.IX Header "説明"
 \&\f(CW\*(C`virt\-tar\-in\*(C'\fR unpacks an uncompressed tarball into a virtual machine disk
 image or named libvirt domain.
 .PP
 The first parameter is the tar file.  Use \f(CW\*(C`\-\*(C'\fR to read the tar file from
 standard input.  The second parameter is the absolute target directory to
 unpack into.
-.SH "EXAMPLES"
-.IX Header "EXAMPLES"
-Upload a home directory to a guest:
+.SH "例"
+.IX Header "例"
+ホームディレクトリを仮想マシンにアップロードします:
 .PP
 .Vb 1
 \& virt\-tar\-in \-d MyGuest homes.tar /home
@@ -104,17 +104,17 @@ Upload a home directory to a guest:
 This command is just a simple shell script wrapper around the
 \&\fIguestfish\fR\|(1) \f(CW\*(C`tar\-in\*(C'\fR command.  For anything more complex than a trivial
 copy, you are probably better off using guestfish directly.
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+.SH "オプション"
+.IX Header "オプション"
 Since the shell script just passes options straight to guestfish, read
 \&\fIguestfish\fR\|(1) to see the full list of options.
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
+.SH "関連項目"
+.IX Header "関連項目"
 \&\fIguestfish\fR\|(1), \fIvirt\-cat\fR\|(1), \fIvirt\-copy\-in\fR\|(1), \fIvirt\-copy\-out\fR\|(1),
 \&\fIvirt\-edit\fR\|(1), \fIvirt\-make\-fs\fR\|(1), \fIvirt\-tar\-out\fR\|(1),
 <http://libguestfs.org/>.
-.SH "AUTHORS"
-.IX Header "AUTHORS"
+.SH "著者"
+.IX Header "著者"
 Richard W.M. Jones (\f(CW\*(C`rjones at redhat dot com\*(C'\fR)
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"

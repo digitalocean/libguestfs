@@ -1,0 +1,56 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsBtrfsFsck
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsBtrfsFsck ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsBtrfsFsck:repair ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsBtrfsFsck:superblock ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsBtrfsFsckClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_btrfs_fsck_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

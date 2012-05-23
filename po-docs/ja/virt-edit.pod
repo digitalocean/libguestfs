@@ -2,9 +2,9 @@
 
 =head1 名前
 
-virt-edit - Edit a file in a virtual machine
+virt-edit - 仮想マシンのファイルの編集
 
-=head1 SYNOPSIS
+=head1 書式
 
  virt-edit [--options] -d domname file [file ...]
 
@@ -12,59 +12,55 @@ virt-edit - Edit a file in a virtual machine
 
  virt-edit [-d domname|-a disk.img] file -e 'expr'
 
-Old-style:
+古い形式:
 
  virt-edit domname file
 
  virt-edit disk.img [disk.img ...] file
 
-=head1 WARNING
+=head1 警告
 
-You must I<not> use C<virt-edit> on live virtual machines.  If you do this,
-you risk disk corruption in the VM.  C<virt-edit> tries to stop you from
-doing this, but doesn't catch all cases.
+動作中の仮想マシンにおいて  C<virt-edit> を使用 I<しない>
+でください。これをすると、仮想マシンにおいてディスク破損を引き起こすリスクがあります。 C<virt-edit>
+はこれを止めようとしますが、すべての場合を止められるわけではありません。
 
-=head1 DESCRIPTION
+=head1 説明
 
-C<virt-edit> is a command line tool to edit C<file> where each C<file>
-exists in the named virtual machine (or disk image).
+C<virt-edit> は名前付きの仮想マシン（またはディスクイメージ）にある、それぞれの C<ファイル> を編集するためのコマンドラインツールです。
 
-Multiple filenames can be given, in which case they are each edited in
-turn.  Each filename must be a full path, starting at the root directory
-(starting with '/').
+複数のファイル名を指定できます。その場合、それぞれ順番に編集されます。各ファイル名はルートディレクトリーから始まる（つまり '/'
+から始まる）完全パスである必要があります。
 
-If you want to just view a file, use L<virt-cat(1)>.
+単にファイルを表示したいだけならば、 L<virt-cat(1)> を使用してください。
 
-For more complex cases you should look at the L<guestfish(1)> tool (see
-L</USING GUESTFISH> below).
+より複雑な場合に対しては L<guestfish(1)> ツールを参照してください（以下の L</guestfish の使用法> 参照）。
 
-C<virt-edit> cannot be used to create a new file.  L<guestfish(1)> can do
-that and much more.
+C<virt-edit> は新しいファイルを作成するために使用できません。 L<guestfish(1)> はこのことやさらにいろいろなことができます。
 
-=head1 EXAMPLES
+=head1 例
 
-Edit the named files interactively:
+名前付きのファイルを対話的に編集します:
 
  virt-edit -d mydomain /boot/grub/grub.conf
 
  virt-edit -d mydomain /etc/passwd
 
-For Windows guests, some Windows paths are understood:
+Windows 仮想マシンに対しては、Windows のパスが解釈されます:
 
  virt-edit -d mywindomain 'c:\autoexec.bat'
 
-If Perl is installed, you can also edit files non-interactively (see
-L</NON-INTERACTIVE EDITING> below).  To change the init default level to 5:
+Perl がインストールされていると、非対話的にファイルを編集することもできます（以下の L</非対話的な編集方法> 参照）。 init
+の初期ランベルを 5 に変更するには:
 
  virt-edit -d mydomain /etc/inittab -e 's/^id:.*/id:5:initdefault:/'
 
-=head1 OPTIONS
+=head1 オプション
 
 =over 4
 
 =item B<--help>
 
-Display brief help.
+簡単なヘルプを表示します。
 
 =item B<-a> file
 
@@ -74,83 +70,71 @@ Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate I<-a> options.
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、I<--format=..> オプションを使用します。
 
 =item B<-b> extension
 
 =item B<--backup> extension
 
-Create a backup of the original file I<in the guest disk image>.  The backup
-has the original filename with C<extension> added.
+I<仮想マシンのディスクイメージにある> 元のファイルのバックアップを作成します。バックアップは元のファイル名に C<extension>
+を加えたものになります。
 
-Usually the first character of C<extension> would be a dot C<.> so you would
-write:
+一般的に C<extension> の最初の文字はドット C<.> です。そのため次のように書きます:
 
  virt-edit -b .orig [etc]
 
-By default, no backup file is made.
+初期設定では、バックアップファイルは作成されません。
 
 =item B<-c URI>
 
 =item B<--connect URI>
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された I<URI> に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 
-If you specify guest block devices directly, then libvirt is not used at
-all.
+仮想マシンのブロックデバイスを直接指定すると、libvirt はまったく使用されません。
 
 =item B<-d> guest
 
 =item B<--domain> guest
 
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  ドメインの UUID が名前の代わりに使用されます。
 
 =item B<--echo-keys>
 
-When prompting for keys and passphrases, virt-edit normally turns echoing
-off so you cannot see what you are typing.  If you are not worried about
-Tempest attacks and there is no one else in the room you can specify this
-flag to see what you are typing.
+キーとパスフレーズを入力要求するとき、 virt-edit
+は通常エコーを無効に切り替えます。そのため、入力しているものを見ることはできません。テンペスト攻撃の心配がなく、部屋に誰もいなければ、入力しているものを見るためにこのフラグを指定できます。
 
 =item B<-e> EXPR
 
 =item B<--expr> EXPR
 
-Instead of launching the external editor, non-interactively apply the Perl
-expression C<EXPR> to each line in the file.  See L</NON-INTERACTIVE
-EDITING> below.
+外部エディターを起動する代わりに、ファイルにある各行に対して非対話的に Perl 表現 C<EXPR> を適用します。以下の L</非対話的な編集方法>
+を参照してください。
 
-Be careful to properly quote the expression to prevent it from being altered
-by the shell.
+表現がシェルにより変更されるのを防ぐために、適切に引用符でくくるよう注意してください。
 
-Note that this option is only available when Perl 5 is installed.
+このオプションは Perl 5 がインストールされているときのみ利用可能であることに注意してください。
 
 =item B<--format> raw|qcow2|...
 
 =item B<--format>
 
-The default for the I<-a> option is to auto-detect the format of the disk
-image.  Using this forces the disk format for I<-a> options which follow on
-the command line.  Using I<--format> with no argument switches back to
-auto-detection for subsequent I<-a> options.
+I<-a> オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、I<-a>
+オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで I<--format> を使用することにより、後続の I<-a>
+オプションに対して自動検知に戻せます。
 
-For example:
+例:
 
  virt-edit --format=raw -a disk.img file
 
-forces raw format (no auto-detection) for C<disk.img>.
+C<disk.img> に対してローイメージを強制します（自動検出しません）。
 
  virt-edit --format=raw -a disk.img --format -a another.img file
 
-forces raw format (no auto-detection) for C<disk.img> and reverts to
-auto-detection for C<another.img>.
+C<disk.img> に対してロー形式（自動検知なし）を強制し、C<another.img> に対して自動検知に戻します。
 
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (CVE-2010-3851).
+仮想マシンのディスクイメージが信頼できないロー形式であるならば、ディスク形式を指定するためにこのオプションを使用すべきです。これにより、悪意のある仮想マシンにより起こり得るセキュリティ問題を回避できます
+(CVE-2010-3851)。
 
 =item B<--keys-from-stdin>
 
@@ -161,36 +145,36 @@ passphrases from the user by opening C</dev/tty>.
 
 =item B<--verbose>
 
-Enable verbose messages for debugging.
+デバッグ用の冗長なメッセージを有効にします。
 
 =item B<-V>
 
 =item B<--version>
 
-Display version number and exit.
+バージョン番号を表示して終了します。
 
 =item B<-x>
 
-Enable tracing of libguestfs API calls.
+libguestfs API 呼び出しのトレースを有効にします。
 
 =back
 
-=head1 OLD-STYLE COMMAND LINE ARGUMENTS
+=head1 旧形式のコマンドライン引数
 
-Previous versions of virt-edit allowed you to write either:
+前のバージョンの virt-edit はどちらを書くこともできます:
 
  virt-edit disk.img [disk.img ...] file
 
-or
+または
 
  virt-edit guestname file
 
 whereas in this version you should use I<-a> or I<-d> respectively to avoid
 the confusing case where a disk image might have the same name as a guest.
 
-For compatibility the old style is still supported.
+互換性のため古い形式がまだサポートされています。
 
-=head1 NON-INTERACTIVE EDITING
+=head1 非対話的な編集方法
 
 C<virt-edit> normally calls out to C<$EDITOR> (or vi) so the system
 administrator can interactively edit the file.
@@ -249,12 +233,12 @@ C<$_> itself (since that would remove all newlines from the file):
 
  my $m = $_; chomp $m; $m =~ /some text$/
 
-=head1 WINDOWS PATHS
+=head1 Windows のパス
 
 C<virt-edit> has a limited ability to understand Windows drive letters and
 paths (eg. C<E:\foo\bar.txt>).
 
-If and only if the guest is running Windows then:
+仮想マシンが Windows を実行している場合に限り:
 
 =over 4
 
@@ -289,7 +273,7 @@ NTFS junction points that cross filesystems are not followed.
 
 =back
 
-=head1 USING GUESTFISH
+=head1 guestfish の使用法
 
 L<guestfish(1)> is a more powerful, lower level tool which you can use when
 C<virt-edit> doesn't work.
@@ -308,11 +292,11 @@ directly, use:
 
  guestfish --rw -a disk.img -m /dev/sda1 edit /file
 
-where C<disk.img> is the disk image, C</dev/sda1> is the filesystem within
-the disk image to edit, and C</file> is the full path to the file.
+ここで、C<disk.img> はディスクイメージ、C</dev/sda1> は編集するディスクイメージにあるファイルシステム、C</file>
+はファイルの完全パスです。
 
-C<virt-edit> cannot create new files.  Use the guestfish commands C<touch>,
-C<write> or C<upload> instead:
+C<virt-edit> は新しいファイルを作成できません。代わりに guestfish コマンド C<touch>, C<write> または
+C<upload> を使用してください:
 
  guestfish --rw -i -d domname touch /newfile
 
@@ -320,16 +304,15 @@ C<write> or C<upload> instead:
 
  guestfish --rw -i -d domname upload localfile /newfile
 
-=head1 ENVIRONMENT VARIABLES
+=head1 環境変数
 
 =over 4
 
 =item C<EDITOR>
 
-If set, this string is used as the editor.  It may contain arguments,
-eg. C<"emacs -nw">
+設定されていると、この文字列がエディターとして使用されます。  C<"emacs -nw"> のように、引数を含めることもできます。
 
-If not set, C<vi> is used.
+設定されていないと、C<vi> が使用されます。
 
 =back
 
@@ -340,17 +323,17 @@ meaning to the shell such as C<#> and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 L<sh(1)> for details.
 
-=head1 EXIT STATUS
+=head1 終了ステータス
 
-This program returns 0 if successful, or non-zero if there was an error.
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>,
 L<virt-tar-in(1)>, L<Sys::Guestfs(3)>, L<Sys::Guestfs::Lib(3)>,
 L<Sys::Virt(3)>, L<http://libguestfs.org/>, L<perl(1)>, L<perlre(1)>.
 
-=head1 AUTHOR
+=head1 著者
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 

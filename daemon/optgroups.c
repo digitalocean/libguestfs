@@ -42,6 +42,7 @@ struct optgroup optgroups[] = {
   { "realpath", optgroup_realpath_available },
   { "scrub", optgroup_scrub_available },
   { "selinux", optgroup_selinux_available },
+  { "wipefs", optgroup_wipefs_available },
   { "xz", optgroup_xz_available },
   { "zerofree", optgroup_zerofree_available },
   { NULL, NULL }

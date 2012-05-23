@@ -62,6 +62,7 @@ let generate_fish_cmds () =
   pr "#include <stdlib.h>\n";
   pr "#include <string.h>\n";
   pr "#include <inttypes.h>\n";
+  pr "#include <libintl.h>\n";
   pr "\n";
   pr "#include \"c-ctype.h\"\n";
   pr "#include \"full-write.h\"\n";
@@ -362,6 +363,10 @@ Guestfish will prompt for these separately."
         pr "  if (argc != %d) {\n" argc_minimum;
         pr "    fprintf (stderr, _(\"%%s should have %%d parameter(s)\\n\"), cmd, %d);\n"
           argc_minimum;
+      ) else if argc_minimum = 0 then (
+        pr "  if (argc > %d) {\n" argc_maximum;
+        pr "    fprintf (stderr, _(\"%%s should have %%d-%%d parameter(s)\\n\"), cmd, %d, %d);\n"
+          argc_minimum argc_maximum;
       ) else (
         pr "  if (argc < %d || argc > %d) {\n" argc_minimum argc_maximum;
         pr "    fprintf (stderr, _(\"%%s should have %%d-%%d parameter(s)\\n\"), cmd, %d, %d);\n"
@@ -996,9 +1001,12 @@ and generate_fish_event_names () =
   generate_header CStyle GPLv2plus;
 
   pr "\
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libintl.h>
 
 #include \"fish.h\"
 
