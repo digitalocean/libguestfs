@@ -16,8 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License along
-   with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 #include <config.h>
 #include <alloca.h>
@@ -37,7 +36,12 @@
 #include <conio.h>
 #include <time.h>
 
+/* Get the overridden 'struct timeval'.  */
+#include <sys/time.h>
+
 #include "msvc-nothrow.h"
+
+#undef select
 
 struct bitset {
   unsigned char in[FD_SETSIZE / CHAR_BIT];
@@ -80,7 +84,7 @@ typedef DWORD (WINAPI *PNtQueryInformationFile)
 
 /* Optimized test whether a HANDLE refers to a console.
    See <http://lists.gnu.org/archive/html/bug-gnulib/2009-08/msg00065.html>.  */
-#define IsConsoleHandle(h) (((long) (h) & 3) == 3)
+#define IsConsoleHandle(h) (((intptr_t) (h) & 3) == 3)
 
 static BOOL
 IsSocketHandle (HANDLE h)
@@ -237,6 +241,7 @@ windows_poll_handle (HANDLE h, int fd,
 int
 rpl_select (int nfds, fd_set *rfds, fd_set *wfds, fd_set *xfds,
             struct timeval *timeout)
+#undef timeval
 {
   static struct timeval tv0;
   static HANDLE hEvent;

@@ -4,8 +4,8 @@
 
 PYTHONS        := $(filter-out python2.5, $(shell pyversions --installed; py3versions --installed))
 PYTHON_DEFAULT := $(shell pyversions --default)
-RUBIES         := ruby1.8 ruby1.9.1
-RUBY_DEFAULT   := ruby1.8
+RUBIES         := $(shell find /usr/bin/ -name ruby1\* | xargs -n1 readlink -f | xargs -n1 basename)
+RUBY_DEFAULT   := $(shell which ruby | xargs readlink -f | xargs basename)
 
 DEFAULT_CONFIG_FLAGS = \
 	--disable-appliance  \
@@ -35,16 +35,19 @@ override_dh_auto_configure:
 		$(DEFAULT_CONFIG_FLAGS) \
 		--enable-install-daemon \
 		--with-java-home=/usr/lib/jvm/default-java \
-		RAKE=rake \
+		RUBY=$(RUBY_DEFAULT) \
+		RAKE=$(patsubst ruby%,rake%,$(RUBY_DEFAULT)) \
 		PYTHON=$(PYTHON_DEFAULT) \
 		JNI_INSTALL_DIR=/usr/lib/jni
 
 	set -e; for v in $(patsubst ruby%,%,$(filter-out $(RUBY_DEFAULT), $(RUBIES))) \
 	; do \
+		if [ $$v = 1.8 ]; then rake=rake; else rake=rake$$v; fi ; \
 		dh_auto_configure --builddir=$(CURDIR)/debian/build-ruby$$v \
 			-- \
 			$(BARE_CONFIG_FLAGS) \
-			--disable-python RUBY=ruby$$v RAKE=rake$$v; \
+			--disable-python \
+			RUBY=ruby$$v RAKE=$$rake ; \
 	done
 
 	set -e; for p in $(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
@@ -52,7 +55,8 @@ override_dh_auto_configure:
 		dh_auto_configure --builddir=$(CURDIR)/debian/build-$$p \
 			-- \
 			$(BARE_CONFIG_FLAGS) \
-			--disable-ruby PYTHON=$$p ; \
+			--disable-ruby \
+			PYTHON=$$p ; \
 	done
 
 override_dh_strip:

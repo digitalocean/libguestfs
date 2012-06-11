@@ -33,7 +33,8 @@ EXTRA_DIST = \
 	TODO.txt \
 	bindtests-manual.js \
 	tests-misc.js \
-	run-tests
+	run-tests \
+	run-live-tests
 
 # Remove the old generated files which were directly in the gobject/
 # directory.  These have now moved into gobject/src/
@@ -58,7 +59,7 @@ libguestfs_gobject_1_0_la_LIBADD = -lguestfs
 # in the subdirectory.
 install-data-hook:
 	rm $(DESTDIR)$(includedir)/guestfs-gobject/guestfs-gobject.h
-	install -m 0644 include/guestfs-gobject.h $(DESTDIR)$(includedir)
+	install -m 0644 $(srcdir)/include/guestfs-gobject.h $(DESTDIR)$(includedir)
 
 -include $(INTROSPECTION_MAKEFILE)
 INTROSPECTION_GIRS =
@@ -75,7 +76,7 @@ Guestfs-1.0.gir: $(libname)
 Guestfs_1_0_gir_INCLUDES = GObject-2.0 Gio-2.0
 Guestfs_1_0_gir_CFLAGS = $(INCLUDES) -I$(srcdir)/include
 Guestfs_1_0_gir_LIBS = $(libname)
-Guestfs_1_0_gir_FILES = $(introspection_sources)
+Guestfs_1_0_gir_FILES = $(patsubst %,$(srcdir)/%,$(introspection_sources))
 INTROSPECTION_GIRS += Guestfs-1.0.gir
 
 girdir = $(datadir)/gir-1.0
@@ -85,10 +86,13 @@ typelibdir = $(libdir)/girepository-1.0
 typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
 TESTS = run-tests
+if ENABLE_APPLIANCE
+TESTS += run-live-tests
+endif ENABLE_APPLIANCE
 TESTS_ENVIRONMENT = GJS=$(GJS)
 
 $(TESTS): $(typelib_DATA)
 
 CLEANFILES += $(gir_DATA) $(typelib_DATA)
 
-endif
+endif HAVE_INTROSPECTION

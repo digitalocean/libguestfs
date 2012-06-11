@@ -1,3 +1,13 @@
+libguestfs (1:1.18.1-1) unstable; urgency=low
+
+  * New upstream version
+  * [9449d4e] Updated watch file
+  * [a8bb722] Added a method for determining available Ruby versions at
+    build time
+  * [9b63f09] rebased patch queue
+
+ -- Hilko Bengen <bengen@debian.org>  Mon, 11 Jun 2012 08:32:27 +0200
+
 libguestfs (1:1.18.0-1) unstable; urgency=low
 
   * New upstream version

@@ -1,3 +1,104 @@
+2012-06-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.18.1.
+
+2012-06-01  Hilko Bengen  <bengen@hilluzination.de>
+
+	Split off GObject tests that require an appliance (cherry picked from commit 3893dc0b9436ebb4dd620c6ca9b1d038eacf83a6)
+
+	Fix out-of-tree build for GObject bindings (cherry picked from commit 148e8068267bcf9ce8ff3a5062747998f960619d)
+
+2012-06-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: 'udevd' has been renamed, since it joined systemd. (cherry picked from commit a7868dd3c940b6cee0894e6033ba611f01a423dd)
+
+	appliance: Move udev (common package name) to the common section.
+	This should be just code motion.
+	(cherry picked from commit a7e4a6c692554e4207b3bdff65946427e66e9fce)
+
+	tests: Add a test of non-ASCII character fidelity on various filesystem types (RHBZ#823887).
+	Thanks Laszlo Ersek.
+	(cherry picked from commit 8e8a5764293d1b6bc3dbfb9409722e4c13384aec)
+
+	doc: Add documentation covering use of utf8 option when mounting vfat (RHBZ#823887). (cherry picked from commit 6445bc5952efd47fb1aa0880d9038040551d72ed)
+
+2012-06-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	trace: Fix display of non-printing characters.
+	Previously the code would drop the first character in any sequence of
+	non-printing characters that occurred within a string.
+
+	Fix for commit e6f18c59d577dd0b443bc6a1d76f699c4e0dde9f.
+	(cherry picked from commit 73071b3163774ff9a514a05bc8e6fb35fa910787)
+
+2012-06-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	trace: Fix escaping of non-printable signed characters.
+	Fix for commit e6f18c59d577dd0b443bc6a1d76f699c4e0dde9f.
+	(cherry picked from commit fba81add94cde015afe8a65245cb4e60a1d3e6bf)
+
+2012-06-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Don't fail if /etc/HOSTNAME or /etc/hostname are empty files (RHBZ#823821).
+	Change guestfs___first_line_of_file so that if the file is empty this
+	returns an empty string instead of an error.  This is consistent with
+	the behaviour of this function in the case where the file starts with
+	a \n character, where it would previously have returned an empty
+	string.
+
+	Change all callers so that they handle this case.
+
+	Then change the hostname parsing code so that it doesn't give up when
+	/etc/HOSTNAME is empty, but falls through to the next alternative, and
+	similarly for /etc/hostname.
+
+	Thanks Todd Mummert for finding and diagnosing this bug.
+	(cherry picked from commit f00066d22b11bf40d0272f68565a2a27fea15627)
+
+2012-06-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Use parse_release_file to parse ttylinux release file.
+	parse_release_file should be used to set fs->product_name, instead of
+	calling guestfs___first_line_of_file directory, although currently the
+	two are equivalent.
+
+	This is code motion and fixes
+	commit b648b1813fc8e55db790435b5414d9be3ec765d2.
+	(cherry picked from commit cffb7fefc88a317f957785f6448fb24183c8c629)
+
+2012-06-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish/mount: Add better error message when -m (mount) fails (RHBZ#824043). (cherry picked from commit ee9ab52bc3e087f63dcc51d3b6ac5c79277425e1)
+
+	fish: Remove inaccurate comment from code. (cherry picked from commit 216a6d16abdfbc36a5514df34f59507ef825e33e)
+
+	virt-make-fs: When writing vfat, add utf8 option to mount (RHBZ#823885). (cherry picked from commit d5d9ceee8b56a10761e207ad9970ebf704fc46e8)
+
+	virt-make-fs: Provide a clearer error message when mkfs fails (RHBZ#823883). (cherry picked from commit 975a41db20eff2b5edf510f8a65005c915b21f27)
+
+2012-06-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Include 'bzip2' in appliance (RHBZ#824716).
+	Missing package caused this error in compress-device-out:
+
+	libguestfs: error: compress_device_out: compression type bzip2 is not supported
+
+	Thanks Mohua Li.
+	(cherry picked from commit f904fa822316ff793e71d4d4ff7dc79e608dcb25)
+
+2012-06-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: Add section about using libguestfs in closed source programs. (cherry picked from commit b8b5ed65c26dd19a0bc9f8282a50c6dff90c456a)
+
+	FAQ: Add a note about "child process died unexpectedly".
+	This is a common search term on the main website, and there is no good
+	information provided by Google at present.
+	(cherry picked from commit 144d7cd98811472a5541d2c53c487e670657051b)
+
+	FAQ: Update Ubuntu instructions. (cherry picked from commit c7d3aa9cd6c065158d43b3c7fe553e814c642d6b)
+
+	java: Remove unnecessary imports from the generated Java code. (cherry picked from commit 54028b9b669cfe495089a7652bb8cd06115f4907)
+
 2012-05-21  Richard W.M. Jones  <rjones@redhat.com>
 
 	New stable branch: Version 1.18.0.

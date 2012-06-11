@@ -122,6 +122,95 @@ Include as much detail as you can and a way to reproduce the problem.
 
 Include the full output of L<libguestfs-test-tool(1)>.
 
+=head1 COMMON ERRORS
+
+=head2 "child process died unexpectedly"
+
+This error indicates that qemu failed or the host kernel could not boot.  To
+get further information about the failure, you have to run:
+
+ libguestfs-test-tool
+
+If, after using this, you still don't understand the failure, contact us
+(see previous section).
+
+=head1 COMMON PROBLEMS
+
+See also L<guestfs(3)/LIBGUESTFS GOTCHAS> for some "gotchas" with using the
+libguestfs API.
+
+=head2 Non-ASCII characters don't appear on VFAT filesystems.
+
+Typical symptoms of this problem:
+
+=over 4
+
+=item *
+
+You get an error when you create a file where the filename contains
+non-ASCII characters, particularly non 8-bit characters from Asian languages
+(Chinese, Japanese, etc).  The filesystem is VFAT.
+
+=item *
+
+When you list a directory from a VFAT filesystem, filenames appear as
+question marks.
+
+=back
+
+This is a design flaw of the GNU/Linux system.
+
+VFAT stores long filenames as UTF-16 characters.  When opening or returning
+filenames, the Linux kernel has to translate these to some form of 8 bit
+string.  UTF-8 would be the obvious choice, except for Linux users who
+persist in using non-UTF-8 locales (the user's locale is not known to the
+kernel because it's a function of libc).
+
+Therefore you have to tell the kernel what translation you want done when
+you mount the filesystem.  The two methods are the C<iocharset> parameter
+(which is not relevant to libguestfs) and the C<utf8> flag.
+
+So to use a VFAT filesystem you must add the C<utf8> flag when mounting.
+From guestfish, use:
+
+ ><fs> mount-options utf8 /dev/sda1 /
+
+or on the guestfish command line:
+
+ guestfish [...] -m /dev/sda1:/:utf8
+
+or from the API:
+
+ guestfs_mount_options (g, "utf8", "/dev/sda1", "/");
+
+The kernel will then translate filenames to and from UTF-8 strings.
+
+We considered adding this mount option transparently, but unfortunately
+there are several problems with doing that:
+
+=over 4
+
+=item *
+
+On some Linux systems, the C<utf8> mount option doesn't work.  We don't
+precisely understand what systems or why, but this was reliably reported by
+one user.
+
+=item *
+
+It would prevent you from using the C<iocharset> parameter because it is
+incompatible with C<utf8>.  It is probably not a good idea to use this
+parameter, but we don't want to prevent it.
+
+=back
+
+=head2 Non-ASCII characters appear as underscore (_) on ISO9660 filesystems.
+
+The filesystem was not prepared correctly with mkisofs or genisoimage.  Make
+sure the filesystem was created using Joliet and/or Rock Ridge extensions.
+libguestfs does not require any special mount options to handle the
+filesystem.
+
 =head1 DOWNLOADING, INSTALLING, COMPILING LIBGUESTFS
 
 =begin HTML
@@ -167,8 +256,15 @@ Bengen).
 =item Ubuntu
 
 We don't have an Ubuntu maintainer, and the packages supplied by Canonical
-(which are outside our control) are broken.  Try compiling from source (next
-section).
+(which are outside our control) are often broken.  Try compiling from source
+(next section).
+
+Canonical decided to change the permissions on the kernel so that it's not
+readable except by root.  This is completely stupid, but they won't change
+it (L<https://bugs.launchpad.net/ubuntu/+source/linux/+bug/759725>).  So
+every user should do this:
+
+ sudo chmod 0644 /boot/vmlinuz*
 
 =item Ubuntu 10.04
 
@@ -176,8 +272,19 @@ See: L<http://libguestfs.org/download/binaries/ubuntu1004-packages/>
 
 =item Ubuntu 12.04
 
-The packages supplied by Canonical are broken.  See:
-L<https://www.redhat.com/archives/libguestfs/2012-April/thread.html#00028>
+libguestfs in this version of Ubuntu works, but you need to update
+febootstrap and seabios to the latest versions.
+
+You need febootstrap E<ge> 3.14-2 from:
+L<http://packages.ubuntu.com/precise/febootstrap>
+
+You need seabios E<ge> 0.6.2-0ubuntu2.1 or E<ge> 0.6.2-0ubuntu3 from:
+L<http://packages.ubuntu.com/precise-updates/seabios> or
+L<http://packages.ubuntu.com/quantal/seabios>
+
+Also you need to do (see above):
+
+ sudo chmod 0644 /boot/vmlinuz*
 
 =item Other Linux distro
 
@@ -304,6 +411,14 @@ WITH OTHER PROGRAMMING LANGUAGES>.
 <!-- old anchor for the next section --> <a name="debug"/>
 
 =end HTML
+
+=head2 Can I use libguestfs in my proprietary / closed source / commercial program?
+
+In general, yes.  However this is not legal advice.  You should read the
+license that comes with libguestfs, and if you have specific questions about
+your obligations when distributing libguestfs, contact a lawyer.  In the
+source tree the license is in the file C<COPYING.LIB> (LGPLv2+ for the
+library and bindings) and C<COPYING> (GPLv2+ for the standalone programs).
 
 =head1 DEBUGGING LIBGUESTFS
 

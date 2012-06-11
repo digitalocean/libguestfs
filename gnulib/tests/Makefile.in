@@ -68,39 +68,40 @@ TESTS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-dup3$(EXEEXT) test-environ$(EXEEXT) test-errno$(EXEEXT) \
 	test-fchdir$(EXEEXT) test-fcntl-h$(EXEEXT) \
 	test-fcntl-safer$(EXEEXT) test-fcntl$(EXEEXT) \
-	test-fdopen$(EXEEXT) test-fgetc$(EXEEXT) \
-	test-filevercmp$(EXEEXT) test-float$(EXEEXT) \
-	test-fnmatch$(EXEEXT) test-fpending.sh test-fputc$(EXEEXT) \
-	test-fread$(EXEEXT) test-fstat$(EXEEXT) test-ftell.sh \
-	test-ftell2.sh test-ftell3$(EXEEXT) test-ftello.sh \
-	test-ftello2.sh test-ftello3$(EXEEXT) test-ftello4.sh \
-	test-ftruncate.sh test-futimens$(EXEEXT) test-fwrite$(EXEEXT) \
-	test-getaddrinfo$(EXEEXT) test-getcwd-lgpl$(EXEEXT) \
-	test-getdelim$(EXEEXT) test-getdtablesize$(EXEEXT) \
-	test-getline$(EXEEXT) test-getlogin_r$(EXEEXT) \
-	test-getopt$(EXEEXT) test-gettimeofday$(EXEEXT) \
-	test-glob$(EXEEXT) test-hash$(EXEEXT) test-i-ring$(EXEEXT) \
+	test-fdopen$(EXEEXT) test-fdopendir$(EXEEXT) \
+	test-fgetc$(EXEEXT) test-filevercmp$(EXEEXT) \
+	test-float$(EXEEXT) test-fnmatch$(EXEEXT) test-fpending.sh \
+	test-fputc$(EXEEXT) test-fread$(EXEEXT) test-fstat$(EXEEXT) \
+	test-ftell.sh test-ftell2.sh test-ftell3$(EXEEXT) \
+	test-ftello.sh test-ftello2.sh test-ftello3$(EXEEXT) \
+	test-ftello4.sh test-ftruncate.sh test-futimens$(EXEEXT) \
+	test-fwrite$(EXEEXT) test-getaddrinfo$(EXEEXT) \
+	test-getcwd-lgpl$(EXEEXT) test-getdelim$(EXEEXT) \
+	test-getdtablesize$(EXEEXT) test-getline$(EXEEXT) \
+	test-getlogin_r$(EXEEXT) test-getopt$(EXEEXT) \
+	test-gettimeofday$(EXEEXT) test-glob$(EXEEXT) \
+	test-hash$(EXEEXT) test-i-ring$(EXEEXT) \
 	test-ignore-value$(EXEEXT) test-inet_ntop$(EXEEXT) \
 	test-inet_pton$(EXEEXT) test-intprops$(EXEEXT) \
 	test-inttostr$(EXEEXT) test-inttypes$(EXEEXT) \
 	test-ioctl$(EXEEXT) test-listen$(EXEEXT) test-locale$(EXEEXT) \
-	test-localename$(EXEEXT) test-lock$(EXEEXT) test-lseek.sh \
-	test-lstat$(EXEEXT) test-malloca$(EXEEXT) test-mbrtowc1.sh \
-	test-mbrtowc2.sh test-mbrtowc3.sh test-mbrtowc4.sh \
-	test-mbrtowc-w32-1.sh test-mbrtowc-w32-2.sh \
-	test-mbrtowc-w32-3.sh test-mbrtowc-w32-4.sh \
-	test-mbrtowc-w32-5.sh test-mbsinit.sh test-mbsrtowcs1.sh \
-	test-mbsrtowcs2.sh test-mbsrtowcs3.sh test-mbsrtowcs4.sh \
-	test-memchr$(EXEEXT) test-memrchr$(EXEEXT) test-netdb$(EXEEXT) \
-	test-netinet_in$(EXEEXT) test-open$(EXEEXT) \
-	test-openat-safer$(EXEEXT) test-openat$(EXEEXT) \
-	test-pathmax$(EXEEXT) test-perror.sh test-perror2$(EXEEXT) \
-	test-pipe$(EXEEXT) test-pread.sh test-quotearg-simple$(EXEEXT) \
-	test-raise$(EXEEXT) test-rawmemchr$(EXEEXT) \
-	test-read-file$(EXEEXT) test-read$(EXEEXT) \
-	test-readlink$(EXEEXT) test-select$(EXEEXT) test-select-in.sh \
-	test-select-out.sh test-setenv$(EXEEXT) test-setlocale1.sh \
-	test-setlocale2.sh test-setsockopt$(EXEEXT) \
+	test-localeconv$(EXEEXT) test-localename$(EXEEXT) \
+	test-lock$(EXEEXT) test-lseek.sh test-lstat$(EXEEXT) \
+	test-malloca$(EXEEXT) test-mbrtowc1.sh test-mbrtowc2.sh \
+	test-mbrtowc3.sh test-mbrtowc4.sh test-mbrtowc-w32-1.sh \
+	test-mbrtowc-w32-2.sh test-mbrtowc-w32-3.sh \
+	test-mbrtowc-w32-4.sh test-mbrtowc-w32-5.sh test-mbsinit.sh \
+	test-mbsrtowcs1.sh test-mbsrtowcs2.sh test-mbsrtowcs3.sh \
+	test-mbsrtowcs4.sh test-memchr$(EXEEXT) test-memrchr$(EXEEXT) \
+	test-netdb$(EXEEXT) test-netinet_in$(EXEEXT) \
+	test-open$(EXEEXT) test-openat-safer$(EXEEXT) \
+	test-openat$(EXEEXT) test-pathmax$(EXEEXT) test-perror.sh \
+	test-perror2$(EXEEXT) test-pipe$(EXEEXT) test-pread.sh \
+	test-quotearg-simple$(EXEEXT) test-raise$(EXEEXT) \
+	test-rawmemchr$(EXEEXT) test-read-file$(EXEEXT) \
+	test-read$(EXEEXT) test-readlink$(EXEEXT) test-select$(EXEEXT) \
+	test-select-in.sh test-select-out.sh test-setenv$(EXEEXT) \
+	test-setlocale1.sh test-setlocale2.sh test-setsockopt$(EXEEXT) \
 	test-signal-h$(EXEEXT) test-sleep$(EXEEXT) \
 	test-snprintf$(EXEEXT) test-sockets$(EXEEXT) \
 	test-stat$(EXEEXT) test-stat-time$(EXEEXT) \
@@ -142,28 +143,29 @@ check_PROGRAMS = test-accept$(EXEEXT) test-accept4$(EXEEXT) \
 	test-dup3$(EXEEXT) test-environ$(EXEEXT) test-errno$(EXEEXT) \
 	test-fchdir$(EXEEXT) test-fcntl-h$(EXEEXT) \
 	test-fcntl-safer$(EXEEXT) test-fcntl$(EXEEXT) \
-	test-fdopen$(EXEEXT) test-fgetc$(EXEEXT) \
-	test-filevercmp$(EXEEXT) test-float$(EXEEXT) \
-	test-fnmatch$(EXEEXT) test-fpending$(EXEEXT) \
-	test-fputc$(EXEEXT) test-fread$(EXEEXT) test-fstat$(EXEEXT) \
-	test-ftell$(EXEEXT) test-ftell3$(EXEEXT) test-ftello$(EXEEXT) \
-	test-ftello3$(EXEEXT) test-ftello4$(EXEEXT) \
-	test-ftruncate$(EXEEXT) test-futimens$(EXEEXT) \
-	test-fwrite$(EXEEXT) test-getaddrinfo$(EXEEXT) \
-	test-getcwd-lgpl$(EXEEXT) test-getdelim$(EXEEXT) \
-	test-getdtablesize$(EXEEXT) test-getline$(EXEEXT) \
-	test-getlogin_r$(EXEEXT) test-getopt$(EXEEXT) \
-	test-gettimeofday$(EXEEXT) test-glob$(EXEEXT) \
-	test-hash$(EXEEXT) test-i-ring$(EXEEXT) \
+	test-fdopen$(EXEEXT) test-fdopendir$(EXEEXT) \
+	test-fgetc$(EXEEXT) test-filevercmp$(EXEEXT) \
+	test-float$(EXEEXT) test-fnmatch$(EXEEXT) \
+	test-fpending$(EXEEXT) test-fputc$(EXEEXT) test-fread$(EXEEXT) \
+	test-fstat$(EXEEXT) test-ftell$(EXEEXT) test-ftell3$(EXEEXT) \
+	test-ftello$(EXEEXT) test-ftello3$(EXEEXT) \
+	test-ftello4$(EXEEXT) test-ftruncate$(EXEEXT) \
+	test-futimens$(EXEEXT) test-fwrite$(EXEEXT) \
+	test-getaddrinfo$(EXEEXT) test-getcwd-lgpl$(EXEEXT) \
+	test-getdelim$(EXEEXT) test-getdtablesize$(EXEEXT) \
+	test-getline$(EXEEXT) test-getlogin_r$(EXEEXT) \
+	test-getopt$(EXEEXT) test-gettimeofday$(EXEEXT) \
+	test-glob$(EXEEXT) test-hash$(EXEEXT) test-i-ring$(EXEEXT) \
 	test-ignore-value$(EXEEXT) test-inet_ntop$(EXEEXT) \
 	test-inet_pton$(EXEEXT) test-intprops$(EXEEXT) \
 	test-inttostr$(EXEEXT) test-inttypes$(EXEEXT) \
 	test-ioctl$(EXEEXT) test-listen$(EXEEXT) test-locale$(EXEEXT) \
-	test-localename$(EXEEXT) test-lock$(EXEEXT) \
-	test-lseek$(EXEEXT) test-lstat$(EXEEXT) test-malloca$(EXEEXT) \
-	test-mbrtowc$(EXEEXT) test-mbrtowc-w32$(EXEEXT) \
-	test-mbsinit$(EXEEXT) test-mbsrtowcs$(EXEEXT) \
-	test-memchr$(EXEEXT) test-memrchr$(EXEEXT) test-netdb$(EXEEXT) \
+	test-localeconv$(EXEEXT) test-localename$(EXEEXT) \
+	test-lock$(EXEEXT) test-lseek$(EXEEXT) test-lstat$(EXEEXT) \
+	test-malloca$(EXEEXT) test-mbrtowc$(EXEEXT) \
+	test-mbrtowc-w32$(EXEEXT) test-mbsinit$(EXEEXT) \
+	test-mbsrtowcs$(EXEEXT) test-memchr$(EXEEXT) \
+	test-memrchr$(EXEEXT) test-netdb$(EXEEXT) \
 	test-netinet_in$(EXEEXT) test-open$(EXEEXT) \
 	test-openat-safer$(EXEEXT) test-openat$(EXEEXT) \
 	test-pathmax$(EXEEXT) test-perror$(EXEEXT) \
@@ -224,20 +226,20 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/fchdir.m4 $(top_srcdir)/m4/fcntl-o.m4 \
 	$(top_srcdir)/m4/fcntl-safer.m4 $(top_srcdir)/m4/fcntl.m4 \
 	$(top_srcdir)/m4/fcntl_h.m4 $(top_srcdir)/m4/fdopen.m4 \
-	$(top_srcdir)/m4/filenamecat.m4 $(top_srcdir)/m4/float_h.m4 \
-	$(top_srcdir)/m4/fnmatch.m4 $(top_srcdir)/m4/fpending.m4 \
-	$(top_srcdir)/m4/fpieee.m4 $(top_srcdir)/m4/fseeko.m4 \
-	$(top_srcdir)/m4/fstat.m4 $(top_srcdir)/m4/fsusage.m4 \
-	$(top_srcdir)/m4/ftell.m4 $(top_srcdir)/m4/ftello.m4 \
-	$(top_srcdir)/m4/ftruncate.m4 $(top_srcdir)/m4/fts.m4 \
-	$(top_srcdir)/m4/futimens.m4 $(top_srcdir)/m4/getaddrinfo.m4 \
-	$(top_srcdir)/m4/getcwd.m4 $(top_srcdir)/m4/getdelim.m4 \
-	$(top_srcdir)/m4/getdtablesize.m4 $(top_srcdir)/m4/getline.m4 \
-	$(top_srcdir)/m4/getlogin_r.m4 $(top_srcdir)/m4/getopt.m4 \
-	$(top_srcdir)/m4/getpagesize.m4 $(top_srcdir)/m4/gettime.m4 \
-	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
-	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
-	$(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/fdopendir.m4 $(top_srcdir)/m4/filenamecat.m4 \
+	$(top_srcdir)/m4/float_h.m4 $(top_srcdir)/m4/fnmatch.m4 \
+	$(top_srcdir)/m4/fpending.m4 $(top_srcdir)/m4/fpieee.m4 \
+	$(top_srcdir)/m4/fseeko.m4 $(top_srcdir)/m4/fstat.m4 \
+	$(top_srcdir)/m4/fsusage.m4 $(top_srcdir)/m4/ftell.m4 \
+	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
+	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
+	$(top_srcdir)/m4/getaddrinfo.m4 $(top_srcdir)/m4/getcwd.m4 \
+	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
+	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
+	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
+	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
+	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
+	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
 	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/include_next.m4 \
@@ -252,51 +254,52 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
 	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
 	$(top_srcdir)/m4/locale-tr.m4 $(top_srcdir)/m4/locale-zh.m4 \
-	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localename.m4 \
-	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
-	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
-	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
-	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
-	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
-	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/mempcpy.m4 \
-	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
-	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
-	$(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localeconv.m4 \
+	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
+	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
+	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
+	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
+	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
+	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
+	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
+	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
+	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
+	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
-	$(top_srcdir)/m4/onceonly.m4 $(top_srcdir)/m4/open.m4 \
-	$(top_srcdir)/m4/openat.m4 $(top_srcdir)/m4/opendir.m4 \
-	$(top_srcdir)/m4/pathmax.m4 $(top_srcdir)/m4/perror.m4 \
-	$(top_srcdir)/m4/pipe.m4 $(top_srcdir)/m4/pread.m4 \
-	$(top_srcdir)/m4/printf.m4 $(top_srcdir)/m4/putenv.m4 \
-	$(top_srcdir)/m4/quote.m4 $(top_srcdir)/m4/quotearg.m4 \
-	$(top_srcdir)/m4/raise.m4 $(top_srcdir)/m4/rawmemchr.m4 \
-	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
-	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
-	$(top_srcdir)/m4/realloc.m4 $(top_srcdir)/m4/safe-read.m4 \
-	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
-	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
-	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
-	$(top_srcdir)/m4/signal_h.m4 $(top_srcdir)/m4/size_max.m4 \
-	$(top_srcdir)/m4/sleep.m4 $(top_srcdir)/m4/snprintf.m4 \
-	$(top_srcdir)/m4/socketlib.m4 $(top_srcdir)/m4/sockets.m4 \
-	$(top_srcdir)/m4/socklen.m4 $(top_srcdir)/m4/sockpfaf.m4 \
-	$(top_srcdir)/m4/ssize_t.m4 $(top_srcdir)/m4/stat-time.m4 \
-	$(top_srcdir)/m4/stat.m4 $(top_srcdir)/m4/stdalign.m4 \
-	$(top_srcdir)/m4/stdarg.m4 $(top_srcdir)/m4/stdbool.m4 \
-	$(top_srcdir)/m4/stddef_h.m4 $(top_srcdir)/m4/stdint.m4 \
-	$(top_srcdir)/m4/stdint_h.m4 $(top_srcdir)/m4/stdio_h.m4 \
-	$(top_srcdir)/m4/stdlib_h.m4 $(top_srcdir)/m4/strchrnul.m4 \
-	$(top_srcdir)/m4/strdup.m4 $(top_srcdir)/m4/strerror.m4 \
-	$(top_srcdir)/m4/strerror_r.m4 $(top_srcdir)/m4/string_h.m4 \
-	$(top_srcdir)/m4/strndup.m4 $(top_srcdir)/m4/strnlen.m4 \
-	$(top_srcdir)/m4/strtoll.m4 $(top_srcdir)/m4/strtoull.m4 \
-	$(top_srcdir)/m4/strtoumax.m4 $(top_srcdir)/m4/symlink.m4 \
-	$(top_srcdir)/m4/symlinkat.m4 $(top_srcdir)/m4/sys_ioctl_h.m4 \
+	$(top_srcdir)/m4/off_t.m4 $(top_srcdir)/m4/onceonly.m4 \
+	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
+	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
+	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
+	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
+	$(top_srcdir)/m4/putenv.m4 $(top_srcdir)/m4/quote.m4 \
+	$(top_srcdir)/m4/quotearg.m4 $(top_srcdir)/m4/raise.m4 \
+	$(top_srcdir)/m4/rawmemchr.m4 $(top_srcdir)/m4/read-file.m4 \
+	$(top_srcdir)/m4/read.m4 $(top_srcdir)/m4/readdir.m4 \
+	$(top_srcdir)/m4/readlink.m4 $(top_srcdir)/m4/realloc.m4 \
+	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
+	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/select.m4 \
+	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
+	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
+	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
+	$(top_srcdir)/m4/sockets.m4 $(top_srcdir)/m4/socklen.m4 \
+	$(top_srcdir)/m4/sockpfaf.m4 $(top_srcdir)/m4/ssize_t.m4 \
+	$(top_srcdir)/m4/stat-time.m4 $(top_srcdir)/m4/stat.m4 \
+	$(top_srcdir)/m4/stdalign.m4 $(top_srcdir)/m4/stdarg.m4 \
+	$(top_srcdir)/m4/stdbool.m4 $(top_srcdir)/m4/stddef_h.m4 \
+	$(top_srcdir)/m4/stdint.m4 $(top_srcdir)/m4/stdint_h.m4 \
+	$(top_srcdir)/m4/stdio_h.m4 $(top_srcdir)/m4/stdlib_h.m4 \
+	$(top_srcdir)/m4/strchrnul.m4 $(top_srcdir)/m4/strdup.m4 \
+	$(top_srcdir)/m4/strerror.m4 $(top_srcdir)/m4/strerror_r.m4 \
+	$(top_srcdir)/m4/string_h.m4 $(top_srcdir)/m4/strndup.m4 \
+	$(top_srcdir)/m4/strnlen.m4 $(top_srcdir)/m4/strtoll.m4 \
+	$(top_srcdir)/m4/strtoull.m4 $(top_srcdir)/m4/strtoumax.m4 \
+	$(top_srcdir)/m4/symlink.m4 $(top_srcdir)/m4/symlinkat.m4 \
+	$(top_srcdir)/m4/sys_ioctl_h.m4 \
 	$(top_srcdir)/m4/sys_select_h.m4 \
 	$(top_srcdir)/m4/sys_socket_h.m4 \
 	$(top_srcdir)/m4/sys_stat_h.m4 $(top_srcdir)/m4/sys_time_h.m4 \
@@ -483,6 +486,9 @@ test_fdopen_OBJECTS = test-fdopen.$(OBJEXT)
 test_fdopen_LDADD = $(LDADD)
 test_fdopen_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
 	libtests.a $(am__DEPENDENCIES_1)
+test_fdopendir_SOURCES = test-fdopendir.c
+test_fdopendir_OBJECTS = test-fdopendir.$(OBJEXT)
+test_fdopendir_DEPENDENCIES = $(am__DEPENDENCIES_2)
 test_fgetc_SOURCES = test-fgetc.c
 test_fgetc_OBJECTS = test-fgetc.$(OBJEXT)
 test_fgetc_LDADD = $(LDADD)
@@ -650,6 +656,11 @@ test_locale_SOURCES = test-locale.c
 test_locale_OBJECTS = test-locale.$(OBJEXT)
 test_locale_LDADD = $(LDADD)
 test_locale_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
+	libtests.a $(am__DEPENDENCIES_1)
+test_localeconv_SOURCES = test-localeconv.c
+test_localeconv_OBJECTS = test-localeconv.$(OBJEXT)
+test_localeconv_LDADD = $(LDADD)
+test_localeconv_DEPENDENCIES = libtests.a ../../gnulib/lib/libgnu.la \
 	libtests.a $(am__DEPENDENCIES_1)
 test_localename_SOURCES = test-localename.c
 test_localename_OBJECTS = test-localename.$(OBJEXT)
@@ -1073,38 +1084,39 @@ SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-dirent-safer.c test-dup.c test-dup-safer.c test-dup2.c \
 	test-dup3.c test-environ.c test-errno.c test-fchdir.c \
 	test-fcntl.c test-fcntl-h.c test-fcntl-safer.c test-fdopen.c \
-	test-fgetc.c test-filevercmp.c test-float.c test-fnmatch.c \
-	test-fpending.c test-fputc.c test-fread.c test-fstat.c \
-	test-ftell.c test-ftell3.c test-ftello.c test-ftello3.c \
-	test-ftello4.c test-ftruncate.c test-futimens.c test-fwrite.c \
-	test-getaddrinfo.c test-getcwd-lgpl.c test-getdelim.c \
-	test-getdtablesize.c test-getline.c test-getlogin_r.c \
-	test-getopt.c test-gettimeofday.c test-glob.c test-hash.c \
-	test-i-ring.c test-ignore-value.c test-inet_ntop.c \
-	test-inet_pton.c test-intprops.c test-inttostr.c \
-	test-inttypes.c test-ioctl.c test-listen.c test-locale.c \
-	test-localename.c test-lock.c test-lseek.c test-lstat.c \
-	test-malloca.c test-mbrtowc.c test-mbrtowc-w32.c \
-	test-mbsinit.c test-mbsrtowcs.c test-memchr.c test-memrchr.c \
-	test-netdb.c test-netinet_in.c test-open.c test-openat.c \
-	test-openat-safer.c test-pathmax.c test-perror.c \
-	test-perror2.c test-pipe.c test-pread.c test-quotearg-simple.c \
-	test-raise.c test-rawmemchr.c test-read.c test-read-file.c \
-	test-readlink.c test-select.c test-select-fd.c \
-	test-select-stdin.c test-setenv.c test-setlocale1.c \
-	test-setlocale2.c test-setsockopt.c test-signal-h.c \
-	test-sleep.c test-snprintf.c test-sockets.c test-stat.c \
-	test-stat-time.c test-stdalign.c test-stdbool.c test-stddef.c \
-	test-stdint.c test-stdio.c test-stdlib.c test-strchrnul.c \
-	test-strerror.c test-strerror_r.c test-string.c test-strnlen.c \
-	test-strtoll.c test-strtoull.c test-strtoumax.c test-symlink.c \
-	test-symlinkat.c test-sys_ioctl.c test-sys_select.c \
-	test-sys_socket.c test-sys_stat.c test-sys_time.c \
-	test-sys_types.c test-sys_uio.c test-sys_wait.c \
-	test-thread_create.c test-thread_self.c test-time.c \
-	test-unistd.c test-unsetenv.c test-usleep.c test-utimens.c \
-	test-vasnprintf.c test-vasprintf.c test-verify.c test-wchar.c \
-	test-wcrtomb.c test-wcrtomb-w32.c test-wctype-h.c test-write.c \
+	test-fdopendir.c test-fgetc.c test-filevercmp.c test-float.c \
+	test-fnmatch.c test-fpending.c test-fputc.c test-fread.c \
+	test-fstat.c test-ftell.c test-ftell3.c test-ftello.c \
+	test-ftello3.c test-ftello4.c test-ftruncate.c test-futimens.c \
+	test-fwrite.c test-getaddrinfo.c test-getcwd-lgpl.c \
+	test-getdelim.c test-getdtablesize.c test-getline.c \
+	test-getlogin_r.c test-getopt.c test-gettimeofday.c \
+	test-glob.c test-hash.c test-i-ring.c test-ignore-value.c \
+	test-inet_ntop.c test-inet_pton.c test-intprops.c \
+	test-inttostr.c test-inttypes.c test-ioctl.c test-listen.c \
+	test-locale.c test-localeconv.c test-localename.c test-lock.c \
+	test-lseek.c test-lstat.c test-malloca.c test-mbrtowc.c \
+	test-mbrtowc-w32.c test-mbsinit.c test-mbsrtowcs.c \
+	test-memchr.c test-memrchr.c test-netdb.c test-netinet_in.c \
+	test-open.c test-openat.c test-openat-safer.c test-pathmax.c \
+	test-perror.c test-perror2.c test-pipe.c test-pread.c \
+	test-quotearg-simple.c test-raise.c test-rawmemchr.c \
+	test-read.c test-read-file.c test-readlink.c test-select.c \
+	test-select-fd.c test-select-stdin.c test-setenv.c \
+	test-setlocale1.c test-setlocale2.c test-setsockopt.c \
+	test-signal-h.c test-sleep.c test-snprintf.c test-sockets.c \
+	test-stat.c test-stat-time.c test-stdalign.c test-stdbool.c \
+	test-stddef.c test-stdint.c test-stdio.c test-stdlib.c \
+	test-strchrnul.c test-strerror.c test-strerror_r.c \
+	test-string.c test-strnlen.c test-strtoll.c test-strtoull.c \
+	test-strtoumax.c test-symlink.c test-symlinkat.c \
+	test-sys_ioctl.c test-sys_select.c test-sys_socket.c \
+	test-sys_stat.c test-sys_time.c test-sys_types.c \
+	test-sys_uio.c test-sys_wait.c test-thread_create.c \
+	test-thread_self.c test-time.c test-unistd.c test-unsetenv.c \
+	test-usleep.c test-utimens.c test-vasnprintf.c \
+	test-vasprintf.c test-verify.c test-wchar.c test-wcrtomb.c \
+	test-wcrtomb-w32.c test-wctype-h.c test-write.c \
 	test-xalloc-die.c test-xstrtol.c test-xstrtoll.c \
 	test-xstrtoul.c test-xstrtoull.c test-xstrtoumax.c \
 	test-xvasprintf.c
@@ -1117,38 +1129,39 @@ DIST_SOURCES = $(libtests_a_SOURCES) $(EXTRA_libtests_a_SOURCES) \
 	test-dirent-safer.c test-dup.c test-dup-safer.c test-dup2.c \
 	test-dup3.c test-environ.c test-errno.c test-fchdir.c \
 	test-fcntl.c test-fcntl-h.c test-fcntl-safer.c test-fdopen.c \
-	test-fgetc.c test-filevercmp.c test-float.c test-fnmatch.c \
-	test-fpending.c test-fputc.c test-fread.c test-fstat.c \
-	test-ftell.c test-ftell3.c test-ftello.c test-ftello3.c \
-	test-ftello4.c test-ftruncate.c test-futimens.c test-fwrite.c \
-	test-getaddrinfo.c test-getcwd-lgpl.c test-getdelim.c \
-	test-getdtablesize.c test-getline.c test-getlogin_r.c \
-	test-getopt.c test-gettimeofday.c test-glob.c test-hash.c \
-	test-i-ring.c test-ignore-value.c test-inet_ntop.c \
-	test-inet_pton.c test-intprops.c test-inttostr.c \
-	test-inttypes.c test-ioctl.c test-listen.c test-locale.c \
-	test-localename.c test-lock.c test-lseek.c test-lstat.c \
-	test-malloca.c test-mbrtowc.c test-mbrtowc-w32.c \
-	test-mbsinit.c test-mbsrtowcs.c test-memchr.c test-memrchr.c \
-	test-netdb.c test-netinet_in.c test-open.c test-openat.c \
-	test-openat-safer.c test-pathmax.c test-perror.c \
-	test-perror2.c test-pipe.c test-pread.c test-quotearg-simple.c \
-	test-raise.c test-rawmemchr.c test-read.c test-read-file.c \
-	test-readlink.c test-select.c test-select-fd.c \
-	test-select-stdin.c test-setenv.c test-setlocale1.c \
-	test-setlocale2.c test-setsockopt.c test-signal-h.c \
-	test-sleep.c test-snprintf.c test-sockets.c test-stat.c \
-	test-stat-time.c test-stdalign.c test-stdbool.c test-stddef.c \
-	test-stdint.c test-stdio.c test-stdlib.c test-strchrnul.c \
-	test-strerror.c test-strerror_r.c test-string.c test-strnlen.c \
-	test-strtoll.c test-strtoull.c test-strtoumax.c test-symlink.c \
-	test-symlinkat.c test-sys_ioctl.c test-sys_select.c \
-	test-sys_socket.c test-sys_stat.c test-sys_time.c \
-	test-sys_types.c test-sys_uio.c test-sys_wait.c \
-	test-thread_create.c test-thread_self.c test-time.c \
-	test-unistd.c test-unsetenv.c test-usleep.c test-utimens.c \
-	test-vasnprintf.c test-vasprintf.c test-verify.c test-wchar.c \
-	test-wcrtomb.c test-wcrtomb-w32.c test-wctype-h.c test-write.c \
+	test-fdopendir.c test-fgetc.c test-filevercmp.c test-float.c \
+	test-fnmatch.c test-fpending.c test-fputc.c test-fread.c \
+	test-fstat.c test-ftell.c test-ftell3.c test-ftello.c \
+	test-ftello3.c test-ftello4.c test-ftruncate.c test-futimens.c \
+	test-fwrite.c test-getaddrinfo.c test-getcwd-lgpl.c \
+	test-getdelim.c test-getdtablesize.c test-getline.c \
+	test-getlogin_r.c test-getopt.c test-gettimeofday.c \
+	test-glob.c test-hash.c test-i-ring.c test-ignore-value.c \
+	test-inet_ntop.c test-inet_pton.c test-intprops.c \
+	test-inttostr.c test-inttypes.c test-ioctl.c test-listen.c \
+	test-locale.c test-localeconv.c test-localename.c test-lock.c \
+	test-lseek.c test-lstat.c test-malloca.c test-mbrtowc.c \
+	test-mbrtowc-w32.c test-mbsinit.c test-mbsrtowcs.c \
+	test-memchr.c test-memrchr.c test-netdb.c test-netinet_in.c \
+	test-open.c test-openat.c test-openat-safer.c test-pathmax.c \
+	test-perror.c test-perror2.c test-pipe.c test-pread.c \
+	test-quotearg-simple.c test-raise.c test-rawmemchr.c \
+	test-read.c test-read-file.c test-readlink.c test-select.c \
+	test-select-fd.c test-select-stdin.c test-setenv.c \
+	test-setlocale1.c test-setlocale2.c test-setsockopt.c \
+	test-signal-h.c test-sleep.c test-snprintf.c test-sockets.c \
+	test-stat.c test-stat-time.c test-stdalign.c test-stdbool.c \
+	test-stddef.c test-stdint.c test-stdio.c test-stdlib.c \
+	test-strchrnul.c test-strerror.c test-strerror_r.c \
+	test-string.c test-strnlen.c test-strtoll.c test-strtoull.c \
+	test-strtoumax.c test-symlink.c test-symlinkat.c \
+	test-sys_ioctl.c test-sys_select.c test-sys_socket.c \
+	test-sys_stat.c test-sys_time.c test-sys_types.c \
+	test-sys_uio.c test-sys_wait.c test-thread_create.c \
+	test-thread_self.c test-time.c test-unistd.c test-unsetenv.c \
+	test-usleep.c test-utimens.c test-vasnprintf.c \
+	test-vasprintf.c test-verify.c test-wchar.c test-wcrtomb.c \
+	test-wcrtomb-w32.c test-wctype-h.c test-write.c \
 	test-xalloc-die.c test-xstrtol.c test-xstrtoll.c \
 	test-xstrtoul.c test-xstrtoull.c test-xstrtoumax.c \
 	test-xvasprintf.c
@@ -1343,7 +1356,6 @@ GNULIB_GETLOGIN = @GNULIB_GETLOGIN@
 GNULIB_GETLOGIN_R = @GNULIB_GETLOGIN_R@
 GNULIB_GETPAGESIZE = @GNULIB_GETPAGESIZE@
 GNULIB_GETPEERNAME = @GNULIB_GETPEERNAME@
-GNULIB_GETS = @GNULIB_GETS@
 GNULIB_GETSOCKNAME = @GNULIB_GETSOCKNAME@
 GNULIB_GETSOCKOPT = @GNULIB_GETSOCKOPT@
 GNULIB_GETSUBOPT = @GNULIB_GETSUBOPT@
@@ -1365,6 +1377,7 @@ GNULIB_LCHOWN = @GNULIB_LCHOWN@
 GNULIB_LINK = @GNULIB_LINK@
 GNULIB_LINKAT = @GNULIB_LINKAT@
 GNULIB_LISTEN = @GNULIB_LISTEN@
+GNULIB_LOCALECONV = @GNULIB_LOCALECONV@
 GNULIB_LSEEK = @GNULIB_LSEEK@
 GNULIB_LSTAT = @GNULIB_LSTAT@
 GNULIB_MALLOC_POSIX = @GNULIB_MALLOC_POSIX@
@@ -2022,6 +2035,7 @@ REPLACE_FSTAT = @REPLACE_FSTAT@
 REPLACE_FSTATAT = @REPLACE_FSTATAT@
 REPLACE_FTELL = @REPLACE_FTELL@
 REPLACE_FTELLO = @REPLACE_FTELLO@
+REPLACE_FTRUNCATE = @REPLACE_FTRUNCATE@
 REPLACE_FUTIMENS = @REPLACE_FUTIMENS@
 REPLACE_GAI_STRERROR = @REPLACE_GAI_STRERROR@
 REPLACE_GETCWD = @REPLACE_GETCWD@
@@ -2042,6 +2056,7 @@ REPLACE_ITOLD = @REPLACE_ITOLD@
 REPLACE_LCHOWN = @REPLACE_LCHOWN@
 REPLACE_LINK = @REPLACE_LINK@
 REPLACE_LINKAT = @REPLACE_LINKAT@
+REPLACE_LOCALECONV = @REPLACE_LOCALECONV@
 REPLACE_LOCALTIME_R = @REPLACE_LOCALTIME_R@
 REPLACE_LSEEK = @REPLACE_LSEEK@
 REPLACE_LSTAT = @REPLACE_LSTAT@
@@ -2108,6 +2123,8 @@ REPLACE_STRSTR = @REPLACE_STRSTR@
 REPLACE_STRTOD = @REPLACE_STRTOD@
 REPLACE_STRTOIMAX = @REPLACE_STRTOIMAX@
 REPLACE_STRTOK_R = @REPLACE_STRTOK_R@
+REPLACE_STRUCT_LCONV = @REPLACE_STRUCT_LCONV@
+REPLACE_STRUCT_TIMEVAL = @REPLACE_STRUCT_TIMEVAL@
 REPLACE_SYMLINK = @REPLACE_SYMLINK@
 REPLACE_TIMEGM = @REPLACE_TIMEGM@
 REPLACE_TMPFILE = @REPLACE_TMPFILE@
@@ -2163,6 +2180,8 @@ VERSION_SCRIPT_FLAGS = @VERSION_SCRIPT_FLAGS@
 WARN_CFLAGS = @WARN_CFLAGS@
 WCHAR_T_SUFFIX = @WCHAR_T_SUFFIX@
 WERROR_CFLAGS = @WERROR_CFLAGS@
+WINDOWS_64_BIT_OFF_T = @WINDOWS_64_BIT_OFF_T@
+WINDOWS_64_BIT_ST_SIZE = @WINDOWS_64_BIT_ST_SIZE@
 WINT_T_SUFFIX = @WINT_T_SUFFIX@
 WRESTOOL = @WRESTOOL@
 XGETTEXT = @XGETTEXT@
@@ -2262,20 +2281,20 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 	test-environ.c test-errno.c test-fchdir.c signature.h macros.h \
 	test-fcntl-h.c test-open.h test-fcntl-safer.c macros.h \
 	test-fcntl.c signature.h macros.h fdopen.c test-fdopen.c \
-	signature.h macros.h test-fgetc.c signature.h macros.h \
-	test-filevercmp.c macros.h test-float.c macros.h \
-	test-fnmatch.c signature.h macros.h test-fpending.c \
-	test-fpending.sh macros.h fpucw.h test-fputc.c signature.h \
-	macros.h test-fread.c signature.h macros.h test-fstat.c \
-	signature.h macros.h test-ftell.c test-ftell.sh test-ftell2.sh \
-	test-ftell3.c signature.h macros.h test-ftello.c \
-	test-ftello.sh test-ftello2.sh test-ftello3.c test-ftello4.c \
-	test-ftello4.sh signature.h macros.h ftruncate.c \
-	test-ftruncate.c test-ftruncate.sh signature.h macros.h nap.h \
-	test-futimens.h test-utimens-common.h test-futimens.c \
-	signature.h macros.h test-fwrite.c signature.h macros.h \
-	signature.h test-getaddrinfo.c test-getcwd-lgpl.c signature.h \
-	macros.h test-getdelim.c signature.h macros.h \
+	signature.h macros.h test-fdopendir.c signature.h macros.h \
+	test-fgetc.c signature.h macros.h test-filevercmp.c macros.h \
+	test-float.c macros.h test-fnmatch.c signature.h macros.h \
+	test-fpending.c test-fpending.sh macros.h fpucw.h test-fputc.c \
+	signature.h macros.h test-fread.c signature.h macros.h \
+	test-fstat.c signature.h macros.h test-ftell.c test-ftell.sh \
+	test-ftell2.sh test-ftell3.c signature.h macros.h \
+	test-ftello.c test-ftello.sh test-ftello2.sh test-ftello3.c \
+	test-ftello4.c test-ftello4.sh signature.h macros.h \
+	ftruncate.c test-ftruncate.c test-ftruncate.sh signature.h \
+	macros.h nap.h test-futimens.h test-utimens-common.h \
+	test-futimens.c signature.h macros.h test-fwrite.c signature.h \
+	macros.h signature.h test-getaddrinfo.c test-getcwd-lgpl.c \
+	signature.h macros.h test-getdelim.c signature.h macros.h \
 	test-getdtablesize.c signature.h macros.h test-getline.c \
 	signature.h macros.h test-getlogin_r.c signature.h macros.h \
 	macros.h signature.h test-getopt.c test-getopt.h \
@@ -2287,37 +2306,37 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 	test-intprops.c macros.h anytostr.c inttostr.h macros.h \
 	test-inttostr.c test-inttypes.c ioctl.c w32sock.h test-ioctl.c \
 	signature.h macros.h listen.c w32sock.h test-listen.c \
-	signature.h macros.h locale.in.h test-locale.c localename.h \
-	test-localename.c macros.h test-lock.c test-lseek.c \
-	test-lseek.sh signature.h macros.h test-lstat.h test-lstat.c \
-	signature.h macros.h test-malloca.c test-mbrtowc1.sh \
-	test-mbrtowc2.sh test-mbrtowc3.sh test-mbrtowc4.sh \
-	test-mbrtowc.c test-mbrtowc-w32-1.sh test-mbrtowc-w32-2.sh \
-	test-mbrtowc-w32-3.sh test-mbrtowc-w32-4.sh \
-	test-mbrtowc-w32-5.sh test-mbrtowc-w32.c signature.h macros.h \
-	test-mbsinit.sh test-mbsinit.c signature.h macros.h \
-	test-mbsrtowcs1.sh test-mbsrtowcs2.sh test-mbsrtowcs3.sh \
-	test-mbsrtowcs4.sh test-mbsrtowcs.c signature.h macros.h \
-	mbtowc-impl.h mbtowc.c test-memchr.c zerosize-ptr.h \
-	signature.h macros.h test-memrchr.c zerosize-ptr.h signature.h \
-	macros.h test-netdb.c test-netinet_in.c test-open.h \
-	test-open.c signature.h macros.h test-openat-safer.c macros.h \
-	test-openat.c test-open.h signature.h macros.h test-pathmax.c \
-	macros.h signature.h test-perror.c test-perror2.c \
-	test-perror.sh pipe.c test-pipe.c signature.h macros.h \
-	test-pread.c test-pread.sh signature.h macros.h putenv.c \
-	test-quotearg-simple.c test-quotearg.h macros.h test-raise.c \
-	signature.h macros.h test-rawmemchr.c zerosize-ptr.h \
-	signature.h macros.h test-read-file.c test-read.c signature.h \
-	macros.h test-readlink.h test-readlink.c signature.h macros.h \
-	macros.h signature.h test-select.c test-select.h \
-	test-select-fd.c test-select-in.sh test-select-out.sh \
-	test-select-stdin.c test-setenv.c signature.h macros.h \
-	setlocale.c test-setlocale1.sh test-setlocale1.c \
-	test-setlocale2.sh test-setlocale2.c signature.h macros.h \
-	setsockopt.c w32sock.h test-setsockopt.c signature.h macros.h \
-	test-signal-h.c test-sleep.c signature.h macros.h \
-	$(top_srcdir)/build-aux/snippet/_Noreturn.h \
+	signature.h macros.h test-locale.c test-localeconv.c \
+	signature.h macros.h localename.h test-localename.c macros.h \
+	test-lock.c test-lseek.c test-lseek.sh signature.h macros.h \
+	test-lstat.h test-lstat.c signature.h macros.h test-malloca.c \
+	test-mbrtowc1.sh test-mbrtowc2.sh test-mbrtowc3.sh \
+	test-mbrtowc4.sh test-mbrtowc.c test-mbrtowc-w32-1.sh \
+	test-mbrtowc-w32-2.sh test-mbrtowc-w32-3.sh \
+	test-mbrtowc-w32-4.sh test-mbrtowc-w32-5.sh test-mbrtowc-w32.c \
+	signature.h macros.h test-mbsinit.sh test-mbsinit.c \
+	signature.h macros.h test-mbsrtowcs1.sh test-mbsrtowcs2.sh \
+	test-mbsrtowcs3.sh test-mbsrtowcs4.sh test-mbsrtowcs.c \
+	signature.h macros.h mbtowc-impl.h mbtowc.c test-memchr.c \
+	zerosize-ptr.h signature.h macros.h test-memrchr.c \
+	zerosize-ptr.h signature.h macros.h test-netdb.c \
+	test-netinet_in.c test-open.h test-open.c signature.h macros.h \
+	test-openat-safer.c macros.h test-openat.c test-open.h \
+	signature.h macros.h test-pathmax.c macros.h signature.h \
+	test-perror.c test-perror2.c test-perror.sh pipe.c test-pipe.c \
+	signature.h macros.h test-pread.c test-pread.sh signature.h \
+	macros.h putenv.c test-quotearg-simple.c test-quotearg.h \
+	macros.h test-raise.c signature.h macros.h test-rawmemchr.c \
+	zerosize-ptr.h signature.h macros.h test-read-file.c \
+	test-read.c signature.h macros.h test-readlink.h \
+	test-readlink.c signature.h macros.h macros.h signature.h \
+	test-select.c test-select.h test-select-fd.c test-select-in.sh \
+	test-select-out.sh test-select-stdin.c test-setenv.c \
+	signature.h macros.h setlocale.c test-setlocale1.sh \
+	test-setlocale1.c test-setlocale2.sh test-setlocale2.c \
+	signature.h macros.h setsockopt.c w32sock.h test-setsockopt.c \
+	signature.h macros.h test-signal-h.c test-sleep.c signature.h \
+	macros.h $(top_srcdir)/build-aux/snippet/_Noreturn.h \
 	$(top_srcdir)/build-aux/snippet/arg-nonnull.h \
 	$(top_srcdir)/build-aux/snippet/c++defs.h \
 	$(top_srcdir)/build-aux/snippet/warn-on-use.h test-snprintf.c \
@@ -2363,13 +2382,12 @@ EXTRA_DIST = test-accept.c signature.h macros.h test-accept4.c \
 # statements but through direct file reference. Therefore this snippet must be
 # present in all Makefile.am that need it. This is ensured by the applicability
 # 'all' defined above.
-BUILT_SOURCES = locale.h arg-nonnull.h c++defs.h warn-on-use.h \
-	sys/ioctl.h
+BUILT_SOURCES = arg-nonnull.h c++defs.h warn-on-use.h sys/ioctl.h
 SUFFIXES = 
 MOSTLYCLEANFILES = core *.stackdump test-fpending.t t-ftell3.tmp \
-	t-ftello3.tmp test-getdelim.txt test-getline.txt locale.h \
-	locale.h-t arg-nonnull.h arg-nonnull.h-t c++defs.h c++defs.h-t \
-	warn-on-use.h warn-on-use.h-t sys/ioctl.h sys/ioctl.h-t
+	t-ftello3.tmp test-getdelim.txt test-getline.txt arg-nonnull.h \
+	arg-nonnull.h-t c++defs.h c++defs.h-t warn-on-use.h \
+	warn-on-use.h-t sys/ioctl.h sys/ioctl.h-t
 MOSTLYCLEANDIRS = sys
 CLEANFILES = 
 DISTCLEANFILES = 
@@ -2401,6 +2419,7 @@ test_connect_LDADD = $(LDADD) @LIBSOCKET@ $(INET_PTON_LIB)
 # and fdopendir indirectly depends on openat-die -> gettext-h.
 test_dirent_safer_LDADD = $(LDADD) $(LIBINTL)
 test_fchdir_LDADD = $(LDADD) $(LIBINTL)
+test_fdopendir_LDADD = $(LDADD) @LIBINTL@
 test_futimens_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME)
 test_getaddrinfo_LDADD = $(LDADD) @GETADDRINFO_LIB@ @LIBINTL@
 test_getcwd_lgpl_LDADD = $(LDADD) $(LIBINTL)
@@ -2599,6 +2618,9 @@ test-fcntl-safer$(EXEEXT): $(test_fcntl_safer_OBJECTS) $(test_fcntl_safer_DEPEND
 test-fdopen$(EXEEXT): $(test_fdopen_OBJECTS) $(test_fdopen_DEPENDENCIES) $(EXTRA_test_fdopen_DEPENDENCIES) 
 	@rm -f test-fdopen$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_fdopen_OBJECTS) $(test_fdopen_LDADD) $(LIBS)
+test-fdopendir$(EXEEXT): $(test_fdopendir_OBJECTS) $(test_fdopendir_DEPENDENCIES) $(EXTRA_test_fdopendir_DEPENDENCIES) 
+	@rm -f test-fdopendir$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_fdopendir_OBJECTS) $(test_fdopendir_LDADD) $(LIBS)
 test-fgetc$(EXEEXT): $(test_fgetc_OBJECTS) $(test_fgetc_DEPENDENCIES) $(EXTRA_test_fgetc_DEPENDENCIES) 
 	@rm -f test-fgetc$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_fgetc_OBJECTS) $(test_fgetc_LDADD) $(LIBS)
@@ -2707,6 +2729,9 @@ test-listen$(EXEEXT): $(test_listen_OBJECTS) $(test_listen_DEPENDENCIES) $(EXTRA
 test-locale$(EXEEXT): $(test_locale_OBJECTS) $(test_locale_DEPENDENCIES) $(EXTRA_test_locale_DEPENDENCIES) 
 	@rm -f test-locale$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_locale_OBJECTS) $(test_locale_LDADD) $(LIBS)
+test-localeconv$(EXEEXT): $(test_localeconv_OBJECTS) $(test_localeconv_DEPENDENCIES) $(EXTRA_test_localeconv_DEPENDENCIES) 
+	@rm -f test-localeconv$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_localeconv_OBJECTS) $(test_localeconv_LDADD) $(LIBS)
 test-localename$(EXEEXT): $(test_localename_OBJECTS) $(test_localename_DEPENDENCIES) $(EXTRA_test_localename_DEPENDENCIES) 
 	@rm -f test-localename$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_localename_OBJECTS) $(test_localename_LDADD) $(LIBS)
@@ -3023,6 +3048,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-fcntl-safer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-fcntl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-fdopen.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-fdopendir.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-fgetc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-filevercmp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-float.Po@am__quote@
@@ -3059,6 +3085,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-ioctl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-listen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-locale.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-localeconv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-localename.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-lock.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-lseek.Po@am__quote@
@@ -3610,29 +3637,6 @@ uninstall-am:
 	mostlyclean-libtool mostlyclean-local pdf pdf-am ps ps-am tags \
 	tags-recursive uninstall uninstall-am
 
-
-# We need the following in order to create <locale.h> when the system
-# doesn't have one that provides all definitions.
-locale.h: locale.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(ARG_NONNULL_H) $(WARN_ON_USE_H)
-	$(AM_V_GEN)rm -f $@-t $@ && \
-	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */' && \
-	  sed -e 's|@''GUARD_PREFIX''@|GL|g' \
-	      -e 's|@''INCLUDE_NEXT''@|$(INCLUDE_NEXT)|g' \
-	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|@PRAGMA_SYSTEM_HEADER@|g' \
-	      -e 's|@''PRAGMA_COLUMNS''@|@PRAGMA_COLUMNS@|g' \
-	      -e 's|@''NEXT_LOCALE_H''@|$(NEXT_LOCALE_H)|g' \
-	      -e 's/@''GNULIB_SETLOCALE''@/$(GNULIB_SETLOCALE)/g' \
-	      -e 's/@''GNULIB_DUPLOCALE''@/$(GNULIB_DUPLOCALE)/g' \
-	      -e 's|@''HAVE_DUPLOCALE''@|$(HAVE_DUPLOCALE)|g' \
-	      -e 's|@''HAVE_XLOCALE_H''@|$(HAVE_XLOCALE_H)|g' \
-	      -e 's|@''REPLACE_SETLOCALE''@|$(REPLACE_SETLOCALE)|g' \
-	      -e 's|@''REPLACE_DUPLOCALE''@|$(REPLACE_DUPLOCALE)|g' \
-	      -e '/definitions of _GL_FUNCDECL_RPL/r $(CXXDEFS_H)' \
-	      -e '/definition of _GL_ARG_NONNULL/r $(ARG_NONNULL_H)' \
-	      -e '/definition of _GL_WARN_ON_USE/r $(WARN_ON_USE_H)' \
-	      < $(srcdir)/locale.in.h; \
-	} > $@-t && \
-	mv $@-t $@
 # The arg-nonnull.h that gets inserted into generated .h files is the same as
 # build-aux/snippet/arg-nonnull.h, except that it has the copyright header cut
 # off.
