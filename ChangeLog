@@ -1,3 +1,79 @@
+2012-05-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.22.
+
+	examples: Add if HAVE_HIVEX ... endif around virt_dhcp_address example. (cherry picked from commit 7201a48d18d03bf3b16141bcff8c56e842d3b1c1)
+
+2012-05-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	qemu: Move -nodefaults etc logically together.
+	This is just code motion.
+
+	(cherry picked from commit 157f6fb18b7197f688ea761a4e52cd39287024f2)
+
+2012-05-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: Set minimum LIBGUESTFS_MEMSIZE at 128.
+	For ARM Versatile ("versatilepb") architecture, memsize must be set to
+	256 (megabytes) else the appliance is unable to boot.  Previously
+	setting LIBGUESTFS_MEMSIZE=256 was not allowed.
+
+	Versatile Express has larger limits.
+	(cherry picked from commit a3718c6b8be9bcbfd1e753c699f030d1852bc26e)
+
+2012-05-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	configure: Fix valgrind --vgdb test. (cherry picked from commit 77afc92fcd08677f9a9ae3b4f6c6919eb8ec2b33)
+
+	configure: Add a comment about vmchannel_test. (cherry picked from commit 0e960614ab0f7d878347d74229ffbb69a4a05540)
+
+2012-05-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	configure: Allow systemtap/DTrace userspace probes to be disabled.
+	'./configure --disable-probes' will disable these probes.  Otherwise
+	they are autodetected as before.
+
+	The <sys/sdt.h> produces lots of errors when you try to compile with
+	these probes enabled under clang, so it is necessary to provide a way
+	to disable them for clang users.
+	(cherry picked from commit a1680f03b7d38bf007d29ac23035e5af33736b0e)
+
+2012-05-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	test-tool: Implement -V / --version option. (cherry picked from commit dd23234f730db7add330bd06f87cab1f08654747)
+
+	virt-df: Add newlines after error messages. (cherry picked from commit 9e2cdd309b709ee1e88269ee3252768515bf56ad)
+
+	virt-make-fs: Use mount instead of mount_options. (cherry picked from commit 93734c78d8f802fbd80418e6ddb333b21f060fa9)
+
+	virt-make-fs: Fix filesystem type check when estimating ntfs. (cherry picked from commit e60556d92725289a26ccb406c9c94be32b3251c8)
+
+2012-05-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	perl: Don't fail if 'type' (disk format) attribute is missing in libvirt XML (RHBZ#701814).
+	Old versions of libvirt allowed you to define disks like this:
+
+	    <disk type='file' device='disk'>
+	      <driver name='qemu'/>
+	      ...
+
+	Since the <driver> element does not have a 'type' attribute (which
+	defines the format), we are supposed to do autodetection, so the
+	format should be undefined.
+
+	However what actually happened was that the code in
+	Sys::Guestfs::Lib::open_guest received format as an empty string from
+	the xpath query, causing libguestfs to give an error.
+
+	If the xpath query returns the format as an empty string, undefine it.
+	(cherry picked from commit f072a21f3aef6779aaa77329578ae3677a685d85)
+
+2012-05-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Move 'feature_available' function to global.
+	This is just code motion.
+	(cherry picked from commit 79bf966ceaa3508698f19bdc951ffc51693eb499)
+
 2012-05-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.21.

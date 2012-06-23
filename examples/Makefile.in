@@ -190,12 +190,13 @@ inspect_vm_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
 inspect_vm_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(inspect_vm_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am_virt_dhcp_address_OBJECTS =  \
-	virt_dhcp_address-virt-dhcp-address.$(OBJEXT)
+am__virt_dhcp_address_SOURCES_DIST = virt-dhcp-address.c
+@HAVE_HIVEX_TRUE@am_virt_dhcp_address_OBJECTS = virt_dhcp_address-virt-dhcp-address.$(OBJEXT)
 virt_dhcp_address_OBJECTS = $(am_virt_dhcp_address_OBJECTS)
 am__DEPENDENCIES_1 =
-virt_dhcp_address_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(top_builddir)/src/libguestfs.la
+@HAVE_HIVEX_TRUE@virt_dhcp_address_DEPENDENCIES =  \
+@HAVE_HIVEX_TRUE@	$(am__DEPENDENCIES_1) \
+@HAVE_HIVEX_TRUE@	$(top_builddir)/src/libguestfs.la
 virt_dhcp_address_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(virt_dhcp_address_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
@@ -229,7 +230,7 @@ am__v_GEN_0 = @echo "  GEN   " $@;
 SOURCES = $(create_disk_SOURCES) $(inspect_vm_SOURCES) \
 	$(virt_dhcp_address_SOURCES)
 DIST_SOURCES = $(create_disk_SOURCES) $(inspect_vm_SOURCES) \
-	$(virt_dhcp_address_SOURCES)
+	$(am__virt_dhcp_address_SOURCES_DIST)
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -1322,16 +1323,16 @@ inspect_vm_CFLAGS = \
 inspect_vm_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
-virt_dhcp_address_SOURCES = virt-dhcp-address.c
-virt_dhcp_address_CFLAGS = \
-	-DGUESTFS_WARN_DEPRECATED=1 \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(HIVEX_CFLAGS)
+@HAVE_HIVEX_TRUE@virt_dhcp_address_SOURCES = virt-dhcp-address.c
+@HAVE_HIVEX_TRUE@virt_dhcp_address_CFLAGS = \
+@HAVE_HIVEX_TRUE@	-DGUESTFS_WARN_DEPRECATED=1 \
+@HAVE_HIVEX_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_HIVEX_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+@HAVE_HIVEX_TRUE@	$(HIVEX_CFLAGS)
 
-virt_dhcp_address_LDADD = \
-	$(HIVEX_LIBS) \
-	$(top_builddir)/src/libguestfs.la
+@HAVE_HIVEX_TRUE@virt_dhcp_address_LDADD = \
+@HAVE_HIVEX_TRUE@	$(HIVEX_LIBS) \
+@HAVE_HIVEX_TRUE@	$(top_builddir)/src/libguestfs.la
 
 man_MANS = \
 	guestfs-examples.3 \

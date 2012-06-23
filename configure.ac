@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [16])
-m4_define([libguestfs_release], [21])
+m4_define([libguestfs_release], [22])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -395,9 +395,19 @@ fi
 AC_SUBST([SELINUX_LIB])
 
 dnl Check for systemtap/DTrace userspace probes (optional).
-dnl http://sourceware.org/systemtap/wiki/AddingUserSpaceProbingToApps
-AC_CHECK_HEADERS([sys/sdt.h])
-dnl AC_CHECK_PROG([DTRACE],[dtrace],[dtrace],[no])
+dnl Since the probe points break under clang, allow this to be disabled.
+AC_ARG_ENABLE([probes],
+        AS_HELP_STRING([--disable-probes], [Disable systemtap/DTrace userspace probes]),
+        [],
+        [enable_probes=yes])
+AS_IF([test "x$enable_probes" != "xno"],[
+    dnl http://sourceware.org/systemtap/wiki/AddingUserSpaceProbingToApps
+    AC_CHECK_HEADERS([sys/sdt.h])
+    dnl AC_CHECK_PROG([DTRACE],[dtrace],[dtrace],[no])
+    AS_IF([test "x$ac_cv_header_sys_sdt_h" = "xyes"],[
+        AC_DEFINE([ENABLE_PROBES],[1],[enable systemtap/DTrace userspace probes])
+    ])
+])
 
 dnl Check for cpio which isn't in the default Pardus install amazingly.
 AC_CHECK_PROG([CPIO],[cpio],[cpio],[no])
@@ -504,6 +514,7 @@ test "x$QEMU" = "xno" && AC_MSG_ERROR([qemu must be installed])
 AC_DEFINE_UNQUOTED([QEMU],["$QEMU"],[Location of qemu binary.])
 
 dnl Check that the chosen qemu has virtio-serial support.
+dnl For historical reasons this can be disabled by setting vmchannel_test=no.
 if test "x$vmchannel_test" != "xno"; then
     AC_MSG_CHECKING([that $QEMU -help works])
     if $QEMU -help >&AS_MESSAGE_LOG_FD 2>&1; then
@@ -580,8 +591,10 @@ and/or KVM.  Please read the relevant section in the README file for
 more information about this.
 
 You can override this test by setting the environment variable
-vmchannel_test=no  However if you don't have the right support
-in your qemu, then this just delays the pain.
+vmchannel_test=no
+
+However if you don't have the right support in your qemu, then this
+just delays the pain.
 
 If I am using the wrong qemu or you want to compile qemu from source
 and install it in another location, then you should configure with
@@ -713,7 +726,7 @@ AM_CONDITIONAL([HAVE_FUSE],[test "x$enable_fuse" != "xno"])
 dnl If valgrind is present (it's not required), check whether or not
 dnl it supports the new 'valgrind --vgdb' option.
 AC_CHECK_PROG([VALGRIND],[valgrind],[valgrind],[no])
-AS_IF([test "x$valgrind" != "xno"],[
+AS_IF([test "x$VALGRIND" != "xno"],[
     AC_MSG_CHECKING([if $VALGRIND supports the --vgdb option])
     if $VALGRIND --help | grep -sq -- --vgdb; then
         AC_MSG_RESULT([yes])
