@@ -42,25 +42,25 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../libguestfs0.templates:2001
+#: ../libguestfs-tools.templates:2001
 msgid "Create or update supermin appliance now?"
 msgstr "¿Desea actualizar o crear una instancia supermin ahora?"
 
 #. Type: boolean
 #. Description
-#: ../libguestfs0.templates:2001
+#: ../libguestfs-tools.templates:2001
 msgid "A \"supermin appliance\" is mandatory for libguestfs. It contains lists of files and directories. These will be copied into an ad-hoc file system whenever libguestfs starts a virtual machine."
 msgstr "Una «instancia supermin» es obligatoria para libguestfs. Ésta contiene un listado de archivos y directorios que se copiarán en un sistema de archivos ad-hoc cada vez que libguestfs inicie una máquina virtual."
 
 #. Type: boolean
 #. Description
-#: ../libguestfs0.templates:2001
+#: ../libguestfs-tools.templates:2001
 msgid "To generate or update a supermin appliance, network access to a package repository is needed."
 msgstr "Para crear o actualizar una instancia supermin se requiere acceso por red a un repositorio de paquetes."
 
 #. Type: boolean
 #. Description
-#: ../libguestfs0.templates:2001
+#: ../libguestfs-tools.templates:2001
 msgid "This can be done later by using the update-guestfs-appliance(8) utility."
 msgstr "Esto puede realizarse más tarde mediante el uso de la utilidad update-guestfs-appliance(8)."
 

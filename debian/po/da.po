@@ -18,13 +18,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../libguestfs0.templates:2001
+#: ../libguestfs-tools.templates:2001
 msgid "Create or update supermin appliance now?"
 msgstr "Opret eller opdater supermin appliance nu?"
 
 #. Type: boolean
 #. Description
-#: ../libguestfs0.templates:2001
+#: ../libguestfs-tools.templates:2001
 msgid ""
 "A \"supermin appliance\" is mandatory for libguestfs. It contains lists of "
 "files and directories. These will be copied into an ad-hoc file system "
@@ -36,7 +36,7 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../libguestfs0.templates:2001
+#: ../libguestfs-tools.templates:2001
 msgid ""
 "To generate or update a supermin appliance, network access to a package "
 "repository is needed."
@@ -46,7 +46,7 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../libguestfs0.templates:2001
+#: ../libguestfs-tools.templates:2001
 msgid ""
 "This can be done later by using the update-guestfs-appliance(8) utility."
 msgstr ""
