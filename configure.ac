@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [18])
-m4_define([libguestfs_release], [1])
+m4_define([libguestfs_release], [2])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -69,7 +69,13 @@ gl_INIT
 
 AC_PROG_LIBTOOL
 
-AC_PROG_SED
+# Define $(SED).
+m4_ifdef([AC_PROG_SED],[
+    AC_PROG_SED
+],[
+    dnl ... else hope for the best
+    AC_SUBST([SED], "sed")
+])
 
 dnl Check for basic C environment.
 AC_PROG_CC_STDC
@@ -474,8 +480,8 @@ else
 fi
 AC_SUBST([POD2_UTF8_OPTION])
 
-dnl Check for genisoimage.
-AC_PATH_PROGS([GENISOIMAGE],[genisoimage],[no],
+dnl Check for genisoimage/mkisofs
+AC_PATH_PROGS([GENISOIMAGE],[genisoimage mkisofs],[no],
         [$PATH$PATH_SEPARATOR/usr/sbin$PATH_SEPARATOR/sbin])
 test "x$GENISOIMAGE" = "xno" && AC_MSG_ERROR([genisoimage must be installed])
 
@@ -759,7 +765,12 @@ AS_IF([test "x$enable_fuse" != "xno"],
         [PKG_CHECK_MODULES([FUSE],[fuse],
             [AC_SUBST([FUSE_CFLAGS])
              AC_SUBST([FUSE_LIBS])
-             AC_DEFINE([HAVE_FUSE],[1],[Define to 1 if you have FUSE])],
+             AC_DEFINE([HAVE_FUSE],[1],[Define to 1 if you have FUSE])
+             old_LIBS="$LIBS"
+             LIBS="$FUSE_LIBS $LIBS"
+             AC_CHECK_FUNCS([fuse_opt_add_opt_escaped])
+             LIBS="$old_LIBS"
+            ],
             [enable_fuse=no
              AC_MSG_WARN([FUSE library and headers are missing, so optional FUSE module won't be built])
             ])

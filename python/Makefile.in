@@ -1776,7 +1776,7 @@ uninstall-am: uninstall-pythonDATA uninstall-pythonLTLIBRARIES
 
 
 # Old RHEL 5 autoconf doesn't have builddir.
-builddir ?= $(top_builddir)/python
+builddir ?= .
 
 # Define a force dependency which will always be rebuilt
 .PHONY: force

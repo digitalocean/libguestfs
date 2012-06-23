@@ -1759,6 +1759,15 @@ uninstall-man: uninstall-man1
 	uninstall-man uninstall-man1
 
 
+# Old RHEL 5 autoconf doesn't have builddir.
+builddir ?= .
+
+# Old RHEL 5 autoconf doesn't have abs_srcdir.
+abs_srcdir ?= $(shell cd $(top_srcdir)/sysprep && pwd)
+
+# Old RHEL 5 autoconf doesn't have abs_builddir.
+abs_builddir ?= $(shell pwd)
+
 # Define a force dependency which will always be rebuilt
 .PHONY: force
 
@@ -1790,7 +1799,7 @@ appliance: force
 @HAVE_OCAML_TRUE@.ml.cmo:
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
 @HAVE_OCAML_TRUE@.ml.cmx:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLCFLAGS) -c $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -c $< -o $@
 
 @HAVE_OCAML_TRUE@virt-sysprep.1 $(top_builddir)/html/virt-sysprep.1.html: stamp-virt-sysprep.pod
 

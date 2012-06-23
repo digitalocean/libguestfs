@@ -665,6 +665,9 @@
 /* Define to 1 if you have FUSE */
 #undef HAVE_FUSE
 
+/* Define to 1 if you have the `fuse_opt_add_opt_escaped' function. */
+#undef HAVE_FUSE_OPT_ADD_OPT_ESCAPED
+
 /* Define to 1 if you have the `futimens' function. */
 #undef HAVE_FUTIMENS
 

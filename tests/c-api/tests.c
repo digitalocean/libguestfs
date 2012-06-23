@@ -236,6 +236,7 @@ static void no_test_warnings (void)
   fprintf (stderr, "warning: \"guestfs_chown\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_sfdisk\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_lvm_remove_all\" has no tests\n");
+  fprintf (stderr, "warning: \"guestfs_blockdev_getbsz\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_blockdev_setbsz\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_tar_out\" has no tests\n");
   fprintf (stderr, "warning: \"guestfs_tgz_out\" has no tests\n");
@@ -5627,10 +5628,10 @@ static int test_vfs_uuid_0 (void)
       return -1;
   }
   /* TestOutput for vfs_uuid (0) */
-  const char *expected = "89cba8db-f46f-7c09-cee5-9959dd44f1ea";
+  const char *expected = "87a176d5-3d36-bbc5-495d-b31faa982eb7";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "89cba8db-f46f-7c09-cee5-9959dd44f1ea";
+    const char *uuid = "87a176d5-3d36-bbc5-495d-b31faa982eb7";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
@@ -10787,7 +10788,7 @@ static int test_mke2journal_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "89cba8db-f46f-7c09-cee5-9959dd44f1ea";
+    const char *uuid = "87a176d5-3d36-bbc5-495d-b31faa982eb7";
     const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
@@ -10798,7 +10799,7 @@ static int test_mke2journal_U_0 (void)
   {
     const char *fstype = "ext2";
     const char *device = "/dev/sda2";
-    const char *uuid = "89cba8db-f46f-7c09-cee5-9959dd44f1ea";
+    const char *uuid = "87a176d5-3d36-bbc5-495d-b31faa982eb7";
     int r;
     suppress_error = 0;
     r = guestfs_mke2fs_JU (g, fstype, 4096, device, uuid);
@@ -11806,7 +11807,7 @@ static int test_swapon_uuid_0 (void)
   }
   /* TestRun for swapon_uuid (0) */
   {
-    const char *uuid = "89cba8db-f46f-7c09-cee5-9959dd44f1ea";
+    const char *uuid = "87a176d5-3d36-bbc5-495d-b31faa982eb7";
     const char *device = "/dev/sdc";
     int r;
     suppress_error = 0;
@@ -11815,7 +11816,7 @@ static int test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "89cba8db-f46f-7c09-cee5-9959dd44f1ea";
+    const char *uuid = "87a176d5-3d36-bbc5-495d-b31faa982eb7";
     int r;
     suppress_error = 0;
     r = guestfs_swapon_uuid (g, uuid);
@@ -11823,7 +11824,7 @@ static int test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "89cba8db-f46f-7c09-cee5-9959dd44f1ea";
+    const char *uuid = "87a176d5-3d36-bbc5-495d-b31faa982eb7";
     int r;
     suppress_error = 0;
     r = guestfs_swapoff_uuid (g, uuid);
@@ -14937,7 +14938,7 @@ static int test_mkswap_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "89cba8db-f46f-7c09-cee5-9959dd44f1ea";
+    const char *uuid = "87a176d5-3d36-bbc5-495d-b31faa982eb7";
     const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
@@ -20464,7 +20465,7 @@ static int test_get_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for get_e2uuid (0) */
-  const char *expected = "89cba8db-f46f-7c09-cee5-9959dd44f1ea";
+  const char *expected = "87a176d5-3d36-bbc5-495d-b31faa982eb7";
   {
     const char *device = "/dev/sdc";
     int r;
@@ -20475,7 +20476,7 @@ static int test_get_e2uuid_0 (void)
   }
   {
     const char *device = "/dev/sdc";
-    const char *uuid = "89cba8db-f46f-7c09-cee5-9959dd44f1ea";
+    const char *uuid = "87a176d5-3d36-bbc5-495d-b31faa982eb7";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
@@ -20571,10 +20572,10 @@ static int test_set_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for set_e2uuid (0) */
-  const char *expected = "89cba8db-f46f-7c09-cee5-9959dd44f1ea";
+  const char *expected = "87a176d5-3d36-bbc5-495d-b31faa982eb7";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "89cba8db-f46f-7c09-cee5-9959dd44f1ea";
+    const char *uuid = "87a176d5-3d36-bbc5-495d-b31faa982eb7";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
@@ -23462,66 +23463,6 @@ static int test_blockdev_getsz_0 (void)
       return -1;
     if (r != 1024000) {
       fprintf (stderr, "test_blockdev_getsz_0: expected 1024000 but got %d\n",               (int) r);
-      return -1;
-    }
-  }
-  return 0;
-}
-
-static int test_blockdev_getbsz_0_skip (void)
-{
-  const char *str;
-
-  str = getenv ("TEST_ONLY");
-  if (str)
-    return strstr (str, "blockdev_getbsz") == NULL;
-  str = getenv ("SKIP_TEST_BLOCKDEV_GETBSZ_0");
-  if (str && STREQ (str, "1")) return 1;
-  str = getenv ("SKIP_TEST_BLOCKDEV_GETBSZ");
-  if (str && STREQ (str, "1")) return 1;
-  return 0;
-}
-
-static int test_blockdev_getbsz_0 (void)
-{
-  if (test_blockdev_getbsz_0_skip ()) {
-    printf ("        %s skipped (reason: environment variable set)\n", "test_blockdev_getbsz_0");
-    return 0;
-  }
-
-  /* InitNone|InitEmpty for test_blockdev_getbsz_0 */
-  {
-    const char *device = "/dev/sda";
-    int r;
-    suppress_error = 0;
-    r = guestfs_blockdev_setrw (g, device);
-    if (r == -1)
-      return -1;
-  }
-  {
-    int r;
-    suppress_error = 0;
-    r = guestfs_umount_all (g);
-    if (r == -1)
-      return -1;
-  }
-  {
-    int r;
-    suppress_error = 0;
-    r = guestfs_lvm_remove_all (g);
-    if (r == -1)
-      return -1;
-  }
-  /* TestOutputInt for blockdev_getbsz (0) */
-  {
-    const char *device = "/dev/sda";
-    int r;
-    suppress_error = 0;
-    r = guestfs_blockdev_getbsz (g, device);
-    if (r == -1)
-      return -1;
-    if (r != 4096) {
-      fprintf (stderr, "test_blockdev_getbsz_0: expected 4096 but got %d\n",               (int) r);
       return -1;
     }
   }
@@ -33553,7 +33494,7 @@ int main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  nr_tests = 360;
+  nr_tests = 359;
 
   test_num++;
   if (guestfs_get_verbose (g))
@@ -35577,14 +35518,6 @@ int main (int argc, char *argv[])
   printf ("%3d/%3d test_blockdev_getsz_0\n", test_num, nr_tests);
   if (test_blockdev_getsz_0 () == -1) {
     printf ("test_blockdev_getsz_0 FAILED\n");
-    n_failed++;
-  }
-  test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_blockdev_getbsz_0\n", test_num, nr_tests);
-  if (test_blockdev_getbsz_0 () == -1) {
-    printf ("test_blockdev_getbsz_0 FAILED\n");
     n_failed++;
   }
   test_num++;

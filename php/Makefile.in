@@ -1617,6 +1617,9 @@ $(top_builddir)/daemon/guestfsd: force
 appliance: force
 	$(MAKE) -C $(top_builddir)/appliance
 
+# Old RHEL 5 autoconf doesn't have abs_srcdir.
+abs_srcdir ?= $(shell cd $(top_srcdir)/php && pwd)
+
 # In theory: EXTRA_LIBS="-lguestfs"  In fact this doesn't work
 # and we need to add the library to EXTRA_LDFLAGS.
 @HAVE_PHP_TRUE@all: extension/config.h

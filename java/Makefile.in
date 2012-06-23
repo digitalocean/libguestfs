@@ -1852,6 +1852,9 @@ uninstall-am: uninstall-jnilibLTLIBRARIES uninstall-libguestfs_jarDATA
 	uninstall-libguestfs_jarDATA
 
 
+# Old RHEL 5 autoconf doesn't have builddir.
+builddir ?= .
+
 # Define a force dependency which will always be rebuilt
 .PHONY: force
 
@@ -1873,9 +1876,6 @@ $(top_builddir)/daemon/guestfsd: force
 .PHONY: appliance
 appliance: force
 	$(MAKE) -C $(top_builddir)/appliance
-
-# Old RHEL 5 autoconf doesn't have builddir.
-builddir ?= $(top_builddir)/java
 @HAVE_JAVA_TRUE@$(libguestfs_jar_class_files): %.class: %.java
 @HAVE_JAVA_TRUE@	$(JAVAC) $(JAVAC_FLAGS) -d $(builddir) -classpath $(srcdir):$(builddir) $(srcdir)/$<
 
