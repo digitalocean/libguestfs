@@ -1560,6 +1560,9 @@ uninstall-am:
 	uninstall uninstall-am
 
 
+# Old RHEL 5 autoconf doesn't have builddir.
+builddir ?= .
+
 # Define a force dependency which will always be rebuilt
 .PHONY: force
 

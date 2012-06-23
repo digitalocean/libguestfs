@@ -17,6 +17,12 @@
 
 include $(top_srcdir)/subdir-rules.mk
 
+# Old RHEL 5 autoconf doesn't have builddir.
+builddir ?= .
+
+# Old RHEL 5 autoconf doesn't have abs_srcdir.
+abs_srcdir ?= $(shell cd $(top_srcdir)/sparsify && pwd)
+
 EXTRA_DIST = \
 	$(SOURCES) \
 	virt-sparsify.pod \
@@ -66,7 +72,7 @@ virt-sparsify: $(OBJECTS)
 .ml.cmo:
 	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
 .ml.cmx:
-	$(OCAMLFIND) ocamlopt $(OCAMLCFLAGS) -c $< -o $@
+	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -c $< -o $@
 
 # automake will decide we don't need C support in this file.  Really
 # we do, so we have to provide it ourselves.

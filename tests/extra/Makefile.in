@@ -1461,6 +1461,12 @@ uninstall-am:
 	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am
 
 
+# Old RHEL 5 autoconf doesn't have abs_srcdir.
+abs_srcdir ?= $(shell cd $(top_srcdir)/tests/extra && pwd)
+
+# Old RHEL 5 autoconf doesn't have abs_builddir.
+abs_builddir ?= $(shell pwd)
+
 export LIBVIRT_DEFAULT_URI = \
 	qemu+unix:///system?socket=/var/run/libvirt/libvirt-sock-ro
 

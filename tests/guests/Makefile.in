@@ -1451,6 +1451,9 @@ uninstall-am:
 	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am
 
 
+# Old RHEL 5 autoconf doesn't have builddir.
+builddir ?= .
+
 # Define a force dependency which will always be rebuilt
 .PHONY: force
 
@@ -1472,9 +1475,6 @@ $(top_builddir)/daemon/guestfsd: force
 .PHONY: appliance
 appliance: force
 	$(MAKE) -C $(top_builddir)/appliance
-
-# Old RHEL 5 autoconf doesn't have builddir.
-builddir ?= $(top_builddir)/tests/guests
 
 # Make a (dummy) Fedora image.
 fedora.img: guest-aux/make-fedora-img.pl \

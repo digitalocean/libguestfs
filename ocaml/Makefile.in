@@ -1773,6 +1773,12 @@ uninstall-am:
 	tags uninstall uninstall-am
 
 
+# Old RHEL 5 autoconf doesn't have builddir.
+builddir ?= .
+
+# Old RHEL 5 autoconf doesn't have abs_srcdir.
+abs_srcdir ?= $(shell cd $(top_srcdir)/ocaml && pwd)
+
 # Define a force dependency which will always be rebuilt
 .PHONY: force
 

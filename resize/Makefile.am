@@ -15,6 +15,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+# Old RHEL 5 autoconf doesn't have builddir.
+builddir ?= .
+
+# Old RHEL 5 autoconf doesn't have abs_srcdir.
+abs_srcdir ?= $(shell cd $(top_srcdir)/resize && pwd)
+
 include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
@@ -67,7 +73,7 @@ virt-resize: $(OBJECTS)
 .ml.cmo:
 	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
 .ml.cmx:
-	$(OCAMLFIND) ocamlopt $(OCAMLCFLAGS) -c $< -o $@
+	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -c $< -o $@
 
 # automake will decide we don't need C support in this file.  Really
 # we do, so we have to provide it ourselves.

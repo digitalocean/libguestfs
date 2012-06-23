@@ -1558,6 +1558,15 @@ uninstall-am: uninstall-local
 	uninstall-local
 
 
+# Old RHEL 5 autoconf doesn't have builddir.
+builddir ?= .
+
+# Old RHEL 5 autoconf doesn't have abs_srcdir.
+abs_srcdir ?= $(shell cd $(top_srcdir)/gobject/docs && pwd)
+
+# Old RHEL 5 autoconf doesn't have abs_builddir.
+abs_builddir ?= $(shell pwd)
+
 @ENABLE_GTK_DOC_TRUE@all-local: $(HTML_BUILD_STAMP) $(PDF_BUILD_STAMP)
 @ENABLE_GTK_DOC_FALSE@all-local:
 

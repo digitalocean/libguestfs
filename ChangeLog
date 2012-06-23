@@ -1,3 +1,185 @@
+2012-06-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.18.2.
+
+	FAQ: Mention update-guestfs-appliance (thanks Steven Dake). (cherry picked from commit 6352953ea927819a8ece795d03c4938e657d0a97)
+
+	build: Workaround for AC_PROG_SED not existing.
+	This didn't exist on ancient autoconf in RHEL 5.
+	(cherry picked from commit 489da3ccdf96e995d3f53fe68eced37b16baa1d2)
+
+2012-06-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Define abs_builddir if not defined already.
+	This is missing on RHEL 5.
+
+	This updates commit 50aa9533e4a505e1c64dbedddb30491bfbb755d6.
+	(cherry picked from commit bc7f1a5ef156576c069f47ea33f4977979ac032d)
+
+2012-06-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	fuse: Skip 'truncate' tests if this command is missing. (cherry picked from commit d7c9c6a0d926982b64d13949a5da580ea4ecc4b6)
+
+2012-06-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Replace truncate command with 'guestfish sparse'.
+	RHEL 5 didn't have the truncate command, but we can replace:
+
+	  truncate -s SIZE FILE
+
+	with the roughly equivalent command:
+
+	  guestfish sparse FILE SIZE
+	(cherry picked from commit 39df80dcc0e485e69048bddbf33c259ce532e50d)
+
+2012-06-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	fuse: Add replacement for fuse_opt_add_opt_escaped.
+	RHEL 5-era FUSE didn't have this function.
+
+	I copied the function out of upstream FUSE, since the license is
+	compatible.
+	(cherry picked from commit 4846b84476015874d569c14c2c30fcd71aa4d54c)
+
+2012-06-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Define builddir and abs_srcdir when they are missing.
+	RHEL 5-era autoconf did not define these, so define them manually
+	when they are missing.
+
+	Define builddir as '.'  The scripts require this.  It won't work
+	in the srcdir != builddir case, but we don't care about that for
+	RHEL 5.
+
+	This commit also moves the builddir / abs_srcdir variable setting
+	above the include of subdir-rules.mk, in case that include uses
+	these variables.
+
+	Useful script:
+
+	  for f in $(find -name Makefile.am | xargs fgrep '$(abs_srcdir)' -l) ; do
+	    if ! grep -q '^abs_srcdir' $f; then
+	      echo missing in $f
+	    fi
+	  done
+	(cherry picked from commit 50aa9533e4a505e1c64dbedddb30491bfbb755d6)
+
+2012-06-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Use OCAMLOPTFLAGS when compiling .cmx (ie. native code) files. (cherry picked from commit dd216fedbdacfd641c2da4073ae26d3ccb6098a6)
+
+	configure: Look for mkisofs as well as genisoimage.
+	For our purposes, the two tools are compatible.
+	(cherry picked from commit 87de36670108a19b832e8f5ded8d413e7b575d70)
+
+	Ignore .gdb_history file. (cherry picked from commit 60a2f8706b305b4068df020598abee9566022e20)
+
+	virt-edit: Document CVE-2012-2690. (cherry picked from commit d43e3d63de1622e98313bb797922dfd7d95ddd11)
+
+	lvm-filter: Make it work with > 26 devices.
+	Thanks Alasdair Kergon.
+	(cherry picked from commit 998ebc333dbfe40c5953e36fb42f9610727a7532)
+
+	daemon: Fix order of devices in guestfs_list_devices when > 26 disks.
+	Sort the device names correctly, not just treating them as
+	strings.  As a result, /dev/sdz < /dev/sdaa.
+	(cherry picked from commit c0a087b8236755e95371d5c352c9d29a3ca992c0)
+
+	appliance: Add lsscsi to package list. (cherry picked from commit cef979b2897725b735c68f5b806d332f4cea864d)
+
+	tests/md: Don't hard code /dev/vda in expected output of tests.
+	Use a small sed script to canonicalize the device names.
+	(cherry picked from commit 320adf477805f703b0a1c79d86c3fb4078d11700)
+
+	tests: Fix spelling in comment. (cherry picked from commit 9a5c0d39081f9f40d7ad12fbb55fb6120046679c)
+
+	tests/lvm: Don't hard-code /dev/vda in test.
+	Hard-coding it breaks virtio-scsi because the devices are called
+	/dev/sda etc.
+	(cherry picked from commit 7509cdf18e6d3fd96b10246f4d0417e5285e38f6)
+
+2012-06-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Always pass -F option to mke2fs.
+	Apparently e2fsprogs only knows that "/dev/sda" is a whole device, but
+	doesn't think that "/dev/vda" is.  On switching the default device
+	over to virtio-scsi, that causes mke2fs without -F option to complain
+	and ask for an interactive prompt.  Adding -F forces it to go ahead
+	anyway.
+
+	This caused several less-used APIs to break with virtio-scsi.
+	(cherry picked from commit 62c5b6db58911a5e51f59965619355437b7a7214)
+
+2012-06-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Allow regression test for bug 690819 to be skipped. (cherry picked from commit 251b131e0a55cce21f6ee2240315903e34c4ffe1)
+
+	blockdev_getbsz: Remove test.
+	The output of this test depends on page size, so on ppc64
+	it returns 64K.
+	(cherry picked from commit 42475dd21fbdc551137fe815efadf08a87729642)
+
+2012-06-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Change test-escapes so test is not endian-sensitive.
+	The test used the external 'od' command to compare the output of
+	guestfish with what it's supposed to be.  Unfortunately by default
+	this outputs groups of 2-byte words, with the words' endianness
+	affected by the current hardware endianness.  For example:
+
+	x86-64$ echo -n ab | od
+	0000000 061141
+	0000002
+
+	ppc64$ echo -n ab | od
+	0000000 060542
+	0000002
+
+	By using 'od -b' instead we can output bytes instead of words, and
+	there is no endianness issue, and the output is clearer:
+
+	x86-64$ echo -n ab | od -b
+	0000000 141 142
+	0000002
+
+	ppc64$ echo -n ab | od -b
+	0000000 141 142
+	0000002
+	(cherry picked from commit 20137c8731d142797e2476e35fe724c95a8a7a06)
+
+2012-06-21  Hilko Bengen  <bengen@hilluzination.de>
+
+	out-of-tree build/install fix for translations (cherry picked from commit 6cf15e8841897d3190c3e730e6eeae06fe4b8b1d)
+
+2012-06-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	Enhance BUGS script.
+	Since RHBZ was updated, the old python-bugzilla program broke.  When
+	it was fixed, I found the (undocumented) ordering of the results from
+	the old tool was no longer true.
+
+	This commit adds a small Perl script to sort the output predictably.
+	Now bugs are sorted by both bug state and bug number, so the output
+	should be more stable than before.
+
+	Re-enable creation of the BUGS file in 'make dist'
+	(this reverts commit 91f3456244e7843768da659e24ce0aeeb4ebe4b0).
+
+	Also the BUGS file has been updated.
+	(cherry picked from commit f90c01a5dc6a01284debdd0a45406f9d4a5e7159)
+
+2012-06-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: Use #if defined instead of #ifdef.
+	No functional change.
+	(cherry picked from commit 4e5d3b06fb2f366c0010ae6aa15f9dee74261917)
+
+	ocaml: Fix parameters to ocaml_guestfs_create.
+	The first parameter (not used) is a unit, so declare it properly.
+	(cherry picked from commit 1bdfc88eba7f932b2581d55ecf4455d0e70335c2)
+
+	ppc64: Avoid "defined by not used" warning for is_openable function. (cherry picked from commit 450493cf6b563389bd11f02284bd22d7ed90b5da)
+
 2012-06-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.18.1.

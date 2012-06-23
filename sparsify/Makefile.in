@@ -1725,6 +1725,12 @@ $(top_builddir)/daemon/guestfsd: force
 appliance: force
 	$(MAKE) -C $(top_builddir)/appliance
 
+# Old RHEL 5 autoconf doesn't have builddir.
+builddir ?= .
+
+# Old RHEL 5 autoconf doesn't have abs_srcdir.
+abs_srcdir ?= $(shell cd $(top_srcdir)/sparsify && pwd)
+
 @HAVE_OCAML_TRUE@virt-sparsify: $(OBJECTS)
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
 @HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib -lncurses -o $@
@@ -1734,7 +1740,7 @@ appliance: force
 @HAVE_OCAML_TRUE@.ml.cmo:
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
 @HAVE_OCAML_TRUE@.ml.cmx:
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLCFLAGS) -c $< -o $@
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -c $< -o $@
 
 @HAVE_OCAML_TRUE@.c.o:
 @HAVE_OCAML_TRUE@	$(CC) $(CFLAGS) $(PROF_CFLAGS) $(DEFAULT_INCLUDES) -c $< -o $@
