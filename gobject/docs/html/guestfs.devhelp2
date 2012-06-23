@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "">
+<book xmlns="http://www.devhelp.net/book" title="Libguestfs GObject Bindings Reference Manual" link="index.html" author="" name="guestfs" version="2" language="c">
+  <chapters>
+    <sub name="Libguestfs GObject Bindings" link="ch01.html">
+      <sub name="GuestfsSession" link="GuestfsSession.html"/>
+      <sub name="GuestfsTristate" link="GuestfsTristate.html"/>
+      <sub name="GuestfsIntBool" link="GuestfsIntBool.html"/>
+      <sub name="GuestfsPV" link="GuestfsPV.html"/>
+      <sub name="GuestfsVG" link="GuestfsVG.html"/>
+      <sub name="GuestfsLV" link="GuestfsLV.html"/>
+      <sub name="GuestfsStat" link="GuestfsStat.html"/>
+      <sub name="GuestfsStatVFS" link="GuestfsStatVFS.html"/>
+      <sub name="GuestfsDirent" link="GuestfsDirent.html"/>
+      <sub name="GuestfsVersion" link="GuestfsVersion.html"/>
+      <sub name="GuestfsXAttr" link="GuestfsXAttr.html"/>
+      <sub name="GuestfsINotifyEvent" link="GuestfsINotifyEvent.html"/>
+      <sub name="GuestfsPartition" link="GuestfsPartition.html"/>
+      <sub name="GuestfsApplication" link="GuestfsApplication.html"/>
+      <sub name="GuestfsISOInfo" link="GuestfsISOInfo.html"/>
+      <sub name="GuestfsMDStat" link="GuestfsMDStat.html"/>
+      <sub name="GuestfsBTRFSSubvolume" link="GuestfsBTRFSSubvolume.html"/>
+      <sub name="GuestfsTest0" link="GuestfsTest0.html"/>
+      <sub name="GuestfsAddDriveOpts" link="GuestfsAddDriveOpts.html"/>
+      <sub name="GuestfsAddDomain" link="GuestfsAddDomain.html"/>
+      <sub name="GuestfsInspectGetIcon" link="GuestfsInspectGetIcon.html"/>
+      <sub name="GuestfsMountLocal" link="GuestfsMountLocal.html"/>
+      <sub name="GuestfsUmountLocal" link="GuestfsUmountLocal.html"/>
+      <sub name="GuestfsMkfsOpts" link="GuestfsMkfsOpts.html"/>
+      <sub name="GuestfsMount9P" link="GuestfsMount9P.html"/>
+      <sub name="GuestfsNTFSResizeOpts" link="GuestfsNTFSResizeOpts.html"/>
+      <sub name="GuestfsBTRFSFilesystemResize" link="GuestfsBTRFSFilesystemResize.html"/>
+      <sub name="GuestfsCompressOut" link="GuestfsCompressOut.html"/>
+      <sub name="GuestfsCompressDeviceOut" link="GuestfsCompressDeviceOut.html"/>
+      <sub name="GuestfsCopyDeviceToDevice" link="GuestfsCopyDeviceToDevice.html"/>
+      <sub name="GuestfsCopyDeviceToFile" link="GuestfsCopyDeviceToFile.html"/>
+      <sub name="GuestfsCopyFileToDevice" link="GuestfsCopyFileToDevice.html"/>
+      <sub name="GuestfsCopyFileToFile" link="GuestfsCopyFileToFile.html"/>
+      <sub name="GuestfsTune2FS" link="GuestfsTune2FS.html"/>
+      <sub name="GuestfsMDCreate" link="GuestfsMDCreate.html"/>
+      <sub name="GuestfsE2fsck" link="GuestfsE2fsck.html"/>
+      <sub name="GuestfsNtfsfix" link="GuestfsNtfsfix.html"/>
+      <sub name="GuestfsNtfscloneOut" link="GuestfsNtfscloneOut.html"/>
+      <sub name="GuestfsMkfsBtrfs" link="GuestfsMkfsBtrfs.html"/>
+      <sub name="GuestfsSetE2attrs" link="GuestfsSetE2attrs.html"/>
+      <sub name="GuestfsBtrfsFsck" link="GuestfsBtrfsFsck.html"/>
+    </sub>
+    <sub name="Object Hierarchy" link="object-tree.html"/>
+    <sub name="API Index" link="api-index-full.html"/>
+    <sub name="Index of deprecated API" link="deprecated-api-index.html"/>
+    <sub name="Annotation Glossary" link="annotation-glossary.html"/>
+  </chapters>
+  <functions>
+    <keyword type="struct" name="struct GuestfsSession" link="GuestfsSession.html#GuestfsSession-struct"/>
+    <keyword type="struct" name="struct GuestfsSessionClass" link="GuestfsSession.html#GuestfsSessionClass"/>
+    <keyword type="enum" name="enum GuestfsSessionEvent" link="GuestfsSession.html#GuestfsSessionEvent-enum"/>
+    <keyword type="struct" name="struct GuestfsSessionEventParams" link="GuestfsSession.html#GuestfsSessionEventParams-struct"/>
+    <keyword type="function" name="guestfs_session_add_cdrom ()" link="GuestfsSession.html#guestfs-session-add-cdrom"/>
+    <keyword type="function" name="guestfs_session_add_domain ()" link="GuestfsSession.html#guestfs-session-add-domain"/>
+    <keyword type="function" name="guestfs_session_add_drive ()" link="GuestfsSession.html#guestfs-session-add-drive"/>
+    <keyword type="function" name="guestfs_session_add_drive_opts ()" link="GuestfsSession.html#guestfs-session-add-drive-opts"/>
+    <keyword type="function" name="guestfs_session_add_drive_ro ()" link="GuestfsSession.html#guestfs-session-add-drive-ro"/>
+    <keyword type="function" name="guestfs_session_add_drive_ro_with_if ()" link="GuestfsSession.html#guestfs-session-add-drive-ro-with-if"/>
+    <keyword type="function" name="guestfs_session_add_drive_with_if ()" link="GuestfsSession.html#guestfs-session-add-drive-with-if"/>
+    <keyword type="function" name="guestfs_session_aug_clear ()" link="GuestfsSession.html#guestfs-session-aug-clear"/>
+    <keyword type="function" name="guestfs_session_aug_close ()" link="GuestfsSession.html#guestfs-session-aug-close"/>
+    <keyword type="function" name="guestfs_session_aug_defnode ()" link="GuestfsSession.html#guestfs-session-aug-defnode"/>
+    <keyword type="function" name="guestfs_session_aug_defvar ()" link="GuestfsSession.html#guestfs-session-aug-defvar"/>
+    <keyword type="function" name="guestfs_session_aug_get ()" link="GuestfsSession.html#guestfs-session-aug-get"/>
+    <keyword type="function" name="guestfs_session_aug_init ()" link="GuestfsSession.html#guestfs-session-aug-init"/>
+    <keyword type="function" name="guestfs_session_aug_insert ()" link="GuestfsSession.html#guestfs-session-aug-insert"/>
+    <keyword type="function" name="guestfs_session_aug_load ()" link="GuestfsSession.html#guestfs-session-aug-load"/>
+    <keyword type="function" name="guestfs_session_aug_ls ()" link="GuestfsSession.html#guestfs-session-aug-ls"/>
+    <keyword type="function" name="guestfs_session_aug_match ()" link="GuestfsSession.html#guestfs-session-aug-match"/>
+    <keyword type="function" name="guestfs_session_aug_mv ()" link="GuestfsSession.html#guestfs-session-aug-mv"/>
+    <keyword type="function" name="guestfs_session_aug_rm ()" link="GuestfsSession.html#guestfs-session-aug-rm"/>
+    <keyword type="function" name="guestfs_session_aug_save ()" link="GuestfsSession.html#guestfs-session-aug-save"/>
+    <keyword type="function" name="guestfs_session_aug_set ()" link="GuestfsSession.html#guestfs-session-aug-set"/>
+    <keyword type="function" name="guestfs_session_available ()" link="GuestfsSession.html#guestfs-session-available"/>
+    <keyword type="function" name="guestfs_session_available_all_groups ()" link="GuestfsSession.html#guestfs-session-available-all-groups"/>
+    <keyword type="function" name="guestfs_session_base64_in ()" link="GuestfsSession.html#guestfs-session-base64-in"/>
+    <keyword type="function" name="guestfs_session_base64_out ()" link="GuestfsSession.html#guestfs-session-base64-out"/>
+    <keyword type="function" name="guestfs_session_blkid ()" link="GuestfsSession.html#guestfs-session-blkid"/>
+    <keyword type="function" name="guestfs_session_blockdev_flushbufs ()" link="GuestfsSession.html#guestfs-session-blockdev-flushbufs"/>
+    <keyword type="function" name="guestfs_session_blockdev_getbsz ()" link="GuestfsSession.html#guestfs-session-blockdev-getbsz"/>
+    <keyword type="function" name="guestfs_session_blockdev_getro ()" link="GuestfsSession.html#guestfs-session-blockdev-getro"/>
+    <keyword type="function" name="guestfs_session_blockdev_getsize64 ()" link="GuestfsSession.html#guestfs-session-blockdev-getsize64"/>
+    <keyword type="function" name="guestfs_session_blockdev_getss ()" link="GuestfsSession.html#guestfs-session-blockdev-getss"/>
+    <keyword type="function" name="guestfs_session_blockdev_getsz ()" link="GuestfsSession.html#guestfs-session-blockdev-getsz"/>
+    <keyword type="function" name="guestfs_session_blockdev_rereadpt ()" link="GuestfsSession.html#guestfs-session-blockdev-rereadpt"/>
+    <keyword type="function" name="guestfs_session_blockdev_setbsz ()" link="GuestfsSession.html#guestfs-session-blockdev-setbsz"/>
+    <keyword type="function" name="guestfs_session_blockdev_setro ()" link="GuestfsSession.html#guestfs-session-blockdev-setro"/>
+    <keyword type="function" name="guestfs_session_blockdev_setrw ()" link="GuestfsSession.html#guestfs-session-blockdev-setrw"/>
+    <keyword type="function" name="guestfs_session_btrfs_device_add ()" link="GuestfsSession.html#guestfs-session-btrfs-device-add"/>
+    <keyword type="function" name="guestfs_session_btrfs_device_delete ()" link="GuestfsSession.html#guestfs-session-btrfs-device-delete"/>
+    <keyword type="function" name="guestfs_session_btrfs_filesystem_balance ()" link="GuestfsSession.html#guestfs-session-btrfs-filesystem-balance"/>
+    <keyword type="function" name="guestfs_session_btrfs_filesystem_resize ()" link="GuestfsSession.html#guestfs-session-btrfs-filesystem-resize"/>
+    <keyword type="function" name="guestfs_session_btrfs_filesystem_sync ()" link="GuestfsSession.html#guestfs-session-btrfs-filesystem-sync"/>
+    <keyword type="function" name="guestfs_session_btrfs_fsck ()" link="GuestfsSession.html#guestfs-session-btrfs-fsck"/>
+    <keyword type="function" name="guestfs_session_btrfs_set_seeding ()" link="GuestfsSession.html#guestfs-session-btrfs-set-seeding"/>
+    <keyword type="function" name="guestfs_session_btrfs_subvolume_create ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-create"/>
+    <keyword type="function" name="guestfs_session_btrfs_subvolume_delete ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-delete"/>
+    <keyword type="function" name="guestfs_session_btrfs_subvolume_list ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-list"/>
+    <keyword type="function" name="guestfs_session_btrfs_subvolume_set_default ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-set-default"/>
+    <keyword type="function" name="guestfs_session_btrfs_subvolume_snapshot ()" link="GuestfsSession.html#guestfs-session-btrfs-subvolume-snapshot"/>
+    <keyword type="function" name="guestfs_session_case_sensitive_path ()" link="GuestfsSession.html#guestfs-session-case-sensitive-path"/>
+    <keyword type="function" name="guestfs_session_cat ()" link="GuestfsSession.html#guestfs-session-cat"/>
+    <keyword type="function" name="guestfs_session_checksum ()" link="GuestfsSession.html#guestfs-session-checksum"/>
+    <keyword type="function" name="guestfs_session_checksum_device ()" link="GuestfsSession.html#guestfs-session-checksum-device"/>
+    <keyword type="function" name="guestfs_session_checksums_out ()" link="GuestfsSession.html#guestfs-session-checksums-out"/>
+    <keyword type="function" name="guestfs_session_chmod ()" link="GuestfsSession.html#guestfs-session-chmod"/>
+    <keyword type="function" name="guestfs_session_chown ()" link="GuestfsSession.html#guestfs-session-chown"/>
+    <keyword type="function" name="guestfs_session_close ()" link="GuestfsSession.html#guestfs-session-close"/>
+    <keyword type="function" name="guestfs_session_command ()" link="GuestfsSession.html#guestfs-session-command"/>
+    <keyword type="function" name="guestfs_session_command_lines ()" link="GuestfsSession.html#guestfs-session-command-lines"/>
+    <keyword type="function" name="guestfs_session_compress_device_out ()" link="GuestfsSession.html#guestfs-session-compress-device-out"/>
+    <keyword type="function" name="guestfs_session_compress_out ()" link="GuestfsSession.html#guestfs-session-compress-out"/>
+    <keyword type="function" name="guestfs_session_config ()" link="GuestfsSession.html#guestfs-session-config"/>
+    <keyword type="function" name="guestfs_session_copy_device_to_device ()" link="GuestfsSession.html#guestfs-session-copy-device-to-device"/>
+    <keyword type="function" name="guestfs_session_copy_device_to_file ()" link="GuestfsSession.html#guestfs-session-copy-device-to-file"/>
+    <keyword type="function" name="guestfs_session_copy_file_to_device ()" link="GuestfsSession.html#guestfs-session-copy-file-to-device"/>
+    <keyword type="function" name="guestfs_session_copy_file_to_file ()" link="GuestfsSession.html#guestfs-session-copy-file-to-file"/>
+    <keyword type="function" name="guestfs_session_copy_size ()" link="GuestfsSession.html#guestfs-session-copy-size"/>
+    <keyword type="function" name="guestfs_session_cp ()" link="GuestfsSession.html#guestfs-session-cp"/>
+    <keyword type="function" name="guestfs_session_cp_a ()" link="GuestfsSession.html#guestfs-session-cp-a"/>
+    <keyword type="function" name="guestfs_session_dd ()" link="GuestfsSession.html#guestfs-session-dd"/>
+    <keyword type="function" name="guestfs_session_debug ()" link="GuestfsSession.html#guestfs-session-debug"/>
+    <keyword type="function" name="guestfs_session_debug_cmdline ()" link="GuestfsSession.html#guestfs-session-debug-cmdline"/>
+    <keyword type="function" name="guestfs_session_debug_drives ()" link="GuestfsSession.html#guestfs-session-debug-drives"/>
+    <keyword type="function" name="guestfs_session_debug_upload ()" link="GuestfsSession.html#guestfs-session-debug-upload"/>
+    <keyword type="function" name="guestfs_session_df ()" link="GuestfsSession.html#guestfs-session-df"/>
+    <keyword type="function" name="guestfs_session_df_h ()" link="GuestfsSession.html#guestfs-session-df-h"/>
+    <keyword type="function" name="guestfs_session_dmesg ()" link="GuestfsSession.html#guestfs-session-dmesg"/>
+    <keyword type="function" name="guestfs_session_download ()" link="GuestfsSession.html#guestfs-session-download"/>
+    <keyword type="function" name="guestfs_session_download_offset ()" link="GuestfsSession.html#guestfs-session-download-offset"/>
+    <keyword type="function" name="guestfs_session_drop_caches ()" link="GuestfsSession.html#guestfs-session-drop-caches"/>
+    <keyword type="function" name="guestfs_session_du ()" link="GuestfsSession.html#guestfs-session-du"/>
+    <keyword type="function" name="guestfs_session_e2fsck ()" link="GuestfsSession.html#guestfs-session-e2fsck"/>
+    <keyword type="function" name="guestfs_session_e2fsck_f ()" link="GuestfsSession.html#guestfs-session-e2fsck-f"/>
+    <keyword type="function" name="guestfs_session_echo_daemon ()" link="GuestfsSession.html#guestfs-session-echo-daemon"/>
+    <keyword type="function" name="guestfs_session_egrep ()" link="GuestfsSession.html#guestfs-session-egrep"/>
+    <keyword type="function" name="guestfs_session_egrepi ()" link="GuestfsSession.html#guestfs-session-egrepi"/>
+    <keyword type="function" name="guestfs_session_equal ()" link="GuestfsSession.html#guestfs-session-equal"/>
+    <keyword type="function" name="guestfs_session_exists ()" link="GuestfsSession.html#guestfs-session-exists"/>
+    <keyword type="function" name="guestfs_session_fallocate ()" link="GuestfsSession.html#guestfs-session-fallocate"/>
+    <keyword type="function" name="guestfs_session_fallocate64 ()" link="GuestfsSession.html#guestfs-session-fallocate64"/>
+    <keyword type="function" name="guestfs_session_fgrep ()" link="GuestfsSession.html#guestfs-session-fgrep"/>
+    <keyword type="function" name="guestfs_session_fgrepi ()" link="GuestfsSession.html#guestfs-session-fgrepi"/>
+    <keyword type="function" name="guestfs_session_file ()" link="GuestfsSession.html#guestfs-session-file"/>
+    <keyword type="function" name="guestfs_session_file_architecture ()" link="GuestfsSession.html#guestfs-session-file-architecture"/>
+    <keyword type="function" name="guestfs_session_filesize ()" link="GuestfsSession.html#guestfs-session-filesize"/>
+    <keyword type="function" name="guestfs_session_fill ()" link="GuestfsSession.html#guestfs-session-fill"/>
+    <keyword type="function" name="guestfs_session_fill_pattern ()" link="GuestfsSession.html#guestfs-session-fill-pattern"/>
+    <keyword type="function" name="guestfs_session_find ()" link="GuestfsSession.html#guestfs-session-find"/>
+    <keyword type="function" name="guestfs_session_find0 ()" link="GuestfsSession.html#guestfs-session-find0"/>
+    <keyword type="function" name="guestfs_session_findfs_label ()" link="GuestfsSession.html#guestfs-session-findfs-label"/>
+    <keyword type="function" name="guestfs_session_findfs_uuid ()" link="GuestfsSession.html#guestfs-session-findfs-uuid"/>
+    <keyword type="function" name="guestfs_session_fsck ()" link="GuestfsSession.html#guestfs-session-fsck"/>
+    <keyword type="function" name="guestfs_session_get_append ()" link="GuestfsSession.html#guestfs-session-get-append"/>
+    <keyword type="function" name="guestfs_session_get_attach_method ()" link="GuestfsSession.html#guestfs-session-get-attach-method"/>
+    <keyword type="function" name="guestfs_session_get_autosync ()" link="GuestfsSession.html#guestfs-session-get-autosync"/>
+    <keyword type="function" name="guestfs_session_get_direct ()" link="GuestfsSession.html#guestfs-session-get-direct"/>
+    <keyword type="function" name="guestfs_session_get_e2attrs ()" link="GuestfsSession.html#guestfs-session-get-e2attrs"/>
+    <keyword type="function" name="guestfs_session_get_e2generation ()" link="GuestfsSession.html#guestfs-session-get-e2generation"/>
+    <keyword type="function" name="guestfs_session_get_e2label ()" link="GuestfsSession.html#guestfs-session-get-e2label"/>
+    <keyword type="function" name="guestfs_session_get_e2uuid ()" link="GuestfsSession.html#guestfs-session-get-e2uuid"/>
+    <keyword type="function" name="guestfs_session_get_memsize ()" link="GuestfsSession.html#guestfs-session-get-memsize"/>
+    <keyword type="function" name="guestfs_session_get_network ()" link="GuestfsSession.html#guestfs-session-get-network"/>
+    <keyword type="function" name="guestfs_session_get_path ()" link="GuestfsSession.html#guestfs-session-get-path"/>
+    <keyword type="function" name="guestfs_session_get_pgroup ()" link="GuestfsSession.html#guestfs-session-get-pgroup"/>
+    <keyword type="function" name="guestfs_session_get_pid ()" link="GuestfsSession.html#guestfs-session-get-pid"/>
+    <keyword type="function" name="guestfs_session_get_qemu ()" link="GuestfsSession.html#guestfs-session-get-qemu"/>
+    <keyword type="function" name="guestfs_session_get_recovery_proc ()" link="GuestfsSession.html#guestfs-session-get-recovery-proc"/>
+    <keyword type="function" name="guestfs_session_get_selinux ()" link="GuestfsSession.html#guestfs-session-get-selinux"/>
+    <keyword type="function" name="guestfs_session_get_smp ()" link="GuestfsSession.html#guestfs-session-get-smp"/>
+    <keyword type="function" name="guestfs_session_get_state ()" link="GuestfsSession.html#guestfs-session-get-state"/>
+    <keyword type="function" name="guestfs_session_get_trace ()" link="GuestfsSession.html#guestfs-session-get-trace"/>
+    <keyword type="function" name="guestfs_session_get_umask ()" link="GuestfsSession.html#guestfs-session-get-umask"/>
+    <keyword type="function" name="guestfs_session_get_verbose ()" link="GuestfsSession.html#guestfs-session-get-verbose"/>
+    <keyword type="function" name="guestfs_session_getcon ()" link="GuestfsSession.html#guestfs-session-getcon"/>
+    <keyword type="function" name="guestfs_session_getxattr ()" link="GuestfsSession.html#guestfs-session-getxattr"/>
+    <keyword type="function" name="guestfs_session_getxattrs ()" link="GuestfsSession.html#guestfs-session-getxattrs"/>
+    <keyword type="function" name="guestfs_session_glob_expand ()" link="GuestfsSession.html#guestfs-session-glob-expand"/>
+    <keyword type="function" name="guestfs_session_grep ()" link="GuestfsSession.html#guestfs-session-grep"/>
+    <keyword type="function" name="guestfs_session_grepi ()" link="GuestfsSession.html#guestfs-session-grepi"/>
+    <keyword type="function" name="guestfs_session_grub_install ()" link="GuestfsSession.html#guestfs-session-grub-install"/>
+    <keyword type="function" name="guestfs_session_head ()" link="GuestfsSession.html#guestfs-session-head"/>
+    <keyword type="function" name="guestfs_session_head_n ()" link="GuestfsSession.html#guestfs-session-head-n"/>
+    <keyword type="function" name="guestfs_session_hexdump ()" link="GuestfsSession.html#guestfs-session-hexdump"/>
+    <keyword type="function" name="guestfs_session_initrd_cat ()" link="GuestfsSession.html#guestfs-session-initrd-cat"/>
+    <keyword type="function" name="guestfs_session_initrd_list ()" link="GuestfsSession.html#guestfs-session-initrd-list"/>
+    <keyword type="function" name="guestfs_session_inotify_add_watch ()" link="GuestfsSession.html#guestfs-session-inotify-add-watch"/>
+    <keyword type="function" name="guestfs_session_inotify_close ()" link="GuestfsSession.html#guestfs-session-inotify-close"/>
+    <keyword type="function" name="guestfs_session_inotify_files ()" link="GuestfsSession.html#guestfs-session-inotify-files"/>
+    <keyword type="function" name="guestfs_session_inotify_init ()" link="GuestfsSession.html#guestfs-session-inotify-init"/>
+    <keyword type="function" name="guestfs_session_inotify_read ()" link="GuestfsSession.html#guestfs-session-inotify-read"/>
+    <keyword type="function" name="guestfs_session_inotify_rm_watch ()" link="GuestfsSession.html#guestfs-session-inotify-rm-watch"/>
+    <keyword type="function" name="guestfs_session_inspect_get_arch ()" link="GuestfsSession.html#guestfs-session-inspect-get-arch"/>
+    <keyword type="function" name="guestfs_session_inspect_get_distro ()" link="GuestfsSession.html#guestfs-session-inspect-get-distro"/>
+    <keyword type="function" name="guestfs_session_inspect_get_drive_mappings ()" link="GuestfsSession.html#guestfs-session-inspect-get-drive-mappings"/>
+    <keyword type="function" name="guestfs_session_inspect_get_filesystems ()" link="GuestfsSession.html#guestfs-session-inspect-get-filesystems"/>
+    <keyword type="function" name="guestfs_session_inspect_get_format ()" link="GuestfsSession.html#guestfs-session-inspect-get-format"/>
+    <keyword type="function" name="guestfs_session_inspect_get_hostname ()" link="GuestfsSession.html#guestfs-session-inspect-get-hostname"/>
+    <keyword type="function" name="guestfs_session_inspect_get_icon ()" link="GuestfsSession.html#guestfs-session-inspect-get-icon"/>
+    <keyword type="function" name="guestfs_session_inspect_get_major_version ()" link="GuestfsSession.html#guestfs-session-inspect-get-major-version"/>
+    <keyword type="function" name="guestfs_session_inspect_get_minor_version ()" link="GuestfsSession.html#guestfs-session-inspect-get-minor-version"/>
+    <keyword type="function" name="guestfs_session_inspect_get_mountpoints ()" link="GuestfsSession.html#guestfs-session-inspect-get-mountpoints"/>
+    <keyword type="function" name="guestfs_session_inspect_get_package_format ()" link="GuestfsSession.html#guestfs-session-inspect-get-package-format"/>
+    <keyword type="function" name="guestfs_session_inspect_get_package_management ()" link="GuestfsSession.html#guestfs-session-inspect-get-package-management"/>
+    <keyword type="function" name="guestfs_session_inspect_get_product_name ()" link="GuestfsSession.html#guestfs-session-inspect-get-product-name"/>
+    <keyword type="function" name="guestfs_session_inspect_get_product_variant ()" link="GuestfsSession.html#guestfs-session-inspect-get-product-variant"/>
+    <keyword type="function" name="guestfs_session_inspect_get_roots ()" link="GuestfsSession.html#guestfs-session-inspect-get-roots"/>
+    <keyword type="function" name="guestfs_session_inspect_get_windows_current_control_set ()" link="GuestfsSession.html#guestfs-session-inspect-get-windows-current-control-set"/>
+    <keyword type="function" name="guestfs_session_inspect_get_windows_systemroot ()" link="GuestfsSession.html#guestfs-session-inspect-get-windows-systemroot"/>
+    <keyword type="function" name="guestfs_session_inspect_is_live ()" link="GuestfsSession.html#guestfs-session-inspect-is-live"/>
+    <keyword type="function" name="guestfs_session_inspect_is_multipart ()" link="GuestfsSession.html#guestfs-session-inspect-is-multipart"/>
+    <keyword type="function" name="guestfs_session_inspect_is_netinst ()" link="GuestfsSession.html#guestfs-session-inspect-is-netinst"/>
+    <keyword type="function" name="guestfs_session_inspect_list_applications ()" link="GuestfsSession.html#guestfs-session-inspect-list-applications"/>
+    <keyword type="function" name="guestfs_session_inspect_os ()" link="GuestfsSession.html#guestfs-session-inspect-os"/>
+    <keyword type="function" name="guestfs_session_internal_autosync ()" link="GuestfsSession.html#guestfs-session-internal-autosync"/>
+    <keyword type="function" name="guestfs_session_is_blockdev ()" link="GuestfsSession.html#guestfs-session-is-blockdev"/>
+    <keyword type="function" name="guestfs_session_is_busy ()" link="GuestfsSession.html#guestfs-session-is-busy"/>
+    <keyword type="function" name="guestfs_session_is_chardev ()" link="GuestfsSession.html#guestfs-session-is-chardev"/>
+    <keyword type="function" name="guestfs_session_is_config ()" link="GuestfsSession.html#guestfs-session-is-config"/>
+    <keyword type="function" name="guestfs_session_is_dir ()" link="GuestfsSession.html#guestfs-session-is-dir"/>
+    <keyword type="function" name="guestfs_session_is_fifo ()" link="GuestfsSession.html#guestfs-session-is-fifo"/>
+    <keyword type="function" name="guestfs_session_is_file ()" link="GuestfsSession.html#guestfs-session-is-file"/>
+    <keyword type="function" name="guestfs_session_is_launching ()" link="GuestfsSession.html#guestfs-session-is-launching"/>
+    <keyword type="function" name="guestfs_session_is_lv ()" link="GuestfsSession.html#guestfs-session-is-lv"/>
+    <keyword type="function" name="guestfs_session_is_ready ()" link="GuestfsSession.html#guestfs-session-is-ready"/>
+    <keyword type="function" name="guestfs_session_is_socket ()" link="GuestfsSession.html#guestfs-session-is-socket"/>
+    <keyword type="function" name="guestfs_session_is_symlink ()" link="GuestfsSession.html#guestfs-session-is-symlink"/>
+    <keyword type="function" name="guestfs_session_is_zero ()" link="GuestfsSession.html#guestfs-session-is-zero"/>
+    <keyword type="function" name="guestfs_session_is_zero_device ()" link="GuestfsSession.html#guestfs-session-is-zero-device"/>
+    <keyword type="function" name="guestfs_session_isoinfo ()" link="GuestfsSession.html#guestfs-session-isoinfo"/>
+    <keyword type="function" name="guestfs_session_isoinfo_device ()" link="GuestfsSession.html#guestfs-session-isoinfo-device"/>
+    <keyword type="function" name="guestfs_session_kill_subprocess ()" link="GuestfsSession.html#guestfs-session-kill-subprocess"/>
+    <keyword type="function" name="guestfs_session_launch ()" link="GuestfsSession.html#guestfs-session-launch"/>
+    <keyword type="function" name="guestfs_session_lchown ()" link="GuestfsSession.html#guestfs-session-lchown"/>
+    <keyword type="function" name="guestfs_session_lgetxattr ()" link="GuestfsSession.html#guestfs-session-lgetxattr"/>
+    <keyword type="function" name="guestfs_session_lgetxattrs ()" link="GuestfsSession.html#guestfs-session-lgetxattrs"/>
+    <keyword type="function" name="guestfs_session_list_9p ()" link="GuestfsSession.html#guestfs-session-list-9p"/>
+    <keyword type="function" name="guestfs_session_list_devices ()" link="GuestfsSession.html#guestfs-session-list-devices"/>
+    <keyword type="function" name="guestfs_session_list_dm_devices ()" link="GuestfsSession.html#guestfs-session-list-dm-devices"/>
+    <keyword type="function" name="guestfs_session_list_filesystems ()" link="GuestfsSession.html#guestfs-session-list-filesystems"/>
+    <keyword type="function" name="guestfs_session_list_md_devices ()" link="GuestfsSession.html#guestfs-session-list-md-devices"/>
+    <keyword type="function" name="guestfs_session_list_partitions ()" link="GuestfsSession.html#guestfs-session-list-partitions"/>
+    <keyword type="function" name="guestfs_session_ll ()" link="GuestfsSession.html#guestfs-session-ll"/>
+    <keyword type="function" name="guestfs_session_llz ()" link="GuestfsSession.html#guestfs-session-llz"/>
+    <keyword type="function" name="guestfs_session_ln ()" link="GuestfsSession.html#guestfs-session-ln"/>
+    <keyword type="function" name="guestfs_session_ln_f ()" link="GuestfsSession.html#guestfs-session-ln-f"/>
+    <keyword type="function" name="guestfs_session_ln_s ()" link="GuestfsSession.html#guestfs-session-ln-s"/>
+    <keyword type="function" name="guestfs_session_ln_sf ()" link="GuestfsSession.html#guestfs-session-ln-sf"/>
+    <keyword type="function" name="guestfs_session_lremovexattr ()" link="GuestfsSession.html#guestfs-session-lremovexattr"/>
+    <keyword type="function" name="guestfs_session_ls ()" link="GuestfsSession.html#guestfs-session-ls"/>
+    <keyword type="function" name="guestfs_session_lsetxattr ()" link="GuestfsSession.html#guestfs-session-lsetxattr"/>
+    <keyword type="function" name="guestfs_session_lstat ()" link="GuestfsSession.html#guestfs-session-lstat"/>
+    <keyword type="function" name="guestfs_session_lstatlist ()" link="GuestfsSession.html#guestfs-session-lstatlist"/>
+    <keyword type="function" name="guestfs_session_luks_add_key ()" link="GuestfsSession.html#guestfs-session-luks-add-key"/>
+    <keyword type="function" name="guestfs_session_luks_close ()" link="GuestfsSession.html#guestfs-session-luks-close"/>
+    <keyword type="function" name="guestfs_session_luks_format ()" link="GuestfsSession.html#guestfs-session-luks-format"/>
+    <keyword type="function" name="guestfs_session_luks_format_cipher ()" link="GuestfsSession.html#guestfs-session-luks-format-cipher"/>
+    <keyword type="function" name="guestfs_session_luks_kill_slot ()" link="GuestfsSession.html#guestfs-session-luks-kill-slot"/>
+    <keyword type="function" name="guestfs_session_luks_open ()" link="GuestfsSession.html#guestfs-session-luks-open"/>
+    <keyword type="function" name="guestfs_session_luks_open_ro ()" link="GuestfsSession.html#guestfs-session-luks-open-ro"/>
+    <keyword type="function" name="guestfs_session_lvcreate ()" link="GuestfsSession.html#guestfs-session-lvcreate"/>
+    <keyword type="function" name="guestfs_session_lvcreate_free ()" link="GuestfsSession.html#guestfs-session-lvcreate-free"/>
+    <keyword type="function" name="guestfs_session_lvm_canonical_lv_name ()" link="GuestfsSession.html#guestfs-session-lvm-canonical-lv-name"/>
+    <keyword type="function" name="guestfs_session_lvm_clear_filter ()" link="GuestfsSession.html#guestfs-session-lvm-clear-filter"/>
+    <keyword type="function" name="guestfs_session_lvm_remove_all ()" link="GuestfsSession.html#guestfs-session-lvm-remove-all"/>
+    <keyword type="function" name="guestfs_session_lvm_set_filter ()" link="GuestfsSession.html#guestfs-session-lvm-set-filter"/>
+    <keyword type="function" name="guestfs_session_lvremove ()" link="GuestfsSession.html#guestfs-session-lvremove"/>
+    <keyword type="function" name="guestfs_session_lvrename ()" link="GuestfsSession.html#guestfs-session-lvrename"/>
+    <keyword type="function" name="guestfs_session_lvresize ()" link="GuestfsSession.html#guestfs-session-lvresize"/>
+    <keyword type="function" name="guestfs_session_lvresize_free ()" link="GuestfsSession.html#guestfs-session-lvresize-free"/>
+    <keyword type="function" name="guestfs_session_lvs ()" link="GuestfsSession.html#guestfs-session-lvs"/>
+    <keyword type="function" name="guestfs_session_lvs_full ()" link="GuestfsSession.html#guestfs-session-lvs-full"/>
+    <keyword type="function" name="guestfs_session_lvuuid ()" link="GuestfsSession.html#guestfs-session-lvuuid"/>
+    <keyword type="function" name="guestfs_session_lxattrlist ()" link="GuestfsSession.html#guestfs-session-lxattrlist"/>
+    <keyword type="function" name="guestfs_session_md_create ()" link="GuestfsSession.html#guestfs-session-md-create"/>
+    <keyword type="function" name="guestfs_session_md_detail ()" link="GuestfsSession.html#guestfs-session-md-detail"/>
+    <keyword type="function" name="guestfs_session_md_stat ()" link="GuestfsSession.html#guestfs-session-md-stat"/>
+    <keyword type="function" name="guestfs_session_md_stop ()" link="GuestfsSession.html#guestfs-session-md-stop"/>
+    <keyword type="function" name="guestfs_session_mkdir ()" link="GuestfsSession.html#guestfs-session-mkdir"/>
+    <keyword type="function" name="guestfs_session_mkdir_mode ()" link="GuestfsSession.html#guestfs-session-mkdir-mode"/>
+    <keyword type="function" name="guestfs_session_mkdir_p ()" link="GuestfsSession.html#guestfs-session-mkdir-p"/>
+    <keyword type="function" name="guestfs_session_mkdtemp ()" link="GuestfsSession.html#guestfs-session-mkdtemp"/>
+    <keyword type="function" name="guestfs_session_mke2fs_J ()" link="GuestfsSession.html#guestfs-session-mke2fs-J"/>
+    <keyword type="function" name="guestfs_session_mke2fs_JL ()" link="GuestfsSession.html#guestfs-session-mke2fs-JL"/>
+    <keyword type="function" name="guestfs_session_mke2fs_JU ()" link="GuestfsSession.html#guestfs-session-mke2fs-JU"/>
+    <keyword type="function" name="guestfs_session_mke2journal ()" link="GuestfsSession.html#guestfs-session-mke2journal"/>
+    <keyword type="function" name="guestfs_session_mke2journal_L ()" link="GuestfsSession.html#guestfs-session-mke2journal-L"/>
+    <keyword type="function" name="guestfs_session_mke2journal_U ()" link="GuestfsSession.html#guestfs-session-mke2journal-U"/>
+    <keyword type="function" name="guestfs_session_mkfifo ()" link="GuestfsSession.html#guestfs-session-mkfifo"/>
+    <keyword type="function" name="guestfs_session_mkfs ()" link="GuestfsSession.html#guestfs-session-mkfs"/>
+    <keyword type="function" name="guestfs_session_mkfs_b ()" link="GuestfsSession.html#guestfs-session-mkfs-b"/>
+    <keyword type="function" name="guestfs_session_mkfs_btrfs ()" link="GuestfsSession.html#guestfs-session-mkfs-btrfs"/>
+    <keyword type="function" name="guestfs_session_mkfs_opts ()" link="GuestfsSession.html#guestfs-session-mkfs-opts"/>
+    <keyword type="function" name="guestfs_session_mkmountpoint ()" link="GuestfsSession.html#guestfs-session-mkmountpoint"/>
+    <keyword type="function" name="guestfs_session_mknod ()" link="GuestfsSession.html#guestfs-session-mknod"/>
+    <keyword type="function" name="guestfs_session_mknod_b ()" link="GuestfsSession.html#guestfs-session-mknod-b"/>
+    <keyword type="function" name="guestfs_session_mknod_c ()" link="GuestfsSession.html#guestfs-session-mknod-c"/>
+    <keyword type="function" name="guestfs_session_mkswap ()" link="GuestfsSession.html#guestfs-session-mkswap"/>
+    <keyword type="function" name="guestfs_session_mkswap_L ()" link="GuestfsSession.html#guestfs-session-mkswap-L"/>
+    <keyword type="function" name="guestfs_session_mkswap_U ()" link="GuestfsSession.html#guestfs-session-mkswap-U"/>
+    <keyword type="function" name="guestfs_session_mkswap_file ()" link="GuestfsSession.html#guestfs-session-mkswap-file"/>
+    <keyword type="function" name="guestfs_session_modprobe ()" link="GuestfsSession.html#guestfs-session-modprobe"/>
+    <keyword type="function" name="guestfs_session_mount ()" link="GuestfsSession.html#guestfs-session-mount"/>
+    <keyword type="function" name="guestfs_session_mount_9p ()" link="GuestfsSession.html#guestfs-session-mount-9p"/>
+    <keyword type="function" name="guestfs_session_mount_local ()" link="GuestfsSession.html#guestfs-session-mount-local"/>
+    <keyword type="function" name="guestfs_session_mount_local_run ()" link="GuestfsSession.html#guestfs-session-mount-local-run"/>
+    <keyword type="function" name="guestfs_session_mount_loop ()" link="GuestfsSession.html#guestfs-session-mount-loop"/>
+    <keyword type="function" name="guestfs_session_mount_options ()" link="GuestfsSession.html#guestfs-session-mount-options"/>
+    <keyword type="function" name="guestfs_session_mount_ro ()" link="GuestfsSession.html#guestfs-session-mount-ro"/>
+    <keyword type="function" name="guestfs_session_mount_vfs ()" link="GuestfsSession.html#guestfs-session-mount-vfs"/>
+    <keyword type="function" name="guestfs_session_mountpoints ()" link="GuestfsSession.html#guestfs-session-mountpoints"/>
+    <keyword type="function" name="guestfs_session_mounts ()" link="GuestfsSession.html#guestfs-session-mounts"/>
+    <keyword type="function" name="guestfs_session_mv ()" link="GuestfsSession.html#guestfs-session-mv"/>
+    <keyword type="function" name="guestfs_session_new ()" link="GuestfsSession.html#guestfs-session-new"/>
+    <keyword type="function" name="guestfs_session_ntfs_3g_probe ()" link="GuestfsSession.html#guestfs-session-ntfs-3g-probe"/>
+    <keyword type="function" name="guestfs_session_ntfsclone_in ()" link="GuestfsSession.html#guestfs-session-ntfsclone-in"/>
+    <keyword type="function" name="guestfs_session_ntfsclone_out ()" link="GuestfsSession.html#guestfs-session-ntfsclone-out"/>
+    <keyword type="function" name="guestfs_session_ntfsfix ()" link="GuestfsSession.html#guestfs-session-ntfsfix"/>
+    <keyword type="function" name="guestfs_session_ntfsresize ()" link="GuestfsSession.html#guestfs-session-ntfsresize"/>
+    <keyword type="function" name="guestfs_session_ntfsresize_opts ()" link="GuestfsSession.html#guestfs-session-ntfsresize-opts"/>
+    <keyword type="function" name="guestfs_session_ntfsresize_size ()" link="GuestfsSession.html#guestfs-session-ntfsresize-size"/>
+    <keyword type="function" name="guestfs_session_part_add ()" link="GuestfsSession.html#guestfs-session-part-add"/>
+    <keyword type="function" name="guestfs_session_part_del ()" link="GuestfsSession.html#guestfs-session-part-del"/>
+    <keyword type="function" name="guestfs_session_part_disk ()" link="GuestfsSession.html#guestfs-session-part-disk"/>
+    <keyword type="function" name="guestfs_session_part_get_bootable ()" link="GuestfsSession.html#guestfs-session-part-get-bootable"/>
+    <keyword type="function" name="guestfs_session_part_get_mbr_id ()" link="GuestfsSession.html#guestfs-session-part-get-mbr-id"/>
+    <keyword type="function" name="guestfs_session_part_get_parttype ()" link="GuestfsSession.html#guestfs-session-part-get-parttype"/>
+    <keyword type="function" name="guestfs_session_part_init ()" link="GuestfsSession.html#guestfs-session-part-init"/>
+    <keyword type="function" name="guestfs_session_part_list ()" link="GuestfsSession.html#guestfs-session-part-list"/>
+    <keyword type="function" name="guestfs_session_part_set_bootable ()" link="GuestfsSession.html#guestfs-session-part-set-bootable"/>
+    <keyword type="function" name="guestfs_session_part_set_mbr_id ()" link="GuestfsSession.html#guestfs-session-part-set-mbr-id"/>
+    <keyword type="function" name="guestfs_session_part_set_name ()" link="GuestfsSession.html#guestfs-session-part-set-name"/>
+    <keyword type="function" name="guestfs_session_part_to_dev ()" link="GuestfsSession.html#guestfs-session-part-to-dev"/>
+    <keyword type="function" name="guestfs_session_part_to_partnum ()" link="GuestfsSession.html#guestfs-session-part-to-partnum"/>
+    <keyword type="function" name="guestfs_session_ping_daemon ()" link="GuestfsSession.html#guestfs-session-ping-daemon"/>
+    <keyword type="function" name="guestfs_session_pread ()" link="GuestfsSession.html#guestfs-session-pread"/>
+    <keyword type="function" name="guestfs_session_pread_device ()" link="GuestfsSession.html#guestfs-session-pread-device"/>
+    <keyword type="function" name="guestfs_session_pvcreate ()" link="GuestfsSession.html#guestfs-session-pvcreate"/>
+    <keyword type="function" name="guestfs_session_pvremove ()" link="GuestfsSession.html#guestfs-session-pvremove"/>
+    <keyword type="function" name="guestfs_session_pvresize ()" link="GuestfsSession.html#guestfs-session-pvresize"/>
+    <keyword type="function" name="guestfs_session_pvresize_size ()" link="GuestfsSession.html#guestfs-session-pvresize-size"/>
+    <keyword type="function" name="guestfs_session_pvs ()" link="GuestfsSession.html#guestfs-session-pvs"/>
+    <keyword type="function" name="guestfs_session_pvs_full ()" link="GuestfsSession.html#guestfs-session-pvs-full"/>
+    <keyword type="function" name="guestfs_session_pvuuid ()" link="GuestfsSession.html#guestfs-session-pvuuid"/>
+    <keyword type="function" name="guestfs_session_pwrite ()" link="GuestfsSession.html#guestfs-session-pwrite"/>
+    <keyword type="function" name="guestfs_session_pwrite_device ()" link="GuestfsSession.html#guestfs-session-pwrite-device"/>
+    <keyword type="function" name="guestfs_session_read_file ()" link="GuestfsSession.html#guestfs-session-read-file"/>
+    <keyword type="function" name="guestfs_session_read_lines ()" link="GuestfsSession.html#guestfs-session-read-lines"/>
+    <keyword type="function" name="guestfs_session_readdir ()" link="GuestfsSession.html#guestfs-session-readdir"/>
+    <keyword type="function" name="guestfs_session_readlink ()" link="GuestfsSession.html#guestfs-session-readlink"/>
+    <keyword type="function" name="guestfs_session_readlinklist ()" link="GuestfsSession.html#guestfs-session-readlinklist"/>
+    <keyword type="function" name="guestfs_session_realpath ()" link="GuestfsSession.html#guestfs-session-realpath"/>
+    <keyword type="function" name="guestfs_session_removexattr ()" link="GuestfsSession.html#guestfs-session-removexattr"/>
+    <keyword type="function" name="guestfs_session_resize2fs ()" link="GuestfsSession.html#guestfs-session-resize2fs"/>
+    <keyword type="function" name="guestfs_session_resize2fs_M ()" link="GuestfsSession.html#guestfs-session-resize2fs-M"/>
+    <keyword type="function" name="guestfs_session_resize2fs_size ()" link="GuestfsSession.html#guestfs-session-resize2fs-size"/>
+    <keyword type="function" name="guestfs_session_rm ()" link="GuestfsSession.html#guestfs-session-rm"/>
+    <keyword type="function" name="guestfs_session_rm_rf ()" link="GuestfsSession.html#guestfs-session-rm-rf"/>
+    <keyword type="function" name="guestfs_session_rmdir ()" link="GuestfsSession.html#guestfs-session-rmdir"/>
+    <keyword type="function" name="guestfs_session_rmmountpoint ()" link="GuestfsSession.html#guestfs-session-rmmountpoint"/>
+    <keyword type="function" name="guestfs_session_scrub_device ()" link="GuestfsSession.html#guestfs-session-scrub-device"/>
+    <keyword type="function" name="guestfs_session_scrub_file ()" link="GuestfsSession.html#guestfs-session-scrub-file"/>
+    <keyword type="function" name="guestfs_session_scrub_freespace ()" link="GuestfsSession.html#guestfs-session-scrub-freespace"/>
+    <keyword type="function" name="guestfs_session_set_append ()" link="GuestfsSession.html#guestfs-session-set-append"/>
+    <keyword type="function" name="guestfs_session_set_attach_method ()" link="GuestfsSession.html#guestfs-session-set-attach-method"/>
+    <keyword type="function" name="guestfs_session_set_autosync ()" link="GuestfsSession.html#guestfs-session-set-autosync"/>
+    <keyword type="function" name="guestfs_session_set_direct ()" link="GuestfsSession.html#guestfs-session-set-direct"/>
+    <keyword type="function" name="guestfs_session_set_e2attrs ()" link="GuestfsSession.html#guestfs-session-set-e2attrs"/>
+    <keyword type="function" name="guestfs_session_set_e2generation ()" link="GuestfsSession.html#guestfs-session-set-e2generation"/>
+    <keyword type="function" name="guestfs_session_set_e2label ()" link="GuestfsSession.html#guestfs-session-set-e2label"/>
+    <keyword type="function" name="guestfs_session_set_e2uuid ()" link="GuestfsSession.html#guestfs-session-set-e2uuid"/>
+    <keyword type="function" name="guestfs_session_set_label ()" link="GuestfsSession.html#guestfs-session-set-label"/>
+    <keyword type="function" name="guestfs_session_set_memsize ()" link="GuestfsSession.html#guestfs-session-set-memsize"/>
+    <keyword type="function" name="guestfs_session_set_network ()" link="GuestfsSession.html#guestfs-session-set-network"/>
+    <keyword type="function" name="guestfs_session_set_path ()" link="GuestfsSession.html#guestfs-session-set-path"/>
+    <keyword type="function" name="guestfs_session_set_pgroup ()" link="GuestfsSession.html#guestfs-session-set-pgroup"/>
+    <keyword type="function" name="guestfs_session_set_qemu ()" link="GuestfsSession.html#guestfs-session-set-qemu"/>
+    <keyword type="function" name="guestfs_session_set_recovery_proc ()" link="GuestfsSession.html#guestfs-session-set-recovery-proc"/>
+    <keyword type="function" name="guestfs_session_set_selinux ()" link="GuestfsSession.html#guestfs-session-set-selinux"/>
+    <keyword type="function" name="guestfs_session_set_smp ()" link="GuestfsSession.html#guestfs-session-set-smp"/>
+    <keyword type="function" name="guestfs_session_set_trace ()" link="GuestfsSession.html#guestfs-session-set-trace"/>
+    <keyword type="function" name="guestfs_session_set_verbose ()" link="GuestfsSession.html#guestfs-session-set-verbose"/>
+    <keyword type="function" name="guestfs_session_setcon ()" link="GuestfsSession.html#guestfs-session-setcon"/>
+    <keyword type="function" name="guestfs_session_setxattr ()" link="GuestfsSession.html#guestfs-session-setxattr"/>
+    <keyword type="function" name="guestfs_session_sfdisk ()" link="GuestfsSession.html#guestfs-session-sfdisk"/>
+    <keyword type="function" name="guestfs_session_sfdiskM ()" link="GuestfsSession.html#guestfs-session-sfdiskM"/>
+    <keyword type="function" name="guestfs_session_sfdisk_N ()" link="GuestfsSession.html#guestfs-session-sfdisk-N"/>
+    <keyword type="function" name="guestfs_session_sfdisk_disk_geometry ()" link="GuestfsSession.html#guestfs-session-sfdisk-disk-geometry"/>
+    <keyword type="function" name="guestfs_session_sfdisk_kernel_geometry ()" link="GuestfsSession.html#guestfs-session-sfdisk-kernel-geometry"/>
+    <keyword type="function" name="guestfs_session_sfdisk_l ()" link="GuestfsSession.html#guestfs-session-sfdisk-l"/>
+    <keyword type="function" name="guestfs_session_sh ()" link="GuestfsSession.html#guestfs-session-sh"/>
+    <keyword type="function" name="guestfs_session_sh_lines ()" link="GuestfsSession.html#guestfs-session-sh-lines"/>
+    <keyword type="function" name="guestfs_session_sleep ()" link="GuestfsSession.html#guestfs-session-sleep"/>
+    <keyword type="function" name="guestfs_session_stat ()" link="GuestfsSession.html#guestfs-session-stat"/>
+    <keyword type="function" name="guestfs_session_statvfs ()" link="GuestfsSession.html#guestfs-session-statvfs"/>
+    <keyword type="function" name="guestfs_session_strings ()" link="GuestfsSession.html#guestfs-session-strings"/>
+    <keyword type="function" name="guestfs_session_strings_e ()" link="GuestfsSession.html#guestfs-session-strings-e"/>
+    <keyword type="function" name="guestfs_session_swapoff_device ()" link="GuestfsSession.html#guestfs-session-swapoff-device"/>
+    <keyword type="function" name="guestfs_session_swapoff_file ()" link="GuestfsSession.html#guestfs-session-swapoff-file"/>
+    <keyword type="function" name="guestfs_session_swapoff_label ()" link="GuestfsSession.html#guestfs-session-swapoff-label"/>
+    <keyword type="function" name="guestfs_session_swapoff_uuid ()" link="GuestfsSession.html#guestfs-session-swapoff-uuid"/>
+    <keyword type="function" name="guestfs_session_swapon_device ()" link="GuestfsSession.html#guestfs-session-swapon-device"/>
+    <keyword type="function" name="guestfs_session_swapon_file ()" link="GuestfsSession.html#guestfs-session-swapon-file"/>
+    <keyword type="function" name="guestfs_session_swapon_label ()" link="GuestfsSession.html#guestfs-session-swapon-label"/>
+    <keyword type="function" name="guestfs_session_swapon_uuid ()" link="GuestfsSession.html#guestfs-session-swapon-uuid"/>
+    <keyword type="function" name="guestfs_session_sync ()" link="GuestfsSession.html#guestfs-session-sync"/>
+    <keyword type="function" name="guestfs_session_tail ()" link="GuestfsSession.html#guestfs-session-tail"/>
+    <keyword type="function" name="guestfs_session_tail_n ()" link="GuestfsSession.html#guestfs-session-tail-n"/>
+    <keyword type="function" name="guestfs_session_tar_in ()" link="GuestfsSession.html#guestfs-session-tar-in"/>
+    <keyword type="function" name="guestfs_session_tar_out ()" link="GuestfsSession.html#guestfs-session-tar-out"/>
+    <keyword type="function" name="guestfs_session_test0 ()" link="GuestfsSession.html#guestfs-session-test0"/>
+    <keyword type="function" name="guestfs_session_test0rbool ()" link="GuestfsSession.html#guestfs-session-test0rbool"/>
+    <keyword type="function" name="guestfs_session_test0rboolerr ()" link="GuestfsSession.html#guestfs-session-test0rboolerr"/>
+    <keyword type="function" name="guestfs_session_test0rbufferout ()" link="GuestfsSession.html#guestfs-session-test0rbufferout"/>
+    <keyword type="function" name="guestfs_session_test0rbufferouterr ()" link="GuestfsSession.html#guestfs-session-test0rbufferouterr"/>
+    <keyword type="function" name="guestfs_session_test0rconstoptstring ()" link="GuestfsSession.html#guestfs-session-test0rconstoptstring"/>
+    <keyword type="function" name="guestfs_session_test0rconstoptstringerr ()" link="GuestfsSession.html#guestfs-session-test0rconstoptstringerr"/>
+    <keyword type="function" name="guestfs_session_test0rconststring ()" link="GuestfsSession.html#guestfs-session-test0rconststring"/>
+    <keyword type="function" name="guestfs_session_test0rconststringerr ()" link="GuestfsSession.html#guestfs-session-test0rconststringerr"/>
+    <keyword type="function" name="guestfs_session_test0rhashtable ()" link="GuestfsSession.html#guestfs-session-test0rhashtable"/>
+    <keyword type="function" name="guestfs_session_test0rhashtableerr ()" link="GuestfsSession.html#guestfs-session-test0rhashtableerr"/>
+    <keyword type="function" name="guestfs_session_test0rint ()" link="GuestfsSession.html#guestfs-session-test0rint"/>
+    <keyword type="function" name="guestfs_session_test0rint64 ()" link="GuestfsSession.html#guestfs-session-test0rint64"/>
+    <keyword type="function" name="guestfs_session_test0rint64err ()" link="GuestfsSession.html#guestfs-session-test0rint64err"/>
+    <keyword type="function" name="guestfs_session_test0rinterr ()" link="GuestfsSession.html#guestfs-session-test0rinterr"/>
+    <keyword type="function" name="guestfs_session_test0rstring ()" link="GuestfsSession.html#guestfs-session-test0rstring"/>
+    <keyword type="function" name="guestfs_session_test0rstringerr ()" link="GuestfsSession.html#guestfs-session-test0rstringerr"/>
+    <keyword type="function" name="guestfs_session_test0rstringlist ()" link="GuestfsSession.html#guestfs-session-test0rstringlist"/>
+    <keyword type="function" name="guestfs_session_test0rstringlisterr ()" link="GuestfsSession.html#guestfs-session-test0rstringlisterr"/>
+    <keyword type="function" name="guestfs_session_test0rstruct ()" link="GuestfsSession.html#guestfs-session-test0rstruct"/>
+    <keyword type="function" name="guestfs_session_test0rstructerr ()" link="GuestfsSession.html#guestfs-session-test0rstructerr"/>
+    <keyword type="function" name="guestfs_session_test0rstructlist ()" link="GuestfsSession.html#guestfs-session-test0rstructlist"/>
+    <keyword type="function" name="guestfs_session_test0rstructlisterr ()" link="GuestfsSession.html#guestfs-session-test0rstructlisterr"/>
+    <keyword type="function" name="guestfs_session_tgz_in ()" link="GuestfsSession.html#guestfs-session-tgz-in"/>
+    <keyword type="function" name="guestfs_session_tgz_out ()" link="GuestfsSession.html#guestfs-session-tgz-out"/>
+    <keyword type="function" name="guestfs_session_touch ()" link="GuestfsSession.html#guestfs-session-touch"/>
+    <keyword type="function" name="guestfs_session_truncate ()" link="GuestfsSession.html#guestfs-session-truncate"/>
+    <keyword type="function" name="guestfs_session_truncate_size ()" link="GuestfsSession.html#guestfs-session-truncate-size"/>
+    <keyword type="function" name="guestfs_session_tune2fs ()" link="GuestfsSession.html#guestfs-session-tune2fs"/>
+    <keyword type="function" name="guestfs_session_tune2fs_l ()" link="GuestfsSession.html#guestfs-session-tune2fs-l"/>
+    <keyword type="function" name="guestfs_session_txz_in ()" link="GuestfsSession.html#guestfs-session-txz-in"/>
+    <keyword type="function" name="guestfs_session_txz_out ()" link="GuestfsSession.html#guestfs-session-txz-out"/>
+    <keyword type="function" name="guestfs_session_umask ()" link="GuestfsSession.html#guestfs-session-umask"/>
+    <keyword type="function" name="guestfs_session_umount ()" link="GuestfsSession.html#guestfs-session-umount"/>
+    <keyword type="function" name="guestfs_session_umount_all ()" link="GuestfsSession.html#guestfs-session-umount-all"/>
+    <keyword type="function" name="guestfs_session_umount_local ()" link="GuestfsSession.html#guestfs-session-umount-local"/>
+    <keyword type="function" name="guestfs_session_upload ()" link="GuestfsSession.html#guestfs-session-upload"/>
+    <keyword type="function" name="guestfs_session_upload_offset ()" link="GuestfsSession.html#guestfs-session-upload-offset"/>
+    <keyword type="function" name="guestfs_session_utimens ()" link="GuestfsSession.html#guestfs-session-utimens"/>
+    <keyword type="function" name="guestfs_session_version ()" link="GuestfsSession.html#guestfs-session-version"/>
+    <keyword type="function" name="guestfs_session_vfs_label ()" link="GuestfsSession.html#guestfs-session-vfs-label"/>
+    <keyword type="function" name="guestfs_session_vfs_type ()" link="GuestfsSession.html#guestfs-session-vfs-type"/>
+    <keyword type="function" name="guestfs_session_vfs_uuid ()" link="GuestfsSession.html#guestfs-session-vfs-uuid"/>
+    <keyword type="function" name="guestfs_session_vg_activate ()" link="GuestfsSession.html#guestfs-session-vg-activate"/>
+    <keyword type="function" name="guestfs_session_vg_activate_all ()" link="GuestfsSession.html#guestfs-session-vg-activate-all"/>
+    <keyword type="function" name="guestfs_session_vgcreate ()" link="GuestfsSession.html#guestfs-session-vgcreate"/>
+    <keyword type="function" name="guestfs_session_vglvuuids ()" link="GuestfsSession.html#guestfs-session-vglvuuids"/>
+    <keyword type="function" name="guestfs_session_vgmeta ()" link="GuestfsSession.html#guestfs-session-vgmeta"/>
+    <keyword type="function" name="guestfs_session_vgpvuuids ()" link="GuestfsSession.html#guestfs-session-vgpvuuids"/>
+    <keyword type="function" name="guestfs_session_vgremove ()" link="GuestfsSession.html#guestfs-session-vgremove"/>
+    <keyword type="function" name="guestfs_session_vgrename ()" link="GuestfsSession.html#guestfs-session-vgrename"/>
+    <keyword type="function" name="guestfs_session_vgs ()" link="GuestfsSession.html#guestfs-session-vgs"/>
+    <keyword type="function" name="guestfs_session_vgs_full ()" link="GuestfsSession.html#guestfs-session-vgs-full"/>
+    <keyword type="function" name="guestfs_session_vgscan ()" link="GuestfsSession.html#guestfs-session-vgscan"/>
+    <keyword type="function" name="guestfs_session_vguuid ()" link="GuestfsSession.html#guestfs-session-vguuid"/>
+    <keyword type="function" name="guestfs_session_wait_ready ()" link="GuestfsSession.html#guestfs-session-wait-ready"/>
+    <keyword type="function" name="guestfs_session_wc_c ()" link="GuestfsSession.html#guestfs-session-wc-c"/>
+    <keyword type="function" name="guestfs_session_wc_l ()" link="GuestfsSession.html#guestfs-session-wc-l"/>
+    <keyword type="function" name="guestfs_session_wc_w ()" link="GuestfsSession.html#guestfs-session-wc-w"/>
+    <keyword type="function" name="guestfs_session_wipefs ()" link="GuestfsSession.html#guestfs-session-wipefs"/>
+    <keyword type="function" name="guestfs_session_write ()" link="GuestfsSession.html#guestfs-session-write"/>
+    <keyword type="function" name="guestfs_session_write_append ()" link="GuestfsSession.html#guestfs-session-write-append"/>
+    <keyword type="function" name="guestfs_session_write_file ()" link="GuestfsSession.html#guestfs-session-write-file"/>
+    <keyword type="function" name="guestfs_session_zegrep ()" link="GuestfsSession.html#guestfs-session-zegrep"/>
+    <keyword type="function" name="guestfs_session_zegrepi ()" link="GuestfsSession.html#guestfs-session-zegrepi"/>
+    <keyword type="function" name="guestfs_session_zero ()" link="GuestfsSession.html#guestfs-session-zero"/>
+    <keyword type="function" name="guestfs_session_zero_device ()" link="GuestfsSession.html#guestfs-session-zero-device"/>
+    <keyword type="function" name="guestfs_session_zero_free_space ()" link="GuestfsSession.html#guestfs-session-zero-free-space"/>
+    <keyword type="function" name="guestfs_session_zerofree ()" link="GuestfsSession.html#guestfs-session-zerofree"/>
+    <keyword type="function" name="guestfs_session_zfgrep ()" link="GuestfsSession.html#guestfs-session-zfgrep"/>
+    <keyword type="function" name="guestfs_session_zfgrepi ()" link="GuestfsSession.html#guestfs-session-zfgrepi"/>
+    <keyword type="function" name="guestfs_session_zfile ()" link="GuestfsSession.html#guestfs-session-zfile"/>
+    <keyword type="function" name="guestfs_session_zgrep ()" link="GuestfsSession.html#guestfs-session-zgrep"/>
+    <keyword type="function" name="guestfs_session_zgrepi ()" link="GuestfsSession.html#guestfs-session-zgrepi"/>
+    <keyword type="signal" name="The &quot;appliance&quot; signal" link="GuestfsSession.html#GuestfsSession-appliance"/>
+    <keyword type="signal" name="The &quot;close&quot; signal" link="GuestfsSession.html#GuestfsSession-close"/>
+    <keyword type="signal" name="The &quot;enter&quot; signal" link="GuestfsSession.html#GuestfsSession-enter"/>
+    <keyword type="signal" name="The &quot;launch-done&quot; signal" link="GuestfsSession.html#GuestfsSession-launch-done"/>
+    <keyword type="signal" name="The &quot;library&quot; signal" link="GuestfsSession.html#GuestfsSession-library"/>
+    <keyword type="signal" name="The &quot;progress&quot; signal" link="GuestfsSession.html#GuestfsSession-progress"/>
+    <keyword type="signal" name="The &quot;subprocess-quit&quot; signal" link="GuestfsSession.html#GuestfsSession-subprocess-quit"/>
+    <keyword type="signal" name="The &quot;trace&quot; signal" link="GuestfsSession.html#GuestfsSession-trace"/>
+    <keyword type="enum" name="enum GuestfsTristate" link="GuestfsTristate.html#GuestfsTristate-enum"/>
+    <keyword type="struct" name="struct GuestfsIntBool" link="GuestfsIntBool.html#GuestfsIntBool-struct"/>
+    <keyword type="struct" name="struct GuestfsPV" link="GuestfsPV.html#GuestfsPV-struct"/>
+    <keyword type="struct" name="struct GuestfsVG" link="GuestfsVG.html#GuestfsVG-struct"/>
+    <keyword type="struct" name="struct GuestfsLV" link="GuestfsLV.html#GuestfsLV-struct"/>
+    <keyword type="struct" name="struct GuestfsStat" link="GuestfsStat.html#GuestfsStat-struct"/>
+    <keyword type="struct" name="struct GuestfsStatVFS" link="GuestfsStatVFS.html#GuestfsStatVFS-struct"/>
+    <keyword type="struct" name="struct GuestfsDirent" link="GuestfsDirent.html#GuestfsDirent-struct"/>
+    <keyword type="struct" name="struct GuestfsVersion" link="GuestfsVersion.html#GuestfsVersion-struct"/>
+    <keyword type="struct" name="struct GuestfsXAttr" link="GuestfsXAttr.html#GuestfsXAttr-struct"/>
+    <keyword type="struct" name="struct GuestfsINotifyEvent" link="GuestfsINotifyEvent.html#GuestfsINotifyEvent-struct"/>
+    <keyword type="struct" name="struct GuestfsPartition" link="GuestfsPartition.html#GuestfsPartition-struct"/>
+    <keyword type="struct" name="struct GuestfsApplication" link="GuestfsApplication.html#GuestfsApplication-struct"/>
+    <keyword type="struct" name="struct GuestfsISOInfo" link="GuestfsISOInfo.html#GuestfsISOInfo-struct"/>
+    <keyword type="struct" name="struct GuestfsMDStat" link="GuestfsMDStat.html#GuestfsMDStat-struct"/>
+    <keyword type="struct" name="struct GuestfsBTRFSSubvolume" link="GuestfsBTRFSSubvolume.html#GuestfsBTRFSSubvolume-struct"/>
+    <keyword type="struct" name="struct GuestfsTest0" link="GuestfsTest0.html#GuestfsTest0-struct"/>
+    <keyword type="struct" name="struct GuestfsTest0Class" link="GuestfsTest0.html#GuestfsTest0Class"/>
+    <keyword type="function" name="guestfs_test0_new ()" link="GuestfsTest0.html#guestfs-test0-new"/>
+    <keyword type="property" name="The &quot;obool&quot; property" link="GuestfsTest0.html#GuestfsTest0--obool"/>
+    <keyword type="property" name="The &quot;oint&quot; property" link="GuestfsTest0.html#GuestfsTest0--oint"/>
+    <keyword type="property" name="The &quot;oint64&quot; property" link="GuestfsTest0.html#GuestfsTest0--oint64"/>
+    <keyword type="property" name="The &quot;ostring&quot; property" link="GuestfsTest0.html#GuestfsTest0--ostring"/>
+    <keyword type="struct" name="struct GuestfsAddDriveOpts" link="GuestfsAddDriveOpts.html#GuestfsAddDriveOpts-struct"/>
+    <keyword type="struct" name="struct GuestfsAddDriveOptsClass" link="GuestfsAddDriveOpts.html#GuestfsAddDriveOptsClass"/>
+    <keyword type="function" name="guestfs_add_drive_opts_new ()" link="GuestfsAddDriveOpts.html#guestfs-add-drive-opts-new"/>
+    <keyword type="property" name="The &quot;format&quot; property" link="GuestfsAddDriveOpts.html#GuestfsAddDriveOpts--format"/>
+    <keyword type="property" name="The &quot;iface&quot; property" link="GuestfsAddDriveOpts.html#GuestfsAddDriveOpts--iface"/>
+    <keyword type="property" name="The &quot;name&quot; property" link="GuestfsAddDriveOpts.html#GuestfsAddDriveOpts--name"/>
+    <keyword type="property" name="The &quot;readonly&quot; property" link="GuestfsAddDriveOpts.html#GuestfsAddDriveOpts--readonly"/>
+    <keyword type="struct" name="struct GuestfsAddDomain" link="GuestfsAddDomain.html#GuestfsAddDomain-struct"/>
+    <keyword type="struct" name="struct GuestfsAddDomainClass" link="GuestfsAddDomain.html#GuestfsAddDomainClass"/>
+    <keyword type="function" name="guestfs_add_domain_new ()" link="GuestfsAddDomain.html#guestfs-add-domain-new"/>
+    <keyword type="property" name="The &quot;allowuuid&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--allowuuid"/>
+    <keyword type="property" name="The &quot;iface&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--iface"/>
+    <keyword type="property" name="The &quot;libvirturi&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--libvirturi"/>
+    <keyword type="property" name="The &quot;live&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--live"/>
+    <keyword type="property" name="The &quot;readonly&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--readonly"/>
+    <keyword type="property" name="The &quot;readonlydisk&quot; property" link="GuestfsAddDomain.html#GuestfsAddDomain--readonlydisk"/>
+    <keyword type="struct" name="struct GuestfsInspectGetIcon" link="GuestfsInspectGetIcon.html#GuestfsInspectGetIcon-struct"/>
+    <keyword type="struct" name="struct GuestfsInspectGetIconClass" link="GuestfsInspectGetIcon.html#GuestfsInspectGetIconClass"/>
+    <keyword type="function" name="guestfs_inspect_get_icon_new ()" link="GuestfsInspectGetIcon.html#guestfs-inspect-get-icon-new"/>
+    <keyword type="property" name="The &quot;favicon&quot; property" link="GuestfsInspectGetIcon.html#GuestfsInspectGetIcon--favicon"/>
+    <keyword type="property" name="The &quot;highquality&quot; property" link="GuestfsInspectGetIcon.html#GuestfsInspectGetIcon--highquality"/>
+    <keyword type="struct" name="struct GuestfsMountLocal" link="GuestfsMountLocal.html#GuestfsMountLocal-struct"/>
+    <keyword type="struct" name="struct GuestfsMountLocalClass" link="GuestfsMountLocal.html#GuestfsMountLocalClass"/>
+    <keyword type="function" name="guestfs_mount_local_new ()" link="GuestfsMountLocal.html#guestfs-mount-local-new"/>
+    <keyword type="property" name="The &quot;cachetimeout&quot; property" link="GuestfsMountLocal.html#GuestfsMountLocal--cachetimeout"/>
+    <keyword type="property" name="The &quot;debugcalls&quot; property" link="GuestfsMountLocal.html#GuestfsMountLocal--debugcalls"/>
+    <keyword type="property" name="The &quot;options&quot; property" link="GuestfsMountLocal.html#GuestfsMountLocal--options"/>
+    <keyword type="property" name="The &quot;readonly&quot; property" link="GuestfsMountLocal.html#GuestfsMountLocal--readonly"/>
+    <keyword type="struct" name="struct GuestfsUmountLocal" link="GuestfsUmountLocal.html#GuestfsUmountLocal-struct"/>
+    <keyword type="struct" name="struct GuestfsUmountLocalClass" link="GuestfsUmountLocal.html#GuestfsUmountLocalClass"/>
+    <keyword type="function" name="guestfs_umount_local_new ()" link="GuestfsUmountLocal.html#guestfs-umount-local-new"/>
+    <keyword type="property" name="The &quot;retry&quot; property" link="GuestfsUmountLocal.html#GuestfsUmountLocal--retry"/>
+    <keyword type="struct" name="struct GuestfsMkfsOpts" link="GuestfsMkfsOpts.html#GuestfsMkfsOpts-struct"/>
+    <keyword type="struct" name="struct GuestfsMkfsOptsClass" link="GuestfsMkfsOpts.html#GuestfsMkfsOptsClass"/>
+    <keyword type="function" name="guestfs_mkfs_opts_new ()" link="GuestfsMkfsOpts.html#guestfs-mkfs-opts-new"/>
+    <keyword type="property" name="The &quot;blocksize&quot; property" link="GuestfsMkfsOpts.html#GuestfsMkfsOpts--blocksize"/>
+    <keyword type="property" name="The &quot;features&quot; property" link="GuestfsMkfsOpts.html#GuestfsMkfsOpts--features"/>
+    <keyword type="property" name="The &quot;inode&quot; property" link="GuestfsMkfsOpts.html#GuestfsMkfsOpts--inode"/>
+    <keyword type="property" name="The &quot;sectorsize&quot; property" link="GuestfsMkfsOpts.html#GuestfsMkfsOpts--sectorsize"/>
+    <keyword type="struct" name="struct GuestfsMount9P" link="GuestfsMount9P.html#GuestfsMount9P-struct"/>
+    <keyword type="struct" name="struct GuestfsMount9PClass" link="GuestfsMount9P.html#GuestfsMount9PClass"/>
+    <keyword type="function" name="guestfs_mount_9p_new ()" link="GuestfsMount9P.html#guestfs-mount-9p-new"/>
+    <keyword type="property" name="The &quot;options&quot; property" link="GuestfsMount9P.html#GuestfsMount9P--options"/>
+    <keyword type="struct" name="struct GuestfsNTFSResizeOpts" link="GuestfsNTFSResizeOpts.html#GuestfsNTFSResizeOpts-struct"/>
+    <keyword type="struct" name="struct GuestfsNTFSResizeOptsClass" link="GuestfsNTFSResizeOpts.html#GuestfsNTFSResizeOptsClass"/>
+    <keyword type="function" name="guestfs_ntfsresize_opts_new ()" link="GuestfsNTFSResizeOpts.html#guestfs-ntfsresize-opts-new"/>
+    <keyword type="property" name="The &quot;force&quot; property" link="GuestfsNTFSResizeOpts.html#GuestfsNTFSResizeOpts--force"/>
+    <keyword type="property" name="The &quot;size&quot; property" link="GuestfsNTFSResizeOpts.html#GuestfsNTFSResizeOpts--size"/>
+    <keyword type="struct" name="struct GuestfsBTRFSFilesystemResize" link="GuestfsBTRFSFilesystemResize.html#GuestfsBTRFSFilesystemResize-struct"/>
+    <keyword type="struct" name="struct GuestfsBTRFSFilesystemResizeClass" link="GuestfsBTRFSFilesystemResize.html#GuestfsBTRFSFilesystemResizeClass"/>
+    <keyword type="function" name="guestfs_btrfs_filesystem_resize_new ()" link="GuestfsBTRFSFilesystemResize.html#guestfs-btrfs-filesystem-resize-new"/>
+    <keyword type="property" name="The &quot;size&quot; property" link="GuestfsBTRFSFilesystemResize.html#GuestfsBTRFSFilesystemResize--size"/>
+    <keyword type="struct" name="struct GuestfsCompressOut" link="GuestfsCompressOut.html#GuestfsCompressOut-struct"/>
+    <keyword type="struct" name="struct GuestfsCompressOutClass" link="GuestfsCompressOut.html#GuestfsCompressOutClass"/>
+    <keyword type="function" name="guestfs_compress_out_new ()" link="GuestfsCompressOut.html#guestfs-compress-out-new"/>
+    <keyword type="property" name="The &quot;level&quot; property" link="GuestfsCompressOut.html#GuestfsCompressOut--level"/>
+    <keyword type="struct" name="struct GuestfsCompressDeviceOut" link="GuestfsCompressDeviceOut.html#GuestfsCompressDeviceOut-struct"/>
+    <keyword type="struct" name="struct GuestfsCompressDeviceOutClass" link="GuestfsCompressDeviceOut.html#GuestfsCompressDeviceOutClass"/>
+    <keyword type="function" name="guestfs_compress_device_out_new ()" link="GuestfsCompressDeviceOut.html#guestfs-compress-device-out-new"/>
+    <keyword type="property" name="The &quot;level&quot; property" link="GuestfsCompressDeviceOut.html#GuestfsCompressDeviceOut--level"/>
+    <keyword type="struct" name="struct GuestfsCopyDeviceToDevice" link="GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice-struct"/>
+    <keyword type="struct" name="struct GuestfsCopyDeviceToDeviceClass" link="GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDeviceClass"/>
+    <keyword type="function" name="guestfs_copy_device_to_device_new ()" link="GuestfsCopyDeviceToDevice.html#guestfs-copy-device-to-device-new"/>
+    <keyword type="property" name="The &quot;destoffset&quot; property" link="GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--destoffset"/>
+    <keyword type="property" name="The &quot;size&quot; property" link="GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--size"/>
+    <keyword type="property" name="The &quot;srcoffset&quot; property" link="GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--srcoffset"/>
+    <keyword type="struct" name="struct GuestfsCopyDeviceToFile" link="GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile-struct"/>
+    <keyword type="struct" name="struct GuestfsCopyDeviceToFileClass" link="GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFileClass"/>
+    <keyword type="function" name="guestfs_copy_device_to_file_new ()" link="GuestfsCopyDeviceToFile.html#guestfs-copy-device-to-file-new"/>
+    <keyword type="property" name="The &quot;destoffset&quot; property" link="GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--destoffset"/>
+    <keyword type="property" name="The &quot;size&quot; property" link="GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--size"/>
+    <keyword type="property" name="The &quot;srcoffset&quot; property" link="GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--srcoffset"/>
+    <keyword type="struct" name="struct GuestfsCopyFileToDevice" link="GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice-struct"/>
+    <keyword type="struct" name="struct GuestfsCopyFileToDeviceClass" link="GuestfsCopyFileToDevice.html#GuestfsCopyFileToDeviceClass"/>
+    <keyword type="function" name="guestfs_copy_file_to_device_new ()" link="GuestfsCopyFileToDevice.html#guestfs-copy-file-to-device-new"/>
+    <keyword type="property" name="The &quot;destoffset&quot; property" link="GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--destoffset"/>
+    <keyword type="property" name="The &quot;size&quot; property" link="GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--size"/>
+    <keyword type="property" name="The &quot;srcoffset&quot; property" link="GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--srcoffset"/>
+    <keyword type="struct" name="struct GuestfsCopyFileToFile" link="GuestfsCopyFileToFile.html#GuestfsCopyFileToFile-struct"/>
+    <keyword type="struct" name="struct GuestfsCopyFileToFileClass" link="GuestfsCopyFileToFile.html#GuestfsCopyFileToFileClass"/>
+    <keyword type="function" name="guestfs_copy_file_to_file_new ()" link="GuestfsCopyFileToFile.html#guestfs-copy-file-to-file-new"/>
+    <keyword type="property" name="The &quot;destoffset&quot; property" link="GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--destoffset"/>
+    <keyword type="property" name="The &quot;size&quot; property" link="GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--size"/>
+    <keyword type="property" name="The &quot;srcoffset&quot; property" link="GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--srcoffset"/>
+    <keyword type="struct" name="struct GuestfsTune2FS" link="GuestfsTune2FS.html#GuestfsTune2FS-struct"/>
+    <keyword type="struct" name="struct GuestfsTune2FSClass" link="GuestfsTune2FS.html#GuestfsTune2FSClass"/>
+    <keyword type="function" name="guestfs_tune2fs_new ()" link="GuestfsTune2FS.html#guestfs-tune2fs-new"/>
+    <keyword type="property" name="The &quot;errorbehavior&quot; property" link="GuestfsTune2FS.html#GuestfsTune2FS--errorbehavior"/>
+    <keyword type="property" name="The &quot;force&quot; property" link="GuestfsTune2FS.html#GuestfsTune2FS--force"/>
+    <keyword type="property" name="The &quot;group&quot; property" link="GuestfsTune2FS.html#GuestfsTune2FS--group"/>
+    <keyword type="property" name="The &quot;intervalbetweenchecks&quot; property" link="GuestfsTune2FS.html#GuestfsTune2FS--intervalbetweenchecks"/>
+    <keyword type="property" name="The &quot;lastmounteddirectory&quot; property" link="GuestfsTune2FS.html#GuestfsTune2FS--lastmounteddirectory"/>
+    <keyword type="property" name="The &quot;maxmountcount&quot; property" link="GuestfsTune2FS.html#GuestfsTune2FS--maxmountcount"/>
+    <keyword type="property" name="The &quot;mountcount&quot; property" link="GuestfsTune2FS.html#GuestfsTune2FS--mountcount"/>
+    <keyword type="property" name="The &quot;reservedblockscount&quot; property" link="GuestfsTune2FS.html#GuestfsTune2FS--reservedblockscount"/>
+    <keyword type="property" name="The &quot;reservedblockspercentage&quot; property" link="GuestfsTune2FS.html#GuestfsTune2FS--reservedblockspercentage"/>
+    <keyword type="property" name="The &quot;user&quot; property" link="GuestfsTune2FS.html#GuestfsTune2FS--user"/>
+    <keyword type="struct" name="struct GuestfsMDCreate" link="GuestfsMDCreate.html#GuestfsMDCreate-struct"/>
+    <keyword type="struct" name="struct GuestfsMDCreateClass" link="GuestfsMDCreate.html#GuestfsMDCreateClass"/>
+    <keyword type="function" name="guestfs_md_create_new ()" link="GuestfsMDCreate.html#guestfs-md-create-new"/>
+    <keyword type="property" name="The &quot;chunk&quot; property" link="GuestfsMDCreate.html#GuestfsMDCreate--chunk"/>
+    <keyword type="property" name="The &quot;level&quot; property" link="GuestfsMDCreate.html#GuestfsMDCreate--level"/>
+    <keyword type="property" name="The &quot;missingbitmap&quot; property" link="GuestfsMDCreate.html#GuestfsMDCreate--missingbitmap"/>
+    <keyword type="property" name="The &quot;nrdevices&quot; property" link="GuestfsMDCreate.html#GuestfsMDCreate--nrdevices"/>
+    <keyword type="property" name="The &quot;spare&quot; property" link="GuestfsMDCreate.html#GuestfsMDCreate--spare"/>
+    <keyword type="struct" name="struct GuestfsE2fsck" link="GuestfsE2fsck.html#GuestfsE2fsck-struct"/>
+    <keyword type="struct" name="struct GuestfsE2fsckClass" link="GuestfsE2fsck.html#GuestfsE2fsckClass"/>
+    <keyword type="function" name="guestfs_e2fsck_new ()" link="GuestfsE2fsck.html#guestfs-e2fsck-new"/>
+    <keyword type="property" name="The &quot;correct&quot; property" link="GuestfsE2fsck.html#GuestfsE2fsck--correct"/>
+    <keyword type="property" name="The &quot;forceall&quot; property" link="GuestfsE2fsck.html#GuestfsE2fsck--forceall"/>
+    <keyword type="struct" name="struct GuestfsNtfsfix" link="GuestfsNtfsfix.html#GuestfsNtfsfix-struct"/>
+    <keyword type="struct" name="struct GuestfsNtfsfixClass" link="GuestfsNtfsfix.html#GuestfsNtfsfixClass"/>
+    <keyword type="function" name="guestfs_ntfsfix_new ()" link="GuestfsNtfsfix.html#guestfs-ntfsfix-new"/>
+    <keyword type="property" name="The &quot;clearbadsectors&quot; property" link="GuestfsNtfsfix.html#GuestfsNtfsfix--clearbadsectors"/>
+    <keyword type="struct" name="struct GuestfsNtfscloneOut" link="GuestfsNtfscloneOut.html#GuestfsNtfscloneOut-struct"/>
+    <keyword type="struct" name="struct GuestfsNtfscloneOutClass" link="GuestfsNtfscloneOut.html#GuestfsNtfscloneOutClass"/>
+    <keyword type="function" name="guestfs_ntfsclone_out_new ()" link="GuestfsNtfscloneOut.html#guestfs-ntfsclone-out-new"/>
+    <keyword type="property" name="The &quot;force&quot; property" link="GuestfsNtfscloneOut.html#GuestfsNtfscloneOut--force"/>
+    <keyword type="property" name="The &quot;ignorefscheck&quot; property" link="GuestfsNtfscloneOut.html#GuestfsNtfscloneOut--ignorefscheck"/>
+    <keyword type="property" name="The &quot;metadataonly&quot; property" link="GuestfsNtfscloneOut.html#GuestfsNtfscloneOut--metadataonly"/>
+    <keyword type="property" name="The &quot;preservetimestamps&quot; property" link="GuestfsNtfscloneOut.html#GuestfsNtfscloneOut--preservetimestamps"/>
+    <keyword type="property" name="The &quot;rescue&quot; property" link="GuestfsNtfscloneOut.html#GuestfsNtfscloneOut--rescue"/>
+    <keyword type="struct" name="struct GuestfsMkfsBtrfs" link="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs-struct"/>
+    <keyword type="struct" name="struct GuestfsMkfsBtrfsClass" link="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfsClass"/>
+    <keyword type="function" name="guestfs_mkfs_btrfs_new ()" link="GuestfsMkfsBtrfs.html#guestfs-mkfs-btrfs-new"/>
+    <keyword type="property" name="The &quot;allocstart&quot; property" link="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--allocstart"/>
+    <keyword type="property" name="The &quot;bytecount&quot; property" link="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--bytecount"/>
+    <keyword type="property" name="The &quot;datatype&quot; property" link="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--datatype"/>
+    <keyword type="property" name="The &quot;label&quot; property" link="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--label"/>
+    <keyword type="property" name="The &quot;leafsize&quot; property" link="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--leafsize"/>
+    <keyword type="property" name="The &quot;metadata&quot; property" link="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--metadata"/>
+    <keyword type="property" name="The &quot;nodesize&quot; property" link="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--nodesize"/>
+    <keyword type="property" name="The &quot;sectorsize&quot; property" link="GuestfsMkfsBtrfs.html#GuestfsMkfsBtrfs--sectorsize"/>
+    <keyword type="struct" name="struct GuestfsSetE2attrs" link="GuestfsSetE2attrs.html#GuestfsSetE2attrs-struct"/>
+    <keyword type="struct" name="struct GuestfsSetE2attrsClass" link="GuestfsSetE2attrs.html#GuestfsSetE2attrsClass"/>
+    <keyword type="function" name="guestfs_set_e2attrs_new ()" link="GuestfsSetE2attrs.html#guestfs-set-e2attrs-new"/>
+    <keyword type="property" name="The &quot;clear&quot; property" link="GuestfsSetE2attrs.html#GuestfsSetE2attrs--clear"/>
+    <keyword type="struct" name="struct GuestfsBtrfsFsck" link="GuestfsBtrfsFsck.html#GuestfsBtrfsFsck-struct"/>
+    <keyword type="struct" name="struct GuestfsBtrfsFsckClass" link="GuestfsBtrfsFsck.html#GuestfsBtrfsFsckClass"/>
+    <keyword type="function" name="guestfs_btrfs_fsck_new ()" link="GuestfsBtrfsFsck.html#guestfs-btrfs-fsck-new"/>
+    <keyword type="property" name="The &quot;repair&quot; property" link="GuestfsBtrfsFsck.html#GuestfsBtrfsFsck--repair"/>
+    <keyword type="property" name="The &quot;superblock&quot; property" link="GuestfsBtrfsFsck.html#GuestfsBtrfsFsck--superblock"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_CLOSE" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-CLOSE:CAPS"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_SUBPROCESS_QUIT" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-SUBPROCESS-QUIT:CAPS"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_LAUNCH_DONE" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-LAUNCH-DONE:CAPS"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_PROGRESS" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-PROGRESS:CAPS"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_APPLIANCE" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-APPLIANCE:CAPS"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_LIBRARY" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-LIBRARY:CAPS"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_TRACE" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-TRACE:CAPS"/>
+    <keyword type="constant" name="GUESTFS_SESSION_EVENT_ENTER" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-ENTER:CAPS"/>
+    <keyword type="constant" name="GUESTFS_TRISTATE_FALSE" link="GuestfsTristate.html#GUESTFS-TRISTATE-FALSE:CAPS"/>
+    <keyword type="constant" name="GUESTFS_TRISTATE_TRUE" link="GuestfsTristate.html#GUESTFS-TRISTATE-TRUE:CAPS"/>
+    <keyword type="constant" name="GUESTFS_TRISTATE_NONE" link="GuestfsTristate.html#GUESTFS-TRISTATE-NONE:CAPS"/>
+  </functions>
+</book>

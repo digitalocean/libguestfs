@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-rescue 1"
-.TH virt-rescue 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-rescue 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -73,17 +73,17 @@ virt-rescue \- Run a rescue shell on a virtual machine
 .SH "КОРОТКИЙ ОПИС"
 .IX Header "КОРОТКИЙ ОПИС"
 .Vb 1
-\& virt\-rescue [\-\-options] \-d domname
+\& virt\-rescue [\-\-параметри] \-d назва_домену
 \&
 \& virt\-rescue [\-\-options] \-a disk.img [\-a disk.img ...]
 \&
-\& virt\-rescue \-\-suggest (\-d domname | \-a disk.img ...)
+\& virt\-rescue \-\-suggest (\-d назва_домену | \-a диск.img ...)
 .Ve
 .PP
 Старий стиль:
 .PP
 .Vb 1
-\& virt\-rescue [\-\-options] domname
+\& virt\-rescue [\-\-параметри] назва_домену
 \&
 \& virt\-rescue [\-\-options] disk.img [disk.img ...]
 .Ve
@@ -107,9 +107,9 @@ You can run virt-rescue on any virtual machine known to libvirt, or directly
 on disk image(s):
 .PP
 .Vb 1
-\& virt\-rescue \-d GuestName
+\& virt\-rescue \-d Назва_гостьової_системи
 \&
-\& virt\-rescue \-\-ro \-a /path/to/disk.img
+\& virt\-rescue \-\-ro \-a /шлях/до/диск.img
 \&
 \& virt\-rescue \-a /dev/sdc
 .Ve
@@ -174,6 +174,9 @@ partition that file (although we would recommend using \fIguestfish\fR\|(1)
 instead as it is more suitable for this purpose).  You can even use
 virt-rescue on things like \s-1SD\s0 cards.
 .PP
+You can get virt-rescue to give you scratch disk(s) to play with.  This is
+useful for testing out Linux utilities (see \fI\-\-scratch\fR).
+.PP
 Virt-rescue does not require root.  You only need to run it as root if you
 need root to open the disk image.
 .PP
@@ -234,13 +237,13 @@ auto-detection for subsequent \fI\-a\fR options.
 Приклад:
 .Sp
 .Vb 1
-\& virt\-rescue \-\-format=raw \-a disk.img
+\& virt\-rescue \-\-format=raw \-a диск.img
 .Ve
 .Sp
 forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR.
 .Sp
 .Vb 1
-\& virt\-rescue \-\-format=raw \-a disk.img \-\-format \-a another.img
+\& virt\-rescue \-\-format=raw \-a диск.img \-\-format \-a інший.img
 .Ve
 .Sp
 forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR and reverts to
@@ -268,13 +271,25 @@ Enable \s-1QEMU\s0 user networking in the guest.  See \*(L"\s-1NETWORK\s0\*(R".
 .IP "\fB\-\-ro\fR" 4
 .IX Item "--ro"
 .PD
-Open the image read-only.
+Відкрити образ у режимі лише читання.
 .Sp
 The option must always be used if the disk image or virtual machine might be
 running, and is generally recommended in cases where you don't need write
 access to the disk.
 .Sp
 Див. також \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" in \fIguestfish\fR\|(1).
+.IP "\fB\-\-scratch\fR" 4
+.IX Item "--scratch"
+.PD 0
+.IP "\fB\-\-scratch=N\fR" 4
+.IX Item "--scratch=N"
+.PD
+The \fI\-\-scratch\fR option adds a large scratch disk to the rescue appliance.
+\&\fI\-\-scratch=N\fR adds \f(CW\*(C`N\*(C'\fR scratch disks.  The scratch disk(s) are deleted
+automatically when virt-rescue exits.
+.Sp
+You can also mix \fI\-a\fR, \fI\-d\fR and \fI\-\-scratch\fR options.  The scratch disk(s)
+are added to the appliance in the order they appear on the command line.
 .IP "\fB\-\-selinux\fR" 4
 .IX Item "--selinux"
 Enable SELinux in the rescue appliance.  You should read
@@ -316,9 +331,9 @@ are done read-write.
 Див. \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" in \fIguestfish\fR\|(1).
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
-Enable tracing of libguestfs \s-1API\s0 calls.
-.SH "OLD-STYLE COMMAND LINE ARGUMENTS"
-.IX Header "OLD-STYLE COMMAND LINE ARGUMENTS"
+Увімкнути трасування викликів програмного інтерфейсу libguestfs.
+.SH "ПАРАМЕТРИ КОМАНДНОГО РЯДКА У ФОРМАТІ ПОПЕРЕДНІХ ВЕРСІЙ"
+.IX Header "ПАРАМЕТРИ КОМАНДНОГО РЯДКА У ФОРМАТІ ПОПЕРЕДНІХ ВЕРСІЙ"
 Previous versions of virt-rescue allowed you to write either:
 .PP
 .Vb 1
@@ -334,7 +349,8 @@ Previous versions of virt-rescue allowed you to write either:
 whereas in this version you should use \fI\-a\fR or \fI\-d\fR respectively to avoid
 the confusing case where a disk image might have the same name as a guest.
 .PP
-For compatibility the old style is still supported.
+З міркувань зворотної сумісності передбачено підтримку запису параметрів у
+застарілому форматі.
 .SH "МЕРЕЖА"
 .IX Header "МЕРЕЖА"
 Adding the \fI\-\-network\fR option enables \s-1QEMU\s0 user networking in the rescue
@@ -369,8 +385,8 @@ See \fIbash\fR\|(1) for more details.
 .IX Header "ЗМІННІ СЕРЕДОВИЩА"
 Several environment variables affect virt-rescue.  See
 \&\*(L"\s-1ENVIRONMENT\s0 \s-1VARIABLES\s0\*(R" in \fIguestfs\fR\|(3) for the complete list.
-.SH "SHELL QUOTING"
-.IX Header "SHELL QUOTING"
+.SH "ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ"
+.IX Header "ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ"
 Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
@@ -397,18 +413,18 @@ This configuration file controls the default read-only or read-write mode
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "АВТОРСЬКІ ПРАВА"
 .IX Header "АВТОРСЬКІ ПРАВА"
-Copyright (C) 2009\-2012 Red Hat Inc.
+© Red Hat Inc., 2009–2012
 .PP
-This program is free software; you can redistribute it and/or modify it
-under the terms of the \s-1GNU\s0 General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option)
-any later version.
+Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
+змінювати її за умов дотримання \s-1GNU\s0 General Public License  утому вигляді,
+що оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
+забажаєте) будь\-якої випущеної пізніше.
 .PP
 Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
 БУДЬ\-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
-You should have received a copy of the \s-1GNU\s0 General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 51
-Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.
+Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301, \s-1USA\s0.

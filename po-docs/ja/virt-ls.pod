@@ -2,21 +2,21 @@
 
 =head1 名前
 
-virt-ls - List files in a virtual machine
+virt-ls - 仮想マシンのファイルの一覧表示
 
-=head1 SYNOPSIS
+=head1 書式
 
  virt-ls [--options] -d domname directory [directory ...]
 
  virt-ls [--options] -a disk.img [-a disk.img ...] directory [directory ...]
 
-Old style:
+古い形式:
 
  virt-ls [--options] domname directory
 
  virt-ls [--options] disk.img [disk.img ...] directory
 
-=head1 DESCRIPTION
+=head1 説明
 
 C<virt-ls> lists filenames, file sizes, checksums, extended attributes and
 more from a virtual machine or disk image.
@@ -31,7 +31,7 @@ C<virt-ls> can do many simple file listings.  For more complicated cases you
 may need to use L<guestfish(1)>, or write a program directly to the
 L<guestfs(3)> API.
 
-=head1 EXAMPLES
+=head1 例
 
 Get a list of all files and directories in a virtual machine:
 
@@ -41,27 +41,27 @@ List all setuid or setgid programs in a Linux virtual machine:
 
  virt-ls -lR -d guest / | grep '^- [42]'
 
-List all public-writable directories in a Linux virtual machine:
+Linux 仮想マシンにあるすべての全体書き込み可能なディレクトリーを一覧表示します:
 
  virt-ls -lR -d guest / | grep '^d ...7'
 
-List all Unix domain sockets in a Linux virtual machine:
+Linux 仮想マシンにあるすべての Unix ドメインソケットを一覧表示します:
 
  virt-ls -lR -d guest / | grep '^s'
 
-List all regular files with filenames ending in '.png':
+'.png' で終わるファイル名を持つすべての通常ファイルを表示するには:
 
  virt-ls -lR -d guest / | grep -i '^-.*\.png$'
 
-To display files larger than 10MB in home directories:
+ホームディレクトリにある 10MB より大きなファイルを表示するには:
 
  virt-ls -lR -d guest /home | awk '$3 > 10*1024*1024'
 
-Find everything modified in the last 7 days:
+7日以内に変更されたものをすべて検索します:
 
  virt-ls -lR -d guest --time-days / | awk '$6 <= 7'
 
-Find regular files modified in the last 24 hours:
+24時間以内に変更された通常のファイルを検索します:
 
  virt-ls -lR -d guest --time-days / | grep '^-' | awk '$6 < 1'
 
@@ -80,24 +80,23 @@ need to add the I<--checksum> parameter to both C<virt-ls> commands.
 I<--checksum> can be quite slow since it has to read and compute a checksum
 of every regular file in the virtual machine.
 
-=head1 OUTPUT MODES
+=head1 出力モード
 
-C<virt-ls> has four output modes, controlled by different combinations of
-the I<-l> and I<-R> options.
+C<virt-ls> は 4 つの出力モードがあります。I<-l> および I<-R> オプションの異なる組み合わせにより制御されます。
 
-=head2 SIMPLE LISTING
+=head2 簡単な一覧方法
 
-A simple listing is like the ordinary L<ls(1)> command:
+簡単な一覧方法は通常の L<ls(1)> コマンドと似ています:
 
  $ virt-ls -d guest /
  bin
  boot
  [etc.]
 
-=head2 LONG LISTING
+=head2 ロング形式の一覧方法
 
-With the I<-l> (I<--long>) option, the output is like the C<ls -l> command
-(more specifically, like the C<guestfs_ll> function).
+I<-l> (I<--long>) オプションを用いると、出力は C<ls -l> コマンドのようになります（より具体的には C<guestfs_ll>
+関数と似ています）。
 
  $ virt-ls -l -d guest /
  total 204
@@ -105,24 +104,21 @@ With the I<-l> (I<--long>) option, the output is like the C<ls -l> command
  dr-xr-xr-x.   5 root root   3072 2009-08-25 19:06 boot
  [etc.]
 
-Note that while this is useful for displaying a directory, do not try
-parsing this output in another program.  Use L</RECURSIVE LONG LISTING>
-instead.
+これはディレクトリーを表示するために有用ですが、他のプログラムにおいてこの出力を解析しないよう注意してください。代わりに
+L</再帰的なロング形式の一覧方法> を使用してください。
 
-=head2 RECURSIVE LISTING
+=head2 再帰的な一覧方法
 
-With the I<-R> (I<--recursive>) option, C<virt-ls> lists the names of files
-and directories recursively:
+I<-R> (I<--recursive>) オプションを用いると、C<virt-ls> はファイルおよびディレクトリーを再帰的に一覧表示します:
 
  $ virt-ls -R -d guest /tmp
  foo
  foo/bar
  [etc.]
 
-To generate this output, C<virt-ls> runs the C<guestfs_find0> function and
-converts C<\0> characters to C<\n>.
+この出力を生成するには、C<virt-ls> が C<guestfs_find0> 関数を実行して、C<\0> 文字を C<\n> に変換します。
 
-=head2 RECURSIVE LONG LISTING
+=head2 再帰的なロング形式の一覧方法
 
 Using I<-lR> options together changes the output to display directories
 recursively, with file stats, and optionally other features such as
@@ -157,35 +153,31 @@ These basic fields are always shown:
 
 =item type
 
-The file type, one of: C<-> (regular file), C<d> (directory), C<c>
-(character device), C<b> (block device), C<p> (named pipe), C<l> (symbolic
-link), C<s> (socket) or C<u> (unknown).
+ファイル形式。次のどれかです: C<-> (通常のファイル), C<d> (ディレクトリー), C<c> (キャラクターデバイス), C<b>
+(ブロックデバイス), C<p> (名前付きパイプ), C<l> (シンボリックリンク), C<s> (ソケット) or C<u> (不明)。
 
-=item permissions
+=item パーミッション
 
-The Unix permissions, displayed as a 4 digit octal number.
+Unix パーティション。4 桁の8進数として表示されます。
 
-=item size
+=item 容量
 
-The size of the file.  This is shown in bytes unless I<-h> or
-I<--human-readable> option is given, in which case this is shown as a
-human-readable number.
+ファイルの容量。  読みやすい形式の数値として表示する I<-h> または I<--human-readable>
+オプションが指定されていなければ、バイト単位で表示されます。
 
-=item path
+=item パス
 
-The full path of the file or directory.
+ファイルまたはディレクトリの完全パス。
 
-=item link
+=item リンク
 
-For symbolic links only, the link target.
+シンボリックリンクのみに対して、リンク先。
 
 =back
 
-In I<-lR> mode, additional command line options enable the display of more
-fields.
+I<-lR> モードでは、追加のコマンドラインオプションにより、さらなる項目の表示を有効にします。
 
-With the I<--uids> flag, these additional fields are displayed before the
-path:
+I<--uids> フラグを用いると、これらの追加項目がパスの前に表示されます:
 
 =over 4
 
@@ -193,33 +185,32 @@ path:
 
 =item gid
 
-The UID and GID of the owner of the file (displayed numerically).  Note
-these only make sense in the context of a Unix-like guest.
+ファイルの所有者の UID および GID (数値表記)。  これらは Unix 系の仮想マシンにおいてのみ意味があることに注意してください。
 
 =back
 
-With the I<--times> flag, these additional fields are displayed:
+I<--times> フラグがあると、これらの追加項目が表示されます:
 
 =over 4
 
 =item atime
 
-The time of last access.
+アクセス日時。
 
 =item mtime
 
-The time of last modification.
+最終変更日時。
 
 =item ctime
 
-The time of last status change.
+最終属性変更日時。
 
 =back
 
-The time fields are displayed as string dates and times, unless one of the
-I<--time-t>, I<--time-relative> or I<--time-days> flags is given.
+I<--time-t>, I<--time-relative> または I<--time-days>
+フラグのどれかが指定されていなければ、日付と時間の文字列として time 項目が表示されます。
 
-With the I<--extra-stats> flag, these additional fields are displayed:
+I<--extra-stats> フラグを用いると、これらの追加項目が表示されます:
 
 =over 4
 
@@ -230,19 +221,19 @@ match devices as known to the guest.
 
 =item inode
 
-The inode number.
+inode 番号。
 
 =item nlink
 
-The number of hard links.
+ハードリンク数。
 
 =item rdev
 
 For block and char special files, the device (displayed as major:minor).
 
-=item blocks
+=item ブロック
 
-The number of 512 byte blocks allocated to the file.
+ファイルに割り当てられた 512 バイトブロック数。
 
 =back
 
@@ -250,13 +241,13 @@ With the I<--checksum> flag, the checksum of the file contents is shown
 (only for regular files).  Computing file checksums can take a considerable
 amount of time.
 
-=head1 OPTIONS
+=head1 オプション
 
 =over 4
 
 =item B<--help>
 
-Display brief help.
+簡単なヘルプを表示します。
 
 =item B<-a> file
 
@@ -266,8 +257,7 @@ Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate I<-a> options.
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、I<--format=..> オプションを使用します。
 
 =item B<--checksum>
 
@@ -277,18 +267,15 @@ Display checksum over file contents for regular files.  With no argument,
 this defaults to using I<md5>.  Using an argument, you can select the
 checksum type to use.
 
-This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
-LISTING> above.
+このオプションは I<-lR> 出力モードにおいてのみ効果があります。  上の L</RECURSIVE LONG LISTING> 参照。
 
 =item B<-c> URI
 
 =item B<--connect> URI
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された I<URI> に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 
-If you specify guest block devices directly (I<-a>), then libvirt is not
-used at all.
+ゲストのブロックデバイスを直接指定していると（(I<-a>)）、libvirt は何も使用されません。
 
 =item B<--csv>
 
@@ -300,8 +287,7 @@ ABOUT CSV FORMAT> below.
 
 =item B<--domain> guest
 
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  ドメインの UUID が名前の代わりに使用されます。
 
 =item B<--echo-keys>
 
@@ -314,41 +300,36 @@ see what you are typing.
 
 Display extra stats.
 
-This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
-LISTING> above.
+このオプションは I<-lR> 出力モードにおいてのみ効果があります。  上の L</RECURSIVE LONG LISTING> 参照。
 
 =item B<--format=raw|qcow2|..>
 
 =item B<--format>
 
-The default for the I<-a> option is to auto-detect the format of the disk
-image.  Using this forces the disk format for I<-a> options which follow on
-the command line.  Using I<--format> with no argument switches back to
-auto-detection for subsequent I<-a> options.
+I<-a> オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、I<-a>
+オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで I<--format> を使用することにより、後続の I<-a>
+オプションに対して自動検知に戻せます。
 
-For example:
+例:
 
  virt-ls --format=raw -a disk.img /dir
 
-forces raw format (no auto-detection) for C<disk.img>.
+C<disk.img> に対してローイメージを強制します（自動検出しません）。
 
  virt-ls --format=raw -a disk.img --format -a another.img /dir
 
-forces raw format (no auto-detection) for C<disk.img> and reverts to
-auto-detection for C<another.img>.
+C<disk.img> に対してロー形式（自動検知なし）を強制し、C<another.img> に対して自動検知に戻します。
 
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (CVE-2010-3851).
+仮想マシンのディスクイメージが信頼できないロー形式であるならば、ディスク形式を指定するためにこのオプションを使用すべきです。これにより、悪意のある仮想マシンにより起こり得るセキュリティ問題を回避できます
+(CVE-2010-3851)。
 
 =item B<-h>
 
 =item B<--human-readable>
 
-Display file sizes in human-readable format.
+読みやすい形式でファイル容量を表示します。
 
-This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
-LISTING> above.
+このオプションは I<-lR> 出力モードにおいてのみ効果があります。  上の L</RECURSIVE LONG LISTING> 参照。
 
 =item B<--keys-from-stdin>
 
@@ -380,8 +361,7 @@ parsed.  See L</RECURSIVE LONG LISTING>.
 
 Display time fields.
 
-This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
-LISTING> above.
+このオプションは I<-lR> 出力モードにおいてのみ効果があります。  上の L</RECURSIVE LONG LISTING> 参照。
 
 =item B<--time-days>
 
@@ -390,64 +370,60 @@ Display time fields as days before now (negative if in the future).
 Note that C<0> in output means "up to 1 day before now", or that the age of
 the file is between 0 and 86399 seconds.
 
-This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
-LISTING> above.
+このオプションは I<-lR> 出力モードにおいてのみ効果があります。  上の L</RECURSIVE LONG LISTING> 参照。
 
 =item B<--time-relative>
 
 Display time fields as seconds before now (negative if in the future).
 
-This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
-LISTING> above.
+このオプションは I<-lR> 出力モードにおいてのみ効果があります。  上の L</RECURSIVE LONG LISTING> 参照。
 
 =item B<--time-t>
 
 Display time fields as seconds since the Unix epoch.
 
-This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
-LISTING> above.
+このオプションは I<-lR> 出力モードにおいてのみ効果があります。  上の L</RECURSIVE LONG LISTING> 参照。
 
 =item B<--uids>
 
-Display UID and GID fields.
+UID と GID の項目を表示します。
 
-This option only has effect in I<-lR> output mode.  See L</RECURSIVE LONG
-LISTING> above.
+このオプションは I<-lR> 出力モードにおいてのみ効果があります。  上の L</RECURSIVE LONG LISTING> 参照。
 
 =item B<-v>
 
 =item B<--verbose>
 
-Enable verbose messages for debugging.
+デバッグ用の冗長なメッセージを有効にします。
 
 =item B<-V>
 
 =item B<--version>
 
-Display version number and exit.
+バージョン番号を表示して終了します。
 
 =item B<-x>
 
-Enable tracing of libguestfs API calls.
+libguestfs API 呼び出しのトレースを有効にします。
 
 =back
 
-=head1 OLD-STYLE COMMAND LINE ARGUMENTS
+=head1 旧形式のコマンドライン引数
 
 Previous versions of virt-ls allowed you to write either:
 
  virt-ls disk.img [disk.img ...] /dir
 
-or
+または
 
  virt-ls guestname /dir
 
 whereas in this version you should use I<-a> or I<-d> respectively to avoid
 the confusing case where a disk image might have the same name as a guest.
 
-For compatibility the old style is still supported.
+互換性のため古い形式がまだサポートされています。
 
-=head1 NOTE ABOUT CSV FORMAT
+=head1 CSV 形式に関する注意
 
 Comma-separated values (CSV) is a deceptive format.  It I<seems> like it
 should be easy to parse, but it is definitely not easy to parse.
@@ -478,17 +454,17 @@ meaning to the shell such as C<#> and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 L<sh(1)> for details.
 
-=head1 EXIT STATUS
+=head1 終了ステータス
 
-This program returns 0 if successful, or non-zero if there was an error.
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-cat(1)>, L<virt-copy-out(1)>,
 L<virt-tar-out(1)>, L<Sys::Guestfs(3)>, L<Sys::Guestfs::Lib(3)>,
 L<Sys::Virt(3)>, L<http://libguestfs.org/>.
 
-=head1 AUTHOR
+=head1 著者
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 

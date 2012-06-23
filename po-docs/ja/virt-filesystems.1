@@ -62,24 +62,23 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-filesystems 1"
-.TH virt-filesystems 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-filesystems 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "名前"
 .IX Header "名前"
-virt-filesystems \- List filesystems, partitions, block devices, \s-1LVM\s0 in a
-virtual machine or disk image
-.SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
+virt-filesystems \- 仮想マシンまたはディスクイメージにあるファイルシステム、パーティション、ブロックデバイスおよび \s-1LVM\s0 の一覧表示
+.SH "書式"
+.IX Header "書式"
 .Vb 1
 \& virt\-filesystems [\-\-options] \-d domname
 \&
 \& virt\-filesystems [\-\-options] \-a disk.img [\-a disk.img ...]
 .Ve
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
+.SH "説明"
+.IX Header "説明"
 This tool allows you to discover filesystems, partitions, logical volumes,
 and their sizes in a disk image or virtual machine.  It is a replacement for
 \&\fIvirt\-list\-filesystems\fR\|(1) and \fIvirt\-list\-partitions\fR\|(1).
@@ -93,14 +92,13 @@ from a disk image:
 \& done
 .Ve
 .PP
-Another use is to list partitions before using another tool to modify those
-partitions (such as \fIvirt\-resize\fR\|(1)).  If you are curious about what an
-unknown disk image contains, use this tool along with \fIvirt\-inspector\fR\|(1).
+他の使用方法は、これらのパーティションを変更するために (\fIvirt\-resize\fR\|(1) のような)
+他のツールを使用する前に、パーティションを一覧表示することです。未知のディスクイメージが含んでいるものについてわからなければ、\fIvirt\-inspector\fR\|(1)
+とともにこのツールを使用します。
 .PP
-Various command line options control what this program displays.  You need
-to give either \fI\-a\fR or \fI\-d\fR options to specify the disk image or libvirt
-guest respectively.  If you just specify that then the program shows
-filesystems found, one per line, like this:
+さまざまなコマンドラインオプションがこのプログラムが表示するものを制御します。それぞれディスクイメージまたは libvirt 仮想マシンを指定するには
+\&\fI\-a\fR または \fI\-d\fR オプションを与える必要があります。単にそれを指定すると、見つけたファイルシステムを 1 行ごとに 1
+つずつこのように表示します:
 .PP
 .Vb 3
 \& $ virt\-filesystems \-a disk.img
@@ -112,13 +110,12 @@ If you add \fI\-l\fR or \fI\-\-long\fR then the output includes extra informatio
 .PP
 .Vb 4
 \& $ virt\-filesystems \-a disk.img \-l
-\& Name                   Type         VFS   Label  Size
+\& 名前                   種類         VFS   ラベル 容量
 \& /dev/sda1              filesystem   ext4  boot   524288000
 \& /dev/vg_guest/lv_root  filesystem   ext4  root   10212081664
 .Ve
 .PP
-If you add \fI\-\-extra\fR then non-mountable (swap, unknown) filesystems are
-shown as well:
+\&\fI\-\-extra\fR を追加すると、マウント不可能な（swap や未知の）ファイルシステムも同様に表示されます:
 .PP
 .Vb 5
 \& $ virt\-filesystems \-a disk.img \-\-extra
@@ -128,7 +125,7 @@ shown as well:
 \& /dev/vg_guest/lv_data
 .Ve
 .PP
-If you add \fI\-\-partitions\fR then partitions are shown instead of filesystems:
+\&\fI\-\-partitions\fR を追加すると、ファイルシステムの代わりにパーティションが表示されます:
 .PP
 .Vb 3
 \& $ virt\-filesystems \-a disk.img \-\-partitions
@@ -136,8 +133,8 @@ If you add \fI\-\-partitions\fR then partitions are shown instead of filesystems
 \& /dev/sda2
 .Ve
 .PP
-Similarly you can use \fI\-\-logical\-volumes\fR, \fI\-\-volume\-groups\fR,
-\&\fI\-\-physical\-volumes\fR, \fI\-\-block\-devices\fR to list those items.
+同様に、それらの項目を一覧表示するには \fI\-\-logical\-volumes\fR, \fI\-\-volume\-groups\fR,
+\&\fI\-\-physical\-volumes\fR, \fI\-\-block\-devices\fR を使用できます。
 .PP
 You can use these options in combination as well (if you want a combination
 including filesystems, you have to add \fI\-\-filesystems\fR).  Notice that some
@@ -162,12 +159,12 @@ information about everything.
 \& /dev/sda  device     \-    \-               20G  \-        \-
 .Ve
 .PP
-For machine-readable output, use \fI\-\-csv\fR to get Comma-Separated Values.
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+マシン読み込み可能な出力のために、カンマ区切り値を取得するために \fI\-\-csv\fR を使用します。
+.SH "オプション"
+.IX Header "オプション"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
-Display brief help.
+簡単なヘルプを表示します。
 .IP "\fB\-a\fR file" 4
 .IX Item "-a file"
 .PD 0
@@ -178,34 +175,30 @@ Add \fIfile\fR which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate \fI\-a\fR options.
 .Sp
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the \fI\-\-format=..\fR option.
+ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、\fI\-\-format=..\fR オプションを使用します。
 .IP "\fB\-\-all\fR" 4
 .IX Item "--all"
-Display everything.  This is currently the same as specifying these options:
-\&\fI\-\-filesystems\fR, \fI\-\-extra\fR, \fI\-\-partitions\fR, \fI\-\-block\-devices\fR,
-\&\fI\-\-logical\-volumes\fR, \fI\-\-volume\-groups\fR, \fI\-\-physical\-volumes\fR.  (More may
-be added to this list in future).
+すべてを表示します。これは現在これらのオプションを指定するのと同じです: \fI\-\-filesystems\fR, \fI\-\-extra\fR,
+\&\fI\-\-partitions\fR, \fI\-\-block\-devices\fR, \fI\-\-logical\-volumes\fR,
+\&\fI\-\-volume\-groups\fR, \fI\-\-physical\-volumes\fR。（将来この一覧にさらに追加されるかもしれません。）
 .Sp
-See also \fI\-\-long\fR.
+\&\fI\-\-long\fR 参照。
 .IP "\fB\-\-blkdevs\fR" 4
 .IX Item "--blkdevs"
 .PD 0
 .IP "\fB\-\-block\-devices\fR" 4
 .IX Item "--block-devices"
 .PD
-Display block devices.
+ブロックデバイスを表示します。
 .IP "\fB\-c\fR \s-1URI\s0" 4
 .IX Item "-c URI"
 .PD 0
 .IP "\fB\-\-connect\fR \s-1URI\s0" 4
 .IX Item "--connect URI"
 .PD
-If using libvirt, connect to the given \fI\s-1URI\s0\fR.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された \fI\s-1URI\s0\fR に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 .Sp
-If you specify guest block devices directly (\fI\-a\fR), then libvirt is not
-used at all.
+ゲストのブロックデバイスを直接指定していると（(\fI\-a\fR)）、libvirt は何も使用されません。
 .IP "\fB\-\-csv\fR" 4
 .IX Item "--csv"
 Write out the results in \s-1CSV\s0 format (comma-separated values).  This format
@@ -217,8 +210,7 @@ can be imported easily into databases and spreadsheets, but read \*(L"\s-1NOTE\s
 .IP "\fB\-\-domain\fR guest" 4
 .IX Item "--domain guest"
 .PD
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  ドメインの \s-1UUID\s0 が名前の代わりに使用されます。
 .IP "\fB\-\-echo\-keys\fR" 4
 .IX Item "--echo-keys"
 When prompting for keys and passphrases, virt-filesystems normally turns
@@ -231,49 +223,46 @@ This causes filesystems that are not ordinary, mountable filesystems to be
 displayed.  This category includes swapspace, and filesystems that are empty
 or contain unknown data.
 .Sp
-This option implies \fI\-\-filesystems\fR.
+このオプションは \fI\-\-filesystems\fR を意味します。
 .IP "\fB\-\-filesystems\fR" 4
 .IX Item "--filesystems"
 Display mountable filesystems.  If no display option was selected then this
 option is implied.
 .Sp
-With \fI\-\-extra\fR, non-mountable filesystems are shown too.
+\&\fI\-\-extra\fR を用いると、マウントできないファイルシステムも表示されます。
 .IP "\fB\-\-format=raw|qcow2|..\fR" 4
 .IX Item "--format=raw|qcow2|.."
 .PD 0
 .IP "\fB\-\-format\fR" 4
 .IX Item "--format"
 .PD
-The default for the \fI\-a\fR option is to auto-detect the format of the disk
-image.  Using this forces the disk format for \fI\-a\fR options which follow on
-the command line.  Using \fI\-\-format\fR with no argument switches back to
-auto-detection for subsequent \fI\-a\fR options.
+\&\fI\-a\fR オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、\fI\-a\fR
+オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで \fI\-\-format\fR を使用することにより、後続の \fI\-a\fR
+オプションに対して自動検知に戻せます。
 .Sp
-For example:
+例:
 .Sp
 .Vb 1
 \& virt\-filesystems \-\-format=raw \-a disk.img
 .Ve
 .Sp
-forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR.
+\&\f(CW\*(C`disk.img\*(C'\fR に対してローイメージを強制します（自動検出しません）。
 .Sp
 .Vb 1
 \& virt\-filesystems \-\-format=raw \-a disk.img \-\-format \-a another.img
 .Ve
 .Sp
-forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR and reverts to
-auto-detection for \f(CW\*(C`another.img\*(C'\fR.
+\&\f(CW\*(C`disk.img\*(C'\fR に対してロー形式（自動検知なし）を強制し、\f(CW\*(C`another.img\*(C'\fR に対して自動検知に戻します。
 .Sp
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (\s-1CVE\-2010\-3851\s0).
+仮想マシンのディスクイメージが信頼できないロー形式であるならば、ディスク形式を指定するためにこのオプションを使用すべきです。これにより、悪意のある仮想マシンにより起こり得るセキュリティ問題を回避できます
+(\s-1CVE\-2010\-3851\s0)。
 .IP "\fB\-h\fR" 4
 .IX Item "-h"
 .PD 0
 .IP "\fB\-\-human\-readable\fR" 4
 .IX Item "--human-readable"
 .PD
-In \fI\-\-long\fR mode, display sizes in human-readable format.
+\&\fI\-\-long\fR モードでは、読みやすい形式で容量を表示します。
 .IP "\fB\-\-keys\-from\-stdin\fR" 4
 .IX Item "--keys-from-stdin"
 Read key or passphrase parameters from stdin.  The default is to try to read
@@ -296,7 +285,7 @@ programs.
 Use \fI\-h\fR if you want sizes to be displayed in human-readable format.  The
 default is to show raw numbers of \fIbytes\fR.
 .Sp
-Use \fI\-\-uuid\fR to display UUIDs too.
+\&\s-1UUID\s0 も表示するには \fI\-\-uuid\fR を使用します。
 .IP "\fB\-\-lvs\fR" 4
 .IX Item "--lvs"
 .PD 0
@@ -305,11 +294,10 @@ Use \fI\-\-uuid\fR to display UUIDs too.
 .IP "\fB\-\-logical\-volumes\fR" 4
 .IX Item "--logical-volumes"
 .PD
-Display \s-1LVM\s0 logical volumes.  In this mode, these are displayed irrespective
-of whether the LVs contain filesystems.
+\&\s-1LVM\s0 論理ボリュームを表示します。  このモードでは、論理ボリュームが含むファイルシステムにかかわりなく表示します。
 .IP "\fB\-\-no\-title\fR" 4
 .IX Item "--no-title"
-In \fI\-\-long\fR mode, don't add a title row.
+\&\fI\-\-long\fR モードでは、見出し行を追加しません。
 .Sp
 Note that the order of the columns is not fixed, and may change in future
 versions of virt-filesystems, so using this option may give you unexpected
@@ -320,8 +308,7 @@ surprises.
 .IP "\fB\-\-partitions\fR" 4
 .IX Item "--partitions"
 .PD
-Display partitions.  In this mode, these are displayed irrespective of
-whether the partitions contain filesystems.
+パーティションを表示します。  このモードでは、パーティションが含むファイルシステムにかかわりなく表示します。
 .IP "\fB\-\-pvs\fR" 4
 .IX Item "--pvs"
 .PD 0
@@ -330,28 +317,28 @@ whether the partitions contain filesystems.
 .IP "\fB\-\-physical\-volumes\fR" 4
 .IX Item "--physical-volumes"
 .PD
-Display \s-1LVM\s0 physical volumes.
+\&\s-1LVM\s0 物理ボリュームを表示します。
 .IP "\fB\-\-uuid\fR" 4
 .IX Item "--uuid"
 .PD 0
 .IP "\fB\-\-uuids\fR" 4
 .IX Item "--uuids"
 .PD
-In \fI\-\-long\fR mode, display UUIDs as well.
+\&\fI\-\-long\fR モードでは \s-1UUID\s0 も表示されます。
 .IP "\fB\-v\fR" 4
 .IX Item "-v"
 .PD 0
 .IP "\fB\-\-verbose\fR" 4
 .IX Item "--verbose"
 .PD
-Enable verbose messages for debugging.
+デバッグ用の冗長なメッセージを有効にします。
 .IP "\fB\-V\fR" 4
 .IX Item "-V"
 .PD 0
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
 .PD
-Display version number and exit.
+バージョン番号を表示して終了します。
 .IP "\fB\-\-vgs\fR" 4
 .IX Item "--vgs"
 .PD 0
@@ -360,33 +347,31 @@ Display version number and exit.
 .IP "\fB\-\-volume\-groups\fR" 4
 .IX Item "--volume-groups"
 .PD
-Display \s-1LVM\s0 volume groups.
+\&\s-1LVM\s0 ボリュームグループを表示します。
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
-Enable tracing of libguestfs \s-1API\s0 calls.
-.SH "COLUMNS"
-.IX Header "COLUMNS"
-Note that columns in the output are subject to reordering and change in
-future versions of this tool.
-.IP "\fBName\fR" 4
-.IX Item "Name"
-The filesystem, partition, block device or \s-1LVM\s0 name.
+libguestfs \s-1API\s0 呼び出しのトレースを有効にします。
+.SH "列"
+.IX Header "列"
+出力にある列はこのツールの将来のバージョンにおいて並び替えられる場合や変更される場合があることに注意してください。
+.IP "\fB名前\fR" 4
+.IX Item "名前"
+ファイルシステム、パーティション、ブロックデバイスまたは \s-1LVM\s0 の名前。
 .Sp
 For device and partition names these are displayed as canonical libguestfs
 names, so that for example \f(CW\*(C`/dev/sda2\*(C'\fR is the second partition on the first
 device.
 .Sp
-If the \fI\-\-long\fR option is \fBnot\fR specified, then only the name column is
-shown in the output.
-.IP "\fBType\fR" 4
-.IX Item "Type"
-The object type, for example \f(CW\*(C`filesystem\*(C'\fR, \f(CW\*(C`lv\*(C'\fR, \f(CW\*(C`device\*(C'\fR etc.
+\&\fI\-\-long\fR オプションが指定されて\fBいない\fRと、名前の列のみが出力に表示されます。
+.IP "\fB種類\fR" 4
+.IX Item "種類"
+対象の形式。たとえば、\f(CW\*(C`filesystem\*(C'\fR, \f(CW\*(C`lv\*(C'\fR, \f(CW\*(C`device\*(C'\fR など。
 .IP "\fB\s-1VFS\s0\fR" 4
 .IX Item "VFS"
 If there is a filesystem, then this column displays the filesystem type if
 one could be detected, eg. \f(CW\*(C`ext4\*(C'\fR.
-.IP "\fBLabel\fR" 4
-.IX Item "Label"
+.IP "\fBラベル\fR" 4
+.IX Item "ラベル"
 If the object has a label (used for identifying and mounting filesystems)
 then this column contains the label.
 .IP "\fB\s-1MBR\s0\fR" 4
@@ -395,25 +380,27 @@ The partition type byte, displayed as a two digit hexadecimal number.  A
 comprehensive list of partition types can be found here:
 http://www.win.tue.nl/~aeb/partitions/partition_types\-1.html <http://www.win.tue.nl/~aeb/partitions/partition_types-1.html>
 .Sp
-This is only applicable for \s-1DOS\s0 (\s-1MBR\s0) partitions.
-.IP "\fBSize\fR" 4
-.IX Item "Size"
+これは \s-1DOS\s0 (\s-1MBR\s0) パーティションに対してのみ適用できます。
+.IP "\fB容量\fR" 4
+.IX Item "容量"
 The size of the object in bytes.  If the \fI\-\-human\fR option is used then the
 size is displayed in a human-readable form.
 .IP "\fBParent\fR" 4
 .IX Item "Parent"
-The parent column records the parent relationship between objects.  For
-example, if the object is a partition, then this column contains the name of
-the containing device.  If the object is a logical volume, then this column
-is the name of the volume group.
+親カラムはオブジェクト間の親子関係を記録します。
+.Sp
+たとえば、オブジェクトがパーティションならば、このカラムは含んでいるデバイスの名前が含まれます。オブジェクトが論理ボリュームならば、このカラムはボリュームグループの名前です。
+.Sp
+If there is more than one parent, then this column is (internal to the
+column) a comma-separated list, eg. \f(CW\*(C`/dev/sda,/dev/sdb\*(C'\fR.
 .IP "\fB\s-1UUID\s0\fR" 4
 .IX Item "UUID"
 If the object has a \s-1UUID\s0 (used for identifying and mounting filesystems and
 block devices) then this column contains the \s-1UUID\s0 as a string.
 .Sp
-The \s-1UUID\s0 is only displayed if the \fI\-\-uuid\fR option is given.
-.SH "NOTE ABOUT CSV FORMAT"
-.IX Header "NOTE ABOUT CSV FORMAT"
+\&\fI\-\-uuid\fR オプションが指定されると、 \s-1UUID\s0 のみが表示されます。
+.SH "CSV 形式に関する注意"
+.IX Header "CSV 形式に関する注意"
 Comma-separated values (\s-1CSV\s0) is a deceptive format.  It \fIseems\fR like it
 should be easy to parse, but it is definitely not easy to parse.
 .PP
@@ -445,16 +432,16 @@ Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
-.SH "EXIT STATUS"
-.IX Header "EXIT STATUS"
-This program returns 0 if successful, or non-zero if there was an error.
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
+.SH "終了ステータス"
+.IX Header "終了ステータス"
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
+.SH "関連項目"
+.IX Header "関連項目"
 \&\fIguestfs\fR\|(3), \fIguestfish\fR\|(1), \fIvirt\-cat\fR\|(1), \fIvirt\-df\fR\|(1),
 \&\fIvirt\-list\-filesystems\fR\|(1), \fIvirt\-list\-partitions\fR\|(1), \fIcsvtool\fR\|(1),
 <http://libguestfs.org/>.
-.SH "AUTHOR"
-.IX Header "AUTHOR"
+.SH "著者"
+.IX Header "著者"
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"

@@ -62,53 +62,50 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-list-partitions.pl 1"
-.TH virt-list-partitions.pl 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-list-partitions.pl 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "名前"
 .IX Header "名前"
-virt-list-partitions \- List partitions in a virtual machine or disk image
-.SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
+virt-list-partitions \- 仮想マシンまたはディスクイメージのパーティションの一覧表示
+.SH "書式"
+.IX Header "書式"
 .Vb 1
 \& virt\-list\-partitions [\-\-options] domname
 \&
 \& virt\-list\-partitions [\-\-options] disk.img [disk.img ...]
 .Ve
-.SH "OBSOLETE"
-.IX Header "OBSOLETE"
+.SH "非推奨"
+.IX Header "非推奨"
 This tool is obsolete.  Use \fIvirt\-filesystems\fR\|(1) as a more flexible
 replacement.
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
-\&\f(CW\*(C`virt\-list\-partitions\*(C'\fR is a command line tool to list the partitions that
-are contained in a virtual machine or disk image.  It is mainly useful as a
-first step to using \fIvirt\-resize\fR\|(1).
+.SH "説明"
+.IX Header "説明"
+\&\f(CW\*(C`virt\-list\-partitions\*(C'\fR
+は、仮想マシンまたはディスクイメージに含まれるパーティションを一覧表示するためのコマンドラインツールです。おもに \fIvirt\-resize\fR\|(1)
+を使用するための最初の手順として有用です。
 .PP
-\&\f(CW\*(C`virt\-list\-partitions\*(C'\fR is just a simple wrapper around \fIlibguestfs\fR\|(3)
-functionality.  For more complex cases you should look at the
-\&\fIguestfish\fR\|(1) tool.
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+\&\f(CW\*(C`virt\-list\-partitions\*(C'\fR は \fIlibguestfs\fR\|(3) の機能の簡単なラッパーです。より複雑な場合に対しては
+\&\fIguestfish\fR\|(1) ツールを参照してください。
+.SH "オプション"
+.IX Header "オプション"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
-Display brief help.
+簡単なヘルプを表示します。
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
-Display version number and exit.
+バージョン番号を表示して終了します。
 .IP "\fB\-c \s-1URI\s0\fR" 4
 .IX Item "-c URI"
 .PD 0
 .IP "\fB\-\-connect \s-1URI\s0\fR" 4
 .IX Item "--connect URI"
 .PD
-If using libvirt, connect to the given \fI\s-1URI\s0\fR.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された \fI\s-1URI\s0\fR に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 .Sp
-If you specify guest block devices directly, then libvirt is not used at
-all.
+仮想マシンのブロックデバイスを直接指定すると、libvirt はまったく使用されません。
 .IP "\fB\-\-format\fR raw" 4
 .IX Item "--format raw"
 Specify the format of disk images given on the command line.  If this is
@@ -126,35 +123,35 @@ the format is always specified.
 .IP "\fB\-\-human\-readable\fR" 4
 .IX Item "--human-readable"
 .PD
-Show sizes in human-readable form (eg. \*(L"1G\*(R").
+容量を読みやすい形式で表示します（例: \*(L"1G\*(R"）。
 .IP "\fB\-l\fR" 4
 .IX Item "-l"
 .PD 0
 .IP "\fB\-\-long\fR" 4
 .IX Item "--long"
 .PD
-With this option, \f(CW\*(C`virt\-list\-partitions\*(C'\fR displays the type and size of each
-partition too (where \*(L"type\*(R" means \f(CW\*(C`ext3\*(C'\fR, \f(CW\*(C`pv\*(C'\fR etc.)
+このオプションを用いると、 \f(CW\*(C`virt\-list\-partitions\*(C'\fR は各パーティションの形式と容量も表示します（ここで \*(L"形式\*(R" は
+\&\f(CW\*(C`ext3\*(C'\fR, \f(CW\*(C`pv\*(C'\fR などを意味します）。
 .IP "\fB\-t\fR" 4
 .IX Item "-t"
 .PD 0
 .IP "\fB\-\-total\fR" 4
 .IX Item "--total"
 .PD
-Display the total size of each block device (as a separate row or rows).
+各ブロックデバイスの合計容量を（別の列として）表示します。
 .SH "SHELL QUOTING"
 .IX Header "SHELL QUOTING"
 Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
+.SH "関連項目"
+.IX Header "関連項目"
 \&\fIguestfs\fR\|(3), \fIguestfish\fR\|(1), \fIvirt\-filesystems\fR\|(1),
 \&\fIvirt\-list\-filesystems\fR\|(1), \fIvirt\-resize\fR\|(1), \fISys::Guestfs\fR\|(3),
 \&\fISys::Guestfs::Lib\fR\|(3), \fISys::Virt\fR\|(3), <http://libguestfs.org/>.
-.SH "AUTHOR"
-.IX Header "AUTHOR"
+.SH "著者"
+.IX Header "著者"
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"

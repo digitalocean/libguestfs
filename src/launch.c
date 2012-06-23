@@ -142,6 +142,64 @@ add_cmdline (guestfs_h *g, const char *str)
   return 0;
 }
 
+/* Like 'add_cmdline' but allowing a shell-quoted string of zero or
+ * more options.  XXX The unquoting is not very clever.
+ */
+static int
+add_cmdline_shell_unquoted (guestfs_h *g, const char *options)
+{
+  char quote;
+  const char *startp, *endp, *nextp;
+
+  if (g->state != CONFIG) {
+    error (g,
+        _("command line cannot be altered after qemu subprocess launched"));
+    return -1;
+  }
+
+  while (*options) {
+    quote = *options;
+    if (quote == '\'' || quote == '"')
+      startp = options+1;
+    else {
+      startp = options;
+      quote = ' ';
+    }
+
+    endp = strchr (options, quote);
+    if (endp == NULL) {
+      if (quote != ' ') {
+        error (g, _("unclosed quote character (%c) in command line near: %s"),
+               quote, options);
+        return -1;
+      }
+      endp = options + strlen (options);
+    }
+
+    if (quote == ' ')
+      nextp = endp+1;
+    else {
+      if (!endp[1])
+        nextp = endp+1;
+      else if (endp[1] == ' ')
+        nextp = endp+2;
+      else {
+        error (g, _("cannot parse quoted string near: %s"), options);
+        return -1;
+      }
+    }
+    while (*nextp && *nextp == ' ')
+      nextp++;
+
+    incr_cmdline_size (g);
+    g->cmdline[g->cmdline_size-1] = safe_strndup (g, startp, endp-startp);
+
+    options = nextp;
+  }
+
+  return 0;
+}
+
 struct drive **
 guestfs___checkpoint_drives (guestfs_h *g)
 {
@@ -277,16 +335,6 @@ valid_format_iface (const char *str)
   return 1;
 }
 
-static int
-check_path (guestfs_h *g, const char *filename)
-{
-  if (strchr (filename, ',') != NULL) {
-    error (g, _("filename cannot contain ',' (comma) character"));
-    return -1;
-  }
-  return 0;
-}
-
 int
 guestfs__add_drive_opts (guestfs_h *g, const char *filename,
                          const struct guestfs_add_drive_opts_argv *optargs)
@@ -295,12 +343,13 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
   char *format;
   char *iface;
   char *name;
-  char *abs_path = NULL;
   int use_cache_off;
-  int check_duplicate;
 
-  if (check_path(g, filename) == -1)
+  if (strchr (filename, ':') != NULL) {
+    error (g, _("filename cannot contain ':' (colon) character. "
+                "This is a limitation of qemu."));
     return -1;
+  }
 
   readonly = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK
              ? optargs->readonly : 0;
@@ -337,39 +386,24 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
     }
   }
 
-  /* Make the path canonical, so we can check if the user is trying to
-   * add the same path twice.  Allow /dev/null to be added multiple
-   * times, in accordance with traditional usage.
-   */
-  abs_path = realpath (filename, NULL);
-  check_duplicate = STRNEQ (abs_path, "/dev/null");
-
   struct drive **i = &(g->drives);
-  while (*i != NULL) {
-    if (check_duplicate && STREQ((*i)->path, abs_path)) {
-      error (g, _("drive %s can't be added twice"), abs_path);
-      goto err_out;
-    }
-    i = &((*i)->next);
-  }
+  while (*i != NULL) i = &((*i)->next);
 
   *i = safe_malloc (g, sizeof (struct drive));
   (*i)->next = NULL;
-  (*i)->path = safe_strdup (g, abs_path);
+  (*i)->path = safe_strdup (g, filename);
   (*i)->readonly = readonly;
   (*i)->format = format;
   (*i)->iface = iface;
   (*i)->name = name;
   (*i)->use_cache_off = use_cache_off;
 
-  free (abs_path);
   return 0;
 
 err_out:
   free (format);
   free (iface);
   free (name);
-  free (abs_path);
   return -1;
 }
 
@@ -423,8 +457,11 @@ guestfs__add_drive_ro_with_if (guestfs_h *g, const char *filename,
 int
 guestfs__add_cdrom (guestfs_h *g, const char *filename)
 {
-  if (check_path(g, filename) == -1)
+  if (strchr (filename, ':') != NULL) {
+    error (g, _("filename cannot contain ':' (colon) character. "
+                "This is a limitation of qemu."));
     return -1;
+  }
 
   if (access (filename, F_OK) == -1) {
     perrorf (g, "%s", filename);
@@ -532,7 +569,7 @@ launch_appliance (guestfs_h *g)
   snprintf (guestfsd_sock, sizeof guestfsd_sock, "%s/guestfsd.sock", g->tmpdir);
   unlink (guestfsd_sock);
 
-  g->sock = socket (AF_UNIX, SOCK_STREAM, 0);
+  g->sock = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
   if (g->sock == -1) {
     perrorf (g, "socket");
     goto cleanup0;
@@ -632,9 +669,17 @@ launch_appliance (guestfs_h *g)
       drv = drv->next;
     }
 
-    if (qemu_supports (g, "-nodefconfig"))
-      add_cmdline (g, "-nodefconfig");
+    if (STRNEQ (QEMU_OPTIONS, "")) {
+      /* Add the extra options for the qemu command line specified
+       * at configure time.
+       */
+      add_cmdline_shell_unquoted (g, QEMU_OPTIONS);
+    }
 
+    /* The #if on the next line should really be "architectures for
+     * which KVM is commonly available.
+     */
+#if defined(__i386__) || defined(__x86_64__)
     /* The qemu -machine option (added 2010-12) is a bit more sane
      * since it falls back through various different acceleration
      * modes, so try that first (thanks Markus Armbruster).
@@ -668,9 +713,10 @@ launch_appliance (guestfs_h *g)
        * qemu command line, again.
        */
       if (qemu_supports (g, "-enable-kvm") &&
-          is_openable (g, "/dev/kvm", O_RDWR))
+          is_openable (g, "/dev/kvm", O_RDWR|O_CLOEXEC))
         add_cmdline (g, "-enable-kvm");
     }
+#endif /* i386 or x86-64 */
 
     if (g->smp > 1) {
       snprintf (buf, sizeof buf, "%d", g->smp);
@@ -686,8 +732,16 @@ launch_appliance (guestfs_h *g)
     add_cmdline (g, "-no-reboot");
 
     /* These options recommended by KVM developers to improve reliability. */
+#ifndef __arm__
+    /* qemu-system-arm advertises the -no-hpet option but if you try
+     * to use it, it usefully says:
+     *   "Option no-hpet not supported for this target".
+     * Cheers qemu developers.  How many years have we been asking for
+     * capabilities?  Could be 3 or 4 years, I forget.
+     */
     if (qemu_supports (g, "-no-hpet"))
       add_cmdline (g, "-no-hpet");
+#endif
 
     if (qemu_supports (g, "-rtc-td-hack"))
       add_cmdline (g, "-rtc-td-hack");
@@ -735,9 +789,15 @@ launch_appliance (guestfs_h *g)
       add_cmdline (g, NET_IF ",netdev=usernet");
     }
 
+#ifdef __arm__
+#define SERIAL_CONSOLE "ttyAMA0"
+#else
+#define SERIAL_CONSOLE "ttyS0"
+#endif
+
 #define LINUX_CMDLINE							\
     "panic=1 "         /* force kernel to panic if daemon exits */	\
-    "console=ttyS0 "   /* serial console */				\
+    "console=" SERIAL_CONSOLE " " /* serial console */		        \
     "udevtimeout=300 " /* good for very slow systems (RHBZ#480319) */	\
     "no_timer_check "  /* fix for RHBZ#502058 */                        \
     "acpi=off "        /* we don't need ACPI, turn it off */		\
@@ -924,7 +984,7 @@ launch_appliance (guestfs_h *g)
     g->fd[0] = wfd[1];		/* stdin of child */
     g->fd[1] = rfd[0];		/* stdout of child */
   } else {
-    g->fd[0] = open ("/dev/null", O_RDWR);
+    g->fd[0] = open ("/dev/null", O_RDWR|O_CLOEXEC);
     if (g->fd[0] == -1) {
       perrorf (g, "open /dev/null");
       goto cleanup1;
@@ -1045,7 +1105,7 @@ connect_unix_socket (guestfs_h *g, const char *sockpath)
   if (g->verbose)
     guestfs___print_timestamped_message (g, "connecting to %s", sockpath);
 
-  g->sock = socket (AF_UNIX, SOCK_STREAM, 0);
+  g->sock = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
   if (g->sock == -1) {
     perrorf (g, "socket");
     return -1;
@@ -1394,18 +1454,31 @@ is_openable (guestfs_h *g, const char *path, int flags)
 static char *
 qemu_drive_param (guestfs_h *g, const struct drive *drv)
 {
+  size_t i;
   size_t len = 64;
+  const char *p;
   char *r;
 
-  len += strlen (drv->path);
+  len += strlen (drv->path) * 2; /* every "," could become ",," */
   len += strlen (drv->iface);
   if (drv->format)
     len += strlen (drv->format);
 
   r = safe_malloc (g, len);
 
-  snprintf (r, len, "file=%s%s%s%s%s,if=%s",
-            drv->path,
+  strcpy (r, "file=");
+  i = 5;
+
+  /* Copy the path in, escaping any "," as ",,". */
+  for (p = drv->path; *p; p++) {
+    if (*p == ',') {
+      r[i++] = ',';
+      r[i++] = ',';
+    } else
+      r[i++] = *p;
+  }
+
+  snprintf (&r[i], len-i, "%s%s%s%s,if=%s",
             drv->readonly ? ",snapshot=on" : "",
             drv->use_cache_off ? ",cache=off" : "",
             drv->format ? ",format=" : "",
@@ -1467,7 +1540,8 @@ guestfs__is_ready (guestfs_h *g)
 int
 guestfs__is_busy (guestfs_h *g)
 {
-  return g->state == BUSY;
+  /* There used to be a BUSY state but it was removed in 1.17.36. */
+  return 0;
 }
 
 int

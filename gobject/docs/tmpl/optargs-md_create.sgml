@@ -1,0 +1,71 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsMDCreate
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsMDCreate ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsMDCreate:chunk ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMDCreate:level ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMDCreate:missingbitmap ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMDCreate:nrdevices ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMDCreate:spare ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsMDCreateClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_md_create_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

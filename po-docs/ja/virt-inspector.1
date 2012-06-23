@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-inspector 1"
-.TH virt-inspector 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-inspector 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -71,28 +71,28 @@
 .IX Header "名前"
 virt-inspector \- Display operating system version and other information
 about a virtual machine
-.SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
+.SH "書式"
+.IX Header "書式"
 .Vb 1
 \& virt\-inspector [\-\-options] \-d domname
 \&
 \& virt\-inspector [\-\-options] \-a disk.img [\-a disk.img ...]
 .Ve
 .PP
-Old-style:
+古い形式:
 .PP
 .Vb 1
 \& virt\-inspector domname
 \&
 \& virt\-inspector disk.img [disk.img ...]
 .Ve
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
+.SH "説明"
+.IX Header "説明"
 \&\fBvirt-inspector\fR examines a virtual machine or disk image and tries to
 determine the version of the operating system and other information about
 the virtual machine.
 .PP
-Virt-inspector produces \s-1XML\s0 output for feeding into other programs.
+Virt-inspector は他のプログラムに提供するための情報をXML形式出力で生成します。
 .PP
 In the normal usage, use \f(CW\*(C`virt\-inspector \-d domname\*(C'\fR where \f(CW\*(C`domname\*(C'\fR is
 the libvirt domain (see: \f(CW\*(C`virsh list \-\-all\*(C'\fR).
@@ -118,11 +118,11 @@ through the core libguestfs inspection \s-1API\s0 (see \*(L"\s-1INSPECTION\s0\*(
 The same information can also be fetched using guestfish or via libguestfs
 bindings in many programming languages (see \*(L"\s-1GETTING\s0 \s-1INSPECTION\s0 \s-1DATA\s0 \s-1FROM\s0
 \&\s-1THE\s0 \s-1LIBGUESTFS\s0 \s-1API\s0\*(R").
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+.SH "オプション"
+.IX Header "オプション"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
-Display brief help.
+簡単なヘルプを表示します。
 .IP "\fB\-a\fR file" 4
 .IX Item "-a file"
 .PD 0
@@ -133,16 +133,14 @@ Add \fIfile\fR which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate \fI\-a\fR options.
 .Sp
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the \fI\-\-format=..\fR option.
+ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、\fI\-\-format=..\fR オプションを使用します。
 .IP "\fB\-c \s-1URI\s0\fR" 4
 .IX Item "-c URI"
 .PD 0
 .IP "\fB\-\-connect \s-1URI\s0\fR" 4
 .IX Item "--connect URI"
 .PD
-If using libvirt, connect to the given \fI\s-1URI\s0\fR.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された \fI\s-1URI\s0\fR に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 .Sp
 Libvirt is only used if you specify a \f(CW\*(C`domname\*(C'\fR on the command line.  If
 you specify guest block devices directly (\fI\-a\fR), then libvirt is not used
@@ -153,8 +151,7 @@ at all.
 .IP "\fB\-\-domain\fR guest" 4
 .IX Item "--domain guest"
 .PD
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  ドメインの \s-1UUID\s0 が名前の代わりに使用されます。
 .IP "\fB\-\-echo\-keys\fR" 4
 .IX Item "--echo-keys"
 When prompting for keys and passphrases, virt-inspector normally turns
@@ -186,31 +183,31 @@ passphrases from the user by opening \f(CW\*(C`/dev/tty\*(C'\fR.
 .IP "\fB\-\-verbose\fR" 4
 .IX Item "--verbose"
 .PD
-Enable verbose messages for debugging.
+デバッグ用の冗長なメッセージを有効にします。
 .IP "\fB\-V\fR" 4
 .IX Item "-V"
 .PD 0
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
 .PD
-Display version number and exit.
+バージョン番号を表示して終了します。
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
-Enable tracing of libguestfs \s-1API\s0 calls.
+libguestfs \s-1API\s0 呼び出しのトレースを有効にします。
 .IP "\fB\-\-xpath\fR query" 4
 .IX Item "--xpath query"
 Perform an XPath query on the \s-1XML\s0 on stdin, and print the result on stdout.
 In this mode virt-inspector simply runs an XPath query; all other inspection
 functions are disabled.  See \*(L"\s-1XPATH\s0 \s-1QUERIES\s0\*(R" below for some examples.
-.SH "OLD-STYLE COMMAND LINE ARGUMENTS"
-.IX Header "OLD-STYLE COMMAND LINE ARGUMENTS"
+.SH "旧形式のコマンドライン引数"
+.IX Header "旧形式のコマンドライン引数"
 Previous versions of virt-inspector allowed you to write either:
 .PP
 .Vb 1
 \& virt\-inspector disk.img [disk.img ...]
 .Ve
 .PP
-or
+または
 .PP
 .Vb 1
 \& virt\-inspector guestname
@@ -219,9 +216,9 @@ or
 whereas in this version you should use \fI\-a\fR or \fI\-d\fR respectively to avoid
 the confusing case where a disk image might have the same name as a guest.
 .PP
-For compatibility the old style is still supported.
-.SH "XML FORMAT"
-.IX Header "XML FORMAT"
+互換性のため古い形式がまだサポートされています。
+.SH "XML フォーマット"
+.IX Header "XML フォーマット"
 The virt-inspector \s-1XML\s0 is described precisely in a \s-1RELAX\s0 \s-1NG\s0 schema file
 \&\f(CW\*(C`virt\-inspector.rng\*(C'\fR which is supplied with libguestfs.  This section is
 just an overview.
@@ -287,7 +284,7 @@ filesystems belonging to the guest, including swap and empty partitions.
 (In the rare case of a multi-boot guest, it covers filesystems belonging to
 this \s-1OS\s0 or shared with this \s-1OS\s0 and other OSes).
 .PP
-You might see something like this:
+次のように表示されることがあります:
 .PP
 .Vb 9
 \& <operatingsystems>
@@ -305,9 +302,8 @@ The optional elements within <filesystem> are the filesystem type,
 the label, and the \s-1UUID\s0.
 .SS "<applications>"
 .IX Subsection "<applications>"
-The related elements <package_format>, <package_management>
-and <applications> describe applications installed in the virtual
-machine.
+関連する要素 <package_format>, <package_management> および
+<applications> は仮想マシンにインストールされたアプリケーションを記述しています。
 .PP
 <package_format>, if present, describes the packaging system used.
 Typical values would be \f(CW\*(C`rpm\*(C'\fR and \f(CW\*(C`deb\*(C'\fR.
@@ -394,14 +390,14 @@ of a multipart \s-1CD\s0.  For example:
 \&     <name>linux</name>
 \&     <arch>i386</arch>
 \&     <distro>ubuntu</distro>
-\&     <product_name>Ubuntu 10.10 &quot;Maverick Meerkat&quot;</product_name>
+\&     <product_name>Ubuntu 10.10 "Maverick Meerkat"</product_name>
 \&     <major_version>10</major_version>
 \&     <minor_version>10</minor_version>
 \&     <format>installer</format>
 \&     <live/>
 .Ve
-.SH "XPATH QUERIES"
-.IX Header "XPATH QUERIES"
+.SH "XPath クエリー"
+.IX Header "XPath クエリー"
 Virt-inspector includes built in support for running XPath queries.  The
 reason for including XPath support directly in virt-inspector is simply that
 there are no good and widely available command line programs that can do
@@ -412,7 +408,7 @@ To perform an XPath query, use the \fI\-\-xpath\fR option.  Note that in this
 mode, virt-inspector simply reads \s-1XML\s0 from stdin and outputs the query
 result on stdout.  All other inspection features are disabled in this mode.
 .PP
-For example:
+例:
 .PP
 .Vb 5
 \& $ virt\-inspector \-d Guest | virt\-inspector \-\-xpath \*(Aq//filesystems\*(Aq
@@ -480,7 +476,7 @@ attached to the guest.
 \& /dev/vg_f15x32/lv_root
 .Ve
 .PP
-Using the root device, you can fetch further information about the guest:
+ルートデバイスを使用して、ゲストに関するさらなる情報を取得できます:
 .PP
 .Vb 8
 \& ><fs> inspect\-get\-type /dev/vg_f15x32/lv_root
@@ -548,31 +544,31 @@ as above.  You can then do:
 .Vb 1
 \& ><fs> inspect\-get\-icon /dev/vg_f15x32/lv_root | display \-
 .Ve
-.SH "OLD VERSIONS OF VIRT-INSPECTOR"
-.IX Header "OLD VERSIONS OF VIRT-INSPECTOR"
+.SH "古いバージョンの virt-inspector"
+.IX Header "古いバージョンの virt-inspector"
 As described above, early versions of libguestfs shipped with a different
 virt-inspector program written in Perl (the current version is written in
 C).  The \s-1XML\s0 output of the Perl virt-inspector was different and it could
 also output in other formats like text.
 .PP
-The old virt-inspector is no longer supported or shipped with libguestfs.
+古い virt-inspector はもはや libguestfs でサポートされず、同梱されていません。
 .PP
-To confuse matters further, in Red Hat Enterprise Linux 6 we ship two
-versions of virt-inspector with different names:
+さらに混乱することに、Red Hat Enterprise Linux 6 では異なる名前で 2 つのバージョンの virt-inspector
+が同梱されています:
 .PP
 .Vb 2
-\& virt\-inspector     Old Perl version.
-\& virt\-inspector2    New C version.
+\& virt\-inspector     古い Perl バージョンです。
+\& virt\-inspector2    新しい C バージョンです。
 .Ve
-.SH "EXIT STATUS"
-.IX Header "EXIT STATUS"
-This program returns 0 if successful, or non-zero if there was an error.
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
+.SH "終了ステータス"
+.IX Header "終了ステータス"
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
+.SH "関連項目"
+.IX Header "関連項目"
 \&\fIguestfs\fR\|(3), \fIguestfish\fR\|(1), <http://www.w3.org/TR/xpath/>,
 \&\fIbase64\fR\|(1), \fIxmlstarlet\fR\|(1), <http://libguestfs.org/>.
-.SH "AUTHORS"
-.IX Header "AUTHORS"
+.SH "著者"
+.IX Header "著者"
 .IP "\(bu" 4
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .IP "\(bu" 4

@@ -1,0 +1,71 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsNtfscloneOut
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsNtfscloneOut ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsNtfscloneOut:force ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsNtfscloneOut:ignorefscheck ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsNtfscloneOut:metadataonly ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsNtfscloneOut:preservetimestamps ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsNtfscloneOut:rescue ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsNtfscloneOutClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_ntfsclone_out_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

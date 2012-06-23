@@ -356,7 +356,7 @@ public class GuestFS {
 
     String[] r = _test0rhashtable (g, val);
 
-    HashMap rhash = new HashMap ();
+    HashMap<String, String> rhash = new HashMap<String, String> ();
     for (int i = 0; i < r.length; i += 2)
       rhash.put (r[i], r[i+1]);
     return rhash;
@@ -373,7 +373,7 @@ public class GuestFS {
 
     String[] r = _test0rhashtableerr (g);
 
-    HashMap rhash = new HashMap ();
+    HashMap<String, String> rhash = new HashMap<String, String> ();
     for (int i = 0; i < r.length; i += 2)
       rhash.put (r[i], r[i+1]);
     return rhash;
@@ -917,16 +917,6 @@ public class GuestFS {
   private native boolean _is_launching (long g)
     throws LibGuestFSException;
 
-  /**
-   * is busy processing a command
-   * <p>
-   * This returns true iff this handle is busy processing a
-   * command (in the "BUSY" state).
-   * <p>
-   * For more information on states, see guestfs(3).
-   * <p>
-   * @throws LibGuestFSException
-   */
   public boolean is_busy ()
     throws LibGuestFSException
   {
@@ -1503,6 +1493,9 @@ public class GuestFS {
    * "hurd"
    * GNU/Hurd.
    * <p>
+   * "dos"
+   * MS-DOS, FreeDOS and others.
+   * <p>
    * "unknown"
    * The operating system type could not be determined.
    * <p>
@@ -1563,14 +1556,24 @@ public class GuestFS {
    * "archlinux"
    * Arch Linux.
    * <p>
+   * "buildroot"
+   * Buildroot-derived distro, but not one we
+   * specifically recognize.
+   * <p>
    * "centos"
    * CentOS.
+   * <p>
+   * "cirros"
+   * Cirros.
    * <p>
    * "debian"
    * Debian.
    * <p>
    * "fedora"
    * Fedora.
+   * <p>
+   * "freedos"
+   * FreeDOS.
    * <p>
    * "gentoo"
    * Gentoo.
@@ -1762,7 +1765,7 @@ public class GuestFS {
 
     String[] r = _inspect_get_mountpoints (g, root);
 
-    HashMap rhash = new HashMap ();
+    HashMap<String, String> rhash = new HashMap<String, String> ();
     for (int i = 0; i < r.length; i += 2)
       rhash.put (r[i], r[i+1]);
     return rhash;
@@ -1888,7 +1891,7 @@ public class GuestFS {
 
     String[] r = _list_filesystems (g);
 
-    HashMap rhash = new HashMap ();
+    HashMap<String, String> rhash = new HashMap<String, String> ();
     for (int i = 0; i < r.length; i += 2)
       rhash.put (r[i], r[i+1]);
     return rhash;
@@ -2709,7 +2712,7 @@ public class GuestFS {
 
     String[] r = _inspect_get_drive_mappings (g, root);
 
-    HashMap rhash = new HashMap ();
+    HashMap<String, String> rhash = new HashMap<String, String> ();
     for (int i = 0; i < r.length; i += 2)
       rhash.put (r[i], r[i+1]);
     return rhash;
@@ -2902,6 +2905,164 @@ public class GuestFS {
   }
 
   private native int _get_smp (long g)
+    throws LibGuestFSException;
+
+  /**
+   * mount on the local filesystem
+   * <p>
+   * This call exports the libguestfs-accessible filesystem
+   * to a local mountpoint (directory) called
+   * "localmountpoint". Ordinary reads and writes to files
+   * and directories under "localmountpoint" are redirected
+   * through libguestfs.
+   * <p>
+   * If the optional "readonly" flag is set to true, then
+   * writes to the filesystem return error "EROFS".
+   * <p>
+   * "options" is a comma-separated list of mount options.
+   * See guestmount(1) for some useful options.
+   * <p>
+   * "cachetimeout" sets the timeout (in seconds) for cached
+   * directory entries. The default is 60 seconds. See
+   * guestmount(1) for further information.
+   * <p>
+   * If "debugcalls" is set to true, then additional
+   * debugging information is generated for every FUSE call.
+   * <p>
+   * When "g.mount_local" returns, the filesystem is ready,
+   * but is not processing requests (access to it will
+   * block). You have to call "g.mount_local_run" to run the
+   * main loop.
+   * <p>
+   * See "MOUNT LOCAL" in guestfs(3) for full documentation.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void mount_local (String localmountpoint, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mount_local: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean readonly = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("readonly");
+    if (_optobj != null) {
+      readonly = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1;
+    }
+    String options = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("options");
+    if (_optobj != null) {
+      options = ((String) _optobj);
+      _optargs_bitmask |= 2;
+    }
+    int cachetimeout = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("cachetimeout");
+    if (_optobj != null) {
+      cachetimeout = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 4;
+    }
+    boolean debugcalls = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("debugcalls");
+    if (_optobj != null) {
+      debugcalls = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8;
+    }
+
+    _mount_local (g, localmountpoint, _optargs_bitmask, readonly, options, cachetimeout, debugcalls);
+  }
+
+  private native void _mount_local (long g, String localmountpoint, long _optargs_bitmask, boolean readonly, String options, int cachetimeout, boolean debugcalls)
+    throws LibGuestFSException;
+
+  /**
+   * run main loop of mount on the local filesystem
+   * <p>
+   * Run the main loop which translates kernel calls to
+   * libguestfs calls.
+   * <p>
+   * This should only be called after "g.mount_local" returns
+   * successfully. The call will not return until the
+   * filesystem is unmounted.
+   * <p>
+   * Note you must *not* make concurrent libguestfs calls on
+   * the same handle from another thread, with the exception
+   * of "g.umount_local".
+   * <p>
+   * You may call this from a different thread than the one
+   * which called "g.mount_local", subject to the usual rules
+   * for threads and libguestfs (see "MULTIPLE HANDLES AND
+   * MULTIPLE THREADS" in guestfs(3)).
+   * <p>
+   * See "MOUNT LOCAL" in guestfs(3) for full documentation.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void mount_local_run ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mount_local_run: handle is closed");
+
+    _mount_local_run (g);
+  }
+
+  private native void _mount_local_run (long g)
+    throws LibGuestFSException;
+
+  /**
+   * unmount a locally mounted filesystem
+   * <p>
+   * If libguestfs is exporting the filesystem on a local
+   * mountpoint, then this unmounts it.
+   * <p>
+   * See "MOUNT LOCAL" in guestfs(3) for full documentation.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void umount_local (Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("umount_local: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean retry = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("retry");
+    if (_optobj != null) {
+      retry = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1;
+    }
+
+    _umount_local (g, _optargs_bitmask, retry);
+  }
+
+  private native void _umount_local (long g, long _optargs_bitmask, boolean retry)
     throws LibGuestFSException;
 
   /**
@@ -4300,7 +4461,7 @@ public class GuestFS {
 
     String[] r = _tune2fs_l (g, device);
 
-    HashMap rhash = new HashMap ();
+    HashMap<String, String> rhash = new HashMap<String, String> ();
     for (int i = 0; i < r.length; i += 2)
       rhash.put (r[i], r[i+1]);
     return rhash;
@@ -4891,6 +5052,13 @@ public class GuestFS {
    * <p>
    * You can use either "g.tune2fs_l" or "g.get_e2label" to
    * return the existing label on a filesystem.
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "set_label" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -5591,12 +5759,7 @@ public class GuestFS {
    * This resizes an ext2, ext3 or ext4 filesystem to match
    * the size of the underlying device.
    * <p>
-   * *Note:* It is sometimes required that you run
-   * "g.e2fsck_f" on the "device" before calling this
-   * command. For unknown reasons "resize2fs" sometimes gives
-   * an error about this and sometimes not. In any case, it
-   * is always safe to call "g.e2fsck_f" before calling this
-   * function.
+   * See also "RESIZE2FS ERRORS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -5668,8 +5831,12 @@ public class GuestFS {
    * filesystem checker on "device", noninteractively (*-p*),
    * even if the filesystem appears to be clean (*-f*).
    * <p>
-   * This command is only needed because of "g.resize2fs"
-   * (q.v.). Normally you should use "g.fsck".
+   * *This function is deprecated.* In new code, use the
+   * "e2fsck" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -5800,6 +5967,10 @@ public class GuestFS {
    * It is just a wrapper around the C glob(3) function with
    * flags "GLOB_MARK|GLOB_BRACE". See that manual page for
    * more details.
+   * <p>
+   * Notice that there is no equivalent command for expanding
+   * a device name (eg. "/dev/sd*"). Use "g.list_devices",
+   * "g.list_partitions" etc functions instead.
    * <p>
    * @throws LibGuestFSException
    */
@@ -6686,7 +6857,7 @@ public class GuestFS {
 
     String[] r = _mountpoints (g);
 
-    HashMap rhash = new HashMap ();
+    HashMap<String, String> rhash = new HashMap<String, String> ();
     for (int i = 0; i < r.length; i += 2)
       rhash.put (r[i], r[i+1]);
     return rhash;
@@ -9331,6 +9502,8 @@ public class GuestFS {
    * allows you to specify the new size (in bytes)
    * explicitly.
    * <p>
+   * See also "RESIZE2FS ERRORS" in guestfs(3).
+   * <p>
    * @throws LibGuestFSException
    */
   public void resize2fs_size (String device, long size)
@@ -10269,6 +10442,8 @@ public class GuestFS {
    * count" values. These two numbers, multiplied together,
    * give the resulting size of the minimal filesystem in
    * bytes.
+   * <p>
+   * See also "RESIZE2FS ERRORS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -11251,7 +11426,7 @@ public class GuestFS {
 
     String[] r = _md_detail (g, md);
 
-    HashMap rhash = new HashMap ();
+    HashMap<String, String> rhash = new HashMap<String, String> ();
     for (int i = 0; i < r.length; i += 2)
       rhash.put (r[i], r[i+1]);
     return rhash;
@@ -11313,7 +11488,7 @@ public class GuestFS {
 
     String[] r = _blkid (g, device);
 
-    HashMap rhash = new HashMap ();
+    HashMap<String, String> rhash = new HashMap<String, String> ();
     for (int i = 0; i < r.length; i += 2)
       rhash.put (r[i], r[i+1]);
     return rhash;
@@ -11381,6 +11556,952 @@ public class GuestFS {
   }
 
   private native void _e2fsck (long g, String device, long _optargs_bitmask, boolean correct, boolean forceall)
+    throws LibGuestFSException;
+
+  /**
+   * list the files in a directory (long format with SELinux contexts)
+   * <p>
+   * List the files in "directory" in the format of 'ls
+   * -laZ'.
+   * <p>
+   * This command is mostly useful for interactive sessions.
+   * It is *not* intended that you try to parse the output
+   * string.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String llz (String directory)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("llz: handle is closed");
+
+    return _llz (g, directory);
+  }
+
+  private native String _llz (long g, String directory)
+    throws LibGuestFSException;
+
+  /**
+   * wipe a filesystem signature from a device
+   * <p>
+   * This command erases filesystem or RAID signatures from
+   * the specified "device" to make the filesystem invisible
+   * to libblkid.
+   * <p>
+   * This does not erase the filesystem itself nor any other
+   * data from the "device".
+   * <p>
+   * Compare with "g.zero" which zeroes the first few blocks
+   * of a device.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void wipefs (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("wipefs: handle is closed");
+
+    _wipefs (g, device);
+  }
+
+  private native void _wipefs (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * fix common errors and force Windows to check NTFS
+   * <p>
+   * This command repairs some fundamental NTFS
+   * inconsistencies, resets the NTFS journal file, and
+   * schedules an NTFS consistency check for the first boot
+   * into Windows.
+   * <p>
+   * This is *not* an equivalent of Windows "chkdsk". It does
+   * *not* scan the filesystem for inconsistencies.
+   * <p>
+   * The optional "clearbadsectors" flag clears the list of
+   * bad sectors. This is useful after cloning a disk with
+   * bad sectors to a new disk.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void ntfsfix (String device, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ntfsfix: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean clearbadsectors = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("clearbadsectors");
+    if (_optobj != null) {
+      clearbadsectors = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1;
+    }
+
+    _ntfsfix (g, device, _optargs_bitmask, clearbadsectors);
+  }
+
+  private native void _ntfsfix (long g, String device, long _optargs_bitmask, boolean clearbadsectors)
+    throws LibGuestFSException;
+
+  /**
+   * save NTFS to backup file
+   * <p>
+   * Stream the NTFS filesystem "device" to the local file
+   * "backupfile". The format used for the backup file is a
+   * special format used by the ntfsclone(8) tool.
+   * <p>
+   * If the optional "metadataonly" flag is true, then *only*
+   * the metadata is saved, losing all the user data (this is
+   * useful for diagnosing some filesystem problems).
+   * <p>
+   * The optional "rescue", "ignorefscheck",
+   * "preservetimestamps" and "force" flags have precise
+   * meanings detailed in the ntfsclone(8) man page.
+   * <p>
+   * Use "g.ntfsclone_in" to restore the file back to a
+   * libguestfs device.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void ntfsclone_out (String device, String backupfile, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ntfsclone_out: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean metadataonly = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("metadataonly");
+    if (_optobj != null) {
+      metadataonly = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1;
+    }
+    boolean rescue = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("rescue");
+    if (_optobj != null) {
+      rescue = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2;
+    }
+    boolean ignorefscheck = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("ignorefscheck");
+    if (_optobj != null) {
+      ignorefscheck = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 4;
+    }
+    boolean preservetimestamps = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("preservetimestamps");
+    if (_optobj != null) {
+      preservetimestamps = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8;
+    }
+    boolean force = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("force");
+    if (_optobj != null) {
+      force = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 16;
+    }
+
+    _ntfsclone_out (g, device, backupfile, _optargs_bitmask, metadataonly, rescue, ignorefscheck, preservetimestamps, force);
+  }
+
+  private native void _ntfsclone_out (long g, String device, String backupfile, long _optargs_bitmask, boolean metadataonly, boolean rescue, boolean ignorefscheck, boolean preservetimestamps, boolean force)
+    throws LibGuestFSException;
+
+  /**
+   * restore NTFS from backup file
+   * <p>
+   * Restore the "backupfile" (from a previous call to
+   * "g.ntfsclone_out") to "device", overwriting any existing
+   * contents of this device.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void ntfsclone_in (String backupfile, String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ntfsclone_in: handle is closed");
+
+    _ntfsclone_in (g, backupfile, device);
+  }
+
+  private native void _ntfsclone_in (long g, String backupfile, String device)
+    throws LibGuestFSException;
+
+  /**
+   * set filesystem label
+   * <p>
+   * Set the filesystem label on "device" to "label".
+   * <p>
+   * Only some filesystem types support labels, and
+   * libguestfs supports setting labels on only a subset of
+   * these.
+   * <p>
+   * On ext2/3/4 filesystems, labels are limited to 16 bytes.
+   * <p>
+   * On NTFS filesystems, labels are limited to 128 unicode
+   * characters.
+   * <p>
+   * To read the label on a filesystem, call "g.vfs_label".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_label (String device, String label)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_label: handle is closed");
+
+    _set_label (g, device, label);
+  }
+
+  private native void _set_label (long g, String device, String label)
+    throws LibGuestFSException;
+
+  /**
+   * zero free space in a filesystem
+   * <p>
+   * Zero the free space in the filesystem mounted on
+   * "directory". The filesystem must be mounted read-write.
+   * <p>
+   * The filesystem contents are not affected, but any free
+   * space in the filesystem is freed.
+   * <p>
+   * In future (but not currently) these zeroed blocks will
+   * be "sparsified" - that is, given back to the host.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void zero_free_space (String directory)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("zero_free_space: handle is closed");
+
+    _zero_free_space (g, directory);
+  }
+
+  private native void _zero_free_space (long g, String directory)
+    throws LibGuestFSException;
+
+  /**
+   * create an LVM logical volume in % remaining free space
+   * <p>
+   * Create an LVM logical volume called
+   * "/dev/volgroup/logvol", using approximately "percent" %
+   * of the free space remaining in the volume group. Most
+   * usefully, when "percent" is 100 this will create the
+   * largest possible LV.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void lvcreate_free (String logvol, String volgroup, int percent)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lvcreate_free: handle is closed");
+
+    _lvcreate_free (g, logvol, volgroup, percent);
+  }
+
+  private native void _lvcreate_free (long g, String logvol, String volgroup, int percent)
+    throws LibGuestFSException;
+
+  /**
+   * get ISO information from primary volume descriptor of device
+   * <p>
+   * "device" is an ISO device. This returns a struct of
+   * information read from the primary volume descriptor (the
+   * ISO equivalent of the superblock) of the device.
+   * <p>
+   * Usually it is more efficient to use the isoinfo(1)
+   * command with the *-d* option on the host to analyze ISO
+   * files, instead of going through libguestfs.
+   * <p>
+   * For information on the primary volume descriptor fields,
+   * see
+   * <http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descr
+   * iptor>
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public ISOInfo isoinfo_device (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("isoinfo_device: handle is closed");
+
+    return _isoinfo_device (g, device);
+  }
+
+  private native ISOInfo _isoinfo_device (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * get ISO information from primary volume descriptor of ISO file
+   * <p>
+   * This is the same as "g.isoinfo_device" except that it
+   * works for an ISO file located inside some other mounted
+   * filesystem. Note that in the common case where you have
+   * added an ISO file as a libguestfs device, you would
+   * *not* call this. Instead you would call
+   * "g.isoinfo_device".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public ISOInfo isoinfo (String isofile)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("isoinfo: handle is closed");
+
+    return _isoinfo (g, isofile);
+  }
+
+  private native ISOInfo _isoinfo (long g, String isofile)
+    throws LibGuestFSException;
+
+  /**
+   * get volume group metadata
+   * <p>
+   * "vgname" is an LVM volume group. This command examines
+   * the volume group and returns its metadata.
+   * <p>
+   * Note that the metadata is an internal structure used by
+   * LVM, subject to change at any time, and is provided for
+   * information only.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String vgmeta (String vgname)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("vgmeta: handle is closed");
+
+    return _vgmeta (g, vgname);
+  }
+
+  private native String _vgmeta (long g, String vgname)
+    throws LibGuestFSException;
+
+  /**
+   * get underlying devices from an MD device
+   * <p>
+   * This call returns a list of the underlying devices which
+   * make up the single software RAID array device "md".
+   * <p>
+   * To get a list of software RAID devices, call
+   * "g.list_md_devices".
+   * <p>
+   * Each structure returned corresponds to one device along
+   * with additional status information:
+   * <p>
+   * "mdstat_device"
+   * The name of the underlying device.
+   * <p>
+   * "mdstat_index"
+   * The index of this device within the array.
+   * <p>
+   * "mdstat_flags"
+   * Flags associated with this device. This is a string
+   * containing (in no specific order) zero or more of
+   * the following flags:
+   * <p>
+   * "W" write-mostly
+   * <p>
+   * "F" device is faulty
+   * <p>
+   * "S" device is a RAID spare
+   * <p>
+   * "R" replacement
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public MDStat[] md_stat (String md)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("md_stat: handle is closed");
+
+    return _md_stat (g, md);
+  }
+
+  private native MDStat[] _md_stat (long g, String md)
+    throws LibGuestFSException;
+
+  /**
+   * create a btrfs filesystem
+   * <p>
+   * Create a btrfs filesystem, allowing all configurables to
+   * be set. For more information on the optional arguments,
+   * see mkfs.btrfs(8).
+   * <p>
+   * Since btrfs filesystems can span multiple devices, this
+   * takes a non-empty list of devices.
+   * <p>
+   * To create general filesystems, use "g.mkfs_opts".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void mkfs_btrfs (String[] devices, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mkfs_btrfs: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    long allocstart = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("allocstart");
+    if (_optobj != null) {
+      allocstart = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 1;
+    }
+    long bytecount = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("bytecount");
+    if (_optobj != null) {
+      bytecount = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 2;
+    }
+    String datatype = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("datatype");
+    if (_optobj != null) {
+      datatype = ((String) _optobj);
+      _optargs_bitmask |= 4;
+    }
+    int leafsize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("leafsize");
+    if (_optobj != null) {
+      leafsize = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 8;
+    }
+    String label = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("label");
+    if (_optobj != null) {
+      label = ((String) _optobj);
+      _optargs_bitmask |= 16;
+    }
+    String metadata = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("metadata");
+    if (_optobj != null) {
+      metadata = ((String) _optobj);
+      _optargs_bitmask |= 32;
+    }
+    int nodesize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("nodesize");
+    if (_optobj != null) {
+      nodesize = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 64;
+    }
+    int sectorsize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("sectorsize");
+    if (_optobj != null) {
+      sectorsize = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 128;
+    }
+
+    _mkfs_btrfs (g, devices, _optargs_bitmask, allocstart, bytecount, datatype, leafsize, label, metadata, nodesize, sectorsize);
+  }
+
+  private native void _mkfs_btrfs (long g, String[] devices, long _optargs_bitmask, long allocstart, long bytecount, String datatype, int leafsize, String label, String metadata, int nodesize, int sectorsize)
+    throws LibGuestFSException;
+
+  /**
+   * get ext2 file attributes of a file
+   * <p>
+   * This returns the file attributes associated with "file".
+   * <p>
+   * The attributes are a set of bits associated with each
+   * inode which affect the behaviour of the file. The
+   * attributes are returned as a string of letters
+   * (described below). The string may be empty, indicating
+   * that no file attributes are set for this file.
+   * <p>
+   * These attributes are only present when the file is
+   * located on an ext2/3/4 filesystem. Using this call on
+   * other filesystem types will result in an error.
+   * <p>
+   * The characters (file attributes) in the returned string
+   * are currently:
+   * <p>
+   * 'A' When the file is accessed, its atime is not
+   * modified.
+   * <p>
+   * 'a' The file is append-only.
+   * <p>
+   * 'c' The file is compressed on-disk.
+   * <p>
+   * 'D' (Directories only.) Changes to this directory are
+   * written synchronously to disk.
+   * <p>
+   * 'd' The file is not a candidate for backup (see
+   * dump(8)).
+   * <p>
+   * 'E' The file has compression errors.
+   * <p>
+   * 'e' The file is using extents.
+   * <p>
+   * 'h' The file is storing its blocks in units of the
+   * filesystem blocksize instead of sectors.
+   * <p>
+   * 'I' (Directories only.) The directory is using hashed
+   * trees.
+   * <p>
+   * 'i' The file is immutable. It cannot be modified,
+   * deleted or renamed. No link can be created to this
+   * file.
+   * <p>
+   * 'j' The file is data-journaled.
+   * <p>
+   * 's' When the file is deleted, all its blocks will be
+   * zeroed.
+   * <p>
+   * 'S' Changes to this file are written synchronously to
+   * disk.
+   * <p>
+   * 'T' (Directories only.) This is a hint to the block
+   * allocator that subdirectories contained in this
+   * directory should be spread across blocks. If not
+   * present, the block allocator will try to group
+   * subdirectories together.
+   * <p>
+   * 't' For a file, this disables tail-merging. (Not used by
+   * upstream implementations of ext2.)
+   * <p>
+   * 'u' When the file is deleted, its blocks will be saved,
+   * allowing the file to be undeleted.
+   * <p>
+   * 'X' The raw contents of the compressed file may be
+   * accessed.
+   * <p>
+   * 'Z' The compressed file is dirty.
+   * <p>
+   * More file attributes may be added to this list later.
+   * Not all file attributes may be set for all kinds of
+   * files. For detailed information, consult the chattr(1)
+   * man page.
+   * <p>
+   * See also "g.set_e2attrs".
+   * <p>
+   * Don't confuse these attributes with extended attributes
+   * (see "g.getxattr").
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String get_e2attrs (String file)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_e2attrs: handle is closed");
+
+    return _get_e2attrs (g, file);
+  }
+
+  private native String _get_e2attrs (long g, String file)
+    throws LibGuestFSException;
+
+  /**
+   * set ext2 file attributes of a file
+   * <p>
+   * This sets or clears the file attributes "attrs"
+   * associated with the inode "file".
+   * <p>
+   * "attrs" is a string of characters representing file
+   * attributes. See "g.get_e2attrs" for a list of possible
+   * attributes. Not all attributes can be changed.
+   * <p>
+   * If optional boolean "clear" is not present or false,
+   * then the "attrs" listed are set in the inode.
+   * <p>
+   * If "clear" is true, then the "attrs" listed are cleared
+   * in the inode.
+   * <p>
+   * In both cases, other attributes not present in the
+   * "attrs" string are left unchanged.
+   * <p>
+   * These attributes are only present when the file is
+   * located on an ext2/3/4 filesystem. Using this call on
+   * other filesystem types will result in an error.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_e2attrs (String file, String attrs, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_e2attrs: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean clear = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("clear");
+    if (_optobj != null) {
+      clear = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1;
+    }
+
+    _set_e2attrs (g, file, attrs, _optargs_bitmask, clear);
+  }
+
+  private native void _set_e2attrs (long g, String file, String attrs, long _optargs_bitmask, boolean clear)
+    throws LibGuestFSException;
+
+  /**
+   * get ext2 file generation of a file
+   * <p>
+   * This returns the ext2 file generation of a file. The
+   * generation (which used to be called the "version") is a
+   * number associated with an inode. This is most commonly
+   * used by NFS servers.
+   * <p>
+   * The generation is only present when the file is located
+   * on an ext2/3/4 filesystem. Using this call on other
+   * filesystem types will result in an error.
+   * <p>
+   * See "g.set_e2generation".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long get_e2generation (String file)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_e2generation: handle is closed");
+
+    return _get_e2generation (g, file);
+  }
+
+  private native long _get_e2generation (long g, String file)
+    throws LibGuestFSException;
+
+  /**
+   * set ext2 file generation of a file
+   * <p>
+   * This sets the ext2 file generation of a file.
+   * <p>
+   * See "g.get_e2generation".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_e2generation (String file, long generation)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_e2generation: handle is closed");
+
+    _set_e2generation (g, file, generation);
+  }
+
+  private native void _set_e2generation (long g, String file, long generation)
+    throws LibGuestFSException;
+
+  /**
+   * create a writable btrfs snapshot
+   * <p>
+   * Create a writable snapshot of the btrfs subvolume
+   * "source". The "dest" argument is the destination
+   * directory and the name of the snapshot, in the form
+   * "/path/to/dest/name".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_subvolume_snapshot (String source, String dest)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_subvolume_snapshot: handle is closed");
+
+    _btrfs_subvolume_snapshot (g, source, dest);
+  }
+
+  private native void _btrfs_subvolume_snapshot (long g, String source, String dest)
+    throws LibGuestFSException;
+
+  /**
+   * delete a btrfs snapshot
+   * <p>
+   * Delete the named btrfs subvolume.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_subvolume_delete (String subvolume)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_subvolume_delete: handle is closed");
+
+    _btrfs_subvolume_delete (g, subvolume);
+  }
+
+  private native void _btrfs_subvolume_delete (long g, String subvolume)
+    throws LibGuestFSException;
+
+  /**
+   * create a btrfs snapshot
+   * <p>
+   * Create a btrfs subvolume. The "dest" argument is the
+   * destination directory and the name of the snapshot, in
+   * the form "/path/to/dest/name".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_subvolume_create (String dest)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_subvolume_create: handle is closed");
+
+    _btrfs_subvolume_create (g, dest);
+  }
+
+  private native void _btrfs_subvolume_create (long g, String dest)
+    throws LibGuestFSException;
+
+  /**
+   * list btrfs snapshots and subvolumes
+   * <p>
+   * List the btrfs snapshots and subvolumes of the btrfs
+   * filesystem which is mounted at "fs".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public BTRFSSubvolume[] btrfs_subvolume_list (String fs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_subvolume_list: handle is closed");
+
+    return _btrfs_subvolume_list (g, fs);
+  }
+
+  private native BTRFSSubvolume[] _btrfs_subvolume_list (long g, String fs)
+    throws LibGuestFSException;
+
+  /**
+   * set default btrfs subvolume
+   * <p>
+   * Set the subvolume of the btrfs filesystem "fs" which
+   * will be mounted by default. See "g.btrfs_subvolume_list"
+   * to get a list of subvolumes.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_subvolume_set_default (long id, String fs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_subvolume_set_default: handle is closed");
+
+    _btrfs_subvolume_set_default (g, id, fs);
+  }
+
+  private native void _btrfs_subvolume_set_default (long g, long id, String fs)
+    throws LibGuestFSException;
+
+  /**
+   * sync a btrfs filesystem
+   * <p>
+   * Force sync on the btrfs filesystem mounted at "fs".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_filesystem_sync (String fs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_filesystem_sync: handle is closed");
+
+    _btrfs_filesystem_sync (g, fs);
+  }
+
+  private native void _btrfs_filesystem_sync (long g, String fs)
+    throws LibGuestFSException;
+
+  /**
+   * balance a btrfs filesystem
+   * <p>
+   * Balance the chunks in the btrfs filesystem mounted at
+   * "fs" across the underlying devices.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_filesystem_balance (String fs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_filesystem_balance: handle is closed");
+
+    _btrfs_filesystem_balance (g, fs);
+  }
+
+  private native void _btrfs_filesystem_balance (long g, String fs)
+    throws LibGuestFSException;
+
+  /**
+   * add devices to a btrfs filesystem
+   * <p>
+   * Add the list of device(s) in "devices" to the btrfs
+   * filesystem mounted at "fs". If "devices" is an empty
+   * list, this does nothing.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_device_add (String[] devices, String fs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_device_add: handle is closed");
+
+    _btrfs_device_add (g, devices, fs);
+  }
+
+  private native void _btrfs_device_add (long g, String[] devices, String fs)
+    throws LibGuestFSException;
+
+  /**
+   * remove devices from a btrfs filesystem
+   * <p>
+   * Remove the "devices" from the btrfs filesystem mounted
+   * at "fs". If "devices" is an empty list, this does
+   * nothing.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_device_delete (String[] devices, String fs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_device_delete: handle is closed");
+
+    _btrfs_device_delete (g, devices, fs);
+  }
+
+  private native void _btrfs_device_delete (long g, String[] devices, String fs)
+    throws LibGuestFSException;
+
+  /**
+   * enable or disable the seeding feature of device
+   * <p>
+   * Enable or disable the seeding feature of a device that
+   * contains a btrfs filesystem.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_set_seeding (String device, boolean seeding)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_set_seeding: handle is closed");
+
+    _btrfs_set_seeding (g, device, seeding);
+  }
+
+  private native void _btrfs_set_seeding (long g, String device, boolean seeding)
+    throws LibGuestFSException;
+
+  /**
+   * check a btrfs filesystem
+   * <p>
+   * Used to check a btrfs filesystem, "device" is the device
+   * file where the filesystem is stored.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void btrfs_fsck (String device, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("btrfs_fsck: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    long superblock = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("superblock");
+    if (_optobj != null) {
+      superblock = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 1;
+    }
+    boolean repair = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("repair");
+    if (_optobj != null) {
+      repair = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2;
+    }
+
+    _btrfs_fsck (g, device, _optargs_bitmask, superblock, repair);
+  }
+
+  private native void _btrfs_fsck (long g, String device, long _optargs_bitmask, long superblock, boolean repair)
     throws LibGuestFSException;
 
 }

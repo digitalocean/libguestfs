@@ -61,6 +61,23 @@
 #define GUESTFS_MD_CREATE_LEVEL_BITMASK (UINT64_C(1)<<4)
 #define GUESTFS_E2FSCK_CORRECT_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_E2FSCK_FORCEALL_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_NTFSFIX_CLEARBADSECTORS_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_NTFSCLONE_OUT_METADATAONLY_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_NTFSCLONE_OUT_RESCUE_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_NTFSCLONE_OUT_IGNOREFSCHECK_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_NTFSCLONE_OUT_PRESERVETIMESTAMPS_BITMASK (UINT64_C(1)<<3)
+#define GUESTFS_NTFSCLONE_OUT_FORCE_BITMASK (UINT64_C(1)<<4)
+#define GUESTFS_MKFS_BTRFS_ALLOCSTART_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_MKFS_BTRFS_BYTECOUNT_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_MKFS_BTRFS_DATATYPE_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_MKFS_BTRFS_LEAFSIZE_BITMASK (UINT64_C(1)<<3)
+#define GUESTFS_MKFS_BTRFS_LABEL_BITMASK (UINT64_C(1)<<4)
+#define GUESTFS_MKFS_BTRFS_METADATA_BITMASK (UINT64_C(1)<<5)
+#define GUESTFS_MKFS_BTRFS_NODESIZE_BITMASK (UINT64_C(1)<<6)
+#define GUESTFS_MKFS_BTRFS_SECTORSIZE_BITMASK (UINT64_C(1)<<7)
+#define GUESTFS_SET_E2ATTRS_CLEAR_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_BTRFS_FSCK_SUPERBLOCK_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_BTRFS_FSCK_REPAIR_BITMASK (UINT64_C(1)<<1)
 extern int do_mount (const char *device, const char *mountpoint);
 extern int do_sync (void);
 extern int do_touch (const char *path);
@@ -365,3 +382,31 @@ extern char **do_md_detail (const char *md);
 extern int do_md_stop (const char *md);
 extern char **do_blkid (const char *device);
 extern int do_e2fsck (const char *device, int correct, int forceall);
+extern char *do_llz (const char *directory);
+extern int do_wipefs (const char *device);
+extern int do_ntfsfix (const char *device, int clearbadsectors);
+extern int do_ntfsclone_out (const char *device, int metadataonly, int rescue, int ignorefscheck, int preservetimestamps, int force);
+extern int do_ntfsclone_in (const char *device);
+extern int do_set_label (const char *device, const char *label);
+extern int do_zero_free_space (const char *directory);
+extern int do_lvcreate_free (const char *logvol, const char *volgroup, int percent);
+extern guestfs_int_isoinfo *do_isoinfo_device (const char *device);
+extern guestfs_int_isoinfo *do_isoinfo (const char *isofile);
+extern char *do_vgmeta (const char *vgname, size_t *size_r);
+extern guestfs_int_mdstat_list *do_md_stat (const char *md);
+extern int do_mkfs_btrfs (char *const *devices, int64_t allocstart, int64_t bytecount, const char *datatype, int leafsize, const char *label, const char *metadata, int nodesize, int sectorsize);
+extern char *do_get_e2attrs (const char *file);
+extern int do_set_e2attrs (const char *file, const char *attrs, int clear);
+extern int64_t do_get_e2generation (const char *file);
+extern int do_set_e2generation (const char *file, int64_t generation);
+extern int do_btrfs_subvolume_snapshot (const char *source, const char *dest);
+extern int do_btrfs_subvolume_delete (const char *subvolume);
+extern int do_btrfs_subvolume_create (const char *dest);
+extern guestfs_int_btrfssubvolume_list *do_btrfs_subvolume_list (const char *fs);
+extern int do_btrfs_subvolume_set_default (int64_t id, const char *fs);
+extern int do_btrfs_filesystem_sync (const char *fs);
+extern int do_btrfs_filesystem_balance (const char *fs);
+extern int do_btrfs_device_add (char *const *devices, const char *fs);
+extern int do_btrfs_device_delete (char *const *devices, const char *fs);
+extern int do_btrfs_set_seeding (const char *device, int seeding);
+extern int do_btrfs_fsck (const char *device, int64_t superblock, int repair);

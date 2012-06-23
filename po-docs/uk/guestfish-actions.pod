@@ -178,7 +178,7 @@ RHBZ#642934.  Specifying the format closes this security hole.
 This rarely-used option lets you emulate the behaviour of the deprecated
 L</add-drive-with-if> call (q.v.)
 
-=item C<name>
+=item C<назва>
 
 The name the drive had in the original guest, e.g. /dev/sdb. This is used as
 a hint to the guest inspection process if it is available.
@@ -487,19 +487,19 @@ present.
 
 The uuid of this device.
 
-=item C<LABEL>
+=item C<МІТКА>
 
-The label of this device.
+Мітка пристрою.
 
-=item C<VERSION>
+=item C<ВЕРСІЯ>
 
-The version of blkid command.
+Версія програми blkid.
 
-=item C<TYPE>
+=item C<ТИП>
 
-The filesystem type or RAID of this device.
+Тип файлової системи або RAID для цього пристрою.
 
-=item C<USAGE>
+=item C<ВИКОРИСТАННЯ>
 
 The usage of this device, for example C<filesystem> or C<raid>.
 
@@ -507,7 +507,7 @@ The usage of this device, for example C<filesystem> or C<raid>.
 
 =head2 blockdev-flushbufs
 
- blockdev-flushbufs device
+ blockdev-flushbufs пристрій
 
 This tells the kernel to flush internal buffers associated with C<device>.
 
@@ -515,9 +515,9 @@ This uses the L<blockdev(8)> command.
 
 =head2 blockdev-getbsz
 
- blockdev-getbsz device
+ blockdev-getbsz пристрій
 
-This returns the block size of a device.
+Повертає розмір блоку для пристрою.
 
 (Note this is different from both I<size in blocks> and I<filesystem block
 size>).
@@ -526,7 +526,7 @@ This uses the L<blockdev(8)> command.
 
 =head2 blockdev-getro
 
- blockdev-getro device
+ blockdev-getro пристрій
 
 Returns a boolean indicating if the block device is read-only (true if
 read-only, false if not).
@@ -535,9 +535,9 @@ This uses the L<blockdev(8)> command.
 
 =head2 blockdev-getsize64
 
- blockdev-getsize64 device
+ blockdev-getsize64 пристрій
 
-This returns the size of the device in bytes.
+Повертає розмір пристрою у байтах.
 
 Див. також L</blockdev-getsz>.
 
@@ -545,7 +545,7 @@ This uses the L<blockdev(8)> command.
 
 =head2 blockdev-getss
 
- blockdev-getss device
+ blockdev-getss пристрій
 
 This returns the size of sectors on a block device.  Usually 512, but can be
 larger for modern devices.
@@ -556,7 +556,7 @@ This uses the L<blockdev(8)> command.
 
 =head2 blockdev-getsz
 
- blockdev-getsz device
+ blockdev-getsz пристрій
 
 This returns the size of the device in units of 512-byte sectors (even if
 the sectorsize isn't 512 bytes ... weird).
@@ -568,17 +568,17 @@ This uses the L<blockdev(8)> command.
 
 =head2 blockdev-rereadpt
 
- blockdev-rereadpt device
+ blockdev-rereadpt пристрій
 
-Reread the partition table on C<device>.
+Повторно прочитати таблицю розділів з пристрою C<пристрій>.
 
 This uses the L<blockdev(8)> command.
 
 =head2 blockdev-setbsz
 
- blockdev-setbsz device blocksize
+ blockdev-setbsz пристрій розмір_блоку
 
-This sets the block size of a device.
+Встановлює розмір блоку на пристрої.
 
 (Note this is different from both I<size in blocks> and I<filesystem block
 size>).
@@ -587,7 +587,7 @@ This uses the L<blockdev(8)> command.
 
 =head2 blockdev-setro
 
- blockdev-setro device
+ blockdev-setro пристрій
 
 Sets the block device named C<device> to read-only.
 
@@ -595,23 +595,44 @@ This uses the L<blockdev(8)> command.
 
 =head2 blockdev-setrw
 
- blockdev-setrw device
+ blockdev-setrw пристрій
 
 Sets the block device named C<device> to read-write.
 
 This uses the L<blockdev(8)> command.
 
+=head2 btrfs-device-add
+
+ btrfs-device-add 'devices ...' fs
+
+Add the list of device(s) in C<devices> to the btrfs filesystem mounted at
+C<fs>.  If C<devices> is an empty list, this does nothing.
+
+=head2 btrfs-device-delete
+
+ btrfs-device-delete 'devices ...' fs
+
+Remove the C<devices> from the btrfs filesystem mounted at C<fs>.  If
+C<devices> is an empty list, this does nothing.
+
+=head2 btrfs-filesystem-balance
+
+ btrfs-filesystem-balance fs
+
+Balance the chunks in the btrfs filesystem mounted at C<fs> across the
+underlying devices.
+
 =head2 btrfs-filesystem-resize
 
- btrfs-filesystem-resize mountpoint [size:N]
+ btrfs-filesystem-resize точка_монтування [size:N]
 
-This command resizes a btrfs filesystem.
+Ця команда змінює розмір файлової системи btrfs.
 
 Note that unlike other resize calls, the filesystem has to be mounted and
 the parameter is the mountpoint not the device (this is a requirement of
 btrfs itself).
 
-The optional parameters are:
+Додатковими параметрами є:
 
 =over 4
 
@@ -626,6 +647,64 @@ resized to the maximum size.
 
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
+
+=head2 btrfs-filesystem-sync
+
+ btrfs-filesystem-sync fs
+
+Force sync on the btrfs filesystem mounted at C<fs>.
+
+=head2 btrfs-fsck
+
+ btrfs-fsck device [superblock:N] [repair:true|false]
+
+Used to check a btrfs filesystem, C<device> is the device file where the
+filesystem is stored.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 btrfs-set-seeding
+
+ btrfs-set-seeding device true|false
+
+Enable or disable the seeding feature of a device that contains a btrfs
+filesystem.
+
+=head2 btrfs-subvolume-create
+
+ btrfs-subvolume-create dest
+
+Create a btrfs subvolume.  The C<dest> argument is the destination directory
+and the name of the snapshot, in the form C</path/to/dest/name>.
+
+=head2 btrfs-subvolume-delete
+
+ btrfs-subvolume-delete subvolume
+
+Delete the named btrfs subvolume.
+
+=head2 btrfs-subvolume-list
+
+ btrfs-subvolume-list fs
+
+List the btrfs snapshots and subvolumes of the btrfs filesystem which is
+mounted at C<fs>.
+
+=head2 btrfs-subvolume-set-default
+
+ btrfs-subvolume-set-default id fs
+
+Set the subvolume of the btrfs filesystem C<fs> which will be mounted by
+default.  See L</btrfs-subvolume-list> to get a list of subvolumes.
+
+=head2 btrfs-subvolume-snapshot
+
+ btrfs-subvolume-snapshot source dest
+
+Create a writable snapshot of the btrfs subvolume C<source>.  The C<dest>
+argument is the destination directory and the name of the snapshot, in the
+form C</path/to/dest/name>.
 
 =head2 case-sensitive-path
 
@@ -929,21 +1008,21 @@ these functions.
 
 =head2 cp
 
- cp src dest
+ cp джерело призначення
 
 This copies a file from C<src> to C<dest> where C<dest> is either a
 destination filename or destination directory.
 
 =head2 cp-a
 
- cp-a src dest
+ cp-a джерело призначення
 
 This copies a file or directory from C<src> to C<dest> recursively using the
 C<cp -a> command.
 
 =head2 dd
 
- dd src dest
+ dd джерело призначення
 
 This command copies from one source device or file C<src> to another
 destination device or file C<dest>.  Normally you would use this to copy to
@@ -1086,8 +1165,12 @@ This runs C<e2fsck -p -f device>, ie. runs the ext2/ext3 filesystem checker
 on C<device>, noninteractively (I<-p>), even if the filesystem appears to be
 clean (I<-f>).
 
-This command is only needed because of L</resize2fs> (q.v.).  Normally you
-should use L</fsck>.
+I<This function is deprecated.> In new code, use the L</e2fsck> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 echo-daemon
 
@@ -1485,6 +1568,129 @@ Get the autosync flag.
 
 Return the direct appliance mode flag.
 
+=head2 get-e2attrs
+
+ get-e2attrs file
+
+This returns the file attributes associated with C<file>.
+
+The attributes are a set of bits associated with each inode which affect the
+behaviour of the file.  The attributes are returned as a string of letters
+(described below).  The string may be empty, indicating that no file
+attributes are set for this file.
+
+These attributes are only present when the file is located on an ext2/3/4
+filesystem.  Using this call on other filesystem types will result in an
+error.
+
+The characters (file attributes) in the returned string are currently:
+
+=over 4
+
+=item 'A'
+
+When the file is accessed, its atime is not modified.
+
+=item 'a'
+
+The file is append-only.
+
+=item 'c'
+
+Файл стиснено на диску.
+
+=item 'D'
+
+(Directories only.)  Changes to this directory are written synchronously to
+disk.
+
+=item 'd'
+
+The file is not a candidate for backup (see L<dump(8)>).
+
+=item 'E'
+
+The file has compression errors.
+
+=item 'e'
+
+The file is using extents.
+
+=item 'h'
+
+The file is storing its blocks in units of the filesystem blocksize instead
+of sectors.
+
+=item 'I'
+
+(Directories only.)  The directory is using hashed trees.
+
+=item 'i'
+
+The file is immutable.  It cannot be modified, deleted or renamed.  No link
+can be created to this file.
+
+=item 'j'
+
+The file is data-journaled.
+
+=item 's'
+
+When the file is deleted, all its blocks will be zeroed.
+
+=item 'S'
+
+Changes to this file are written synchronously to disk.
+
+=item 'T'
+
+(Directories only.)  This is a hint to the block allocator that
+subdirectories contained in this directory should be spread across blocks.
+If not present, the block allocator will try to group subdirectories
+together.
+
+=item 't'
+
+For a file, this disables tail-merging.  (Not used by upstream
+implementations of ext2.)
+
+=item 'u'
+
+When the file is deleted, its blocks will be saved, allowing the file to be
+undeleted.
+
+=item 'X'
+
+The raw contents of the compressed file may be accessed.
+
+=item 'Z'
+
+The compressed file is dirty.
+
+=back
+
+More file attributes may be added to this list later.  Not all file
+attributes may be set for all kinds of files.  For detailed information,
+consult the L<chattr(1)> man page.
+
+Див. також L</set-e2attrs>.
+
+Don't confuse these attributes with extended attributes (see L</getxattr>).
+
+=head2 get-e2generation
+
+ get-e2generation file
+
+This returns the ext2 file generation of a file.  The generation (which used
+to be called the "version") is a number associated with an inode.  This is
+most commonly used by NFS servers.
+
+The generation is only present when the file is located on an ext2/3/4
+filesystem.  Using this call on other filesystem types will result in an
+error.
+
+Див. L</set-e2generation>.
+
 =head2 get-e2label
 
  get-e2label пристрій
@@ -1662,6 +1868,10 @@ If no paths match, then this returns an empty list (note: not an error).
 
 It is just a wrapper around the C L<glob(3)> function with flags
 C<GLOB_MARK|GLOB_BRACE>.  See that manual page for more details.
+
+Notice that there is no equivalent command for expanding a device name
+(eg. C</dev/sd*>).  Use L</list-devices>, L</list-partitions> etc functions
+instead.
 
 =head2 grep
 
@@ -1889,9 +2099,17 @@ This returns the distro (distribution) of the inspected operating system.
 
 Arch Linux.
 
+=item "buildroot"
+
+Buildroot-derived distro, but not one we specifically recognize.
+
 =item "centos"
 
 CentOS.
+
+=item "cirros"
+
+Cirros.
 
 =item "debian"
 
@@ -1900,6 +2118,10 @@ Debian.
 =item "fedora"
 
 Fedora.
+
+=item "freedos"
+
+FreeDOS.
 
 =item "gentoo"
 
@@ -2271,11 +2493,11 @@ types are:
 
 =item "linux"
 
-Any Linux-based operating system.
+Будь-яка заснована на Linux операційна система.
 
 =item "windows"
 
-Any Microsoft Windows operating system.
+Будь-яка операційна система Microsoft Windows.
 
 =item "freebsd"
 
@@ -2288,6 +2510,10 @@ NetBSD.
 =item "hurd"
 
 GNU/Hurd.
+
+=item "dos"
+
+MS-DOS, FreeDOS та інші.
 
 =item "unknown"
 
@@ -2486,15 +2712,6 @@ C<path> name.
 
 Див. також L</stat>.
 
-=head2 is-busy
-
- is-busy
-
-This returns true iff this handle is busy processing a command (in the
-C<BUSY> state).
-
-For more information on states, see L<guestfs(3)>.
-
 =head2 is-chardev
 
  is-chardev шлях
@@ -2598,6 +2815,30 @@ all zero bytes.
 This returns true iff the device exists and contains all zero bytes.
 
 Note that for large devices this can take a long time to run.
+
+=head2 isoinfo
+
+ isoinfo isofile
+
+This is the same as L</isoinfo-device> except that it works for an ISO file
+located inside some other mounted filesystem.  Note that in the common case
+where you have added an ISO file as a libguestfs device, you would I<not>
+call this.  Instead you would call L</isoinfo-device>.
+
+=head2 isoinfo-device
+
+ isoinfo-device device
+
+C<device> is an ISO device.  This returns a struct of information read from
+the primary volume descriptor (the ISO equivalent of the superblock) of the
+device.
+
+Usually it is more efficient to use the L<isoinfo(1)> command with the I<-d>
+option on the host to analyze ISO files, instead of going through
+libguestfs.
+
+For information on the primary volume descriptor fields, see
+L<http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor>
 
 =head2 kill-subprocess
 
@@ -2737,6 +2978,15 @@ L</lvs>.
 
 List the files in C<directory> (relative to the root directory, there is no
 cwd) in the format of 'ls -la'.
+
+This command is mostly useful for interactive sessions.  It is I<not>
+intended that you try to parse the output string.
+
+=head2 llz
+
+ llz directory
+
+List the files in C<directory> in the format of 'ls -laZ'.
 
 This command is mostly useful for interactive sessions.  It is I<not>
 intended that you try to parse the output string.
@@ -2917,6 +3167,15 @@ prompt for these separately.
 This creates an LVM logical volume called C<logvol> on the volume group
 C<volgroup>, with C<size> megabytes.
 
+=head2 lvcreate-free
+
+ lvcreate-free logvol volgroup percent
+
+Create an LVM logical volume called C</dev/volgroup/logvol>, using
+approximately C<percent> % of the free space remaining in the volume group.
+Most usefully, when C<percent> is C<100> this will create the largest
+possible LV.
+
 =head2 lvm-canonical-lv-name
 
  lvm-canonical-lv-name lvname
@@ -3056,7 +3315,7 @@ names.
 Create a Linux md (RAID) device named C<name> on the devices in the list
 C<devices>.
 
-The optional parameters are:
+Додатковими параметрами є:
 
 =over 4
 
@@ -3136,9 +3395,58 @@ The metadata version used.
 
 The UUID of the MD device.
 
-=item C<name>
+=item C<назва>
 
 The name of the MD device.
+
+=back
+
+=head2 md-stat
+
+ md-stat md
+
+This call returns a list of the underlying devices which make up the single
+software RAID array device C<md>.
+
+To get a list of software RAID devices, call L</list-md-devices>.
+
+Each structure returned corresponds to one device along with additional
+status information:
+
+=over 4
+
+=item C<mdstat_device>
+
+The name of the underlying device.
+
+=item C<mdstat_index>
+
+The index of this device within the array.
+
+=item C<mdstat_flags>
+
+Flags associated with this device.  This is a string containing (in no
+specific order) zero or more of the following flags:
+
+=over 4
+
+=item C<W>
+
+write-mostly
+
+=item C<F>
+
+пристрій працює з помилками
+
+=item C<S>
+
+пристрій є запасною частиною RAID
+
+=item C<R>
+
+заміна
+
+=back
 
 =back
 
@@ -3278,6 +3586,21 @@ instead.
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+
+=head2 mkfs-btrfs
+
+ mkfs-btrfs 'devices ...' [allocstart:N] [bytecount:N] [datatype:..] [leafsize:N] [label:..] [metadata:..] [nodesize:N] [sectorsize:N]
+
+Create a btrfs filesystem, allowing all configurables to be set.  For more
+information on the optional arguments, see L<mkfs.btrfs(8)>.
+
+Since btrfs filesystems can span multiple devices, this takes a non-empty
+list of devices.
+
+To create general filesystems, use L</mkfs-opts>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 mkfs-opts
 
@@ -3482,6 +3805,53 @@ parameter.
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
 
+=head2 mount-local
+
+ mount-local localmountpoint [readonly:true|false] [options:..] [cachetimeout:N] [debugcalls:true|false]
+
+This call exports the libguestfs-accessible filesystem to a local mountpoint
+(directory) called C<localmountpoint>.  Ordinary reads and writes to files
+and directories under C<localmountpoint> are redirected through libguestfs.
+
+If the optional C<readonly> flag is set to true, then writes to the
+filesystem return error C<EROFS>.
+
+C<options> is a comma-separated list of mount options.  See L<guestmount(1)>
+for some useful options.
+
+C<cachetimeout> sets the timeout (in seconds) for cached directory entries.
+The default is 60 seconds.  See L<guestmount(1)> for further information.
+
+If C<debugcalls> is set to true, then additional debugging information is
+generated for every FUSE call.
+
+When L</mount-local> returns, the filesystem is ready, but is not processing
+requests (access to it will block).  You have to call L</mount-local-run> to
+run the main loop.
+
+See L<guestfs(3)/MOUNT LOCAL> for full documentation.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 mount-local-run
+
+ mount-local-run
+
+Run the main loop which translates kernel calls to libguestfs calls.
+
+This should only be called after L</mount-local> returns successfully.  The
+call will not return until the filesystem is unmounted.
+
+B<Note> you must I<not> make concurrent libguestfs calls on the same handle
+from another thread, with the exception of L</umount-local>.
+
+You may call this from a different thread than the one which called
+L</mount-local>, subject to the usual rules for threads and libguestfs (see
+L<guestfs(3)/MULTIPLE HANDLES AND MULTIPLE THREADS>).
+
+See L<guestfs(3)/MOUNT LOCAL> for full documentation.
+
 =head2 mount-loop
 
  mount-loop file mountpoint
@@ -3555,6 +3925,54 @@ volume can be mounted read-only.
 The return value is an integer which C<0> if the operation would succeed, or
 some non-zero value documented in the L<ntfs-3g.probe(8)> manual page.
 
+=head2 ntfsclone-in
+
+ ntfsclone-in (backupfile|-) device
+
+Restore the C<backupfile> (from a previous call to L</ntfsclone-out>) to
+C<device>, overwriting any existing contents of this device.
+
+Use C<-> instead of a filename to read/write from stdin/stdout.
+
+=head2 ntfsclone-out
+
+ ntfsclone-out device (backupfile|-) [metadataonly:true|false] [rescue:true|false] [ignorefscheck:true|false] [preservetimestamps:true|false] [force:true|false]
+
+Stream the NTFS filesystem C<device> to the local file C<backupfile>.  The
+format used for the backup file is a special format used by the
+L<ntfsclone(8)> tool.
+
+If the optional C<metadataonly> flag is true, then I<only> the metadata is
+saved, losing all the user data (this is useful for diagnosing some
+filesystem problems).
+
+The optional C<rescue>, C<ignorefscheck>, C<preservetimestamps> and C<force>
+flags have precise meanings detailed in the L<ntfsclone(8)> man page.
+
+Use L</ntfsclone-in> to restore the file back to a libguestfs device.
+
+Use C<-> instead of a filename to read/write from stdin/stdout.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 ntfsfix
+
+ ntfsfix device [clearbadsectors:true|false]
+
+This command repairs some fundamental NTFS inconsistencies, resets the NTFS
+journal file, and schedules an NTFS consistency check for the first boot
+into Windows.
+
+This is I<not> an equivalent of Windows C<chkdsk>.  It does I<not> scan the
+filesystem for inconsistencies.
+
+The optional C<clearbadsectors> flag clears the list of bad sectors.  This
+is useful after cloning a disk with bad sectors to a new disk.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
 =head2 ntfsresize
 
  ntfsresize пристрій
@@ -3585,7 +4003,7 @@ these functions.
 This command resizes an NTFS filesystem, expanding or shrinking it to the
 size of the underlying device.
 
-The optional parameters are:
+Додатковими параметрами є:
 
 =over 4
 
@@ -4121,10 +4539,7 @@ This call removes the extended attribute named C<xattr> of the file C<path>.
 This resizes an ext2, ext3 or ext4 filesystem to match the size of the
 underlying device.
 
-I<Note:> It is sometimes required that you run L</e2fsck-f> on the C<device>
-before calling this command.  For unknown reasons C<resize2fs> sometimes
-gives an error about this and sometimes not.  In any case, it is always safe
-to call L</e2fsck-f> before calling this function.
+Див. також L<guestfs(3)/RESIZE2FS ERRORS>.
 
 =head2 resize2fs-M
 
@@ -4139,12 +4554,16 @@ and read the C<Block size> and C<Block count> values.  These two numbers,
 multiplied together, give the resulting size of the minimal filesystem in
 bytes.
 
+Див. також L<guestfs(3)/RESIZE2FS ERRORS>.
+
 =head2 resize2fs-size
 
  resize2fs-size device size
 
 This command is the same as L</resize2fs> except that it allows you to
 specify the new size (in bytes) explicitly.
+
+Див. також L<guestfs(3)/RESIZE2FS ERRORS>.
 
 =head2 rm
 
@@ -4276,6 +4695,40 @@ You probably don't want to use this unless you know what you are doing.
 
 The default is disabled.
 
+=head2 set-e2attrs
+
+ set-e2attrs file attrs [clear:true|false]
+
+This sets or clears the file attributes C<attrs> associated with the inode
+C<file>.
+
+C<attrs> is a string of characters representing file attributes.  See
+L</get-e2attrs> for a list of possible attributes.  Not all attributes can
+be changed.
+
+If optional boolean C<clear> is not present or false, then the C<attrs>
+listed are set in the inode.
+
+If C<clear> is true, then the C<attrs> listed are cleared in the inode.
+
+In both cases, other attributes not present in the C<attrs> string are left
+unchanged.
+
+These attributes are only present when the file is located on an ext2/3/4
+filesystem.  Using this call on other filesystem types will result in an
+error.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 set-e2generation
+
+ set-e2generation file generation
+
+This sets the ext2 file generation of a file.
+
+Див. L</get-e2generation>.
+
 =head2 set-e2label
 
  set-e2label device label
@@ -4285,6 +4738,13 @@ C<label>.  Filesystem labels are limited to 16 characters.
 
 You can use either L</tune2fs-l> or L</get-e2label> to return the existing
 label on a filesystem.
+
+I<This function is deprecated.> In new code, use the L</set_label> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 set-e2uuid
 
@@ -4296,6 +4756,21 @@ C<random> and C<time> are described in the L<tune2fs(8)> manpage.
 
 You can use either L</tune2fs-l> or L</get-e2uuid> to return the existing
 UUID of a filesystem.
+
+=head2 set-label
+
+ set-label device label
+
+Set the filesystem label on C<device> to C<label>.
+
+Only some filesystem types support labels, and libguestfs supports setting
+labels on only a subset of these.
+
+On ext2/3/4 filesystems, labels are limited to 16 bytes.
+
+On NTFS filesystems, labels are limited to 128 unicode characters.
+
+To read the label on a filesystem, call L</vfs-label>.
 
 =head2 set-memsize
 
@@ -4853,7 +5328,7 @@ non-sparse file of zeroes, use L</fallocate64> instead.
 This call allows you to adjust various filesystem parameters of an
 ext2/ext3/ext4 filesystem called C<device>.
 
-The optional parameters are:
+Додатковими параметрами є:
 
 =over 4
 
@@ -4988,6 +5463,18 @@ by its mountpoint (path) or the device which contains the filesystem.
 This unmounts all mounted filesystems.
 
 Some internal mounts are not unmounted by this call.
+
+=head2 umount-local
+
+ umount-local [retry:true|false]
+
+If libguestfs is exporting the filesystem on a local mountpoint, then this
+unmounts it.
+
+See L<guestfs(3)/MOUNT LOCAL> for full documentation.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 upload
 
@@ -5142,6 +5629,16 @@ logical volumes and volume groups.
 
 Див. також L</vgpvuuids>.
 
+=head2 vgmeta
+
+ vgmeta vgname
+
+C<vgname> is an LVM volume group.  This command examines the volume group
+and returns its metadata.
+
+Note that the metadata is an internal structure used by LVM, subject to
+change at any time, and is provided for information only.
+
 =head2 vgpvuuids
 
  vgpvuuids vgname
@@ -5220,6 +5717,18 @@ command.
 
 This command counts the words in a file, using the C<wc -w> external
 command.
+
+=head2 wipefs
+
+ wipefs device
+
+This command erases filesystem or RAID signatures from the specified
+C<device> to make the filesystem invisible to libblkid.
+
+This does not erase the filesystem itself nor any other data from the
+C<device>.
+
+Compare with L</zero> which zeroes the first few blocks of a device.
 
 =head2 write
 
@@ -5311,6 +5820,19 @@ which just zeroes the first few blocks of a device.
 If blocks are already zero, then this command avoids writing zeroes.  This
 prevents the underlying device from becoming non-sparse or growing
 unnecessarily.
+
+=head2 zero-free-space
+
+ zero-free-space directory
+
+Zero the free space in the filesystem mounted on C<directory>.  The
+filesystem must be mounted read-write.
+
+The filesystem contents are not affected, but any free space in the
+filesystem is freed.
+
+In future (but not currently) these zeroed blocks will be "sparsified" -
+that is, given back to the host.
 
 =head2 zerofree
 

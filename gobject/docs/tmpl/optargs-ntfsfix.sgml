@@ -1,0 +1,51 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsNtfsfix
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsNtfsfix ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsNtfsfix:clearbadsectors ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsNtfsfixClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_ntfsfix_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

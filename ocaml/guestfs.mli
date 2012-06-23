@@ -245,6 +245,38 @@ type application = {
   app_description : string;
 }
 
+type isoinfo = {
+  iso_system_id : string;
+  iso_volume_id : string;
+  iso_volume_space_size : int32;
+  iso_volume_set_size : int32;
+  iso_volume_sequence_number : int32;
+  iso_logical_block_size : int32;
+  iso_volume_set_id : string;
+  iso_publisher_id : string;
+  iso_data_preparer_id : string;
+  iso_application_id : string;
+  iso_copyright_file_id : string;
+  iso_abstract_file_id : string;
+  iso_bibliographic_file_id : string;
+  iso_volume_creation_t : int64;
+  iso_volume_modification_t : int64;
+  iso_volume_expiration_t : int64;
+  iso_volume_effective_t : int64;
+}
+
+type mdstat = {
+  mdstat_device : string;
+  mdstat_index : int32;
+  mdstat_flags : string;
+}
+
+type btrfssubvolume = {
+  btrfssubvolume_id : int64;
+  btrfssubvolume_top_level_id : int64;
+  btrfssubvolume_path : string;
+}
+
 val add_cdrom : t -> string -> unit
 (** add a CD-ROM disk image to examine
 
@@ -362,8 +394,41 @@ val blockdev_setro : t -> string -> unit
 val blockdev_setrw : t -> string -> unit
 (** set block device to read-write *)
 
+val btrfs_device_add : t -> string array -> string -> unit
+(** add devices to a btrfs filesystem *)
+
+val btrfs_device_delete : t -> string array -> string -> unit
+(** remove devices from a btrfs filesystem *)
+
+val btrfs_filesystem_balance : t -> string -> unit
+(** balance a btrfs filesystem *)
+
 val btrfs_filesystem_resize : t -> ?size:int64 -> string -> unit
 (** resize a btrfs filesystem *)
+
+val btrfs_filesystem_sync : t -> string -> unit
+(** sync a btrfs filesystem *)
+
+val btrfs_fsck : t -> ?superblock:int64 -> ?repair:bool -> string -> unit
+(** check a btrfs filesystem *)
+
+val btrfs_set_seeding : t -> string -> bool -> unit
+(** enable or disable the seeding feature of device *)
+
+val btrfs_subvolume_create : t -> string -> unit
+(** create a btrfs snapshot *)
+
+val btrfs_subvolume_delete : t -> string -> unit
+(** delete a btrfs snapshot *)
+
+val btrfs_subvolume_list : t -> string -> btrfssubvolume array
+(** list btrfs snapshots and subvolumes *)
+
+val btrfs_subvolume_set_default : t -> int64 -> string -> unit
+(** set default btrfs subvolume *)
+
+val btrfs_subvolume_snapshot : t -> string -> string -> unit
+(** create a writable btrfs snapshot *)
 
 val case_sensitive_path : t -> string -> string
 (** return true path on case-insensitive filesystem *)
@@ -464,7 +529,10 @@ val e2fsck : t -> ?correct:bool -> ?forceall:bool -> string -> unit
 (** check an ext2/ext3 filesystem *)
 
 val e2fsck_f : t -> string -> unit
-(** check an ext2/ext3 filesystem *)
+(** check an ext2/ext3 filesystem
+
+    @deprecated Use {!e2fsck} instead
+ *)
 
 val echo_daemon : t -> string array -> string
 (** echo arguments back to the client *)
@@ -537,6 +605,12 @@ val get_autosync : t -> bool
 
 val get_direct : t -> bool
 (** get direct appliance mode flag *)
+
+val get_e2attrs : t -> string -> string
+(** get ext2 file attributes of a file *)
+
+val get_e2generation : t -> string -> int64
+(** get ext2 file generation of a file *)
 
 val get_e2label : t -> string -> string
 (** get the ext2/3/4 filesystem label
@@ -718,7 +792,6 @@ val is_blockdev : t -> string -> bool
 (** test if block device *)
 
 val is_busy : t -> bool
-(** is busy processing a command *)
 
 val is_chardev : t -> string -> bool
 (** test if character device *)
@@ -756,6 +829,12 @@ val is_zero : t -> string -> bool
 val is_zero_device : t -> string -> bool
 (** test if a device contains all zero bytes *)
 
+val isoinfo : t -> string -> isoinfo
+(** get ISO information from primary volume descriptor of ISO file *)
+
+val isoinfo_device : t -> string -> isoinfo
+(** get ISO information from primary volume descriptor of device *)
+
 val kill_subprocess : t -> unit
 (** kill the qemu subprocess *)
 
@@ -791,6 +870,9 @@ val list_partitions : t -> string array
 
 val ll : t -> string -> string
 (** list the files in a directory (long format) *)
+
+val llz : t -> string -> string
+(** list the files in a directory (long format with SELinux contexts) *)
 
 val ln : t -> string -> string -> unit
 (** create a hard link *)
@@ -843,6 +925,9 @@ val luks_open_ro : t -> string -> string -> string -> unit
 val lvcreate : t -> string -> string -> int -> unit
 (** create an LVM logical volume *)
 
+val lvcreate_free : t -> string -> string -> int -> unit
+(** create an LVM logical volume in % remaining free space *)
+
 val lvm_canonical_lv_name : t -> string -> string
 (** get canonical name of an LV *)
 
@@ -884,6 +969,9 @@ val md_create : t -> ?missingbitmap:int64 -> ?nrdevices:int -> ?spare:int -> ?ch
 
 val md_detail : t -> string -> (string * string) list
 (** obtain metadata for an MD device *)
+
+val md_stat : t -> string -> mdstat array
+(** get underlying devices from an MD device *)
 
 val md_stop : t -> string -> unit
 (** stop a Linux md (RAID) device *)
@@ -930,6 +1018,9 @@ val mkfs_b : t -> string -> int -> string -> unit
     @deprecated Use {!mkfs_opts} instead
  *)
 
+val mkfs_btrfs : t -> ?allocstart:int64 -> ?bytecount:int64 -> ?datatype:string -> ?leafsize:int -> ?label:string -> ?metadata:string -> ?nodesize:int -> ?sectorsize:int -> string array -> unit
+(** create a btrfs filesystem *)
+
 val mkfs_opts : t -> ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> string -> string -> unit
 (** make a filesystem *)
 
@@ -966,6 +1057,12 @@ val mount : t -> string -> string -> unit
 val mount_9p : t -> ?options:string -> string -> string -> unit
 (** mount 9p filesystem *)
 
+val mount_local : t -> ?readonly:bool -> ?options:string -> ?cachetimeout:int -> ?debugcalls:bool -> string -> unit
+(** mount on the local filesystem *)
+
+val mount_local_run : t -> unit
+(** run main loop of mount on the local filesystem *)
+
 val mount_loop : t -> string -> string -> unit
 (** mount a file using the loop device *)
 
@@ -989,6 +1086,15 @@ val mv : t -> string -> string -> unit
 
 val ntfs_3g_probe : t -> bool -> string -> int
 (** probe NTFS volume *)
+
+val ntfsclone_in : t -> string -> string -> unit
+(** restore NTFS from backup file *)
+
+val ntfsclone_out : t -> ?metadataonly:bool -> ?rescue:bool -> ?ignorefscheck:bool -> ?preservetimestamps:bool -> ?force:bool -> string -> string -> unit
+(** save NTFS to backup file *)
+
+val ntfsfix : t -> ?clearbadsectors:bool -> string -> unit
+(** fix common errors and force Windows to check NTFS *)
 
 val ntfsresize : t -> string -> unit
 (** resize an NTFS filesystem
@@ -1143,11 +1249,23 @@ val set_autosync : t -> bool -> unit
 val set_direct : t -> bool -> unit
 (** enable or disable direct appliance mode *)
 
+val set_e2attrs : t -> ?clear:bool -> string -> string -> unit
+(** set ext2 file attributes of a file *)
+
+val set_e2generation : t -> string -> int64 -> unit
+(** set ext2 file generation of a file *)
+
 val set_e2label : t -> string -> string -> unit
-(** set the ext2/3/4 filesystem label *)
+(** set the ext2/3/4 filesystem label
+
+    @deprecated Use {!set_label} instead
+ *)
 
 val set_e2uuid : t -> string -> string -> unit
 (** set the ext2/3/4 filesystem UUID *)
+
+val set_label : t -> string -> string -> unit
+(** set filesystem label *)
 
 val set_memsize : t -> int -> unit
 (** set memory allocated to the qemu subprocess *)
@@ -1357,6 +1475,9 @@ val umount : t -> string -> unit
 val umount_all : t -> unit
 (** unmount all filesystems *)
 
+val umount_local : t -> ?retry:bool -> unit
+(** unmount a locally mounted filesystem *)
+
 val upload : t -> string -> string -> unit
 (** upload a file from the local machine *)
 
@@ -1389,6 +1510,9 @@ val vgcreate : t -> string -> string array -> unit
 
 val vglvuuids : t -> string -> string array
 (** get the LV UUIDs of all LVs in the volume group *)
+
+val vgmeta : t -> string -> string
+(** get volume group metadata *)
 
 val vgpvuuids : t -> string -> string array
 (** get the PV UUIDs containing the volume group *)
@@ -1426,6 +1550,9 @@ val wc_l : t -> string -> int
 val wc_w : t -> string -> int
 (** count words in a file *)
 
+val wipefs : t -> string -> unit
+(** wipe a filesystem signature from a device *)
+
 val write : t -> string -> string -> unit
 (** create a new file *)
 
@@ -1449,6 +1576,9 @@ val zero : t -> string -> unit
 
 val zero_device : t -> string -> unit
 (** write zeroes to an entire device *)
+
+val zero_free_space : t -> string -> unit
+(** zero free space in a filesystem *)
 
 val zerofree : t -> string -> unit
 (** zero unused inodes and disk blocks on ext2/3 filesystem *)
@@ -1487,10 +1617,10 @@ val zgrepi : t -> string -> string -> string array
     You can get the {!t} handle by calling
     [g#]{{!guestfs.ocaml_handle}ocaml_handle}.
 
-    Note that methods that take no parameters (except the implicit handle)
-    get an extra unit [()] parameter.  This is so you can create a
-    closure from the method easily.  For example
-    [g#]{{!guestfs.get_verbose}get_verbose} [()]
+    Note that methods that take no required parameters
+    (except the implicit handle) get an extra unit [()] parameter.
+    This is so you can create a closure from the method easily.
+    For example [g#]{{!guestfs.get_verbose}get_verbose} [()]
     calls the method, whereas [g#get_verbose] is a function. *)
 
 class guestfs : unit -> object
@@ -1536,7 +1666,18 @@ class guestfs : unit -> object
   method blockdev_setbsz : string -> int -> unit
   method blockdev_setro : string -> unit
   method blockdev_setrw : string -> unit
+  method btrfs_device_add : string array -> string -> unit
+  method btrfs_device_delete : string array -> string -> unit
+  method btrfs_filesystem_balance : string -> unit
   method btrfs_filesystem_resize : ?size:int64 -> string -> unit
+  method btrfs_filesystem_sync : string -> unit
+  method btrfs_fsck : ?superblock:int64 -> ?repair:bool -> string -> unit
+  method btrfs_set_seeding : string -> bool -> unit
+  method btrfs_subvolume_create : string -> unit
+  method btrfs_subvolume_delete : string -> unit
+  method btrfs_subvolume_list : string -> btrfssubvolume array
+  method btrfs_subvolume_set_default : int64 -> string -> unit
+  method btrfs_subvolume_snapshot : string -> string -> unit
   method case_sensitive_path : string -> string
   method cat : string -> string
   method checksum : string -> string -> string
@@ -1593,6 +1734,8 @@ class guestfs : unit -> object
   method get_attach_method : unit -> string
   method get_autosync : unit -> bool
   method get_direct : unit -> bool
+  method get_e2attrs : string -> string
+  method get_e2generation : string -> int64
   method get_e2label : string -> string
   method get_e2uuid : string -> string
   method get_memsize : unit -> int
@@ -1664,6 +1807,8 @@ class guestfs : unit -> object
   method is_symlink : string -> bool
   method is_zero : string -> bool
   method is_zero_device : string -> bool
+  method isoinfo : string -> isoinfo
+  method isoinfo_device : string -> isoinfo
   method kill_subprocess : unit -> unit
   method launch : unit -> unit
   method lchown : int -> int -> string -> unit
@@ -1676,6 +1821,7 @@ class guestfs : unit -> object
   method list_md_devices : unit -> string array
   method list_partitions : unit -> string array
   method ll : string -> string
+  method llz : string -> string
   method ln : string -> string -> unit
   method ln_f : string -> string -> unit
   method ln_s : string -> string -> unit
@@ -1693,6 +1839,7 @@ class guestfs : unit -> object
   method luks_open : string -> string -> string -> unit
   method luks_open_ro : string -> string -> string -> unit
   method lvcreate : string -> string -> int -> unit
+  method lvcreate_free : string -> string -> int -> unit
   method lvm_canonical_lv_name : string -> string
   method lvm_clear_filter : unit -> unit
   method lvm_remove_all : unit -> unit
@@ -1707,6 +1854,7 @@ class guestfs : unit -> object
   method lxattrlist : string -> string array -> xattr array
   method md_create : ?missingbitmap:int64 -> ?nrdevices:int -> ?spare:int -> ?chunk:int64 -> ?level:string -> string -> string array -> unit
   method md_detail : string -> (string * string) list
+  method md_stat : string -> mdstat array
   method md_stop : string -> unit
   method mkdir : string -> unit
   method mkdir_mode : string -> int -> unit
@@ -1721,6 +1869,7 @@ class guestfs : unit -> object
   method mkfifo : int -> string -> unit
   method mkfs : string -> string -> unit
   method mkfs_b : string -> int -> string -> unit
+  method mkfs_btrfs : ?allocstart:int64 -> ?bytecount:int64 -> ?datatype:string -> ?leafsize:int -> ?label:string -> ?metadata:string -> ?nodesize:int -> ?sectorsize:int -> string array -> unit
   method mkfs_opts : ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> string -> string -> unit
   method mkmountpoint : string -> unit
   method mknod : int -> int -> int -> string -> unit
@@ -1733,6 +1882,8 @@ class guestfs : unit -> object
   method modprobe : string -> unit
   method mount : string -> string -> unit
   method mount_9p : ?options:string -> string -> string -> unit
+  method mount_local : ?readonly:bool -> ?options:string -> ?cachetimeout:int -> ?debugcalls:bool -> string -> unit
+  method mount_local_run : unit -> unit
   method mount_loop : string -> string -> unit
   method mount_options : string -> string -> string -> unit
   method mount_ro : string -> string -> unit
@@ -1741,6 +1892,9 @@ class guestfs : unit -> object
   method mounts : unit -> string array
   method mv : string -> string -> unit
   method ntfs_3g_probe : bool -> string -> int
+  method ntfsclone_in : string -> string -> unit
+  method ntfsclone_out : ?metadataonly:bool -> ?rescue:bool -> ?ignorefscheck:bool -> ?preservetimestamps:bool -> ?force:bool -> string -> string -> unit
+  method ntfsfix : ?clearbadsectors:bool -> string -> unit
   method ntfsresize : string -> unit
   method ntfsresize_opts : ?size:int64 -> ?force:bool -> string -> unit
   method ntfsresize_size : string -> int64 -> unit
@@ -1790,8 +1944,11 @@ class guestfs : unit -> object
   method set_attach_method : string -> unit
   method set_autosync : bool -> unit
   method set_direct : bool -> unit
+  method set_e2attrs : ?clear:bool -> string -> string -> unit
+  method set_e2generation : string -> int64 -> unit
   method set_e2label : string -> string -> unit
   method set_e2uuid : string -> string -> unit
+  method set_label : string -> string -> unit
   method set_memsize : int -> unit
   method set_network : bool -> unit
   method set_path : string option -> unit
@@ -1865,6 +2022,7 @@ class guestfs : unit -> object
   method umask : int -> int
   method umount : string -> unit
   method umount_all : unit -> unit
+  method umount_local : ?retry:bool -> unit -> unit
   method upload : string -> string -> unit
   method upload_offset : string -> string -> int64 -> unit
   method utimens : string -> int64 -> int64 -> int64 -> int64 -> unit
@@ -1876,6 +2034,7 @@ class guestfs : unit -> object
   method vg_activate_all : bool -> unit
   method vgcreate : string -> string array -> unit
   method vglvuuids : string -> string array
+  method vgmeta : string -> string
   method vgpvuuids : string -> string array
   method vgremove : string -> unit
   method vgrename : string -> string -> unit
@@ -1887,6 +2046,7 @@ class guestfs : unit -> object
   method wc_c : string -> int
   method wc_l : string -> int
   method wc_w : string -> int
+  method wipefs : string -> unit
   method write : string -> string -> unit
   method write_append : string -> string -> unit
   method write_file : string -> string -> int -> unit
@@ -1894,6 +2054,7 @@ class guestfs : unit -> object
   method zegrepi : string -> string -> string array
   method zero : string -> unit
   method zero_device : string -> unit
+  method zero_free_space : string -> unit
   method zerofree : string -> unit
   method zfgrep : string -> string -> string array
   method zfgrepi : string -> string -> string array

@@ -19,8 +19,8 @@
 # add extra information using --with-extra="..." which may be any
 # freeform string.
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [16])
-m4_define([libguestfs_release], [23])
+m4_define([libguestfs_minor],   [18])
+m4_define([libguestfs_release], [0])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -101,9 +101,8 @@ if test "$gl_gcc_warnings" = yes; then
   nw="$nw -Wcast-qual"              # Too many warnings for now
   nw="$nw -Wconversion"             # Too many warnings for now
   nw="$nw -Wsystem-headers"         # Don't let system headers trigger warnings
-  nw="$nw -Wsign-conversion"        # Too many warnings for now
-  nw="$nw -Wtraditional-conversion" # Too many warnings for now
-  nw="$nw -Wunreachable-code"       # Too many warnings for now
+  nw="$nw -Wsign-conversion"        # Not an error
+  nw="$nw -Wtraditional-conversion" # Don't care about pre-ANSI compilers
   nw="$nw -Wpadded"                 # Our structs are not padded
   nw="$nw -Wredundant-decls"        # openat.h declares e.g., mkdirat
   nw="$nw -Wlogical-op"             # any use of fwrite provokes this
@@ -117,10 +116,6 @@ if test "$gl_gcc_warnings" = yes; then
   nw="$nw -Wpacked"                 # Allow attribute((packed)) on structs
   nw="$nw -Wlong-long"              # Allow long long since it's required
                                     # by Python, Ruby and xstrtoll.
-  nw="$nw -Wstack-protector"        # Don't warn about stack-protector
-                                    # failures (seen on Ubuntu).
-  nw="$nw -Wmissing-noreturn"       # Don't warn about missed noreturn funcs
-                                    # (seen on Ubuntu).
   nw="$nw -Wsuggest-attribute=pure" # Don't suggest pure functions.
   nw="$nw -Wsuggest-attribute=const" # Don't suggest const functions.
   nw="$nw -Wunsuffixed-float-constants" # Don't care about these.
@@ -130,21 +125,17 @@ if test "$gl_gcc_warnings" = yes; then
   for w in $ws; do
     gl_WARN_ADD([$w])
   done
-  gl_WARN_ADD([-Wno-unused-parameter]) # stubs.c
-  gl_WARN_ADD([-Wno-jump-misses-init]) # stubs.c
-  gl_WARN_ADD([-Wno-unused-variable]) # FIXME: only temporary, for guestfs_protocol.c, etc
 
-  # In spite of excluding -Wlogical-op above, it is enabled, as of
-  # gcc 4.5.0 20090517, and it provokes warnings in cat.c, dd.c, truncate.c
-  gl_WARN_ADD([-Wno-logical-op])
+  # Normally we disable warnings in $nw above.  However for some
+  # unknown reason that doesn't always work, and we need to explicitly
+  # list a few disabled warnings below.
 
-  # Work around warning in src/inspect.c.  This seems to be a bug in gcc 4.5.1.
-  gl_WARN_ADD([-Wno-strict-overflow])
+  gl_WARN_ADD([-Wno-unused-parameter]) # Unused parameters are not a bug.
 
-  # Missing field initializers is not a bug in C.  Adding this to $nw above
-  # did not work, so force it here instead.
+  # Missing field initializers is not a bug in C.
   gl_WARN_ADD([-Wno-missing-field-initializers])
 
+  # Display the name of the warning option with the warning.
   gl_WARN_ADD([-fdiagnostics-show-option])
 
   AC_SUBST([WARN_CFLAGS])
@@ -221,6 +212,7 @@ AC_CHECK_FUNCS([\
         ntohl \
         ntohs \
         posix_fallocate \
+        posix_fadvise \
         realpath \
         removexattr \
         setitimer \
@@ -228,6 +220,20 @@ AC_CHECK_FUNCS([\
         sigaction \
         statvfs \
         sync])
+
+dnl tgetent, tputs and UP [sic] are all required.  They come from libtinfo
+dnl which is pulled in as a dependency of libncurses.
+old_LIBS="$LIBS"
+AC_CHECK_LIB([ncurses], [tgetent], [], [
+    AC_MSG_ERROR(['ncurses' library not found, or it doesn't contain 'tgetent'])
+])
+AC_CHECK_LIB([ncurses], [tputs], [], [
+    AC_MSG_ERROR(['ncurses' library not found, or it doesn't contain 'tputs'])
+])
+AC_CHECK_LIB([ncurses], [UP], [], [
+    AC_MSG_ERROR(['ncurses' library not found, or it doesn't contain 'UP'])
+])
+LIBS="$old_LIBS"
 
 dnl For modified printf in the daemon, we need glibc either (old-style)
 dnl register_printf_function or (new-style) register_printf_specifier.
@@ -244,6 +250,23 @@ AC_CHECK_FUNC([register_printf_specifier],[
 
 This means you either have a very old glibc (pre-2.0) or you
 are using some other libc where this is not supported.])])])
+
+dnl GNU gettext tools (optional).
+AC_CHECK_PROG([XGETTEXT],[xgettext],[xgettext],[no])
+AC_CHECK_PROG([MSGCAT],[msgcat],[msgcat],[no])
+AC_CHECK_PROG([MSGFMT],[msgfmt],[msgfmt],[no])
+AC_CHECK_PROG([MSGMERGE],[msgmerge],[msgmerge],[no])
+
+dnl Check they are the GNU gettext tools.
+AC_MSG_CHECKING([msgfmt is GNU tool])
+if $MSGFMT --version >/dev/null 2>&1 && $MSGFMT --version | grep -q 'GNU gettext'; then
+    msgfmt_is_gnu=yes
+else
+    msgfmt_is_gnu=no
+fi
+AC_MSG_RESULT([$msgfmt_is_gnu])
+AM_CONDITIONAL([HAVE_GNU_GETTEXT],
+        [test "x$XGETTEXT" != "xno" && test "x$MSGCAT" != "xno" && test "x$MSGFMT" != "xno" && test "x$MSGMERGE" != "xno" && test "x$msgfmt_is_gnu" != "xno"])
 
 dnl Build the daemon?
 AC_MSG_CHECKING([if we should build the daemon])
@@ -513,6 +536,22 @@ AC_PATH_PROGS([QEMU],[$with_qemu],[no],
 test "x$QEMU" = "xno" && AC_MSG_ERROR([qemu must be installed])
 AC_DEFINE_UNQUOTED([QEMU],["$QEMU"],[Location of qemu binary.])
 
+dnl Does the user wish to specify -M, -cpu or other qemu options?
+AC_MSG_CHECKING([if the user specified extra options for qemu command line])
+AC_ARG_WITH([qemu-options],
+    [AS_HELP_STRING([--with-qemu-options="-M ... -cpu ... etc"],
+        [pass extra options for qemu command line @<:@default=no@:>@])],
+    [QEMU_OPTIONS="$withval"],
+    [QEMU_OPTIONS=no])
+AS_IF([test "x$QEMU_OPTIONS" = "xno"],[
+    AC_MSG_RESULT([no])
+    QEMU_OPTIONS=
+],[
+    AC_MSG_RESULT([$QEMU_OPTIONS])
+])
+AC_DEFINE_UNQUOTED([QEMU_OPTIONS],["$QEMU_OPTIONS"],
+                   [extra options for qemu command line])
+
 dnl Check that the chosen qemu has virtio-serial support.
 dnl For historical reasons this can be disabled by setting vmchannel_test=no.
 if test "x$vmchannel_test" != "xno"; then
@@ -529,53 +568,55 @@ working.
 ])
     fi
 
-    dnl qemu 0.15 was released with broken support for '-machine',
-    dnl requiring you to add the machine type: '-machine pc,[...]'.
-    dnl The problem is that 'pc' is only applicable for PC-like
-    dnl hardware, so we cannot do this as a general solution.  Since
-    dnl qemu 0.15, this problem has been fixed so now the default
-    dnl machine type is chosen (qemu commit 2645c6dcaf6ea2a51a).
-    dnl
-    dnl We need to work out if this qemu is the broken version, so we
-    dnl can add 'pc' just for this broken version.
-    dnl
-    dnl Note that old qemu didn't support the '-machine' option at all.
-    dnl
-    dnl We use the -kernel option for testing this, because this option
-    dnl is processed very late, after qemu has set up the machine.
-    AC_MSG_CHECKING([for broken '-machine accel=tcg' option in $QEMU])
-    LC_ALL=C $QEMU -nographic -machine accel=tcg -kernel /NO_SUCH_FILE \
+    AS_IF([test "x$QEMU_OPTIONS" = "x"],[
+        dnl qemu 0.15 was released with broken support for '-machine',
+        dnl requiring you to add the machine type: '-machine pc,[...]'.
+        dnl The problem is that 'pc' is only applicable for PC-like
+        dnl hardware, so we cannot do this as a general solution.  Since
+        dnl qemu 0.15, this problem has been fixed so now the default
+        dnl machine type is chosen (qemu commit 2645c6dcaf6ea2a51a).
+        dnl
+        dnl We need to work out if this qemu is the broken version, so we
+        dnl can add 'pc' just for this broken version.
+        dnl
+        dnl Note that old qemu didn't support the '-machine' option at all.
+        dnl
+        dnl We use the -kernel option for testing this, because this option
+        dnl is processed very late, after qemu has set up the machine.
+        AC_MSG_CHECKING([for broken '-machine accel=tcg' option in $QEMU])
+        LC_ALL=C $QEMU -nographic -machine accel=tcg -kernel /NO_SUCH_FILE \
              > config1.tmp 2>&1
-    LC_ALL=C $QEMU -nographic -machine pc,accel=tcg -kernel /NO_SUCH_FILE \
+        LC_ALL=C $QEMU -nographic -machine pc,accel=tcg -kernel /NO_SUCH_FILE \
              > config2.tmp 2>&1
-    if cmp -s config1.tmp config2.tmp; then
-        AC_MSG_RESULT([no])
-    else
-        AC_MSG_RESULT([yes])
-        AC_DEFINE([QEMU_MACHINE_TYPE_IS_BROKEN],[1],[qemu -machine accel=tcg option is broken (in qemu 0.15 only)])
-    fi
-    rm config1.tmp config2.tmp
+        if cmp -s config1.tmp config2.tmp; then
+            AC_MSG_RESULT([no])
+        else
+            AC_MSG_RESULT([yes])
+            AC_DEFINE([QEMU_MACHINE_TYPE_IS_BROKEN],[1],[qemu -machine accel=tcg option is broken (in qemu 0.15 only)])
+        fi
+        rm config1.tmp config2.tmp
 
-    dnl See if the '-machine [pc,]accel=tcg' option is required in
-    dnl order to run the virtio-serial test below.  This happens when
-    dnl we run qemu-kvm inside a VM without forcing TCG:
-    dnl
-    dnl   Could not access KVM kernel module: No such file or directory
-    dnl   failed to initialize KVM: No such file or directory
-    dnl   No accelerator found!
-    AC_MSG_CHECKING([if -machine @<:@pc,@:>@accel=tcg option is required to test virtio-serial feature])
-    if $QEMU -nographic -device \? >/dev/null 2>&1; then
-        :
-    elif $QEMU -machine accel=tcg -nographic -device \? >/dev/null 2>&1; then
-        QEMU_EXTRA_OPTIONS_FOR_TEST="-machine accel=tcg"
-    elif $QEMU -machine pc,accel=tcg -nographic -device \? >/dev/null 2>&1; then
-        QEMU_EXTRA_OPTIONS_FOR_TEST="-machine pc,accel=tcg"
-    # else nothing ... it'll fail below.
-    fi
-    AC_MSG_RESULT([$QEMU_EXTRA_OPTIONS_FOR_TEST])
+        dnl See if the '-machine [pc,]accel=tcg' option is required in
+        dnl order to run the virtio-serial test below.  This happens when
+        dnl we run qemu-kvm inside a VM without forcing TCG:
+        dnl
+        dnl   Could not access KVM kernel module: No such file or directory
+        dnl   failed to initialize KVM: No such file or directory
+        dnl   No accelerator found!
+        AC_MSG_CHECKING([if -machine @<:@pc,@:>@accel=tcg option is required to test virtio-serial feature])
+        if $QEMU -nographic -device \? >/dev/null 2>&1; then
+            :
+        elif $QEMU -machine accel=tcg -nographic -device \? >/dev/null 2>&1; then
+            QEMU_OPTIONS_FOR_TEST="-machine accel=tcg"
+        elif $QEMU -machine pc,accel=tcg -nographic -device \? >/dev/null 2>&1; then
+            QEMU_OPTIONS_FOR_TEST="-machine pc,accel=tcg"
+        # else nothing ... it'll fail below.
+        fi
+        AC_MSG_RESULT([$QEMU_OPTIONS_FOR_TEST])
+    ])
 
     AC_MSG_CHECKING([for virtio-serial support in $QEMU])
-    if $QEMU $QEMU_EXTRA_OPTIONS_FOR_TEST -nographic -device \? 2>&1 | grep -sq virtio-serial; then
+    if $QEMU $QEMU_OPTIONS $QEMU_OPTIONS_FOR_TEST -nographic -device \? 2>&1 | grep -sq virtio-serial; then
         AC_MSG_RESULT([yes])
     else
         AC_MSG_RESULT([no])
@@ -659,9 +700,6 @@ AS_IF([test "x$with_readline" != xno],
      LIBS="$old_LIBS"
     ])
 
-dnl For i18n.
-AM_GNU_GETTEXT([external])
-
 dnl Check for PCRE (required)
 PKG_CHECK_MODULES([PCRE], [libpcre])
 
@@ -718,10 +756,22 @@ AC_ARG_ENABLE([fuse],
         [],
         [enable_fuse=yes])
 AS_IF([test "x$enable_fuse" != "xno"],
-        [PKG_CHECK_MODULES([FUSE],[fuse],,[
-                enable_fuse=no
-                AC_MSG_WARN([FUSE library and headers are missing, so optional FUSE module won't be built])])])
+        [PKG_CHECK_MODULES([FUSE],[fuse],
+            [AC_SUBST([FUSE_CFLAGS])
+             AC_SUBST([FUSE_LIBS])
+             AC_DEFINE([HAVE_FUSE],[1],[Define to 1 if you have FUSE])],
+            [enable_fuse=no
+             AC_MSG_WARN([FUSE library and headers are missing, so optional FUSE module won't be built])
+            ])
+        ])
 AM_CONDITIONAL([HAVE_FUSE],[test "x$enable_fuse" != "xno"])
+
+dnl Check for C++ (optional, we just use this to test the header works).
+AC_PROG_CXX
+
+dnl The C++ compiler test is pretty useless because even if it fails
+dnl it sets CXX=g++.  So test the compiler actually works.
+AM_CONDITIONAL([HAVE_CXX], [$CXX --version])
 
 dnl If valgrind is present (it's not required), check whether or not
 dnl it supports the new 'valgrind --vgdb' option.
@@ -756,6 +806,95 @@ AM_CONDITIONAL([HAVE_OCAML],
                [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno"])
 AM_CONDITIONAL([HAVE_OCAMLDOC],
                [test "x$OCAMLDOC" != "xno"])
+
+OCAML_PKG_gettext=no
+AS_IF([test "x$OCAMLC" != "xno"],[
+    dnl Check for ocaml-gettext package to translate OCaml tools.
+    AC_CHECK_OCAML_PKG(gettext)
+
+    dnl Write gettext modules for each OCaml tool.  If OCaml gettext
+    dnl is not available then we write dummy functions.
+    for program in resize sparsify sysprep; do
+        output=$program/${program}_gettext.ml
+        AC_MSG_NOTICE([creating $output])
+        rm -f $output
+
+        cat <<EOF > $output
+(* This file is generated automatically by ./configure. *)
+
+(** Gettext functions for virt-$program.
+
+    The ${program}_gettext module provides gettext functions for
+    $program, or dummy functions if ocaml-gettext was not available
+    at configure time.
+
+    {b Note}: Don't translate debug strings, or strings which are
+    meant to be read/written only by machine.
+
+    There are two ways to translate constant strings in OCaml programs.
+
+    For ordinary strings, replace [["string"]] with [[s_"string"]].  Since
+    this is a function call to a function called [[s_]], you may have
+    to put parentheses around the expression.
+
+    For format strings, use:
+
+{v
+  printf (f_"zeroing filesystem %s") filename;
+v}
+
+    Note for format strings, the parentheses are almost always required,
+    and they just go around the [[(f_"string")]], {i not} around the other
+    arguments of the printf function.
+
+    At build time, a program parses the OCaml code into an abstract
+    syntax tree and statically determines all calls to the special
+    [[s_]] and [[f_]] functions, which means: (a) You can be very loose
+    with syntax, unlike ordinary xgettext, but (b) you cannot rename
+    these functions.
+*)
+
+EOF
+
+        if test "x$OCAML_PKG_gettext" != "xno"; then
+            # ocaml-gettext available: real module.
+            cat <<EOF >>$output
+module Gettext = Gettext.Program (
+  struct
+    let textdomain = "$PACKAGE_NAME"
+    let codeset = None
+    let dir = None
+    let dependencies = [[]]
+  end
+) (GettextStub.Native)
+EOF
+        else
+            # No gettext: module containing dummy gettext functions.
+            cat <<EOF >>$output
+module Gettext = struct
+  external s_ : string -> string = "%identity"
+  external f_ : ('a, 'b, 'c, 'd, 'e, 'f) format6
+    -> ('a, 'b, 'c, 'd, 'e, 'f) format6
+    = "%identity"
+  let sn_ : string -> string -> int -> string
+    = fun s p n -> if n = 1 then s else p
+  let fn_ : ('a, 'b, 'c, 'd, 'e, 'f) format6
+    -> ('a, 'b, 'c, 'd, 'e, 'f) format6
+    -> int -> ('a, 'b, 'c, 'd, 'e, 'f) format6
+    = fun s p n -> if n = 1 then s else p
+end
+EOF
+        fi
+
+        chmod -w $output
+    done
+])
+AM_CONDITIONAL([HAVE_OCAML_PKG_GETTEXT],
+        [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && test "x$OCAML_PKG_gettext" != "xno"])
+
+AC_CHECK_PROG([OCAML_GETTEXT],[ocaml-gettext],[ocaml-gettext],[no])
+AM_CONDITIONAL([HAVE_OCAML_GETTEXT],
+        [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && test "x$OCAML_PKG_gettext" != "xno" && test "x$OCAML_GETTEXT" != "xno"])
 
 dnl Check for Perl (optional, for Perl bindings and Perl tools).
 PERL=no
@@ -990,6 +1129,16 @@ if test "x$with_java_home" != "xno"; then
         esac
         AC_MSG_RESULT([$JAVAC_FLAGS])
 
+        dnl Extra lint flags?
+        AC_MSG_CHECKING([extra javac lint flags])
+        if $JAVAC -X >/dev/null 2>&1 && \
+           $JAVAC -X 2>&1 | grep -q -- '-Xlint:.*all'; then
+            AC_MSG_RESULT([-Xlint:all])
+            JAVAC_FLAGS="$JAVAC_FLAGS -Xlint:all"
+        else
+            AC_MSG_RESULT([no])
+        fi
+
         dnl Where to install jarfiles, jnifiles
         if test -z $JAR_INSTALL_DIR; then
             JAR_INSTALL_DIR=\${prefix}/share/java
@@ -1105,9 +1254,20 @@ AS_IF(
       ],
       [AC_MSG_WARN([gobject library not found, gobject binding will be disabled])]
     )
+
+    PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.26.0],
+      [
+        AC_SUBST([GIO_CFLAGS])
+        AC_SUBST([GIO_LIBS])
+        AC_DEFINE([HAVE_GIO],[1],
+                  [gio library found at compile time.])
+      ],
+      [AC_MSG_WARN([gio library not found, gobject binding will be disabled])]
+    )
   ]
 )
-AM_CONDITIONAL([HAVE_GOBJECT],[test "x$GOBJECT_LIBS" != "x"])
+AM_CONDITIONAL([HAVE_GOBJECT],
+               [test "x$GOBJECT_LIBS" != "x" -a "x$GIO_LIBS" != "x"])
 
 AC_CHECK_PROG([GJS],[gjs],[gjs])
 AS_IF(
@@ -1131,6 +1291,13 @@ m4_ifdef([GOBJECT_INTROSPECTION_CHECK], [
     AM_CONDITIONAL([HAVE_INTROSPECTION], [false])
 ])
 
+# check for gtk-doc
+m4_ifdef([GTK_DOC_CHECK], [
+GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
+],[
+AM_CONDITIONAL([ENABLE_GTK_DOC], false)
+])
+
 dnl Library versioning.
 MAX_PROC_NR=`cat $srcdir/src/MAX_PROC_NR`
 AC_SUBST(MAX_PROC_NR)
@@ -1143,8 +1310,8 @@ AC_SUBST([LIBTOOL])
 dnl Produce output files.
 AC_CONFIG_HEADERS([config.h])
 dnl http://www.mail-archive.com/automake@gnu.org/msg10204.html
-AC_CONFIG_FILES([clone/virt-sysprep],
-                [chmod +x clone/virt-sysprep])
+AC_CONFIG_FILES([appliance/libguestfs-make-fixed-appliance],
+                [chmod +x appliance/libguestfs-make-fixed-appliance])
 AC_CONFIG_FILES([podwrapper.sh],
                 [chmod +x podwrapper.sh])
 AC_CONFIG_FILES([run],
@@ -1153,10 +1320,8 @@ AC_CONFIG_FILES([Makefile
                  align/Makefile
                  appliance/Makefile
                  cat/Makefile
-                 clone/Makefile
                  csharp/Makefile
                  daemon/Makefile
-                 debian/changelog
                  df/Makefile
                  edit/Makefile
                  erlang/Makefile
@@ -1169,6 +1334,8 @@ AC_CONFIG_FILES([Makefile
                  gnulib/lib/Makefile
                  gnulib/tests/Makefile
                  gobject/Makefile
+                 gobject/docs/Makefile
+                 gobject/docs/guestfs-docs.sgml
                  haskell/Makefile
                  inspector/Makefile
                  java/Makefile
@@ -1183,7 +1350,7 @@ AC_CONFIG_FILES([Makefile
                  po-docs/Makefile
                  po-docs/ja/Makefile
                  po-docs/uk/Makefile
-                 po/Makefile.in
+                 po/Makefile
                  python/Makefile
                  python/examples/Makefile
                  rescue/Makefile
@@ -1194,7 +1361,9 @@ AC_CONFIG_FILES([Makefile
                  sparsify/Makefile
                  src/Makefile
                  src/libguestfs.pc
+                 sysprep/Makefile
                  test-tool/Makefile
+                 tests/btrfs/Makefile
                  tests/c-api/Makefile
                  tests/data/Makefile
                  tests/extra/Makefile
@@ -1202,9 +1371,11 @@ AC_CONFIG_FILES([Makefile
                  tests/luks/Makefile
                  tests/lvm/Makefile
                  tests/md/Makefile
+                 tests/ntfsclone/Makefile
                  tests/protocol/Makefile
                  tests/qemu/Makefile
                  tests/regressions/Makefile
+                 tests/xml/Makefile
                  tools/Makefile])
 AC_OUTPUT
 
@@ -1218,33 +1389,35 @@ echo "This is how we have configured the optional components for you today:"
 echo
 echo    "Daemon .............................. $enable_daemon"
 echo    "Appliance ........................... $enable_appliance"
-echo    "QEMU ................................ $QEMU"
-echo -n "OCaml bindings ...................... "
+echo    "QEMU ................................ $QEMU $QEMU_OPTIONS"
+AS_ECHO_N(["OCaml bindings ...................... "])
 if test "x$HAVE_OCAML_TRUE" = "x"; then echo "yes"; else echo "no"; fi
-echo -n "Perl bindings ....................... "
+AS_ECHO_N(["Perl bindings ....................... "])
 if test "x$HAVE_PERL_TRUE" = "x"; then echo "yes"; else echo "no"; fi
-echo -n "Python bindings ..................... "
+AS_ECHO_N(["Python bindings ..................... "])
 if test "x$HAVE_PYTHON_TRUE" = "x"; then echo "yes"; else echo "no"; fi
-echo -n "Ruby bindings ....................... "
+AS_ECHO_N(["Ruby bindings ....................... "])
 if test "x$HAVE_RUBY_TRUE" = "x"; then echo "yes"; else echo "no"; fi
-echo -n "Java bindings ....................... "
+AS_ECHO_N(["Java bindings ....................... "])
 if test "x$HAVE_JAVA_TRUE" = "x"; then echo "yes"; else echo "no"; fi
-echo -n "Haskell bindings .................... "
+AS_ECHO_N(["Haskell bindings .................... "])
 if test "x$HAVE_HASKELL_TRUE" = "x"; then echo "yes"; else echo "no"; fi
-echo -n "PHP bindings ........................ "
+AS_ECHO_N(["PHP bindings ........................ "])
 if test "x$HAVE_PHP_TRUE" = "x"; then echo "yes"; else echo "no"; fi
-echo -n "Erlang bindings ..................... "
+AS_ECHO_N(["Erlang bindings ..................... "])
 if test "x$HAVE_ERLANG_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 echo    "guestfish and C virt tools .......... yes"
-echo -n "Perl virt tools ..................... "
+AS_ECHO_N(["Perl virt tools ..................... "])
 if test "x$HAVE_TOOLS_TRUE" = "x"; then echo "yes"; else echo "no"; fi
-echo -n "virt-resize ......................... "
+AS_ECHO_N(["OCaml virt tools .................... "])
 if test "x$HAVE_OCAML_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 echo "FUSE filesystem ..................... $enable_fuse"
-echo -n "gobject bindings .................... "
+AS_ECHO_N(["gobject bindings .................... "])
 if test "x$HAVE_GOBJECT_TRUE" = "x"; then echo "yes"; else echo "no"; fi
-echo -n "gobject introspection ............... "
+AS_ECHO_N(["gobject introspection ............... "])
 if test "x$HAVE_INTROSPECTION_TRUE" = "x"; then echo "yes"; else echo "no"; fi
+AS_ECHO_N(["GNU gettext for i18n ................ "])
+if test "x$HAVE_GNU_GETTEXT_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 echo
 echo "If any optional component is configured 'no' when you expected 'yes'"
 echo "then you should check the preceding messages."

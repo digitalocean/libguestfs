@@ -2,9 +2,9 @@
 
 =head1 名前
 
-guestfs-erlang - How to use libguestfs from Erlang
+guestfs-erlang - Erlang から libguestfs を使用する方法
 
-=head1 SYNOPSIS
+=head1 書式
 
  {ok, G} = guestfs:create(),
  ok = guestfs:add_drive_opts(G, Disk,
@@ -13,7 +13,7 @@ guestfs-erlang - How to use libguestfs from Erlang
  [Device] = guestfs:list_devices(G),
  ok = guestfs:close(G).
 
-=head1 DESCRIPTION
+=head1 説明
 
 This manual page documents how to call libguestfs from the Erlang
 programming language.  This page just documents the differences from the C
@@ -32,7 +32,7 @@ should specify the full path to the program:
 
 C<G> is the libguestfs handle which you should pass to other functions.
 
-To close the handle:
+ハンドルを閉じるには:
 
  ok = guestfs:close(G).
 
@@ -45,28 +45,27 @@ remaining optional arguments.
  ok = guestfs:add_drive_opts(G, Disk,
                              [{format, "raw"}, {readonly, true}]).
 
-If the last argument would be an empty list, you can also omit it:
+最後の引数が空の一覧ならば、それを省略できます:
 
  ok = guestfs:add_drive_opts(G, Disk).
 
-=head2 RETURN VALUES AND ERRORS
+=head2 返り値およびエラー
 
 On success, most functions return a C<Result> term (which could be a list,
 string, tuple etc.).  If there is nothing for the function to return, then
 the atom C<ok> is returned.
 
-On error, you would see one of the following tuples:
+エラーが発生すると、以下の組のどれかが表示されます:
 
 =over 4
 
 =item C<{error, Msg, Errno}>
 
-This indicates an ordinary error from the function.
+これは関数からの通常のエラーを意味します。
 
-C<Msg> is the error message (string) and C<Errno> is the Unix error
-(integer).
+C<Msg> はエラーメッセージ（文字列）です。C<Errno> は Unix エラー（整数）です。
 
-C<Errno> can be zero.  See L<guestfs(3)/guestfs_last_errno>.
+C<Errno> は 0 の可能性があります。 L<guestfs(3)/guestfs_last_errno> 参照。
 
 =item C<{unknown, Function}>
 
@@ -74,7 +73,7 @@ This indicates that the function you called is not known.  Generally this
 means you are mixing C<erl-guestfs> from another version of libguestfs,
 which you should not do.
 
-C<Function> is the name of the unknown function.
+C<Function> は未知の関数の名前です。
 
 =item C<{unknownarg, Arg}>
 
@@ -85,22 +84,22 @@ C<Arg> is the name of the unknown argument.
 
 =back
 
-=head1 EXAMPLE 1: CREATE A DISK IMAGE
+=head1 例 1: ディスクイメージの作成
 
 @EXAMPLE1@
 
-=head1 EXAMPLE 2: INSPECT A VIRTUAL MACHINE DISK IMAGE
+=head1 例 2: 仮想マシンのディスクイメージの検査
 
 @EXAMPLE2@
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfs(3)>, L<guestfs-examples(3)>, L<guestfs-java(3)>,
 L<guestfs-ocaml(3)>, L<guestfs-perl(3)>, L<guestfs-python(3)>,
 L<guestfs-recipes(1)>, L<guestfs-ruby(3)>, L<http://www.erlang.org/>.
-L<http://libguestfs.org/>.
+L<http://libguestfs.org/>。
 
-=head1 AUTHORS
+=head1 著者
 
 Richard W.M. Jones (C<rjones at redhat dot com>)
 
@@ -108,8 +107,7 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 Copyright (C) 2011 Red Hat Inc. L<http://libguestfs.org/>
 
-The examples in this manual page may be freely copied, modified and
-distributed without any restrictions.
+このマニュアルページにある例は、なんら制限なく自由にコピー、修正、配布できます。
 
 This library is free software; you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published by the

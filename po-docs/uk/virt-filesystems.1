@@ -62,21 +62,21 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-filesystems 1"
-.TH virt-filesystems 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-filesystems 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "НАЗВА"
 .IX Header "НАЗВА"
-virt-filesystems \- List filesystems, partitions, block devices, \s-1LVM\s0 in a
-virtual machine or disk image
+virt-filesystems — програма для показу списку файлових систем, розділів,
+блокових пристроїв, \s-1LVM\s0 у віртуальних машинах або образах дисків
 .SH "КОРОТКИЙ ОПИС"
 .IX Header "КОРОТКИЙ ОПИС"
 .Vb 1
 \& virt\-filesystems [\-\-параметри] \-d назва_домену
 \&
-\& virt\-filesystems [\-\-options] \-a disk.img [\-a disk.img ...]
+\& virt\-filesystems [\-\-параметри] \-a диск.img [\-a диск.img ...]
 .Ve
 .SH "ОПИС"
 .IX Header "ОПИС"
@@ -108,7 +108,8 @@ filesystems found, one per line, like this:
 \& /dev/vg_guest/lv_root
 .Ve
 .PP
-If you add \fI\-l\fR or \fI\-\-long\fR then the output includes extra information:
+Якщо ви додасте \fI\-l\fR або \fI\-\-long\fR, у виведених даних буде показано
+додаткову інформацію:
 .PP
 .Vb 4
 \& $ virt\-filesystems \-a disk.img \-l
@@ -309,7 +310,7 @@ Display \s-1LVM\s0 logical volumes.  In this mode, these are displayed irrespect
 of whether the LVs contain filesystems.
 .IP "\fB\-\-no\-title\fR" 4
 .IX Item "--no-title"
-In \fI\-\-long\fR mode, don't add a title row.
+У режимі \fI\-\-long\fR не додавати рядок заголовків.
 .Sp
 Note that the order of the columns is not fixed, and may change in future
 versions of virt-filesystems, so using this option may give you unexpected
@@ -363,7 +364,7 @@ In \fI\-\-long\fR mode, display UUIDs as well.
 Показати групи томів \s-1LVM\s0.
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
-Enable tracing of libguestfs \s-1API\s0 calls.
+Увімкнути трасування викликів програмного інтерфейсу libguestfs.
 .SH "СТОВПЧИКИ"
 .IX Header "СТОВПЧИКИ"
 Note that columns in the output are subject to reordering and change in
@@ -395,25 +396,29 @@ The partition type byte, displayed as a two digit hexadecimal number.  A
 comprehensive list of partition types can be found here:
 http://www.win.tue.nl/~aeb/partitions/partition_types\-1.html <http://www.win.tue.nl/~aeb/partitions/partition_types-1.html>
 .Sp
-This is only applicable for \s-1DOS\s0 (\s-1MBR\s0) partitions.
+Це стосується лише розділів \s-1DOS\s0 (\s-1MBR\s0).
 .IP "\fBРозмір\fR" 4
 .IX Item "Розмір"
 The size of the object in bytes.  If the \fI\-\-human\fR option is used then the
 size is displayed in a human-readable form.
-.IP "\fBParent\fR" 4
-.IX Item "Parent"
-The parent column records the parent relationship between objects.  For
-example, if the object is a partition, then this column contains the name of
-the containing device.  If the object is a logical volume, then this column
-is the name of the volume group.
+.IP "\fBОснова\fR" 4
+.IX Item "Основа"
+The parent column records the parent relationship between objects.
+.Sp
+For example, if the object is a partition, then this column contains the
+name of the containing device.  If the object is a logical volume, then this
+column is the name of the volume group.
+.Sp
+If there is more than one parent, then this column is (internal to the
+column) a comma-separated list, eg. \f(CW\*(C`/dev/sda,/dev/sdb\*(C'\fR.
 .IP "\fB\s-1UUID\s0\fR" 4
 .IX Item "UUID"
 If the object has a \s-1UUID\s0 (used for identifying and mounting filesystems and
 block devices) then this column contains the \s-1UUID\s0 as a string.
 .Sp
 The \s-1UUID\s0 is only displayed if the \fI\-\-uuid\fR option is given.
-.SH "NOTE ABOUT CSV FORMAT"
-.IX Header "NOTE ABOUT CSV FORMAT"
+.SH "ЗАУВАЖЕННЯ ЩОДО ФОРМАТУ CSV"
+.IX Header "ЗАУВАЖЕННЯ ЩОДО ФОРМАТУ CSV"
 Comma-separated values (\s-1CSV\s0) is a deceptive format.  It \fIseems\fR like it
 should be easy to parse, but it is definitely not easy to parse.
 .PP
@@ -439,15 +444,16 @@ For other languages, use a \s-1CSV\s0 processing library (eg. \f(CW\*(C`Text::CS
 or Python's built-in csv library).
 .PP
 Most spreadsheets and databases can import \s-1CSV\s0 directly.
-.SH "SHELL QUOTING"
-.IX Header "SHELL QUOTING"
+.SH "ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ"
+.IX Header "ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ"
 Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
 .SH "СТАН ВИХОДУ"
 .IX Header "СТАН ВИХОДУ"
-This program returns 0 if successful, or non-zero if there was an error.
+Ця програма повертає значення 0 у разі успішного завершення і ненульове
+значення, якщо сталася помилка.
 .SH "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 .IX Header "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 \&\fIguestfs\fR\|(3), \fIguestfish\fR\|(1), \fIvirt\-cat\fR\|(1), \fIvirt\-df\fR\|(1),
@@ -460,16 +466,16 @@ Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .IX Header "АВТОРСЬКІ ПРАВА"
 ©Red Hat Inc., 2010
 .PP
-This program is free software; you can redistribute it and/or modify it
-under the terms of the \s-1GNU\s0 General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option)
-any later version.
+Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
+змінювати її за умов дотримання \s-1GNU\s0 General Public License  утому вигляді,
+що оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
+забажаєте) будь\-якої випущеної пізніше.
 .PP
 Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
 БУДЬ\-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
-You should have received a copy of the \s-1GNU\s0 General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 51
-Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.
+Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301, \s-1USA\s0.

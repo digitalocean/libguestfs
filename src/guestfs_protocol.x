@@ -186,6 +186,44 @@ struct guestfs_int_application {
 
 typedef struct guestfs_int_application guestfs_int_application_list<>;
 
+struct guestfs_int_isoinfo {
+  string iso_system_id<>;
+  string iso_volume_id<>;
+  unsigned int iso_volume_space_size;
+  unsigned int iso_volume_set_size;
+  unsigned int iso_volume_sequence_number;
+  unsigned int iso_logical_block_size;
+  string iso_volume_set_id<>;
+  string iso_publisher_id<>;
+  string iso_data_preparer_id<>;
+  string iso_application_id<>;
+  string iso_copyright_file_id<>;
+  string iso_abstract_file_id<>;
+  string iso_bibliographic_file_id<>;
+  hyper iso_volume_creation_t;
+  hyper iso_volume_modification_t;
+  hyper iso_volume_expiration_t;
+  hyper iso_volume_effective_t;
+};
+
+typedef struct guestfs_int_isoinfo guestfs_int_isoinfo_list<>;
+
+struct guestfs_int_mdstat {
+  string mdstat_device<>;
+  int mdstat_index;
+  string mdstat_flags<>;
+};
+
+typedef struct guestfs_int_mdstat guestfs_int_mdstat_list<>;
+
+struct guestfs_int_btrfssubvolume {
+  unsigned hyper btrfssubvolume_id;
+  unsigned hyper btrfssubvolume_top_level_id;
+  string btrfssubvolume_path<>;
+};
+
+typedef struct guestfs_int_btrfssubvolume guestfs_int_btrfssubvolume_list<>;
+
 struct guestfs_mount_args {
   string device<>;
   string mountpoint<>;
@@ -2041,6 +2079,177 @@ struct guestfs_e2fsck_args {
   bool forceall;
 };
 
+struct guestfs_llz_args {
+  string directory<>;
+};
+
+struct guestfs_llz_ret {
+  string listing<>;
+};
+
+struct guestfs_wipefs_args {
+  string device<>;
+};
+
+struct guestfs_ntfsfix_args {
+  string device<>;
+  bool clearbadsectors;
+};
+
+struct guestfs_ntfsclone_out_args {
+  string device<>;
+  bool metadataonly;
+  bool rescue;
+  bool ignorefscheck;
+  bool preservetimestamps;
+  bool force;
+};
+
+struct guestfs_ntfsclone_in_args {
+  string device<>;
+};
+
+struct guestfs_set_label_args {
+  string device<>;
+  string label<>;
+};
+
+struct guestfs_zero_free_space_args {
+  string directory<>;
+};
+
+struct guestfs_lvcreate_free_args {
+  string logvol<>;
+  string volgroup<>;
+  int percent;
+};
+
+struct guestfs_isoinfo_device_args {
+  string device<>;
+};
+
+struct guestfs_isoinfo_device_ret {
+  guestfs_int_isoinfo isodata;
+};
+
+struct guestfs_isoinfo_args {
+  string isofile<>;
+};
+
+struct guestfs_isoinfo_ret {
+  guestfs_int_isoinfo isodata;
+};
+
+struct guestfs_vgmeta_args {
+  string vgname<>;
+};
+
+struct guestfs_vgmeta_ret {
+  opaque metadata<>;
+};
+
+struct guestfs_md_stat_args {
+  string md<>;
+};
+
+struct guestfs_md_stat_ret {
+  guestfs_int_mdstat_list devices;
+};
+
+struct guestfs_mkfs_btrfs_args {
+  guestfs_str devices<>;
+  hyper allocstart;
+  hyper bytecount;
+  string datatype<>;
+  int leafsize;
+  string label<>;
+  string metadata<>;
+  int nodesize;
+  int sectorsize;
+};
+
+struct guestfs_get_e2attrs_args {
+  string file<>;
+};
+
+struct guestfs_get_e2attrs_ret {
+  string attrs<>;
+};
+
+struct guestfs_set_e2attrs_args {
+  string file<>;
+  string attrs<>;
+  bool clear;
+};
+
+struct guestfs_get_e2generation_args {
+  string file<>;
+};
+
+struct guestfs_get_e2generation_ret {
+  hyper generation;
+};
+
+struct guestfs_set_e2generation_args {
+  string file<>;
+  hyper generation;
+};
+
+struct guestfs_btrfs_subvolume_snapshot_args {
+  string source<>;
+  string dest<>;
+};
+
+struct guestfs_btrfs_subvolume_delete_args {
+  string subvolume<>;
+};
+
+struct guestfs_btrfs_subvolume_create_args {
+  string dest<>;
+};
+
+struct guestfs_btrfs_subvolume_list_args {
+  string fs<>;
+};
+
+struct guestfs_btrfs_subvolume_list_ret {
+  guestfs_int_btrfssubvolume_list subvolumes;
+};
+
+struct guestfs_btrfs_subvolume_set_default_args {
+  hyper id;
+  string fs<>;
+};
+
+struct guestfs_btrfs_filesystem_sync_args {
+  string fs<>;
+};
+
+struct guestfs_btrfs_filesystem_balance_args {
+  string fs<>;
+};
+
+struct guestfs_btrfs_device_add_args {
+  guestfs_str devices<>;
+  string fs<>;
+};
+
+struct guestfs_btrfs_device_delete_args {
+  guestfs_str devices<>;
+  string fs<>;
+};
+
+struct guestfs_btrfs_set_seeding_args {
+  string device<>;
+  bool seeding;
+};
+
+struct guestfs_btrfs_fsck_args {
+  string device<>;
+  hyper superblock;
+  bool repair;
+};
+
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
   GUESTFS_PROC_SYNC = 2,
@@ -2346,6 +2555,34 @@ enum guestfs_procedure {
   GUESTFS_PROC_MD_STOP = 302,
   GUESTFS_PROC_BLKID = 303,
   GUESTFS_PROC_E2FSCK = 304,
+  GUESTFS_PROC_LLZ = 305,
+  GUESTFS_PROC_WIPEFS = 306,
+  GUESTFS_PROC_NTFSFIX = 307,
+  GUESTFS_PROC_NTFSCLONE_OUT = 308,
+  GUESTFS_PROC_NTFSCLONE_IN = 309,
+  GUESTFS_PROC_SET_LABEL = 310,
+  GUESTFS_PROC_ZERO_FREE_SPACE = 311,
+  GUESTFS_PROC_LVCREATE_FREE = 312,
+  GUESTFS_PROC_ISOINFO_DEVICE = 313,
+  GUESTFS_PROC_ISOINFO = 314,
+  GUESTFS_PROC_VGMETA = 315,
+  GUESTFS_PROC_MD_STAT = 316,
+  GUESTFS_PROC_MKFS_BTRFS = 317,
+  GUESTFS_PROC_GET_E2ATTRS = 318,
+  GUESTFS_PROC_SET_E2ATTRS = 319,
+  GUESTFS_PROC_GET_E2GENERATION = 320,
+  GUESTFS_PROC_SET_E2GENERATION = 321,
+  GUESTFS_PROC_BTRFS_SUBVOLUME_SNAPSHOT = 322,
+  GUESTFS_PROC_BTRFS_SUBVOLUME_DELETE = 323,
+  GUESTFS_PROC_BTRFS_SUBVOLUME_CREATE = 324,
+  GUESTFS_PROC_BTRFS_SUBVOLUME_LIST = 325,
+  GUESTFS_PROC_BTRFS_SUBVOLUME_SET_DEFAULT = 326,
+  GUESTFS_PROC_BTRFS_FILESYSTEM_SYNC = 327,
+  GUESTFS_PROC_BTRFS_FILESYSTEM_BALANCE = 328,
+  GUESTFS_PROC_BTRFS_DEVICE_ADD = 329,
+  GUESTFS_PROC_BTRFS_DEVICE_DELETE = 330,
+  GUESTFS_PROC_BTRFS_SET_SEEDING = 331,
+  GUESTFS_PROC_BTRFS_FSCK = 332,
   GUESTFS_PROC_NR_PROCS
 };
 

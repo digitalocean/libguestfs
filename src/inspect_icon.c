@@ -34,6 +34,9 @@
 #include "guestfs_protocol.h"
 
 /* External tools are required for some icon types.  Check we have them. */
+#if defined(PBMTEXT) && defined (PNMTOPNG)
+#define CAN_DO_CIRROS 1
+#endif
 #if defined(WRESTOOL) && defined(BMPTOPNM) && defined(PNMTOPNG) && \
     defined(PAMCUT)
 #define CAN_DO_WINDOWS 1
@@ -62,6 +65,9 @@ static char *icon_debian (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
 static char *icon_ubuntu (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
 static char *icon_mageia (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
 static char *icon_opensuse (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
+#if CAN_DO_CIRROS
+static char *icon_cirros (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
+#endif
 #if CAN_DO_WINDOWS
 static char *icon_windows (guestfs_h *g, struct inspect_fs *fs, size_t *size_r);
 #endif
@@ -150,8 +156,16 @@ guestfs__inspect_get_icon (guestfs_h *g, const char *root, size_t *size_r,
       r = icon_opensuse (g, fs, &size);
       break;
 
+    case OS_DISTRO_CIRROS:
+#if CAN_DO_CIRROS
+      r = icon_cirros (g, fs, &size);
+#endif
+      break;
+
       /* These are just to keep gcc warnings happy. */
     case OS_DISTRO_ARCHLINUX:
+    case OS_DISTRO_BUILDROOT:
+    case OS_DISTRO_FREEDOS:
     case OS_DISTRO_GENTOO:
     case OS_DISTRO_LINUX_MINT:
     case OS_DISTRO_MANDRIVA:
@@ -177,6 +191,7 @@ guestfs__inspect_get_icon (guestfs_h *g, const char *root, size_t *size_r,
 
   case OS_TYPE_FREEBSD:
   case OS_TYPE_NETBSD:
+  case OS_TYPE_DOS:
   case OS_TYPE_UNKNOWN:
   default: ;
   }
@@ -335,6 +350,65 @@ icon_opensuse (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
   return get_png (g, fs, OPENSUSE_ICON, size_r, 2048);
 }
 
+#if CAN_DO_CIRROS
+
+/* Cirros's logo is a text file! */
+#define CIRROS_LOGO "/usr/share/cirros/logo"
+
+static char *
+icon_cirros (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
+{
+  char *ret = NOT_FOUND;
+  char *type = NULL;
+  char *local = NULL;
+  char *pngfile = NULL;
+  char *cmd = NULL;
+  int r;
+
+  r = guestfs_exists (g, CIRROS_LOGO);
+  if (r == -1) {
+    ret = NULL; /* a real error */
+    goto out;
+  }
+  if (r == 0) goto out;
+
+  /* Check the file type and geometry. */
+  type = guestfs_file (g, CIRROS_LOGO);
+  if (!type) goto out;
+
+  if (!STRPREFIX (type, "ASCII text")) goto out;
+
+  local = guestfs___download_to_tmp (g, fs, CIRROS_LOGO, "icon", 1024);
+  if (!local) goto out;
+
+  /* Use pbmtext to render it. */
+  pngfile = safe_asprintf (g, "%s/cirros.png", g->tmpdir);
+
+  cmd = safe_asprintf (g, PBMTEXT " < %s | " PNMTOPNG " > %s",
+                       local, pngfile);
+  r = system (cmd);
+  if (r == -1 || WEXITSTATUS (r) != 0) {
+    debug (g, "external command failed: %s", cmd);
+    goto out;
+  }
+
+  /* Read it into memory. */
+  if (read_whole_file (g, pngfile, &ret, size_r) == -1) {
+    ret = NULL;
+    goto out;
+  }
+
+ out:
+  free (pngfile);
+  free (cmd);
+  free (local);
+  free (type);
+
+  return ret;
+}
+
+#endif /* CAN_DO_CIRROS */
+
 #if CAN_DO_WINDOWS
 
 /* Windows, as usual, has to be much more complicated and stupid than
@@ -479,7 +553,7 @@ read_whole_file (guestfs_h *g, const char *filename,
   ssize_t r;
   struct stat statbuf;
 
-  fd = open (filename, O_RDONLY);
+  fd = open (filename, O_RDONLY|O_CLOEXEC);
   if (fd == -1) {
     perrorf (g, "open: %s", filename);
     return -1;

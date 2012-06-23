@@ -2,20 +2,20 @@
 
 =head1 名前
 
-virt-list-filesystems - List filesystems in a virtual machine or disk image
+virt-list-filesystems - 仮想マシンまたはディスクイメージのファイルシステムの一覧表示
 
-=head1 SYNOPSIS
+=head1 書式
 
  virt-list-filesystems [--options] domname
 
  virt-list-filesystems [--options] disk.img [disk.img ...]
 
-=head1 OBSOLETE
+=head1 非推奨
 
 This tool is obsolete.  Use L<virt-filesystems(1)> as a more flexible
 replacement.
 
-=head1 DESCRIPTION
+=head1 説明
 
 C<virt-list-filesystems> is a command line tool to list the filesystems that
 are contained in a virtual machine or disk image.
@@ -24,27 +24,25 @@ C<virt-list-filesystems> is just a simple wrapper around L<libguestfs(3)>
 functionality.  For more complex cases you should look at the
 L<guestfish(1)> tool.
 
-=head1 OPTIONS
+=head1 オプション
 
 =over 4
 
 =item B<--help>
 
-Display brief help.
+簡単なヘルプを表示します。
 
 =item B<--version>
 
-Display version number and exit.
+バージョン番号を表示して終了します。
 
 =item B<-c URI>
 
 =item B<--connect URI>
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された I<URI> に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 
-If you specify guest block devices directly, then libvirt is not used at
-all.
+仮想マシンのブロックデバイスを直接指定すると、libvirt はまったく使用されません。
 
 =item B<--format> raw
 
@@ -81,13 +79,13 @@ meaning to the shell such as C<#> and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 L<sh(1)> for details.
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-cat(1)>, L<virt-tar(1)>,
 L<virt-filesystems(1)>, L<virt-list-partitions(1)>, L<Sys::Guestfs(3)>,
 L<Sys::Guestfs::Lib(3)>, L<Sys::Virt(3)>, L<http://libguestfs.org/>.
 
-=head1 AUTHOR
+=head1 著者
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 

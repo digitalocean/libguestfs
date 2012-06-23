@@ -2,23 +2,20 @@
 
 =head1 名前
 
-virt-sysprep - Reset or unconfigure a virtual machine so clones can be made
+virt-sysprep - 仮想マシンをクローンできるようリセットまたは設定解除
 
-=head1 SYNOPSIS
+=head1 書式
 
  virt-sysprep [--options] -d domname
 
  virt-sysprep [--options] -a disk.img [-a disk.img ...]
 
-=head1 DESCRIPTION
+=head1 説明
 
 Virt-sysprep "resets" or "unconfigures" a virtual machine so that clones can
 be made from it.  Steps in this process include removing SSH host keys,
 removing persistent network MAC configuration, and removing user accounts.
 Each step can be enabled or disabled as required.
-
-Virt-sysprep is a simple shell script, allowing easy inspection or
-customization by the system administrator.
 
 Virt-sysprep modifies the guest or disk image I<in place>.  The guest must
 be shut down.  If you want to preserve the existing contents of the guest,
@@ -37,90 +34,114 @@ machines in preparation for cloning them.  Having said that, virt-sysprep
 does I<not> currently work on Microsoft Windows guests.  We plan to support
 Windows sysprepping in a future version, and we already have code to do it.
 
-=head1 OPTIONS
+=head1 オプション
 
 =over 4
 
 =item B<--help>
 
-Display brief help.
+簡単なヘルプを表示します。
 
 =item B<-a> file
 
 =item B<--add> file
 
-Add I<file> which should be a disk image from a virtual machine.
+仮想マシンからディスクイメージの I<file> を追加します。
 
 The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+particular format use the I<--format> option.
 
 =item B<-c> URI
 
 =item B<--connect> URI
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された I<URI> に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 
-If you specify guest block devices directly (I<-a>), then libvirt is not
-used at all.
+ゲストのブロックデバイスを直接指定していると（(I<-a>)）、libvirt は何も使用されません。
 
 =item B<-d> guest
 
 =item B<--domain> guest
 
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  ドメインの UUID が名前の代わりに使用されます。
 
-=item B<--enable=...>
+=item B<-n>
+
+=item B<--dry-run>
+
+Perform a read-only "dry run" on the guest.  This runs the sysprep
+operation, but throws away any changes to the disk at the end.
+
+=item B<--enable> operations
 
 Choose which sysprep operations to perform.  Give a comma-separated list of
 operations, for example:
 
- --enable=ssh-hostkeys,udev-persistent-net
+ --enable ssh-hostkeys,udev-persistent-net
 
 would enable ONLY C<ssh-hostkeys> and C<udev-persistent-net> operations.
 
-If the I<--enable> option is not given, then we default to trying all
-possible sysprep operations.  But some sysprep operations are skipped for
+If the I<--enable> option is not given, then we default to trying most
+sysprep operations (see I<--list-operations> to show which are enabled).
+
+Regardless of the I<--enable> option, sysprep operations are skipped for
 some guest types.
 
-Use I<--list-operations> to list operations supported by a particular
-version of virt-sysprep.
+特定のバージョンの virt-sysprep によりサポートされる操作の一覧を表示するには I<--list-operations> を使用します。
 
 See L</OPERATIONS> below for a list and an explanation of each operation.
 
-=item B<--format=raw|qcow2|..>
+=item B<--format> raw|qcow2|..
 
-=item B<--format>
+=item B<--format> auto
 
 The default for the I<-a> option is to auto-detect the format of the disk
 image.  Using this forces the disk format for I<-a> options which follow on
-the command line.  Using I<--format> with no argument switches back to
-auto-detection for subsequent I<-a> options.
+the command line.  Using I<--format auto> switches back to auto-detection
+for subsequent I<-a> options.
 
-For example:
+例:
 
- virt-sysprep --format=raw -a disk.img
+ virt-sysprep --format raw -a disk.img
 
-forces raw format (no auto-detection) for C<disk.img>.
+C<disk.img> に対してローイメージを強制します（自動検出しません）。
 
- virt-sysprep --format=raw -a disk.img --format -a another.img
+ virt-sysprep --format raw -a disk.img --format auto -a another.img
 
-forces raw format (no auto-detection) for C<disk.img> and reverts to
-auto-detection for C<another.img>.
+C<disk.img> に対してロー形式（自動検知なし）を強制し、C<another.img> に対して自動検知に戻します。
 
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (CVE-2010-3851).
-
-=item B<--hostname> newhostname
-
-Change the hostname.  See the L</hostname> operation below.  If not given,
-defaults to C<localhost.localdomain>.
+仮想マシンのディスクイメージが信頼できないロー形式であるならば、ディスク形式を指定するためにこのオプションを使用すべきです。これにより、悪意のある仮想マシンにより起こり得るセキュリティ問題を回避できます
+(CVE-2010-3851)。
 
 =item B<--list-operations>
 
-List the operations supported by the virt-sysprep program.
+virt-sysprep プログラムによりサポートされる操作を一覧表示します。
+
+These are listed one per line, with one or more single-space-separated
+fields, eg:
+
+ $ virt-sysprep --list-operations
+ bash-history * Remove the bash history in the guest
+ cron-spool * Remove user at-jobs and cron-jobs
+ dhcp-client-state * Remove DHCP client leases
+ dhcp-server-state * Remove DHCP server leases
+ [etc]
+
+The first field is the operation name, which can be supplied to
+I<--enable>.  The second field is a C<*> character if the operation is
+enabled by default or blank if not.  Subsequent fields on the same line are
+the description of the operation.
+
+Before libguestfs 1.17.33 only the first (operation name) field was shown
+and all operations were enabled by default.
+
+=item B<-q>
+
+=item B<--quiet>
+
+Don't print log messages.
+
+To enable detailed logging of individual file operations, use I<-x>.
 
 =item B<--selinux-relabel>
 
@@ -136,149 +157,66 @@ L</SELINUX RELABELLING> below for more details.
 
 =item B<--verbose>
 
-Enable verbose messages for debugging.
+デバッグ用の冗長なメッセージを有効にします。
 
 =item B<-V>
 
 =item B<--version>
 
-Display version number and exit.
+バージョン番号を表示して終了します。
 
 =item B<-x>
 
-Enable tracing of libguestfs API calls.
+libguestfs API 呼び出しのトレースを有効にします。
+
+@EXTRA_OPTIONS@
 
 =back
 
 =head1 OPERATIONS
 
-If the I<--enable> option is I<not> given, then I<all sysprep operations are
-enabled>, although some are skipped depending on the type of guest.
+If the I<--enable> option is I<not> given, then most sysprep operations are
+enabled.
+
+Use C<virt-sysprep --list-operations> to list all operations for your
+virt-sysprep binary.  The ones which are enabled by default are marked with
+a C<*> character.  Regardless of the I<--enable> option, sysprep operations
+are skipped for some guest types.
 
 Operations can be individually enabled using the I<--enable> option.  Use a
 comma-separated list, for example:
 
  virt-sysprep --enable=ssh-hostkeys,udev-persistent-net [etc..]
 
-To list the operations supported by the current version of virt-sysprep, use
-I<--list-operations>.
-
 Future versions of virt-sysprep may add more operations.  If you are using
 virt-sysprep and want predictable behaviour, specify only the operations
 that you want to have enabled.
 
-=head2 cron-spool
+C<*> = enabled by default when no I<--enable> option is given.
 
-Remove user at-jobs and cron-jobs.
+@OPERATIONS@
 
-=head2 dhcp-client-state
+=head1 コピー方法およびクローン方法
 
-Remove DHCP client leases.
+virt-sysprep
+は仮想マシンをクローンするプロセスの一部として使用できます。もしくは、クローンされた仮想マシンからテンプレートを準備するために使用できます。仮想化ツールを使用してこれを実現する他の方法がいろいろとあります。このセクションは単に概要を説明します。
 
-=head2 dhcp-server-state
-
-Remove DHCP server leases.
-
-=head2 hostname
-
-Changes the hostname of the guest to the value given in the I<--hostname>
-parameter.
-
-If the I<--hostname> parameter is not given, then the hostname is changed to
-C<localhost.localdomain>.
-
-=head2 logfiles
-
-Remove many log files.
-
-=head2 mail-spool
-
-Remove email from the local mail spool directory.
-
-=head2 net-hwaddr
-
-Remove HWADDR (hard-coded MAC address) configuration.  For Fedora and Red
-Hat Enterprise Linux, this is removed from C<ifcfg-*> files.
-
-=head2 random-seed
-
-Write some random bytes from the host into the random seed file of the
-guest.
-
-See L</RANDOM SEED> below.
-
-=head2 rhn-systemid
-
-Remove the RHN system ID.
-
-=head2 smolt-uuid
-
-Remove the Smolt hardware UUID.
-
-=head2 ssh-hostkeys
-
-Remove the SSH host keys in the guest.
-
-The SSH host keys are regenerated (differently) next time the guest is
-booted.
-
-If, after cloning, the guest gets the same IP address, ssh will give you a
-stark warning about the host key changing:
-
- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
- @    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
- IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
-
-=head2 udev-persistent-net
-
-Remove udev persistent net rules which map the guest's existing MAC address
-to a fixed ethernet device (eg. eth0).
-
-After a guest is cloned, the MAC address usually changes.  Since the old MAC
-address occupies the old name (eg. eth0), this means the fresh MAC address
-is assigned to a new name (eg. eth1) and this is usually undesirable.
-Erasing the udev persistent net rules avoids this.
-
-=head2 utmp
-
-Remove the utmp file.
-
-This records who is currently logged in on a machine.  In modern Linux
-distros it is stored in a ramdisk and hence not part of the virtual
-machine's disk, but it was stored on disk in older distros.
-
-=head2 yum-uuid
-
-Remove the yum UUID.
-
-Yum creates a fresh UUID the next time it runs when it notices that the
-original UUID has been erased.
-
-=head1 COPYING AND CLONING
-
-Virt-sysprep can be used as part of a process of cloning guests, or to
-prepare a template from which guests can be cloned.  There are many
-different ways to achieve this using the virt tools, and this section is
-just an introduction.
-
-A virtual machine (when switched off) consists of two parts:
+仮想マシン（停止状態の場合）は 2 つの部分からなります:
 
 =over 4
 
 =item I<configuration>
 
-The configuration or description of the guest.  eg. The libvirt XML (see
-C<virsh dumpxml>), the running configuration of the guest, or another
-external format like OVF.
+仮想マシンの設定または説明。  例: libvirt XML (C<virsh dumpxml> 参照) 、仮想マシンの実行中の設定、または OVF
+のような他の外部形式。
 
-Some configuration items that might need to be changed:
+いくつかの設定項目は変更する必要があるかもしれません:
 
 =over 4
 
 =item *
 
-name
+名前
 
 =item *
 
@@ -286,15 +224,15 @@ UUID
 
 =item *
 
-path to block device(s)
+ブロックデバイスへのパス
 
 =item *
 
-network card MAC address
+ネットワークカードの MAC アドレス
 
 =back
 
-=item I<block device(s)>
+=item I<ブロックデバイス>
 
 One or more hard disk images, themselves containing files, directories,
 applications, kernels, configuration, etc.
@@ -305,7 +243,7 @@ Some things inside the block devices that might need to be changed:
 
 =item *
 
-hostname and other net configuration
+ホスト名および他のネットワーク設定
 
 =item *
 
@@ -313,21 +251,21 @@ UUID
 
 =item *
 
-SSH host keys
+SSH ホストキー
 
 =item *
 
-Windows unique security ID (SID)
+Windows の一意なセキュリティ ID (SID)
 
 =item *
 
-Puppet registration
+Puppet の登録
 
 =back
 
 =back
 
-=head2 COPYING THE BLOCK DEVICE
+=head2 ブロックデバイスのコピー法
 
 Starting with an original guest, you probably wish to copy the guest block
 device and its configuration to make a template.  Then once you are happy
@@ -336,30 +274,29 @@ with the template, you will want to make many clones from it.
                         virt-sysprep
                              |
                              v
- original guest --------> template ---------->
-                                      \------> cloned
-                                       \-----> guests
+ 元のゲスト --------> テンプレート ---------->
+                                      \------> クローン
+                                       \-----> 済みゲスト
                                         \---->
 
-You can, of course, just copy the block device on the host using L<cp(1)> or
-L<dd(1)>.
+もちろん、ホストにおいて L<cp(1)> または L<dd(1)> を使用してブロックデバイスをコピーできます。
 
-                   dd                 dd
- original guest --------> template ---------->
-                                      \------> cloned
-                                       \-----> guests
+               dd                      dd
+ 元のゲスト --------> テンプレート ---------->
+                                      \------> クローン
+                                       \-----> 済みゲスト
                                         \---->
 
-There are some smarter (and faster) ways too:
+よりスマート（かつ高速）な方法もあります:
 
 =over 4
 
 =item *
 
                           snapshot
-                template ---------->
-                            \------> cloned
-                             \-----> guests
+            テンプレート ---------->
+                            \------> クローン
+                             \-----> 済みゲスト
                               \---->
 
 Use the block device as a backing file and create a snapshot on top for each
@@ -380,11 +317,11 @@ Get your NAS to snapshot and/or duplicate the LUN.
 
 =item *
 
-Prepare your template using L<virt-sparsify(1)>.  See below.
+L<virt-sparsify(1)> を使用してテンプレートを準備します。以下を参照してください。
 
 =back
 
-=head2 VIRT-CLONE
+=head2 virt-clone
 
 A separate tool, L<virt-clone(1)>, can be used to duplicate the block device
 and/or modify the external libvirt configuration of a guest.  It will reset
@@ -393,10 +330,10 @@ the name, UUID and MAC address of the guest in the libvirt XML.
 L<virt-clone(1)> does not use libguestfs and cannot look inside the disk
 image.  This was the original motivation to write virt-sysprep.
 
-=head2 SPARSIFY
+=head2 スパース化
 
-              virt-sparsify
- original guest --------> template
+          virt-sparsify
+ 元のゲスト --------> テンプレート
 
 L<virt-sparsify(1)> can be used to make the cloning template smaller, making
 it easier to compress and/or faster to copy.
@@ -404,12 +341,12 @@ it easier to compress and/or faster to copy.
 Notice that since virt-sparsify also copies the image, you can use it to
 make the initial copy (instead of C<dd>).
 
-=head2 RESIZE
+=head2 容量変更
 
                          virt-resize
-                template ---------->
-                            \------> cloned
-                             \-----> guests
+            テンプレート ---------->
+                            \------> クローン
+                             \-----> 済みゲスト
                               \---->
 
 If you want to give people cloned guests, but let them pick the size of the
@@ -418,12 +355,11 @@ disk space), then instead of copying the template, you can run
 L<virt-resize(1)>.  Virt-resize performs a copy and resize, and thus is
 ideal for cloning guests from a template.
 
-=head1 SECURITY
+=head1 セキュリティ
 
 Although virt-sysprep removes some sensitive information from the guest, it
 does not pretend to remove all of it.  You should examine the L</OPERATIONS>
-above, and the implementation of the operations in the shell script.  You
-should also examine the guest afterwards.
+above and the guest afterwards.
 
 Sensitive files are simply removed.  The data they contained may still exist
 on the disk, easily recovered with a hex editor or undelete tool.  Use
@@ -431,9 +367,9 @@ L<virt-sparsify(1)> as one way to remove this content.  See also the
 L<scrub(1)> command to get rid of deleted content in directory entries and
 inodes.
 
-=head2 RANDOM SEED
+=head2 乱数の種
 
-I<(This section applies to Linux guests only)>
+I<(このセクションは Linux 仮想マシンのみに適用します)>
 
 The virt-sysprep C<random-seed> operation writes a few bytes of randomness
 from the host into the guest's random seed file.
@@ -447,22 +383,20 @@ template too, which can be done by just enabling the C<random-seed>
 operation:
 
  cp template.img newguest.img
- virt-sysprep --enable=random-seed -a newguest.img
+ virt-sysprep --enable random-seed -a newguest.img
 
-=head2 SELINUX RELABELLING
+=head2 SELinux の再ラベル付け
 
-I<(This section applies to Linux guests using SELinux only)>
+I<(このセクションは SELinux を使用している Linux 仮想マシンのみに適用されます。)>
 
 If any new files are created by virt-sysprep, then virt-sysprep touches
 C</.autorelabel> so that these will be correctly labelled by SELinux the
 next time the guest is booted.  This process interrupts boot and can take
 some time.
 
-You can force relabelling for all guests by supplying the
-I<--selinux-relabel> option.
+I<--selinux-relabel> オプションを指定することにより、すべての仮想マシンに対して強制的に再ラベルできます。
 
-You can disable relabelling entirely by supplying the
-I<--no-selinux-relabel> option.
+I<--no-selinux-relabel> オプションを指定することにより、すべての仮想マシンに対して強制的に再ラベルできます。
 
 =head1 SHELL QUOTING
 
@@ -471,24 +405,28 @@ meaning to the shell such as C<#> and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 L<sh(1)> for details.
 
-=head1 EXIT STATUS
+=head1 終了ステータス
 
-This program returns 0 on success, or 1 if there was an error.
+このプログラムは、成功すると 0 を返します。または、エラーが起きると 1 を返します。
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-clone(1)>, L<virt-rescue(1)>,
 L<virt-resize(1)>, L<virt-sparsify(1)>, L<virsh(1)>, L<lvcreate(8)>,
 L<qemu-img(1)>, L<scrub(1)>, L<http://libguestfs.org/>,
 L<http://libvirt.org/>.
 
-=head1 AUTHOR
+=head1 著者
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
+Wanlong Gao, Fujitsu Ltd.
+
 =head1 COPYRIGHT
 
-Copyright (C) 2011 Red Hat Inc.
+Copyright (C) 2011-2012 Red Hat Inc.
+
+Copyright (C) 2012 Fujitsu Ltd.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free

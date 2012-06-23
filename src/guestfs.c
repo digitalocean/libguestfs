@@ -258,6 +258,10 @@ guestfs_close (guestfs_h *g)
   }
   gl_lock_unlock (handles_lock);
 
+#if HAVE_FUSE
+  guestfs___free_fuse (g);
+#endif
+
   if (g->pda)
     hash_free (g->pda);
   free (g->last_error);
@@ -795,7 +799,10 @@ guestfs__get_pgroup (guestfs_h *g)
 int
 guestfs__set_smp (guestfs_h *g, int v)
 {
-  if (v >= 1) {
+  if (v > 255) {
+    error (g, "unsupported number of smp vcpus: %d", v);
+    return -1;
+  } else if (v >= 1) {
     g->smp = v;
     return 0;
   } else {

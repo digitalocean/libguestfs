@@ -2,13 +2,13 @@
 
 =head1 名前
 
-virt-format - Erase and make a blank disk
+virt-format - ディスクの消去および空のディスクの作成
 
-=head1 SYNOPSIS
+=head1 書式
 
  virt-format [--options] -a disk.img [-a disk.img ...]
 
-=head1 DESCRIPTION
+=head1 説明
 
 Virt-format takes an existing disk file (or it can be a host partition, LV
 etc), B<erases all data on it>, and formats it as a blank disk.  It can
@@ -19,11 +19,11 @@ To create a disk containing data, you may be better to use
 L<virt-make-fs(1)>.  If you are creating a blank disk to use in
 L<guestfish(1)>, you should instead use the guestfish I<-N> option.
 
-Normal usage would be something like this:
+通常の使用方法はこのようになります:
 
  virt-format -a disk.qcow
 
-or this:
+または、このようになります:
 
  virt-format -a /dev/VG/LV
 
@@ -54,24 +54,23 @@ by using the I<--format> option (q.v.).  In situations where you do not
 trust the existing content of the disk, then it is advisable to use this
 option to avoid possible exploits.
 
-=head1 OPTIONS
+=head1 オプション
 
 =over 4
 
 =item B<--help>
 
-Display brief help.
+簡単なヘルプを表示します。
 
 =item B<-a> file
 
 =item B<--add> file
 
-Add I<file>, a disk image, host partition, LV, external USB disk, etc.
+I<ファイル>、ディスクイメージ、ホストのパーティション、論理ボリューム、外部 USB ディスクなどを追加します。
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、I<--format=..> オプションを使用します。
 
-B<Any existing data on the disk is erased.>
+B<ディスクにある既存のデータはすべて削除されます。>
 
 =item B<--filesystem=ext3|ntfs|vfat|...>
 
@@ -80,31 +79,28 @@ supported by libguestfs.
 
 =item B<--filesystem=none>
 
-Create no filesystem.  This is the default.
+ファイルシステムを作成しません。  これがデフォルトです。
 
 =item B<--format=raw|qcow2|..>
 
 =item B<--format>
 
-The default for the I<-a> option is to auto-detect the format of the disk
-image.  Using this forces the disk format for I<-a> options which follow on
-the command line.  Using I<--format> with no argument switches back to
-auto-detection for subsequent I<-a> options.
+I<-a> オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、I<-a>
+オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで I<--format> を使用することにより、後続の I<-a>
+オプションに対して自動検知に戻せます。
 
-For example:
+例:
 
  virt-format --format=raw -a disk.img
 
-forces raw format (no auto-detection) for C<disk.img>.
+C<disk.img> に対してローイメージを強制します（自動検出しません）。
 
  virt-format --format=raw -a disk.img --format -a another.img
 
-forces raw format (no auto-detection) for C<disk.img> and reverts to
-auto-detection for C<another.img>.
+C<disk.img> に対してロー形式（自動検知なし）を強制し、C<another.img> に対して自動検知に戻します。
 
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (CVE-2010-3851).
+仮想マシンのディスクイメージが信頼できないロー形式であるならば、ディスク形式を指定するためにこのオプションを使用すべきです。これにより、悪意のある仮想マシンにより起こり得るセキュリティ問題を回避できます
+(CVE-2010-3851)。
 
 =item B<--lvm=/dev/I<VG>/I<LV>>
 
@@ -113,43 +109,42 @@ change the name of the volume group and logical volume.
 
 =item B<--lvm>
 
-Create a Linux LVM2 logical volume with the default name (C</dev/VG/LV>).
+初期名 (C</dev/VG/LV>) を用いて Linux LVM2 論理ボリュームを作成します。
 
 =item B<--lvm=none>
 
-Create no logical volume.  This is the default.
+論理ボリュームを作成しません。  これがデフォルトです。
 
 =item B<--partition>
 
-Create either an MBR or GPT partition covering the whole disk.  MBR is
-chosen if the disk size is E<lt> 2 TB, GPT if E<ge> 2 TB.
+ディスク全体をカバーする MBR または GPT パーティションを作成します。ディスク容量が E<lt> 2 TB ならば MBR
+が選択されます。容量が E<ge> 2 TB ならば GPT が選択されます。
 
-This is the default.
+これがデフォルトです。
 
 =item B<--partition=gpt>
 
-Create a GPT partition.
+GPT パーティションを作成します。
 
 =item B<--partition=mbr>
 
-Create an MBR partition.
+MBR パーティションを作成します。
 
 =item B<--partition=none>
 
-Create no partition table.  Note that Windows may not be able to see these
-disks.
+パーティションテーブルを作成しません。Windows はこれらのディスクを認識できないかもしれないことに注意してください。
 
 =item B<-v>
 
 =item B<--verbose>
 
-Enable verbose messages for debugging.
+デバッグ用の冗長なメッセージを有効にします。
 
 =item B<-V>
 
 =item B<--version>
 
-Display version number and exit.
+バージョン番号を表示して終了します。
 
 =item B<--wipe>
 
@@ -163,20 +158,20 @@ that previous data is not recoverable.
 
 =item B<-x>
 
-Enable tracing of libguestfs API calls.
+libguestfs API 呼び出しのトレースを有効にします。
 
 =back
 
-=head1 EXIT STATUS
+=head1 終了ステータス
 
-This program returns C<0> on success, or C<1> on failure.
+このプログラムは、成功すると C<0>、失敗すると C<1> を返します。
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-filesystems(1)>, L<virt-make-fs(1)>,
 L<virt-rescue(1)>, L<virt-resize(1)>, L<http://libguestfs.org/>.
 
-=head1 AUTHOR
+=head1 著者
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 

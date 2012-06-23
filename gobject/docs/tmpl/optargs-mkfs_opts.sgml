@@ -1,0 +1,66 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsMkfsOpts
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsMkfsOpts ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsMkfsOpts:blocksize ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMkfsOpts:features ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMkfsOpts:inode ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMkfsOpts:sectorsize ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsMkfsOptsClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_mkfs_opts_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

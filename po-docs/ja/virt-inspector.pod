@@ -5,25 +5,25 @@
 virt-inspector - Display operating system version and other information
 about a virtual machine
 
-=head1 SYNOPSIS
+=head1 書式
 
  virt-inspector [--options] -d domname
 
  virt-inspector [--options] -a disk.img [-a disk.img ...]
 
-Old-style:
+古い形式:
 
  virt-inspector domname
 
  virt-inspector disk.img [disk.img ...]
 
-=head1 DESCRIPTION
+=head1 説明
 
 B<virt-inspector> examines a virtual machine or disk image and tries to
 determine the version of the operating system and other information about
 the virtual machine.
 
-Virt-inspector produces XML output for feeding into other programs.
+Virt-inspector は他のプログラムに提供するための情報をXML形式出力で生成します。
 
 In the normal usage, use C<virt-inspector -d domname> where C<domname> is
 the libvirt domain (see: C<virsh list --all>).
@@ -50,13 +50,13 @@ The same information can also be fetched using guestfish or via libguestfs
 bindings in many programming languages (see L</GETTING INSPECTION DATA FROM
 THE LIBGUESTFS API>).
 
-=head1 OPTIONS
+=head1 オプション
 
 =over 4
 
 =item B<--help>
 
-Display brief help.
+簡単なヘルプを表示します。
 
 =item B<-a> file
 
@@ -66,15 +66,13 @@ Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate I<-a> options.
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、I<--format=..> オプションを使用します。
 
 =item B<-c URI>
 
 =item B<--connect URI>
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された I<URI> に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 
 Libvirt is only used if you specify a C<domname> on the command line.  If
 you specify guest block devices directly (I<-a>), then libvirt is not used
@@ -84,8 +82,7 @@ at all.
 
 =item B<--domain> guest
 
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  ドメインの UUID が名前の代わりに使用されます。
 
 =item B<--echo-keys>
 
@@ -117,17 +114,17 @@ passphrases from the user by opening C</dev/tty>.
 
 =item B<--verbose>
 
-Enable verbose messages for debugging.
+デバッグ用の冗長なメッセージを有効にします。
 
 =item B<-V>
 
 =item B<--version>
 
-Display version number and exit.
+バージョン番号を表示して終了します。
 
 =item B<-x>
 
-Enable tracing of libguestfs API calls.
+libguestfs API 呼び出しのトレースを有効にします。
 
 =item B<--xpath> query
 
@@ -137,22 +134,22 @@ functions are disabled.  See L</XPATH QUERIES> below for some examples.
 
 =back
 
-=head1 OLD-STYLE COMMAND LINE ARGUMENTS
+=head1 旧形式のコマンドライン引数
 
 Previous versions of virt-inspector allowed you to write either:
 
  virt-inspector disk.img [disk.img ...]
 
-or
+または
 
  virt-inspector guestname
 
 whereas in this version you should use I<-a> or I<-d> respectively to avoid
 the confusing case where a disk image might have the same name as a guest.
 
-For compatibility the old style is still supported.
+互換性のため古い形式がまだサポートされています。
 
-=head1 XML FORMAT
+=head1 XML フォーマット
 
 The virt-inspector XML is described precisely in a RELAX NG schema file
 C<virt-inspector.rng> which is supplied with libguestfs.  This section is
@@ -218,7 +215,7 @@ filesystems belonging to the guest, including swap and empty partitions.
 (In the rare case of a multi-boot guest, it covers filesystems belonging to
 this OS or shared with this OS and other OSes).
 
-You might see something like this:
+次のように表示されることがあります:
 
  <operatingsystems>
    <operatingsystem>
@@ -235,9 +232,8 @@ the label, and the UUID.
 
 =head2 E<lt>applicationsE<gt>
 
-The related elements E<lt>package_formatE<gt>, E<lt>package_managementE<gt>
-and E<lt>applicationsE<gt> describe applications installed in the virtual
-machine.
+関連する要素 E<lt>package_formatE<gt>, E<lt>package_managementE<gt> および
+E<lt>applicationsE<gt> は仮想マシンにインストールされたアプリケーションを記述しています。
 
 E<lt>package_formatE<gt>, if present, describes the packaging system used.
 Typical values would be C<rpm> and C<deb>.
@@ -318,13 +314,13 @@ of a multipart CD.  For example:
      <name>linux</name>
      <arch>i386</arch>
      <distro>ubuntu</distro>
-     <product_name>Ubuntu 10.10 &quot;Maverick Meerkat&quot;</product_name>
+     <product_name>Ubuntu 10.10 "Maverick Meerkat"</product_name>
      <major_version>10</major_version>
      <minor_version>10</minor_version>
      <format>installer</format>
      <live/>
 
-=head1 XPATH QUERIES
+=head1 XPath クエリー
 
 Virt-inspector includes built in support for running XPath queries.  The
 reason for including XPath support directly in virt-inspector is simply that
@@ -336,7 +332,7 @@ To perform an XPath query, use the I<--xpath> option.  Note that in this
 mode, virt-inspector simply reads XML from stdin and outputs the query
 result on stdout.  All other inspection features are disabled in this mode.
 
-For example:
+例:
 
  $ virt-inspector -d Guest | virt-inspector --xpath '//filesystems'
  <filesystems>
@@ -403,7 +399,7 @@ attached to the guest.
  ><fs> inspect-os
  /dev/vg_f15x32/lv_root
 
-Using the root device, you can fetch further information about the guest:
+ルートデバイスを使用して、ゲストに関するさらなる情報を取得できます:
 
  ><fs> inspect-get-type /dev/vg_f15x32/lv_root
  linux
@@ -464,31 +460,31 @@ as above.  You can then do:
 
  ><fs> inspect-get-icon /dev/vg_f15x32/lv_root | display -
 
-=head1 OLD VERSIONS OF VIRT-INSPECTOR
+=head1 古いバージョンの virt-inspector
 
 As described above, early versions of libguestfs shipped with a different
 virt-inspector program written in Perl (the current version is written in
 C).  The XML output of the Perl virt-inspector was different and it could
 also output in other formats like text.
 
-The old virt-inspector is no longer supported or shipped with libguestfs.
+古い virt-inspector はもはや libguestfs でサポートされず、同梱されていません。
 
-To confuse matters further, in Red Hat Enterprise Linux 6 we ship two
-versions of virt-inspector with different names:
+さらに混乱することに、Red Hat Enterprise Linux 6 では異なる名前で 2 つのバージョンの virt-inspector
+が同梱されています:
 
- virt-inspector     Old Perl version.
- virt-inspector2    New C version.
+ virt-inspector     古い Perl バージョンです。
+ virt-inspector2    新しい C バージョンです。
 
-=head1 EXIT STATUS
+=head1 終了ステータス
 
-This program returns 0 if successful, or non-zero if there was an error.
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfs(3)>, L<guestfish(1)>, L<http://www.w3.org/TR/xpath/>,
 L<base64(1)>, L<xmlstarlet(1)>, L<http://libguestfs.org/>.
 
-=head1 AUTHORS
+=head1 著者
 
 =over 4
 

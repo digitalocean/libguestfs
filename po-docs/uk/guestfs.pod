@@ -32,6 +32,8 @@ L<http://libguestfs.org/>
 Each virt tool has its own man page (for a full list, go to L</SEE ALSO> at
 the end of this file).
 
+The libguestfs FAQ contains many useful answers: L<guestfs-faq(1)>.
+
 For examples of using the API from C, see L<guestfs-examples(3)>.  For
 examples in other languages, see L</USING LIBGUESTFS WITH OTHER PROGRAMMING
 LANGUAGES> below.
@@ -207,6 +209,9 @@ turn these errors into exceptions).
 File writes are affected by the per-handle umask, set by calling
 L</guestfs_umask> and defaulting to 022.  See L</UMASK>.
 
+Since libguestfs 1.18, it is possible to mount the libguestfs filesystem on
+a local directory, subject to some restrictions.  See L</MOUNT LOCAL> below.
+
 =head2 ПОДІЛ НА РОЗДІЛИ
 
 Libguestfs contains API calls to read, create and modify partition tables on
@@ -314,7 +319,7 @@ optional C<size> parameter:
          GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE, 10000,
          -1);
 
-=item B<file on the host> to B<file or device>
+=item B<файл на вузлі> на B<файл або пристрій>
 
 Use L</guestfs_upload>.  See L</UPLOADING> above.
 
@@ -521,6 +526,51 @@ on it, deactivate the volume groups by caling C<guestfs_vg_activate (g, 0,
 L</guestfs_luks_close> on the C</dev/mapper/mapname> device (I<not> the
 underlying encrypted block device).
 
+=head2 MOUNT LOCAL
+
+In libguestfs E<ge> 1.18, it is possible to mount the libguestfs filesystem
+on a local directory and access it using ordinary POSIX calls and programs.
+
+Availability of this is subject to a number of restrictions: it requires
+FUSE (the Filesystem in USErspace), and libfuse must also have been
+available when libguestfs was compiled.  FUSE may require that a kernel
+module is loaded, and it may be necessary to add the current user to a
+special C<fuse> group.  See the documentation for your distribution and
+L<http://fuse.sf.net> for further information.
+
+The call to mount the libguestfs filesystem on a local directory is
+L</guestfs_mount_local> (q.v.) followed by L</guestfs_mount_local_run>.  The
+latter does not return until you unmount the filesystem.  The reason is that
+the call enters the FUSE main loop and processes kernel requests, turning
+them into libguestfs calls.  An alternative design would have been to create
+a background thread to do this, but libguestfs doesn't require pthreads.
+This way is also more flexible: for example the user can create another
+thread for L</guestfs_mount_local_run>.
+
+L</guestfs_mount_local> needs a certain amount of time to set up the
+mountpoint.  The mountpoint is not ready to use until the call returns.  At
+this point, accesses to the filesystem will block until the main loop is
+entered (ie. L</guestfs_mount_local_run>).  So if you need to start another
+process to access the filesystem, put the fork between
+L</guestfs_mount_local> and L</guestfs_mount_local_run>.
+
+=head3 MOUNT LOCAL COMPATIBILITY
+
+Since local mounting was only added in libguestfs 1.18, and may not be
+available even in these builds, you should consider writing code so that it
+doesn't depend on this feature, and can fall back to using libguestfs file
+system calls.
+
+If libguestfs was compiled without support for L</guestfs_mount_local> then
+calling it will return an error with errno set to C<ENOTSUP> (see
+L</guestfs_last_errno>).
+
+=head3 MOUNT LOCAL PERFORMANCE
+
+Libguestfs on top of FUSE performs quite poorly.  For best performance do
+not use it.  Use ordinary libguestfs filesystem calls, upload, download
+etc. instead.
+
 =head2 ПЕРЕВІРКА
 
 Libguestfs has APIs for inspecting an unknown disk image to find out if it
@@ -656,6 +706,31 @@ There are other useful extended attributes that can be read from ntfs-3g
 filesystems (using L</guestfs_getxattr>).  See:
 
 L<http://www.tuxera.com/community/ntfs-3g-advanced/extended-attributes/>
+
+=head2 RESIZE2FS ERRORS
+
+The L</guestfs_resize2fs>, L</guestfs_resize2fs_size> and
+L</guestfs_resize2fs_M> calls are used to resize ext2/3/4 filesystems.
+
+The underlying program (L<resize2fs(8)>) requires that the filesystem is
+clean and recently fsck'd before you can resize it.  Also, if the resize
+operation fails for some reason, then you had to call fsck the filesystem
+again to fix it.
+
+In libguestfs C<lt> 1.17.14, you usually had to call L</guestfs_e2fsck_f>
+before the resize.  However, in C<ge> 1.17.14, L<e2fsck(8)> is called
+automatically before the resize, so you no longer need to do this.
+
+The L<resize2fs(8)> program can still fail, in which case it prints an error
+message similar to:
+
+ Please run 'e2fsck -fy <device>' to fix the filesystem
+ after the aborted resize operation.
+
+You can do this by calling L</guestfs_e2fsck> with the C<forceall> option.
+However in the context of disk images, it is usually better to avoid this
+situation, eg. by rolling back to an earlier snapshot, or by copying and
+resizing and on failure going back to the original.
 
 =head2 ВИКОРИСТАННЯ LIBGUESTFS ЗА ДОПОМОГОЮ ІНШИХ МОВ ПРОГРАМУВАННЯ
 
@@ -2213,28 +2288,28 @@ libguestfs uses a state machine to model the child process:
                     guestfs_create
                          |
                          |
-                     ____V_____
-                    /          \
-                    |  CONFIG  |
-                    \__________/
-                     ^ ^   ^  \
-                    /  |    \  \ guestfs_launch
-                   /   |    _\__V______
-                  /    |   /           \
-                 /     |   | LAUNCHING |
-                /      |   \___________/
-               /       |       /
-              /        |  guestfs_launch
-             /         |     /
-    ______  /        __|____V
-   /      \ ------> /        \
-   | BUSY |         | READY  |
-   \______/ <------ \________/
+                     ____V_______
+                    /             \
+                    | НАЛАШТУВАННЯ |
+                    \______________/
+                       ^   ^  \
+                       |    \  \ guestfs_launch
+                       |    _\__V______
+                       |   /           \
+                       |   |  ЗАПУСК   |
+                       |   \___________/
+                       |       /
+                       |  guestfs_launch
+                       |     /
+                     __|____V__
+                    /           \
+                    | ГОТОВНІСТЬ |
+                    \____________/
 
 The normal transitions are (1) CONFIG (when the handle is created, but there
 is no child process), (2) LAUNCHING (when the child process is booting up),
-(3) alternating between READY and BUSY as commands are issued to, and
-carried out by, the child process.
+(3) READY meaning the appliance is up, actions can be issued to, and carried
+out by, the child process.
 
 The guest may be killed by L</guestfs_kill_subprocess>, or may die
 asynchronously at any time (eg. due to some internal error), and that causes
@@ -2249,10 +2324,9 @@ commands (or until some failure or timeout).  L</guestfs_launch> internally
 moves the state from CONFIG to LAUNCHING while it is running.
 
 API actions such as L</guestfs_mount> can only be issued when in the READY
-state.  These API calls block waiting for the command to be carried out
-(ie. the state to transition to BUSY and then back to READY).  There are no
-non-blocking versions, and no way to issue more than one command per handle
-at the same time.
+state.  These API calls block waiting for the command to be carried out.
+There are no non-blocking versions, and no way to issue more than one
+command per handle at the same time.
 
 Finally, the child process sends asynchronous messages back to the main
 program, such as kernel log messages.  You can register a callback to
@@ -2335,7 +2409,7 @@ The appliance itself now initializes itself.  This involves starting certain
 processes like C<udev>, possibly printing some debug information, and
 finally running the daemon (C<guestfsd>).
 
-=item The daemon
+=item Фонова служба
 
 Finally the daemon (C<guestfsd>) runs inside the appliance.  If it runs you
 should see:
@@ -2485,7 +2559,7 @@ parameters, but with the roles of daemon and library reversed.
  sequence of chunks for FileOut param #0
  sequence of chunks for FileOut param #1 etc.
 
-=head3 INITIAL MESSAGE
+=head3 ПОЧАТКОВЕ ПОВІДОМЛЕННЯ
 
 When the daemon launches it sends an initial word (C<GUESTFS_LAUNCH_FLAG>)
 which indicates that the guest and daemon is alive.  This is what
@@ -2808,11 +2882,6 @@ The libguestfs appliance, build scripts and so on.
 The L<virt-cat(1)>, L<virt-filesystems(1)> and L<virt-ls(1)> commands and
 documentation.
 
-=item C<clone>
-
-Tools for cloning virtual machines.  Currently contains L<virt-sysprep(1)>
-command and documentation.
-
 =item C<contrib>
 
 Outside contributions, experimental parts.
@@ -2891,6 +2960,10 @@ L<virt-sparsify(1)> command and documentation.
 
 Source code to the C library.
 
+=item C<sysprep>
+
+L<virt-sysprep(1)> command and documentation.
+
 =item C<test-tool>
 
 Test tool for end users to test if their qemu/kernel combination will work
@@ -2898,7 +2971,7 @@ with libguestfs.
 
 =item C<tests>
 
-Tests.
+Тести.
 
 =item C<tools>
 
@@ -2928,7 +3001,7 @@ Command line tools written in Perl (L<virt-win-reg(1)> and many others).
 
 =back
 
-=head2 MAKING A STABLE RELEASE
+=head2 СТВОРЕННЯ СТАБІЛЬНОГО ВИПУСКУ
 
 When we make a stable release, there are several steps documented here.  See
 L</LIBGUESTFS VERSION NUMBERS> for general information about the stable
@@ -3147,9 +3220,11 @@ L<virt-format(1)>, L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
 L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
 L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,
 L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
-L<virt-win-reg(1)>, L<guestfs-testing(1)>, L<libguestfs-test-tool(1)>,
-L<febootstrap(1)>, L<febootstrap-supermin-helper(8)>, L<qemu(1)>,
-L<hivex(3)>, L<stap(1)>, L<http://libguestfs.org/>.
+L<virt-win-reg(1)>, L<guestfs-faq(1)>, L<guestfs-performance(1)>,
+L<guestfs-testing(1)>, L<libguestfs-test-tool(1)>,
+L<libguestfs-make-fixed-appliance(1)>, L<febootstrap(1)>,
+L<febootstrap-supermin-helper(8)>, L<qemu(1)>, L<hivex(3)>, L<stap(1)>,
+L<http://libguestfs.org/>.
 
 Tools with a similar purpose: L<fdisk(8)>, L<parted(8)>, L<kpartx(8)>,
 L<lvm(8)>, L<disktype(1)>.
@@ -3194,19 +3269,20 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2012 Red Hat Inc.  L<http://libguestfs.org/>
+© Red Hat Inc., 2009–2012 L<http://libguestfs.org/>
 
 This library is free software; you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published by the
 Free Software Foundation; either version 2 of the License, or (at your
 option) any later version.
 
-This library is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
-for more details.
+Ця бібліотека поширюється у сподіванні, що вона буде корисною, але БЕЗ
+БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
+ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
+про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU Lesser General Public License
-along with this library; if not, write to the Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+Ви маєте отримати копію GNU Lesser General Public License разом з цією
+бібліотекою; якщо це не так, повідомте про факт за адресою Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
+USA
 

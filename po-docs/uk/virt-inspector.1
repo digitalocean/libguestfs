@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-inspector 1"
-.TH virt-inspector 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-inspector 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -196,14 +196,14 @@ passphrases from the user by opening \f(CW\*(C`/dev/tty\*(C'\fR.
 Показати дані щодо версії і завершити роботу.
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
-Enable tracing of libguestfs \s-1API\s0 calls.
+Увімкнути трасування викликів програмного інтерфейсу libguestfs.
 .IP "\fB\-\-xpath\fR query" 4
 .IX Item "--xpath query"
 Perform an XPath query on the \s-1XML\s0 on stdin, and print the result on stdout.
 In this mode virt-inspector simply runs an XPath query; all other inspection
 functions are disabled.  See \*(L"\s-1XPATH\s0 \s-1QUERIES\s0\*(R" below for some examples.
-.SH "OLD-STYLE COMMAND LINE ARGUMENTS"
-.IX Header "OLD-STYLE COMMAND LINE ARGUMENTS"
+.SH "ПАРАМЕТРИ КОМАНДНОГО РЯДКА У ФОРМАТІ ПОПЕРЕДНІХ ВЕРСІЙ"
+.IX Header "ПАРАМЕТРИ КОМАНДНОГО РЯДКА У ФОРМАТІ ПОПЕРЕДНІХ ВЕРСІЙ"
 Previous versions of virt-inspector allowed you to write either:
 .PP
 .Vb 1
@@ -219,7 +219,8 @@ Previous versions of virt-inspector allowed you to write either:
 whereas in this version you should use \fI\-a\fR or \fI\-d\fR respectively to avoid
 the confusing case where a disk image might have the same name as a guest.
 .PP
-For compatibility the old style is still supported.
+З міркувань зворотної сумісності передбачено підтримку запису параметрів у
+застарілому форматі.
 .SH "XML FORMAT"
 .IX Header "XML FORMAT"
 The virt-inspector \s-1XML\s0 is described precisely in a \s-1RELAX\s0 \s-1NG\s0 schema file
@@ -429,8 +430,8 @@ result on stdout.  All other inspection features are disabled in this mode.
 \&     virt\-inspector \-\-xpath \*(Aqstring(//icon)\*(Aq | base64 \-i \-d | display \-
 \& [displays the guest icon, if there is one]
 .Ve
-.SH "SHELL QUOTING"
-.IX Header "SHELL QUOTING"
+.SH "ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ"
+.IX Header "ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ"
 Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
@@ -566,7 +567,8 @@ versions of virt-inspector with different names:
 .Ve
 .SH "СТАН ВИХОДУ"
 .IX Header "СТАН ВИХОДУ"
-This program returns 0 if successful, or non-zero if there was an error.
+Ця програма повертає значення 0 у разі успішного завершення і ненульове
+значення, якщо сталася помилка.
 .SH "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 .IX Header "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 \&\fIguestfs\fR\|(3), \fIguestfish\fR\|(1), <http://www.w3.org/TR/xpath/>,
@@ -579,18 +581,18 @@ Richard W.M. Jones <http://people.redhat.com/~rjones/>
 Matthew Booth mbooth@redhat.com
 .SH "АВТОРСЬКІ ПРАВА"
 .IX Header "АВТОРСЬКІ ПРАВА"
-Copyright (C) 2010\-2012 Red Hat Inc.
+© Red Hat Inc., 2010–2012
 .PP
-This program is free software; you can redistribute it and/or modify it
-under the terms of the \s-1GNU\s0 General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option)
-any later version.
+Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
+змінювати її за умов дотримання \s-1GNU\s0 General Public License  утому вигляді,
+що оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
+забажаєте) будь\-якої випущеної пізніше.
 .PP
 Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
 БУДЬ\-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
-You should have received a copy of the \s-1GNU\s0 General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 51
-Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.
+Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301, \s-1USA\s0.

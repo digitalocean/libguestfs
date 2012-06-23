@@ -23,6 +23,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <libintl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/un.h>
@@ -36,7 +37,8 @@
 #include "rc_protocol.h"
 
 static void
-create_sockpath (pid_t pid, char *sockpath, int len, struct sockaddr_un *addr)
+create_sockpath (pid_t pid, char *sockpath, size_t len,
+                 struct sockaddr_un *addr)
 {
   char dir[128];
   uid_t euid = geteuid ();
@@ -222,7 +224,7 @@ rc_listen (void)
   pid = getpid ();
   create_sockpath (pid, sockpath, sizeof sockpath, &addr);
 
-  sock = socket (AF_UNIX, SOCK_STREAM, 0);
+  sock = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
   if (sock == -1) {
     perror ("socket");
     exit (EXIT_FAILURE);
@@ -237,14 +239,15 @@ rc_listen (void)
     exit (EXIT_FAILURE);
   }
 
-  /* Now close stdout and substitute /dev/null.  This is necessary
-   * so that eval `guestfish --listen` doesn't block forever.
-   */
-  close_stdout();
-
   /* Read commands and execute them. */
   while (!quit) {
-    s = accept (sock, NULL, NULL);
+    /* Before waiting, close stdout and substitute /dev/null.  This is
+     * necessary so that eval `guestfish --listen` doesn't block
+     * forever.
+     */
+    close_stdout ();
+
+    s = accept4 (sock, NULL, NULL, SOCK_CLOEXEC);
     if (s == -1)
       perror ("accept");
     else {
@@ -290,6 +293,15 @@ rc_listen (void)
 
         xdr_free ((xdrproc_t) xdr_guestfish_call, (char *) &call);
 
+        /* RHBZ#802389: If the command is quit, close the handle right
+         * away.  Note that the main while loop will exit preventing
+         * 'g' from being reused.
+         */
+        if (quit) {
+          guestfs_close (g);
+          g = NULL;
+        }
+
         /* Send the reply. */
         xdrstdio_create (&xdr2, fp, XDR_ENCODE);
         (void) xdr_guestfish_reply (&xdr2, &reply);
@@ -305,12 +317,12 @@ rc_listen (void)
     error:
       xdr_destroy (&xdr);	/* NB. This doesn't close 'fp'. */
       fclose (fp);		/* Closes the underlying socket 's'. */
-      close_stdout(); /* Re-close stdout */
     }
   }
 
   unlink (sockpath);
-  exit (EXIT_SUCCESS);
+
+  /* This returns to 'fish.c', where it jumps to global cleanups and exits. */
 }
 
 /* Remote control client. */
@@ -340,7 +352,7 @@ rc_remote (int pid, const char *cmd, size_t argc, char *argv[],
 
   create_sockpath (pid, sockpath, sizeof sockpath, &addr);
 
-  sock = socket (AF_UNIX, SOCK_STREAM, 0);
+  sock = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
   if (sock == -1) {
     perror ("socket");
     return -1;

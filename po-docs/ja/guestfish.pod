@@ -2,9 +2,9 @@
 
 =head1 名前
 
-guestfish - the libguestfs Filesystem Interactive SHell
+guestfish - libguestfs ファイルシステム対話式シェル
 
-=head1 SYNOPSIS
+=head1 書式
 
  guestfish [--options] [commands]
 
@@ -20,14 +20,14 @@ guestfish - the libguestfs Filesystem Interactive SHell
 
  guestfish -d libvirt-domain -i
 
-=head1 WARNING
+=head1 警告
 
 Using guestfish in read/write mode on live virtual machines can be
 dangerous, potentially causing disk corruption.  Use the I<--ro> (read-only)
 option to use guestfish safely if the disk image or virtual machine might be
 live.
 
-=head1 DESCRIPTION
+=head1 説明
 
 Guestfish is a shell and command-line tool for examining and modifying
 virtual machine filesystems.  It uses libguestfs and exposes all of the
@@ -38,18 +38,19 @@ scripts or the command line or interactively.  If you want to rescue a
 broken virtual machine image, you should look at the L<virt-rescue(1)>
 command.
 
-=head1 EXAMPLES
+=head1 例
 
-=head2 As an interactive shell
+=head2 対話式シェルとして
 
  $ guestfish
  
- Welcome to guestfish, the libguestfs filesystem interactive shell for
- editing virtual machine filesystems.
+ guestfish へようこそ。
+ 仮想マシンのファイルシステムを編集するための
+ libguestfs ファイルシステム対話式シェルです。
  
- Type: 'help' for a list of commands
-       'man' to read the manual
-       'quit' to quit the shell
+ 入力: コマンド一覧は 'help'
+       マニュアルを読むには 'man'
+       シェルを終了するには 'quit'
  
  ><fs> add-ro disk.img
  ><fs> run
@@ -64,7 +65,7 @@ command.
  [...]
  ><fs> exit
 
-=head2 From shell scripts
+=head2 シェルスクリプトから
 
 Create a new C</etc/motd> file in a guest or disk image:
 
@@ -75,14 +76,14 @@ Create a new C</etc/motd> file in a guest or disk image:
  write /etc/motd "Welcome, new users"
  _EOF_
 
-List the LVM logical volumes in a disk image:
+ディスクイメージにある LVM 論理ボリュームを一覧表示します:
 
  guestfish -a disk.img --ro <<_EOF_
  run
  lvs
  _EOF_
 
-List all the filesystems in a disk image:
+ディスクイメージにあるファイルシステムをすべて一覧表示します:
 
  guestfish -a disk.img --ro <<_EOF_
  run
@@ -91,20 +92,20 @@ List all the filesystems in a disk image:
 
 =head2 On one command line
 
-Update C</etc/resolv.conf> in a guest:
+仮想マシンの C</etc/resolv.conf> を更新します:
 
  guestfish \
    add disk.img : run : mount /dev/vg_guest/lv_root / : \
    write /etc/resolv.conf "nameserver 1.2.3.4"
 
-Edit C</boot/grub/grub.conf> interactively:
+C</boot/grub/grub.conf> を対話的に編集します:
 
  guestfish --rw --add disk.img \
    --mount /dev/vg_guest/lv_root \
    --mount /dev/sda1:/boot \
    edit /boot/grub/grub.conf
 
-=head2 Mount disks automatically
+=head2 ディスクを自動的にマウントします
 
 Use the I<-i> option to automatically mount the disks from a virtual
 machine:
@@ -117,7 +118,7 @@ Another way to edit C</boot/grub/grub.conf> interactively is:
 
  guestfish --rw -a disk.img -i edit /boot/grub/grub.conf
 
-=head2 As a script interpreter
+=head2 スクリプトのインタープリターとして
 
 Create a 100MB disk containing an ext2-formatted partition:
 
@@ -138,41 +139,40 @@ To list what is available do:
 
  guestfish -N help | less
 
-=head2 Remote control
+=head2 リモート制御
 
  eval "`guestfish --listen`"
  guestfish --remote add-ro disk.img
  guestfish --remote run
  guestfish --remote lvs
 
-=head1 OPTIONS
+=head1 オプション
 
 =over 4
 
 =item B<--help>
 
-Displays general help on options.
+オプションの一般的なヘルプを表示します。
 
 =item B<-h>
 
 =item B<--cmd-help>
 
-Lists all available guestfish commands.
+利用可能な available guestfish コマンドをすべて一覧表示します。
 
 =item B<-h cmd>
 
 =item B<--cmd-help cmd>
 
-Displays detailed help on a single command C<cmd>.
+あるコマンド C<cmd> の詳細なヘルプを表示します。
 
 =item B<-a image>
 
 =item B<--add image>
 
-Add a block device or virtual machine image to the shell.
+ブロックデバイスまたは仮想マシンイメージをシェルに追加します。
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、I<--format=..> オプションを使用します。
 
 Using this flag is mostly equivalent to using the C<add> command, with
 C<readonly:true> if the I<--ro> flag was given, and with C<format:...> if
@@ -224,7 +224,7 @@ flag to see what you are typing.
 
 =item B<--file file>
 
-Read commands from C<file>.  To write pure guestfish scripts, use:
+C<file> からコマンドを読み込みます。  純粋な guestfish スクリプトを書くには、以下を使用します:
 
  #!/usr/bin/guestfish -f
 
@@ -232,21 +232,19 @@ Read commands from C<file>.  To write pure guestfish scripts, use:
 
 =item B<--format>
 
-The default for the I<-a> option is to auto-detect the format of the disk
-image.  Using this forces the disk format for I<-a> options which follow on
-the command line.  Using I<--format> with no argument switches back to
-auto-detection for subsequent I<-a> options.
+I<-a> オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、I<-a>
+オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで I<--format> を使用することにより、後続の I<-a>
+オプションに対して自動検知に戻せます。
 
-For example:
+例:
 
  guestfish --format=raw -a disk.img
 
-forces raw format (no auto-detection) for C<disk.img>.
+C<disk.img> に対してローイメージを強制します（自動検出しません）。
 
  guestfish --format=raw -a disk.img --format -a another.img
 
-forces raw format (no auto-detection) for C<disk.img> and reverts to
-auto-detection for C<another.img>.
+C<disk.img> に対してロー形式（自動検知なし）を強制し、C<another.img> に対して自動検知に戻します。
 
 If you have untrusted raw-format guest disk images, you should use this
 option to specify the disk format.  This avoids a possible security problem
@@ -303,12 +301,11 @@ L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>).
 
 Mount the named partition or logical volume on the given mountpoint.
 
-If the mountpoint is omitted, it defaults to C</>.
+マウントポイントが省略されると、初期値は C</> です。
 
-You have to mount something on C</> before most commands will work.
+多くのコマンドが動作させる前に、何かを C</> にマウントする必要があります。
 
-If any I<-m> or I<--mount> options are given, the guest is automatically
-launched.
+I<-m> または I<--mount> オプションが指定されると、仮想マシンが自動的に起動します。
 
 If you don't know what filesystems a disk image contains, you can either run
 guestfish without this option, then list the partitions, filesystems and LVs
@@ -344,6 +341,17 @@ the I<-a> option: whereas I<-a> adds an existing disk, I<-N> creates a
 preformatted disk with a filesystem and adds it.  See L</PREPARED DISK
 IMAGES> below.
 
+=item B<--pipe-error>
+
+If writes fail to pipe commands (see L</PIPES> below), then the command
+returns an error.
+
+The default (also for historical reasons) is to ignore such errors so that:
+
+ ><fs> command_with_lots_of_output | head
+
+doesn't give an error.
+
 =item B<--progress-bars>
 
 Enable progress bars, even when guestfish is used non-interactively.
@@ -353,7 +361,7 @@ interactive shell.
 
 =item B<--no-progress-bars>
 
-Disable progress bars.
+進行状況バーを無効にします。
 
 =item B<--remote[=pid]>
 
@@ -375,24 +383,23 @@ Note that prepared disk images created with I<-N> are not affected by this
 option.  Also commands like C<add> are not affected - you have to specify
 the C<readonly:true> option explicitly if you need it.
 
-See also L</OPENING DISKS FOR READ AND WRITE> below.
+以下の L</OPENING DISKS FOR READ AND WRITE> 参照。
 
 =item B<--selinux>
 
-Enable SELinux support for the guest.  See L<guestfs(3)/SELINUX>.
+仮想マシンに対して SELinux を有効にします。 L<guestfs(3)/SELINUX> 参照。
 
 =item B<-v>
 
 =item B<--verbose>
 
-Enable very verbose messages.  This is particularly useful if you find a
-bug.
+非常に冗長なメッセージを有効にします。バグを探していると、これはとくに有用です。
 
 =item B<-V>
 
 =item B<--version>
 
-Display the guestfish / libguestfs version number and exit.
+guestfish / libguestfs のバージョン番号を表示して終了します。
 
 =item B<-w>
 
@@ -405,11 +412,11 @@ See L</OPENING DISKS FOR READ AND WRITE> below.
 
 =item B<-x>
 
-Echo each command before executing it.
+各コマンドを実行する前にエコーします。
 
 =back
 
-=head1 COMMANDS ON COMMAND LINE
+=head1 コマンドラインにおけるコマンド
 
 Any additional (non-option) arguments are treated as commands to execute.
 
@@ -426,7 +433,7 @@ In either command line mode or non-interactive shell, the first command that
 gives an error causes the whole shell to exit.  In interactive mode (with a
 prompt) if a command fails, you can continue to enter commands.
 
-=head1 USING launch (OR run)
+=head1 launch (または run) の使用法
 
 As with L<guestfs(3)>, you must first configure your guest by adding disks,
 then launch it, then mount any disks you need, and finally issue
@@ -440,11 +447,11 @@ add or -a/--add
 
 =item *
 
-launch (aka run)
+launch (別名 run)
 
 =item *
 
-mount or -m/--mount
+mount または -m/--mount
 
 =item *
 
@@ -516,54 +523,53 @@ characters:
 
 =item C<\a>
 
-Alert (bell) character.
+アラート（ベル）文字。
 
 =item C<\b>
 
-Backspace character.
+バックスペース文字。
 
 =item C<\f>
 
-Form feed character.
+フォームフィード文字。
 
 =item C<\n>
 
-Newline character.
+改行文字。
 
 =item C<\r>
 
-Carriage return character.
+復帰文字。
 
 =item C<\t>
 
-Horizontal tab character.
+水平タブ文字。
 
 =item C<\v>
 
-Vertical tab character.
+垂直タブ文字。
 
 =item C<\">
 
-A literal double quote character.
+二重引用符文字。
 
 =item C<\ooo>
 
-A character with octal value I<ooo>.  There must be precisely 3 octal digits
-(unlike C).
+8 進値 I<ooo> を持つ文字。（C とは異なり）ちょうど 3 桁である必要があります。
 
 =item C<\xhh>
 
-A character with hex value I<hh>.  There must be precisely 2 hex digits.
+16 進数値 I<hh> を持つ文字。ちょうど 2 桁である必要があります。
 
 In the current implementation C<\000> and C<\x00> cannot be used in strings.
 
 =item C<\\>
 
-A literal backslash character.
+文字としてのバックスラッシュ文字。
 
 =back
 
-=head1 OPTIONAL ARGUMENTS
+=head1 オプション引数
 
 Some commands take optional arguments.  These arguments appear in this
 documentation as C<[argname:..]>.  You can use them as in these examples:
@@ -577,114 +583,112 @@ documentation as C<[argname:..]>.  You can use them as in these examples:
 Each optional argument can appear at most once.  All optional arguments must
 appear after the required ones.
 
-=head1 NUMBERS
+=head1 数値
 
-This section applies to all commands which can take integers as parameters.
+このセクションはパラメーターとして整数を取り得るすべてのコマンドに適用されます。
 
-=head2 SIZE SUFFIX
+=head2 容量の接尾辞
 
-When the command takes a parameter measured in bytes, you can use one of the
-following suffixes to specify kilobytes, megabytes and larger sizes:
+コマンドがバイト単位で計算されるパラメーターをとるとき、キロバイト、メガバイト、それより大きい容量を指定するために、以下の接尾辞のどれかをとることができます:
 
 =over 4
 
-=item B<k> or B<K> or B<KiB>
+=item B<k> または B<K> または B<KiB>
 
-The size in kilobytes (multiplied by 1024).
+キロ（1024 の掛け算）バイト単位の容量です。
 
 =item B<KB>
 
-The size in SI 1000 byte units.
+国際単位系（SI）の 1000 バイト単位の容量です。
 
-=item B<M> or B<MiB>
+=item B<M> または B<MiB>
 
-The size in megabytes (multiplied by 1048576).
+メガ（1048576 の掛け算）バイト単位の容量です。
 
 =item B<MB>
 
-The size in SI 1000000 byte units.
+国際単位系（SI）の 1000000 バイト単位の容量です。
 
-=item B<G> or B<GiB>
+=item B<G> または B<GiB>
 
-The size in gigabytes (multiplied by 2**30).
+ギガ（2 の 30 乗の掛け算）バイト単位の容量です。
 
 =item B<GB>
 
-The size in SI 10**9 byte units.
+国際単位系（SI）の 10 の 9 乗バイト単位の容量です。
 
-=item B<T> or B<TiB>
+=item B<T> または B<TiB>
 
-The size in terabytes (multiplied by 2**40).
+テラ（2 の 40 乗の掛け算）バイト単位の容量です。
 
 =item B<TB>
 
-The size in SI 10**12 byte units.
+国際単位系（SI）の 10 の 12 乗バイト単位の容量です。
 
-=item B<P> or B<PiB>
+=item B<P> または B<PiB>
 
-The size in petabytes (multiplied by 2**50).
+ペタ（2 の 50 乗の掛け算）バイト単位の容量です。
 
 =item B<PB>
 
-The size in SI 10**15 byte units.
+国際単位系（SI）の 10 の 15 乗バイト単位の容量です。
 
-=item B<E> or B<EiB>
+=item B<E> または B<EiB>
 
-The size in exabytes (multiplied by 2**60).
+エクサ（2 の 60 乗の掛け算）バイト単位の容量です。
 
 =item B<EB>
 
-The size in SI 10**18 byte units.
+国際単位系（SI）の 10 の 18 乗バイト単位の容量です。
 
-=item B<Z> or B<ZiB>
+=item B<Z> または B<ZiB>
 
-The size in zettabytes (multiplied by 2**70).
+ゼタ（2 の 70 乗の掛け算）バイト単位の容量です。
 
 =item B<ZB>
 
-The size in SI 10**21 byte units.
+国際単位系（SI）の 10 の 21 乗バイト単位の容量です。
 
-=item B<Y> or B<YiB>
+=item B<Y> または B<YiB>
 
-The size in yottabytes (multiplied by 2**80).
+ヨタ（2 の 80 乗の掛け算）バイト単位の容量です。
 
 =item B<YB>
 
-The size in SI 10**24 byte units.
+国際単位系（SI）の 10 の 24 乗バイト単位の容量です。
 
 =back
 
-For example:
+例:
 
  truncate-size /file 1G
 
-would truncate the file to 1 gigabyte.
+ファイルを 1 ギガバイトに切り詰めます。
 
-Be careful because a few commands take sizes in kilobytes or megabytes
-(eg. the parameter to L</memsize> is specified in megabytes already).
-Adding a suffix will probably not do what you expect.
+いくつかのコマンドはキロバイトまたはメガバイト単位の容量をとるので注意してください (たとえば、L</memsize>
+のパラメーターはすでにメガバイト単位で指定されています)。接尾辞をつけることにより、期待しない結果になることがあります。
 
-=head2 OCTAL AND HEXADECIMAL NUMBERS
+=head2 10 進数値および 16 進数値
 
 For specifying the radix (base) use the C convention: C<0> to prefix an
 octal number or C<0x> to prefix a hexadecimal number.  For example:
 
- 1234      decimal number 1234
- 02322     octal number, equivalent to decimal 1234
- 0x4d2     hexadecimal number, equivalent to decimal 1234
+ 1234      10 進数 1234
+ 02322     8 進数、10 進数の 1234
+ 0x4d2     16 進数、10 進数の 1234
 
 When using the C<chmod> command, you almost always want to specify an octal
 number for the mode, and you must prefix it with C<0> (unlike the Unix
 L<chmod(1)> program):
 
- chmod 0777 /public  # OK
- chmod 777 /public   # WRONG! This is mode 777 decimal = 01411 octal.
+ chmod 0777 /public  # 正解
+ chmod 777 /public   # 誤り! このモードは 10 進 777 = 8 進 01411 です。
 
 Commands that return numbers usually print them in decimal, but some
 commands print numbers in other radices (eg. C<umask> prints the mode in
 octal, preceded by C<0>).
 
-=head1 WILDCARDS AND GLOBBING
+=head1 ワイルドカードおよびグロブ
 
 Neither guestfish nor the underlying guestfs API performs wildcard expansion
 (globbing) by default.  So for example the following will not do what you
@@ -695,7 +699,7 @@ expect:
 Assuming you don't have a directory called literally C</home/*> then the
 above command will return an error.
 
-To perform wildcard expansion, use the C<glob> command.
+ワイルドカードの展開を実行するには C<glob> コマンドを使用します。
 
  glob rm-rf /home/*
 
@@ -711,19 +715,19 @@ C<glob> only works on simple guest paths and not on device names.
 If you have several parameters, each containing a wildcard, then glob will
 perform a Cartesian product.
 
-=head1 COMMENTS
+=head1 コメント
 
 Any line which starts with a I<#> character is treated as a comment and
 ignored.  The I<#> can optionally be preceded by whitespace, but B<not> by a
 command.  For example:
 
- # this is a comment
-         # this is a comment
- foo # NOT a comment
+ # これはコメントです
+         # これはコメントです
+ foo # コメントではありません
 
-Blank lines are also ignored.
+空行も無視されます。
 
-=head1 RUNNING COMMANDS LOCALLY
+=head1 ローカルのコマンドの実行法
 
 Any line which starts with a I<!> character is treated as a command sent to
 the local shell (C</bin/sh> or whatever L<system(3)> uses).  For example:
@@ -763,7 +767,7 @@ ordinary I<!> local command), see what guestfish commands it would run, and
 when you are happy with those prepend the C<E<lt>> character to run the
 guestfish commands for real.
 
-=head1 PIPES
+=head1 パイプ
 
 Use C<command E<lt>spaceE<gt> | command> to pipe the output of the first
 command (a guestfish command) to the second command (any host command).  For
@@ -789,7 +793,7 @@ it, eg:
 
  echo "|"
 
-=head1 HOME DIRECTORIES
+=head1 ホームディレクトリ
 
 If a parameter starts with the character C<~> then the tilde may be expanded
 as a home directory path (either C<~> for the current user's home directory,
@@ -803,7 +807,7 @@ eg:
 
  echo "~"
 
-=head1 ENCRYPTED DISKS
+=head1 暗号化ディスク
 
 Libguestfs has some support for Linux guests encrypted according to the
 Linux Unified Key Setup (LUKS) standard, which includes nearly all whole
@@ -819,7 +823,7 @@ Then open those devices using L</luks-open>.  This creates a device-mapper
 device called C</dev/mapper/luksdev>.
 
  ><fs> luks-open /dev/sda2 luksdev
- Enter key or passphrase ("key"): <enter the passphrase>
+ Enter key or passphrase ("key"): <パスフレーズを入力してください>
 
 Finally you have to tell LVM to scan for volume groups on the newly created
 mapper device:
@@ -836,7 +840,7 @@ one.  Then you can close the mapper device:
  vg-activate false /dev/VG
  luks-close /dev/mapper/luksdev
 
-=head1 WINDOWS PATHS
+=head1 Windows のパス
 
 If a path is prefixed with C<win:> then you can use Windows-style drive
 letters and paths (with some limitations).  The following commands are
@@ -858,7 +862,7 @@ then the parameter might be rewritten like this:
 
 This only works in argument positions that expect a path.
 
-=head1 UPLOADING AND DOWNLOADING FILES
+=head1 ファイルのアップロード方法およびダウンロード方法
 
 For commands such as C<upload>, C<download>, C<tar-in>, C<tar-out> and
 others which upload from or download to a local file, you can use the
@@ -938,12 +942,11 @@ have several guestfish listener processes running using:
 
 =head2 REMOTE CONTROL AND CSH
 
-When using csh-like shells (csh, tcsh etc) you have to add the I<--csh>
-option:
+csh 系のシェル (csh, tcsh など) を使用するとき、I<--csh> オプションを追加する必要があります:
 
  eval "`guestfish --listen --csh`"
 
-=head2 REMOTE CONTROL DETAILS
+=head2 リモート制御の詳細
 
 Remote control happens over a Unix domain socket called
 C</tmp/.guestfish-$UID/socket-$PID>, where C<$UID> is the effective user ID
@@ -1022,24 +1025,23 @@ To list the available types and any extra parameters they take, run:
 Note that the prepared filesystem is not mounted.  You would usually have to
 use the C<mount /dev/sda1 /> command or add the I<-m /dev/sda1> option.
 
-If any I<-N> or I<--new> options are given, the guest is automatically
-launched.
+I<-N> または I<--new> オプションが指定されると、仮想マシンが自動的に起動します。
 
-=head2 EXAMPLES
+=head2 例
 
-Create a 100MB disk with an ext4-formatted partition:
+ext4 フォーマットのパーティションを持つ 100MB ディスクを作成します:
 
  guestfish -N fs:ext4
 
-Create a 32MB disk with a VFAT-formatted partition, and mount it:
+VFAT フォーマットのパーティションを持つ 32MB ディスクを作成して、マウントします:
 
  guestfish -N fs:vfat:32M -m /dev/sda1
 
-Create a blank 200MB disk:
+200MB の空ディスクを作成します:
 
  guestfish -N disk:200M
 
-=head1 PROGRESS BARS
+=head1 進行状況バー
 
 Some (not all) long-running commands send progress notification messages as
 they are running.  Guestfish turns these messages into progress bars.
@@ -1061,7 +1063,7 @@ Progress bars are enabled by default when guestfish is used interactively.
 You can enable them even for non-interactive modes using I<--progress-bars>,
 and you can disable them completely using I<--no-progress-bars>.
 
-=head1 GUESTFISH COMMANDS
+=head1 guestfish コマンド
 
 The commands in this section are guestfish convenience commands, in other
 words, they are not part of the L<guestfs(3)> API.
@@ -1077,27 +1079,25 @@ With a C<cmd> parameter, this displays detailed help for that command.
 
 =head2 quit | exit
 
-This exits guestfish.  You can also use C<^D> key.
+これは guestfish を終了します。C<^D> キーを使用することもできます。
 
 @FISH_COMMANDS@
 
-=head1 COMMANDS
+=head1 コマンド
 
 @ACTIONS@
 
-=head1 EXIT STATUS
+=head1 終了ステータス
 
-guestfish returns 0 if the commands completed without error, or 1 if there
-was an error.
+コマンドがエラーなく完了すると、guestfish は 0 を返します。エラーがあると 1 を返します。
 
-=head1 ENVIRONMENT VARIABLES
+=head1 環境変数
 
 =over 4
 
 =item EDITOR
 
-The C<edit> command uses C<$EDITOR> as the editor.  If not set, it uses
-C<vi>.
+C<edit> コマンドはエディターとして C<$EDITOR> を使用します。設定されていないと、C<vi> を使用します。
 
 =item FEBOOTSTRAP_KERNEL
 
@@ -1126,12 +1126,11 @@ not specified, the external L<hexedit(1)> program is used.
 
 =item HOME
 
-If compiled with GNU readline support, various files in the home directory
-can be used.  See L</FILES>.
+GNU readline のサポート付きでコンパイルしていると、ホームディレクトリーにあるさまざまなファイルを使用できます。 L</ファイル> 参照。
 
 =item LIBGUESTFS_APPEND
 
-Pass additional options to the guest kernel.
+仮想マシンのカーネルに追加のオプションを渡します。
 
 =item LIBGUESTFS_DEBUG
 
@@ -1156,7 +1155,7 @@ which was found at compile time by the configure script is used.
 
 =item LIBGUESTFS_TRACE
 
-Set C<LIBGUESTFS_TRACE=1> to enable command traces.
+コマンドトレースを有効にするには C<LIBGUESTFS_TRACE=1> を設定してください。
 
 =item PAGER
 
@@ -1165,17 +1164,17 @@ C<more>.
 
 =item TMPDIR
 
-Location of temporary directory, defaults to C</tmp> except for the cached
-supermin appliance which defaults to C</var/tmp>.
+一時ディレクトリーの場所です。初期値は C</tmp> です。初期値が C</var/tmp> であるキャッシュされた supermin
+アプライアンスは除きます。
 
-If libguestfs was compiled to use the supermin appliance then the real
-appliance is cached in this directory, shared between all handles belonging
-to the same EUID.  You can use C<$TMPDIR> to configure another directory to
-use in case C</var/tmp> is not large enough.
+libguestfs が supermin
+アプライアンスを使用するようコンパイルされていると、本当のアプライアンスがこのディレクトリーにキャッシュされ、同じ EUID
+に属するすべてのハンドル間で共有されます。 C</var/tmp> が十分に大きくない場合に使用する他のディレクトリーを設定するために
+C<$TMPDIR> を使用できます。
 
 =back
 
-=head1 FILES
+=head1 ファイル
 
 =over 4
 
@@ -1190,16 +1189,14 @@ See L</OPENING DISKS FOR READ AND WRITE>.
 
 =item $HOME/.guestfish
 
-If compiled with GNU readline support, then the command history is saved in
-this file.
+GNU readline のサポート付きでコンパイルされていると、コマンドの履歴がこのファイルに保存されます。
 
 =item $HOME/.inputrc
 
 =item /etc/inputrc
 
-If compiled with GNU readline support, then these files can be used to
-configure readline.  For further information, please see
-L<readline(3)/INITIALIZATION FILE>.
+GNU readline のサポート付きでコンパイルされていると、これらのファイルが readline を設定するために使用されます。  詳細は
+L<readline(3)/INITIALIZATION FILE> を参照してください。
 
 To write rules which only apply to guestfish, use:
 
@@ -1212,14 +1209,14 @@ in useful ways include:
 
 =over 4
 
-=item completion-ignore-case (default: on)
+=item completion-ignore-case (初期値: on)
 
 By default, guestfish will ignore case when tab-completing paths on the
 disk.  Use:
 
  set completion-ignore-case off
 
-to make guestfish case sensitive.
+guestfish が大文字小文字を区別するようになります。
 
 =back
 
@@ -1234,7 +1231,7 @@ the same name will be overwritten.
 
 =back
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfs(3)>, L<http://libguestfs.org/>, L<virt-alignment-scan(1)>,
 L<virt-cat(1)>, L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-df(1)>,
@@ -1243,9 +1240,9 @@ L<virt-list-filesystems(1)>, L<virt-list-partitions(1)>, L<virt-ls(1)>,
 L<virt-make-fs(1)>, L<virt-rescue(1)>, L<virt-resize(1)>,
 L<virt-sparsify(1)>, L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>,
 L<virt-tar-out(1)>, L<virt-win-reg(1)>, L<display(1)>, L<hexedit(1)>,
-L<febootstrap-supermin-helper(8)>.
+L<febootstrap-supermin-helper(8)>。
 
-=head1 AUTHORS
+=head1 著者
 
 Richard W.M. Jones (C<rjones at redhat dot com>)
 

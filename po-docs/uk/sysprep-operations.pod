@@ -1,0 +1,223 @@
+=encoding utf8
+
+=head2 B<bash-history> *
+
+Вилучити журнал команд bash у гостьовій системі.
+
+Remove the bash history of user "root" and any other users who have a
+C<.bash_history> file in their home directory.
+
+=head2 B<blkid-tab> *
+
+Remove blkid tab in the guest.
+
+=head2 B<ca-certificates>
+
+Remove CA certificates in the guest.
+
+=head2 B<cron-spool> *
+
+Вилучити завдання at та cron користувачів.
+
+=head2 B<dhcp-client-state> *
+
+Вилучити надані клієнтські адреси DHCP.
+
+=head2 B<dhcp-server-state> *
+
+Вилучити надані серверні адреси DHCP.
+
+=head2 B<dovecot-data> *
+
+Вилучити дані Dovecot (поштового сервера).
+
+=head2 B<flag-reconfiguration>
+
+Позначити систему для зміни налаштувань.
+
+Зауважте, що це може потребувати втручання користувача під час завантаження
+гостьової системи.
+
+=head2 B<hostname> *
+
+Змінити назву вузла гостьової системи.
+
+Ця дія змінює назву вузла гостьової системи на значення, вказане
+за допомогою параметра I<--hostname>.
+
+Якщо параметр I<--hostname> не буде вказано, назву вузла буде змінено на
+C<localhost.localdomain>.
+
+=head2 B<kerberos-data>
+
+Remove Kerberos data in the guest.
+
+=head2 B<logfiles> *
+
+Вилучити з гостьової системи багато файлів журналів.
+
+У Linux вилучено такі файли:
+
+ /root/anaconda-ks.cfg
+ /root/install.log
+ /root/install.log.syslog
+ /var/account/pacct
+ /var/cache/gdm/*
+ /var/lib/AccountService/users/*
+ /var/lib/fprint/*
+ /var/lib/logrotate.status
+ /var/log/*.log*
+ /var/log/BackupPC/LOG
+ /var/log/audit/*
+ /var/log/btmp*
+ /var/log/ceph/*.log
+ /var/log/chrony/*.log
+ /var/log/cron*
+ /var/log/cups/*_log
+ /var/log/dmesg*
+ /var/log/glusterfs/*glusterd.vol.log
+ /var/log/glusterfs/glusterfs.log
+ /var/log/httpd/*log
+ /var/log/jetty/jetty-console.log
+ /var/log/lastlog*
+ /var/log/libvirt/libvirtd.log
+ /var/log/libvirt/lxc/*.log
+ /var/log/libvirt/qemu/*.log
+ /var/log/libvirt/uml/*.log
+ /var/log/mail/*
+ /var/log/maillog*
+ /var/log/messages*
+ /var/log/ppp/connect-errors
+ /var/log/secure*
+ /var/log/setroubleshoot/*.log
+ /var/log/spooler*
+ /var/log/squid/*.log
+ /var/log/tallylog*
+ /var/log/wtmp*
+ /var/named/data/named.run
+
+=head2 B<mail-spool> *
+
+Вилучити поштове повідомлення з локального каталогу поштового буфера.
+
+=head2 B<net-hwaddr> *
+
+Вилучити налаштування HWADDR (апаратної адреси MAC).
+
+Для Fedora і Red Hat Enterprise Linux це вилучається з файлів C<ifcfg-*>.
+
+=head2 B<package-manager-cache> *
+
+Вилучити кеш керування пакунками.
+
+=head2 B<pam-data> *
+
+Remove the PAM data in the guest.
+
+=head2 B<random-seed> *
+
+Створити породжувач випадкових чисел для гостьової системи.
+
+Записати випадкові байти з основної системи до файла породжувача
+псевдовипадкових чисел у гостьовій системі.
+
+Див. L</RANDOM SEED> нижче.
+
+=head2 B<rhn-systemid> *
+
+Вилучити ідентифікатор системи у RHN.
+
+=head2 B<samba-db-log> *
+
+Вилучити бази даних та файли журналів Samba.
+
+=head2 B<script> *
+
+Запустити довільні скрипти дій над гостьовою системою.
+
+The C<script> module lets you run arbitrary shell scripts or programs
+against the guest.
+
+Note this feature requires FUSE support.  You may have to enable this in
+your host, for example by adding the current user to the C<fuse> group, or
+by loading a kernel module.
+
+Use one or more I<--script> parameters to specify scripts or programs that
+will be run against the guest.
+
+The script or program is run with its current directory being the guest's
+root directory, so relative paths should be used.  For example: C<rm
+etc/resolv.conf> in the script would remove a Linux guest's DNS
+configuration file, but C<rm /etc/resolv.conf> would (try to) remove the
+host's file.
+
+Normally a temporary mount point for the guest is used, but you can choose a
+specific one by using the I<--scriptdir> parameter.
+
+=head2 B<smolt-uuid> *
+
+Вилучити UUID обладнання Smolt.
+
+=head2 B<ssh-hostkeys> *
+
+Вилучити ключі вузла SSH у гостьовій системі.
+
+Ключі вузла SSH повторно створюються (незалежно) під час наступного
+завантаження гостьової системи.
+
+Якщо після клонування гостьова система отримати ту саму IP-адресу, ssh
+надасть вам додаткове попередження щодо зміни ключа вузла:
+
+ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+ @    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+ IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+
+=head2 B<ssh-userdir> *
+
+Вилучити каталоги «.ssh» у гостьовій системі.
+
+Вилучити каталог C<.ssh> користувача «root» та всіх інших користувачів,
+домашні каталоги яких містять каталог C<.ssh>.
+
+=head2 B<sssd-db-log> *
+
+Вилучити бази даних і файли журналів sssd.
+
+=head2 B<udev-persistent-net> *
+
+Вилучити постійні правила мережі udev.
+
+Вилучити постійні правила мережі udev, які відображають вже створену
+MAC-адресу гостьової системи на фіксований пристрій ethernet (наприклад
+eth0).
+
+Після клонування гостьової системи MAC-адреса зазвичай змінюється. Оскільки
+стару MAC-адресу вже пов’язано зі старою назвою (наприклад eth0), це
+означає, що нову MAC-адресу буде пов’язано з новою назвою (наприклад eth1),
+а це зазвичай є небажаним. За допомогою вилучення постійних правил мережі
+udev цьому можна запобігти.
+
+=head2 B<user-account>
+
+Вилучити облікові записи користувачів у гостьовій системі.
+
+Вилучити всі облікові записи користувачів та відповідні домашні
+каталоги. Обліковий запис «root» вилучено не буде.
+
+=head2 B<utmp> *
+
+Вилучити файл utmp.
+
+У цьому файлі зберігаються записи щодо входу користувачів до машини. У
+сучасних дистрибутивах Linux ці записи зберігаються на диску у пам’яті, тому
+не є частиною віртуальної машини на диску, але ці дані зберігаються на диску
+у старіших версіях дистрибутивів.
+
+=head2 B<yum-uuid> *
+
+Вилучити UUID yum.
+
+Yum створить новий UUID під час наступного запуску, коли виявить, що
+початковий UUID було вилучено.
+

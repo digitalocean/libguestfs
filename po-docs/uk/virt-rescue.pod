@@ -6,15 +6,15 @@ virt-rescue - Run a rescue shell on a virtual machine
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-rescue [--options] -d domname
+ virt-rescue [--параметри] -d назва_домену
 
  virt-rescue [--options] -a disk.img [-a disk.img ...]
 
- virt-rescue --suggest (-d domname | -a disk.img ...)
+ virt-rescue --suggest (-d назва_домену | -a диск.img ...)
 
 Старий стиль:
 
- virt-rescue [--options] domname
+ virt-rescue [--параметри] назва_домену
 
  virt-rescue [--options] disk.img [disk.img ...]
 
@@ -38,9 +38,9 @@ disk image.
 You can run virt-rescue on any virtual machine known to libvirt, or directly
 on disk image(s):
 
- virt-rescue -d GuestName
+ virt-rescue -d Назва_гостьової_системи
 
- virt-rescue --ro -a /path/to/disk.img
+ virt-rescue --ro -a /шлях/до/диск.img
 
  virt-rescue -a /dev/sdc
 
@@ -98,6 +98,9 @@ virtual machine.  For example you can use it on a blank file if you want to
 partition that file (although we would recommend using L<guestfish(1)>
 instead as it is more suitable for this purpose).  You can even use
 virt-rescue on things like SD cards.
+
+You can get virt-rescue to give you scratch disk(s) to play with.  This is
+useful for testing out Linux utilities (see I<--scratch>).
 
 Virt-rescue does not require root.  You only need to run it as root if you
 need root to open the disk image.
@@ -158,11 +161,11 @@ auto-detection for subsequent I<-a> options.
 
 Приклад:
 
- virt-rescue --format=raw -a disk.img
+ virt-rescue --format=raw -a диск.img
 
 forces raw format (no auto-detection) for C<disk.img>.
 
- virt-rescue --format=raw -a disk.img --format -a another.img
+ virt-rescue --format=raw -a диск.img --format -a інший.img
 
 forces raw format (no auto-detection) for C<disk.img> and reverts to
 auto-detection for C<another.img>.
@@ -188,13 +191,24 @@ Enable QEMU user networking in the guest.  See L</NETWORK>.
 
 =item B<--ro>
 
-Open the image read-only.
+Відкрити образ у режимі лише читання.
 
 The option must always be used if the disk image or virtual machine might be
 running, and is generally recommended in cases where you don't need write
 access to the disk.
 
 Див. також L<guestfish(1)/OPENING DISKS FOR READ AND WRITE>.
+
+=item B<--scratch>
+
+=item B<--scratch=N>
+
+The I<--scratch> option adds a large scratch disk to the rescue appliance.
+I<--scratch=N> adds C<N> scratch disks.  The scratch disk(s) are deleted
+automatically when virt-rescue exits.
+
+You can also mix I<-a>, I<-d> and I<--scratch> options.  The scratch disk(s)
+are added to the appliance in the order they appear on the command line.
 
 =item B<--selinux>
 
@@ -237,11 +251,11 @@ are done read-write.
 
 =item B<-x>
 
-Enable tracing of libguestfs API calls.
+Увімкнути трасування викликів програмного інтерфейсу libguestfs.
 
 =back
 
-=head1 OLD-STYLE COMMAND LINE ARGUMENTS
+=head1 ПАРАМЕТРИ КОМАНДНОГО РЯДКА У ФОРМАТІ ПОПЕРЕДНІХ ВЕРСІЙ
 
 Previous versions of virt-rescue allowed you to write either:
 
@@ -254,7 +268,8 @@ Previous versions of virt-rescue allowed you to write either:
 whereas in this version you should use I<-a> or I<-d> respectively to avoid
 the confusing case where a disk image might have the same name as a guest.
 
-For compatibility the old style is still supported.
+З міркувань зворотної сумісності передбачено підтримку запису параметрів у
+застарілому форматі.
 
 =head1 МЕРЕЖА
 
@@ -297,7 +312,7 @@ See L<bash(1)> for more details.
 Several environment variables affect virt-rescue.  See
 L<guestfs(3)/ENVIRONMENT VARIABLES> for the complete list.
 
-=head1 SHELL QUOTING
+=head1 ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ
 
 Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as C<#> and space.  You may need to quote or
@@ -330,19 +345,19 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2012 Red Hat Inc.
+© Red Hat Inc., 2009–2012
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option)
-any later version.
+Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
+змінювати її за умов дотримання GNU General Public License  утому вигляді,
+що оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
+забажаєте) будь-якої випущеної пізніше.
 
 Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
 БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 51
-Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 

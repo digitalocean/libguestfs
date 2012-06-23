@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsAddDriveOpts</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsTest0.html" title="GuestfsTest0">
+<link rel="next" href="GuestfsAddDomain.html" title="GuestfsAddDomain">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsTest0.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsAddDomain.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsAddDriveOpts.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsAddDriveOpts.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsAddDriveOpts.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsAddDriveOpts.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsAddDriveOpts"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsAddDriveOpts.top_of_page"></a>GuestfsAddDriveOpts</span></h2>
+<p>GuestfsAddDriveOpts — An object encapsulating optional arguments for guestfs_session_add_drive_opts</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsAddDriveOpts.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsAddDriveOpts.html#GuestfsAddDriveOpts-struct" title="struct GuestfsAddDriveOpts">GuestfsAddDriveOpts</a>;
+struct              <a class="link" href="GuestfsAddDriveOpts.html#GuestfsAddDriveOptsClass" title="struct GuestfsAddDriveOptsClass">GuestfsAddDriveOptsClass</a>;
+<a class="link" href="GuestfsAddDriveOpts.html" title="GuestfsAddDriveOpts"><span class="returnvalue">GuestfsAddDriveOpts</span></a> * <a class="link" href="GuestfsAddDriveOpts.html#guestfs-add-drive-opts-new" title="guestfs_add_drive_opts_new ()">guestfs_add_drive_opts_new</a>        (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsAddDriveOpts.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----GuestfsAddDriveOpts
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsAddDriveOpts.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsAddDriveOpts.html#GuestfsAddDriveOpts--format" title='The "format" property'>format</a>"                   <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsAddDriveOpts.html#GuestfsAddDriveOpts--iface" title='The "iface" property'>iface</a>"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsAddDriveOpts.html#GuestfsAddDriveOpts--name" title='The "name" property'>name</a>"                     <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsAddDriveOpts.html#GuestfsAddDriveOpts--readonly" title='The "readonly" property'>readonly</a>"                 <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsAddDriveOpts.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_add_drive_opts
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsAddDriveOpts.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsAddDriveOpts-struct"></a><h3>struct GuestfsAddDriveOpts</h3>
+<pre class="programlisting">struct GuestfsAddDriveOpts;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_add_drive_opts.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsAddDriveOptsClass"></a><h3>struct GuestfsAddDriveOptsClass</h3>
+<pre class="programlisting">struct GuestfsAddDriveOptsClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsAddDriveOpts.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="GuestfsAddDriveOptsClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsAddDriveOptsClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-add-drive-opts-new"></a><h3>guestfs_add_drive_opts_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsAddDriveOpts.html" title="GuestfsAddDriveOpts"><span class="returnvalue">GuestfsAddDriveOpts</span></a> * guestfs_add_drive_opts_new        (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsAddDriveOpts object
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsAddDriveOpts object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsAddDriveOpts.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsAddDriveOpts--format"></a><h3>The <code class="literal">"format"</code> property</h3>
+<pre class="programlisting">  "format"                   <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsAddDriveOpts--iface"></a><h3>The <code class="literal">"iface"</code> property</h3>
+<pre class="programlisting">  "iface"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsAddDriveOpts--name"></a><h3>The <code class="literal">"name"</code> property</h3>
+<pre class="programlisting">  "name"                     <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsAddDriveOpts--readonly"></a><h3>The <code class="literal">"readonly"</code> property</h3>
+<pre class="programlisting">  "readonly"                 <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

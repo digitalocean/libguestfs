@@ -10,25 +10,30 @@ virt-alignment-scan — перевірити вирівнювання розді
 
  virt-alignment-scan [--параметри] -a диск.img [-a диск.img ...]
 
+ virt-alignment-scan [--параметри]
+
 =head1 ОПИС
 
-When older operating systems install themselves, the partitioning tools
-place partitions at a sector misaligned with the underlying storage
-(commonly the first partition starts on sector C<63>).  Misaligned
-partitions can result in an operating system issuing more I/O than should be
-necessary.
+Під час встановлення застарілих операційних систем засоби розподілу диска
+можуть розташувати розділ на секторі з помилковим вирівнюванням відносно
+системи зберігання даних (типово, перший розділ починається з сектора
+C<63>). Розділи з помилковим вирівнюванням можуть призвести до неоптимальної
+кількості запитів щодо виведення та введення даних від операційної системи.
 
-The virt-alignment-scan tool checks the alignment of partitions in virtual
-machines and disk images and warns you if there are alignment problems.
+Програма virt-alignment-scan виконує перевірку вирівнювання розділів у
+віртуальних машинах та образів дисків і повідомляє вам, якщо буде виявлено
+помилки вирівнювання.
 
-Currently there is no virt tool for fixing alignment problems.  You can only
-reinstall the guest operating system.  The following NetApp document
-summarises the problem and possible solutions:
+У поточній версії не передбачено програми для виправлення помилок,
+пов’язаних з вирівнюванням. Ви можете лише перевстановити гостьову
+операційну систему. У цьому документі можна знайти короткі описи помилок та
+можливі шляхи усування цих помилок:
 L<http://media.netapp.com/documents/tr-3747.pdf>
 
 =head1 ВИВЕДЕННЯ
 
-To run this tool on a disk image directly, use the I<-a> option:
+Щоб запустити цю програму безпосередньо для образу диска, скористайтеся
+параметром I<-a>:
 
  $ virt-alignment-scan -a winxp.img
  /dev/sda1        32256          512    bad (alignment < 4K)
@@ -38,8 +43,8 @@ To run this tool on a disk image directly, use the I<-a> option:
  /dev/sda2      2097152         2048K   ok
  /dev/sda3    526385152         2048K   ok
 
-To run the tool on a guest known to libvirt, use the I<-d> option and
-possibly the I<-c> option:
+Щоб запустити програму на гостьовій системі, відомій libvirt, скористайтеся
+параметром I<-d> і, можливо, параметром I<-c>:
 
  # virt-alignment-scan -d RHEL5
  /dev/sda1        32256          512    bad (alignment < 4K)
@@ -50,29 +55,41 @@ possibly the I<-c> option:
  /dev/sda2    105906176         1024K   ok
  /dev/sdb1        65536           64K   ok
 
-The output consists of 4 or more whitespace-separated columns.  Only the
-first 4 columns are significant if you want to parse this from a program.
-The columns are:
+Run virt-alignment-scan without any I<-a> or I<-d> options to scan all
+libvirt domains.
+
+ # virt-alignment-scan
+ F16x64:/dev/sda1      1048576         1024K   ok
+ F16x64:/dev/sda2      2097152         2048K   ok
+ F16x64:/dev/sda3    526385152         2048K   ok
+
+Дані буде виведено у форматі 4 або більшої кількості стовпчиків,
+відокремлених пробілами. Якщо ви маєте намір обробляти ці дані якоюсь
+програмою, до уваги слід брати лише перші 4 стовпчики. Ось ці стовпчики:
 
 =over 4
 
 =item стовпчик 1
 
-the device and partition name (eg. C</dev/sda1> meaning the first partition
-on the first block device)
+Назва пристрою і розділу (наприклад, C</dev/sda1> означає перший розділ на
+першому блоковому пристрої).
+
+When listing all libvirt domains (no I<-a> or I<-d> option given) this
+column is prefixed by the libvirt name or UUID (if I<--uuid> is given).  eg:
+C<WinXP:/dev/sda1>
 
 =item стовпчик 2
 
-the start of the partition in bytes
+позиція початку розділу у байтах
 
 =item стовпчик 3
 
-the alignment in bytes or Kbytes (eg. C<512> or C<4K>)
+вирівнювання у байтах або кілобайтах (наприклад C<512> або C<4K>)
 
 =item стовпчик 4
 
-C<ok> if the alignment is best for performance, or C<bad> if the alignment
-can cause performance problems
+C<ok>, якщо вирівнювання є оптимальним з огляду на швидкодію, або C<bad>,
+якщо вирівнювання може призвести до проблем зі швидкодією
 
 =item стовпчик 5 і далі
 
@@ -80,10 +97,11 @@ can cause performance problems
 
 =back
 
-The exit code from the program changes depending on whether poorly aligned
-partitions were found.  See L</EXIT STATUS> below.
+Код виходу програми залежить від того, чи буде знайдено розділи з помилковим
+вирівнюванням.  Див. розділ L</EXIT STATUS> нижче.
 
-If you just want the exit code with no output, use the I<-q> option.
+Якщо вам потрібен лише код виходу без виведення даних, скористайтеся
+параметром I<-q>.
 
 =head1 ПАРАМЕТРИ
 
@@ -97,7 +115,7 @@ If you just want the exit code with no output, use the I<-q> option.
 
 =item B<--add> файл
 
-Add I<file> which should be a disk image from a virtual machine.
+Додати I<файл>, який має бути образом диска з віртуальної машини.
 
 The format of the disk image is auto-detected.  To override this and force a
 particular format use the I<--format=..> option.
@@ -150,6 +168,15 @@ with malicious guests (CVE-2010-3851).
 Don't produce any output.  Just set the exit code (see L</EXIT STATUS>
 below).
 
+=item B<--uuid>
+
+Print UUIDs instead of names.  This is useful for following a guest even
+when the guest is migrated or renamed, or when two guests happen to have the
+same name.
+
+This option only applies when listing all libvirt domains (when no I<-a> or
+I<-d> options are specified).
+
 =item B<-v>
 
 =item B<--verbose>
@@ -164,7 +191,7 @@ below).
 
 =item B<-x>
 
-Enable tracing of libguestfs API calls.
+Увімкнути трасування викликів програмного інтерфейсу libguestfs.
 
 =back
 
@@ -240,7 +267,7 @@ For a typical consumer hard drive with 512 byte sectors:
  $ cat /sys/block/sda/queue/optimal_io_size
  0
 
-For a new consumer hard drive with 4Kbyte sectors:
+Для нових звичайних жорстких дисків з секторами у 4 кБ:
 
  $ cat /sys/block/sda/queue/hw_sector_size
  4096
@@ -253,7 +280,7 @@ For a new consumer hard drive with 4Kbyte sectors:
  $ cat /sys/block/sda/queue/optimal_io_size
  0
 
-For a NetApp LUN:
+Для NetApp LUN:
 
  $ cat /sys/block/sdc/queue/logical_block_size
  512
@@ -267,13 +294,13 @@ For a NetApp LUN:
 The NetApp allows 512 byte accesses (but they will be very inefficient),
 prefers a minimum 4K I/O size, but the optimal I/O size is 64K.
 
-For detailed information about what these numbers mean, see
+Щоб дізнатися більше про призначення цих чисел, ознайомтеся зі сторінкою
 L<http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Storage_Administration_Guide/newstorage-iolimits.html>
 
 [Thanks to Matt Booth for providing 4K drive data.  Thanks to Mike Snitzer
 for providing NetApp data and additional information.]
 
-=head2 1 MB PARTITION ALIGNMENT
+=head2 ВИРІВНЮВАННЯ РОЗДІЛІВ НА ПОЗНАЧКИ 1 МБ
 
 Microsoft picked 1 MB as the default alignment for all partitions starting
 with Windows 2008 Server, and Linux has followed this.
@@ -305,7 +332,7 @@ an explicit C<%pre> section that creates aligned partitions using
 L<parted(8)>.  Do not use the Kickstart C<part> command.  The NetApp
 document above contains an example.
 
-=head1 SHELL QUOTING
+=head1 ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ
 
 Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as C<#> and space.  You may need to quote or
@@ -322,13 +349,14 @@ L<sh(1)> for details.
 
 0
 
-successful exit, all partitions are aligned E<ge> 64K for best performance
+успішне завершення, всі розділи вирівняно на E<ge> 64 кБ для отримання
+найкращої швидкодії
 
 =item *
 
 1
 
-an error scanning the disk image or guest
+під час сканування образу диска або гостьової системи сталася помилка
 
 =item *
 
@@ -359,17 +387,17 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 © Red Hat Inc., 2011
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option)
-any later version.
+Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
+змінювати її за умов дотримання GNU General Public License  утому вигляді,
+що оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
+забажаєте) будь-якої випущеної пізніше.
 
 Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
 БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 51
-Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 

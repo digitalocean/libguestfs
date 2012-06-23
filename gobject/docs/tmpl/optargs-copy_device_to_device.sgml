@@ -1,0 +1,61 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsCopyDeviceToDevice
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsCopyDeviceToDevice ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsCopyDeviceToDevice:destoffset ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsCopyDeviceToDevice:size ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsCopyDeviceToDevice:srcoffset ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsCopyDeviceToDeviceClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_copy_device_to_device_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

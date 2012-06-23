@@ -485,11 +485,6 @@ class GuestFS:
         return libguestfsmod.is_launching (self._o)
 
     def is_busy (self):
-        """This returns true iff this handle is busy processing a
-        command (in the "BUSY" state).
-        
-        For more information on states, see guestfs(3).
-        """
         self._check_not_closed ()
         return libguestfsmod.is_busy (self._o)
 
@@ -839,6 +834,9 @@ class GuestFS:
         "hurd"
         GNU/Hurd.
         
+        "dos"
+        MS-DOS, FreeDOS and others.
+        
         "unknown"
         The operating system type could not be determined.
         
@@ -873,14 +871,24 @@ class GuestFS:
         "archlinux"
         Arch Linux.
         
+        "buildroot"
+        Buildroot-derived distro, but not one we
+        specifically recognize.
+        
         "centos"
         CentOS.
+        
+        "cirros"
+        Cirros.
         
         "debian"
         Debian.
         
         "fedora"
         Fedora.
+        
+        "freedos"
+        FreeDOS.
         
         "gentoo"
         Gentoo.
@@ -1671,6 +1679,67 @@ class GuestFS:
         """
         self._check_not_closed ()
         return libguestfsmod.get_smp (self._o)
+
+    def mount_local (self, localmountpoint, readonly=-1, options=None, cachetimeout=-1, debugcalls=-1):
+        """This call exports the libguestfs-accessible filesystem
+        to a local mountpoint (directory) called
+        "localmountpoint". Ordinary reads and writes to files
+        and directories under "localmountpoint" are redirected
+        through libguestfs.
+        
+        If the optional "readonly" flag is set to true, then
+        writes to the filesystem return error "EROFS".
+        
+        "options" is a comma-separated list of mount options.
+        See guestmount(1) for some useful options.
+        
+        "cachetimeout" sets the timeout (in seconds) for cached
+        directory entries. The default is 60 seconds. See
+        guestmount(1) for further information.
+        
+        If "debugcalls" is set to true, then additional
+        debugging information is generated for every FUSE call.
+        
+        When "g.mount_local" returns, the filesystem is ready,
+        but is not processing requests (access to it will
+        block). You have to call "g.mount_local_run" to run the
+        main loop.
+        
+        See "MOUNT LOCAL" in guestfs(3) for full documentation.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.mount_local (self._o, localmountpoint, readonly, options, cachetimeout, debugcalls)
+
+    def mount_local_run (self):
+        """Run the main loop which translates kernel calls to
+        libguestfs calls.
+        
+        This should only be called after "g.mount_local" returns
+        successfully. The call will not return until the
+        filesystem is unmounted.
+        
+        Note you must *not* make concurrent libguestfs calls on
+        the same handle from another thread, with the exception
+        of "g.umount_local".
+        
+        You may call this from a different thread than the one
+        which called "g.mount_local", subject to the usual rules
+        for threads and libguestfs (see "MULTIPLE HANDLES AND
+        MULTIPLE THREADS" in guestfs(3)).
+        
+        See "MOUNT LOCAL" in guestfs(3) for full documentation.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.mount_local_run (self._o)
+
+    def umount_local (self, retry=-1):
+        """If libguestfs is exporting the filesystem on a local
+        mountpoint, then this unmounts it.
+        
+        See "MOUNT LOCAL" in guestfs(3) for full documentation.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.umount_local (self._o, retry)
 
     def mount (self, device, mountpoint):
         """Mount a guest disk at a position in the filesystem.
@@ -2680,6 +2749,13 @@ class GuestFS:
         
         You can use either "g.tune2fs_l" or "g.get_e2label" to
         return the existing label on a filesystem.
+        
+        *This function is deprecated.* In new code, use the
+        "set_label" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed ()
         return libguestfsmod.set_e2label (self._o, device, label)
@@ -3047,12 +3123,7 @@ class GuestFS:
         """This resizes an ext2, ext3 or ext4 filesystem to match
         the size of the underlying device.
         
-        *Note:* It is sometimes required that you run
-        "g.e2fsck_f" on the "device" before calling this
-        command. For unknown reasons "resize2fs" sometimes gives
-        an error about this and sometimes not. In any case, it
-        is always safe to call "g.e2fsck_f" before calling this
-        function.
+        See also "RESIZE2FS ERRORS" in guestfs(3).
         """
         self._check_not_closed ()
         return libguestfsmod.resize2fs (self._o, device)
@@ -3100,8 +3171,12 @@ class GuestFS:
         filesystem checker on "device", noninteractively (*-p*),
         even if the filesystem appears to be clean (*-f*).
         
-        This command is only needed because of "g.resize2fs"
-        (q.v.). Normally you should use "g.fsck".
+        *This function is deprecated.* In new code, use the
+        "e2fsck" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed ()
         return libguestfsmod.e2fsck_f (self._o, device)
@@ -3169,6 +3244,10 @@ class GuestFS:
         It is just a wrapper around the C glob(3) function with
         flags "GLOB_MARK|GLOB_BRACE". See that manual page for
         more details.
+        
+        Notice that there is no equivalent command for expanding
+        a device name (eg. "/dev/sd*"). Use "g.list_devices",
+        "g.list_partitions" etc functions instead.
         
         This function returns a list of strings.
         """
@@ -5017,6 +5096,8 @@ class GuestFS:
         """This command is the same as "g.resize2fs" except that it
         allows you to specify the new size (in bytes)
         explicitly.
+        
+        See also "RESIZE2FS ERRORS" in guestfs(3).
         """
         self._check_not_closed ()
         return libguestfsmod.resize2fs_size (self._o, device, size)
@@ -5489,6 +5570,8 @@ class GuestFS:
         count" values. These two numbers, multiplied together,
         give the resulting size of the minimal filesystem in
         bytes.
+        
+        See also "RESIZE2FS ERRORS" in guestfs(3).
         """
         self._check_not_closed ()
         return libguestfsmod.resize2fs_M (self._o, device)
@@ -5910,4 +5993,420 @@ class GuestFS:
         """
         self._check_not_closed ()
         return libguestfsmod.e2fsck (self._o, device, correct, forceall)
+
+    def llz (self, directory):
+        """List the files in "directory" in the format of 'ls
+        -laZ'.
+        
+        This command is mostly useful for interactive sessions.
+        It is *not* intended that you try to parse the output
+        string.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.llz (self._o, directory)
+
+    def wipefs (self, device):
+        """This command erases filesystem or RAID signatures from
+        the specified "device" to make the filesystem invisible
+        to libblkid.
+        
+        This does not erase the filesystem itself nor any other
+        data from the "device".
+        
+        Compare with "g.zero" which zeroes the first few blocks
+        of a device.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.wipefs (self._o, device)
+
+    def ntfsfix (self, device, clearbadsectors=-1):
+        """This command repairs some fundamental NTFS
+        inconsistencies, resets the NTFS journal file, and
+        schedules an NTFS consistency check for the first boot
+        into Windows.
+        
+        This is *not* an equivalent of Windows "chkdsk". It does
+        *not* scan the filesystem for inconsistencies.
+        
+        The optional "clearbadsectors" flag clears the list of
+        bad sectors. This is useful after cloning a disk with
+        bad sectors to a new disk.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.ntfsfix (self._o, device, clearbadsectors)
+
+    def ntfsclone_out (self, device, backupfile, metadataonly=-1, rescue=-1, ignorefscheck=-1, preservetimestamps=-1, force=-1):
+        """Stream the NTFS filesystem "device" to the local file
+        "backupfile". The format used for the backup file is a
+        special format used by the ntfsclone(8) tool.
+        
+        If the optional "metadataonly" flag is true, then *only*
+        the metadata is saved, losing all the user data (this is
+        useful for diagnosing some filesystem problems).
+        
+        The optional "rescue", "ignorefscheck",
+        "preservetimestamps" and "force" flags have precise
+        meanings detailed in the ntfsclone(8) man page.
+        
+        Use "g.ntfsclone_in" to restore the file back to a
+        libguestfs device.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.ntfsclone_out (self._o, device, backupfile, metadataonly, rescue, ignorefscheck, preservetimestamps, force)
+
+    def ntfsclone_in (self, backupfile, device):
+        """Restore the "backupfile" (from a previous call to
+        "g.ntfsclone_out") to "device", overwriting any existing
+        contents of this device.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.ntfsclone_in (self._o, backupfile, device)
+
+    def set_label (self, device, label):
+        """Set the filesystem label on "device" to "label".
+        
+        Only some filesystem types support labels, and
+        libguestfs supports setting labels on only a subset of
+        these.
+        
+        On ext2/3/4 filesystems, labels are limited to 16 bytes.
+        
+        On NTFS filesystems, labels are limited to 128 unicode
+        characters.
+        
+        To read the label on a filesystem, call "g.vfs_label".
+        """
+        self._check_not_closed ()
+        return libguestfsmod.set_label (self._o, device, label)
+
+    def zero_free_space (self, directory):
+        """Zero the free space in the filesystem mounted on
+        "directory". The filesystem must be mounted read-write.
+        
+        The filesystem contents are not affected, but any free
+        space in the filesystem is freed.
+        
+        In future (but not currently) these zeroed blocks will
+        be "sparsified" - that is, given back to the host.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.zero_free_space (self._o, directory)
+
+    def lvcreate_free (self, logvol, volgroup, percent):
+        """Create an LVM logical volume called
+        "/dev/volgroup/logvol", using approximately "percent" %
+        of the free space remaining in the volume group. Most
+        usefully, when "percent" is 100 this will create the
+        largest possible LV.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.lvcreate_free (self._o, logvol, volgroup, percent)
+
+    def isoinfo_device (self, device):
+        """"device" is an ISO device. This returns a struct of
+        information read from the primary volume descriptor (the
+        ISO equivalent of the superblock) of the device.
+        
+        Usually it is more efficient to use the isoinfo(1)
+        command with the *-d* option on the host to analyze ISO
+        files, instead of going through libguestfs.
+        
+        For information on the primary volume descriptor fields,
+        see
+        <http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descr
+        iptor>
+        
+        This function returns a dictionary, with keys matching
+        the various fields in the guestfs_isoinfo structure.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.isoinfo_device (self._o, device)
+
+    def isoinfo (self, isofile):
+        """This is the same as "g.isoinfo_device" except that it
+        works for an ISO file located inside some other mounted
+        filesystem. Note that in the common case where you have
+        added an ISO file as a libguestfs device, you would
+        *not* call this. Instead you would call
+        "g.isoinfo_device".
+        
+        This function returns a dictionary, with keys matching
+        the various fields in the guestfs_isoinfo structure.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.isoinfo (self._o, isofile)
+
+    def vgmeta (self, vgname):
+        """"vgname" is an LVM volume group. This command examines
+        the volume group and returns its metadata.
+        
+        Note that the metadata is an internal structure used by
+        LVM, subject to change at any time, and is provided for
+        information only.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.vgmeta (self._o, vgname)
+
+    def md_stat (self, md):
+        """This call returns a list of the underlying devices which
+        make up the single software RAID array device "md".
+        
+        To get a list of software RAID devices, call
+        "g.list_md_devices".
+        
+        Each structure returned corresponds to one device along
+        with additional status information:
+        
+        "mdstat_device"
+        The name of the underlying device.
+        
+        "mdstat_index"
+        The index of this device within the array.
+        
+        "mdstat_flags"
+        Flags associated with this device. This is a string
+        containing (in no specific order) zero or more of
+        the following flags:
+        
+        "W" write-mostly
+        
+        "F" device is faulty
+        
+        "S" device is a RAID spare
+        
+        "R" replacement
+        
+        This function returns a list of mdstats. Each mdstat is
+        represented as a dictionary.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.md_stat (self._o, md)
+
+    def mkfs_btrfs (self, devices, allocstart=-1, bytecount=-1, datatype=None, leafsize=-1, label=None, metadata=None, nodesize=-1, sectorsize=-1):
+        """Create a btrfs filesystem, allowing all configurables to
+        be set. For more information on the optional arguments,
+        see mkfs.btrfs(8).
+        
+        Since btrfs filesystems can span multiple devices, this
+        takes a non-empty list of devices.
+        
+        To create general filesystems, use "g.mkfs_opts".
+        """
+        devices = list (devices)
+        self._check_not_closed ()
+        return libguestfsmod.mkfs_btrfs (self._o, devices, allocstart, bytecount, datatype, leafsize, label, metadata, nodesize, sectorsize)
+
+    def get_e2attrs (self, file):
+        """This returns the file attributes associated with "file".
+        
+        The attributes are a set of bits associated with each
+        inode which affect the behaviour of the file. The
+        attributes are returned as a string of letters
+        (described below). The string may be empty, indicating
+        that no file attributes are set for this file.
+        
+        These attributes are only present when the file is
+        located on an ext2/3/4 filesystem. Using this call on
+        other filesystem types will result in an error.
+        
+        The characters (file attributes) in the returned string
+        are currently:
+        
+        'A' When the file is accessed, its atime is not
+        modified.
+        
+        'a' The file is append-only.
+        
+        'c' The file is compressed on-disk.
+        
+        'D' (Directories only.) Changes to this directory are
+        written synchronously to disk.
+        
+        'd' The file is not a candidate for backup (see
+        dump(8)).
+        
+        'E' The file has compression errors.
+        
+        'e' The file is using extents.
+        
+        'h' The file is storing its blocks in units of the
+        filesystem blocksize instead of sectors.
+        
+        'I' (Directories only.) The directory is using hashed
+        trees.
+        
+        'i' The file is immutable. It cannot be modified,
+        deleted or renamed. No link can be created to this
+        file.
+        
+        'j' The file is data-journaled.
+        
+        's' When the file is deleted, all its blocks will be
+        zeroed.
+        
+        'S' Changes to this file are written synchronously to
+        disk.
+        
+        'T' (Directories only.) This is a hint to the block
+        allocator that subdirectories contained in this
+        directory should be spread across blocks. If not
+        present, the block allocator will try to group
+        subdirectories together.
+        
+        't' For a file, this disables tail-merging. (Not used by
+        upstream implementations of ext2.)
+        
+        'u' When the file is deleted, its blocks will be saved,
+        allowing the file to be undeleted.
+        
+        'X' The raw contents of the compressed file may be
+        accessed.
+        
+        'Z' The compressed file is dirty.
+        
+        More file attributes may be added to this list later.
+        Not all file attributes may be set for all kinds of
+        files. For detailed information, consult the chattr(1)
+        man page.
+        
+        See also "g.set_e2attrs".
+        
+        Don't confuse these attributes with extended attributes
+        (see "g.getxattr").
+        """
+        self._check_not_closed ()
+        return libguestfsmod.get_e2attrs (self._o, file)
+
+    def set_e2attrs (self, file, attrs, clear=-1):
+        """This sets or clears the file attributes "attrs"
+        associated with the inode "file".
+        
+        "attrs" is a string of characters representing file
+        attributes. See "g.get_e2attrs" for a list of possible
+        attributes. Not all attributes can be changed.
+        
+        If optional boolean "clear" is not present or false,
+        then the "attrs" listed are set in the inode.
+        
+        If "clear" is true, then the "attrs" listed are cleared
+        in the inode.
+        
+        In both cases, other attributes not present in the
+        "attrs" string are left unchanged.
+        
+        These attributes are only present when the file is
+        located on an ext2/3/4 filesystem. Using this call on
+        other filesystem types will result in an error.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.set_e2attrs (self._o, file, attrs, clear)
+
+    def get_e2generation (self, file):
+        """This returns the ext2 file generation of a file. The
+        generation (which used to be called the "version") is a
+        number associated with an inode. This is most commonly
+        used by NFS servers.
+        
+        The generation is only present when the file is located
+        on an ext2/3/4 filesystem. Using this call on other
+        filesystem types will result in an error.
+        
+        See "g.set_e2generation".
+        """
+        self._check_not_closed ()
+        return libguestfsmod.get_e2generation (self._o, file)
+
+    def set_e2generation (self, file, generation):
+        """This sets the ext2 file generation of a file.
+        
+        See "g.get_e2generation".
+        """
+        self._check_not_closed ()
+        return libguestfsmod.set_e2generation (self._o, file, generation)
+
+    def btrfs_subvolume_snapshot (self, source, dest):
+        """Create a writable snapshot of the btrfs subvolume
+        "source". The "dest" argument is the destination
+        directory and the name of the snapshot, in the form
+        "/path/to/dest/name".
+        """
+        self._check_not_closed ()
+        return libguestfsmod.btrfs_subvolume_snapshot (self._o, source, dest)
+
+    def btrfs_subvolume_delete (self, subvolume):
+        """Delete the named btrfs subvolume.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.btrfs_subvolume_delete (self._o, subvolume)
+
+    def btrfs_subvolume_create (self, dest):
+        """Create a btrfs subvolume. The "dest" argument is the
+        destination directory and the name of the snapshot, in
+        the form "/path/to/dest/name".
+        """
+        self._check_not_closed ()
+        return libguestfsmod.btrfs_subvolume_create (self._o, dest)
+
+    def btrfs_subvolume_list (self, fs):
+        """List the btrfs snapshots and subvolumes of the btrfs
+        filesystem which is mounted at "fs".
+        
+        This function returns a list of btrfssubvolumes. Each
+        btrfssubvolume is represented as a dictionary.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.btrfs_subvolume_list (self._o, fs)
+
+    def btrfs_subvolume_set_default (self, id, fs):
+        """Set the subvolume of the btrfs filesystem "fs" which
+        will be mounted by default. See "g.btrfs_subvolume_list"
+        to get a list of subvolumes.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.btrfs_subvolume_set_default (self._o, id, fs)
+
+    def btrfs_filesystem_sync (self, fs):
+        """Force sync on the btrfs filesystem mounted at "fs".
+        """
+        self._check_not_closed ()
+        return libguestfsmod.btrfs_filesystem_sync (self._o, fs)
+
+    def btrfs_filesystem_balance (self, fs):
+        """Balance the chunks in the btrfs filesystem mounted at
+        "fs" across the underlying devices.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.btrfs_filesystem_balance (self._o, fs)
+
+    def btrfs_device_add (self, devices, fs):
+        """Add the list of device(s) in "devices" to the btrfs
+        filesystem mounted at "fs". If "devices" is an empty
+        list, this does nothing.
+        """
+        devices = list (devices)
+        self._check_not_closed ()
+        return libguestfsmod.btrfs_device_add (self._o, devices, fs)
+
+    def btrfs_device_delete (self, devices, fs):
+        """Remove the "devices" from the btrfs filesystem mounted
+        at "fs". If "devices" is an empty list, this does
+        nothing.
+        """
+        devices = list (devices)
+        self._check_not_closed ()
+        return libguestfsmod.btrfs_device_delete (self._o, devices, fs)
+
+    def btrfs_set_seeding (self, device, seeding):
+        """Enable or disable the seeding feature of a device that
+        contains a btrfs filesystem.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.btrfs_set_seeding (self._o, device, seeding)
+
+    def btrfs_fsck (self, device, superblock=-1, repair=-1):
+        """Used to check a btrfs filesystem, "device" is the device
+        file where the filesystem is stored.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.btrfs_fsck (self._o, device, superblock, repair)
 

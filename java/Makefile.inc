@@ -21,10 +21,13 @@
 
 java_built_sources = \
 	com/redhat/et/libguestfs/Application.java \
+	com/redhat/et/libguestfs/BTRFSSubvolume.java \
 	com/redhat/et/libguestfs/Dirent.java \
 	com/redhat/et/libguestfs/INotifyEvent.java \
+	com/redhat/et/libguestfs/ISOInfo.java \
 	com/redhat/et/libguestfs/IntBool.java \
 	com/redhat/et/libguestfs/LV.java \
+	com/redhat/et/libguestfs/MDStat.java \
 	com/redhat/et/libguestfs/PV.java \
 	com/redhat/et/libguestfs/Partition.java \
 	com/redhat/et/libguestfs/Stat.java \

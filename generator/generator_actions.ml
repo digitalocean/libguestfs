@@ -112,7 +112,7 @@ You probably don't want to call this function.")]
  *)
 
 let non_daemon_functions = test_functions @ [
-  ("launch", (RErr, [], []), -1, [FishAlias "run"; Progress],
+  ("launch", (RErr, [], []), -1, [FishAlias "run"; Progress; ConfigOnly],
    [],
    "launch the qemu subprocess",
    "\
@@ -143,7 +143,7 @@ versions of the API.");
    "\
 This kills the qemu subprocess.  You should never need to call this.");
 
-  ("add_drive", (RErr, [String "filename"], []), -1, [],
+  ("add_drive", (RErr, [String "filename"], []), -1, [ConfigOnly],
    [],
    "add an image to examine or modify",
    "\
@@ -158,7 +158,7 @@ this security hole.  Therefore you should think about replacing
 calls to this function with calls to C<guestfs_add_drive_opts>,
 and specifying the format.");
 
-  ("add_cdrom", (RErr, [String "filename"], []), -1, [DeprecatedBy "add_drive_opts"],
+  ("add_cdrom", (RErr, [String "filename"], []), -1, [DeprecatedBy "add_drive_opts"; ConfigOnly],
    [],
    "add a CD-ROM disk image to examine",
    "\
@@ -185,7 +185,7 @@ should probably use C<guestfs_add_drive_ro> instead.
 
 =back");
 
-  ("add_drive_ro", (RErr, [String "filename"], []), -1, [FishAlias "add-ro"],
+  ("add_drive_ro", (RErr, [String "filename"], []), -1, [FishAlias "add-ro"; ConfigOnly],
    [],
    "add a drive in snapshot mode (read-only)",
    "\
@@ -194,7 +194,7 @@ with the optional parameter C<GUESTFS_ADD_DRIVE_OPTS_READONLY> set to 1,
 so the disk is added read-only, with the format being detected
 automatically.");
 
-  ("config", (RErr, [String "qemuparam"; OptString "qemuvalue"], []), -1, [],
+  ("config", (RErr, [String "qemuparam"; OptString "qemuvalue"], []), -1, [ConfigOnly],
    [],
    "add qemu parameters",
    "\
@@ -207,7 +207,7 @@ The first character of C<param> string must be a C<-> (dash).
 
 C<value> can be NULL.");
 
-  ("set_qemu", (RErr, [OptString "qemu"], []), -1, [FishAlias "qemu"],
+  ("set_qemu", (RErr, [OptString "qemu"], []), -1, [FishAlias "qemu"; ConfigOnly],
    [],
    "set the qemu binary",
    "\
@@ -239,7 +239,7 @@ Return the current qemu binary.
 This is always non-NULL.  If it wasn't set already, then this will
 return the default qemu binary name.");
 
-  ("set_path", (RErr, [OptString "searchpath"], []), -1, [FishAlias "path"],
+  ("set_path", (RErr, [OptString "searchpath"], []), -1, [FishAlias "path"; ConfigOnly],
    [],
    "set the search path",
    "\
@@ -260,7 +260,7 @@ Return the current search path.
 This is always non-NULL.  If it wasn't set already, then this will
 return the default path.");
 
-  ("set_append", (RErr, [OptString "append"], []), -1, [FishAlias "append"],
+  ("set_append", (RErr, [OptString "append"], []), -1, [FishAlias "append"; ConfigOnly],
    [],
    "add options to kernel command line",
    "\
@@ -354,13 +354,12 @@ This returns true iff this handle is launching the subprocess
 
 For more information on states, see L<guestfs(3)>.");
 
-  ("is_busy", (RBool "busy", [], []), -1, [],
+  ("is_busy", (RBool "busy", [], []), -1, [NotInDocs],
    [InitNone, Always, TestOutputFalse (
       [["is_busy"]])],
    "is busy processing a command",
    "\
-This returns true iff this handle is busy processing a command
-(in the C<BUSY> state).
+This always returns false.  Do not use this function.
 
 For more information on states, see L<guestfs(3)>.");
 
@@ -373,10 +372,8 @@ only useful for printing debug and internal error messages.
 
 For more information on states, see L<guestfs(3)>.");
 
-  ("set_memsize", (RErr, [Int "memsize"], []), -1, [FishAlias "memsize"],
-   [InitNone, Always, TestOutputInt (
-      [["set_memsize"; "500"];
-       ["get_memsize"]], 500)],
+  ("set_memsize", (RErr, [Int "memsize"], []), -1, [FishAlias "memsize"; ConfigOnly],
+   [],
    "set memory allocated to the qemu subprocess",
    "\
 This sets the memory size in megabytes allocated to the
@@ -451,10 +448,8 @@ features from later versions into earlier versions,
 making this an unreliable way to test for features.
 Use C<guestfs_available> instead.");
 
-  ("set_selinux", (RErr, [Bool "selinux"], []), -1, [FishAlias "selinux"],
-   [InitNone, Always, TestOutputTrue (
-      [["set_selinux"; "true"];
-       ["get_selinux"]])],
+  ("set_selinux", (RErr, [Bool "selinux"], []), -1, [FishAlias "selinux"; ConfigOnly],
+   [],
    "set SELinux enabled or disabled at appliance boot",
    "\
 This sets the selinux flag that is passed to the appliance
@@ -502,10 +497,8 @@ C<guestfs_set_event_callback>).");
    "\
 Return the command trace flag.");
 
-  ("set_direct", (RErr, [Bool "direct"], []), -1, [FishAlias "direct"],
-   [InitNone, Always, TestOutputFalse (
-      [["set_direct"; "false"];
-       ["get_direct"]])],
+  ("set_direct", (RErr, [Bool "direct"], []), -1, [FishAlias "direct"; ConfigOnly],
+   [],
    "enable or disable direct appliance mode",
    "\
 If the direct appliance mode flag is enabled, then stdin and
@@ -527,10 +520,8 @@ The default is disabled.");
    "\
 Return the direct appliance mode flag.");
 
-  ("set_recovery_proc", (RErr, [Bool "recoveryproc"], []), -1, [FishAlias "recovery-proc"],
-   [InitNone, Always, TestOutputTrue (
-      [["set_recovery_proc"; "true"];
-       ["get_recovery_proc"]])],
+  ("set_recovery_proc", (RErr, [Bool "recoveryproc"], []), -1, [FishAlias "recovery-proc"; ConfigOnly],
+   [],
    "enable or disable the recovery process",
    "\
 If this is called with the parameter C<false> then
@@ -553,14 +544,14 @@ qemu, which is not very helpful.");
    "\
 Return the recovery process enabled flag.");
 
-  ("add_drive_with_if", (RErr, [String "filename"; String "iface"], []), -1, [DeprecatedBy "add_drive_opts"],
+  ("add_drive_with_if", (RErr, [String "filename"; String "iface"], []), -1, [DeprecatedBy "add_drive_opts"; ConfigOnly],
    [],
    "add a drive specifying the QEMU block emulation to use",
    "\
 This is the same as C<guestfs_add_drive> but it allows you
 to specify the QEMU interface emulation to use at run time.");
 
-  ("add_drive_ro_with_if", (RErr, [String "filename"; String "iface"], []), -1, [DeprecatedBy "add_drive_opts"],
+  ("add_drive_ro_with_if", (RErr, [String "filename"; String "iface"], []), -1, [DeprecatedBy "add_drive_opts"; ConfigOnly],
    [],
    "add a drive read-only specifying the QEMU block emulation to use",
    "\
@@ -760,6 +751,10 @@ NetBSD.
 
 GNU/Hurd.
 
+=item \"dos\"
+
+MS-DOS, FreeDOS and others.
+
 =item \"unknown\"
 
 The operating system type could not be determined.
@@ -799,9 +794,17 @@ Currently defined distros are:
 
 Arch Linux.
 
+=item \"buildroot\"
+
+Buildroot-derived distro, but not one we specifically recognize.
+
 =item \"centos\"
 
 CentOS.
+
+=item \"cirros\"
+
+Cirros.
 
 =item \"debian\"
 
@@ -810,6 +813,10 @@ Debian.
 =item \"fedora\"
 
 Fedora.
+
+=item \"freedos\"
+
+FreeDOS.
 
 =item \"gentoo\"
 
@@ -968,7 +975,7 @@ for a filesystem to be shared between operating systems.
 Please read L<guestfs(3)/INSPECTION> for more details.
 See also C<guestfs_inspect_get_mountpoints>.");
 
-  ("set_network", (RErr, [Bool "network"], []), -1, [FishAlias "network"],
+  ("set_network", (RErr, [Bool "network"], []), -1, [FishAlias "network"; ConfigOnly],
    [],
    "set enable network flag",
    "\
@@ -1020,7 +1027,7 @@ be mountable but require special options.  Filesystems may
 not all belong to a single logical operating system
 (use C<guestfs_inspect_os> to look for OSes).");
 
-  ("add_drive_opts", (RErr, [String "filename"], [OBool "readonly"; OString "format"; OString "iface"; OString "name"]), -1, [FishAlias "add"],
+  ("add_drive_opts", (RErr, [String "filename"], [OBool "readonly"; OString "format"; OString "iface"; OString "name"]), -1, [FishAlias "add"; ConfigOnly],
    [],
    "add an image to examine or modify",
    "\
@@ -1110,7 +1117,7 @@ not part of the formal API and can be removed or changed at any time.");
 This returns the internal list of drives.  'debug' commands are
 not part of the formal API and can be removed or changed at any time.");
 
-  ("add_domain", (RInt "nrdisks", [String "dom"], [OString "libvirturi"; OBool "readonly"; OString "iface"; OBool "live"; OBool "allowuuid"; OString "readonlydisk"]), -1, [FishAlias "domain"],
+  ("add_domain", (RInt "nrdisks", [String "dom"], [OString "libvirturi"; OBool "readonly"; OString "iface"; OBool "live"; OBool "allowuuid"; OString "readonlydisk"]), -1, [FishAlias "domain"; ConfigOnly],
    [],
    "add the disk(s) from a named libvirt domain",
    "\
@@ -1450,7 +1457,7 @@ part of a set.
 
 Please read L<guestfs(3)/INSPECTION> for more details.");
 
-  ("set_attach_method", (RErr, [String "attachmethod"], []), -1, [FishAlias "attach-method"],
+  ("set_attach_method", (RErr, [String "attachmethod"], []), -1, [FishAlias "attach-method"; ConfigOnly],
    [],
    "set the attach method",
    "\
@@ -1618,7 +1625,7 @@ advice before using trademarks in applications.
 
 =back");
 
-  ("set_pgroup", (RErr, [Bool "pgroup"], []), -1, [FishAlias "pgroup"],
+  ("set_pgroup", (RErr, [Bool "pgroup"], []), -1, [FishAlias "pgroup"; ConfigOnly],
    [],
    "set process group flag",
    "\
@@ -1639,7 +1646,7 @@ long-running commands gracefully (see C<guestfs_user_cancel>).");
    "\
 This returns the process group flag.");
 
-  ("set_smp", (RErr, [Int "smp"], []), -1, [FishAlias "smp"],
+  ("set_smp", (RErr, [Int "smp"], []), -1, [FishAlias "smp"; ConfigOnly],
    [],
    "set number of virtual CPUs in appliance",
    "\
@@ -1654,6 +1661,65 @@ This function must be called before C<guestfs_launch>.");
    "get number of virtual CPUs in appliance",
    "\
 This returns the number of virtual CPUs assigned to the appliance.");
+
+  ("mount_local", (RErr, [String "localmountpoint"], [OBool "readonly"; OString "options"; OInt "cachetimeout"; OBool "debugcalls"]), -1, [],
+   [], (* tests in fuse subdirectory *)
+   "mount on the local filesystem",
+   "\
+This call exports the libguestfs-accessible filesystem to
+a local mountpoint (directory) called C<localmountpoint>.
+Ordinary reads and writes to files and directories under
+C<localmountpoint> are redirected through libguestfs.
+
+If the optional C<readonly> flag is set to true, then
+writes to the filesystem return error C<EROFS>.
+
+C<options> is a comma-separated list of mount options.
+See L<guestmount(1)> for some useful options.
+
+C<cachetimeout> sets the timeout (in seconds) for cached directory
+entries.  The default is 60 seconds.  See L<guestmount(1)>
+for further information.
+
+If C<debugcalls> is set to true, then additional debugging
+information is generated for every FUSE call.
+
+When C<guestfs_mount_local> returns, the filesystem is ready,
+but is not processing requests (access to it will block).  You
+have to call C<guestfs_mount_local_run> to run the main loop.
+
+See L<guestfs(3)/MOUNT LOCAL> for full documentation.");
+
+  ("mount_local_run", (RErr, [], []), -1, [Cancellable (* in a future version *)],
+   [],
+   "run main loop of mount on the local filesystem",
+   "\
+Run the main loop which translates kernel calls to libguestfs
+calls.
+
+This should only be called after C<guestfs_mount_local>
+returns successfully.  The call will not return until the
+filesystem is unmounted.
+
+B<Note> you must I<not> make concurrent libguestfs calls
+on the same handle from another thread,
+with the exception of C<guestfs_umount_local>.
+
+You may call this from a different thread than the one which
+called C<guestfs_mount_local>, subject to the usual rules
+for threads and libguestfs (see
+L<guestfs(3)/MULTIPLE HANDLES AND MULTIPLE THREADS>).
+
+See L<guestfs(3)/MOUNT LOCAL> for full documentation.");
+
+  ("umount_local", (RErr, [], [OBool "retry"]), -1, [],
+   [], (* tests in fuse subdirectory *)
+   "unmount a locally mounted filesystem",
+   "\
+If libguestfs is exporting the filesystem on a local
+mountpoint, then this unmounts it.
+
+See L<guestfs(3)/MOUNT LOCAL> for full documentation.");
 
 ]
 
@@ -3017,7 +3083,7 @@ The implementation uses the C<pvremove> command which refuses to
 wipe physical volumes that contain any volume groups, so you have
 to remove those first.");
 
-  ("set_e2label", (RErr, [Device "device"; String "label"], []), 80, [],
+  ("set_e2label", (RErr, [Device "device"; String "label"], []), 80, [DeprecatedBy "set_label"],
    [InitBasicFS, Always, TestOutput (
       [["set_e2label"; "/dev/sda1"; "testlabel"];
        ["get_e2label"; "/dev/sda1"]], "testlabel")],
@@ -3496,11 +3562,7 @@ is lost.");
 This resizes an ext2, ext3 or ext4 filesystem to match the size of
 the underlying device.
 
-I<Note:> It is sometimes required that you run C<guestfs_e2fsck_f>
-on the C<device> before calling this command.  For unknown reasons
-C<resize2fs> sometimes gives an error about this and sometimes not.
-In any case, it is always safe to call C<guestfs_e2fsck_f> before
-calling this function.");
+See also L<guestfs(3)/RESIZE2FS ERRORS>.");
 
   ("find", (RStringList "names", [Pathname "directory"], []), 107, [ProtocolLimitWarning],
    [InitBasicFS, Always, TestOutputList (
@@ -3543,16 +3605,13 @@ The returned list is sorted.
 
 See also C<guestfs_find0>.");
 
-  ("e2fsck_f", (RErr, [Device "device"], []), 108, [],
+  ("e2fsck_f", (RErr, [Device "device"], []), 108, [DeprecatedBy "e2fsck"],
    [], (* lvresize tests this *)
    "check an ext2/ext3 filesystem",
    "\
 This runs C<e2fsck -p -f device>, ie. runs the ext2/ext3
 filesystem checker on C<device>, noninteractively (I<-p>),
-even if the filesystem appears to be clean (I<-f>).
-
-This command is only needed because of C<guestfs_resize2fs>
-(q.v.).  Normally you should use C<guestfs_fsck>.");
+even if the filesystem appears to be clean (I<-f>).");
 
   ("sleep", (RErr, [Int "secs"], []), 109, [],
    [InitNone, Always, TestRun (
@@ -3641,7 +3700,11 @@ If no paths match, then this returns an empty list
 
 It is just a wrapper around the C L<glob(3)> function
 with flags C<GLOB_MARK|GLOB_BRACE>.
-See that manual page for more details.");
+See that manual page for more details.
+
+Notice that there is no equivalent command for expanding a device
+name (eg. C</dev/sd*>).  Use C<guestfs_list_devices>,
+C<guestfs_list_partitions> etc functions instead.");
 
   ("scrub_device", (RErr, [Device "device"], []), 114, [Optional "scrub"],
    [InitNone, Always, TestRun (	(* use /dev/sdc because it's smaller *)
@@ -5654,7 +5717,9 @@ See also C<guestfs_pread>, C<guestfs_pwrite_device>.");
    "resize an ext2, ext3 or ext4 filesystem (with size)",
    "\
 This command is the same as C<guestfs_resize2fs> except that it
-allows you to specify the new size (in bytes) explicitly.");
+allows you to specify the new size (in bytes) explicitly.
+
+See also L<guestfs(3)/RESIZE2FS ERRORS>.");
 
   ("pvresize_size", (RErr, [Device "device"; Int64 "size"], []), 249, [Optional "lvm2"],
    [],
@@ -5706,7 +5771,7 @@ a file in the host and attach it as a device.");
 
   ("vfs_label", (RString "label", [Device "device"], []), 253, [],
    [InitBasicFS, Always, TestOutput (
-       [["set_e2label"; "/dev/sda1"; "LTEST"];
+       [["set_label"; "/dev/sda1"; "LTEST"];
         ["vfs_label"; "/dev/sda1"]], "LTEST")],
    "get the filesystem label",
    "\
@@ -6156,7 +6221,9 @@ to the C<resize2fs> command.
 To get the resulting size of the filesystem you should call
 C<guestfs_tune2fs_l> and read the C<Block size> and C<Block count>
 values.  These two numbers, multiplied together, give the
-resulting size of the minimal filesystem in bytes.");
+resulting size of the minimal filesystem in bytes.
+
+See also L<guestfs(3)/RESIZE2FS ERRORS>.");
 
   ("internal_autosync", (RErr, [], []), 282, [NotInFish; NotInDocs],
    [],
@@ -6651,6 +6718,528 @@ non-interactively.
 This option may not be specified at the same time as the C<correct> option.
 
 =back");
+
+  ("llz", (RString "listing", [Pathname "directory"], []), 305, [],
+   [],
+   "list the files in a directory (long format with SELinux contexts)",
+   "\
+List the files in C<directory> in the format of 'ls -laZ'.
+
+This command is mostly useful for interactive sessions.  It
+is I<not> intended that you try to parse the output string.");
+
+  ("wipefs", (RErr, [Device "device"], []), 306, [Optional "wipefs"],
+   [InitBasicFSonLVM, Always, TestRun (
+      [["wipefs"; "/dev/VG/LV"]])],
+   "wipe a filesystem signature from a device",
+   "\
+This command erases filesystem or RAID signatures from
+the specified C<device> to make the filesystem invisible to libblkid.
+
+This does not erase the filesystem itself nor any other data from the
+C<device>.
+
+Compare with C<guestfs_zero> which zeroes the first few blocks of a
+device.");
+
+  ("ntfsfix", (RErr, [Device "device"], [OBool "clearbadsectors"]), 307, [Optional "ntfs3g"],
+   [InitPartition, IfAvailable "ntfs3g", TestRun (
+     [["mkfs"; "ntfs"; "/dev/sda1"];
+      ["ntfsfix"; "/dev/sda1"; "false"]])],
+   "fix common errors and force Windows to check NTFS",
+   "\
+This command repairs some fundamental NTFS inconsistencies,
+resets the NTFS journal file, and schedules an NTFS consistency
+check for the first boot into Windows.
+
+This is I<not> an equivalent of Windows C<chkdsk>.  It does I<not>
+scan the filesystem for inconsistencies.
+
+The optional C<clearbadsectors> flag clears the list of bad sectors.
+This is useful after cloning a disk with bad sectors to a new disk.");
+
+  ("ntfsclone_out", (RErr, [Device "device"; FileOut "backupfile"], [OBool "metadataonly"; OBool "rescue"; OBool "ignorefscheck"; OBool "preservetimestamps"; OBool "force"]), 308, [Optional "ntfs3g"; Cancellable],
+   [], (* tested in tests/ntfsclone *)
+   "save NTFS to backup file",
+   "\
+Stream the NTFS filesystem C<device> to the local file
+C<backupfile>.  The format used for the backup file is a
+special format used by the L<ntfsclone(8)> tool.
+
+If the optional C<metadataonly> flag is true, then I<only> the
+metadata is saved, losing all the user data (this is useful
+for diagnosing some filesystem problems).
+
+The optional C<rescue>, C<ignorefscheck>, C<preservetimestamps>
+and C<force> flags have precise meanings detailed in the
+L<ntfsclone(8)> man page.
+
+Use C<guestfs_ntfsclone_in> to restore the file back to a
+libguestfs device.");
+
+  ("ntfsclone_in", (RErr, [FileIn "backupfile"; Device "device"], []), 309, [Optional "ntfs3g"; Cancellable],
+   [], (* tested in tests/ntfsclone *)
+   "restore NTFS from backup file",
+   "\
+Restore the C<backupfile> (from a previous call to
+C<guestfs_ntfsclone_out>) to C<device>, overwriting
+any existing contents of this device.");
+
+  ("set_label", (RErr, [Device "device"; String "label"], []), 310, [],
+   [InitBasicFS, Always, TestOutput (
+     [["set_label"; "/dev/sda1"; "testlabel"];
+      ["vfs_label"; "/dev/sda1"]], "testlabel");
+    InitPartition, IfAvailable "ntfs3g", TestOutput (
+     [["mkfs"; "ntfs"; "/dev/sda1"];
+      ["set_label"; "/dev/sda1"; "testlabel2"];
+      ["vfs_label"; "/dev/sda1"]], "testlabel2");
+    InitPartition, Always, TestLastFail (
+     [["zero"; "/dev/sda1"];
+      ["set_label"; "/dev/sda1"; "testlabel2"]])],
+   "set filesystem label",
+   "\
+Set the filesystem label on C<device> to C<label>.
+
+Only some filesystem types support labels, and libguestfs supports
+setting labels on only a subset of these.
+
+On ext2/3/4 filesystems, labels are limited to 16 bytes.
+
+On NTFS filesystems, labels are limited to 128 unicode characters.
+
+To read the label on a filesystem, call C<guestfs_vfs_label>.");
+
+  ("zero_free_space", (RErr, [Pathname "directory"], []), 311, [Progress],
+   [InitScratchFS, Always, TestRun (
+     [["zero_free_space"; "/"]])],
+   "zero free space in a filesystem",
+   "\
+Zero the free space in the filesystem mounted on C<directory>.
+The filesystem must be mounted read-write.
+
+The filesystem contents are not affected, but any free space
+in the filesystem is freed.
+
+In future (but not currently) these zeroed blocks will be
+\"sparsified\" - that is, given back to the host.");
+
+  ("lvcreate_free", (RErr, [String "logvol"; String "volgroup"; Int "percent"], []), 312, [Optional "lvm2"],
+   [InitEmpty, Always, TestOutputList (
+      [["part_disk"; "/dev/sda"; "mbr"];
+       ["pvcreate"; "/dev/sda1"];
+       ["vgcreate"; "VG"; "/dev/sda1"];
+       ["lvcreate_free"; "LV1"; "VG"; "50"];
+       ["lvcreate_free"; "LV2"; "VG"; "50"];
+       ["lvcreate_free"; "LV3"; "VG"; "50"];
+       ["lvcreate_free"; "LV4"; "VG"; "100"];
+       ["lvs"]],
+      ["/dev/VG/LV1"; "/dev/VG/LV2"; "/dev/VG/LV3"; "/dev/VG/LV4"])],
+   "create an LVM logical volume in % remaining free space",
+   "\
+Create an LVM logical volume called C</dev/volgroup/logvol>,
+using approximately C<percent> % of the free space remaining
+in the volume group.  Most usefully, when C<percent> is C<100>
+this will create the largest possible LV.");
+
+  ("isoinfo_device", (RStruct ("isodata", "isoinfo"), [Device "device"], []), 313, [],
+   [InitNone, Always, TestOutputStruct (
+     [["isoinfo_device"; "/dev/sdd"]],
+     [CompareWithString ("iso_system_id", "LINUX");
+      CompareWithString ("iso_volume_id", "CDROM");
+      CompareWithString ("iso_volume_set_id", "");
+      CompareWithInt ("iso_volume_set_size", 1);
+      CompareWithInt ("iso_volume_sequence_number", 1);
+      CompareWithInt ("iso_logical_block_size", 2048)])],
+   "get ISO information from primary volume descriptor of device",
+   "\
+C<device> is an ISO device.  This returns a struct of information
+read from the primary volume descriptor (the ISO equivalent of the
+superblock) of the device.
+
+Usually it is more efficient to use the L<isoinfo(1)> command
+with the I<-d> option on the host to analyze ISO files,
+instead of going through libguestfs.
+
+For information on the primary volume descriptor fields, see
+L<http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor>");
+
+  ("isoinfo", (RStruct ("isodata", "isoinfo"), [Pathname "isofile"], []), 314, [],
+   [],
+   "get ISO information from primary volume descriptor of ISO file",
+   "\
+This is the same as C<guestfs_isoinfo_device> except that it
+works for an ISO file located inside some other mounted filesystem.
+Note that in the common case where you have added an ISO file
+as a libguestfs device, you would I<not> call this.  Instead
+you would call C<guestfs_isoinfo_device>.");
+
+  ("vgmeta", (RBufferOut "metadata", [String "vgname"], []), 315, [Optional "lvm2"],
+   [],
+   "get volume group metadata",
+   "\
+C<vgname> is an LVM volume group.  This command examines the
+volume group and returns its metadata.
+
+Note that the metadata is an internal structure used by LVM,
+subject to change at any time, and is provided for information only.");
+
+  ("md_stat", (RStructList ("devices", "mdstat"), [Device "md"], []), 316, [Optional "mdadm"],
+   [],
+   "get underlying devices from an MD device",
+   "\
+This call returns a list of the underlying devices which make
+up the single software RAID array device C<md>.
+
+To get a list of software RAID devices, call C<guestfs_list_md_devices>.
+
+Each structure returned corresponds to one device along with
+additional status information:
+
+=over 4
+
+=item C<mdstat_device>
+
+The name of the underlying device.
+
+=item C<mdstat_index>
+
+The index of this device within the array.
+
+=item C<mdstat_flags>
+
+Flags associated with this device.  This is a string containing
+(in no specific order) zero or more of the following flags:
+
+=over 4
+
+=item C<W>
+
+write-mostly
+
+=item C<F>
+
+device is faulty
+
+=item C<S>
+
+device is a RAID spare
+
+=item C<R>
+
+replacement
+
+=back
+
+=back");
+
+  ("mkfs_btrfs", (RErr, [DeviceList "devices"], [OInt64 "allocstart"; OInt64 "bytecount"; OString "datatype"; OInt "leafsize"; OString "label"; OString "metadata"; OInt "nodesize"; OInt "sectorsize"]), 317, [Optional "btrfs"],
+   [InitEmpty, Always, TestRun (
+     [["part_disk"; "/dev/sda"; "mbr"];
+      ["mkfs_btrfs"; "/dev/sda1"; "0"; "268435456"; "single"; "4096"; "test"; "single"; "4096"; "512"]])],
+   "create a btrfs filesystem",
+   "\
+Create a btrfs filesystem, allowing all configurables to be set.
+For more information on the optional arguments, see L<mkfs.btrfs(8)>.
+
+Since btrfs filesystems can span multiple devices, this takes a
+non-empty list of devices.
+
+To create general filesystems, use C<guestfs_mkfs_opts>.");
+
+  ("get_e2attrs", (RString "attrs", [Pathname "file"], []), 318, [],
+   [InitScratchFS, Always, TestOutput (
+     [["touch"; "/e2attrs1"];
+      ["get_e2attrs"; "/e2attrs1"]], "");
+    InitScratchFS, Always, TestOutput (
+     [["touch"; "/e2attrs2"];
+      ["set_e2attrs"; "/e2attrs2"; "is"; "false"];
+      ["get_e2attrs"; "/e2attrs2"]], "is");
+    InitScratchFS, Always, TestOutput (
+     [["touch"; "/e2attrs3"];
+      ["set_e2attrs"; "/e2attrs3"; "is"; "false"];
+      ["set_e2attrs"; "/e2attrs3"; "i"; "true"];
+      ["get_e2attrs"; "/e2attrs3"]], "s");
+    InitScratchFS, Always, TestOutput (
+     [["touch"; "/e2attrs4"];
+      ["set_e2attrs"; "/e2attrs4"; "adst"; "false"];
+      ["set_e2attrs"; "/e2attrs4"; "iS"; "false"];
+      ["set_e2attrs"; "/e2attrs4"; "i"; "true"];
+      ["set_e2attrs"; "/e2attrs4"; "ad"; "true"];
+      ["set_e2attrs"; "/e2attrs4"; ""; "false"];
+      ["set_e2attrs"; "/e2attrs4"; ""; "true"];
+      ["get_e2attrs"; "/e2attrs4"]], "Sst");
+    InitScratchFS, Always, TestLastFail (
+     [["touch"; "/e2attrs5"];
+      ["set_e2attrs"; "/e2attrs5"; "R"; "false"]]);
+    InitScratchFS, Always, TestLastFail (
+     [["touch"; "/e2attrs6"];
+      ["set_e2attrs"; "/e2attrs6"; "v"; "false"]]);
+    InitScratchFS, Always, TestLastFail (
+     [["touch"; "/e2attrs7"];
+      ["set_e2attrs"; "/e2attrs7"; "aa"; "false"]]);
+    InitScratchFS, Always, TestLastFail (
+     [["touch"; "/e2attrs8"];
+      ["set_e2attrs"; "/e2attrs8"; "BabcdB"; "false"]])],
+   "get ext2 file attributes of a file",
+   "\
+This returns the file attributes associated with C<file>.
+
+The attributes are a set of bits associated with each
+inode which affect the behaviour of the file.  The attributes
+are returned as a string of letters (described below).  The
+string may be empty, indicating that no file attributes are
+set for this file.
+
+These attributes are only present when the file is located on
+an ext2/3/4 filesystem.  Using this call on other filesystem
+types will result in an error.
+
+The characters (file attributes) in the returned string are
+currently:
+
+=over 4
+
+=item 'A'
+
+When the file is accessed, its atime is not modified.
+
+=item 'a'
+
+The file is append-only.
+
+=item 'c'
+
+The file is compressed on-disk.
+
+=item 'D'
+
+(Directories only.)  Changes to this directory are written
+synchronously to disk.
+
+=item 'd'
+
+The file is not a candidate for backup (see L<dump(8)>).
+
+=item 'E'
+
+The file has compression errors.
+
+=item 'e'
+
+The file is using extents.
+
+=item 'h'
+
+The file is storing its blocks in units of the filesystem blocksize
+instead of sectors.
+
+=item 'I'
+
+(Directories only.)  The directory is using hashed trees.
+
+=item 'i'
+
+The file is immutable.  It cannot be modified, deleted or renamed.
+No link can be created to this file.
+
+=item 'j'
+
+The file is data-journaled.
+
+=item 's'
+
+When the file is deleted, all its blocks will be zeroed.
+
+=item 'S'
+
+Changes to this file are written synchronously to disk.
+
+=item 'T'
+
+(Directories only.)  This is a hint to the block allocator
+that subdirectories contained in this directory should be
+spread across blocks.  If not present, the block allocator
+will try to group subdirectories together.
+
+=item 't'
+
+For a file, this disables tail-merging.
+(Not used by upstream implementations of ext2.)
+
+=item 'u'
+
+When the file is deleted, its blocks will be saved, allowing
+the file to be undeleted.
+
+=item 'X'
+
+The raw contents of the compressed file may be accessed.
+
+=item 'Z'
+
+The compressed file is dirty.
+
+=back
+
+More file attributes may be added to this list later.  Not all
+file attributes may be set for all kinds of files.  For
+detailed information, consult the L<chattr(1)> man page.
+
+See also C<guestfs_set_e2attrs>.
+
+Don't confuse these attributes with extended attributes
+(see C<guestfs_getxattr>).");
+
+  ("set_e2attrs", (RErr, [Pathname "file"; String "attrs"], [OBool "clear"]), 319, [],
+   [] (* tested by get_e2attrs *),
+   "set ext2 file attributes of a file",
+   "\
+This sets or clears the file attributes C<attrs>
+associated with the inode C<file>.
+
+C<attrs> is a string of characters representing
+file attributes.  See C<guestfs_get_e2attrs> for a list of
+possible attributes.  Not all attributes can be changed.
+
+If optional boolean C<clear> is not present or false, then
+the C<attrs> listed are set in the inode.
+
+If C<clear> is true, then the C<attrs> listed are cleared
+in the inode.
+
+In both cases, other attributes not present in the C<attrs>
+string are left unchanged.
+
+These attributes are only present when the file is located on
+an ext2/3/4 filesystem.  Using this call on other filesystem
+types will result in an error.");
+
+  ("get_e2generation", (RInt64 "generation", [Pathname "file"], []), 320, [],
+   [InitScratchFS, Always, TestOutputInt (
+     [["touch"; "/e2generation"];
+      ["set_e2generation"; "/e2generation"; "123456"];
+      ["get_e2generation"; "/e2generation"]], 123456)],
+   "get ext2 file generation of a file",
+   "\
+This returns the ext2 file generation of a file.  The generation
+(which used to be called the \"version\") is a number associated
+with an inode.  This is most commonly used by NFS servers.
+
+The generation is only present when the file is located on
+an ext2/3/4 filesystem.  Using this call on other filesystem
+types will result in an error.
+
+See C<guestfs_set_e2generation>.");
+
+  ("set_e2generation", (RErr, [Pathname "file"; Int64 "generation"], []), 321, [],
+   [], (* tested by get_e2generation *)
+   "set ext2 file generation of a file",
+   "\
+This sets the ext2 file generation of a file.
+
+See C<guestfs_get_e2generation>.");
+
+  ("btrfs_subvolume_snapshot", (RErr, [Pathname "source"; Pathname "dest"], []), 322, [Optional "btrfs"; CamelName "BTRFSSubvolumeSnapshot"],
+   [InitPartition, IfAvailable "btrfs", TestRun (
+     [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+      ["mount"; "/dev/sda1"; "/"];
+      ["mkdir"; "/dir"];
+      ["btrfs_subvolume_create"; "/test1"];
+      ["btrfs_subvolume_create"; "/test2"];
+      ["btrfs_subvolume_create"; "/dir/test3"];
+      ["btrfs_subvolume_snapshot"; "/dir/test3"; "/dir/test4"]])],
+   "create a writable btrfs snapshot",
+   "\
+Create a writable snapshot of the btrfs subvolume C<source>.
+The C<dest> argument is the destination directory and the name
+of the snapshot, in the form C</path/to/dest/name>.");
+
+  ("btrfs_subvolume_delete", (RErr, [Pathname "subvolume"], []), 323, [Optional "btrfs"; CamelName "BTRFSSubvolumeDelete"],
+   [InitPartition, IfAvailable "btrfs", TestRun (
+     [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+      ["mount"; "/dev/sda1"; "/"];
+      ["btrfs_subvolume_create"; "/test1"];
+      ["btrfs_subvolume_delete"; "/test1"]])],
+   "delete a btrfs snapshot",
+   "\
+Delete the named btrfs subvolume.");
+
+  ("btrfs_subvolume_create", (RErr, [Pathname "dest"], []), 324, [Optional "btrfs"; CamelName "BTRFSSubvolumeCreate"],
+   [], (* tested above *)
+   "create a btrfs snapshot",
+   "\
+Create a btrfs subvolume.  The C<dest> argument is the destination
+directory and the name of the snapshot, in the form C</path/to/dest/name>.");
+
+  ("btrfs_subvolume_list", (RStructList ("subvolumes", "btrfssubvolume"), [Pathname "fs"], []), 325, [Optional "btrfs"; CamelName "BTRFSSubvolumeList"],
+   [], (* tested in tests/btrfs *)
+   "list btrfs snapshots and subvolumes",
+   "\
+List the btrfs snapshots and subvolumes of the btrfs filesystem
+which is mounted at C<fs>.");
+
+  ("btrfs_subvolume_set_default", (RErr, [Int64 "id"; Pathname "fs"], []), 326, [Optional "btrfs"; CamelName "BTRFSSubvolumeSetDefault"],
+   [], (* tested in tests/btrfs *)
+   "set default btrfs subvolume",
+   "\
+Set the subvolume of the btrfs filesystem C<fs> which will
+be mounted by default.  See C<guestfs_btrfs_subvolume_list> to
+get a list of subvolumes.");
+
+  ("btrfs_filesystem_sync", (RErr, [Pathname "fs"], []), 327, [Optional "btrfs"; CamelName "BTRFSFilesystemSync"],
+   [InitPartition, IfAvailable "btrfs", TestRun (
+     [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+      ["mount"; "/dev/sda1"; "/"];
+      ["btrfs_subvolume_create"; "/test1"];
+      ["btrfs_filesystem_sync"; "/test1"];
+      ["btrfs_filesystem_balance"; "/test1"]])],
+   "sync a btrfs filesystem",
+   "\
+Force sync on the btrfs filesystem mounted at C<fs>.");
+
+  ("btrfs_filesystem_balance", (RErr, [Pathname "fs"], []), 328, [Optional "btrfs"; CamelName "BTRFSFilesystemBalance"],
+   [], (* tested above *)
+   "balance a btrfs filesystem",
+   "\
+Balance the chunks in the btrfs filesystem mounted at C<fs>
+across the underlying devices.");
+
+  ("btrfs_device_add", (RErr, [DeviceList "devices"; Pathname "fs"], []), 329, [Optional "btrfs"; CamelName "BTRFSDeviceAdd"],
+   [], (* test disk isn't large enough to test this thoroughly, so there
+        * is an external test in 'tests/btrfs' directory.
+        *)
+   "add devices to a btrfs filesystem",
+   "\
+Add the list of device(s) in C<devices> to the btrfs filesystem
+mounted at C<fs>.  If C<devices> is an empty list, this does nothing.");
+
+  ("btrfs_device_delete", (RErr, [DeviceList "devices"; Pathname "fs"], []), 330, [Optional "btrfs"; CamelName "BTRFSDeviceDelete"],
+   [], (* test disk isn't large enough to test this thoroughly, so there
+        * is an external test in 'tests/btrfs' directory.
+        *)
+   "remove devices from a btrfs filesystem",
+   "\
+Remove the C<devices> from the btrfs filesystem mounted at C<fs>.
+If C<devices> is an empty list, this does nothing.");
+
+  ("btrfs_set_seeding", (RErr, [Device "device"; Bool "seeding"], []), 331, [Optional "btrfs"],
+   [InitPartition, IfAvailable "btrfs", TestRun (
+     [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+      ["btrfs_set_seeding"; "/dev/sda1"; "true"];
+      ["btrfs_set_seeding"; "/dev/sda1"; "false"]])],
+   "enable or disable the seeding feature of device",
+   "\
+Enable or disable the seeding feature of a device that contains
+a btrfs filesystem.");
+
+  ("btrfs_fsck", (RErr, [Device "device"], [OInt64 "superblock"; OBool "repair"]), 332, [Optional "btrfs"],
+   [InitPartition, IfAvailable "btrfs", TestRun (
+     [["mkfs_btrfs"; "/dev/sda1"; ""; ""; "NOARG"; ""; "NOARG"; "NOARG"; ""; ""];
+      ["btrfs_fsck"; "/dev/sda1"; ""; ""]])],
+   "check a btrfs filesystem",
+   "\
+Used to check a btrfs filesystem, C<device> is the device file where the
+filesystem is stored.");
 
 ]
 

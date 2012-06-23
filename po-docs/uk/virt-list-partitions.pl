@@ -10,7 +10,7 @@ virt-list-partitions - List partitions in a virtual machine or disk image
 
  virt-list-partitions [--параметри] диск.img [диск.img ...]
 
-=head1 OBSOLETE
+=head1 ЗАСТАРІЛЕ
 
 This tool is obsolete.  Use L<virt-filesystems(1)> as a more flexible
 replacement.
@@ -80,7 +80,7 @@ Display the total size of each block device (as a separate row or rows).
 
 =back
 
-=head1 SHELL QUOTING
+=head1 ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ
 
 Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as C<#> and space.  You may need to quote or
@@ -99,19 +99,19 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2012 Red Hat Inc.
+© Red Hat Inc., 2009–2012
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option)
-any later version.
+Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
+змінювати її за умов дотримання GNU General Public License  утому вигляді,
+що оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
+забажаєте) будь-якої випущеної пізніше.
 
 Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
 БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 51
-Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 

@@ -36,5 +36,6 @@ extern int optgroup_ntfsprogs_available (void);
 extern int optgroup_realpath_available (void);
 extern int optgroup_scrub_available (void);
 extern int optgroup_selinux_available (void);
+extern int optgroup_wipefs_available (void);
 extern int optgroup_xz_available (void);
 extern int optgroup_zerofree_available (void);

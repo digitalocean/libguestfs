@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsTune2FS</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsCopyFileToFile.html" title="GuestfsCopyFileToFile">
+<link rel="next" href="GuestfsMDCreate.html" title="GuestfsMDCreate">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsCopyFileToFile.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsMDCreate.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsTune2FS.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsTune2FS.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsTune2FS.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsTune2FS.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsTune2FS"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsTune2FS.top_of_page"></a>GuestfsTune2FS</span></h2>
+<p>GuestfsTune2FS — An object encapsulating optional arguments for guestfs_session_tune2fs</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsTune2FS.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsTune2FS.html#GuestfsTune2FS-struct" title="struct GuestfsTune2FS">GuestfsTune2FS</a>;
+struct              <a class="link" href="GuestfsTune2FS.html#GuestfsTune2FSClass" title="struct GuestfsTune2FSClass">GuestfsTune2FSClass</a>;
+<a class="link" href="GuestfsTune2FS.html" title="GuestfsTune2FS"><span class="returnvalue">GuestfsTune2FS</span></a> *    <a class="link" href="GuestfsTune2FS.html#guestfs-tune2fs-new" title="guestfs_tune2fs_new ()">guestfs_tune2fs_new</a>                 (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsTune2FS.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+   +----GuestfsTune2FS
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsTune2FS.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsTune2FS.html#GuestfsTune2FS--errorbehavior" title='The "errorbehavior" property'>errorbehavior</a>"            <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsTune2FS.html#GuestfsTune2FS--force" title='The "force" property'>force</a>"                    <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsTune2FS.html#GuestfsTune2FS--group" title='The "group" property'>group</a>"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct
+  "<a class="link" href="GuestfsTune2FS.html#GuestfsTune2FS--intervalbetweenchecks" title='The "intervalbetweenchecks" property'>intervalbetweenchecks</a>"    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct
+  "<a class="link" href="GuestfsTune2FS.html#GuestfsTune2FS--lastmounteddirectory" title='The "lastmounteddirectory" property'>lastmounteddirectory</a>"     <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsTune2FS.html#GuestfsTune2FS--maxmountcount" title='The "maxmountcount" property'>maxmountcount</a>"            <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct
+  "<a class="link" href="GuestfsTune2FS.html#GuestfsTune2FS--mountcount" title='The "mountcount" property'>mountcount</a>"               <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct
+  "<a class="link" href="GuestfsTune2FS.html#GuestfsTune2FS--reservedblockscount" title='The "reservedblockscount" property'>reservedblockscount</a>"      <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct
+  "<a class="link" href="GuestfsTune2FS.html#GuestfsTune2FS--reservedblockspercentage" title='The "reservedblockspercentage" property'>reservedblockspercentage</a>" <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct
+  "<a class="link" href="GuestfsTune2FS.html#GuestfsTune2FS--user" title='The "user" property'>user</a>"                     <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsTune2FS.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_tune2fs
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsTune2FS.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsTune2FS-struct"></a><h3>struct GuestfsTune2FS</h3>
+<pre class="programlisting">struct GuestfsTune2FS;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_tune2fs.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTune2FSClass"></a><h3>struct GuestfsTune2FSClass</h3>
+<pre class="programlisting">struct GuestfsTune2FSClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsTune2FS.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="GuestfsTune2FSClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsTune2FSClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-tune2fs-new"></a><h3>guestfs_tune2fs_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsTune2FS.html" title="GuestfsTune2FS"><span class="returnvalue">GuestfsTune2FS</span></a> *    guestfs_tune2fs_new                 (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsTune2FS object
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsTune2FS object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsTune2FS.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsTune2FS--errorbehavior"></a><h3>The <code class="literal">"errorbehavior"</code> property</h3>
+<pre class="programlisting">  "errorbehavior"            <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTune2FS--force"></a><h3>The <code class="literal">"force"</code> property</h3>
+<pre class="programlisting">  "force"                    <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTune2FS--group"></a><h3>The <code class="literal">"group"</code> property</h3>
+<pre class="programlisting">  "group"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct</pre>
+<p>
+A 64-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTune2FS--intervalbetweenchecks"></a><h3>The <code class="literal">"intervalbetweenchecks"</code> property</h3>
+<pre class="programlisting">  "intervalbetweenchecks"    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct</pre>
+<p>
+A 32-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTune2FS--lastmounteddirectory"></a><h3>The <code class="literal">"lastmounteddirectory"</code> property</h3>
+<pre class="programlisting">  "lastmounteddirectory"     <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTune2FS--maxmountcount"></a><h3>The <code class="literal">"maxmountcount"</code> property</h3>
+<pre class="programlisting">  "maxmountcount"            <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct</pre>
+<p>
+A 32-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTune2FS--mountcount"></a><h3>The <code class="literal">"mountcount"</code> property</h3>
+<pre class="programlisting">  "mountcount"               <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct</pre>
+<p>
+A 32-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTune2FS--reservedblockscount"></a><h3>The <code class="literal">"reservedblockscount"</code> property</h3>
+<pre class="programlisting">  "reservedblockscount"      <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct</pre>
+<p>
+A 64-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTune2FS--reservedblockspercentage"></a><h3>The <code class="literal">"reservedblockspercentage"</code> property</h3>
+<pre class="programlisting">  "reservedblockspercentage" <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct</pre>
+<p>
+A 32-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsTune2FS--user"></a><h3>The <code class="literal">"user"</code> property</h3>
+<pre class="programlisting">  "user"                     <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct</pre>
+<p>
+A 64-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

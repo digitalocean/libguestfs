@@ -1,0 +1,96 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsTune2FS
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsTune2FS ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsTune2FS:errorbehavior ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsTune2FS:force ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsTune2FS:group ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsTune2FS:intervalbetweenchecks ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsTune2FS:lastmounteddirectory ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsTune2FS:maxmountcount ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsTune2FS:mountcount ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsTune2FS:reservedblockscount ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsTune2FS:reservedblockspercentage ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsTune2FS:user ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsTune2FSClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_tune2fs_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-cat 1"
-.TH virt-cat 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-cat 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -229,10 +229,10 @@ passphrases from the user by opening \f(CW\*(C`/dev/tty\*(C'\fR.
 Показати дані щодо версії і завершити роботу.
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
-Enable tracing of libguestfs \s-1API\s0 calls.
-.SH "OLD-STYLE COMMAND LINE ARGUMENTS"
-.IX Header "OLD-STYLE COMMAND LINE ARGUMENTS"
-Previous versions of virt-cat allowed you to write either:
+Увімкнути трасування викликів програмного інтерфейсу libguestfs.
+.SH "ПАРАМЕТРИ КОМАНДНОГО РЯДКА У ФОРМАТІ ПОПЕРЕДНІХ ВЕРСІЙ"
+.IX Header "ПАРАМЕТРИ КОМАНДНОГО РЯДКА У ФОРМАТІ ПОПЕРЕДНІХ ВЕРСІЙ"
+У попередніх версіях virt-cat можна було використовувати або
 .PP
 .Vb 1
 \& virt\-cat диск.img [диск.img ...] файл
@@ -247,13 +247,14 @@ Previous versions of virt-cat allowed you to write either:
 whereas in this version you should use \fI\-a\fR or \fI\-d\fR respectively to avoid
 the confusing case where a disk image might have the same name as a guest.
 .PP
-For compatibility the old style is still supported.
+З міркувань зворотної сумісності передбачено підтримку запису параметрів у
+застарілому форматі.
 .SH "ШЛЯХИ У WINDOWS"
 .IX Header "ШЛЯХИ У WINDOWS"
 \&\f(CW\*(C`virt\-cat\*(C'\fR has a limited ability to understand Windows drive letters and
 paths (eg. \f(CW\*(C`E:\efoo\ebar.txt\*(C'\fR).
 .PP
-If and only if the guest is running Windows then:
+Тоді і лише тоді, коли у гостьовій системі працює Windows:
 .IP "\(bu" 4
 Drive letter prefixes like \f(CW\*(C`C:\*(C'\fR are resolved against the Windows Registry
 to the correct filesystem.
@@ -264,9 +265,10 @@ slashes so that libguestfs can process it.
 The path is resolved case insensitively to locate the file that should be
 displayed.
 .PP
-There are some known shortcomings:
+Відомі певні недоліки програми:
 .IP "\(bu" 4
-Some \s-1NTFS\s0 symbolic links may not be followed correctly.
+Перехід за деякими символічними посиланнями \s-1NTFS\s0 може здійснюватися з
+помилками.
 .IP "\(bu" 4
 \&\s-1NTFS\s0 junction points that cross filesystems are not followed.
 .SH "ВИКОРИСТАННЯ GUESTFISH"
@@ -277,7 +279,7 @@ Some \s-1NTFS\s0 symbolic links may not be followed correctly.
 Using \f(CW\*(C`virt\-cat\*(C'\fR is approximately equivalent to doing:
 .PP
 .Vb 1
-\& guestfish \-\-ro \-i \-d domname download file \-
+\& guestfish \-\-ro \-i \-d назва_домену download файл \-
 .Ve
 .PP
 where \f(CW\*(C`domname\*(C'\fR is the name of the libvirt guest, and \f(CW\*(C`file\*(C'\fR is the full
@@ -289,20 +291,21 @@ disk images that don't contain guests.  To display a file from a disk image
 directly, use:
 .PP
 .Vb 1
-\& guestfish \-\-ro \-a disk.img \-m /dev/sda1 download file \-
+\& guestfish \-\-ro \-a диск.img \-m /dev/sda1 download файл \-
 .Ve
 .PP
 where \f(CW\*(C`disk.img\*(C'\fR is the disk image, \f(CW\*(C`/dev/sda1\*(C'\fR is the filesystem within
 the disk image, and \f(CW\*(C`file\*(C'\fR is the full path to the file.
-.SH "SHELL QUOTING"
-.IX Header "SHELL QUOTING"
+.SH "ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ"
+.IX Header "ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ"
 Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
 .SH "СТАН ВИХОДУ"
 .IX Header "СТАН ВИХОДУ"
-This program returns 0 if successful, or non-zero if there was an error.
+Ця програма повертає значення 0 у разі успішного завершення і ненульове
+значення, якщо сталася помилка.
 .SH "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 .IX Header "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
 \&\fIguestfs\fR\|(3), \fIguestfish\fR\|(1), \fIvirt\-copy\-out\fR\|(1), \fIvirt\-edit\fR\|(1),
@@ -312,18 +315,18 @@ This program returns 0 if successful, or non-zero if there was an error.
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "АВТОРСЬКІ ПРАВА"
 .IX Header "АВТОРСЬКІ ПРАВА"
-Copyright (C) 2010\-2012 Red Hat Inc.
+© Red Hat Inc., 2010–2012
 .PP
-This program is free software; you can redistribute it and/or modify it
-under the terms of the \s-1GNU\s0 General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option)
-any later version.
+Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
+змінювати її за умов дотримання \s-1GNU\s0 General Public License  утому вигляді,
+що оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
+забажаєте) будь\-якої випущеної пізніше.
 .PP
 Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
 БУДЬ\-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з \s-1GNU\s0 General Public License.
 .PP
-You should have received a copy of the \s-1GNU\s0 General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 51
-Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301 \s-1USA\s0.
+Ви маєте отримати копію \s-1GNU\s0 General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, \s-1MA\s0 02110\-1301, \s-1USA\s0.

@@ -62,16 +62,16 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-tar.pl 1"
-.TH virt-tar.pl 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-tar.pl 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "名前"
 .IX Header "名前"
-virt-tar \- Extract or upload files to a virtual machine
-.SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
+virt-tar \- 仮想マシンへのファイルの展開またはアップロード
+.SH "書式"
+.IX Header "書式"
 .Vb 1
 \& virt\-tar [\-\-options] \-x domname directory tarball
 \&
@@ -81,13 +81,13 @@ virt-tar \- Extract or upload files to a virtual machine
 \&
 \& virt\-tar [\-\-options] disk.img [disk.img ...] \-u tarball directory
 .Ve
-.SH "OBSOLETE"
-.IX Header "OBSOLETE"
-This tool is obsolete.  Use \fIvirt\-copy\-in\fR\|(1), \fIvirt\-copy\-out\fR\|(1),
-\&\fIvirt\-tar\-in\fR\|(1), \fIvirt\-tar\-out\fR\|(1) as replacements.
-.SH "EXAMPLES"
-.IX Header "EXAMPLES"
-Download \f(CW\*(C`/home\*(C'\fR from the \s-1VM\s0 into a local tarball:
+.SH "非推奨"
+.IX Header "非推奨"
+このツールは推奨されません。  代わりに \fIvirt\-copy\-in\fR\|(1), \fIvirt\-copy\-out\fR\|(1),
+\&\fIvirt\-tar\-in\fR\|(1), \fIvirt\-tar\-out\fR\|(1) を使用してください。
+.SH "例"
+.IX Header "例"
+仮想マシンから \f(CW\*(C`/home\*(C'\fR をローカルの tar ファイルにダウンロードします:
 .PP
 .Vb 1
 \& virt\-tar \-x domname /home home.tar
@@ -95,15 +95,15 @@ Download \f(CW\*(C`/home\*(C'\fR from the \s-1VM\s0 into a local tarball:
 \& virt\-tar \-zx domname /home home.tar.gz
 .Ve
 .PP
-Upload a local tarball and unpack it inside \f(CW\*(C`/tmp\*(C'\fR in the \s-1VM:\s0
+ローカルの tar ファイルをアップロードして、仮想マシンの \f(CW\*(C`/tmp\*(C'\fR に展開します:
 .PP
 .Vb 1
 \& virt\-tar \-u domname uploadstuff.tar /tmp
 \&
 \& virt\-tar \-zu domname uploadstuff.tar.gz /tmp
 .Ve
-.SH "WARNING"
-.IX Header "WARNING"
+.SH "警告"
+.IX Header "警告"
 You must \fInot\fR use \f(CW\*(C`virt\-tar\*(C'\fR with the \fI\-u\fR option (upload) on live
 virtual machines.  If you do this, you risk disk corruption in the \s-1VM\s0.
 \&\f(CW\*(C`virt\-tar\*(C'\fR tries to stop you from doing this, but doesn't catch all cases.
@@ -113,8 +113,8 @@ inconsistent results or errors if there is filesystem activity inside the
 \&\s-1VM\s0.  If the live \s-1VM\s0 is synched and quiescent, then \f(CW\*(C`virt\-tar\*(C'\fR will usually
 work, but the only way to guarantee consistent results is if the virtual
 machine is shut down.
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
+.SH "説明"
+.IX Header "説明"
 \&\f(CW\*(C`virt\-tar\*(C'\fR is a general purpose archive tool for downloading and uploading
 parts of a guest filesystem.  There are many possibilities: making backups,
 uploading data files, snooping on guest activity, fixing or customizing
@@ -137,25 +137,23 @@ is compressed because virt-tar won't detect this on its own.
 example it cannot do PKZip files or bzip2 compression.  If you want that
 then you'll have to rebuild the tarballs yourself.  (This is a limitation of
 the \fIlibguestfs\fR\|(3) \s-1API\s0).
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+.SH "オプション"
+.IX Header "オプション"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
-Display brief help.
+簡単なヘルプを表示します。
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
-Display version number and exit.
+バージョン番号を表示して終了します。
 .IP "\fB\-c \s-1URI\s0\fR" 4
 .IX Item "-c URI"
 .PD 0
 .IP "\fB\-\-connect \s-1URI\s0\fR" 4
 .IX Item "--connect URI"
 .PD
-If using libvirt, connect to the given \fI\s-1URI\s0\fR.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された \fI\s-1URI\s0\fR に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 .Sp
-If you specify guest block devices directly, then libvirt is not used at
-all.
+仮想マシンのブロックデバイスを直接指定すると、libvirt はまったく使用されません。
 .IP "\fB\-\-format\fR raw" 4
 .IX Item "--format raw"
 Specify the format of disk images given on the command line.  If this is
@@ -185,7 +183,7 @@ local tarball.
 Use \fI\-u\fR to upload and unpack from a local tarball into a virtual machine.
 Please read the \*(L"\s-1WARNING\s0\*(R" section above before using this option.
 .Sp
-You must specify exactly one of these options.
+これらのオプションのいずれかを正確に指定する必要があります。
 .IP "\fB\-z\fR" 4
 .IX Item "-z"
 .PD 0
@@ -199,14 +197,14 @@ Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
+.SH "関連項目"
+.IX Header "関連項目"
 \&\fIguestfs\fR\|(3), \fIguestfish\fR\|(1), \fIvirt\-cat\fR\|(1), \fIvirt\-edit\fR\|(1),
 \&\fIvirt\-copy\-in\fR\|(1), \fIvirt\-copy\-out\fR\|(1), \fIvirt\-tar\-in\fR\|(1),
 \&\fIvirt\-tar\-out\fR\|(1), \fISys::Guestfs\fR\|(3), \fISys::Guestfs::Lib\fR\|(3),
 \&\fISys::Virt\fR\|(3), <http://libguestfs.org/>.
-.SH "AUTHOR"
-.IX Header "AUTHOR"
+.SH "著者"
+.IX Header "著者"
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"

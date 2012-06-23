@@ -4,98 +4,108 @@
 
 =item B<augeas>
 
-The following functions: L</guestfs_aug_clear> L</guestfs_aug_close>
-L</guestfs_aug_defnode> L</guestfs_aug_defvar> L</guestfs_aug_get>
-L</guestfs_aug_init> L</guestfs_aug_insert> L</guestfs_aug_load>
-L</guestfs_aug_ls> L</guestfs_aug_match> L</guestfs_aug_mv>
-L</guestfs_aug_rm> L</guestfs_aug_save> L</guestfs_aug_set>
+以下の関数: L</guestfs_aug_clear> L</guestfs_aug_close> L</guestfs_aug_defnode>
+L</guestfs_aug_defvar> L</guestfs_aug_get> L</guestfs_aug_init>
+L</guestfs_aug_insert> L</guestfs_aug_load> L</guestfs_aug_ls>
+L</guestfs_aug_match> L</guestfs_aug_mv> L</guestfs_aug_rm>
+L</guestfs_aug_save> L</guestfs_aug_set>
 
 =item B<btrfs>
 
-The following functions: L</guestfs_btrfs_filesystem_resize>
+The following functions: L</guestfs_btrfs_device_add>
+L</guestfs_btrfs_device_delete> L</guestfs_btrfs_filesystem_balance>
+L</guestfs_btrfs_filesystem_resize> L</guestfs_btrfs_filesystem_sync>
+L</guestfs_btrfs_fsck> L</guestfs_btrfs_set_seeding>
+L</guestfs_btrfs_subvolume_create> L</guestfs_btrfs_subvolume_delete>
+L</guestfs_btrfs_subvolume_list> L</guestfs_btrfs_subvolume_set_default>
+L</guestfs_btrfs_subvolume_snapshot> L</guestfs_mkfs_btrfs>
 
 =item B<grub>
 
-The following functions: L</guestfs_grub_install>
+以下の関数: L</guestfs_grub_install>
 
 =item B<inotify>
 
-The following functions: L</guestfs_inotify_add_watch>
-L</guestfs_inotify_close> L</guestfs_inotify_files> L</guestfs_inotify_init>
-L</guestfs_inotify_read> L</guestfs_inotify_rm_watch>
+以下の関数: L</guestfs_inotify_add_watch> L</guestfs_inotify_close>
+L</guestfs_inotify_files> L</guestfs_inotify_init> L</guestfs_inotify_read>
+L</guestfs_inotify_rm_watch>
 
 =item B<linuxfsuuid>
 
-The following functions: L</guestfs_mke2fs_JU> L</guestfs_mke2journal_U>
-L</guestfs_mkswap_U> L</guestfs_swapoff_uuid> L</guestfs_swapon_uuid>
+以下の関数: L</guestfs_mke2fs_JU> L</guestfs_mke2journal_U> L</guestfs_mkswap_U>
+L</guestfs_swapoff_uuid> L</guestfs_swapon_uuid>
 
 =item B<linuxmodules>
 
-The following functions: L</guestfs_modprobe>
+以下の関数: L</guestfs_modprobe>
 
 =item B<linuxxattrs>
 
-The following functions: L</guestfs_getxattr> L</guestfs_getxattrs>
-L</guestfs_lgetxattr> L</guestfs_lgetxattrs> L</guestfs_lremovexattr>
-L</guestfs_lsetxattr> L</guestfs_lxattrlist> L</guestfs_removexattr>
-L</guestfs_setxattr>
+以下の関数: L</guestfs_getxattr> L</guestfs_getxattrs> L</guestfs_lgetxattr>
+L</guestfs_lgetxattrs> L</guestfs_lremovexattr> L</guestfs_lsetxattr>
+L</guestfs_lxattrlist> L</guestfs_removexattr> L</guestfs_setxattr>
 
 =item B<luks>
 
-The following functions: L</guestfs_luks_add_key> L</guestfs_luks_close>
+以下の関数: L</guestfs_luks_add_key> L</guestfs_luks_close>
 L</guestfs_luks_format> L</guestfs_luks_format_cipher>
 L</guestfs_luks_kill_slot> L</guestfs_luks_open> L</guestfs_luks_open_ro>
 
 =item B<lvm2>
 
-The following functions: L</guestfs_is_lv> L</guestfs_lvcreate>
+以下の関数: L</guestfs_is_lv> L</guestfs_lvcreate> L</guestfs_lvcreate_free>
 L</guestfs_lvm_remove_all> L</guestfs_lvm_set_filter> L</guestfs_lvremove>
 L</guestfs_lvresize> L</guestfs_lvresize_free> L</guestfs_lvs>
 L</guestfs_lvs_full> L</guestfs_pvcreate> L</guestfs_pvremove>
 L</guestfs_pvresize> L</guestfs_pvresize_size> L</guestfs_pvs>
 L</guestfs_pvs_full> L</guestfs_vg_activate> L</guestfs_vg_activate_all>
-L</guestfs_vgcreate> L</guestfs_vgremove> L</guestfs_vgs>
+L</guestfs_vgcreate> L</guestfs_vgmeta> L</guestfs_vgremove> L</guestfs_vgs>
 L</guestfs_vgs_full>
 
 =item B<mdadm>
 
-The following functions: L</guestfs_md_create> L</guestfs_md_detail>
+以下の関数: L</guestfs_md_create> L</guestfs_md_detail> L</guestfs_md_stat>
 L</guestfs_md_stop>
 
 =item B<mknod>
 
-The following functions: L</guestfs_mkfifo> L</guestfs_mknod>
-L</guestfs_mknod_b> L</guestfs_mknod_c>
+以下の関数: L</guestfs_mkfifo> L</guestfs_mknod> L</guestfs_mknod_b>
+L</guestfs_mknod_c>
 
 =item B<ntfs3g>
 
-The following functions: L</guestfs_ntfs_3g_probe>
+次の関数: L</guestfs_ntfs_3g_probe> L</guestfs_ntfsclone_in>
+L</guestfs_ntfsclone_out> L</guestfs_ntfsfix>
 
 =item B<ntfsprogs>
 
-The following functions: L</guestfs_ntfsresize> L</guestfs_ntfsresize_opts>
+以下の関数: L</guestfs_ntfsresize> L</guestfs_ntfsresize_opts>
 L</guestfs_ntfsresize_size>
 
 =item B<realpath>
 
-The following functions: L</guestfs_realpath>
+以下の関数: L</guestfs_realpath>
 
 =item B<scrub>
 
-The following functions: L</guestfs_scrub_device> L</guestfs_scrub_file>
+以下の関数: L</guestfs_scrub_device> L</guestfs_scrub_file>
 L</guestfs_scrub_freespace>
 
 =item B<selinux>
 
-The following functions: L</guestfs_getcon> L</guestfs_setcon>
+以下の関数: L</guestfs_getcon> L</guestfs_setcon>
+
+=item B<wipefs>
+
+次の関数: L</guestfs_wipefs>
 
 =item B<xz>
 
-The following functions: L</guestfs_txz_in> L</guestfs_txz_out>
+以下の関数: L</guestfs_txz_in> L</guestfs_txz_out>
 
 =item B<zerofree>
 
-The following functions: L</guestfs_zerofree>
+以下の関数: L</guestfs_zerofree>
 
 =back
 

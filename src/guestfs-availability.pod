@@ -21,7 +21,19 @@ L</guestfs_aug_set>
 =item B<btrfs>
 
 The following functions:
+L</guestfs_btrfs_device_add>
+L</guestfs_btrfs_device_delete>
+L</guestfs_btrfs_filesystem_balance>
 L</guestfs_btrfs_filesystem_resize>
+L</guestfs_btrfs_filesystem_sync>
+L</guestfs_btrfs_fsck>
+L</guestfs_btrfs_set_seeding>
+L</guestfs_btrfs_subvolume_create>
+L</guestfs_btrfs_subvolume_delete>
+L</guestfs_btrfs_subvolume_list>
+L</guestfs_btrfs_subvolume_set_default>
+L</guestfs_btrfs_subvolume_snapshot>
+L</guestfs_mkfs_btrfs>
 
 =item B<grub>
 
@@ -81,6 +93,7 @@ L</guestfs_luks_open_ro>
 The following functions:
 L</guestfs_is_lv>
 L</guestfs_lvcreate>
+L</guestfs_lvcreate_free>
 L</guestfs_lvm_remove_all>
 L</guestfs_lvm_set_filter>
 L</guestfs_lvremove>
@@ -97,6 +110,7 @@ L</guestfs_pvs_full>
 L</guestfs_vg_activate>
 L</guestfs_vg_activate_all>
 L</guestfs_vgcreate>
+L</guestfs_vgmeta>
 L</guestfs_vgremove>
 L</guestfs_vgs>
 L</guestfs_vgs_full>
@@ -106,6 +120,7 @@ L</guestfs_vgs_full>
 The following functions:
 L</guestfs_md_create>
 L</guestfs_md_detail>
+L</guestfs_md_stat>
 L</guestfs_md_stop>
 
 =item B<mknod>
@@ -120,6 +135,9 @@ L</guestfs_mknod_c>
 
 The following functions:
 L</guestfs_ntfs_3g_probe>
+L</guestfs_ntfsclone_in>
+L</guestfs_ntfsclone_out>
+L</guestfs_ntfsfix>
 
 =item B<ntfsprogs>
 
@@ -145,6 +163,11 @@ L</guestfs_scrub_freespace>
 The following functions:
 L</guestfs_getcon>
 L</guestfs_setcon>
+
+=item B<wipefs>
+
+The following functions:
+L</guestfs_wipefs>
 
 =item B<xz>
 

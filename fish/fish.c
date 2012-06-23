@@ -30,6 +30,7 @@
 #include <sys/wait.h>
 #include <locale.h>
 #include <langinfo.h>
+#include <libintl.h>
 
 #ifdef HAVE_LIBREADLINE
 #include <readline/readline.h>
@@ -60,9 +61,9 @@ static int launch (void);
 static void interactive (void);
 static void shell_script (void);
 static void script (int prompt);
-static void cmdline (char *argv[], int optind, int argc);
+static void cmdline (char *argv[], size_t optind, size_t argc);
 static struct parsed_command parse_command_line (char *buf, int *exit_on_error_rtn);
-static int parse_quoted_string (char *p);
+static ssize_t parse_quoted_string (char *p);
 static int execute_and_inline (const char *cmd, int exit_on_error);
 static void error_cb (guestfs_h *g, void *data, const char *msg);
 static void initialize_readline (void);
@@ -73,6 +74,7 @@ static void add_history_line (const char *);
 
 static int override_progress_bars = -1;
 static struct progress_bar *bar = NULL;
+static int pipe_error = 0;
 
 /* Currently open libguestfs handle. */
 guestfs_h *g = NULL;
@@ -125,6 +127,7 @@ usage (int status)
              "  -m|--mount dev[:mnt[:opts]] Mount dev on mnt (if omitted, /)\n"
              "  -n|--no-sync         Don't autosync\n"
              "  -N|--new type        Create prepared disk (test1.img, ...)\n"
+             "  --pipe-error         Pipe commands can detect write errors\n"
              "  --progress-bars      Enable progress bars even when not interactive\n"
              "  --no-progress-bars   Disable progress bars\n"
              "  --remote[=pid]       Send commands to remote %s\n"
@@ -157,6 +160,7 @@ main (int argc, char *argv[])
   /* Set global program name that is not polluted with libtool artifacts.  */
   set_program_name (argv[0]);
 
+  /* Initialize gnulib closeout module. */
   atexit (close_stdout);
 
   setlocale (LC_ALL, "");
@@ -189,6 +193,7 @@ main (int argc, char *argv[])
     { "new", 1, 0, 'N' },
     { "no-dest-paths", 0, 0, 'D' },
     { "no-sync", 0, 0, 'n' },
+    { "pipe-error", 0, 0, 0 },
     { "progress-bars", 0, 0, 0 },
     { "no-progress-bars", 0, 0, 0 },
     { "remote", 2, 0, 0 },
@@ -279,6 +284,8 @@ main (int argc, char *argv[])
         remote_control_csh = 1;
       } else if (STREQ (long_options[option_index].name, "live")) {
         live = 1;
+      } else if (STREQ (long_options[option_index].name, "pipe-error")) {
+        pipe_error = 1;
       } else {
         fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
                  program_name, long_options[option_index].name, option_index);
@@ -495,12 +502,13 @@ main (int argc, char *argv[])
       exit (EXIT_FAILURE);
     }
     rc_listen ();
+    goto out_after_handle_close;
   }
 
   /* -f (file) parameter? */
   if (file) {
     close (0);
-    if (open (file, O_RDONLY) == -1) {
+    if (open (file, O_RDONLY|O_CLOEXEC) == -1) {
       perror (file);
       exit (EXIT_FAILURE);
     }
@@ -545,12 +553,14 @@ main (int argc, char *argv[])
   else
     cmdline (argv, optind, argc);
 
+  guestfs_close (g);
+
+ out_after_handle_close:
   cleanup_readline ();
 
   if (progress_bars)
     progress_bar_free (bar);
 
-  guestfs_close (g);
   free_event_handlers ();
 
   exit (EXIT_SUCCESS);
@@ -621,7 +631,7 @@ rl_gets (int prompt)
 #endif /* HAVE_LIBREADLINE */
 
   static char buf[8192];
-  int len;
+  size_t len;
 
   if (prompt) printf (FISH);
   line_read = fgets (buf, sizeof buf, stdin);
@@ -698,7 +708,7 @@ parse_command_line (char *buf, int *exit_on_error_rtn)
 {
   struct parsed_command pcmd;
   char *p, *pend;
-  int len;
+  ssize_t len;
   int tilde_candidate;
   int r;
   const size_t argv_len = sizeof pcmd.argv / sizeof pcmd.argv[0];
@@ -877,7 +887,7 @@ hexdigit (char d)
  * with the true character.  Since the string is returned in place,
  * the escapes must make the string shorter.
  */
-static int
+static ssize_t
 parse_quoted_string (char *p)
 {
   char *start = p;
@@ -988,7 +998,7 @@ execute_and_inline (const char *cmd, int global_exit_on_error)
 }
 
 static void
-cmdline (char *argv[], int optind, int argc)
+cmdline (char *argv[], size_t optind, size_t argc)
 {
   const char *cmd;
   char **params;
@@ -1037,7 +1047,7 @@ int
 issue_command (const char *cmd, char *argv[], const char *pipecmd,
                int rc_exit_on_error_flag)
 {
-  int argc;
+  size_t argc;
   int stdout_saved_fd = -1;
   int pid = 0;
   int r;
@@ -1125,6 +1135,15 @@ issue_command (const char *cmd, char *argv[], const char *pipecmd,
     perror ("failed to flush standard output");
     return -1;
   }
+  if (ferror (stdout)) {
+    if (!pipecmd || pipe_error) {
+      fprintf (stderr, "%s: write error%s\n", program_name,
+               pipecmd ? " on pipe" : "");
+      r = -1;
+    }
+    /* We've dealt with this error, so clear the flag. */
+    clearerr (stdout);
+  }
 
   if (pipecmd) {
     close (1);
@@ -1205,17 +1224,17 @@ error_cb (guestfs_h *g, void *data, const char *msg)
 void
 free_strings (char **argv)
 {
-  int argc;
+  size_t argc;
 
   for (argc = 0; argv[argc] != NULL; ++argc)
     free (argv[argc]);
   free (argv);
 }
 
-int
+size_t
 count_strings (char *const *argv)
 {
-  int c;
+  size_t c;
 
   for (c = 0; argv[c]; ++c)
     ;
@@ -1225,7 +1244,7 @@ count_strings (char *const *argv)
 void
 print_strings (char *const *argv)
 {
-  int argc;
+  size_t argc;
 
   for (argc = 0; argv[argc] != NULL; ++argc)
     printf ("%s\n", argv[argc]);
@@ -1234,7 +1253,7 @@ print_strings (char *const *argv)
 void
 print_table (char *const *argv)
 {
-  int i;
+  size_t i;
 
   for (i = 0; argv[i] != NULL; i += 2)
     printf ("%s: %s\n", argv[i], argv[i+1]);
@@ -1433,7 +1452,7 @@ cleanup_readline (void)
   int fd;
 
   if (histfile[0] != '\0') {
-    fd = open (histfile, O_WRONLY|O_CREAT, 0644);
+    fd = open (histfile, O_WRONLY|O_CREAT|O_NOCTTY|O_CLOEXEC, 0644);
     if (fd == -1) {
       perror (histfile);
       return;

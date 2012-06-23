@@ -4,18 +4,18 @@
 
 guestfs-testing - manual testing of libguestfs, you can help!
 
-=head1 DESCRIPTION
+=head1 説明
 
 This page has manual tests you can try on libguestfs.  Everyone has a
 slightly different combination of platform, hardware and guests, so this
 testing is very valuable.  Thanks for helping out!
 
-These tests require libguestfs E<ge> 1.14.
+これらのテストは libguestfs E<ge> 1.14 が必要です。
 
 Tests marked with a B<*> (asterisk) can B<destroy data> if you're not
 careful.  The others are safe and won't modify anything.
 
-You can report bugs you find through this link:
+このリンクを使用して見つけたバグを報告できます:
 
 https://bugzilla.redhat.com/enter_bug.cgi?component=libguestfs&product=Virtualization+Tools
 
@@ -25,9 +25,9 @@ your message):
 
 https://www.redhat.com/mailman/listinfo/libguestfs
 
-=head1 TESTS
+=head1 テスト
 
-=head2 Check KVM acceleration is being used.
+=head2 KVM アクセラレーションが使用されていることを確認します。
 
 If your host has hardware virt acceleration, then with a hot cache
 libguestfs should be able to start up in a few seconds.  Run the following
@@ -42,27 +42,27 @@ How to check for hardware virt:
 
 http://virt-tools.org/learning/check-hardware-virt/
 
-If the command above does not work at all, use L<libguestfs-test-tool(1)>.
+上のコマンドがまったく機能しなければ、 L<libguestfs-test-tool(1)> を使用します。
 
-=head2 Run virt-alignment-scan on all your guests.
+=head2 すべての仮想マシンにおいて virt-alignment-scan を実行します。
 
-Run L<virt-alignment-scan(1)> on guests or disk images:
+仮想マシンまたはディスクイメージにおいて L<virt-alignment-scan(1)> を実行します:
 
  virt-alignment-scan -a /path/to/disk.img
 
-or:
+または:
 
  virt-alignment-scan -d Guest
 
 Does the alignment report match how the guest partitions are aligned?
 
-=head2 Run virt-cat on some files in guests.
+=head2 仮想マシンにあるいくつかのファイルにおいて virt-cat を実行します。
 
-L<virt-cat(1)> can display files from guests.  For a Linux guest, try:
+L<virt-cat(1)> は仮想マシンからファイルを表示できます。 Linux 仮想マシンに対しては、次を試します:
 
  virt-cat LinuxGuest /etc/passwd
 
-A recent feature is support for Windows paths, for example:
+最近の機能は Windows のパスをサポートします、たとえば:
 
  virt-cat WindowsGuest 'c:\windows\win.ini'
 
@@ -84,7 +84,7 @@ Shut the guest down and try copying multiple files and directories:
 
  virt-copy-in -d Guest /home /etc/issue /tmp
 
-=head2 Copy some files out of a guest.
+=head2 仮想マシンからいくつかのファイルをコピーします
 
 L<virt-copy-out(1)> can recursively copy files and directories out of a
 guest or disk image.
@@ -95,9 +95,9 @@ Note the final space and period in the command is not a typo.
 
 This should copy C</home> from the guest into the current directory.
 
-=head2 Run virt-df.
+=head2 virt-df を実行します。
 
-L<virt-df(1)> lists disk space.  Run:
+L<virt-df(1)> はディスク領域を一覧表示します。次を実行します:
 
  virt-df
 
@@ -127,7 +127,7 @@ greatly differing numbers.
 
 =head2 Try importing virt-df CSV output into a spreadsheet or database.
 
-Run:
+次を実行します:
 
  virt-df --csv > /tmp/report.csv
 
@@ -137,140 +137,135 @@ results reproduced faithfully in the spreadsheet/database?
 http://www.postgresql.org/docs/8.1/static/sql-copy.html
 http://dev.mysql.com/doc/refman/5.1/en/load-data.html
 
-=head2 B<*> Edit a file in a B<shut off> guest.
+=head2 B<*> B<シャットオフ>している仮想マシンにあるファイルを編集します。
 
-L<virt-edit(1)> can edit files in guests.  Try this command on a RHEL or
-Fedora guest:
+L<virt-edit(1)> は仮想マシンにあるファイルを編集できます。RHEL または Fedora 仮想マシンにおいてこのコマンドを試します:
 
  virt-edit LinuxGuest /etc/sysconfig/network
 
-On other Linux guests try editing other files such as:
+他の Linux 仮想マシンにおいて、次のように他のファイルの編集を試します:
 
  virt-edit LinuxGuest /etc/motd
 
 Are the changes seen inside the guest when it is booted?
 
-=head2 Display the filesystems / partitions / LVs in a guest.
+=head2 仮想マシンにあるファイルシステム / パーティション / 論理ボリュームを表示します。
 
 L<virt-filesystems(1)> can be used to display filesystems in a guest.  Try
 this command on any disk image or guest:
 
  virt-filesystems -a /path/to/disk.img --all --long -h
 
-or:
+または:
 
  virt-filesystems -d Guest --all --long -h
 
 Do the results match what is seen in the guest?
 
-=head2 Run virt-inspector on all your guests.
+=head2 すべての仮想マシンにおいて virt-inspector を実行します。
 
 Use L<virt-inspector(1)> to get a report on all of your guests or disk
 images:
 
  virt-inspector -a /path/to/disk.img | less
 
-or:
+または:
 
  virt-inspector -d Guest | less
 
 Do the results match what is actually in the guest?
 
-=head2 Try the auditing features of virt-ls on all your guests.
+=head2 すべての仮想マシンにおいて virt-ls の監査機能を試します。
 
 List all setuid or setgid programs in a Linux virtual machine:
 
  virt-ls -lR -d Guest / | grep '^- [42]'
 
-List all public-writable directories in a Linux virtual machine:
+Linux 仮想マシンにあるすべての全体書き込み可能なディレクトリーを一覧表示します:
 
  virt-ls -lR -d Guest / | grep '^d ...7'
 
-List all Unix domain sockets in a Linux virtual machine:
+Linux 仮想マシンにあるすべての Unix ドメインソケットを一覧表示します:
 
  virt-ls -lR -d Guest / | grep '^s'
 
-List all regular files with filenames ending in '.png':
+'.png' で終わるファイル名を持つすべての通常ファイルを表示するには:
 
  virt-ls -lR -d Guest / | grep -i '^-.*\.png$'
 
-Display files larger than 10MB in home directories:
+ホームディレクトリーにある 10MB より大きなファイルを表示します:
 
  virt-ls -lR -d Guest /home | awk '$3 > 10*1024*1024'
 
-Find everything modified in the last 7 days:
+7日以内に変更されたものをすべて検索します:
 
  virt-ls -lR -d Guest --time-days / | awk '$6 <= 7'
 
-Find regular files modified in the last 24 hours:
+24時間以内に変更された通常のファイルを検索します:
 
  virt-ls -lR -d Guest --time-days / | grep '^-' | awk '$6 < 1'
 
 Do the results match what is in the guest?
 
-=head2 Create a disk image from a tarball.
+=head2 tar ファイルからディスクイメージを作成します。
 
 Use L<virt-make-fs(1)> to create a disk image from any tarball that you
 happen to have:
 
  virt-make-fs --partition=mbr --type=vfat /any/tarball.tar.gz output.img
 
-Add 'output.img' as a raw disk to an existing guest.  Check the guest can
-see the files.  This test is particularly useful if you try it with a
-Windows guest.
+'output.img' を既存の仮想マシンにローディスクとして追加します。仮想マシンがファイルを認識できるかを確認します。Windows
+仮想マシンを試していると、このテストがとくに有用です。
 
-Try other partitioning schemes, eg. I<--partition=gpt>.
+他のパーティションスキーマを試してください。例: I<--partition=gpt>
 
-Try other filesystem formats, eg. I<--type=ntfs>, I<--type=ext2>.
+他のファイルシステム形式を試してください。例: I<--type=ntfs>, I<--type=ext2>
 
-=head2 B<*> Run virt-rescue on a B<shut off> disk image or guest.
+=head2 B<*> B<停止状態>のディスクイメージまたは仮想マシンにおいて virt-rescue を実行します。
 
-Use L<virt-rescue(1)> to examine, rescue or repair a B<shut off> guest or
-disk image:
+B<停止状態>の仮想マシンまたはディスクイメージを検査、復旧、または修復するには L<virt-rescue(1)> を使用します:
 
  virt-rescue -a /path/to/disk.img
 
-or:
+または:
 
  virt-rescue -d Guest
 
-Can you use ordinary shell commands to examine the guest?
+仮想マシンを検査するために通常のシェルコマンドを使用できますか？
 
-=head2 B<*> Resize your guests.
+=head2 B<*> 仮想マシンの容量を変更します。
 
-Use L<virt-resize(1)> to give a guest some more disk space.  For example, if
-you have a disk image that is smaller than 30G, increase it to 30G by doing:
+仮想マシンのディスク容量を大きくするために L<virt-resize(1)> を使用します。たとえば、ディスクイメージが 30G
+より小さければ、次を実行して 30G に増やします:
 
  truncate -s 30G newdisk.img
  virt-filesystems -a /path/to/olddisk.img --all --long -h
  virt-resize /path/to/olddisk.img newdisk.img --expand /dev/sda1
  qemu-kvm -m 1024 -hda newdisk.img
 
-Does the guest still boot? Try expanding other partitions.
+仮想マシンがまだ起動しますか？他のパーティションの拡張を試します。
 
-=head2 B<*> Sparsify a guest disk.
+=head2 B<*> 仮想マシンのディスクをスパースにします。
 
-Using L<virt-sparsify(1)>, make a disk image more sparse:
+L<virt-sparsify(1)> を使用して、ディスクイメージをよりスパースにします:
 
  virt-sparsify /path/to/olddisk.img newdisk.img
 
 Is C<newdisk.img> still bootable after sparsifying? Is the resulting disk
 image smaller (use C<du> to check)?
 
-=head2 B<*> "sysprep" a B<shut off> Linux guest.
+=head2 B<*> B<停止状態>の Linux 仮想マシンを "sysprep" します。
 
 Note that this really will mess up an existing guest, so it's better to
 clone the guest before trying this.
 
  virt-sysprep --hostname newhost.example.com -a /path/to/disk.img
 
-Was the sysprep successful? After booting, what changes were made and were
-they successful?
+sysprep が成功しましたか？起動後、何を変更しましたか、その変更は成功しましたか？
 
-=head2 Dump the Windows Registry from your Windows guests.
+=head2 Windows ゲストから Windows レジストリをダンプします。
 
-Use L<virt-win-reg(1)> to dump out the Windows Registry from any Windows
-guests that you have.
+Windows 仮想マシンから Windows レジストリをダンプ出力するには L<virt-win-reg(1)> を使用します。
 
  virt-win-reg --unsafe-printable-strings WindowsGuest 'HKLM\Software' |
    less
@@ -286,12 +281,12 @@ replacing I<username> with the name of a local user in the guest:
  virt-win-reg --unsafe-printable-strings WindowsGuest 'HKEY_USERS\username' |
    less
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfs(3)>, L<guestfish(1)>, L<guestfs-examples(3)>,
 L<http://libguestfs.org/>.
 
-=head1 AUTHORS
+=head1 著者
 
 Richard W.M. Jones (C<rjones at redhat dot com>)
 

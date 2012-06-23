@@ -62,21 +62,21 @@
 .\" ========================================================================
 .\"
 .IX Title "libguestfs-test-tool 1"
-.TH libguestfs-test-tool 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH libguestfs-test-tool 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "名前"
 .IX Header "名前"
-libguestfs-test-tool \- Diagnostics for libguestfs
-.SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
+libguestfs-test-tool \- libguestfs の診断
+.SH "書式"
+.IX Header "書式"
 .Vb 1
 \& libguestfs\-test\-tool [\-\-options]
 .Ve
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
+.SH "説明"
+.IX Header "説明"
 libguestfs-test-tool is a test program shipped with libguestfs to allow you
 to check basic libguestfs functionality is working.  This is needed because
 libguestfs occasionally breaks for reasons beyond our control: usually
@@ -103,8 +103,8 @@ If it fails (and/or exits with non-zero error code), please paste the
 \&\fIcomplete, unedited\fR output of the test tool into a bug report.  More
 information about reporting bugs can be found on the
 <http://libguestfs.org/> website.
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+.SH "オプション"
+.IX Header "オプション"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
 Display short usage information and exit.
@@ -151,23 +151,23 @@ libguestfs tries.  You do this by setting the environment variables
 .PP
 Refer to \*(L"\s-1ENVIRONMENT\s0 \s-1VARIABLES\s0\*(R" in \fIfebootstrap\-supermin\-helper\fR\|(8) for further
 information.
-.SH "SELF-DIAGNOSIS"
-.IX Header "SELF-DIAGNOSIS"
-Refer to \*(L"\s-1APPLIANCE\s0 \s-1BOOT\s0 \s-1PROCESS\s0\*(R" in \fIguestfs\fR\|(3) to understand the messages
-produced by libguestfs-test-tool and/or possible errors.
-.SH "EXIT STATUS"
-.IX Header "EXIT STATUS"
+.SH "自己診断"
+.IX Header "自己診断"
+libguestfs-test-tool および/または起こりうるエラーにより生成されるメッセージを理解するには
+\&\*(L"アプライアンス起動プロセス\*(R" in \fIguestfs\fR\|(3) を参照してください。
+.SH "終了ステータス"
+.IX Header "終了ステータス"
 libguestfs-test-tool returns \fI0\fR if the tests completed without error, or
 \&\fI1\fR if there was an error.
-.SH "ENVIRONMENT VARIABLES"
-.IX Header "ENVIRONMENT VARIABLES"
+.SH "環境変数"
+.IX Header "環境変数"
 For the full list of environment variables which may affect libguestfs,
 please see the \fIguestfs\fR\|(3) manual page.
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
+.SH "関連項目"
+.IX Header "関連項目"
 \&\fIguestfs\fR\|(3), <http://libguestfs.org/>, <http://qemu.org/>.
-.SH "AUTHORS"
-.IX Header "AUTHORS"
+.SH "著者"
+.IX Header "著者"
 Richard W.M. Jones (\f(CW\*(C`rjones at redhat dot com\*(C'\fR)
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"

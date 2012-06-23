@@ -1,0 +1,51 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsCompressDeviceOut
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsCompressDeviceOut ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsCompressDeviceOut:level ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsCompressDeviceOutClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_compress_device_out_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

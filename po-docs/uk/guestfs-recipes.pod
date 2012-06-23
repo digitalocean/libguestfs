@@ -36,7 +36,7 @@ be substantially different for each version of Windows.
 https://lists.fedoraproject.org/pipermail/virt/2011-May/002655.html
 https://lists.fedoraproject.org/pipermail/virt/2011-May/002658.html
 
-=head1 Cloning a virtual machine (Linux)
+=head1 Клонування віртуальної машини (Linux)
 
 The guestfish technique described in the link below works well for most
 Linux VMs.  Depending on the Linux distro you may need to change the paths
@@ -49,7 +49,7 @@ discussion.
 
 https://www.redhat.com/archives/virt-tools-list/2011-May/msg00019.html
 
-=head1 Cloning a virtual machine (Windows)
+=head1 Клонування віртуальної машини (Windows)
 
 It is possible to do a "sysprep" using libguestfs alone, although not
 straightforward.  Currently there is code in the Aeolus Oz project which
@@ -69,7 +69,7 @@ To export just a subdirectory, eg. C</files>, do:
 
  guestfish --ro -a cd.iso -m /dev/sda tgz-out /files cd.tar.gz
 
-=head1 Create empty disk images
+=head1 Створення порожніх образів дисків
 
 You can use the L<guestfish(1)> I<-N> option to create empty disk images.
 The useful guide below explains the options available.
@@ -90,7 +90,7 @@ To list the filesystems in a disk image, use L<virt-filesystems(1)>.
 
 =head1 Edit grub configuration in a VM
 
-You can use this to:
+Ви можете скористатися цим для того, щоб виконати такі завдання:
 
 =over 4
 
@@ -117,7 +117,7 @@ this:
 
  virt-rescue -d BrokenGuest
 
-=head1 Export any directory from a VM
+=head1 Експортувати будь-який каталог з віртуальної машини
 
 To export C</home> from a VM into a local directory use L<virt-copy-out(1)>:
 
@@ -245,7 +245,7 @@ listing who was logged in recently
 
 http://augeas.net/
 
-=head1 Install RPMs in a guest
+=head1 Встановлення RPM у гостьовій системі
 
 The link below contains a method to install RPMs in a guest.  In fact the
 RPMs are just uploaded to the guest along with a "firstboot" script that
@@ -254,7 +254,7 @@ to install vital security updates in an offline guest.
 
 https://rwmj.wordpress.com/2010/12/01/tip-install-rpms-in-a-guest/#content
 
-=head1 List applications installed in a VM
+=head1 Показати список програм, встановлених у віртуальній машині
 
 Save the following to a file C<list-apps.sh>:
 
@@ -301,13 +301,13 @@ machine:
 If you want to run the script on disk images (instead of libvirt virtual
 machines), change C<-d "$1"> to C<-a "$1">.  See also L<virt-inspector(1)>.
 
-=head1 List files and directories in a VM
+=head1 Показати список файлів і каталогів у віртуальній машині
 
 This involves using the L<guestfish(1)> C<find0> command like this:
 
  guestfish --ro -d Guest -i find0 / - | tr '\0' '\n' | sort
 
-=head1 List services in a Windows VM
+=head1 Показати список служб у віртуальній машині Windows
 
 The link below contains a script that can be used to list out the services
 from a Windows VM, and whether those services run at boot time or are loaded
@@ -329,7 +329,7 @@ The link below contains a guide.
 
 http://virt-tools.org/learning/advanced-virt-df/
 
-=head1 Reading the Windows Event Log from Windows Vista (or later)
+=head1 Читання журналу подій у Windows з версії Windows Vista
 
 L<guestfish(1)> plus the tools described in the link below can be used to
 read out the Windows Event Log from any virtual machine running Windows
@@ -337,14 +337,14 @@ Vista or a later version.
 
 https://rwmj.wordpress.com/2011/04/17/decoding-the-windows-event-log-using-guestfish/#content
 
-=head1 Remove root password (Linux)
+=head1 Вилучення пароля root (Linux)
 
 Using the L<virt-edit(1)> I<-e> option you can do simple replacements on
 files.  One use is to remove the root password from a Linux guest:
 
  virt-edit domname /etc/passwd -e 's/^root:.*?:/root::/'
 
-=head1 Remove Administrator password (Windows)
+=head1 Вилучення пароля адміністратора (Windows)
 
 The link below contains one technique for removing the Administrator
 password from a Windows VM, or to be more precise, it gives you a command
@@ -352,7 +352,7 @@ prompt the next time you log in which you can use to bypass any security:
 
 https://mdbooth.wordpress.com/2010/10/18/resetting-a-windows-guests-administrator-password-with-guestfish/
 
-=head1 Unpack a live CD
+=head1 Розпакування компакт-диска з портативною системою
 
 Linux live CDs often contain multiple layers of disk images wrapped like a
 Russian doll.  You can use L<guestfish(1)> to look inside these multiple
@@ -360,7 +360,7 @@ layers, as outlined in the guide below.
 
 https://rwmj.wordpress.com/2009/07/15/unpack-the-russian-doll-of-a-f11-live-cd/#content
 
-=head1 Uploading and downloading files
+=head1 Вивантаження і звантаження файлів
 
 The link below contains general tips on uploading (copying in)  and
 downloading (copying out) files from VMs.
@@ -387,7 +387,7 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2009-2012 Red Hat Inc. L<http://libguestfs.org/>
+© Red Hat Inc. L<http://libguestfs.org/>, 2009–2012
 
 The examples in this manual page may be freely copied, modified and
 distributed without any restrictions.
@@ -397,12 +397,13 @@ under the terms of the GNU Lesser General Public License as published by the
 Free Software Foundation; either version 2 of the License, or (at your
 option) any later version.
 
-This library is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
-for more details.
+Ця бібліотека поширюється у сподіванні, що вона буде корисною, але БЕЗ
+БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
+ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
+про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU Lesser General Public License
-along with this library; if not, write to the Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+Ви маєте отримати копію GNU Lesser General Public License разом з цією
+бібліотекою; якщо це не так, повідомте про факт за адресою Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
+USA
 

@@ -23,21 +23,16 @@
 
 #include "fish-cmds.h"
 
-#ifdef HAVE_GETTEXT
-#include "gettext.h"
-#define _(str) dgettext(PACKAGE, (str))
-#define N_(str) dgettext(PACKAGE, (str))
-#else
-#define _(str) str
-#define N_(str) str
+#ifndef O_CLOEXEC
+#define O_CLOEXEC 0
 #endif
 
-#if !ENABLE_NLS
-#undef textdomain
-#define textdomain(Domainname) /* empty */
-#undef bindtextdomain
-#define bindtextdomain(Domainname, Dirname) /* empty */
+#ifndef SOCK_CLOEXEC
+#define SOCK_CLOEXEC 0
 #endif
+
+#define _(str) dgettext(PACKAGE, (str))
+#define N_(str) dgettext(PACKAGE, (str))
 
 #define STREQ(a,b) (strcmp((a),(b)) == 0)
 #define STRCASEEQ(a,b) (strcasecmp((a),(b)) == 0)
@@ -69,7 +64,7 @@ extern int issue_command (const char *cmd, char *argv[], const char *pipe, int r
 extern void list_builtin_commands (void);
 extern int display_builtin_command (const char *cmd);
 extern void free_strings (char **argv);
-extern int count_strings (char *const *argv);
+extern size_t count_strings (char *const *argv);
 extern void print_strings (char *const *argv);
 extern void print_table (char *const *argv);
 extern int is_true (const char *str);
@@ -131,7 +126,7 @@ extern void free_prep_data (void *data);
 extern int vg_lv_parse (const char *device, char **vg, char **lv);
 
 /* in rc.c (remote control) */
-extern void rc_listen (void) __attribute__((noreturn));
+extern void rc_listen (void);
 extern int rc_remote (int pid, const char *cmd, size_t argc, char *argv[],
                       int exit_on_error);
 

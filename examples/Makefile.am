@@ -18,17 +18,40 @@
 EXTRA_DIST = \
 	LICENSE \
 	guestfs-examples.pod \
+	guestfs-faq.pod \
+	guestfs-performance.pod \
 	guestfs-recipes.pod \
 	guestfs-testing.pod
 
 CLEANFILES = \
 	stamp-guestfs-examples.pod \
+	stamp-guestfs-faq.pod \
+	stamp-guestfs-performance.pod \
 	stamp-guestfs-recipes.pod \
 	stamp-guestfs-testing.pod
 
-noinst_PROGRAMS = create_disk inspect_vm
+noinst_PROGRAMS = create_disk display_icon inspect_vm
+if HAVE_LIBVIRT
+noinst_PROGRAMS += copy_over
+endif
 if HAVE_HIVEX
 noinst_PROGRAMS += virt-dhcp-address
+endif
+if HAVE_FUSE
+noinst_PROGRAMS += mount_local
+endif
+
+if HAVE_LIBVIRT
+copy_over_SOURCES = copy_over.c
+copy_over_CFLAGS = \
+	-DGUESTFS_WARN_DEPRECATED=1 \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	$(LIBVIRT_CFLAGS) \
+	-pthread \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+copy_over_LDADD = \
+	$(top_builddir)/src/libguestfs.la \
+	$(LIBVIRT_LIBS)
 endif
 
 create_disk_SOURCES = create_disk.c
@@ -39,6 +62,14 @@ create_disk_CFLAGS = \
 create_disk_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
+display_icon_SOURCES = display_icon.c
+display_icon_CFLAGS = \
+	-DGUESTFS_WARN_DEPRECATED=1 \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+display_icon_LDADD = \
+	$(top_builddir)/src/libguestfs.la
+
 inspect_vm_SOURCES = inspect_vm.c
 inspect_vm_CFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
@@ -46,6 +77,18 @@ inspect_vm_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 inspect_vm_LDADD = \
 	$(top_builddir)/src/libguestfs.la
+
+if HAVE_FUSE
+mount_local_SOURCES = mount_local.c
+mount_local_CFLAGS = \
+	-DGUESTFS_WARN_DEPRECATED=1 \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	$(FUSE_CFLAGS) \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+mount_local_LDADD = \
+	$(FUSE_LIBS) -lulockmgr \
+	$(top_builddir)/src/libguestfs.la
+endif
 
 if HAVE_HIVEX
 virt_dhcp_address_SOURCES = virt-dhcp-address.c
@@ -61,10 +104,14 @@ endif
 
 man_MANS = \
 	guestfs-examples.3 \
+	guestfs-faq.1 \
+	guestfs-performance.1 \
 	guestfs-recipes.1 \
 	guestfs-testing.1
 noinst_DATA = \
 	$(top_builddir)/html/guestfs-examples.3.html \
+	$(top_builddir)/html/guestfs-faq.1.html \
+	$(top_builddir)/html/guestfs-performance.1.html \
 	$(top_builddir)/html/guestfs-recipes.1.html \
 	$(top_builddir)/html/guestfs-testing.1.html
 
@@ -77,6 +124,26 @@ stamp-guestfs-examples.pod: guestfs-examples.pod create_disk.c inspect_vm.c
 	  --html $(top_builddir)/html/guestfs-examples.3.html \
 	  --verbatim $(srcdir)/create_disk.c:@EXAMPLE1@ \
 	  --verbatim $(srcdir)/inspect_vm.c:@EXAMPLE2@ \
+	  $<
+	touch $@
+
+guestfs-faq.1 $(top_builddir)/html/guestfs-faq.1.html: stamp-guestfs-faq.pod
+
+stamp-guestfs-faq.pod: guestfs-faq.pod
+	$(top_builddir)/podwrapper.sh \
+	  --section 1 \
+	  --man guestfs-faq.1 \
+	  --html $(top_builddir)/html/guestfs-faq.1.html \
+	  $<
+	touch $@
+
+guestfs-performance.1 $(top_builddir)/html/guestfs-performance.1.html: stamp-guestfs-performance.pod
+
+stamp-guestfs-performance.pod: guestfs-performance.pod
+	$(top_builddir)/podwrapper.sh \
+	  --section 1 \
+	  --man guestfs-performance.1 \
+	  --html $(top_builddir)/html/guestfs-performance.1.html \
 	  $<
 	touch $@
 

@@ -1,0 +1,66 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsMountLocal
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsMountLocal ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsMountLocal:cachetimeout ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMountLocal:debugcalls ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMountLocal:options ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMountLocal:readonly ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsMountLocalClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_mount_local_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

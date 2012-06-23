@@ -30,6 +30,10 @@
 
 #include "guestfs_protocol.h"
 
+#ifndef O_CLOEXEC
+#define O_CLOEXEC 0
+#endif
+
 /*-- in guestfsd.c --*/
 extern int verbose;
 
@@ -47,14 +51,35 @@ extern int xwrite (int sock, const void *buf, size_t len)
 extern int xread (int sock, void *buf, size_t len)
   __attribute__((__warn_unused_result__));
 
-extern int add_string_nodup (char ***argv, int *size, int *alloc, char *str);
-extern int add_string (char ***argv, int *size, int *alloc, const char *str);
-extern size_t count_strings (char *const *argv);
-extern void sort_strings (char **argv, int len);
-extern void free_strings (char **argv);
-extern void free_stringslen (char **argv, int len);
+/* Growable strings buffer. */
+struct stringsbuf {
+  char **argv;
+  size_t size;
+  size_t alloc;
+};
+#define DECLARE_STRINGSBUF(v) \
+  struct stringsbuf (v) = { .argv = NULL, .size = 0, .alloc = 0 }
 
-extern int is_power_of_2 (unsigned long v);
+/* Append a string to the strings buffer.
+ *
+ * add_string_nodup: don't copy the string.
+ * add_string: copy the string.
+ * end_stringsbuf: NULL-terminate the buffer.
+ *
+ * All functions may fail.  If these functions return -1, then
+ * reply_with_* has been called, the strings have been freed and the
+ * buffer should no longer be used.
+ */
+extern int add_string_nodup (struct stringsbuf *sb, char *str);
+extern int add_string (struct stringsbuf *sb, const char *str);
+extern int end_stringsbuf (struct stringsbuf *sb);
+
+extern size_t count_strings (char *const *argv);
+extern void sort_strings (char **argv, size_t len);
+extern void free_strings (char **argv);
+extern void free_stringslen (char **argv, size_t len);
+
+extern char **split_lines (char *str);
 
 #define command(out,err,name,...) commandf((out),(err),0,(name),__VA_ARGS__)
 #define commandr(out,err,name,...) commandrf((out),(err),0,(name),__VA_ARGS__)
@@ -74,7 +99,7 @@ extern int commandvf (char **stdoutput, char **stderror, int flags,
 extern int commandrvf (char **stdoutput, char **stderror, int flags,
                        char const* const *argv);
 
-extern char **split_lines (char *str);
+extern int is_power_of_2 (unsigned long v);
 
 extern void trim (char *str);
 
@@ -111,6 +136,7 @@ extern uint64_t optargs_bitmask;
 
 /*-- in mount.c --*/
 extern int is_root_mounted (void);
+extern int is_device_mounted (const char *device);
 
 /*-- in stubs.c (auto-generated) --*/
 extern void dispatch_incoming_message (XDR *);
@@ -131,6 +157,9 @@ extern int sync_disks (void);
 
 /*-- in ext2.c --*/
 extern int e2prog (char *name); /* Massive hack for RHEL 5. */
+
+/* Confirmed this is true up to ext4 from the Linux sources. */
+#define EXT2_LABEL_MAX 16
 
 /*-- in lvm.c --*/
 extern int lv_canonical (const char *device, char **ret);
@@ -167,7 +196,7 @@ extern int cancel_receive (void);
  * reply, then send_file_* for each FileOut parameter.
  * Note max write size if GUESTFS_MAX_CHUNK_SIZE.
  */
-extern int send_file_write (const void *buf, int len);
+extern int send_file_write (const void *buf, size_t len);
 extern int send_file_end (int cancel);
 
 /* only call this if there is a FileOut parameter */

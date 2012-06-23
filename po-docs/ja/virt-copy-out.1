@@ -62,32 +62,31 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-copy-out 1"
-.TH virt-copy-out 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-copy-out 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "名前"
 .IX Header "名前"
-virt-copy-out \- Copy files and directories out of a virtual machine disk
-image.
-.SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
+virt-copy-out \- ファイルとディレクトリの仮想マシンのディスクイメージ外へのコピー
+.SH "書式"
+.IX Header "書式"
 .Vb 1
 \& virt\-copy\-out \-a disk.img /file|dir [/file|dir ...] localdir
 \&
 \& virt\-copy\-out \-d domain /file|dir [/file|dir ...] localdir
 .Ve
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
+.SH "説明"
+.IX Header "説明"
 \&\f(CW\*(C`virt\-copy\-out\*(C'\fR copies files and directories out of a virtual machine disk
 image or named libvirt domain.
 .PP
 You can give one of more filenames and directories on the command line.
 Directories are copied out recursively.
-.SH "EXAMPLES"
-.IX Header "EXAMPLES"
-Download the home directories from a virtual machine:
+.SH "例"
+.IX Header "例"
+仮想マシンからホームディレクトリをダウンロードします:
 .PP
 .Vb 2
 \& mkdir homes
@@ -98,16 +97,16 @@ Download the home directories from a virtual machine:
 This command is just a simple shell script wrapper around the
 \&\fIguestfish\fR\|(1) \f(CW\*(C`copy\-out\*(C'\fR command.  For anything more complex than a
 trivial copy, you are probably better off using guestfish directly.
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+.SH "オプション"
+.IX Header "オプション"
 Since the shell script just passes options straight to guestfish, read
 \&\fIguestfish\fR\|(1) to see the full list of options.
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
+.SH "関連項目"
+.IX Header "関連項目"
 \&\fIguestfish\fR\|(1), \fIvirt\-cat\fR\|(1), \fIvirt\-copy\-in\fR\|(1), \fIvirt\-edit\fR\|(1),
 \&\fIvirt\-tar\-in\fR\|(1), \fIvirt\-tar\-out\fR\|(1), <http://libguestfs.org/>.
-.SH "AUTHORS"
-.IX Header "AUTHORS"
+.SH "著者"
+.IX Header "著者"
 Richard W.M. Jones (\f(CW\*(C`rjones at redhat dot com\*(C'\fR)
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"

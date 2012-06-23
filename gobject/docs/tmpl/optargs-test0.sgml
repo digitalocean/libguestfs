@@ -1,0 +1,66 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsTest0
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsTest0 ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsTest0:obool ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsTest0:oint ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsTest0:oint64 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsTest0:ostring ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsTest0Class ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_test0_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsVG</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsPV.html" title="GuestfsPV">
+<link rel="next" href="GuestfsLV.html" title="GuestfsLV">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsPV.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsLV.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsVG.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsVG.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsVG.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsVG"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsVG.top_of_page"></a>GuestfsVG</span></h2>
+<p>GuestfsVG</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsVG.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsVG.html#GuestfsVG-struct" title="struct GuestfsVG">GuestfsVG</a>;
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsVG.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GBoxed
+   +----GuestfsVG
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsVG.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="GuestfsVG.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsVG-struct"></a><h3>struct GuestfsVG</h3>
+<pre class="programlisting">struct GuestfsVG {
+  gchar *vg_name;
+  /* The next field is NOT nul-terminated, be careful when printing it: */
+  gchar vg_uuid[32];
+  gchar *vg_fmt;
+  gchar *vg_attr;
+  guint64 vg_size;
+  guint64 vg_free;
+  gchar *vg_sysid;
+  guint64 vg_extent_size;
+  gint64 vg_extent_count;
+  gint64 vg_free_count;
+  gint64 max_lv;
+  gint64 max_pv;
+  gint64 pv_count;
+  gint64 lv_count;
+  gint64 snap_count;
+  gint64 vg_seqno;
+  gchar *vg_tags;
+  gint64 vg_mda_count;
+  guint64 vg_mda_free;
+};
+</pre>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsVG-struct.vg-name"></a>vg_name</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> <em class="structfield"><code><a name="GuestfsVG-struct.vg-uuid"></a>vg_uuid</code></em>[32];</span></p></td>
+<td>A 32 byte UUID. Note that this is not NULL-terminated</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsVG-struct.vg-fmt"></a>vg_fmt</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsVG-struct.vg-attr"></a>vg_attr</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> <em class="structfield"><code><a name="GuestfsVG-struct.vg-size"></a>vg_size</code></em>;</span></p></td>
+<td>An unsigned 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> <em class="structfield"><code><a name="GuestfsVG-struct.vg-free"></a>vg_free</code></em>;</span></p></td>
+<td>An unsigned 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsVG-struct.vg-sysid"></a>vg_sysid</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> <em class="structfield"><code><a name="GuestfsVG-struct.vg-extent-size"></a>vg_extent_size</code></em>;</span></p></td>
+<td>An unsigned 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> <em class="structfield"><code><a name="GuestfsVG-struct.vg-extent-count"></a>vg_extent_count</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> <em class="structfield"><code><a name="GuestfsVG-struct.vg-free-count"></a>vg_free_count</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> <em class="structfield"><code><a name="GuestfsVG-struct.max-lv"></a>max_lv</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> <em class="structfield"><code><a name="GuestfsVG-struct.max-pv"></a>max_pv</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> <em class="structfield"><code><a name="GuestfsVG-struct.pv-count"></a>pv_count</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> <em class="structfield"><code><a name="GuestfsVG-struct.lv-count"></a>lv_count</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> <em class="structfield"><code><a name="GuestfsVG-struct.snap-count"></a>snap_count</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> <em class="structfield"><code><a name="GuestfsVG-struct.vg-seqno"></a>vg_seqno</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsVG-struct.vg-tags"></a>vg_tags</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> <em class="structfield"><code><a name="GuestfsVG-struct.vg-mda-count"></a>vg_mda_count</code></em>;</span></p></td>
+<td>A signed 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> <em class="structfield"><code><a name="GuestfsVG-struct.vg-mda-free"></a>vg_mda_free</code></em>;</span></p></td>
+<td>An unsigned 64-bit integer</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

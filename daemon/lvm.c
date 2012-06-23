@@ -23,6 +23,7 @@
 #include <inttypes.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <dirent.h>
 
@@ -45,9 +46,8 @@ static char **
 convert_lvm_output (char *out, const char *prefix)
 {
   char *p, *pend;
-  char **r = NULL;
-  int size = 0, alloc = 0;
-  int len;
+  DECLARE_STRINGSBUF (ret);
+  size_t len;
   char buf[256];
   char *str;
 
@@ -79,7 +79,7 @@ convert_lvm_output (char *out, const char *prefix)
     } else
       str = p;
 
-    if (add_string (&r, &size, &alloc, str) == -1) {
+    if (add_string (&ret, str) == -1) {
       free (out);
       return NULL;
     }
@@ -89,11 +89,13 @@ convert_lvm_output (char *out, const char *prefix)
 
   free (out);
 
-  if (add_string (&r, &size, &alloc, NULL) == -1)
+  if (ret.size > 0)
+    sort_strings (ret.argv, ret.size);
+
+  if (end_stringsbuf (&ret) == -1)
     return NULL;
 
-  sort_strings (r, size-1);
-  return r;
+  return ret.argv;
 }
 
 char **
@@ -262,6 +264,36 @@ do_lvcreate (const char *logvol, const char *volgroup, int mbytes)
 }
 
 int
+do_lvcreate_free (const char *logvol, const char *volgroup, int percent)
+{
+  char *err;
+  int r;
+
+  if (percent < 0 || percent > 100) {
+    reply_with_error ("percentage must be [0..100] (was %d)", percent);
+    return -1;
+  }
+
+  char size[64];
+  snprintf (size, sizeof size, "%d%%FREE", percent);
+
+  r = command (NULL, &err,
+               "lvm", "lvcreate",
+               "-l", size, "-n", logvol, volgroup, NULL);
+  if (r == -1) {
+    reply_with_error ("%s", err);
+    free (err);
+    return -1;
+  }
+
+  free (err);
+
+  udev_settle ();
+
+  return 0;
+}
+
+int
 do_lvresize (const char *logvol, int mbytes)
 {
   char *err;
@@ -316,7 +348,8 @@ int
 do_lvm_remove_all (void)
 {
   char **xs;
-  int i, r;
+  size_t i;
+  int r;
   char *err;
 
   /* Remove LVs. */
@@ -769,8 +802,7 @@ do_lvm_canonical_lv_name (const char *device)
 char **
 do_list_dm_devices (void)
 {
-  char **ret = NULL;
-  int size = 0, alloc = 0;
+  DECLARE_STRINGSBUF (ret);
   struct dirent *d;
   DIR *dir;
   int r;
@@ -802,7 +834,7 @@ do_list_dm_devices (void)
     /* Ignore dm devices which are LVs. */
     r = lv_canonical (devname, NULL);
     if (r == -1) {
-      free_stringslen (ret, size);
+      free_stringslen (ret.argv, ret.size);
       closedir (dir);
       return NULL;
     }
@@ -810,7 +842,7 @@ do_list_dm_devices (void)
       continue;
 
     /* Not an LV, so add it. */
-    if (add_string (&ret, &size, &alloc, devname) == -1) {
+    if (add_string (&ret, devname) == -1) {
       closedir (dir);
       return NULL;
     }
@@ -819,7 +851,7 @@ do_list_dm_devices (void)
   /* Did readdir fail? */
   if (errno != 0) {
     reply_with_perror ("readdir: /dev/mapper");
-    free_stringslen (ret, size);
+    free_stringslen (ret.argv, ret.size);
     closedir (dir);
     return NULL;
   }
@@ -827,17 +859,104 @@ do_list_dm_devices (void)
   /* Close the directory handle. */
   if (closedir (dir) == -1) {
     reply_with_perror ("closedir: /dev/mapper");
-    free_stringslen (ret, size);
+    free_stringslen (ret.argv, ret.size);
     return NULL;
   }
 
   /* Sort the output (may be empty). */
-  if (ret != NULL)
-    sort_strings (ret, size);
+  if (ret.size > 0)
+    sort_strings (ret.argv, ret.size);
 
   /* NULL-terminate the list. */
-  if (add_string (&ret, &size, &alloc, NULL) == -1)
+  if (end_stringsbuf (&ret) == -1)
     return NULL;
 
-  return ret;
+  return ret.argv;
+}
+
+char *
+do_vgmeta (const char *vg, size_t *size_r)
+{
+  char *err;
+  int fd, r;
+  char tmp[] = "/tmp/vgmetaXXXXXX";
+  size_t alloc, size, max;
+  ssize_t rs;
+  char *buf, *buf2;
+
+  /* Make a temporary file. */
+  fd = mkstemp (tmp);
+  if (fd == -1) {
+    reply_with_perror ("mkstemp");
+    return NULL;
+  }
+
+  close (fd);
+
+  r = command (NULL, &err, "lvm", "vgcfgbackup", "-f", tmp, vg, NULL);
+  if (r == -1) {
+    reply_with_error ("vgcfgbackup: %s", err);
+    free (err);
+    return NULL;
+  }
+  free (err);
+
+  /* Now read back the temporary file. */
+  fd = open (tmp, O_RDONLY|O_CLOEXEC);
+  if (fd == -1) {
+    reply_with_error ("%s", tmp);
+    return NULL;
+  }
+
+  /* Read up to GUESTFS_MESSAGE_MAX - <overhead> bytes.  If it's
+   * larger than that, we need to return an error instead (for
+   * correctness).
+   */
+  max = GUESTFS_MESSAGE_MAX - 1000;
+  buf = NULL;
+  size = alloc = 0;
+
+  for (;;) {
+    if (size >= alloc) {
+      alloc += 8192;
+      if (alloc > max) {
+        reply_with_error ("metadata is too large for message buffer");
+        free (buf);
+        close (fd);
+        return NULL;
+      }
+      buf2 = realloc (buf, alloc);
+      if (buf2 == NULL) {
+        reply_with_perror ("realloc");
+        free (buf);
+        close (fd);
+        return NULL;
+      }
+      buf = buf2;
+    }
+
+    rs = read (fd, buf + size, alloc - size);
+    if (rs == -1) {
+      reply_with_perror ("read: %s", tmp);
+      free (buf);
+      close (fd);
+      return NULL;
+    }
+    if (rs == 0)
+      break;
+    if (rs > 0)
+      size += rs;
+  }
+
+  if (close (fd) == -1) {
+    reply_with_perror ("close: %s", tmp);
+    free (buf);
+    return NULL;
+  }
+
+  unlink (tmp);
+
+  *size_r = size;
+
+  return buf;			/* caller will free */
 }

@@ -62,30 +62,27 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-sysprep 1"
-.TH virt-sysprep 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-sysprep 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "名前"
 .IX Header "名前"
-virt-sysprep \- Reset or unconfigure a virtual machine so clones can be made
-.SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
+virt-sysprep \- 仮想マシンをクローンできるようリセットまたは設定解除
+.SH "書式"
+.IX Header "書式"
 .Vb 1
 \& virt\-sysprep [\-\-options] \-d domname
 \&
 \& virt\-sysprep [\-\-options] \-a disk.img [\-a disk.img ...]
 .Ve
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
+.SH "説明"
+.IX Header "説明"
 Virt-sysprep \*(L"resets\*(R" or \*(L"unconfigures\*(R" a virtual machine so that clones can
 be made from it.  Steps in this process include removing \s-1SSH\s0 host keys,
 removing persistent network \s-1MAC\s0 configuration, and removing user accounts.
 Each step can be enabled or disabled as required.
-.PP
-Virt-sysprep is a simple shell script, allowing easy inspection or
-customization by the system administrator.
 .PP
 Virt-sysprep modifies the guest or disk image \fIin place\fR.  The guest must
 be shut down.  If you want to preserve the existing contents of the guest,
@@ -103,95 +100,124 @@ Microsoft program \f(CW\*(C`sysprep.exe\*(C'\fR which is used to unconfigure Win
 machines in preparation for cloning them.  Having said that, virt-sysprep
 does \fInot\fR currently work on Microsoft Windows guests.  We plan to support
 Windows sysprepping in a future version, and we already have code to do it.
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+.SH "オプション"
+.IX Header "オプション"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
-Display brief help.
+簡単なヘルプを表示します。
 .IP "\fB\-a\fR file" 4
 .IX Item "-a file"
 .PD 0
 .IP "\fB\-\-add\fR file" 4
 .IX Item "--add file"
 .PD
-Add \fIfile\fR which should be a disk image from a virtual machine.
+仮想マシンからディスクイメージの \fIfile\fR を追加します。
 .Sp
 The format of the disk image is auto-detected.  To override this and force a
-particular format use the \fI\-\-format=..\fR option.
+particular format use the \fI\-\-format\fR option.
 .IP "\fB\-c\fR \s-1URI\s0" 4
 .IX Item "-c URI"
 .PD 0
 .IP "\fB\-\-connect\fR \s-1URI\s0" 4
 .IX Item "--connect URI"
 .PD
-If using libvirt, connect to the given \fI\s-1URI\s0\fR.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された \fI\s-1URI\s0\fR に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 .Sp
-If you specify guest block devices directly (\fI\-a\fR), then libvirt is not
-used at all.
+ゲストのブロックデバイスを直接指定していると（(\fI\-a\fR)）、libvirt は何も使用されません。
 .IP "\fB\-d\fR guest" 4
 .IX Item "-d guest"
 .PD 0
 .IP "\fB\-\-domain\fR guest" 4
 .IX Item "--domain guest"
 .PD
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
-.IP "\fB\-\-enable=...\fR" 4
-.IX Item "--enable=..."
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  ドメインの \s-1UUID\s0 が名前の代わりに使用されます。
+.IP "\fB\-n\fR" 4
+.IX Item "-n"
+.PD 0
+.IP "\fB\-\-dry\-run\fR" 4
+.IX Item "--dry-run"
+.PD
+Perform a read-only \*(L"dry run\*(R" on the guest.  This runs the sysprep
+operation, but throws away any changes to the disk at the end.
+.IP "\fB\-\-enable\fR operations" 4
+.IX Item "--enable operations"
 Choose which sysprep operations to perform.  Give a comma-separated list of
 operations, for example:
 .Sp
 .Vb 1
-\& \-\-enable=ssh\-hostkeys,udev\-persistent\-net
+\& \-\-enable ssh\-hostkeys,udev\-persistent\-net
 .Ve
 .Sp
 would enable \s-1ONLY\s0 \f(CW\*(C`ssh\-hostkeys\*(C'\fR and \f(CW\*(C`udev\-persistent\-net\*(C'\fR operations.
 .Sp
-If the \fI\-\-enable\fR option is not given, then we default to trying all
-possible sysprep operations.  But some sysprep operations are skipped for
+If the \fI\-\-enable\fR option is not given, then we default to trying most
+sysprep operations (see \fI\-\-list\-operations\fR to show which are enabled).
+.Sp
+Regardless of the \fI\-\-enable\fR option, sysprep operations are skipped for
 some guest types.
 .Sp
-Use \fI\-\-list\-operations\fR to list operations supported by a particular
-version of virt-sysprep.
+特定のバージョンの virt-sysprep によりサポートされる操作の一覧を表示するには \fI\-\-list\-operations\fR を使用します。
 .Sp
 See \*(L"\s-1OPERATIONS\s0\*(R" below for a list and an explanation of each operation.
-.IP "\fB\-\-format=raw|qcow2|..\fR" 4
-.IX Item "--format=raw|qcow2|.."
+.IP "\fB\-\-format\fR raw|qcow2|.." 4
+.IX Item "--format raw|qcow2|.."
 .PD 0
-.IP "\fB\-\-format\fR" 4
-.IX Item "--format"
+.IP "\fB\-\-format\fR auto" 4
+.IX Item "--format auto"
 .PD
 The default for the \fI\-a\fR option is to auto-detect the format of the disk
 image.  Using this forces the disk format for \fI\-a\fR options which follow on
-the command line.  Using \fI\-\-format\fR with no argument switches back to
-auto-detection for subsequent \fI\-a\fR options.
+the command line.  Using \fI\-\-format auto\fR switches back to auto-detection
+for subsequent \fI\-a\fR options.
 .Sp
-For example:
-.Sp
-.Vb 1
-\& virt\-sysprep \-\-format=raw \-a disk.img
-.Ve
-.Sp
-forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR.
+例:
 .Sp
 .Vb 1
-\& virt\-sysprep \-\-format=raw \-a disk.img \-\-format \-a another.img
+\& virt\-sysprep \-\-format raw \-a disk.img
 .Ve
 .Sp
-forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR and reverts to
-auto-detection for \f(CW\*(C`another.img\*(C'\fR.
+\&\f(CW\*(C`disk.img\*(C'\fR に対してローイメージを強制します（自動検出しません）。
 .Sp
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (\s-1CVE\-2010\-3851\s0).
-.IP "\fB\-\-hostname\fR newhostname" 4
-.IX Item "--hostname newhostname"
-Change the hostname.  See the \*(L"hostname\*(R" operation below.  If not given,
-defaults to \f(CW\*(C`localhost.localdomain\*(C'\fR.
+.Vb 1
+\& virt\-sysprep \-\-format raw \-a disk.img \-\-format auto \-a another.img
+.Ve
+.Sp
+\&\f(CW\*(C`disk.img\*(C'\fR に対してロー形式（自動検知なし）を強制し、\f(CW\*(C`another.img\*(C'\fR に対して自動検知に戻します。
+.Sp
+仮想マシンのディスクイメージが信頼できないロー形式であるならば、ディスク形式を指定するためにこのオプションを使用すべきです。これにより、悪意のある仮想マシンにより起こり得るセキュリティ問題を回避できます
+(\s-1CVE\-2010\-3851\s0)。
 .IP "\fB\-\-list\-operations\fR" 4
 .IX Item "--list-operations"
-List the operations supported by the virt-sysprep program.
+virt-sysprep プログラムによりサポートされる操作を一覧表示します。
+.Sp
+These are listed one per line, with one or more single-space-separated
+fields, eg:
+.Sp
+.Vb 6
+\& $ virt\-sysprep \-\-list\-operations
+\& bash\-history * Remove the bash history in the guest
+\& cron\-spool * Remove user at\-jobs and cron\-jobs
+\& dhcp\-client\-state * Remove DHCP client leases
+\& dhcp\-server\-state * Remove DHCP server leases
+\& [etc]
+.Ve
+.Sp
+The first field is the operation name, which can be supplied to
+\&\fI\-\-enable\fR.  The second field is a \f(CW\*(C`*\*(C'\fR character if the operation is
+enabled by default or blank if not.  Subsequent fields on the same line are
+the description of the operation.
+.Sp
+Before libguestfs 1.17.33 only the first (operation name) field was shown
+and all operations were enabled by default.
+.IP "\fB\-q\fR" 4
+.IX Item "-q"
+.PD 0
+.IP "\fB\-\-quiet\fR" 4
+.IX Item "--quiet"
+.PD
+Don't print log messages.
+.Sp
+To enable detailed logging of individual file operations, use \fI\-x\fR.
 .IP "\fB\-\-selinux\-relabel\fR" 4
 .IX Item "--selinux-relabel"
 .PD 0
@@ -209,21 +235,50 @@ The default is to try to detect if SELinux relabelling is required.  See
 .IP "\fB\-\-verbose\fR" 4
 .IX Item "--verbose"
 .PD
-Enable verbose messages for debugging.
+デバッグ用の冗長なメッセージを有効にします。
 .IP "\fB\-V\fR" 4
 .IX Item "-V"
 .PD 0
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
 .PD
-Display version number and exit.
+バージョン番号を表示して終了します。
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
-Enable tracing of libguestfs \s-1API\s0 calls.
+libguestfs \s-1API\s0 呼び出しのトレースを有効にします。
+.ie n .IP "\fB\-\-hostname\fR hostname (see ""hostname"" below)" 4
+.el .IP "\fB\-\-hostname\fR hostname (see \f(CWhostname\fR below)" 4
+.IX Item "--hostname hostname (see hostname below)"
+Change the hostname.  If not given, defaults to \f(CW\*(C`localhost.localdomain\*(C'\fR.
+.ie n .IP "\fB\-\-script\fR script (see ""script"" below)" 4
+.el .IP "\fB\-\-script\fR script (see \f(CWscript\fR below)" 4
+.IX Item "--script script (see script below)"
+Run the named \f(CW\*(C`script\*(C'\fR (a shell script or program) against the guest.  The
+script can be any program on the host.  The script's current directory will
+be the guest's root directory.
+.Sp
+\&\fBNote:\fR If the script is not on the \f(CW$PATH\fR, then you must give the full
+absolute path to the script.
+.ie n .IP "\fB\-\-scriptdir\fR scriptdir (see ""script"" below)" 4
+.el .IP "\fB\-\-scriptdir\fR scriptdir (see \f(CWscript\fR below)" 4
+.IX Item "--scriptdir scriptdir (see script below)"
+The mount point (an empty directory on the host) used when the \f(CW\*(C`script\*(C'\fR
+operation is enabled and one or more scripts are specified using \fI\-\-script\fR
+parameter(s).
+.Sp
+\&\fBNote:\fR \f(CW\*(C`scriptdir\*(C'\fR \fBmust\fR be an absolute path.
+.Sp
+If \fI\-\-scriptdir\fR is not specified then a temporary mountpoint will be
+created.
 .SH "OPERATIONS"
 .IX Header "OPERATIONS"
-If the \fI\-\-enable\fR option is \fInot\fR given, then \fIall sysprep operations are
-enabled\fR, although some are skipped depending on the type of guest.
+If the \fI\-\-enable\fR option is \fInot\fR given, then most sysprep operations are
+enabled.
+.PP
+Use \f(CW\*(C`virt\-sysprep \-\-list\-operations\*(C'\fR to list all operations for your
+virt-sysprep binary.  The ones which are enabled by default are marked with
+a \f(CW\*(C`*\*(C'\fR character.  Regardless of the \fI\-\-enable\fR option, sysprep operations
+are skipped for some guest types.
 .PP
 Operations can be individually enabled using the \fI\-\-enable\fR option.  Use a
 comma-separated list, for example:
@@ -232,59 +287,157 @@ comma-separated list, for example:
 \& virt\-sysprep \-\-enable=ssh\-hostkeys,udev\-persistent\-net [etc..]
 .Ve
 .PP
-To list the operations supported by the current version of virt-sysprep, use
-\&\fI\-\-list\-operations\fR.
-.PP
 Future versions of virt-sysprep may add more operations.  If you are using
 virt-sysprep and want predictable behaviour, specify only the operations
 that you want to have enabled.
-.SS "cron-spool"
-.IX Subsection "cron-spool"
-Remove user at-jobs and cron-jobs.
-.SS "dhcp-client-state"
-.IX Subsection "dhcp-client-state"
-Remove \s-1DHCP\s0 client leases.
-.SS "dhcp-server-state"
-.IX Subsection "dhcp-server-state"
-Remove \s-1DHCP\s0 server leases.
-.SS "hostname"
-.IX Subsection "hostname"
-Changes the hostname of the guest to the value given in the \fI\-\-hostname\fR
-parameter.
 .PP
-If the \fI\-\-hostname\fR parameter is not given, then the hostname is changed to
-\&\f(CW\*(C`localhost.localdomain\*(C'\fR.
-.SS "logfiles"
-.IX Subsection "logfiles"
-Remove many log files.
-.SS "mail-spool"
-.IX Subsection "mail-spool"
-Remove email from the local mail spool directory.
-.SS "net-hwaddr"
-.IX Subsection "net-hwaddr"
-Remove \s-1HWADDR\s0 (hard-coded \s-1MAC\s0 address) configuration.  For Fedora and Red
-Hat Enterprise Linux, this is removed from \f(CW\*(C`ifcfg\-*\*(C'\fR files.
-.SS "random-seed"
-.IX Subsection "random-seed"
+\&\f(CW\*(C`*\*(C'\fR = enabled by default when no \fI\-\-enable\fR option is given.
+.SS "\fBbash-history\fP *"
+.IX Subsection "bash-history *"
+Remove the bash history in the guest.
+.PP
+Remove the bash history of user \*(L"root\*(R" and any other users who have a
+\&\f(CW\*(C`.bash_history\*(C'\fR file in their home directory.
+.SS "\fBblkid-tab\fP *"
+.IX Subsection "blkid-tab *"
+Remove blkid tab in the guest.
+.SS "\fBca-certificates\fP"
+.IX Subsection "ca-certificates"
+Remove \s-1CA\s0 certificates in the guest.
+.SS "\fBcron-spool\fP *"
+.IX Subsection "cron-spool *"
+Remove user at-jobs and cron-jobs.
+.SS "\fBdhcp-client-state\fP *"
+.IX Subsection "dhcp-client-state *"
+\&\s-1DHCP\s0 クライアントのリースを削除します。
+.SS "\fBdhcp-server-state\fP *"
+.IX Subsection "dhcp-server-state *"
+\&\s-1DHCP\s0 サーバーのリースを削除します。
+.SS "\fBdovecot-data\fP *"
+.IX Subsection "dovecot-data *"
+Remove Dovecot (mail server) data.
+.SS "\fBflag-reconfiguration\fP"
+.IX Subsection "flag-reconfiguration"
+Flag the system for reconfiguration.
+.PP
+Note that this may require user intervention when the guest is booted.
+.SS "\fBhostname\fP *"
+.IX Subsection "hostname *"
+Change the hostname of the guest.
+.PP
+This operation changes the hostname of the guest to the value given in the
+\&\fI\-\-hostname\fR parameter.
+.PP
+\&\fI\-\-hostname\fR パラメーターが指定されていないと、ホスト名が \f(CW\*(C`localhost.localdomain\*(C'\fR に変更されます。
+.SS "\fBkerberos-data\fP"
+.IX Subsection "kerberos-data"
+Remove Kerberos data in the guest.
+.SS "\fBlogfiles\fP *"
+.IX Subsection "logfiles *"
+Remove many log files from the guest.
+.PP
+On Linux the following files are removed:
+.PP
+.Vb 10
+\& /root/anaconda\-ks.cfg
+\& /root/install.log
+\& /root/install.log.syslog
+\& /var/account/pacct
+\& /var/cache/gdm/*
+\& /var/lib/AccountService/users/*
+\& /var/lib/fprint/*
+\& /var/lib/logrotate.status
+\& /var/log/*.log*
+\& /var/log/BackupPC/LOG
+\& /var/log/audit/*
+\& /var/log/btmp*
+\& /var/log/ceph/*.log
+\& /var/log/chrony/*.log
+\& /var/log/cron*
+\& /var/log/cups/*_log
+\& /var/log/dmesg*
+\& /var/log/glusterfs/*glusterd.vol.log
+\& /var/log/glusterfs/glusterfs.log
+\& /var/log/httpd/*log
+\& /var/log/jetty/jetty\-console.log
+\& /var/log/lastlog*
+\& /var/log/libvirt/libvirtd.log
+\& /var/log/libvirt/lxc/*.log
+\& /var/log/libvirt/qemu/*.log
+\& /var/log/libvirt/uml/*.log
+\& /var/log/mail/*
+\& /var/log/maillog*
+\& /var/log/messages*
+\& /var/log/ppp/connect\-errors
+\& /var/log/secure*
+\& /var/log/setroubleshoot/*.log
+\& /var/log/spooler*
+\& /var/log/squid/*.log
+\& /var/log/tallylog*
+\& /var/log/wtmp*
+\& /var/named/data/named.run
+.Ve
+.SS "\fBmail-spool\fP *"
+.IX Subsection "mail-spool *"
+ローカルのメールスプールのディレクトリから電子メールを削除します。
+.SS "\fBnet-hwaddr\fP *"
+.IX Subsection "net-hwaddr *"
+Remove \s-1HWADDR\s0 (hard-coded \s-1MAC\s0 address) configuration.
+.PP
+For Fedora and Red Hat Enterprise Linux, this is removed from \f(CW\*(C`ifcfg\-*\*(C'\fR
+files.
+.SS "\fBpackage-manager-cache\fP *"
+.IX Subsection "package-manager-cache *"
+Remove package manager cache.
+.SS "\fBpam-data\fP *"
+.IX Subsection "pam-data *"
+Remove the \s-1PAM\s0 data in the guest.
+.SS "\fBrandom-seed\fP *"
+.IX Subsection "random-seed *"
+Generate random seed for guest.
+.PP
 Write some random bytes from the host into the random seed file of the
 guest.
 .PP
-See \*(L"\s-1RANDOM\s0 \s-1SEED\s0\*(R" below.
-.SS "rhn-systemid"
-.IX Subsection "rhn-systemid"
-Remove the \s-1RHN\s0 system \s-1ID\s0.
-.SS "smolt-uuid"
-.IX Subsection "smolt-uuid"
-Remove the Smolt hardware \s-1UUID\s0.
-.SS "ssh-hostkeys"
-.IX Subsection "ssh-hostkeys"
-Remove the \s-1SSH\s0 host keys in the guest.
+以下の \*(L"\s-1RANDOM\s0 \s-1SEED\s0\*(R" を参照してください。
+.SS "\fBrhn-systemid\fP *"
+.IX Subsection "rhn-systemid *"
+\&\s-1RHN\s0 システム \s-1ID\s0 を削除します。
+.SS "\fBsamba-db-log\fP *"
+.IX Subsection "samba-db-log *"
+Remove the database and log files of Samba.
+.SS "\fBscript\fP *"
+.IX Subsection "script *"
+Run arbitrary scripts against the guest.
 .PP
-The \s-1SSH\s0 host keys are regenerated (differently) next time the guest is
-booted.
+The \f(CW\*(C`script\*(C'\fR module lets you run arbitrary shell scripts or programs
+against the guest.
 .PP
-If, after cloning, the guest gets the same \s-1IP\s0 address, ssh will give you a
-stark warning about the host key changing:
+Note this feature requires \s-1FUSE\s0 support.  You may have to enable this in
+your host, for example by adding the current user to the \f(CW\*(C`fuse\*(C'\fR group, or
+by loading a kernel module.
+.PP
+Use one or more \fI\-\-script\fR parameters to specify scripts or programs that
+will be run against the guest.
+.PP
+The script or program is run with its current directory being the guest's
+root directory, so relative paths should be used.  For example: \f(CW\*(C`rm
+etc/resolv.conf\*(C'\fR in the script would remove a Linux guest's \s-1DNS\s0
+configuration file, but \f(CW\*(C`rm /etc/resolv.conf\*(C'\fR would (try to) remove the
+host's file.
+.PP
+Normally a temporary mount point for the guest is used, but you can choose a
+specific one by using the \fI\-\-scriptdir\fR parameter.
+.SS "\fBsmolt-uuid\fP *"
+.IX Subsection "smolt-uuid *"
+Smolt ハードウェア \s-1UUID\s0 を削除します。
+.SS "\fBssh-hostkeys\fP *"
+.IX Subsection "ssh-hostkeys *"
+仮想マシンの \s-1SSH\s0 ホストキーを削除します。
+.PP
+仮想マシンの次回起動時に（異なる） \s-1SSH\s0 ホストキーが再生成されます。
+.PP
+クローン後、仮想マシンが同じ \s-1IP\s0 アドレスを取得すると、ホストキーが変更されたという警告が ssh により表示されます:
 .PP
 .Vb 4
 \& @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -292,77 +445,89 @@ stark warning about the host key changing:
 \& @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 \& IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
 .Ve
-.SS "udev-persistent-net"
-.IX Subsection "udev-persistent-net"
+.SS "\fBssh-userdir\fP *"
+.IX Subsection "ssh-userdir *"
+仮想マシンにある \*(L".ssh\*(R" ディレクトリーを削除します。
+.PP
+Remove the \f(CW\*(C`.ssh\*(C'\fR directory of user \*(L"root\*(R" and any other users who have a
+\&\f(CW\*(C`.ssh\*(C'\fR directory in their home directory.
+.SS "\fBsssd-db-log\fP *"
+.IX Subsection "sssd-db-log *"
+\&\s-1SSSD\s0 のデータベースとログファイルを削除します。
+.SS "\fBudev-persistent-net\fP *"
+.IX Subsection "udev-persistent-net *"
+Remove udev persistent net rules.
+.PP
 Remove udev persistent net rules which map the guest's existing \s-1MAC\s0 address
 to a fixed ethernet device (eg. eth0).
 .PP
-After a guest is cloned, the \s-1MAC\s0 address usually changes.  Since the old \s-1MAC\s0
-address occupies the old name (eg. eth0), this means the fresh \s-1MAC\s0 address
-is assigned to a new name (eg. eth1) and this is usually undesirable.
-Erasing the udev persistent net rules avoids this.
-.SS "utmp"
-.IX Subsection "utmp"
-Remove the utmp file.
+仮想マシンをクローンした後、通常 \s-1MAC\s0 アドレスは変わります。古い \s-1MAC\s0 アドレスは古い名前（たとえば eth0）を占有するため、このことは新しい
+\&\s-1MAC\s0 アドレスが新しい名前（たとえば eth1）に割り当てられることを意味します。それは、一般的に好ましくありません。 udev の永続的な net
+ルールを削除することにより、これを避けます。
+.SS "\fBuser-account\fP"
+.IX Subsection "user-account"
+仮想マシンにあるユーザーアカウントを削除します。
 .PP
-This records who is currently logged in on a machine.  In modern Linux
+Remove all the user accounts and their home directories.  The \*(L"root\*(R" account
+is not removed.
+.SS "\fButmp\fP *"
+.IX Subsection "utmp *"
+utmp ファイルを削除します。
+.PP
+This file records who is currently logged in on a machine.  In modern Linux
 distros it is stored in a ramdisk and hence not part of the virtual
 machine's disk, but it was stored on disk in older distros.
-.SS "yum-uuid"
-.IX Subsection "yum-uuid"
-Remove the yum \s-1UUID\s0.
+.SS "\fByum-uuid\fP *"
+.IX Subsection "yum-uuid *"
+yum \s-1UUID\s0 を削除します。
 .PP
-Yum creates a fresh \s-1UUID\s0 the next time it runs when it notices that the
-original \s-1UUID\s0 has been erased.
-.SH "COPYING AND CLONING"
-.IX Header "COPYING AND CLONING"
-Virt-sysprep can be used as part of a process of cloning guests, or to
-prepare a template from which guests can be cloned.  There are many
-different ways to achieve this using the virt tools, and this section is
-just an introduction.
+yum は元々の \s-1UUID\s0 が削除されたことを通知するとき、次の実行時に新しい \s-1UUID\s0 を作成します。
+.SH "コピー方法およびクローン方法"
+.IX Header "コピー方法およびクローン方法"
+virt-sysprep
+は仮想マシンをクローンするプロセスの一部として使用できます。もしくは、クローンされた仮想マシンからテンプレートを準備するために使用できます。仮想化ツールを使用してこれを実現する他の方法がいろいろとあります。このセクションは単に概要を説明します。
 .PP
-A virtual machine (when switched off) consists of two parts:
+仮想マシン（停止状態の場合）は 2 つの部分からなります:
 .IP "\fIconfiguration\fR" 4
 .IX Item "configuration"
-The configuration or description of the guest.  eg. The libvirt \s-1XML\s0 (see
-\&\f(CW\*(C`virsh dumpxml\*(C'\fR), the running configuration of the guest, or another
-external format like \s-1OVF\s0.
+仮想マシンの設定または説明。  例: libvirt \s-1XML\s0 (\f(CW\*(C`virsh dumpxml\*(C'\fR 参照) 、仮想マシンの実行中の設定、または \s-1OVF\s0
+のような他の外部形式。
 .Sp
-Some configuration items that might need to be changed:
+いくつかの設定項目は変更する必要があるかもしれません:
 .RS 4
 .IP "\(bu" 4
-name
+名前
 .IP "\(bu" 4
 \&\s-1UUID\s0
 .IP "\(bu" 4
-path to block device(s)
+ブロックデバイスへのパス
 .IP "\(bu" 4
-network card \s-1MAC\s0 address
+ネットワークカードの \s-1MAC\s0 アドレス
 .RE
 .RS 4
 .RE
-.IP "\fIblock device(s)\fR" 4
-.IX Item "block device(s)"
+.IP "\fIブロックデバイス\fR" 4
+.IX Item "ブロックデバイス"
 One or more hard disk images, themselves containing files, directories,
 applications, kernels, configuration, etc.
 .Sp
 Some things inside the block devices that might need to be changed:
 .RS 4
 .IP "\(bu" 4
-hostname and other net configuration
+ホスト名および他のネットワーク設定
 .IP "\(bu" 4
 \&\s-1UUID\s0
 .IP "\(bu" 4
-\&\s-1SSH\s0 host keys
+\&\s-1SSH\s0 ホストキー
 .IP "\(bu" 4
-Windows unique security \s-1ID\s0 (\s-1SID\s0)
+Windows の一意なセキュリティ \s-1ID\s0 (\s-1SID\s0)
 .IP "\(bu" 4
-Puppet registration
+Puppet の登録
 .RE
 .RS 4
 .RE
-.SS "\s-1COPYING\s0 \s-1THE\s0 \s-1BLOCK\s0 \s-1DEVICE\s0"
-.IX Subsection "COPYING THE BLOCK DEVICE"
+.SS "ブロックデバイスのコピー法"
+.IX Subsection "ブロックデバイスのコピー法"
 Starting with an original guest, you probably wish to copy the guest block
 device and its configuration to make a template.  Then once you are happy
 with the template, you will want to make many clones from it.
@@ -371,32 +536,31 @@ with the template, you will want to make many clones from it.
 \&                        virt\-sysprep
 \&                             |
 \&                             v
-\& original guest \-\-\-\-\-\-\-\-> template \-\-\-\-\-\-\-\-\-\->
-\&                                      \e\-\-\-\-\-\-> cloned
-\&                                       \e\-\-\-\-\-> guests
+\& 元のゲスト \-\-\-\-\-\-\-\-> テンプレート \-\-\-\-\-\-\-\-\-\->
+\&                                      \e\-\-\-\-\-\-> クローン
+\&                                       \e\-\-\-\-\-> 済みゲスト
 \&                                        \e\-\-\-\->
 .Ve
 .PP
-You can, of course, just copy the block device on the host using \fIcp\fR\|(1) or
-\&\fIdd\fR\|(1).
+もちろん、ホストにおいて \fIcp\fR\|(1) または \fIdd\fR\|(1) を使用してブロックデバイスをコピーできます。
 .PP
 .Vb 5
-\&                   dd                 dd
-\& original guest \-\-\-\-\-\-\-\-> template \-\-\-\-\-\-\-\-\-\->
-\&                                      \e\-\-\-\-\-\-> cloned
-\&                                       \e\-\-\-\-\-> guests
+\&               dd                      dd
+\& 元のゲスト \-\-\-\-\-\-\-\-> テンプレート \-\-\-\-\-\-\-\-\-\->
+\&                                      \e\-\-\-\-\-\-> クローン
+\&                                       \e\-\-\-\-\-> 済みゲスト
 \&                                        \e\-\-\-\->
 .Ve
 .PP
-There are some smarter (and faster) ways too:
+よりスマート（かつ高速）な方法もあります:
 .IP "\(bu" 4
 
 .Sp
 .Vb 5
 \&                          snapshot
-\&                template \-\-\-\-\-\-\-\-\-\->
-\&                            \e\-\-\-\-\-\-> cloned
-\&                             \e\-\-\-\-\-> guests
+\&            テンプレート \-\-\-\-\-\-\-\-\-\->
+\&                            \e\-\-\-\-\-\-> クローン
+\&                             \e\-\-\-\-\-> 済みゲスト
 \&                              \e\-\-\-\->
 .Ve
 .Sp
@@ -414,20 +578,20 @@ also create cheap snapshots from files or LUNs.
 .IP "\(bu" 4
 Get your \s-1NAS\s0 to snapshot and/or duplicate the \s-1LUN\s0.
 .IP "\(bu" 4
-Prepare your template using \fIvirt\-sparsify\fR\|(1).  See below.
-.SS "VIRT-CLONE"
-.IX Subsection "VIRT-CLONE"
+\&\fIvirt\-sparsify\fR\|(1) を使用してテンプレートを準備します。以下を参照してください。
+.SS "virt-clone"
+.IX Subsection "virt-clone"
 A separate tool, \fIvirt\-clone\fR\|(1), can be used to duplicate the block device
 and/or modify the external libvirt configuration of a guest.  It will reset
 the name, \s-1UUID\s0 and \s-1MAC\s0 address of the guest in the libvirt \s-1XML\s0.
 .PP
 \&\fIvirt\-clone\fR\|(1) does not use libguestfs and cannot look inside the disk
 image.  This was the original motivation to write virt-sysprep.
-.SS "\s-1SPARSIFY\s0"
-.IX Subsection "SPARSIFY"
+.SS "スパース化"
+.IX Subsection "スパース化"
 .Vb 2
-\&              virt\-sparsify
-\& original guest \-\-\-\-\-\-\-\-> template
+\&          virt\-sparsify
+\& 元のゲスト \-\-\-\-\-\-\-\-> テンプレート
 .Ve
 .PP
 \&\fIvirt\-sparsify\fR\|(1) can be used to make the cloning template smaller, making
@@ -435,13 +599,13 @@ it easier to compress and/or faster to copy.
 .PP
 Notice that since virt-sparsify also copies the image, you can use it to
 make the initial copy (instead of \f(CW\*(C`dd\*(C'\fR).
-.SS "\s-1RESIZE\s0"
-.IX Subsection "RESIZE"
+.SS "容量変更"
+.IX Subsection "容量変更"
 .Vb 5
 \&                         virt\-resize
-\&                template \-\-\-\-\-\-\-\-\-\->
-\&                            \e\-\-\-\-\-\-> cloned
-\&                             \e\-\-\-\-\-> guests
+\&            テンプレート \-\-\-\-\-\-\-\-\-\->
+\&                            \e\-\-\-\-\-\-> クローン
+\&                             \e\-\-\-\-\-> 済みゲスト
 \&                              \e\-\-\-\->
 .Ve
 .PP
@@ -450,21 +614,20 @@ guest themselves (eg. depending on how much they are prepared to pay for
 disk space), then instead of copying the template, you can run
 \&\fIvirt\-resize\fR\|(1).  Virt-resize performs a copy and resize, and thus is
 ideal for cloning guests from a template.
-.SH "SECURITY"
-.IX Header "SECURITY"
+.SH "セキュリティ"
+.IX Header "セキュリティ"
 Although virt-sysprep removes some sensitive information from the guest, it
 does not pretend to remove all of it.  You should examine the \*(L"\s-1OPERATIONS\s0\*(R"
-above, and the implementation of the operations in the shell script.  You
-should also examine the guest afterwards.
+above and the guest afterwards.
 .PP
 Sensitive files are simply removed.  The data they contained may still exist
 on the disk, easily recovered with a hex editor or undelete tool.  Use
 \&\fIvirt\-sparsify\fR\|(1) as one way to remove this content.  See also the
 \&\fIscrub\fR\|(1) command to get rid of deleted content in directory entries and
 inodes.
-.SS "\s-1RANDOM\s0 \s-1SEED\s0"
-.IX Subsection "RANDOM SEED"
-\&\fI(This section applies to Linux guests only)\fR
+.SS "乱数の種"
+.IX Subsection "乱数の種"
+\&\fI(このセクションは Linux 仮想マシンのみに適用します)\fR
 .PP
 The virt-sysprep \f(CW\*(C`random\-seed\*(C'\fR operation writes a few bytes of randomness
 from the host into the guest's random seed file.
@@ -479,43 +642,45 @@ operation:
 .PP
 .Vb 2
 \& cp template.img newguest.img
-\& virt\-sysprep \-\-enable=random\-seed \-a newguest.img
+\& virt\-sysprep \-\-enable random\-seed \-a newguest.img
 .Ve
-.SS "\s-1SELINUX\s0 \s-1RELABELLING\s0"
-.IX Subsection "SELINUX RELABELLING"
-\&\fI(This section applies to Linux guests using SELinux only)\fR
+.SS "SELinux の再ラベル付け"
+.IX Subsection "SELinux の再ラベル付け"
+\&\fI(このセクションは SELinux を使用している Linux 仮想マシンのみに適用されます。)\fR
 .PP
 If any new files are created by virt-sysprep, then virt-sysprep touches
 \&\f(CW\*(C`/.autorelabel\*(C'\fR so that these will be correctly labelled by SELinux the
 next time the guest is booted.  This process interrupts boot and can take
 some time.
 .PP
-You can force relabelling for all guests by supplying the
-\&\fI\-\-selinux\-relabel\fR option.
+\&\fI\-\-selinux\-relabel\fR オプションを指定することにより、すべての仮想マシンに対して強制的に再ラベルできます。
 .PP
-You can disable relabelling entirely by supplying the
-\&\fI\-\-no\-selinux\-relabel\fR option.
+\&\fI\-\-no\-selinux\-relabel\fR オプションを指定することにより、すべての仮想マシンに対して強制的に再ラベルできます。
 .SH "SHELL QUOTING"
 .IX Header "SHELL QUOTING"
 Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
-.SH "EXIT STATUS"
-.IX Header "EXIT STATUS"
-This program returns 0 on success, or 1 if there was an error.
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
+.SH "終了ステータス"
+.IX Header "終了ステータス"
+このプログラムは、成功すると 0 を返します。または、エラーが起きると 1 を返します。
+.SH "関連項目"
+.IX Header "関連項目"
 \&\fIguestfs\fR\|(3), \fIguestfish\fR\|(1), \fIvirt\-clone\fR\|(1), \fIvirt\-rescue\fR\|(1),
 \&\fIvirt\-resize\fR\|(1), \fIvirt\-sparsify\fR\|(1), \fIvirsh\fR\|(1), \fIlvcreate\fR\|(8),
 \&\fIqemu\-img\fR\|(1), \fIscrub\fR\|(1), <http://libguestfs.org/>,
 <http://libvirt.org/>.
-.SH "AUTHOR"
-.IX Header "AUTHOR"
+.SH "著者"
+.IX Header "著者"
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
+.PP
+Wanlong Gao, Fujitsu Ltd.
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"
-Copyright (C) 2011 Red Hat Inc.
+Copyright (C) 2011\-2012 Red Hat Inc.
+.PP
+Copyright (C) 2012 Fujitsu Ltd.
 .PP
 This program is free software; you can redistribute it and/or modify it
 under the terms of the \s-1GNU\s0 General Public License as published by the Free

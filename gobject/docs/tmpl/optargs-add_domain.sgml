@@ -1,0 +1,76 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsAddDomain
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsAddDomain ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsAddDomain:allowuuid ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsAddDomain:iface ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsAddDomain:libvirturi ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsAddDomain:live ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsAddDomain:readonly ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsAddDomain:readonlydisk ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsAddDomainClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_add_domain_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

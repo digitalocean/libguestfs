@@ -2,15 +2,17 @@
 
 =head1 名前
 
-virt-alignment-scan - Check alignment of virtual machine partitions
+virt-alignment-scan - 仮想マシンのパーティション配置の確認
 
-=head1 SYNOPSIS
+=head1 書式
 
  virt-alignment-scan [--options] -d domname
 
  virt-alignment-scan [--options] -a disk.img [-a disk.img ...]
 
-=head1 DESCRIPTION
+ virt-alignment-scan [--options]
+
+=head1 説明
 
 When older operating systems install themselves, the partitioning tools
 place partitions at a sector misaligned with the underlying storage
@@ -18,17 +20,15 @@ place partitions at a sector misaligned with the underlying storage
 partitions can result in an operating system issuing more I/O than should be
 necessary.
 
-The virt-alignment-scan tool checks the alignment of partitions in virtual
-machines and disk images and warns you if there are alignment problems.
+virt-alignment-scan ツールは、仮想マシンおよびディスクイメージにあるパーティションの配置を確認します。配置に問題があれば警告します。
 
-Currently there is no virt tool for fixing alignment problems.  You can only
-reinstall the guest operating system.  The following NetApp document
-summarises the problem and possible solutions:
+現在、配置の問題を修正するための仮想化ツールはありません。ゲストオペレーティングシステムを再インストールすることだけができます。以下の NetApp
+のドキュメントが、問題と取り得る解決策をまとめています:
 L<http://media.netapp.com/documents/tr-3747.pdf>
 
-=head1 OUTPUT
+=head1 出力
 
-To run this tool on a disk image directly, use the I<-a> option:
+このツールをディスクイメージにおいて直接実行するには、I<-a> オプションを使用します:
 
  $ virt-alignment-scan -a winxp.img
  /dev/sda1        32256          512    bad (alignment < 4K)
@@ -38,8 +38,7 @@ To run this tool on a disk image directly, use the I<-a> option:
  /dev/sda2      2097152         2048K   ok
  /dev/sda3    526385152         2048K   ok
 
-To run the tool on a guest known to libvirt, use the I<-d> option and
-possibly the I<-c> option:
+libvirt が把握している仮想マシンにおいてツールを実行するには、I<-d> オプションおよびおそらく I<-c> オプションを使用します:
 
  # virt-alignment-scan -d RHEL5
  /dev/sda1        32256          512    bad (alignment < 4K)
@@ -50,33 +49,45 @@ possibly the I<-c> option:
  /dev/sda2    105906176         1024K   ok
  /dev/sdb1        65536           64K   ok
 
+Run virt-alignment-scan without any I<-a> or I<-d> options to scan all
+libvirt domains.
+
+ # virt-alignment-scan
+ F16x64:/dev/sda1      1048576         1024K   ok
+ F16x64:/dev/sda2      2097152         2048K   ok
+ F16x64:/dev/sda3    526385152         2048K   ok
+
 The output consists of 4 or more whitespace-separated columns.  Only the
 first 4 columns are significant if you want to parse this from a program.
 The columns are:
 
 =over 4
 
-=item col 1
+=item 1 列目
 
-the device and partition name (eg. C</dev/sda1> meaning the first partition
-on the first block device)
+The device and partition name (eg. C</dev/sda1> meaning the first partition
+on the first block device).
 
-=item col 2
+When listing all libvirt domains (no I<-a> or I<-d> option given) this
+column is prefixed by the libvirt name or UUID (if I<--uuid> is given).  eg:
+C<WinXP:/dev/sda1>
 
-the start of the partition in bytes
+=item 2 列目
 
-=item col 3
+パーティションの開始位置（バイト単位）
 
-the alignment in bytes or Kbytes (eg. C<512> or C<4K>)
+=item 3 列目
 
-=item col 4
+バイトまたはキロバイト単位のアライメント（例: C<512>, C<4K>）
+
+=item 4 列目
 
 C<ok> if the alignment is best for performance, or C<bad> if the alignment
 can cause performance problems
 
-=item cols 5+
+=item 5 列目以降
 
-optional free-text explanation.
+オプションの自由なテキスト説明。
 
 =back
 
@@ -85,149 +96,141 @@ partitions were found.  See L</EXIT STATUS> below.
 
 If you just want the exit code with no output, use the I<-q> option.
 
-=head1 OPTIONS
+=head1 オプション
 
 =over 4
 
 =item B<--help>
 
-Display brief help.
+簡単なヘルプを表示します。
 
 =item B<-a> file
 
 =item B<--add> file
 
-Add I<file> which should be a disk image from a virtual machine.
+仮想マシンからディスクイメージの I<file> を追加します。
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、I<--format=..> オプションを使用します。
 
 =item B<-c> URI
 
 =item B<--connect> URI
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された I<URI> に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 
-If you specify guest block devices directly (I<-a>), then libvirt is not
-used at all.
+ゲストのブロックデバイスを直接指定していると（(I<-a>)）、libvirt は何も使用されません。
 
 =item B<-d> guest
 
 =item B<--domain> guest
 
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  ドメインの UUID が名前の代わりに使用されます。
 
 =item B<--format=raw|qcow2|..>
 
 =item B<--format>
 
-The default for the I<-a> option is to auto-detect the format of the disk
-image.  Using this forces the disk format for I<-a> options which follow on
-the command line.  Using I<--format> with no argument switches back to
-auto-detection for subsequent I<-a> options.
+I<-a> オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、I<-a>
+オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで I<--format> を使用することにより、後続の I<-a>
+オプションに対して自動検知に戻せます。
 
-For example:
+例:
 
  virt-alignment-scan --format=raw -a disk.img
 
-forces raw format (no auto-detection) for C<disk.img>.
+C<disk.img> に対してローイメージを強制します（自動検出しません）。
 
  virt-alignment-scan --format=raw -a disk.img --format -a another.img
 
-forces raw format (no auto-detection) for C<disk.img> and reverts to
-auto-detection for C<another.img>.
+C<disk.img> に対してロー形式（自動検知なし）を強制し、C<another.img> に対して自動検知に戻します。
 
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (CVE-2010-3851).
+仮想マシンのディスクイメージが信頼できないロー形式であるならば、ディスク形式を指定するためにこのオプションを使用すべきです。これにより、悪意のある仮想マシンにより起こり得るセキュリティ問題を回避できます
+(CVE-2010-3851)。
 
 =item B<-q>
 
 =item B<--quiet>
 
-Don't produce any output.  Just set the exit code (see L</EXIT STATUS>
-below).
+何も出力しません。  終了コードを設定するのみです（以下の L</終了ステータス> 参照）。
+
+=item B<--uuid>
+
+Print UUIDs instead of names.  This is useful for following a guest even
+when the guest is migrated or renamed, or when two guests happen to have the
+same name.
+
+This option only applies when listing all libvirt domains (when no I<-a> or
+I<-d> options are specified).
 
 =item B<-v>
 
 =item B<--verbose>
 
-Enable verbose messages for debugging.
+デバッグ用の冗長なメッセージを有効にします。
 
 =item B<-V>
 
 =item B<--version>
 
-Display version number and exit.
+バージョン番号を表示して終了します。
 
 =item B<-x>
 
-Enable tracing of libguestfs API calls.
+libguestfs API 呼び出しのトレースを有効にします。
 
 =back
 
-=head1 RECOMMENDED ALIGNMENT
+=head1 推奨されるアライメント
 
-Operating systems older than Windows 2008 and Linux before ca.2010 place the
-first sector of the first partition at sector 63, with a 512 byte sector
-size.  This happens because of a historical accident.  Drives have to report
-a cylinder / head / sector (CHS) geometry to the BIOS.  The geometry is
-completely meaningless on modern drives, but it happens that the geometry
-reported always has 63 sectors per track.  The operating system therefore
-places the first partition at the start of the second "track", at sector 63.
+Windows 2008 および ca.2010 以前のLinux よりも古いオペレーティングシステムは、512 バイトのセクター容量でセクター 63
+に、第 1 パーティションの第1セクターを配置しなければいけません。これは古くからの障害によるものです。ドライブは BIOS
+にシリンダー/ヘッド/セクター (CHS) の配置を通知する必要があります。配置は最近のドライブにおいては意味がありませんが、必ずトラックあたり 63
+セクターを持つことをときどき通知します。そのため、オペレーティングシステムはセクター 63 にある、第 2 "トラック" の先頭にある第 1
+パーティションに置かれます。
 
-When the guest OS is virtualized, the host operating system and hypervisor
-may prefer accesses aligned to one of:
+ゲスト OS が仮想化されているとき、ホストオペレーティングシステムおよびハイパーバイザーは以下のどれかにアライメントされていることが好ましいでしょう。
 
 =over 4
 
-=item * 512 bytes
+=item * 512 バイト
 
-if the host OS uses local storage directly on hard drive partitions, and the
-hard drive has 512 byte physical sectors.
+ホスト OS がハードディスクのパーティションに直接ローカルストレージを使用して、ハードディスクが 512 バイトの物理セクターを持っている場合。
 
-=item * 4 Kbytes
+=item * 4 K バイト
 
-for local storage on new hard drives with 4Kbyte physical sectors; for
-file-backed storage on filesystems with 4Kbyte block size; or for some types
-of network-attached storage.
+4K バイトの物理セクターを持つ新規ハードディスクにおけるローカルストレージ向け。 4K
+バイトのブロック容量を持つファイルシステムにおけるファイル形式のストレージ向け。もしくは、何種類かのネットワークストレージ（NAS）向け。
 
-=item * 64 Kbytes
+=item * 64 K バイト
 
-for high-end network-attached storage.  This is the optimal block size for
-some NetApp hardware.
+ハイエンドの NAS 向け。いくつかの NetApp ハードウェアに最適なブロックサイズです。
 
-=item * 1 Mbyte
+=item * 1 M バイト
 
-see L</1 MB PARTITION ALIGNMENT> below.
+以下の L</1 MB パーティションアライメント> 参照。
 
 =back
 
-Partitions which are not aligned correctly to the underlying storage cause
-extra I/O.  For example:
+基礎となるストレージに正しくアライメントされていないパーティションは余計な I/O を引き起こします。たとえば:
 
-                       sect#63
+                       セクター#63
                        +--------------------------+------
-                       |         guest            |
-                       |    filesystem block      |
+                       |         ゲスト           |
+                       | ファイルシステムブロック |
  ---+------------------+------+-------------------+-----+---
-    |  host block             |  host block             |
+    |  ホストブロック         |  ホストブロック         |
     |                         |                         |
  ---+-------------------------+-------------------------+---
 
-In this example, each time a 4K guest block is read, two blocks on the host
-must be accessed (so twice as much I/O is done).  When a 4K guest block is
-written, two host blocks must first be read, the old and new data combined,
-and the two blocks written back (4x I/O).
+この例では、4K ブロックが読み込まれるたびに、ホストにある 2 つのブロックにアクセスする必要があります（そのため I/O が 2
+倍になります）。仮想マシンの 4K ブロックが書き込まれるとき、まず 2 つのホストブロックを読み込む必要があり、古いデータと新しいデータが結合され、2
+つのブロックが書き込まれます（4 倍の I/O）。
 
-=head2 LINUX HOST BLOCK AND I/O SIZE
+=head2 Linux ホストブロック
 
-New versions of the Linux kernel expose the physical and logical block size,
-and minimum and recommended I/O size.
+新しいバージョンの Linux カーネルは、物理ブロック容量、論理ブロック容量および最小かつ推奨の I/O サイズを明らかにします。
 
-For a typical consumer hard drive with 512 byte sectors:
+一般的な 512 バイトセクターのハードディスク向け:
 
  $ cat /sys/block/sda/queue/hw_sector_size
  512
@@ -240,7 +243,7 @@ For a typical consumer hard drive with 512 byte sectors:
  $ cat /sys/block/sda/queue/optimal_io_size
  0
 
-For a new consumer hard drive with 4Kbyte sectors:
+新しい 4K バイトセクターのハードディスク向け:
 
  $ cat /sys/block/sda/queue/hw_sector_size
  4096
@@ -253,7 +256,7 @@ For a new consumer hard drive with 4Kbyte sectors:
  $ cat /sys/block/sda/queue/optimal_io_size
  0
 
-For a NetApp LUN:
+NetApp LUN 向け:
 
  $ cat /sys/block/sdc/queue/logical_block_size
  512
@@ -264,19 +267,20 @@ For a NetApp LUN:
  $ cat /sys/block/sdc/queue/optimal_io_size
  65536
 
-The NetApp allows 512 byte accesses (but they will be very inefficient),
-prefers a minimum 4K I/O size, but the optimal I/O size is 64K.
+NetApp は、最小の 4K I/O サイズより好ましい 512 バイトアクセスが可能です（しかし、非常に効率が悪いです）、しかし最適な I/O
+サイズは 64K です。
 
-For detailed information about what these numbers mean, see
+これらの数字の意味に関する詳細は
 L<http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Storage_Administration_Guide/newstorage-iolimits.html>
+を参照してください。
 
-[Thanks to Matt Booth for providing 4K drive data.  Thanks to Mike Snitzer
-for providing NetApp data and additional information.]
+[4K ドライブデータを提供してくれた Matt Booth に感謝します。NetApp のデータと追加情報を提供してくれた Mike Snitzer
+に感謝します。]
 
-=head2 1 MB PARTITION ALIGNMENT
+=head2 1 MB パーティションアライメント
 
-Microsoft picked 1 MB as the default alignment for all partitions starting
-with Windows 2008 Server, and Linux has followed this.
+Microsoft は Windows Server 2008 以降、すべてのパーティションに対してデフォルトのアライメントとして 1 MB
+を選択しました。 Linux はこれに従ってきました。
 
 Assuming 512 byte sectors in the guest, you will now see the first partition
 starting at sector 2048, and subsequent partitions (if any)  will start at a
@@ -285,7 +289,7 @@ multiple of 2048 sectors.
 1 MB alignment is compatible with all current alignment requirements (4K,
 64K) and provides room for future growth in physical block sizes.
 
-=head2 SETTING ALIGNMENT
+=head2 アライメントの設定法
 
 L<virt-resize(1)> can change the alignment of the partitions of some
 guests.  Currently it can fully align all the partitions of all Windows
@@ -297,8 +301,8 @@ Another way to correct partition alignment problems is to reinstall your
 guest operating systems.  If you install operating systems from templates,
 ensure these have correct partition alignment too.
 
-For older versions of Windows, the following NetApp document contains useful
-information: L<http://media.netapp.com/documents/tr-3747.pdf>
+古いバージョンの Windows は、次の NetApp ドキュメントに有用な情報があります:
+L<http://media.netapp.com/documents/tr-3747.pdf>
 
 For Red Hat Enterprise Linux E<le> 5, use a Kickstart script that contains
 an explicit C<%pre> section that creates aligned partitions using
@@ -312,9 +316,9 @@ meaning to the shell such as C<#> and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 L<sh(1)> for details.
 
-=head1 EXIT STATUS
+=head1 終了ステータス
 
-This program returns:
+このプログラムは以下を返します:
 
 =over 4
 
@@ -322,36 +326,34 @@ This program returns:
 
 0
 
-successful exit, all partitions are aligned E<ge> 64K for best performance
+正常終了、すべてのパーティションが最高のパフォーマンスのために E<ge> 64K に配置されています
 
 =item *
 
 1
 
-an error scanning the disk image or guest
+ディスクイメージまたは仮想マシンのスキャン中にエラーが発生しました
 
 =item *
 
 2
 
-successful exit, some partitions have alignment E<lt> 64K which can result
-in poor performance on high end network storage
+正常終了、いくつかのパーティションがハイエンドのネットワークストレージにおいてパフォーマンスの悪い E<lt> 64K のアライメントを持ちます
 
 =item *
 
 3
 
-successful exit, some partitions have alignment E<lt> 4K which can result in
-poor performance on most hypervisors
+正常終了、いくつかのパーティションが多くのハイパーバイザーにおいてパフォーマンスの悪い E<lt> 4K のアライメントを持ちます
 
 =back
 
-=head1 SEE ALSO
+=head1 関連項目
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-filesystems(1)>, L<virt-rescue(1)>,
 L<virt-resize(1)>, L<http://libguestfs.org/>.
 
-=head1 AUTHOR
+=head1 著者
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 

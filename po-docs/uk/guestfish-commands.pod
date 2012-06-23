@@ -50,7 +50,7 @@ the help of L</glob> like this:
 
 =head2 delete-event
 
- delete-event name
+ delete-event назва
 
 Delete the event handler which was previously registered as C<name>.  If
 multiple event handlers were registered with the same name, they are all

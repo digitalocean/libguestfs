@@ -62,16 +62,16 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfish 1"
-.TH guestfish 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH guestfish 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "名前"
 .IX Header "名前"
-guestfish \- the libguestfs Filesystem Interactive SHell
-.SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
+guestfish \- libguestfs ファイルシステム対話式シェル
+.SH "書式"
+.IX Header "書式"
 .Vb 1
 \& guestfish [\-\-options] [commands]
 \&
@@ -87,14 +87,14 @@ guestfish \- the libguestfs Filesystem Interactive SHell
 \&
 \& guestfish \-d libvirt\-domain \-i
 .Ve
-.SH "WARNING"
-.IX Header "WARNING"
+.SH "警告"
+.IX Header "警告"
 Using guestfish in read/write mode on live virtual machines can be
 dangerous, potentially causing disk corruption.  Use the \fI\-\-ro\fR (read-only)
 option to use guestfish safely if the disk image or virtual machine might be
 live.
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
+.SH "説明"
+.IX Header "説明"
 Guestfish is a shell and command-line tool for examining and modifying
 virtual machine filesystems.  It uses libguestfs and exposes all of the
 functionality of the guestfs \s-1API\s0, see \fIguestfs\fR\|(3).
@@ -103,19 +103,20 @@ Guestfish gives you structured access to the libguestfs \s-1API\s0, from shell
 scripts or the command line or interactively.  If you want to rescue a
 broken virtual machine image, you should look at the \fIvirt\-rescue\fR\|(1)
 command.
-.SH "EXAMPLES"
-.IX Header "EXAMPLES"
-.SS "As an interactive shell"
-.IX Subsection "As an interactive shell"
+.SH "例"
+.IX Header "例"
+.SS "対話式シェルとして"
+.IX Subsection "対話式シェルとして"
 .Vb 1
 \& $ guestfish
 \& 
-\& Welcome to guestfish, the libguestfs filesystem interactive shell for
-\& editing virtual machine filesystems.
+\& guestfish へようこそ。
+\& 仮想マシンのファイルシステムを編集するための
+\& libguestfs ファイルシステム対話式シェルです。
 \& 
-\& Type: \*(Aqhelp\*(Aq for a list of commands
-\&       \*(Aqman\*(Aq to read the manual
-\&       \*(Aqquit\*(Aq to quit the shell
+\& 入力: コマンド一覧は \*(Aqhelp\*(Aq
+\&       マニュアルを読むには \*(Aqman\*(Aq
+\&       シェルを終了するには \*(Aqquit\*(Aq
 \& 
 \& ><fs> add\-ro disk.img
 \& ><fs> run
@@ -130,8 +131,8 @@ command.
 \& [...]
 \& ><fs> exit
 .Ve
-.SS "From shell scripts"
-.IX Subsection "From shell scripts"
+.SS "シェルスクリプトから"
+.IX Subsection "シェルスクリプトから"
 Create a new \f(CW\*(C`/etc/motd\*(C'\fR file in a guest or disk image:
 .PP
 .Vb 6
@@ -143,7 +144,7 @@ Create a new \f(CW\*(C`/etc/motd\*(C'\fR file in a guest or disk image:
 \& _EOF_
 .Ve
 .PP
-List the \s-1LVM\s0 logical volumes in a disk image:
+ディスクイメージにある \s-1LVM\s0 論理ボリュームを一覧表示します:
 .PP
 .Vb 4
 \& guestfish \-a disk.img \-\-ro <<_EOF_
@@ -152,7 +153,7 @@ List the \s-1LVM\s0 logical volumes in a disk image:
 \& _EOF_
 .Ve
 .PP
-List all the filesystems in a disk image:
+ディスクイメージにあるファイルシステムをすべて一覧表示します:
 .PP
 .Vb 4
 \& guestfish \-a disk.img \-\-ro <<_EOF_
@@ -162,7 +163,7 @@ List all the filesystems in a disk image:
 .Ve
 .SS "On one command line"
 .IX Subsection "On one command line"
-Update \f(CW\*(C`/etc/resolv.conf\*(C'\fR in a guest:
+仮想マシンの \f(CW\*(C`/etc/resolv.conf\*(C'\fR を更新します:
 .PP
 .Vb 3
 \& guestfish \e
@@ -170,7 +171,7 @@ Update \f(CW\*(C`/etc/resolv.conf\*(C'\fR in a guest:
 \&   write /etc/resolv.conf "nameserver 1.2.3.4"
 .Ve
 .PP
-Edit \f(CW\*(C`/boot/grub/grub.conf\*(C'\fR interactively:
+\&\f(CW\*(C`/boot/grub/grub.conf\*(C'\fR を対話的に編集します:
 .PP
 .Vb 4
 \& guestfish \-\-rw \-\-add disk.img \e
@@ -178,8 +179,8 @@ Edit \f(CW\*(C`/boot/grub/grub.conf\*(C'\fR interactively:
 \&   \-\-mount /dev/sda1:/boot \e
 \&   edit /boot/grub/grub.conf
 .Ve
-.SS "Mount disks automatically"
-.IX Subsection "Mount disks automatically"
+.SS "ディスクを自動的にマウントします"
+.IX Subsection "ディスクを自動的にマウントします"
 Use the \fI\-i\fR option to automatically mount the disks from a virtual
 machine:
 .PP
@@ -194,8 +195,8 @@ Another way to edit \f(CW\*(C`/boot/grub/grub.conf\*(C'\fR interactively is:
 .Vb 1
 \& guestfish \-\-rw \-a disk.img \-i edit /boot/grub/grub.conf
 .Ve
-.SS "As a script interpreter"
-.IX Subsection "As a script interpreter"
+.SS "スクリプトのインタープリターとして"
+.IX Subsection "スクリプトのインタープリターとして"
 Create a 100MB disk containing an ext2\-formatted partition:
 .PP
 .Vb 5
@@ -219,43 +220,42 @@ To list what is available do:
 .Vb 1
 \& guestfish \-N help | less
 .Ve
-.SS "Remote control"
-.IX Subsection "Remote control"
+.SS "リモート制御"
+.IX Subsection "リモート制御"
 .Vb 4
 \& eval "\`guestfish \-\-listen\`"
 \& guestfish \-\-remote add\-ro disk.img
 \& guestfish \-\-remote run
 \& guestfish \-\-remote lvs
 .Ve
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+.SH "オプション"
+.IX Header "オプション"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
-Displays general help on options.
+オプションの一般的なヘルプを表示します。
 .IP "\fB\-h\fR" 4
 .IX Item "-h"
 .PD 0
 .IP "\fB\-\-cmd\-help\fR" 4
 .IX Item "--cmd-help"
 .PD
-Lists all available guestfish commands.
+利用可能な available guestfish コマンドをすべて一覧表示します。
 .IP "\fB\-h cmd\fR" 4
 .IX Item "-h cmd"
 .PD 0
 .IP "\fB\-\-cmd\-help cmd\fR" 4
 .IX Item "--cmd-help cmd"
 .PD
-Displays detailed help on a single command \f(CW\*(C`cmd\*(C'\fR.
+あるコマンド \f(CW\*(C`cmd\*(C'\fR の詳細なヘルプを表示します。
 .IP "\fB\-a image\fR" 4
 .IX Item "-a image"
 .PD 0
 .IP "\fB\-\-add image\fR" 4
 .IX Item "--add image"
 .PD
-Add a block device or virtual machine image to the shell.
+ブロックデバイスまたは仮想マシンイメージをシェルに追加します。
 .Sp
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the \fI\-\-format=..\fR option.
+ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、\fI\-\-format=..\fR オプションを使用します。
 .Sp
 Using this flag is mostly equivalent to using the \f(CW\*(C`add\*(C'\fR command, with
 \&\f(CW\*(C`readonly:true\*(C'\fR if the \fI\-\-ro\fR flag was given, and with \f(CW\*(C`format:...\*(C'\fR if
@@ -309,7 +309,7 @@ flag to see what you are typing.
 .IP "\fB\-\-file file\fR" 4
 .IX Item "--file file"
 .PD
-Read commands from \f(CW\*(C`file\*(C'\fR.  To write pure guestfish scripts, use:
+\&\f(CW\*(C`file\*(C'\fR からコマンドを読み込みます。  純粋な guestfish スクリプトを書くには、以下を使用します:
 .Sp
 .Vb 1
 \& #!/usr/bin/guestfish \-f
@@ -320,25 +320,23 @@ Read commands from \f(CW\*(C`file\*(C'\fR.  To write pure guestfish scripts, use
 .IP "\fB\-\-format\fR" 4
 .IX Item "--format"
 .PD
-The default for the \fI\-a\fR option is to auto-detect the format of the disk
-image.  Using this forces the disk format for \fI\-a\fR options which follow on
-the command line.  Using \fI\-\-format\fR with no argument switches back to
-auto-detection for subsequent \fI\-a\fR options.
+\&\fI\-a\fR オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、\fI\-a\fR
+オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで \fI\-\-format\fR を使用することにより、後続の \fI\-a\fR
+オプションに対して自動検知に戻せます。
 .Sp
-For example:
+例:
 .Sp
 .Vb 1
 \& guestfish \-\-format=raw \-a disk.img
 .Ve
 .Sp
-forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR.
+\&\f(CW\*(C`disk.img\*(C'\fR に対してローイメージを強制します（自動検出しません）。
 .Sp
 .Vb 1
 \& guestfish \-\-format=raw \-a disk.img \-\-format \-a another.img
 .Ve
 .Sp
-forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR and reverts to
-auto-detection for \f(CW\*(C`another.img\*(C'\fR.
+\&\f(CW\*(C`disk.img\*(C'\fR に対してロー形式（自動検知なし）を強制し、\f(CW\*(C`another.img\*(C'\fR に対して自動検知に戻します。
 .Sp
 If you have untrusted raw-format guest disk images, you should use this
 option to specify the disk format.  This avoids a possible security problem
@@ -402,12 +400,11 @@ Connect to a live virtual machine.  (Experimental, see
 .PD
 Mount the named partition or logical volume on the given mountpoint.
 .Sp
-If the mountpoint is omitted, it defaults to \f(CW\*(C`/\*(C'\fR.
+マウントポイントが省略されると、初期値は \f(CW\*(C`/\*(C'\fR です。
 .Sp
-You have to mount something on \f(CW\*(C`/\*(C'\fR before most commands will work.
+多くのコマンドが動作させる前に、何かを \f(CW\*(C`/\*(C'\fR にマウントする必要があります。
 .Sp
-If any \fI\-m\fR or \fI\-\-mount\fR options are given, the guest is automatically
-launched.
+\&\fI\-m\fR または \fI\-\-mount\fR オプションが指定されると、仮想マシンが自動的に起動します。
 .Sp
 If you don't know what filesystems a disk image contains, you can either run
 guestfish without this option, then list the partitions, filesystems and LVs
@@ -446,6 +443,18 @@ Prepare a fresh disk image formatted as \*(L"type\*(R".  This is an alternative 
 the \fI\-a\fR option: whereas \fI\-a\fR adds an existing disk, \fI\-N\fR creates a
 preformatted disk with a filesystem and adds it.  See \*(L"\s-1PREPARED\s0 \s-1DISK\s0
 \&\s-1IMAGES\s0\*(R" below.
+.IP "\fB\-\-pipe\-error\fR" 4
+.IX Item "--pipe-error"
+If writes fail to pipe commands (see \*(L"\s-1PIPES\s0\*(R" below), then the command
+returns an error.
+.Sp
+The default (also for historical reasons) is to ignore such errors so that:
+.Sp
+.Vb 1
+\& ><fs> command_with_lots_of_output | head
+.Ve
+.Sp
+doesn't give an error.
 .IP "\fB\-\-progress\-bars\fR" 4
 .IX Item "--progress-bars"
 Enable progress bars, even when guestfish is used non-interactively.
@@ -454,7 +463,7 @@ Progress bars are enabled by default when guestfish is used as an
 interactive shell.
 .IP "\fB\-\-no\-progress\-bars\fR" 4
 .IX Item "--no-progress-bars"
-Disable progress bars.
+進行状況バーを無効にします。
 .IP "\fB\-\-remote[=pid]\fR" 4
 .IX Item "--remote[=pid]"
 Send remote commands to \f(CW$GUESTFISH_PID\fR or \f(CW\*(C`pid\*(C'\fR.  See section \*(L"\s-1REMOTE\s0
@@ -476,25 +485,24 @@ Note that prepared disk images created with \fI\-N\fR are not affected by this
 option.  Also commands like \f(CW\*(C`add\*(C'\fR are not affected \- you have to specify
 the \f(CW\*(C`readonly:true\*(C'\fR option explicitly if you need it.
 .Sp
-See also \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" below.
+以下の \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" 参照。
 .IP "\fB\-\-selinux\fR" 4
 .IX Item "--selinux"
-Enable SELinux support for the guest.  See \*(L"\s-1SELINUX\s0\*(R" in \fIguestfs\fR\|(3).
+仮想マシンに対して SELinux を有効にします。 \*(L"\s-1SELINUX\s0\*(R" in \fIguestfs\fR\|(3) 参照。
 .IP "\fB\-v\fR" 4
 .IX Item "-v"
 .PD 0
 .IP "\fB\-\-verbose\fR" 4
 .IX Item "--verbose"
 .PD
-Enable very verbose messages.  This is particularly useful if you find a
-bug.
+非常に冗長なメッセージを有効にします。バグを探していると、これはとくに有用です。
 .IP "\fB\-V\fR" 4
 .IX Item "-V"
 .PD 0
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
 .PD
-Display the guestfish / libguestfs version number and exit.
+guestfish / libguestfs のバージョン番号を表示して終了します。
 .IP "\fB\-w\fR" 4
 .IX Item "-w"
 .PD 0
@@ -507,9 +515,9 @@ mounts are done read-write.
 See \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE\s0\*(R" below.
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
-Echo each command before executing it.
-.SH "COMMANDS ON COMMAND LINE"
-.IX Header "COMMANDS ON COMMAND LINE"
+各コマンドを実行する前にエコーします。
+.SH "コマンドラインにおけるコマンド"
+.IX Header "コマンドラインにおけるコマンド"
 Any additional (non-option) arguments are treated as commands to execute.
 .PP
 Commands to execute should be separated by a colon (\f(CW\*(C`:\*(C'\fR), where the colon
@@ -526,17 +534,17 @@ non-interactive shell.
 In either command line mode or non-interactive shell, the first command that
 gives an error causes the whole shell to exit.  In interactive mode (with a
 prompt) if a command fails, you can continue to enter commands.
-.SH "USING launch (OR run)"
-.IX Header "USING launch (OR run)"
+.SH "launch (または run) の使用法"
+.IX Header "launch (または run) の使用法"
 As with \fIguestfs\fR\|(3), you must first configure your guest by adding disks,
 then launch it, then mount any disks you need, and finally issue
 actions/commands.  So the general order of the day is:
 .IP "\(bu" 4
 add or \-a/\-\-add
 .IP "\(bu" 4
-launch (aka run)
+launch (別名 run)
 .IP "\(bu" 4
-mount or \-m/\-\-mount
+mount または \-m/\-\-mount
 .IP "\(bu" 4
 any other commands
 .PP
@@ -603,52 +611,51 @@ characters:
 .ie n .IP """\ea""" 4
 .el .IP "\f(CW\ea\fR" 4
 .IX Item "a"
-Alert (bell) character.
+アラート（ベル）文字。
 .ie n .IP """\eb""" 4
 .el .IP "\f(CW\eb\fR" 4
 .IX Item "b"
-Backspace character.
+バックスペース文字。
 .ie n .IP """\ef""" 4
 .el .IP "\f(CW\ef\fR" 4
 .IX Item "f"
-Form feed character.
+フォームフィード文字。
 .ie n .IP """\en""" 4
 .el .IP "\f(CW\en\fR" 4
 .IX Item "n"
-Newline character.
+改行文字。
 .ie n .IP """\er""" 4
 .el .IP "\f(CW\er\fR" 4
 .IX Item "r"
-Carriage return character.
+復帰文字。
 .ie n .IP """\et""" 4
 .el .IP "\f(CW\et\fR" 4
 .IX Item "t"
-Horizontal tab character.
+水平タブ文字。
 .ie n .IP """\ev""" 4
 .el .IP "\f(CW\ev\fR" 4
 .IX Item "v"
-Vertical tab character.
+垂直タブ文字。
 .ie n .IP """\e""""" 4
 .el .IP "\f(CW\e""\fR" 4
 .IX Item """"
-A literal double quote character.
+二重引用符文字。
 .ie n .IP """\eooo""" 4
 .el .IP "\f(CW\eooo\fR" 4
 .IX Item "ooo"
-A character with octal value \fIooo\fR.  There must be precisely 3 octal digits
-(unlike C).
+8 進値 \fIooo\fR を持つ文字。（C とは異なり）ちょうど 3 桁である必要があります。
 .ie n .IP """\exhh""" 4
 .el .IP "\f(CW\exhh\fR" 4
 .IX Item "xhh"
-A character with hex value \fIhh\fR.  There must be precisely 2 hex digits.
+16 進数値 \fIhh\fR を持つ文字。ちょうど 2 桁である必要があります。
 .Sp
 In the current implementation \f(CW\*(C`\e000\*(C'\fR and \f(CW\*(C`\ex00\*(C'\fR cannot be used in strings.
 .ie n .IP """\e\e""" 4
 .el .IP "\f(CW\e\e\fR" 4
 .IX Item ""
-A literal backslash character.
-.SH "OPTIONAL ARGUMENTS"
-.IX Header "OPTIONAL ARGUMENTS"
+文字としてのバックスラッシュ文字。
+.SH "オプション引数"
+.IX Header "オプション引数"
 Some commands take optional arguments.  These arguments appear in this
 documentation as \f(CW\*(C`[argname:..]\*(C'\fR.  You can use them as in these examples:
 .PP
@@ -662,82 +669,80 @@ documentation as \f(CW\*(C`[argname:..]\*(C'\fR.  You can use them as in these e
 .PP
 Each optional argument can appear at most once.  All optional arguments must
 appear after the required ones.
-.SH "NUMBERS"
-.IX Header "NUMBERS"
-This section applies to all commands which can take integers as parameters.
-.SS "\s-1SIZE\s0 \s-1SUFFIX\s0"
-.IX Subsection "SIZE SUFFIX"
-When the command takes a parameter measured in bytes, you can use one of the
-following suffixes to specify kilobytes, megabytes and larger sizes:
-.IP "\fBk\fR or \fBK\fR or \fBKiB\fR" 4
-.IX Item "k or K or KiB"
-The size in kilobytes (multiplied by 1024).
+.SH "数値"
+.IX Header "数値"
+このセクションはパラメーターとして整数を取り得るすべてのコマンドに適用されます。
+.SS "容量の接尾辞"
+.IX Subsection "容量の接尾辞"
+コマンドがバイト単位で計算されるパラメーターをとるとき、キロバイト、メガバイト、それより大きい容量を指定するために、以下の接尾辞のどれかをとることができます:
+.IP "\fBk\fR または \fBK\fR または \fBKiB\fR" 4
+.IX Item "k または K または KiB"
+キロ（1024 の掛け算）バイト単位の容量です。
 .IP "\fB\s-1KB\s0\fR" 4
 .IX Item "KB"
-The size in \s-1SI\s0 1000 byte units.
-.IP "\fBM\fR or \fBMiB\fR" 4
-.IX Item "M or MiB"
-The size in megabytes (multiplied by 1048576).
+国際単位系（SI）の 1000 バイト単位の容量です。
+.IP "\fBM\fR または \fBMiB\fR" 4
+.IX Item "M または MiB"
+メガ（1048576 の掛け算）バイト単位の容量です。
 .IP "\fB\s-1MB\s0\fR" 4
 .IX Item "MB"
-The size in \s-1SI\s0 1000000 byte units.
-.IP "\fBG\fR or \fBGiB\fR" 4
-.IX Item "G or GiB"
-The size in gigabytes (multiplied by 2**30).
+国際単位系（SI）の 1000000 バイト単位の容量です。
+.IP "\fBG\fR または \fBGiB\fR" 4
+.IX Item "G または GiB"
+ギガ（2 の 30 乗の掛け算）バイト単位の容量です。
 .IP "\fB\s-1GB\s0\fR" 4
 .IX Item "GB"
-The size in \s-1SI\s0 10**9 byte units.
-.IP "\fBT\fR or \fBTiB\fR" 4
-.IX Item "T or TiB"
-The size in terabytes (multiplied by 2**40).
+国際単位系（SI）の 10 の 9 乗バイト単位の容量です。
+.IP "\fBT\fR または \fBTiB\fR" 4
+.IX Item "T または TiB"
+テラ（2 の 40 乗の掛け算）バイト単位の容量です。
 .IP "\fB\s-1TB\s0\fR" 4
 .IX Item "TB"
-The size in \s-1SI\s0 10**12 byte units.
-.IP "\fBP\fR or \fBPiB\fR" 4
-.IX Item "P or PiB"
-The size in petabytes (multiplied by 2**50).
+国際単位系（SI）の 10 の 12 乗バイト単位の容量です。
+.IP "\fBP\fR または \fBPiB\fR" 4
+.IX Item "P または PiB"
+ペタ（2 の 50 乗の掛け算）バイト単位の容量です。
 .IP "\fB\s-1PB\s0\fR" 4
 .IX Item "PB"
-The size in \s-1SI\s0 10**15 byte units.
-.IP "\fBE\fR or \fBEiB\fR" 4
-.IX Item "E or EiB"
-The size in exabytes (multiplied by 2**60).
+国際単位系（SI）の 10 の 15 乗バイト単位の容量です。
+.IP "\fBE\fR または \fBEiB\fR" 4
+.IX Item "E または EiB"
+エクサ（2 の 60 乗の掛け算）バイト単位の容量です。
 .IP "\fB\s-1EB\s0\fR" 4
 .IX Item "EB"
-The size in \s-1SI\s0 10**18 byte units.
-.IP "\fBZ\fR or \fBZiB\fR" 4
-.IX Item "Z or ZiB"
-The size in zettabytes (multiplied by 2**70).
+国際単位系（SI）の 10 の 18 乗バイト単位の容量です。
+.IP "\fBZ\fR または \fBZiB\fR" 4
+.IX Item "Z または ZiB"
+ゼタ（2 の 70 乗の掛け算）バイト単位の容量です。
 .IP "\fB\s-1ZB\s0\fR" 4
 .IX Item "ZB"
-The size in \s-1SI\s0 10**21 byte units.
-.IP "\fBY\fR or \fBYiB\fR" 4
-.IX Item "Y or YiB"
-The size in yottabytes (multiplied by 2**80).
+国際単位系（SI）の 10 の 21 乗バイト単位の容量です。
+.IP "\fBY\fR または \fBYiB\fR" 4
+.IX Item "Y または YiB"
+ヨタ（2 の 80 乗の掛け算）バイト単位の容量です。
 .IP "\fB\s-1YB\s0\fR" 4
 .IX Item "YB"
-The size in \s-1SI\s0 10**24 byte units.
+国際単位系（SI）の 10 の 24 乗バイト単位の容量です。
 .PP
-For example:
+例:
 .PP
 .Vb 1
 \& truncate\-size /file 1G
 .Ve
 .PP
-would truncate the file to 1 gigabyte.
+ファイルを 1 ギガバイトに切り詰めます。
 .PP
-Be careful because a few commands take sizes in kilobytes or megabytes
-(eg. the parameter to \*(L"memsize\*(R" is specified in megabytes already).
-Adding a suffix will probably not do what you expect.
-.SS "\s-1OCTAL\s0 \s-1AND\s0 \s-1HEXADECIMAL\s0 \s-1NUMBERS\s0"
-.IX Subsection "OCTAL AND HEXADECIMAL NUMBERS"
+いくつかのコマンドはキロバイトまたはメガバイト単位の容量をとるので注意してください (たとえば、\*(L"memsize\*(R"
+のパラメーターはすでにメガバイト単位で指定されています)。接尾辞をつけることにより、期待しない結果になることがあります。
+.SS "10 進数値および 16 進数値"
+.IX Subsection "10 進数値および 16 進数値"
 For specifying the radix (base) use the C convention: \f(CW0\fR to prefix an
 octal number or \f(CW\*(C`0x\*(C'\fR to prefix a hexadecimal number.  For example:
 .PP
 .Vb 3
-\& 1234      decimal number 1234
-\& 02322     octal number, equivalent to decimal 1234
-\& 0x4d2     hexadecimal number, equivalent to decimal 1234
+\& 1234      10 進数 1234
+\& 02322     8 進数、10 進数の 1234
+\& 0x4d2     16 進数、10 進数の 1234
 .Ve
 .PP
 When using the \f(CW\*(C`chmod\*(C'\fR command, you almost always want to specify an octal
@@ -745,15 +750,15 @@ number for the mode, and you must prefix it with \f(CW0\fR (unlike the Unix
 \&\fIchmod\fR\|(1) program):
 .PP
 .Vb 2
-\& chmod 0777 /public  # OK
-\& chmod 777 /public   # WRONG! This is mode 777 decimal = 01411 octal.
+\& chmod 0777 /public  # 正解
+\& chmod 777 /public   # 誤り! このモードは 10 進 777 = 8 進 01411 です。
 .Ve
 .PP
 Commands that return numbers usually print them in decimal, but some
 commands print numbers in other radices (eg. \f(CW\*(C`umask\*(C'\fR prints the mode in
 octal, preceded by \f(CW0\fR).
-.SH "WILDCARDS AND GLOBBING"
-.IX Header "WILDCARDS AND GLOBBING"
+.SH "ワイルドカードおよびグロブ"
+.IX Header "ワイルドカードおよびグロブ"
 Neither guestfish nor the underlying guestfs \s-1API\s0 performs wildcard expansion
 (globbing) by default.  So for example the following will not do what you
 expect:
@@ -765,7 +770,7 @@ expect:
 Assuming you don't have a directory called literally \f(CW\*(C`/home/*\*(C'\fR then the
 above command will return an error.
 .PP
-To perform wildcard expansion, use the \f(CW\*(C`glob\*(C'\fR command.
+ワイルドカードの展開を実行するには \f(CW\*(C`glob\*(C'\fR コマンドを使用します。
 .PP
 .Vb 1
 \& glob rm\-rf /home/*
@@ -784,21 +789,21 @@ many times), equivalent to:
 .PP
 If you have several parameters, each containing a wildcard, then glob will
 perform a Cartesian product.
-.SH "COMMENTS"
-.IX Header "COMMENTS"
+.SH "コメント"
+.IX Header "コメント"
 Any line which starts with a \fI#\fR character is treated as a comment and
 ignored.  The \fI#\fR can optionally be preceded by whitespace, but \fBnot\fR by a
 command.  For example:
 .PP
 .Vb 3
-\& # this is a comment
-\&         # this is a comment
-\& foo # NOT a comment
+\& # これはコメントです
+\&         # これはコメントです
+\& foo # コメントではありません
 .Ve
 .PP
-Blank lines are also ignored.
-.SH "RUNNING COMMANDS LOCALLY"
-.IX Header "RUNNING COMMANDS LOCALLY"
+空行も無視されます。
+.SH "ローカルのコマンドの実行法"
+.IX Header "ローカルのコマンドの実行法"
 Any line which starts with a \fI!\fR character is treated as a command sent to
 the local shell (\f(CW\*(C`/bin/sh\*(C'\fR or whatever \fIsystem\fR\|(3) uses).  For example:
 .PP
@@ -841,8 +846,8 @@ script first (ie. remove the initial \f(CW\*(C`<\*(C'\fR character so it is just
 ordinary \fI!\fR local command), see what guestfish commands it would run, and
 when you are happy with those prepend the \f(CW\*(C`<\*(C'\fR character to run the
 guestfish commands for real.
-.SH "PIPES"
-.IX Header "PIPES"
+.SH "パイプ"
+.IX Header "パイプ"
 Use \f(CW\*(C`command <space> | command\*(C'\fR to pipe the output of the first
 command (a guestfish command) to the second command (any host command).  For
 example:
@@ -872,8 +877,8 @@ it, eg:
 .Vb 1
 \& echo "|"
 .Ve
-.SH "HOME DIRECTORIES"
-.IX Header "HOME DIRECTORIES"
+.SH "ホームディレクトリ"
+.IX Header "ホームディレクトリ"
 If a parameter starts with the character \f(CW\*(C`~\*(C'\fR then the tilde may be expanded
 as a home directory path (either \f(CW\*(C`~\*(C'\fR for the current user's home directory,
 or \f(CW\*(C`~user\*(C'\fR for another user).
@@ -887,8 +892,8 @@ eg:
 .Vb 1
 \& echo "~"
 .Ve
-.SH "ENCRYPTED DISKS"
-.IX Header "ENCRYPTED DISKS"
+.SH "暗号化ディスク"
+.IX Header "暗号化ディスク"
 Libguestfs has some support for Linux guests encrypted according to the
 Linux Unified Key Setup (\s-1LUKS\s0) standard, which includes nearly all whole
 disk encryption systems used by modern Linux guests.  Currently only
@@ -906,7 +911,7 @@ device called \f(CW\*(C`/dev/mapper/luksdev\*(C'\fR.
 .PP
 .Vb 2
 \& ><fs> luks\-open /dev/sda2 luksdev
-\& Enter key or passphrase ("key"): <enter the passphrase>
+\& Enter key or passphrase ("key"): <パスフレーズを入力してください>
 .Ve
 .PP
 Finally you have to tell \s-1LVM\s0 to scan for volume groups on the newly created
@@ -927,8 +932,8 @@ one.  Then you can close the mapper device:
 \& vg\-activate false /dev/VG
 \& luks\-close /dev/mapper/luksdev
 .Ve
-.SH "WINDOWS PATHS"
-.IX Header "WINDOWS PATHS"
+.SH "Windows のパス"
+.IX Header "Windows のパス"
 If a path is prefixed with \f(CW\*(C`win:\*(C'\fR then you can use Windows-style drive
 letters and paths (with some limitations).  The following commands are
 equivalent:
@@ -952,8 +957,8 @@ then the parameter might be rewritten like this:
 .Ve
 .PP
 This only works in argument positions that expect a path.
-.SH "UPLOADING AND DOWNLOADING FILES"
-.IX Header "UPLOADING AND DOWNLOADING FILES"
+.SH "ファイルのアップロード方法およびダウンロード方法"
+.IX Header "ファイルのアップロード方法およびダウンロード方法"
 For commands such as \f(CW\*(C`upload\*(C'\fR, \f(CW\*(C`download\*(C'\fR, \f(CW\*(C`tar\-in\*(C'\fR, \f(CW\*(C`tar\-out\*(C'\fR and
 others which upload from or download to a local file, you can use the
 special filename \f(CW\*(C`\-\*(C'\fR to mean \*(L"from stdin\*(R" or \*(L"to stdout\*(R".  For example:
@@ -1042,14 +1047,13 @@ have several guestfish listener processes running using:
 .Ve
 .SS "\s-1REMOTE\s0 \s-1CONTROL\s0 \s-1AND\s0 \s-1CSH\s0"
 .IX Subsection "REMOTE CONTROL AND CSH"
-When using csh-like shells (csh, tcsh etc) you have to add the \fI\-\-csh\fR
-option:
+csh 系のシェル (csh, tcsh など) を使用するとき、\fI\-\-csh\fR オプションを追加する必要があります:
 .PP
 .Vb 1
 \& eval "\`guestfish \-\-listen \-\-csh\`"
 .Ve
-.SS "\s-1REMOTE\s0 \s-1CONTROL\s0 \s-1DETAILS\s0"
-.IX Subsection "REMOTE CONTROL DETAILS"
+.SS "リモート制御の詳細"
+.IX Subsection "リモート制御の詳細"
 Remote control happens over a Unix domain socket called
 \&\f(CW\*(C`/tmp/.guestfish\-$UID/socket\-$PID\*(C'\fR, where \f(CW$UID\fR is the effective user \s-1ID\s0
 of the process, and \f(CW$PID\fR is the process \s-1ID\s0 of the server.
@@ -1130,29 +1134,28 @@ To list the available types and any extra parameters they take, run:
 Note that the prepared filesystem is not mounted.  You would usually have to
 use the \f(CW\*(C`mount /dev/sda1 /\*(C'\fR command or add the \fI\-m /dev/sda1\fR option.
 .PP
-If any \fI\-N\fR or \fI\-\-new\fR options are given, the guest is automatically
-launched.
-.SS "\s-1EXAMPLES\s0"
-.IX Subsection "EXAMPLES"
-Create a 100MB disk with an ext4\-formatted partition:
+\&\fI\-N\fR または \fI\-\-new\fR オプションが指定されると、仮想マシンが自動的に起動します。
+.SS "例"
+.IX Subsection "例"
+ext4 フォーマットのパーティションを持つ 100MB ディスクを作成します:
 .PP
 .Vb 1
 \& guestfish \-N fs:ext4
 .Ve
 .PP
-Create a 32MB disk with a VFAT-formatted partition, and mount it:
+\&\s-1VFAT\s0 フォーマットのパーティションを持つ 32MB ディスクを作成して、マウントします:
 .PP
 .Vb 1
 \& guestfish \-N fs:vfat:32M \-m /dev/sda1
 .Ve
 .PP
-Create a blank 200MB disk:
+200MB の空ディスクを作成します:
 .PP
 .Vb 1
 \& guestfish \-N disk:200M
 .Ve
-.SH "PROGRESS BARS"
-.IX Header "PROGRESS BARS"
+.SH "進行状況バー"
+.IX Header "進行状況バー"
 Some (not all) long-running commands send progress notification messages as
 they are running.  Guestfish turns these messages into progress bars.
 .PP
@@ -1174,8 +1177,8 @@ When the bar reaches 100% and the command finishes, the spinner disappears.
 Progress bars are enabled by default when guestfish is used interactively.
 You can enable them even for non-interactive modes using \fI\-\-progress\-bars\fR,
 and you can disable them completely using \fI\-\-no\-progress\-bars\fR.
-.SH "GUESTFISH COMMANDS"
-.IX Header "GUESTFISH COMMANDS"
+.SH "guestfish コマンド"
+.IX Header "guestfish コマンド"
 The commands in this section are guestfish convenience commands, in other
 words, they are not part of the \fIguestfs\fR\|(3) \s-1API\s0.
 .SS "help"
@@ -1190,7 +1193,7 @@ Without any parameter, this provides general help.
 With a \f(CW\*(C`cmd\*(C'\fR parameter, this displays detailed help for that command.
 .SS "quit | exit"
 .IX Subsection "quit | exit"
-This exits guestfish.  You can also use \f(CW\*(C`^D\*(C'\fR key.
+これは guestfish を終了します。\f(CW\*(C`^D\*(C'\fR キーを使用することもできます。
 .SS "alloc"
 .IX Subsection "alloc"
 .SS "allocate"
@@ -1206,8 +1209,8 @@ For more advanced image creation, see \fIqemu\-img\fR\|(1) utility.
 .PP
 Size can be specified using standard suffixes, eg. \f(CW\*(C`1M\*(C'\fR.
 .PP
-To create a sparse file, use \*(L"sparse\*(R" instead.  To create a prepared disk
-image, see \*(L"\s-1PREPARED\s0 \s-1DISK\s0 \s-1IMAGES\s0\*(R".
+スパースなファイルを作成するには、代わりに \*(L"sparse\*(R" を使用します。非スパースなディスクイメージを作成するには、
+\&\*(L"準備済みディスクイメージ\*(R" を参照してください。
 .SS "copy-in"
 .IX Subsection "copy-in"
 .Vb 1
@@ -1256,7 +1259,7 @@ Delete the event handler which was previously registered as \f(CW\*(C`name\*(C'\
 multiple event handlers were registered with the same name, they are all
 deleted.
 .PP
-See also the guestfish commands \f(CW\*(C`event\*(C'\fR and \f(CW\*(C`list\-events\*(C'\fR.
+guestfish コマンドの \f(CW\*(C`event\*(C'\fR および \f(CW\*(C`list\-events\*(C'\fR 参照。
 .SS "display"
 .IX Subsection "display"
 .Vb 1
@@ -1273,14 +1276,14 @@ environment variable.  For example to use the \s-1GNOME\s0 display program:
 \& export GUESTFISH_DISPLAY_IMAGE=eog
 .Ve
 .PP
-See also \fIdisplay\fR\|(1).
+\&\fIdisplay\fR\|(1) 参照。
 .SS "echo"
 .IX Subsection "echo"
 .Vb 1
 \& echo [params ...]
 .Ve
 .PP
-This echos the parameters to the terminal.
+パラメーターを端末に返します。
 .SS "edit"
 .IX Subsection "edit"
 .SS "vi"
@@ -1330,7 +1333,7 @@ variable \f(CW$EVENT\fR.
 \& event "" * "echo $EVENT $@"
 .Ve
 .PP
-See also the guestfish commands \f(CW\*(C`delete\-event\*(C'\fR and \f(CW\*(C`list\-events\*(C'\fR.
+guestfish コマンドの \f(CW\*(C`delete\-event\*(C'\fR および \f(CW\*(C`list\-events\*(C'\fR 参照。
 .SS "glob"
 .IX Subsection "glob"
 .Vb 1
@@ -1340,7 +1343,7 @@ See also the guestfish commands \f(CW\*(C`delete\-event\*(C'\fR and \f(CW\*(C`li
 Expand wildcards in any paths in the args list, and run \f(CW\*(C`command\*(C'\fR
 repeatedly on each matching path.
 .PP
-See \*(L"\s-1WILDCARDS\s0 \s-1AND\s0 \s-1GLOBBING\s0\*(R".
+\&\*(L"\s-1WILDCARDS\s0 \s-1AND\s0 \s-1GLOBBING\s0\*(R" 参照。
 .SS "hexedit"
 .IX Subsection "hexedit"
 .Vb 3
@@ -1367,7 +1370,7 @@ For example to edit the first few sectors of a disk you might do:
 which would allow you to edit anywhere within the first megabyte of the
 disk.
 .PP
-To edit the superblock of an ext2 filesystem on \f(CW\*(C`/dev/sda1\*(C'\fR, do:
+\&\f(CW\*(C`/dev/sda1\*(C'\fR にある ext2 ファイルシステムのスーパーブロックを編集するには、次のようにします:
 .PP
 .Vb 1
 \& hexedit /dev/sda1 0x400 0x400
@@ -1378,7 +1381,7 @@ To edit the superblock of an ext2 filesystem on \f(CW\*(C`/dev/sda1\*(C'\fR, do:
 This command requires the external \fIhexedit\fR\|(1) program.  You can specify
 another program to use by setting the \f(CW\*(C`HEXEDITOR\*(C'\fR environment variable.
 .PP
-See also \*(L"hexdump\*(R".
+\&\*(L"hexdump\*(R" 参照。
 .SS "lcd"
 .IX Subsection "lcd"
 .Vb 1
@@ -1403,7 +1406,7 @@ List the event handlers registered using the guestfish \f(CW\*(C`event\*(C'\fR c
 \&  man
 .Ve
 .PP
-Opens the manual page for guestfish.
+guestfish のマニュアルページを開きます。
 .SS "more"
 .IX Subsection "more"
 .SS "less"
@@ -1414,10 +1417,10 @@ Opens the manual page for guestfish.
 \& less filename
 .Ve
 .PP
-This is used to view a file.
+ファイルを表示するために使用します。
 .PP
-The default viewer is \f(CW$PAGER\fR.  However if you use the alternate command
-\&\f(CW\*(C`less\*(C'\fR you will get the \f(CW\*(C`less\*(C'\fR command specifically.
+デフォルトのビューアーは \f(CW$PAGER\fR です。  しかし代替のコマンド \f(CW\*(C`less\*(C'\fR を使用すると、明示的に \f(CW\*(C`less\*(C'\fR
+コマンドが使えます。
 .SS "reopen"
 .IX Subsection "reopen"
 .Vb 1
@@ -1433,9 +1436,9 @@ However this is occasionally useful for testing.
 \&  setenv VAR value
 .Ve
 .PP
-Set the environment variable \f(CW\*(C`VAR\*(C'\fR to the string \f(CW\*(C`value\*(C'\fR.
+環境変数 \f(CW\*(C`VAR\*(C'\fR を文字列 \f(CW\*(C`value\*(C'\fR に設定します。
 .PP
-To print the value of an environment variable use a shell command such as:
+環境変数の値を表示するには、次のようにシェルコマンドを使用します:
 .PP
 .Vb 1
 \& !echo $VAR
@@ -1468,7 +1471,7 @@ This command returns a list of the optional groups known to the daemon, and
 indicates which ones are supported by this build of the libguestfs
 appliance.
 .PP
-See also \*(L"\s-1AVAILABILITY\s0\*(R" in \fIguestfs\fR\|(3).
+\&\*(L"\s-1AVAILABILITY\s0\*(R" in \fIguestfs\fR\|(3) 参照。
 .SS "time"
 .IX Subsection "time"
 .Vb 1
@@ -1483,20 +1486,20 @@ be useful for benchmarking operations.
 \&  unsetenv VAR
 .Ve
 .PP
-Remove \f(CW\*(C`VAR\*(C'\fR from the environment.
-.SH "COMMANDS"
-.IX Header "COMMANDS"
+環境から \f(CW\*(C`VAR\*(C'\fR を削除します。
+.SH "コマンド"
+.IX Header "コマンド"
 .SS "add-cdrom"
 .IX Subsection "add-cdrom"
 .Vb 1
 \& add\-cdrom filename
 .Ve
 .PP
-This function adds a virtual CD-ROM disk image to the guest.
+この関数は仮想 CD-ROM ディスクイメージを仮想マシンに追加します。
 .PP
-This is equivalent to the qemu parameter \fI\-cdrom filename\fR.
+これは \s-1QEMU\s0 パラメーター \fI\-cdrom filename\fR と同等です。
 .PP
-Notes:
+注:
 .IP "\(bu" 4
 This call checks for the existence of \f(CW\*(C`filename\*(C'\fR.  This stops you from
 specifying other types of drive which are supported by qemu such as \f(CW\*(C`nbd:\*(C'\fR
@@ -1507,8 +1510,7 @@ If you just want to add an \s-1ISO\s0 file (often you use this as an efficient w
 to transfer large files into the guest), then you should probably use
 \&\*(L"add-drive-ro\*(R" instead.
 .PP
-\&\fIThis function is deprecated.\fR In new code, use the \*(L"add_drive_opts\*(R" call
-instead.
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"add_drive_opts\*(R" を使用してください。
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -1557,41 +1559,41 @@ are marked <readonly/> in the libvirt \s-1XML\s0.  Possible values are:
 .ie n .IP "readonlydisk = ""error""" 4
 .el .IP "readonlydisk = ``error''" 4
 .IX Item "readonlydisk = error"
-If \f(CW\*(C`readonly\*(C'\fR is false:
+\&\f(CW\*(C`readonly\*(C'\fR が偽ならば:
 .Sp
 The whole call is aborted with an error if any disk with the
 <readonly/> flag is found.
 .Sp
-If \f(CW\*(C`readonly\*(C'\fR is true:
+\&\f(CW\*(C`readonly\*(C'\fR が真ならば:
 .Sp
 Disks with the <readonly/> flag are added read-only.
 .ie n .IP "readonlydisk = ""read""" 4
 .el .IP "readonlydisk = ``read''" 4
 .IX Item "readonlydisk = read"
-If \f(CW\*(C`readonly\*(C'\fR is false:
+\&\f(CW\*(C`readonly\*(C'\fR が偽ならば:
 .Sp
 Disks with the <readonly/> flag are added read-only.  Other disks
 are added read/write.
 .Sp
-If \f(CW\*(C`readonly\*(C'\fR is true:
+\&\f(CW\*(C`readonly\*(C'\fR が真ならば:
 .Sp
 Disks with the <readonly/> flag are added read-only.
-.ie n .IP "readonlydisk = ""write"" (default)" 4
-.el .IP "readonlydisk = ``write'' (default)" 4
-.IX Item "readonlydisk = write (default)"
-If \f(CW\*(C`readonly\*(C'\fR is false:
+.ie n .IP "readonlydisk = ""write"" (デフォルト)" 4
+.el .IP "readonlydisk = ``write'' (デフォルト)" 4
+.IX Item "readonlydisk = write (デフォルト)"
+\&\f(CW\*(C`readonly\*(C'\fR が偽ならば:
 .Sp
 Disks with the <readonly/> flag are added read/write.
 .Sp
-If \f(CW\*(C`readonly\*(C'\fR is true:
+\&\f(CW\*(C`readonly\*(C'\fR が真ならば:
 .Sp
 Disks with the <readonly/> flag are added read-only.
 .ie n .IP "readonlydisk = ""ignore""" 4
 .el .IP "readonlydisk = ``ignore''" 4
 .IX Item "readonlydisk = ignore"
-If \f(CW\*(C`readonly\*(C'\fR is true or false:
+\&\f(CW\*(C`readonly\*(C'\fR が真または偽ならば:
 .Sp
-Disks with the <readonly/> flag are skipped.
+<readonly/> フラグのあるディスクはスキップされます
 .PP
 The other optional parameters are passed directly through to
 \&\*(L"add-drive-opts\*(R".
@@ -1630,9 +1632,9 @@ obviously do need sufficient permissions to access the filename for whatever
 operations you want to perform (ie. read access if you just want to read the
 image or write access if you want to modify the image).
 .PP
-This call checks that \f(CW\*(C`filename\*(C'\fR exists.
+この呼び出しは \f(CW\*(C`filename\*(C'\fR が存在するかを確認します。
 .PP
-The optional arguments are:
+オプション引数は次のとおりです:
 .ie n .IP """readonly""" 4
 .el .IP "\f(CWreadonly\fR" 4
 .IX Item "readonly"
@@ -1682,8 +1684,7 @@ is added read-only, with the format being detected automatically.
 This is the same as \*(L"add-drive-ro\*(R" but it allows you to specify the \s-1QEMU\s0
 interface emulation to use at run time.
 .PP
-\&\fIThis function is deprecated.\fR In new code, use the \*(L"add_drive_opts\*(R" call
-instead.
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"add_drive_opts\*(R" を使用してください。
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -1697,8 +1698,7 @@ these functions.
 This is the same as \*(L"add-drive\*(R" but it allows you to specify the \s-1QEMU\s0
 interface emulation to use at run time.
 .PP
-\&\fIThis function is deprecated.\fR In new code, use the \*(L"add_drive_opts\*(R" call
-instead.
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"add_drive_opts\*(R" を使用してください。
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -1740,8 +1740,8 @@ nodeset, and a boolean flag if a node was created.
 \& aug\-defvar name expr
 .Ve
 .PP
-Defines an Augeas variable \f(CW\*(C`name\*(C'\fR whose value is the result of evaluating
-\&\f(CW\*(C`expr\*(C'\fR.  If \f(CW\*(C`expr\*(C'\fR is \s-1NULL\s0, then \f(CW\*(C`name\*(C'\fR is undefined.
+\&\f(CW\*(C`expr\*(C'\fR を評価した結果の値である Augeas 変数 \f(CW\*(C`name\*(C'\fR を定義します。 \f(CW\*(C`expr\*(C'\fR が \s-1NULL\s0 ならば、 \f(CW\*(C`name\*(C'\fR
+が定義されません。
 .PP
 On success this returns the number of nodes in \f(CW\*(C`expr\*(C'\fR, or \f(CW0\fR if \f(CW\*(C`expr\*(C'\fR
 evaluates to something which is not a nodeset.
@@ -1765,19 +1765,18 @@ closed.
 .PP
 You must call this before using any other \*(L"aug\-*\*(R" commands.
 .PP
-\&\f(CW\*(C`root\*(C'\fR is the filesystem root.  \f(CW\*(C`root\*(C'\fR must not be \s-1NULL\s0, use \f(CW\*(C`/\*(C'\fR instead.
+\&\f(CW\*(C`root\*(C'\fR はファイルシステムのルートです。 \f(CW\*(C`root\*(C'\fR は \s-1NULL\s0 にできません、代わりに \f(CW\*(C`/\*(C'\fR を使用します。
 .PP
 The flags are the same as the flags defined in <augeas.h>, the
 logical \fIor\fR of the following integers:
 .ie n .IP """AUG_SAVE_BACKUP"" = 1" 4
 .el .IP "\f(CWAUG_SAVE_BACKUP\fR = 1" 4
 .IX Item "AUG_SAVE_BACKUP = 1"
-Keep the original file with a \f(CW\*(C`.augsave\*(C'\fR extension.
+\&\f(CW\*(C`.augsave\*(C'\fR 拡張子を付けて元のファイルを保持します。
 .ie n .IP """AUG_SAVE_NEWFILE"" = 2" 4
 .el .IP "\f(CWAUG_SAVE_NEWFILE\fR = 2" 4
 .IX Item "AUG_SAVE_NEWFILE = 2"
-Save changes into a file with extension \f(CW\*(C`.augnew\*(C'\fR, and do not overwrite
-original.  Overrides \f(CW\*(C`AUG_SAVE_BACKUP\*(C'\fR.
+拡張子 \f(CW\*(C`.augnew\*(C'\fR を付けたファイルに変更点を保存し、元を上書きしません。\f(CW\*(C`AUG_SAVE_BACKUP\*(C'\fR を上書きします。
 .ie n .IP """AUG_TYPE_CHECK"" = 4" 4
 .el .IP "\f(CWAUG_TYPE_CHECK\fR = 4" 4
 .IX Item "AUG_TYPE_CHECK = 4"
@@ -1789,7 +1788,7 @@ set the \f(CW\*(C`LIBGUESTFS_MEMSIZE\*(C'\fR environment variable or call \*(L"s
 .ie n .IP """AUG_NO_STDINC"" = 8" 4
 .el .IP "\f(CWAUG_NO_STDINC\fR = 8" 4
 .IX Item "AUG_NO_STDINC = 8"
-Do not use standard load path for modules.
+モジュールの標準的な読み込みパスを使用しません。
 .ie n .IP """AUG_SAVE_NOOP"" = 16" 4
 .el .IP "\f(CWAUG_SAVE_NOOP\fR = 16" 4
 .IX Item "AUG_SAVE_NOOP = 16"
@@ -1801,7 +1800,7 @@ Do not load the tree in \*(L"aug-init\*(R".
 .PP
 To close the handle, you can call \*(L"aug-close\*(R".
 .PP
-To find out more about Augeas, see <http://augeas.net/>.
+Augeas に関する詳細は <http://augeas.net/> を参照してください。
 .SS "aug-insert"
 .IX Subsection "aug-insert"
 .Vb 1
@@ -1819,7 +1818,7 @@ be a label, ie. not contain \f(CW\*(C`/\*(C'\fR, \f(CW\*(C`*\*(C'\fR or end with
 \& aug\-load
 .Ve
 .PP
-Load files into the tree.
+ファイルをツリーの中に読み込みます
 .PP
 See \f(CW\*(C`aug_load\*(C'\fR in the Augeas documentation for the full gory details.
 .SS "aug-ls"
@@ -1845,24 +1844,24 @@ node in the current tree.
 \& aug\-mv src dest
 .Ve
 .PP
-Move the node \f(CW\*(C`src\*(C'\fR to \f(CW\*(C`dest\*(C'\fR.  \f(CW\*(C`src\*(C'\fR must match exactly one node.
-\&\f(CW\*(C`dest\*(C'\fR is overwritten if it exists.
+ノード \f(CW\*(C`src\*(C'\fR を \f(CW\*(C`dest\*(C'\fR に移動します。 \f(CW\*(C`src\*(C'\fR はただ一つのノードである必要があります。 \f(CW\*(C`dest\*(C'\fR
+は存在すると上書きされます。
 .SS "aug-rm"
 .IX Subsection "aug-rm"
 .Vb 1
 \& aug\-rm augpath
 .Ve
 .PP
-Remove \f(CW\*(C`path\*(C'\fR and all of its children.
+\&\f(CW\*(C`path\*(C'\fR とすべての子を削除します。
 .PP
-On success this returns the number of entries which were removed.
+成功すると、これは削除された項目の数が返します。
 .SS "aug-save"
 .IX Subsection "aug-save"
 .Vb 1
 \& aug\-save
 .Ve
 .PP
-This writes all pending changes to disk.
+これにより、すべての保留の変更がディスクに書き込まれます。
 .PP
 The flags which were passed to \*(L"aug-init\*(R" affect exactly how files are
 saved.
@@ -1903,7 +1902,7 @@ in the appliance.
 If an unknown group name is included in the list of groups then an error is
 always returned.
 .PP
-\&\fINotes:\fR
+\&\fI注記:\fR
 .IP "\(bu" 4
 You must call \*(L"launch\*(R" before calling this function.
 .Sp
@@ -1932,7 +1931,7 @@ about.  Note this returns both supported and unsupported groups.  To find
 out which ones the daemon can actually support you have to call
 \&\*(L"available\*(R" on each member of the returned list.
 .PP
-See also \*(L"available\*(R" and \*(L"\s-1AVAILABILITY\s0\*(R" in \fIguestfs\fR\|(3).
+\&\*(L"available\*(R" および \*(L"\s-1AVAILABILITY\s0\*(R" in \fIguestfs\fR\|(3) 参照。
 .SS "base64\-in"
 .IX Subsection "base64-in"
 .Vb 1
@@ -1964,23 +1963,23 @@ present.
 .ie n .IP """UUID""" 4
 .el .IP "\f(CWUUID\fR" 4
 .IX Item "UUID"
-The uuid of this device.
+このデバイスのUUID。
 .ie n .IP """LABEL""" 4
 .el .IP "\f(CWLABEL\fR" 4
 .IX Item "LABEL"
-The label of this device.
+このデバイスのラベル。
 .ie n .IP """VERSION""" 4
 .el .IP "\f(CWVERSION\fR" 4
 .IX Item "VERSION"
-The version of blkid command.
+blkid コマンドのバージョン。
 .ie n .IP """TYPE""" 4
 .el .IP "\f(CWTYPE\fR" 4
 .IX Item "TYPE"
-The filesystem type or \s-1RAID\s0 of this device.
+このデバイスのファイルシステム形式または RAID。
 .ie n .IP """USAGE""" 4
 .el .IP "\f(CWUSAGE\fR" 4
 .IX Item "USAGE"
-The usage of this device, for example \f(CW\*(C`filesystem\*(C'\fR or \f(CW\*(C`raid\*(C'\fR.
+このデバイスの使用法です。たとえば、\f(CW\*(C`filesystem\*(C'\fR や \f(CW\*(C`raid\*(C'\fR。
 .SS "blockdev-flushbufs"
 .IX Subsection "blockdev-flushbufs"
 .Vb 1
@@ -1989,52 +1988,49 @@ The usage of this device, for example \f(CW\*(C`filesystem\*(C'\fR or \f(CW\*(C`
 .PP
 This tells the kernel to flush internal buffers associated with \f(CW\*(C`device\*(C'\fR.
 .PP
-This uses the \fIblockdev\fR\|(8) command.
+これは \fIblockdev\fR\|(8) コマンドを使用します。
 .SS "blockdev-getbsz"
 .IX Subsection "blockdev-getbsz"
 .Vb 1
 \& blockdev\-getbsz device
 .Ve
 .PP
-This returns the block size of a device.
+これはデバイスのブロック容量を返します。
 .PP
-(Note this is different from both \fIsize in blocks\fR and \fIfilesystem block
-size\fR).
+(これは \fIsize in blocks\fR および \fIfilesystem block size\fR と異なることに注意してください。)
 .PP
-This uses the \fIblockdev\fR\|(8) command.
+これは \fIblockdev\fR\|(8) コマンドを使用します。
 .SS "blockdev-getro"
 .IX Subsection "blockdev-getro"
 .Vb 1
 \& blockdev\-getro device
 .Ve
 .PP
-Returns a boolean indicating if the block device is read-only (true if
-read-only, false if not).
+ブロックデバイスが読み込み専用であるかどうかを示す論理値を返します（読み込み専用ならば真、そうでなければ偽）。
 .PP
-This uses the \fIblockdev\fR\|(8) command.
+これは \fIblockdev\fR\|(8) コマンドを使用します。
 .SS "blockdev\-getsize64"
 .IX Subsection "blockdev-getsize64"
 .Vb 1
 \& blockdev\-getsize64 device
 .Ve
 .PP
-This returns the size of the device in bytes.
+これはデバイスの容量をバイト単位で返します。
 .PP
-See also \*(L"blockdev-getsz\*(R".
+\&\*(L"blockdev-getsz\*(R" 参照。
 .PP
-This uses the \fIblockdev\fR\|(8) command.
+これは \fIblockdev\fR\|(8) コマンドを使用します。
 .SS "blockdev-getss"
 .IX Subsection "blockdev-getss"
 .Vb 1
 \& blockdev\-getss device
 .Ve
 .PP
-This returns the size of sectors on a block device.  Usually 512, but can be
-larger for modern devices.
+これはブロックデバイスのセクター容量を返します。通常は 512 ですが、最近のデバイスはより大きいかもしれません。
 .PP
-(Note, this is not the size in sectors, use \*(L"blockdev-getsz\*(R" for that).
+（これはセクターのサイズではありません、そのためには \*(L"blockdev-getsz\*(R" を使用する必要があることに注意してください）。
 .PP
-This uses the \fIblockdev\fR\|(8) command.
+これは \fIblockdev\fR\|(8) コマンドを使用します。
 .SS "blockdev-getsz"
 .IX Subsection "blockdev-getsz"
 .Vb 1
@@ -2047,46 +2043,69 @@ the sectorsize isn't 512 bytes ... weird).
 See also \*(L"blockdev-getss\*(R" for the real sector size of the device, and
 \&\*(L"blockdev\-getsize64\*(R" for the more useful \fIsize in bytes\fR.
 .PP
-This uses the \fIblockdev\fR\|(8) command.
+これは \fIblockdev\fR\|(8) コマンドを使用します。
 .SS "blockdev-rereadpt"
 .IX Subsection "blockdev-rereadpt"
 .Vb 1
 \& blockdev\-rereadpt device
 .Ve
 .PP
-Reread the partition table on \f(CW\*(C`device\*(C'\fR.
+\&\f(CW\*(C`device\*(C'\fR のパーティションテーブルを再読み込みします。
 .PP
-This uses the \fIblockdev\fR\|(8) command.
+これは \fIblockdev\fR\|(8) コマンドを使用します。
 .SS "blockdev-setbsz"
 .IX Subsection "blockdev-setbsz"
 .Vb 1
 \& blockdev\-setbsz device blocksize
 .Ve
 .PP
-This sets the block size of a device.
+デバイスのブロック容量を設定します。
 .PP
-(Note this is different from both \fIsize in blocks\fR and \fIfilesystem block
-size\fR).
+(これは \fIsize in blocks\fR および \fIfilesystem block size\fR と異なることに注意してください。)
 .PP
-This uses the \fIblockdev\fR\|(8) command.
+これは \fIblockdev\fR\|(8) コマンドを使用します。
 .SS "blockdev-setro"
 .IX Subsection "blockdev-setro"
 .Vb 1
 \& blockdev\-setro device
 .Ve
 .PP
-Sets the block device named \f(CW\*(C`device\*(C'\fR to read-only.
+\&\f(CW\*(C`device\*(C'\fR という名前のブロックデバイスを読み込み専用に設定します。
 .PP
-This uses the \fIblockdev\fR\|(8) command.
+これは \fIblockdev\fR\|(8) コマンドを使用します。
 .SS "blockdev-setrw"
 .IX Subsection "blockdev-setrw"
 .Vb 1
 \& blockdev\-setrw device
 .Ve
 .PP
-Sets the block device named \f(CW\*(C`device\*(C'\fR to read-write.
+\&\f(CW\*(C`device\*(C'\fR という名前のブロックデバイスを読み書きに設定します。
 .PP
-This uses the \fIblockdev\fR\|(8) command.
+これは \fIblockdev\fR\|(8) コマンドを使用します。
+.SS "btrfs-device-add"
+.IX Subsection "btrfs-device-add"
+.Vb 1
+\& btrfs\-device\-add \*(Aqdevices ...\*(Aq fs
+.Ve
+.PP
+Add the list of device(s) in \f(CW\*(C`devices\*(C'\fR to the btrfs filesystem mounted at
+\&\f(CW\*(C`fs\*(C'\fR.  If \f(CW\*(C`devices\*(C'\fR is an empty list, this does nothing.
+.SS "btrfs-device-delete"
+.IX Subsection "btrfs-device-delete"
+.Vb 1
+\& btrfs\-device\-delete \*(Aqdevices ...\*(Aq fs
+.Ve
+.PP
+Remove the \f(CW\*(C`devices\*(C'\fR from the btrfs filesystem mounted at \f(CW\*(C`fs\*(C'\fR.  If
+\&\f(CW\*(C`devices\*(C'\fR is an empty list, this does nothing.
+.SS "btrfs-filesystem-balance"
+.IX Subsection "btrfs-filesystem-balance"
+.Vb 1
+\& btrfs\-filesystem\-balance fs
+.Ve
+.PP
+Balance the chunks in the btrfs filesystem mounted at \f(CW\*(C`fs\*(C'\fR across the
+underlying devices.
 .SS "btrfs-filesystem-resize"
 .IX Subsection "btrfs-filesystem-resize"
 .Vb 1
@@ -2099,17 +2118,81 @@ Note that unlike other resize calls, the filesystem has to be mounted and
 the parameter is the mountpoint not the device (this is a requirement of
 btrfs itself).
 .PP
-The optional parameters are:
+オプションのパラメーターは次のとおりです:
 .ie n .IP """size""" 4
 .el .IP "\f(CWsize\fR" 4
 .IX Item "size"
-The new size (in bytes) of the filesystem.  If omitted, the filesystem is
-resized to the maximum size.
+ファイルシステムの新しい容量（バイト単位）。省略されると、ファイルシステムは最大の容量に変更されます。
 .PP
-See also \fIbtrfs\fR\|(8).
+\&\fIbtrfs\fR\|(8) 参照。
 .PP
 This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 \&\s-1ARGUMENTS\s0\*(R".
+.SS "btrfs-filesystem-sync"
+.IX Subsection "btrfs-filesystem-sync"
+.Vb 1
+\& btrfs\-filesystem\-sync fs
+.Ve
+.PP
+Force sync on the btrfs filesystem mounted at \f(CW\*(C`fs\*(C'\fR.
+.SS "btrfs-fsck"
+.IX Subsection "btrfs-fsck"
+.Vb 1
+\& btrfs\-fsck device [superblock:N] [repair:true|false]
+.Ve
+.PP
+Used to check a btrfs filesystem, \f(CW\*(C`device\*(C'\fR is the device file where the
+filesystem is stored.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
+.SS "btrfs-set-seeding"
+.IX Subsection "btrfs-set-seeding"
+.Vb 1
+\& btrfs\-set\-seeding device true|false
+.Ve
+.PP
+Enable or disable the seeding feature of a device that contains a btrfs
+filesystem.
+.SS "btrfs-subvolume-create"
+.IX Subsection "btrfs-subvolume-create"
+.Vb 1
+\& btrfs\-subvolume\-create dest
+.Ve
+.PP
+Create a btrfs subvolume.  The \f(CW\*(C`dest\*(C'\fR argument is the destination directory
+and the name of the snapshot, in the form \f(CW\*(C`/path/to/dest/name\*(C'\fR.
+.SS "btrfs-subvolume-delete"
+.IX Subsection "btrfs-subvolume-delete"
+.Vb 1
+\& btrfs\-subvolume\-delete subvolume
+.Ve
+.PP
+Delete the named btrfs subvolume.
+.SS "btrfs-subvolume-list"
+.IX Subsection "btrfs-subvolume-list"
+.Vb 1
+\& btrfs\-subvolume\-list fs
+.Ve
+.PP
+List the btrfs snapshots and subvolumes of the btrfs filesystem which is
+mounted at \f(CW\*(C`fs\*(C'\fR.
+.SS "btrfs-subvolume-set-default"
+.IX Subsection "btrfs-subvolume-set-default"
+.Vb 1
+\& btrfs\-subvolume\-set\-default id fs
+.Ve
+.PP
+Set the subvolume of the btrfs filesystem \f(CW\*(C`fs\*(C'\fR which will be mounted by
+default.  See \*(L"btrfs-subvolume-list\*(R" to get a list of subvolumes.
+.SS "btrfs-subvolume-snapshot"
+.IX Subsection "btrfs-subvolume-snapshot"
+.Vb 1
+\& btrfs\-subvolume\-snapshot source dest
+.Ve
+.PP
+btrfs サブボリューム \f(CW\*(C`source\*(C'\fR の書き込み可能なスナップショットを作成します。\f(CW\*(C`dest\*(C'\fR
+引数は、宛先ディレクトリーで、\f(CW\*(C`/path/to/dest/name\*(C'\fR 形式のスナップショットの名前です。
 .SS "case-sensitive-path"
 .IX Subsection "case-sensitive-path"
 .Vb 1
@@ -2130,7 +2213,7 @@ may appear as \f(CW\*(C`/WINDOWS\*(C'\fR or \f(CW\*(C`/windows\*(C'\fR (or other
 precise details of how they were created.  In Windows itself this would not
 be a problem.
 .PP
-Bug or feature? You decide:
+バグか機能か？次を見て決めてください:
 http://www.tuxera.com/community/ntfs\-3g\-faq/#posixfilenames1 <http://www.tuxera.com/community/ntfs-3g-faq/#posixfilenames1>
 .PP
 This function resolves the true case of each element in the path and returns
@@ -2142,14 +2225,14 @@ how the directories were originally created under Windows).
 .PP
 \&\fINote\fR: This function does not handle drive names, backslashes etc.
 .PP
-See also \*(L"realpath\*(R".
+\&\*(L"realpath\*(R" 参照。
 .SS "cat"
 .IX Subsection "cat"
 .Vb 1
 \& cat path
 .Ve
 .PP
-Return the contents of the file named \f(CW\*(C`path\*(C'\fR.
+\&\f(CW\*(C`path\*(C'\fR という名前のファイルの内容を返します。
 .PP
 Note that this function cannot correctly handle binary files (specifically,
 files containing \f(CW\*(C`\e0\*(C'\fR character which is treated as end of string).  For
@@ -2164,45 +2247,44 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 \& checksum csumtype path
 .Ve
 .PP
-This call computes the \s-1MD5\s0, SHAx or \s-1CRC\s0 checksum of the file named \f(CW\*(C`path\*(C'\fR.
+この呼び出しは \f(CW\*(C`path\*(C'\fR という名前のファイルの \s-1MD5\s0, SHAx または \s-1CRC\s0 チェックサムを計算します。
 .PP
-The type of checksum to compute is given by the \f(CW\*(C`csumtype\*(C'\fR parameter which
-must have one of the following values:
+計算するチェックサムの種類は、以下の値のどれかである \f(CW\*(C`csumtype\*(C'\fR パラメーターにより与えられます:
 .ie n .IP """crc""" 4
 .el .IP "\f(CWcrc\fR" 4
 .IX Item "crc"
-Compute the cyclic redundancy check (\s-1CRC\s0) specified by \s-1POSIX\s0 for the
-\&\f(CW\*(C`cksum\*(C'\fR command.
+\&\f(CW\*(C`cksum\*(C'\fR コマンドに対して \s-1POSIX\s0 により指定された巡回冗長検査 (\s-1CRC:\s0 cyclic redundancy check)
+を計算します。
 .ie n .IP """md5""" 4
 .el .IP "\f(CWmd5\fR" 4
 .IX Item "md5"
-Compute the \s-1MD5\s0 hash (using the \f(CW\*(C`md5sum\*(C'\fR program).
+（\f(CW\*(C`md5sum\*(C'\fR プログラムを用いて）MD5 ハッシュを計算します。
 .ie n .IP """sha1""" 4
 .el .IP "\f(CWsha1\fR" 4
 .IX Item "sha1"
-Compute the \s-1SHA1\s0 hash (using the \f(CW\*(C`sha1sum\*(C'\fR program).
+（\f(CW\*(C`sha1sum\*(C'\fR プログラムを用いて）SHA1 ハッシュを計算します。
 .ie n .IP """sha224""" 4
 .el .IP "\f(CWsha224\fR" 4
 .IX Item "sha224"
-Compute the \s-1SHA224\s0 hash (using the \f(CW\*(C`sha224sum\*(C'\fR program).
+（\f(CW\*(C`sha224sum\*(C'\fR プログラムを用いて）SHA224 ハッシュを計算します。
 .ie n .IP """sha256""" 4
 .el .IP "\f(CWsha256\fR" 4
 .IX Item "sha256"
-Compute the \s-1SHA256\s0 hash (using the \f(CW\*(C`sha256sum\*(C'\fR program).
+（\f(CW\*(C`sha256sum\*(C'\fR プログラムを用いて）SHA256 ハッシュを計算します。
 .ie n .IP """sha384""" 4
 .el .IP "\f(CWsha384\fR" 4
 .IX Item "sha384"
-Compute the \s-1SHA384\s0 hash (using the \f(CW\*(C`sha384sum\*(C'\fR program).
+（\f(CW\*(C`sha384sum\*(C'\fR プログラムを用いて）SHA384 ハッシュを計算します。
 .ie n .IP """sha512""" 4
 .el .IP "\f(CWsha512\fR" 4
 .IX Item "sha512"
-Compute the \s-1SHA512\s0 hash (using the \f(CW\*(C`sha512sum\*(C'\fR program).
+（\f(CW\*(C`sha512sum\*(C'\fR プログラムを用いて）SHA512 ハッシュを計算します。
 .PP
-The checksum is returned as a printable string.
+チェックサムは表示可能な文字列として返されます。
 .PP
-To get the checksum for a device, use \*(L"checksum-device\*(R".
+デバイスのチェックサムを取得するには \*(L"checksum-device\*(R" を使用します。
 .PP
-To get the checksums for many files, use \*(L"checksums-out\*(R".
+多くのファイルのチェックサムを取得するには \*(L"checksums-out\*(R" を使用します。
 .SS "checksum-device"
 .IX Subsection "checksum-device"
 .Vb 1
@@ -2241,14 +2323,14 @@ supported.
 decimal, unless you prefix it with \f(CW0\fR to get octal, ie. use \f(CW0700\fR not
 \&\f(CW700\fR.
 .PP
-The mode actually set is affected by the umask.
+実際に設定されるモードは umask により影響されます。
 .SS "chown"
 .IX Subsection "chown"
 .Vb 1
 \& chown owner group path
 .Ve
 .PP
-Change the file owner to \f(CW\*(C`owner\*(C'\fR and group to \f(CW\*(C`group\*(C'\fR.
+ファイルの所有者を \f(CW\*(C`owner\*(C'\fR に、グループを \f(CW\*(C`group\*(C'\fR に変更します。
 .PP
 Only numeric uid and gid are supported.  If you want to use names, you will
 need to locate and parse the password file yourself (Augeas support makes
@@ -2293,7 +2375,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .PP
 This is the same as \*(L"command\*(R", but splits the result into a list of lines.
 .PP
-See also: \*(L"sh-lines\*(R"
+関連項目: \*(L"sh-lines\*(R"
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -2345,9 +2427,9 @@ This can be used to add arbitrary qemu command line parameters of the form
 \&\fI\-param value\fR.  Actually it's not quite arbitrary \- we prevent you from
 setting some parameters which would interfere with parameters that we use.
 .PP
-The first character of \f(CW\*(C`param\*(C'\fR string must be a \f(CW\*(C`\-\*(C'\fR (dash).
+\&\f(CW\*(C`param\*(C'\fR 文字列の最初の文字は \f(CW\*(C`\-\*(C'\fR (ダッシュ) である必要があります。
 .PP
-\&\f(CW\*(C`value\*(C'\fR can be \s-1NULL\s0.
+\&\f(CW\*(C`value\*(C'\fR は \s-1NULL\s0 もありえます。
 .SS "copy-device-to-device"
 .IX Subsection "copy-device-to-device"
 .Vb 1
@@ -2363,11 +2445,9 @@ offset, destination offset and size to copy.  These values are all specified
 in bytes.  If not given, the offsets both default to zero, and the size
 defaults to copying as much as possible until we hit the end of the source.
 .PP
-The source and destination may be the same object.  However overlapping
-regions may not be copied correctly.
+ソースと宛先は同じオブジェクトである可能性があります。しかしながら、重なり合う領域は正しくコピーされないかもしれません。
 .PP
-If the destination is a file, it is created if required.  If the destination
-file is not large enough, it is extended.
+宛先がファイルならば、必要に応じて作成されます。宛先ファイルが十分に大きくなければ、拡張されます。
 .PP
 This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 \&\s-1ARGUMENTS\s0\*(R".
@@ -2377,7 +2457,7 @@ This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 \& copy\-device\-to\-file src dest [srcoffset:N] [destoffset:N] [size:N]
 .Ve
 .PP
-See \*(L"copy-device-to-device\*(R" for a general overview of this call.
+この呼び出しの一般的な概要は \*(L"copy-device-to-device\*(R" を参照してください。
 .PP
 This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 \&\s-1ARGUMENTS\s0\*(R".
@@ -2387,7 +2467,7 @@ This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 \& copy\-file\-to\-device src dest [srcoffset:N] [destoffset:N] [size:N]
 .Ve
 .PP
-See \*(L"copy-device-to-device\*(R" for a general overview of this call.
+この呼び出しの一般的な概要は \*(L"copy-device-to-device\*(R" を参照してください。
 .PP
 This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 \&\s-1ARGUMENTS\s0\*(R".
@@ -2397,7 +2477,7 @@ This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 \& copy\-file\-to\-file src dest [srcoffset:N] [destoffset:N] [size:N]
 .Ve
 .PP
-See \*(L"copy-device-to-device\*(R" for a general overview of this call.
+この呼び出しの一般的な概要は \*(L"copy-device-to-device\*(R" を参照してください。
 .PP
 This is \fBnot\fR the function you want for copying files.  This is for copying
 blocks within existing files.  See \*(L"cp\*(R", \*(L"cp-a\*(R" and \*(L"mv\*(R" for general
@@ -2417,8 +2497,7 @@ This command copies exactly \f(CW\*(C`size\*(C'\fR bytes from one source device 
 Note this will fail if the source is too short or if the destination is not
 large enough.
 .PP
-\&\fIThis function is deprecated.\fR In new code, use the
-\&\*(L"copy_device_to_device\*(R" call instead.
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"copy_device_to_device\*(R" を使用してください。
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -2429,16 +2508,14 @@ these functions.
 \& cp src dest
 .Ve
 .PP
-This copies a file from \f(CW\*(C`src\*(C'\fR to \f(CW\*(C`dest\*(C'\fR where \f(CW\*(C`dest\*(C'\fR is either a
-destination filename or destination directory.
+ファイルを \f(CW\*(C`src\*(C'\fR から \f(CW\*(C`dest\*(C'\fR にコピーします。ここで \f(CW\*(C`dest\*(C'\fR は宛先ファイル名または宛先ディレクトリです。
 .SS "cp-a"
 .IX Subsection "cp-a"
 .Vb 1
 \& cp\-a src dest
 .Ve
 .PP
-This copies a file or directory from \f(CW\*(C`src\*(C'\fR to \f(CW\*(C`dest\*(C'\fR recursively using the
-\&\f(CW\*(C`cp \-a\*(C'\fR command.
+ファイルまたはディレクトリを \f(CW\*(C`src\*(C'\fR から \f(CW\*(C`dest\*(C'\fR に \f(CW\*(C`cp \-a\*(C'\fR コマンドを使用して再帰的にコピーします。
 .SS "dd"
 .IX Subsection "dd"
 .Vb 1
@@ -2453,8 +2530,7 @@ If the destination is a device, it must be as large or larger than the
 source file or device, otherwise the copy will fail.  This command cannot do
 partial copies (see \*(L"copy-device-to-device\*(R").
 .PP
-\&\fIThis function is deprecated.\fR In new code, use the
-\&\*(L"copy_device_to_device\*(R" call instead.
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"copy_device_to_device\*(R" を使用してください。
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -2465,7 +2541,7 @@ these functions.
 \& df
 .Ve
 .PP
-This command runs the \f(CW\*(C`df\*(C'\fR command to report disk space used.
+このコマンドはディスク使用状況を報告するために \f(CW\*(C`df\*(C'\fR コマンドを実行します。
 .PP
 This command is mostly useful for interactive sessions.  It is \fInot\fR
 intended that you try to parse the output string.  Use \*(L"statvfs\*(R" from
@@ -2476,8 +2552,7 @@ programs.
 \& df\-h
 .Ve
 .PP
-This command runs the \f(CW\*(C`df \-h\*(C'\fR command to report disk space used in
-human-readable format.
+このコマンドはディスク使用状況を読みやすい形式で報告するために \f(CW\*(C`df \-h\*(C'\fR コマンドを実行します。
 .PP
 This command is mostly useful for interactive sessions.  It is \fInot\fR
 intended that you try to parse the output string.  Use \*(L"statvfs\*(R" from
@@ -2503,9 +2578,9 @@ before running the program.
 Download file \f(CW\*(C`remotefilename\*(C'\fR and save it as \f(CW\*(C`filename\*(C'\fR on the local
 machine.
 .PP
-\&\f(CW\*(C`filename\*(C'\fR can also be a named pipe.
+\&\f(CW\*(C`filename\*(C'\fR は名前付きパイプを使えます。
 .PP
-See also \*(L"upload\*(R", \*(L"cat\*(R".
+\&\*(L"upload\*(R", \*(L"cat\*(R" 参照。
 .PP
 Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "download-offset"
@@ -2524,7 +2599,7 @@ Note that there is no limit on the amount of data that can be downloaded
 with this call, unlike with \*(L"pread\*(R", and this call always reads the full
 amount unless an error occurs.
 .PP
-See also \*(L"download\*(R", \*(L"pread\*(R".
+\&\*(L"download\*(R", \*(L"pread\*(R" 参照。
 .PP
 Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "drop-caches"
@@ -2537,7 +2612,7 @@ This instructs the guest kernel to drop its page cache, and/or dentries and
 inode caches.  The parameter \f(CW\*(C`whattodrop\*(C'\fR tells the kernel what precisely
 to drop, see http://linux\-mm.org/Drop_Caches <http://linux-mm.org/Drop_Caches>
 .PP
-Setting \f(CW\*(C`whattodrop\*(C'\fR to 3 should drop everything.
+\&\f(CW\*(C`whattodrop\*(C'\fR を 3 に設定することにより、すべてのものを破棄します。
 .PP
 This automatically calls \fIsync\fR\|(2) before the operation, so that the
 maximum guest memory is freed.
@@ -2574,10 +2649,9 @@ This option may not be specified at the same time as the \f(CW\*(C`forceall\*(C'
 .ie n .IP """forceall""" 4
 .el .IP "\f(CWforceall\fR" 4
 .IX Item "forceall"
-Assume an answer of 'yes' to all questions; allows e2fsck to be used
-non-interactively.
+すべての質問に対して 'yes' の回答をすると仮定します。e2fsck が非対話的に使用できます。
 .Sp
-This option may not be specified at the same time as the \f(CW\*(C`correct\*(C'\fR option.
+このオプションは \f(CW\*(C`correct\*(C'\fR オプションと同時に指定できません。
 .PP
 This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 \&\s-1ARGUMENTS\s0\*(R".
@@ -2591,8 +2665,11 @@ This runs \f(CW\*(C`e2fsck \-p \-f device\*(C'\fR, ie. runs the ext2/ext3 filesy
 on \f(CW\*(C`device\*(C'\fR, noninteractively (\fI\-p\fR), even if the filesystem appears to be
 clean (\fI\-f\fR).
 .PP
-This command is only needed because of \*(L"resize2fs\*(R" (q.v.).  Normally you
-should use \*(L"fsck\*(R".
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"e2fsck\*(R" を使用してください。
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 .SS "echo-daemon"
 .IX Subsection "echo-daemon"
 .Vb 1
@@ -2604,7 +2681,7 @@ between them and returns the resulting string.
 .PP
 You can use this command to test the connection through to the daemon.
 .PP
-See also \*(L"ping-daemon\*(R".
+\&\*(L"ping-daemon\*(R" 参照。
 .SS "egrep"
 .IX Subsection "egrep"
 .Vb 1
@@ -2634,7 +2711,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 This compares the two files \f(CW\*(C`file1\*(C'\fR and \f(CW\*(C`file2\*(C'\fR and returns true if their
 content is exactly equal, or false otherwise.
 .PP
-The external \fIcmp\fR\|(1) program is used for the comparison.
+外部の \fIcmp\fR\|(1) プログラムが比較のために使用されます。
 .SS "exists"
 .IX Subsection "exists"
 .Vb 1
@@ -2644,7 +2721,7 @@ The external \fIcmp\fR\|(1) program is used for the comparison.
 This returns \f(CW\*(C`true\*(C'\fR if and only if there is a file, directory (or anything)
 with the given \f(CW\*(C`path\*(C'\fR name.
 .PP
-See also \*(L"is-file\*(R", \*(L"is-dir\*(R", \*(L"stat\*(R".
+\&\*(L"is-file\*(R", \*(L"is-dir\*(R", \*(L"stat\*(R" 参照。
 .SS "fallocate"
 .IX Subsection "fallocate"
 .Vb 1
@@ -2657,8 +2734,7 @@ size \f(CW\*(C`len\*(C'\fR bytes.  If the file exists already, it is overwritten
 Do not confuse this with the guestfish-specific \f(CW\*(C`alloc\*(C'\fR command which
 allocates a file in the host and attaches it as a device.
 .PP
-\&\fIThis function is deprecated.\fR In new code, use the \*(L"fallocate64\*(R" call
-instead.
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"fallocate64\*(R" を使用してください。
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -2720,8 +2796,8 @@ The output depends on the output of the underlying \fIfile\fR\|(1) command and i
 can change in future in ways beyond our control.  In other words, the output
 is not guaranteed by the \s-1ABI\s0.
 .PP
-See also: \fIfile\fR\|(1), \*(L"vfs-type\*(R", \*(L"lstat\*(R", \*(L"is-file\*(R", \*(L"is-blockdev\*(R"
-(etc), \*(L"is-zero\*(R".
+関連項目: \fIfile\fR\|(1), \*(L"vfs-type\*(R", \*(L"lstat\*(R", \*(L"is-file\*(R", \*(L"is-blockdev\*(R"
+(etc), \*(L"is-zero\*(R"
 .SS "file-architecture"
 .IX Subsection "file-architecture"
 .Vb 1
@@ -2731,24 +2807,24 @@ See also: \fIfile\fR\|(1), \*(L"vfs-type\*(R", \*(L"lstat\*(R", \*(L"is-file\*(R
 This detects the architecture of the binary \f(CW\*(C`filename\*(C'\fR, and returns it if
 known.
 .PP
-Currently defined architectures are:
+現在定義されているアーキテクチャーは次のとおりです:
 .ie n .IP """i386""" 4
 .el .IP "``i386''" 4
 .IX Item "i386"
-This string is returned for all 32 bit i386, i486, i586, i686 binaries
-irrespective of the precise processor requirements of the binary.
+この文字列は、バイナリーの正確なプロセッサー要求にかかわりなく、すべての 32 ビット i386, i486, i586, i686
+バイナリーに対して返されます。
 .ie n .IP """x86_64""" 4
 .el .IP "``x86_64''" 4
 .IX Item "x86_64"
-64 bit x86\-64.
+64 ビット x86\-64.
 .ie n .IP """sparc""" 4
 .el .IP "``sparc''" 4
 .IX Item "sparc"
-32 bit \s-1SPARC\s0.
+32 ビット \s-1SPARC\s0.
 .ie n .IP """sparc64""" 4
 .el .IP "``sparc64''" 4
 .IX Item "sparc64"
-64 bit \s-1SPARC\s0 V9 and above.
+64 ビット \s-1SPARC\s0 V9 およびそれ以降.
 .ie n .IP """ia64""" 4
 .el .IP "``ia64''" 4
 .IX Item "ia64"
@@ -2756,41 +2832,41 @@ Intel Itanium.
 .ie n .IP """ppc""" 4
 .el .IP "``ppc''" 4
 .IX Item "ppc"
-32 bit Power \s-1PC\s0.
+32 ビット Power \s-1PC\s0.
 .ie n .IP """ppc64""" 4
 .el .IP "``ppc64''" 4
 .IX Item "ppc64"
-64 bit Power \s-1PC\s0.
+64 ビット Power \s-1PC\s0.
 .PP
-Libguestfs may return other architecture strings in future.
+libguestfs は将来他のアーキテクチャー文字列を返すかもしれません。
 .PP
 The function works on at least the following types of files:
 .IP "\(bu" 4
-many types of Un*x and Linux binary
+多くの種類の Un*x および Linux バイナリー
 .IP "\(bu" 4
-many types of Un*x and Linux shared library
+多くの種類の Un*x および Linux 共有ライブラリー
 .IP "\(bu" 4
-Windows Win32 and Win64 binaries
+Windows Win32 および Win64 バイナリー
 .IP "\(bu" 4
-Windows Win32 and Win64 DLLs
+Windows Win32 および Win64 \s-1DLL\s0
 .Sp
-Win32 binaries and DLLs return \f(CW\*(C`i386\*(C'\fR.
+Win32 バイナリーと \s-1DLL\s0 が \f(CW\*(C`i386\*(C'\fR を返します。
 .Sp
-Win64 binaries and DLLs return \f(CW\*(C`x86_64\*(C'\fR.
+Win64 バイナリーと \s-1DLL\s0 が \f(CW\*(C`x86_64\*(C'\fR を返します。
 .IP "\(bu" 4
-Linux kernel modules
+Linux カーネルモジュール
 .IP "\(bu" 4
-Linux new-style initrd images
+新形式の Linux initrd イメージ
 .IP "\(bu" 4
-some non\-x86 Linux vmlinuz kernels
+いくつかの非 x86 Linux vmlinuz カーネル
 .PP
 What it can't do currently:
 .IP "\(bu" 4
-static libraries (libfoo.a)
+静的ライブラリー (libfoo.a)
 .IP "\(bu" 4
 Linux old-style initrd as compressed ext2 filesystem (\s-1RHEL\s0 3)
 .IP "\(bu" 4
-x86 Linux vmlinuz kernels
+x86 Linux vmlinuz カーネル
 .Sp
 x86 vmlinuz images (bzImage format) consist of a mix of 16\-, 32\- and
 compressed code, and are horribly hard to unpack.  If you want to find the
@@ -2804,18 +2880,16 @@ kernel module(s) instead.
 .PP
 This command returns the size of \f(CW\*(C`file\*(C'\fR in bytes.
 .PP
-To get other stats about a file, use \*(L"stat\*(R", \*(L"lstat\*(R", \*(L"is-dir\*(R",
-\&\*(L"is-file\*(R" etc.  To get the size of block devices, use
-\&\*(L"blockdev\-getsize64\*(R".
+ファイルに関する他の統計を取得するには use \*(L"stat\*(R", \*(L"lstat\*(R", \*(L"is-dir\*(R", \*(L"is-file\*(R"
+などを使用します。ブロックデバイスの容量を取得するには \*(L"blockdev\-getsize64\*(R" を使用します。
 .SS "fill"
 .IX Subsection "fill"
 .Vb 1
 \& fill c len path
 .Ve
 .PP
-This command creates a new file called \f(CW\*(C`path\*(C'\fR.  The initial content of the
-file is \f(CW\*(C`len\*(C'\fR octets of \f(CW\*(C`c\*(C'\fR, where \f(CW\*(C`c\*(C'\fR must be a number in the range
-\&\f(CW\*(C`[0..255]\*(C'\fR.
+このコマンドは \f(CW\*(C`path\*(C'\fR という新しいファイルを作成します。初期の内容は \f(CW\*(C`len\*(C'\fR オクテットの \f(CW\*(C`c\*(C'\fR です。ここで \f(CW\*(C`c\*(C'\fR は
+\&\f(CW\*(C`[0..255]\*(C'\fR の範囲の数値である必要があります。
 .PP
 To fill a file with zero bytes (sparsely), it is much more efficient to use
 \&\*(L"truncate-size\*(R".  To create a file with a pattern of repeating bytes use
@@ -2861,9 +2935,9 @@ then the returned list from \*(L"find\*(R" \f(CW\*(C`/tmp\*(C'\fR would be 4 ele
 .PP
 If \f(CW\*(C`directory\*(C'\fR is not a directory, then this command returns an error.
 .PP
-The returned list is sorted.
+返された一覧は並び替えられています。
 .PP
-See also \*(L"find0\*(R".
+\&\*(L"find0\*(R" 参照。
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -2886,7 +2960,7 @@ Items (filenames) in the result are separated by \f(CW\*(C`\e0\*(C'\fR character
 .IP "\(bu" 4
 This command is not limited in the number of names that it can return.
 .IP "\(bu" 4
-The result list is not sorted.
+結果の一覧はソートされていません。
 .PP
 Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "findfs-label"
@@ -2898,7 +2972,7 @@ Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 This command searches the filesystems and returns the one which has the
 given label.  An error is returned if no such filesystem can be found.
 .PP
-To find the label of a filesystem, use \*(L"vfs-label\*(R".
+ファイルシステムのラベルを検索するには \*(L"vfs-label\*(R" を使用します。
 .SS "findfs-uuid"
 .IX Subsection "findfs-uuid"
 .Vb 1
@@ -2908,7 +2982,7 @@ To find the label of a filesystem, use \*(L"vfs-label\*(R".
 This command searches the filesystems and returns the one which has the
 given \s-1UUID\s0.  An error is returned if no such filesystem can be found.
 .PP
-To find the \s-1UUID\s0 of a filesystem, use \*(L"vfs-uuid\*(R".
+ファイルシステムの \s-1UUID\s0 を検索するには \*(L"vfs-uuid\*(R" を使用します。
 .SS "fsck"
 .IX Subsection "fsck"
 .Vb 1
@@ -2918,12 +2992,11 @@ To find the \s-1UUID\s0 of a filesystem, use \*(L"vfs-uuid\*(R".
 This runs the filesystem checker (fsck) on \f(CW\*(C`device\*(C'\fR which should have
 filesystem type \f(CW\*(C`fstype\*(C'\fR.
 .PP
-The returned integer is the status.  See \fIfsck\fR\|(8) for the list of status
-codes from \f(CW\*(C`fsck\*(C'\fR.
+返された整数は状態です。 \f(CW\*(C`fsck\*(C'\fR からの状態コードの一覧は \fIfsck\fR\|(8) を参照してください。
 .PP
-Notes:
+注:
 .IP "\(bu" 4
-Multiple status codes can be summed together.
+複数の状態コードが同時に合計されるかもしれません。
 .IP "\(bu" 4
 A non-zero return code can mean \*(L"success\*(R", for example if errors have been
 corrected on the filesystem.
@@ -2947,14 +3020,14 @@ If \f(CW\*(C`NULL\*(C'\fR then no options are added.
 \& get\-attach\-method
 .Ve
 .PP
-Return the current attach method.  See \*(L"set-attach-method\*(R".
+現在の接続方式を返します。  </set\-attach\-method> 参照。
 .SS "get-autosync"
 .IX Subsection "get-autosync"
 .Vb 1
 \& get\-autosync
 .Ve
 .PP
-Get the autosync flag.
+autosync フラグを取得します。
 .SS "get-direct"
 .IX Subsection "get-direct"
 .Vb 1
@@ -2962,16 +3035,118 @@ Get the autosync flag.
 .Ve
 .PP
 Return the direct appliance mode flag.
+.SS "get\-e2attrs"
+.IX Subsection "get-e2attrs"
+.Vb 1
+\& get\-e2attrs file
+.Ve
+.PP
+This returns the file attributes associated with \f(CW\*(C`file\*(C'\fR.
+.PP
+The attributes are a set of bits associated with each inode which affect the
+behaviour of the file.  The attributes are returned as a string of letters
+(described below).  The string may be empty, indicating that no file
+attributes are set for this file.
+.PP
+These attributes are only present when the file is located on an ext2/3/4
+filesystem.  Using this call on other filesystem types will result in an
+error.
+.PP
+The characters (file attributes) in the returned string are currently:
+.IP "'A'" 4
+.IX Item "'A'"
+ファイルがアクセスされたとき、アクセス日時 (atime) を変更しません。
+.IP "'a'" 4
+.IX Item "'a'"
+ファイルは追記専用です。
+.IP "'c'" 4
+.IX Item "'c'"
+ファイルはディスクにおいて圧縮されます。
+.IP "'D'" 4
+.IX Item "'D'"
+(Directories only.)  Changes to this directory are written synchronously to
+disk.
+.IP "'d'" 4
+.IX Item "'d'"
+The file is not a candidate for backup (see \fIdump\fR\|(8)).
+.IP "'E'" 4
+.IX Item "'E'"
+ファイルは圧縮エラーがあります。
+.IP "'e'" 4
+.IX Item "'e'"
+ファイルは拡張属性を使用しています。
+.IP "'h'" 4
+.IX Item "'h'"
+The file is storing its blocks in units of the filesystem blocksize instead
+of sectors.
+.IP "'I'" 4
+.IX Item "'I'"
+(Directories only.)  The directory is using hashed trees.
+.IP "'i'" 4
+.IX Item "'i'"
+The file is immutable.  It cannot be modified, deleted or renamed.  No link
+can be created to this file.
+.IP "'j'" 4
+.IX Item "'j'"
+The file is data-journaled.
+.IP "'s'" 4
+.IX Item "'s'"
+When the file is deleted, all its blocks will be zeroed.
+.IP "'S'" 4
+.IX Item "'S'"
+Changes to this file are written synchronously to disk.
+.IP "'T'" 4
+.IX Item "'T'"
+(Directories only.)  This is a hint to the block allocator that
+subdirectories contained in this directory should be spread across blocks.
+If not present, the block allocator will try to group subdirectories
+together.
+.IP "'t'" 4
+.IX Item "'t'"
+For a file, this disables tail-merging.  (Not used by upstream
+implementations of ext2.)
+.IP "'u'" 4
+.IX Item "'u'"
+When the file is deleted, its blocks will be saved, allowing the file to be
+undeleted.
+.IP "'X'" 4
+.IX Item "'X'"
+The raw contents of the compressed file may be accessed.
+.IP "'Z'" 4
+.IX Item "'Z'"
+The compressed file is dirty.
+.PP
+More file attributes may be added to this list later.  Not all file
+attributes may be set for all kinds of files.  For detailed information,
+consult the \fIchattr\fR\|(1) man page.
+.PP
+See also \*(L"set\-e2attrs\*(R".
+.PP
+Don't confuse these attributes with extended attributes (see \*(L"getxattr\*(R").
+.SS "get\-e2generation"
+.IX Subsection "get-e2generation"
+.Vb 1
+\& get\-e2generation file
+.Ve
+.PP
+This returns the ext2 file generation of a file.  The generation (which used
+to be called the \*(L"version\*(R") is a number associated with an inode.  This is
+most commonly used by \s-1NFS\s0 servers.
+.PP
+The generation is only present when the file is located on an ext2/3/4
+filesystem.  Using this call on other filesystem types will result in an
+error.
+.PP
+See \*(L"set\-e2generation\*(R".
 .SS "get\-e2label"
 .IX Subsection "get-e2label"
 .Vb 1
 \& get\-e2label device
 .Ve
 .PP
-This returns the ext2/3/4 filesystem label of the filesystem on \f(CW\*(C`device\*(C'\fR.
+これは \f(CW\*(C`device\*(C'\fR にあるファイルシステムの ext2/3/4 ファイルシステムラベルを返します。
 .PP
-\&\fIThis function is deprecated.\fR In new code, use the \*(L"vfs_label\*(R" call
-instead.
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"vfs_label\*(R" を使用してください。
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -2984,8 +3159,7 @@ these functions.
 .PP
 This returns the ext2/3/4 filesystem \s-1UUID\s0 of the filesystem on \f(CW\*(C`device\*(C'\fR.
 .PP
-\&\fIThis function is deprecated.\fR In new code, use the \*(L"vfs_uuid\*(R" call
-instead.
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"vfs_uuid\*(R" を使用してください。
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -3002,7 +3176,7 @@ If \*(L"set-memsize\*(R" was not called on this handle, and if
 \&\f(CW\*(C`LIBGUESTFS_MEMSIZE\*(C'\fR was not set, then this returns the compiled-in default
 value for memsize.
 .PP
-For more information on the architecture of libguestfs, see \fIguestfs\fR\|(3).
+libguestfs のアーキテクチャーの詳細は \fIguestfs\fR\|(3) を参照してください。
 .SS "get-network"
 .IX Subsection "get-network"
 .Vb 1
@@ -3016,7 +3190,7 @@ This returns the enable network flag.
 \& get\-path
 .Ve
 .PP
-Return the current search path.
+現在の検索パスを返します。
 .PP
 This is always non-NULL.  If it wasn't set already, then this will return
 the default path.
@@ -3045,7 +3219,7 @@ This is an internal call used for debugging and testing.
 \& get\-qemu
 .Ve
 .PP
-Return the current qemu binary.
+現在の \s-1QEMU\s0 バイナリーを返します。
 .PP
 This is always non-NULL.  If it wasn't set already, then this will return
 the default qemu binary name.
@@ -3055,7 +3229,7 @@ the default qemu binary name.
 \& get\-recovery\-proc
 .Ve
 .PP
-Return the recovery process enabled flag.
+復元プロセス有効化フラグを返します。
 .SS "get-selinux"
 .IX Subsection "get-selinux"
 .Vb 1
@@ -3065,7 +3239,7 @@ Return the recovery process enabled flag.
 This returns the current setting of the selinux flag which is passed to the
 appliance at boot time.  See \*(L"set-selinux\*(R".
 .PP
-For more information on the architecture of libguestfs, see \fIguestfs\fR\|(3).
+libguestfs のアーキテクチャーの詳細は \fIguestfs\fR\|(3) を参照してください。
 .SS "get-smp"
 .IX Subsection "get-smp"
 .Vb 1
@@ -3089,7 +3263,7 @@ For more information on states, see \fIguestfs\fR\|(3).
 \& get\-trace
 .Ve
 .PP
-Return the command trace flag.
+コマンドトレースフラグを返します。
 .SS "get-umask"
 .IX Subsection "get-umask"
 .Vb 1
@@ -3104,14 +3278,14 @@ set by calling \*(L"umask\*(R".
 \& get\-verbose
 .Ve
 .PP
-This returns the verbose messages flag.
+これはメッセージ冗長化フラグを返します。
 .SS "getcon"
 .IX Subsection "getcon"
 .Vb 1
 \& getcon
 .Ve
 .PP
-This gets the SELinux security context of the daemon.
+これはデーモンの SELinux セキュリティコンテキストを取得します。
 .PP
 See the documentation about \s-1SELINUX\s0 in \fIguestfs\fR\|(3), and \*(L"setcon\*(R"
 .SS "getxattr"
@@ -3133,7 +3307,7 @@ attributes you want in advance and call this function.
 Extended attribute values are blobs of binary data.  If there is no extended
 attribute named \f(CW\*(C`name\*(C'\fR, this returns an error.
 .PP
-See also: \*(L"getxattrs\*(R", \*(L"lgetxattr\*(R", \fIattr\fR\|(5).
+関連項目: \*(L"getxattrs\*(R", \*(L"lgetxattr\*(R", \fIattr\fR\|(5)
 .SS "getxattrs"
 .IX Subsection "getxattrs"
 .Vb 1
@@ -3145,7 +3319,7 @@ This call lists the extended attributes of the file or directory \f(CW\*(C`path\
 At the system call level, this is a combination of the \fIlistxattr\fR\|(2) and
 \&\fIgetxattr\fR\|(2) calls.
 .PP
-See also: \*(L"lgetxattrs\*(R", \fIattr\fR\|(5).
+関連項目: \*(L"lgetxattrs\*(R", \fIattr\fR\|(5)
 .SS "glob-expand"
 .IX Subsection "glob-expand"
 .Vb 1
@@ -3159,6 +3333,10 @@ If no paths match, then this returns an empty list (note: not an error).
 .PP
 It is just a wrapper around the C \fIglob\fR\|(3) function with flags
 \&\f(CW\*(C`GLOB_MARK|GLOB_BRACE\*(C'\fR.  See that manual page for more details.
+.PP
+Notice that there is no equivalent command for expanding a device name
+(eg. \f(CW\*(C`/dev/sd*\*(C'\fR).  Use \*(L"list-devices\*(R", \*(L"list-partitions\*(R" etc functions
+instead.
 .SS "grep"
 .IX Subsection "grep"
 .Vb 1
@@ -3188,7 +3366,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 This command installs \s-1GRUB\s0 1 (the Grand Unified Bootloader) on \f(CW\*(C`device\*(C'\fR,
 with the root directory being \f(CW\*(C`root\*(C'\fR.
 .PP
-Notes:
+注:
 .IP "\(bu" 4
 There is currently no way in the \s-1API\s0 to install grub2, which is used by most
 modern Linux guests.  It is possible to run the grub2 command from the
@@ -3232,7 +3410,7 @@ If the parameter \f(CW\*(C`nrlines\*(C'\fR is a positive number, this returns th
 If the parameter \f(CW\*(C`nrlines\*(C'\fR is a negative number, this returns lines from
 the file \f(CW\*(C`path\*(C'\fR, excluding the last \f(CW\*(C`nrlines\*(C'\fR lines.
 .PP
-If the parameter \f(CW\*(C`nrlines\*(C'\fR is zero, this returns an empty list.
+パラメーター \f(CW\*(C`nrlines\*(C'\fR が 0 ならば、空の一覧を返します。
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -3242,8 +3420,8 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 \& hexdump path
 .Ve
 .PP
-This runs \f(CW\*(C`hexdump \-C\*(C'\fR on the given \f(CW\*(C`path\*(C'\fR.  The result is the
-human-readable, canonical hex dump of the file.
+指定された \f(CW\*(C`path\*(C'\fR において \f(CW\*(C`hexdump \-C\*(C'\fR を実行します。結果は、読みやすい形式になり、ファイルの正規化された 16
+進ダンプです。
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -3265,7 +3443,7 @@ initramfs image:
 \& initrd\-cat /boot/initrd\-<version>.img init
 .Ve
 .PP
-See also \*(L"initrd-list\*(R".
+\&\*(L"initrd-list\*(R" 参照。
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -3275,7 +3453,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 \& initrd\-list path
 .Ve
 .PP
-This command lists out files contained in an initrd.
+このコマンドは initrd に含まれるファイルを一覧表示します。
 .PP
 The files are listed without any initial \f(CW\*(C`/\*(C'\fR character.  The files are
 listed in the order they appear (not necessarily alphabetical).  Directory
@@ -3354,7 +3532,7 @@ that there is one global inotify handle per libguestfs instance.
 Return the complete queue of events that have happened since the previous
 read call.
 .PP
-If no events have happened, this returns an empty list.
+何もイベントが起きないと、これは空の一覧を返します。
 .PP
 \&\fINote\fR: In order to make sure that all events have been read, you must call
 this function repeatedly until it returns an empty list.  The reason is that
@@ -3366,7 +3544,7 @@ and leave remaining events in the queue.
 \& inotify\-rm\-watch wd
 .Ve
 .PP
-Remove a previously defined inotify watch.  See \*(L"inotify-add-watch\*(R".
+前に定義された inotify ウォッチを削除します。 \*(L"inotify-add-watch\*(R" 参照。
 .SS "inspect-get-arch"
 .IX Subsection "inspect-get-arch"
 .Vb 1
@@ -3376,8 +3554,7 @@ Remove a previously defined inotify watch.  See \*(L"inotify-add-watch\*(R".
 This returns the architecture of the inspected operating system.  The
 possible return values are listed under \*(L"file-architecture\*(R".
 .PP
-If the architecture could not be determined, then the string \f(CW\*(C`unknown\*(C'\fR is
-returned.
+アーキテクチャーが決められなければ、文字列 \f(CW\*(C`unknown\*(C'\fR が返されます。
 .PP
 Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-get-distro"
@@ -3386,17 +3563,25 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 \& inspect\-get\-distro root
 .Ve
 .PP
-This returns the distro (distribution) of the inspected operating system.
+これは検査したオペレーティングシステムのディストリビューションを返します。
 .PP
-Currently defined distros are:
+定義されているディストリビューションは現在次のとおりです:
 .ie n .IP """archlinux""" 4
 .el .IP "``archlinux''" 4
 .IX Item "archlinux"
 Arch Linux.
+.ie n .IP """buildroot""" 4
+.el .IP "``buildroot''" 4
+.IX Item "buildroot"
+Buildroot 派生のディストリビューション. 具体的にどれかを認識しません.
 .ie n .IP """centos""" 4
 .el .IP "``centos''" 4
 .IX Item "centos"
 CentOS.
+.ie n .IP """cirros""" 4
+.el .IP "``cirros''" 4
+.IX Item "cirros"
+Cirros.
 .ie n .IP """debian""" 4
 .el .IP "``debian''" 4
 .IX Item "debian"
@@ -3405,6 +3590,10 @@ Debian.
 .el .IP "``fedora''" 4
 .IX Item "fedora"
 Fedora.
+.ie n .IP """freedos""" 4
+.el .IP "``freedos''" 4
+.IX Item "freedos"
+FreeDOS.
 .ie n .IP """gentoo""" 4
 .el .IP "``gentoo''" 4
 .IX Item "gentoo"
@@ -3436,7 +3625,7 @@ Pardus.
 .ie n .IP """redhat-based""" 4
 .el .IP "``redhat-based''" 4
 .IX Item "redhat-based"
-Some Red Hat-derived distro.
+いくつかの Red Hat 派生ディストリビューション.
 .ie n .IP """rhel""" 4
 .el .IP "``rhel''" 4
 .IX Item "rhel"
@@ -3460,15 +3649,13 @@ Ubuntu.
 .ie n .IP """unknown""" 4
 .el .IP "``unknown''" 4
 .IX Item "unknown"
-The distro could not be determined.
+ディストリビューションがわかりませんでした。
 .ie n .IP """windows""" 4
 .el .IP "``windows''" 4
 .IX Item "windows"
-Windows does not have distributions.  This string is returned if the \s-1OS\s0 type
-is Windows.
+Windows はディストリビューションがありません。OS 種別が Windows ならば、この文字列は返されません。
 .PP
-Future versions of libguestfs may return other strings here.  The caller
-should be prepared to handle any string.
+libguestfs の将来のバージョンは、ここに他の文字列を返す可能性があります。呼び出し元はあらゆる文字列の処理に備えなければいけません。
 .PP
 Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-get-drive-mappings"
@@ -3518,8 +3705,7 @@ filesystems, and non-mounted devices like swap partitions.
 In the case of a multi-boot virtual machine, it is possible for a filesystem
 to be shared between operating systems.
 .PP
-Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.  See also
-\&\*(L"inspect-get-mountpoints\*(R".
+詳細は \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) を読んでください。  \*(L"inspect-get-mountpoints\*(R" 参照。
 .SS "inspect-get-format"
 .IX Subsection "inspect-get-format"
 .Vb 1
@@ -3533,7 +3719,7 @@ Currently defined formats are:
 .ie n .IP """installed""" 4
 .el .IP "``installed''" 4
 .IX Item "installed"
-This is an installed operating system.
+インストールされているオペレーティングシステムです。
 .ie n .IP """installer""" 4
 .el .IP "``installer''" 4
 .IX Item "installer"
@@ -3544,8 +3730,7 @@ The disk image being inspected is not an installed operating system, but a
 .IX Item "unknown"
 The format of this disk image is not known.
 .PP
-Future versions of libguestfs may return other strings here.  The caller
-should be prepared to handle any string.
+libguestfs の将来のバージョンは、ここに他の文字列を返す可能性があります。呼び出し元はあらゆる文字列の処理に備えなければいけません。
 .PP
 Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-get-hostname"
@@ -3587,7 +3772,7 @@ are returned, which means only icons of high resolution with an alpha
 channel.  The default (false) is to return any icon we can, even if it is of
 substandard quality.
 .PP
-Notes:
+注:
 .IP "\(bu" 4
 Unlike most other inspection \s-1API\s0 calls, the guest's disks must be mounted up
 before you call this, since it needs to read information from the guest
@@ -3635,12 +3820,11 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 \& inspect\-get\-minor\-version root
 .Ve
 .PP
-This returns the minor version number of the inspected operating system.
+検査するオペレーティングシステムのマイナーバージョン番号を返します。
 .PP
 If the version could not be determined, then \f(CW0\fR is returned.
 .PP
-Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.  See also
-\&\*(L"inspect-get-major-version\*(R".
+詳細は \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) を読んでください。  \*(L"inspect-get-major-version\*(R" 参照。
 .SS "inspect-get-mountpoints"
 .IX Subsection "inspect-get-mountpoints"
 .Vb 1
@@ -3665,8 +3849,7 @@ will only return an entry for the first drive \*(L"mounted on\*(R" \f(CW\*(C`/\*
 information about the mapping of drive letters to partitions, see
 \&\*(L"inspect-get-drive-mappings\*(R".
 .PP
-Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.  See also
-\&\*(L"inspect-get-filesystems\*(R".
+詳細は \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) を読んでください。  \*(L"inspect-get-filesystems\*(R" 参照。
 .SS "inspect-get-package-format"
 .IX Subsection "inspect-get-package-format"
 .Vb 1
@@ -3770,11 +3953,11 @@ types are:
 .ie n .IP """linux""" 4
 .el .IP "``linux''" 4
 .IX Item "linux"
-Any Linux-based operating system.
+すべての Linux ベースのオペレーティングシステム.
 .ie n .IP """windows""" 4
 .el .IP "``windows''" 4
 .IX Item "windows"
-Any Microsoft Windows operating system.
+すべての Microsoft Windows オペレーティングシステム.
 .ie n .IP """freebsd""" 4
 .el .IP "``freebsd''" 4
 .IX Item "freebsd"
@@ -3787,13 +3970,16 @@ NetBSD.
 .el .IP "``hurd''" 4
 .IX Item "hurd"
 GNU/Hurd.
+.ie n .IP """dos""" 4
+.el .IP "``dos''" 4
+.IX Item "dos"
+MS-DOS, FreeDOS およびその他.
 .ie n .IP """unknown""" 4
 .el .IP "``unknown''" 4
 .IX Item "unknown"
 The operating system type could not be determined.
 .PP
-Future versions of libguestfs may return other strings here.  The caller
-should be prepared to handle any string.
+libguestfs の将来のバージョンは、ここに他の文字列を返す可能性があります。呼び出し元はあらゆる文字列の処理に備えなければいけません。
 .PP
 Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-get-windows-current-control-set"
@@ -3802,11 +3988,10 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 \& inspect\-get\-windows\-current\-control\-set root
 .Ve
 .PP
-This returns the Windows CurrentControlSet of the inspected guest.  The
-CurrentControlSet is a registry key name such as \f(CW\*(C`ControlSet001\*(C'\fR.
+これは検査した仮想マシンの Windows CurrentControlSet を返します。 CurrentControlSet は
+\&\f(CW\*(C`ControlSet001\*(C'\fR のようなレジストリキーの名前です。
 .PP
-This call assumes that the guest is Windows and that the Registry could be
-examined by inspection.  If this is not the case then an error is returned.
+この呼び出しは、仮想マシンが Windows であり、レジストリが検査により確認できることを仮定しています。該当しない場合、エラーが返されます。
 .PP
 Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .SS "inspect-get-windows-systemroot"
@@ -3815,8 +4000,7 @@ Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 \& inspect\-get\-windows\-systemroot root
 .Ve
 .PP
-This returns the Windows systemroot of the inspected guest.  The systemroot
-is a directory path such as \f(CW\*(C`/WINDOWS\*(C'\fR.
+これは検査した仮想マシンの Windows システムルートを返します。システムルートは \f(CW\*(C`/WINDOWS\*(C'\fR のようなディレクトリーのパスです。
 .PP
 This call assumes that the guest is Windows and that the systemroot could be
 determined by inspection.  If this is not the case then an error is
@@ -3878,8 +4062,7 @@ The application structure contains the following fields:
 .ie n .IP """app_name""" 4
 .el .IP "\f(CWapp_name\fR" 4
 .IX Item "app_name"
-The name of the application.  For Red Hat-derived and Debian-derived Linux
-guests, this is the package name.
+アプリケーションの名前。 Red Hat 派生および Debian 派生の Linux 仮想マシンの場合、パッケージ名になります。
 .ie n .IP """app_display_name""" 4
 .el .IP "\f(CWapp_display_name\fR" 4
 .IX Item "app_display_name"
@@ -3975,7 +4158,7 @@ This function cannot decrypt encrypted disks.  The caller must do that first
 .PP
 Please read \*(L"\s-1INSPECTION\s0\*(R" in \fIguestfs\fR\|(3) for more details.
 .PP
-See also \*(L"list-filesystems\*(R".
+\&\*(L"list-filesystems\*(R" 参照。
 .SS "is-blockdev"
 .IX Subsection "is-blockdev"
 .Vb 1
@@ -3985,17 +4168,7 @@ See also \*(L"list-filesystems\*(R".
 This returns \f(CW\*(C`true\*(C'\fR if and only if there is a block device with the given
 \&\f(CW\*(C`path\*(C'\fR name.
 .PP
-See also \*(L"stat\*(R".
-.SS "is-busy"
-.IX Subsection "is-busy"
-.Vb 1
-\& is\-busy
-.Ve
-.PP
-This returns true iff this handle is busy processing a command (in the
-\&\f(CW\*(C`BUSY\*(C'\fR state).
-.PP
-For more information on states, see \fIguestfs\fR\|(3).
+\&\*(L"stat\*(R" 参照。
 .SS "is-chardev"
 .IX Subsection "is-chardev"
 .Vb 1
@@ -4005,7 +4178,7 @@ For more information on states, see \fIguestfs\fR\|(3).
 This returns \f(CW\*(C`true\*(C'\fR if and only if there is a character device with the
 given \f(CW\*(C`path\*(C'\fR name.
 .PP
-See also \*(L"stat\*(R".
+\&\*(L"stat\*(R" 参照。
 .SS "is-config"
 .IX Subsection "is-config"
 .Vb 1
@@ -4025,7 +4198,7 @@ For more information on states, see \fIguestfs\fR\|(3).
 This returns \f(CW\*(C`true\*(C'\fR if and only if there is a directory with the given
 \&\f(CW\*(C`path\*(C'\fR name.  Note that it returns false for other objects like files.
 .PP
-See also \*(L"stat\*(R".
+\&\*(L"stat\*(R" 参照。
 .SS "is-fifo"
 .IX Subsection "is-fifo"
 .Vb 1
@@ -4035,7 +4208,7 @@ See also \*(L"stat\*(R".
 This returns \f(CW\*(C`true\*(C'\fR if and only if there is a \s-1FIFO\s0 (named pipe)  with the
 given \f(CW\*(C`path\*(C'\fR name.
 .PP
-See also \*(L"stat\*(R".
+\&\*(L"stat\*(R" 参照。
 .SS "is-file"
 .IX Subsection "is-file"
 .Vb 1
@@ -4046,7 +4219,7 @@ This returns \f(CW\*(C`true\*(C'\fR if and only if there is a regular file with 
 \&\f(CW\*(C`path\*(C'\fR name.  Note that it returns false for other objects like
 directories.
 .PP
-See also \*(L"stat\*(R".
+\&\*(L"stat\*(R" 参照。
 .SS "is-launching"
 .IX Subsection "is-launching"
 .Vb 1
@@ -4084,7 +4257,7 @@ For more information on states, see \fIguestfs\fR\|(3).
 This returns \f(CW\*(C`true\*(C'\fR if and only if there is a Unix domain socket with the
 given \f(CW\*(C`path\*(C'\fR name.
 .PP
-See also \*(L"stat\*(R".
+\&\*(L"stat\*(R" 参照。
 .SS "is-symlink"
 .IX Subsection "is-symlink"
 .Vb 1
@@ -4094,7 +4267,7 @@ See also \*(L"stat\*(R".
 This returns \f(CW\*(C`true\*(C'\fR if and only if there is a symbolic link with the given
 \&\f(CW\*(C`path\*(C'\fR name.
 .PP
-See also \*(L"stat\*(R".
+\&\*(L"stat\*(R" 参照。
 .SS "is-zero"
 .IX Subsection "is-zero"
 .Vb 1
@@ -4112,6 +4285,32 @@ all zero bytes.
 This returns true iff the device exists and contains all zero bytes.
 .PP
 Note that for large devices this can take a long time to run.
+.SS "isoinfo"
+.IX Subsection "isoinfo"
+.Vb 1
+\& isoinfo isofile
+.Ve
+.PP
+This is the same as \*(L"isoinfo-device\*(R" except that it works for an \s-1ISO\s0 file
+located inside some other mounted filesystem.  Note that in the common case
+where you have added an \s-1ISO\s0 file as a libguestfs device, you would \fInot\fR
+call this.  Instead you would call \*(L"isoinfo-device\*(R".
+.SS "isoinfo-device"
+.IX Subsection "isoinfo-device"
+.Vb 1
+\& isoinfo\-device device
+.Ve
+.PP
+\&\f(CW\*(C`device\*(C'\fR is an \s-1ISO\s0 device.  This returns a struct of information read from
+the primary volume descriptor (the \s-1ISO\s0 equivalent of the superblock) of the
+device.
+.PP
+Usually it is more efficient to use the \fIisoinfo\fR\|(1) command with the \fI\-d\fR
+option on the host to analyze \s-1ISO\s0 files, instead of going through
+libguestfs.
+.PP
+プライマリーボリューム記述子の項目に関する詳細は、
+<http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor> を参照してください。
 .SS "kill-subprocess"
 .IX Subsection "kill-subprocess"
 .Vb 1
@@ -4163,7 +4362,7 @@ attributes you want in advance and call this function.
 Extended attribute values are blobs of binary data.  If there is no extended
 attribute named \f(CW\*(C`name\*(C'\fR, this returns an error.
 .PP
-See also: \*(L"lgetxattrs\*(R", \*(L"getxattr\*(R", \fIattr\fR\|(5).
+関連項目: \*(L"lgetxattrs\*(R", \*(L"getxattr\*(R", \fIattr\fR\|(5)
 .SS "lgetxattrs"
 .IX Subsection "lgetxattrs"
 .Vb 1
@@ -4186,18 +4385,18 @@ returned.
 \& list\-devices
 .Ve
 .PP
-List all the block devices.
+すべてのブロックデバイスを一覧表示します。
 .PP
-The full block device names are returned, eg. \f(CW\*(C`/dev/sda\*(C'\fR.
+ブロックデバイスの完全名（例: \f(CW\*(C`/dev/sda\*(C'\fR）を返します。
 .PP
-See also \*(L"list-filesystems\*(R".
+\&\*(L"list-filesystems\*(R" 参照。
 .SS "list-dm-devices"
 .IX Subsection "list-dm-devices"
 .Vb 1
 \& list\-dm\-devices
 .Ve
 .PP
-List all device mapper devices.
+すべてのデバイスマッパーデバイスを一覧表示します。
 .PP
 The returned list contains \f(CW\*(C`/dev/mapper/*\*(C'\fR devices, eg. ones created by a
 previous call to \*(L"luks-open\*(R".
@@ -4242,7 +4441,7 @@ single logical operating system (use \*(L"inspect-os\*(R" to look for OSes).
 \& list\-md\-devices
 .Ve
 .PP
-List all Linux md devices.
+すべての Linux md デバイスを一覧表示します。
 .SS "list-partitions"
 .IX Subsection "list-partitions"
 .Vb 1
@@ -4253,10 +4452,9 @@ List all the partitions detected on all block devices.
 .PP
 The full partition device names are returned, eg. \f(CW\*(C`/dev/sda1\*(C'\fR
 .PP
-This does not return logical volumes.  For that you will need to call
-\&\*(L"lvs\*(R".
+これは論理ボリュームを返しません。  そのためには \*(L"lvs\*(R" を呼び出す必要があります。
 .PP
-See also \*(L"list-filesystems\*(R".
+\&\*(L"list-filesystems\*(R" 参照。
 .SS "ll"
 .IX Subsection "ll"
 .Vb 1
@@ -4265,6 +4463,16 @@ See also \*(L"list-filesystems\*(R".
 .PP
 List the files in \f(CW\*(C`directory\*(C'\fR (relative to the root directory, there is no
 cwd) in the format of 'ls \-la'.
+.PP
+This command is mostly useful for interactive sessions.  It is \fInot\fR
+intended that you try to parse the output string.
+.SS "llz"
+.IX Subsection "llz"
+.Vb 1
+\& llz directory
+.Ve
+.PP
+\&'ls \-laZ' 形式で \f(CW\*(C`directory\*(C'\fR にあるファイルを一覧表示します。
 .PP
 This command is mostly useful for interactive sessions.  It is \fInot\fR
 intended that you try to parse the output string.
@@ -4461,6 +4669,16 @@ prompt for these separately.
 .PP
 This creates an \s-1LVM\s0 logical volume called \f(CW\*(C`logvol\*(C'\fR on the volume group
 \&\f(CW\*(C`volgroup\*(C'\fR, with \f(CW\*(C`size\*(C'\fR megabytes.
+.SS "lvcreate-free"
+.IX Subsection "lvcreate-free"
+.Vb 1
+\& lvcreate\-free logvol volgroup percent
+.Ve
+.PP
+Create an \s-1LVM\s0 logical volume called \f(CW\*(C`/dev/volgroup/logvol\*(C'\fR, using
+approximately \f(CW\*(C`percent\*(C'\fR % of the free space remaining in the volume group.
+Most usefully, when \f(CW\*(C`percent\*(C'\fR is \f(CW100\fR this will create the largest
+possible \s-1LV\s0.
 .SS "lvm-canonical-lv-name"
 .IX Subsection "lvm-canonical-lv-name"
 .Vb 1
@@ -4474,7 +4692,7 @@ canonical name.  For example, \f(CW\*(C`/dev/mapper/VG\-LV\*(C'\fR is converted 
 This command returns an error if the \f(CW\*(C`lvname\*(C'\fR parameter does not refer to a
 logical volume.
 .PP
-See also \*(L"is-lv\*(R".
+\&\*(L"is-lv\*(R" 参照。
 .SS "lvm-clear-filter"
 .IX Subsection "lvm-clear-filter"
 .Vb 1
@@ -4541,8 +4759,7 @@ Rename a logical volume \f(CW\*(C`logvol\*(C'\fR with the new name \f(CW\*(C`new
 \& lvresize device mbytes
 .Ve
 .PP
-This resizes (expands or shrinks) an existing \s-1LVM\s0 logical volume to
-\&\f(CW\*(C`mbytes\*(C'\fR.  When reducing, data in the reduced part is lost.
+これは既存の \s-1LVM\s0 論理ボリュームを \f(CW\*(C`mbytes\*(C'\fR に容量変更（拡大または縮小）します。縮小するとき、縮小された部分にあるデータは失われます。
 .SS "lvresize-free"
 .IX Subsection "lvresize-free"
 .Vb 1
@@ -4562,10 +4779,9 @@ remaining free space in the volume group.
 List all the logical volumes detected.  This is the equivalent of the
 \&\fIlvs\fR\|(8) command.
 .PP
-This returns a list of the logical volume device names
-(eg. \f(CW\*(C`/dev/VolGroup00/LogVol00\*(C'\fR).
+これは論理ボリュームのデバイス名（例: \f(CW\*(C`/dev/VolGroup00/LogVol00\*(C'\fR）の一覧を返します。
 .PP
-See also \*(L"lvs-full\*(R", \*(L"list-filesystems\*(R".
+\&\*(L"lvs-full\*(R", \*(L"list-filesystems\*(R" 参照。
 .SS "lvs-full"
 .IX Subsection "lvs-full"
 .Vb 1
@@ -4580,7 +4796,7 @@ List all the logical volumes detected.  This is the equivalent of the
 \& lvuuid device
 .Ve
 .PP
-This command returns the \s-1UUID\s0 of the \s-1LVM\s0 \s-1LV\s0 \f(CW\*(C`device\*(C'\fR.
+このコマンドは \s-1LVM\s0 論理ボリューム \f(CW\*(C`device\*(C'\fR の \s-1UUID\s0 を返します。
 .SS "lxattrlist"
 .IX Subsection "lxattrlist"
 .Vb 1
@@ -4614,7 +4830,7 @@ names.
 Create a Linux md (\s-1RAID\s0) device named \f(CW\*(C`name\*(C'\fR on the devices in the list
 \&\f(CW\*(C`devices\*(C'\fR.
 .PP
-The optional parameters are:
+オプションのパラメーターは次のとおりです:
 .ie n .IP """missingbitmap""" 4
 .el .IP "\f(CWmissingbitmap\fR" 4
 .IX Item "missingbitmap"
@@ -4622,44 +4838,42 @@ A bitmap of missing devices.  If a bit is set it means that a missing device
 is added to the array.  The least significant bit corresponds to the first
 device in the array.
 .Sp
-As examples:
+例として:
 .Sp
-If \f(CW\*(C`devices = ["/dev/sda"]\*(C'\fR and \f(CW\*(C`missingbitmap = 0x1\*(C'\fR then the resulting
-array would be \f(CW\*(C`[<missing>, "/dev/sda"]\*(C'\fR.
+\&\f(CW\*(C`devices = ["/dev/sda"]\*(C'\fR かつ \f(CW\*(C`missingbitmap = 0x1\*(C'\fR ならば、結果の配列は
+\&\f(CW\*(C`[<missing>, "/dev/sda"]\*(C'\fR になります。
 .Sp
-If \f(CW\*(C`devices = ["/dev/sda"]\*(C'\fR and \f(CW\*(C`missingbitmap = 0x2\*(C'\fR then the resulting
-array would be \f(CW\*(C`["/dev/sda", <missing>]\*(C'\fR.
+\&\f(CW\*(C`devices = ["/dev/sda"]\*(C'\fR かつ \f(CW\*(C`missingbitmap = 0x2\*(C'\fR ならば、結果の配列は
+\&\f(CW\*(C`["/dev/sda", <missing>]\*(C'\fR になります。
 .Sp
-This defaults to \f(CW0\fR (no missing devices).
+この初期値は \f(CW0\fR です（デバイスがありません）。
 .Sp
-The length of \f(CW\*(C`devices\*(C'\fR + the number of bits set in \f(CW\*(C`missingbitmap\*(C'\fR must
-equal \f(CW\*(C`nrdevices\*(C'\fR + \f(CW\*(C`spare\*(C'\fR.
+\&\f(CW\*(C`devices\*(C'\fR の長さ + \f(CW\*(C`missingbitmap\*(C'\fR に設定されたビット数は \f(CW\*(C`nrdevices\*(C'\fR + \f(CW\*(C`spare\*(C'\fR
+と同じである必要があります。
 .ie n .IP """nrdevices""" 4
 .el .IP "\f(CWnrdevices\fR" 4
 .IX Item "nrdevices"
-The number of active \s-1RAID\s0 devices.
+稼動中の \s-1RAID\s0 デバイス数。
 .Sp
-If not set, this defaults to the length of \f(CW\*(C`devices\*(C'\fR plus the number of
-bits set in \f(CW\*(C`missingbitmap\*(C'\fR.
+設定されていないと、この初期値は \f(CW\*(C`devices\*(C'\fR の長さ + \f(CW\*(C`missingbitmap\*(C'\fR に設定されたビット数になります。
 .ie n .IP """spare""" 4
 .el .IP "\f(CWspare\fR" 4
 .IX Item "spare"
-The number of spare devices.
+予備デバイス数。
 .Sp
-If not set, this defaults to \f(CW0\fR.
+設定されていなければ、デフォルトは \f(CW0\fR です。
 .ie n .IP """chunk""" 4
 .el .IP "\f(CWchunk\fR" 4
 .IX Item "chunk"
-The chunk size in bytes.
+バイト単位のチャンク容量です。
 .ie n .IP """level""" 4
 .el .IP "\f(CWlevel\fR" 4
 .IX Item "level"
-The \s-1RAID\s0 level, which can be one of: \fIlinear\fR, \fIraid0\fR, \fI0\fR, \fIstripe\fR,
-\&\fIraid1\fR, \fI1\fR, \fImirror\fR, \fIraid4\fR, \fI4\fR, \fIraid5\fR, \fI5\fR, \fIraid6\fR, \fI6\fR,
-\&\fIraid10\fR, \fI10\fR.  Some of these are synonymous, and more levels may be
-added in future.
+\&\s-1RAID\s0 レベルです。次のどれかです: \fIlinear\fR, \fIraid0\fR, \fI0\fR, \fIstripe\fR, \fIraid1\fR, \fI1\fR,
+\&\fImirror\fR, \fIraid4\fR, \fI4\fR, \fIraid5\fR, \fI5\fR, \fIraid6\fR, \fI6\fR, \fIraid10\fR,
+\&\fI10\fR。これらのいくつかは同じものを意味しています。将来さらなるレベルが追加される可能性があります。
 .Sp
-If not set, this defaults to \f(CW\*(C`raid1\*(C'\fR.
+設定されていないと、この初期値は \f(CW\*(C`raid1\*(C'\fR です。
 .PP
 This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 \&\s-1ARGUMENTS\s0\*(R".
@@ -4675,23 +4889,69 @@ present.
 .ie n .IP """level""" 4
 .el .IP "\f(CWlevel\fR" 4
 .IX Item "level"
-The raid level of the \s-1MD\s0 device.
+\&\s-1MD\s0 デバイスの \s-1RAID\s0 レベル。
 .ie n .IP """devices""" 4
 .el .IP "\f(CWdevices\fR" 4
 .IX Item "devices"
-The number of underlying devices in the \s-1MD\s0 device.
+\&\s-1MD\s0 デバイスにあるデバイス数。
 .ie n .IP """metadata""" 4
 .el .IP "\f(CWmetadata\fR" 4
 .IX Item "metadata"
-The metadata version used.
+使用されているメタ情報のバージョン。
 .ie n .IP """uuid""" 4
 .el .IP "\f(CWuuid\fR" 4
 .IX Item "uuid"
-The \s-1UUID\s0 of the \s-1MD\s0 device.
+\&\s-1MD\s0 デバイスの UUID。
 .ie n .IP """name""" 4
 .el .IP "\f(CWname\fR" 4
 .IX Item "name"
-The name of the \s-1MD\s0 device.
+\&\s-1MD\s0 デバイスの名前。
+.SS "md-stat"
+.IX Subsection "md-stat"
+.Vb 1
+\& md\-stat md
+.Ve
+.PP
+This call returns a list of the underlying devices which make up the single
+software \s-1RAID\s0 array device \f(CW\*(C`md\*(C'\fR.
+.PP
+ソフトウェア \s-1RAID\s0 デバイスの一覧を取得するには、\*(L"list-md-devices\*(R" を呼び出します。
+.PP
+Each structure returned corresponds to one device along with additional
+status information:
+.ie n .IP """mdstat_device""" 4
+.el .IP "\f(CWmdstat_device\fR" 4
+.IX Item "mdstat_device"
+下にあるデバイスの名前です。
+.ie n .IP """mdstat_index""" 4
+.el .IP "\f(CWmdstat_index\fR" 4
+.IX Item "mdstat_index"
+配列の中にあるこのデバイスのインデックスです。
+.ie n .IP """mdstat_flags""" 4
+.el .IP "\f(CWmdstat_flags\fR" 4
+.IX Item "mdstat_flags"
+Flags associated with this device.  This is a string containing (in no
+specific order) zero or more of the following flags:
+.RS 4
+.ie n .IP """W""" 4
+.el .IP "\f(CWW\fR" 4
+.IX Item "W"
+ほとんど書き込み
+.ie n .IP """F""" 4
+.el .IP "\f(CWF\fR" 4
+.IX Item "F"
+デバイス故障
+.ie n .IP """S""" 4
+.el .IP "\f(CWS\fR" 4
+.IX Item "S"
+RAIDスペアデバイス
+.ie n .IP """R""" 4
+.el .IP "\f(CWR\fR" 4
+.IX Item "R"
+置換
+.RE
+.RS 4
+.RE
 .SS "md-stop"
 .IX Subsection "md-stop"
 .Vb 1
@@ -4706,7 +4966,7 @@ but it is not destroyed or zeroed.
 \& mkdir path
 .Ve
 .PP
-Create a directory named \f(CW\*(C`path\*(C'\fR.
+\&\f(CW\*(C`path\*(C'\fR という名前のディレクトリーを作成します。
 .SS "mkdir-mode"
 .IX Subsection "mkdir-mode"
 .Vb 1
@@ -4720,7 +4980,7 @@ For common Linux filesystems, the actual mode which is set will be \f(CW\*(C`mod
 ~umask & 01777\*(C'\fR.  Non-native-Linux filesystems may interpret the mode in
 other ways.
 .PP
-See also \*(L"mkdir\*(R", \*(L"umask\*(R"
+\&\*(L"mkdir\*(R", \*(L"umask\*(R" 参照。
 .SS "mkdir-p"
 .IX Subsection "mkdir-p"
 .Vb 1
@@ -4739,17 +4999,17 @@ This command creates a temporary directory.  The \f(CW\*(C`tmpl\*(C'\fR paramete
 a full pathname for the temporary directory name with the final six
 characters being \*(L"\s-1XXXXXX\s0\*(R".
 .PP
-For example: \*(L"/tmp/myprogXXXXXX\*(R" or \*(L"/Temp/myprogXXXXXX\*(R", the second one
-being suitable for Windows filesystems.
+例: \*(L"/tmp/myprogXXXXXX\*(R" または \*(L"/Temp/myprogXXXXXX\*(R"、2 つめの例は Windows
+ファイルシステムに適しています。
 .PP
-The name of the temporary directory that was created is returned.
+作成された一時ディレクトリーの名前を返します。
 .PP
-The temporary directory is created with mode 0700 and is owned by root.
+一時ディレクトリーがモード 0700 で作成され、root により所有されます。
 .PP
 The caller is responsible for deleting the temporary directory and its
 contents after use.
 .PP
-See also: \fImkdtemp\fR\|(3)
+関連項目: \fImkdtemp\fR\|(3)
 .SS "mke2fs\-J"
 .IX Subsection "mke2fs-J"
 .Vb 1
@@ -4763,7 +5023,7 @@ This creates an ext2/3/4 filesystem on \f(CW\*(C`device\*(C'\fR with an external
 \& mke2fs \-t fstype \-b blocksize \-J device=<journal> <device>
 .Ve
 .PP
-See also \*(L"mke2journal\*(R".
+\&\*(L"mke2journal\*(R" 参照。
 .SS "mke2fs\-JL"
 .IX Subsection "mke2fs-JL"
 .Vb 1
@@ -4773,7 +5033,7 @@ See also \*(L"mke2journal\*(R".
 This creates an ext2/3/4 filesystem on \f(CW\*(C`device\*(C'\fR with an external journal on
 the journal labeled \f(CW\*(C`label\*(C'\fR.
 .PP
-See also \*(L"mke2journal\-L\*(R".
+\&\*(L"mke2journal\-L\*(R" 参照。
 .SS "mke2fs\-JU"
 .IX Subsection "mke2fs-JU"
 .Vb 1
@@ -4783,7 +5043,7 @@ See also \*(L"mke2journal\-L\*(R".
 This creates an ext2/3/4 filesystem on \f(CW\*(C`device\*(C'\fR with an external journal on
 the journal with \s-1UUID\s0 \f(CW\*(C`uuid\*(C'\fR.
 .PP
-See also \*(L"mke2journal\-U\*(R".
+\&\*(L"mke2journal\-U\*(R" 参照。
 .SS "mke2journal"
 .IX Subsection "mke2journal"
 .Vb 1
@@ -4819,7 +5079,7 @@ This creates an ext2 external journal on \f(CW\*(C`device\*(C'\fR with \s-1UUID\
 This call creates a \s-1FIFO\s0 (named pipe) called \f(CW\*(C`path\*(C'\fR with mode \f(CW\*(C`mode\*(C'\fR.  It
 is just a convenient wrapper around \*(L"mknod\*(R".
 .PP
-The mode actually set is affected by the umask.
+実際に設定されるモードは umask により影響されます。
 .SS "mkfs"
 .IX Subsection "mkfs"
 .Vb 1
@@ -4841,12 +5101,27 @@ filesystem type, but typically they are \f(CW1024\fR, \f(CW2048\fR or \f(CW4096\
 For \s-1VFAT\s0 and \s-1NTFS\s0 the \f(CW\*(C`blocksize\*(C'\fR parameter is treated as the requested
 cluster size.
 .PP
-\&\fIThis function is deprecated.\fR In new code, use the \*(L"mkfs_opts\*(R" call
-instead.
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"mkfs_opts\*(R" を使用してください。
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+.SS "mkfs-btrfs"
+.IX Subsection "mkfs-btrfs"
+.Vb 1
+\& mkfs\-btrfs \*(Aqdevices ...\*(Aq [allocstart:N] [bytecount:N] [datatype:..] [leafsize:N] [label:..] [metadata:..] [nodesize:N] [sectorsize:N]
+.Ve
+.PP
+Create a btrfs filesystem, allowing all configurables to be set.  For more
+information on the optional arguments, see \fImkfs.btrfs\fR\|(8).
+.PP
+Since btrfs filesystems can span multiple devices, this takes a non-empty
+list of devices.
+.PP
+To create general filesystems, use \*(L"mkfs-opts\*(R".
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
 .SS "mkfs-opts"
 .IX Subsection "mkfs-opts"
 .Vb 1
@@ -4856,28 +5131,26 @@ these functions.
 This function creates a filesystem on \f(CW\*(C`device\*(C'\fR.  The filesystem type is
 \&\f(CW\*(C`fstype\*(C'\fR, for example \f(CW\*(C`ext3\*(C'\fR.
 .PP
-The optional arguments are:
+オプション引数は次のとおりです:
 .ie n .IP """blocksize""" 4
 .el .IP "\f(CWblocksize\fR" 4
 .IX Item "blocksize"
-The filesystem block size.  Supported block sizes depend on the filesystem
-type, but typically they are \f(CW1024\fR, \f(CW2048\fR or \f(CW4096\fR for Linux ext2/3
-filesystems.
+ファイルシステムのブロック容量です。サポートされるブロック容量は、ファイルシステムの形式に依存します。一般的に Linux ext2/3
+ファイルシステムには \f(CW1024\fR, \f(CW2048\fR または \f(CW4096\fR です。
 .Sp
 For \s-1VFAT\s0 and \s-1NTFS\s0 the \f(CW\*(C`blocksize\*(C'\fR parameter is treated as the requested
 cluster size.
 .Sp
-For \s-1UFS\s0 block sizes, please see \fImkfs.ufs\fR\|(8).
-.ie n .IP """features""" 4
-.el .IP "\f(CWfeatures\fR" 4
-.IX Item "features"
-This passes the \fI\-O\fR parameter to the external mkfs program.
+\&\s-1UFS\s0 ブロック容量は \fImkfs.ufs\fR\|(8) を参照してください。
+.ie n .IP """特徴""" 4
+.el .IP "\f(CW特徴\fR" 4
+.IX Item "特徴"
+これは \fI\-O\fR パラメーターを外部の mkfs プログラムに渡します。
 .Sp
-For certain filesystem types, this allows extra filesystem features to be
-selected.  See \fImke2fs\fR\|(8) and \fImkfs.ufs\fR\|(8) for more details.
+特定のファイルシステム形式には、追加のファイルシステム機能が選択できます。詳細は \fImke2fs\fR\|(8) および \fImkfs.ufs\fR\|(8)
+を参照してください。
 .Sp
-You cannot use this optional parameter with the \f(CW\*(C`gfs\*(C'\fR or \f(CW\*(C`gfs2\*(C'\fR filesystem
-type.
+\&\f(CW\*(C`gfs\*(C'\fR または \f(CW\*(C`gfs2\*(C'\fR ファイルシステム形式ではこのオプションのパラメーターを使用できません。
 .ie n .IP """inode""" 4
 .el .IP "\f(CWinode\fR" 4
 .IX Item "inode"
@@ -4929,7 +5202,7 @@ unmount filesystems and remove mountpoints after use.
 for this to work for manual mountpoints, you must ensure that the innermost
 mountpoints have the longest pathnames, as in the example code above.
 .PP
-For more details see <https://bugzilla.redhat.com/show_bug.cgi?id=599503>
+詳細は <https://bugzilla.redhat.com/show_bug.cgi?id=599503> を参照してください
 .PP
 Autosync [see \*(L"set-autosync\*(R", this is set by default on handles] can cause
 \&\*(L"umount-all\*(R" to be called when the handle is closed which can also trigger
@@ -4954,7 +5227,7 @@ files, or you can use \*(L"mknod-b\*(R", \*(L"mknod-c\*(R" or \*(L"mkfifo\*(R" w
 wrappers around this command which bitwise \s-1OR\s0 in the appropriate constant
 for you.
 .PP
-The mode actually set is affected by the umask.
+実際に設定されるモードは umask により影響されます。
 .SS "mknod-b"
 .IX Subsection "mknod-b"
 .Vb 1
@@ -4965,7 +5238,7 @@ This call creates a block device node called \f(CW\*(C`path\*(C'\fR with mode \f
 device major/minor \f(CW\*(C`devmajor\*(C'\fR and \f(CW\*(C`devminor\*(C'\fR.  It is just a convenient
 wrapper around \*(L"mknod\*(R".
 .PP
-The mode actually set is affected by the umask.
+実際に設定されるモードは umask により影響されます。
 .SS "mknod-c"
 .IX Subsection "mknod-c"
 .Vb 1
@@ -4976,21 +5249,21 @@ This call creates a char device node called \f(CW\*(C`path\*(C'\fR with mode \f(
 device major/minor \f(CW\*(C`devmajor\*(C'\fR and \f(CW\*(C`devminor\*(C'\fR.  It is just a convenient
 wrapper around \*(L"mknod\*(R".
 .PP
-The mode actually set is affected by the umask.
+実際に設定されるモードは umask により影響されます。
 .SS "mkswap"
 .IX Subsection "mkswap"
 .Vb 1
 \& mkswap device
 .Ve
 .PP
-Create a swap partition on \f(CW\*(C`device\*(C'\fR.
+\&\f(CW\*(C`device\*(C'\fR に swap パーティションを作成します。
 .SS "mkswap-L"
 .IX Subsection "mkswap-L"
 .Vb 1
 \& mkswap\-L label device
 .Ve
 .PP
-Create a swap partition on \f(CW\*(C`device\*(C'\fR with label \f(CW\*(C`label\*(C'\fR.
+ラベル \f(CW\*(C`label\*(C'\fR を持つ \f(CW\*(C`device\*(C'\fR に swap パーティションを作成します。
 .PP
 Note that you cannot attach a swap label to a block device
 (eg. \f(CW\*(C`/dev/sda\*(C'\fR), just to a partition.  This appears to be a limitation of
@@ -5001,14 +5274,14 @@ the kernel or swap tools.
 \& mkswap\-U uuid device
 .Ve
 .PP
-Create a swap partition on \f(CW\*(C`device\*(C'\fR with \s-1UUID\s0 \f(CW\*(C`uuid\*(C'\fR.
+\&\s-1UUID\s0 \f(CW\*(C`uuid\*(C'\fR の \f(CW\*(C`device\*(C'\fR に swap パーティションを作成します。
 .SS "mkswap-file"
 .IX Subsection "mkswap-file"
 .Vb 1
 \& mkswap\-file path
 .Ve
 .PP
-Create a swap file.
+swap ファイルを作成します。
 .PP
 This command just writes a swap file signature to an existing file.  To
 create the file itself, use something like \*(L"fallocate\*(R".
@@ -5018,7 +5291,7 @@ create the file itself, use something like \*(L"fallocate\*(R".
 \& modprobe modulename
 .Ve
 .PP
-This loads a kernel module in the appliance.
+アプライアンスにカーネルモジュールを読み込みます。
 .PP
 The kernel module must have been whitelisted when libguestfs was built (see
 \&\f(CW\*(C`appliance/kmod.whitelist.in\*(C'\fR in the source).
@@ -5051,8 +5324,7 @@ first parameter if you don't want any options).
 \& mount\-9p mounttag mountpoint [options:..]
 .Ve
 .PP
-Mount the virtio\-9p filesystem with the tag \f(CW\*(C`mounttag\*(C'\fR on the directory
-\&\f(CW\*(C`mountpoint\*(C'\fR.
+タグ \f(CW\*(C`mounttag\*(C'\fR を持つ virtio\-9p ファイルシステムをディレクトリ \f(CW\*(C`mountpoint\*(C'\fR にマウントします。
 .PP
 If required, \f(CW\*(C`trans=virtio\*(C'\fR will be automatically added to the options.
 Any other options required can be passed in the optional \f(CW\*(C`options\*(C'\fR
@@ -5060,6 +5332,55 @@ parameter.
 .PP
 This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 \&\s-1ARGUMENTS\s0\*(R".
+.SS "ローカルマウント"
+.IX Subsection "ローカルマウント"
+.Vb 1
+\& mount\-local localmountpoint [readonly:true|false] [options:..] [cachetimeout:N] [debugcalls:true|false]
+.Ve
+.PP
+This call exports the libguestfs-accessible filesystem to a local mountpoint
+(directory) called \f(CW\*(C`localmountpoint\*(C'\fR.  Ordinary reads and writes to files
+and directories under \f(CW\*(C`localmountpoint\*(C'\fR are redirected through libguestfs.
+.PP
+If the optional \f(CW\*(C`readonly\*(C'\fR flag is set to true, then writes to the
+filesystem return error \f(CW\*(C`EROFS\*(C'\fR.
+.PP
+\&\f(CW\*(C`options\*(C'\fR is a comma-separated list of mount options.  See \fIguestmount\fR\|(1)
+for some useful options.
+.PP
+\&\f(CW\*(C`cachetimeout\*(C'\fR sets the timeout (in seconds) for cached directory entries.
+The default is 60 seconds.  See \fIguestmount\fR\|(1) for further information.
+.PP
+If \f(CW\*(C`debugcalls\*(C'\fR is set to true, then additional debugging information is
+generated for every \s-1FUSE\s0 call.
+.PP
+When \*(L"mount-local\*(R" returns, the filesystem is ready, but is not processing
+requests (access to it will block).  You have to call \*(L"mount-local-run\*(R" to
+run the main loop.
+.PP
+完全なドキュメントは \*(L"\s-1MOUNT\s0 \s-1LOCAL\s0\*(R" in \fIguestfs\fR\|(3) を参照してください。
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
+.SS "mount-local-run"
+.IX Subsection "mount-local-run"
+.Vb 1
+\& mount\-local\-run
+.Ve
+.PP
+Run the main loop which translates kernel calls to libguestfs calls.
+.PP
+This should only be called after \*(L"mount-local\*(R" returns successfully.  The
+call will not return until the filesystem is unmounted.
+.PP
+\&\fBNote\fR you must \fInot\fR make concurrent libguestfs calls on the same handle
+from another thread, with the exception of \*(L"umount-local\*(R".
+.PP
+You may call this from a different thread than the one which called
+\&\*(L"mount-local\*(R", subject to the usual rules for threads and libguestfs (see
+\&\*(L"\s-1MULTIPLE\s0 \s-1HANDLES\s0 \s-1AND\s0 \s-1MULTIPLE\s0 \s-1THREADS\s0\*(R" in \fIguestfs\fR\|(3)).
+.PP
+完全なドキュメントは \*(L"\s-1MOUNT\s0 \s-1LOCAL\s0\*(R" in \fIguestfs\fR\|(3) を参照してください。
 .SS "mount-loop"
 .IX Subsection "mount-loop"
 .Vb 1
@@ -5116,7 +5437,7 @@ of devices (eg. \f(CW\*(C`/dev/sda1\*(C'\fR, \f(CW\*(C`/dev/VG/LV\*(C'\fR).
 .PP
 Some internal mounts are not shown.
 .PP
-See also: \*(L"mountpoints\*(R"
+関連項目: \*(L"mountpoints\*(R"
 .SS "mv"
 .IX Subsection "mv"
 .Vb 1
@@ -5141,6 +5462,55 @@ volume can be mounted read-only.
 .PP
 The return value is an integer which \f(CW0\fR if the operation would succeed, or
 some non-zero value documented in the \fIntfs\-3g.probe\fR\|(8) manual page.
+.SS "ntfsclone-in"
+.IX Subsection "ntfsclone-in"
+.Vb 1
+\& ntfsclone\-in (backupfile|\-) device
+.Ve
+.PP
+\&\f(CW\*(C`backupfile\*(C'\fR を(前に \f(CW\*(C`/ntfsclone\-out\*(C'\fR を呼び出したところから)  \f(CW\*(C`device\*(C'\fR
+に復元します。このデバイスの既存の内容はすべて上書きされます。
+.PP
+Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
+.SS "ntfsclone-out"
+.IX Subsection "ntfsclone-out"
+.Vb 1
+\& ntfsclone\-out device (backupfile|\-) [metadataonly:true|false] [rescue:true|false] [ignorefscheck:true|false] [preservetimestamps:true|false] [force:true|false]
+.Ve
+.PP
+Stream the \s-1NTFS\s0 filesystem \f(CW\*(C`device\*(C'\fR to the local file \f(CW\*(C`backupfile\*(C'\fR.  The
+format used for the backup file is a special format used by the
+\&\fIntfsclone\fR\|(8) tool.
+.PP
+If the optional \f(CW\*(C`metadataonly\*(C'\fR flag is true, then \fIonly\fR the metadata is
+saved, losing all the user data (this is useful for diagnosing some
+filesystem problems).
+.PP
+オプションの \f(CW\*(C`rescue\*(C'\fR, \f(CW\*(C`ignorefscheck\*(C'\fR, \f(CW\*(C`preservetimestamps\*(C'\fR および \f(CW\*(C`force\*(C'\fR フラグは
+\&\fIntfsclone\fR\|(8) マニュアルページに詳細な意味が説明されています。
+.PP
+ファイルを libguestfs デバイスに復元するには \*(L"ntfsclone-in\*(R" を使用します。
+.PP
+Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
+.SS "ntfsfix"
+.IX Subsection "ntfsfix"
+.Vb 1
+\& ntfsfix device [clearbadsectors:true|false]
+.Ve
+.PP
+このコマンドは、いくつかの基本的な \s-1NTFS\s0 の不整合を修復し、 \s-1NTFS\s0 ジャーナルファイルをリセットし、次回 Windows 起動時に \s-1NTFS\s0
+完全性チェックをスケジュール化します。
+.PP
+これは Windows の \f(CW\*(C`chkdsk\*(C'\fR と同等では \fIありません\fR 。不整合に対してファイルシステムをスキャン \fIしません\fR 。
+.PP
+オプションの \f(CW\*(C`clearbadsectors\*(C'\fR
+フラグは不良セクターの一覧をクリアします。不良セクターを持つディスクを新しいディスクにクローンした後に有用です。
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
 .SS "ntfsresize"
 .IX Subsection "ntfsresize"
 .Vb 1
@@ -5157,10 +5527,9 @@ resize filesystems which have been marked in this way.  So in effect it is
 not possible to call ntfsresize multiple times on a single filesystem
 without booting into Windows between each resize.
 .PP
-See also \fIntfsresize\fR\|(8).
+\&\fIntfsresize\fR\|(8) 参照。
 .PP
-\&\fIThis function is deprecated.\fR In new code, use the \*(L"ntfsresize_opts\*(R"
-call instead.
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"ntfsresize_opts\*(R" を使用してください。
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -5174,7 +5543,7 @@ these functions.
 This command resizes an \s-1NTFS\s0 filesystem, expanding or shrinking it to the
 size of the underlying device.
 .PP
-The optional parameters are:
+オプションのパラメーターは次のとおりです:
 .ie n .IP """size""" 4
 .el .IP "\f(CWsize\fR" 4
 .IX Item "size"
@@ -5192,7 +5561,7 @@ this check and clear this condition.  If you \fIdon't\fR set the \f(CW\*(C`force
 option then it is not possible to call \*(L"ntfsresize-opts\*(R" multiple times on
 a single filesystem without booting into Windows between each resize.
 .PP
-See also \fIntfsresize\fR\|(8).
+\&\fIntfsresize\fR\|(8) 参照。
 .PP
 This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 \&\s-1ARGUMENTS\s0\*(R".
@@ -5205,8 +5574,7 @@ This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
 This command is the same as \*(L"ntfsresize\*(R" except that it allows you to
 specify the new size (in bytes) explicitly.
 .PP
-\&\fIThis function is deprecated.\fR In new code, use the \*(L"ntfsresize_opts\*(R"
-call instead.
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"ntfsresize_opts\*(R" を使用してください。
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -5236,7 +5604,7 @@ Creating a partition which covers the whole disk is not so easy.  Use
 \& part\-del device partnum
 .Ve
 .PP
-This command deletes the partition numbered \f(CW\*(C`partnum\*(C'\fR on \f(CW\*(C`device\*(C'\fR.
+このコマンドは \f(CW\*(C`device\*(C'\fR にある \f(CW\*(C`partnum\*(C'\fR 番のパーティションを削除します。
 .PP
 Note that in the case of \s-1MBR\s0 partitioning, deleting an extended partition
 also deletes any logical partitions it contains.
@@ -5260,7 +5628,7 @@ possible values are described in \*(L"part-init\*(R".
 This command returns true if the partition \f(CW\*(C`partnum\*(C'\fR on \f(CW\*(C`device\*(C'\fR has the
 bootable flag set.
 .PP
-See also \*(L"part-set-bootable\*(R".
+\&\*(L"part-set-bootable\*(R" 参照。
 .SS "part-get-mbr-id"
 .IX Subsection "part-get-mbr-id"
 .Vb 1
@@ -5305,7 +5673,7 @@ Possible values for \f(CW\*(C`parttype\*(C'\fR are:
 .IP "\fBgpt\fR" 4
 .IX Item "gpt"
 .PD
-Intel \s-1EFI\s0 / \s-1GPT\s0 partition table.
+Intel \s-1EFI\s0 / \s-1GPT\s0 パーティションテーブル。
 .Sp
 This is recommended for >= 2 \s-1TB\s0 partitions that will be accessed from Linux
 and Intel-based Mac \s-1OS\s0 X.  It also has limited backwards compatibility with
@@ -5323,32 +5691,32 @@ Windows.  This partition type will \fBonly\fR work for device sizes up to 2
 Other partition table types that may work but are not supported include:
 .IP "\fBaix\fR" 4
 .IX Item "aix"
-\&\s-1AIX\s0 disk labels.
+\&\s-1AIX\s0 ディスクラベル。
 .IP "\fBamiga\fR" 4
 .IX Item "amiga"
 .PD 0
 .IP "\fBrdb\fR" 4
 .IX Item "rdb"
 .PD
-Amiga \*(L"Rigid Disk Block\*(R" format.
+Amiga \*(L"Rigid Disk Block\*(R" 形式。
 .IP "\fBbsd\fR" 4
 .IX Item "bsd"
-\&\s-1BSD\s0 disk labels.
+\&\s-1BSD\s0 ディスクラベル.
 .IP "\fBdasd\fR" 4
 .IX Item "dasd"
-\&\s-1DASD\s0, used on \s-1IBM\s0 mainframes.
+\&\s-1DASD\s0, \s-1IBM\s0 メインフレームにおいて使用.
 .IP "\fBdvh\fR" 4
 .IX Item "dvh"
-\&\s-1MIPS/SGI\s0 volumes.
+\&\s-1MIPS/SGI\s0 ボリューム.
 .IP "\fBmac\fR" 4
 .IX Item "mac"
-Old Mac partition format.  Modern Macs use \f(CW\*(C`gpt\*(C'\fR.
+古い Mac パーティション形式。最近の Mac は \f(CW\*(C`gpt\*(C'\fR を使用します。
 .IP "\fBpc98\fR" 4
 .IX Item "pc98"
-\&\s-1NEC\s0 \s-1PC\-98\s0 format, common in Japan apparently.
+\&\s-1NEC\s0 \s-1PC\-98\s0 形式。日本において一般的に見られます。
 .IP "\fBsun\fR" 4
 .IX Item "sun"
-Sun disk labels.
+Sun ディスクラベル
 .SS "part-list"
 .IX Subsection "part-list"
 .Vb 1
@@ -5361,25 +5729,25 @@ partitions found.
 The fields in the returned structure are:
 .IP "\fBpart_num\fR" 4
 .IX Item "part_num"
-Partition number, counting from 1.
+パーティション番号。1 から数えます。
 .IP "\fBpart_start\fR" 4
 .IX Item "part_start"
-Start of the partition \fIin bytes\fR.  To get sectors you have to divide by
-the device's sector size, see \*(L"blockdev-getss\*(R".
+\&\fIバイト単位\fRのパーティション開始位置。セクターを取得するには、デバイスのセクター容量で割り算する必要があります。
+\&\*(L"blockdev-getss\*(R" 参照。
 .IP "\fBpart_end\fR" 4
 .IX Item "part_end"
-End of the partition in bytes.
+バイト単位のパーティションの終了位置。
 .IP "\fBpart_size\fR" 4
 .IX Item "part_size"
-Size of the partition in bytes.
+バイト単位のパーティション容量。
 .SS "part-set-bootable"
 .IX Subsection "part-set-bootable"
 .Vb 1
 \& part\-set\-bootable device partnum true|false
 .Ve
 .PP
-This sets the bootable flag on partition numbered \f(CW\*(C`partnum\*(C'\fR on device
-\&\f(CW\*(C`device\*(C'\fR.  Note that partitions are numbered from 1.
+デバイス \f(CW\*(C`device\*(C'\fR のパーティション番号 \f(CW\*(C`partnum\*(C'\fR にブート可能フラグを設定します。パーティションは 1
+から番号が始まることに注意してください。
 .PP
 The bootable flag is used by some operating systems (notably Windows) to
 determine which partition to boot from.  It is by no means universally
@@ -5421,7 +5789,7 @@ partition number, returning the device name (eg. \*(L"/dev/sdb\*(R").
 The named partition must exist, for example as a string returned from
 \&\*(L"list-partitions\*(R".
 .PP
-See also \*(L"part-to-partnum\*(R".
+\&\*(L"part-to-partnum\*(R" 参照。
 .SS "part-to-partnum"
 .IX Subsection "part-to-partnum"
 .Vb 1
@@ -5434,7 +5802,7 @@ partition number (eg. \f(CW1\fR).
 The named partition must exist, for example as a string returned from
 \&\*(L"list-partitions\*(R".
 .PP
-See also \*(L"part-to-dev\*(R".
+\&\*(L"part-to-dev\*(R" 参照。
 .SS "ping-daemon"
 .IX Subsection "ping-daemon"
 .Vb 1
@@ -5457,7 +5825,7 @@ file, starting at \f(CW\*(C`offset\*(C'\fR, from file \f(CW\*(C`path\*(C'\fR.
 This may read fewer bytes than requested.  For further details see the
 \&\fIpread\fR\|(2) system call.
 .PP
-See also \*(L"pwrite\*(R", \*(L"pread-device\*(R".
+\&\*(L"pwrite\*(R", \*(L"pread-device\*(R" 参照。
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -5473,7 +5841,7 @@ This command lets you read part of a file.  It reads \f(CW\*(C`count\*(C'\fR byt
 This may read fewer bytes than requested.  For further details see the
 \&\fIpread\fR\|(2) system call.
 .PP
-See also \*(L"pread\*(R".
+\&\*(L"pread\*(R" 参照。
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -5525,7 +5893,7 @@ List all the physical volumes detected.  This is the equivalent of the
 This returns a list of just the device names that contain PVs
 (eg. \f(CW\*(C`/dev/sda2\*(C'\fR).
 .PP
-See also \*(L"pvs-full\*(R".
+\&\*(L"pvs-full\*(R" 参照。
 .SS "pvs-full"
 .IX Subsection "pvs-full"
 .Vb 1
@@ -5556,7 +5924,7 @@ number of bytes that were actually written to the file.  This could even be
 0, although short writes are unlikely for regular files in ordinary
 circumstances.
 .PP
-See also \*(L"pread\*(R", \*(L"pwrite-device\*(R".
+\&\*(L"pread\*(R", \*(L"pwrite-device\*(R" 参照。
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -5573,7 +5941,7 @@ This command implements the \fIpwrite\fR\|(2) system call, and like that system
 call it may not write the full data requested (although short writes to disk
 devices and partitions are probably impossible with standard Linux kernels).
 .PP
-See also \*(L"pwrite\*(R".
+\&\*(L"pwrite\*(R" 参照。
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -5597,7 +5965,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 \& read\-lines path
 .Ve
 .PP
-Return the contents of the file named \f(CW\*(C`path\*(C'\fR.
+\&\f(CW\*(C`path\*(C'\fR という名前のファイルの内容を返します。
 .PP
 The file contents are returned as a list of lines.  Trailing \f(CW\*(C`LF\*(C'\fR and
 \&\f(CW\*(C`CRLF\*(C'\fR character sequences are \fInot\fR returned.
@@ -5622,28 +5990,28 @@ Also this call returns basic file type information about each file.  The
 \&\f(CW\*(C`ftyp\*(C'\fR field will contain one of the following characters:
 .IP "'b'" 4
 .IX Item "'b'"
-Block special
+ブロック特殊
 .IP "'c'" 4
 .IX Item "'c'"
-Char special
+キャラクター特殊
 .IP "'d'" 4
 .IX Item "'d'"
-Directory
+ディレクトリ
 .IP "'f'" 4
 .IX Item "'f'"
-\&\s-1FIFO\s0 (named pipe)
+\&\s-1FIFO\s0 (名前付きパイプ)
 .IP "'l'" 4
 .IX Item "'l'"
-Symbolic link
+シンボリックリンク
 .IP "'r'" 4
 .IX Item "'r'"
-Regular file
+通常のファイル
 .IP "'s'" 4
 .IX Item "'s'"
-Socket
+ソケット
 .IP "'u'" 4
 .IX Item "'u'"
-Unknown file type
+未知のファイル種別
 .IP "'?'" 4
 The \fIreaddir\fR\|(3) call returned a \f(CW\*(C`d_type\*(C'\fR field with an unexpected value
 .PP
@@ -5656,7 +6024,7 @@ consumption, use \*(L"ll\*(R".
 \& readlink path
 .Ve
 .PP
-This command reads the target of a symbolic link.
+このコマンドはシンボリックリンクの参照先を読み込みます。
 .SS "readlinklist"
 .IX Subsection "readlinklist"
 .Vb 1
@@ -5696,7 +6064,7 @@ has no \f(CW\*(C`.\*(C'\fR, \f(CW\*(C`..\*(C'\fR or symbolic link path elements.
 .PP
 This call removes the extended attribute named \f(CW\*(C`xattr\*(C'\fR of the file \f(CW\*(C`path\*(C'\fR.
 .PP
-See also: \*(L"lremovexattr\*(R", \fIattr\fR\|(5).
+関連項目: \*(L"lremovexattr\*(R", \fIattr\fR\|(5)
 .SS "resize2fs"
 .IX Subsection "resize2fs"
 .Vb 1
@@ -5706,10 +6074,7 @@ See also: \*(L"lremovexattr\*(R", \fIattr\fR\|(5).
 This resizes an ext2, ext3 or ext4 filesystem to match the size of the
 underlying device.
 .PP
-\&\fINote:\fR It is sometimes required that you run \*(L"e2fsck\-f\*(R" on the \f(CW\*(C`device\*(C'\fR
-before calling this command.  For unknown reasons \f(CW\*(C`resize2fs\*(C'\fR sometimes
-gives an error about this and sometimes not.  In any case, it is always safe
-to call \*(L"e2fsck\-f\*(R" before calling this function.
+See also \*(L"\s-1RESIZE2FS\s0 \s-1ERRORS\s0\*(R" in \fIguestfs\fR\|(3).
 .SS "resize2fs\-M"
 .IX Subsection "resize2fs-M"
 .Vb 1
@@ -5724,6 +6089,8 @@ To get the resulting size of the filesystem you should call \*(L"tune2fs\-l\*(R"
 and read the \f(CW\*(C`Block size\*(C'\fR and \f(CW\*(C`Block count\*(C'\fR values.  These two numbers,
 multiplied together, give the resulting size of the minimal filesystem in
 bytes.
+.PP
+See also \*(L"\s-1RESIZE2FS\s0 \s-1ERRORS\s0\*(R" in \fIguestfs\fR\|(3).
 .SS "resize2fs\-size"
 .IX Subsection "resize2fs-size"
 .Vb 1
@@ -5732,13 +6099,15 @@ bytes.
 .PP
 This command is the same as \*(L"resize2fs\*(R" except that it allows you to
 specify the new size (in bytes) explicitly.
+.PP
+See also \*(L"\s-1RESIZE2FS\s0 \s-1ERRORS\s0\*(R" in \fIguestfs\fR\|(3).
 .SS "rm"
 .IX Subsection "rm"
 .Vb 1
 \& rm path
 .Ve
 .PP
-Remove the single file \f(CW\*(C`path\*(C'\fR.
+単一ファイル \f(CW\*(C`path\*(C'\fR を削除します。
 .SS "rm-rf"
 .IX Subsection "rm-rf"
 .Vb 1
@@ -5753,7 +6122,7 @@ its a directory.  This is like the \f(CW\*(C`rm \-rf\*(C'\fR shell command.
 \& rmdir path
 .Ve
 .PP
-Remove the single directory \f(CW\*(C`path\*(C'\fR.
+単一ディレクトリ \f(CW\*(C`path\*(C'\fR を削除します。
 .SS "rmmountpoint"
 .IX Subsection "rmmountpoint"
 .Vb 1
@@ -5807,14 +6176,12 @@ more details.
 \& set\-append append
 .Ve
 .PP
-This function is used to add additional options to the guest kernel command
-line.
+この関数は、追加のオプションを仮想マシンのカーネルコマンドラインに追加するために使用されます。
 .PP
-The default is \f(CW\*(C`NULL\*(C'\fR unless overridden by setting \f(CW\*(C`LIBGUESTFS_APPEND\*(C'\fR
-environment variable.
+\&\f(CW\*(C`LIBGUESTFS_APPEND\*(C'\fR 環境変数を設定して上書きされなければ、デフォルトは \f(CW\*(C`NULL\*(C'\fR です。
 .PP
-Setting \f(CW\*(C`append\*(C'\fR to \f(CW\*(C`NULL\*(C'\fR means \fIno\fR additional options are passed
-(libguestfs always adds a few of its own).
+\&\f(CW\*(C`append\*(C'\fR を \f(CW\*(C`NULL\*(C'\fR に設定することは、追加のオプションが渡され \fIない\fR ことを意味します（libguestfs
+は常に自身のいくつかを追加します）。
 .SS "set-attach-method"
 .IX Subsection "set-attach-method"
 .SS "attach-method"
@@ -5850,8 +6217,7 @@ If \f(CW\*(C`autosync\*(C'\fR is true, this enables autosync.  Libguestfs will m
 effort attempt to make filesystems consistent and synchronized when the
 handle is closed (also if the program exits without closing handles).
 .PP
-This is enabled by default (since libguestfs 1.5.24, previously it was
-disabled by default).
+デフォルトで有効です（libguestfs 1.5.24 以降、以前は デフォルトで無効でした）。
 .SS "set-direct"
 .IX Subsection "set-direct"
 .SS "direct"
@@ -5868,7 +6234,43 @@ and handled by \*(L"set-log-message-callback\*(R", but go straight to stdout.
 .PP
 You probably don't want to use this unless you know what you are doing.
 .PP
-The default is disabled.
+デフォルトは無効です。
+.SS "set\-e2attrs"
+.IX Subsection "set-e2attrs"
+.Vb 1
+\& set\-e2attrs file attrs [clear:true|false]
+.Ve
+.PP
+This sets or clears the file attributes \f(CW\*(C`attrs\*(C'\fR associated with the inode
+\&\f(CW\*(C`file\*(C'\fR.
+.PP
+\&\f(CW\*(C`attrs\*(C'\fR is a string of characters representing file attributes.  See
+\&\*(L"get\-e2attrs\*(R" for a list of possible attributes.  Not all attributes can
+be changed.
+.PP
+If optional boolean \f(CW\*(C`clear\*(C'\fR is not present or false, then the \f(CW\*(C`attrs\*(C'\fR
+listed are set in the inode.
+.PP
+If \f(CW\*(C`clear\*(C'\fR is true, then the \f(CW\*(C`attrs\*(C'\fR listed are cleared in the inode.
+.PP
+In both cases, other attributes not present in the \f(CW\*(C`attrs\*(C'\fR string are left
+unchanged.
+.PP
+These attributes are only present when the file is located on an ext2/3/4
+filesystem.  Using this call on other filesystem types will result in an
+error.
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
+.SS "set\-e2generation"
+.IX Subsection "set-e2generation"
+.Vb 1
+\& set\-e2generation file generation
+.Ve
+.PP
+This sets the ext2 file generation of a file.
+.PP
+See \*(L"get\-e2generation\*(R".
 .SS "set\-e2label"
 .IX Subsection "set-e2label"
 .Vb 1
@@ -5880,6 +6282,12 @@ This sets the ext2/3/4 filesystem label of the filesystem on \f(CW\*(C`device\*(
 .PP
 You can use either \*(L"tune2fs\-l\*(R" or \*(L"get\-e2label\*(R" to return the existing
 label on a filesystem.
+.PP
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"set_label\*(R" を使用してください。
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 .SS "set\-e2uuid"
 .IX Subsection "set-e2uuid"
 .Vb 1
@@ -5892,6 +6300,21 @@ This sets the ext2/3/4 filesystem \s-1UUID\s0 of the filesystem on \f(CW\*(C`dev
 .PP
 You can use either \*(L"tune2fs\-l\*(R" or \*(L"get\-e2uuid\*(R" to return the existing
 \&\s-1UUID\s0 of a filesystem.
+.SS "set-label"
+.IX Subsection "set-label"
+.Vb 1
+\& set\-label device label
+.Ve
+.PP
+\&\f(CW\*(C`device\*(C'\fR のファイルシステムのラベルを \f(CW\*(C`label\*(C'\fR に設定します。
+.PP
+いくつかのファイルシステム形式のみがラベルをサポートします。そして libguestfs はこれらのサブセットのみにおいてラベルの設定をサポートします。
+.PP
+ext2/3/4 ファイルシステムでは、ラベルは 16 バイトに制限されます。
+.PP
+\&\s-1NTFS\s0 ファイルシステムでは、ラベルは 128 Unicode 文字に制限されます。
+.PP
+ファイルシステムのラベルを読み込むには \*(L"vfs-label\*(R" を呼び出します。
 .SS "set-memsize"
 .IX Subsection "set-memsize"
 .SS "memsize"
@@ -5900,13 +6323,11 @@ You can use either \*(L"tune2fs\-l\*(R" or \*(L"get\-e2uuid\*(R" to return the e
 \& set\-memsize memsize
 .Ve
 .PP
-This sets the memory size in megabytes allocated to the qemu subprocess.
-This only has any effect if called before \*(L"launch\*(R".
+\&\s-1QEMU\s0 サブプロセスに割り当てられるメモリー容量をメガバイト単位で設定します。 \*(L"launch\*(R" 前に呼び出されるときのみ効果があります。
 .PP
-You can also change this by setting the environment variable
-\&\f(CW\*(C`LIBGUESTFS_MEMSIZE\*(C'\fR before the handle is created.
+ハンドルが設定される前に環境変数 \f(CW\*(C`LIBGUESTFS_MEMSIZE\*(C'\fR を設定することにより、これを変更できます。
 .PP
-For more information on the architecture of libguestfs, see \fIguestfs\fR\|(3).
+libguestfs のアーキテクチャーの詳細は \fIguestfs\fR\|(3) を参照してください。
 .SS "set-network"
 .IX Subsection "set-network"
 .SS "network"
@@ -5915,27 +6336,26 @@ For more information on the architecture of libguestfs, see \fIguestfs\fR\|(3).
 \& set\-network true|false
 .Ve
 .PP
-If \f(CW\*(C`network\*(C'\fR is true, then the network is enabled in the libguestfs
-appliance.  The default is false.
+\&\f(CW\*(C`network\*(C'\fR が真ならば、libguestfs アプライアンスにおいてネットワークが有効になります。デフォルトは偽です。
 .PP
 This affects whether commands are able to access the network (see
 \&\*(L"\s-1RUNNING\s0 \s-1COMMANDS\s0\*(R" in \fIguestfs\fR\|(3)).
 .PP
-You must call this before calling \*(L"launch\*(R", otherwise it has no effect.
+\&\*(L"launch\*(R" を呼び出す前に、これを呼び出さなければいけません。そうしなければ効果がありません。
 .SS "set-path"
 .IX Subsection "set-path"
-.SS "path"
-.IX Subsection "path"
+.SS "パス"
+.IX Subsection "パス"
 .Vb 1
 \& set\-path searchpath
 .Ve
 .PP
-Set the path that libguestfs searches for kernel and initrd.img.
+libguestfs がカーネルおよび initrd.img を検索するパスを設定します。
 .PP
 The default is \f(CW\*(C`$libdir/guestfs\*(C'\fR unless overridden by setting
 \&\f(CW\*(C`LIBGUESTFS_PATH\*(C'\fR environment variable.
 .PP
-Setting \f(CW\*(C`path\*(C'\fR to \f(CW\*(C`NULL\*(C'\fR restores the default path.
+\&\f(CW\*(C`path\*(C'\fR に \f(CW\*(C`NULL\*(C'\fR を設定することによりパスの初期値を復元します。
 .SS "set-pgroup"
 .IX Subsection "set-pgroup"
 .SS "pgroup"
@@ -5944,8 +6364,7 @@ Setting \f(CW\*(C`path\*(C'\fR to \f(CW\*(C`NULL\*(C'\fR restores the default pa
 \& set\-pgroup true|false
 .Ve
 .PP
-If \f(CW\*(C`pgroup\*(C'\fR is true, child processes are placed into their own process
-group.
+\&\f(CW\*(C`pgroup\*(C'\fR が真ならば、子プロセスは自身のプロセスグループの中に置かれます。
 .PP
 The practical upshot of this is that signals like \f(CW\*(C`SIGINT\*(C'\fR (from users
 pressing \f(CW\*(C`^C\*(C'\fR) won't be received by the child process.
@@ -5962,7 +6381,7 @@ so that \f(CW\*(C`^C\*(C'\fR can cancel long-running commands gracefully (see
 \& set\-qemu qemu
 .Ve
 .PP
-Set the qemu binary that we will use.
+使用したい \s-1QEMU\s0 バイナリーを設定します。
 .PP
 The default is chosen when the library was compiled by the configure script.
 .PP
@@ -6010,7 +6429,7 @@ The default is \f(CW\*(C`selinux=0\*(C'\fR (disabled).
 Note that if SELinux is enabled, it is always in Permissive mode
 (\f(CW\*(C`enforcing=0\*(C'\fR).
 .PP
-For more information on the architecture of libguestfs, see \fIguestfs\fR\|(3).
+libguestfs のアーキテクチャーの詳細は \fIguestfs\fR\|(3) を参照してください。
 .SS "set-smp"
 .IX Subsection "set-smp"
 .SS "smp"
@@ -6019,11 +6438,10 @@ For more information on the architecture of libguestfs, see \fIguestfs\fR\|(3).
 \& set\-smp smp
 .Ve
 .PP
-Change the number of virtual CPUs assigned to the appliance.  The default is
-\&\f(CW1\fR.  Increasing this may improve performance, though often it has no
-effect.
+アプライアンスに割り当てられる仮想 \s-1CPU\s0 数を変更します。初期値は \f(CW1\fR
+です。これを増やすことにより性能を向上させられますが、ときどき効果がありません。
 .PP
-This function must be called before \*(L"launch\*(R".
+この関数は \*(L"launch\*(R" の前に呼び出す必要があります。
 .SS "set-trace"
 .IX Subsection "set-trace"
 .SS "trace"
@@ -6051,7 +6469,7 @@ callback to send them somewhere else (see \*(L"set-event-callback\*(R").
 \& set\-verbose true|false
 .Ve
 .PP
-If \f(CW\*(C`verbose\*(C'\fR is true, this turns on verbose messages.
+\&\f(CW\*(C`verbose\*(C'\fR が真ならば、メッセージの冗長化を有効にします。
 .PP
 Verbose messages are disabled unless the environment variable
 \&\f(CW\*(C`LIBGUESTFS_DEBUG\*(C'\fR is defined and set to \f(CW1\fR.
@@ -6067,7 +6485,7 @@ callback to send them somewhere else (see \*(L"set-event-callback\*(R").
 This sets the SELinux security context of the daemon to the string
 \&\f(CW\*(C`context\*(C'\fR.
 .PP
-See the documentation about \s-1SELINUX\s0 in \fIguestfs\fR\|(3).
+\&\fIguestfs\fR\|(3) における SELinux に関するドキュメントを参照してください。
 .SS "setxattr"
 .IX Subsection "setxattr"
 .Vb 1
@@ -6077,7 +6495,7 @@ See the documentation about \s-1SELINUX\s0 in \fIguestfs\fR\|(3).
 This call sets the extended attribute named \f(CW\*(C`xattr\*(C'\fR of the file \f(CW\*(C`path\*(C'\fR to
 the value \f(CW\*(C`val\*(C'\fR (of length \f(CW\*(C`vallen\*(C'\fR).  The value is arbitrary 8 bit data.
 .PP
-See also: \*(L"lsetxattr\*(R", \fIattr\fR\|(5).
+関連項目: \*(L"lsetxattr\*(R", \fIattr\fR\|(5)
 .SS "sfdisk"
 .IX Subsection "sfdisk"
 .Vb 1
@@ -6103,10 +6521,9 @@ To create a single partition occupying the whole disk, you would pass
 \&\f(CW\*(C`lines\*(C'\fR as a single element list, when the single element being the string
 \&\f(CW\*(C`,\*(C'\fR (comma).
 .PP
-See also: \*(L"sfdisk-l\*(R", \*(L"sfdisk-N\*(R", \*(L"part-init\*(R"
+関連項目: \*(L"sfdisk-l\*(R", \*(L"sfdisk-N\*(R", \*(L"part-init\*(R"
 .PP
-\&\fIThis function is deprecated.\fR In new code, use the \*(L"part_add\*(R" call
-instead.
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"part_add\*(R" を使用してください。
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -6122,10 +6539,9 @@ sizes are specified in megabytes only (rounded to the nearest cylinder) and
 you don't need to specify the cyls, heads and sectors parameters which were
 rarely if ever used anyway.
 .PP
-See also: \*(L"sfdisk\*(R", the \fIsfdisk\fR\|(8) manpage and \*(L"part-disk\*(R"
+関連項目: \*(L"sfdisk\*(R", \fIsfdisk\fR\|(8) マニュアルページおよび \*(L"part-disk\*(R"
 .PP
-\&\fIThis function is deprecated.\fR In new code, use the \*(L"part_add\*(R" call
-instead.
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"part_add\*(R" を使用してください。
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -6142,10 +6558,9 @@ This runs \fIsfdisk\fR\|(8) option to modify just the single partition \f(CW\*(C
 For other parameters, see \*(L"sfdisk\*(R".  You should usually pass \f(CW0\fR for the
 cyls/heads/sectors parameters.
 .PP
-See also: \*(L"part-add\*(R"
+関連項目: \*(L"part-add\*(R"
 .PP
-\&\fIThis function is deprecated.\fR In new code, use the \*(L"part_add\*(R" call
-instead.
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"part_add\*(R" を使用してください。
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -6180,10 +6595,9 @@ The result is in human-readable format, and not designed to be parsed.
 This displays the partition table on \f(CW\*(C`device\*(C'\fR, in the human-readable output
 of the \fIsfdisk\fR\|(8) command.  It is not intended to be parsed.
 .PP
-See also: \*(L"part-list\*(R"
+関連項目: \*(L"part-list\*(R"
 .PP
-\&\fIThis function is deprecated.\fR In new code, use the \*(L"part_list\*(R" call
-instead.
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"part_list\*(R" を使用してください。
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -6215,14 +6629,14 @@ All the provisos about \*(L"command\*(R" apply to this call.
 .PP
 This is the same as \*(L"sh\*(R", but splits the result into a list of lines.
 .PP
-See also: \*(L"command-lines\*(R"
+関連項目: \*(L"command-lines\*(R"
 .SS "sleep"
 .IX Subsection "sleep"
 .Vb 1
 \& sleep secs
 .Ve
 .PP
-Sleep for \f(CW\*(C`secs\*(C'\fR seconds.
+\&\f(CW\*(C`secs\*(C'\fR 秒間スリープします。
 .SS "stat"
 .IX Subsection "stat"
 .Vb 1
@@ -6231,7 +6645,7 @@ Sleep for \f(CW\*(C`secs\*(C'\fR seconds.
 .PP
 Returns file information for the given \f(CW\*(C`path\*(C'\fR.
 .PP
-This is the same as the \f(CWstat(2)\fR system call.
+これは \f(CWstat(2)\fR システムコールと同じです。
 .SS "statvfs"
 .IX Subsection "statvfs"
 .Vb 1
@@ -6242,7 +6656,7 @@ Returns file system statistics for any mounted file system.  \f(CW\*(C`path\*(C'
 be a file or directory in the mounted file system (typically it is the mount
 point itself, but it doesn't need to be).
 .PP
-This is the same as the \f(CWstatvfs(2)\fR system call.
+これは \f(CWstatvfs(2)\fR システムコールと同じです。
 .SS "strings"
 .IX Subsection "strings"
 .Vb 1
@@ -6263,29 +6677,29 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 This is like the \*(L"strings\*(R" command, but allows you to specify the encoding
 of strings that are looked for in the source file \f(CW\*(C`path\*(C'\fR.
 .PP
-Allowed encodings are:
+許可されるエンコードは次のとおりです:
 .IP "s" 4
 .IX Item "s"
 Single 7\-bit\-byte characters like \s-1ASCII\s0 and the ASCII-compatible parts of
 \&\s-1ISO\-8859\-X\s0 (this is what \*(L"strings\*(R" uses).
 .IP "S" 4
 .IX Item "S"
-Single 8\-bit\-byte characters.
+単一の 8 ビットのバイト文字。
 .IP "b" 4
 .IX Item "b"
-16\-bit big endian strings such as those encoded in \s-1UTF\-16BE\s0 or \s-1UCS\-2BE\s0.
-.IP "l (lower case letter L)" 4
-.IX Item "l (lower case letter L)"
-16\-bit little endian such as \s-1UTF\-16LE\s0 and \s-1UCS\-2LE\s0.  This is useful for
-examining binaries in Windows guests.
+\&\s-1UTF\-16BE\s0 や \s-1UCS\-2BE\s0 でエンコードされたもののように 16 ビットのビッグエンディアン文字列。
+.IP "l (小文字の L)" 4
+.IX Item "l (小文字の L)"
+\&\s-1UTF\-16LE\s0 や \s-1UCS\-2LE\s0 のような 16 ビットのリトルエンディアン。これは Windows
+仮想マシンにあるバイナリーを検査するために有用です。
 .IP "B" 4
 .IX Item "B"
-32\-bit big endian such as \s-1UCS\-4BE\s0.
+\&\s-1UCS\-4BE\s0 のような 32 ビットのビッグエンディアン。
 .IP "L" 4
 .IX Item "L"
-32\-bit little endian such as \s-1UCS\-4LE\s0.
+\&\s-1UCS\-4LE\s0 のような 32 ビットのリトルエンディアン。
 .PP
-The returned strings are transcoded to \s-1UTF\-8\s0.
+返される文字列は \s-1UTF\-8\s0 に変換されます。
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -6303,23 +6717,21 @@ named \f(CW\*(C`device\*(C'\fR.  See \*(L"swapon-device\*(R".
 \& swapoff\-file file
 .Ve
 .PP
-This command disables the libguestfs appliance swap on file.
+このコマンドは libguestfs アプライアンスの swap on ファイルを無効にします。
 .SS "swapoff-label"
 .IX Subsection "swapoff-label"
 .Vb 1
 \& swapoff\-label label
 .Ve
 .PP
-This command disables the libguestfs appliance swap on labeled swap
-partition.
+このコマンドは libguestfs アプライアンスの swap on ラベル付き swap パーティションを無効にします。
 .SS "swapoff-uuid"
 .IX Subsection "swapoff-uuid"
 .Vb 1
 \& swapoff\-uuid uuid
 .Ve
 .PP
-This command disables the libguestfs appliance swap partition with the given
-\&\s-1UUID\s0.
+このコマンドは libguestfs アプライアンスの指定された \s-1UUID\s0 を持つ swap パーティションを無効にします。
 .SS "swapon-device"
 .IX Subsection "swapon-device"
 .Vb 1
@@ -6391,7 +6803,7 @@ If the parameter \f(CW\*(C`nrlines\*(C'\fR is a positive number, this returns th
 If the parameter \f(CW\*(C`nrlines\*(C'\fR is a negative number, this returns lines from
 the file \f(CW\*(C`path\*(C'\fR, starting with the \f(CW\*(C`\-nrlines\*(C'\fRth line.
 .PP
-If the parameter \f(CW\*(C`nrlines\*(C'\fR is zero, this returns an empty list.
+パラメーター \f(CW\*(C`nrlines\*(C'\fR が 0 ならば、空の一覧を返します。
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -6404,7 +6816,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 This command uploads and unpacks local file \f(CW\*(C`tarfile\*(C'\fR (an \fIuncompressed\fR
 tar file) into \f(CW\*(C`directory\*(C'\fR.
 .PP
-To upload a compressed tarball, use \*(L"tgz-in\*(R" or \*(L"txz-in\*(R".
+圧縮した tar ファイルをアップロードするには \*(L"tgz-in\*(R" または \*(L"txz-in\*(R" を使用します。
 .PP
 Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "tar-out"
@@ -6416,7 +6828,7 @@ Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 This command packs the contents of \f(CW\*(C`directory\*(C'\fR and downloads it to local
 file \f(CW\*(C`tarfile\*(C'\fR.
 .PP
-To download a compressed tarball, use \*(L"tgz-out\*(R" or \*(L"txz-out\*(R".
+圧縮した tar ファイルをダウンロードするには \*(L"tgz-out\*(R" または \*(L"txz-out\*(R" を使用します。
 .PP
 Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "tgz-in"
@@ -6428,7 +6840,7 @@ Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 This command uploads and unpacks local file \f(CW\*(C`tarball\*(C'\fR (a \fIgzip compressed\fR
 tar file) into \f(CW\*(C`directory\*(C'\fR.
 .PP
-To upload an uncompressed tarball, use \*(L"tar-in\*(R".
+圧縮していない tar ファイルをアップロードするには \*(L"tar-in\*(R" を使用します。
 .PP
 Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "tgz-out"
@@ -6440,7 +6852,7 @@ Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 This command packs the contents of \f(CW\*(C`directory\*(C'\fR and downloads it to local
 file \f(CW\*(C`tarball\*(C'\fR.
 .PP
-To download an uncompressed tarball, use \*(L"tar-out\*(R".
+圧縮していない tar ファイルをダウンロードするには \*(L"tar-out\*(R" を使用します。
 .PP
 Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "touch"
@@ -6485,7 +6897,7 @@ non-sparse file of zeroes, use \*(L"fallocate64\*(R" instead.
 This call allows you to adjust various filesystem parameters of an
 ext2/ext3/ext4 filesystem called \f(CW\*(C`device\*(C'\fR.
 .PP
-The optional parameters are:
+オプションのパラメーターは次のとおりです:
 .ie n .IP """force""" 4
 .el .IP "\f(CWforce\fR" 4
 .IX Item "force"
@@ -6510,7 +6922,7 @@ values currently are: \f(CW\*(C`continue\*(C'\fR, \f(CW\*(C`remount\-ro\*(C'\fR,
 these options don't really make any difference, particularly for write
 errors.
 .Sp
-This is the same as the tune2fs \f(CW\*(C`\-e\*(C'\fR option.
+これは tune2fs \f(CW\*(C`\-e\*(C'\fR オプションと同じです。
 .ie n .IP """group""" 4
 .el .IP "\f(CWgroup\fR" 4
 .IX Item "group"
@@ -6522,7 +6934,7 @@ the tune2fs \f(CW\*(C`\-g\*(C'\fR option except that it can only be specified as
 Adjust the maximal time between two filesystem checks (in seconds).  If the
 option is passed as \f(CW0\fR then time-dependent checking is disabled.
 .Sp
-This is the same as the tune2fs \f(CW\*(C`\-i\*(C'\fR option.
+これは tune2fs \f(CW\*(C`\-i\*(C'\fR オプションと同じです。
 .ie n .IP """reservedblockspercentage""" 4
 .el .IP "\f(CWreservedblockspercentage\fR" 4
 .IX Item "reservedblockspercentage"
@@ -6531,8 +6943,7 @@ privileged processes.  This is the same as the tune2fs \f(CW\*(C`\-m\*(C'\fR opt
 .ie n .IP """lastmounteddirectory""" 4
 .el .IP "\f(CWlastmounteddirectory\fR" 4
 .IX Item "lastmounteddirectory"
-Set the last mounted directory.  This is the same as the tune2fs \f(CW\*(C`\-M\*(C'\fR
-option.
+最後にマウントされたディレクトリーを設定します。これは tune2fs \f(CW\*(C`\-M\*(C'\fR オプションと同じです。
 .ie n .IP """reservedblockscount"" Set the number of reserved filesystem blocks.  This is the same as the tune2fs ""\-r"" option." 4
 .el .IP "\f(CWreservedblockscount\fR Set the number of reserved filesystem blocks.  This is the same as the tune2fs \f(CW\-r\fR option." 4
 .IX Item "reservedblockscount Set the number of reserved filesystem blocks.  This is the same as the tune2fs -r option."
@@ -6600,7 +7011,7 @@ The default umask is \f(CW022\fR.  This is important because it means that
 directories and device nodes will be created with \f(CW0644\fR or \f(CW0755\fR mode
 even if you specify \f(CW0777\fR.
 .PP
-See also \*(L"get-umask\*(R", \fIumask\fR\|(2), \*(L"mknod\*(R", \*(L"mkdir\*(R".
+\&\*(L"get-umask\*(R", \fIumask\fR\|(2), \*(L"mknod\*(R", \*(L"mkdir\*(R" 参照。
 .PP
 This call returns the previous umask.
 .SS "umount"
@@ -6621,20 +7032,32 @@ by its mountpoint (path) or the device which contains the filesystem.
 \& umount\-all
 .Ve
 .PP
-This unmounts all mounted filesystems.
+これはマウントされたファイルシステムをすべてアンマウントします。
 .PP
-Some internal mounts are not unmounted by this call.
+いくつかの内部マウントはこの呼び出しによりアンマウントされません。
+.SS "umount-local"
+.IX Subsection "umount-local"
+.Vb 1
+\& umount\-local [retry:true|false]
+.Ve
+.PP
+libguestfs がローカルマウントポイントにあるファイルシステムをエクスポートしているならば、これによりアンマウントされます。
+.PP
+完全なドキュメントは \*(L"\s-1MOUNT\s0 \s-1LOCAL\s0\*(R" in \fIguestfs\fR\|(3) を参照してください。
+.PP
+This command has one or more optional arguments.  See \*(L"\s-1OPTIONAL\s0
+\&\s-1ARGUMENTS\s0\*(R".
 .SS "upload"
 .IX Subsection "upload"
 .Vb 1
 \& upload (filename|\-) remotefilename
 .Ve
 .PP
-Upload local file \f(CW\*(C`filename\*(C'\fR to \f(CW\*(C`remotefilename\*(C'\fR on the filesystem.
+ローカルファイル \f(CW\*(C`filename\*(C'\fR をファイルシステムにおいて \f(CW\*(C`remotefilename\*(C'\fR にアップロードします。
 .PP
-\&\f(CW\*(C`filename\*(C'\fR can also be a named pipe.
+\&\f(CW\*(C`filename\*(C'\fR は名前付きパイプを使えます。
 .PP
-See also \*(L"download\*(R".
+\&\*(L"download\*(R" 参照。
 .PP
 Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "upload-offset"
@@ -6643,7 +7066,7 @@ Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 \& upload\-offset (filename|\-) remotefilename offset
 .Ve
 .PP
-Upload local file \f(CW\*(C`filename\*(C'\fR to \f(CW\*(C`remotefilename\*(C'\fR on the filesystem.
+ローカルファイル \f(CW\*(C`filename\*(C'\fR をファイルシステムにおいて \f(CW\*(C`remotefilename\*(C'\fR にアップロードします。
 .PP
 \&\f(CW\*(C`remotefilename\*(C'\fR is overwritten starting at the byte \f(CW\*(C`offset\*(C'\fR specified.
 The intention is to overwrite parts of existing files or devices, although
@@ -6655,7 +7078,7 @@ Note that there is no limit on the amount of data that can be uploaded with
 this call, unlike with \*(L"pwrite\*(R", and this call always writes the full
 amount unless an error occurs.
 .PP
-See also \*(L"upload\*(R", \*(L"pwrite\*(R".
+\&\*(L"upload\*(R", \*(L"pwrite\*(R" 参照。
 .PP
 Use \f(CW\*(C`\-\*(C'\fR instead of a filename to read/write from stdin/stdout.
 .SS "utimens"
@@ -6704,7 +7127,7 @@ but may be used for distro-specific information.
 .PP
 To construct the original version string: \f(CW\*(C`$major.$minor.$release$extra\*(C'\fR
 .PP
-See also: \*(L"\s-1LIBGUESTFS\s0 \s-1VERSION\s0 \s-1NUMBERS\s0\*(R" in \fIguestfs\fR\|(3).
+関連項目: \*(L"\s-1LIBGUESTFS\s0 \s-1VERSION\s0 \s-1NUMBERS\s0\*(R" in \fIguestfs\fR\|(3)
 .PP
 \&\fINote:\fR Don't use this call to test for availability of features.  In
 enterprise distributions we backport features from later versions into
@@ -6718,9 +7141,9 @@ earlier versions, making this an unreliable way to test for features.  Use
 .PP
 This returns the filesystem label of the filesystem on \f(CW\*(C`device\*(C'\fR.
 .PP
-If the filesystem is unlabeled, this returns the empty string.
+ファイルシステムにラベルが付いていないと、空の文字列が返されます。
 .PP
-To find a filesystem from the label, use \*(L"findfs-label\*(R".
+ラベルからファイルシステムを検索するには \*(L"findfs-label\*(R" を使用します。
 .SS "vfs-type"
 .IX Subsection "vfs-type"
 .Vb 1
@@ -6741,9 +7164,9 @@ the filesystem type.  For example a string such as \f(CW\*(C`ext3\*(C'\fR or \f(
 .PP
 This returns the filesystem \s-1UUID\s0 of the filesystem on \f(CW\*(C`device\*(C'\fR.
 .PP
-If the filesystem does not have a \s-1UUID\s0, this returns the empty string.
+ファイルシステムが \s-1UUID\s0 を持っていないと、空の文字列を返します。
 .PP
-To find a filesystem from the \s-1UUID\s0, use \*(L"findfs-uuid\*(R".
+\&\s-1UUID\s0 からファイルシステムを検索するには \*(L"findfs-uuid\*(R" を使用します。
 .SS "vg-activate"
 .IX Subsection "vg-activate"
 .Vb 1
@@ -6753,7 +7176,7 @@ To find a filesystem from the \s-1UUID\s0, use \*(L"findfs-uuid\*(R".
 This command activates or (if \f(CW\*(C`activate\*(C'\fR is false) deactivates all logical
 volumes in the listed volume groups \f(CW\*(C`volgroups\*(C'\fR.
 .PP
-This command is the same as running \f(CW\*(C`vgchange \-a y|n volgroups...\*(C'\fR
+このコマンドは \f(CW\*(C`vgchange \-a y|n volgroups...\*(C'\fR を実行するときと同じです。
 .PP
 Note that if \f(CW\*(C`volgroups\*(C'\fR is an empty list then \fBall\fR volume groups are
 activated or deactivated.
@@ -6787,7 +7210,16 @@ volumes created in this volume group.
 You can use this along with \*(L"lvs\*(R" and \*(L"lvuuid\*(R" calls to associate
 logical volumes and volume groups.
 .PP
-See also \*(L"vgpvuuids\*(R".
+\&\*(L"vgpvuuids\*(R" 参照。
+.SS "vgmeta"
+.IX Subsection "vgmeta"
+.Vb 1
+\& vgmeta vgname
+.Ve
+.PP
+\&\f(CW\*(C`vgname\*(C'\fR は \s-1LVM\s0 ボリュームグループです。このコマンドは、ボリュームグループを検査して、そのメタ情報を返します。
+.PP
+メタ情報は、LVM により使用される内部構造で、いつでも変更を強制され、情報に対してのみ提供されることに注意してください。
 .SS "vgpvuuids"
 .IX Subsection "vgpvuuids"
 .Vb 1
@@ -6800,14 +7232,14 @@ volumes that this volume group resides on.
 You can use this along with \*(L"pvs\*(R" and \*(L"pvuuid\*(R" calls to associate
 physical volumes and volume groups.
 .PP
-See also \*(L"vglvuuids\*(R".
+\&\*(L"vglvuuids\*(R" 参照。
 .SS "vgremove"
 .IX Subsection "vgremove"
 .Vb 1
 \& vgremove vgname
 .Ve
 .PP
-Remove an \s-1LVM\s0 volume group \f(CW\*(C`vgname\*(C'\fR, (for example \f(CW\*(C`VG\*(C'\fR).
+\&\s-1LVM\s0 ボリュームグループ \f(CW\*(C`vgname\*(C'\fR を削除します（例: \f(CW\*(C`VG\*(C'\fR）。
 .PP
 This also forcibly removes all logical volumes in the volume group (if any).
 .SS "vgrename"
@@ -6829,7 +7261,7 @@ List all the volumes groups detected.  This is the equivalent of the
 This returns a list of just the volume group names that were detected
 (eg. \f(CW\*(C`VolGroup00\*(C'\fR).
 .PP
-See also \*(L"vgs-full\*(R".
+\&\*(L"vgs-full\*(R" 参照。
 .SS "vgs-full"
 .IX Subsection "vgs-full"
 .Vb 1
@@ -6875,8 +7307,19 @@ command.
 \& wc\-w path
 .Ve
 .PP
-This command counts the words in a file, using the \f(CW\*(C`wc \-w\*(C'\fR external
-command.
+このコマンドは、\f(CW\*(C`wc \-w\*(C'\fR 外部コマンドを使用して、ファイルにある単語を数えます。
+.SS "wipefs"
+.IX Subsection "wipefs"
+.Vb 1
+\& wipefs device
+.Ve
+.PP
+This command erases filesystem or \s-1RAID\s0 signatures from the specified
+\&\f(CW\*(C`device\*(C'\fR to make the filesystem invisible to libblkid.
+.PP
+これは、ファイルシステム自身を削除しません、また \f(CW\*(C`device\*(C'\fR から他のどんなデータも削除しません。
+.PP
+デバイスの最初の数ブロックをゼロにする \*(L"zero\*(R" と比較します。
 .SS "write"
 .IX Subsection "write"
 .Vb 1
@@ -6886,7 +7329,7 @@ command.
 This call creates a file called \f(CW\*(C`path\*(C'\fR.  The content of the file is the
 string \f(CW\*(C`content\*(C'\fR (which can contain any 8 bit data).
 .PP
-See also \*(L"write-append\*(R".
+\&\*(L"write-append\*(R" 参照。
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -6899,7 +7342,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 This call appends \f(CW\*(C`content\*(C'\fR to the end of file \f(CW\*(C`path\*(C'\fR.  If \f(CW\*(C`path\*(C'\fR does
 not exist, then a new file is created.
 .PP
-See also \*(L"write\*(R".
+\&\*(L"write\*(R" 参照。
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -6921,7 +7364,7 @@ As a special case, if \f(CW\*(C`size\*(C'\fR is \f(CW0\fR then the length is cal
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
 .PP
-\&\fIThis function is deprecated.\fR In new code, use the \*(L"write\*(R" call instead.
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"write\*(R" を使用してください。
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -6932,7 +7375,7 @@ these functions.
 \& zegrep regex path
 .Ve
 .PP
-This calls the external \f(CW\*(C`zegrep\*(C'\fR program and returns the matching lines.
+これは外部の \f(CW\*(C`zegrep\*(C'\fR プログラムを呼び出し、一致する行を返します。
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -6942,7 +7385,7 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 \& zegrepi regex path
 .Ve
 .PP
-This calls the external \f(CW\*(C`zegrep \-i\*(C'\fR program and returns the matching lines.
+これは外部の \f(CW\*(C`zegrep \-i\*(C'\fR プログラムを呼び出し、一致する行を返します。
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -6958,11 +7401,10 @@ How many blocks are zeroed isn't specified (but it's \fInot\fR enough to
 securely wipe the device).  It should be sufficient to remove any partition
 tables, filesystem superblocks and so on.
 .PP
-If blocks are already zero, then this command avoids writing zeroes.  This
-prevents the underlying device from becoming non-sparse or growing
-unnecessarily.
+ブロックデバイスがすでに 0 ならば、このコマンドは 0
+を書き込みません。これは、下にあるブロックデバイスが不必要に非スパース化されたり大きくなったりすることを避けるためです。
 .PP
-See also: \*(L"zero-device\*(R", \*(L"scrub-device\*(R", \*(L"is-zero-device\*(R"
+関連項目: \*(L"zero-device\*(R", \*(L"scrub-device\*(R", \*(L"is-zero-device\*(R"
 .SS "zero-device"
 .IX Subsection "zero-device"
 .Vb 1
@@ -6972,9 +7414,20 @@ See also: \*(L"zero-device\*(R", \*(L"scrub-device\*(R", \*(L"is-zero-device\*(R
 This command writes zeroes over the entire \f(CW\*(C`device\*(C'\fR.  Compare with \*(L"zero\*(R"
 which just zeroes the first few blocks of a device.
 .PP
-If blocks are already zero, then this command avoids writing zeroes.  This
-prevents the underlying device from becoming non-sparse or growing
-unnecessarily.
+ブロックデバイスがすでに 0 ならば、このコマンドは 0
+を書き込みません。これは、下にあるブロックデバイスが不必要に非スパース化されたり大きくなったりすることを避けるためです。
+.SS "zero-free-space"
+.IX Subsection "zero-free-space"
+.Vb 1
+\& zero\-free\-space directory
+.Ve
+.PP
+\&\f(CW\*(C`directory\*(C'\fR にマウントされたファイルシステムにある空き領域にゼロを書き込みます。
+ファイルシステムは読み書きモードでマウントする必要があります。
+.PP
+ファイルシステムの内容は影響を受けません。しかし、ファイルシステムにある空き領域はすべて開放されます。
+.PP
+将来（現在ではありません）これらのゼロにされたブロックは「スパース化」されます。つまり、ホストに返されます。
 .SS "zerofree"
 .IX Subsection "zerofree"
 .Vb 1
@@ -7017,11 +7470,11 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 .PP
 This command runs \f(CW\*(C`file\*(C'\fR after first decompressing \f(CW\*(C`path\*(C'\fR using \f(CW\*(C`method\*(C'\fR.
 .PP
-\&\f(CW\*(C`method\*(C'\fR must be one of \f(CW\*(C`gzip\*(C'\fR, \f(CW\*(C`compress\*(C'\fR or \f(CW\*(C`bzip2\*(C'\fR.
+\&\f(CW\*(C`method\*(C'\fR は \f(CW\*(C`gzip\*(C'\fR, \f(CW\*(C`compress\*(C'\fR または \f(CW\*(C`bzip2\*(C'\fR のいずれかである必要があります。
 .PP
 Since 1.0.63, use \*(L"file\*(R" instead which can now process compressed files.
 .PP
-\&\fIThis function is deprecated.\fR In new code, use the \*(L"file\*(R" call instead.
+\&\fIこの関数は推奨されません。\fR 新しいコードでは、代わりに \*(L"file\*(R" を使用してください。
 .PP
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -7032,7 +7485,7 @@ these functions.
 \& zgrep regex path
 .Ve
 .PP
-This calls the external \f(CW\*(C`zgrep\*(C'\fR program and returns the matching lines.
+外部 \f(CW\*(C`zgrep\*(C'\fR プログラムを呼び出し、一致する行を返します。
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
@@ -7042,20 +7495,18 @@ between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\
 \& zgrepi regex path
 .Ve
 .PP
-This calls the external \f(CW\*(C`zgrep \-i\*(C'\fR program and returns the matching lines.
+外部 \f(CW\*(C`zgrep \-i\*(C'\fR プログラムを呼び出し、一致する行を返します。
 .PP
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See \*(L"\s-1PROTOCOL\s0 \s-1LIMITS\s0\*(R" in \fIguestfs\fR\|(3).
-.SH "EXIT STATUS"
-.IX Header "EXIT STATUS"
-guestfish returns 0 if the commands completed without error, or 1 if there
-was an error.
-.SH "ENVIRONMENT VARIABLES"
-.IX Header "ENVIRONMENT VARIABLES"
+.SH "終了ステータス"
+.IX Header "終了ステータス"
+コマンドがエラーなく完了すると、guestfish は 0 を返します。エラーがあると 1 を返します。
+.SH "環境変数"
+.IX Header "環境変数"
 .IP "\s-1EDITOR\s0" 4
 .IX Item "EDITOR"
-The \f(CW\*(C`edit\*(C'\fR command uses \f(CW$EDITOR\fR as the editor.  If not set, it uses
-\&\f(CW\*(C`vi\*(C'\fR.
+\&\f(CW\*(C`edit\*(C'\fR コマンドはエディターとして \f(CW$EDITOR\fR を使用します。設定されていないと、\f(CW\*(C`vi\*(C'\fR を使用します。
 .IP "\s-1FEBOOTSTRAP_KERNEL\s0" 4
 .IX Item "FEBOOTSTRAP_KERNEL"
 .PD 0
@@ -7081,11 +7532,10 @@ The \*(L"hexedit\*(R" command uses \f(CW$HEXEDITOR\fR as the external hex editor
 not specified, the external \fIhexedit\fR\|(1) program is used.
 .IP "\s-1HOME\s0" 4
 .IX Item "HOME"
-If compiled with \s-1GNU\s0 readline support, various files in the home directory
-can be used.  See \*(L"\s-1FILES\s0\*(R".
+\&\s-1GNU\s0 readline のサポート付きでコンパイルしていると、ホームディレクトリーにあるさまざまなファイルを使用できます。 \*(L"ファイル\*(R" 参照。
 .IP "\s-1LIBGUESTFS_APPEND\s0" 4
 .IX Item "LIBGUESTFS_APPEND"
-Pass additional options to the guest kernel.
+仮想マシンのカーネルに追加のオプションを渡します。
 .IP "\s-1LIBGUESTFS_DEBUG\s0" 4
 .IX Item "LIBGUESTFS_DEBUG"
 Set \f(CW\*(C`LIBGUESTFS_DEBUG=1\*(C'\fR to enable verbose messages.  This has the same
@@ -7107,22 +7557,22 @@ Set the default qemu binary that libguestfs uses.  If not set, then the qemu
 which was found at compile time by the configure script is used.
 .IP "\s-1LIBGUESTFS_TRACE\s0" 4
 .IX Item "LIBGUESTFS_TRACE"
-Set \f(CW\*(C`LIBGUESTFS_TRACE=1\*(C'\fR to enable command traces.
+コマンドトレースを有効にするには \f(CW\*(C`LIBGUESTFS_TRACE=1\*(C'\fR を設定してください。
 .IP "\s-1PAGER\s0" 4
 .IX Item "PAGER"
 The \f(CW\*(C`more\*(C'\fR command uses \f(CW$PAGER\fR as the pager.  If not set, it uses
 \&\f(CW\*(C`more\*(C'\fR.
 .IP "\s-1TMPDIR\s0" 4
 .IX Item "TMPDIR"
-Location of temporary directory, defaults to \f(CW\*(C`/tmp\*(C'\fR except for the cached
-supermin appliance which defaults to \f(CW\*(C`/var/tmp\*(C'\fR.
+一時ディレクトリーの場所です。初期値は \f(CW\*(C`/tmp\*(C'\fR です。初期値が \f(CW\*(C`/var/tmp\*(C'\fR であるキャッシュされた supermin
+アプライアンスは除きます。
 .Sp
-If libguestfs was compiled to use the supermin appliance then the real
-appliance is cached in this directory, shared between all handles belonging
-to the same \s-1EUID\s0.  You can use \f(CW$TMPDIR\fR to configure another directory to
-use in case \f(CW\*(C`/var/tmp\*(C'\fR is not large enough.
-.SH "FILES"
-.IX Header "FILES"
+libguestfs が supermin
+アプライアンスを使用するようコンパイルされていると、本当のアプライアンスがこのディレクトリーにキャッシュされ、同じ \s-1EUID\s0
+に属するすべてのハンドル間で共有されます。 \f(CW\*(C`/var/tmp\*(C'\fR が十分に大きくない場合に使用する他のディレクトリーを設定するために
+\&\f(CW$TMPDIR\fR を使用できます。
+.SH "ファイル"
+.IX Header "ファイル"
 .ie n .IP "$HOME/.libguestfs\-tools.rc" 4
 .el .IP "\f(CW$HOME\fR/.libguestfs\-tools.rc" 4
 .IX Item "$HOME/.libguestfs-tools.rc"
@@ -7137,8 +7587,7 @@ See \*(L"\s-1OPENING\s0 \s-1DISKS\s0 \s-1FOR\s0 \s-1READ\s0 \s-1AND\s0 \s-1WRITE
 .ie n .IP "$HOME/.guestfish" 4
 .el .IP "\f(CW$HOME\fR/.guestfish" 4
 .IX Item "$HOME/.guestfish"
-If compiled with \s-1GNU\s0 readline support, then the command history is saved in
-this file.
+\&\s-1GNU\s0 readline のサポート付きでコンパイルされていると、コマンドの履歴がこのファイルに保存されます。
 .ie n .IP "$HOME/.inputrc" 4
 .el .IP "\f(CW$HOME\fR/.inputrc" 4
 .IX Item "$HOME/.inputrc"
@@ -7146,9 +7595,8 @@ this file.
 .IP "/etc/inputrc" 4
 .IX Item "/etc/inputrc"
 .PD
-If compiled with \s-1GNU\s0 readline support, then these files can be used to
-configure readline.  For further information, please see
-\&\*(L"\s-1INITIALIZATION\s0 \s-1FILE\s0\*(R" in \fIreadline\fR\|(3).
+\&\s-1GNU\s0 readline のサポート付きでコンパイルされていると、これらのファイルが readline を設定するために使用されます。  詳細は
+\&\*(L"\s-1INITIALIZATION\s0 \s-1FILE\s0\*(R" in \fIreadline\fR\|(3) を参照してください。
 .Sp
 To write rules which only apply to guestfish, use:
 .Sp
@@ -7161,8 +7609,8 @@ To write rules which only apply to guestfish, use:
 Variables that you can set in inputrc that change the behaviour of guestfish
 in useful ways include:
 .RS 4
-.IP "completion-ignore-case (default: on)" 4
-.IX Item "completion-ignore-case (default: on)"
+.IP "completion-ignore-case (初期値: on)" 4
+.IX Item "completion-ignore-case (初期値: on)"
 By default, guestfish will ignore case when tab-completing paths on the
 disk.  Use:
 .Sp
@@ -7170,7 +7618,7 @@ disk.  Use:
 \& set completion\-ignore\-case off
 .Ve
 .Sp
-to make guestfish case sensitive.
+guestfish が大文字小文字を区別するようになります。
 .RE
 .RS 4
 .RE
@@ -7184,8 +7632,8 @@ When using the \fI\-N\fR or \fI\-\-new\fR option, the prepared disk or filesyste
 will be created in the file \f(CW\*(C`test1.img\*(C'\fR in the current directory.  The
 second use of \fI\-N\fR will use \f(CW\*(C`test2.img\*(C'\fR and so on.  Any existing file with
 the same name will be overwritten.
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
+.SH "関連項目"
+.IX Header "関連項目"
 \&\fIguestfs\fR\|(3), <http://libguestfs.org/>, \fIvirt\-alignment\-scan\fR\|(1),
 \&\fIvirt\-cat\fR\|(1), \fIvirt\-copy\-in\fR\|(1), \fIvirt\-copy\-out\fR\|(1), \fIvirt\-df\fR\|(1),
 \&\fIvirt\-edit\fR\|(1), \fIvirt\-filesystems\fR\|(1), \fIvirt\-inspector\fR\|(1),
@@ -7193,9 +7641,9 @@ the same name will be overwritten.
 \&\fIvirt\-make\-fs\fR\|(1), \fIvirt\-rescue\fR\|(1), \fIvirt\-resize\fR\|(1),
 \&\fIvirt\-sparsify\fR\|(1), \fIvirt\-sysprep\fR\|(1), \fIvirt\-tar\fR\|(1), \fIvirt\-tar\-in\fR\|(1),
 \&\fIvirt\-tar\-out\fR\|(1), \fIvirt\-win\-reg\fR\|(1), \fIdisplay\fR\|(1), \fIhexedit\fR\|(1),
-\&\fIfebootstrap\-supermin\-helper\fR\|(8).
-.SH "AUTHORS"
-.IX Header "AUTHORS"
+\&\fIfebootstrap\-supermin\-helper\fR\|(8)。
+.SH "著者"
+.IX Header "著者"
 Richard W.M. Jones (\f(CW\*(C`rjones at redhat dot com\*(C'\fR)
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"

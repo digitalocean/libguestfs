@@ -1,0 +1,61 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsCopyFileToFile
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsCopyFileToFile ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsCopyFileToFile:destoffset ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsCopyFileToFile:size ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsCopyFileToFile:srcoffset ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsCopyFileToFileClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_copy_file_to_file_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

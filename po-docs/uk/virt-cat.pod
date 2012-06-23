@@ -145,13 +145,13 @@ passphrases from the user by opening C</dev/tty>.
 
 =item B<-x>
 
-Enable tracing of libguestfs API calls.
+Увімкнути трасування викликів програмного інтерфейсу libguestfs.
 
 =back
 
-=head1 OLD-STYLE COMMAND LINE ARGUMENTS
+=head1 ПАРАМЕТРИ КОМАНДНОГО РЯДКА У ФОРМАТІ ПОПЕРЕДНІХ ВЕРСІЙ
 
-Previous versions of virt-cat allowed you to write either:
+У попередніх версіях virt-cat можна було використовувати або
 
  virt-cat диск.img [диск.img ...] файл
 
@@ -162,14 +162,15 @@ Previous versions of virt-cat allowed you to write either:
 whereas in this version you should use I<-a> or I<-d> respectively to avoid
 the confusing case where a disk image might have the same name as a guest.
 
-For compatibility the old style is still supported.
+З міркувань зворотної сумісності передбачено підтримку запису параметрів у
+застарілому форматі.
 
 =head1 ШЛЯХИ У WINDOWS
 
 C<virt-cat> has a limited ability to understand Windows drive letters and
 paths (eg. C<E:\foo\bar.txt>).
 
-If and only if the guest is running Windows then:
+Тоді і лише тоді, коли у гостьовій системі працює Windows:
 
 =over 4
 
@@ -190,13 +191,14 @@ displayed.
 
 =back
 
-There are some known shortcomings:
+Відомі певні недоліки програми:
 
 =over 4
 
 =item *
 
-Some NTFS symbolic links may not be followed correctly.
+Перехід за деякими символічними посиланнями NTFS може здійснюватися з
+помилками.
 
 =item *
 
@@ -211,7 +213,7 @@ C<virt-cat> doesn't work.
 
 Using C<virt-cat> is approximately equivalent to doing:
 
- guestfish --ro -i -d domname download file -
+ guestfish --ro -i -d назва_домену download файл -
 
 where C<domname> is the name of the libvirt guest, and C<file> is the full
 path to the file.  Note the final C<-> (meaning "output to stdout").
@@ -221,12 +223,12 @@ work on guests that libguestfs cannot inspect, or on things like arbitrary
 disk images that don't contain guests.  To display a file from a disk image
 directly, use:
 
- guestfish --ro -a disk.img -m /dev/sda1 download file -
+ guestfish --ro -a диск.img -m /dev/sda1 download файл -
 
 where C<disk.img> is the disk image, C</dev/sda1> is the filesystem within
 the disk image, and C<file> is the full path to the file.
 
-=head1 SHELL QUOTING
+=head1 ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ
 
 Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as C<#> and space.  You may need to quote or
@@ -235,7 +237,8 @@ L<sh(1)> for details.
 
 =head1 СТАН ВИХОДУ
 
-This program returns 0 if successful, or non-zero if there was an error.
+Ця програма повертає значення 0 у разі успішного завершення і ненульове
+значення, якщо сталася помилка.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
@@ -248,19 +251,19 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2010-2012 Red Hat Inc.
+© Red Hat Inc., 2010–2012
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option)
-any later version.
+Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
+змінювати її за умов дотримання GNU General Public License  утому вигляді,
+що оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
+забажаєте) будь-якої випущеної пізніше.
 
 Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
 БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 51
-Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 

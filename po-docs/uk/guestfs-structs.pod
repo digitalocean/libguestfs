@@ -8,8 +8,8 @@
  };
  
  struct guestfs_int_bool_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_int_bool *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_int_bool *val; /* Елементи. */
  };
  
  void guestfs_free_int_bool (struct guestfs_free_int_bool *);
@@ -19,7 +19,7 @@
 
  struct guestfs_lvm_pv {
    char *pv_name;
-   /* The next field is NOT nul-terminated, be careful when printing it: */
+   /* Наступне поле не завершується нульовим байтом, будьте обережні під час виведення цього поля: */
    char pv_uuid[32];
    char *pv_fmt;
    uint64_t pv_size;
@@ -36,8 +36,8 @@
  };
  
  struct guestfs_lvm_pv_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_lvm_pv *val; /* Elements. */
+   uint32_t len; /* кількість елементів у списку. */
+   struct guestfs_lvm_pv *val; /* елементи. */
  };
  
  void guestfs_free_lvm_pv (struct guestfs_free_lvm_pv *);
@@ -69,8 +69,8 @@
  };
  
  struct guestfs_lvm_vg_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_lvm_vg *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_lvm_vg *val; /* Елементи. */
  };
  
  void guestfs_free_lvm_vg (struct guestfs_free_lvm_vg *);
@@ -101,8 +101,8 @@
  };
  
  struct guestfs_lvm_lv_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_lvm_lv *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_lvm_lv *val; /* Елементи. */
  };
  
  void guestfs_free_lvm_lv (struct guestfs_free_lvm_lv *);
@@ -127,8 +127,8 @@
  };
  
  struct guestfs_stat_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_stat *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_stat *val; /* Елементи. */
  };
  
  void guestfs_free_stat (struct guestfs_free_stat *);
@@ -151,8 +151,8 @@
  };
  
  struct guestfs_statvfs_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_statvfs *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_statvfs *val; /* Елементи. */
  };
  
  void guestfs_free_statvfs (struct guestfs_free_statvfs *);
@@ -167,8 +167,8 @@
  };
  
  struct guestfs_dirent_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_dirent *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_dirent *val; /* Елементи. */
  };
  
  void guestfs_free_dirent (struct guestfs_free_dirent *);
@@ -184,8 +184,8 @@
  };
  
  struct guestfs_version_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_version *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_version *val; /* Елементи. */
  };
  
  void guestfs_free_version (struct guestfs_free_version *);
@@ -201,8 +201,8 @@
  };
  
  struct guestfs_xattr_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_xattr *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_xattr *val; /* Елементи. */
  };
  
  void guestfs_free_xattr (struct guestfs_free_xattr *);
@@ -218,8 +218,8 @@
  };
  
  struct guestfs_inotify_event_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_inotify_event *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_inotify_event *val; /* Елементи. */
  };
  
  void guestfs_free_inotify_event (struct guestfs_free_inotify_event *);
@@ -235,8 +235,8 @@
  };
  
  struct guestfs_partition_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_partition *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_partition *val; /* Елементи. */
  };
  
  void guestfs_free_partition (struct guestfs_free_partition *);
@@ -260,10 +260,72 @@
  };
  
  struct guestfs_application_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_application *val; /* Elements. */
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_application *val; /* Елементи. */
  };
  
  void guestfs_free_application (struct guestfs_free_application *);
  void guestfs_free_application_list (struct guestfs_free_application_list *);
+
+=head2 guestfs_isoinfo
+
+ struct guestfs_isoinfo {
+   char *iso_system_id;
+   char *iso_volume_id;
+   uint32_t iso_volume_space_size;
+   uint32_t iso_volume_set_size;
+   uint32_t iso_volume_sequence_number;
+   uint32_t iso_logical_block_size;
+   char *iso_volume_set_id;
+   char *iso_publisher_id;
+   char *iso_data_preparer_id;
+   char *iso_application_id;
+   char *iso_copyright_file_id;
+   char *iso_abstract_file_id;
+   char *iso_bibliographic_file_id;
+   int64_t iso_volume_creation_t;
+   int64_t iso_volume_modification_t;
+   int64_t iso_volume_expiration_t;
+   int64_t iso_volume_effective_t;
+ };
+ 
+ struct guestfs_isoinfo_list {
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_isoinfo *val; /* Елементи. */
+ };
+ 
+ void guestfs_free_isoinfo (struct guestfs_free_isoinfo *);
+ void guestfs_free_isoinfo_list (struct guestfs_free_isoinfo_list *);
+
+=head2 guestfs_mdstat
+
+ struct guestfs_mdstat {
+   char *mdstat_device;
+   int32_t mdstat_index;
+   char *mdstat_flags;
+ };
+ 
+ struct guestfs_mdstat_list {
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_mdstat *val; /* Елементи. */
+ };
+ 
+ void guestfs_free_mdstat (struct guestfs_free_mdstat *);
+ void guestfs_free_mdstat_list (struct guestfs_free_mdstat_list *);
+
+=head2 guestfs_btrfssubvolume
+
+ struct guestfs_btrfssubvolume {
+   uint64_t btrfssubvolume_id;
+   uint64_t btrfssubvolume_top_level_id;
+   char *btrfssubvolume_path;
+ };
+ 
+ struct guestfs_btrfssubvolume_list {
+   uint32_t len; /* Кількість елементів у списку. */
+   struct guestfs_btrfssubvolume *val; /* Елементи. */
+ };
+ 
+ void guestfs_free_btrfssubvolume (struct guestfs_free_btrfssubvolume *);
+ void guestfs_free_btrfssubvolume_list (struct guestfs_free_btrfssubvolume_list *);
 

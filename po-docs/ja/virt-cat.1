@@ -62,31 +62,31 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-cat 1"
-.TH virt-cat 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-cat 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "名前"
 .IX Header "名前"
-virt-cat \- Display files in a virtual machine
-.SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
+virt-cat \- 仮想マシンにあるファイルの表示
+.SH "書式"
+.IX Header "書式"
 .Vb 1
 \& virt\-cat [\-\-options] \-d domname file [file ...]
 \&
 \& virt\-cat [\-\-options] \-a disk.img [\-a disk.img ...] file [file ...]
 .Ve
 .PP
-Old-style:
+古い形式:
 .PP
 .Vb 1
 \& virt\-cat domname file
 \&
 \& virt\-cat disk.img file
 .Ve
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
+.SH "説明"
+.IX Header "説明"
 \&\f(CW\*(C`virt\-cat\*(C'\fR is a command line tool to display the contents of \f(CW\*(C`file\*(C'\fR where
 \&\f(CW\*(C`file\*(C'\fR exists in the named virtual machine (or disk image).
 .PP
@@ -97,15 +97,15 @@ together.  Each filename must be a full path, starting at the root directory
 \&\f(CW\*(C`virt\-cat\*(C'\fR can be used to quickly view a file.  To edit a file, use
 \&\f(CW\*(C`virt\-edit\*(C'\fR.  For more complex cases you should look at the \fIguestfish\fR\|(1)
 tool (see \*(L"\s-1USING\s0 \s-1GUESTFISH\s0\*(R" below).
-.SH "EXAMPLES"
-.IX Header "EXAMPLES"
+.SH "例"
+.IX Header "例"
 Display \f(CW\*(C`/etc/fstab\*(C'\fR file from inside the libvirt \s-1VM\s0 called \f(CW\*(C`mydomain\*(C'\fR:
 .PP
 .Vb 1
 \& virt\-cat \-d mydomain /etc/fstab
 .Ve
 .PP
-List syslog messages from a \s-1VM\s0 disk image file:
+仮想マシンのディスクイメージファイルから syslog メッセージを一覧表示するには:
 .PP
 .Vb 1
 \& virt\-cat \-a disk.img /var/log/messages | tail
@@ -118,30 +118,30 @@ Find out what \s-1DHCP\s0 \s-1IP\s0 address a \s-1VM\s0 acquired:
 \&   grep \*(Aqdhclient: bound to\*(Aq | tail
 .Ve
 .PP
-Find out what packages were recently installed:
+どのパッケージが最新インストールされたかを見つけるには:
 .PP
 .Vb 1
 \& virt\-cat \-d mydomain /var/log/yum.log | tail
 .Ve
 .PP
-Find out who is logged on inside a virtual machine:
+どのユーザーが仮想マシンにログインしているかを見つけるには:
 .PP
 .Vb 2
 \& virt\-cat \-d mydomain /var/run/utmp > /tmp/utmp
 \& who /tmp/utmp
 .Ve
 .PP
-or who was logged on:
+または、だれがログオンしたかを見つけるには:
 .PP
 .Vb 2
 \& virt\-cat \-d mydomain /var/log/wtmp > /tmp/wtmp
 \& last \-f /tmp/wtmp
 .Ve
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+.SH "オプション"
+.IX Header "オプション"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
-Display brief help.
+簡単なヘルプを表示します。
 .IP "\fB\-a\fR file" 4
 .IX Item "-a file"
 .PD 0
@@ -152,27 +152,23 @@ Add \fIfile\fR which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate \fI\-a\fR options.
 .Sp
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the \fI\-\-format=..\fR option.
+ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、\fI\-\-format=..\fR オプションを使用します。
 .IP "\fB\-c\fR \s-1URI\s0" 4
 .IX Item "-c URI"
 .PD 0
 .IP "\fB\-\-connect\fR \s-1URI\s0" 4
 .IX Item "--connect URI"
 .PD
-If using libvirt, connect to the given \fI\s-1URI\s0\fR.  If omitted, then we connect
-to the default libvirt hypervisor.
+libvirt を使用していると、指定された \fI\s-1URI\s0\fR に接続します。  省略すると、デフォルトの libvirt ハイパーバイザーに接続します。
 .Sp
-If you specify guest block devices directly (\fI\-a\fR), then libvirt is not
-used at all.
+ゲストのブロックデバイスを直接指定していると（(\fI\-a\fR)）、libvirt は何も使用されません。
 .IP "\fB\-d\fR guest" 4
 .IX Item "-d guest"
 .PD 0
 .IP "\fB\-\-domain\fR guest" 4
 .IX Item "--domain guest"
 .PD
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+名前付きの libvirt 仮想マシンからすべてのディスクを追加します。  ドメインの \s-1UUID\s0 が名前の代わりに使用されます。
 .IP "\fB\-\-echo\-keys\fR" 4
 .IX Item "--echo-keys"
 When prompting for keys and passphrases, virt-cat normally turns echoing off
@@ -185,29 +181,26 @@ see what you are typing.
 .IP "\fB\-\-format\fR" 4
 .IX Item "--format"
 .PD
-The default for the \fI\-a\fR option is to auto-detect the format of the disk
-image.  Using this forces the disk format for \fI\-a\fR options which follow on
-the command line.  Using \fI\-\-format\fR with no argument switches back to
-auto-detection for subsequent \fI\-a\fR options.
+\&\fI\-a\fR オプションのデフォルトはディスクイメージの形式を自動検知します。これを使用することにより、\fI\-a\fR
+オプションのディスク形式をコマンドラインにおいて指定したものに強制できます。引数なしで \fI\-\-format\fR を使用することにより、後続の \fI\-a\fR
+オプションに対して自動検知に戻せます。
 .Sp
-For example:
+例:
 .Sp
 .Vb 1
 \& virt\-cat \-\-format=raw \-a disk.img file
 .Ve
 .Sp
-forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR.
+\&\f(CW\*(C`disk.img\*(C'\fR に対してローイメージを強制します（自動検出しません）。
 .Sp
 .Vb 1
 \& virt\-cat \-\-format=raw \-a disk.img \-\-format \-a another.img file
 .Ve
 .Sp
-forces raw format (no auto-detection) for \f(CW\*(C`disk.img\*(C'\fR and reverts to
-auto-detection for \f(CW\*(C`another.img\*(C'\fR.
+\&\f(CW\*(C`disk.img\*(C'\fR に対してロー形式（自動検知なし）を強制し、\f(CW\*(C`another.img\*(C'\fR に対して自動検知に戻します。
 .Sp
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (\s-1CVE\-2010\-3851\s0).
+仮想マシンのディスクイメージが信頼できないロー形式であるならば、ディスク形式を指定するためにこのオプションを使用すべきです。これにより、悪意のある仮想マシンにより起こり得るセキュリティ問題を回避できます
+(\s-1CVE\-2010\-3851\s0)。
 .IP "\fB\-\-keys\-from\-stdin\fR" 4
 .IX Item "--keys-from-stdin"
 Read key or passphrase parameters from stdin.  The default is to try to read
@@ -218,26 +211,26 @@ passphrases from the user by opening \f(CW\*(C`/dev/tty\*(C'\fR.
 .IP "\fB\-\-verbose\fR" 4
 .IX Item "--verbose"
 .PD
-Enable verbose messages for debugging.
+デバッグ用の冗長なメッセージを有効にします。
 .IP "\fB\-V\fR" 4
 .IX Item "-V"
 .PD 0
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
 .PD
-Display version number and exit.
+バージョン番号を表示して終了します。
 .IP "\fB\-x\fR" 4
 .IX Item "-x"
-Enable tracing of libguestfs \s-1API\s0 calls.
-.SH "OLD-STYLE COMMAND LINE ARGUMENTS"
-.IX Header "OLD-STYLE COMMAND LINE ARGUMENTS"
-Previous versions of virt-cat allowed you to write either:
+libguestfs \s-1API\s0 呼び出しのトレースを有効にします。
+.SH "旧形式のコマンドライン引数"
+.IX Header "旧形式のコマンドライン引数"
+以前のバージョンの virt-cat はどちらの書き込みもできます:
 .PP
 .Vb 1
 \& virt\-cat disk.img [disk.img ...] file
 .Ve
 .PP
-or
+または
 .PP
 .Vb 1
 \& virt\-cat guestname file
@@ -246,13 +239,12 @@ or
 whereas in this version you should use \fI\-a\fR or \fI\-d\fR respectively to avoid
 the confusing case where a disk image might have the same name as a guest.
 .PP
-For compatibility the old style is still supported.
-.SH "WINDOWS PATHS"
-.IX Header "WINDOWS PATHS"
-\&\f(CW\*(C`virt\-cat\*(C'\fR has a limited ability to understand Windows drive letters and
-paths (eg. \f(CW\*(C`E:\efoo\ebar.txt\*(C'\fR).
+互換性のため古い形式がまだサポートされています。
+.SH "Windows のパス"
+.IX Header "Windows のパス"
+\&\f(CW\*(C`virt\-cat\*(C'\fR は Windows のドライブレターとパスの解釈能力に制限があります（例: \f(CW\*(C`E:\efoo\ebar.txt\*(C'\fR）。
 .PP
-If and only if the guest is running Windows then:
+仮想マシンが Windows を実行している場合に限り:
 .IP "\(bu" 4
 Drive letter prefixes like \f(CW\*(C`C:\*(C'\fR are resolved against the Windows Registry
 to the correct filesystem.
@@ -268,46 +260,43 @@ There are some known shortcomings:
 Some \s-1NTFS\s0 symbolic links may not be followed correctly.
 .IP "\(bu" 4
 \&\s-1NTFS\s0 junction points that cross filesystems are not followed.
-.SH "USING GUESTFISH"
-.IX Header "USING GUESTFISH"
-\&\fIguestfish\fR\|(1) is a more powerful, lower level tool which you can use when
-\&\f(CW\*(C`virt\-cat\*(C'\fR doesn't work.
+.SH "guestfish の使用法"
+.IX Header "guestfish の使用法"
+\&\fIguestfish\fR\|(1) は \f(CW\*(C`virt\-cat\*(C'\fR がうまく機能しないときに使用できる、より強力な、より低レベルなツールです。
 .PP
-Using \f(CW\*(C`virt\-cat\*(C'\fR is approximately equivalent to doing:
+\&\f(CW\*(C`virt\-cat\*(C'\fR を使用することは、次のこととほぼ同等です:
 .PP
 .Vb 1
 \& guestfish \-\-ro \-i \-d domname download file \-
 .Ve
 .PP
-where \f(CW\*(C`domname\*(C'\fR is the name of the libvirt guest, and \f(CW\*(C`file\*(C'\fR is the full
-path to the file.  Note the final \f(CW\*(C`\-\*(C'\fR (meaning \*(L"output to stdout\*(R").
+ここで \f(CW\*(C`domname\*(C'\fR は libvirt 仮想マシンの名前です。また、\f(CW\*(C`file\*(C'\fR はファイルの完全パスです。最後の \f(CW\*(C`\-\*(C'\fR
+(\*(L"標準出力に出力\*(R" を意味します) に注意してください。
 .PP
-The command above uses libguestfs's guest inspection feature and so does not
-work on guests that libguestfs cannot inspect, or on things like arbitrary
-disk images that don't contain guests.  To display a file from a disk image
-directly, use:
+上のコマンドは libguestfs の仮想マシン検査機能を使用します。そのため、libguestfs
+が検査できない仮想マシンにおいて、または仮想マシンを含んでいない任意のディスクイメージのようなものにおいて、うまく動作しません。ディスクイメージから直接ファイルを表示するには、次を使用します:
 .PP
 .Vb 1
 \& guestfish \-\-ro \-a disk.img \-m /dev/sda1 download file \-
 .Ve
 .PP
-where \f(CW\*(C`disk.img\*(C'\fR is the disk image, \f(CW\*(C`/dev/sda1\*(C'\fR is the filesystem within
-the disk image, and \f(CW\*(C`file\*(C'\fR is the full path to the file.
+ここで、\f(CW\*(C`disk.img\*(C'\fR はディスクイメージ、\f(CW\*(C`/dev/sda1\*(C'\fR はディスクイメージにあるファイルシステム、そして \f(CW\*(C`file\*(C'\fR
+はファイルの完全パスです。
 .SH "SHELL QUOTING"
 .IX Header "SHELL QUOTING"
 Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
-.SH "EXIT STATUS"
-.IX Header "EXIT STATUS"
-This program returns 0 if successful, or non-zero if there was an error.
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
+.SH "終了ステータス"
+.IX Header "終了ステータス"
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
+.SH "関連項目"
+.IX Header "関連項目"
 \&\fIguestfs\fR\|(3), \fIguestfish\fR\|(1), \fIvirt\-copy\-out\fR\|(1), \fIvirt\-edit\fR\|(1),
 \&\fIvirt\-tar\-out\fR\|(1), <http://libguestfs.org/>.
-.SH "AUTHOR"
-.IX Header "AUTHOR"
+.SH "著者"
+.IX Header "著者"
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"

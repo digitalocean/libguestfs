@@ -24,7 +24,7 @@ Virt-sparsify can operate on any disk image, not just ones from virtual
 machines.  If a virtual machine has more than one attached disk, you must
 sparsify each one separately.
 
-=head2 IMPORTANT LIMITATIONS
+=head2 ВАЖЛИВІ ОБМЕЖЕННЯ
 
 =over 4
 
@@ -59,12 +59,6 @@ Virt-sparsify cannot yet sparsify the space between partitions.  Note that
 this space is often used for critical items like bootloaders so it's not
 really unused.
 
-=item *
-
-Virt-sparsify does not yet know how to sparsify swapspace.  It is not safe
-to do this unless we can be sure there is no hibernation data, so at the
-moment swap partitions are ignored.
-
 =back
 
 You may also want to read the manual pages for the associated tools
@@ -72,7 +66,7 @@ L<virt-filesystems(1)> and L<virt-df(1)> before starting.
 
 =head1 ПРИКЛАДИ
 
-Typical usage is:
+Типовий приклад використання:
 
  virt-sparsify indisk outdisk
 
@@ -99,7 +93,7 @@ See L<virt-filesystems(1)> to get a list of filesystems within a disk image.
 
 =item B<--help>
 
-Display help.
+Показати довідкове повідомлення.
 
 =item B<--compress>
 
@@ -140,9 +134,9 @@ it is auto-detected from the image itself.
 If working with untrusted raw-format guest disk images, you should ensure
 the format is always specified.
 
-=item B<--ignore> filesystem
+=item B<--ignore> файлова_система
 
-=item B<--ignore> volgroup
+=item B<--ignore> група_томів
 
 Ignore the named filesystem.  Free space on the filesystem will not be
 zeroed, but existing blocks of zeroes will still be sparsified.
@@ -150,14 +144,14 @@ zeroed, but existing blocks of zeroes will still be sparsified.
 In the second form, this ignores the named volume group.  Use the volume
 group name without the C</dev/> prefix, eg. I<--ignore vg_foo>
 
-You can give this option multiple times.
+Цей параметр можна вказувати декілька разів.
 
 =item B<--machine-readable>
 
 This option is used to make the output more machine friendly when being
 parsed by other programs.  See L</MACHINE READABLE OUTPUT> below.
 
-=item B<-o> option[,option,...]
+=item B<-o> параметр[,параметр,...]
 
 Pass I<-o> option(s) to the L<qemu-img(1)> command to fine-tune the output
 format.  Options available depend on the output format (see I<--convert>)
@@ -189,7 +183,15 @@ This disables progress bars and other unnecessary output.
 
 =item B<-x>
 
-Enable tracing of libguestfs API calls.
+Увімкнути трасування викликів програмного інтерфейсу libguestfs.
+
+=item B<--zero> розділ
+
+=item B<--zero> логічний_том
+
+Zero the contents of the named partition or logical volume in the guest.
+All data on the device is lost, but sparsification is excellent! You can
+give this option multiple times.
 
 =back
 
@@ -199,7 +201,7 @@ The I<--machine-readable> option can be used to make the output more machine
 friendly, which is useful when calling virt-sparsify from other programs,
 GUIs etc.
 
-There are two ways to use this option.
+Існує два способи використання цього параметра.
 
 Firstly use the option on its own to query the capabilities of the
 virt-sparsify binary.  Typical output looks like this:
@@ -215,7 +217,7 @@ status 0.
 Secondly use the option in conjunction with other options to make the
 regular program output more machine friendly.
 
-At the moment this means:
+У поточній версії це означає таке:
 
 =over 4
 
@@ -245,7 +247,8 @@ option.
 
 =head1 СТАН ВИХОДУ
 
-This program returns 0 if successful, or non-zero if there was an error.
+Ця програма повертає значення 0 у разі успішного завершення і ненульове
+значення, якщо сталася помилка.
 
 =head1 ЗМІННІ СЕРЕДОВИЩА
 
@@ -260,7 +263,7 @@ You should ensure there is enough free space in the worst case for a full
 copy of the source disk (I<virtual> size), or else set C<$TMPDIR> to point
 to another directory that has enough space.
 
-This defaults to C</tmp>.
+Типовим значенням є C</tmp>.
 
 Note that if C<$TMPDIR> is a tmpfs (eg. if C</tmp> is on tmpfs, or if you
 use C<TMPDIR=/dev/shm>), tmpfs defaults to a maximum size of I<half> of
@@ -272,7 +275,8 @@ mountpoint, eg:
 
 =back
 
-For other environment variables, see L<guestfs(3)/ENVIRONMENT VARIABLES>.
+Опис інших змінних середовища наведено у розділі L<guestfs(3)/ENVIRONMENT
+VARIABLES>.
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
@@ -288,17 +292,17 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 © Red Hat Inc., 2011
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option)
-any later version.
+Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
+змінювати її за умов дотримання GNU General Public License  утому вигляді,
+що оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
+забажаєте) будь-якої випущеної пізніше.
 
 Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
 БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
 ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
 про це можна дізнатися з GNU General Public License.
 
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 51
-Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+Ви маєте отримати копію GNU General Public License разом з цією програмою;
+якщо це не так, повідомте про факт за адресою Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 

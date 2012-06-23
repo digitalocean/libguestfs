@@ -1,0 +1,215 @@
+=encoding utf8
+
+=head2 B<bash-history> *
+
+Remove the bash history in the guest.
+
+Remove the bash history of user "root" and any other users who have a
+C<.bash_history> file in their home directory.
+
+=head2 B<blkid-tab> *
+
+Remove blkid tab in the guest.
+
+=head2 B<ca-certificates>
+
+Remove CA certificates in the guest.
+
+=head2 B<cron-spool> *
+
+Remove user at-jobs and cron-jobs.
+
+=head2 B<dhcp-client-state> *
+
+DHCP クライアントのリースを削除します。
+
+=head2 B<dhcp-server-state> *
+
+DHCP サーバーのリースを削除します。
+
+=head2 B<dovecot-data> *
+
+Remove Dovecot (mail server) data.
+
+=head2 B<flag-reconfiguration>
+
+Flag the system for reconfiguration.
+
+Note that this may require user intervention when the guest is booted.
+
+=head2 B<hostname> *
+
+Change the hostname of the guest.
+
+This operation changes the hostname of the guest to the value given in the
+I<--hostname> parameter.
+
+I<--hostname> パラメーターが指定されていないと、ホスト名が C<localhost.localdomain> に変更されます。
+
+=head2 B<kerberos-data>
+
+Remove Kerberos data in the guest.
+
+=head2 B<logfiles> *
+
+Remove many log files from the guest.
+
+On Linux the following files are removed:
+
+ /root/anaconda-ks.cfg
+ /root/install.log
+ /root/install.log.syslog
+ /var/account/pacct
+ /var/cache/gdm/*
+ /var/lib/AccountService/users/*
+ /var/lib/fprint/*
+ /var/lib/logrotate.status
+ /var/log/*.log*
+ /var/log/BackupPC/LOG
+ /var/log/audit/*
+ /var/log/btmp*
+ /var/log/ceph/*.log
+ /var/log/chrony/*.log
+ /var/log/cron*
+ /var/log/cups/*_log
+ /var/log/dmesg*
+ /var/log/glusterfs/*glusterd.vol.log
+ /var/log/glusterfs/glusterfs.log
+ /var/log/httpd/*log
+ /var/log/jetty/jetty-console.log
+ /var/log/lastlog*
+ /var/log/libvirt/libvirtd.log
+ /var/log/libvirt/lxc/*.log
+ /var/log/libvirt/qemu/*.log
+ /var/log/libvirt/uml/*.log
+ /var/log/mail/*
+ /var/log/maillog*
+ /var/log/messages*
+ /var/log/ppp/connect-errors
+ /var/log/secure*
+ /var/log/setroubleshoot/*.log
+ /var/log/spooler*
+ /var/log/squid/*.log
+ /var/log/tallylog*
+ /var/log/wtmp*
+ /var/named/data/named.run
+
+=head2 B<mail-spool> *
+
+ローカルのメールスプールのディレクトリから電子メールを削除します。
+
+=head2 B<net-hwaddr> *
+
+Remove HWADDR (hard-coded MAC address) configuration.
+
+For Fedora and Red Hat Enterprise Linux, this is removed from C<ifcfg-*>
+files.
+
+=head2 B<package-manager-cache> *
+
+Remove package manager cache.
+
+=head2 B<pam-data> *
+
+Remove the PAM data in the guest.
+
+=head2 B<random-seed> *
+
+Generate random seed for guest.
+
+Write some random bytes from the host into the random seed file of the
+guest.
+
+以下の L</RANDOM SEED> を参照してください。
+
+=head2 B<rhn-systemid> *
+
+RHN システム ID を削除します。
+
+=head2 B<samba-db-log> *
+
+Remove the database and log files of Samba.
+
+=head2 B<script> *
+
+Run arbitrary scripts against the guest.
+
+The C<script> module lets you run arbitrary shell scripts or programs
+against the guest.
+
+Note this feature requires FUSE support.  You may have to enable this in
+your host, for example by adding the current user to the C<fuse> group, or
+by loading a kernel module.
+
+Use one or more I<--script> parameters to specify scripts or programs that
+will be run against the guest.
+
+The script or program is run with its current directory being the guest's
+root directory, so relative paths should be used.  For example: C<rm
+etc/resolv.conf> in the script would remove a Linux guest's DNS
+configuration file, but C<rm /etc/resolv.conf> would (try to) remove the
+host's file.
+
+Normally a temporary mount point for the guest is used, but you can choose a
+specific one by using the I<--scriptdir> parameter.
+
+=head2 B<smolt-uuid> *
+
+Smolt ハードウェア UUID を削除します。
+
+=head2 B<ssh-hostkeys> *
+
+仮想マシンの SSH ホストキーを削除します。
+
+仮想マシンの次回起動時に（異なる） SSH ホストキーが再生成されます。
+
+クローン後、仮想マシンが同じ IP アドレスを取得すると、ホストキーが変更されたという警告が ssh により表示されます:
+
+ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+ @    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+ IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+
+=head2 B<ssh-userdir> *
+
+仮想マシンにある ".ssh" ディレクトリーを削除します。
+
+Remove the C<.ssh> directory of user "root" and any other users who have a
+C<.ssh> directory in their home directory.
+
+=head2 B<sssd-db-log> *
+
+SSSD のデータベースとログファイルを削除します。
+
+=head2 B<udev-persistent-net> *
+
+Remove udev persistent net rules.
+
+Remove udev persistent net rules which map the guest's existing MAC address
+to a fixed ethernet device (eg. eth0).
+
+仮想マシンをクローンした後、通常 MAC アドレスは変わります。古い MAC アドレスは古い名前（たとえば eth0）を占有するため、このことは新しい
+MAC アドレスが新しい名前（たとえば eth1）に割り当てられることを意味します。それは、一般的に好ましくありません。 udev の永続的な net
+ルールを削除することにより、これを避けます。
+
+=head2 B<user-account>
+
+仮想マシンにあるユーザーアカウントを削除します。
+
+Remove all the user accounts and their home directories.  The "root" account
+is not removed.
+
+=head2 B<utmp> *
+
+utmp ファイルを削除します。
+
+This file records who is currently logged in on a machine.  In modern Linux
+distros it is stored in a ramdisk and hence not part of the virtual
+machine's disk, but it was stored on disk in older distros.
+
+=head2 B<yum-uuid> *
+
+yum UUID を削除します。
+
+yum は元々の UUID が削除されたことを通知するとき、次の実行時に新しい UUID を作成します。
+

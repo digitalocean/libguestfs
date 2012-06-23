@@ -247,7 +247,7 @@ main (int argc, char *argv[])
   copy_lvm ();
 
   /* Connect to virtio-serial channel. */
-  int sock = open (VIRTIO_SERIAL_CHANNEL, O_RDWR | O_CLOEXEC);
+  int sock = open (VIRTIO_SERIAL_CHANNEL, O_RDWR|O_CLOEXEC);
   if (sock == -1) {
     fprintf (stderr,
              "\n"
@@ -292,7 +292,7 @@ main (int argc, char *argv[])
 static char *
 read_cmdline (void)
 {
-  int fd = open ("/proc/cmdline", O_RDONLY);
+  int fd = open ("/proc/cmdline", O_RDONLY|O_CLOEXEC);
   if (fd == -1) {
     perror ("/proc/cmdline");
     return NULL;
@@ -364,7 +364,7 @@ char *
 sysroot_path (const char *path)
 {
   char *r;
-  int len = strlen (path) + sysroot_len + 1;
+  size_t len = strlen (path) + sysroot_len + 1;
 
   r = malloc (len);
   if (r == NULL)
@@ -417,46 +417,50 @@ xread (int sock, void *v_buf, size_t len)
 }
 
 int
-add_string_nodup (char ***argv, int *size, int *alloc, char *str)
+add_string_nodup (struct stringsbuf *sb, char *str)
 {
   char **new_argv;
 
-  if (*size >= *alloc) {
-    *alloc += 64;
-    new_argv = realloc (*argv, *alloc * sizeof (char *));
+  if (sb->size >= sb->alloc) {
+    sb->alloc += 64;
+    new_argv = realloc (sb->argv, sb->alloc * sizeof (char *));
     if (new_argv == NULL) {
       reply_with_perror ("realloc");
-      free_strings (*argv);
-      *argv = NULL;
+      free_stringslen (sb->argv, sb->size);
+      sb->argv = NULL;
       return -1;
     }
-    *argv = new_argv;
+    sb->argv = new_argv;
   }
 
-  (*argv)[*size] = str;
+  sb->argv[sb->size] = str;
+  sb->size++;
 
-  (*size)++;
   return 0;
 }
 
 int
-add_string (char ***argv, int *size, int *alloc, const char *str)
+add_string (struct stringsbuf *sb, const char *str)
 {
-  char *new_str;
+  char *new_str = NULL;
 
   if (str) {
     new_str = strdup (str);
     if (new_str == NULL) {
       reply_with_perror ("strdup");
-      free_strings (*argv);
-      *argv = NULL;
+      free_stringslen (sb->argv, sb->size);
+      sb->argv = NULL;
       return -1;
     }
-  } else {
-    new_str = NULL;
   }
 
-  return add_string_nodup (argv, size, alloc, new_str);
+  return add_string_nodup (sb, new_str);
+}
+
+int
+end_stringsbuf (struct stringsbuf *sb)
+{
+  return add_string_nodup (sb, NULL);
 }
 
 size_t
@@ -485,7 +489,7 @@ compare (const void *vp1, const void *vp2)
 }
 
 void
-sort_strings (char **argv, int len)
+sort_strings (char **argv, size_t len)
 {
   qsort (argv, len, sizeof (char *), compare);
 }
@@ -493,7 +497,7 @@ sort_strings (char **argv, int len)
 void
 free_strings (char **argv)
 {
-  int argc;
+  size_t argc;
 
   for (argc = 0; argv[argc] != NULL; ++argc)
     free (argv[argc]);
@@ -501,9 +505,9 @@ free_strings (char **argv)
 }
 
 void
-free_stringslen (char **argv, int len)
+free_stringslen (char **argv, size_t len)
 {
-  int i;
+  size_t i;
 
   for (i = 0; i < len; ++i)
     free (argv[i]);
@@ -519,7 +523,8 @@ commandf (char **stdoutput, char **stderror, int flags, const char *name, ...)
   va_list args;
   const char **argv;
   char *s;
-  int i, r;
+  size_t i;
+  int r;
 
   /* Collect the command line arguments into an array. */
   i = 2;
@@ -651,7 +656,7 @@ int
 commandrvf (char **stdoutput, char **stderror, int flags,
             char const* const *argv)
 {
-  int so_size = 0, se_size = 0;
+  size_t so_size = 0, se_size = 0;
   int so_fd[2], se_fd[2];
   int flag_copy_stdin = flags & COMMAND_FLAG_CHROOT_COPY_FILE_TO_STDIN;
   int stdin_fd[2] = { -1, -1 };
@@ -708,7 +713,7 @@ commandrvf (char **stdoutput, char **stderror, int flags,
       close (stdin_fd[1]);
     } else {
       /* Set stdin to /dev/null (ignore failure) */
-      ignore_value (open ("/dev/null", O_RDONLY));
+      ignore_value (open ("/dev/null", O_RDONLY|O_CLOEXEC));
     }
     close (so_fd[0]);
     close (se_fd[0]);
@@ -890,9 +895,10 @@ commandrvf (char **stdoutput, char **stderror, int flags,
     *stderror = q;
     if (*stderror) {
       (*stderror)[se_size] = '\0';
-      se_size--;
-      while (se_size >= 0 && (*stderror)[se_size] == '\n')
-        (*stderror)[se_size--] = '\0';
+      while (se_size > 0 && (*stderror)[se_size-1] == '\n') {
+        se_size--;
+        (*stderror)[se_size] = '\0';
+      }
     }
   }
 
@@ -946,8 +952,7 @@ commandrvf (char **stdoutput, char **stderror, int flags,
 char **
 split_lines (char *str)
 {
-  char **lines = NULL;
-  int size = 0, alloc = 0;
+  DECLARE_STRINGSBUF (lines);
   char *p, *pend;
 
   if (STREQ (str, ""))
@@ -965,7 +970,7 @@ split_lines (char *str)
       pend++;
     }
 
-    if (add_string (&lines, &size, &alloc, p) == -1) {
+    if (add_string (&lines, p) == -1) {
       return NULL;
     }
 
@@ -973,10 +978,10 @@ split_lines (char *str)
   }
 
  empty_list:
-  if (add_string (&lines, &size, &alloc, NULL) == -1)
+  if (end_stringsbuf (&lines) == -1)
     return NULL;
 
-  return lines;
+  return lines.argv;
 }
 
 /* Skip leading and trailing whitespace, updating the original string
@@ -1074,7 +1079,7 @@ device_name_translation (char *device)
 {
   int fd;
 
-  fd = open (device, O_RDONLY);
+  fd = open (device, O_RDONLY|O_CLOEXEC);
   if (fd >= 0) {
   close_ok:
     close (fd);
@@ -1089,12 +1094,12 @@ device_name_translation (char *device)
     return -1;
 
   device[5] = 'h';		/* /dev/hd (old IDE driver) */
-  fd = open (device, O_RDONLY);
+  fd = open (device, O_RDONLY|O_CLOEXEC);
   if (fd >= 0)
     goto close_ok;
 
   device[5] = 'v';		/* /dev/vd (for virtio devices) */
-  fd = open (device, O_RDONLY);
+  fd = open (device, O_RDONLY|O_CLOEXEC);
   if (fd >= 0)
     goto close_ok;
 

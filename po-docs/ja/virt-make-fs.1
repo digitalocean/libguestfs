@@ -62,16 +62,16 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-make-fs.pl 1"
-.TH virt-make-fs.pl 1 "2012-05-18" "libguestfs-1.16.23" "Virtualization Support"
+.TH virt-make-fs.pl 1 "2012-05-21" "libguestfs-1.18.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "名前"
 .IX Header "名前"
-virt-make-fs \- Make a filesystem from a tar archive or files
-.SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
+virt-make-fs \- tar アーカイブまたはファイルからファイルシステムの作成
+.SH "書式"
+.IX Header "書式"
 .Vb 1
 \& virt\-make\-fs [\-\-options] input.tar output.img
 \&
@@ -79,8 +79,8 @@ virt-make-fs \- Make a filesystem from a tar archive or files
 \&
 \& virt\-make\-fs [\-\-options] directory output.img
 .Ve
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
+.SH "説明"
+.IX Header "説明"
 Virt-make-fs is a command line tool for creating a filesystem from a tar
 archive or some files in a directory.  It is similar to tools like
 \&\fImkisofs\fR\|(1), \fIgenisoimage\fR\|(1) and \fImksquashfs\fR\|(1).  Unlike those tools,
@@ -88,7 +88,7 @@ it can create common filesystem types like ext2/3 or \s-1NTFS\s0, which can be
 useful if you want to attach these filesystems to existing virtual machines
 (eg. to import large amounts of read-only data to a \s-1VM\s0).
 .PP
-To create blank disks, use \fIvirt\-format\fR\|(1).
+空のディスクを使用するには \fIvirt\-format\fR\|(1) を使用します。
 .PP
 Basic usage is:
 .PP
@@ -101,8 +101,8 @@ or a tar archive (either uncompressed tar or gzip-compressed tar); and
 \&\f(CW\*(C`output.img\*(C'\fR is a disk image.  The input type is detected automatically.
 The output disk image defaults to a raw ext2 sparse image unless you specify
 extra flags (see \*(L"\s-1OPTIONS\s0\*(R" below).
-.SS "\s-1FILESYSTEM\s0 \s-1TYPE\s0"
-.IX Subsection "FILESYSTEM TYPE"
+.SS "ファイルシステム形式"
+.IX Subsection "ファイルシステム形式"
 The default filesystem type is \f(CW\*(C`ext2\*(C'\fR.  Just about any filesystem type that
 libguestfs supports can be used (but \fInot\fR read-only formats like
 \&\s-1ISO9660\s0).  Here are some of the more common choices:
@@ -111,8 +111,8 @@ libguestfs supports can be used (but \fInot\fR read-only formats like
 Note that ext3 filesystems contain a journal, typically 1\-32 \s-1MB\s0 in size.  If
 you are not going to use the filesystem in a way that requires the journal,
 then this is just wasted overhead.
-.IP "\fIntfs\fR or \fIvfat\fR" 4
-.IX Item "ntfs or vfat"
+.IP "\fIntfs\fR または \fIvfat\fR" 4
+.IX Item "ntfs または vfat"
 Useful if exporting data to a Windows guest.
 .Sp
 \&\fINote for vfat\fR: The tar archive or local directory must only contain files
@@ -124,8 +124,8 @@ non-root files, since vfat itself does not support this.
 Lower overhead than \f(CW\*(C`ext2\*(C'\fR, but certain limitations on filename length and
 total filesystem size.
 .PP
-\fI\s-1EXAMPLE\s0\fR
-.IX Subsection "EXAMPLE"
+\fI例\fR
+.IX Subsection "例"
 .PP
 .Vb 1
 \& virt\-make\-fs \-\-type=minix input minixfs.img
@@ -144,10 +144,10 @@ longer a straight filesystem.  For example you cannot run \fIfsck\fR\|(8)
 directly on a partitioned disk image.  (However libguestfs tools such as
 \&\fIguestfish\fR\|(1) and \fIvirt\-resize\fR\|(1) can still be used).
 .PP
-\fI\s-1EXAMPLE\s0\fR
-.IX Subsection "EXAMPLE"
+\fI例\fR
+.IX Subsection "例"
 .PP
-Add an \s-1MBR\s0 partition:
+\&\s-1MBR\s0 パーティションを追加します:
 .PP
 .Vb 1
 \& virt\-make\-fs \-\-partition \-\- input disk.img
@@ -180,23 +180,23 @@ Don't forget that you can also use local commands including \fIresize2fs\fR\|(8)
 and \fIvirt\-resize\fR\|(1) to resize existing filesystems, or rerun virt-make-fs
 to build another image from scratch.
 .PP
-\fI\s-1EXAMPLE\s0\fR
-.IX Subsection "EXAMPLE"
+\fI例\fR
+.IX Subsection "例"
 .PP
 .Vb 1
 \& virt\-make\-fs \-\-format=qcow2 \-\-size=+200M input output.img
 .Ve
-.SH "OPTIONS"
-.IX Header "OPTIONS"
+.SH "オプション"
+.IX Header "オプション"
 .IP "\fB\-\-help\fR" 4
 .IX Item "--help"
-Display brief help.
+簡単なヘルプを表示します。
 .IP "\fB\-\-version\fR" 4
 .IX Item "--version"
-Display version number and exit.
+バージョン番号を表示して終了します。
 .IP "\fB\-\-debug\fR" 4
 .IX Item "--debug"
-Enable debugging information.
+デバッグ情報を有効にします。
 .IP "\fB\-\-size=<N>\fR" 4
 .IX Item "--size=<N>"
 .PD 0
@@ -232,9 +232,9 @@ desired free space).
 .IP "\fB\-F <fmt>\fR" 4
 .IX Item "-F <fmt>"
 .PD
-Choose the output disk image format.
+出力するディスクイメージ形式を選択します。
 .Sp
-The default is \f(CW\*(C`raw\*(C'\fR (raw sparse disk image).
+デフォルトは \f(CW\*(C`raw\*(C'\fR です (スパースな raw 形式のディスクイメージ)。
 .Sp
 For other choices, see the \fIqemu\-img\fR\|(1) manpage.  The only other choice
 that would really make sense here is \f(CW\*(C`qcow2\*(C'\fR.
@@ -246,7 +246,7 @@ that would really make sense here is \f(CW\*(C`qcow2\*(C'\fR.
 .PD
 Choose the output filesystem type.
 .Sp
-The default is \f(CW\*(C`ext2\*(C'\fR.
+デフォルトは \f(CW\*(C`ext2\*(C'\fR です。
 .Sp
 Any filesystem which is supported read-write by libguestfs can be used here.
 .IP "\fB\-\-partition\fR" 4
@@ -255,8 +255,7 @@ Any filesystem which is supported read-write by libguestfs can be used here.
 .IP "\fB\-\-partition=<parttype>\fR" 4
 .IX Item "--partition=<parttype>"
 .PD
-If specified, this flag adds an \s-1MBR\s0 partition table to the output disk
-image.
+このフラグが指定されていると、出力ディスクイメージに \s-1MBR\s0 パーティションテーブルを追加します。
 .Sp
 You can change the partition table type, eg. \fI\-\-partition=gpt\fR for large
 disks.
@@ -283,26 +282,24 @@ Libvirt guest names can contain arbitrary characters, some of which have
 meaning to the shell such as \f(CW\*(C`#\*(C'\fR and space.  You may need to quote or
 escape these characters on the command line.  See the shell manual page
 \&\fIsh\fR\|(1) for details.
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
+.SH "関連項目"
+.IX Header "関連項目"
 \&\fIguestfish\fR\|(1), \fIvirt\-format\fR\|(1), \fIvirt\-resize\fR\|(1), \fIvirt\-tar\-in\fR\|(1),
 \&\fImkisofs\fR\|(1), \fIgenisoimage\fR\|(1), \fImksquashfs\fR\|(1), \fImke2fs\fR\|(8),
 \&\fIresize2fs\fR\|(8), \fIguestfs\fR\|(3), \fISys::Guestfs\fR\|(3),
 <http://libguestfs.org/>.
-.SH "BUGS"
-.IX Header "BUGS"
-When reporting bugs, please enable debugging and capture the \fIcomplete\fR
-output:
+.SH "バグ"
+.IX Header "バグ"
+バグを報告するとき、デバッグを有効にして、\fI完全な\fR 出力を記録してください:
 .PP
 .Vb 2
 \& export LIBGUESTFS_DEBUG=1
 \& virt\-make\-fs \-\-debug [...] > /tmp/virt\-make\-fs.log 2>&1
 .Ve
 .PP
-Attach /tmp/virt\-make\-fs.log to a new bug report at
-<https://bugzilla.redhat.com/>
-.SH "AUTHOR"
-.IX Header "AUTHOR"
+/tmp/virt\-make\-fs.log を <https://bugzilla.redhat.com/> の新しいバグ報告に添付します
+.SH "著者"
+.IX Header "著者"
 Richard W.M. Jones <http://people.redhat.com/~rjones/>
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"
