@@ -1,3 +1,34 @@
+2012-04-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.19.
+
+2012-04-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	python: Remove 'del g' from the docs, replace with 'g.close ()'.
+	'del g' is a trap for the unwary.  If the handle has any other
+	references, it does nothing (in fact, it can be actively dangerous if
+	the user was expecting the appliance to go away).  In non-CPython it
+	can be delayed arbitrarily long.
+
+	Using 'g.close()' on the other hand is always safe.
+	(cherry picked from commit 255882a3f615c7727d2cc2f18f692513dc0a75e9)
+
+2012-04-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	resize, sparsify: Add a simple-minded check to stop indisk = outdisk. (cherry picked from commit 84d450210b3ea01de3fe26b2cf1db2b492d77aec)
+
+2012-04-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	sparsify: Fix comma/colon and quoting in qemu-img command.
+	Colon characters are not allowed in qemu/qemu-img filenames.  There's
+	no way to quote them.
+
+	Comma characters CAN be used.  However they must be quoted (by
+	doubling) when used in the '-o' option.
+
+	Fix general quoting problems in the external command.
+	(cherry picked from commit 8d3d5a52d2746af91f770608cce5f47462f33aba)
+
 2012-04-13  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.18.
