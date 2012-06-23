@@ -1,3 +1,40 @@
+2012-04-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.20.
+
+	build: Change comment above OCaml tools. (cherry picked from commit 97ef9afca77ee81a6c0d1a30cf4d367d7cefa2e3)
+
+	guests: Add /etc/shadow file to fedora.img.
+	This is used for testing file permissions and SELinux contexts.
+	(cherry picked from commit 03d321d0225512bdcd136ac7cb086c0b292a9c09)
+
+	tests: Space before parens in perl code. (cherry picked from commit c844a38d6e6990af00506afb434a6f7b40e5259f)
+
+2012-04-24  Jim Meyering  <jim@meyering.net>
+
+	maint: fix doc typos
+	Fix typos spotted by http://github.com/lyda/misspell-check.
+	* configure.ac: As above.
+	* ocaml/examples/guestfs-ocaml.pod: Likewise.
+	* fish/guestfish.pod: Likewise.
+	(cherry picked from commit e97b6a1bb15e8cad319dceff53c58f8267e8152f)
+
+2012-04-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	Remove obsolete valgrind rule from C API tests. (cherry picked from commit c253c69d0955242e5f23dc194ddbaf34764f79f7)
+
+	extra-tests: Check if valgrind supports --vgdb=no option.
+	This option didn't exist in RHEL 6 valgrind.
+	(cherry picked from commit 58a5b5bd944655b028c915a91dad2220176986db)
+
+	Check library still compiles without libvirt. (cherry picked from commit 5d6a323b9358bb01233681b784fa67414a5d2c6d)
+
+	sparsify: Add a note about sparsify on tmpfs. (cherry picked from commit b0b5fdc69f6ee831f325760f95a164627b499f77)
+
+2012-04-24  Matthew Booth  <mbooth@redhat.com>
+
+	Don't abort inspection if mdadm.conf ARRAY doesn't have a uuid (cherry picked from commit 4542401fee7a141204baea98dcdc9fa557878f85)
+
 2012-04-17  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.19.

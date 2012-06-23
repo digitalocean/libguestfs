@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "virt-sparsify 1"
-.TH virt-sparsify 1 "2012-04-17" "libguestfs-1.16.19" "Virtualization Support"
+.TH virt-sparsify 1 "2012-04-24" "libguestfs-1.16.20" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -302,6 +302,16 @@ copy of the source disk (\fIvirtual\fR size), or else set \f(CW$TMPDIR\fR to poi
 to another directory that has enough space.
 .Sp
 This defaults to \f(CW\*(C`/tmp\*(C'\fR.
+.Sp
+Note that if \f(CW$TMPDIR\fR is a tmpfs (eg. if \f(CW\*(C`/tmp\*(C'\fR is on tmpfs, or if you
+use \f(CW\*(C`TMPDIR=/dev/shm\*(C'\fR), tmpfs defaults to a maximum size of \fIhalf\fR of
+physical \s-1RAM\s0.  If virt-sparsify exceeds this, it will hang.  The solution is
+either to use a real disk, or to increase the maximum size of the tmpfs
+mountpoint, eg:
+.Sp
+.Vb 1
+\& mount \-o remount,size=10G /tmp
+.Ve
 .PP
 For other environment variables, see \*(L"\s-1ENVIRONMENT\s0 \s-1VARIABLES\s0\*(R" in \fIguestfs\fR\|(3).
 .SH "SEE ALSO"
