@@ -333,6 +333,15 @@ EXTRA_DIST += test-fdopen.c signature.h macros.h
 
 ## end   gnulib module fdopen-tests
 
+## begin gnulib module fdopendir-tests
+
+TESTS += test-fdopendir
+check_PROGRAMS += test-fdopendir
+test_fdopendir_LDADD = $(LDADD) @LIBINTL@
+EXTRA_DIST += test-fdopendir.c signature.h macros.h
+
+## end   gnulib module fdopendir-tests
+
 ## begin gnulib module fgetc-tests
 
 TESTS += test-fgetc
@@ -669,38 +678,6 @@ EXTRA_DIST += test-listen.c signature.h macros.h
 
 ## end   gnulib module listen-tests
 
-## begin gnulib module locale
-
-BUILT_SOURCES += locale.h
-
-# We need the following in order to create <locale.h> when the system
-# doesn't have one that provides all definitions.
-locale.h: locale.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(ARG_NONNULL_H) $(WARN_ON_USE_H)
-	$(AM_V_GEN)rm -f $@-t $@ && \
-	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */' && \
-	  sed -e 's|@''GUARD_PREFIX''@|GL|g' \
-	      -e 's|@''INCLUDE_NEXT''@|$(INCLUDE_NEXT)|g' \
-	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|@PRAGMA_SYSTEM_HEADER@|g' \
-	      -e 's|@''PRAGMA_COLUMNS''@|@PRAGMA_COLUMNS@|g' \
-	      -e 's|@''NEXT_LOCALE_H''@|$(NEXT_LOCALE_H)|g' \
-	      -e 's/@''GNULIB_SETLOCALE''@/$(GNULIB_SETLOCALE)/g' \
-	      -e 's/@''GNULIB_DUPLOCALE''@/$(GNULIB_DUPLOCALE)/g' \
-	      -e 's|@''HAVE_DUPLOCALE''@|$(HAVE_DUPLOCALE)|g' \
-	      -e 's|@''HAVE_XLOCALE_H''@|$(HAVE_XLOCALE_H)|g' \
-	      -e 's|@''REPLACE_SETLOCALE''@|$(REPLACE_SETLOCALE)|g' \
-	      -e 's|@''REPLACE_DUPLOCALE''@|$(REPLACE_DUPLOCALE)|g' \
-	      -e '/definitions of _GL_FUNCDECL_RPL/r $(CXXDEFS_H)' \
-	      -e '/definition of _GL_ARG_NONNULL/r $(ARG_NONNULL_H)' \
-	      -e '/definition of _GL_WARN_ON_USE/r $(WARN_ON_USE_H)' \
-	      < $(srcdir)/locale.in.h; \
-	} > $@-t && \
-	mv $@-t $@
-MOSTLYCLEANFILES += locale.h locale.h-t
-
-EXTRA_DIST += locale.in.h
-
-## end   gnulib module locale
-
 ## begin gnulib module locale-tests
 
 TESTS += test-locale
@@ -708,6 +685,14 @@ check_PROGRAMS += test-locale
 EXTRA_DIST += test-locale.c
 
 ## end   gnulib module locale-tests
+
+## begin gnulib module localeconv-tests
+
+TESTS += test-localeconv
+check_PROGRAMS += test-localeconv
+EXTRA_DIST += test-localeconv.c signature.h macros.h
+
+## end   gnulib module localeconv-tests
 
 ## begin gnulib module localename
 

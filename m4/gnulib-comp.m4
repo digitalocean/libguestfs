@@ -118,6 +118,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module fd-safer-flag:
   # Code from module fdopen:
   # Code from module fdopen-tests:
+  # Code from module fdopendir:
+  # Code from module fdopendir-tests:
   # Code from module fgetc-tests:
   # Code from module filename:
   # Code from module filenamecat-lgpl:
@@ -207,6 +209,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module localcharset:
   # Code from module locale:
   # Code from module locale-tests:
+  # Code from module localeconv:
+  # Code from module localeconv-tests:
   # Code from module localename:
   # Code from module localename-tests:
   # Code from module lock:
@@ -533,6 +537,12 @@ gl_FCNTL_MODULE_INDICATOR([fcntl])
 gl_FCNTL_H
 gl_FCNTL_SAFER
 gl_MODULE_INDICATOR([fcntl-safer])
+gl_FUNC_FDOPENDIR
+if test $HAVE_FDOPENDIR = 0 || test $REPLACE_FDOPENDIR = 1; then
+  AC_LIBOBJ([fdopendir])
+fi
+gl_DIRENT_MODULE_INDICATOR([fdopendir])
+gl_MODULE_INDICATOR([fdopendir])
 gl_FILE_NAME_CONCAT_LGPL
 AC_REQUIRE([AC_C_INLINE])
 gl_FLOAT_H
@@ -571,6 +581,7 @@ gl_STDIO_MODULE_INDICATOR([ftell])
 gl_FUNC_FTELLO
 if test $HAVE_FTELLO = 0 || test $REPLACE_FTELLO = 1; then
   AC_LIBOBJ([ftello])
+  gl_PREREQ_FTELLO
 fi
 gl_STDIO_MODULE_INDICATOR([ftello])
 gl_FUNC_FTS
@@ -675,9 +686,17 @@ fi
 gl_ARPA_INET_MODULE_INDICATOR([inet_ntop])
 gl_INLINE
 gl_INTTYPES_INCOMPLETE
+AC_REQUIRE([gl_LARGEFILE])
 gl_LOCALCHARSET
 LOCALCHARSET_TESTS_ENVIRONMENT="CHARSETALIASDIR=\"\$(abs_top_builddir)/$gl_source_base\""
 AC_SUBST([LOCALCHARSET_TESTS_ENVIRONMENT])
+gl_LOCALE_H
+gl_FUNC_LOCALECONV
+if test $REPLACE_LOCALECONV = 1; then
+  AC_LIBOBJ([localeconv])
+  gl_PREREQ_LOCALECONV
+fi
+gl_LOCALE_MODULE_INDICATOR([localeconv])
 gl_LOCK
 gl_FUNC_LSEEK
 if test $REPLACE_LSEEK = 1; then
@@ -977,7 +996,6 @@ gl_STDIO_MODULE_INDICATOR([vasprintf])
 m4_ifdef([AM_XGETTEXT_OPTION],
   [AM_][XGETTEXT_OPTION([--flag=asprintf:2:c-format])
    AM_][XGETTEXT_OPTION([--flag=vasprintf:2:c-format])])
-AC_SUBST([WARN_CFLAGS])
 gl_WCHAR_H
 gl_WCTYPE_H
 gl_FUNC_WRITE
@@ -1069,7 +1087,7 @@ gl_STDIO_MODULE_INDICATOR([fdopen])
 gl_FUNC_UNGETC_WORKS
 gl_FUNC_UNGETC_WORKS
 gl_FUNC_FTRUNCATE
-if test $HAVE_FTRUNCATE = 0; then
+if test $HAVE_FTRUNCATE = 0 || test $REPLACE_FTRUNCATE = 1; then
   AC_LIBOBJ([ftruncate])
   gl_PREREQ_FTRUNCATE
 fi
@@ -1100,7 +1118,6 @@ if test "$ac_cv_header_winsock2_h" = yes; then
   AC_LIBOBJ([listen])
 fi
 gl_SYS_SOCKET_MODULE_INDICATOR([listen])
-gl_LOCALE_H
 AC_CHECK_FUNCS_ONCE([newlocale])
 gl_LOCALENAME
 AC_CHECK_FUNCS_ONCE([newlocale])
@@ -1366,6 +1383,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/fd-hook.c
   lib/fd-hook.h
   lib/fd-safer.c
+  lib/fdopendir.c
   lib/filename.h
   lib/filenamecat-lgpl.c
   lib/filenamecat.h
@@ -1427,6 +1445,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/itold.c
   lib/localcharset.c
   lib/localcharset.h
+  lib/locale.in.h
+  lib/localeconv.c
   lib/lseek.c
   lib/lstat.c
   lib/malloc.c
@@ -1469,7 +1489,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/printf-parse.h
   lib/progname.c
   lib/progname.h
-  lib/quote.c
   lib/quote.h
   lib/quotearg.c
   lib/quotearg.h
@@ -1608,6 +1627,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/fcntl.m4
   m4/fcntl_h.m4
   m4/fdopen.m4
+  m4/fdopendir.m4
   m4/filenamecat.m4
   m4/float_h.m4
   m4/fnmatch.m4
@@ -1660,6 +1680,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/locale-tr.m4
   m4/locale-zh.m4
   m4/locale_h.m4
+  m4/localeconv.m4
   m4/localename.m4
   m4/lock.m4
   m4/longlong.m4
@@ -1686,6 +1707,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/netdb_h.m4
   m4/netinet_in_h.m4
   m4/nocrash.m4
+  m4/off_t.m4
   m4/onceonly.m4
   m4/open.m4
   m4/openat.m4
@@ -1819,6 +1841,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-fcntl-safer.c
   tests/test-fcntl.c
   tests/test-fdopen.c
+  tests/test-fdopendir.c
   tests/test-fgetc.c
   tests/test-filevercmp.c
   tests/test-float.c
@@ -1866,6 +1889,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-ioctl.c
   tests/test-listen.c
   tests/test-locale.c
+  tests/test-localeconv.c
   tests/test-localename.c
   tests/test-lock.c
   tests/test-lseek.c
@@ -2016,7 +2040,6 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/inttostr.h
   tests=lib/ioctl.c
   tests=lib/listen.c
-  tests=lib/locale.in.h
   tests=lib/localename.c
   tests=lib/localename.h
   tests=lib/mbtowc-impl.h

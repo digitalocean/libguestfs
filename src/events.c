@@ -161,6 +161,11 @@ guestfs___call_callbacks_message (guestfs_h *g, uint64_t event,
         while (i < buf_len && NO_ESCAPING (buf[i]))
           ++i;
         fwrite (&buf[i0], 1, i-i0, stderr);
+        /* Adjust i so that next time around the loop, the next
+         * non-printing character will be displayed.
+         */
+        if (i < buf_len)
+          --i;
       } else {
         switch (buf[i]) {
         case '\0': fputs ("\\0", stderr); break;
@@ -172,7 +177,7 @@ guestfs___call_callbacks_message (guestfs_h *g, uint64_t event,
         case '\t': fputs ("\\t", stderr); break;
         case '\v': fputs ("\\v", stderr); break;
         default:
-          fprintf (stderr, "\\x%x", (unsigned) buf[i]);
+          fprintf (stderr, "\\x%x", (unsigned char) buf[i]);
         }
       }
     }

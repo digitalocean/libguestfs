@@ -99,6 +99,10 @@
 #undef GNULIB_FCNTL_SAFER
 
 /* Define to a C preprocessor expression that evaluates to 1 or 0, depending
+   whether the gnulib module fdopendir shall be considered present. */
+#undef GNULIB_FDOPENDIR
+
+/* Define to a C preprocessor expression that evaluates to 1 or 0, depending
    whether the gnulib module fd-safer-flag shall be considered present. */
 #undef GNULIB_FD_SAFER_FLAG
 
@@ -172,6 +176,9 @@
 /* Define to 1 when the gnulib module fdopen should be tested. */
 #undef GNULIB_TEST_FDOPEN
 
+/* Define to 1 when the gnulib module fdopendir should be tested. */
+#undef GNULIB_TEST_FDOPENDIR
+
 /* Define to 1 when the gnulib module fstat should be tested. */
 #undef GNULIB_TEST_FSTAT
 
@@ -219,6 +226,9 @@
 
 /* Define to 1 when the gnulib module listen should be tested. */
 #undef GNULIB_TEST_LISTEN
+
+/* Define to 1 when the gnulib module localeconv should be tested. */
+#undef GNULIB_TEST_LOCALECONV
 
 /* Define to 1 when the gnulib module lseek should be tested. */
 #undef GNULIB_TEST_LSEEK
@@ -445,6 +455,10 @@
 /* Define to 1 if you have the declaration of `fchdir', and to 0 if you don't.
    */
 #undef HAVE_DECL_FCHDIR
+
+/* Define to 1 if you have the declaration of `fdopendir', and to 0 if you
+   don't. */
+#undef HAVE_DECL_FDOPENDIR
 
 /* Define to 1 if you have the declaration of `freeaddrinfo', and to 0 if you
    don't. */
@@ -1077,6 +1091,9 @@
 /* Define to 1 if getpeername is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_GETPEERNAME
 
+/* Define to 1 if gets is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_GETS
+
 /* Define to 1 if getsockname is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_GETSOCKNAME
 
@@ -1692,6 +1709,9 @@
 /* Define to 1 if `d_type' is a member of `struct dirent'. */
 #undef HAVE_STRUCT_DIRENT_D_TYPE
 
+/* Define to 1 if `decimal_point' is a member of `struct lconv'. */
+#undef HAVE_STRUCT_LCONV_DECIMAL_POINT
+
 /* Define to 1 if `sa_len' is a member of `struct sockaddr'. */
 #undef HAVE_STRUCT_SOCKADDR_SA_LEN
 
@@ -1920,6 +1940,9 @@
 
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL
+
+/* Define to 1 if you have the `_ftelli64' function. */
+#undef HAVE__FTELLI64
 
 /* Define to 1 if you have the `_ftime' function. */
 #undef HAVE__FTIME
@@ -2211,17 +2234,24 @@
 /* enable compile-time and run-time bounds-checking, and some warnings */
 #undef _FORTIFY_SOURCE
 
+/* Define to 1 if Gnulib overrides 'struct stat' on Windows so that struct
+   stat.st_size becomes 64-bit. */
+#undef _GL_WINDOWS_64_BIT_ST_SIZE
+
 /* Define to 1 to make fseeko visible on some hosts (e.g. glibc 2.2). */
 #undef _LARGEFILE_SOURCE
 
 /* Define for large files, on AIX-style hosts. */
 #undef _LARGE_FILES
 
+/* Define to 1 on Solaris. */
+#undef _LCONV_C99
+
 /* Define to 1 if on MINIX. */
 #undef _MINIX
 
 /* The _Noreturn keyword of C11.  */
-#ifndef _Noreturn
+#if !defined _Noreturn && __STDC_VERSION__ < 201112
 # if (3 <= __GNUC__ || (__GNUC__ == 2 && 8 <= __GNUC_MINOR__) \
       || 0x5110 <= __SUNPRO_C)
 #  define _Noreturn __attribute__ ((__noreturn__))

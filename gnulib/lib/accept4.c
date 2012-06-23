@@ -12,8 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License along
-   with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 #include <config.h>
 
@@ -91,7 +90,7 @@ accept4 (int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags)
       /* Closing fd before allocating the new fd ensures that the new fd will
          have the minimum possible value.  */
       close (fd);
-      nfd = _open_osfhandle ((long) new_handle,
+      nfd = _open_osfhandle ((intptr_t) new_handle,
                              O_NOINHERIT | (flags & (O_TEXT | O_BINARY)));
       if (nfd < 0)
         {

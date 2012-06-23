@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [18])
-m4_define([libguestfs_release], [0])
+m4_define([libguestfs_release], [1])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1365,6 +1365,7 @@ AC_CONFIG_FILES([Makefile
                  test-tool/Makefile
                  tests/btrfs/Makefile
                  tests/c-api/Makefile
+                 tests/charsets/Makefile
                  tests/data/Makefile
                  tests/extra/Makefile
                  tests/guests/Makefile

@@ -456,11 +456,32 @@ eval {
 
     # Create the filesystem.
     if ($type ne "btrfs") {
-        $g->mkfs ($type, $dev);
+        eval {
+            $g->mkfs ($type, $dev);
+        };
+        if ($@) {
+            # Provide more guidance in the error message (RHBZ#823883).
+            print STDERR "'mkfs' (create filesystem) operation failed.\n";
+            if ($type eq "fat") {
+                print STDERR "Instead of 'fat', try 'vfat' (long filenames) or 'msdos' (short filenames).\n";
+            } else {
+                print STDERR "Is '$type' a correct filesystem type?\n";
+            }
+            die
+        }
     } else {
         $g->mkfs_btrfs ([$dev], datatype => "single", metadata => "single");
     }
-    $g->mount ($dev, "/");
+
+    # Mount it.
+
+    # For vfat, add the utf8 mount option because we want to be able
+    # to encode any non-ASCII characters into UCS2 which is what
+    # modern vfat uses on disk (RHBZ#823885).
+    my $options = "";
+    $options = "utf8" if $type eq "vfat";
+
+    $g->mount_options ($options, $dev, "/");
 
     # Copy the data in.
     my $ifile;
