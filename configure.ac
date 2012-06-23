@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [16])
-m4_define([libguestfs_release], [20])
+m4_define([libguestfs_release], [21])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -724,7 +724,7 @@ AS_IF([test "x$valgrind" != "xno"],[
     fi
 ])
 
-dnl Check for OCaml (optional, for OCaml bindings).
+dnl Check for OCaml (optional, for OCaml bindings and OCaml tools).
 OCAMLC=no
 OCAMLFIND=no
 AC_ARG_ENABLE([ocaml],
@@ -744,7 +744,7 @@ AM_CONDITIONAL([HAVE_OCAML],
 AM_CONDITIONAL([HAVE_OCAMLDOC],
                [test "x$OCAMLDOC" != "xno"])
 
-dnl Check for Perl (optional, for Perl bindings).
+dnl Check for Perl (optional, for Perl bindings and Perl tools).
 PERL=no
 AC_ARG_ENABLE([perl],
         AS_HELP_STRING([--disable-perl], [Disable Perl language bindings]),
@@ -1160,7 +1160,6 @@ AC_CONFIG_FILES([Makefile
                  inspector/Makefile
                  java/Makefile
                  java/examples/Makefile
-                 libguestfs.pc
                  ocaml/META
                  ocaml/Makefile
                  ocaml/examples/Makefile
@@ -1181,6 +1180,7 @@ AC_CONFIG_FILES([Makefile
                  ruby/examples/Makefile
                  sparsify/Makefile
                  src/Makefile
+                 src/libguestfs.pc
                  test-tool/Makefile
                  tests/c-api/Makefile
                  tests/data/Makefile

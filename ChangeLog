@@ -1,3 +1,69 @@
+2012-05-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.16.21.
+
+	doc: Rewrite description section in man page guestfs(3).
+	Make the introduction in the man page shorter and punchier, so it
+	leads readers directly to other pages of interest.
+	(cherry picked from commit 922052c70fdc66859c78bbc89a7817aad141862a)
+
+	configure: Comment fix. (cherry picked from commit 79822d46e3d7785ae7b02272e6661f15a61f4b5e)
+
+	Move 'libguestfs.pc' (pkgconfig file) to src/ directory.
+	Since it describes the C library, it's better in the src/ directory.
+	(cherry picked from commit bb73cf0941ba9d34eb2ecf82d10ecb5fc5d2362d)
+
+	debug: 'progress' (unsupported debug command) now checks argument is reasonable (RHBZ#816839).
+	Thanks Yuyu Zhou.
+	(cherry picked from commit cc798540370658ecc1bba94c4ab4b64485c9bcc6)
+
+	gobject: Fix whitespace in Makefile.am. (cherry picked from commit 1f0964536b7c9a4a165e9b041ef0e5340ead7e1f)
+
+2012-05-01  Matthew Booth  <mbooth@redhat.com>
+
+	gobject: NFC generated code formatting fix (cherry picked from commit a2dc83cf03c3a040e12a3ac33ab6bc99e0faf5c4)
+
+2012-05-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Add opaque field to the drives list for programs to use.
+	Not used at present.
+	(cherry picked from commit 39d79e677b684dfd49c852ee7ce4c4bf3d5cf56f)
+
+2012-05-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Remove some unnecessary errors.
+	virt-rescue prints errors such as:
+
+	  rm: cannot remove `/proc': Is a directory
+	  mkdir: cannot create directory `/proc': File exists
+	  rm: cannot remove `/sys': Is a directory
+	  mkdir: cannot create directory `/sys': File exists
+
+	People have reported these errors (which are nothing to worry about)
+	as bugs in the past, so avoid them where possible.
+	(cherry picked from commit beaa5288558fc78304bcd008b9254ae2725017f2)
+
+2012-05-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add some more substantial test data.
+	The two tarballs:
+
+	  8252 bytes   tests/data/filesanddirs-10M.tar.xz
+	 41152 bytes   tests/data/filesanddirs-100M.tar.xz
+
+	contain, as their names suggest, highly compressed files and
+	directories, with unpacked size respectively around 10M and 100M (the
+	precise size after unpacking depends on the filesystem).
+
+	These can be used for testing purposes.
+	(cherry picked from commit 12c5394d4cb379890c9c69c16d1d735674a2e80d)
+
+2012-05-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Add explicit types to pod memoization code.
+	This is just code motion.
+	(cherry picked from commit 37a3cdbc139167d7b77d84a761f681595ff7fc23)
+
 2012-04-24  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.16.20.
