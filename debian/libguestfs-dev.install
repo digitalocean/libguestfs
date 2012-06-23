@@ -1,8 +1,8 @@
 usr/include/guestfs.h
-usr/lib/libguestfs.a
-usr/lib/libguestfs.so
-usr/lib/libguestfs.la
-usr/lib/pkgconfig/*
+usr/lib/*-*/libguestfs.a
+usr/lib/*-*/libguestfs.so
+usr/lib/*-*/libguestfs.la
+usr/lib/*-*/pkgconfig/*
 
 usr/share/man/man3/guestfs.3*
 usr/share/man/man3/libguestfs.3*

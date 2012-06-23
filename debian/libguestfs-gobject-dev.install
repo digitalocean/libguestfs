@@ -1,6 +1,6 @@
 usr/include/guestfs-gobject.h
-usr/lib/libguestfs-gobject-*.a
-usr/lib/libguestfs-gobject-*.so
-usr/lib/libguestfs-gobject-*.la
+usr/lib/*-*/libguestfs-gobject-*.a
+usr/lib/*-*/libguestfs-gobject-*.so
+usr/lib/*-*/libguestfs-gobject-*.la
 
 usr/share/gir-1.0

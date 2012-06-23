@@ -38,7 +38,7 @@ override_dh_auto_configure:
 		RUBY=$(RUBY_DEFAULT) \
 		RAKE=$(patsubst ruby%,rake%,$(RUBY_DEFAULT)) \
 		PYTHON=$(PYTHON_DEFAULT) \
-		JNI_INSTALL_DIR=/usr/lib/jni
+		JNI_INSTALL_DIR='$${libdir}/jni'
 
 	set -e; for v in $(patsubst ruby%,%,$(filter-out $(RUBY_DEFAULT), $(RUBIES))) \
 	; do \

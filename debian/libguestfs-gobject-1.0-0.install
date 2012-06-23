@@ -1,2 +1,2 @@
-usr/lib/libguestfs-gobject-*.so.*
+usr/lib/*-*/libguestfs-gobject-*.so.*
 
