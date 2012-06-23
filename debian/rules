@@ -85,7 +85,8 @@ override_dh_auto_test:
 		$(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
 		$(filter-out $(RUBY_DEFAULT), $(RUBIES)) \
 	; do \
-		dh_auto_test --builddir=$(CURDIR)/debian/build-$$p ; \
+		dh_auto_test --builddir=$(CURDIR)/debian/build-$$p \
+			-- CFLAGS="$(filter-out -Werror=format-security,$(CFLAGS))"; \
 	done
 
 override_dh_auto_install:
