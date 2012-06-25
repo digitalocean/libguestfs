@@ -94,9 +94,9 @@ override_dh_auto_install:
 # We assume that the Python version used for building the Python
 # bindings doesn't affect the outcome of those builds.
 	set -e; for p in \
-		default \
 		$(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
 		$(filter-out $(RUBY_DEFAULT), $(RUBIES)) \
+		default \
 	; do \
 		dh_auto_install --builddir=$(CURDIR)/debian/build-$$p ; \
 	done
