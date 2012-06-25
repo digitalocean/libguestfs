@@ -1,3 +1,13 @@
+libguestfs (1:1.18.2-2) unstable; urgency=low
+
+  * [f094ece] Added Replaces statement (Closes: #678977). One of these
+    days I will learn how to properly move files between packages.
+  * [1cde91e] Moved installation of default configuration to the last
+    position. This should fix the "libguestfs: error: FUSE not supported"
+    problem reported by SharkWipf on IRC.
+
+ -- Hilko Bengen <bengen@debian.org>  Mon, 25 Jun 2012 19:15:21 +0200
+
 libguestfs (1:1.18.2-1) unstable; urgency=low
 
   * New upstream version
