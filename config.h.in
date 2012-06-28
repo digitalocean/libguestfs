@@ -1583,6 +1583,9 @@
 /* Define to 1 if _Exit is declared even after undefining macros. */
 #undef HAVE_RAW_DECL__EXIT
 
+/* Define to 1 if you have the `rb_hash_lookup' function. */
+#undef HAVE_RB_HASH_LOOKUP
+
 /* Define to 1 if you have the `readdir' function. */
 #undef HAVE_READDIR
 

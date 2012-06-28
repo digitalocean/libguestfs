@@ -291,6 +291,12 @@ Also you need to do (see above):
 
  sudo chmod 0644 /boot/vmlinuz*
 
+=item Gentoo
+
+Libguestfs was added to Gentoo in 2012-07.  Do:
+
+ emerge libguestfs
+
 =item Інші дистрибутиви Linux
 
 Можна зібрати з початкових кодів (наступний розділ).
