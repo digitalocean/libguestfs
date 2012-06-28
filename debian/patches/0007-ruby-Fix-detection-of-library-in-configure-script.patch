@@ -1,0 +1,27 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Fri, 29 Jun 2012 21:22:02 +0200
+Subject: ruby: Fix detection of library in configure script
+
+---
+ configure.ac |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index dfee7b2..79ccabc 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1020,11 +1020,12 @@ AC_ARG_ENABLE([ruby],
+ AS_IF([test "x$enable_ruby" != "xno"],[
+         AC_CHECK_PROG([RUBY],[ruby],[ruby],[no])
+         AC_CHECK_PROG([RAKE],[rake],[rake],[no])
+-        AC_CHECK_LIB([ruby],[ruby_init],[HAVE_LIBRUBY=1],[HAVE_LIBRUBY=])
++        ruby_soname=`$RUBY -rrbconfig -e 'puts RbConfig::CONFIG[["RUBY_SO_NAME"]]'`
++        AC_CHECK_LIB([$ruby_soname],[ruby_init],[HAVE_LIBRUBY=1],[HAVE_LIBRUBY=])
+         AC_SUBST([RAKE])
+         AS_IF([test -n "$HAVE_LIBRUBY"],[
+             old_LIBS="$LIBS"
+-            LIBS="$LIBS -lruby"
++            LIBS="$LIBS -l$ruby_soname"
+             AC_CHECK_FUNCS([rb_hash_lookup])
+             LIBS="$old_LIBS"
+         ])
