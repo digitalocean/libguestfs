@@ -1,3 +1,148 @@
+2012-06-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.18.3.
+
+	Ensure #include <config.h> occurs in every C file. (cherry picked from commit 1d17a6e9d8f434f952f3c171b5a81ca6b916fa1f)
+
+	src/actions.c: Include <config.h> in this generated file.
+	On RHEL 5, because _GNU_SOURCE was not defined, open_memstream was not
+	being declared, resulting in miscompilation and a segfault in the
+	trace code whenever open_memstream returned a pointer >= 0x80000000
+	(which would be truncated to a 32 bit int and then sign-extended).
+	(cherry picked from commit 6777425636d1c04494e52c61dc44f523458d12d3)
+
+2012-06-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	gobject: bindtests: gjs exception behaviour changed, fix test.
+	When libguestfs calls 'error (g, "error")', gjs in F17 throws
+	error.message == "Error invoking Guestfs.test0rinterr: error"
+
+	In F18, error.message is simply the string "error".
+
+	Fix the test so it works for both cases.
+	(cherry picked from commit 6afb7336e33dc28c4fd1a4545a8298ee36c10723)
+
+2012-06-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	./run: Fix indenting for shell script. (cherry picked from commit bbb7d75c91450ab029edb794b0486eeb8220e4fd)
+
+	ocaml: Allow parallel mount-local test to be skipped.
+	FUSE is not very reliable on RHEL 5.
+	(cherry picked from commit 0977c8408a1119c0582e3d2ab6edef23a1f1f22e)
+
+	FAQ: Add Gentoo (thanks Agostino Sarubbo). (cherry picked from commit 8d88b06277c1d6d7a26b9434cc69a7bae9ada7fc)
+
+2012-06-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: Avoid double-close when qemu exits early.
+	The stdin and stdout of the qemu process are aliased to g->fd:
+
+	  g->fd[0] = wfd[1];
+	  g->fd[1] = rfd[0];
+
+	However if the child exits early, then child_cleanup closes g->fd[0],
+	g->fd[1], AND the code at the cleanup1 label closes wfd[1], rfd[0],
+	resulting in a double-close.
+
+	Avoid this case by setting wfd[1], rfd[0] to -1.  In the cleanup1
+	label, only close wfd[1], rfd[0] if they are not -1, and add the same
+	for g->fd[0], g->fd[1].
+	(cherry picked from commit c87956837e962072fff61edef5b18e55ad42d730)
+
+2012-06-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: Ensure errno from test_qemu_cmd is captured and printed.
+	(cherry picked from commit 9e221e55b61e9f1cd0caf292ca609a4ca26f1d4d)
+
+	launch: Set g->sock = -1 to avoid double-close.
+	This fixes commit ef5c02c6ee72eb8e127115923951777a2c2b8480.
+	(cherry picked from commit 11317b5d1243f3afc35f7abe8edc646f75813e36)
+
+	launch: Log errors from close syscall. (cherry picked from commit ef5c02c6ee72eb8e127115923951777a2c2b8480)
+
+	tests: Add thread IDs to test of bug 790721. (cherry picked from commit 90d0beb3c528d91029349b64d0159836c776189b)
+
+	sysprep: Don't check for /dev/fuse before running the test.
+	The program doesn't actually require FUSE when used without
+	any --script options.
+	(cherry picked from commit 8fc2127975de2f364e348c5a558d78e77988953c)
+
+	fish: Allow mount-local test to be skipped with environment variable.
+	The test uses FUSE, so we need a way to disable it on RHEL 5.
+	(cherry picked from commit f27770e1412c0dbe652d490791347911aac62b24)
+
+2012-06-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Fix a few tests where /dev/null was being used with format=qcow2.
+	This was always incorrect behaviour, but qemu appears to tolerate it.
+
+	This cherry picks just the test fixes from
+	commit 729bb9c6b5ae0c0e7c68dc802b1617936062f966.
+
+2012-06-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Remove obsolete NETWORK, ROUTER definitions in header file.
+	These haven't been used since we switched over to virtio-serial.
+	(cherry picked from commit 78a515ec4a4e8650bd2e1ffc0bfbb97b9568306d)
+
+2012-06-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/xml: Fix compilation of test on RHEL 5 with old libvirt.
+	Old <libvirt.h> had a conflicting definition of virDomainGetXMLDesc:
+
+	fake_libvirt_xml.c:36: error: conflicting types for 'virDomainGetXMLDesc'
+	/usr/include/libvirt/libvirt.h:715: error: previous declaration of 'virDomainGetXMLDesc' was here
+
+	The difference is not material ('int' vs. 'unsigned int').
+
+	Avoid the error by not including <libvirt.h>.
+	(cherry picked from commit 461455ca7cab93af09445d135483f5705589cc0c)
+
+2012-06-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add workaround for missing O_CLOEXEC. (cherry picked from commit 9e7644346dc4303316e59dda13ea5b2f60549626)
+
+	tests: Fix broken workarounds for missing O_CLOEXEC. (cherry picked from commit 35882ba97722ddf9b4c55a332961b08ad8240dd7)
+
+2012-06-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	test-virt-resize: Replace truncate with guestfish sparse.
+	Another instance of 'truncate' command.
+
+	See commit 39df80dcc0e485e69048bddbf33c259ce532e50d for an
+	explanation.
+	(cherry picked from commit ef1514aa1e0a099d71cbb7d2c5f24f9f32e1939d)
+
+2012-06-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	part-get-bootable: Fix when partitions are missing or unordered (RHBZ#602997).
+	The original fix for this in
+	commit 511c82df46f5c6f4a7f984fdb81d4691038ed6da was not complete, in
+	that it did not fix the case of the old (pre '-m' option) parted.
+	This doesn't matter for Fedora, but it matters for RHEL 5 which has
+	this ancient parted.
+	(cherry picked from commit 4d3ec25b47361601604e2f585178393e60f4cd4d)
+
+	ruby: Add a replacement rb_hash_lookup function for Ruby 1.8.5.
+	This function was first added to Ruby in 1.8.7.
+	(cherry picked from commit 8098d062b4cb70defd4aecba0ba8cd75cf893751)
+
+	ruby: Fix libruby test.
+	If -lruby was not available, this used to define HAVE_LIBRUBY=0.
+	However this meant that the later test -n "$HAVE_LIBRUBY" would
+	be successful, whereas it should fail in this case.
+	(cherry picked from commit 823ba05ebd8f1a12574a3f154aaf7c8b4f2aeeac)
+
+	virt-format: Don't call wipefs unless API is available.
+	This API is optional.  Don't call it unless it's available
+	in the appliance.
+	(cherry picked from commit 6cb74d46ba5b1c3f1edd3bfb12df9d4da2ec8a8f)
+
+	tests: Add SKIP_TEST_* variables to allow these tests to be skipped.
+	By setting these variables, we can skip tests that fail on
+	RHEL 5.
+	(cherry picked from commit 145f35badfd9ca4a6d9f54f7732566a5e5114876)
+
 2012-06-21  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.18.2.

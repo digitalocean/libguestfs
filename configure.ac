@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [18])
-m4_define([libguestfs_release], [2])
+m4_define([libguestfs_release], [3])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1017,13 +1017,18 @@ AC_ARG_ENABLE([ruby],
         AS_HELP_STRING([--disable-ruby], [Disable Ruby language bindings]),
         [],
         [enable_ruby=yes])
-AS_IF([test "x$enable_ruby" != "xno"],
-        [
+AS_IF([test "x$enable_ruby" != "xno"],[
         AC_CHECK_PROG([RUBY],[ruby],[ruby],[no])
         AC_CHECK_PROG([RAKE],[rake],[rake],[no])
-        AC_CHECK_LIB([ruby],[ruby_init],[HAVE_LIBRUBY=1],[HAVE_LIBRUBY=0])
+        AC_CHECK_LIB([ruby],[ruby_init],[HAVE_LIBRUBY=1],[HAVE_LIBRUBY=])
         AC_SUBST([RAKE])
+        AS_IF([test -n "$HAVE_LIBRUBY"],[
+            old_LIBS="$LIBS"
+            LIBS="$LIBS -lruby"
+            AC_CHECK_FUNCS([rb_hash_lookup])
+            LIBS="$old_LIBS"
         ])
+])
 AM_CONDITIONAL([HAVE_RUBY],
     [test "x$RAKE" != "xno" && test -n "$HAVE_LIBRUBY"])
 
