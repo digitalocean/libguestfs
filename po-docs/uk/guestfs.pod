@@ -15,6 +15,7 @@ guestfs — бібліотека для доступу та внесення з�
  guestfs_mount (g, "/dev/sda1", "/");
  guestfs_touch (g, "/hello");
  guestfs_umount (g, "/");
+ guestfs_shutdown (g);
  guestfs_close (g);
 
  cc prog.c -o prog -lguestfs
@@ -81,13 +82,10 @@ The general structure of all libguestfs-using programs looks like this:
   */
  guestfs_touch (g, "/hello");
  
- /* This is only needed for libguestfs < 1.5.24.  Since then
-  * it is done automatically when you close the handle.  See
-  * discussion of autosync in this page.
-  */
- guestfs_sync (g);
+ /* Synchronize the disk.  This is the opposite of guestfs_launch. */
+ guestfs_shutdown (g);
  
- /* Закрити дескриптор 'g'. */
+ /* Close and free the handle 'g'. */
  guestfs_close (g);
 
 The code above doesn't include any error checking.  In real code you should
@@ -1369,13 +1367,38 @@ L</ERROR HANDLING> section below.
 
  void guestfs_close (guestfs_h *g);
 
-This closes the connection handle and frees up all resources used.
+This closes the connection handle and frees up all resources used.  If a
+close callback was set on the handle, then it is called.
 
-If autosync was set on the handle and the handle was launched, then this
-implicitly calls various functions to unmount filesystems and sync the
-disk.  See L</guestfs_set_autosync> for more details.
+The correct way to close the handle is:
 
-If a close callback was set on the handle, then it is called.
+ if (guestfs_shutdown (g) == -1) {
+   /* handle write errors here */
+ }
+ guestfs_close (g);
+
+L</guestfs_shutdown> is only needed if B<all> of the following are true:
+
+=over 4
+
+=item 1
+
+one or more disks were added in read-write mode, I<and>
+
+=item 2
+
+guestfs_launch was called, I<and>
+
+=item 3
+
+you made some changes, I<and>
+
+=item 4
+
+you have a way to handle write errors (eg. by exiting with an error code or
+reporting something to the user).
+
+=back
 
 =head1 ОБРОБКА ПОМИЛОК
 

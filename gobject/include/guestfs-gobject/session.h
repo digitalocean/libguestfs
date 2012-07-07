@@ -222,6 +222,7 @@ gint32 guestfs_session_get_smp(GuestfsSession *session, GError **err);
 gboolean guestfs_session_mount_local(GuestfsSession *session, const gchar *localmountpoint, GuestfsMountLocal *optargs, GError **err);
 gboolean guestfs_session_mount_local_run(GuestfsSession *session, GCancellable *cancellable, GError **err);
 gboolean guestfs_session_umount_local(GuestfsSession *session, GuestfsUmountLocal *optargs, GError **err);
+gboolean guestfs_session_shutdown(GuestfsSession *session, GError **err);
 gboolean guestfs_session_mount(GuestfsSession *session, const gchar *device, const gchar *mountpoint, GError **err);
 gboolean guestfs_session_sync(GuestfsSession *session, GError **err);
 gboolean guestfs_session_touch(GuestfsSession *session, const gchar *path, GError **err);
@@ -554,6 +555,8 @@ gboolean guestfs_session_btrfs_device_add(GuestfsSession *session, gchar *const 
 gboolean guestfs_session_btrfs_device_delete(GuestfsSession *session, gchar *const *devices, const gchar *fs, GError **err);
 gboolean guestfs_session_btrfs_set_seeding(GuestfsSession *session, const gchar *device, gboolean seeding, GError **err);
 gboolean guestfs_session_btrfs_fsck(GuestfsSession *session, const gchar *device, GuestfsBtrfsFsck *optargs, GError **err);
+gint32 guestfs_session_device_index(GuestfsSession *session, const gchar *device, GError **err);
+gint32 guestfs_session_nr_devices(GuestfsSession *session, GError **err);
 
 G_END_DECLS
 

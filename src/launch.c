@@ -287,19 +287,30 @@ guestfs__config (guestfs_h *g,
   return 0;
 }
 
-/* cache=off improves reliability in the event of a host crash.
+/* cache=none improves reliability in the event of a host crash.
  *
  * However this option causes qemu to try to open the file with
  * O_DIRECT.  This fails on some filesystem types (notably tmpfs).
  * So we check if we can open the file with or without O_DIRECT,
- * and use cache=off (or not) accordingly.
+ * and use cache=none (or not) accordingly.
  *
- * NB: This function is only called on the !readonly path.  We must
+ * Notes:
+ *
+ * (1) In qemu, cache=none and cache=off are identical.
+ *
+ * (2) cache=none does not disable caching entirely.  qemu still
+ * maintains a writeback cache internally, which will be written out
+ * when qemu is killed (with SIGTERM).  It disables *host kernel*
+ * caching by using O_DIRECT.  To disable caching entirely in kernel
+ * and qemu we would need to use cache=directsync but there is a
+ * performance penalty for that.
+ *
+ * (3) This function is only called on the !readonly path.  We must
  * try to open with O_RDWR to test that the file is readable and
  * writable here.
  */
 static int
-test_cache_off (guestfs_h *g, const char *filename)
+test_cache_none (guestfs_h *g, const char *filename)
 {
   int fd = open (filename, O_RDWR|O_DIRECT);
   if (fd >= 0) {
@@ -343,7 +354,7 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
   char *format;
   char *iface;
   char *name;
-  int use_cache_off;
+  int use_cache_none;
 
   if (strchr (filename, ':') != NULL) {
     error (g, _("filename cannot contain ':' (colon) character. "
@@ -371,12 +382,12 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
     goto err_out;
   }
 
-  /* For writable files, see if we can use cache=off.  This also
+  /* For writable files, see if we can use cache=none.  This also
    * checks for the existence of the file.  For readonly we have
    * to do the check explicitly.
    */
-  use_cache_off = readonly ? 0 : test_cache_off (g, filename);
-  if (use_cache_off == -1)
+  use_cache_none = readonly ? 0 : test_cache_none (g, filename);
+  if (use_cache_none == -1)
     goto err_out;
 
   if (readonly) {
@@ -396,7 +407,7 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
   (*i)->format = format;
   (*i)->iface = iface;
   (*i)->name = name;
-  (*i)->use_cache_off = use_cache_off;
+  (*i)->use_cache_none = use_cache_none;
 
   return 0;
 
@@ -765,6 +776,13 @@ launch_appliance (guestfs_h *g)
     add_cmdline (g, "-serial");
     add_cmdline (g, "stdio");
 #endif
+
+    /* Use sgabios instead of vgabios.  This means we'll see BIOS
+     * messages on the serial port.  QEmu has included sgabios
+     * upstream since just before 1.0.
+     */
+    add_cmdline (g, "-device");
+    add_cmdline (g, "sga");
 
     /* Set up virtio-serial for the communications channel. */
     add_cmdline (g, "-chardev");
@@ -1492,7 +1510,7 @@ qemu_drive_param (guestfs_h *g, const struct drive *drv)
 
   snprintf (&r[i], len-i, "%s%s%s%s,if=%s",
             drv->readonly ? ",snapshot=on" : "",
-            drv->use_cache_off ? ",cache=off" : "",
+            drv->use_cache_none ? ",cache=none" : "",
             drv->format ? ",format=" : "",
             drv->format ? drv->format : "",
             drv->iface);
@@ -1517,17 +1535,7 @@ guestfs__wait_ready (guestfs_h *g)
 int
 guestfs__kill_subprocess (guestfs_h *g)
 {
-  if (g->state == CONFIG) {
-    error (g, _("no subprocess to kill"));
-    return -1;
-  }
-
-  debug (g, "sending SIGTERM to process %d", g->pid);
-
-  if (g->pid > 0) kill (g->pid, SIGTERM);
-  if (g->recoverypid > 0) kill (g->recoverypid, 9);
-
-  return 0;
+  return guestfs__shutdown (g);
 }
 
 /* Access current state. */

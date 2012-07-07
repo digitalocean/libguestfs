@@ -1314,6 +1314,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_device_index (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// convert device to index
+    /// </summary>
+    public int device_index (string device)
+    {
+      int r;
+      r = guestfs_device_index (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string guestfs_df (IntPtr h);
 
     /// <summary>
@@ -4090,6 +4105,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_nr_devices (IntPtr h);
+
+    /// <summary>
+    /// return number of whole block devices (disks) added
+    /// </summary>
+    public int nr_devices ()
+    {
+      int r;
+      r = guestfs_nr_devices (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_ntfs_3g_probe (IntPtr h, bool rw, [In] string device);
 
     /// <summary>
@@ -5204,6 +5234,20 @@ namespace Guestfs
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_shutdown (IntPtr h);
+
+    /// <summary>
+    /// shutdown the qemu subprocess
+    /// </summary>
+    public void shutdown ()
+    {
+      int r;
+      r = guestfs_shutdown (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
     }
 
     [DllImport ("libguestfs.so.0")]

@@ -119,6 +119,7 @@ static int run_get_smp (const char *cmd, size_t argc, char *argv[]);
 static int run_mount_local (const char *cmd, size_t argc, char *argv[]);
 static int run_mount_local_run (const char *cmd, size_t argc, char *argv[]);
 static int run_umount_local (const char *cmd, size_t argc, char *argv[]);
+static int run_shutdown (const char *cmd, size_t argc, char *argv[]);
 static int run_mount (const char *cmd, size_t argc, char *argv[]);
 static int run_sync (const char *cmd, size_t argc, char *argv[]);
 static int run_touch (const char *cmd, size_t argc, char *argv[]);
@@ -450,6 +451,8 @@ static int run_btrfs_device_add (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_device_delete (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_set_seeding (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_fsck (const char *cmd, size_t argc, char *argv[]);
+static int run_device_index (const char *cmd, size_t argc, char *argv[]);
+static int run_nr_devices (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -579,7 +582,7 @@ struct command_entry launch_cmd_entry = {
 
 struct command_entry kill_subprocess_cmd_entry = {
   .name = "kill-subprocess",
-  .help = "NAME\n    kill-subprocess - kill the qemu subprocess\n\nSYNOPSIS\n     kill-subprocess\n\nDESCRIPTION\n    This kills the qemu subprocess. You should never need to call this.\n\n",
+  .help = "NAME\n    kill-subprocess - kill the qemu subprocess\n\nSYNOPSIS\n     kill-subprocess\n\nDESCRIPTION\n    This kills the qemu subprocess.\n\n    Do not call this. See: \"shutdown\" instead.\n\n    *This function is deprecated.* In new code, use the \"shutdown\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_kill_subprocess
 };
 
@@ -1019,6 +1022,12 @@ struct command_entry umount_local_cmd_entry = {
   .name = "umount-local",
   .help = "NAME\n    umount-local - unmount a locally mounted filesystem\n\nSYNOPSIS\n     umount-local\n\nDESCRIPTION\n    If libguestfs is exporting the filesystem on a local mountpoint, then\n    this unmounts it.\n\n    See \"MOUNT LOCAL\" in guestfs(3) for full documentation.\n\n",
   .run = run_umount_local
+};
+
+struct command_entry shutdown_cmd_entry = {
+  .name = "shutdown",
+  .help = "NAME\n    shutdown - shutdown the qemu subprocess\n\nSYNOPSIS\n     shutdown\n\nDESCRIPTION\n    This is the opposite of \"launch\". It performs an orderly shutdown of the\n    backend process(es). If the autosync flag is set (which is the default)\n    then the disk image is synchronized.\n\n    If the subprocess exits with an error then this function will return an\n    error, which should *not* be ignored (it may indicate that the disk\n    image could not be written out properly).\n\n    It is safe to call this multiple times. Extra calls are ignored.\n\n    This call does *not* close or free up the handle. You still need to call\n    \"close\" afterwards.\n\n    \"close\" will call this if you don't do it explicitly, but note that any\n    errors are ignored in that case.\n\n",
+  .run = run_shutdown
 };
 
 struct command_entry mount_cmd_entry = {
@@ -2649,7 +2658,7 @@ struct command_entry is_socket_cmd_entry = {
 
 struct command_entry part_to_dev_cmd_entry = {
   .name = "part-to-dev",
-  .help = "NAME\n    part-to-dev - convert partition name to device name\n\nSYNOPSIS\n     part-to-dev partition\n\nDESCRIPTION\n    This function takes a partition name (eg. \"/dev/sdb1\") and removes the\n    partition number, returning the device name (eg. \"/dev/sdb\").\n\n    The named partition must exist, for example as a string returned from\n    \"list_partitions\".\n\n    See also \"part_to_partnum\".\n\n",
+  .help = "NAME\n    part-to-dev - convert partition name to device name\n\nSYNOPSIS\n     part-to-dev partition\n\nDESCRIPTION\n    This function takes a partition name (eg. \"/dev/sdb1\") and removes the\n    partition number, returning the device name (eg. \"/dev/sdb\").\n\n    The named partition must exist, for example as a string returned from\n    \"list_partitions\".\n\n    See also \"part_to_partnum\", \"device_index\".\n\n",
   .run = run_part_to_dev
 };
 
@@ -3007,6 +3016,18 @@ struct command_entry btrfs_fsck_cmd_entry = {
   .run = run_btrfs_fsck
 };
 
+struct command_entry device_index_cmd_entry = {
+  .name = "device-index",
+  .help = "NAME\n    device-index - convert device to index\n\nSYNOPSIS\n     device-index device\n\nDESCRIPTION\n    This function takes a device name (eg. \"/dev/sdb\") and returns the index\n    of the device in the list of devices.\n\n    Index numbers start from 0. The named device must exist, for example as\n    a string returned from \"list_devices\".\n\n    See also \"list_devices\", \"part_to_dev\".\n\n",
+  .run = run_device_index
+};
+
+struct command_entry nr_devices_cmd_entry = {
+  .name = "nr-devices",
+  .help = "NAME\n    nr-devices - return number of whole block devices (disks) added\n\nSYNOPSIS\n     nr-devices\n\nDESCRIPTION\n    This returns the number of whole block devices that were added. This is\n    the same as the number of devices that would be returned if you called\n    \"list_devices\".\n\n    To find out the maximum number of devices that could be added, call\n    \"max_disks\".\n\n",
+  .run = run_nr_devices
+};
+
 void
 list_commands (void)
 {
@@ -3088,6 +3109,7 @@ list_commands (void)
   printf ("%-20s %s\n", "debug-drives", _("debug the drives (internal use only)"));
   printf ("%-20s %s\n", "debug-upload", _("upload a file to the appliance (internal use only)"));
   printf ("%-20s %s\n", "delete-event", _("delete a previously registered event handler"));
+  printf ("%-20s %s\n", "device-index", _("convert device to index"));
   printf ("%-20s %s\n", "df", _("report file system disk space usage"));
   printf ("%-20s %s\n", "df-h", _("report file system disk space usage (human readable)"));
   printf ("%-20s %s\n", "display", _("display an image"));
@@ -3286,6 +3308,7 @@ list_commands (void)
   printf ("%-20s %s\n", "mountpoints", _("show mountpoints"));
   printf ("%-20s %s\n", "mounts", _("show mounted filesystems"));
   printf ("%-20s %s\n", "mv", _("move a file"));
+  printf ("%-20s %s\n", "nr-devices", _("return number of whole block devices (disks) added"));
   printf ("%-20s %s\n", "ntfs-3g-probe", _("probe NTFS volume"));
   printf ("%-20s %s\n", "ntfsclone-in", _("restore NTFS from backup file"));
   printf ("%-20s %s\n", "ntfsclone-out", _("save NTFS to backup file"));
@@ -3366,6 +3389,7 @@ list_commands (void)
   printf ("%-20s %s\n", "sfdisk-l", _("display the partition table"));
   printf ("%-20s %s\n", "sh", _("run a command via the shell"));
   printf ("%-20s %s\n", "sh-lines", _("run a command via the shell returning lines"));
+  printf ("%-20s %s\n", "shutdown", _("shutdown the qemu subprocess"));
   printf ("%-20s %s\n", "sleep", _("sleep for some seconds"));
   printf ("%-20s %s\n", "sparse", _("create a sparse disk image and add"));
   printf ("%-20s %s\n", "stat", _("get file information"));
@@ -3687,49 +3711,13 @@ print_btrfssubvolume_indent (struct guestfs_btrfssubvolume *btrfssubvolume, cons
 }
 
 static void
-print_lvm_vg_list (struct guestfs_lvm_vg_list *lvm_vgs)
+print_lvm_lv_list (struct guestfs_lvm_lv_list *lvm_lvs)
 {
   unsigned int i;
 
-  for (i = 0; i < lvm_vgs->len; ++i) {
+  for (i = 0; i < lvm_lvs->len; ++i) {
     printf ("[%d] = {\n", i);
-    print_lvm_vg_indent (&lvm_vgs->val[i], "  ");
-    printf ("}\n");
-  }
-}
-
-static void
-print_stat_list (struct guestfs_stat_list *stats)
-{
-  unsigned int i;
-
-  for (i = 0; i < stats->len; ++i) {
-    printf ("[%d] = {\n", i);
-    print_stat_indent (&stats->val[i], "  ");
-    printf ("}\n");
-  }
-}
-
-static void
-print_mdstat_list (struct guestfs_mdstat_list *mdstats)
-{
-  unsigned int i;
-
-  for (i = 0; i < mdstats->len; ++i) {
-    printf ("[%d] = {\n", i);
-    print_mdstat_indent (&mdstats->val[i], "  ");
-    printf ("}\n");
-  }
-}
-
-static void
-print_btrfssubvolume_list (struct guestfs_btrfssubvolume_list *btrfssubvolumes)
-{
-  unsigned int i;
-
-  for (i = 0; i < btrfssubvolumes->len; ++i) {
-    printf ("[%d] = {\n", i);
-    print_btrfssubvolume_indent (&btrfssubvolumes->val[i], "  ");
+    print_lvm_lv_indent (&lvm_lvs->val[i], "  ");
     printf ("}\n");
   }
 }
@@ -3759,13 +3747,25 @@ print_partition_list (struct guestfs_partition_list *partitions)
 }
 
 static void
-print_lvm_lv_list (struct guestfs_lvm_lv_list *lvm_lvs)
+print_inotify_event_list (struct guestfs_inotify_event_list *inotify_events)
 {
   unsigned int i;
 
-  for (i = 0; i < lvm_lvs->len; ++i) {
+  for (i = 0; i < inotify_events->len; ++i) {
     printf ("[%d] = {\n", i);
-    print_lvm_lv_indent (&lvm_lvs->val[i], "  ");
+    print_inotify_event_indent (&inotify_events->val[i], "  ");
+    printf ("}\n");
+  }
+}
+
+static void
+print_application_list (struct guestfs_application_list *applications)
+{
+  unsigned int i;
+
+  for (i = 0; i < applications->len; ++i) {
+    printf ("[%d] = {\n", i);
+    print_application_indent (&applications->val[i], "  ");
     printf ("}\n");
   }
 }
@@ -3795,45 +3795,51 @@ print_lvm_pv_list (struct guestfs_lvm_pv_list *lvm_pvs)
 }
 
 static void
-print_application_list (struct guestfs_application_list *applications)
+print_lvm_vg_list (struct guestfs_lvm_vg_list *lvm_vgs)
 {
   unsigned int i;
 
-  for (i = 0; i < applications->len; ++i) {
+  for (i = 0; i < lvm_vgs->len; ++i) {
     printf ("[%d] = {\n", i);
-    print_application_indent (&applications->val[i], "  ");
+    print_lvm_vg_indent (&lvm_vgs->val[i], "  ");
     printf ("}\n");
   }
 }
 
 static void
-print_inotify_event_list (struct guestfs_inotify_event_list *inotify_events)
+print_btrfssubvolume_list (struct guestfs_btrfssubvolume_list *btrfssubvolumes)
 {
   unsigned int i;
 
-  for (i = 0; i < inotify_events->len; ++i) {
+  for (i = 0; i < btrfssubvolumes->len; ++i) {
     printf ("[%d] = {\n", i);
-    print_inotify_event_indent (&inotify_events->val[i], "  ");
+    print_btrfssubvolume_indent (&btrfssubvolumes->val[i], "  ");
     printf ("}\n");
   }
 }
 
 static void
-print_stat (struct guestfs_stat *stat)
+print_mdstat_list (struct guestfs_mdstat_list *mdstats)
 {
-  print_stat_indent (stat, "");
+  unsigned int i;
+
+  for (i = 0; i < mdstats->len; ++i) {
+    printf ("[%d] = {\n", i);
+    print_mdstat_indent (&mdstats->val[i], "  ");
+    printf ("}\n");
+  }
 }
 
 static void
-print_statvfs (struct guestfs_statvfs *statvfs)
+print_stat_list (struct guestfs_stat_list *stats)
 {
-  print_statvfs_indent (statvfs, "");
-}
+  unsigned int i;
 
-static void
-print_isoinfo (struct guestfs_isoinfo *isoinfo)
-{
-  print_isoinfo_indent (isoinfo, "");
+  for (i = 0; i < stats->len; ++i) {
+    printf ("[%d] = {\n", i);
+    print_stat_indent (&stats->val[i], "  ");
+    printf ("}\n");
+  }
 }
 
 static void
@@ -3846,6 +3852,24 @@ static void
 print_int_bool (struct guestfs_int_bool *int_bool)
 {
   print_int_bool_indent (int_bool, "");
+}
+
+static void
+print_isoinfo (struct guestfs_isoinfo *isoinfo)
+{
+  print_isoinfo_indent (isoinfo, "");
+}
+
+static void
+print_stat (struct guestfs_stat *stat)
+{
+  print_stat_indent (stat, "");
+}
+
+static void
+print_statvfs (struct guestfs_statvfs *statvfs)
+{
+  print_statvfs_indent (statvfs, "");
 }
 
 static int
@@ -5737,6 +5761,25 @@ run_umount_local (const char *cmd, size_t argc, char *argv[])
   }
 
   r = guestfs_umount_local_argv (g, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_shutdown (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_shutdown (g);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -16942,6 +16985,49 @@ run_btrfs_fsck (const char *cmd, size_t argc, char *argv[])
   r = guestfs_btrfs_fsck_argv (g, device, optargs);
   if (r == -1) goto out;
   ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_device_index (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_device_index (g, device);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%d\n", r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_nr_devices (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_nr_devices (g);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%d\n", r);
  out:
  out_noargs:
   return ret;

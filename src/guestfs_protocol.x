@@ -2250,6 +2250,18 @@ struct guestfs_btrfs_fsck_args {
   bool repair;
 };
 
+struct guestfs_device_index_args {
+  string device<>;
+};
+
+struct guestfs_device_index_ret {
+  int index;
+};
+
+struct guestfs_nr_devices_ret {
+  int nrdisks;
+};
+
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
   GUESTFS_PROC_SYNC = 2,
@@ -2583,6 +2595,8 @@ enum guestfs_procedure {
   GUESTFS_PROC_BTRFS_DEVICE_DELETE = 330,
   GUESTFS_PROC_BTRFS_SET_SEEDING = 331,
   GUESTFS_PROC_BTRFS_FSCK = 332,
+  GUESTFS_PROC_DEVICE_INDEX = 335,
+  GUESTFS_PROC_NR_DEVICES = 336,
   GUESTFS_PROC_NR_PROCS
 };
 

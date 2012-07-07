@@ -137,11 +137,13 @@ If you see any calls to this function in code then you can just
 remove them, unless you want to retain compatibility with older
 versions of the API.");
 
-  ("kill_subprocess", (RErr, [], []), -1, [],
+  ("kill_subprocess", (RErr, [], []), -1, [DeprecatedBy "shutdown"],
    [],
    "kill the qemu subprocess",
    "\
-This kills the qemu subprocess.  You should never need to call this.");
+This kills the qemu subprocess.
+
+Do not call this.  See: C<guestfs_shutdown> instead.");
 
   ("add_drive", (RErr, [String "filename"], []), -1, [ConfigOnly],
    [],
@@ -1720,6 +1722,26 @@ If libguestfs is exporting the filesystem on a local
 mountpoint, then this unmounts it.
 
 See L<guestfs(3)/MOUNT LOCAL> for full documentation.");
+
+  ("shutdown", (RErr, [], []), -1, [],
+   [],
+   "shutdown the qemu subprocess",
+   "\
+This is the opposite of C<guestfs_launch>.  It performs an orderly
+shutdown of the backend process(es).  If the autosync flag is set
+(which is the default) then the disk image is synchronized.
+
+If the subprocess exits with an error then this function will return
+an error, which should I<not> be ignored (it may indicate that the
+disk image could not be written out properly).
+
+It is safe to call this multiple times.  Extra calls are ignored.
+
+This call does I<not> close or free up the handle.  You still
+need to call C<guestfs_close> afterwards.
+
+C<guestfs_close> will call this if you don't do it explicitly,
+but note that any errors are ignored in that case.");
 
 ]
 
@@ -6019,7 +6041,7 @@ removes the partition number, returning the device name
 The named partition must exist, for example as a string returned
 from C<guestfs_list_partitions>.
 
-See also C<guestfs_part_to_partnum>.");
+See also C<guestfs_part_to_partnum>, C<guestfs_device_index>.");
 
   ("upload_offset", (RErr, [FileIn "filename"; Dev_or_Path "remotefilename"; Int64 "offset"], []), 273,
    [Progress; Cancellable],
@@ -7239,6 +7261,31 @@ a btrfs filesystem.");
    "\
 Used to check a btrfs filesystem, C<device> is the device file where the
 filesystem is stored.");
+
+  ("device_index", (RInt "index", [Device "device"], []), 335, [],
+   [InitEmpty, Always, TestOutputInt (
+      [["device_index"; "/dev/sda"]], 0)],
+   "convert device to index",
+   "\
+This function takes a device name (eg. \"/dev/sdb\") and
+returns the index of the device in the list of devices.
+
+Index numbers start from 0.  The named device must exist,
+for example as a string returned from C<guestfs_list_devices>.
+
+See also C<guestfs_list_devices>, C<guestfs_part_to_dev>.");
+
+  ("nr_devices", (RInt "nrdisks", [], []), 336, [],
+   [InitEmpty, Always, TestOutputInt (
+      [["nr_devices"]], 4)],
+   "return number of whole block devices (disks) added",
+   "\
+This returns the number of whole block devices that were
+added.  This is the same as the number of devices that would
+be returned if you called C<guestfs_list_devices>.
+
+To find out the maximum number of devices that could be added,
+call C<guestfs_max_disks>.");
 
 ]
 

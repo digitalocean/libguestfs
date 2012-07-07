@@ -491,6 +491,7 @@ guestfs_session_debug
 guestfs_session_debug_cmdline
 guestfs_session_debug_drives
 guestfs_session_debug_upload
+guestfs_session_device_index
 guestfs_session_df
 guestfs_session_df_h
 guestfs_session_dmesg
@@ -680,6 +681,7 @@ guestfs_session_mountpoints
 guestfs_session_mounts
 guestfs_session_mv
 guestfs_session_new
+guestfs_session_nr_devices
 guestfs_session_ntfs_3g_probe
 guestfs_session_ntfsclone_in
 guestfs_session_ntfsclone_out
@@ -758,6 +760,7 @@ guestfs_session_sfdisk_kernel_geometry
 guestfs_session_sfdisk_l
 guestfs_session_sh
 guestfs_session_sh_lines
+guestfs_session_shutdown
 guestfs_session_sleep
 guestfs_session_stat
 guestfs_session_statvfs

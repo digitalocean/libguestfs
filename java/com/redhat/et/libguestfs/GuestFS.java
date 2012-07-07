@@ -459,8 +459,16 @@ public class GuestFS {
   /**
    * kill the qemu subprocess
    * <p>
-   * This kills the qemu subprocess. You should never need to
-   * call this.
+   * This kills the qemu subprocess.
+   * <p>
+   * Do not call this. See: "g.shutdown" instead.
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "shutdown" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -3055,6 +3063,42 @@ public class GuestFS {
   }
 
   private native void _umount_local (long g, long _optargs_bitmask, boolean retry)
+    throws LibGuestFSException;
+
+  /**
+   * shutdown the qemu subprocess
+   * <p>
+   * This is the opposite of "g.launch". It performs an
+   * orderly shutdown of the backend process(es). If the
+   * autosync flag is set (which is the default) then the
+   * disk image is synchronized.
+   * <p>
+   * If the subprocess exits with an error then this function
+   * will return an error, which should *not* be ignored (it
+   * may indicate that the disk image could not be written
+   * out properly).
+   * <p>
+   * It is safe to call this multiple times. Extra calls are
+   * ignored.
+   * <p>
+   * This call does *not* close or free up the handle. You
+   * still need to call "g.close" afterwards.
+   * <p>
+   * "g.close" will call this if you don't do it explicitly,
+   * but note that any errors are ignored in that case.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void shutdown ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("shutdown: handle is closed");
+
+    _shutdown (g);
+  }
+
+  private native void _shutdown (long g)
     throws LibGuestFSException;
 
   /**
@@ -10088,7 +10132,7 @@ public class GuestFS {
    * The named partition must exist, for example as a string
    * returned from "g.list_partitions".
    * <p>
-   * See also "g.part_to_partnum".
+   * See also "g.part_to_partnum", "g.device_index".
    * <p>
    * @throws LibGuestFSException
    */
@@ -12494,6 +12538,55 @@ public class GuestFS {
   }
 
   private native void _btrfs_fsck (long g, String device, long _optargs_bitmask, long superblock, boolean repair)
+    throws LibGuestFSException;
+
+  /**
+   * convert device to index
+   * <p>
+   * This function takes a device name (eg. "/dev/sdb") and
+   * returns the index of the device in the list of devices.
+   * <p>
+   * Index numbers start from 0. The named device must exist,
+   * for example as a string returned from "g.list_devices".
+   * <p>
+   * See also "g.list_devices", "g.part_to_dev".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public int device_index (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("device_index: handle is closed");
+
+    return _device_index (g, device);
+  }
+
+  private native int _device_index (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * return number of whole block devices (disks) added
+   * <p>
+   * This returns the number of whole block devices that were
+   * added. This is the same as the number of devices that
+   * would be returned if you called "g.list_devices".
+   * <p>
+   * To find out the maximum number of devices that could be
+   * added, call "g.max_disks".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public int nr_devices ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("nr_devices: handle is closed");
+
+    return _nr_devices (g);
+  }
+
+  private native int _nr_devices (long g)
     throws LibGuestFSException;
 
 }

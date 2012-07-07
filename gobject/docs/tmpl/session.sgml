@@ -973,6 +973,17 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_device_index ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_df ##### -->
 <para>
 
@@ -3119,6 +3130,16 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_nr_devices ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_ntfs_3g_probe ##### -->
 <para>
 
@@ -4029,6 +4050,16 @@ GuestfsSession
 
 @session: 
 @command: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_shutdown ##### -->
+<para>
+
+</para>
+
+@session: 
 @err: 
 @Returns: 
 

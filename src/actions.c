@@ -4291,6 +4291,40 @@ guestfs_umount_local_argv (guestfs_h *g,
 }
 
 int
+guestfs_shutdown (guestfs_h *g)
+{
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  int r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "shutdown", 8);
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s", "shutdown");
+    trace_send_line (g);
+  }
+
+  r = guestfs__shutdown (g);
+
+  if (r != -1) {
+    if (trace_flag) {
+      trace_fp = trace_open (g);
+      fprintf (trace_fp, "%s = ", "shutdown");
+      fprintf (trace_fp, "%d", r);
+      trace_send_line (g);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "shutdown", "-1");
+  }
+
+  return r;
+}
+
+int
 guestfs_mount (guestfs_h *g,
                const char *device,
                const char *mountpoint)
@@ -38454,6 +38488,187 @@ guestfs_btrfs_fsck_argv (guestfs_h *g,
   if (trace_flag) {
     trace_fp = trace_open (g);
     fprintf (trace_fp, "%s = ", "btrfs_fsck");
+    fprintf (trace_fp, "%d", ret_v);
+    trace_send_line (g);
+  }
+
+  return ret_v;
+}
+
+int
+guestfs_device_index (guestfs_h *g,
+                      const char *device)
+{
+  struct guestfs_device_index_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_device_index_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "device_index", 12);
+  if (device == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "device_index", "device");
+    return -1;
+  }
+
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s", "device_index");
+    fprintf (trace_fp, " \"%s\"", device);
+    trace_send_line (g);
+  }
+
+  if (check_appliance_up (g, "device_index") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "device_index", "-1");
+    return -1;
+  }
+
+  args.device = (char *) device;
+  serial = guestfs___send (g, GUESTFS_PROC_DEVICE_INDEX,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_device_index_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "device_index", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "device_index", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_device_index_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "device_index", "-1");
+    return -1;
+  }
+
+  if (check_reply_header (g, &hdr, GUESTFS_PROC_DEVICE_INDEX, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "device_index", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "device_index", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "device_index", err.error_message);
+    else
+      guestfs_error_errno (g, errnum, "%s: %s", "device_index",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = ret.index;
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s = ", "device_index");
+    fprintf (trace_fp, "%d", ret_v);
+    trace_send_line (g);
+  }
+
+  return ret_v;
+}
+
+int
+guestfs_nr_devices (guestfs_h *g)
+{
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_nr_devices_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "nr_devices", 10);
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s", "nr_devices");
+    trace_send_line (g);
+  }
+
+  if (check_appliance_up (g, "nr_devices") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "nr_devices", "-1");
+    return -1;
+  }
+
+  serial = guestfs___send (g, GUESTFS_PROC_NR_DEVICES, progress_hint, 0,
+                           NULL, NULL);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "nr_devices", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "nr_devices", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_nr_devices_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "nr_devices", "-1");
+    return -1;
+  }
+
+  if (check_reply_header (g, &hdr, GUESTFS_PROC_NR_DEVICES, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "nr_devices", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "nr_devices", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "nr_devices", err.error_message);
+    else
+      guestfs_error_errno (g, errnum, "%s: %s", "nr_devices",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = ret.nrdisks;
+  if (trace_flag) {
+    trace_fp = trace_open (g);
+    fprintf (trace_fp, "%s = ", "nr_devices");
     fprintf (trace_fp, "%d", ret_v);
     trace_send_line (g);
   }

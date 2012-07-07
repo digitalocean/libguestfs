@@ -13,6 +13,7 @@ guestfs - 仮想マシンイメージのアクセスまたは変更のための�
  guestfs_mount (g, "/dev/sda1", "/");
  guestfs_touch (g, "/hello");
  guestfs_umount (g, "/");
+ guestfs_shutdown (g);
  guestfs_close (g);
 
  cc prog.c -o prog -lguestfs
@@ -77,13 +78,10 @@ libguestfs を使用しているすべてのプログラムの一般的な構造
   */
  guestfs_touch (g, "/hello");
  
- /* これは libguestfs < 1.5.24 に対してのみ必要にです。
-  * それ以降はハンドルを閉じるときに自動的に実行されます。
-  * このページにある自動同期の議論を参照してください。
-  */
- guestfs_sync (g);
+ /* Synchronize the disk.  This is the opposite of guestfs_launch. */
+ guestfs_shutdown (g);
  
- /* 'g' を閉じます。 */
+ /* Close and free the handle 'g'. */
  guestfs_close (g);
 
 上のコードは何もエラーチェックを含めていません。実際のコードにおいては、エラーに対して返り値を注意深く確認すべきです。一般的に、整数を返すすべての関数はエラーのときに
@@ -1298,13 +1296,38 @@ L</ERROR HANDLING> section below.
 
  void guestfs_close (guestfs_h *g);
 
-これにより、接続ハンドルを閉じ、すべての使用資源を解放します。
+This closes the connection handle and frees up all resources used.  If a
+close callback was set on the handle, then it is called.
 
-If autosync was set on the handle and the handle was launched, then this
-implicitly calls various functions to unmount filesystems and sync the
-disk.  See L</guestfs_set_autosync> for more details.
+The correct way to close the handle is:
 
-If a close callback was set on the handle, then it is called.
+ if (guestfs_shutdown (g) == -1) {
+   /* handle write errors here */
+ }
+ guestfs_close (g);
+
+L</guestfs_shutdown> is only needed if B<all> of the following are true:
+
+=over 4
+
+=item 1
+
+one or more disks were added in read-write mode, I<and>
+
+=item 2
+
+guestfs_launch was called, I<and>
+
+=item 3
+
+you made some changes, I<and>
+
+=item 4
+
+you have a way to handle write errors (eg. by exiting with an error code or
+reporting something to the user).
+
+=back
 
 =head1 エラー処理
 

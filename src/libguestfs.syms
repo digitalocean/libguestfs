@@ -117,6 +117,7 @@
         guestfs_debug_drives;
         guestfs_debug_upload;
         guestfs_delete_event_callback;
+        guestfs_device_index;
         guestfs_df;
         guestfs_df_h;
         guestfs_dmesg;
@@ -357,6 +358,7 @@
         guestfs_mounts;
         guestfs_mv;
         guestfs_next_private;
+        guestfs_nr_devices;
         guestfs_ntfs_3g_probe;
         guestfs_ntfsclone_in;
         guestfs_ntfsclone_out;
@@ -456,6 +458,7 @@
         guestfs_sfdisk_l;
         guestfs_sh;
         guestfs_sh_lines;
+        guestfs_shutdown;
         guestfs_sleep;
         guestfs_stat;
         guestfs_statvfs;

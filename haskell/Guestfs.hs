@@ -59,6 +59,7 @@ module Guestfs (
   set_smp,
   get_smp,
   mount_local_run,
+  shutdown,
   mount,
   sync,
   touch,
@@ -250,7 +251,9 @@ module Guestfs (
   btrfs_filesystem_balance,
   btrfs_device_add,
   btrfs_device_delete,
-  btrfs_set_seeding
+  btrfs_set_seeding,
+  device_index,
+  nr_devices
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -709,6 +712,18 @@ foreign import ccall unsafe "guestfs_mount_local_run" c_mount_local_run
 mount_local_run :: GuestfsH -> IO ()
 mount_local_run h = do
   r <- withForeignPtr h (\p -> c_mount_local_run p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_shutdown" c_shutdown
+  :: GuestfsP -> IO (CInt)
+
+shutdown :: GuestfsH -> IO ()
+shutdown h = do
+  r <- withForeignPtr h (\p -> c_shutdown p)
   if (r == -1)
     then do
       err <- last_error h
@@ -3018,4 +3033,28 @@ btrfs_set_seeding h device seeding = do
       err <- last_error h
       fail err
     else return ()
+
+foreign import ccall unsafe "guestfs_device_index" c_device_index
+  :: GuestfsP -> CString -> IO (CInt)
+
+device_index :: GuestfsH -> String -> IO (Int)
+device_index h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_device_index p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs_nr_devices" c_nr_devices
+  :: GuestfsP -> IO (CInt)
+
+nr_devices :: GuestfsH -> IO (Int)
+nr_devices h = do
+  r <- withForeignPtr h (\p -> c_nr_devices p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
 

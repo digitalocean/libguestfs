@@ -1,3 +1,232 @@
+2012-07-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.18.4.
+
+	Update gnulib to latest version.
+	(cherry picked from commit 1596b6026ddd1e343efc6a74fc23f46e4975868f)
+
+2012-07-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: Correction in comment.
+	https://bugs.launchpad.net/qemu/+bug/1021649 is invalid, probably
+	caused by a Fedora ROM.
+
+	This updates commit 52d188e32fb8addb45bf926df07e34ab35898f85.
+	(cherry picked from commit 6e5a85bb9b6557bc337625a339728e23f5f2dd94)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Calling Gc.compact before g#mount_local works around RHBZ#838081. (cherry picked from commit ad7c4498f66f37c4219242c6df04d28e9ee7877f)
+
+	qemu: Use sgabios by default (thanks Dan Berrange). (cherry picked from commit 52d188e32fb8addb45bf926df07e34ab35898f85)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	qemu or qemu-kvm >= 1.1.0 is highly recommended required.
+	Earlier versions of qemu contained a bug in the qcow2 code which
+	causes qemu to segfault when shutting down and flushing its internal
+	cache, and this can result in data loss.
+
+	Cherry picked from commit 7996e0882442dc7bac2ab573e2fcac0b488c8cc7
+	and changed to suit stable-1.18 releases.
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	New API: guestfs_shutdown: Cleanly shutdown the backend.
+	The new API splits orderly close into a two-step process:
+
+	  if (guestfs_shutdown (g) == -1) {
+	    /* handle the error, eg. qemu error */
+	  }
+	  guestfs_close (g);
+
+	Note that the explicit shutdown step is only necessary in the case
+	where you have made changes to the disk image and want to handle write
+	errors.  Read the documentation for further information.
+
+	This change also:
+
+	 - deprecates guestfs_kill_subprocess
+
+	 - turns guestfs_kill_subprocess into the same as guestfs_shutdown
+
+	 - changes guestfish and other tools to call shutdown + close
+	   where necessary (not for read-only tools)
+
+	 - updates documentation
+
+	 - updates examples
+
+	(cherry picked from commit ffbf1475f7ae7c462db289ad4834391469e72edd)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	close: Warn if qemu exits unsuccessfully.
+	Currently guestfs_close has no method to return an error indication,
+	so this commit simply prints the error on stderr.
+	(cherry picked from commit bcc4ffb52b9f4b5db7861682905ec32844f4603b)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	close: Rearrange the order in which the handle is closed and freed.
+	The order is now:
+
+	 - remove the handle from the list of handles
+	 - send close trace message
+	 - sync and shutdown qemu
+	 - run user close callback
+	 - free temporary directory
+	 - free memory
+
+	This commit ought to be no functional change.
+	(cherry picked from commit fc3c6fff4b0a6ffeb75aa78b1d73241a14a03cd1)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	perl, python, ruby: Fix comments on call to close method.
+	Make the comments consistent.
+
+	Also make the Perl example call $g->close explicitly so it is
+	consistent with the other examples.
+	(cherry picked from commit 27ebf517fae972eee49ae5911a03fabe5f4b6e54)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	examples: In create_disk example, don't call set_autosync.
+	This is now set by default in all supported versions of libguestfs.
+	It's just confusing if the examples refer to it.
+	(cherry picked from commit 917550a117904ec1a06b77a7870a147014d71adb)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Run fsync on block devices after sync (RHBZ#836710).
+	On Linux, sync(2) does not actually issue a write barrier, thus it
+	doesn't force a flush of the underlying hardware write cache (or
+	qemu's disk cache in the virtual case).
+
+	This can be a problem, because libguestfs relies on running sync in
+	the appliance, followed by killing qemu (using SIGTERM).
+
+	In most cases, this is fine, because killing qemu with SIGTERM should
+	cause it to flush out the disk cache before it exits.  However we have
+	found various bugs in qemu which cause qemu to crash while doing the
+	flush, leaving the data unwritten (see RHBZ#836913).
+
+	The solution is to issue fsync(2) to the block devices.  This has a
+	write barrier, so it ensures that qemu writes out its cache long
+	before we get around to killing qemu.
+	(cherry picked from commit c0a3c9ce70b98171e737e49e6dccc4457963f2ec)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Code tidy up in devsparts.
+	No functional change.
+	(cherry picked from commit cb24ceedd8a8ef7da71cfcce6db10669de47685c)
+
+	Add notes about how qemu cache=none works internally.
+	This is just a comment and has no functional effect.
+	(cherry picked from commit 0437a7905619b8370e25fbae1a3e6388c5277be9)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	Rename qemu option cache=off to cache=none.
+	Note that qemu treats these identically, so this change has
+	no functional effect.
+
+	(cherry picked from commit 1608ca182b094a1dbe22094f39a5e86f18f728b7)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Update paths to udevd.
+	systemd is playing a WTF game with udevd, moving it around and
+	renaming it unnecessarily in each release.  Chase all known locations.
+	(cherry picked from commit 906f8e3ae24a084d9a70d33d84c0ce29bdafa79c)
+
+	appliance: Update comment to note that systemd package now contains udevd. (cherry picked from commit 100271c7bc00a1f9baacd8c56b43e156b736fc12)
+
+	tests: Add a test of /dev/disk/by-id paths (RHBZ#627675). (cherry picked from commit 5489304c8d2836713ec58051c24514eba22b8c94)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Use qemu-img to create an overlay for testing, instead of copying.
+	Replace:
+
+	  cp tests/guests/fedora.img test.img
+
+	with the longer but possibly more space-efficient equivalent:
+
+	  qemu-img create -F raw -b tests/guests/fedora.img -f qcow2 test.qcow2
+	(cherry picked from commit 339f3647f889424af2a2256c4fcad0b44982c275)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspect: Check partition exists when doing fstab mapping.
+	If the partition name we're about to return doesn't really exist,
+	then don't perform the mapping.
+	(cherry picked from commit ea8421c5d297698856a87c2cfe4a6b42796175a8)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspect: Guess device name from /dev/disk/by-id/*-partN path (RHBZ#627675).
+	See https://bugzilla.redhat.com/show_bug.cgi?id=836573#c3
+	for an explanation.
+
+	Useful function 'is_partition' shows how to tell if a device name
+	represents a partition.
+	(cherry picked from commit 7eaa99994ebd354f4b078d4068695984989a907f)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	New API: guestfs_nr_devices
+	This returns the number of whole block devices added.  It is usually
+	simpler to call this than to list the devices and count them, which
+	is what we do in some places in the current codebase.
+
+	(cherry picked from commit 152b179a19e43fcb0baec65ea65d394ee1dba891)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	New API: device-index.
+	This returns the index of the device, eg. /dev/sdb => 1.
+	Or you can think of it as the order that the device was
+	added, or the index of the device in guestfs_list_devices.
+
+	(cherry picked from commit a9d7d044f552855a7ef78d953c0c2672e35bfc80)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspect: Refactor resolve_fstab_device code into multiple functions.
+	This is mostly code motion, although it also fixes a memory leak in an
+	extremely rare failure case, and it generally tidies up the existing
+	code.
+	(cherry picked from commit 47b8225b05a7e35411f954f61f3eb3115c5a9f45)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	ruby: Fix detection of library (thanks Hilko Bengen).
+	On Debian, the Ruby C extensions library isn't '-lruby', it's
+	something like '-lruby1.8' or '-lruby-1.9.1' and these can even be
+	parallel-installed.
+
+	Fix detection so we use Ruby's own rbconfig.rb file to find the right
+	library to use.
+	(cherry picked from commit cba49169094f04dead9b165b6b5991afa92132ff)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	ruby: Changing spacing in configure file.
+	No functional change.
+	(cherry picked from commit b07d0968823d008776345a1c724713d2320e1571)
+
+	ruby: Remove useless AC_SUBST in configure file. (cherry picked from commit b9f858e5eefa0d2abae5ff0a61a39b0d34334bc1)
+
+2012-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	run: Rearrangement and add comments.
+	No functional change.
+
+	(cherry picked from commit 2d56e5af900662ea0a13e9e8ea4a802609214ecc)
+
 2012-06-28  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.18.3.

@@ -178,6 +178,19 @@ guestfs_close (guestfs_h *g)
     return;
   }
 
+  /* Remove the handle from the handles list. */
+  gl_lock_lock (handles_lock);
+  if (handles == g)
+    handles = g->next;
+  else {
+    guestfs_h *gg;
+
+    for (gg = handles; gg->next != g; gg = gg->next)
+      ;
+    gg->next = g->next;
+  }
+  gl_lock_unlock (handles_lock);
+
   if (g->trace) {
     const char trace_msg[] = "close";
 
@@ -187,10 +200,6 @@ guestfs_close (guestfs_h *g)
 
   debug (g, "closing guestfs handle %p (state %d)", g, g->state);
 
-  /* Try to sync if autosync flag is set. */
-  if (g->autosync && g->state == READY)
-    ignore_value (guestfs_internal_autosync (g));
-
   /* If we are valgrinding the daemon, then we *don't* want to kill
    * the subprocess because we want the final valgrind messages sent
    * when we close sockets below.  However for normal production use,
@@ -198,23 +207,72 @@ guestfs_close (guestfs_h *g)
    * daemon or qemu is not responding).
    */
 #ifndef VALGRIND_DAEMON
-  /* Kill the qemu subprocess. */
   if (g->state != CONFIG)
-    ignore_value (guestfs_kill_subprocess (g));
+    ignore_value (guestfs_shutdown (g));
 #endif
 
   /* Run user close callbacks. */
   guestfs___call_callbacks_void (g, GUESTFS_EVENT_CLOSE);
 
-  /* Remove all other registered callbacks.  Since we've already
-   * called the close callbacks, we shouldn't call any others.
-   */
+  /* Remove whole temporary directory. */
+  guestfs___remove_tmpdir (g->tmpdir);
+
+  /* Mark the handle as dead and then free up all memory. */
+  g->state = NO_HANDLE;
+
   free (g->events);
   g->nr_events = 0;
   g->events = NULL;
 
+#if HAVE_FUSE
+  guestfs___free_fuse (g);
+#endif
+
   guestfs___free_inspect_info (g);
   guestfs___free_drives (&g->drives);
+
+  if (g->cmdline) {
+    size_t i;
+
+    for (i = 0; i < g->cmdline_size; ++i)
+      free (g->cmdline[i]);
+    free (g->cmdline);
+  }
+
+  if (g->pda)
+    hash_free (g->pda);
+  free (g->tmpdir);
+  free (g->last_error);
+  free (g->path);
+  free (g->qemu);
+  free (g->append);
+  free (g->qemu_help);
+  free (g->qemu_version);
+  free (g);
+}
+
+/* Shutdown the backend. */
+int
+guestfs__shutdown (guestfs_h *g)
+{
+  int ret = 0;
+  int status, sig;
+
+  if (g->state == CONFIG)
+    return 0;
+
+  /* Try to sync if autosync flag is set. */
+  if (g->autosync && g->state == READY) {
+    if (guestfs_internal_autosync (g) == -1)
+      ret = -1;
+  }
+
+  /* Signal qemu to shutdown cleanly, and kill the recovery process. */
+  if (g->pid > 0) {
+    debug (g, "sending SIGTERM to process %d", g->pid);
+    kill (g->pid, SIGTERM);
+  }
+  if (g->recoverypid > 0) kill (g->recoverypid, 9);
 
   /* Close sockets. */
   if (g->fd[0] >= 0)
@@ -228,49 +286,32 @@ guestfs_close (guestfs_h *g)
   g->sock = -1;
 
   /* Wait for subprocess(es) to exit. */
-  if (g->pid > 0) waitpid (g->pid, NULL, 0);
+  if (g->pid > 0) {
+    if (waitpid (g->pid, &status, 0) == -1) {
+      perrorf (g, "waitpid (qemu)");
+      ret = -1;
+    }
+    else if (WIFEXITED (status) && WEXITSTATUS (status) != 0) {
+      error (g, "qemu failed (status %d)", WEXITSTATUS (status));
+      ret = -1;
+    }
+    else if (WIFSIGNALED (status)) {
+      sig = WTERMSIG (status);
+      error (g, "qemu terminated by signal %d (%s)", sig, strsignal (sig));
+      ret = -1;
+    }
+    else if (WIFSTOPPED (status)) {
+      sig = WSTOPSIG (status);
+      error (g, "qemu stopped by signal %d (%s)", sig, strsignal (sig));
+      ret = -1;
+    }
+  }
   if (g->recoverypid > 0) waitpid (g->recoverypid, NULL, 0);
 
-  /* Remove whole temporary directory. */
-  guestfs___remove_tmpdir (g->tmpdir);
-  free (g->tmpdir);
+  g->pid = g->recoverypid = 0;
+  g->state = CONFIG;
 
-  if (g->cmdline) {
-    size_t i;
-
-    for (i = 0; i < g->cmdline_size; ++i)
-      free (g->cmdline[i]);
-    free (g->cmdline);
-  }
-
-  /* Mark the handle as dead before freeing it. */
-  g->state = NO_HANDLE;
-
-  gl_lock_lock (handles_lock);
-  if (handles == g)
-    handles = g->next;
-  else {
-    guestfs_h *gg;
-
-    for (gg = handles; gg->next != g; gg = gg->next)
-      ;
-    gg->next = g->next;
-  }
-  gl_lock_unlock (handles_lock);
-
-#if HAVE_FUSE
-  guestfs___free_fuse (g);
-#endif
-
-  if (g->pda)
-    hash_free (g->pda);
-  free (g->last_error);
-  free (g->path);
-  free (g->qemu);
-  free (g->append);
-  free (g->qemu_help);
-  free (g->qemu_version);
-  free (g);
+  return ret;
 }
 
 /* Close all open handles (called from atexit(3)). */

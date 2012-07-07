@@ -1039,6 +1039,18 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+=head2 device-index
+
+ device-index device
+
+This function takes a device name (eg. "/dev/sdb") and returns the index of
+the device in the list of devices.
+
+Index numbers start from 0.  The named device must exist, for example as a
+string returned from L</list-devices>.
+
+See also L</list-devices>, L</part-to-dev>.
+
 =head2 df
 
  df
@@ -2844,7 +2856,16 @@ L<http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor>
 
  kill-subprocess
 
-This kills the qemu subprocess.  You should never need to call this.
+This kills the qemu subprocess.
+
+Do not call this.  See: L</shutdown> instead.
+
+I<This function is deprecated.> In new code, use the L</shutdown> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 launch
 
@@ -3910,6 +3931,17 @@ Some internal mounts are not shown.
 This moves a file from C<src> to C<dest> where C<dest> is either a
 destination filename or destination directory.
 
+=head2 nr-devices
+
+ nr-devices
+
+This returns the number of whole block devices that were added.  This is the
+same as the number of devices that would be returned if you called
+L</list-devices>.
+
+To find out the maximum number of devices that could be added, call
+L</max-disks>.
+
 =head2 ntfs-3g-probe
 
  ntfs-3g-probe true|false device
@@ -4261,7 +4293,7 @@ partition number, returning the device name (eg. "/dev/sdb").
 The named partition must exist, for example as a string returned from
 L</list-partitions>.
 
-Див. також L</part-to-partnum>.
+See also L</part-to-partnum>, L</device-index>.
 
 =head2 part-to-partnum
 
@@ -5073,6 +5105,26 @@ All the provisos about L</command> apply to this call.
 This is the same as L</sh>, but splits the result into a list of lines.
 
 Див. також L</command-lines>
+
+=head2 shutdown
+
+ shutdown
+
+This is the opposite of L</launch>.  It performs an orderly shutdown of the
+backend process(es).  If the autosync flag is set (which is the default)
+then the disk image is synchronized.
+
+If the subprocess exits with an error then this function will return an
+error, which should I<not> be ignored (it may indicate that the disk image
+could not be written out properly).
+
+It is safe to call this multiple times.  Extra calls are ignored.
+
+This call does I<not> close or free up the handle.  You still need to call
+L</close> afterwards.
+
+L</close> will call this if you don't do it explicitly, but note that any
+errors are ignored in that case.
 
 =head2 sleep
 

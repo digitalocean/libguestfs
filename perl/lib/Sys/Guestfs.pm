@@ -85,7 +85,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.332';
+$VERSION = '0.336';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -1170,6 +1170,16 @@ In new code, use the L</copy_device_to_device> call instead.
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
+
+=item $index = $h->device_index ($device);
+
+This function takes a device name (eg. "/dev/sdb") and
+returns the index of the device in the list of devices.
+
+Index numbers start from 0.  The named device must exist,
+for example as a string returned from C<$h-E<gt>list_devices>.
+
+See also C<$h-E<gt>list_devices>, C<$h-E<gt>part_to_dev>.
 
 =item $output = $h->df ();
 
@@ -2844,7 +2854,16 @@ L<http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor>
 
 =item $h->kill_subprocess ();
 
-This kills the qemu subprocess.  You should never need to call this.
+This kills the qemu subprocess.
+
+Do not call this.  See: C<$h-E<gt>shutdown> instead.
+
+I<This function is deprecated.>
+In new code, use the L</shutdown> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $h->launch ();
 
@@ -3768,6 +3787,15 @@ See also: C<$h-E<gt>mountpoints>
 This moves a file from C<src> to C<dest> where C<dest> is
 either a destination filename or destination directory.
 
+=item $nrdisks = $h->nr_devices ();
+
+This returns the number of whole block devices that were
+added.  This is the same as the number of devices that would
+be returned if you called C<$h-E<gt>list_devices>.
+
+To find out the maximum number of devices that could be added,
+call C<$h-E<gt>max_disks>.
+
 =item $status = $h->ntfs_3g_probe ($rw, $device);
 
 This command runs the L<ntfs-3g.probe(8)> command which probes
@@ -4082,7 +4110,7 @@ removes the partition number, returning the device name
 The named partition must exist, for example as a string returned
 from C<$h-E<gt>list_partitions>.
 
-See also C<$h-E<gt>part_to_partnum>.
+See also C<$h-E<gt>part_to_partnum>, C<$h-E<gt>device_index>.
 
 =item $partnum = $h->part_to_partnum ($partition);
 
@@ -4787,6 +4815,24 @@ This is the same as C<$h-E<gt>sh>, but splits the result
 into a list of lines.
 
 See also: C<$h-E<gt>command_lines>
+
+=item $h->shutdown ();
+
+This is the opposite of C<$h-E<gt>launch>.  It performs an orderly
+shutdown of the backend process(es).  If the autosync flag is set
+(which is the default) then the disk image is synchronized.
+
+If the subprocess exits with an error then this function will return
+an error, which should I<not> be ignored (it may indicate that the
+disk image could not be written out properly).
+
+It is safe to call this multiple times.  Extra calls are ignored.
+
+This call does I<not> close or free up the handle.  You still
+need to call C<$h-E<gt>close> afterwards.
+
+C<$h-E<gt>close> will call this if you don't do it explicitly,
+but note that any errors are ignored in that case.
 
 =item $h->sleep ($secs);
 
@@ -6182,6 +6228,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "debug_upload",
     description => "upload a file to the appliance (internal use only)",
+  },
+  "device_index" => {
+    ret => 'int',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "device_index",
+    description => "convert device to index",
   },
   "df" => {
     ret => 'string',
@@ -7789,6 +7843,13 @@ use vars qw(%guestfs_introspection);
     name => "mv",
     description => "move a file",
   },
+  "nr_devices" => {
+    ret => 'int',
+    args => [
+    ],
+    name => "nr_devices",
+    description => "return number of whole block devices (disks) added",
+  },
   "ntfs_3g_probe" => {
     ret => 'int',
     args => [
@@ -8474,6 +8535,13 @@ use vars qw(%guestfs_introspection);
     ],
     name => "sh_lines",
     description => "run a command via the shell returning lines",
+  },
+  "shutdown" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "shutdown",
+    description => "shutdown the qemu subprocess",
   },
   "sleep" => {
     ret => 'void',

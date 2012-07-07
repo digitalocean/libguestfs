@@ -12548,6 +12548,63 @@ done_no_free:
   return;
 }
 
+static void
+device_index_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_device_index_args args;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_device_index_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  char *device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+
+  r = do_device_index (device);
+  if (r == -1)
+    /* do_device_index has already called reply_with_error */
+    goto done;
+
+  struct guestfs_device_index_ret ret;
+  ret.index = r;
+  reply ((xdrproc_t) &xdr_guestfs_device_index_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_device_index_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+nr_devices_stub (XDR *xdr_in)
+{
+  int r;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_nr_devices ();
+  if (r == -1)
+    /* do_nr_devices has already called reply_with_error */
+    goto done;
+
+  struct guestfs_nr_devices_ret ret;
+  ret.nrdisks = r;
+  reply ((xdrproc_t) &xdr_guestfs_nr_devices_ret, (char *) &ret);
+done:
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -13546,6 +13603,12 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_BTRFS_FSCK:
       btrfs_fsck_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_DEVICE_INDEX:
+      device_index_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_NR_DEVICES:
+      nr_devices_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

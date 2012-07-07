@@ -17,10 +17,6 @@ close FILE or die "$output: $!";
 # Set the trace flag so that we can see each libguestfs call.
 $g->set_trace (1);
 
-# Set the autosync flag so that the disk will be synchronized
-# automatically when the libguestfs handle is closed.
-$g->set_autosync (1);
-
 # Attach the disk image to libguestfs.
 $g->add_drive_opts ($output, format => "raw", readonly => 0);
 
@@ -61,7 +57,12 @@ $g->mkdir ("/foo");
 # the disk image.
 $g->upload ("/etc/resolv.conf", "/foo/resolv.conf");
 
-# Because 'autosync' was set (above) we can just exit here
-# and the disk contents will be synchronized.  You can also do
-# this manually by calling $g->umount_all and $g->sync.
-exit 0
+# Because we wrote to the disk and we want to detect write
+# errors, call $g->shutdown.  You don't need to do this:
+# $g->close will do it implicitly.
+$g->shutdown ();
+
+# Note also that handles are automatically closed if they are
+# reaped by reference counting.  You only need to call close
+# if you want to close the handle right away.
+$g->close ();

@@ -128,6 +128,7 @@
     <keyword type="function" name="guestfs_session_debug_cmdline ()" link="GuestfsSession.html#guestfs-session-debug-cmdline"/>
     <keyword type="function" name="guestfs_session_debug_drives ()" link="GuestfsSession.html#guestfs-session-debug-drives"/>
     <keyword type="function" name="guestfs_session_debug_upload ()" link="GuestfsSession.html#guestfs-session-debug-upload"/>
+    <keyword type="function" name="guestfs_session_device_index ()" link="GuestfsSession.html#guestfs-session-device-index"/>
     <keyword type="function" name="guestfs_session_df ()" link="GuestfsSession.html#guestfs-session-df"/>
     <keyword type="function" name="guestfs_session_df_h ()" link="GuestfsSession.html#guestfs-session-df-h"/>
     <keyword type="function" name="guestfs_session_dmesg ()" link="GuestfsSession.html#guestfs-session-dmesg"/>
@@ -317,6 +318,7 @@
     <keyword type="function" name="guestfs_session_mounts ()" link="GuestfsSession.html#guestfs-session-mounts"/>
     <keyword type="function" name="guestfs_session_mv ()" link="GuestfsSession.html#guestfs-session-mv"/>
     <keyword type="function" name="guestfs_session_new ()" link="GuestfsSession.html#guestfs-session-new"/>
+    <keyword type="function" name="guestfs_session_nr_devices ()" link="GuestfsSession.html#guestfs-session-nr-devices"/>
     <keyword type="function" name="guestfs_session_ntfs_3g_probe ()" link="GuestfsSession.html#guestfs-session-ntfs-3g-probe"/>
     <keyword type="function" name="guestfs_session_ntfsclone_in ()" link="GuestfsSession.html#guestfs-session-ntfsclone-in"/>
     <keyword type="function" name="guestfs_session_ntfsclone_out ()" link="GuestfsSession.html#guestfs-session-ntfsclone-out"/>
@@ -395,6 +397,7 @@
     <keyword type="function" name="guestfs_session_sfdisk_l ()" link="GuestfsSession.html#guestfs-session-sfdisk-l"/>
     <keyword type="function" name="guestfs_session_sh ()" link="GuestfsSession.html#guestfs-session-sh"/>
     <keyword type="function" name="guestfs_session_sh_lines ()" link="GuestfsSession.html#guestfs-session-sh-lines"/>
+    <keyword type="function" name="guestfs_session_shutdown ()" link="GuestfsSession.html#guestfs-session-shutdown"/>
     <keyword type="function" name="guestfs_session_sleep ()" link="GuestfsSession.html#guestfs-session-sleep"/>
     <keyword type="function" name="guestfs_session_stat ()" link="GuestfsSession.html#guestfs-session-stat"/>
     <keyword type="function" name="guestfs_session_statvfs ()" link="GuestfsSession.html#guestfs-session-statvfs"/>

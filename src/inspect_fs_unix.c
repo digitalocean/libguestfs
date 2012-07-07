@@ -68,6 +68,7 @@ static pcre *re_xdev;
 static pcre *re_cciss;
 static pcre *re_mdN;
 static pcre *re_freebsd;
+static pcre *re_diskbyid;
 static pcre *re_netbsd;
 
 static void compile_regexps (void) __attribute__((constructor));
@@ -112,6 +113,7 @@ compile_regexps (void)
   COMPILE (re_cciss, "^/dev/(cciss/c\\d+d\\d+)(?:p(\\d+))?$", 0);
   COMPILE (re_mdN, "^(/dev/md\\d+)$", 0);
   COMPILE (re_freebsd, "^/dev/ad(\\d+)s(\\d+)([a-z])$", 0);
+  COMPILE (re_diskbyid, "^/dev/disk/by-id/.*-part(\\d+)$", 0);
   COMPILE (re_netbsd, "^NetBSD (\\d+)\\.(\\d+)", 0);
 }
 
@@ -133,6 +135,7 @@ free_regexps (void)
   pcre_free (re_cciss);
   pcre_free (re_mdN);
   pcre_free (re_freebsd);
+  pcre_free (re_diskbyid);
   pcre_free (re_netbsd);
 }
 
@@ -147,6 +150,7 @@ static int add_fstab_entry (guestfs_h *g, struct inspect_fs *fs,
 static char *resolve_fstab_device (guestfs_h *g, const char *spec,
                                    Hash_table *md_map);
 static int inspect_with_augeas (guestfs_h *g, struct inspect_fs *fs, const char **configfiles, int (*f) (guestfs_h *, struct inspect_fs *));
+static int is_partition (guestfs_h *g, const char *partition);
 
 /* Hash structure for uuid->path lookups */
 typedef struct md_uuid {
@@ -1185,6 +1189,158 @@ error:
   return -1;
 }
 
+static int
+resolve_fstab_device_xdev (guestfs_h *g, const char *type, const char *disk,
+                           const char *part, char **device_ret)
+{
+  char *name, *device;
+  char **devices;
+  size_t i, count;
+  struct drive *drive;
+  const char *p;
+
+  /* type: (h|s|v|xv)
+   * disk: ([a-z]+)
+   * part: (\d*)
+   */
+
+  devices = guestfs_list_devices (g);
+  if (devices == NULL)
+    return -1;
+
+  /* Check any hints we were passed for a non-heuristic mapping */
+  name = safe_asprintf (g, "%sd%s", type, disk);
+  i = 0;
+  drive = g->drives;
+  while (drive) {
+    if (drive->name && STREQ (drive->name, name)) {
+      device = safe_asprintf (g, "%s%s", devices[i], part);
+      if (!is_partition (g, device)) {
+        free (device);
+        goto out;
+      }
+      *device_ret = device;
+      break;
+    }
+
+    i++; drive = drive->next;
+  }
+  free (name);
+
+  /* Guess the appliance device name if we didn't find a matching hint */
+  if (!*device_ret) {
+    /* Count how many disks the libguestfs appliance has */
+    for (count = 0; devices[count] != NULL; count++)
+      ;
+
+    /* Calculate the numerical index of the disk */
+    i = disk[0] - 'a';
+    for (p = disk + 1; *p != '\0'; p++) {
+      i += 1; i *= 26;
+      i += *p - 'a';
+    }
+
+    /* Check the index makes sense wrt the number of disks the appliance has.
+     * If it does, map it to an appliance disk.
+     */
+    if (i < count) {
+      device = safe_asprintf (g, "%s%s", devices[i], part);
+      if (!is_partition (g, device)) {
+        free (device);
+        goto out;
+      }
+      *device_ret = device;
+    }
+  }
+
+ out:
+  guestfs___free_string_list (devices);
+  return 0;
+}
+
+static int
+resolve_fstab_device_cciss (guestfs_h *g, const char *disk, const char *part,
+                            char **device_ret)
+{
+  char *device;
+  char **devices;
+  size_t i;
+  struct drive *drive;
+
+  /* disk: (cciss/c\d+d\d+)
+   * part: (\d+)?
+   */
+
+  devices = guestfs_list_devices (g);
+  if (devices == NULL)
+    return -1;
+
+  /* Check any hints we were passed for a non-heuristic mapping */
+  i = 0;
+  drive = g->drives;
+  while (drive) {
+    if (drive->name && STREQ(drive->name, disk)) {
+      if (part) {
+        device = safe_asprintf (g, "%s%s", devices[i], part);
+        if (!is_partition (g, device)) {
+          free (device);
+          goto out;
+        }
+        *device_ret = device;
+      }
+      else
+        *device_ret = safe_strdup (g, devices[i]);
+      break;
+    }
+
+    i++; drive = drive->next;
+  }
+
+  /* We don't try to guess mappings for cciss devices */
+
+ out:
+  guestfs___free_string_list (devices);
+  return 0;
+}
+
+static int
+resolve_fstab_device_diskbyid (guestfs_h *g, const char *part,
+                               char **device_ret)
+{
+  int nr_devices;
+  char *device;
+
+  /* For /dev/disk/by-id there is a limit to what we can do because
+   * original SCSI ID information has likely been lost.  This
+   * heuristic will only work for guests that have a single block
+   * device.
+   *
+   * So the main task here is to make sure the assumptions above are
+   * true.
+   *
+   * XXX Use hints from virt-p2v if available.
+   * See also: https://bugzilla.redhat.com/show_bug.cgi?id=836573#c3
+   */
+
+  nr_devices = guestfs_nr_devices (g);
+  if (nr_devices == -1)
+    return -1;
+
+  /* If #devices isn't 1, give up trying to translate this fstab entry. */
+  if (nr_devices != 1)
+    return 0;
+
+  /* Make the partition name and check it exists. */
+  device = safe_asprintf (g, "/dev/sda%s", part);
+  if (!is_partition (g, device)) {
+    free (device);
+    return 0;
+  }
+
+  *device_ret = device;
+  return 0;
+}
+
 /* Resolve block device name to the libguestfs device name, eg.
  * /dev/xvdb1 => /dev/vdb1; and /dev/mapper/VG-LV => /dev/VG/LV.  This
  * assumes that disks were added in the same order as they appear to
@@ -1196,6 +1352,7 @@ resolve_fstab_device (guestfs_h *g, const char *spec, Hash_table *md_map)
 {
   char *device = NULL;
   char *type, *slice, *disk, *part;
+  int r;
 
   if (STRPREFIX (spec, "/dev/mapper/") && guestfs_exists (g, spec) > 0) {
     /* LVM2 does some strange munging on /dev/mapper paths for VGs and
@@ -1211,81 +1368,19 @@ resolve_fstab_device (guestfs_h *g, const char *spec, Hash_table *md_map)
     device = guestfs_lvm_canonical_lv_name (g, spec);
   }
   else if (match3 (g, spec, re_xdev, &type, &disk, &part)) {
-    /* type: (h|s|v|xv)
-     * disk: ([a-z]+)
-     * part: (\d*) */
-    char **devices = guestfs_list_devices (g);
-    if (devices == NULL)
-      return NULL;
-
-    /* Check any hints we were passed for a non-heuristic mapping */
-    char *name = safe_asprintf (g, "%sd%s", type, disk);
-    size_t i = 0;
-    struct drive *drive = g->drives;
-    while (drive) {
-      if (drive->name && STREQ(drive->name, name)) {
-        device = safe_asprintf (g, "%s%s", devices[i], part);
-        break;
-      }
-
-      i++; drive = drive->next;
-    }
-    free (name);
-
-    /* Guess the appliance device name if we didn't find a matching hint */
-    if (!device) {
-      /* Count how many disks the libguestfs appliance has */
-      size_t count;
-      for (count = 0; devices[count] != NULL; count++)
-        ;
-
-      /* Calculate the numerical index of the disk */
-      i = disk[0] - 'a';
-      for (char *p = disk + 1; *p != '\0'; p++) {
-        i += 1; i *= 26;
-        i += *p - 'a';
-      }
-
-      /* Check the index makes sense wrt the number of disks the appliance has.
-       * If it does, map it to an appliance disk. */
-      if (i < count) {
-        device = safe_asprintf (g, "%s%s", devices[i], part);
-      }
-    }
-
+    r = resolve_fstab_device_xdev (g, type, disk, part, &device);
     free (type);
     free (disk);
     free (part);
-    guestfs___free_string_list (devices);
+    if (r == -1)
+      return NULL;
   }
   else if (match2 (g, spec, re_cciss, &disk, &part)) {
-    /* disk: (cciss/c\d+d\d+)
-     * part: (\d+)? */
-    char **devices = guestfs_list_devices (g);
-    if (devices == NULL)
-      return NULL;
-
-    /* Check any hints we were passed for a non-heuristic mapping */
-    size_t i = 0;
-    struct drive *drive = g->drives;
-    while (drive) {
-      if (drive->name && STREQ(drive->name, disk)) {
-        if (part) {
-          device = safe_asprintf (g, "%s%s", devices[i], part);
-        } else {
-          device = safe_strdup (g, devices[i]);
-        }
-        break;
-      }
-
-      i++; drive = drive->next;
-    }
-
-    /* We don't try to guess mappings for cciss devices */
-
+    r = resolve_fstab_device_cciss (g, disk, part, &device);
     free (disk);
     free (part);
-    guestfs___free_string_list (devices);
+    if (r == -1)
+      return NULL;
   }
   else if (md_map && (disk = match1 (g, spec, re_mdN)) != NULL) {
     mdadm_app entry;
@@ -1315,6 +1410,12 @@ resolve_fstab_device (guestfs_h *g, const char *spec, Hash_table *md_map)
         part_i >= 0 && part_i < 26) {
       device = safe_asprintf (g, "/dev/sd%c%d", disk_i + 'a', part_i + 5);
     }
+  }
+  else if ((part = match1 (g, spec, re_diskbyid)) != NULL) {
+    r = resolve_fstab_device_diskbyid (g, part, &device);
+    free (part);
+    if (r == -1)
+      return NULL;
   }
 
   /* Didn't match device pattern, return original spec unchanged. */
@@ -1405,6 +1506,32 @@ inspect_with_augeas (guestfs_h *g, struct inspect_fs *fs,
   guestfs_aug_close (g);
 
   return r;
+}
+
+static int
+is_partition (guestfs_h *g, const char *partition)
+{
+  char *device;
+  guestfs_error_handler_cb old_error_cb;
+
+  old_error_cb = g->error_cb;
+  g->error_cb = NULL;
+
+  if ((device = guestfs_part_to_dev (g, partition)) == NULL) {
+    g->error_cb = old_error_cb;
+    return 0;
+  }
+
+  if (guestfs_device_index (g, device) == -1) {
+    g->error_cb = old_error_cb;
+    free (device);
+    return 0;
+  }
+
+  g->error_cb = old_error_cb;
+  free (device);
+
+  return 1;
 }
 
 #endif /* defined(HAVE_HIVEX) */

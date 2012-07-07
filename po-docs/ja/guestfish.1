@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfish 1"
-.TH guestfish 1 "2012-06-28" "libguestfs-1.18.3" "Virtualization Support"
+.TH guestfish 1 "2012-07-07" "libguestfs-1.18.4" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -2535,6 +2535,19 @@ partial copies (see \*(L"copy-device-to-device\*(R").
 Deprecated functions will not be removed from the \s-1API\s0, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+.SS "device-index"
+.IX Subsection "device-index"
+.Vb 1
+\& device\-index device
+.Ve
+.PP
+This function takes a device name (eg. \*(L"/dev/sdb\*(R") and returns the index of
+the device in the list of devices.
+.PP
+Index numbers start from 0.  The named device must exist, for example as a
+string returned from \*(L"list-devices\*(R".
+.PP
+See also \*(L"list-devices\*(R", \*(L"part-to-dev\*(R".
 .SS "df"
 .IX Subsection "df"
 .Vb 1
@@ -4317,7 +4330,16 @@ libguestfs.
 \& kill\-subprocess
 .Ve
 .PP
-This kills the qemu subprocess.  You should never need to call this.
+This kills the qemu subprocess.
+.PP
+Do not call this.  See: \*(L"shutdown\*(R" instead.
+.PP
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"shutdown\*(R" call
+instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 .SS "launch"
 .IX Subsection "launch"
 .SS "run"
@@ -5446,6 +5468,18 @@ Some internal mounts are not shown.
 .PP
 This moves a file from \f(CW\*(C`src\*(C'\fR to \f(CW\*(C`dest\*(C'\fR where \f(CW\*(C`dest\*(C'\fR is either a
 destination filename or destination directory.
+.SS "nr-devices"
+.IX Subsection "nr-devices"
+.Vb 1
+\& nr\-devices
+.Ve
+.PP
+This returns the number of whole block devices that were added.  This is the
+same as the number of devices that would be returned if you called
+\&\*(L"list-devices\*(R".
+.PP
+To find out the maximum number of devices that could be added, call
+\&\*(L"max-disks\*(R".
 .SS "ntfs\-3g\-probe"
 .IX Subsection "ntfs-3g-probe"
 .Vb 1
@@ -5789,7 +5823,7 @@ partition number, returning the device name (eg. \*(L"/dev/sdb\*(R").
 The named partition must exist, for example as a string returned from
 \&\*(L"list-partitions\*(R".
 .PP
-\&\*(L"part-to-partnum\*(R" 参照。
+See also \*(L"part-to-partnum\*(R", \*(L"device-index\*(R".
 .SS "part-to-partnum"
 .IX Subsection "part-to-partnum"
 .Vb 1
@@ -6630,6 +6664,27 @@ All the provisos about \*(L"command\*(R" apply to this call.
 This is the same as \*(L"sh\*(R", but splits the result into a list of lines.
 .PP
 関連項目: \*(L"command-lines\*(R"
+.SS "shutdown"
+.IX Subsection "shutdown"
+.Vb 1
+\& shutdown
+.Ve
+.PP
+This is the opposite of \*(L"launch\*(R".  It performs an orderly shutdown of the
+backend process(es).  If the autosync flag is set (which is the default)
+then the disk image is synchronized.
+.PP
+If the subprocess exits with an error then this function will return an
+error, which should \fInot\fR be ignored (it may indicate that the disk image
+could not be written out properly).
+.PP
+It is safe to call this multiple times.  Extra calls are ignored.
+.PP
+This call does \fInot\fR close or free up the handle.  You still need to call
+\&\*(L"close\*(R" afterwards.
+.PP
+\&\*(L"close\*(R" will call this if you don't do it explicitly, but note that any
+errors are ignored in that case.
 .SS "sleep"
 .IX Subsection "sleep"
 .Vb 1

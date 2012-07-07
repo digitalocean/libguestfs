@@ -504,6 +504,9 @@ val debug_drives : t -> string array
 
 val debug_upload : t -> string -> string -> int -> unit
 
+val device_index : t -> string -> int
+(** convert device to index *)
+
 val df : t -> string
 (** report file system disk space usage *)
 
@@ -836,7 +839,10 @@ val isoinfo_device : t -> string -> isoinfo
 (** get ISO information from primary volume descriptor of device *)
 
 val kill_subprocess : t -> unit
-(** kill the qemu subprocess *)
+(** kill the qemu subprocess
+
+    @deprecated Use {!shutdown} instead
+ *)
 
 val launch : t -> unit
 (** launch the qemu subprocess *)
@@ -1083,6 +1089,9 @@ val mounts : t -> string array
 
 val mv : t -> string -> string -> unit
 (** move a file *)
+
+val nr_devices : t -> int
+(** return number of whole block devices (disks) added *)
 
 val ntfs_3g_probe : t -> bool -> string -> int
 (** probe NTFS volume *)
@@ -1338,6 +1347,9 @@ val sh : t -> string -> string
 
 val sh_lines : t -> string -> string array
 (** run a command via the shell returning lines *)
+
+val shutdown : t -> unit
+(** shutdown the qemu subprocess *)
 
 val sleep : t -> int -> unit
 (** sleep for some seconds *)
@@ -1702,6 +1714,7 @@ class guestfs : unit -> object
   method debug_cmdline : unit -> string array
   method debug_drives : unit -> string array
   method debug_upload : string -> string -> int -> unit
+  method device_index : string -> int
   method df : unit -> string
   method df_h : unit -> string
   method dmesg : unit -> string
@@ -1891,6 +1904,7 @@ class guestfs : unit -> object
   method mountpoints : unit -> (string * string) list
   method mounts : unit -> string array
   method mv : string -> string -> unit
+  method nr_devices : unit -> int
   method ntfs_3g_probe : bool -> string -> int
   method ntfsclone_in : string -> string -> unit
   method ntfsclone_out : ?metadataonly:bool -> ?rescue:bool -> ?ignorefscheck:bool -> ?preservetimestamps:bool -> ?force:bool -> string -> string -> unit
@@ -1969,6 +1983,7 @@ class guestfs : unit -> object
   method sfdisk_l : string -> string
   method sh : string -> string
   method sh_lines : string -> string array
+  method shutdown : unit -> unit
   method sleep : int -> unit
   method stat : string -> stat
   method statvfs : string -> statvfs

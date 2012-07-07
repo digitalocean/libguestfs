@@ -95,6 +95,7 @@
 -export([debug_cmdline/1]).
 -export([debug_drives/1]).
 -export([debug_upload/4]).
+-export([device_index/2]).
 -export([df/1]).
 -export([df_h/1]).
 -export([dmesg/1]).
@@ -284,6 +285,7 @@
 -export([mountpoints/1]).
 -export([mounts/1]).
 -export([mv/3]).
+-export([nr_devices/1]).
 -export([ntfs_3g_probe/3]).
 -export([ntfsclone_in/3]).
 -export([ntfsclone_out/3, ntfsclone_out/4]).
@@ -362,6 +364,7 @@
 -export([sfdisk_l/2]).
 -export([sh/2]).
 -export([sh_lines/2]).
+-export([shutdown/1]).
 -export([sleep/2]).
 -export([stat/2]).
 -export([statvfs/2]).
@@ -728,6 +731,9 @@ debug_drives(G) ->
 
 debug_upload(G, Filename, Tmpname, Mode) ->
   call_port(G, {debug_upload, Filename, Tmpname, Mode}).
+
+device_index(G, Device) ->
+  call_port(G, {device_index, Device}).
 
 df(G) ->
   call_port(G, {df}).
@@ -1310,6 +1316,9 @@ mounts(G) ->
 mv(G, Src, Dest) ->
   call_port(G, {mv, Src, Dest}).
 
+nr_devices(G) ->
+  call_port(G, {nr_devices}).
+
 ntfs_3g_probe(G, Rw, Device) ->
   call_port(G, {ntfs_3g_probe, Rw, Device}).
 
@@ -1551,6 +1560,9 @@ sh(G, Command) ->
 
 sh_lines(G, Command) ->
   call_port(G, {sh_lines, Command}).
+
+shutdown(G) ->
+  call_port(G, {shutdown}).
 
 sleep(G, Secs) ->
   call_port(G, {sleep, Secs}).
