@@ -1,3 +1,11 @@
+libguestfs (1:1.18.4-1) unstable; urgency=low
+
+  * [3fc6f7c] Imported Upstream version 1.18.4
+  * [90f05f5] Rebased patch queue; dropped libruby detection fix which has
+    been picked up upstream
+
+ -- Hilko Bengen <bengen@debian.org>  Sun, 08 Jul 2012 00:04:46 +0200
+
 libguestfs (1:1.18.3-1) unstable; urgency=low
 
   * New upstream version
